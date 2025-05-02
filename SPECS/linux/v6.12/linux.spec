@@ -1,6 +1,6 @@
 %global security_hardening none
 %global __cmake_in_source_build 0
-%global lkcm_version 6.0.0
+%global lkcm_version 6.12
 
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -259,6 +259,8 @@ Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 # Add non-approved prints for essIV and echainIV IV generation method
 Patch505: 0004-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
+# Introduce rsa-pkcs1pad_crypt.c to include encrypt and decrypt functions outside canister
+Patch506: 0001-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -307,7 +309,7 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.12.1-13-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0003-FIPS-canister-creation.patch
@@ -319,6 +321,7 @@ Patch10008: 0008-Move-kernel-structures-usage-from-canister-to-wrappe.patch
 Patch10009: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 Patch10010: 0010-List-canister-objs-in-a-file.patch
 Patch10011: 0011-Handle-approved-and-non-approved-services.patch
+Patch10012: 0012-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
 
 %if 0%{?kat_build}
 Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -490,7 +493,7 @@ The kernel fips-canister
 %endif
 
 # crypto
-%autopatch -p1 -m500 -M505
+%autopatch -p1 -m500 -M506
 
 %if 0%{?fips}
 %autopatch -p1 -m508 -M511
@@ -521,7 +524,7 @@ popd
 #popd
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10013
+%autopatch -p1 -m10000 -M10012
 
 %if 0%{?kat_build}
 %autopatch -p1 -m10014 -M10014
@@ -665,14 +668,14 @@ popd
 %if 0%{?canister_build}
 install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
 pushd crypto/
-mkdir fips-canister-%{lkcm_version}-%{version}-%{release}
+mkdir fips-canister-%{version}-%{release}
 cp fips_canister.o \
    fips_canister-kallsyms \
    .fips_canister.o.cmd \
-   fips-canister-%{lkcm_version}-%{version}-%{release}/
-tar -cvjf fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 fips-canister-%{lkcm_version}-%{version}-%{release}/
+   fips-canister-%{version}-%{release}/
+tar -cvjf fips-canister-%{version}-%{release}.tar.bz2 fips-canister-%{version}-%{release}/
 popd
-cp crypto/fips-canister-%{lkcm_version}-%{version}-%{release}.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
+cp crypto/fips-canister-%{version}-%{release}.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
 %endif
 
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -869,6 +872,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Apr 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.1-13
+- Move rsa-pkcs1pad encrypt/decrypt functions out of canister boundry
+- Fail rsa-pkcs1pad encrypt/decrypt in fips mode
+- Use version-release for canister version, remove 6.0.0
 * Tue Apr 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-12
 - Update canister binary v6.12.1-11
 * Thu Apr 17 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.1-11

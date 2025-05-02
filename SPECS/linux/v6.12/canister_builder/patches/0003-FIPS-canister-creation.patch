@@ -1,6 +1,6 @@
-From c722a44978975bdfe949e79e8c58fb3da0adc507 Mon Sep 17 00:00:00 2001
-From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
-Date: Wed, 26 Feb 2025 06:14:54 +0000
+From f2c54f9bf8907f01233d7f28e0e48d50c8b5b396 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Fri, 2 May 2025 02:57:23 -0500
 Subject: [PATCH 03/12] FIPS canister creation
 
 Canister creation patch.
@@ -17,33 +17,34 @@ Canister creation patch.
  - Redo DO_ONCE as it is not supported by integrity code.
  - Do not use latent entropy GCC plugin for canister objects
  - Do not check indirect call destination signatures from canister
+ - Remove rsa-pkcs1pad encrypt/decrypt functions from canister
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c |  77 ++++++++++----------
- crypto/Makefile                    |  91 ++++++++++++++++++++++++
+ arch/x86/crypto/aesni-intel_glue.c |  77 ++++++-------
+ crypto/Makefile                    |  91 ++++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
  crypto/ctr.c                       |   3 +-
  crypto/cts.c                       |   3 +-
- crypto/drbg.c                      |  50 ++++++++-----
+ crypto/drbg.c                      |  50 +++++----
  crypto/ecb.c                       |   2 +-
  crypto/ecc.c                       |   5 +-
  crypto/ecdh.c                      |   5 +-
  crypto/ecdsa.c                     |   3 +-
- crypto/gcm.c                       |  11 +--
+ crypto/gcm.c                       |  11 +-
  crypto/ghash-generic.c             |   5 +-
  crypto/hmac.c                      |   3 +-
- crypto/rsa-pkcs1pad.c              |  13 ++--
+ crypto/rsa-pkcs1pad.c              | 168 ++---------------------------
  crypto/sha3_generic.c              |   5 +-
- crypto/testmgr.c                   | 108 ++++++++++++++++-------------
+ crypto/testmgr.c                   | 108 ++++++++++---------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 20 files changed, 267 insertions(+), 138 deletions(-)
+ 20 files changed, 271 insertions(+), 289 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -316,7 +317,7 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index dc3b331ca..fdd2b292a 100644
+index 1b301de0b..ea127f8b5 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -14,9 +14,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -336,7 +337,7 @@ index dc3b331ca..fdd2b292a 100644
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
 +canister += $(rsa_generic-y)
- 
+ obj-$(CONFIG_CRYPTO_RSA) += rsa-pkcs1pad_crypt.o
  
  $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature.asn1.h
  $(obj)/ecdsa.o: $(obj)/ecdsasignature.asn1.h
@@ -1000,10 +1001,17 @@ index 7cec25ff9..54a5321ea 100644
  		return -ENOMEM;
  	spawn = shash_instance_ctx(inst);
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index cd501195f..11805ebd2 100644
+index cd501195f..bfde0f28c 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
-@@ -15,6 +15,7 @@
+@@ -9,12 +9,14 @@
+ #include <crypto/akcipher.h>
+ #include <crypto/internal/akcipher.h>
+ #include <crypto/internal/rsa.h>
++#include <crypto/internal/rsa_pkcs1pad.h>
+ #include <linux/err.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
  #include <linux/module.h>
  #include <linux/random.h>
  #include <linux/scatterlist.h>
@@ -1011,7 +1019,16 @@ index cd501195f..11805ebd2 100644
  
  /*
   * Hash algorithm OIDs plus ASN.1 DER wrappings [RFC4880 sec 5.2.2].
-@@ -213,7 +214,7 @@ static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
+@@ -194,7 +196,7 @@ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
+ 		sg_chain(sg, nsegs, next);
+ }
+ 
+-static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
++static int pkcs1pad_sign_complete(struct akcipher_request *req, int err)
+ {
+ 	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+ 	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
+@@ -213,7 +215,7 @@ static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
  	if (likely(!pad_len))
  		goto out;
  
@@ -1020,25 +1037,177 @@ index cd501195f..11805ebd2 100644
  	err = -ENOMEM;
  	if (!out_buf)
  		goto out;
-@@ -265,7 +266,7 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
- 		return -EOVERFLOW;
- 	}
+@@ -233,167 +235,19 @@ static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
+ 	return err;
+ }
  
+-static void pkcs1pad_encrypt_sign_complete_cb(void *data, int err)
++static void pkcs1pad_sign_complete_cb(void *data, int err)
+ {
+ 	struct akcipher_request *req = data;
+ 
+ 	if (err == -EINPROGRESS)
+ 		goto out;
+ 
+-	err = pkcs1pad_encrypt_sign_complete(req, err);
++	err = pkcs1pad_sign_complete(req, err);
+ 
+ out:
+ 	akcipher_request_complete(req, err);
+ }
+ 
+-static int pkcs1pad_encrypt(struct akcipher_request *req)
+-{
+-	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+-	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
+-	struct pkcs1pad_request *req_ctx = akcipher_request_ctx(req);
+-	int err;
+-	unsigned int i, ps_end;
+-
+-	if (!ctx->key_size)
+-		return -EINVAL;
+-
+-	if (req->src_len > ctx->key_size - 11)
+-		return -EOVERFLOW;
+-
+-	if (req->dst_len < ctx->key_size) {
+-		req->dst_len = ctx->key_size;
+-		return -EOVERFLOW;
+-	}
+-
 -	req_ctx->in_buf = kmalloc(ctx->key_size - 1 - req->src_len,
-+	req_ctx->in_buf = fcw_kmalloc(ctx->key_size - 1 - req->src_len,
- 				  GFP_KERNEL);
- 	if (!req_ctx->in_buf)
- 		return -ENOMEM;
-@@ -371,7 +372,7 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
- 	if (!ctx->key_size || req->src_len != ctx->key_size)
- 		return -EINVAL;
- 
+-				  GFP_KERNEL);
+-	if (!req_ctx->in_buf)
+-		return -ENOMEM;
+-
+-	ps_end = ctx->key_size - req->src_len - 2;
+-	req_ctx->in_buf[0] = 0x02;
+-	for (i = 1; i < ps_end; i++)
+-		req_ctx->in_buf[i] = get_random_u32_inclusive(1, 255);
+-	req_ctx->in_buf[ps_end] = 0x00;
+-
+-	pkcs1pad_sg_set_buf(req_ctx->in_sg, req_ctx->in_buf,
+-			ctx->key_size - 1 - req->src_len, req->src);
+-
+-	akcipher_request_set_tfm(&req_ctx->child_req, ctx->child);
+-	akcipher_request_set_callback(&req_ctx->child_req, req->base.flags,
+-			pkcs1pad_encrypt_sign_complete_cb, req);
+-
+-	/* Reuse output buffer */
+-	akcipher_request_set_crypt(&req_ctx->child_req, req_ctx->in_sg,
+-				   req->dst, ctx->key_size - 1, req->dst_len);
+-
+-	err = crypto_akcipher_encrypt(&req_ctx->child_req);
+-	if (err != -EINPROGRESS && err != -EBUSY)
+-		return pkcs1pad_encrypt_sign_complete(req, err);
+-
+-	return err;
+-}
+-
+-static int pkcs1pad_decrypt_complete(struct akcipher_request *req, int err)
+-{
+-	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+-	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
+-	struct pkcs1pad_request *req_ctx = akcipher_request_ctx(req);
+-	unsigned int dst_len;
+-	unsigned int pos;
+-	u8 *out_buf;
+-
+-	if (err)
+-		goto done;
+-
+-	err = -EINVAL;
+-	dst_len = req_ctx->child_req.dst_len;
+-	if (dst_len < ctx->key_size - 1)
+-		goto done;
+-
+-	out_buf = req_ctx->out_buf;
+-	if (dst_len == ctx->key_size) {
+-		if (out_buf[0] != 0x00)
+-			/* Decrypted value had no leading 0 byte */
+-			goto done;
+-
+-		dst_len--;
+-		out_buf++;
+-	}
+-
+-	if (out_buf[0] != 0x02)
+-		goto done;
+-
+-	for (pos = 1; pos < dst_len; pos++)
+-		if (out_buf[pos] == 0x00)
+-			break;
+-	if (pos < 9 || pos == dst_len)
+-		goto done;
+-	pos++;
+-
+-	err = 0;
+-
+-	if (req->dst_len < dst_len - pos)
+-		err = -EOVERFLOW;
+-	req->dst_len = dst_len - pos;
+-
+-	if (!err)
+-		sg_copy_from_buffer(req->dst,
+-				sg_nents_for_len(req->dst, req->dst_len),
+-				out_buf + pos, req->dst_len);
+-
+-done:
+-	kfree_sensitive(req_ctx->out_buf);
+-
+-	return err;
+-}
+-
+-static void pkcs1pad_decrypt_complete_cb(void *data, int err)
+-{
+-	struct akcipher_request *req = data;
+-
+-	if (err == -EINPROGRESS)
+-		goto out;
+-
+-	err = pkcs1pad_decrypt_complete(req, err);
+-
+-out:
+-	akcipher_request_complete(req, err);
+-}
+-
+-static int pkcs1pad_decrypt(struct akcipher_request *req)
+-{
+-	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+-	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
+-	struct pkcs1pad_request *req_ctx = akcipher_request_ctx(req);
+-	int err;
+-
+-	if (!ctx->key_size || req->src_len != ctx->key_size)
+-		return -EINVAL;
+-
 -	req_ctx->out_buf = kmalloc(ctx->key_size, GFP_KERNEL);
-+	req_ctx->out_buf = fcw_kmalloc(ctx->key_size, GFP_KERNEL);
- 	if (!req_ctx->out_buf)
- 		return -ENOMEM;
- 
-@@ -419,7 +420,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+-	if (!req_ctx->out_buf)
+-		return -ENOMEM;
+-
+-	pkcs1pad_sg_set_buf(req_ctx->out_sg, req_ctx->out_buf,
+-			    ctx->key_size, NULL);
+-
+-	akcipher_request_set_tfm(&req_ctx->child_req, ctx->child);
+-	akcipher_request_set_callback(&req_ctx->child_req, req->base.flags,
+-			pkcs1pad_decrypt_complete_cb, req);
+-
+-	/* Reuse input buffer, output to a new buffer */
+-	akcipher_request_set_crypt(&req_ctx->child_req, req->src,
+-				   req_ctx->out_sg, req->src_len,
+-				   ctx->key_size);
+-
+-	err = crypto_akcipher_decrypt(&req_ctx->child_req);
+-	if (err != -EINPROGRESS && err != -EBUSY)
+-		return pkcs1pad_decrypt_complete(req, err);
+-
+-	return err;
+-}
+-
+ static int pkcs1pad_sign(struct akcipher_request *req)
+ {
+ 	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+@@ -419,7 +273,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
  		return -EOVERFLOW;
  	}
  
@@ -1047,7 +1216,25 @@ index cd501195f..11805ebd2 100644
  				  GFP_KERNEL);
  	if (!req_ctx->in_buf)
  		return -ENOMEM;
-@@ -561,7 +562,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
+@@ -438,7 +292,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+ 
+ 	akcipher_request_set_tfm(&req_ctx->child_req, ctx->child);
+ 	akcipher_request_set_callback(&req_ctx->child_req, req->base.flags,
+-			pkcs1pad_encrypt_sign_complete_cb, req);
++			pkcs1pad_sign_complete_cb, req);
+ 
+ 	/* Reuse output buffer */
+ 	akcipher_request_set_crypt(&req_ctx->child_req, req_ctx->in_sg,
+@@ -446,7 +300,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+ 
+ 	err = crypto_akcipher_decrypt(&req_ctx->child_req);
+ 	if (err != -EINPROGRESS && err != -EBUSY)
+-		return pkcs1pad_encrypt_sign_complete(req, err);
++		return pkcs1pad_sign_complete(req, err);
+ 
+ 	return err;
+ }
+@@ -561,7 +415,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
  	    !ctx->key_size || sig_size != ctx->key_size)
  		return -EINVAL;
  
@@ -1056,7 +1243,7 @@ index cd501195f..11805ebd2 100644
  	if (!req_ctx->out_buf)
  		return -ENOMEM;
  
-@@ -631,7 +632,7 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -631,7 +485,7 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err)
  		return err;
  
@@ -1529,5 +1716,5 @@ index af5ad51d3..f3e132d6f 100644
  	unsigned char *Vbuf;
  	/* hash: static value 10.1.1.1 1b) hmac / ctr: key */
 -- 
-2.39.4
+2.49.0
 

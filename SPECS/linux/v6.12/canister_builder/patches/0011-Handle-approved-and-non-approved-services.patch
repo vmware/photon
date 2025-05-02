@@ -1,6 +1,6 @@
-From 98cefa4c712ad47073d90353fa9fb6b15010e399 Mon Sep 17 00:00:00 2001
-From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
-Date: Wed, 11 Dec 2024 06:28:45 +0000
+From 7f16fd7c595f793480d19600c66012f91de4bb8c Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Fri, 2 May 2025 03:09:39 -0500
 Subject: [PATCH 11/12] Handle approved and non-approved services
 
 - Add log indicator prints in algorithm initialization path
@@ -10,8 +10,6 @@ Subject: [PATCH 11/12] Handle approved and non-approved services
         ghash-generic outside of gcm context
         rfc4309(ccm(aes))
         rfc3686(ctr(aes)))
-- Add log message in pksc1pad_encrypt and pkcs1pad_decrypt functions as non-approved
-  services.
 - Add logic in gcm/rfc4106 encrypt functions to maintain whitelist of known
   callers of gcm-aes/rfc4106-gcm-aes and log message if any other
   callers are using gcm-aes/rfc4106-gcm-aes with External IV
@@ -35,6 +33,7 @@ Subject: [PATCH 11/12] Handle approved and non-approved services
  */
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c | 125 ++++++++++++++++++++++++++++-
  crypto/aes_generic.c               |  11 ++-
@@ -51,7 +50,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  crypto/gcm.c                       |  65 +++++++++++++++
  crypto/ghash-generic.c             |  10 ++-
  crypto/hmac.c                      |   3 +
- crypto/rsa-pkcs1pad.c              |  20 ++++-
+ crypto/rsa-pkcs1pad.c              |   7 +-
  crypto/rsa.c                       |   5 ++
  crypto/seqiv.c                     |   4 +
  crypto/sha1_generic.c              |  10 ++-
@@ -60,7 +59,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  crypto/sha512_generic.c            |  12 ++-
  crypto/testmgr.c                   |  14 ++--
  crypto/xts.c                       |   9 ++-
- 24 files changed, 365 insertions(+), 23 deletions(-)
+ 24 files changed, 351 insertions(+), 24 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index 2aab5fe59..3edf21fb8 100644
@@ -765,10 +764,10 @@ index 60540c928..430d334aa 100644
  	return err;
  }
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 0c27c8985..31f3050d8 100644
+index 492cf3002..aa5103bf1 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
-@@ -14,6 +14,7 @@
+@@ -15,6 +15,7 @@
  #include <linux/kernel.h>
  #include <linux/random.h>
  #include <linux/scatterlist.h>
@@ -776,33 +775,7 @@ index 0c27c8985..31f3050d8 100644
  #include "fips_canister_wrapper.h"
  
  /*
-@@ -254,6 +255,12 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
- 	int err;
- 	unsigned int i, ps_end;
- 
-+	if (fips_enabled) {
-+		fcw_printk(KERN_NOTICE "alg: (%s) (%s) Encryption is not approved in FIPS mode\n",
-+			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
-+
-+	}
-+
- 	if (!ctx->key_size)
- 		return -EINVAL;
- 
-@@ -368,6 +375,12 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
- 	struct pkcs1pad_request *req_ctx = akcipher_request_ctx(req);
- 	int err;
- 
-+	if (fips_enabled) {
-+		fcw_printk(KERN_NOTICE "alg: (%s) (%s) Decryption is not approved in FIPS mode\n",
-+			   crypto_tfm_alg_driver_name(req->base.tfm), crypto_tfm_alg_name(req->base.tfm));
-+
-+	}
-+
- 	if (!ctx->key_size || req->src_len != ctx->key_size)
- 		return -EINVAL;
- 
-@@ -701,6 +714,12 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -554,6 +555,10 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
  err_free_inst:
  		pkcs1pad_free(inst);
@@ -810,15 +783,14 @@ index 0c27c8985..31f3050d8 100644
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) Signature generation and verification "
 +			   "is registered as an approved service\n",
 +			   inst->alg.base.cra_driver_name, inst->alg.base.cra_name);
-+		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) Key transport is registered as a non-approved service\n",
-+			   inst->alg.base.cra_driver_name, inst->alg.base.cra_name);
  	}
  	return err;
  }
-@@ -711,4 +730,3 @@ struct crypto_template rsa_pkcs1pad_tmpl = {
+@@ -563,5 +568,3 @@ struct crypto_template rsa_pkcs1pad_tmpl = {
+ 	.create = pkcs1pad_create,
  	.module = THIS_MODULE,
  };
- 
+-
 -MODULE_ALIAS_CRYPTO("pkcs1pad");
 diff --git a/crypto/rsa.c b/crypto/rsa.c
 index 93cba5859..96db023fd 100644
@@ -1080,5 +1052,5 @@ index 0e619e399..c3bccc80a 100644
  	return err;
  }
 -- 
-2.39.4
+2.49.0
 

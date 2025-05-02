@@ -1,0 +1,133 @@
+From 0b368273e6b4907e0defc380758dd9700776893f Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Mon, 7 Apr 2025 08:02:02 +0000
+Subject: [PATCH 12/12] rsa-pkcs1pad: Add invalid_hash_len check in sign/verify
+
+Upstream code after 6.13 added an additional check to compare
+last byte of hash_prefix/digest_info to slen/dlen appropriately
+
+Port it to 6.12
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ crypto/crypto_self_test.c |  4 ----
+ crypto/rsa-pkcs1pad.c     | 35 ++++++++++++++++++++++++++++++++++-
+ crypto/testmgr.c          |  7 -------
+ 3 files changed, 34 insertions(+), 12 deletions(-)
+
+diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
+index 836808d7c..00333196b 100644
+--- a/crypto/crypto_self_test.c
++++ b/crypto/crypto_self_test.c
+@@ -68,10 +68,6 @@ static struct alg_self_test __initdata alg_self_test_tbl[]  =
+ 		.driver_name = "hmac(sha3-512)",
+ 		.alg_name = "hmac(sha3-512)",
+ 	},
+-	{
+-		.driver_name = "pkcs1pad(rsa,sha1)",
+-		.alg_name = "pkcs1pad(rsa,sha1)",
+-	},
+ 	{
+ 		.driver_name = "pkcs1pad(rsa,sha224)",
+ 		.alg_name = "pkcs1pad(rsa,sha224)",
+diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
+index aa5103bf1..e2226341b 100644
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -10,6 +10,7 @@
+ #include <crypto/internal/akcipher.h>
+ #include <crypto/internal/rsa.h>
+ #include <crypto/internal/rsa_pkcs1pad.h>
++#include <crypto/hash.h>
+ #include <linux/err.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+@@ -21,6 +22,8 @@
+ /*
+  * Hash algorithm OIDs plus ASN.1 DER wrappings [RFC4880 sec 5.2.2].
+  */
++static const u8 rsa_digest_info_none[] = { };
++
+ static const u8 rsa_digest_info_md5[] = {
+ 	0x30, 0x20, 0x30, 0x0c, 0x06, 0x08,
+ 	0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x02, 0x05, /* OID */
+@@ -171,6 +174,29 @@ static int pkcs1pad_set_priv_key(struct crypto_akcipher *tfm, const void *key,
+ 	return 0;
+ }
+ 
++static bool pkcs1pad_invalid_hash_len(unsigned int len,
++					  const struct rsa_asn1_template *digest_info)
++{
++	/*
++	 * Legacy protocols such as TLS 1.1 or earlier and IKE version 1
++	 * do not prepend a Full Hash Prefix/Digest Info to the hash.  In that case,
++	 * the size of the Full Hash Prefix is zero.
++	 */
++	if (digest_info->data == rsa_digest_info_none)
++		return false;
++
++	/*
++	 * The final byte of the Full Hash Prefix encodes the hash length.
++	 *
++	 * This needs to be revisited should hash algorithms with more than
++	 * 1016 bits (127 bytes * 8) ever be added.  The length would then
++	 * be encoded into more than one byte by ASN.1.
++	 */
++	static_assert(HASH_MAX_DIGESTSIZE <= 127);
++
++	return len != digest_info->data[digest_info->size - 1];
++}
++
+ static unsigned int pkcs1pad_get_max_size(struct crypto_akcipher *tfm)
+ {
+ 	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
+@@ -268,6 +294,9 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+ 	if (req->src_len + digest_info_size > ctx->key_size - 11)
+ 		return -EOVERFLOW;
+ 
++	if (pkcs1pad_invalid_hash_len(req->src_len, digest_info))
++		return -EINVAL;
++
+ 	if (req->dst_len < ctx->key_size) {
+ 		req->dst_len = ctx->key_size;
+ 		return -EOVERFLOW;
+@@ -406,13 +435,17 @@ static int pkcs1pad_verify(struct akcipher_request *req)
+ {
+ 	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+ 	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
++	struct akcipher_instance *inst = akcipher_alg_instance(tfm);
++	struct pkcs1pad_inst_ctx *ictx = akcipher_instance_ctx(inst);
++	const struct rsa_asn1_template *digest_info = ictx->digest_info;
+ 	struct pkcs1pad_request *req_ctx = akcipher_request_ctx(req);
+ 	const unsigned int sig_size = req->src_len;
+ 	const unsigned int digest_size = req->dst_len;
+ 	int err;
+ 
+ 	if (fcw_warn_on(req->dst) || fcw_warn_on(!digest_size) ||
+-	    !ctx->key_size || sig_size != ctx->key_size)
++	    !ctx->key_size || sig_size != ctx->key_size ||
++	    pkcs1pad_invalid_hash_len(digest_size, digest_info))
+ 		return -EINVAL;
+ 
+ 	req_ctx->out_buf = fcw_kmalloc(ctx->key_size + digest_size, GFP_KERNEL);
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index 1a3ec52c2..b1daf25c5 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -5176,13 +5176,6 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 		.suite = {
+ 			.cipher = __VECS(fcrypt_pcbc_tv_template)
+ 		}
+-	}, {
+-		.alg = "pkcs1pad(rsa,sha1)",
+-		.test = alg_test_akcipher,
+-		.fips_allowed = 1,
+-		.suite = {
+-			.akcipher = __VECS(pkcs1pad_rsa_sha1_tv_template)
+-		}
+ 	}, {
+ 		.alg = "pkcs1pad(rsa,sha224)",
+ 		.test = alg_test_akcipher,
+-- 
+2.49.0
+

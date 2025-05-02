@@ -1,4 +1,4 @@
-From 1b1b20bc74fb659e840bf33d4fc081c99a2899e7 Mon Sep 17 00:00:00 2001
+From 826ed3f0811b5ca0f4305ae752e4d5951740a7b6 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 29 Nov 2024 06:14:48 +0000
 Subject: [PATCH 04/12] aesni_intel: Remove static call
@@ -56,5 +56,5 @@ index 55ed01a67..9c4cb927d 100644
  	}
  #endif /* CONFIG_X86_64 */
 -- 
-2.39.4
+2.49.0
 

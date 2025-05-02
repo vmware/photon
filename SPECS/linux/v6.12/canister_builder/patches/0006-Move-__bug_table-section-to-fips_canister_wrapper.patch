@@ -1,4 +1,4 @@
-From 368017448ca41207d655a5b48c2588e3e04cc4f8 Mon Sep 17 00:00:00 2001
+From cefe1bd1ed16a86ed3abfd60a3d499eb5df8633d Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 29 Nov 2024 11:39:30 +0000
 Subject: [PATCH 06/12] Move __bug_table section to fips_canister_wrapper
@@ -750,10 +750,10 @@ index 54a5321ea..2c722aa7c 100644
  	for (i = 0; i < bs; i++) {
  		ipad[i] ^= HMAC_IPAD_VALUE;
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 11805ebd2..936dd963d 100644
+index bfde0f28c..a631b4905 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
-@@ -189,7 +189,7 @@ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
+@@ -190,7 +190,7 @@ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
  	int nsegs = next ? 2 : 1;
  
  	sg_init_table(sg, nsegs);
@@ -762,7 +762,7 @@ index 11805ebd2..936dd963d 100644
  
  	if (next)
  		sg_chain(sg, nsegs, next);
-@@ -431,7 +431,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+@@ -284,7 +284,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
  	req_ctx->in_buf[ps_end] = 0x00;
  
  	if (digest_info)
@@ -771,7 +771,7 @@ index 11805ebd2..936dd963d 100644
  		       digest_info->size);
  
  	pkcs1pad_sg_set_buf(req_ctx->in_sg, req_ctx->in_buf,
-@@ -558,7 +558,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
+@@ -411,7 +411,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
  	const unsigned int digest_size = req->dst_len;
  	int err;
  
@@ -1277,5 +1277,5 @@ index 04c1f2557..ca5cd6492 100644
  EXPORT_SYMBOL(sha256_update);
  
 -- 
-2.39.4
+2.49.0
 
