@@ -1,4 +1,4 @@
-From 5b11e5961b3bf0e0e79c22c8899425a06e7d5e62 Mon Sep 17 00:00:00 2001
+From 66ab11a786e8a1323db88278cda67d167679e695 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 06:58:48 +0000
 Subject: [PATCH 07/12] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
@@ -521,5 +521,5 @@ index ca5cd6492..285384817 100644
  MODULE_DESCRIPTION("SHA-256 Algorithm");
  MODULE_LICENSE("GPL");
 -- 
-2.39.4
+2.49.0
 

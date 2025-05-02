@@ -1,4 +1,4 @@
-From ed49cfeb5ef49e2c743ad2df3df5746467c6cf7a Mon Sep 17 00:00:00 2001
+From 169acd5f5f419ec4b49f254117650a8b4d03fc33 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 07:59:18 +0000
 Subject: [PATCH 08/12] Move kernel structures usage from canister to wrapper
@@ -571,7 +571,7 @@ index f3410fe44..8df4433f8 100644
 -MODULE_ALIAS_CRYPTO("cmac");
 -MODULE_IMPORT_NS(CRYPTO_INTERNAL);
 diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
-index 385a56479..d1f48da4e 100644
+index efa26cccd..836808d7c 100644
 --- a/crypto/crypto_self_test.c
 +++ b/crypto/crypto_self_test.c
 @@ -5,12 +5,11 @@
@@ -588,7 +588,7 @@ index 385a56479..d1f48da4e 100644
  
  extern int alg_test(const char *driver, const char *alg, u32 type, u32 mask);
  
-@@ -93,7 +92,7 @@ extern int FIPS_NOT_ALLOWED(char *);
+@@ -97,7 +96,7 @@ extern int FIPS_NOT_ALLOWED(char *);
  #define FIPS_NOT_ALLOWED(algname) 0
  #endif
  
@@ -597,7 +597,7 @@ index 385a56479..d1f48da4e 100644
  {
  	int err = -ENOMEM;
  	int i = 0;
-@@ -106,7 +105,7 @@ static int __init crypto_self_test_init(void)
+@@ -110,7 +109,7 @@ static int __init crypto_self_test_init(void)
  			continue;
  		err = alg_test(alg_self_test_tbl[i].driver_name, alg_self_test_tbl[i].alg_name, 0, 0);
  		if (err) {
@@ -606,7 +606,7 @@ index 385a56479..d1f48da4e 100644
  					 alg_self_test_tbl[i].driver_name,
  					 alg_self_test_tbl[i].alg_name);
  			goto error;
-@@ -116,4 +115,3 @@ static int __init crypto_self_test_init(void)
+@@ -120,4 +119,3 @@ static int __init crypto_self_test_init(void)
  error:
  	return err;
  }
@@ -1433,10 +1433,10 @@ index 711a6a5bf..fe6a3cb67 100644
  
  static inline int crypto_is_larval(struct crypto_alg *alg)
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 936dd963d..0c27c8985 100644
+index a631b4905..492cf3002 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
-@@ -12,7 +12,6 @@
+@@ -13,7 +13,6 @@
  #include <linux/err.h>
  #include <linux/init.h>
  #include <linux/kernel.h>
@@ -3668,5 +3668,5 @@ index d32441948..6456666be 100644
  };
  
 -- 
-2.39.4
+2.49.0
 

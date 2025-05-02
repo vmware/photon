@@ -1,4 +1,4 @@
-From 9fbbb077433193c0757da3db755ff7acb448db44 Mon Sep 17 00:00:00 2001
+From 1e69c8f824f75a570b17b3408c3a42ef23308921 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Thu, 28 Nov 2024 07:22:49 +0000
 Subject: [PATCH 02/12] scripts-kallsyms: Extra kallsyms parsing
@@ -209,5 +209,5 @@ index a9b3f34a7..e248617e6 100755
  	scripts/kallsyms ${kallsymopt} "${1}" > "${2}.S"
  
 -- 
-2.39.4
+2.49.0
 
