@@ -18,4 +18,7 @@ all:
 	fi
 
 %:
-	@python3 build.py -c $(CONF) -t $@; touch $(FIRST_PASS_MARKER)
+	@python3 build.py -c $(CONF) -t "$@"
+	@if [[ "$@" != clean* ]]; then \
+		touch $(FIRST_PASS_MARKER); \
+	fi
