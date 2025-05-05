@@ -3,7 +3,7 @@
 Summary:      The Apache Portable Runtime Utility Library
 Name:         apr-util
 Version:      1.6.3
-Release:      3%{?dist}
+Release:      4%{?dist}
 License:      Apache License 2.0
 URL:          https://apr.apache.org
 Group:        System Environment/Libraries
@@ -128,6 +128,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.3-4
+- Version bump for expat upgrade
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.6.3-3
 - Build with pgsql15
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.6.3-2

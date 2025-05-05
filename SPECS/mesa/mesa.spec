@@ -1,7 +1,7 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        23.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org/
 Group:          System Environment/Libraries
@@ -137,6 +137,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/gbm.pc
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 23.0.0-5
+- Version bump for expat upgrade
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 23.0.0-4
 - Bump version as a part of meson upgrade
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 23.0.0-3

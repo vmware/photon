@@ -1,7 +1,7 @@
 Summary:       XML-Parser perl module
 Name:          XML-Parser
 Version:       2.46
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPL+
 URL:           http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:       http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
@@ -50,6 +50,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.46-4
+-   Version bump for expat upgrade
 *   Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 2.46-3
 -   Bump version as a part of expat upgrade
 *   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 2.46-2

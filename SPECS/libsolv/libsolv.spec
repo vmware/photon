@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.19
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -76,6 +76,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.7.19-7
+- Version bump for expat upgrade
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.7.19-6
 - Bump version as a part of expat upgrade
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.19-5

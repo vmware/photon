@@ -1,7 +1,7 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        0.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
@@ -45,6 +45,8 @@ rm -rf %{buildroot}
 %{_sbindir}/*
 
 %changelog
+*   Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.0-3
+-   Version bump for expat upgrade
 *   Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.9.0-2
 -   Bump version as a part of expat upgrade
 *   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.0-1

@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.40.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -134,6 +134,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.40.4-2
+- Version bump for expat upgrade
 * Thu Jan 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-1
 - Version upgrade to v2.40.4
 - Fix CVE-2024-52006, CVE-2024-50349

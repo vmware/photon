@@ -1,23 +1,14 @@
 Summary:        An XML parser library
 Name:           expat
-Version:        2.4.9
-Release:        4%{?dist}
+Version:        2.7.1
+Release:        1%{?dist}
 License:        MIT
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=8508379b4915d84d50f3638678a90792179c98247d1cb5e6e6387d117af4dc148ac7031c1debea8b96e7b710ef436cf0dd5da91f3d22b8186a00cfafe1201169
-Patch0:         CVE-2022-43680.patch
-Patch1:         CVE-2023-52425.patch
-Patch2:         CVE-2023-52426.patch
-Patch3:         CVE-2024-28757.patch
-Patch4:         CVE-2024-45490.patch
-Patch5:         CVE-2024-45491.patch
-Patch6:         CVE-2024-45492.patch
-Patch7:         CVE-2024-50602-1.patch
-Patch8:         CVE-2024-50602-2.patch
+%define sha512 %{name}=4c9a6c1c1769d2c4404da083dd3013dbc73883da50e2b7353db2349a420e9b6d27cac7dbcb645991d6c7cdbf79bd88486fc1ac353084ce48e61081fb56e13d46
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -92,8 +83,11 @@ rm -rf %{buildroot}/*
 %files docs
 %defattr(-,root,root)
 %doc AUTHORS Changes
+%exclude %{_mandir}/man1/xmlwf.1.gz
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.7.1-1
+- Version upgrade to fix CVE-2024-8176
 * Wed Dec 25 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.9-4
 - CVE-2024-50602 fix
 * Tue Sep 03 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.4.9-3

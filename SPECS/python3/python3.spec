@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.11
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -309,6 +309,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.10.11-13
+- Version bump for expat upgrade
 * Tue Dec 31 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.11-12
 - Fix CVE-2024-9287
 * Mon Oct 07 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.11-11

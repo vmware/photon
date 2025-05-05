@@ -1,7 +1,7 @@
 Summary:        A 2D graphics library.
 Name:           cairo
 Version:        1.17.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://www.linuxfromscratch.org/blfs/view/svn/x/cairo.html
 Group:          System Environment/Libraries
@@ -92,6 +92,8 @@ autoreconf -fiv
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.17.2-9
+- Version bump for expat upgrade
 * Mon Apr 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.2-8
 - Fix devel package requires
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 1.17.2-7

@@ -3,7 +3,7 @@
 Summary:    Cmake
 Name:       cmake
 Version:    3.18.3
-Release:    8%{?dist}
+Release:    9%{?dist}
 License:    BSD and LGPLv2+
 URL:        http://www.cmake.org
 Group:      Development/Tools
@@ -77,6 +77,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.18.3-9
+- Version bump for expat upgrade
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 3.18.3-8
 - Bump version as a part of expat upgrade
 * Tue Jul 04 2023 Anmol Jain <anmolja@vmware.com> 3.18.3-7
