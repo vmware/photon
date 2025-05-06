@@ -697,7 +697,7 @@ class CleanUp:
             return
 
         cmd = f"git diff --name-only {basecommit} | grep '^SPECS/.*\\.spec$'"
-        out, _, _ = runCmd(cmd, shell=True, capture=True, cwd=ph_path)
+        out, _, _ = runCmd(cmd, shell=True, capture=True, cwd=ph_path, ignore_rc=True)
 
         spec_fns = [
             os.path.abspath(os.path.join(ph_path, fn))
