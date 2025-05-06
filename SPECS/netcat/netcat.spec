@@ -4,7 +4,7 @@ Summary:        OpenBSD netcat to read and write data across connections using T
 Name:           netcat
 # Version obtained from netcat.c header comment
 Version:        1.228
-Release:        1%{?dist}
+Release:        2%{?dist}
 # BSD-3-Clause: nc.1 and netcat.c
 # BSD-2-Clause: atomicio.{c,h} and socks.c
 License:        BSD-3-Clause AND BSD-2-Clause
@@ -50,7 +50,7 @@ with some.
 
 %install
 install -D -p -m 0755 nc %{buildroot}%{_bindir}/%{name}
-ln %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/nc
+ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/nc
 
 %files
 %defattr(-,root,root)
@@ -58,6 +58,8 @@ ln %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/nc
 %{_bindir}/%{name}
 
 %changelog
+* Tue May 06 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.228-2
+- Make nc a symlink
 * Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.228-1
 - Switch to BSD netcat.
 - GNU netcat-0.7.1 was released back in Jan 2004.
