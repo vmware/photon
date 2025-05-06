@@ -1,22 +1,20 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
-Version:         3.2.1
-Release:         18%{?dist}
+Version:         3.6.5
+Release:         1%{?dist}
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
 Distribution:    Photon
 
-Source0: http://ftp.gnome.org/pub/GNOME/sources/libsoup/3.2/%{name}-%{version}.tar.xz
+Source0: https://download.gnome.org/sources/libsoup//3.6/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0:        CVE-2024-52530.patch
-Patch1:        CVE-2024-52531-1.patch
-Patch2:        CVE-2024-52531-2.patch
-Patch3:        CVE-2024-52532-1.patch
-Patch4:        CVE-2024-52532-2.patch
+Patch0: CVE-2025-32908-1.patch
+Patch1: CVE-2025-32908-2.patch
+Patch2: CVE-2025-32914.patch
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -102,6 +100,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Tue May 06 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.5-1
+- Upgrade to v3.6.5
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.1-18
 - Bump version as a part of meson upgrade
 * Wed Jan 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.1-17

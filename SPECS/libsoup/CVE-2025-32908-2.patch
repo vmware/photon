@@ -1,0 +1,46 @@
+From 527428a033df573ef4558ce1106e080fd9ec5c71 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Mon, 28 Apr 2025 10:55:42 +0200
+Subject: [PATCH] soup-server-http2: Correct check of the validity of the
+ constructed connection URI
+
+RFC 5740: the CONNECT has unset the "scheme" and "path", thus allow them unset.
+
+The commit a792b23ab87cacbf4dd9462bf7b675fa678efbae also missed to decrement
+the `io->in_callback` in the early returns.
+
+Related to #429
+---
+ .../server/http2/soup-server-message-io-http2.c   | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/libsoup/server/http2/soup-server-message-io-http2.c b/libsoup/server/http2/soup-server-message-io-http2.c
+index f1fe2d5c..913afb46 100644
+--- a/libsoup/server/http2/soup-server-message-io-http2.c
++++ b/libsoup/server/http2/soup-server-message-io-http2.c
+@@ -771,13 +771,18 @@ on_frame_recv_callback (nghttp2_session     *session,
+                 char *uri_string;
+                 GUri *uri;
+ 
+-		if (msg_io->scheme == NULL || msg_io->authority == NULL || msg_io->path == NULL)
+-			return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
+-                uri_string = g_strdup_printf ("%s://%s%s", msg_io->scheme, msg_io->authority, msg_io->path);
++                if (msg_io->authority == NULL) {
++                        io->in_callback--;
++                        return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
++                }
++                /* RFC 5740: the CONNECT has unset the "scheme" and "path", but the GUri requires the scheme, thus let it be "(null)" */
++                uri_string = g_strdup_printf ("%s://%s%s", msg_io->scheme, msg_io->authority, msg_io->path == NULL ? "" : msg_io->path);
+                 uri = g_uri_parse (uri_string, SOUP_HTTP_URI_FLAGS, NULL);
+                 g_free (uri_string);
+-		if (uri == NULL)
+-			return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
++                if (uri == NULL) {
++                        io->in_callback--;
++                        return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
++                }
+                 soup_server_message_set_uri (msg_io->msg, uri);
+                 g_uri_unref (uri);
+ 
+-- 
+GitLab

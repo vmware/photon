@@ -1,7 +1,15 @@
 sources:
-- archive: libsoup-3.2.1.tar.xz
-  archive_sha512sum: e5f60fd700f4cda041d869eec50e787b2fbe9323949b90710405cff296e108bab6d1323ab96e89855c5396ce73c7b7574b424dbe957ae10b48740b272889be51
-  skip_validation: true
+- archive: libsoup-3.6.5.tar.xz
+  archive_type: upstream
+  version: 3.6.5
+  name: libsoup-3.6.5
+  repo_url: https://gitlab.gnome.org/GNOME/libsoup.git
+  url: https://download.gnome.org/sources/libsoup/3.6/libsoup-3.6.5.tar.xz
+  commit_id: 766e17528251c9b696a6076300ac61adc95536ac
+  archive_sha512sum: cb44d93b16048d31ae04a8c2416bbe233e0e9bdaf2d9bfe2879260fd3da27e90a0bb05cddbd82cdf81a4a778bd451ad172a14dd31e2fd113c3bbbe13c0029b03
+  skip_list: []
+  missing: []
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'libsoup is HTTP client/server library for GNOME '
