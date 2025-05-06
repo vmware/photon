@@ -2,7 +2,7 @@
 
 Name:           python3-virtualenv
 Version:        20.16.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Virtual Python Environment builder
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/virtualenv
@@ -61,6 +61,8 @@ pip3 install tomli flaky pytest-mock pytest-freezer
 %{python3_sitelib}/*
 
 %changelog
+* Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20.16.3-6
+- Release bump for SRP compliance
 * Mon Dec 16 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 20.16.3-5
 - Fix CVE-2024-53899
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 20.16.3-4

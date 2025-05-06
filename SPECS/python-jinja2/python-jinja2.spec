@@ -3,7 +3,7 @@
 Summary:        A fast and easy to use template engine written in pure Python
 Name:           python3-jinja2
 Version:        3.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -53,6 +53,8 @@ expressions and an optional sandboxed environment.
 %{python3_sitelib}/%{srcname}-%{version}.dist-info
 
 %changelog
+* Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.1.6-2
+- Release bump for SRP compliance
 * Mon Apr 07 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.6-1
 - Update to 3.1.6. Fixes CVE-2024-56326, CVE-2024-56201 & CVE-2025-27516
 * Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.2-5

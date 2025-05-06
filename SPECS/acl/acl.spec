@@ -1,7 +1,7 @@
 Summary:        Access control list utilities
 Name:           acl
 Version:        2.3.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://savannah.nongnu.org/projects/%{name}
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ fi
 %{_libdir}/libacl.so.*
 
 %changelog
+* Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.3.1-5
+- Release bump for SRP compliance
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.3.1-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.1-3

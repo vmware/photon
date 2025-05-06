@@ -3,7 +3,7 @@
 Summary:        Coroutine-based network library
 Name:           python3-gevent
 Version:        23.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,6 +65,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 23.9.1-2
+- Release bump for SRP compliance
 * Mon Dec 16 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.9.1-1
 - Update to v23.9.1, fixes CVE-2023-41419
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.7.0-2
