@@ -85,11 +85,11 @@ This script upgrades or updates Photon OS based upon the options provided.
 function record_enabled_disabled_services() {
   echo "Determining enabled systemd units to be enabled post upgrade of OS..."
   enabled_services_arr+=( $(get_services_by_state enabled) )
-  echo "Enabled systemd utils are: ( ${enabled_services_arr[@]} )"
+  echo "Enabled systemd units are: ( ${enabled_services_arr[@]} )"
 
   echo "Determining disabled systemd units to be disabled post upgrade of OS..."
   disabled_services_arr+=( $(get_services_by_state disabled) )
-  echo "Disabled systemd utils are: ( ${disabled_services_arr[@]} )"
+  echo "Disabled systemd units are: ( ${disabled_services_arr[@]} )"
 }
 
 # Reset states of services where they were before upgrade
