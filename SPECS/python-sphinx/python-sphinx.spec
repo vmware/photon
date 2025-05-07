@@ -3,7 +3,7 @@
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       5.1.1
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Development/Tools
 URL:           www.sphinx-doc.org
 Vendor:        VMware, Inc.
@@ -25,7 +25,6 @@ BuildRequires: python3-alabaster
 BuildRequires: python3-imagesize
 BuildRequires: python3-requests
 BuildRequires: python3-snowballstemmer
-BuildRequires: python3-typing
 BuildRequires: python3-packaging
 BuildRequires: python3-sphinxcontrib-applehelp
 BuildRequires: python3-sphinxcontrib-devhelp
@@ -56,7 +55,6 @@ Requires: python3-alabaster
 Requires: python3-imagesize
 Requires: python3-requests
 Requires: python3-snowballstemmer
-Requires: python3-typing
 
 BuildArch: noarch
 
@@ -98,6 +96,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 5.1.1-5
+- Remove dependency on python3-typing
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.1.1-4
 - Release bump for SRP compliance
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.1.1-3

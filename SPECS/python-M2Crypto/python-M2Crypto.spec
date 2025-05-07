@@ -1,6 +1,6 @@
 Name:           python3-M2Crypto
 Version:        0.38.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
@@ -9,9 +9,11 @@ Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0:         0001-openssl-3.0.0-support.patch
 %if 0%{?with_check}
-Patch0:         makecheck.patch
+Patch1:         makecheck.patch
 %endif
+
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -19,13 +21,10 @@ BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-typing
 BuildRequires:  swig
 BuildRequires:  python3-xml
-Requires:       python3-typing
 Requires:       python3
 Requires:       openssl
-Patch1:         0001-openssl-3.0.0-support.patch
 
 %description
 M2Crypto is a crypto and SSL toolkit for Python featuring the following:
@@ -40,10 +39,10 @@ messenger for Zope.
 %prep
 # Using autosetup is not feasible
 %setup -q -n M2Crypto-%{version}
-%if 0%{?with_check}
 %patch -p1 0
-%endif
+%if 0%{?with_check}
 %patch -p1 1
+%endif
 
 %build
 CFLAGS="%{optflags}" python3 setup.py build --openssl=/usr/include --bundledlls
@@ -63,6 +62,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.38.0-4
+- Remove python3-typing
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.38.0-3
 - Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.38.0-2
