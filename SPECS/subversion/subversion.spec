@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
@@ -28,6 +28,8 @@ BuildRequires: serf-devel
 BuildRequires: lz4
 BuildRequires: utf8proc-devel
 BuildRequires: swig
+
+Patch0: subversion-CVE-2024-46901.patch
 
 %description
 The Apache version control system.
@@ -102,6 +104,8 @@ userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Wed May 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.14.2-13
+- Fixes CVE-2024-46901
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.14.2-12
 - Version bump for expat upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.14.2-11
