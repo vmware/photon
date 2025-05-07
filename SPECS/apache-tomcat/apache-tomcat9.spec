@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.98
-Release:        2%{?dist}
+Version:        9.0.104
+Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -30,11 +30,6 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 3. generated code will be exist to default location $HOME/tomcat-build-libs
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
-# Note: Please remove Line 72,73,74 in next version upgrade
-# These lines were added to fix issue in base-for-apache-tomcat v9.0.98 source tar ball.
-# Lines to be removed -
-# "pushd %{_builddir}/base-for-%{_origname}-%{version} , mv tomcat-build-libs/* . ,popd"
-# Contact Harinadh.Dommaraju@broadcom.com for more information
 
 Source1: base-for-%{_origname}-%{version}.tar.gz
 
@@ -42,7 +37,6 @@ Source2: license-apache-tomcat9.txt
 %include %{SOURCE2}
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
-Patch1: apache-tomcat9-CVE-2025-24813.patch
 
 BuildArch: noarch
 
@@ -72,9 +66,6 @@ The web application for Apache Tomcat.
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
-pushd %{_builddir}/base-for-%{_origname}-%{version}
-mv tomcat-build-libs/* .
-popd
 
 %build
 ant -Dant.build.javac.source=1.8 -Dant.build.javac.target=1.8 \
@@ -159,6 +150,9 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed May 07 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.104-1
+- Version upgrade
+- Fixes CVE-2025-31650,CVE-2025-31651
 * Tue Apr 01 2025 HarinadhD <harinadh.dommaraju@broadcom.com> 9.0.98-2
 - Fix for CVE-2025-24813
 * Wed Jan 08 2025 HarinadhD <harinadh.dommaraju@broadcom.com> 9.0.98-1

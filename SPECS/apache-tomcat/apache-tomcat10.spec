@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
-Version:        10.1.34
-Release:        3%{?dist}
+Version:        10.1.40
+Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -38,7 +38,6 @@ Source2: license-apache-tomcat10.txt
 %include %{SOURCE2}
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
-Patch1: apache-tomcat10-CVE-2025-24813.patch
 
 BuildArch: noarch
 
@@ -155,6 +154,9 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed May 07 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.40-1
+- Version upgrade
+- Fixes CVE-2025-31651,CVE-2025-31650
 * Tue Apr 01 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.34-3
 - Fix for CVE-2025-24813
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 10.1.34-2
