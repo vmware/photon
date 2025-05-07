@@ -1,6 +1,6 @@
 Name:           python3-M2Crypto
 Version:        0.38.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
@@ -19,10 +19,8 @@ BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-typing
 BuildRequires:  swig
 BuildRequires:  python3-xml
-Requires:       python3-typing
 Requires:       python3
 Requires:       openssl
 Patch1:         0001-openssl-3.0.0-support.patch
@@ -63,6 +61,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.38.0-4
+- Remove python3-typing
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.38.0-3
 - Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.38.0-2

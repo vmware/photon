@@ -3,7 +3,7 @@
 Summary:        YAML parser/emitter.
 Name:           python3-ruamel-yaml
 Version:        0.17.21
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,7 +16,6 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-BuildRequires:  python3-typing
 %if 0%{?with_check}
 BuildRequires:  python3-attrs
 BuildRequires:  python3-six
@@ -28,7 +27,6 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       python3-xml
 Requires:       python3-setuptools
-Requires:       python3-typing
 
 %description
 ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order
@@ -55,6 +53,8 @@ find %{buildroot} -name '*.pyc' -delete
 %{python3_sitelib}/*
 
 %changelog
+* Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.17.21-3
+- Remove dependency on python3-typing
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.17.21-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.17.21-1
