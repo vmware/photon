@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -123,6 +123,8 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Wed May 07 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.9.8-6
+- Improve multiline descriptions
 * Thu Apr 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.8-5
 - Limit auto generated livepatch kernel module name to 38 characters
 - Added support for multiline module descriptions
