@@ -1,1 +1,0 @@
-License: TCP-wrappers AND BSD-4.3TAHOE

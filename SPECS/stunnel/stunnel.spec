@@ -1,6 +1,6 @@
 Name:           stunnel
 Version:        5.72
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A TLS-encrypting socket wrapper
 Group:          System Environment/Libraries
 URL:            https://www.stunnel.org
@@ -13,7 +13,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: openssl-devel
-BuildRequires: tcp_wrappers-devel
 
 %if 0%{?with_check}
 Buildrequires: python3-devel
@@ -23,7 +22,6 @@ Buildrequires: python3-cryptography
 Requires: openssl-libs
 Requires: libnsl
 Requires: rpcsvc-proto
-Requires: tcp_wrappers
 Requires: finger
 Requires: perl
 
@@ -37,7 +35,7 @@ conjunction with imapd to create a TLS secure IMAP server.
 %autosetup -p1
 
 %build
-%configure
+%configure --disable-libwrap
 %make_build
 
 %install
@@ -58,6 +56,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}*
 
 %changelog
+* Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 5.72-4
+- Build without tcp_wrappers
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 5.72-3
 - Release bump for SRP compliance
 * Fri Oct 04 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.72-2

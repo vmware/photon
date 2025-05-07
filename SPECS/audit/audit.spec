@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        22%{?dist}
+Release:        23%{?dist}
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
@@ -24,7 +24,6 @@ Patch1: audit-3.0.8-undo-flex-array.patch
 
 BuildRequires: krb5-devel
 BuildRequires: openldap-devel
-BuildRequires: tcp_wrappers-devel
 BuildRequires: libcap-ng-devel
 BuildRequires: swig
 BuildRequires: e2fsprogs-devel
@@ -39,7 +38,6 @@ BuildRequires: go
 Requires: systemd
 Requires: krb5
 Requires: openldap
-Requires: tcp_wrappers
 Requires: libcap-ng
 Requires: gawk
 
@@ -75,7 +73,6 @@ cp %{_includedir}/linux/%{name}.h lib/
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --exec_prefix=%{_usr} \
     --with-python3=yes \
-    --with-libwrap \
     --enable-gssapi-krb5=yes \
     --with-libcap-ng=yes \
     --with-aarch64 \
@@ -167,6 +164,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.9-23
+- Remove tcp_wrappers support
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.0.9-22
 - Release bump for SRP compliance
 * Fri Oct 18 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-21

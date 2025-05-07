@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        20%{?dist}
+Release:        21%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,7 +39,6 @@ BuildRequires: boost-devel
 BuildRequires: attr-devel
 BuildRequires: libxslt-devel
 BuildRequires: systemd-devel
-BuildRequires: tcp_wrappers-devel
 BuildRequires: ruby
 
 Requires(pre): systemd-rpm-macros
@@ -53,7 +52,6 @@ Requires: pcre
 Requires: python3
 Requires: ruby
 Requires: util-linux
-Requires: tcp_wrappers
 Requires: libxml2
 Requires: openssl
 Requires: libcap
@@ -186,7 +184,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/%{name}/rack_plugin.so
 %{_libdir}/%{name}/rawrouter_plugin.so
 %{_libdir}/%{name}/redislog_plugin.so
-%{_libdir}/%{name}/router_access_plugin.so
 %{_libdir}/%{name}/router_basicauth_plugin.so
 %{_libdir}/%{name}/router_cache_plugin.so
 %{_libdir}/%{name}/router_expires_plugin.so
@@ -237,6 +234,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Mon Sep 15 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.21-21
+- Build without tcp_wrappers
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.21-20
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.0.21-19

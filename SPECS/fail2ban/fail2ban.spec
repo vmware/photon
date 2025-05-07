@@ -1,7 +1,7 @@
 Summary:        Daemon to ban hosts that cause multiple authentication errors
 Name:           fail2ban
 Version:        1.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Productivity/Networking/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -52,17 +52,6 @@ Apache web server ones.
 The main package contains the core server components for Fail2Ban with minimal
 dependencies.  You can install this directly if you want to have a small
 installation and know what you are doing.
-
-%package hostsdeny
-Summary:  Hostsdeny (tcp_wrappers) support for Fail2Ban
-Group:    Productivity/Networking/Security
-Requires: %{name} = %{version}-%{release}
-Requires: ed
-Requires: tcp_wrappers
-
-%description hostsdeny
-This package enables support for manipulating tcp_wrapper's /etc/hosts.deny
-files.
 
 %package devel
 Summary:  Fail2Ban testcases
@@ -189,10 +178,6 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/%{name}
 %dir /run/%{name}/
 
-%files hostsdeny
-%defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/%{name}/action.d/hostsdeny.conf
-
 %files devel
 %defattr(-,root,root)
 %{_bindir}/%{name}-testcases
@@ -217,6 +202,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/jail.d/00-%{name}-systemd.conf
 
 %changelog
+* Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2-5
+- Build without tcp_wrappers
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.2-4
 - Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.0.2-3
