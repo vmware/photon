@@ -27,7 +27,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.135
+Version:        6.1.138
 Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -586,6 +586,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.138-1
+- Update to version 6.1.138
 * Sun Apr 27 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.135-1
 - Update to version 6.1.135
 * Tue Apr 22 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.133-1

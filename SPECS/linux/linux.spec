@@ -43,7 +43,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.135
+Version:        6.1.138
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -981,6 +981,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.138-1
+- Update to version 6.1.138
 * Sun Apr 27 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.135-1
 - Update to version 6.1.135
 * Mon Apr 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.133-1

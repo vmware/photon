@@ -14,6 +14,13 @@ changelog_entry=$(echo "`date +"%a %b %d %Y"` `git config user.name` <`git confi
 for spec in $specs; do
 	sed -i '/^Version:/ s/6.1.[0-9]*/'$version'/' SPECS/$spec
 	sed -i '/^Release:/ s/[0-9]*%/1%/' SPECS/$spec
-	sed -i '/^%define sha512 linux/ s/=[0-9a-f]*$/='$sha512'/' SPECS/$spec
 	sed -i '/^%changelog/a* '"$changelog_entry"'\n- Update to version '"$version"'' SPECS/$spec
 done
+config_tags="-[[:space:]]archive version name url commit_id archive_sha512sum"
+config_tags=($config_tags)
+for config_tag in "${config_tags[@]:0:4}"; do
+	sed -i '0,/^\([[:space:]]*\)'$config_tag':/ s/6.1.[0-9]*/'$version'/' SPECS/linux/config.yaml
+done
+commit_id=$(git ls-remote --tags https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git v$version^{} | awk '{print $1}')
+sed -i '0,/^\([[:space:]]*\)'${config_tags[4]}': [0-9a-z]*$/ s//\1'${config_tags[4]}': '$commit_id'/' SPECS/linux/config.yaml
+sed -i '0,/^\([[:space:]]*\)'${config_tags[5]}': [0-9a-z]*$/ s//\1'${config_tags[5]}': '$sha512'/' SPECS/linux/config.yaml
