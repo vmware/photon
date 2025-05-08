@@ -10,7 +10,7 @@
 Summary:        A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:           openresty
 Version:        1.21.4.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://openresty.org/en
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -164,7 +164,7 @@ sed -i -e "s|@@ORPREFIX@@|%{orprefix}|" %{buildroot}%{_unitdir}/%{name}.service
 
 install -Dm755 %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
 sed -i -e "s|@@ORPREFIX@@|%{orprefix}|" %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
 %sysusers_create_compat %{SOURCE3}
@@ -186,7 +186,7 @@ rm -rf %{buildroot}
 %{orprefix}/COPYRIGHT
 %{_sysconfdir}/profile.d/%{name}.sh
 %{_unitdir}/%{name}.service
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %exclude %{orprefix}/bin/resty*
 %exclude %{orprefix}/bin/opm
 %exclude %{orprefix}/bin/md2pod.pl
@@ -224,6 +224,8 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.4.3-3
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21.4.3-2
 - Release bump for SRP compliance
 * Wed Jan 03 2024 Michelle Wang <michellew@vmware.com> 1.21.4.3-1

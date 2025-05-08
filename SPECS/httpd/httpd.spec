@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.62
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -109,7 +109,7 @@ $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 %make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_sysconfdir}/%{name}/logs
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 install -D -m 644 %{SOURCE3} %{buildroot}%{_presetdir}/50-%{name}.preset
 install -D -m 644 %{SOURCE4} %{buildroot}%{_tmpfilesdir}/%{name}.conf
@@ -173,7 +173,7 @@ fi
 %{_presetdir}/50-%{name}.preset
 %{_tmpfilesdir}/%{name}.conf
 %{_localstatedir}/log/%{name}
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %ghost %{_sysconfdir}/mime.types
 
 %files devel
@@ -190,6 +190,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.62-6
+- Renaming sysusers to conf to fix auto user creation
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.62-5
 - Version bump for expat upgrade
 * Mon Feb 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.62-4

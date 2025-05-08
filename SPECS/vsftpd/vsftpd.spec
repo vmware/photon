@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -45,7 +45,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vm 755 %{name} %{buildroot}%{_sbindir}/%{name}
 install -vm 644 %{name}.8 %{buildroot}%{_mandir}/man8/
 install -vm 644 %{name}.conf.5 %{buildroot}%{_mandir}/man5/
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 cat >> %{buildroot}%{_sysconfdir}/%{name}.conf << "EOF"
 background=YES
@@ -75,9 +75,11 @@ fi
 %{_sysconfdir}/*
 %{_sbindir}/*
 %{_datadir}/*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.5-6
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.0.5-5
 - Release bump for SRP compliance
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 3.0.5-4

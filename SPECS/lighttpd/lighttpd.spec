@@ -2,7 +2,7 @@
 Summary:        A secure, fast, compliant, and very flexible web server
 Name:           lighttpd
 Version:        1.4.76
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.lighttpd.net/
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -65,7 +65,7 @@ export LIBS='-lssl -lcrypto -lcurl -lcares -lz -lglib-2.0 -lgthread-2.0 -lpcre -
 %install
 %make_install %{?_smp_mflags}
 
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
 install -p -D -m 0755 %{SOURCE4} %{buildroot}%{_libexecdir}/%{name}/start-server.sh
@@ -112,11 +112,13 @@ make %{?_smp_mflags} check
 %{_libdir}/%{name}/
 %{_libexecdir}/%{name}/
 %{_presetdir}/50-%{name}.preset
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_unitdir}/%{name}.service
 %{_mandir}/man8/%{name}*8*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.76-3
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.4.76-2
 - Release bump for SRP compliance
 * Mon May 20 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.76-1

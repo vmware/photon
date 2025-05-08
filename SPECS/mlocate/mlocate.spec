@@ -1,6 +1,6 @@
 Name:           mlocate
 Version:        0.26
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        An utility for finding files by name.
 URL:            https://pagure.io/mlocate
 Vendor:         VMware, Inc.
@@ -41,7 +41,7 @@ much.
 mv %{buildroot}%{_bindir}/locate %{buildroot}%{_bindir}/%{name}
 mv %{buildroot}%{_bindir}/updatedb %{buildroot}%{_bindir}/updatedb.%{name}
 mv %{buildroot}%{_mandir}/man1/locate.1 %{buildroot}%{_mandir}/man1/%{name}.1
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %check
 %make_build check
@@ -60,9 +60,11 @@ fi
 %{_mandir}/*
 %{_datadir}/locale/*
 %{_var}/*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.26-6
+- Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.26-5
 - Release bump for SRP compliance
 * Sun Oct 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.26-4

@@ -1,7 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.2.6
-Release:       3%{?dist}
+Release:       4%{?dist}
 URL:           http://redis.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -63,7 +63,7 @@ Group=%{name}
 [Install]
 WantedBy=multi-user.target
 EOF
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %check
 %if 0%{?with_check}
@@ -89,9 +89,11 @@ make check %{?_smp_mflags}
 %{_bindir}/*
 %{_libdir}/systemd/*
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Fri May 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.6-4
+- Renaming sysusers to conf to fix auto user creation
 * Tue May 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 7.2.6-3
 - Fix CVE-2024-46981
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.6-2

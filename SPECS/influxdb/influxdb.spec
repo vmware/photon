@@ -3,7 +3,7 @@
 
 Name:           influxdb
 Version:        1.8.10
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        InfluxDB is an open source time series database
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
@@ -61,7 +61,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/influxdb
 mkdir -m 755 -p %{buildroot}%{_libdir}/influxdb/scripts
 cp -r bin/influx* %{buildroot}%{_bindir}
 pushd src/%{gopath_comp_influxdb}
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -p -m 0755 scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
 cp etc/config.sample.toml %{buildroot}%{_sysconfdir}/influxdb/influxdb.conf
 cp scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/influxdb
@@ -109,9 +109,11 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_bindir}/influx_stress
 %{_bindir}/influx_tools
 %{_mandir}/man1/*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.10-16
+- Renaming sysusers to conf to fix auto user creation
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.10-15
 - Fix srp input declaration when package names have Capital letters
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.10-14

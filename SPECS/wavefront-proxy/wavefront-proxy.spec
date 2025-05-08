@@ -2,7 +2,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.4
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -84,7 +84,7 @@ install -m 755 -D proxy/target/proxy-%{version}-spring-boot.jar \
 
 install -m 755 -D %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 755 -D docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
 user="wavefront"
@@ -122,9 +122,11 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/wavefront/%{name}/log4j2.xml
 %{_sysconfdir}/wavefront/%{name}/preprocessor_rules.yaml
 %{_unitdir}/%{name}.service
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 13.4-4
+- Renaming sysusers to conf to fix auto user creation
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.4-3
 - Release bump for network_required packages
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 13.4-2

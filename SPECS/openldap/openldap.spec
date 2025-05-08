@@ -4,7 +4,7 @@
 Summary:        OpenLdap-2.6.4
 Name:           openldap
 Version:        2.6.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.openldap.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -123,7 +123,7 @@ fi
 
 install -m 0755 -d %{buildroot}%{_localstatedir}/run/%{name}
 install -m 0755 -d %{buildroot}%{_sharedstatedir}/%{name}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -Dm 0644 %{SOURCE2} %{buildroot}%{_unitdir}/slapd.service
 install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_presetdir}/50-slapd.preset
 
@@ -175,12 +175,14 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/%{name}/slapd.*
 %{_libdir}/%{name}/*
 %{_libdir}/systemd/system/slapd.service
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_presetdir}/50-slapd.preset
 %dir %attr(-,ldap,ldap) %{_localstatedir}/run/%{name}
 %dir %attr(-,ldap,ldap) %{_sharedstatedir}/%{name}
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.6.4-4
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6.4-3
 - Release bump for SRP compliance
 * Mon May 27 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.6.4-2

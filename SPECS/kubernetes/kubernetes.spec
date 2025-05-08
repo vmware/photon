@@ -14,7 +14,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -155,7 +155,7 @@ install -m 0644 -t %{buildroot}%{_unitdir} contrib-%{contrib_ver}/init/systemd/*
 install -dm755 %{buildroot}%{_sharedstatedir}/kubelet
 install -dm755 %{buildroot}%{_var}/run/%{name}
 
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat << EOF >> %{buildroot}%{_tmpfilesdir}/%{name}.conf
@@ -248,7 +248,7 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/kubelet
 %config(noreplace) %{_sysconfdir}/%{name}/kubeconfig
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files kubeadm
 %defattr(-,root,root)
@@ -266,6 +266,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-2
+- Renaming sysusers to conf to fix auto user creation
 * Tue Feb 25 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-1
 - Update to 1.27.16, Fixes CVE-2024-5321,fix CVE-2024-10220
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.27.13-8

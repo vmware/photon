@@ -9,7 +9,7 @@
 Summary:        pmd-ng (photon management daemon next gen) is an open source, super light weight remote management API Gateway
 Name:           pmd-ng
 Version:        0.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            https://github.com/vmware/pmd-next-gen/archive/refs/tags/v%{version}.tar.gz
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -60,7 +60,7 @@ install bin/photon-mgmtd %{buildroot}%{_bindir}
 install bin/pmctl %{buildroot}%{_bindir}
 install -m 755 distribution/mgmt.toml %{buildroot}%{_sysconfdir}/photon-mgmt
 install -m 0644 distribution/photon-mgmtd.service %{buildroot}%{_unitdir}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %clean
 rm -rf %{buildroot}/*
@@ -72,7 +72,7 @@ rm -rf %{buildroot}/*
 
 %{_sysconfdir}/photon-mgmt/mgmt.toml
 %{_unitdir}/photon-mgmtd.service
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %pre
 %sysusers_create_compat %{SOURCE1}
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %systemd_postun_with_restart photon-mgmtd.service
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.1-14
+- Renaming sysusers to conf to fix auto user creation
 * Wed Apr 09 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.1-13
 - Prefix nft commands with "nft"
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1-12

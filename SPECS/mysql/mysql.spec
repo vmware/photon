@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -117,7 +117,7 @@ popd
 rm -rf %{buildroot}%{_datadir}/%{name}-test \
        %{buildroot}%{_libdir}/*.a
 
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %check
 pushd %{__cmake_builddir}/%{name}-test
@@ -158,7 +158,7 @@ fi
 %dir %attr(750,mysql,mysql) %{_sharedstatedir}/mysql-keyring
 %config(noreplace) %{_sysconfdir}/my.cnf
 %dir %{_sysconfdir}/my.cnf.d
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/*.so.*
@@ -181,6 +181,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 8.4.4-2
+- Renaming sysusers to conf to fix auto user creation
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.4-1
 - Upgrade to v8.4.4
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 8.4.2-2

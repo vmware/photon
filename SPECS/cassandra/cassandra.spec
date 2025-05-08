@@ -5,7 +5,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.10
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://cassandra.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -89,7 +89,7 @@ cp -r lib build %{buildroot}%{_localstatedir}/opt/%{name}/
 cp -p build/tools/lib/stress.jar build/apache-%{name}-%{version}.jar %{buildroot}%{_localstatedir}/opt/%{name}/lib
 
 install -p -D -m 644 %{SOURCE1}  %{buildroot}%{_unitdir}/%{name}.service
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 cat >> %{buildroot}%{_sysconfdir}/sysconfig/%{name} <<- "EOF"
 CASSANDRA_HOME=%{_localstatedir}/opt/%{name}/
@@ -129,10 +129,12 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %{_sysconfdir}/sysconfig/%{name}
 %{_sysconfdir}/profile.d/%{name}.sh
 %{_unitdir}/%{name}.service
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.0.10-8
+- Renaming sysusers to conf to fix auto user creation
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.10-7
 - Release bump for network_required packages
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4.0.10-6

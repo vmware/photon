@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       14%{?dist}
+Release:       15%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -202,9 +202,9 @@ ln -sfv %{_localstatedir}/opt/stap-server/log %{buildroot}%{_localstatedir}/log/
 touch %{buildroot}%{_localstatedir}/opt/stap-server/log/log
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logrotate.d/stap-server
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/systemtap_runtime.sysusers
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/systemtap_server.sysusers
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/systemtap.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/systemtap_runtime.conf
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/systemtap_server.conf
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/systemtap.conf
 rm -rf %{buildroot}%{_mandir}/cs/
 
 %find_lang %{name}
@@ -323,7 +323,7 @@ fi
 %{_mandir}/man8/stapbpf.8*
 %doc AUTHORS COPYING
 %{_bindir}/dtrace
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files initscript
 %defattr(-,root,root)
@@ -342,7 +342,7 @@ fi
 %{_libexecdir}/%{name}/stapio
 %{_libexecdir}/%{name}/stap-env
 %{_libexecdir}/%{name}/stap-authorize-cert
-%{_sysusersdir}/%{name}_runtime.sysusers
+%{_sysusersdir}/%{name}_runtime.conf
 %if 0%{?with_crash}
 %{_libdir}/%{name}/staplog.so*
 %endif
@@ -364,7 +364,7 @@ fi
 %{_libexecdir}/%{name}/stap-gen-cert
 %{_libexecdir}/%{name}/stap-sign-module
 %{_sysconfdir}/rc.d/init.d/stap-server
-%{_sysusersdir}/%{name}_server.sysusers
+%{_sysusersdir}/%{name}_server.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/stap-server
 %dir %{_sysconfdir}/stap-server
 %dir %{_sysconfdir}/stap-server/conf.d
@@ -391,6 +391,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.8-15
+- Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.8-14
 - Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.8-13

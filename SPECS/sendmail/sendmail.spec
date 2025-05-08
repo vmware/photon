@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.0.2
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -63,7 +63,7 @@ cp generic-linux.mc %{name}.mc
 sh Build %{name}.cf
 
 %install
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 %sysusers_create_compat %{SOURCE1}
 
 pushd cf/cf
@@ -178,7 +178,7 @@ fi
 %{_sysconfdir}/mail/helpfile
 %{_sysconfdir}/mail/%{name}.schema
 %{_sysconfdir}/mail/statistics
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_bindir}/*
 %{_sbindir}/*
 %{_datadir}/*
@@ -192,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 8.18.0.2-3
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.0.2-2
 - Release bump for SRP compliance
 * Tue Jan 16 2024 Nitesh Kumar <kunitesh@vmware.com> 8.18.0.2-1

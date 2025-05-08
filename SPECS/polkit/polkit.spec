@@ -1,7 +1,7 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
 Version:           121
-Release:           6%{?dist}
+Release:           7%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
 URL:               https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
@@ -73,7 +73,7 @@ session  include        system-session
 
 # End /etc/pam.d/polkit-1
 EOF
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
 %sysusers_create_compat %{SOURCE1}
@@ -108,7 +108,7 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_datadir}/gettext/its
 %{_libdir}/girepository-1.0/*.typelib
 %{_datadir}/polkit-1/policyconfig-1.dtd
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
@@ -118,6 +118,8 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 121-7
+- Renaming sysusers to conf to fix auto user creation
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 121-6
 - Version bump for expat upgrade
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 121-5

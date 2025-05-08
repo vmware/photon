@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.8.0
-Release:          6%{?dist}
+Release:          7%{?dist}
 URL:              http://zookeeper.apache.org/
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -64,7 +64,7 @@ cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
 
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable zookeeper.service" > %{buildroot}%{_presetdir}/50-zookeeper.preset
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
 %sysusers_create_compat %{SOURCE3}
@@ -86,10 +86,12 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 %{_unitdir}/zookeeper.service
 %{_presetdir}/50-zookeeper.preset
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_prefix}/*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.8.0-7
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.8.0-6
 - Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-5

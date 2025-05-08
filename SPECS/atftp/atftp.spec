@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          7%{?dist}
+Release:          8%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
@@ -58,7 +58,7 @@ mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot \
          %{buildroot}%{_sysconfdir}/sysconfig \
          %{buildroot}%{_sysusersdir}
 
-install -p -m 644 %{SOURCE1} %{buildroot}%{_sysusersdir}/
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/
 
 sed -i -e "s|@SBINDIR@|%{_sbindir}|" -e "s|@SYSCONFDIR@|%{_sysconfdir}|" %{SOURCE3}
@@ -105,7 +105,7 @@ rm -rf %{buildroot}
 %{_unitdir}/atftpd.service
 %{_unitdir}/atftpd.socket
 %{_sysconfdir}/sysconfig/atftpd
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files client
 %defattr(-,root,root)
@@ -113,6 +113,8 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.0-8
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.8.0-7
 - Release bump for SRP compliance
 * Tue Jan 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-6

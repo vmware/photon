@@ -1,7 +1,7 @@
 Summary:         Programs for finding and viewing man pages
 Name:            man-db
 Version:         2.11.1
-Release:         3%{?dist}
+Release:         4%{?dist}
 URL:             http://www.nongnu.org/man-db
 Group:           Applications/System
 Vendor:          VMware, Inc.
@@ -50,7 +50,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name} --all-name
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %if 0%{?with_check}
 %check
@@ -77,9 +77,11 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/tmpfiles.d/man-db.conf
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+*   Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.11.1-4
+-   Renaming sysusers to conf to fix auto user creation
 *   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.11.1-3
 -   Release bump for SRP compliance
 *   Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 2.11.1-2

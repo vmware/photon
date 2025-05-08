@@ -3,7 +3,7 @@
 %define network_required 1
 Name:           kapacitor
 Version:        1.6.6
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
@@ -70,7 +70,7 @@ cp -r usr/share/bash-completion/completions/kapacitor %{buildroot}%{_datadir}/ba
 cp -r scripts/kapacitor.service %{buildroot}%{_libdir}/systemd/system/
 cp -r etc/logrotate.d/kapacitor %{buildroot}%{_sysconfdir}/logrotate.d/
 cp -r etc/kapacitor/kapacitor.conf %{buildroot}%{_sysconfdir}/kapacitor
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %clean
 rm -rf %{buildroot}/*
@@ -104,9 +104,11 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_libdir}/systemd/system/kapacitor.service
 %config(noreplace) %{_sysconfdir}/logrotate.d/kapacitor
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-15
+- Renaming sysusers to conf to fix auto user creation
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-14
 - Fix go input dependencies which have Capital letters in name.
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-13

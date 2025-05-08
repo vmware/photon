@@ -7,7 +7,7 @@ Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
 Version:        1.26.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -136,7 +136,7 @@ install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/%{name}/log
 ln -sfrv %{buildroot}%{_var}/opt/%{name}/log %{buildroot}%{_var}/log/%{name}
 install -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %clean
 rm -rf %{buildroot}
@@ -171,7 +171,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
 %{_sysconfdir}/%{name}/win-utf
 %{_sysconfdir}/%{name}/html/*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_sbindir}/*
 %{_unitdir}/%{name}.service
 %dir %{_var}/opt/%{name}/log
@@ -202,6 +202,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.2-5
+- Renaming sysusers to conf to fix auto user creation
 * Mon Jan 06 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.2-4
 - Convert modulee like http-dav and stream-ssl-preread to dynamic
 - Package dynamic modules as a sub package

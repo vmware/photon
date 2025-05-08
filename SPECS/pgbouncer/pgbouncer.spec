@@ -1,7 +1,7 @@
 Summary:          Connection pooler for PostgreSQL.
 Name:             pgbouncer
 Version:          1.17.0
-Release:          5%{?dist}
+Release:          6%{?dist}
 URL:              https://wiki.postgresql.org/wiki/PgBouncer
 Source0:          https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
 Source1:          pgbouncer.service
@@ -44,7 +44,7 @@ install -p -d %{buildroot}%{_sysconfdir}/sysconfig
 install -p -m 644 etc/pgbouncer.ini %{buildroot}%{_sysconfdir}/
 mkdir -p %{buildroot}/etc/systemd/system/
 install -m 0644 %{SOURCE1} %{buildroot}/etc/systemd/system/%{name}.service
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %check
 pushd test
@@ -74,9 +74,11 @@ fi
 %{_mandir}/man1/%{name}.*
 %{_mandir}/man5/%{name}.*
 %{_datadir}/doc/pgbouncer/*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.17.0-6
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.17.0-5
 - Release bump for SRP compliance
 * Wed Oct 18 2023 Anmol Jain <anmolja@vmware.com> 1.17.0-4

@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        19%{?dist}
+Release:        20%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -119,7 +119,7 @@ mkdir -p %{buildroot}%{_tmpfilesdir}
 cat >> %{buildroot}%{_tmpfilesdir}/%{name}.conf << EOF
 d /run/%{name} 0775 %{name} %{name}
 EOF
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
 %sysusers_create_compat %{SOURCE4}
@@ -143,7 +143,7 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 %{_tmpfilesdir}/%{name}.conf
 %dir %{_sysconfdir}/%{name}.d
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files devel
 %defattr(-,root,root,-)
@@ -237,6 +237,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.21-20
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.0.21-19
 - Release bump for SRP compliance
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.0.21-18

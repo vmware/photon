@@ -1,7 +1,7 @@
 Summary:         RPC program number mapper
 Name:            rpcbind
 Version:         1.2.6
-Release:         5%{?dist}
+Release:         6%{?dist}
 URL:             http://nfsv4.bullopensource.org
 Group:           Applications/Daemons
 Vendor:          VMware, Inc.
@@ -58,7 +58,7 @@ cat > %{buildroot}%{_presetdir}/50-%{name}.preset << EOF
 disable %{name}.socket
 disable %{name}.service
 EOF
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %if 0%{?with_check}
 %check
@@ -94,9 +94,11 @@ fi
 %dir %{_localstatedir}/lib/%{name}
 %{_unitdir}/*
 %{_presetdir}/50-%{name}.preset
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.6-6
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.6-5
 - Release bump for SRP compliance
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.2.6-4

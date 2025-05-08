@@ -2,7 +2,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.12
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -41,7 +41,7 @@ install -vdm 0755 %{buildroot}%{_sysconfdir}/sysconfig
 %endif
 install -vdm 0755 %{buildroot}%{_sysconfdir}/etcd
 install -vpm 0755 -T etcd.conf.yml.sample %{buildroot}%{_sysconfdir}/etcd/etcd-default-conf.yml
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 chown -R root:root %{buildroot}%{_bindir}
 chown -R root:root %{buildroot}/%{_docdir}/%{name}-%{version}
@@ -81,12 +81,14 @@ rm -rf %{buildroot}/*
 %{_presetdir}/50-etcd.preset
 %attr(0700,%{name},%{name}) %dir %{_sharedstatedir}/etcd
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %ifarch aarch64
 %config(noreplace) %{_sysconfdir}/sysconfig/etcd
 %endif
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-9
+- Renaming sysusers to conf to fix auto user creation
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.12-8
 - Fix go input dependencies which have Capital letters in name.
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.12-7

@@ -5,7 +5,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.20.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -83,7 +83,7 @@ zone "." in {
 };
 EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}%{_tmpfilesdir}/named.conf
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
 %sysusers_create_compat %{SOURCE1}
@@ -103,7 +103,7 @@ chmod 0770 %{_home_dir}
 %{_sysconfdir}/*
 %{_tmpfilesdir}/named.conf
 %{_mandir}/man1/*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_home_dir}
 
 %files libs
@@ -133,6 +133,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Thu May 22 2025 Mukul Sikka <mukul.sikka@broadcom.com> 9.20.7-3
+- Renaming sysusers to conf to fix auto user creation
 * Wed May 21 2025 Tapas Kundu <tapas.kundu@broadcom.com> 9.20.7-2
 - Fix CVE-2025-40775
 * Tue Apr 08 2025 Ajay Kaher <ajay.kaher@broadcom.com> 9.20.7-1

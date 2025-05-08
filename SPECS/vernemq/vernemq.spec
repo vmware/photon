@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          2.0.1
-Release:          6%{?dist}
+Release:          7%{?dist}
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -132,7 +132,7 @@ install -vdm 0755 %{buildroot}%{_sbindir}
 ln -sv %{_libdir}/%{name}/bin/%{name} %{buildroot}%{_sbindir}
 ln -sv %{_libdir}/%{name}/bin/vmq-admin %{buildroot}%{_sbindir}
 ln -sv %{_libdir}/%{name}/bin/vmq-passwd %{buildroot}%{_sbindir}
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
 %sysusers_create_compat %{SOURCE4}
@@ -166,9 +166,11 @@ rm -rf %{buildroot}
 %{_unitdir}/%{name}.service
 %{_presetdir}/50-%{name}.preset
 %{_tmpfilesdir}/%{name}.conf
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.1-7
+- Renaming sysusers to conf to fix auto user creation
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.1-6
 - Bump release for updating erlang
 * Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.1-5

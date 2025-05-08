@@ -3,7 +3,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          9%{?dist}
+Release:          10%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -129,7 +129,7 @@ mv %{buildroot}%{_datadir}/systemd/mariadb.service \
     %{buildroot}%{_datadir}/systemd/mariadb-extra@.socket \
     %{buildroot}%{_datadir}/systemd/mariadb@.socket \
     %{buildroot}%{_unitdir}
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 rm %{buildroot}%{_sbindir}/rcmysql %{buildroot}%{_libdir}/*.a
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
@@ -284,7 +284,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/s3.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/spider.cnf
 %doc COPYING CREDITS
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %exclude %{_datadir}/mysql/bench
 %exclude %{_datadir}/mysql/test
 %exclude %{_datadir}/doc/mariadb-%{version}/*
@@ -468,6 +468,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 10.9.4-10
+- Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 10.9.4-9
 - Release bump for SRP compliance
 * Fri Jul 19 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 10.9.4-8

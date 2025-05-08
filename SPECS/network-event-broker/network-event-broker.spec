@@ -3,7 +3,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 Source1:        %{name}.sysusers
@@ -48,7 +48,7 @@ pushd src/%{gopath_comp_neb}
 install -m 755 -d %{buildroot}%{_bindir}
 install -m 755 -d %{buildroot}%{_sysconfdir}/network-broker
 install -m 755 -d %{buildroot}%{_unitdir}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -pm 755 -t %{buildroot}%{_bindir} bin/network-broker
 
 install -pm 755 -t %{buildroot}%{_sysconfdir}/network-broker distribution/network-broker.toml
@@ -73,11 +73,13 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/network-broker
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_sysconfdir}/network-broker/network-broker.toml
 %{_unitdir}/network-broker.service
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-16
+- Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.3-15
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-14

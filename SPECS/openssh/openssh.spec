@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -125,7 +125,7 @@ install -m644 %{SOURCE3} %{buildroot}%{_unitdir}/sshd-keygen.service
 install -m644 %{SOURCE4} %{buildroot}%{_unitdir}/sshd@.service
 install -m755 contrib/ssh-copy-id %{buildroot}%{_bindir}/
 install -m644 contrib/ssh-copy-id.1 %{buildroot}%{_mandir}/man1/
-install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %{_fixperms} %{buildroot}/*
 
@@ -177,7 +177,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/sshd.8.gz
 %{_mandir}/man5/moduli.5.gz
 %{_mandir}/man8/sftp-server.8.gz
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files clients
 %defattr(-,root,root)
@@ -214,6 +214,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 9.3p2-14
+- Renaming sysusers to conf to fix auto user creation
 * Tue Apr 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-13
 - Fix CVE-2025-32728
 * Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-12

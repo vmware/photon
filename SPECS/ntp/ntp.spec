@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p18
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.ntp.org
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
@@ -89,7 +89,7 @@ install -m 755 ntpstat %{buildroot}%{_bindir}
 install -m 644 ntpstat.1 %{buildroot}%{_mandir}/man8/ntpstat.8
 popd
 
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 cat > %{buildroot}%{_sysconfdir}/%{name}.conf <<- "EOF"
 tinker panic 0
@@ -149,7 +149,7 @@ rm -rf %{buildroot}/*
 %attr(0755,%{name},%{name}) %{_sharedstatedir}/%{name}/drift
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_unitdir}/ntpd.service
 %{_presetdir}/50-ntpd.preset
 %{_bindir}/ntpd
@@ -189,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.8p18-4
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2.8p18-3
 - Release bump for SRP compliance
 * Tue Oct 01 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.8p18-2

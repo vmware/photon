@@ -1,6 +1,6 @@
 Name:           memcached
 Version:        1.6.22
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -49,7 +49,7 @@ install -Dp -m0755 scripts/%{name}-tool %{buildroot}%{_bindir}/%{name}-tool
 install -Dp -m0644 scripts/%{name}-tool.1 %{buildroot}%{_mandir}/man1/%{name}-tool.1
 install -Dp -m0644 scripts/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 install -Dp -m0644 scripts/%{name}.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %if 0%{?with_check}
 %check
@@ -77,13 +77,15 @@ make test %{?_smp_mflags}
 %{_mandir}/man1/%{name}-tool.1*
 %{_mandir}/man1/%{name}.1*
 %{_unitdir}/%{name}.service
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}/*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.22-3
+- Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.22-2
 - Release bump for SRP compliance
 * Thu Nov 09 2023 Mukul Sikka <msikka@vmware.com> 1.6.22-1

@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.15p5
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -69,7 +69,7 @@ mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
 touch %{buildroot}%{_libdir}/tmpfiles.d/sudo.conf
 
 %find_lang %{name}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %{_fixperms} %{buildroot}/*
 
@@ -104,12 +104,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %attr(0644,root,root) %{_libdir}/tmpfiles.d/sudo.conf
 %exclude  %{_sysconfdir}/sudoers.dist
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.9.15p5-4
+- Renaming sysusers to conf to fix auto user creation
 * Fri Mar 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.15p5-3
 - Add colon to password prompt
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.9.15p5-2

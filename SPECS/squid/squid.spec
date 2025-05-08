@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -149,7 +149,7 @@ install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
 install -m 644 %{SOURCE3} %{buildroot}%{_unitdir}
 install -m 755 %{SOURCE4} %{buildroot}%{_libexecdir}/%{name}
 install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/logrotate.d/
-install -p -D -m 0644 %{SOURCE6} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE6} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 mkdir -p %{buildroot}%{_localstatedir}/log/%{name} \
          %{buildroot}%{_localstatedir}/spool/%{name} \
@@ -224,7 +224,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/%{name}/mime.conf
 %{_sysconfdir}/%{name}/%{name}.conf
 %{_sysconfdir}/sysconfig/%{name}
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %{_datadir}/%{name}/mib.txt
 
 %dir %{_datadir}/%{name}
@@ -236,6 +236,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.12-3
+- Renaming sysusers to conf to fix auto user creation
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12-2
 - Version bump for expat upgrade
 * Thu Dec 12 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12-1

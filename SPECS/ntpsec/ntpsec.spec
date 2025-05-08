@@ -1,7 +1,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -72,7 +72,7 @@ mkdir -p %{buildroot}/{%{_sysconfdir}/logrotate.d,%{_libdir}/systemd/ntp-units.d
 install -p -m755 attic/ntpdate %{buildroot}%{_sbindir}/ntpdate
 install -p -m644 etc/logrotate-config.ntpd \
         %{buildroot}%{_sysconfdir}/logrotate.d/ntpsec.conf
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 touch %{buildroot}%{_sharedstatedir}/ntp/ntp.drift
 echo 'ntpd.service' > %{buildroot}%{_libdir}/systemd/ntp-units.d/60-ntpd.list
 
@@ -120,13 +120,15 @@ rm -rf %{buildroot}/*
 %{_prefix}/lib/systemd/ntp-units.d/*ntpd.list
 %dir %attr(-,ntp,ntp) %{_sharedstatedir}/ntp
 %dir %attr(-,ntp,ntp) %{_localstatedir}/log/ntpstats
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files -n python3-ntp
 %defattr(-,root,root)
 %{python3_sitearch}/ntp*
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-3
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-2
 - Release bump for SRP compliance
 * Mon Jan 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.3-1

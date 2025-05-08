@@ -1,7 +1,7 @@
 Summary:    OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:       tpm2-tss
 Version:    3.2.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        https://github.com/tpm2-software/tpm2-tss
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -46,7 +46,7 @@ The libraries and header files needed for TSS2 development.
 
 %install
 %make_install %{?_smp_mflags}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %post
 %sysusers_create_compat %{SOURCE1}
@@ -58,7 +58,7 @@ chown -R tss:tss /var/lib/tpm
 %defattr(-,root,root)
 %{_sysconfdir}/udev/rules.d/tpm-udev.rules
 %{_libdir}/*.so.*
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
@@ -69,6 +69,8 @@ chown -R tss:tss /var/lib/tpm
 %{_mandir}/man7
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-7
+- Renaming sysusers to conf to fix auto user creation
 * Mon Apr 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-6
 - Fix CVE-2023-22745, CVE-2024-29040
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.2.0-5

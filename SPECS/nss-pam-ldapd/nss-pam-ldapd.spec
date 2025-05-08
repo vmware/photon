@@ -2,7 +2,7 @@
 
 Name:           nss-pam-ldapd
 Version:        0.9.12
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        nsswitch module which uses directory servers
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
 Group:          System Environment/Security
@@ -62,7 +62,7 @@ sed -i -e 's,^uid.*,uid nslcd,g' -e 's,^gid.*,gid ldap,g' \
         %{buildroot}%{_sysconfdir}/nslcd.conf
 
 install -p -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %check
 %make_build check
@@ -89,13 +89,15 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %{_libdir}/*.so*
 %{pamdir}/pam_ldap.so
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/nslcd.conf
 %attr(0644,root,root) %config(noreplace) %{_tmpfilesdir}/%{name}.conf
 %{_unitdir}/nslcd.service
 %attr(0775,nslcd,root) /run/nslcd
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.9.12-10
+- Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.12-9
 - Release bump for SRP compliance
 * Tue Oct 10 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.9.12-8

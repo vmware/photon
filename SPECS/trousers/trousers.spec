@@ -1,7 +1,7 @@
 Summary:        TCG Software Stack (TSS)
 Name:           trousers
 Version:        0.3.15
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://sourceforge.net/projects/trousers
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -44,7 +44,7 @@ sh bootstrap.sh
 
 %install
 %make_install %{?_smp_mflags}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %post
 %sysusers_create_compat %{SOURCE1}
@@ -60,7 +60,7 @@ chown -R tss:tss %{_sharedstatedir}/tpm
 %{_sbindir}/*
 %{_mandir}/man5
 %{_mandir}/man8
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 %exclude %dir /var
 
 %files devel
@@ -77,6 +77,8 @@ chown -R tss:tss %{_sharedstatedir}/tpm
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.3.15-6
+- Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.3.15-5
 - Release bump for SRP compliance
 * Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 0.3.15-4

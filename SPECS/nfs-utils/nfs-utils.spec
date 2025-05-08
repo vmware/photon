@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.2
-Release:          10%{?dist}
+Release:          11%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -111,7 +111,7 @@ install -m644 systemd/nfs-idmapd.service %{buildroot}%{_unitdir}
 install -m644 systemd/rpc_pipefs.target  %{buildroot}%{_unitdir}
 install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}%{_unitdir}
 install -m644 systemd/rpc-svcgssd.service %{buildroot}%{_unitdir}
-install -p -D -m 0644 %{SOURCE8} %{buildroot}%{_sysusersdir}/%{name}.sysusers
+install -p -D -m 0644 %{SOURCE8} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -vdm755 %{buildroot}%{_presetdir}
 echo "disable nfs-server.service" > %{buildroot}%{_presetdir}/50-nfs-server.preset
 
@@ -154,7 +154,7 @@ rm -rf %{buildroot}/*
 %{_presetdir}/50-nfs-server.preset
 %{_udevrulesdir}/99-nfs.rules
 %attr(0600,root,root) %config(noreplace) %{_libdir}/modprobe.d/50-nfs.conf
-%{_sysusersdir}/%{name}.sysusers
+%{_sysusersdir}/%{name}.conf
 
 %files devel
 %defattr(-,root,root)
@@ -176,6 +176,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libnfsidmap.so
 
 %changelog
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.6.2-11
+- Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.6.2-10
 - Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.6.2-9
