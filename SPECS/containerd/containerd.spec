@@ -4,17 +4,17 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        1.6.21
-Release:        13%{?dist}
+Version:        1.6.38
+Release:        1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/containerd/containerd/archive/%{name}-%{version}.tar.gz
+Source0: https://github.com/containerd/containerd/archive/refs/tags/v%{version}.tar.gz
 
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT 3dce8eb055cbb6872793272b4f20ed16117344f8
+%define CONTAINERD_GITCOMMIT cf158e884cfe4812a6c371b59e4ea9bc4c46e51a
 
 Source1: %{name}-config.toml
 Source2: disable-%{name}-by-default.preset
@@ -29,8 +29,7 @@ BuildRequires: btrfs-progs
 BuildRequires: btrfs-progs-devel
 BuildRequires: libseccomp
 BuildRequires: libseccomp-devel
-# Upstream is unhappy with 1.14. 1.13 or 1.15+ is OK
-BuildRequires: go >= 1.16
+BuildRequires: go >= 1.23
 BuildRequires: go-md2man
 BuildRequires: systemd-devel
 
@@ -136,6 +135,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Thu May 08 2025 Akhil Mohan <akhil.mohan@broadcom.com> 1.6.38-1
+- Upgrade to 1.6.38
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.6.21-13
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-12

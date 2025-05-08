@@ -1,6 +1,6 @@
 sources:
-- archive: containerd-1.6.21.tar.gz
-  archive_sha512sum: a94ed8b8b9e153c9dc370228b659fcba1b03b3c47c8b5fcb001bb1b4b158ea048159f5d8d8c5294e7da3444edd76fbd903d7b7faa84e3382807a583d757325e1
+- archive: containerd-1.6.38.tar.gz
+  archive_sha512sum: c908e1bb8167ce44d801eeeedb9190f5429de66663b6a3989c9626334af2c79162830de58f24dc534b116cf74f1388945d242c74f9b4dc858b34cd4399e45fbb
   skip_validation: true
   spdx:
     package:

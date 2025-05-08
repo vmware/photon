@@ -12,7 +12,7 @@ version = 2
 #  gid = 0
 
 [plugins."io.containerd.grpc.v1.cri"]
-enable_selinux = true
+  enable_selinux = true
 
 #[debug]
 #  address = "/run/containerd/debug.sock"
