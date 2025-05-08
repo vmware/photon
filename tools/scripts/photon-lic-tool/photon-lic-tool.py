@@ -73,6 +73,7 @@ def scan(args):
         docker=args.docker,
         path=args.path,
         alt_src_url=args.alt_src_url,
+        extra_repo_urls=args.extra_repo_urls
     )
 
 
@@ -248,12 +249,19 @@ in addition to packages.vmware.com""",
     )
 
     scan_sub_p.add_argument(
+        "--extra_repo_urls",
+        action="store",
+        help="""Comma separated list of additional package repository URLs for tdnf""",
+    )
+
+    scan_sub_p.add_argument(
         "--build_spec",
         action="store_true",
         help="""Indicates that the path given points to a SPEC file within Photon,
 and the package source should be built and scanned. Otherwise, scan will just be
 for the SPEC file only.""",
     )
+
 
     scan_sub_p.set_defaults(func=scan)
     ########## END SCAN ###################################

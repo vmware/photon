@@ -29,6 +29,8 @@ import json
 
 
 class Scanner:
+    _extra_repo_urls = None
+
     # parse scan yaml output and produce a valid SPDX expression
     def _parse_scan_yaml(self, yaml_fn=None, exceptions_list=[], cached_spdx_ids=set()):
         license_exps = set()
@@ -112,6 +114,27 @@ class Scanner:
 
         return lic_str
 
+    # Restore versions of required python packages
+    # Keep this in line with list in Dockerfile
+    def _restore_python_reqs(self):
+        pkgs_vers = {
+                        "requests": "2.32.3",
+                        "charset-normalizer": "3.4.2",
+                        "lxml": "5.4.0",
+                        "markupsafe": "3.0.2",
+                        "pyyaml": "6.0.2",
+                        "redis": "6.0.0",
+                        "argparse": "1.4.0"
+                    }
+
+        pkg_update_cmd = "pip3 install"
+
+        for pkg in pkgs_vers:
+            pkg_update_cmd += f" {pkg}=={pkgs_vers[pkg]}"
+
+        run_cmd(pkg_update_cmd)
+
+
     def _install_build_reqs(self, spec_path=None):
         build_reqs = []
 
@@ -132,6 +155,11 @@ class Scanner:
 
         install_cmd.extend(build_reqs)
 
+        if self._extra_repo_urls:
+            for i, url in enumerate(self._extra_repo_urls.split(",")):
+                extra_repo = f"--repofrompath extra_repo{i},{url}"
+                install_cmd.extend(extra_repo.split())
+
         result = run_cmd(install_cmd, ignore_rc=True)
 
         if result.returncode != 0:
@@ -139,6 +167,11 @@ class Scanner:
                 f"Failed to install package dependencies for {spec_path}\n"
                 f"{result.stdout.decode()}"
             )
+
+        print(
+            "Restoring Python package versions after tdnf packge install..."
+        )
+        self._restore_python_reqs()
 
     # Find all extracted archives, i.e dirs with -extract at the end.
     # And delete them, so they are not copied to the scanning dir
@@ -233,6 +266,35 @@ class Scanner:
             else:
                 print(f"Checksum integrity check passed for {archive}")
 
+
+    def _rpmbuild_prep(self, rpm_build_cmds=None, spec_path=None):
+        attempts = 0
+        spec_fn = os.path.basename(spec_path)
+
+        if not rpm_build_cmds:
+            err_exit("No RPM build command passed to Scanner._rpmbuild_prep()!")
+
+        while attempts < 2:
+            attempts += 1
+            result = run_cmd(
+                rpm_build_cmds,
+                ignore_rc=True,
+            )
+
+            if result.returncode == 0:
+                return
+
+            pr_err(
+                f"Failed to build src directory for {spec_fn}:\n{result.stdout.decode()}"
+            )
+
+            if attempts < 2:
+                print("Trying to install required packages and trying again...")
+                self._install_build_reqs(spec_path)
+            else:
+                err_exit()
+
+
     # run rpmbuild -bp to get the source RPM to scan
     def _extract_src_rpm(self, rpm_path=None):
         dist_tag = None
@@ -274,18 +336,14 @@ class Scanner:
 
             rpm_build_cmds += ["--define", f"%dist .{dist_tag}"]
 
-        rpm_build_cmds.append(f"{common.rpm_build_root}/SPECS/{spec_fn}")
+        spec_path = f"{common.rpm_build_root}/SPECS/{spec_fn}"
 
-        result = run_cmd(
-            rpm_build_cmds,
-            ignore_rc=True,
-        )
+        rpm_build_cmds.append(spec_path)
 
-        if result.returncode != 0:
-            pr_err(f"Failed to prep src rpm for {spec_fn}:\n{result.stdout.decode()}")
-            return None
+        self._rpmbuild_prep(rpm_build_cmds, spec_path)
 
         return f"{common.rpm_build_root}/BUILD"
+
 
     # Build the scan directory from a photon spec file,
     # e.g SPECS/<pkg name>/<pkg.spec>. Similar to extract_src_rpm()
@@ -338,24 +396,10 @@ class Scanner:
 
         rpm_build_cmds.append(f"{common.rpm_build_root}/SPECS/{spec_fn}")
 
-        while attempts < 2:
-            attempts += 1
-            result = run_cmd(
-                rpm_build_cmds,
-                ignore_rc=True,
-            )
-
-            if result.returncode != 0:
-                pr_err(
-                    f"Failed to build src directory for {spec_fn}:\n{result.stdout.decode()}"
-                )
-
-                print("Trying to install required packages and trying again...")
-                self._install_build_reqs(spec_path)
-            else:
-                break
+        self._rpmbuild_prep(rpm_build_cmds, spec_path)
 
         return f"{common.rpm_build_root}/BUILD"
+
 
     def _setup_scan_dir(self, path="", build_spec=False, alt_src_url=None):
         scan_dir = ""
@@ -437,6 +481,7 @@ class Scanner:
         cpus=1,
         docker=False,
         alt_src_url=None,
+        extra_repo_urls=None
     ):
         yaml_tmp_path = f"{common.ph_scan_dir}/scan-results.yaml"
         cwd = os.getcwd()
@@ -446,6 +491,7 @@ class Scanner:
         cache_util = None
         lic_db = None
         cached_spdx_ids = set()
+        self._extra_repo_urls = extra_repo_urls
 
         if not path:
             err_exit("ERROR: No input given for scan!")
@@ -463,6 +509,7 @@ class Scanner:
                 yaml=yaml,
                 cpus=cpus,
                 alt_src_url=alt_src_url,
+                extra_repo_urls=extra_repo_urls
             )
             return
 

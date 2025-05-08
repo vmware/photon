@@ -13,6 +13,9 @@ class DockerUtil:
         # Location of the photon-lic-tool directory within the docker container
         self._docker_tool_dir = "/root/photon-lic-tool"
 
+        # Lock file - don't want multiple docker builds at once
+        self._docker_lock_fn = ".docker_lock"
+
         # check for docker command existence
         if not shutil.which("docker"):
             err_exit(
@@ -33,21 +36,20 @@ class DockerUtil:
     def create_docker_image(self):
         build_cmd = ""
         dockerfile_local_path = "Dockerfile"
-        docker_lock = ".docker_lock"
 
         # Don't try to build the image if already in the process of building
-        if os.path.exists(".docker_lock"):
+        if os.path.exists(self._docker_lock_fn):
             print("Docker build already in progress somewhere else, skipping")
             return
-
-        # indicate build is ongoing
-        with open(docker_lock, "w") as docker_lock_f:
-            docker_lock_f.write("1")
 
         cwd = os.getcwd()
 
         if not os.path.exists(dockerfile_local_path):
             err_exit(f"ERROR: No dockerfile found at {dockerfile_local_path}")
+
+        # indicate build is ongoing
+        with open(self._docker_lock_fn, "w") as docker_lock_f:
+            docker_lock_f.write("1")
 
         # build the docker image
         print("Building docker image...")
@@ -65,13 +67,14 @@ class DockerUtil:
         result = run_cmd(build_cmd, ignore_rc=True)
         os.chdir(cwd)
 
+        if os.path.exists(self._docker_lock_fn):
+            os.remove(self._docker_lock_fn)
+
         if result.returncode != 0:
             err_exit(f"Docker image build failed\n{result.stdout.decode()}")
 
         print(f"Successfully built docker image {self._docker_img_name}")
 
-        if os.path.exists(docker_lock):
-            os.remove(docker_lock)
 
     def clean_docker_image(self):
         docker_clean_cmd = ["docker", "image", "rm", self._docker_img_name]
@@ -90,7 +93,8 @@ class DockerUtil:
         score=None,
         yaml=None,
         cpus=None,
-        alt_src_url=None
+        alt_src_url=None,
+        extra_repo_urls=None
     ):
         full_cmd = ""
         tool_cmd = ""
@@ -162,6 +166,9 @@ class DockerUtil:
         if alt_src_url:
             tool_cmd += f" --alt_src_url={alt_src_url}"
 
+        if extra_repo_urls:
+            tool_cmd += f" --extra_repo_urls={extra_repo_urls}"
+
         if yaml:
             # Mount yaml directory so we can write directly out to the location
             yaml_mnt = "--mount "
@@ -204,6 +211,7 @@ class DockerUtil:
         yaml=None,
         cpus=None,
         alt_src_url=None,
+        extra_repo_urls=None
     ):
         new_cmd = ""
 
@@ -212,7 +220,7 @@ class DockerUtil:
 
         # Don't try to build the image if already in the process of building.
         # Also, wait for build to finish before running.
-        while os.path.exists(".docker_lock"):
+        while os.path.exists(self._docker_lock_fn):
             print("Docker build already in progress somewhere else, waiting...")
             sleep(10)
 
@@ -231,7 +239,8 @@ class DockerUtil:
                 score=score,
                 yaml=yaml,
                 cpus=cpus,
-                alt_src_url=alt_src_url
+                alt_src_url=alt_src_url,
+                extra_repo_urls=extra_repo_urls
             )
         else:
             err_exit(f'Command "{cmd}" not compatible with docker, not running.')
