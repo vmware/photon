@@ -19,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.12.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -209,6 +209,14 @@ Patch1009: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # stalld eBPF plugin patches
 Patch1500: 0001-Add-eBPF-object-interface-and-build-it.patch
 
+# FIPS canister plugins
+%if 0%{?fips_plugins}
+Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
+Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
+Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
+Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+%endif
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -256,6 +264,7 @@ Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 Requires:       gawk
+Requires:       dwarves-devel
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -335,6 +344,10 @@ pushd ../stalld-v%{stalld_version}/
 %autopatch -p1 -m1500 -M1500
 popd
 
+%if 0%{?fips}
+%autopatch -p1 -m10500 -M10503
+%endif
+
 %ifarch x86_64
 cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
       crypto/jitterentropy-%{jent_major_version}/
@@ -370,6 +383,10 @@ cp %{SOURCE79} %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
+
+%if 0%{?fips}
+sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
+%endif
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -512,6 +529,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-3
+- Introduce FIPS canister plugins
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.1-2
 - Require coreutils and remove xml-security-c-devel from build requires
 * Fri Feb 21 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-1

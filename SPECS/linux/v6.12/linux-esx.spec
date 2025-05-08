@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -219,6 +219,14 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
 
+# FIPS canister plugins
+%if 0%{?fips_plugins}
+Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
+Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
+Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
+Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+%endif
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -259,7 +267,7 @@ This kernel is FIPS certified.
 %package devel
 Summary:       Kernel Dev
 Group:         System Environment/Kernel
-Requires:      python3 gawk
+Requires:      python3 gawk dwarves-devel
 Requires:      %{name} = %{version}-%{release}
 %description devel
 The Linux package contains the Linux kernel dev files
@@ -328,6 +336,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m600 -M609
 %endif
 
+%if 0%{?fips}
+%autopatch -p1 -m10500 -M10503
+%endif
+
 %ifarch x86_64
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
@@ -354,6 +366,10 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 patch -p1 < %{SOURCE18}
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
+
+%if 0%{?fips}
+sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
+%endif
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -459,6 +475,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-5
+- Introduce FIPS canister plugins
 * Tue Jun 03 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-4
 - Changes to Jitterentropy.
 * Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-3

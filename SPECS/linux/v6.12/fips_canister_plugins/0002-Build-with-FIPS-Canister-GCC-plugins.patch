@@ -1,0 +1,139 @@
+From e504abffde6490fe2e13db00b438ca675079cd1d Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Wed, 7 May 2025 19:58:31 +0000
+Subject: [PATCH 2/4] Build with FIPS Canister GCC plugins
+
+GCC plugins for FIPS canister requires certain conditions
+for structures, such as designated initializers.
+Ensure these conditions are satisfied.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ crypto/rsa.c                                        | 8 ++++++--
+ drivers/char/tpm/tpm2-sessions.c                    | 2 +-
+ drivers/crypto/virtio/virtio_crypto_akcipher_algs.c | 4 +++-
+ include/crypto/hash.h                               | 2 +-
+ include/crypto/internal/ecc.h                       | 2 +-
+ include/linux/completion.h                          | 2 +-
+ net/bluetooth/ecdh_helper.c                         | 2 +-
+ 8 files changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/crypto/rsa.c b/crypto/rsa.c
+index 78b28d14c..d5e4d994e 100644
+--- a/crypto/rsa.c
++++ b/crypto/rsa.c
+@@ -270,9 +270,11 @@ static int rsa_set_pub_key(struct crypto_akcipher *tfm, const void *key,
+ 			   unsigned int keylen)
+ {
+ 	struct rsa_mpi_key *mpi_key = akcipher_tfm_ctx(tfm);
+-	struct rsa_key raw_key = {0};
++	struct rsa_key raw_key;
+ 	int ret;
+
++	memset(&raw_key, 0, sizeof(struct rsa_key));
++
+ 	/* Free the old MPI key if any */
+ 	rsa_free_mpi_key(mpi_key);
+
+@@ -309,9 +311,11 @@ static int rsa_set_priv_key(struct crypto_akcipher *tfm, const void *key,
+ 			    unsigned int keylen)
+ {
+ 	struct rsa_mpi_key *mpi_key = akcipher_tfm_ctx(tfm);
+-	struct rsa_key raw_key = {0};
++	struct rsa_key raw_key;
+ 	int ret;
+
++	memset(&raw_key, 0, sizeof(struct rsa_key));
++
+ 	/* Free the old MPI key if any */
+ 	rsa_free_mpi_key(mpi_key);
+
+diff --git a/drivers/char/tpm/tpm2-sessions.c b/drivers/char/tpm/tpm2-sessions.c
+index b0f13c8ea..7b00f7a5e 100644
+--- a/drivers/char/tpm/tpm2-sessions.c
++++ b/drivers/char/tpm/tpm2-sessions.c
+@@ -498,7 +498,7 @@ static void tpm_buf_append_salt(struct tpm_buf *buf, struct tpm_chip *chip,
+ 	struct crypto_kpp *kpp;
+ 	struct kpp_request *req;
+ 	struct scatterlist s[2], d[1];
+-	struct ecdh p = {0};
++	struct ecdh p = {.key = 0, .key_size = 0};
+ 	u8 encoded_key[EC_PT_SZ], *x, *y;
+ 	unsigned int buf_len;
+
+diff --git a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+index cb92b7fa9..885152fbb 100644
+--- a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
++++ b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
+@@ -374,11 +374,13 @@ static int virtio_crypto_rsa_set_key(struct crypto_akcipher *tfm,
+ 	struct virtio_crypto *vcrypto;
+ 	struct virtio_crypto_ctrl_header header;
+ 	struct virtio_crypto_akcipher_session_para para;
+-	struct rsa_key rsa_key = {0};
++	struct rsa_key rsa_key;
+ 	int node = virtio_crypto_get_current_node();
+ 	uint32_t keytype;
+ 	int ret;
+
++	memset(&rsa_key, 0, sizeof(struct rsa_key));
++
+ 	/* mpi_free will test n, just free it. */
+ 	mpi_free(rsa_ctx->n);
+ 	rsa_ctx->n = NULL;
+diff --git a/include/crypto/hash.h b/include/crypto/hash.h
+index 2d5ea9f9f..40ba64417 100644
+--- a/include/crypto/hash.h
++++ b/include/crypto/hash.h
+@@ -162,7 +162,7 @@ struct shash_desc {
+  * Worst case is hmac(sha3-224-generic).  Its context is a nested 'shash_desc'
+  * containing a 'struct sha3_state'.
+  */
+-#define HASH_MAX_DESCSIZE	(sizeof(struct shash_desc) + 360)
++#define HASH_MAX_DESCSIZE	(sizeof(struct shash_desc) + 368)
+
+ #define SHASH_DESC_ON_STACK(shash, ctx)					     \
+ 	char __##shash##_desc[sizeof(struct shash_desc) + HASH_MAX_DESCSIZE] \
+diff --git a/include/crypto/internal/ecc.h b/include/crypto/internal/ecc.h
+index 065f00e4b..fc14ada03 100644
+--- a/include/crypto/internal/ecc.h
++++ b/include/crypto/internal/ecc.h
+@@ -40,7 +40,7 @@
+
+ #define ECC_MAX_BYTES (ECC_MAX_DIGITS << ECC_DIGITS_TO_BYTES_SHIFT)
+
+-#define ECC_POINT_INIT(x, y, ndigits)	(struct ecc_point) { x, y, ndigits }
++#define ECC_POINT_INIT(_x, _y, _ndigits)	(struct ecc_point) { .x = _x, .y = _y, .ndigits = _ndigits }
+
+ /**
+  * ecc_swap_digits() - Copy ndigits from big endian array to native array
+diff --git a/include/linux/crypto.h b/include/linux/crypto.h
+index b164da5e1..1aa9f67fe 100644
+--- a/include/linux/crypto.h
++++ b/include/linux/crypto.h
+@@ -382,7 +382,9 @@ struct crypto_wait {
+  */
+ #define DECLARE_CRYPTO_WAIT(_wait) \
+ 	struct crypto_wait _wait = { \
+-		COMPLETION_INITIALIZER_ONSTACK((_wait).completion), 0 }
++		.completion = COMPLETION_INITIALIZER_ONSTACK((_wait).completion), \
++		.err = 0 \
++	}
+
+ /*
+  * Async ops completion helper functioons
+diff --git a/net/bluetooth/ecdh_helper.c b/net/bluetooth/ecdh_helper.c
+index 0efc93fda..daaa12f32 100644
+--- a/net/bluetooth/ecdh_helper.c
++++ b/net/bluetooth/ecdh_helper.c
+@@ -103,7 +103,7 @@ int set_ecdh_privkey(struct crypto_kpp *tfm, const u8 private_key[32])
+ 	u8 *buf, *tmp = NULL;
+ 	unsigned int buf_len;
+ 	int err;
+-	struct ecdh p = {0};
++	struct ecdh p = {.key = 0, .key_size = 0};
+
+ 	if (private_key) {
+ 		tmp = kmalloc(32, GFP_KERNEL);
+--
+2.40.4
+
