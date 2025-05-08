@@ -30,10 +30,18 @@
 %global fips 0
 %endif
 
+%if 0%{?canister_build}
+%global fips_plugins 1
+%endif
+
+%if 0%{?fips}
+%global fips_plugins 1
+%endif
+
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        16%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        17%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -338,6 +346,14 @@ Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
 %endif
 %endif
 
+# FIPS canister plugins
+%if 0%{?fips_plugins}
+Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
+Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
+Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
+Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+%endif
+
 BuildRequires:  bc
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
@@ -386,7 +402,7 @@ This kernel is FIPS certified.
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-Requires:       python3 gawk
+Requires:       python3 gawk dwarves-devel
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -545,6 +561,10 @@ popd
 %endif
 %endif
 
+%if 0%{?fips_plugins}
+%autopatch -p1 -m10500 -M10503
+%endif
+
 %ifarch x86_64
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
@@ -599,10 +619,16 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 %if 0%{?canister_build}
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
+sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
+sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
 %endif
+%endif
+
+%if 0%{?fips}
+sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
 %endif
 
 %ifarch x86_64
@@ -888,6 +914,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-17
+- Introduce FIPS canister plugins
 * Tue Jun 03 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-16
 - Changes to Jitterentropy.
 * Thu May 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-15
