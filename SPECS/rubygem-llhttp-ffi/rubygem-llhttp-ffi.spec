@@ -2,8 +2,8 @@
 %global gem_name llhttp-ffi
 
 Name:           rubygem-llhttp-ffi
-Version:        0.4.0
-Release:        5%{?dist}
+Version:        0.5.1
+Release:        1%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.5.1-1
+- Upgrade to 0.5.1
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.4.0-5
 - Release bump for SRP compliance
 * Wed Sep 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.4.0-4

@@ -5,7 +5,7 @@
 Summary:        Google Auth Library for Ruby
 Name:           rubygem-googleauth
 Version:        1.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,5 +51,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.1-2
+- Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.13.1-1
 - Initial version.

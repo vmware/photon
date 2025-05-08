@@ -3,8 +3,8 @@
 %global gem_name async-pool
 
 Name:           rubygem-async-pool
-Version:        0.4.0
-Release:        3%{?dist}
+Version:        0.10.3
+Release:        1%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.10.3-1
+- Upgrade to 0.10.3
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.4.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.4.0-2

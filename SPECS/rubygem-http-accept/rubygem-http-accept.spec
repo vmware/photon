@@ -4,7 +4,7 @@
 
 Name:           rubygem-http-accept
 Version:        1.7.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Parse Accept and Accept-Language HTTP headers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ Parse Accept and Accept-Language HTTP headers.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-4
+- Release bump for ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-2

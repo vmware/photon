@@ -4,7 +4,7 @@
 
 Name: rubygem-netrc
 Version:        0.11.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        This library can read and update netrc files, preserving formatting including comments and whitespace.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ This library can read and update netrc files, preserving formatting including co
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.11.0-5
+- Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.11.0-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.11.0-3

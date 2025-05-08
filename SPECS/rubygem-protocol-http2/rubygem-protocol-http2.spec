@@ -3,8 +3,8 @@
 %global gem_name protocol-http2
 
 Name:           rubygem-protocol-http2
-Version:        0.15.0
-Release:        3%{?dist}
+Version:        0.22.1
+Release:        1%{?dist}
 Summary:        A low level implementation of the HTTP/2 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -19,12 +19,10 @@ Source1: license.txt
 BuildRequires: ruby-devel
 BuildRequires: rubygem-protocol-hpack
 BuildRequires: rubygem-protocol-http
-BuildRequires: rubygem-async-io
 BuildRequires: rubygem-io-event
 
 Requires: rubygem-protocol-hpack >= 1.4.0, rubygem-protocol-hpack < 2.0.0
 Requires: rubygem-protocol-http >= 0.2.0, rubygem-protocol-http < 1.0.0
-Requires: rubygem-async-io
 Requires: rubygem-io-event
 Requires: ruby
 
@@ -47,6 +45,8 @@ Provides a low-level implementation of the HTTP/2 protocol.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.22.1-1
+- Upgrade to 0.22.1
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.15.0-2

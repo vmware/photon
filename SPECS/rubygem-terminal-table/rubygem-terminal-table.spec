@@ -3,8 +3,8 @@
 %define gem_name terminal-table
 
 Name:           rubygem-terminal-table
-Version:        3.0.2
-Release:        3%{?dist}
+Version:        4.0.0
+Release:        1%{?dist}
 Summary:        Simple, feature rich ascii table generation library
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ Simple, feature rich ascii table generation library
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.0-1
+- Upgrade to 4.0.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.2-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.2-2

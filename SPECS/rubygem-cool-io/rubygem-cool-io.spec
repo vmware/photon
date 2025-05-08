@@ -2,8 +2,8 @@
 %global gem_name cool.io
 
 Name:           rubygem-cool-io
-Version:        1.7.1
-Release:        4%{?dist}
+Version:        1.9.0
+Release:        1%{?dist}
 Summary:        a high performance event framework for Ruby which uses the libev C library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ A high performance event framework for Ruby which uses the libev C library
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.9.0-1
+- Upgrade to 1.9.0
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.1-4
 - Release bump for SRP compliance
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.1-3

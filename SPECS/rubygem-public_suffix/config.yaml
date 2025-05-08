@@ -1,14 +1,12 @@
 sources:
-- archive: public_suffix-5.0.0.gem
-  archive_sha512sum: 89dc076e6c55790b1459ceb0b0587d20b80d8a681bab6db2dd213e06f9bf9e55200e86cf891c92b310e691e7b0e1bb5ae95e28e3a3307541c2f020e5f69abeb5
+- archive: public_suffix-6.0.2.gem
+  archive_sha512sum: 46ffd9ab753188351428a1c21705dfda9090b3c5e8e6b0059d796689403e140c48a394b6b3337cb714d9d7b0cb9f5d55369a36d1a2a69e49922c6ee95339aee2
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'PublicSuffix can parse and decompose a domain name into
-        top level domain, domain and subdomains. '
-      home_page: https://rubygems.org/gems/public_suffix/versions/5.0.0
-      license_concluded: MPL-2.0 AND MIT AND CC0-1.0
-      license_declared: MPL-2.0 AND MIT AND CC0-1.0
-      short_summary: PublicSuffix can parse and decompose a domain name into top level
-        domain, domain and subdomains.
+      detailed_description: 'PublicSuffix can parse and decompose a domain name into top level domain, domain and subdomains. '
+      home_page: https://rubygems.org/gems/public_suffix/versions/6.0.2
+      license_concluded: MIT AND MPL-2.0
+      license_declared: MIT AND MPL-2.0
+      short_summary: PublicSuffix can parse and decompose a domain name into top level domain, domain and subdomains.
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,12 @@
+sources:
+- archive: io-endpoint-0.15.2.gem
+  archive_sha512sum: 5dfb49a8c797cfa909e9aa97794c5c466d6a95b2cdd156dcb74bba0ebf10deef69c79d48710dcb0f8d949703c3f00c7678855e06eb4996d5a94dd47d1979a615
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Abstraction for IO endpoints including sockets, SSL, pipes, etc..'
+      home_page: https://rubygems.org/gems/io-endpoint
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Abstraction for IO endpoints including sockets, SSL, pipes, etc.
+      supplier: 'Organization: Broadcom, Inc.'

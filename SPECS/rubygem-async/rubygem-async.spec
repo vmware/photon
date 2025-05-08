@@ -3,8 +3,8 @@
 %global gem_name async
 
 Name: rubygem-async
-Version:        2.2.1
-Release:        4%{?dist}
+Version:        2.24.0
+Release:        1%{?dist}
 Summary:        Async provides a modern asynchronous I/O framework for Ruby, based on nio4r.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -22,12 +22,16 @@ BuildRequires: ruby-devel
 BuildRequires: rubygem-nio4r
 BuildRequires: rubygem-timers
 BuildRequires: rubygem-fiber-local
+BuildRequires: rubygem-traces
 BuildRequires: rubygem-console
+BuildRequires: rubygem-metrics
 
 Requires: rubygem-console >= 1.0.0, rubygem-console < 2.0.0
 Requires: rubygem-nio4r >= 2.3.0, rubygem-nio4r < 3.0.0
 Requires: rubygem-timers >= 4.1.0, rubygem-timers < 5.0.0
 Requires: rubygem-fiber-local
+Requires: rubygem-traces
+Requires: rubygem-metrics
 Requires: ruby
 
 %description
@@ -48,6 +52,8 @@ It implements the reactor pattern, providing both IO and timer based events.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.24.0-1
+- Upgrade to 2.24.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.1-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.1-3

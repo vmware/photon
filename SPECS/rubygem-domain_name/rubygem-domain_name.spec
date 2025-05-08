@@ -3,8 +3,8 @@
 %global gem_name domain_name
 
 Name: rubygem-domain_name
-Version:        0.5.20190701
-Release:        4%{?dist}
+Version:        0.6.20240107
+Release:        1%{?dist}
 Summary:        This is a Domain Name manipulation library for Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ cookie domain validation based on the Public Suffix List.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.6.20240107-1
+- Upgrade to 0.6.20240107
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.5.20190701-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.5.20190701-3

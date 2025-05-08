@@ -1,0 +1,12 @@
+sources:
+- archive: rubyzip-2.4.1.gem
+  archive_sha512sum: 113a1d8913826d6f96f6d7bdaee49bb9dbc5a5ff01054f93467a377ab3b890c782d42a2ed466d17385868350079345aada87541ba7617e28a4af700d17aab9ef
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ruby library for reading and writing Zip files '
+      home_page: https://rubygems.org/gems/rubyzip
+      license_concluded: (BSD-2-Clause OR Ruby) AND BSD-2-Clause
+      license_declared: (BSD-2-Clause OR Ruby) AND BSD-2-Clause
+      short_summary: Ruby library for reading and writing Zip files
+      supplier: 'Organization: Broadcom, Inc.'

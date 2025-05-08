@@ -2,8 +2,8 @@
 %global gem_name ffi
 
 Name:           rubygem-ffi
-Version:        1.15.5
-Release:        4%{?dist}
+Version:        1.17.2
+Release:        1%{?dist}
 Summary:        Ruby FFI library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ Ruby FFI library
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.17.2-1
+- Upgrade to 1.17.2
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.5-4
 - Release bump for SRP compliance
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.5-3

@@ -3,8 +3,8 @@
 %global gem_name traces
 
 Name:           rubygem-traces
-Version:        0.11.1
-Release:        3%{?dist}
+Version:        0.15.2
+Release:        1%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.15.2-1
+- Upgrade to 0.15.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.11.1-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.11.1-2

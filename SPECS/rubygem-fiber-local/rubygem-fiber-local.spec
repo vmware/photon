@@ -3,8 +3,8 @@
 %global gem_name fiber-local
 
 Name:           rubygem-fiber-local
-Version:        1.0.0
-Release:        3%{?dist}
+Version:        1.1.0
+Release:        1%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -18,9 +18,11 @@ Source1: license.txt
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-io-event
+BuildRequires: rubygem-fiber-storage
 
 Requires: ruby
 Requires: rubygem-io-event
+Requires: rubygem-fiber-storage
 
 BuildArch: noarch
 
@@ -42,6 +44,8 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-1
+- Upgrade to 1.1.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.0-2

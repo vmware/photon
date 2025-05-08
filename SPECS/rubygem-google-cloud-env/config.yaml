@@ -1,6 +1,6 @@
 sources:
-- archive: google-cloud-env-2.2.1.gem
-  archive_sha512sum: 2f9151b0a633e2ccb721056b152db647c731752264ac641e0e0103a264c686c2ef4ec3b6dfbe0521e47d051a370c8fbb90472492aa7ddc15eaedd0d1e59a4f99
+- archive: google-cloud-env-2.3.0.gem
+  archive_sha512sum: 7792c065ee34515c9f59841dc5026e2debc50b3222df7dd2fba1999ef3e8848ff95be288b132aac7aab0b7845bda870fbee869399ae2589c4e5d691ad5dc4d6f
   skip_validation: true
   spdx:
     package:

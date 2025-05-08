@@ -4,7 +4,7 @@
 
 Summary:        google-cloud-core is the internal shared library for google-cloud-ruby.
 Name:           rubygem-google-cloud-core
-Version:        1.7.1
+Version:        1.8.0
 Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -52,5 +52,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.8.0-1
+- Upgrade to 1.8.0
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.1-1
 - Initial version.

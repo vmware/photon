@@ -3,8 +3,8 @@
 %global gem_name sigdump
 
 Name: rubygem-sigdump
-Version:        0.2.4
-Release:        4%{?dist}
+Version:        0.2.5
+Release:        1%{?dist}
 Summary:        signal handler which dumps backtrace of running threads
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ and see /tmp/sigdump-<pid>.log.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-1
+- Upgrade to 0.2.5
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.2.4-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.4-3

@@ -4,7 +4,7 @@
 
 Name: rubygem-jmespath
 Version:        1.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Implements JMESPath for Ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -36,6 +36,8 @@ Implements JMESPath for Ruby.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.1-4
+- Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.1-2

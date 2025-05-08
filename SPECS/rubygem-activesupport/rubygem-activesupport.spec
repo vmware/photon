@@ -3,7 +3,7 @@
 %global gem_name activesupport
 
 Name: rubygem-activesupport
-Version:        7.0.8.5
+Version:        7.0.8.7
 Release:        1%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
@@ -45,6 +45,8 @@ time zones, and testing.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.7-1
+- Upgrade to 7.0.8.7
 * Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.5-1
 - Fix CVE-2024-28103
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.4-3

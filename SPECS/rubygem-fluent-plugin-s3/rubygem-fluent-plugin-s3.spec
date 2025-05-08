@@ -3,8 +3,8 @@
 %global gem_name fluent-plugin-s3
 
 Name: rubygem-fluent-plugin-s3
-Version:        1.7.2
-Release:        3%{?dist}
+Version:        1.8.3
+Release:        1%{?dist}
 Summary:        Amazon S3 output plugin for Fluentd event collector.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -53,6 +53,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.8.3-1
+- Upgrade to 1.8.3
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.2-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.2-2

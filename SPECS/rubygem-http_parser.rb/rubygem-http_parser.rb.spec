@@ -3,7 +3,7 @@
 
 Name: rubygem-http_parser.rb
 Version:        0.8.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Provides ruby bindings to http parser
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -36,6 +36,8 @@ Provides ruby bindings to http parser.
 %{gem_base}
 
 %changelog
+* Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.0-6
+- Spec bump with ruby upgrade
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.0-5
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.0-4

@@ -4,7 +4,7 @@
 
 Summary:        Signet is an OAuth 1.0 / OAuth 2.0 implementation.
 Name:           rubygem-signet
-Version:        0.19.0
+Version:        0.20.0
 Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -48,5 +48,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.20.0-1
+- Upgrade to 0.20.0
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.19.0-1
 - Initial version.

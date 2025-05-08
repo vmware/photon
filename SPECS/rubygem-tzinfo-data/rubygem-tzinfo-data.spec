@@ -3,8 +3,8 @@
 %global gem_name tzinfo-data
 
 Name: rubygem-tzinfo-data
-Version:        1.2022.6
-Release:        3%{?dist}
+Version:        1.2025.2
+Release:        1%{?dist}
 Summary:        data from the IANA Time Zone database packaged as Ruby modules
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ Ruby modules for use with TZInfo.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2025.2-1
+- Upgrade to 1.2025.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2022.6-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2022.6-2

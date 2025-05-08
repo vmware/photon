@@ -1,14 +1,12 @@
 sources:
-- archive: sigdump-0.2.4.gem
-  archive_sha512sum: c079f538d3e4e1af61325f18b0580a8d92869800736fc770bc7b193358df480105f1ff223158d52e62ea272e1c375be82ab6415b43c28cc1d74c57cc7640d9cd
+- archive: sigdump-0.2.5.gem
+  archive_sha512sum: 2400403768f4606cb21a3fc34b4630800846ef5ad4c06f1bfca3b04fb62208bfd48a53f1f090b8c65858b49d1bf594c42f555c2f997534129793773c837cfa73
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'Setup signal handler which dumps backtrace of running
-        threads and number of allocated objects per class. Require ''sigdump/setup'',
-        send SIGCONT, and see /tmp/sigdump-<pid>.log. '
-      home_page: https://rubygems.org/gems/sigdump/versions/0.2.4
-      license_concluded: MIT
-      license_declared: MIT
+      detailed_description: "Setup signal handler which dumps backtrace of running threads and number of allocated objects per class. Require 'sigdump/setup', send SIGCONT, and see /tmp/sigdump-<pid>.log. "
+      home_page: https://rubygems.org/gems/sigdump/versions/0.2.5
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
       short_summary: signal handler which dumps backtrace of running threads
       supplier: 'Organization: Broadcom, Inc.'

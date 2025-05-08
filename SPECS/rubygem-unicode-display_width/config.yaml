@@ -1,6 +1,6 @@
 sources:
-- archive: unicode-display_width-2.3.0.gem
-  archive_sha512sum: 5c8b5cad378baee9a449d1f06edccbea12f26f8d269ba39ef500dfc6bd5c0b478aa9e0a7262ac07ad3f3e75ee66bbcd4b2d450eae78ac67a3c912804ae9ae1ec
+- archive: unicode-display_width-3.1.4.gem
+  archive_sha512sum: f829512fa2d0fd88453d3e7fcf595fd73191b18b183e149eb006f1daf45488d495982e634d26574785f53c40653250494e31946fabf3837490d887438c8388fb
   skip_validation: true
   spdx:
     package:

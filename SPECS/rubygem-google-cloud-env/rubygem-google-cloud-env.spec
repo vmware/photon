@@ -4,7 +4,7 @@
 
 Summary:        google-cloud-env provides information on the Google Cloud Platform hosting environment.
 Name:           rubygem-google-cloud-env
-Version:        2.2.1
+Version:        2.3.0
 Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -45,5 +45,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.0-1
+- Upgrade to 2.3.0
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.1-1
 - Initial version.

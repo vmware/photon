@@ -1,6 +1,6 @@
 sources:
-- archive: backports-3.23.0.gem
-  archive_sha512sum: b6d721a2925a932e451437938e01c6e3f4ac08bafac975063963f7866e17015abfeb6862face89cbd08caf479db75eb085f540263ba251a87c6acc7611ba6d40
+- archive: backports-3.25.1.gem
+  archive_sha512sum: a69f9b38d5f2b868a0823c3e2750b01e0d1a5c8b52c5e49a04de13fd0fd7262e881768f583c6545c4257bb12a20d6531d0a5132173ee629ee7464db2421dbbc4
   skip_validation: true
   spdx:
     package:

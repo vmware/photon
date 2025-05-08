@@ -3,8 +3,8 @@
 %global gem_name systemd-journal
 
 Name: rubygem-systemd-journal
-Version:        1.4.2
-Release:        3%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 Summary:        Provides the ability to navigate and read entries from the systemd journal in ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ as well as write events to the journal.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.1.0-1
+- Upgrade to 2.1.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.2-2

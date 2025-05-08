@@ -2,8 +2,8 @@
 %global gem_name fluent-plugin-kubernetes_metadata_filter
 
 Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
-Version:        3.4.0
-Release:        5%{?dist}
+Version:        3.6.0
+Release:        1%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -21,13 +21,13 @@ BuildRequires:  ruby-devel
 BuildRequires:  rubygem-fluentd < 2.0.0
 BuildRequires:  rubygem-lru_redux
 BuildRequires:  rubygem-kubeclient < 5.0
-BuildRequires:  rubygem-http < 5.0
+BuildRequires:  rubygem-http < 5.2.1
 BuildRequires:  findutils
 
 Requires:       rubygem-fluentd < 2.0.0
 Requires:       rubygem-kubeclient < 5.0
-Requires:       rubygem-http-accept < 2.0
-Requires:       rubygem-http < 5.0
+Requires:       rubygem-http-accept < 2.2.2
+Requires:       rubygem-http < 5.2.1
 Requires:       rubygem-lru_redux
 Requires:       rubygem-jsonpath
 Requires:       ruby
@@ -57,6 +57,8 @@ proper log isolation.
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.6.0-1
+- Upgrade to 3.6.0
 * Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-5
 - Bump version with rubygem-activesupport bump
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-4

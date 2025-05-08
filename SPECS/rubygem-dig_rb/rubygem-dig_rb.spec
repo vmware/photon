@@ -4,7 +4,7 @@
 
 Name: rubygem-dig_rb
 Version:        1.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Array/Hash/Struct#dig backfill for ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -36,6 +36,8 @@ Array/Hash/Struct#dig backfill for ruby
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.1-5
+- Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.1-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.1-3

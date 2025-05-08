@@ -3,8 +3,8 @@
 %global gem_name async-http
 
 Name: rubygem-async-http
-Version:        0.60.2
-Release:        3%{?dist}
+Version:        0.89.0
+Release:        1%{?dist}
 Summary:        A HTTP client and server library.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -17,22 +17,22 @@ Source1: license.txt
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-async
-BuildRequires: rubygem-async-io
 BuildRequires: rubygem-protocol-http
 BuildRequires: rubygem-protocol-http1
 BuildRequires: rubygem-protocol-http2
 BuildRequires: rubygem-fiber-local
-BuildRequires: rubygem-traces
 BuildRequires: rubygem-async-pool
+BuildRequires: rubygem-io-stream
+BuildRequires: rubygem-io-endpoint
 
-Requires: rubygem-async >= 1.19.0, rubygem-async < 2.2.2
-Requires: rubygem-async-io >= 1.25.0, rubygem-async-io < 2.0.4
+Requires: rubygem-async >= 2.10.2
 Requires: rubygem-protocol-http >= 0.24.0
 Requires: rubygem-protocol-http1 >= 0.15.1
 Requires: rubygem-protocol-http2 >= 0.15.0
 Requires: rubygem-fiber-local
-Requires: rubygem-traces
 Requires: rubygem-async-pool
+Requires: rubygem-io-stream
+Requires: rubygem-io-endpoint
 Requires: ruby
 
 BuildArch: noarch
@@ -56,6 +56,8 @@ and async-io. falcon provides a rack-compatible server.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.89.0-1
+- Upgrade to 0.89.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.60.2-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.60.2-2

@@ -1,6 +1,6 @@
 sources:
-- archive: optimist-3.1.0.gem
-  archive_sha512sum: adadc1722d970cc4c002a0983d0ab2dbb3683777310c7085950e07fa18c94e4ab788bd10bca9e1d076cf77637d09e2d6bb969f5d5b35f0b648881e744f42c785
+- archive: optimist-3.2.1.gem
+  archive_sha512sum: 0bdd1820244ac9a40f634bc0ae1cdf26711d33c6e78e889b8e0e3326c64491274d303b070d5fb44793f221f783fbb4ee2eac247f4ee0a2e9812405ba80d9748c
   skip_validation: true
   spdx:
     package:

@@ -1,12 +1,12 @@
 sources:
-- archive: systemd-journal-1.4.2.gem
-  archive_sha512sum: 3eb2ef8b6ea4cf4f5f5e39d8aa9f1b5f6849a5037ab60b5b0a86a183be8d7b2354d61fe613194a6b695c44765771310830efa072fdc1834a9c20235ccb05f40c
+- archive: systemd-journal-2.1.0.gem
+  archive_sha512sum: 955cc88c515f8137d43b60ecd6e63956eaf84344849525c6f89505e9f4baef2113a8ebc1ff2a6e5dc87b9253b27443ceeacb6db259938fa621e21890aacbd837
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Provides the ability to navigate and read entries from
         the systemd journal in ruby, as well as write events to the journal. '
-      home_page: https://rubygems.org/gems/systemd-journal/versions/1.4.2
+      home_page: https://rubygems.org/gems/systemd-journal/versions/2.1.0
       license_concluded: MIT
       license_declared: MIT
       short_summary: Provides the ability to navigate and read entries from the systemd

@@ -4,8 +4,8 @@
 
 Summary:        Simplistic port-like solution for developers
 Name:           rubygem-mini_portile2
-Version:        2.8.0
-Release:        3%{?dist}
+Version:        2.8.8
+Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,6 +14,9 @@ Source0:        https://rubygems.org/downloads/mini_portile2-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Provides:      rubygem-mini_portile <= 0.6.2-6
+Obsoletes:     rubygem-mini_portile <= 0.6.2-6
 
 BuildRequires: ruby-devel
 
@@ -35,6 +38,8 @@ Simplistic port-like solution for developers. It provides a standard and simplif
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.8-1
+- Upgrade to 2.8.8
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.0-2

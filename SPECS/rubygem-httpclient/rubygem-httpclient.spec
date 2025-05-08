@@ -4,7 +4,7 @@
 
 Summary:        Gives something like the functionality of libwww-perl (LWP) in Ruby
 Name:           rubygem-httpclient
-Version:        2.8.3
+Version:        2.9.0
 Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -40,5 +40,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.9.0-1
+- Upgrade to 2.9.0
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.3-1
 - Initial version.

@@ -2,8 +2,8 @@
 %global gem_name msgpack
 
 Name: rubygem-msgpack
-Version:        1.6.0
-Release:        4%{?dist}
+Version:        1.8.0
+Release:        1%{?dist}
 Summary:        A binary-based efficient object serialization library
 Group:          Development/Languages
 Distribution:   Photon
@@ -35,6 +35,8 @@ But unlike JSON, it is very fast and small.
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.8.0-1
+- Upgrade to 1.8.0
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-4
 - Release bump for SRP compliance
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-3

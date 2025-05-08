@@ -3,8 +3,8 @@
 %global gem_name mime-types-data
 
 Name: rubygem-mime-types-data
-Version:        3.2022.0105
-Release:        3%{?dist}
+Version:        3.2025.0507
+Release:        1%{?dist}
 Summary:        Provides a registry for information about MIME media type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ MIME type definitions.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2025.0507-1
+- Upgrade to 3.2025.0507
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2022.0105-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2022.0105-2

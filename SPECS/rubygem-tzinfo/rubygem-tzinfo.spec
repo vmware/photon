@@ -3,8 +3,8 @@
 %global gem_name tzinfo
 
 Name: rubygem-tzinfo
-Version:        2.0.5
-Release:        3%{?dist}
+Version:        2.0.6
+Release:        1%{?dist}
 Summary:        Timezone related support for Ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.6-1
+- Upgrade to 2.0.6
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.5-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.5-2

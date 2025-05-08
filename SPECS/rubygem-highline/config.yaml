@@ -1,6 +1,6 @@
 sources:
-- archive: highline-2.0.3.gem
-  archive_sha512sum: 18426c690125807ccc43af98d395c866752d2aa3a1d59ae2f16b65e3c207eedd76c0756f8acebdf4ceea2d52daf04500030f38e63f7658c39c946c6cb9737bb0
+- archive: highline-3.1.2.gem
+  archive_sha512sum: 629540be22038895ce446b39b766f9b814cff66d1965fb9e5bca69b18ad9fbe8970629b07422625ee3e02494fe2c5f09fb43c32fb426524953b5525a4c262717
   skip_validation: true
   spdx:
     package:

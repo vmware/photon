@@ -3,8 +3,8 @@
 %global gem_name i18n
 
 Name: rubygem-i18n
-Version:        1.12.0
-Release:        3%{?dist}
+Version:        1.14.7
+Release:        1%{?dist}
 Summary:        Support for ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ New wave Internationalization support for Ruby.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.14.7-1
+- Upgrade to 1.14.7
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.12.0-2

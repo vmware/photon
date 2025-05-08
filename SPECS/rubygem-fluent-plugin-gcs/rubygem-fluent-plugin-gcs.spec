@@ -5,7 +5,7 @@
 Summary:        Google Cloud Storage output plugin for Fluentd.
 Name:           rubygem-fluent-plugin-gcs
 Version:        0.4.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,5 +44,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.4.4-2
+- Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.4.4-1
 - Initial version.

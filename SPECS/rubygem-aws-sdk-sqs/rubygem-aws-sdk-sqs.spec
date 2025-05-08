@@ -3,8 +3,8 @@
 %global gem_name aws-sdk-sqs
 
 Name: rubygem-aws-sdk-sqs
-Version:        1.52.0
-Release:        3%{?dist}
+Version:        1.94.0
+Release:        1%{?dist}
 Summary:        Official AWS Ruby gem for Amazon Simple Queue Service (Amazon SQS).
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ This gem is part of the AWS SDK for Ruby.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.94.0-1
+- Upgrade to 1.94.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.52.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.52.0-2

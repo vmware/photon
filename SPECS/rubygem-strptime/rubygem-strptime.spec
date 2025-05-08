@@ -3,7 +3,7 @@
 
 Name: rubygem-strptime
 Version:        0.2.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        a fast strptime/strftime engine which uses VM
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ A fast strptime/strftime engine which uses VM
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-6
+- Spec bump with ruby upgrade
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-5
 - Release bump for SRP compliance
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-4

@@ -1,11 +1,11 @@
 sources:
-- archive: unf_ext-0.0.8.2.gem
-  archive_sha512sum: c9d3e54c96a525031d3b2fe349b5ffa1d03e3f28f74c3a2715af299e5274c7514526d07be5d7244a2cf9561c11e170b15c75d34c5e2a7143cef1ee25d32d2137
+- archive: unf_ext-0.0.9.1.gem
+  archive_sha512sum: f2d0d58dc0ed30e3e99ac75022c8ea78bf4ad51c8803009c059de087b1cd439e06a8e7ef4c1be5c75048f85afe6c301f402ed21405ff02ad36ea73209416994d
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Unicode Normalization Form support library for CRuby. '
-      home_page: https://rubygems.org/gems/unf_ext/versions/0.0.8.2
+      home_page: https://rubygems.org/gems/unf_ext/versions/0.0.9.1
       license_concluded: MIT
       license_declared: MIT
       short_summary: Unicode Normalization Form support library for CRuby.

@@ -2,8 +2,8 @@
 %global gem_name rdiscount
 
 Name: rubygem-rdiscount
-Version:        2.2.7
-Release:        4%{?dist}
+Version:        2.2.7.3
+Release:        1%{?dist}
 Summary:        Fast Implementation of Gruber's Markdown in C
 Group:          Development/Languages
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
@@ -35,6 +35,8 @@ and thereby inherits Discount’s numerous useful extensions to the Markdown lan
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7.3-1
+- Upgrade to 2.2.7.3
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-4
 - Release bump for SRP compliance
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7-3

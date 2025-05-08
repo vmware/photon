@@ -2,8 +2,8 @@
 %global gem_name unf_ext
 
 Name: rubygem-unf_ext
-Version:        0.0.8.2
-Release:        4%{?dist}
+Version:        0.0.9.1
+Release:        1%{?dist}
 Summary:        Unicode Normalization Form support library for CRuby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -34,6 +34,8 @@ Unicode Normalization Form support library for CRuby.
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.9.1-1
+- Upgrade to 0.0.9.1
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-4
 - Release bump for SRP compliance
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.8.2-3

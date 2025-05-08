@@ -3,8 +3,8 @@
 %global gem_name timers
 
 Name: rubygem-timers
-Version:        4.3.5
-Release:        3%{?dist}
+Version:        4.4.0
+Release:        1%{?dist}
 Summary:        Schedule procs to run after a certain time, or at periodic intervals, using any API that accepts a timeout.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ Schedule procs to run after a certain time, or at periodic intervals, using any 
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.4.0-1
+- Upgrade to 4.4.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.5-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.3.5-2

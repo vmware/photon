@@ -3,8 +3,8 @@
 %global gem_name aws-eventstream
 
 Name: rubygem-aws-eventstream
-Version:        1.2.0
-Release:        3%{?dist}
+Version:        1.3.2
+Release:        1%{?dist}
 Summary:        Amazon Web Services event stream library.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ Decodes and encodes binary stream under
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.2-1
+- Upgrade to 1.3.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.0-2

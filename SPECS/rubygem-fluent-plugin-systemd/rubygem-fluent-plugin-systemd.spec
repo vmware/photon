@@ -3,8 +3,8 @@
 %global gem_name fluent-plugin-systemd
 
 Name: rubygem-fluent-plugin-systemd
-Version:        1.0.5
-Release:        3%{?dist}
+Version:        1.1.1
+Release:        1%{?dist}
 Summary:        This is a fluentd input plugin. It reads logs from the systemd journal.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -43,6 +43,8 @@ This is a fluentd input plugin. It reads logs from the systemd journal.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.1-1
+- Upgrade to 1.1.1
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.5-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.5-2

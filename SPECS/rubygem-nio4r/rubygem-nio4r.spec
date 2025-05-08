@@ -2,8 +2,8 @@
 %global gem_name nio4r
 
 Name: rubygem-nio4r
-Version:        2.5.8
-Release:        4%{?dist}
+Version:        2.7.4
+Release:        1%{?dist}
 Summary:        Cross-platform asynchronous I/O primitives for scalable network clients and servers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ Inspired by the Java NIO API, but simplified for ease-of-use.
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-1
+- Upgrade to 2.7.4
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.8-4
 - Release bump for SRP compliance
 * Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.8-3

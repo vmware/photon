@@ -3,8 +3,8 @@
 %global gem_name webrick
 
 Name:           rubygem-webrick
-Version:        1.7.0
-Release:        4%{?dist}
+Version:        1.9.1
+Release:        1%{?dist}
 Summary:        HTTP server toolkit
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -15,11 +15,6 @@ Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0:         CVE-2024-47220.patch
-Patch1:         CVE-2025-6442.patch
-# Follow-up fix for CVE-2025-6442
-Patch2:         0001-Only-strip-space-and-horizontal-tab-in-headers.patch
 
 BuildRequires:  ruby-devel
 
@@ -46,6 +41,8 @@ a proxy server, and a virtual-host server.
 %{gemdir}
 
 %changelog
+* Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.9.1-1
+- Upgrade to 1.9.1
 * Mon Sep 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-4
 - Build gems properly
 * Tue Sep 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-3

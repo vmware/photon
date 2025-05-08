@@ -4,7 +4,7 @@
 
 Name: rubygem-rest-client
 Version:        2.1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A simple HTTP and REST client for Ruby, inspired by the Sinatra microframework style of specifying actions: get, put, post, delete.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -50,6 +50,8 @@ ln -srv %{buildroot}%{gemdir}/bin/restclient %{buildroot}/%{_bindir}/restclient
 %{_bindir}/restclient
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.1.0-7
+- Spec bump with ruby upgrade
 * Tue Mar 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.0-6
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.1.0-5

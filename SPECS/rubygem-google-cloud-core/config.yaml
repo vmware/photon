@@ -1,6 +1,6 @@
 sources:
-- archive: google-cloud-core-1.7.1.gem
-  archive_sha512sum: 308545210f816438d6d7abdbf61bac72084bb6c9f2c7b870fd3dde748c742f6da7011ec18a9425a092b89c917d7f2468a2c326b9e66ec55176676878ed4c2385
+- archive: google-cloud-core-1.8.0.gem
+  archive_sha512sum: 5c51c1b400af953511326a9e327040f88bc93942276c69f693619f9fc8337e18cb4067cb26646db3b9893c2ff4d6e33ff0ddb3cc530d8dbc42df8cb963ec52bd
   skip_validation: true
   spdx:
     package:

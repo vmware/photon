@@ -3,7 +3,7 @@
 %define gem_name trollop
 Name:           rubygem-trollop
 Version:        2.9.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Commandline option parser for Ruby
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.9.10-4
+- Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.10-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.9.10-2

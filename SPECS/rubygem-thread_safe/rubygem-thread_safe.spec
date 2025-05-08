@@ -4,7 +4,7 @@
 
 Name: rubygem-thread_safe
 Version:        0.3.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Thread safe programming support for Ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -36,6 +36,8 @@ A collection of data structures and utilities to make thread-safe programming in
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.3.6-5
+- Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3.6-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.3.6-3

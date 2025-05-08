@@ -3,8 +3,8 @@
 %global gem_name serverengine
 
 Name: rubygem-serverengine
-Version:        2.3.0
-Release:        3%{?dist}
+Version:        2.4.0
+Release:        1%{?dist}
 Summary:        A framework to implement robust multiprocess servers like Unicorn
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ A framework to implement robust multiprocess servers like Unicorn.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.4.0-1
+- Upgrade to 2.4.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.0-2

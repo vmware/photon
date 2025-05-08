@@ -3,8 +3,8 @@
 %global gem_name http
 
 Name:           rubygem-http
-Version:        4.4.1
-Release:        3%{?dist}
+Version:        5.2.0
+Release:        1%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -51,6 +51,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.2.0-1
+- Upgrade to 5.2.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.1-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.4.1-2

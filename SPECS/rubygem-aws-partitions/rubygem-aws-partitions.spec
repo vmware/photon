@@ -3,8 +3,8 @@
 %global gem_name aws-partitions
 
 Name: rubygem-aws-partitions
-Version:        1.654.0
-Release:        3%{?dist}
+Version:        1.1098.0
+Release:        1%{?dist}
 Summary:        Provides interfaces to enumerate AWS partitions, regions & services.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -36,6 +36,8 @@ Provides interfaces to enumerate AWS partitions, regions, and services.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1098.0-1
+- Upgrade to 1.1098.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.654.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.654.0-2

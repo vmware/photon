@@ -1,0 +1,12 @@
+sources:
+- archive: unicode-emoji-4.0.4.gem
+  archive_sha512sum: d189ee50a2c0d79a9639e28f4c198ea37662d9ccc585d9bbe93cbba69d282fa5474d7187ddd83f14525f5f24fba436b1f77d0afe8bad673b956a8bcb6de1baee
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A Ruby gem for working with Unicode Emoji characters.'
+      home_page: https://rubygems.org/gems/unicode-emoji
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Unicode Emoji characters api for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

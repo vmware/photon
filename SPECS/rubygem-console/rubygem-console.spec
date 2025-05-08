@@ -4,8 +4,8 @@
 
 Summary:        Beautiful logging for Ruby.
 Name:           rubygem-console
-Version:        1.16.2
-Release:        4%{?dist}
+Version:        1.30.2
+Release:        1%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,9 +17,11 @@ Source1: license.txt
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-fiber-local
+BuildRequires: rubygem-fiber-annotation
 
 Requires: ruby
 Requires: rubygem-fiber-local
+Requires: rubygem-fiber-annotation
 
 BuildArch: noarch
 
@@ -40,6 +42,8 @@ Provides beautiful console logging for Ruby applications. Implements fast, buffe
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.30.2-1
+- Upgrade to 1.30.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.2-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.16.2-3

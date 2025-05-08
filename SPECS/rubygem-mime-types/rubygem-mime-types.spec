@@ -3,8 +3,8 @@
 %global gem_name mime-types
 
 Name: rubygem-mime-types
-Version:        3.4.1
-Release:        3%{?dist}
+Version:        3.7.0
+Release:        1%{?dist}
 Summary:        The mime-types library provides a library and registry for information about MIME content type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ There are a number of other smaller changes described in the History file.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.7.0-1
+- Upgrade to 3.7.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.1-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.1-2

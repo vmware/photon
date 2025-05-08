@@ -1,0 +1,12 @@
+sources:
+- archive: fiber-annotation-0.2.0.gem
+  archive_sha512sum: 4a0d51c753e1c6ad47881302c643821892a5f544aa8a73b64555a0d545c8c9780ef3af88580dbb8452732cae6c6ba24406cd41e87a256c4b2f9f4077357cfbbe
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A Ruby gem for annotating fibers with metadata.'
+      home_page: https://rubygems.org/gems/fiber-annotation
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A Ruby gem for annotating fibers with metadata.
+      supplier: 'Organization: Broadcom, Inc.'

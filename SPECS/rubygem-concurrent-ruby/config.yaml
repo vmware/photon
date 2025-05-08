@@ -1,13 +1,13 @@
 sources:
-- archive: concurrent-ruby-1.1.10.gem
-  archive_sha512sum: ed01d65d79e6ed2987321f4665cb5f7c3fcd701029a33e68da0feb0cd6cb2682cef619566a3bd0996db207becb0425d77967b66ee66d775a489b1317e78807ab
+- archive: concurrent-ruby-1.3.4.gem
+  archive_sha512sum: 3a89107da7eb9631f93b54e881b51c2992299179bc9ba839d71572df254d5a0b561e6a928947ba3adadd931439ae17f071676ed1e110370aa370435997239b0d
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Modern concurrency tools including agents, futures, promises,
         thread pools, actors, supervisors, and more. Inspired by Erlang, Clojure,
         Go, JavaScript, actors, and classic concurrency patterns. '
-      home_page: https://rubygems.org/gems/concurrent-ruby/versions/1.1.10
+      home_page: https://rubygems.org/gems/concurrent-ruby/versions/1.3.4
       license_concluded: MIT AND CC0-1.0
       license_declared: MIT AND CC0-1.0
       short_summary: Modern concurrency tools for Rails framework.

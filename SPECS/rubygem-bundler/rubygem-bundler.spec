@@ -2,8 +2,8 @@
 %global gem_name bundler
 
 Name:           rubygem-bundler
-Version:        2.3.24
-Release:        5%{?dist}
+Version:        2.6.8
+Release:        1%{?dist}
 Summary:        manages an application's dependencies
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ across many machines, systematically and repeatably.
 %{gem_base}
 
 %changelog
+* Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.6.8-1
+- Upgrade to 2.6.8
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.24-5
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.24-4

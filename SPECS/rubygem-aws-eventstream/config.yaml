@@ -1,12 +1,12 @@
 sources:
-- archive: aws-eventstream-1.2.0.gem
-  archive_sha512sum: d7d8a318523b1d4c4d950861f8fb4fb6b65a76b8df2bd788ca1d81d40f7a1d1fd91ad9db106892b508d348fd7f8678aa387b43ac390bcd75f8fb03d081c3e60b
+- archive: aws-eventstream-1.3.2.gem
+  archive_sha512sum: 1400e5c7a546c17a7707c722aaee90ba7b726ecc5423b76a220e3e9ac1636ea095d33eda0697b31c340d5c20e3e51bd68e263cc10b45a62913245e296da1a1b8
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Amazon Web Services event stream library. Decodes and
         encodes binary stream under `vnd.amazon.event-stream` content-type '
-      home_page: https://rubygems.org/gems/aws-eventstream/versions/1.2.0
+      home_page: https://rubygems.org/gems/aws-eventstream/versions/1.3.2
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Amazon Web Services event stream library.

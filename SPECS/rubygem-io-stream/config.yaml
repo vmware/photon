@@ -1,0 +1,12 @@
+sources:
+- archive: io-stream-0.6.1.gem
+  archive_sha512sum: 9aa0c98909e44c3ee3c75e1e6eb931887a032c05bf7ed27b46fe299cdf120dd243345ac6fd7868fb2c56aced615e06334c68e596c0f1cdcbc78eb73637a5e0a8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Simple IO stream utilities for Ruby.'
+      home_page: https://rubygems.org/gems/io-stream
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Simple IO stream utilities for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

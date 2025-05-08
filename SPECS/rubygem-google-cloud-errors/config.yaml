@@ -1,6 +1,6 @@
 sources:
-- archive: google-cloud-errors-1.4.0.gem
-  archive_sha512sum: 3c12e59795abc2e3aee62b463fa7ab70deca6b5cecaa919b925bcb03ed7a1e67455e40a5bfb9c1380aae16d5a5e9bd9a125d0ef8d346aa54c07545dc32b8a042
+- archive: google-cloud-errors-1.5.0.gem
+  archive_sha512sum: 6d1829eb05dbb3f4514b38857ff85046d8c0c544327733f709924d33a891a0ca38ad059acf66df84a0d9e78a250080e333d85355959180f69660ab704ea8cd45
   skip_validation: true
   spdx:
     package:

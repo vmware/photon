@@ -5,7 +5,7 @@
 Summary:        Adds support for calculating Cyclic Redundancy Check (CRC) to the Digest module.
 Name:           rubygem-digest-crc
 Version:        0.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -40,5 +40,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.7.0-2
+- Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.0-1
 - Initial version.

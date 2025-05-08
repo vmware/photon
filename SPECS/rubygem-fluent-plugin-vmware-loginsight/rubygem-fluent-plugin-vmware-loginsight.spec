@@ -3,8 +3,8 @@
 %global gem_name fluent-plugin-vmware-loginsight
 
 Name: rubygem-fluent-plugin-vmware-loginsight
-Version:        1.3.0
-Release:        3%{?dist}
+Version:        1.4.2
+Release:        1%{?dist}
 Summary:        Fluent output plugin to forward logs to VMware Log Insight.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ Fluent output plugin to forward logs to VMware Log Insight.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.2-1
+- Upgrade to 1.4.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.0-2

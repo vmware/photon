@@ -1,0 +1,12 @@
+sources:
+- archive: fiber-storage-1.0.1.gem
+  archive_sha512sum: a7297c7c5827de88b599e71bfb64ab0d49ad107e3781cc403b69b1009083bf3bc355a5645c58e1acd4b356903280aaae48ab0492e777adfbfa6768f2ea06a236
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ruby Gem for Fiber Storage.'
+      home_page: https://rubygems.org/gems/fiber-storage
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Ruby Gem for Fiber Storage.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,6 +1,6 @@
 sources:
-- archive: traces-0.11.1.gem
-  archive_sha512sum: 1be8f690d6074b4f9c4f0df8465e9f1ebf059d89a9ba36579fa5e011d496244350f947d65d980a3b3d9f97b7f8eab069a97d24e6d4d67c6abad8d34c72b65b3c
+- archive: traces-0.15.2.gem
+  archive_sha512sum: 95147024783dc94c03bd86c2e6e48d494f9ce528d88d72c7bdf67bb9e7a5539dc67f64659b90ffb550b00835aa689cc3c920fac6124b86f5783f148044361b63
   skip_validation: true
   spdx:
     package:

@@ -5,7 +5,7 @@
 Summary:        DSL for nested generic schemas with inheritance and refining.
 Name:           rubygem-declarative
 Version:        0.0.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,5 +41,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.0.20-2
+- Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.0.20-1
 - Initial version.

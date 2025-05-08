@@ -1,11 +1,11 @@
 sources:
-- archive: protocol-http-0.24.0.gem
-  archive_sha512sum: 0822232df95723e73fa6bfb61a90509d2ca70b725692770c2bbe945f97d4900402ae36ea63b9651cde3a6860dfe970604fafb747e734a97c8b11218d9275815b
+- archive: protocol-http-0.50.1.gem
+  archive_sha512sum: e1e7b461564b17130d953c1a9d23c87546fc467384e62f97c7d37492c240c60f905844301f23c6eeffa5ed8f764ace3c46df0a2c1833fa877c1d317cfa8fc095
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Provides abstractions for working with the HTTP protocol. '
-      home_page: https://rubygems.org/gems/protocol-http/versions/0.24.0
+      home_page: https://rubygems.org/gems/protocol-http/versions/0.50.1
       license_concluded: MIT
       license_declared: MIT
       short_summary: Provides abstractions to handle HTTP protocols.

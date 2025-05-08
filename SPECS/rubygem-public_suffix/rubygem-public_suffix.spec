@@ -3,8 +3,8 @@
 %global gem_name public_suffix
 
 Name: rubygem-public_suffix
-Version:        5.0.0
-Release:        3%{?dist}
+Version:        6.0.2
+Release:        1%{?dist}
 Summary:        PublicSuffix can parse and decompose a domain name into top level domain, domain and subdomains.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ PublicSuffix can parse and decompose a domain name into top level domain, domain
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.0.2-1
+- Upgrade to 6.0.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.0-2

@@ -3,8 +3,8 @@
 %global gem_name addressable
 
 Name: rubygem-addressable
-Version:        2.8.1
-Release:        3%{?dist}
+Version:        2.8.7
+Release:        1%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -21,7 +21,7 @@ BuildArch: noarch
 BuildRequires: ruby-devel
 BuildRequires: rubygem-public_suffix
 
-Requires: rubygem-public_suffix >= 2.0.2, rubygem-public_suffix < 5.0.1
+Requires: rubygem-public_suffix >= 2.0.2, rubygem-public_suffix < 6.0.3
 Requires: ruby
 
 %description
@@ -42,6 +42,8 @@ It more closely conforms to the relevant RFCs and adds support for IRIs and URI 
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.7-1
+- Upgrade to 2.8.7
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.1-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.1-2

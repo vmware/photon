@@ -1,12 +1,12 @@
 sources:
-- archive: aws-partitions-1.654.0.gem
-  archive_sha512sum: 8c6b38c5facfb7dc4c915daba3f160f21e277998aa4887edbc20037b20ca356cd9133057407833c34a08cb76495ea61dd61fb7c24e9e43a8f1626a98cf1c59d3
+- archive: aws-partitions-1.1098.0.gem
+  archive_sha512sum: c166c6b6bf3b4450874085d389db4c78ab946aea9ec6b04d3dc6bfdf00f69ef18611c642a0b5ada24763cbd25773746028a077e058c20930bf1e0f9b7eca56a5
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Provides interfaces to enumerate AWS partitions, regions,
         and services. '
-      home_page: https://rubygems.org/gems/aws-partitions/versions/1.654.0
+      home_page: https://rubygems.org/gems/aws-partitions/versions/1.1098.0
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Provides interfaces to enumerate AWS partitions, regions & services.

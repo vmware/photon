@@ -5,7 +5,7 @@
 Name:           rubygem-syslog_protocol
 Summary:        Syslog Protocol
 Version:        0.9.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -38,6 +38,8 @@ Syslog protocol parser and generator
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.9.2-5
+- Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.2-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.9.2-3

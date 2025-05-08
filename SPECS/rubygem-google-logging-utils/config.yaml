@@ -1,6 +1,6 @@
 sources:
-- archive: google-logging-utils-0.1.0.gem
-  archive_sha512sum: 023f9111c4df6845cc08e4f8b011bd63d1987862c4bc7ab24d00b1a7e1e6e3ca011d65977b5842224f3988d376548cc0c511487babe29555bd84b1cf9aeb8e11
+- archive: google-logging-utils-0.2.0.gem
+  archive_sha512sum: 02abb5eb49bae0a7bf091d687795a678e4ee70da7e34bc48a4e24eeebcb5ae813f3d4e89228f292ff2bd997dcff364f748016ee9dc8ce107fa7dd781dd39f357
   skip_validation: true
   spdx:
     package:

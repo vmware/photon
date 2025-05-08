@@ -4,7 +4,7 @@
 
 Name:           rubygem-multi_json
 Version:        1.15.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Ruby Gem for JSON parsing and encoding
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ MultiJson is a library that provides a common interface to several JSON implemen
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.0-4
+- Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.0-2

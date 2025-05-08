@@ -1,11 +1,11 @@
 sources:
-- archive: protocol-http1-0.15.1.gem
-  archive_sha512sum: 7ecebe21b9d1177f1d0c232ce2d1eab17be0498eaeeab27e9083bea46038378d72cf9f55d8f2bb603ec93545ba7fd36cb9b5ecd54371ef3a9a9f07adeab77c55
+- archive: protocol-http1-0.34.0.gem
+  archive_sha512sum: 6d2ee4a1bd99325d9c92ca961f1f3b6fcc2f7b3abfe73fa577a87db9a5c2c80816b6697fcf916ebe38a6bb035a850d6a681c4c468f7c5b362491e865a5e3cf9e
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Provides a low-level implementation of the HTTP/1 protocol. '
-      home_page: https://rubygems.org/gems/protocol-http1/versions/0.15.1
+      home_page: https://rubygems.org/gems/protocol-http1/versions/0.34.0
       license_concluded: MIT
       license_declared: MIT
       short_summary: A low level implementation of the HTTP/1 protocol.

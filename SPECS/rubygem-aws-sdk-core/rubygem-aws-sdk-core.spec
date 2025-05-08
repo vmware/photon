@@ -3,8 +3,8 @@
 %global gem_name aws-sdk-core
 
 Name: rubygem-aws-sdk-core
-Version:        3.166.0
-Release:        3%{?dist}
+Version:        3.223.0
+Release:        1%{?dist}
 Summary:        Provides API clients for AWS.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ Provides API clients for AWS. This gem is part of the official AWS SDK for Ruby.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.223.0-1
+- Upgrade to 3.223.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.166.0-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.166.0-2

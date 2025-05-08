@@ -1,22 +1,12 @@
 sources:
-- archive: ffi-1.15.5.gem
-  archive_sha512sum: 074df34edffc7038ab08199350a97b32280d61ea15dd85d459b008bd3363ec5403b4e533621c8e460e5288f01fec944bff9b149851b819e85bab75ad2362227c
+- archive: ffi-1.17.2.gem
+  archive_sha512sum: 61fd30c546d9d4a695dd3954eba205cd6ddf36f2c67eb2f823591a6ece540d2d11fcc792704218d969d21bf7111e36bc54f40e5d9eeb1be4fdb06274a17bec13
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Ruby FFI library '
-      home_page: https://rubygems.org/gems/ffi/versions/1.15.5
-      license_concluded: FSFUL AND FSFAP AND GPL-3.0-or-later AND GPL-3.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later WITH Libtool-exception AND CC-PDDC
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND MIT AND FSFULLRWD
-        AND GPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-only AND GPL-3.0-only AND
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
-        WITH Autoconf-exception-2.0 AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
-      license_declared: FSFUL AND FSFAP AND GPL-3.0-or-later AND GPL-3.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later WITH Libtool-exception AND CC-PDDC
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND MIT AND FSFULLRWD
-        AND GPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-only AND GPL-3.0-only AND
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
-        WITH Autoconf-exception-2.0 AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+      home_page: https://rubygems.org/gems/ffi/versions/1.17.2
+      license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND BSD-3-Clause AND BSD-Source-Code AND CC-PDDC AND FSFAP AND FSFUL AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND X11
+      license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND BSD-3-Clause AND BSD-Source-Code AND CC-PDDC AND FSFAP AND FSFUL AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND X11
       short_summary: Ruby FFI library
       supplier: 'Organization: Broadcom, Inc.'

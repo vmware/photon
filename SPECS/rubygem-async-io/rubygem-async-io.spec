@@ -1,48 +1,33 @@
-%global debug_package %{nil}
-%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
-%global gem_name async-io
-
-Name: rubygem-async-io
-Version:        1.34.0
-Release:        5%{?dist}
+Name:           rubygem-async-io
 Summary:        Provides support for asynchonous TCP, UDP, UNIX and SSL sockets.
+Version:        1.34.0
+Release:        6%{?dist}
 Group:          Development/Libraries
+URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 
-Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-
-Source1: license.txt
-%include %{SOURCE1}
+Source0: license.txt
+%include %{SOURCE0}
 
 BuildArch: noarch
 
-BuildRequires: ruby-devel
-BuildRequires: rubygem-async
-BuildRequires: rubygem-fiber-local
-
-Requires: rubygem-async >= 1.14.0, rubygem-async < 2.2.2
-Requires: rubygem-fiber-local
-Requires: ruby
+# Keep this list alphabetically sorted
+Requires: rubygem-io-endpoint
+Requires: rubygem-io-stream
 
 %description
-Async::IO provides builds on async and provides asynchronous wrappers for IO, Socket, and related classes.
+Metapackage to install rubygem-async-io
 
 %prep
-%gem_unpack %{SOURCE0}
-
 %build
-%gem_build
-
-%install
-%gem_install
 
 %files
-%defattr(-,root,root,-)
-%{gemdir}
+%defattr(-,root,root,0755)
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-6
+- Changing to metapackage for rubygem-async-io
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.0-5
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-4

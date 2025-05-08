@@ -4,8 +4,8 @@
 
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
-Version:        3.2.4
-Release:        5%{?dist}
+Version:        3.3.0
+Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -49,6 +49,8 @@ popd
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.3.0-1
+- Upgrade to 3.3.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.4-5
 - Build gems properly
 * Wed Jan 22 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.4-4

@@ -3,8 +3,8 @@
 %global gem_name unf
 
 Name: rubygem-unf
-Version:        0.1.4
-Release:        4%{?dist}
+Version:        0.2.0
+Release:        1%{?dist}
 Summary:        This is a wrapper library to bring Unicode Normalization Form support to Ruby/JRuby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ This is a wrapper library to bring Unicode Normalization Form support to Ruby/JR
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.0-1
+- Upgrade to 0.2.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1.4-4
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.1.4-3

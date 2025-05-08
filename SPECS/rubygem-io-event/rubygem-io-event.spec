@@ -2,8 +2,8 @@
 %global gem_name io-event
 
 Name:           rubygem-io-event
-Version:        1.1.0
-Release:        5%{?dist}
+Version:        1.10.0
+Release:        1%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gem_base}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.10.0-1
+- Upgrade to 1.10.0
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-5
 - Release bump for SRP compliance
 * Wed Sep 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-4

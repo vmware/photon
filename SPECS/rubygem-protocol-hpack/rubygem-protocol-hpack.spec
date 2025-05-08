@@ -3,8 +3,8 @@
 %global gem_name protocol-hpack
 
 Name: rubygem-protocol-hpack
-Version:        1.4.2
-Release:        3%{?dist}
+Version:        1.5.1
+Release:        1%{?dist}
 Summary:        A compresssor and decompressor for HTTP 2.0 HPACK.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ Provides a compressor and decompressor for HTTP 2.0 headers, HPACK, as defined b
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.5.1-1
+- Upgrade to 1.5.1
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.2-2

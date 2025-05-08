@@ -3,7 +3,7 @@
 
 Name:           rubygem-lru_redux
 Version:        1.1.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        An efficient, thread safe implementation of an LRU cache.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ An efficient, thread safe implementation of an LRU cache.
 %{gem_base}
 
 %changelog
+* Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-8
+- Spec bump with ruby upgrade
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.0-7
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-6

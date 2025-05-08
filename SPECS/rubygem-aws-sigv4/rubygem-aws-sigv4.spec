@@ -3,8 +3,8 @@
 %global gem_name aws-sigv4
 
 Name: rubygem-aws-sigv4
-Version:        1.5.2
-Release:        3%{?dist}
+Version:        1.11.0
+Release:        1%{?dist}
 Summary:        Amazon Web Services Signature Version 4 signing library.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ Generates sigv4 signature for HTTP requests.
 %{gemdir}
 
 %changelog
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.11.0-1
+- Upgrade to 1.11.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.2-3
 - Build gems properly
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.5.2-2
