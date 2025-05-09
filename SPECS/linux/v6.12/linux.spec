@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        14%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -356,10 +356,10 @@ BuildRequires:  gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre):    (coreutils or coreutils-selinux)
-Requires(preun):  (coreutils or coreutils-selinux)
-Requires(post):   (coreutils or coreutils-selinux)
-Requires(postun): (coreutils or coreutils-selinux)
+Requires(pre):    coreutils
+Requires(preun):  coreutils
+Requires(post):   coreutils
+Requires(postun): coreutils
 
 Obsoletes:  linux-aws
 Obsoletes:  linux-secure
@@ -872,6 +872,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.1-14
+- Require coreutils and remove xml-security-c-devel from build requires
 * Wed Apr 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.1-13
 - Move rsa-pkcs1pad encrypt/decrypt functions out of canister boundry
 - Fail rsa-pkcs1pad encrypt/decrypt in fips mode

@@ -35,7 +35,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -356,10 +356,10 @@ BuildRequires:  gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre):    (coreutils or coreutils-selinux)
-Requires(preun):  (coreutils or coreutils-selinux)
-Requires(post):   (coreutils or coreutils-selinux)
-Requires(postun): (coreutils or coreutils-selinux)
+Requires(pre):    coreutils
+Requires(preun):  coreutils
+Requires(post):   coreutils
+Requires(postun): coreutils
 
 Obsoletes:  linux-aws
 Obsoletes:  linux-secure
@@ -845,6 +845,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.83-9
+- Require coreutils and remove xml-security-c-devel from build requires
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.83-8
 - Release bump for SRP compliance
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.83-7

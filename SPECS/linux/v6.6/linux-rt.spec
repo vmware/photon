@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.6.30
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -197,7 +197,6 @@ BuildRequires:  kbd
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
-BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet-devel
 BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
@@ -218,10 +217,10 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre):    (coreutils or coreutils-selinux)
-Requires(preun):  (coreutils or coreutils-selinux)
-Requires(post):   (coreutils or coreutils-selinux)
-Requires(postun): (coreutils or coreutils-selinux)
+Requires(pre):    coreutils
+Requires(preun):  coreutils
+Requires(post):   coreutils
+Requires(postun): coreutils
 
 %description
 The Linux package contains the Linux kernel with RT (real-time)
@@ -469,6 +468,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.6.30-5
+- Require coreutils and remove xml-security-c-devel from build requires
 * Wed Mar 19 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.6.30-4
 - Include SBAT and kexec patches
 * Tue Mar 18 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.6.30-3
