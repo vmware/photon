@@ -42,7 +42,6 @@ Header files and shared library symlinks for the MPC library.
 %install
 %make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
-%make_build check
 
 %check
 %make_build check
