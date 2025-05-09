@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -215,7 +215,6 @@ BuildRequires: kbd
 BuildRequires: kmod-devel
 BuildRequires: glib-devel
 BuildRequires: xerces-c-devel
-BuildRequires: xml-security-c-devel
 BuildRequires: libdnet-devel
 BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
@@ -233,10 +232,10 @@ BuildRequires: gdb
 
 Requires: kmod
 Requires: filesystem
-Requires(pre):    (coreutils or coreutils-selinux)
-Requires(preun):  (coreutils or coreutils-selinux)
-Requires(post):   (coreutils or coreutils-selinux)
-Requires(postun): (coreutils or coreutils-selinux)
+Requires(pre):    coreutils
+Requires(preun):  coreutils
+Requires(post):   coreutils
+Requires(postun): coreutils
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
@@ -445,6 +444,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.1-2
+- Require coreutils and remove xml-security-c-devel from build requires
 * Mon Dec 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.1-1
 - Upgrade to version 6.12.x.
 * Wed Oct 16 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.6.28-2
