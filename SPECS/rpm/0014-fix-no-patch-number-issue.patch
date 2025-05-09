@@ -1,0 +1,75 @@
+From 02b8d8dccc0f045b0ebf81785cf6ad1056cf550e Mon Sep 17 00:00:00 2001
+From: Panu Matilainen <pmatilai@redhat.com>
+Date: Wed, 30 Mar 2022 11:02:23 +0300
+Subject: [PATCH] Issue warning on implicit "%patch zero" variants, sanitize
+ semantics
+
+Supporting `%patch` with no number specified, in particular combinations
+like `%patch 1` meaning patches 0 and 1 (!), prevents further progress
+in this area. Dropping support for these is a case of sawing off a limb
+to save the patient, but there's enough history to numberless `%patch`
+that we need to take the long route of deprecating it first.
+
+To be exact:
+- we now issue a warning on `%patch` where no patch numbers have been
+  specified, but assume it to mean Patch0 for now
+- `%patch N' applies patch N and nothing else
+
+While at it, avoid an unnecessary strdup() and a dangling buf after
+free.
+---
+ build/parsePrep.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/build/parsePrep.c b/build/parsePrep.c
+index 1a3a32ab0f..9b6b30445a 100644
+--- a/build/parsePrep.c
++++ b/build/parsePrep.c
+@@ -383,9 +383,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
+  * - %patchN is equal to %patch -P\<N\>
+  * - -P\<N\> -P\<N+1\>... can be used to apply several patch on a single line
+  * - Any trailing arguments are treated as patch numbers
+- * - Any combination of the above, except unless at least one -P is specified,
+- *   %patch is treated as "numberless patch" so that "%patch 1" actually tries
+- *   to pull in numberless "Patch:" and numbered "Patch1:".
++ * - Any combination of the above
+  *
+  * @param spec		build info
+  * @param line		current line from spec file
+@@ -423,15 +421,8 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+     /* Convert %patchN to %patch -PN to simplify further processing */
+     if (! strchr(" \t\n", line[6])) {
+ 	rasprintf(&buf, "%%patch -P %s", line + 6);
+-    } else {
+-	/* %patch without a number refers to patch 0 */
+-	if (strstr(line+6, " -P") == NULL)
+-	    rasprintf(&buf, "%%patch -P %d %s", 0, line + 6);
+-	else
+-	    buf = xstrdup(line);
+     }
+-    poptParseArgvString(buf, &argc, &argv);
+-    free(buf);
++    poptParseArgvString(buf ? buf : line, &argc, &argv);
+ 
+     /* 
+      * Grab all -P<N> numbers for later processing. Stored as strings
+@@ -462,6 +453,11 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+     /* Any trailing arguments are treated as patch numbers */
+     argvAppend(&patchnums, (ARGV_const_t) poptGetArgs(optCon));
+ 
++    if (argvCount(patchnums) == 0) {
++	rpmlog(RPMLOG_WARNING, _("Patch number not specified: %s\n"), line);
++	argvAdd(&patchnums, "0");
++    }
++
+     /* Convert to number, generate patch command and append to %prep script */
+     for (patch = patchnums; *patch; patch++) {
+ 	uint32_t pnum;
+@@ -487,6 +483,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+     free(opt_d);
+     free(opt_o);
+     free(argv);
++    free(buf);
+     poptFreeContext(optCon);
+     return rc;
+ }
