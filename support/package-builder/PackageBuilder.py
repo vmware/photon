@@ -164,10 +164,9 @@ class PackageBuilder(object):
                 f"Installing the build time dependent packages for {self.package} ..."
             )
             for pkg in listDependentPackages:
-                (
-                    pkgName,
-                    pkgVer,
-                ) = StringUtils.splitPackageNameAndVersion(pkg)
+                pkgName, pkgVer = StringUtils.splitPackageNameAndVersion(
+                    pkg
+                )
                 self._installPackage(
                     pkgUtils,
                     pkgName,
@@ -179,15 +178,13 @@ class PackageBuilder(object):
                 )
             for pkg in listTestPackages:
                 flag = False
-                (
-                    pkgName,
-                    pkgVer,
-                ) = StringUtils.splitPackageNameAndVersion(pkg)
+                pkgName, pkgVer = StringUtils.splitPackageNameAndVersion(
+                    pkg
+                )
                 for depPkg in listDependentPackages:
-                    (
-                        depPackageName,
-                        depPackageVersion,
-                    ) = StringUtils.splitPackageNameAndVersion(depPkg)
+                    depPackageName, depPackageVersion = (
+                        StringUtils.splitPackageNameAndVersion(depPkg)
+                    )
                     if depPackageName == pkgName:
                         flag = True
                         break
@@ -271,7 +268,7 @@ class PackageBuilder(object):
             self.logger.error(
                 f"No rpm file found for package: {package}-{pkgVer}"
             )
-            raise Exception("ERROR: Missing rpm file: {package}-{pkgVer}")
+            raise Exception(f"ERROR: Missing rpm file: {package}-{pkgVer}")
 
         specificRPM = os.path.basename(rpmfile.replace(".rpm", ""))
         if specificRPM in listInstalledRPMs:
