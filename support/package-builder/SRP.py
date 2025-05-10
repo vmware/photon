@@ -21,11 +21,15 @@ GRADLE_REMOTE_PREFIX = "/artifactory/plugins-gradle-org-m2/"
 
 
 class SRP(object):
+    msg_printed = False
 
     def __init__(self, pkg, logger):
         self.srpcli = constants.srpcli
         if not self.srpcli:
+            if SRP.msg_printed:
+                return
             logger.info("SRPCLI is not provided. SRP provenance will not be generated.")
+            SRP.msg_printed = True
             return
 
         self.pkg = pkg
