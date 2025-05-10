@@ -33,7 +33,6 @@ class PackageBuilder(object):
             "binutils",
             "mpfr",
             "mpc",
-            "gcc",
             "ncurses",
             "util-linux",
             "groff",
@@ -158,19 +157,18 @@ class PackageBuilder(object):
 
         if listDependentPackages:
             self.logger.debug(
-                f"Installing the build time dependent packages for {arch}"
+                f"Installing the build time dependent packages for {self.package} ..."
             )
             for pkg in listDependentPackages:
                 (
-                    packageName,
-                    packageVersion,
+                    pkgName,
+                    pkgVer,
                 ) = StringUtils.splitPackageNameAndVersion(pkg)
                 self._installPackage(
                     pkgUtils,
-                    packageName,
-                    packageVersion,
+                    pkgName,
+                    pkgVer,
                     self.sandbox,
-                    self.logPath,
                     listInstalledPackages,
                     listInstalledRPMs,
                     arch,
@@ -178,24 +176,23 @@ class PackageBuilder(object):
             for pkg in listTestPackages:
                 flag = False
                 (
-                    packageName,
-                    packageVersion,
+                    pkgName,
+                    pkgVer,
                 ) = StringUtils.splitPackageNameAndVersion(pkg)
                 for depPkg in listDependentPackages:
                     (
                         depPackageName,
                         depPackageVersion,
                     ) = StringUtils.splitPackageNameAndVersion(depPkg)
-                    if depPackageName == packageName:
+                    if depPackageName == pkgName:
                         flag = True
                         break
                 if not flag:
                     self._installPackage(
                         pkgUtils,
-                        packageName,
-                        packageVersion,
+                        pkgName,
+                        pkgVer,
                         self.sandbox,
-                        self.logPath,
                         listInstalledPackages,
                         listInstalledRPMs,
                         arch,
@@ -256,89 +253,104 @@ class PackageBuilder(object):
         self,
         pkgUtils,
         package,
-        packageVersion,
+        pkgVer,
         sandbox,
-        destLogPath,
         listInstalledPackages,
         listInstalledRPMs,
         arch,
     ):
-        rpmfile = pkgUtils.findRPMFile(package, packageVersion, arch)
+        if package in pkgUtils.packagesToInstallInAOneShot:
+            return
+
+        rpmfile = pkgUtils.findRPMFile(package, pkgVer, arch)
         if rpmfile is None:
             self.logger.error(
-                "No rpm file found for package: " + package + "-" + packageVersion
+                f"No rpm file found for package: {package}-{pkgVer}"
             )
-            raise Exception("Missing rpm file")
+            raise Exception("ERROR: Missing rpm file: {package}-{pkgVer}")
+
         specificRPM = os.path.basename(rpmfile.replace(".rpm", ""))
-        pkg = self._findPackageNameAndVersionFromRPMFile(f"{package}-{packageVersion}")
-        if pkg in listInstalledPackages:
+        if specificRPM in listInstalledRPMs:
             return
-        # mark it as installed -  to avoid recursion
-        listInstalledPackages.append(pkg)
+
+        toInstall = {package: pkgVer}
+
+        specName = SPECS.getData().getSpecName(package)
+        pkgsInSpec = SPECS.getData().getRPMPackages(specName, pkgVer)
+
+        for p in listInstalledRPMs:
+            name, _ = StringUtils.splitPackageNameAndVersion(p)
+            if f"{name}-{pkgVer}.{arch}" in listInstalledRPMs:
+                continue
+            if (name in pkgsInSpec and
+                name not in pkgUtils.packagesToInstallInAOneShot):
+                toInstall[name] = pkgVer
+
+        # mark it as installed - to avoid recursion
         listInstalledRPMs.append(specificRPM)
-        self._installDependentRunTimePackages(
-            pkgUtils,
-            package,
-            packageVersion,
-            sandbox,
-            destLogPath,
-            listInstalledPackages,
-            listInstalledRPMs,
-            arch,
-        )
-        noDeps = False
-        if (
-            package in self.mapPackageToCycles
-            or package in self.listNodepsPackages
-            or package in constants.noDepsPackageList
-        ):
-            noDeps = True
-        pkgUtils.prepRPMforInstall(package, packageVersion, noDeps, destLogPath, arch)
+
+        for package, pkgVer in toInstall.items():
+            self._installDependentRunTimePackages(
+                pkgUtils,
+                package,
+                pkgVer,
+                sandbox,
+                listInstalledPackages,
+                listInstalledRPMs,
+                arch,
+            )
+            noDeps = False
+            if (
+                package in self.mapPackageToCycles
+                or package in self.listNodepsPackages
+                or package in constants.noDepsPackageList
+            ):
+                noDeps = True
+            pkgUtils.prepRPMforInstall(package, pkgVer, noDeps, arch)
 
     def _installDependentRunTimePackages(
         self,
         pkgUtils,
         package,
-        packageVersion,
+        pkgVer,
         sandbox,
-        destLogPath,
         listInstalledPackages,
         listInstalledRPMs,
         arch,
     ):
         listRunTimeDependentPackages = self._findRunTimeRequiredRPMPackages(
-            package, packageVersion, arch
+            package, pkgVer, arch
         )
-        if listRunTimeDependentPackages:
-            for pkg in listRunTimeDependentPackages:
-                if pkg in self.mapPackageToCycles:
-                    continue
-                (
-                    packageName,
-                    packageVersion,
-                ) = StringUtils.splitPackageNameAndVersion(pkg)
-                rpmfile = pkgUtils.findRPMFile(packageName, packageVersion, arch, True)
-                if rpmfile is None:
-                    self.logger.error(
-                        "No rpm file found for package: "
-                        + packageName
-                        + "-"
-                        + packageVersion
-                    )
-                    raise Exception("Missing rpm file")
-                latestPkgRPM = os.path.basename(rpmfile).replace(".rpm", "")
-                if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
-                    continue
-                self._installPackage(
-                    pkgUtils,
-                    packageName,
-                    packageVersion,
-                    sandbox,
-                    destLogPath,
-                    listInstalledPackages,
-                    listInstalledRPMs,
-                    arch,
+
+        if not listRunTimeDependentPackages:
+            return
+
+        for pkg in listRunTimeDependentPackages:
+            if pkg in self.mapPackageToCycles:
+                continue
+            (
+                pkgName,
+                pkgVer,
+            ) = StringUtils.splitPackageNameAndVersion(pkg)
+            rpmfile = pkgUtils.findRPMFile(pkgName, pkgVer, arch, True)
+            if rpmfile is None:
+                self.logger.error(
+                    "No rpm file found for package: "
+                    f"{pkgName}-{pkgVer}"
                 )
+                raise Exception(f"ERROR: Missing rpm file: {pkgName}-{pkgVer}")
+            pkgRPM = os.path.basename(rpmfile).replace(".rpm", "")
+            if pkgRPM in listInstalledRPMs:
+                continue
+            self._installPackage(
+                pkgUtils,
+                pkgName,
+                pkgVer,
+                sandbox,
+                listInstalledPackages,
+                listInstalledRPMs,
+                arch,
+            )
 
     def _findDependentPackagesAndInstalledRPM(self, sandbox, arch):
         listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(

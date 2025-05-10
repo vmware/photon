@@ -44,14 +44,16 @@ class PackageUtils(object):
         self.logfnvalue = None
 
     def prepRPMforInstall(
-        self, package, version, noDeps=False, destLogPath=None, arch=None
+        self, package, version, noDeps=False, arch=constants.currentArch
     ):
-        if not arch:
-            arch = constants.currentArch
+        if (package in self.packagesToInstallInAOneShot or
+            package in self.noDepsPackagesToInstallInAOneShot):
+            return
+
         rpmfile = self.findRPMFile(package, version, arch)
         if rpmfile is None:
             self.logger.error(f"No rpm file found for package: {package}")
-            raise Exception("Missing rpm file")
+            raise Exception(f"ERROR: Missing rpm file: {package}")
 
         rpmName = os.path.basename(rpmfile)
         # TODO: path from constants
