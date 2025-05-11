@@ -40,8 +40,8 @@ all:
 
 %:
 	@$(call with_pushd, \
-	python3 build.py -c $(CONF) -t "$@"; \
+	python3 build.py -c $(CONF) -t "$@" && \
 	if [[ "$@" != clean* ]]; then \
 		touch $(FIRST_PASS_MARKER); \
-	fi\
+	fi \
 	)
