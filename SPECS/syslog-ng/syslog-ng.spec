@@ -1,7 +1,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org
 Group:          System Environment/Daemons
@@ -17,6 +17,7 @@ Source2:        %{name}.service
 # can be removed after v >= 4.5.0
 # https://github.com/syslog-ng/syslog-ng/commit/dc64f0b6a7e79dd6fb27cf1f26b168e6a5a3f1db.patch
 Patch0: disable-example-modules.patch
+Patch1: CVE-2024-47619.patch
 
 Requires:       glib >= 2.68.4
 Requires:       openssl
@@ -182,6 +183,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Mon May 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-8
+- Fix CVE-2024-47619
 * Thu Jan 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-7
 - Disable example module building
 * Thu Apr 11 2024 Nitesh Kumar <nitesh-nk.kumar@brodcom.com> 4.3.1-6
