@@ -1,4 +1,4 @@
-From 0b0c3289100cbc4d9f496ba643b049598e222523 Mon Sep 17 00:00:00 2001
+From e405c8e8875c064f81577392484e83a1361335db Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 Date: Tue, 4 Mar 2025 15:21:43 +0000
 Subject: [PATCH] bpf: Allow RCU-protected lookups to happen from bh context
@@ -27,9 +27,9 @@ Link: https://lore.kernel.org/bpf/20210624160609.292325-5-toke@redhat.com
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  kernel/bpf/hashtab.c  | 18 ++++++++++++------
- kernel/bpf/helpers.c  |  6 +++---
+ kernel/bpf/helpers.c  |  9 ++++++---
  kernel/bpf/lpm_trie.c |  6 ++++--
- 3 files changed, 19 insertions(+), 11 deletions(-)
+ 3 files changed, 22 insertions(+), 11 deletions(-)
 
 diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
 index 4c7cab79d..213231b36 100644
@@ -96,33 +96,36 @@ index 4c7cab79d..213231b36 100644
  	key_size = map->key_size;
  
 diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index c5b4834a2..f41a96105 100644
+index d9d65bbaf..4f337bdcc 100644
 --- a/kernel/bpf/helpers.c
 +++ b/kernel/bpf/helpers.c
-@@ -29,7 +29,7 @@
+@@ -30,7 +30,8 @@
   */
  BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
  {
--	WARN_ON_ONCE(!rcu_read_lock_held());
-+	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++			!rcu_read_lock_bh_held());
  	return (unsigned long) map->ops->map_lookup_elem(map, key);
  }
  
-@@ -45,7 +45,7 @@ const struct bpf_func_proto bpf_map_lookup_elem_proto = {
+@@ -46,7 +47,8 @@ const struct bpf_func_proto bpf_map_lookup_elem_proto = {
  BPF_CALL_4(bpf_map_update_elem, struct bpf_map *, map, void *, key,
  	   void *, value, u64, flags)
  {
--	WARN_ON_ONCE(!rcu_read_lock_held());
-+	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++			!rcu_read_lock_bh_held());
  	return map->ops->map_update_elem(map, key, value, flags);
  }
  
-@@ -62,7 +62,7 @@ const struct bpf_func_proto bpf_map_update_elem_proto = {
+@@ -63,7 +65,8 @@ const struct bpf_func_proto bpf_map_update_elem_proto = {
  
  BPF_CALL_2(bpf_map_delete_elem, struct bpf_map *, map, void *, key)
  {
--	WARN_ON_ONCE(!rcu_read_lock_held());
-+	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+-	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held());
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
++			!rcu_read_lock_bh_held());
  	return map->ops->map_delete_elem(map, key);
  }
  
@@ -151,5 +154,5 @@ index d833d74c1..1ddac6dab 100644
  
  	if (!found)
 -- 
-2.40.4
+2.39.4
 

@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.236
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.237
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=835f10a8d3efb52094ef92aaba403a471143eabbb5da59ec2e26bea66840952bcc7f3f20056f1e1cf1277dcdb33b59e56c70a7aea05861aa9edf62b1508d0840
+%define sha512 linux=0fae2faf7b39cdadd988100171a26ca3877321a73200e91f91171ea263a8dd1443d84418cb6dfc268673069034e930ea33a762d21e26255deb56e22e2b8a1933
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -214,9 +214,6 @@ Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 # Fix CVE-2024-35937
 Patch123: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
 
-# Fix CVE-2024-56658
-Patch124: 0001-net-defer-final-struct-net-free-in-netns-dismantle.patch
-
 # Fix CVE-2025-21863
 Patch125: 0001-io_uring-prevent-opcode-speculation.patch
 
@@ -250,9 +247,6 @@ Patch146: 0001-tls-rx-simplify-async-wait.patch
 Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
 
-#Fix CVE-2024-49960
-Patch150: 0001-ext4-fix-timer-use-after-free-on-failed-mount.patch
-
 # Fix CVE-2024-26583
 Patch151: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
 
@@ -262,20 +256,8 @@ Patch152: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 # Fix CVE-2024-26589
 Patch153: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
-# Fix CVE-2023-1192
-Patch154: 0001-cifs-Fix-UAF-in-cifs_demultiplex_thread.patch
-
 # Fix CVE-2024-26904
 Patch155: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
-
-# Fix CVE-2024-41073
-Patch156: 0001-nvme-avoid-double-free-special-payload.patch
-
-# Fix CVE-2024-42322
-Patch157: 0001-ipvs-properly-dereference-pe-in-ip_vs_add_service.patch
-
-# Fix CVE-2024-24855
-Patch162: 0001-scsi-lpfc-Fix-a-possible-data-race-in-lpfc_unregiste.patch
 
 # Fix CVE-2024-44934
 Patch163: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
@@ -315,13 +297,9 @@ Patch178: 0001-drm-amd-display-added-NULL-check-at-start-of-dc_vali.patch
 
 # Fix CVE-2024-46816
 Patch179: 0001-drm-amd-display-handle-invalid-connector-indices.patch
-Patch180: 0001-drm-amd-display-Stop-amdgpu_dm-initialize-when-link-.patch
 
 # Fix CVE-2024-50143
 Patch181: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
-
-# Fix CVE-2024-50154
-Patch182: 0001-tcp-dccp-Don-t-use-timer_pending-in-reqsk_queue_unli.patch
 
 # Fix CVE-2024-50014
 Patch184: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
@@ -353,9 +331,6 @@ Patch194: 0001-nouveau-lock-the-client-object-tree.patch
 # Fix CVE-2024-26915
 Patch196: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
 
-# Fix CVE-2024-26928
-Patch197: smb-client-fix-potential-UAF-in-cifs_debug_files_pro.patch
-
 # Fix CVE-2024-35863
 Patch198: smb-client-fix-potential-UAF-in-is_valid_oplock_brea.patch
 
@@ -364,9 +339,6 @@ Patch199: smb-client-fix-potential-UAF-in-smb2_is_valid_lease_.patch
 
 # Fix CVE-2024-35865
 Patch200: smb-client-fix-potential-UAF-in-smb2_is_valid_oplock.patch
-
-# Fix CVE-2024-35867
-Patch201: smb-client-fix-potential-UAF-in-cifs_stats_proc_show.patch
 
 # Fix CVE-2024-35868
 Patch202: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
@@ -390,7 +362,6 @@ Patch209: 0004-uprobe-avoid-out-of-bounds-memory-access-of-fetching.patch
 
 # Fix CVE-2023-52621
 Patch210: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
-Patch211: 0006-bpf-Check-rcu_read_lock_trace_held-before-calling-bp.patch
 
 # Fix CVE-2024-35839
 Patch212: 0001-netfilter-nfnetlink_log-use-proper-helper-for-fetchi.patch
@@ -779,6 +750,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue May 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-1
+- Update to version 5.10.237
 * Tue Apr 29 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.236-2
 - Fix CVE-2024-26739
 * Mon Apr 28 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.236-1
