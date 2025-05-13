@@ -1,7 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.0.15
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       BSD
 URL:           http://redis.io
 Group:         Applications/Databases
@@ -15,6 +15,7 @@ Patch0: %{name}-conf.patch
 Patch1: 0001-CVE-2024-31227.patch
 Patch2: 0002-CVE-2024-31228.patch
 Patch3: 0003-CVE-2024-31449.patch
+Patch4: 0004-CVE-2024-46981.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -91,6 +92,8 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}.conf
 
 %changelog
+* Tue May 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 7.0.15-3
+- Fix CVE-2024-46981
 * Fri Oct 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.15-2
 - Fix CVE-2024-{31227, 31228, 31449}
 * Thu Jan 18 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 7.0.15-1
