@@ -1,7 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.2.6
-Release:       2%{?dist}
+Release:       3%{?dist}
 URL:           http://redis.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -15,6 +15,7 @@ Source2: license.txt
 %include %{SOURCE2}
 
 Patch0: %{name}-conf.patch
+Patch1: CVE-2024-46981.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -91,6 +92,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.sysusers
 
 %changelog
+* Tue May 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 7.2.6-3
+- Fix CVE-2024-46981
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.6-2
 - Release bump for SRP compliance
 * Fri Oct 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.6-1
