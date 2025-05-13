@@ -1,3 +1,5 @@
+# If 'security_hardening none' is removed,
+# ensure kpatch-build in kpatch is updated accordingly.
 %global security_hardening none
 %global __cmake_in_source_build 0
 

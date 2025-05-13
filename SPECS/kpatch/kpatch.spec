@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
-Version:        0.9.8
-Release:        6%{?dist}
+Version:        0.9.10
+Release:        1%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -9,29 +9,24 @@ Distribution:   Photon
 
 Source0: https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
 
-Source1:        scripts/auto_livepatch.sh
-Source2:        scripts/gen_livepatch.sh
-Source3:        scripts/README.txt
-Source4:        scripts/rpm/spec.file
+Source1:        utils/auto_livepatch
+Source2:        utils/gen_livepatch
+Source3:        utils/livepatch.sh
+Source4:        utils/README.txt
+Source5:        utils/rpm/livepatch_spec.template
+Source6:        utils/Dockerfile.ph5
+Source7:        utils/Dockerfile.ph4
+Source8:        utils/Dockerfile.ph3
 
-Source5: license.txt
-%include %{SOURCE5}
+Source9:        license.txt
+%include %{SOURCE9}
 
 BuildArch:      x86_64
 
-Patch0:         0001-Added-support-for-Photon-OS.patch
-Patch1:         0001-adding-option-to-set-description-field-of-module.patch
-Patch2:         0001-allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
-
-# Bug fix
-Patch3:         kpatch-build-ignore-init-version-timestamp-o.patch
-
+Patch0:         0001-adding-option-to-set-description-field-of-module.patch
 # Compatibility with linux-secure->linux merger
-Patch4:         0001-create-diff-object-support-x86-NOP-padded-functions.patch
-Patch5:         0002-kpatch-compatibility-with-Photon-gcc-RAP-patch.patch
-Patch6:         0003-patch-hook-fix-cast-errors.patch
-
-Patch7:         0001-Support-multiline-MODULE_DESCRIPTION.patch
+Patch1:         0002-kpatch-compatibility-with-Photon-gcc-RAP-patch.patch
+Patch2:         0003-patch-hook-fix-cast-errors.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -59,11 +54,11 @@ for scheduled reboot windows.  It gives more control over up-time without
 sacrificing security or stability.
 
 %package build
+Summary: Dynamic kernel patching
 Requires: %{name} = %{version}-%{release}
 Requires: build-essential
 Requires: tar
 Requires: curl
-Summary: Dynamic kernel patching
 
 %description build
 Contains the kpatch-build tool, to enable creation of kernel livepatches.
@@ -75,10 +70,11 @@ Summary: Development files for kpatch
 Contains files for developing with kpatch.
 
 %package utils
+Summary: Tools to automate livepatch building.
 Requires: %{name} = %{version}-%{release}
 Requires: %{name}-build = %{version}-%{release}
 Requires: docker
-Summary: Tools to automate livepatch building.
+Requires: docker-buildx
 
 %description utils
 Contains auto_livepatch and gen_livepatch scripts.
@@ -91,10 +87,11 @@ Contains auto_livepatch and gen_livepatch scripts.
 
 %install
 %make_install PREFIX=%{_usr} %{?_smp_mflags}
-mkdir -p %{buildroot}%{_sysconfdir}/{auto_livepatch/dockerfiles,gen_livepatch}
+install -vdm755 %{buildroot}%{_datadir}/livepatch/dockerfiles/
 cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
-cp %{SOURCE3} %{buildroot}%{_sysconfdir}/auto_livepatch
-cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
+cp %{SOURCE3} %{buildroot}%{_libdir}
+cp %{SOURCE4} %{SOURCE5} %{buildroot}%{_datadir}/livepatch
+cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfiles
 
 %files
 %defattr(-,root,root,-)
@@ -104,8 +101,9 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %files build
 %defattr(-,root,root,-)
-%exclude %{_bindir}/auto_livepatch.sh
-%exclude %{_bindir}/gen_livepatch.sh
+%exclude %{_bindir}/auto_livepatch
+%exclude %{_bindir}/gen_livepatch
+%exclude %{_libdir}/livepatch.sh
 %{_bindir}/*
 %{_libexecdir}/*
 %{_datadir}/%{name}
@@ -116,13 +114,27 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_mandir}/man1/kpatch.1*
 
 %files utils
-%defattr(-,root,root,-)
-%doc %{_sysconfdir}/auto_livepatch/README.txt
-%{_bindir}/auto_livepatch.sh
-%{_bindir}/gen_livepatch.sh
-%{_sysconfdir}/gen_livepatch/build-rpm.spec
+%defattr(0755,root,root,0755)
+%{_bindir}/auto_livepatch
+%{_bindir}/gen_livepatch
+%{_libdir}/livepatch.sh
+%defattr(0644,root,root,0755)
+%doc %{_datadir}/livepatch/README.txt
+%{_datadir}/livepatch/livepatch_spec.template
+%{_datadir}/livepatch/dockerfiles/Dockerfile.ph5
+%{_datadir}/livepatch/dockerfiles/Dockerfile.ph4
+%{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Tue May 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-1
+- upgrade to 0.9.10 to get latest fixes upstream by Photon
+- Allow non-root users in the docker group to run the autolive patch script
+- Moved common functions to livepatch.sh
+- Enhanced cleanup function
+- Switched from docker build to docker buildx
+- Included a static Dockerfile instead of generating it dynamically in the script
+- Improved help message
+- Various code improvements
 * Wed May 07 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.9.8-6
 - Improve multiline descriptions
 * Thu Apr 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.8-5

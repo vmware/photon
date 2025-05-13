@@ -1,7 +1,14 @@
 sources:
-- archive: kpatch-v0.9.8.tar.gz
-  archive_sha512sum: ab3a771dfcde92a9eee768afcf7fddb6f1ad5ba9e8c7f44d579d258ce9b6ee1722869b1b70c4597ae951b0faf71413efa26a5b135f50308c996b284a9dcee5b7
-  skip_validation: true
+- archive: kpatch-v0.9.10.tar.gz
+  archive_type: upstream
+  archive_sha512sum: d27f0e92d93539cc6ae6137419a99d124e5e2dba8bfbf67d15b0bf89230d2e92584c974ccae6932ce7a02460d73da9d46806e9104ee019ea3c6d3cfe8658be83
+  name: "kpatch-0.9.10"
+  version: 0.9.10
+  url: https://github.com/dynup/kpatch/archive/refs/tags/v0.9.10.tar.gz
+  repo_url: https://github.com/dynup/kpatch
+  commit_id: 903dfe2b644ec41d9b4bc50344fdadf9664e948f
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Contains the kpatch utility, which allows loading of

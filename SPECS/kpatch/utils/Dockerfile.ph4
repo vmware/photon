@@ -1,0 +1,34 @@
+FROM photon:4.0
+RUN tdnf install -y \
+build-essential \
+elfutils-libelf-devel \
+tar \
+findutils \
+audit-devel \
+binutils-devel \
+elfutils-devel \
+gdb \
+glib-devel \
+kmod-devel \
+libcap-devel \
+libunwind-devel \
+openssl-devel \
+pciutils-devel \
+procps-ng-devel \
+python3-devel \
+slang-devel \
+xz-devel \
+rpm-build \
+bc \
+Linux-PAM-devel \
+kbd \
+libdnet-devel \
+libmspack-devel \
+xerces-c-devel \
+xml-security-c-devel \
+coreutils \
+util-linux \
+kpatch \
+kpatch-build \
+kpatch-utils
+RUN mkdir -p  /var/opt/gen_livepatch/gen_livepatch_workspace

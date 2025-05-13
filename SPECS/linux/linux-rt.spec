@@ -1,3 +1,5 @@
+# If 'security_hardening none' is removed,
+# ensure kpatch-build in kpatch is updated accordingly.
 %global security_hardening none
 
 # SBAT generation of "linux.photon" component

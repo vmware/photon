@@ -1,0 +1,43 @@
+Name:           @@RPM_NAME@@
+Version:        @@VERSION@@
+Release:        @@RELEASE@@%{?dist}
+Vendor:         VMware, Inc.
+Group:          System Environment/Kernel
+License:        GPLv2
+Summary:        Package containing a livepatch module for Photon OS
+Distribution:   Photon
+
+Requires: kpatch >= 0.9.10-1
+
+%define _modulesdir /lib/modules/@@LINUX_VERSION@@
+
+%description
+@@DESCRIPTION@@
+
+
+%install
+mkdir -p %{buildroot}%{_modulesdir}/extra/livepatches/
+cp ../SOURCES/@@LIVEPATCH_NAME@@.ko %{buildroot}%{_modulesdir}/extra/livepatches/
+
+%pre
+echo "Required linux version is: @@LINUX_VERSION@@, current version is $(uname -r)"
+if [[ @@LINUX_VERSION@@ != $(uname -r) ]]; then
+    echo "ABORT: Looks like you have the wrong linux version installed. This package is compatible only with @@LINUX_VERSION@@"
+    exit 1
+fi
+
+%postun
+# uninstall and unload livepatch module
+kpatch uninstall @@LIVEPATCH_NAME@@ || echo "kpatch unload failed - maybe module was not loaded?"
+
+%post
+# load livepatch module
+kpatch install %{_modulesdir}/extra/livepatches/@@LIVEPATCH_NAME@@.ko
+kpatch load %{_modulesdir}/extra/livepatches/@@LIVEPATCH_NAME@@.ko
+depmod -a
+
+%files
+%defattr(-,root,root,-)
+%{_modulesdir}/extra/livepatches/@@LIVEPATCH_NAME@@.ko
+
+%changelog
