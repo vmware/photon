@@ -1,7 +1,9 @@
+%define _sysusersdir /usr/lib/sysusers.d/
+
 Summary:    Default file system
 Name:       filesystem
 Version:    1.1
-Release:    7%{?dist}
+Release:    8%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://www.linuxfromscratch.org
@@ -105,6 +107,34 @@ touch %{buildroot}%{_sysconfdir}/fstab
 install -vdm 755 %{buildroot}%{_sysconfdir}/modprobe.d
 install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/modprobe.d/usb.conf
 #       chapter 9.1. The End
+
+while IFS=: read -r group_name _ gid _; do
+  [[ -z "$group_name" || "$group_name" =~ ^# ]] && continue
+
+  # Check if group_name or gid starts with a space
+  if [[ "$group_name" == ' '* || "$gid" == ' '* ]]; then
+    echo "Error: group_name or gid starts with a space: group_name='$group_name' gid='$gid'" >&2
+    exit 1
+  fi
+
+  echo "g $group_name $gid" >> group.sysusers
+done < %{SOURCE8}
+
+while IFS=: read -r username password uid gid comment home shell; do
+  [[ -z "$username" || "$username" =~ ^# ]] && continue
+
+  # Check if any field starts with a space
+  if [[ "$username" == ' '* || "$password" == ' '* || "$uid" == ' '* || "$gid" == ' '* || \
+        "$comment" == ' '* || "$home" == ' '* || "$shell" == ' '* ]]; then
+    echo "Error: One or more fields start with a space in user entry: username='$username'" >&2
+    exit 1
+  fi
+
+  echo "u $username $uid:$gid \"$comment\" $home $shell" >> users.sysusers
+done < %{SOURCE9}
+
+install -p -D -m 644 group.sysusers %{buildroot}%{_sysusersdir}/group.conf
+install -p -D -m 644 users.sysusers %{buildroot}%{_sysusersdir}/users.conf
 
 %pretrans -p <lua>
 posix.mkdir("/sys")
@@ -234,6 +264,8 @@ rm -rf %{buildroot}
 %attr(600,root,root) %{_var}/log/btmp
 %{_var}/lock
 %{_var}/run
+%{_sysusersdir}/users.conf
+%{_sysusersdir}/group.conf
 
 /lib64
 %{_lib64dir}
@@ -242,6 +274,9 @@ rm -rf %{buildroot}
 %{_libdir}/debug%{_lib64dir}
 
 %changelog
+* Fri May 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1-8
+- Adding default sysusers conf file for automatic creation by
+- systemd from '/usr/lib/sysusers.d/'
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1-7
 - Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1-6
