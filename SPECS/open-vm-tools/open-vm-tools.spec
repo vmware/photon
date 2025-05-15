@@ -29,7 +29,7 @@ Patch3: CVE-2025-22247-1230-1250-VGAuth-updates.patch
 
 %ifarch aarch64
 # TODO: This must be removed once VMCI config is enabled in aarch64 kernel
-Patch3: ovt-unknown-ioctl.patch
+Patch4: ovt-unknown-ioctl.patch
 %endif
 
 BuildRequires: glib-devel
