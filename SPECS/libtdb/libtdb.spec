@@ -1,6 +1,6 @@
 Name:           libtdb
 Summary:        Trivial database library
-Version:        1.4.8
+Version:        1.4.13
 Release:        1%{?dist}
 URL:            https://tdb.samba.org
 License:        LGPLv3+
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://samba.org/ftp/tdb/tdb-%{version}.tar.gz
-%define sha512 tdb=763beebe923aa04303cbb91ce5970e6bbd13546888cff75ea9ab025afff3ef88fee539ae173fc2fb7ec661b6c337b0c2da361ce3d318f51ef6627bdb3fe6ca63
+%define sha512 tdb=23cbabaf272947d65ab6ba22481ecbf2b86889f860b223ae650101fbf3c6a19acd179d8da15013502076172876acbf3ee3695e9cdeeaa721ed30920b1bd4937d
 
 BuildRequires: make
 BuildRequires: gcc
@@ -94,5 +94,7 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/*
 
 %changelog
+* Fri May 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.13-1
+- Upgrade to v1.4.13, needed by samba-4.19.3
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 1.4.8-1
 - Initial addition to Photon. Needed for SSSD.

@@ -1,7 +1,7 @@
-%global talloc_version 2.4.0
+%global talloc_version 2.4.1
 
 Name:           libtevent
-Version:        0.14.1
+Version:        0.15.0
 Release:        1%{?dist}
 Summary:        The tevent library
 License:        LGPLv3+
@@ -11,7 +11,7 @@ Distribution:   Photon
 Group:          Development/Libraries
 
 Source0: http://samba.org/ftp/tevent/tevent-%{version}.tar.gz
-%define sha512 tevent=0bcc87c10f84e947edad8f8c31f3923253c599b7a69a1db1c21ab292e02937ccb8bad9f0f70e27420ead687aaed1a9b3830b6daa903b8a9bd48cc035a6e5f4ec
+%define sha512 tevent=470cc4489255a4f122ba1d680669589ba375d4081ff46631dd56f5104202d175bfb13356820eb9108a6b768b3837b2f5d26cc7b0acc3071c4787fb070df3cbab
 
 BuildRequires: docbook-xsl
 BuildRequires: gcc
@@ -88,5 +88,7 @@ Python 3 bindings for libtevent
 %{python3_sitearch}/_tevent.cpython*.so
 
 %changelog
+* Fri May 16 2025 Michelle Wang <michelle.wang@broadcom.com> 0.15.0-1
+- Bump up version to 0.15.0 required by samba-client 4.19.3
 * Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.14.1-1
 - Initial addition to Photon. Needed for SSSD addition.

@@ -1,11 +1,11 @@
 %global cmocka_version  1.1.5
-%global talloc_version  2.4.0
+%global talloc_version  2.4.1
 %global tdb_version     1.4.8
-%global tevent_version  0.14.1
+%global tevent_version  0.15.0
 
 Name:           libldb
-Version:        2.7.2
-Release:        2%{?dist}
+Version:        2.8.2
+Release:        1%{?dist}
 Summary:        A schema-less, ldap like, API and database
 License:        LGPLv3+
 Distribution:   Photon
@@ -14,7 +14,7 @@ Group:          Development/Libraries
 URL:            http://ldb.samba.org
 
 Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
-%define sha512 ldb=beb2cd83a8f128713e0b43ec6e80d0f87ab0883c6c8f0cefbbf5bf49e29dfa327b245b78467d1906917cb5f3f11e01cb76cc6bcca58a47c5deac4f05c2e9dfbd
+%define sha512 ldb=df1c228307ede75920a927ae3124cd0d507dfcf00f93b6f5c14b79f4e1a23dbe00249bc92b3ee3ed1e5ce06fe363f0be1eb3dab491fbe79e83b1a1b35a6e50e1
 
 BuildRequires: cmocka-devel
 BuildRequires: gcc
@@ -144,7 +144,7 @@ Development files for the Python bindings for the LDB library
 
 %files -n python3-ldb
 %defattr(-,root,root)
-%{python3_sitearch}/ldb.cpython-*.so
+%{python3_sitearch}/*.cpython-*.so
 %{_libdir}/libpyldb-util.cpython-*.so.2*
 %{python3_sitearch}/_ldb_text.py
 
@@ -155,6 +155,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Fri May 16 2025 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-1
+- Upgrade to v1.4.13, needed by samba-4.19.3
 * Mon Jul 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.7.2-2
 - Remove _isa entry
 * Tue Jun 13 2023 Oliver Kurth <okurth@vmware.com> 2.7.2-1

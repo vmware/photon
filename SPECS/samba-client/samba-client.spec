@@ -5,8 +5,8 @@
 
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.18.8
-Release:        3%{?dist}
+Version:        4.19.3
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -14,11 +14,9 @@ Distribution:   Photon
 URL:            https://www.samba.org
 
 Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha512 samba=2924c360f6299129527457547b13c1b282e2907a0ecde1036dbca894c752935d693914b4846a9eab436b33798c53c9974692e51fd071301b1174598be944a246
+%define sha512 samba=1eacc6be2866ecc7cbb13c5d17a32ad14cc8148e811db9c730a11065ac3ed84a82e406e750dc97fbc884377346c4538a38d8031e63db6b09acd78fbd2c02d702
 
 Source1: smb.conf.vendor
-
-Patch0: 0001-rename_dcerpc_to_smbdcerpc-4.18.3.patch
 
 BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
@@ -41,10 +39,10 @@ BuildRequires: openldap
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 BuildRequires: sudo
-BuildRequires: libtdb-devel
-BuildRequires: libtalloc-devel
-BuildRequires: libldb-devel
-BuildRequires: libtevent-devel
+BuildRequires: libtdb-devel >= 1.4.8
+BuildRequires: libtalloc-devel >= 2.4.1
+BuildRequires: libldb-devel >= 2.7.2
+BuildRequires: libtevent-devel  >= 0.15.0
 BuildRequires: bison
 BuildRequires: perl-JSON
 BuildRequires: zlib-devel
@@ -66,8 +64,8 @@ Requires: dbus
 Requires: bindutils
 Requires: libtdb >= 1.4.8
 Requires: libldb >= 2.7.2
-Requires: libtalloc >= 2.4.0
-Requires: libtevent >= 0.14.1
+Requires: libtalloc >= 2.4.1
+Requires: libtevent >= 0.15.0
 Requires: zlib
 Requires: ncurses
 
@@ -396,6 +394,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/smbtar
 %{_bindir}/smbtree
 %{_bindir}/net
+%{_bindir}/samba-log-parser
 %ghost %{_libexecdir}/samba/cups_backend_smb
 %{_tmpfilesdir}/samba.conf
 %attr(0700,root,root) %dir /var/log/samba
@@ -429,8 +428,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsmbconf.so.*
 %{_libdir}/libsmbldap.so.*
 %{_libdir}/libtevent-util.so.*
-%{_libdir}/libsmbdcerpc.so.*
 %{_libdir}/libsmbclient.so.*
+%{_libdir}/libdcerpc.so.*
 %dir %{_libdir}/samba
 %{_libdir}/samba/libasn1-samba4.so
 %{_libdir}/samba/libcom-err-samba4.so
@@ -548,8 +547,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/samba-%{maj_ver}/charset.h
 %{_includedir}/samba-%{maj_ver}/gen_ndr/*
 %{_includedir}/samba-%{maj_ver}/ndr/*
+%{_libdir}/libdcerpc.so
 %{_libdir}/libsmbclient.so
-%{_libdir}/libsmbdcerpc.so
 %{_libdir}/libdcerpc-binding.so
 %{_libdir}/libndr-krb5pac.so
 %{_libdir}/libndr-nbt.so
@@ -583,6 +582,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Fri May 16 2025 Michelle Wang <michelle.wang@broadcom.com> 4.19.3-1
+- Bump up version to 4.19.3 for CVE-2023-5568 and CVE-2018-14628
 * Fri Jan 05 2024 Mukul Sikka <msikka@vmwrae.com> 4.18.8-3
 - Bump version as a part of sudo upgrade
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.18.8-2
