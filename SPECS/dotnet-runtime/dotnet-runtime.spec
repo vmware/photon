@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        6.0.26
+Version:        6.0.36
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,15 +10,16 @@ License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 
+BuildArch:      x86_64
+
 # Download source tarball from the links provided in:
 # https://github.com/dotnet/core/tree/main/release-notes
 #
 # For example:
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
-Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha512    %{name}=7336f71f7f99ffc3a44c7d730c6a1e08c5c0b6e05d2076a1963776f174f8588d31c9b783d1c4f645f7e7cc6a54077b798c6bde35ed4a812ffd9b2427d29b0b34
-BuildArch:      x86_64
+Source0: %{name}-%{version}-linux-x64.tar.gz
+%define sha512 %{name}=afb6018fcabec468ccd7ae2f1131d8c9de7f4de7645b8f0c223efbbdbfdc515fb0642a399ebfe372c02044416c4cae463c9c802cd156b9da4181efff0e33ee94
 
 Requires:       curl
 Requires:       libunwind
@@ -30,27 +31,27 @@ Requires:       lttng-ust
 applications, microservices and modern websites.
 
 %prep
-%autosetup -c dotnet-runtime-%{version} -p1
+%autosetup -c %{name}-%{version} -p1
 
 %build
 
 %install
-mkdir -p %{buildroot}%{_libdir}/dotnet %{buildroot}%{_docdir}/dotnet-runtime-%{version}
-cp -r * %{buildroot}%{_libdir}/dotnet
-mkdir -p %{buildroot}%{_bindir}
-cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-runtime-%{version}
-rm LICENSE.txt ThirdPartyNotices.txt
-ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
+mkdir -p %{buildroot}%{_libdir}/dotnet \
+         %{buildroot}%{_docdir}/%{name}-%{version} \
+         %{buildroot}%{_bindir}
 
-%pre
+cp -a * %{buildroot}%{_libdir}/dotnet
+cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/%{name}-%{version}
+ln -sfrv %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 
 %post
 /sbin/ldconfig
 
-%preun
-
 %postun
 /sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,0755)
@@ -60,6 +61,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
+* Fri May 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.36-1
+- Upgrade to v6.0.36
 * Mon Jan 22 2024 Anmol Jain <anmolja@vmware.com> 6.0.26-1
 - Upgarde to version 6.0.26
 * Wed Dec 20 2023 Anmol Jain <anmolja@vmware.com> 6.0.25-1
