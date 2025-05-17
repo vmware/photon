@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Sun May 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-4
+- Fix openjdk11-jre mapping and correct RPM DB path in upgrade scripts
 * Tue Jan 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.1-3
 - Release bump for SRP
 * Thu Sep 05 2024 Dweep Advani <dweep.advani@broadcom.com> 1.1-2

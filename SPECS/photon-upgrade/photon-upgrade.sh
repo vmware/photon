@@ -165,7 +165,7 @@ function check_installed_packages_in_target_repo() {
   local i
   local n
 
-  echo "Finding packages in the target repo. This may take several minutes."
+  echo "Finding packages in the target repo. This may take a while ..."
   missings_arr+=($(check_packages_in_target_repo ${rpms_arr[@]}))
   n=${#missings_arr[@]}
   for ((i=0; i<$n; i++)); do
@@ -770,7 +770,8 @@ function verify_version_and_upgrade() {
   if [ -z "$ASSUME_YES_OPT" ]; then
     # This is interactive invocation of the script
     echo "You are about to upgrade PhotonOS from $FROM_VERSION to $TO_VERSION."
-    echo "Please backup your data before proceeding. Continue (y/n)?"
+    echo "Please backup your data before proceeding."
+    echo "Continue (y/n)?"
     read yn
   elif ! is_precheck_running; then
     # -y or --assume-yes was given on command line; non-interactive invocation
@@ -790,7 +791,7 @@ function verify_version_and_upgrade() {
       rc=$?
       find_incorrect_units
       ((rc+=$?))
-      is_precheck_running || backup_rpms_list_n_db $RPM_DB_LOC
+      is_precheck_running || backup_rpms_list_n_db $OLD_RPMDB_PATH
       find_files_for_review
       tdnf_makecache $FROM_VERSION
       if [ "$UPDATE_PKGS" = 'y' ] && ! is_precheck_running; then
