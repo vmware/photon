@@ -2,8 +2,8 @@
 %global gem_name kubeclient
 
 Name:           rubygem-kubeclient
-Version:        4.9.1
-Release:        7%{?dist}
+Version:        4.9.3
+Release:        1%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -11,7 +11,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  kubeclient=bc4ea2ae7dac142afec5d4de171f58871ea87aa2205c5d96ebbf3966377a4c4d4099b400bc958ee34f7983760fcff8197c73ca18fb1b452cf65f68ea0b0758a0
+%define sha512  kubeclient=f31a516fc55231ac65f02a0a49627819c3bcde08860af5d4695702ebe4ccba1fd3d31f199cdf3f4389b36e8f257a8ab5c8b73c045b3ff31d7dc381e4ede9d94f
 
 BuildArch: noarch
 
@@ -49,6 +49,8 @@ A client for Kubernetes REST api.
 %{gem_base}
 
 %changelog
+*   Mon May 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.9.3-1
+-   Upgrade to 4.9.3 to fix CVE-2022-0759
 *   Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.1-7
 -   Set buildarch to noarch
 *   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.9.1-6
