@@ -3,8 +3,8 @@
 %global gem_name jmespath
 
 Name: rubygem-jmespath
-Version:        1.4.0
-Release:        2%{?dist}
+Version:        1.6.1
+Release:        1%{?dist}
 Summary:        Implements JMESPath for Ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -12,14 +12,16 @@ Distribution:   Photon
 License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/jmespath-%{version}.gem
-%define sha1    jmespath=016b3f6a1ca8040f66cf4fe3dc0eaacbca4ff8bf
-BuildRequires:  ruby
+%define sha512  jmespath=e06f6f4d47abbe552cff4055fff3841380ee8779b61c5f68b184e1acbcc588a97ad7d83225671a9f547d1077041592553f5f44649d6ceb76d369a0fc462439f3
+
+BuildRequires:  ruby-devel
+Requires:       ruby
 
 %description
 Implements JMESPath for Ruby.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -31,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon May 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.1-1
+-   Upgrade to 1.6.1 to fix CVE-2022-32511
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.4.0-2
 -   rebuilt with ruby-2.7.1
 *   Mon Jul 30 2018 Srinidhi Rao <srinidhir@vmware.com> 1.4.0-1

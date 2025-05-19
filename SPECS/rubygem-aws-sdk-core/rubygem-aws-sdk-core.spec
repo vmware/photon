@@ -4,15 +4,20 @@
 
 Name: rubygem-aws-sdk-core
 Version:        3.109.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides API clients for AWS.
 Group:          Development/Languages
+Vendor:         VMware, Inc.
+Distribution:   Photon
 License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
-Source0:        https://rubygems.org/downloads/aws-sdk-core-%{version}.gem
-%define sha1    aws-sdk-core=0d0d969d26e78eed0c29882ceeee2e29fe0f4061
-BuildRequires:  ruby
 
+Source0:        https://rubygems.org/downloads/aws-sdk-core-%{version}.gem
+%define sha512  aws-sdk-core=cf8e0ca9297665a067be6708d075dedad5cda50a8b666ab77bcee2c22a6dad1c9339ff5cee78e06f3869d60715c8ec4b3fdd0b83c90b0fbf8dc19b3100f5b4e9
+
+BuildRequires:  ruby-devel
+
+Requires: ruby
 Requires: rubygem-aws-eventstream >= 1.0
 Requires: rubygem-aws-partitions >= 1.0
 Requires: rubygem-aws-sigv4 >= 1.0
@@ -22,7 +27,7 @@ Requires: rubygem-jmespath >= 1.0
 Provides API clients for AWS. This gem is part of the official AWS SDK for Ruby..
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -34,6 +39,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon May 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.109.0-2
+-   Bump release with rubygem-jmespath upgrade
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.109.0-1
 -   Automatic Version Bump
 *   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 3.108.0-1
