@@ -198,18 +198,10 @@ class SpecDependencyGenerator(object):
             else:
                 inputPackages = self.getAllPackageNames(inputValue)
             self.calculateSpecDependency(inputPackages, mapDependencies, parent)
-            if outputFile is not None:
-                return self.displayDependencies(
-                    displayOption,
-                    inputType,
-                    outputFile,
-                    mapDependencies,
-                    parent,
-                )
             return self.displayDependencies(
                 displayOption,
                 inputType,
-                inputValue,
+                outputFile if outputFile else inputValue,
                 mapDependencies,
                 parent,
             )

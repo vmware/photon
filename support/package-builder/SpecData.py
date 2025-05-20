@@ -34,6 +34,8 @@ class SpecData(object):
     def _readSpecs(self, specFilesPaths):
         for specFile in self._getListSpecFiles(specFilesPaths):
             spec = SpecParser(specFile, self.arch, self.dist)
+            if spec.skipSpec:
+                continue
 
             # skip the specfile if buildarch differs
             buildarch = spec.packages.get("default").buildarch

@@ -39,17 +39,24 @@ class SpecParser(object):
         self.conditionalCheckMacroEnabled = False
         self.macro_pattern = re.compile(r"%{(\S+?)\}")
         self.specfile = specfile
+        self.skipSpec = False
 
         self.packages["default"] = Package(self.arch)
         self.currentPkg = "default"
         self._parseSpecFile(self.specfile)
 
     def _parseSpecFile(self, file):
+        lines = []
+
         with open(file) as specFile:
-            lines = specFile.readlines()
-            totalLines = len(lines)
+            lines = specFile.read().splitlines()
+
+        if self._shouldSpecBeSkipped(lines):
+            self.skipSpec = True
+            return
 
         i = 0
+        totalLines = len(lines)
 
         def skip_conditional_body(line):
             deep = 1
@@ -61,9 +68,6 @@ class SpecParser(object):
                     deep += 1
                 elif self._isConditionalMacroEnd(line):
                     deep -= 1
-
-        if not self._isConditionBranch(lines):
-            return
 
         while i < totalLines:
             line = lines[i].strip()
@@ -295,45 +299,50 @@ class SpecParser(object):
             or self._isConditionalMacroEnd(line)
         )
 
-    def _isConditionBranch(self, lines):
-        # Compile the regular expression pattern to match `%global build_for` and capture the value that follows
-        pattern = re.compile(r"%global\s+build_for (.+)")
+    def _shouldSpecBeSkipped(self, lines):
+        pattern = re.compile(r"%(?:global|define)\s+build_for\s+(.+)")
 
-        # Iterate over each line
         for line in lines:
+            # expect build_for macro to be at top of spec
+            if line.startswith("Name:"):
+                break
+            if not line.startswith(("%global", "%define")):
+                continue
             match = pattern.search(line)
             if match:
-                condition = match.group(1).strip()
-                return self._evaluateCondition(condition)
-        return True
+                values = match.group(1).strip()
+                return self._parseBuildForValues(values)
 
-    def _evaluateCondition(self, condition):
+        return False
+
+    def _parseBuildForValues(self, condition):
         err = ValueError(
-            "Invalid condition format. Correct formats are:\n"
-            "1. Simple value: ph5\n"
-            "2. Negation: !ph5\n"
-            "3. List of values: (ph5, ph6)\n"
-            "4. Negation list: !(ph5, ph6)\n"
-            "5. All: all\n"
-            "6. None: none\n"
-            "Examples:\n"
-            "   %global build_for ph5\n"
-            "   %global build_for !ph5\n"
-            "   %global build_for (ph5, ph6)\n"
-            "   %global build_for !(ph4, ph6)\n"
-            "   %global build_for all\n"
-            "   %global build_for none"
-        )
-        # Handle conditions with 'all' and 'none'
-        if condition.lower() == "all":
-            return True
-        if condition.lower() == "none":
+                f"\nInvalid condition format: '{condition}' in {self.specfile}."
+                "Correct formats are:\n"
+                "1. Simple value: ph5\n"
+                "2. Negation: !ph5\n"
+                "3. List of values: (ph5, ph6)\n"
+                "4. Negation list: !(ph5, ph6)\n"
+                "5. All: all\n"
+                "6. None: none\n"
+                "Examples:\n"
+                "   %global build_for ph5\n"
+                "   %global build_for !ph5\n"
+                "   %define build_for (ph5, ph6)\n"
+                "   %global build_for !(ph4, ph6)\n"
+                "   %define build_for all\n"
+                "   %global build_for none"
+            )
+
+        if condition == "all":
             return False
+        if condition == "none":
+            return True
 
         # Handle negation cases (starting with '!')
         if condition.startswith("!"):
             sub_condition = condition[1:].strip()
-            return not self._evaluateCondition(sub_condition)
+            return not self._parseBuildForValues(sub_condition)
 
         # Handle lists within parentheses
         if condition.startswith("(") and condition.endswith(")"):
@@ -342,13 +351,13 @@ class SpecParser(object):
             if "!" in options or "(" in options or ")" in options:
                 raise err
             options_list = [opt.strip() for opt in options.split(",")]
-            return self.dist in options_list
+            return self.dist not in options_list
 
         # Handle the case where it's neither a list nor a simple value
         if "," in condition or "(" in condition or ")" in condition:
             raise err
 
-        return self.dist == condition
+        return self.dist != condition
 
     def _isConditionalArch(self, line):
         return re.search("^%ifarch", line)

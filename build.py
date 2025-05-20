@@ -711,7 +711,7 @@ class CleanUp:
         try:
             CleanUp.removeUpwardDeps(":".join(spec_fns), "tree")
         except Exception as error:
-            print(f"Error in clean_stage_for_incremental_build: {error}")
+            raise(f"ERROR: in clean_stage_for_incremental_build: {error}")
 
     def clean_stage_rpms():
         allFiles = []
