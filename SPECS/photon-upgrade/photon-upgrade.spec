@@ -23,7 +23,7 @@ Requires:       rpm
 Requires:       tdnf
 Requires:       gawk
 Requires:       sed
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils
 Requires:       photon-release
 Requires:       findutils
 Requires:       util-linux

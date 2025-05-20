@@ -12,7 +12,7 @@ Source0: https://gitlab.gnome.org/GNOME/gobject-introspection/-/archive/%{versio
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison

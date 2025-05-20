@@ -5,7 +5,7 @@
 Name:       raspberrypi-firmware
 Summary:    Raspberry Pi firmware
 Version:    1.20230106
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/raspberrypi/firmware
 Group:      System Environment/Boot
 Vendor:     VMware, Inc.
@@ -27,8 +27,8 @@ Firmware files for Raspberry Pi
 Summary:    Raspberry Pi 3 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-10
+Requires(post): coreutils >= 9.1-10
 
 %description pi3
 Firmware files for Raspberry Pi 3
@@ -37,8 +37,8 @@ Firmware files for Raspberry Pi 3
 Summary:    Extra files for Raspberry Pi 3 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware-pi3 = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-10
+Requires(post): coreutils >= 9.1-10
 
 %description pi3-extra
 Extra Firmware files for Raspberry Pi 3
@@ -47,8 +47,8 @@ Extra Firmware files for Raspberry Pi 3
 Summary:    Raspberry Pi 4 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-10
+Requires(post): coreutils >= 9.1-10
 
 %description pi4
 Firmware files for Raspberry Pi 4
@@ -57,8 +57,8 @@ Firmware files for Raspberry Pi 4
 Summary:    Extra files for Raspberry Pi 4 firmware
 Group:      System Environment/Boot
 Requires:   raspberrypi-firmware-pi4 = %{version}-%{release}
-Requires(preun): (coreutils or coreutils-selinux or toybox)
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(preun): coreutils >= 9.1-10
+Requires(post): coreutils >= 9.1-10
 
 %description pi4-extra
 Extra Firmware files for Raspberry Pi 4
@@ -115,6 +115,8 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.20230106-3
+- Require coreutils only
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.20230106-2
 - Release bump for SRP compliance
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 1.20230106-1

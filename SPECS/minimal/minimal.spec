@@ -1,7 +1,7 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -11,43 +11,33 @@ Source0: license.txt
 %include %{SOURCE0}
 
 # Keep this list alphabetically sorted
+Requires: basic
 Requires: bc
 Requires: bridge-utils
 Requires: bzip2
 Requires: cloud-init
 Requires: cpio
-Requires: cracklib-dicts
-Requires: dbus
 Requires: docker
+Requires: dracut
 Requires: e2fsprogs
 Requires: file
-Requires: filesystem
-Requires: findutils
 Requires: gdbm
 Requires: grep
-Requires: grub2-efi-image >= 2.06-15
 Requires: gzip
 Requires: iana-etc
+Requires: initramfs
 Requires: iproute2
 Requires: iptables
 Requires: iputils
-Requires: Linux-PAM
+Requires: basic
 Requires: motd
 Requires: net-tools
-Requires: openssh
+Requires: open-vm-tools
 Requires: open-vm-tools-gosc
-Requires: photon-release
-Requires: photon-repos
 Requires: procps-ng
 Requires: python3
-Requires: rpm-plugin-systemd-inhibit
 Requires: rpm
-Requires: sed
-Requires: systemd-pam
-Requires: systemd-rpm-macros
-Requires: systemd
-Requires: systemd-udev
-Requires: tdnf
+Requires: rpm-plugin-systemd-inhibit
 Requires: tzdata
 Requires: util-linux
 Requires: vim
@@ -63,6 +53,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5
+- Add basic to requires
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0-4
 - Release bump for SRP compliance
 * Sat Mar 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-3

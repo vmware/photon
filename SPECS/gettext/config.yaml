@@ -1,6 +1,6 @@
 sources:
-- archive: gettext-0.21.1.tar.xz
-  archive_sha512sum: 61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
+- archive: gettext-0.22.5.tar.xz
+  archive_sha512sum: a60999bb9d09441f138214d87acb7e59aab81e765bb9253a77c54902681c5de164a5a04de2a9778dfb479dbdefaab2d5de1fbaf6095c555c43e7e9fd7a1c09bd
   skip_validation: true
   spdx:
     package:

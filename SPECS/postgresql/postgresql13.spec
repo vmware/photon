@@ -33,7 +33,7 @@ Source8: license-postgresql13.txt
 %include %{SOURCE8}
 
 BuildRequires: clang-devel
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: krb5-devel
 BuildRequires: icu-devel
 BuildRequires: libedit-devel

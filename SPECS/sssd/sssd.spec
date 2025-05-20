@@ -93,7 +93,7 @@ BuildRequires: libdhash-devel
 BuildRequires: libini-config-devel
 BuildRequires: e2fsprogs-devel
 BuildRequires: Linux-PAM-devel
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: libwbclient
 BuildRequires: jansson-devel
 BuildRequires: keyutils-devel

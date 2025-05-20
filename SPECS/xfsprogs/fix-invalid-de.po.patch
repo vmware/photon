@@ -1,0 +1,35 @@
+From 987373623e127fe476d29c81625d288d7a418f95 Mon Sep 17 00:00:00 2001
+From: David Seifert <soap@gentoo.org>
+Date: Mon, 26 Jun 2023 10:50:46 +0100
+Subject: po: Fix invalid .de translation format string
+
+* gettext-0.22 validates format strings now
+  https://savannah.gnu.org/bugs/index.php?64332#comment1
+
+Bug: https://bugs.gentoo.org/908864
+Signed-off-by: David Seifert <soap@gentoo.org>
+Signed-off-by: Sam James <sam@gentoo.org>
+Reviewed-by: Carlos Maiolino <cmaiolino@redhat.com>
+Signed-off-by: Carlos Maiolino <cem@kernel.org>
+---
+ po/de.po | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+(limited to 'po/de.po')
+
+diff --git a/po/de.po b/po/de.po
+index 944b0e91de..a6f8fde1eb 100644
+--- a/po/de.po
++++ b/po/de.po
+@@ -3084,7 +3084,7 @@ msgstr "%llu Spezialdateien\n"
+ #: .././estimate/xfs_estimate.c:191
+ #, c-format
+ msgid "%s will take about %.1f megabytes\n"
+-msgstr "%s wird etwa %.lf Megabytes einnehmen\n"
++msgstr "%s wird etwa %.1f Megabytes einnehmen\n"
+ 
+ #: .././estimate/xfs_estimate.c:198
+ #, c-format
+-- 
+cgit 1.2.3-korg
+

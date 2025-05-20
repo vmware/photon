@@ -20,7 +20,7 @@ Source2: license.txt
 
 BuildRequires: perl
 BuildRequires: libtool
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: texinfo

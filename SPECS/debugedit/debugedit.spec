@@ -1,6 +1,6 @@
 Name:       debugedit
 Version:    5.0
-Release:    9%{?dist}
+Release:    10%{?dist}
 Summary:    Tools for debuginfo creation
 URL:        https://sourceware.org/debugedit
 Group:      System Environment/Base
@@ -29,7 +29,7 @@ Requires: elfutils
 # For add_minidebug, readelf, awk, nm, sort, comm, objcopy, xz
 Requires: gawk
 Requires: xz
-Requires: (coreutils or coreutils-selinux)
+Requires: coreutils >= 9.1-10
 # For do_file, gdb_add_index
 # We only need gdb-add-index, so suggest gdb-minimal (full gdb is also ok)
 Requires: (gdb or gdb-minimal)
@@ -75,6 +75,8 @@ make check %{?_smp_mflags}
 %{_mandir}/man1/find-debuginfo.1*
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-10
+- Require coreutils only
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0-9
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-8

@@ -25,7 +25,7 @@ Requires: findutils
 BuildRequires: glib-devel
 BuildRequires: python3-devel
 BuildRequires: popt-devel
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: pkg-config
 BuildRequires: systemd-devel
 

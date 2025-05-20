@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        8%{?dist}
+Release:        9%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -16,7 +16,7 @@ Patch0: diagnose-negative-repeat-value-in-pcre2test-subj-line.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-10
 BuildRequires:  libtool
 BuildRequires:  make
 BuildRequires:  readline-devel
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.40-9
+- Require coreutils only
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.40-8
 - Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 10.40-7

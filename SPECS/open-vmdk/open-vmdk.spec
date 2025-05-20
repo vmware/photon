@@ -1,7 +1,7 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
 Version:       0.3.11
-Release:       1%{?dist}
+Release:       2%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/open-vmdk
@@ -14,7 +14,7 @@ Source1: license.txt
 
 BuildRequires: zlib-devel
 
-Requires: coreutils
+Requires: coreutils >= 9.1-10
 Requires: grep
 Requires: python3-lxml
 Requires: python3-PyYAML
@@ -68,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/ovfenv
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3.11-2
+- Require coreutils only
 * Tue Mar 11 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.11-1
 - update to 0.3.11
 - add ovfenv utility

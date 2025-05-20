@@ -1,0 +1,21 @@
+sources:
+- archive: bash-completion-2.15.0.tar.xz
+  archive_sha512sum: 3b7e98801c3ceab7853c0603bdaa0cd6f0a658e0f7f24b092f341bd1794633b62d33e664035b6ab3c03b5a3dd941b16f87a415aade8a2707578c59cc48b1a9f7
+  skip_validation: false
+  archive_type: upstream
+  name: "bash-completion-2.15.0"
+  version: 2.15.0
+  url: https://github.com/scop/bash-completion/releases/download/2.15.0/bash-completion-2.15.0.tar.xz
+  repo_url: https://github.com/scop/bash-completion
+  commit_id: d4a1c565dfcafc21a6c9cfe56966a531a42b6219
+  skip_list: []
+  missing: [runLint, kldload, .gitlint, kldunload, missing, requirements-dev.txt, .typos.toml, install-sh, update-test-cmd-list, portinstall, lspci, Makefile.in, requirements.txt, configure, pkgutil, config.guess, .gitignore, portupgrade, .github, freebsd-update, rg, version.txt, .pre-commit-config.yaml, aclocal.m4, .dockerignore, pkg_delete, .pymarkdown.json, generate, docker, test-cmd-list.txt, portsnap, uscan, config.sub]
+  spdx:
+    package:
+      detailed_description: 'bash-completion is a collection of shell functions that take advantage
+of the programmable completion feature of bash.'
+      home_page: https://github.com/scop/bash-completion
+      license_concluded: GPL-2.0-or-later
+      license_declared: GPL-2.0-or-later
+      short_summary: Programmable completion for Bash
+      supplier: 'Organization: Broadcom, Inc.'

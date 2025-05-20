@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        22.12.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,13 +12,13 @@ Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils
 BuildRequires:  zlib-devel
 BuildRequires:  python3-devel
 BuildRequires:  which
 
 Requires:       python3
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -76,6 +76,8 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 22.12.0-3
+- Require coreutils only
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 22.12.0-2
 - Release bump for SRP compliance
 * Wed Dec 04 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.12.0-1

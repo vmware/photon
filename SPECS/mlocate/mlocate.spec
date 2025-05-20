@@ -17,7 +17,7 @@ Source2: license.txt
 BuildRequires:  sed
 BuildRequires:  grep
 BuildRequires:  xz
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  systemd-devel
 
 %description

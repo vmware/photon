@@ -1,14 +1,13 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
-Version:        0.21.1
-Release:        5%{?dist}
+Version:        0.22.5
+Release:        1%{?dist}
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-
+Source0: http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
@@ -25,10 +24,33 @@ Patch9:         libxml2-CVE-2024-56171.patch
 Patch10:        libxml2-CVE-2025-24928.patch
 Patch11:        libxml2-CVE-2025-27113.patch
 
+Requires: libgcc
+Requires: libstdc++
+Requires: %{name}-libs = %{version}-%{release}
+
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output
 messages in the user's native language.
+
+%package devel
+Summary: Development files for %{name}
+Requires: %{name} = %{version}-%{release}
+Requires: %{name}-libs = %{version}-%{release}
+Requires: xz
+Requires: diffutils
+
+%description devel
+This package contains all development related files necessary for
+developing or compiling applications/libraries that needs
+internationalization capability. You also need this package if you
+want to add gettext support for your project.
+
+%package libs
+Summary: Libraries for %{name}
+
+%description libs
+This package contains libraries used internationalization support.
 
 %prep
 # Using autosetup is not feasible
@@ -54,39 +76,59 @@ popd
 
 %build
 %configure \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
-    --disable-silent-rules
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --disable-silent-rules \
+    --disable-static \
+    --enable-shared \
+    --without-emacs
+
 %make_build
 
 %install
 %make_install
-find %{buildroot}%{_libdir} -name '*.la' -delete
-rm -rf %{buildroot}/usr/share/doc/gettext-%{version}/examples
-rm -rf %{buildroot}%{_infodir}
+rm -rf %{buildroot}%{_docdir}/gettext-%{version}/examples \
+       %{buildroot}%{_infodir}
+
 %find_lang %{name} --all-name
 
+%if 0%{?with_check}
 %check
 sed -i 's/test-term-ostream-xterm.sh//1' ./libtextstyle/tests/Makefile
 make %{?_smp_mflags} check
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
-%{_includedir}/*
-%{_libdir}/gettext/*
+%{_libdir}/%{name}/*
+%{_datadir}/%{name}/*
+%{_datadir}/%{name}-%{version}/*
+
+%files libs
+%defattr(-,root,root)
 %{_libdir}/*.so.*
+%{_libdir}/libgettextlib-0.*.so
+%{_libdir}/libgettextsrc-0.*.so
+
+%files devel
+%defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/*.a
-%{_datarootdir}/aclocal/*
-%{_datadir}/*
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_datarootdir}/%{name}/*
+%exclude %{_libdir}/libgettextlib-0.*.so
+%exclude %{_libdir}/libgettextsrc-0.*.so
+%{_includedir}/*
+%{_datadir}/aclocal/*
 %{_mandir}/*
+%{_docdir}/*
 
 %changelog
+* Thu May 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.22.5-1
+- Introduce devel & libs sub packages
 * Tue Mar 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.21.1-5
 - Fix for CVE-2024-56171, CVE-2025-24928, CVE-2025-27113
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.21.1-4

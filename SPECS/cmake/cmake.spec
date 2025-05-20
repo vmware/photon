@@ -3,7 +3,7 @@
 Summary:      Cross-platform make system
 Name:         cmake
 Version:      3.25.2
-Release:      6%{?dist}
+Release:      7%{?dist}
 URL:          http://www.cmake.org
 Group:        Development/Tools
 Vendor:       VMware, Inc.
@@ -23,7 +23,7 @@ BuildRequires: zlib-devel
 BuildRequires: libarchive-devel
 BuildRequires: bzip2-devel
 BuildRequires: libgcrypt-devel
-BuildRequires: (coreutils or coreutils-selinux)
+BuildRequires: coreutils
 
 Requires: libgcrypt
 Requires: ncurses
@@ -74,6 +74,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25.2-7
+- Require coreutils only
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.25.2-6
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25.2-5

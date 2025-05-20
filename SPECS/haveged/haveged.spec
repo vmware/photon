@@ -1,7 +1,7 @@
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.18
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Daemons
@@ -18,7 +18,7 @@ Requires:       systemd
 
 BuildRequires:  systemd-devel
 BuildRequires:  automake
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils >= 9.1-10
 BuildRequires:  glibc
 
 %description
@@ -96,6 +96,8 @@ rm -rf %{buildroot}
 %{_libdir}/*.so
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.18-4
+- Require coreutils only
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.9.18-3
 - Release bump for SRP compliance
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.9.18-2

@@ -15,7 +15,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: ncurses-devel
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: findutils
 BuildRequires: libtool
 

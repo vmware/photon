@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -73,7 +73,7 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils
 Requires:       expat >= 2.6.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
@@ -309,6 +309,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.9-10
+- Require coreutils only
 * Tue Feb 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.9-9
 - Fix license
 * Wed Jan 22 2025 Prashant S Chauhan <Prashant.singh-chauhan@broadcom.com> 3.11.9-8

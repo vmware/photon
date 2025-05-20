@@ -14,7 +14,7 @@ Patch0:         sysstat.sysconfig.in.patch
 Patch1:         0001-Fix-an-overflow-which-is-still-possible-for-some-val.patch
 BuildRequires:  cronie
 Requires:       cronie
-Requires(pre):  (coreutils or coreutils-selinux)
+Requires(pre):  coreutils
 
 %description
 The Sysstat package contains utilities to monitor system performance and usage activity. Sysstat contains the sar utility, common to many commercial Unixes, and tools you can schedule via cron to collect and historize performance and activity data.

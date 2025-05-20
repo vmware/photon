@@ -4,7 +4,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -62,7 +62,7 @@ Summary:    Development Libraries for ruby
 Group:      Development/Libraries
 Requires:   findutils
 Requires:   libselinux-devel
-Requires:   (coreutils or coreutils-selinux)
+Requires:   coreutils >= 9.1-10
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -133,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.4-12
+- Require coreutils only
 * Mon Mar 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.4-11
 - Chore cleanups
 * Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-10

@@ -1,7 +1,7 @@
 Summary:        Library to find geographical and network information of an IP address
 Name:           geoip-api-c
 Version:        1.6.12
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/maxmind/geoip-api-c
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Source0: https://github.com/maxmind/geoip-api-c/releases/download/v%{version}/Ge
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  zlib-devel
@@ -71,6 +71,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/geoip.pc
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.12-5
+- Require coreutils only
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.12-4
 - Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.6.12-3

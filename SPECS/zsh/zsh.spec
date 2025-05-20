@@ -1,7 +1,7 @@
 Summary:          Z shell
 Name:             zsh
 Version:          5.9
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://zsh.org
 Group:            System Environment/Shells
 Vendor:           VMware, Inc.
@@ -15,7 +15,7 @@ Source2: zshrc
 Source3: license.txt
 %include %{SOURCE3}
 
-BuildRequires:    (coreutils or coreutils-selinux)
+BuildRequires:    coreutils
 BuildRequires:    tar
 BuildRequires:    patch
 BuildRequires:    diffutils
@@ -32,7 +32,7 @@ BuildRequires:    elfutils
 
 Requires(post):   /bin/grep
 Requires(postun): /bin/grep
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils
 
 Provides:         /bin/%{name}
 
@@ -125,6 +125,8 @@ fi
 %config(noreplace) %{_sysconfdir}/z*
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.9-5
+- Require coreutils only
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.9-4
 - Release bump for SRP compliance
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.9-3

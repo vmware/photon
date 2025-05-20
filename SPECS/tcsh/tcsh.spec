@@ -1,7 +1,7 @@
 Summary:          An enhanced version of csh, the C shell
 Name:             tcsh
 Version:          6.24.06
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://www.tcsh.org
 Group:            System Environment/Shells
 Vendor:           VMware, Inc.
@@ -21,7 +21,7 @@ BuildRequires: ncurses-devel
 Requires:         ncurses
 Requires(post):   /bin/grep
 Requires(postun): /bin/grep
-Requires(postun): (coreutils or coreutils-selinux or toybox)
+Requires(postun): coreutils >= 9.1-10
 
 %description
 Tcsh is an enhanced but completely compatible version of csh, the C
@@ -118,6 +118,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.24.06-5
+- Require coreutils only
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.24.06-4
 - Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 6.24.06-3

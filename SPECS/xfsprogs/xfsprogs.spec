@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        6.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://oss.sgi.com/projects/xfs
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -12,7 +12,9 @@ Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{vers
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires: gettext
+Patch0: fix-invalid-de.po.patch
+
+BuildRequires: gettext-devel
 BuildRequires: inih-devel
 BuildRequires: readline-devel
 BuildRequires: userspace-rcu-devel
@@ -48,18 +50,19 @@ These are the additional language files of xfsprogs.
 %build
 %configure \
     --enable-readline=yes \
-    --enable-blkid=yes
+    --enable-blkid=yes \
+    --disable-static
 
 make DEBUG=-DNDEBUG \
      INSTALL_USER=root \
      INSTALL_GROUP=root %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
-             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} install %{?_smp_mflags}
-
-make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
-             PKG_ROOT_LIB_DIR=%{_libdir} PKG_ROOT_SBIN_DIR=%{_sbindir} install-dev %{?_smp_mflags}
+make %{?_smp_mflags} DESTDIR=%{buildroot} \
+     PKG_DOC_DIR=%{_docdir}/%{name}-%{version} \
+     PKG_ROOT_LIB_DIR=%{_libdir} \
+     PKG_ROOT_SBIN_DIR=%{_sbindir} \
+     install install-dev
 
 find %{buildroot}%{_lib64dir} -name '*.la' -delete
 find %{buildroot}%{_lib64dir} -name '*.a' -delete
@@ -80,13 +83,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man2/*
 %{_mandir}/man8/*
 %{_mandir}/man5/*
+%{_libdir}/*.so.*
 %{_datadir}/%{name}/mkfs/*.conf
 %exclude %{_docdir}/%{name}-%{version}/CHANGES.gz
 
 %files devel
 %defattr(-,root,root)
 %dir %{_includedir}/xfs
-%{_libdir}/*.so*
+%{_libdir}/*.so
 %{_includedir}/xfs/*
 %{_mandir}/man3/*
 
@@ -94,6 +98,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.0-4
+- Fix invalid de.po
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0.0-3
 - Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.0-2

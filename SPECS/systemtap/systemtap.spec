@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       14%{?dist}
+Release:       15%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -101,7 +101,7 @@ Group:         System/Tools
 Summary:       Instrumentation System Server
 Requires:      %{name} = %{version}-%{release}
 Requires:      %{name}-runtime = %{version}-%{release}
-Requires:      (coreutils or coreutils-selinux)
+Requires:      coreutils >= 9.1-10
 Requires:      nss
 Requires:      unzip
 Requires:      gzip
@@ -391,6 +391,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.8-15
+- Require coreutils only
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.8-14
 - Release bump for SRP compliance
 * Fri Feb 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.8-13

@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.0.2
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -26,7 +26,7 @@ Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 Requires: cyrus-sasl
 Requires: tinycdb
-Requires: (coreutils or coreutils-selinux)
+Requires: coreutils >= 9.1-10
 Requires: systemd
 Requires: m4
 Requires: openldap
@@ -192,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.0.2-3
+- Require coreutils only
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.0.2-2
 - Release bump for SRP compliance
 * Tue Jan 16 2024 Nitesh Kumar <kunitesh@vmware.com> 8.18.0.2-1

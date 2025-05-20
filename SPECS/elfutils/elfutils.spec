@@ -34,7 +34,7 @@ BuildRequires:  glibc >= 2.7
 BuildRequires:  bison >= 1.875
 BuildRequires:  flex >= 2.5.4a
 BuildRequires:  m4
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  libmicrohttpd-devel
 BuildRequires:  curl-devel

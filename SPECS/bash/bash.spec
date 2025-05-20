@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -9,27 +9,19 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 
-# Source1 and Source3 are taken from https://github.com/scop/bash-completion
-# At commit 79fd051
-# TODO:
-# We will have remove these and introduce bash-completion as a separate package
-Source1: bash_completion
-Source3: 000_bash_completion_compat.bash
+Source1: license.txt
+%include %{SOURCE1}
 
-Source2: license.txt
-%include %{SOURCE2}
-
-Source4: dircolors.sh
-Source5: extrapaths.sh
-Source6: readline.sh
-Source7: i18n.sh
-Source8: bash_completion.sh
-Source9: bash.bashrc
-Source10: bash_profile
-Source11: bashrc
-Source12: bash_logout
-Source13: post.inc
-Source14: postun.inc
+Source2: dircolors.sh
+Source3: extrapaths.sh
+Source4: readline.sh
+Source5: i18n.sh
+Source6: bash.bashrc
+Source7: bash_profile
+Source8: bashrc
+Source9: bash_logout
+Source10: post.inc
+Source11: postun.inc
 
 Patch0: enable-SYS_BASHRC-SSH_SOURCE_BASHRC.patch
 
@@ -85,43 +77,32 @@ ln -sv bash %{buildroot}%{_bindir}/sh
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}%{_sysconfdir}/profile.d
 install -vdm 755 %{buildroot}%{_sysconfdir}/skel
-install -vdm 755 %{buildroot}%{_datadir}/bash-completion
-
-# bash_completion
-install -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/bash-completion
-
-# 000_bash_completion_compat.bash
-install -D -m 644 %{SOURCE3} \
-    %{buildroot}%{_sysconfdir}/bash_completion.d/$(basename %{SOURCE3})
 
 rm %{buildroot}%{_libdir}/bash/Makefile.inc
 
 # dircolors.sh
-install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/profile.d/dircolors.sh
+install -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d/dircolors.sh
 
 # extrapaths.sh
-install -D -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/profile.d/extrapaths.sh
+install -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/profile.d/extrapaths.sh
 
 # readline.sh
-install -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/profile.d/readline.sh
+install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/profile.d/readline.sh
 
 # i18n.sh
-install -D -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/profile.d/i18n.sh
-
-# bash_completion.sh
-install -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/profile.d/bash_completion.sh
+install -D -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/profile.d/i18n.sh
 
 # bash.bashrc
-install -D -m 644 %{SOURCE9} %{buildroot}%{_sysconfdir}/bash.bashrc
+install -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/bash.bashrc
 
 # .bash_profile
-install -D -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/skel/.bash_profile
+install -D -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/skel/.bash_profile
 
 # .bashrc
-install -D -m 644 %{SOURCE11} %{buildroot}%{_sysconfdir}/skel/.bashrc
+install -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/skel/.bashrc
 
 # .bash_logout
-install -D -m 644 %{SOURCE12} %{buildroot}%{_sysconfdir}/skel/.bash_logout
+install -D -m 644 %{SOURCE9} %{buildroot}%{_sysconfdir}/skel/.bash_logout
 
 dircolors -p > %{buildroot}%{_sysconfdir}/dircolors
 %find_lang %{name}
@@ -131,17 +112,16 @@ rm -rf %{buildroot}%{_infodir}
 %make_build check NON_ROOT_USERNAME=nobody
 
 %post
-%include %{SOURCE13}
+%include %{SOURCE10}
 
 %postun
-%include %{SOURCE14}
+%include %{SOURCE11}
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/%{name}/*
 %{_sysconfdir}/
-%{_datadir}/bash-completion/
 
 %files devel
 %{_includedir}/%{name}/*
@@ -157,6 +137,9 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/*/*
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-8
+- Remove bash-completion related files
+- bash-completion is a new package now
 * Thu Jan 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-7
 - Add compatibility data script to bash completion
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-6

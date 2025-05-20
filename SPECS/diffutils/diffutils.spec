@@ -1,7 +1,7 @@
 Summary:    Programs that show the differences between files or directories
 Name:       diffutils
 Version:    3.8
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software/diffutils
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -12,7 +12,7 @@ Source0: http://ftp.gnu.org/gnu/diffutils/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  coreutils
 
 Conflicts:      toybox < 0.8.2-2
 
@@ -43,6 +43,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8-5
+- Require coreutils only
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.8-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8-3

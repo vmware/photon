@@ -13,7 +13,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  gcc
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  make
 
 Provides:       unix2dos

@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 URL:            https://github.com/dracutdevs/dracut/wiki
@@ -44,7 +44,7 @@ Requires:       findutils
 Requires:       procps-ng
 Requires:       systemd
 Requires:       systemd-udev
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-10
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -159,6 +159,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 059-12
+- Require coreutils only
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 059-11
 - Bump-up to build with kmod-34.1
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 059-10

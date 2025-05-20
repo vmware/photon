@@ -14,7 +14,7 @@ Source1: license.txt
 
 BuildRequires:  build-essential
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  gnupg
 BuildRequires:  gpgme-devel
 BuildRequires:  krb5-devel

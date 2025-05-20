@@ -26,7 +26,7 @@ Requires: systemd
 
 BuildRequires: systemd-devel
 BuildRequires: newt-devel
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: popt-devel
 BuildRequires: libselinux-devel
 

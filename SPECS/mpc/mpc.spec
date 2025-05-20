@@ -1,10 +1,10 @@
-Summary:        Library for the arithmetic of complex numbers
-Name:           mpc
-Version:        1.3.1
-Release:        3%{?dist}
-URL:            http://www.multiprecision.org
-Group:          Applications/System
-Vendor:         VMware, Inc.
+Summary:    Library for the arithmetic of complex numbers
+Name:       mpc
+Version:    1.3.1
+Release:    2%{?dist}
+URL:        http://www.multiprecision.org
+Group:      Applications/System
+Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.gz
@@ -12,44 +12,57 @@ Source0: http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires:       gmp
+BuildRequires: gmp-devel
+BuildRequires: mpfr-devel
+
+Requires: gmp
+Requires: mpfr
 
 %description
 The MPC package contains a library for the arithmetic of complex
 numbers with arbitrarily high precision and correct rounding of
 the result.
 
+%package devel
+Summary: Headers and shared development libraries for MPC
+Requires: %{name} = %{version}-%{release}
+Requires: gmp-devel
+Requires: mpfr-devel
+
+%description devel
+Header files and shared library symlinks for the MPC library.
+
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
-      --disable-silent-rules
-make %{?_smp_mflags}
+    --disable-silent-rules  \
+    --disable-static
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot}%{_libdir} -name '*.la' -delete
+%make_install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 
 %check
-make %{?_smp_mflags} check
+%make_build check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-%{_includedir}/*
-%{_libdir}/*.a
-%{_libdir}/*.so
 %{_libdir}/*.so.*
 
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+%{_libdir}/*.so
+
 %changelog
-* Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-3
-- Release bump for SRP compliance
-* Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.1-2
-- Bump version to generate SRP provenance file
+* Sun Oct 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1-2
+- Fix requires
+- Introduce devel package
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.1-1
 - Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.1-1

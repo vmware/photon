@@ -19,7 +19,7 @@ Source2: license.txt
 BuildRequires: gcc
 BuildRequires: libtasn1-devel >= 2.3
 BuildRequires: libffi-devel
-BuildRequires: gettext
+BuildRequires: gettext-devel
 BuildRequires: gtk-doc
 BuildRequires: meson
 BuildRequires: systemd-devel

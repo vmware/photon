@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -40,7 +40,7 @@ BuildRequires:  systemd-rpm-macros
 Requires:       kmod
 Requires:       bash
 Requires:       rpm-build
-Requires:       (coreutils or coreutils-selinux)
+Requires:       coreutils >= 9.1-10
 Requires:       gawk
 Requires:       util-linux
 Requires:       binutils
@@ -121,6 +121,8 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.8-6
+- Require coreutils only
 * Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.8-5
 - Do not need xml-security-c for building kernel
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.9.8-4

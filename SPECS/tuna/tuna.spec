@@ -12,7 +12,10 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildArch:      noarch
-BuildRequires:  python3-devel, gettext
+
+BuildRequires:  python3-devel
+BuildRequires:  gettext-devel
+
 Requires:       python3-ethtool
 Requires:       python3-linux-procfs
 Requires:       python3-schedutils

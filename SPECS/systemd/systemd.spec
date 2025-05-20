@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -64,7 +64,7 @@ BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
 BuildRequires:  docbook-xml
 BuildRequires:  docbook-xsl
-BuildRequires:  gettext
+BuildRequires:  gettext-devel
 BuildRequires:  glib-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  gperf
@@ -120,7 +120,7 @@ resolution.
 %package libs
 Summary:        systemd libraries
 Provides:       nss-myhostname = 0.4
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(post): (coreutils or toybox)
 Requires(post): sed
 Requires(post): grep
 
@@ -701,6 +701,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri May 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-11
+- Require coreutils only
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 253.19-10
 - Bump-up to build with kmod-34.1
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 253.19-9
