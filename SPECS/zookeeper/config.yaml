@@ -1,6 +1,6 @@
 sources:
-- archive: zookeeper-3.8.0.tar.gz
-  archive_sha512sum: d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
+- archive: zookeeper-3.9.3.tar.gz
+  archive_sha512sum: d44d870c1691662efbf1a8baf1859c901b820dc5ff163b36e81beb27b6fbf3cd31b5f1f075697edaaf6d3e7a4cb0cc92f924dcff64b294ef13d535589bdaf143
   skip_validation: true
   spdx:
     package:
@@ -15,17 +15,19 @@ sources:
         of these services lead to management complexity when the applications are
         deployed. '
       home_page: http://zookeeper.apache.org/
-      license_concluded: CDDL-1.0 AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0)
-        AND BSD-3-Clause AND GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0
-        AND MIT AND (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (CDDL-1.1
-        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.0 OR GPL-2.0-only
-        WITH Classpath-exception-2.0) AND GPL-2.0-only AND EPL-1.0 AND (EPL-1.0 OR
-        Apache-2.0) AND BSD-2-Clause AND EPL-2.0
-      license_declared: CDDL-1.0 AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0)
-        AND BSD-3-Clause AND GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0
-        AND MIT AND (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (CDDL-1.1
-        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.0 OR GPL-2.0-only
-        WITH Classpath-exception-2.0) AND GPL-2.0-only AND EPL-1.0 AND (EPL-1.0 OR
-        Apache-2.0) AND BSD-2-Clause AND EPL-2.0
+      license_concluded: (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (EPL-1.0 OR Apache-2.0)
+        AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-3.0-only)
+        AND (EPL-1.0 OR LGPL-2.1-only) AND SSLeay-standalone AND BSD-3-Clause AND
+        LGPL-2.1-only AND OpenSSL-standalone AND ISC AND GPL-2.0-only AND GPL-2.0-only
+        WITH Classpath-exception-2.0 AND CDDL-1.0 AND Zlib AND EPL-1.0 AND EPL-2.0
+        AND OpenSSL AND BSD-2-Clause AND Apache-2.0 AND MIT
+      license_declared: (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (EPL-1.0 OR Apache-2.0)
+        AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-3.0-only)
+        AND (EPL-1.0 OR LGPL-2.1-only) AND SSLeay-standalone AND BSD-3-Clause AND
+        LGPL-2.1-only AND OpenSSL-standalone AND ISC AND GPL-2.0-only AND GPL-2.0-only
+        WITH Classpath-exception-2.0 AND CDDL-1.0 AND Zlib AND EPL-1.0 AND EPL-2.0
+        AND OpenSSL AND BSD-2-Clause AND Apache-2.0 AND MIT
       short_summary: Highly reliable distributed coordination
       supplier: 'Organization: Broadcom, Inc.'

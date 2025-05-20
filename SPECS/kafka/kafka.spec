@@ -6,8 +6,8 @@
 
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
-Version:       3.4.0
-Release:       10%{?dist}
+Version:       3.9.1
+Release:       1%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -18,8 +18,8 @@ Source0: %{name}-%{version}-src.tgz
 Source1:       %{name}.service
 Source2:       %{name}.sysusers
 
-#Download https://raw.githubusercontent.com/gradle/gradle/v7.6.0/gradle/wrapper/gradle-wrapper.jar
-Source3:       gradle-wrapper-7.6.0-jar.tar.gz
+#Download https://raw.githubusercontent.com/gradle/gradle/v8.8.0/gradle/wrapper/gradle-wrapper.jar
+Source3:       gradle-wrapper-8.8.0-jar.tar.gz
 
 Source4: license.txt
 %include %{SOURCE4}
@@ -38,6 +38,7 @@ BuildRequires: openjdk11
 Requires: zookeeper
 Requires: systemd-rpm-macros
 Requires: (openjdk11-jre or openjdk17-jre)
+Requires(post): (coreutils or coreutils-selinux)
 
 %{?systemd_requires}
 
@@ -89,8 +90,8 @@ install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
 install -p -D -m 644 config/log4j.properties %{buildroot}/%{_conf_dir}/
 install -p -D -m 644 connect/mirror/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/runtime/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 tools/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 tools/build/dependant-libs-2.13.15/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 core/build/dependant-libs-2.13.15/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 core/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 clients/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/api/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
@@ -99,10 +100,14 @@ install -p -D -m 644 connect/json/build/libs/* %{buildroot}/%{_prefix}/%{name}/l
 install -p -D -m 644 connect/transforms/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/file/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/examples/build/dependant-libs-2.13.10/* %{buildroot}/%{_prefix}/%{name}/libs
+install -p -D -m 644 streams/examples/build/dependant-libs-2.13.15/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/upgrade-system-tests-0100/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 644 streams/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
+
+cat << EOF >> %{buildroot}/%{_conf_dir}/%{name}.env
+LOG_DIR=/var/log/kafka
+EOF
 
 %clean
 rm -rf %{buildroot}
@@ -111,6 +116,13 @@ rm -rf %{buildroot}
 %sysusers_create_compat %{SOURCE2}
 
 %post
+if [ -d %{_prefix}/%{name}/logs ] && [ ! -L %{_prefix}/%{name}/logs ]; then
+    shopt -s dotglob
+    mv %{_prefix}/%{name}/logs/* %{_log_dir}/
+    shopt -u dotglob
+    rmdir %{_prefix}/%{name}/logs/
+    ln -s %{_log_dir} %{_prefix}/%{name}/logs
+fi
 %systemd_post %{name}.service
 
 %preun
@@ -123,7 +135,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{_unitdir}/%{name}.service
 %config(noreplace) %{_conf_dir}/*
-%{_prefix}/%{name}
+%attr(0755,kafka,kafka) %{_prefix}/%{name}
 %attr(0755,kafka,kafka) %dir %{_log_dir}
 %attr(0700,kafka,kafka) %dir %{_data_dir}
 %{_sysusersdir}/%{name}.conf
@@ -131,6 +143,8 @@ rm -rf %{buildroot}
 %doc LICENSE
 
 %changelog
+* Thu May 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-1
+- Update to 3.9.1, fixes multiple CVEs
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.4.0-10
 - Renaming sysusers to conf to fix auto user creation
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.0-9

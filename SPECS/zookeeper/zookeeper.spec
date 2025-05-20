@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
-Version:          3.8.0
-Release:          7%{?dist}
+Version:          3.9.3
+Release:          1%{?dist}
 URL:              http://zookeeper.apache.org/
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -90,6 +90,8 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_prefix}/*
 
 %changelog
+* Mon May 26 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.3-1
+- Update to 3.9.3, fixes many second level CVEs
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.8.0-7
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.8.0-6

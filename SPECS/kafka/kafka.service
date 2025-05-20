@@ -6,6 +6,7 @@ After=network.target zookeeper.service
 [Service]
 User=kafka
 Group=kafka
+EnvironmentFile=/etc/kafka/kafka.env
 ExecStart=/usr/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
 ExecStop=/usr/kafka/bin/kafka-server-stop.sh
 SuccessExitStatus=143

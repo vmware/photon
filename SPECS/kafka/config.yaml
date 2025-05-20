@@ -1,6 +1,6 @@
 sources:
-- archive: gradle-wrapper-7.6.0-jar.tar.gz
-  archive_sha512sum: 70a4bd98e9c220b1a06ffc416a7345bda8ae5abaa57c7bd3f392516e46e211b1934086bcfb4a58e8e613c105a012e80e2da1de53b4ab900e85e74f467018f4c1
+- archive: gradle-wrapper-8.8.0-jar.tar.gz
+  archive_sha512sum: 54484ee25a05b7d611ba536c5b8ae7fe7dc1efe53b439db10e7549b71cea5030b6e52568ec68182d87d69393307b7d166595e5900f0ddfde0f4fac3efc93be22
   skip_validation: true
   spdx:
     package:
@@ -11,9 +11,15 @@ sources:
       license_declared: Apache-2.0
       short_summary: Contains Gradle jar file
       supplier: 'Organization: Broadcom, Inc.'
-- archive: kafka-3.4.0-src.tgz
-  archive_sha512sum: 84e368c6d5e6487ab7a9892a4f7859fa1f7a4c90880706d0b6a855affdf165fd1aa1ae25e098d5ef11f452a71f76e5edab083db98d6eec5ff5e61c69cb65d302
-  skip_validation: true
+- archive: kafka-3.9.1-src.tgz
+  archive_sha512sum: 28b3066cb554e573428ef69d366cd344b0e7114a560eb57b2d3dda0507d266e6e804389457e8788f27b9c8f1dab027698a448bd82ca1d38b788e2874683e8019
+  archive_type: upstream
+  skip_validation: false
+  name: kafka-3.9.1-src
+  version: "3.9.1"
+  repo_url: https://github.com/apache/kafka
+  commit_id: f745dfdcee2b9851204ddbbcd423626ab87294bc
+  url: https://dlcdn.apache.org/kafka/3.9.1/kafka-3.9.1-src.tgz
   spdx:
     package:
       detailed_description: 'Kafka is designed to allow a single cluster to serve

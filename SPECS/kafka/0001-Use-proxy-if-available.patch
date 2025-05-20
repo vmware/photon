@@ -4,19 +4,21 @@ Date: Wed, 11 Jul 2024 13:56:13 +0000
 Subject: [PATCH] Use proxy if available
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Signed-off-by: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+
 ---
  build.gradle    | 15 +++++++++++++--
  settings.gradle | 18 ++++++++++++++++++
  2 files changed, 31 insertions(+), 2 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index cacda19..1327eea 100644
+index 388a85a..b833686 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -17,9 +17,15 @@ import org.ajoberstar.grgit.Grgit
-
+@@ -18,9 +18,15 @@ import org.gradle.api.JavaVersion
+ 
  import java.nio.charset.StandardCharsets
-
+ 
 +
  buildscript {
    repositories {
@@ -29,10 +31,10 @@ index cacda19..1327eea 100644
 +    }
    }
    apply from: "$rootDir/gradle/dependencies.gradle"
-
-@@ -120,7 +126,12 @@ ext {
+ 
+@@ -167,7 +173,12 @@ ext {
  allprojects {
-
+ 
    repositories {
 -    mavenCentral()
 +    def proxyUrl = System.getenv("GRADLE_PROXY_URL")
@@ -42,37 +44,33 @@ index cacda19..1327eea 100644
 +      mavenCentral()
 +    }
    }
-
+ 
    dependencyUpdates {
 diff --git a/settings.gradle b/settings.gradle
-index a406cc0..607aad2 100644
+index a81ffb6..4b0a6ee 100644
 --- a/settings.gradle
 +++ b/settings.gradle
-@@ -13,6 +13,24 @@
+@@ -13,6 +13,23 @@
  // See the License for the specific language governing permissions and
  // limitations under the License.
-
-+def proxyUrl = System.getenv("GRADLE_PROXY_URL")
+ 
++pluginManagement {
++  repositories {
++    def proxyUrl = System.getenv("GRADLE_PROXY_URL")
++    if (proxyUrl) {
++        def pluginMirror = System.getenv("GRADLE_PLUGINS_URL_MIRROR1")
++        if (pluginMirror) {
++          maven { url "${pluginMirror}" }
++        }
 +
-+if (proxyUrl) {
-+  pluginManagement {
-+    repositories {
-+      def pluginMirror = System.getenv("GRADLE_PLUGINS_URL_MIRROR1")
-+      if (pluginMirror) {
-+        maven { url "${pluginMirror}" }
-+      }
-+
-+      pluginMirror = System.getenv("GRADLE_PLUGINS_URL_MIRROR2")
-+      if (pluginMirror) {
-+        maven { url "${pluginMirror}" }
-+      }
++        pluginMirror = System.getenv("GRADLE_PLUGINS_URL_MIRROR2")
++        if (pluginMirror) {
++          maven { url "${pluginMirror}" }
++        }
 +    }
 +  }
 +}
 +
- include 'clients',
-     'connect:api',
-     'connect:basic-auth-extension',
---
-2.39.4
-
+ plugins {
+     id 'com.gradle.enterprise' version '3.14.1'
+     id 'com.gradle.common-custom-user-data-gradle-plugin' version '1.11.1'
