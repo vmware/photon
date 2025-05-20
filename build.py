@@ -105,7 +105,7 @@ targetDict = {
 
 configdict = {}
 check_prerequesite = {}
-ph_path = ""
+phPath = ""
 
 runCmd = CommandUtils.runCmd
 
@@ -645,7 +645,7 @@ class CleanUp:
             "is-toolchain-pkg", pkg, display_option
         )
         if isToolChainPkg:
-            specDeps.logger.info(
+            print(
                 "Removing all staged RPMs since toolchain packages were modified"
             )
             shutil.rmtree(constants.rpmPath, ignore_errors=True)
@@ -653,9 +653,7 @@ class CleanUp:
             whoNeedsList = specDeps.process(
                 "get-upward-deps", pkg, display_option
             )
-            specDeps.logger.info(
-                "Removing upward dependencies: " + str(whoNeedsList)
-            )
+            print(f"Removing upward dependencies: {whoNeedsList}")
             for pkg in whoNeedsList:
                 package, version = StringUtils.splitPackageNameAndVersion(pkg)
                 for p in SPECS.getData().getPackages(package, version):
@@ -669,45 +667,37 @@ class CleanUp:
                         os.unlink(rpmFile)
 
     def clean_stage_for_incremental_build():
-        rpm_path = constants.rpmPath
+        rpmPath = constants.rpmPath
 
-        basecommit = ""
-        if "base-commit" in configdict["photon-build-param"]:
-            basecommit = str(
-                configdict["photon-build-param"].get("base-commit")
-            )
-
-        if basecommit:
-            cmd = ["git", "diff", "--name-only", basecommit]
+        baseCommit = str(configdict["photon-build-param"].get("base-commit", ""))
+        if baseCommit:
+            cmd = ["git", "diff", "--name-only", baseCommit]
         else:
             cmd = ["git", "diff", "--name-only", "@~1", "@"]
 
-        out, _, _ = runCmd(cmd, capture=True, cwd=ph_path)
+        out, _, _ = runCmd(cmd, capture=True, cwd=phPath)
         if ("support/package-builder" in out) or (
             "support/pullpublishrpms" in out
         ):
             print("Remove all staged RPMs")
-            shutil.rmtree(rpm_path, ignore_errors=True)
-
-        if not os.path.exists(rpm_path):
-            print(f"{rpm_path} is empty, return ...")
+            shutil.rmtree(rpmPath, ignore_errors=True)
             return
 
-        if not basecommit:
+        if not os.path.exists(rpmPath):
+            print(f"{rpmPath} is empty, return ...")
             return
 
-        cmd = f"git diff --name-only {basecommit} | grep '^SPECS/.*\\.spec$'"
-        out, _, _ = runCmd(cmd, shell=True, capture=True, cwd=ph_path, ignore_rc=True)
+        if not baseCommit:
+            return
 
-        spec_fns = [
-            os.path.abspath(os.path.join(ph_path, fn))
-            for fn in out.split("\n")
-            if fn
-        ]
-        if not spec_fns:
+        cmd = f"git diff --name-only {baseCommit} | grep '^SPECS/.*\\.spec$'"
+        files, _, _ = runCmd(cmd, shell=True, capture=True, cwd=phPath, ignore_rc=True)
+        files = files.splitlines()
+        if not files:
             print("No spec files were changed in this incremental build")
             return
 
+        spec_fns = [os.path.join(phPath, f) for f in files]
         try:
             CleanUp.removeUpwardDeps(":".join(spec_fns), "tree")
         except Exception as error:
@@ -1211,14 +1201,23 @@ class CheckTools:
 
         cmd = cmd.rstrip(" ;")
 
-        commit_id = str(
+        baseCommit = str(
             configdict["photon-build-param"].get("base-commit", "")
         )
-        if commit_id:
-            cmd = f"git diff --name-only {commit_id}"
+        if baseCommit:
+            cmd = f"git diff --name-only {baseCommit}"
 
-        files, _, _ = runCmd(cmd, capture=True, shell=True, cwd=ph_path)
+        files, _, _ = runCmd(cmd, capture=True, shell=True, cwd=phPath)
         files = files.splitlines()
+
+        if not files:
+            check_prerequesite["check-spec-files"] = True
+            return
+
+        # if there is no base commit provided, get_modified_files returns
+        # abspath, so no need of prepending phPath
+        if  baseCommit:
+            files = [os.path.join(phPath, f) for f in files]
 
         if check_specs(files):
             raise Exception("Spec file check failed")
@@ -1251,8 +1250,8 @@ class BuildImage:
             )
 
         self.img_name = imgName
-        self.rpm_path = constants.rpmPath
-        self.srpm_path = constants.sourceRpmPath
+        self.rpmPath = constants.rpmPath
+        self.srpmPath = constants.sourceRpmPath
         self.pkg_to_rpm_map_file = os.path.join(
             Build_Config.stagePath, "pkg_info.json"
         )
@@ -1976,7 +1975,7 @@ def main():
 
     global configdict
     global check_prerequesite
-    global ph_path
+    global phPath
     global releaseDir
 
     with open(cfgPath) as jsonData:
@@ -2053,17 +2052,20 @@ def main():
         for item in targetDict[target]:
             check_prerequesite[item] = False
 
-    commit_id = str(configdict["photon-build-param"].get("base-commit", ""))
-    check_hash = ["git", "merge-base", "--is-ancestor", commit_id, "HEAD"]
-    _, _, rc = runCmd(
-        check_hash,
-        cwd=configdict["release-branch-path"],
-        ignore_rc=True,
-        capture=True,
-    )
-    ph_path = (
-        configdict["photon-path"] if rc else configdict["release-branch-path"]
-    )
+    phPath = configdict["photon-path"]
+    baseCommit = str(configdict["photon-build-param"].get("base-commit", ""))
+    if baseCommit:
+        cmd = ["git", "merge-base", "--is-ancestor", baseCommit, "HEAD"]
+        _, _, rc = runCmd(
+            cmd,
+            cwd=configdict["release-branch-path"],
+            ignore_rc=True,
+        )
+
+        if not rc:
+            phPath = configdict["release-branch-path"]
+
+    phPath = os.path.abspath(phPath)
 
     initialize_constants()
 
