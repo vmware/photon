@@ -5,7 +5,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.20.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,6 +17,8 @@ Source1:        %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0:         0001-CVE-2025-40775.patch
 
 Requires:       krb5
 Requires:       e2fsprogs-libs
@@ -131,6 +133,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Wed May 21 2025 Tapas Kundu <tapas.kundu@broadcom.com> 9.20.7-2
+- Fix CVE-2025-40775
 * Tue Apr 08 2025 Ajay Kaher <ajay.kaher@broadcom.com> 9.20.7-1
 - Update to version 9.20.7 to fix CVE-2024-12705/11187
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 9.20.0-2
