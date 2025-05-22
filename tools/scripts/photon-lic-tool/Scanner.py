@@ -2,19 +2,7 @@
 # Includes ability to scan SRPMS, archives, normal files, and even to
 # build source trees from spec files under SPECS/<pkg>/<pkg>.spec
 import common
-from common import (
-    copytree,
-    run_cmd,
-    pr_err,
-    err_exit,
-    get_exceptions_list,
-    extract_top_level_expressions,
-    strip_license_id,
-    cleanup_license_expression,
-    is_extractable,
-    download_file,
-    copy_spec_to_rpm_build_root,
-)
+from common import *
 from CacheUtil import CacheUtil
 from LicDB import LicDB
 from DockerUtil import DockerUtil
@@ -199,21 +187,16 @@ class Scanner:
     # against checksum
     def _download_srcs(
         self,
-        spec_path=None,
         output_dir=None,
-        dist_tag="",
         alt_src_url="",
         photon_root="",
+        config_yaml_path=""
     ):
-        config_yaml_path = f"{os.path.dirname(spec_path)}/config.yaml"
         config_yaml = None
         archive = ""
         archive_checksum = ""
         src_url = ""
         local_checksum = ""
-
-        if not spec_path:
-            return
 
         with open(config_yaml_path, "r") as config_yaml_f:
             config_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
@@ -347,7 +330,10 @@ class Scanner:
 
     # Build the scan directory from a photon spec file,
     # e.g SPECS/<pkg name>/<pkg.spec>. Similar to extract_src_rpm()
-    def _build_scan_dir_from_spec_dir(self, spec_path=None, alt_src_url=None):
+    def _build_scan_dir_from_spec_dir(self,
+                                      spec_path=None,
+                                      alt_src_url=None,
+                                      config_yaml_path=None):
         dist_tag = ""
         attempts = 0
         ph_root = ""
@@ -374,11 +360,10 @@ class Scanner:
                 dist_tag = build_config_json["photon-build-param"]["photon-dist-tag"]
 
         self._download_srcs(
-            spec_path,
             f"{common.rpm_build_root}/SOURCES",
-            dist_tag=dist_tag,
             alt_src_url=alt_src_url,
             photon_root=ph_root,
+            config_yaml_path=config_yaml_path
         )
 
         rpm_build_cmds = [
@@ -415,7 +400,15 @@ class Scanner:
             # this is a Photon spec directory, i.e SPECS/<pkg name>
             if not path.endswith(".spec"):
                 err_exit("--build_spec option requires --path to point to a .spec file")
-            scan_dir = self._build_scan_dir_from_spec_dir(path, alt_src_url)
+
+            config_yaml_path = f"{os.path.dirname(path)}/config.yaml"
+            if not os.path.exists(config_yaml_path):
+                pr_err(
+                    f"config.yaml for {path} not found at {config_yaml_path}, nothing to scan"
+                )
+                return scan_dir
+
+            scan_dir = self._build_scan_dir_from_spec_dir(path, alt_src_url, config_yaml_path)
 
             if not scan_dir:
                 err_exit(f"Failed to build source directory for {path}")
@@ -471,6 +464,21 @@ class Scanner:
                 if checksum in common.known_failures:
                     os.remove(full_path)
 
+
+    def _emit_spdx(self, spdx_exp="None"):
+        print(f"SPDX Expression: {spdx_exp}")
+
+    def _cleanup_scan(self, scan_dir=""):
+        try:
+            if scan_dir and os.path.exists(scan_dir):
+                shutil.rmtree(scan_dir)
+
+            if os.path.exists(common.ph_scan_dir):
+                shutil.rmtree(common.ph_scan_dir)
+        except Exception as e:
+            pr_err(f"Failed to remove temp dir(s) after scan: {e}")
+
+
     # Main scanning function
     def scan(
         self,
@@ -513,6 +521,19 @@ class Scanner:
             )
             return
 
+        # clean out the dir if anything there before
+        if os.path.exists(common.ph_scan_dir):
+            shutil.rmtree(common.ph_scan_dir)
+
+        os.makedirs(common.ph_scan_dir)
+
+        scan_dir = self._setup_scan_dir(path, build_spec, alt_src_url)
+
+        if not scan_dir:
+            self._emit_spdx()
+            self._cleanup_scan()
+            return
+
         if not cpus:
             cpus = multiprocessing.cpu_count()
 
@@ -525,14 +546,6 @@ class Scanner:
             )
         elif common.redis_host or common.redis_port:
             err_exit("For redis cache, need both the host and the port!")
-
-        # clean out the dir if anything there before
-        if os.path.exists(common.ph_scan_dir):
-            shutil.rmtree(common.ph_scan_dir)
-
-        os.makedirs(common.ph_scan_dir)
-
-        scan_dir = self._setup_scan_dir(path, build_spec, alt_src_url)
 
         if not common.no_trimming:
             lic_db = LicDB()
@@ -611,13 +624,5 @@ class Scanner:
                     yaml_output_dir=os.path.dirname(yaml_output_path)
                 )
 
-        print(f"SPDX Expression: {spdx_exp}")
-
-        try:
-            if os.path.exists(scan_dir):
-                shutil.rmtree(scan_dir)
-
-            if os.path.exists(common.ph_scan_dir):
-                shutil.rmtree(common.ph_scan_dir)
-        except Exception as e:
-            pr_err(f"Failed to remove temp dir(s) after scan: {e}")
+        self._emit_spdx(spdx_exp)
+        self._cleanup_scan(scan_dir)
