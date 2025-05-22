@@ -6,21 +6,15 @@ if [ ! -d "${repoDir}" ]; then
   exit 1
 fi
 
-pushd ${repoDir} 1>/dev/null
-
-# We don't expect branch names to be something other than
-# standard Photon branches.
-branch=$(git branch --show-current)
-
-files=($( {
-  git diff --name-only origin/${branch}..HEAD
-  git diff --name-only
-  git diff --name-only --cached
-} | sort -u ))
-
-popd 1>/dev/null
-
-[ ${#files[@]} -eq 0 ] && exit 0
+# get @~ file list if there are no files in git diff or HEAD is ahead
+if [ -z "$(git -C ${repoDir} diff --name-only HEAD --)" ]; then
+  files=($(git -C ${repoDir} diff --name-only @~))
+elif [ -n "$(git -C ${repoDir} status 2>&1 | grep -iw 'ahead of')" ]; then
+  ahead_by="$(git -C ${repoDir} status | sed -n -e 's/^.*ahead.* by //p' |  cut -d' ' -f1)"
+  files=($(git -C ${repoDir} diff --name-only @~${ahead_by} @))
+else
+  files=($(git -C ${repoDir} diff --name-only))
+fi
 
 # prepend path
 prefix="$(realpath ${repoDir})"
