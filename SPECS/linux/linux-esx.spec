@@ -28,7 +28,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.138
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -586,6 +586,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu May 22 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.138-2
+- Enable CONFIG_MTD, CONFIG_PCIE_PTM
 * Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.138-1
 - Update to version 6.1.138
 * Sun Apr 27 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.135-1
