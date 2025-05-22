@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -183,6 +183,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Thu May 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-10
+- Use yescrypt as default password encryption backend
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-9
 - Release bump for SRP compliance
 * Sun Dec 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-8
