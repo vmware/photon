@@ -1,0 +1,42 @@
+From 5cea0aef63039fb52c53360ea8d347c1b2b58bcb Mon Sep 17 00:00:00 2001
+From: "Paul E. McKenney" <paulmck@kernel.org>
+Date: Wed, 12 Jan 2022 09:52:44 -0800
+Subject: [PATCH] srcu: Tighten cleanup_srcu_struct() GP checks
+
+[ Upstream commit 8ed00760203d8018bee042fbfe8e076579be2c2b ]
+
+Currently, cleanup_srcu_struct() checks for a grace period in progress,
+but it does not check for a grace period that has not yet started but
+which might start at any time.  Such a situation could result in a
+use-after-free bug, so this commit adds a check for a grace period that
+is needed but not yet started to cleanup_srcu_struct().
+
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ kernel/rcu/srcutree.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+index b8821665c435..5d89d941280f 100644
+--- a/kernel/rcu/srcutree.c
++++ b/kernel/rcu/srcutree.c
+@@ -388,9 +388,11 @@ void cleanup_srcu_struct(struct srcu_struct *ssp)
+ 			return; /* Forgot srcu_barrier(), so just leak it! */
+ 	}
+ 	if (WARN_ON(rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)) != SRCU_STATE_IDLE) ||
++	    WARN_ON(rcu_seq_current(&ssp->srcu_gp_seq) != ssp->srcu_gp_seq_needed) ||
+ 	    WARN_ON(srcu_readers_active(ssp))) {
+-		pr_info("%s: Active srcu_struct %p state: %d\n",
+-			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)));
++		pr_info("%s: Active srcu_struct %p read state: %d gp state: %lu/%lu\n",
++			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)),
++			rcu_seq_current(&ssp->srcu_gp_seq), ssp->srcu_gp_seq_needed);
+ 		return; /* Caller forgot to stop doing call_srcu()? */
+ 	}
+ 	free_percpu(ssp->sda);
+-- 
+2.39.4
+

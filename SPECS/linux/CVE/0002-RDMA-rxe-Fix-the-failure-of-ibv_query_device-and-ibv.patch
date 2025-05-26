@@ -1,0 +1,139 @@
+From 94d2b09579d5de09e4d949e95f70fe87b50a2d94 Mon Sep 17 00:00:00 2001
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
+Date: Sun, 2 Mar 2025 22:54:44 +0100
+Subject: [PATCH 2/2] RDMA/rxe: Fix the failure of ibv_query_device() and
+ ibv_query_device_ex() tests
+
+[ Upstream commit 8ce2eb9dfac8743d1c423b86339336a5b6a6069e ]
+
+In rdma-core, the following failures appear.
+
+"
+$ ./build/bin/run_tests.py -k device
+ssssssss....FF........s
+======================================================================
+FAIL: test_query_device (tests.test_device.DeviceTest.test_query_device)
+Test ibv_query_device()
+----------------------------------------------------------------------
+Traceback (most recent call last):
+   File "/home/ubuntu/rdma-core/tests/test_device.py", line 63, in
+   test_query_device
+     self.verify_device_attr(attr, dev)
+   File "/home/ubuntu/rdma-core/tests/test_device.py", line 200, in
+   verify_device_attr
+     assert attr.sys_image_guid != 0
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+
+======================================================================
+FAIL: test_query_device_ex (tests.test_device.DeviceTest.test_query_device_ex)
+Test ibv_query_device_ex()
+----------------------------------------------------------------------
+Traceback (most recent call last):
+   File "/home/ubuntu/rdma-core/tests/test_device.py", line 222, in
+   test_query_device_ex
+     self.verify_device_attr(attr_ex.orig_attr, dev)
+   File "/home/ubuntu/rdma-core/tests/test_device.py", line 200, in
+   verify_device_attr
+     assert attr.sys_image_guid != 0
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+"
+
+The root cause is: before a net device is set with rxe, this net device
+is used to generate a sys_image_guid.
+
+Fixes: 2ac5415022d1 ("RDMA/rxe: Remove the direct link to net_device")
+Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+Link: https://patch.msgid.link/20250302215444.3742072-1-yanjun.zhu@linux.dev
+Reviewed-by: Daisuke Matsuda <matsuda-daisuke@fujitsu.com>
+Tested-by: Daisuke Matsuda <matsuda-daisuke@fujitsu.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/infiniband/sw/rxe/rxe.c | 25 ++++++-------------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
+index 79740ec28399..3e8ab4563253 100644
+--- a/drivers/infiniband/sw/rxe/rxe.c
++++ b/drivers/infiniband/sw/rxe/rxe.c
+@@ -40,10 +40,8 @@ void rxe_dealloc(struct ib_device *ib_dev)
+ }
+ 
+ /* initialize rxe device parameters */
+-static void rxe_init_device_param(struct rxe_dev *rxe)
++static void rxe_init_device_param(struct rxe_dev *rxe, struct net_device *ndev)
+ {
+-	struct net_device *ndev;
+-
+ 	rxe->max_inline_data			= RXE_MAX_INLINE_DATA;
+ 
+ 	rxe->attr.vendor_id			= RXE_VENDOR_ID;
+@@ -74,15 +72,9 @@ static void rxe_init_device_param(struct rxe_dev *rxe)
+ 	rxe->attr.max_pkeys			= RXE_MAX_PKEYS;
+ 	rxe->attr.local_ca_ack_delay		= RXE_LOCAL_CA_ACK_DELAY;
+ 
+-	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
+-	if (!ndev)
+-		return;
+-
+ 	addrconf_addr_eui48((unsigned char *)&rxe->attr.sys_image_guid,
+ 			ndev->dev_addr);
+ 
+-	dev_put(ndev);
+-
+ 	rxe->max_ucontext			= RXE_MAX_UCONTEXT;
+ }
+ 
+@@ -115,18 +107,13 @@ static void rxe_init_port_param(struct rxe_port *port)
+ /* initialize port state, note IB convention that HCA ports are always
+  * numbered from 1
+  */
+-static void rxe_init_ports(struct rxe_dev *rxe)
++static void rxe_init_ports(struct rxe_dev *rxe, struct net_device *ndev)
+ {
+ 	struct rxe_port *port = &rxe->port;
+-	struct net_device *ndev;
+ 
+ 	rxe_init_port_param(port);
+-	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
+-	if (!ndev)
+-		return;
+ 	addrconf_addr_eui48((unsigned char *)&port->port_guid,
+ 			    ndev->dev_addr);
+-	dev_put(ndev);
+ 	spin_lock_init(&port->port_lock);
+ }
+ 
+@@ -210,14 +197,14 @@ static int rxe_init_pools(struct rxe_dev *rxe)
+ }
+ 
+ /* initialize rxe device state */
+-static int rxe_init(struct rxe_dev *rxe)
++static int rxe_init(struct rxe_dev *rxe, struct net_device *ndev)
+ {
+ 	int err;
+ 
+ 	/* init default device parameters */
+-	rxe_init_device_param(rxe);
++	rxe_init_device_param(rxe, ndev);
+ 
+-	rxe_init_ports(rxe);
++	rxe_init_ports(rxe, ndev);
+ 
+ 	err = rxe_init_pools(rxe);
+ 	if (err)
+@@ -255,7 +242,7 @@ int rxe_add(struct rxe_dev *rxe, unsigned int mtu, const char *ibdev_name,
+ {
+ 	int err;
+ 
+-	err = rxe_init(rxe);
++	err = rxe_init(rxe, ndev);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.39.4
+

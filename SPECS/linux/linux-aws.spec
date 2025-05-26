@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.237
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -314,6 +314,15 @@ Patch213: 0001-netfilter-nfnetlink_log-use-proper-helper-for-fetchi.patch
 Patch214: 0002-netfilter-nf_queue-remove-excess-nf_bridge-variable.patch
 Patch215: 0003-netfilter-propagate-net-to-nf_bridge_get_physindev.patch
 Patch216: 0004-netfilter-bridge-replace-physindev-with-physinif-in-.patch
+
+# Fix CVE-2022-21546
+Patch217: 0001-scsi-target-Fix-WRITE_SAME-No-Data-Buffer-crash.patch
+# Fix CVE-2022-49651
+Patch218: 0001-srcu-Tighten-cleanup_srcu_struct-GP-checks.patch
+
+# Fix CVE-2024-57795
+Patch219: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
+Patch220: 0002-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -661,6 +670,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 26 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-2
+- Fixes CVE-2022-21546, CVE-2022-49651, CVE-2024-57795
 * Tue May 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-1
 - Update to version 5.10.237
 * Tue Apr 29 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.236-2

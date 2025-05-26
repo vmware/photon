@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.237
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -368,6 +368,15 @@ Patch212: 0001-netfilter-nfnetlink_log-use-proper-helper-for-fetchi.patch
 Patch213: 0002-netfilter-nf_queue-remove-excess-nf_bridge-variable.patch
 Patch214: 0003-netfilter-propagate-net-to-nf_bridge_get_physindev.patch
 Patch215: 0004-netfilter-bridge-replace-physindev-with-physinif-in-.patch
+
+# Fix CVE-2022-21546
+Patch217: 0001-scsi-target-Fix-WRITE_SAME-No-Data-Buffer-crash.patch
+# Fix CVE-2022-49651
+Patch218: 0001-srcu-Tighten-cleanup_srcu_struct-GP-checks.patch
+
+# Fix CVE-2024-57795
+Patch219: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
+Patch220: 0002-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
 
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -750,6 +759,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon May 26 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-2
+- Fixes CVE-2022-21546, CVE-2022-49651, CVE-2024-57795
 * Tue May 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-1
 - Update to version 5.10.237
 * Tue Apr 29 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.236-2
