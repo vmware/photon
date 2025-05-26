@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        18.20.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +10,8 @@ URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 %define sha512  node=e15226fe7c7fed5ea82033047674c20108b3ef8223c79cd6da7de45f0d9b59ed75836eee69d4be50a63041a6a22d906ed58ca220ceda8a47c1b1d0ded149ef0c
+
+Patch0:         CVE-2025-23166.patch
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -84,6 +86,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Mon May 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.20.8-2
+- Fix CVE-2025-23166
 * Fri May 16 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.20.8-1
 - Upgrade to 18.20.8
 * Mon Jul 15 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.20.4-1
