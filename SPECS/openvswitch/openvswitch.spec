@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        3.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Source1: license.txt
 Patch0:         CVE-2022-4337.patch
 Patch1:         CVE-2022-4337-tests.patch
 Patch2:         openvswitch-CVE-2023-1668.patch
+Patch3:         openvswitch-CVE-2023-3966.patch
 BuildRequires:  gcc
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -148,6 +149,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 %{_mandir}/man5/ovsdb.local-config.5.gz
 
 %changelog
+* Mon May 26 2025 Dweep Advani <dweep.advani@broadcom.com> 3.0.2-5
+- Fix CVE-2023-3966
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.2-4
 - Release bump for SRP compliance
 * Mon Sep 11 2023 Dweep Advani <dadvani@vmware.com> 3.0.2-3
