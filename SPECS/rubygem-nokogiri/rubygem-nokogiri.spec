@@ -3,21 +3,23 @@
 
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
-Version:        1.12.5
-Release:        5%{?dist}
+Version:        1.13.6
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/nokogiri/
 Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
-%define sha512  nokogiri=29ef38133906f3ffc4b8a3d8f980b5b684dcab21360a46fa618cc47caf1f98f51654a64648a1cc638d784a33336f24ce45a6ea43aa365caf39702e36ab75dbcf
+%define sha512  nokogiri=1928b41b1e8f5e99792b8427b8228343d53deca56d472055b2afdf29d247637acc3403c5183be0f80e64b55ba20747a152ce5eebdaf90a4c431ca54010ce4b3f
+
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-mini_portile2
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
+
 Requires:       ruby >= 2.4.0
-Requires:       rubygem-mini_portile2
+Requires:       rubygem-mini_portile2 >= 2.8.0
 Requires:       libxml2
 Requires:       libxslt
 
@@ -38,6 +40,8 @@ Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features
 %{gem_base}
 
 %changelog
+*   Mon May 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.6-1
+-   Fix CVE-2022-29181, CVE-2022-24836, CVE-2018-25032 and CVE-2021-30560
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.12.5-5
 -   Add gem macros
 *   Thu Apr 25 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.12.5-4
