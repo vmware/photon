@@ -30,15 +30,15 @@ declare -A replaced_pkgs_map=(
   [openjdk10-src]="openjdk17-src openjdk11-src"
   [openjre10]="openjdk17 openjdk11"
   [pmd]=pmd-ng
-  [postgresql]="postgresql15 postgresql14 postgresql13"
-  [postgresql-libs]="postgresql15-libs postgresql14-libs postgresql13-libs"
-  [postgresql-devel]="postgresql15-devel postgresql14-devel postgresql13-devel"
-  [postgresql13]="postgresql13 postgresql15 postgresql14"
-  [postgresql13-libs]="postgresql13-libs postgresql15-libs postgresql14-libs"
-  [postgresql13-devel]="postgresql13-devel postgresql15-devel postgresql14-devel"
-  [pgaudit13]="pgaudit13 pgaudit15 pgaudit14"
-  [repmgr]="repmgr15 repmgr14 repmgr13"
-  [repmgr13]="repmgr13 repmgr15 repmgr14"
+  [postgresql]="postgresql16 postgresql15 postgresql14 postgresql13"
+  [postgresql-libs]="postgresql16-libs postgresql15-libs postgresql14-libs postgresql13-libs"
+  [postgresql-devel]="postgresql16-devel postgresql15-devel postgresql14-devel postgresql13-devel"
+  [postgresql13]="postgresql13 postgresql16 postgresql15 postgresql14"
+  [postgresql13-libs]="postgresql13-libs postgresql16-libs postgresql15-libs postgresql14-libs"
+  [postgresql13-devel]="postgresql13-devel postgresql16-devel postgresql15-devel postgresql14-devel"
+  [pgaudit13]="pgaudit13 pgaudit16 pgaudit15 pgaudit14"
+  [repmgr]="repmgr16 repmgr15 repmgr14 repmgr13"
+  [repmgr13]="repmgr13 repmgr16 repmgr15 repmgr14"
 )
 
 # Maps the the packages with new names in target repo to the installed packages
@@ -68,7 +68,6 @@ declare -A conf_path_map=(
   # config of apache-tomcat in 3.0 will be restored for apache-tomcat-9 in 5.0
   [/var/opt/apache-tomcat/conf]=/var/opt/apache-tomcat9/conf
 )
-
 
 # Take care of post upgrade config changes
 function fix_post_upgrade_config() {
