@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         15%{?dist}
+Release:         16%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -22,6 +22,25 @@ Patch2:        CVE-2024-52530.patch
 Patch3:        CVE-2024-52531.patch
 Patch4:        CVE-2024-52532-1.patch
 Patch5:        CVE-2024-52532-2.patch
+Patch6:        CVE-2025-2784-1.patch
+Patch7:        CVE-2025-2784-2.patch
+Patch9:        CVE-2025-32052.patch
+Patch10:       CVE-2025-32053.patch
+Patch11:       CVE-2025-32906-1.patch
+Patch12:       CVE-2025-32906-2.patch
+Patch13:       CVE-2025-32907.patch
+Patch16:       CVE-2025-32909.patch
+Patch17:       CVE-2025-32910-1.patch
+Patch18:       CVE-2025-32910-2.patch
+Patch19:       CVE-2025-32910-3.patch
+Patch20:       CVE-2025-32911-1.patch
+Patch21:       CVE-2025-32911-2.patch
+Patch22:       CVE-2025-32914.patch
+Patch23:       CVE-2025-4476.patch
+Patch24:       CVE-2025-46420.patch
+Patch26:       CVE-2025-52050.patch
+Patch27:       Backport-auth-tests-for-CVE-2025-32910.patch
+Patch28:       Backport-server-mem-limit-test-from-CVE-2025-32907.patch
 
 BuildRequires: glib-devel >= 2.68.4
 BuildRequires: gobject-introspection
@@ -117,6 +136,8 @@ These are the additional language files of libsoup.
 %defattr(-,root,root)
 
 %changelog
+* Tue May 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.72.0-16
+- Fix Multiple CVE's
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.72.0-15
 - Bump version as a part of meson upgrade
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.72.0-14
