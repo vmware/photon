@@ -3,11 +3,15 @@
 %global security_hardening none
 %define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define _modulesdir /lib/modules/%{uname_r}
+%define falcosecurity_libs_prefix_src %{_arch}-vmware-linux/falcosecurity-libs-repo/falcosecurity-libs-prefix/src
+%define falcosecurity_libs %{falcosecurity_libs_prefix_src}/falcosecurity-libs
+%define falcosecurity_src  %{falcosecurity_libs_prefix_src}/0.13.4.tar.gz
+%define uthash_path %{falcosecurity_libs}/userspace/libscap
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        10%{?kernelsubrelease}%{?dist}
+Release:        11%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -17,6 +21,8 @@ Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{vers
 
 Source1: %{name}-%{version}-dependencies.tar.gz
 
+#Refer below file in github to know where to fetch uthash.h for respective version
+#https://github.com/falcosecurity/libs/blob/3eef3f356e0f6ff2bfcbd9304784c46fdec7729c/cmake/modules/uthash.cmake#L17
 #https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h
 Source2: uthash.h
 
@@ -25,6 +31,7 @@ Source3: license.txt
 
 Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1: 0001-build-plugins-locally.patch
+Patch2: falcosecurity-libs-use-local-src.patch
 
 BuildArch: x86_64
 
@@ -78,8 +85,11 @@ Falco lets you continuously monitor and detect container, application, host, and
 
 %prep
 %autosetup -p1
-mkdir -p %{_arch}-vmware-linux
+mkdir -p %{uthash_path}
 tar xf %{SOURCE1} --strip-components=1 -C %{_arch}-vmware-linux
+mkdir -p %{falcosecurity-libs}
+tar xf %{falcosecurity_src} --strip-components=1 -C %{falcosecurity_libs}
+cp %{SOURCE2} %{uthash_path}
 
 %build
 %{cmake} \
@@ -94,7 +104,6 @@ tar xf %{SOURCE1} --strip-components=1 -C %{_arch}-vmware-linux
     -DCMAKE_INSTALL_LIBDIR=%{_lib} \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir}
 
-cp %{SOURCE2} %{_arch}-vmware-linux/falcosecurity-libs-repo/falcosecurity-libs-prefix/src/falcosecurity-libs/userspace/libscap/
 export KERNELDIR="%{_modulesdir}/build"
 %{cmake_build}
 
@@ -131,6 +140,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Tue May 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.36.2-11
+- Use local falcosecurility libs source and uthash.h
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-10
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-9

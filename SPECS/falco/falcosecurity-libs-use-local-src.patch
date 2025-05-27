@@ -1,0 +1,15 @@
+diff --git a/cmake/modules/falcosecurity-libs.cmake b/cmake/modules/falcosecurity-libs.cmake
+index 9ace1a5..b951aa6 100644
+--- a/cmake/modules/falcosecurity-libs.cmake
++++ b/cmake/modules/falcosecurity-libs.cmake
+@@ -20,8 +20,9 @@ file(MAKE_DIRECTORY ${FALCOSECURITY_LIBS_CMAKE_WORKING_DIR})
+ # explicitly disable the bundled driver, since we pull it separately
+ set(USE_BUNDLED_DRIVER OFF CACHE BOOL "")
+
++set(FALCOSECURITY_LIBS_SOURCE_DIR "${FALCOSECURITY_LIBS_CMAKE_WORKING_DIR}/falcosecurity-libs-prefix/src/falcosecurity-libs")
+ if(FALCOSECURITY_LIBS_SOURCE_DIR)
+-  set(FALCOSECURITY_LIBS_VERSION "0.0.0-local")
++  set(FALCOSECURITY_LIBS_VERSION "0.13.4")
+   message(STATUS "Using local version of falcosecurity/libs: '${FALCOSECURITY_LIBS_SOURCE_DIR}'")
+ else()
+   # FALCOSECURITY_LIBS_REPO accepts a repository name (<org name>/<repo name>) alternative to the falcosecurity/libs repository.
