@@ -1134,7 +1134,7 @@ class CheckTools:
                 runCmd(
                     [
                         "ln",
-                        "-srv",
+                        "-sfv",
                         f"{hook_scripts_path}/{fn}",
                         f"{git_hooks_path}/{fn}",
                     ]
