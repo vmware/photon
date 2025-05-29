@@ -1,7 +1,10 @@
 sources:
-- archive: rsyslog-8.2306.0.tar.gz
-  archive_sha512sum: 4012ea18d49efa75438aa225fec1daafcaadc216cd5c0ecceccdc34688940bbdca9eb19bd9c401e834b023d9b9a5a0870529f7b855bb64c796a55538639dadfc
+- archive: rsyslog-8.2504.0.tar.gz
+  archive_sha512sum: 327d4d1cbfa3aa9de4107199da1f9d5e534a80873c1bb612790c752f650acd12b9b7b7017c11b6132e3b869709c1d6c15fe684d6bc9eef155aca2d779f542994
   skip_validation: true
+  repo_url: https://github.com/rsyslog/rsyslog
+  url: https://github.com/rsyslog/rsyslog/archive/refs/tags/v8.2504.0.tar.gz
+  commit_id: 53c8bd9387ea16b5fa992075136daa2f52ab964d
   spdx:
     package:
       detailed_description: 'RSYSLOG is the rocket-fast system for log processing.
@@ -10,19 +13,15 @@ sources:
         swiss army knife of logging, being able to accept inputs from a wide variety
         of sources, transform them, and output to the results to diverse destinations. '
       home_page: http://www.rsyslog.com
-      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND CDDL-1.0
-        AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND Apache-2.0 AND FSFAP-no-warranty-disclaimer
-        AND GPL-3.0-or-later AND GPL-2.0-or-later AND X11 AND LGPL-3.0-or-later AND
-        FSFAP AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-3.0-only AND LGPL-3.0-only AND CC0-1.0 AND GPL-1.0-or-later AND BSD-3-Clause
-        AND FSFUL AND LGPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-macro
-      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND CDDL-1.0
-        AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND Apache-2.0 AND FSFAP-no-warranty-disclaimer
-        AND GPL-3.0-or-later AND GPL-2.0-or-later AND X11 AND LGPL-3.0-or-later AND
-        FSFAP AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception
-        AND GPL-3.0-only AND LGPL-3.0-only AND CC0-1.0 AND GPL-1.0-or-later AND BSD-3-Clause
-        AND FSFUL AND LGPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-macro
+      license_concluded: (MIT OR BSD-3-Clause OR GPL-2.0-only) AND (MIT OR GPL-2.0-only)
+        AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND LGPL-2.0-only AND GPL-1.0-or-later
+        AND Apache-1.0 AND FSFAP AND CC0-1.0 AND BSD-3-Clause AND GPL-3.0-or-later
+        AND Apache-2.0 AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-3.0-only AND
+        LGPL-3.0-or-later AND CDDL-1.0
+      license_declared: (MIT OR BSD-3-Clause OR GPL-2.0-only) AND (MIT OR GPL-2.0-only)
+        AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND LGPL-2.0-only AND GPL-1.0-or-later
+        AND Apache-1.0 AND FSFAP AND CC0-1.0 AND BSD-3-Clause AND GPL-3.0-or-later
+        AND Apache-2.0 AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-3.0-only AND
+        LGPL-3.0-or-later AND CDDL-1.0
       short_summary: Rocket-fast system for log processing
       supplier: 'Organization: Broadcom, Inc.'
