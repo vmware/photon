@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
-Date: Tue, 22 Mar 2022 10:57:07 -0400
+Date: Wed, 3 Jul 2024 17:54:41 -0600
 Subject: [PATCH] nx: set attrs in our kernel loaders
 
 For NX, our kernel loaders need to set write and execute page
@@ -12,23 +12,22 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
 [rharwood: fix stack_attrs undefined, fix aarch64 callsites]
 Signed-off-by: Robbie Harwood <rharwood@redhat.com>
 ---
- grub-core/kern/efi/mm.c            |  77 +++++++++++++++++
- grub-core/loader/arm64/linux.c     |  16 +++-
- grub-core/loader/arm64/xen_boot.c  |   4 +-
+ grub-core/kern/efi/mm.c            |  79 ++++++++++++++++
+ grub-core/loader/arm64/xen_boot.c  |   5 +-
  grub-core/loader/efi/chainloader.c |  11 +++
- grub-core/loader/efi/linux.c       | 164 ++++++++++++++++++++++++++++++++++++-
- grub-core/loader/i386/efi/linux.c  |  26 +++++-
- grub-core/loader/i386/linux.c      |   5 ++
+ grub-core/loader/efi/linux.c       | 188 ++++++++++++++++++++++++++++++++++---
+ grub-core/loader/i386/efi/linux.c  |  26 ++++-
+ grub-core/loader/i386/linux.c      |   5 +
  include/grub/efi/efi.h             |   6 +-
  include/grub/efi/linux.h           |  16 +++-
  include/grub/efi/pe32.h            |   2 +
- 10 files changed, 312 insertions(+), 15 deletions(-)
+ 9 files changed, 319 insertions(+), 19 deletions(-)
 
 diff --git a/grub-core/kern/efi/mm.c b/grub-core/kern/efi/mm.c
-index 2c33758ed7..e460b072e6 100644
+index 560b859b6f4..464fe1c3c01 100644
 --- a/grub-core/kern/efi/mm.c
 +++ b/grub-core/kern/efi/mm.c
-@@ -610,6 +610,81 @@ print_memory_map (grub_efi_memory_descriptor_t *memory_map,
+@@ -603,6 +603,83 @@ print_memory_map (grub_efi_memory_descriptor_t *memory_map,
  }
  #endif
  
@@ -107,11 +106,13 @@ index 2c33758ed7..e460b072e6 100644
 +    }
 +}
 +
- void
- grub_efi_mm_init (void)
++
++
+ static grub_err_t
+ grub_efi_mm_add_regions (grub_size_t required_bytes, unsigned int flags)
  {
-@@ -623,6 +698,8 @@ grub_efi_mm_init (void)
-   grub_efi_uint64_t required_pages;
+@@ -615,6 +692,8 @@ grub_efi_mm_add_regions (grub_size_t required_bytes, unsigned int flags)
+   grub_err_t err;
    int mm_status;
  
 +  grub_nx_init ();
@@ -119,66 +120,11 @@ index 2c33758ed7..e460b072e6 100644
    /* Prepare a memory region to store two memory maps.  */
    memory_map = grub_efi_allocate_any_pages (2 * BYTES_TO_PAGES (MEMORY_MAP_SIZE));
    if (! memory_map)
-diff --git a/grub-core/loader/arm64/linux.c b/grub-core/loader/arm64/linux.c
-index cc67f43906..de85583487 100644
---- a/grub-core/loader/arm64/linux.c
-+++ b/grub-core/loader/arm64/linux.c
-@@ -172,7 +172,8 @@ free_params (void)
- }
- 
- grub_err_t
--grub_arch_efi_linux_boot_image (grub_addr_t addr, char *args)
-+grub_arch_efi_linux_boot_image (grub_addr_t addr, grub_size_t size, char *args,
-+				int nx_supported)
- {
-   grub_err_t retval;
- 
-@@ -182,7 +183,8 @@ grub_arch_efi_linux_boot_image (grub_addr_t addr, char *args)
- 
-   grub_dprintf ("linux", "linux command line: '%s'\n", args);
- 
--  retval = grub_efi_linux_boot ((char *)addr, handover_offset, (void *)addr);
-+  retval = grub_efi_linux_boot (addr, size, handover_offset,
-+				(void *)addr, nx_supported);
- 
-   /* Never reached... */
-   free_params();
-@@ -192,7 +194,10 @@ grub_arch_efi_linux_boot_image (grub_addr_t addr, char *args)
- static grub_err_t
- grub_linux_boot (void)
- {
--  return (grub_arch_efi_linux_boot_image((grub_addr_t)kernel_addr, linux_args));
-+  return grub_arch_efi_linux_boot_image((grub_addr_t)kernel_addr,
-+					(grub_size_t)kernel_size,
-+					linux_args,
-+					0);
- }
- 
- static grub_err_t
-@@ -340,6 +345,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
-   grub_off_t filelen;
-   grub_uint32_t align;
-   void *kernel = NULL;
-+  int nx_supported = 1;
- 
-   grub_dl_ref (my_mod);
- 
-@@ -376,6 +382,10 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
-   grub_dprintf ("linux", "kernel entry offset : %d\n", handover_offset);
-   grub_dprintf ("linux", "kernel alignment    : 0x%x\n", align);
- 
-+  err = grub_efi_check_nx_image_support((grub_addr_t)kernel, filelen, &nx_supported);
-+  if (err != GRUB_ERR_NONE)
-+    goto fail;
-+
-   grub_loader_unset();
- 
-   kernel_alloc_pages = GRUB_EFI_BYTES_TO_PAGES (kernel_size + align - 1);
 diff --git a/grub-core/loader/arm64/xen_boot.c b/grub-core/loader/arm64/xen_boot.c
-index d9b7a9ba40..6e7e920416 100644
+index 9838a0f878b..5d7c8603db9 100644
 --- a/grub-core/loader/arm64/xen_boot.c
 +++ b/grub-core/loader/arm64/xen_boot.c
-@@ -266,7 +266,9 @@ xen_boot (void)
+@@ -252,7 +252,10 @@ xen_boot (void)
      return err;
  
    return grub_arch_efi_linux_boot_image (xen_hypervisor->start,
@@ -186,14 +132,15 @@ index d9b7a9ba40..6e7e920416 100644
 +                                         xen_hypervisor->size,
 +                                         xen_hypervisor->cmdline,
 +                                         0);
++
  }
  
  static void
 diff --git a/grub-core/loader/efi/chainloader.c b/grub-core/loader/efi/chainloader.c
-index fb874f1855..dd31ac9bb3 100644
+index badff5e50b5..5cd6f6a5993 100644
 --- a/grub-core/loader/efi/chainloader.c
 +++ b/grub-core/loader/efi/chainloader.c
-@@ -1070,6 +1070,17 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
+@@ -1078,6 +1078,17 @@ grub_cmd_chainloader (grub_command_t cmd __attribute__ ((unused)),
        goto fail;
      }
  
@@ -212,18 +159,18 @@ index fb874f1855..dd31ac9bb3 100644
    if (fsize >= (grub_ssize_t) sizeof (struct grub_macho_fat_header))
      {
 diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
-index 9265cf4200..277f352e0c 100644
+index 3ada50ed969..fe48001442a 100644
 --- a/grub-core/loader/efi/linux.c
 +++ b/grub-core/loader/efi/linux.c
-@@ -26,16 +26,127 @@
+@@ -96,16 +96,127 @@ static grub_efi_load_file2_t initrd_lf2 = {
  
  #pragma GCC diagnostic push
  #pragma GCC diagnostic ignored "-Wcast-align"
 +#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 +
 +grub_err_t
-+grub_efi_check_nx_image_support (grub_addr_t kernel_addr,
-+				 grub_size_t kernel_size,
++grub_efi_check_nx_image_support (grub_addr_t k_add,
++				 grub_size_t k_size,
 +				 int *nx_supported)
 +{
 +  struct grub_dos_header *doshdr;
@@ -235,19 +182,19 @@ index 9265cf4200..277f352e0c 100644
 +  int image_is_compatible = 0;
 +  int is_64_bit;
 +
-+  if (kernel_size < sz)
++  if (k_size < sz)
 +    return grub_error (GRUB_ERR_BAD_OS, N_("kernel is too small"));
 +
-+  doshdr = (void *)kernel_addr;
++  doshdr = (void *)k_add;
 +
 +  if ((doshdr->magic & 0xffff) != GRUB_DOS_MAGIC)
 +    return grub_error (GRUB_ERR_BAD_OS, N_("kernel DOS magic is invalid"));
 +
 +  sz = doshdr->lfanew + sizeof (*pe32);
-+  if (kernel_size < sz)
++  if (k_size < sz)
 +    return grub_error (GRUB_ERR_BAD_OS, N_("kernel is too small"));
 +
-+  pe32 = (struct grub_pe32_header_32 *)(kernel_addr + doshdr->lfanew);
++  pe32 = (struct grub_pe32_header_32 *)(k_add + doshdr->lfanew);
 +  pe64 = (struct grub_pe32_header_64 *)pe32;
 +
 +  if (grub_memcmp (pe32->signature, GRUB_PE32_SIGNATURE,
@@ -275,7 +222,7 @@ index 9265cf4200..277f352e0c 100644
 +  if (is_64_bit)
 +    {
 +      sz = doshdr->lfanew + sizeof (*pe64);
-+      if (kernel_size < sz)
++      if (k_size < sz)
 +	return grub_error (GRUB_ERR_BAD_OS, N_("kernel is too small"));
 +
 +      if (pe64->optional_header.dll_characteristics & GRUB_PE32_NX_COMPAT)
@@ -295,7 +242,7 @@ index 9265cf4200..277f352e0c 100644
 +grub_efi_check_nx_required (int *nx_required)
 +{
 +  grub_efi_status_t status;
-+  grub_efi_guid_t guid = GRUB_EFI_SHIM_LOCK_GUID;
++  grub_guid_t guid = GRUB_EFI_SHIM_LOCK_GUID;
 +  grub_size_t mok_policy_sz = 0;
 +  char *mok_policy = NULL;
 +  grub_uint32_t mok_policy_attrs = 0;
@@ -325,10 +272,10 @@ index 9265cf4200..277f352e0c 100644
  typedef void (*handover_func) (void *, grub_efi_system_table_t *, void *);
  
  grub_err_t
--grub_efi_linux_boot (void *kernel_addr, grub_off_t handover_offset,
+-grub_efi_linux_boot (void *kernel_address, grub_off_t ho_offset,
 -		     void *kernel_params)
-+grub_efi_linux_boot (grub_addr_t kernel_addr, grub_size_t kernel_size,
-+		     grub_off_t handover_offset, void *kernel_params,
++grub_efi_linux_boot (grub_addr_t k_address, grub_size_t k_size,
++		     grub_off_t h_offset, void *k_params,
 +		     int nx_supported)
  {
    grub_efi_loaded_image_t *loaded_image = NULL;
@@ -345,18 +292,20 @@ index 9265cf4200..277f352e0c 100644
  
  #ifdef __x86_64__
    offset = 512;
-@@ -48,12 +159,57 @@ grub_efi_linux_boot (void *kernel_addr, grub_off_t handover_offset,
+@@ -118,14 +229,59 @@ grub_efi_linux_boot (void *kernel_address, grub_off_t ho_offset,
     */
    loaded_image = grub_efi_get_loaded_image (grub_efi_image_handle);
    if (loaded_image)
--    loaded_image->image_base = kernel_addr;
-+    loaded_image->image_base = (void *)kernel_addr;
+-    loaded_image->image_base = kernel_address;
++    loaded_image->image_base = (void *)k_address;
    else
      grub_dprintf ("linux", "Loaded Image base address could not be set\n");
  
-   grub_dprintf ("linux", "kernel_addr: %p handover_offset: %p params: %p\n",
--		kernel_addr, (void *)(grub_efi_uintn_t)handover_offset, kernel_params);
-+		(void *)kernel_addr, (void *)handover_offset, kernel_params);
+   grub_dprintf ("linux", "kernel_address: %p handover_offset: %p params: %p\n",
+-		kernel_address, (void *)(grub_efi_uintn_t)ho_offset, kernel_params);
+-  hf = (handover_func)((char *)kernel_address + ho_offset + offset);
+-  hf (grub_efi_image_handle, grub_efi_system_table, kernel_params);
++		(void *)k_address, (void *)h_offset, k_params);
 +
 +
 +  if (nx_required && !nx_supported)
@@ -371,14 +320,14 @@ index 9265cf4200..277f352e0c 100644
 +    }
 +
 +  grub_dprintf ("nx", "Setting attributes for 0x%"PRIxGRUB_ADDR"-0x%"PRIxGRUB_ADDR" to r%cx\n",
-+		    kernel_addr, kernel_addr + kernel_size - 1,
++		    k_address, k_address + k_size - 1,
 +		    (kernel_set_attrs & GRUB_MEM_ATTR_W) ? 'w' : '-');
-+  grub_update_mem_attrs (kernel_addr, kernel_size,
++  grub_update_mem_attrs (k_address, k_size,
 +			 kernel_set_attrs, kernel_clear_attrs);
 +
-+  grub_get_mem_attrs (kernel_addr, 4096, &attrs);
++  grub_get_mem_attrs (k_address, 4096, &attrs);
 +  grub_dprintf ("nx", "permissions for 0x%"PRIxGRUB_ADDR" are %s%s%s\n",
-+		(grub_addr_t)kernel_addr,
++		(grub_addr_t)k_address,
 +		(attrs & GRUB_MEM_ATTR_R) ? "r" : "-",
 +		(attrs & GRUB_MEM_ATTR_W) ? "w" : "-",
 +		(attrs & GRUB_MEM_ATTR_X) ? "x" : "-");
@@ -402,11 +351,75 @@ index 9265cf4200..277f352e0c 100644
 +  asm volatile ("cli");
 +#endif
 +
-   hf = (handover_func)((char *)kernel_addr + handover_offset + offset);
-   hf (grub_efi_image_handle, grub_efi_system_table, kernel_params);
++  hf = (handover_func)((char *)k_address + h_offset + offset);
++  hf (grub_efi_image_handle, grub_efi_system_table, k_params);
  
+   return GRUB_ERR_BUG;
+ }
+@@ -287,13 +443,15 @@ free_params (void)
+ }
+ 
+ grub_err_t
+-grub_arch_efi_linux_boot_image (grub_addr_t addr, char *args)
++grub_arch_efi_linux_boot_image (grub_addr_t addr, grub_size_t size, char *args,
++				int nx_supported)
+ {
+   grub_err_t retval;
+ 
+   grub_dprintf ("linux", "linux command line: '%s'\n", args);
+ 
+-  retval = grub_efi_linux_boot ((char *)addr, handover_offset, (void *)addr);
++  retval = grub_efi_linux_boot (addr, size, handover_offset,
++				(void *)addr, nx_supported);
+ 
+   /* Never reached... */
+   free_params();
+@@ -308,7 +466,10 @@ grub_linux_boot (void)
+     return grub_errno;
+ #endif
+ 
+-  return grub_arch_efi_linux_boot_image ((grub_addr_t) kernel_addr, linux_args);
++  return grub_arch_efi_linux_boot_image((grub_addr_t)kernel_addr,
++					(grub_size_t)kernel_size,
++					linux_args,
++					0);
+ }
+ 
+ static grub_err_t
+@@ -560,10 +721,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+   struct linux_arch_kernel_header lh;
+   grub_off_t filelen;
+   grub_off_t filereadlen;
+-  grub_uint32_t align;
+-  grub_uint32_t code_size;
+   void *kernel = NULL;
+   grub_err_t err;
++  int nx_supported = 1;
+ 
+   grub_dl_ref (my_mod);
+ 
+@@ -634,6 +794,8 @@ fallback:
+ 
+ 
+ #if !defined(__i386__) && !defined(__x86_64__)
++  grub_uint32_t align;
++  grub_uint32_t code_size;
+   if (parse_pe_header (kernel, &kernel_size, &handover_offset, &align, &code_size) != GRUB_ERR_NONE)
+     goto fail;
+   grub_dprintf ("linux", "kernel mem size     : %lld\n", (long long) kernel_size);
+@@ -641,6 +803,10 @@ fallback:
+   grub_dprintf ("linux", "kernel alignment    : 0x%x\n", align);
+   grub_dprintf ("linux", "kernel size         : 0x%x\n", code_size);
+ 
++  err = grub_efi_check_nx_image_support((grub_addr_t)kernel, filelen, &nx_supported);
++  if (err != GRUB_ERR_NONE)
++    goto fail;
++
+   grub_loader_unset();
+ 
+   kernel_alloc_pages = GRUB_EFI_BYTES_TO_PAGES (kernel_size + align - 1);
 diff --git a/grub-core/loader/i386/efi/linux.c b/grub-core/loader/i386/efi/linux.c
-index 92b2fb5091..91ae274299 100644
+index f97b123a51e..abbf6b24f50 100644
 --- a/grub-core/loader/i386/efi/linux.c
 +++ b/grub-core/loader/i386/efi/linux.c
 @@ -44,7 +44,7 @@ struct grub_linuxefi_context {
@@ -418,7 +431,7 @@ index 92b2fb5091..91ae274299 100644
    void *initrd_mem;
  };
  
-@@ -110,13 +110,19 @@ kernel_alloc(grub_efi_uintn_t size,
+@@ -134,13 +134,19 @@ kernel_alloc(kernel_alloc_purpose_t purpose,
        pages = BYTES_TO_PAGES(size);
        grub_dprintf ("linux", "Trying to allocate %lu pages from %p\n",
  		    (unsigned long)pages, (void *)(unsigned long)max);
@@ -439,7 +452,7 @@ index 92b2fb5091..91ae274299 100644
      }
  
    while (grub_error_pop ())
-@@ -137,9 +143,11 @@ grub_linuxefi_boot (void *data)
+@@ -161,9 +167,11 @@ grub_linuxefi_boot (void *data)
  
    asm volatile ("cli");
  
@@ -453,7 +466,7 @@ index 92b2fb5091..91ae274299 100644
  }
  
  static grub_err_t
-@@ -304,7 +312,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -331,7 +339,9 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
    grub_uint32_t handover_offset;
    struct linux_kernel_params *params = 0;
    char *cmdline = 0;
@@ -463,7 +476,7 @@ index 92b2fb5091..91ae274299 100644
  
    grub_dl_ref (my_mod);
  
-@@ -334,6 +344,13 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -361,6 +371,13 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
        goto fail;
      }
  
@@ -477,7 +490,7 @@ index 92b2fb5091..91ae274299 100644
    lh = (struct linux_i386_kernel_header *)kernel;
    grub_dprintf ("linux", "original lh is at %p\n", kernel);
  
-@@ -498,6 +515,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -530,6 +547,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
    context->handover_offset = handover_offset;
    context->params = params;
    context->cmdline = cmdline;
@@ -486,10 +499,10 @@ index 92b2fb5091..91ae274299 100644
    grub_loader_set_ex (grub_linuxefi_boot, grub_linuxefi_unload, context, 0);
  
 diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
-index 4aeb0e4b9a..3c1ff64763 100644
+index 5a257552234..90121e9bc5a 100644
 --- a/grub-core/loader/i386/linux.c
 +++ b/grub-core/loader/i386/linux.c
-@@ -805,6 +805,11 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -817,6 +817,11 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
        kernel_offset += len;
      }
  
@@ -502,29 +515,31 @@ index 4aeb0e4b9a..3c1ff64763 100644
    linux_params.kernel_alignment = (1 << align);
    linux_params.ps_mouse = linux_params.padding11 = 0;
 diff --git a/include/grub/efi/efi.h b/include/grub/efi/efi.h
-index 34825c4adc..449e55269f 100644
+index c40684821e1..2c0e7f24bda 100644
 --- a/include/grub/efi/efi.h
 +++ b/include/grub/efi/efi.h
-@@ -140,12 +140,16 @@ extern void (*EXPORT_VAR(grub_efi_net_config)) (grub_efi_handle_t hnd,
- 						char **device,
- 						char **path);
+@@ -190,6 +190,9 @@ extern void (*EXPORT_VAR(grub_efi_net_config)) (grub_efi_handle_t hnd,
+ void *
+ EXPORT_FUNC (grub_efi_find_configuration_table) (const grub_guid_t *target_guid);
  
 +extern grub_addr_t EXPORT_VAR(grub_stack_addr);
 +extern grub_size_t EXPORT_VAR(grub_stack_size);
 +
- #if defined(__arm__) || defined(__aarch64__) || defined(__riscv)
+ #if defined(__arm__) || defined(__aarch64__) || defined(__riscv) || defined(__loongarch__)
  void *EXPORT_FUNC(grub_efi_get_firmware_fdt)(void);
  grub_err_t EXPORT_FUNC(grub_efi_get_ram_base)(grub_addr_t *);
- #include <grub/cpu/linux.h>
- grub_err_t grub_arch_efi_linux_check_image(struct linux_arch_kernel_header *lh);
+@@ -197,7 +200,8 @@ grub_err_t EXPORT_FUNC(grub_efi_get_ram_base)(grub_addr_t *);
+ #include <grub/file.h>
+ grub_err_t grub_arch_efi_linux_load_image_header(grub_file_t file,
+                                                 struct linux_arch_kernel_header *lh);
 -grub_err_t grub_arch_efi_linux_boot_image(grub_addr_t addr, char *args);
 +grub_err_t grub_arch_efi_linux_boot_image(grub_addr_t addr, grub_size_t size,
 +					  char *args, int nx_enabled);
- #endif
  
  grub_addr_t grub_efi_section_addr (const char *section);
+ 
 diff --git a/include/grub/efi/linux.h b/include/grub/efi/linux.h
-index 887b02fd9f..b82f71006a 100644
+index c806a7757f3..5b4e626c37c 100644
 --- a/include/grub/efi/linux.h
 +++ b/include/grub/efi/linux.h
 @@ -22,8 +22,20 @@
@@ -535,26 +550,26 @@ index 887b02fd9f..b82f71006a 100644
 +
  grub_err_t
 -EXPORT_FUNC(grub_efi_linux_boot) (void *kernel_address, grub_off_t offset,
--				  void *kernel_param);
+-                                  void *kernel_param);
 +EXPORT_FUNC(grub_efi_linux_boot) (grub_addr_t kernel_address,
-+				  grub_size_t kernel_size,
-+				  grub_off_t handover_offset,
-+				  void *kernel_param, int nx_enabled);
++                                  grub_size_t kernel_size,
++                                  grub_off_t handover_offset,
++                                  void *kernel_param, int nx_enabled);
 +
 +grub_err_t
 +EXPORT_FUNC(grub_efi_check_nx_image_support) (grub_addr_t kernel_addr,
-+					      grub_size_t kernel_size,
-+					      int *nx_supported);
++                                              grub_size_t kernel_size,
++                                              int *nx_supported);
 +
 +grub_err_t
 +EXPORT_FUNC(grub_efi_check_nx_required) (int *nx_required);
  
  #endif /* ! GRUB_EFI_LINUX_HEADER */
 diff --git a/include/grub/efi/pe32.h b/include/grub/efi/pe32.h
-index 2a5e1ee003..a5e623eb04 100644
+index 13fdd0e7d98..a4d62373cc9 100644
 --- a/include/grub/efi/pe32.h
 +++ b/include/grub/efi/pe32.h
-@@ -181,6 +181,8 @@ struct grub_pe32_optional_header
+@@ -194,6 +194,8 @@ struct grub_pe32_optional_header
    struct grub_pe32_data_directory reserved_entry;
  };
  

@@ -1,4 +1,4 @@
-From 6ff44b1287bb17d5a53e9ae2abfe165d7a3a8875 Mon Sep 17 00:00:00 2001
+From 536ba53c8861a94d2c01843e69019f1804be64f3 Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <akaher@vmware.com>
 Date: Thu, 29 Jun 2023 17:56:48 +0530
 Subject: [PATCH 1/2] grub2-emu: hide menu, skip retry
@@ -11,10 +11,10 @@ Subject: [PATCH 1/2] grub2-emu: hide menu, skip retry
  1 file changed, 17 insertions(+)
 
 diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
-index c8516a5..9ead05e 100644
+index a2703da..5899358 100644
 --- a/grub-core/normal/menu.c
 +++ b/grub-core/normal/menu.c
-@@ -61,6 +61,7 @@ struct timeout_style_name {
+@@ -62,6 +62,7 @@ struct timeout_style_name {
  void
  grub_wait_after_message (void)
  {
@@ -22,7 +22,7 @@ index c8516a5..9ead05e 100644
    grub_uint64_t endtime;
    grub_xputs ("\n");
    grub_printf_ (N_("Press any key to continue..."));
-@@ -72,6 +73,7 @@ grub_wait_after_message (void)
+@@ -73,6 +74,7 @@ grub_wait_after_message (void)
  	 && grub_getkey_noblock () == GRUB_TERM_NO_KEY);
  
    grub_xputs ("\n");
@@ -30,7 +30,7 @@ index c8516a5..9ead05e 100644
  }
  
  /* Get a menu entry by its index in the entry list.  */
-@@ -902,6 +904,16 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
+@@ -905,6 +907,16 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
        int auto_boot;
        int notify_boot;
  
@@ -47,7 +47,7 @@ index c8516a5..9ead05e 100644
        boot_entry = run_menu (menu, nested, &auto_boot, &notify_boot);
        if (boot_entry < 0)
  	break;
-@@ -919,6 +931,11 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
+@@ -922,6 +934,11 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
  	grub_menu_execute_entry (e, 0);
        if (autobooted)
  	break;
@@ -60,5 +60,5 @@ index c8516a5..9ead05e 100644
  
    return GRUB_ERR_NONE;
 -- 
-2.7.4
+2.49.0
 

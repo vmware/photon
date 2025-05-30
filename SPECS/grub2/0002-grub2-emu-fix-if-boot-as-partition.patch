@@ -1,4 +1,4 @@
-From 47d22545e0b3ff3edfd1fb7dd2e3b386a8962f7b Mon Sep 17 00:00:00 2001
+From ee0262ef81ebfe7cadc5c3f18097989e0dcec8c5 Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <akaher@vmware.com>
 Date: Tue, 13 Jun 2023 11:09:20 +0530
 Subject: [PATCH 2/2] grub2-emu: fix if /boot as partition
@@ -8,13 +8,13 @@ Kexec doesn't understand grub devices i.e. (hd*,gpt*), and if /boot is a
 separate partition then need to append /boot for linux and initrd paths.
 
 grub2-emu using /proc/mounts finds if /boot is separate partition and
-accordingly adds /boot to linux and initrd paths.
+accordingly adds /boot to linux and initrd paths
 ---
- grub-core/loader/emu/linux.c | 78 +++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 70 insertions(+), 8 deletions(-)
+ grub-core/loader/emu/linux.c | 78 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 67 insertions(+), 11 deletions(-)
 
 diff --git a/grub-core/loader/emu/linux.c b/grub-core/loader/emu/linux.c
-index fda9e00..a00d5ca 100644
+index 7de3f7f..d791452 100644
 --- a/grub-core/loader/emu/linux.c
 +++ b/grub-core/loader/emu/linux.c
 @@ -20,6 +20,8 @@
@@ -74,27 +74,27 @@ index fda9e00..a00d5ca 100644
  static grub_err_t
  grub_linux_boot (void)
  {
-@@ -100,19 +143,27 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)), int argc, char *arg
+@@ -111,6 +154,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)), int argc,
  {
    int i;
    char *tempstr;
 +  char *boot_path;
  
+   /* Mark ourselves as in-use. */
    grub_dl_ref (my_mod);
- 
+@@ -118,13 +162,17 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)), int argc,
    if (argc == 0)
      return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
  
--  if ( !grub_util_is_regular(argv[0]) )
--    return grub_error(GRUB_ERR_FILE_NOT_FOUND, N_("Cannot find kernel file %s"), argv[0]);
+-  if (!grub_util_is_regular (argv[0]))
+-    return grub_error (GRUB_ERR_FILE_NOT_FOUND,
+-		       N_("cannot find kernel file %s"), argv[0]);
 -
-   if ( kernel_path != NULL )
-     grub_free(kernel_path);
- 
--  kernel_path = grub_xasprintf("%s", argv[0]);
+   grub_free (kernel_path);
+-  kernel_path = grub_xasprintf ("%s", argv[0]);
+-
 +  boot_path = get_boot_path();
 +  kernel_path = grub_xasprintf("%s%s", boot_path, argv[0]);
-+
 +  grub_dprintf ("debug", "kernel_path = %s\n",kernel_path);
 +
 +  if ( !grub_util_is_regular(kernel_path)) {
@@ -103,48 +103,46 @@ index fda9e00..a00d5ca 100644
 +    kernel_path = NULL;
 +    return grub_error(GRUB_ERR_FILE_NOT_FOUND, N_("Cannot find kernel file %s"), argv[0]);
 +  }
+   grub_free (boot_cmdline);
+   boot_cmdline = NULL;
  
-   if ( boot_cmdline != NULL ) {
-     grub_free(boot_cmdline);
-@@ -129,6 +180,8 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)), int argc, char *arg
+@@ -139,6 +187,8 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)), int argc,
+         }
      }
-   }
  
 +  grub_dprintf ("debug", "boot_cmdline = %s\n",boot_cmdline);
 +
    grub_loader_set (grub_linux_boot, grub_linux_unload, 0);
  
    return GRUB_ERR_NONE;
-@@ -137,16 +190,25 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)), int argc, char *arg
- static grub_err_t
- grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)), int argc, char *argv[])
+@@ -148,16 +198,22 @@ static grub_err_t
+ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)), int argc,
+ 		 char *argv[])
  {
 +  char *boot_path;
-+
    if (argc == 0)
      return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
  
--  if ( !grub_util_is_regular(argv[0]) )
--    return grub_error(GRUB_ERR_FILE_NOT_FOUND, N_("Cannot find initrd file %s"), argv[0]);
+-  if (!grub_util_is_regular (argv[0]))
+-    return grub_error (GRUB_ERR_FILE_NOT_FOUND,
+-		       N_("Cannot find initrd file %s"), argv[0]);
 -
-   if ( initrd_path != NULL )
-     grub_free(initrd_path);
- 
--  initrd_path = grub_xasprintf("%s", argv[0]);
+   grub_free (initrd_path);
+-  initrd_path = grub_xasprintf ("%s", argv[0]);
 +  boot_path = get_boot_path(boot_path);
 +  initrd_path = grub_xasprintf("%s%s", boot_path, argv[0]);
 +
 +  grub_dprintf ("debug", "initrd_path = %s\n",initrd_path);
-+
+ 
 +  if ( !grub_util_is_regular(initrd_path) ) {
 +    if ( initrd_path != NULL )
 +      grub_free(initrd_path);
 +    initrd_path = NULL;
 +    return grub_error(GRUB_ERR_FILE_NOT_FOUND, N_("Cannot find initrd file %s"), argv[0]);
 +  }
- 
+   /* We are done - mark ourselves as on longer in use. */
    grub_dl_unref (my_mod);
  
 -- 
-2.7.4
+2.49.0
 

@@ -10,7 +10,7 @@ This reverts commit 54e0a1bbf1e9106901a557195bb35e5e20fb3925.
  2 files changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
-index f8cbb8d7a2..d3e879b8e5 100644
+index 32c480daeb2..7516a015be0 100644
 --- a/util/grub-mkconfig.in
 +++ b/util/grub-mkconfig.in
 @@ -140,9 +140,6 @@ GRUB_DEVICE_PARTUUID="`${grub_probe} --device ${GRUB_DEVICE} --target=partuuid 2
@@ -31,7 +31,7 @@ index f8cbb8d7a2..d3e879b8e5 100644
    GRUB_FS \
    GRUB_FONT \
    GRUB_PRELOAD_MODULES \
-@@ -246,6 +242,7 @@ export GRUB_DEFAULT \
+@@ -250,6 +246,7 @@ export GRUB_DEFAULT \
    GRUB_BACKGROUND \
    GRUB_THEME \
    GRUB_GFXPAYLOAD_LINUX \
@@ -40,7 +40,7 @@ index f8cbb8d7a2..d3e879b8e5 100644
    GRUB_SAVEDEFAULT \
    GRUB_ENABLE_CRYPTODISK \
 diff --git a/util/grub.d/30_os-prober.in b/util/grub.d/30_os-prober.in
-index 9462248128..80685b15f4 100644
+index 376ca47efe4..30f27f15b83 100644
 --- a/util/grub.d/30_os-prober.in
 +++ b/util/grub.d/30_os-prober.in
 @@ -26,8 +26,8 @@ export TEXTDOMAINDIR="@localedir@"

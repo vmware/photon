@@ -9,7 +9,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  1 file changed, 132 insertions(+), 7 deletions(-)
 
 diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
-index f8cbb8d..cc262a0 100644
+index bd3e79e..8930e63 100644
 --- a/util/grub-mkconfig.in
 +++ b/util/grub-mkconfig.in
 @@ -1,4 +1,4 @@
@@ -18,7 +18,7 @@ index f8cbb8d..cc262a0 100644
  set -e
  
  # Generate grub.cfg by inspecting /boot contents.
-@@ -55,15 +55,28 @@ export TEXTDOMAINDIR="@localedir@"
+@@ -56,15 +56,28 @@ export TEXTDOMAINDIR="@localedir@"
  # Print the usage.
  usage () {
      gettext_printf "Usage: %s [OPTION]\n" "$self"
@@ -51,7 +51,7 @@ index f8cbb8d..cc262a0 100644
  argument () {
    opt=$1
    shift
-@@ -75,6 +88,9 @@ argument () {
+@@ -76,6 +89,9 @@ argument () {
    echo $1
  }
  
@@ -61,7 +61,7 @@ index f8cbb8d..cc262a0 100644
  # Check the arguments.
  while test $# -gt 0
  do
-@@ -83,13 +99,16 @@ do
+@@ -84,13 +100,16 @@ do
  
      case "$option" in
      -h | --help)
@@ -80,9 +80,9 @@ index f8cbb8d..cc262a0 100644
      --output=*)
  	grub_cfg=`echo "$option" | sed 's/--output=//'`
  	;;
-@@ -102,6 +121,12 @@ do
-     esac
- done
+@@ -111,6 +130,12 @@ if test -s "${grub_cfg}" && test "x${grub_cfg}" = "x/boot/efi/EFI/$os_name/grub.
+   exit 1
+ fi
  
 +# for accidental usage of grub2-mkconfig -p -y
 +if [ "$grub_cfg" = "-y" ]; then
@@ -93,7 +93,7 @@ index f8cbb8d..cc262a0 100644
  if [ "x$EUID" = "x" ] ; then
    EUID=`id -u`
  fi
-@@ -123,6 +148,106 @@ if [ "$EUID" != 0 ] ; then
+@@ -132,6 +157,106 @@ if [ "$EUID" != 0 ] ; then
    fi
  fi
  
@@ -201,5 +201,5 @@ index f8cbb8d..cc262a0 100644
  if test -f "$1"; then
      :
 -- 
-2.30.0
+2.49.0
 

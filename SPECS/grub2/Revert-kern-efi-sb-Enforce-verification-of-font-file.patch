@@ -1,0 +1,38 @@
+From d3d99cd3da6835e8ecfe2214dfd1d25419c85bc4 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Sun, 22 Jun 2025 05:24:28 -0500
+Subject: [PATCH] Revert "kern/efi/sb: Enforce verification of font files"
+
+This reverts commit 93a786a00163e50c29f0394df198518617e1c9a5.
+---
+ grub-core/kern/efi/sb.c   | 1 +
+ grub-core/kern/lockdown.c | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/grub-core/kern/efi/sb.c b/grub-core/kern/efi/sb.c
+index 8d3e41360..0963bf28b 100644
+--- a/grub-core/kern/efi/sb.c
++++ b/grub-core/kern/efi/sb.c
+@@ -155,6 +155,7 @@ shim_lock_verifier_init (grub_file_t io __attribute__ ((unused)),
+     case GRUB_FILE_TYPE_PRINT_BLOCKLIST:
+     case GRUB_FILE_TYPE_TESTLOAD:
+     case GRUB_FILE_TYPE_GET_SIZE:
++    case GRUB_FILE_TYPE_FONT:
+     case GRUB_FILE_TYPE_ZFS_ENCRYPTION_KEY:
+     case GRUB_FILE_TYPE_CAT:
+     case GRUB_FILE_TYPE_HEXCAT:
+diff --git a/grub-core/kern/lockdown.c b/grub-core/kern/lockdown.c
+index af6d493cd..0bc70fd42 100644
+--- a/grub-core/kern/lockdown.c
++++ b/grub-core/kern/lockdown.c
+@@ -51,7 +51,6 @@ lockdown_verifier_init (grub_file_t io __attribute__ ((unused)),
+     case GRUB_FILE_TYPE_EFI_CHAINLOADED_IMAGE:
+     case GRUB_FILE_TYPE_ACPI_TABLE:
+     case GRUB_FILE_TYPE_DEVICE_TREE_IMAGE:
+-    case GRUB_FILE_TYPE_FONT:
+       *flags = GRUB_VERIFY_FLAGS_DEFER_AUTH;
+ 
+       /* Fall through. */
+-- 
+2.49.0
+

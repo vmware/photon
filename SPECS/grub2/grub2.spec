@@ -1,11 +1,11 @@
 %define debug_package %{nil}
 
-%define grub_photon_generation 2
+%define grub_photon_generation 3
 
 Summary:    GRand Unified Bootloader
 Name:       grub2
-Version:    2.06
-Release:    23%{?dist}
+Version:    2.12
+Release:    1%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -224,6 +224,7 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %config() %{_sysconfdir}/grub.d/00_header
 %config() %{_sysconfdir}/grub.d/10_linux
 %config() %{_sysconfdir}/grub.d/20_linux_xen
+%config() %{_sysconfdir}/grub.d/25_bli
 %config() %{_sysconfdir}/grub.d/30_os-prober
 %config() %{_sysconfdir}/grub.d/30_uefi-firmware
 %config(noreplace) %{_sysconfdir}/grub.d/40_custom
@@ -266,6 +267,9 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Oct 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12-1
+- Update to grub 2.12
+- Sync fedora patches
 * Tue Aug 12 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-23
 - version bump to fix the license scan
 * Wed Jul 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.06-22
