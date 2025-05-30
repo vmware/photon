@@ -1,7 +1,15 @@
 sources:
 - archive: setuptools-69.0.3.tar.gz
   archive_sha512sum: 11df934931f4b73f7e07ea5713479593c6baa134d423556b2ae7aff0f1e5bdbdee1f5b516131adb169c838231ceb0293441fbf275ef7030dabecf74122565b6d
-  skip_validation: true
+  archive_type: upstream
+  version: "69.0.3"
+  name: setuptools-69.0.3
+  url: https://files.pythonhosted.org/packages/fc/c9/b146ca195403e0182a374e0ea4dbc69136bad3cd55bc293df496d625d0f7/setuptools-69.0.3.tar.gz
+  repo_url: https://github.com/pypa/setuptools
+  commit_id: b07d2f58233f9a99a820901924e263645c57a7c6
+  missing: ['LICENSE', '.mergify.yml', 'setuptools.egg-info', '.readthedocs.yaml', 'SECURITY.md', 'MIT-LICENSE', 'mypy.ini', 'command_template', '.gitignore', 'launcher', 'REQUESTED', 'includetest.rst', 'bootstrap.egg-info', 'platformdirs-2.6.2.dist-info', 'typing_extensions-4.4.0.dist-info', 'INSTALLER', 'RECORD', 'utf-8.file', 'binary.file', 'ziptestdata.zip', 'NOTICE', 'PKG-INFO', 'namespacedata01', 'METADATA', 'typing_extensions-4.0.1.dist-info', 'xxmodule-3.8.c', '.coveragerc', 'packaging-23.1.dist-info', '.bumpversion.cfg', '.github', '.editorconfig', 'utf-16.file', 'images', 'xxmodule.c', '.codecov.yml', 'Setup.sample', 'tomli-2.0.1.dist-info', 'WHEEL', 'towncrier.toml', 'more_itertools-9.1.0.dist-info']
+  skip_list: ['setup.cfg']
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Setuptools is a fully-featured, actively-maintained,

@@ -7,7 +7,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        69.0.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,6 +19,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: CVE-2024-6345.patch
+Patch1: CVE-2025-47273.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -76,6 +77,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed May 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 69.0.3-8
+- Fix CVE-2025-47273
 * Fri Jan 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-7
 - Add findutils to post requires
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 69.0.3-6
