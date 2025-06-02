@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -157,7 +157,7 @@ Requires(post):   grep
 Requires:         kmod
 Requires:         kbd
 Provides:         udev = %{version}-%{release}
-Conflicts: %{name} < 247
+Conflicts: %{name} < 247.13-14%{?dist}
 
 %description udev
 This package contains systemd-udev and the rules and hardware database
@@ -336,6 +336,9 @@ ln -sfv multi-user.target %{buildroot}%{_unitdir}/default.target
 %ifarch x86_64
 install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
 %endif
+
+rm -rf %{buildroot}%{_datadir}/zsh
+
 %find_lang %{name} ../%{name}.lang
 
 %post
@@ -378,30 +381,21 @@ udevadm hwdb --update &>/dev/null || :
 %dir %{_sysconfdir}/sysctl.d
 %dir %{_sysconfdir}/modules-load.d
 %dir %{_sysconfdir}/binfmt.d
-
 %{_sysconfdir}/X11/xinit/xinitrc.d/50-%{name}-user.sh
 %{_sysconfdir}/sysctl.d/50-security-hardening.conf
 %{_sysconfdir}/xdg/%{name}
 %{_sysconfdir}/rc.d/init.d/README
-
-%config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
 %config(noreplace) %{_sysconfdir}/%{name}/system.conf
 %config(noreplace) %{_sysconfdir}/%{name}/user.conf
 %config(noreplace) %{_sysconfdir}/%{name}/logind.conf
 %config(noreplace) %{_sysconfdir}/%{name}/journald.conf
 %config(noreplace) %{_sysconfdir}/%{name}/resolved.conf
-%config(noreplace) %{_sysconfdir}/%{name}/coredump.conf
-%config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/%{name}/networkd.conf
-%config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
-
 %ifarch x86_64
 %config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
 %endif
 %config(noreplace) %{_sysconfdir}/%{name}/network/99-dhcp-en.network
-
 %config(noreplace) /boot/%{name}.cfg
-
 %{_sbindir}/halt
 %{_sbindir}/init
 %{_sbindir}/poweroff
@@ -410,7 +404,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_sbindir}/shutdown
 %{_sbindir}/telinit
 %{_sbindir}/resolvconf
-
 %{_bindir}/busctl
 %{_bindir}/coredumpctl
 %{_bindir}/hostnamectl
@@ -446,7 +439,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/userdbctl
 %{_bindir}/%{name}-repart
 %{_bindir}/%{name}-dissect
-
 %{_tmpfilesdir}/etc.conf
 %{_tmpfilesdir}/home.conf
 %{_tmpfilesdir}/journal-nocow.conf
@@ -460,7 +452,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_tmpfilesdir}/var.conf
 %{_tmpfilesdir}/x11.conf
 %{_tmpfilesdir}/README
-
 %{_environmentdir}/99-environment.conf
 %exclude %{_datadir}/locale
 %{_libdir}/rpm/*
@@ -483,7 +474,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_datadir}/doc/*
 %{_datadir}/polkit-1
 %{_datadir}/%{name}
-%{_datadir}/zsh/*
 %{_var}/log/journal
 
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/basic.target.wants
@@ -521,10 +511,11 @@ udevadm hwdb --update &>/dev/null || :
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
-%{_sysconfdir}/%{name}/pstore.conf
-%{_sysconfdir}/%{name}/sleep.conf
-%{_sysconfdir}/%{name}/timesyncd.conf
-%{_sysconfdir}/udev/udev.conf
+%config(noreplace) %{_sysconfdir}/%{name}/coredump.conf
+%config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
+%config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
+%config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
+%config(noreplace) %{_sysconfdir}/udev/udev.conf
 %{_tmpfilesdir}/%{name}-pstore.conf
 %{_bindir}/bootctl
 %{_bindir}/kernel-install
@@ -600,30 +591,21 @@ udevadm hwdb --update &>/dev/null || :
 %{_systemd_util_dir}/%{name}-udevd
 %{_systemd_util_dir}/%{name}-vconsole-setup
 %{_systemd_util_dir}/%{name}-volatile-root
-
 %dir %{_libdir}/udev
+%dir %{_libdir}/udev/hwdb.d
+%dir %{_libdir}/udev/rules.d
 %{_libdir}/udev/ata_id
 %{_libdir}/udev/cdrom_id
 %{_libdir}/udev/fido_id
-
-%dir %{_libdir}/udev/hwdb.d
 %{_libdir}/udev/hwdb.d/*
 %{_libdir}/udev/mtd_probe
-
-%dir %{_libdir}/udev/rules.d
 %{_libdir}/udev/rules.d/*
 %{_libdir}/udev/scsi_id
-
 %{_datadir}/bash-completion/completions/bootctl
 %{_datadir}/bash-completion/completions/kernel-install
 %{_datadir}/bash-completion/completions/udevadm
-
 %{_datadir}/dbus-1/system-services/org.freedesktop.timesync1.service
 %{_datadir}/dbus-1/system.d/org.freedesktop.timesync1.conf
-
-%{_datadir}/zsh/site-functions/_bootctl
-%{_datadir}/zsh/site-functions/_kernel-install
-%{_datadir}/zsh/site-functions/_udevadm
 
 %files libs
 %defattr(-,root,root)
@@ -686,6 +668,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-14
+- Mark various configuration files as %config(noreplace) to preserve user modifications
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 247.13-13
 - Bump version as a part of meson upgrade
 * Tue Jan 09 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 247.13-12
