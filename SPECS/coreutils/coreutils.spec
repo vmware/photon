@@ -4,7 +4,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -19,6 +19,7 @@ Source1:        serial-console.sh
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
 Patch0: coreutils-%{version}-i18n-1.patch
+Patch1: CVE-2025-5278.patch
 
 BuildRequires:  attr-devel
 
@@ -97,6 +98,8 @@ touch %{coreutils_present}
 %defattr(-,root,root)
 
 %changelog
+* Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-5
+- Fix CVE-2025-5278
 * Mon Aug 12 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1-4
 - Resolve coreutils dependency issue on bash
 * Thu Jul 04 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 9.1-3
