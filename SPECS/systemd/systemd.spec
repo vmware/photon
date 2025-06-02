@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -349,6 +349,8 @@ install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/fileattrs/ %{SOURCE12}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE13}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE14}
 
+rm -rf %{buildroot}%{_datadir}/zsh
+
 %find_lang %{name} ../%{name}.lang
 
 %post
@@ -392,31 +394,22 @@ udevadm hwdb --update &>/dev/null || :
 %dir %{_sysconfdir}/sysctl.d
 %dir %{_sysconfdir}/modules-load.d
 %dir %{_sysconfdir}/binfmt.d
-
 %{_sysconfdir}/X11/xinit/xinitrc.d/50-%{name}-user.sh
 %{_sysconfdir}/sysctl.d/50-security-hardening.conf
 %{_sysconfdir}/xdg/%{name}
 %{_sysconfdir}/rc.d/init.d/README
-
-%config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
 %config(noreplace) %{_sysconfdir}/%{name}/system.conf
 %config(noreplace) %{_sysconfdir}/%{name}/user.conf
 %config(noreplace) %{_sysconfdir}/%{name}/logind.conf
 %config(noreplace) %{_sysconfdir}/%{name}/journald.conf
 %config(noreplace) %{_sysconfdir}/%{name}/resolved.conf
-%config(noreplace) %{_sysconfdir}/%{name}/coredump.conf
-%config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/%{name}/networkd.conf
-%config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
-%config(noreplace) %{_sysusersdir}/*.conf
-
+%{_sysusersdir}/*.conf
 %ifarch x86_64
 %config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
 %endif
 %config(noreplace) %{_sysconfdir}/%{name}/network/99-dhcp-en.network
-
 %config(noreplace) /boot/%{name}.cfg
-
 %{_sbindir}/halt
 %{_sbindir}/init
 %{_sbindir}/poweroff
@@ -425,7 +418,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_sbindir}/shutdown
 %{_sbindir}/telinit
 %{_sbindir}/resolvconf
-
 %{_bindir}/busctl
 %{_bindir}/coredumpctl
 %{_bindir}/hostnamectl
@@ -465,7 +457,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/%{name}-sysext
 %{_bindir}/%{name}-creds
 %{_bindir}/%{name}-ac-power
-
 %{_tmpfilesdir}/etc.conf
 %{_tmpfilesdir}/home.conf
 %{_tmpfilesdir}/journal-nocow.conf
@@ -483,7 +474,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_tmpfilesdir}/x11.conf
 %{_tmpfilesdir}/credstore.conf
 %{_tmpfilesdir}/README
-
 %{_environmentdir}/99-environment.conf
 %exclude %{_datadir}/locale
 %{_libdir}/binfmt.d
@@ -507,9 +497,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_datadir}/doc/*
 %{_datadir}/polkit-1
 %{_datadir}/%{name}
-%{_datadir}/zsh/*
 %{_var}/log/journal
-
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/basic.target.wants
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/bluetooth.target.wants
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/default.target.wants
@@ -545,15 +533,15 @@ udevadm hwdb --update &>/dev/null || :
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
-%{_sysconfdir}/%{name}/pstore.conf
-%{_sysconfdir}/%{name}/sleep.conf
-%{_sysconfdir}/%{name}/timesyncd.conf
-%{_sysconfdir}/udev/udev.conf
+%config(noreplace) %{_sysconfdir}/%{name}/coredump.conf
+%config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
+%config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
+%config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
+%config(noreplace) %{_sysconfdir}/udev/udev.conf
 %{_tmpfilesdir}/%{name}-pstore.conf
 %{_bindir}/kernel-install
 %{_bindir}/%{name}-hwdb
 %{_bindir}/udevadm
-
 %{_libdir}/udev/v4l_id
 %{_libdir}/udev/dmi_memory_id
 %{_libdir}/kernel
@@ -619,28 +607,20 @@ udevadm hwdb --update &>/dev/null || :
 %{_systemd_util_dir}/%{name}-udevd
 %{_systemd_util_dir}/%{name}-vconsole-setup
 %{_systemd_util_dir}/%{name}-volatile-root
-
 %dir %{_libdir}/udev
+%dir %{_libdir}/udev/hwdb.d
+%dir %{_libdir}/udev/rules.d
 %{_libdir}/udev/ata_id
 %{_libdir}/udev/cdrom_id
 %{_libdir}/udev/fido_id
-
-%dir %{_libdir}/udev/hwdb.d
 %{_libdir}/udev/hwdb.d/*
 %{_libdir}/udev/mtd_probe
-
-%dir %{_libdir}/udev/rules.d
 %{_libdir}/udev/rules.d/*
 %{_libdir}/udev/scsi_id
-
 %{_datadir}/bash-completion/completions/kernel-install
 %{_datadir}/bash-completion/completions/udevadm
-
 %{_datadir}/dbus-1/system-services/org.freedesktop.timesync1.service
 %{_datadir}/dbus-1/system.d/org.freedesktop.timesync1.conf
-
-%{_datadir}/zsh/site-functions/_kernel-install
-%{_datadir}/zsh/site-functions/_udevadm
 
 %files libs
 %defattr(-,root,root)
@@ -661,7 +641,6 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 %{_bindir}/%{name}-nspawn
 %{_bindir}/machinectl
-
 %{_systemd_util_dir}/%{name}-machined
 %{_unitdir}/%{name}-machined.service
 %{_unitdir}/%{name}-nspawn@.service
@@ -670,7 +649,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_unitdir}/machine.slice
 %{_unitdir}/machines.target.wants
 %{_tmpfilesdir}/%{name}-nspawn.conf
-
 %{_datadir}/dbus-1/system.d/org.freedesktop.machine1.conf
 %{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
 %{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
@@ -679,11 +657,9 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/%{name}/journal-upload.conf
 %config(noreplace) %{_sysconfdir}/%{name}/journal-remote.conf
-
 %{_systemd_util_dir}/%{name}-journal-gatewayd
 %{_systemd_util_dir}/%{name}-journal-remote
 %{_systemd_util_dir}/%{name}-journal-upload
-
 %{_unitdir}/%{name}-journal-gatewayd.service
 %{_unitdir}/%{name}-journal-gatewayd.socket
 %{_unitdir}/%{name}-journal-remote.service
@@ -701,6 +677,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-11
+- Mark various configuration files as %config(noreplace) to preserve user modifications
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 253.19-10
 - Bump-up to build with kmod-34.1
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 253.19-9
