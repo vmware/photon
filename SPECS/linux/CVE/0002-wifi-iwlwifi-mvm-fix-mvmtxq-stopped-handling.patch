@@ -1,0 +1,97 @@
+From 742ae1a6c65df9e77149e3b4b9cc292a170b214a Mon Sep 17 00:00:00 2001
+From: Johannes Berg <johannes.berg@intel.com>
+Date: Fri, 17 Mar 2023 10:53:24 +0100
+Subject: [PATCH] wifi: iwlwifi: mvm: fix mvmtxq->stopped handling
+
+[ Upstream commit b58e3d4311b54b6dd0e37165277965da0c9eb21d ]
+
+This could race if the queue is redirected while full, then
+the flushing internally would start it while it's not yet
+usable again. Fix it by using two state bits instead of just
+one.
+
+Reviewed-by: Benjamin Berg <benjamin.berg@intel.com>
+Tested-by: Jose Ignacio Tornos Martinez <jtornosm@redhat.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ KN: Backport to v5.10.y ]
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 5 ++++-
+ drivers/net/wireless/intel/iwlwifi/mvm/mvm.h      | 4 +++-
+ drivers/net/wireless/intel/iwlwifi/mvm/ops.c      | 5 ++++-
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.c      | 4 ++--
+ 4 files changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index e0a243aab..85d0a5525 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -868,7 +868,10 @@ void iwl_mvm_mac_itxq_xmit(struct ieee80211_hw *hw, struct ieee80211_txq *txq)
+ 
+ 	rcu_read_lock();
+ 	do {
+-		while (likely(!mvmtxq->stopped &&
++		while (likely(!test_bit(IWL_MVM_TXQ_STATE_STOP_FULL,
++					&mvmtxq->state) &&
++			      !test_bit(IWL_MVM_TXQ_STATE_STOP_REDIRECT,
++					&mvmtxq->state) &&
+ 			      !test_bit(IWL_MVM_STATUS_IN_D3, &mvm->status))) {
+ 			skb = ieee80211_tx_dequeue(hw, txq);
+ 
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h b/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
+index 99560314e..b538efe0e 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mvm.h
+@@ -779,7 +779,9 @@ struct iwl_mvm_txq {
+ 	struct list_head list;
+ 	u16 txq_id;
+ 	atomic_t tx_request;
+-	bool stopped;
++#define IWL_MVM_TXQ_STATE_STOP_FULL	0
++#define IWL_MVM_TXQ_STATE_STOP_REDIRECT	1
++	unsigned long state;
+ };
+ 
+ static inline struct iwl_mvm_txq *
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+index 9b1a1455a..2899e0e16 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+@@ -1166,7 +1166,10 @@ static void iwl_mvm_queue_state_change(struct iwl_op_mode *op_mode,
+ 
+ 		txq = sta->txq[tid];
+ 		mvmtxq = iwl_mvm_txq_from_mac80211(txq);
+-		mvmtxq->stopped = !start;
++		if (start)
++			clear_bit(IWL_MVM_TXQ_STATE_STOP_FULL, &mvmtxq->state);
++		else
++			set_bit(IWL_MVM_TXQ_STATE_STOP_FULL, &mvmtxq->state);
+ 
+ 		if (start && mvmsta->sta_state != IEEE80211_STA_NOTEXIST) {
+ 			local_bh_disable();
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
+index 141581fa7..fc59251dd 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
+@@ -686,7 +686,7 @@ static int iwl_mvm_redirect_queue(struct iwl_mvm *mvm, int queue, int tid,
+ 			    queue, iwl_mvm_ac_to_tx_fifo[ac]);
+ 
+ 	/* Stop the queue and wait for it to empty */
+-	txq->stopped = true;
++	set_bit(IWL_MVM_TXQ_STATE_STOP_REDIRECT, &txq->state);
+ 
+ 	ret = iwl_trans_wait_tx_queues_empty(mvm->trans, BIT(queue));
+ 	if (ret) {
+@@ -729,7 +729,7 @@ static int iwl_mvm_redirect_queue(struct iwl_mvm *mvm, int queue, int tid,
+ 
+ out:
+ 	/* Continue using the queue */
+-	txq->stopped = false;
++	clear_bit(IWL_MVM_TXQ_STATE_STOP_REDIRECT, &txq->state);
+ 
+ 	return ret;
+ }
+-- 
+2.39.4
+

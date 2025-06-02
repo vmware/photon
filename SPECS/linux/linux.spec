@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.237
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -382,6 +382,13 @@ Patch218: 0001-srcu-Tighten-cleanup_srcu_struct-GP-checks.patch
 # Fix CVE-2024-57795
 Patch219: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
 Patch220: 0002-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
+
+# Fix CVE-2024-27056
+Patch221: 0001-iwlwifi-mvm-don-t-check-system_pm_mode-without-mutex.patch
+Patch222: 0002-wifi-iwlwifi-mvm-fix-mvmtxq-stopped-handling.patch
+Patch223: 0003-wifi-iwlwifi-mvm-fix-double-list_add-at-iwl_mvm_mac_.patch
+Patch224: 0004-wifi-iwlwifi-mvm-protect-TXQ-list-manipulation.patch
+Patch225: 0005-wifi-iwlwifi-mvm-ensure-offloading-TID-queue-exists.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1051,6 +1058,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jun 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.237-3
+- Fix CVE-2024-27056
 * Mon May 26 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-2
 - Fixes CVE-2022-21546, CVE-2022-49651, CVE-2024-57795
 * Tue May 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-1

@@ -1,0 +1,120 @@
+From 4903303f25f48b5a1e34e6324c7fae9ccd6b959a Mon Sep 17 00:00:00 2001
+From: Benjamin Berg <benjamin.berg@intel.com>
+Date: Sun, 18 Feb 2024 19:51:47 +0200
+Subject: [PATCH] wifi: iwlwifi: mvm: ensure offloading TID queue exists
+
+commit 78f65fbf421a61894c14a1b91fe2fb4437b3fe5f upstream.
+
+The resume code path assumes that the TX queue for the offloading TID
+has been configured. At resume time it then tries to sync the write
+pointer as it may have been updated by the firmware.
+
+In the unusual event that no packets have been send on TID 0, the queue
+will not have been allocated and this causes a crash. Fix this by
+ensuring the queue exist at suspend time.
+
+Signed-off-by: Benjamin Berg <benjamin.berg@intel.com>
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+Link: https://msgid.link/20240218194912.6632e6dc7b35.Ie6e6a7488c9c7d4529f13d48f752b5439d8ac3c4@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Jianqi Ren <jianqi.ren.cn@windriver.com>
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ KN: Backport to v5.10.y ]
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/d3.c  |  9 ++++++-
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.c | 28 ++++++++++++++++++++
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.h |  3 ++-
+ 3 files changed, 38 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+index 8bcc3e7f6..0129e531b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+@@ -1091,7 +1091,9 @@ static int __iwl_mvm_suspend(struct ieee80211_hw *hw,
+ 
+ 		mvm->net_detect = true;
+ 	} else {
+-		struct iwl_wowlan_config_cmd wowlan_config_cmd = {};
++		struct iwl_wowlan_config_cmd wowlan_config_cmd = {
++			.offloading_tid = 0,
++		};
+ 
+ 		wowlan_config_cmd.sta_id = mvmvif->ap_sta_id;
+ 
+@@ -1103,6 +1105,11 @@ static int __iwl_mvm_suspend(struct ieee80211_hw *hw,
+ 			goto out_noreset;
+ 		}
+ 
++		ret = iwl_mvm_sta_ensure_queue(
++			mvm, ap_sta->txq[wowlan_config_cmd.offloading_tid]);
++		if (ret)
++			goto out_noreset;
++
+ 		ret = iwl_mvm_get_wowlan_config(mvm, wowlan, &wowlan_config_cmd,
+ 						vif, mvmvif, ap_sta);
+ 		if (ret)
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
+index 845ecea2f..48c4d59fa 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
+@@ -1396,6 +1396,34 @@ static int iwl_mvm_sta_alloc_queue(struct iwl_mvm *mvm,
+ 	return ret;
+ }
+ 
++int iwl_mvm_sta_ensure_queue(struct iwl_mvm *mvm,
++			     struct ieee80211_txq *txq)
++{
++	struct iwl_mvm_txq *mvmtxq = iwl_mvm_txq_from_mac80211(txq);
++	int ret = -EINVAL;
++
++	lockdep_assert_held(&mvm->mutex);
++
++	if (likely(test_bit(IWL_MVM_TXQ_STATE_READY, &mvmtxq->state)) ||
++	    !txq->sta) {
++		return 0;
++	}
++
++	if (!iwl_mvm_sta_alloc_queue(mvm, txq->sta, txq->ac, txq->tid)) {
++		set_bit(IWL_MVM_TXQ_STATE_READY, &mvmtxq->state);
++		ret = 0;
++	}
++
++	local_bh_disable();
++	spin_lock(&mvm->add_stream_lock);
++	if (!list_empty(&mvmtxq->list))
++		list_del_init(&mvmtxq->list);
++	spin_unlock(&mvm->add_stream_lock);
++	local_bh_enable();
++
++	return ret;
++}
++
+ void iwl_mvm_add_new_dqa_stream_wk(struct work_struct *wk)
+ {
+ 	struct iwl_mvm *mvm = container_of(wk, struct iwl_mvm,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.h b/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
+index d7578c981..138e660a5 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
+@@ -8,7 +8,7 @@
+  * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
+  * Copyright(c) 2013 - 2014 Intel Mobile Communications GmbH
+  * Copyright(c) 2015 - 2016 Intel Deutschland GmbH
+- * Copyright(c) 2018 - 2020 Intel Corporation
++ * Copyright(c) 2018 - 2024 Intel Corporation
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of version 2 of the GNU General Public License as
+@@ -578,6 +578,7 @@ void iwl_mvm_modify_all_sta_disable_tx(struct iwl_mvm *mvm,
+ 				       struct iwl_mvm_vif *mvmvif,
+ 				       bool disable);
+ void iwl_mvm_csa_client_absent(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
++int iwl_mvm_sta_ensure_queue(struct iwl_mvm *mvm, struct ieee80211_txq *txq);
+ void iwl_mvm_add_new_dqa_stream_wk(struct work_struct *wk);
+ int iwl_mvm_add_pasn_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
+ 			 struct iwl_mvm_int_sta *sta, u8 *addr, u32 cipher,
+-- 
+2.39.4
+

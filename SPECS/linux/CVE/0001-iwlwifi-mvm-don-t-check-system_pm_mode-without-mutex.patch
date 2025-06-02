@@ -1,0 +1,56 @@
+From 00520b7a2a13db5c6b56cc1f49cea4e0e174479c Mon Sep 17 00:00:00 2001
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Date: Sun, 17 Jan 2021 13:10:38 +0200
+Subject: [PATCH] iwlwifi: mvm: don't check system_pm_mode without mutex held
+
+[ Upstream commit 00520b7a2a13db5c6b56cc1f49cea4e0e174479c ]
+
+When we want to stop TX'ing because we are suspending, we
+have two options: either we check system_pm_mode or we
+check the mvm's status that has a bit for the suspend
+flow.
+The latter is better because test_bit is atomic. Also
+add a call to synchronize_net after we set the bit to
+make sure that all the new Tx see the bit before we
+actually complete the suspend flow.
+
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210117130510.243c88781302.I5c0379c5a7e5d49410569e7fcd2fff7a419c6dea@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/d3.c       | 2 ++
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 3 +--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+index d21143495..8bcc3e7f6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+@@ -1067,6 +1067,8 @@ static int __iwl_mvm_suspend(struct ieee80211_hw *hw,
+ 
+ 	set_bit(IWL_MVM_STATUS_IN_D3, &mvm->status);
+ 
++	synchronize_net();
++
+ 	vif = iwl_mvm_get_bss_vif(mvm);
+ 	if (IS_ERR_OR_NULL(vif)) {
+ 		ret = 1;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index fa784d835..e0a243aab 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -869,8 +869,7 @@ void iwl_mvm_mac_itxq_xmit(struct ieee80211_hw *hw, struct ieee80211_txq *txq)
+ 	rcu_read_lock();
+ 	do {
+ 		while (likely(!mvmtxq->stopped &&
+-			      (mvm->trans->system_pm_mode ==
+-			       IWL_PLAT_PM_MODE_DISABLED))) {
++			      !test_bit(IWL_MVM_STATUS_IN_D3, &mvm->status))) {
+ 			skb = ieee80211_tx_dequeue(hw, txq);
+ 
+ 			if (!skb) {
+-- 
+2.39.4
+
