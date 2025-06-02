@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.238
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -384,6 +384,9 @@ Patch222: 0002-wifi-iwlwifi-mvm-fix-mvmtxq-stopped-handling.patch
 Patch223: 0003-wifi-iwlwifi-mvm-fix-double-list_add-at-iwl_mvm_mac_.patch
 Patch224: 0004-wifi-iwlwifi-mvm-protect-TXQ-list-manipulation.patch
 Patch225: 0005-wifi-iwlwifi-mvm-ensure-offloading-TID-queue-exists.patch
+
+# Fix CVE-2025-21759
+Patch226: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1053,6 +1056,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Jun 11 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.238-2
+- Fix CVE-2025-21759
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.238-1
 - Update to version 5.10.238
 * Tue Jun 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.237-3

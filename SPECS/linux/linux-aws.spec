@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.238
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -318,6 +318,9 @@ Patch218: 0001-srcu-Tighten-cleanup_srcu_struct-GP-checks.patch
 # Fix CVE-2024-57795
 Patch219: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
 Patch220: 0002-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
+
+# Fix CVE-2025-21759
+Patch221: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -665,6 +668,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 11 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.238-2
+- Fix CVE-2025-21759
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.238-1
 - Update to version 5.10.238
 * Mon May 26 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-2
