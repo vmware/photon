@@ -4,7 +4,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -20,6 +20,7 @@ Source2: license.txt
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
 Patch0: coreutils-%{version}-i18n-1.patch
+Patch1: CVE-2025-5278.patch
 
 BuildRequires:  attr-devel
 
@@ -98,6 +99,8 @@ touch %{coreutils_present}
 %defattr(-,root,root)
 
 %changelog
+* Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-7
+- Fix CVE-2025-5278
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-6
 - Release bump for SRP compliance
 * Thu Aug 08 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1-5

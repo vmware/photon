@@ -6,7 +6,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -22,6 +22,7 @@ Source2: license.txt
 # Patches are taken from:
 # www.linuxfromscratch.org/patches/downloads/coreutils/
 Patch0: %{srcname}-%{version}-i18n-1.patch
+Patch1: CVE-2025-5278.patch
 
 BuildRequires: libselinux-devel
 BuildRequires: attr-devel
@@ -107,6 +108,8 @@ touch %{coreutils_selinux_present}
 %defattr(-,root,root)
 
 %changelog
+* Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-10
+- Fix CVE-2025-5278
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.1-9
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-8
