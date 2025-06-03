@@ -273,7 +273,7 @@ class PackageUtils(object):
                 arch = rpm.split(".")[-2]
             rpm = os.path.basename(rpm)
             rpm_full_path = os.path.join(path, arch, rpm)
-            cmd = ["python3", constants.srpSigningScript["src"],
+            cmd = [constants.srpSigningScript["src"],
                    "--config_file", constants.srpSigningParams["src"],
                    "--auth_file", constants.srpSigningAuth["src"],
                    "--artifact", rpm_full_path, "--file_type", "rpm"]

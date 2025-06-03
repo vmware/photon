@@ -33,7 +33,7 @@ cp shimx64.efi %{buildroot}/boot/efi/EFI/BOOT/bootx64.efi
 cp revocations.efi %{buildroot}/boot/efi/EFI/BOOT/revocations.efi
 
 %if "%{?signing_script}" != ""
-python3 %{signing_script} --file_type pe \
+%{signing_script} --file_type pe \
       --config_file %{signing_params} \
       --auth_file %{signing_auth} \
       --artifact %{buildroot}/boot/efi/EFI/BOOT/revocations.efi

@@ -489,7 +489,7 @@ if [ "$ID1" != "$ID2" ] ; then
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %if "%{?signing_script}" != ""
-python3 %{signing_script} --file_type pe \
+%{signing_script} --file_type pe \
       --config_file %{signing_params} \
       --auth_file %{signing_auth} \
       --artifact %{buildroot}/boot/vmlinuz-%{uname_r}

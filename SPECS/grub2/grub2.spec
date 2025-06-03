@@ -181,7 +181,7 @@ sed -e "s,@@VERSION@@,%{version},g" \
 ./install-for-efi/%{_bindir}/grub2-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 
 %if "%{?signing_script}" != ""
-python3 %{signing_script} --file_type pe \
+%{signing_script} --file_type pe \
       --config_file %{signing_params} \
       --auth_file %{signing_auth} \
       --artifact %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi

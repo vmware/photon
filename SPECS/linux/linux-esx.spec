@@ -505,7 +505,7 @@ install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 %ifarch x86_64
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %if "%{?signing_script}" != ""
-python3 %{signing_script} --file_type pe \
+%{signing_script} --file_type pe \
       --config_file %{signing_params} \
       --auth_file %{signing_auth} \
       --artifact %{buildroot}/boot/vmlinuz-%{uname_r}
