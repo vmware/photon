@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        15%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        16%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -66,6 +66,12 @@ Source16:       fips-canister-6.0.0-6.12.1-11-1%{?dist}.tar.bz2
 
 %endif
 
+%ifarch x86_64
+%define jent_name photon-jitterentropy-v6.12
+%define jent_rel_ver 1
+Source17:       %{jent_name}-%{jent_rel_ver}.tar.gz
+%endif
+
 Source18:       spec_install_post.inc
 Source19:       %{name}-dracut-%{_arch}.conf
 Source20:       photon_sb2020.pem
@@ -73,10 +79,6 @@ Source20:       photon_sb2020.pem
 %ifarch x86_64
 # Secure Boot
 Source25:       linux-sbat.csv.in
-
-%define jent_major_version 3.4.1
-%define jent_ph_version 4
-Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
 
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
@@ -254,7 +256,7 @@ Patch324: 0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 Patch500: 0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
+#Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
 # Patch to remove urandom usage in rng module
 Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
@@ -271,6 +273,10 @@ Patch507: 0001-linux-canister-Eliminate-codetag-and-other-taggings-.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 #Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
+%endif
+
+%ifarch x86_64
+Patch510: 0001-jitterentropy-Makefile-changes.patch
 %endif
 
 %if 0%{?acvp_build:1}
@@ -464,7 +470,7 @@ The kernel fips-canister
 
 %ifarch x86_64
 # Using autosetup is not feasible
-%setup -q -T -D -b 32 -n linux-%{version}
+%setup -q -T -D -b 17 -n linux-%{version}
 %endif
 
 # common
@@ -500,7 +506,11 @@ The kernel fips-canister
 %autopatch -p1 -m500 -M507
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M511
+%autopatch -p1 -m508 -M509
+%endif
+
+%ifarch x86_64
+%autopatch -p1 -m510 -M510
 %endif
 
 %if 0%{?acvp_build:1}
@@ -536,11 +546,12 @@ popd
 %endif
 
 %ifarch x86_64
-cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
-      crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+cp -rf ../%{jent_name}/ crypto/
+rm -rf crypto/jitterentropy-kcapi.c
+mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
+cp %{SOURCE33} crypto/%{jent_name}/
+cp %{SOURCE34} crypto/%{jent_name}/
+cp %{SOURCE35} crypto/%{jent_name}/
 %endif
 
 make %{?_smp_mflags} mrproper
@@ -615,6 +626,7 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 %build
+
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
@@ -876,6 +888,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jun 03 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-16
+- Changes to Jitterentropy.
 * Thu May 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-15
 - Moved 'x86_cpu_id' struct access to fips canister wrapper
 - Disable alloc_hook_tags if MEM_PROFILING is disabled

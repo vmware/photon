@@ -94,8 +94,8 @@ sources:
         BSD-3-Clause-acpica AND X11 AND HPND-export2-US AND Unlicense
       short_summary: Kernel
       supplier: 'Organization: Broadcom, Inc.'
-- archive: jitterentropy-3.4.1-4.tar.bz2
-  archive_sha512sum: 37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
+- archive: photon-jitterentropy-v6.12-1.tar.gz
+  archive_sha512sum: d8443b112fabc025b3f13d584cea0631eab8dc29be25a32095b47894fa6f67f363659a06e8427fcf48a148ecc9b865e77a43ce1158bc1cd95b16ee49c0292a85
   skip_validation: true
   spdx:
     package:
@@ -107,8 +107,8 @@ sources:
         passes all standard statistical tools analyzing the quality of a random data
         stream.
       home_page: https://github.com/vmware/photon
-      license_concluded: GPL-2.0-or-later
-      license_declared: GPL-2.0-or-later
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only AND GPL-2.0-or-later
       short_summary: A JitterEntropy is a reliable, software based random number generator
         that uses the randomness of CPU jitter to produce cryptographically secure
         random numbers, ensuring robust security in systems that rely on high-quality

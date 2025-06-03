@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -42,7 +42,15 @@ Source9:        check_fips_canister_struct_compatibility.inc
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+%endif
 
+%ifarch x86_64
+%define jent_name photon-jitterentropy-v6.12
+%define jent_rel_ver 1
+Source17: photon-jitterentropy-v6.12-1.tar.gz
+%endif
+
+%if 0%{?fips}
 Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
@@ -53,10 +61,6 @@ Source20:       %{name}-dracut.conf
 %ifarch x86_64
 # Secure Boot
 Source25:       linux-sbat.csv.in
-
-%define jent_major_version 3.4.1
-%define jent_ph_version 4
-Source32: jitterentropy-%{jent_major_version}-%{jent_ph_version}.tar.bz2
 
 Source33: jitterentropy_canister_wrapper.c
 Source34: jitterentropy_canister_wrapper.h
@@ -190,7 +194,6 @@ Patch207: 0001-vmw_vmci-arm64-support-memory-ordering.patch
 Patch500: 0002-FIPS-crypto-self-tests.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
 # Patch to remove urandom usage in rng module
 Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
@@ -201,6 +204,10 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: 0001-crypto-Export-symbol-crypto_shash_alg_has_setkey.patch
+%endif
+
+%ifarch x86_64
+Patch511: 0001-jent-makefile-changes-esx.patch
 %endif
 
 %ifarch x86_64
@@ -275,7 +282,7 @@ The Linux package contains the Linux kernel doc files
 
 %ifarch x86_64
 # Using autosetup is not feasible
-%setup -q -T -D -b 32 -n linux-%{version}
+%setup -q -T -D -b 17 -n linux-%{version}
 %endif
 
 # common
@@ -313,16 +320,21 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %ifarch x86_64
+%autopatch -p1 -m511 -M511
+%endif
+
+%ifarch x86_64
 # SEV on VMware
 %autopatch -p1 -m600 -M609
 %endif
 
 %ifarch x86_64
-cp -r ../jitterentropy-%{jent_major_version}-%{jent_ph_version}/ \
-      crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE33} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE34} crypto/jitterentropy-%{jent_major_version}/
-cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
+cp -rf ../%{jent_name}/ crypto/
+rm -rf crypto/jitterentropy-kcapi.c
+mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
+cp %{SOURCE33} crypto/%{jent_name}/
+cp %{SOURCE34} crypto/%{jent_name}/
+cp %{SOURCE35} crypto/%{jent_name}/
 %endif
 
 make %{?_smp_mflags} mrproper
@@ -353,6 +365,7 @@ sed -e "s,@@NAME@@,%{name},g" \
 %include %{SOURCE4}
 
 %build
+
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
@@ -446,6 +459,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jun 03 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-4
+- Changes to Jitterentropy.
 * Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.1-3
 - Disable alloc_hook_tags if MEM_PROFILING is disabled
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.1-2

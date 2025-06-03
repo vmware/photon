@@ -7,29 +7,41 @@
  */
 
 #include <linux/string.h>
-#include <linux/cacheinfo.h>
-#include <linux/mutex.h>
+#include <linux/stdarg.h>
 #include <linux/slab.h>
 #include <linux/fips.h>
+#include <linux/kern_levels.h>
+#include <linux/mm.h>
+#include <linux/vmalloc.h>
+#include <linux/err.h>
+#include <asm/set_memory.h>
+#include "jitterentropy_canister_wrapper.h"
 #include "jitterentropy.h"
 
-void *jcw_mutex_init(void)
-{
-	struct mutex *m = kzalloc(sizeof(struct mutex), GFP_KERNEL);
-	if (m)
-		mutex_init(m);
+/* Prototype definitions */
+int jcw_strncasecmp(const char *s1, const char *s2, size_t len);
+void *jcw_memcpy(void *dst, const void *src, size_t len);
+void jcw_memzero_explicit(void *s, size_t count);
+int jcw_printk(const char *fmt, ...);
+void *jcw_kzalloc(size_t size);
+void *jcw_vzalloc(size_t size);
+void *jcw_kvzalloc(unsigned int len);
+void *jcw_kvzalloc_align(unsigned char *ptr, unsigned int len);
+void jcw_zfree(void *ptr, unsigned int len);
+void jcw_kvzfree(void *ptr, unsigned int len);
+void jcw_vfree(void *ptr, unsigned int len);
+int jcw_set_memory_uc(unsigned char *addr, int numpages);
+int jcw_fips_enabled(void);
+u64 jcw_ktime_get_ns(void);
 
-	return (void *)m;
-}
+inline bool jcw_is_err_or_null(void *ptr);
 
-void jcw_mutex_lock(void *m)
-{
-	mutex_lock((struct mutex *)m);
-}
+size_t jcw_strlen(const char *str);
+int set_memory_uc(unsigned long addr, int numpages);
 
-void jcw_mutex_unlock(void *m)
+inline bool jcw_is_err_or_null(void *ptr)
 {
-	mutex_unlock((struct mutex *)m);
+	return IS_ERR_OR_NULL(ptr);
 }
 
 void *jcw_kzalloc(size_t size)
@@ -47,31 +59,60 @@ void jcw_memzero_explicit(void *s, size_t count)
 	return memzero_explicit(s, count);
 }
 
-unsigned int jcw_cache_size_roundup(void)
+void *jcw_kvzalloc(unsigned int len)
 {
-	unsigned int i = 0, size = 0;
-	struct cpu_cacheinfo *info_ci = get_cpu_cacheinfo(0);
-	struct cacheinfo *info = NULL;
+        return kvzalloc(len, GFP_KERNEL);
+}
 
-	for (i = 0; i< info_ci->num_leaves; i++) {
-		info = info_ci->info_list + i;
-		size += info->size;
+void *jcw_kvzalloc_align(unsigned char *ptr, unsigned int len)
+{
+	unsigned long algn_len = len;
+
+	if (len < PAGE_SIZE)
+		return kvzalloc(len, GFP_KERNEL);
+
+	if (len & ~PAGE_MASK)
+		algn_len = roundup(len, PAGE_SIZE);
+
+	ptr = kvzalloc(algn_len + PAGE_SIZE, GFP_KERNEL);
+	if (IS_ERR_OR_NULL(ptr)) {
+		pr_err("\n Failed to allocate aligned memory");
+		return NULL;
 	}
 
-	/* Force the output_size to be of the form (bounding_pwr_of_2 - 1)*/
-	size |= (size >> 1);
-	size |= (size >> 2);
-	size |= (size >> 4);
-	size |= (size >> 8);
-	size |= (size >> 16);
+	return (unsigned char *)PAGE_ALIGN((unsigned long)ptr);
+}
 
-	if (size == 0)
-		return 0;
+void jcw_kvzfree(void *ptr, unsigned int len)
+{
+	memzero_explicit(ptr, len);
+        kvfree_sensitive(ptr, len);
+}
 
-	/* Make the output_size the smallest power of 2 strictly greater than
-		cache_size. */
-	size++;
-	return size;
+void *jcw_vzalloc(size_t size)
+{
+	return vzalloc(size);
+}
+
+void jcw_vfree(void *ptr, unsigned int len)
+{
+	memzero_explicit(ptr, len);
+	vfree(ptr);
+}
+
+int jcw_strncasecmp(const char *s1, const char *s2, size_t len)
+{
+	return strncasecmp((const char *)s1, (const char *)s2, len);
+}
+
+size_t jcw_strlen(const char *str)
+{
+	return strlen((const char *)str);
+}
+
+int jcw_set_memory_uc(unsigned char *addr, int numpages)
+{
+	return set_memory_uc((unsigned long)addr, numpages);
 }
 
 int jcw_fips_enabled(void)
@@ -88,9 +129,4 @@ void jcw_zfree(void *ptr, unsigned int len)
 u64 jcw_ktime_get_ns(void)
 {
 	return ktime_get_ns();
-}
-
-unsigned long jcw_random_get_entropy(void)
-{
-	return random_get_entropy();
 }
