@@ -1,19 +1,48 @@
 sources:
-- archive: aide-0.17.4.tar.gz
-  archive_sha512sum: b6dba54fd204e1899d47b0b4139786cbeaa51c388027e2cfc1bb839297a70ae8ad6f37429594a730fac8007d62b4ba5b61a4aa22edbc55cbe986ccfaf5197f31
-  skip_validation: true
+- archive: aide-0.19.tar.gz
+  archive_type: upstream
+  archive_sha512sum: ce8b718781ca1ada664675647f4bcb4e9ffbc470d525bea7c4d8303e7cfdf4a5937bda9ef0391f25cae56d5812f05207326eadccdbad61c059cc31e4b9007b54
+  name: aide-0.19
+  version: '0.19'
+  url: https://github.com/aide/aide/releases/download/v0.19/aide-0.19.tar.gz
+  repo_url: https://github.com/aide/aide
+  commit_id: 20e6d36471fa6023a9aa0fe534bd54d06b6f4c9c
+  skip_list: []
+  missing:
+  - INSTALL
+  - Makefile.in
+  - compile
+  - .github
+  - install-sh
+  - config.sub
+  - aclocal.m4
+  - .gitignore
+  - conf_yacc.c
+  - config.h.in
+  - conf_yacc.h
+  - missing
+  - version.sh
+  - ylwrap
+  - depcomp
+  - version.m4
+  - configure
+  - config.guess
+  - autogen.sh
+  - conf_lex.c
   spdx:
     package:
       detailed_description: AIDE (Advanced Intrusion Detection Environment) is a file
         integrity checker and intrusion detection program.
       home_page: https://github.com/aide
-      license_concluded: GPL-2.0-only AND BSD-3-Clause AND FSFUL AND FSFAP AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later AND X11 AND LGPL-2.0-or-later
-        AND FSFULLRWD AND GPL-1.0-or-later AND FSFULLR AND LGPL-2.1-only AND GPL-3.0-or-later
-        WITH Bison-exception-2.2 AND GPL-2.0-or-later WITH Autoconf-exception-generic
-      license_declared: GPL-2.0-only AND BSD-3-Clause AND FSFUL AND FSFAP AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later AND X11 AND LGPL-2.0-or-later
-        AND FSFULLRWD AND GPL-1.0-or-later AND FSFULLR AND LGPL-2.1-only AND GPL-3.0-or-later
-        WITH Bison-exception-2.2 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_concluded: GPL-2.0-or-later AND FSFULLR AND X11 AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFULLRWD
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND
+        LGPL-2.0-or-later AND FSFAP AND LGPL-2.1-only
+      license_declared: GPL-2.0-or-later AND FSFULLR AND X11 AND GPL-3.0-or-later
+        WITH Autoconf-exception-2.0 AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFULLRWD
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND
+        LGPL-2.0-or-later AND FSFAP AND LGPL-2.1-only
       short_summary: Intrusion detection environment
       supplier: 'Organization: Broadcom, Inc.'
