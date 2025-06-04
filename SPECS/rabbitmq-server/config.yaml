@@ -1,7 +1,14 @@
 sources:
-- archive: rabbitmq-server-3.13.3.tar.xz
-  archive_sha512sum: 3d06926e4068ef8d0a832e6d32267a6fc3d098a59583266e5c419e421cdf3c5dd60b77859778232289b80e1e3ff3e35ce9959ea53fefa269d7b1afe5f686c068
-  skip_validation: true
+- archive: rabbitmq-server-4.0.1.tar.xz
+  archive_type: upstream
+  archive_sha512sum: e06737281f4e21762df8499939a6217d1542fb08564ee4af5a977049718ed452e3dc4d9d7676d3fb1b7518f5fa5bfee918b367265f3c45bdd8d249a921bf2820
+  name: rabbitmq-server-4.0.1
+  version: "4.0.1"
+  url: https://github.com/rabbitmq/rabbitmq-server/releases/download/v4.0.1/rabbitmq-server-4.0.1.tar.xz
+  repo_url: https://github.com/rabbitmq/rabbitmq-server
+  commit_id: 6963f8b91090bc631c3a764f82e1b2016ccd24f5
+  skip_list: ['LICENSE', 'LICENSE-APACHE2', 'plugins.mk']
+  missing: ['aten', 'LICENSE-MPL-2.0', 'recon', 'LICENSE-MPL2', 'khepri', '.bazelrc', 'systemd', 'LICENSE-httpc_aws', '.mix', 'bazel', 'observer_cli', 'gen_batch_server', 'BUILD.bazel', 'git-revisions.txt', 'docker', 'rabbitmq-mix.mk', '.gitignore', 'rabbitmq_run.bzl', 'LICENSE-Apache-2.0', 'jose', 'osiris', 'rabbitmq_amqp_client', 'rabbitmq_ct_client_helpers', 'BUILD.bats', 'MODULE.bazel', 'LICENSE-rabbitmq_aws', 'elvis_mk', 'cowlib', 'rabbitmq_home.bzl', 'rabbitmqctl.bzl', 'seshat', 'user-template.bazelrc', 'LICENSE-MIT-Mochi', 'cowboy', 'packaging', 'LICENSE-BSD-recon', '.git-blame-ignore-revs', 'examples', 'LICENSE-MIT-jQuery', '.gitkeep', 'BUILD.package_generic_unix', 'cuttlefish', 'khepri_mnesia_migration', 'prometheus', 'stdout_formatter', 'PKG_LINUX.md', 'quantile_estimator', 'activemq.bzl', 'sysmon_handler', 'rabbitmq_ct_helpers', 'tools', 'getopt', '.hgignore', 'csv', 'LICENSE-MIT-Sammy060', 'LICENSE-MIT-Erlware-Commons', '.hex', 'test', 'rabbitmq.bzl', 'LICENSE-BSD-base64js', 'doc', 'rabbitmq_package_generic_unix.bzl', 'LICENSE-MIT-EJS10', 'LICENSE-APL2-Stomp-Websocket', 'LICENSE-APACHE2-excanvas', 'ra', 'base64url', 'json', 'LICENSE-MIT-EJS', 'app.bzl', 'syslog', 'thoas', 'PKG_WINDOWS.md', 'enough', 'ranch', 'trust_store_http', 'horus', 'LICENSE-MPL', 'gun', 'mix.lock', 'LICENSE-MIT-Sammy', 'bats.bzl', 'erlang_ls.config', 'accept', 'credentials_obfuscation', 'LICENSE-ISC-cowboy', 'eetcd', 'moduleindex.yaml', 'LICENSE-APACHE2-ExplorerCanvas', 'LICENSE-MIT-jQuery164', 'LICENSE-erlcloud', 'redbug', '.github', 'dist.bzl', 'LICENSE-MIT-Flot']
   spdx:
     package:
       detailed_description: 'rabbitmq messaging server '

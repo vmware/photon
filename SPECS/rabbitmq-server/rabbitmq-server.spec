@@ -14,12 +14,13 @@
 # 3.8.x --> 3.11.x (not recommended)
 # 3.8.x --> 3.9.x (recommended & probably okay)
 # Enable all feauture flags before upgrade from 3.11.x to 3.12.4
-# 3.11.0 --> 3.11.18 --> 3.12.4
+# Enable all feauture flags before upgrade from 3.13.x to 4.0.1
+# 3.11.0 --> 3.11.18 --> 3.12.4 --> 3.13.3 --> 4.0.1
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.13.3
-Release:       4%{?dist}
+Version:       4.0.1
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -155,6 +156,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Wed Jun 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.0.1-1
+- Version upgrade
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.13.3-4
 - Bump release for updating erlang
 * Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.13.3-3
