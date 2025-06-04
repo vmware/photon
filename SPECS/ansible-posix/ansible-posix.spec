@@ -3,8 +3,8 @@
 
 Summary:        Ansible Collection targeting POSIX and POSIX-ish platforms
 Name:           ansible-posix
-Version:        1.5.1
-Release:        3%{?dist}
+Version:        2.0.0
+Release:        1%{?dist}
 URL:            https://github.com/ansible-collections/ansible.posix
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 %{ansible_collection_files}
 
 %changelog
+* Wed Jun 04 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.0-1
+- Update to 2.0.0
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.5.1-3
 - Release bump for SRP compliance
 * Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 1.5.1-2

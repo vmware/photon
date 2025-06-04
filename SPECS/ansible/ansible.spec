@@ -1,7 +1,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.14.12
-Release:        3%{?dist}
+Version:        2.18.6
+Release:        1%{?dist}
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -16,13 +16,13 @@ Source3: ansible_collection.py
 Source4: license.txt
 %include %{SOURCE4}
 
-Patch0: CVE-2024-0690.patch
-
 BuildArch: noarch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-resolvelib
+BuildRequires: python3-pip
+BuildRequires: python3-wheel
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
@@ -55,10 +55,10 @@ Development files for ansible packages
 cp -vp %{SOURCE1} lib/%{name}/modules/
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 install -Dpm0744 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
@@ -75,6 +75,8 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Thu May 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.18.6-1
+- Update to 2.18.6
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.14.12-3
 - Release bump for SRP compliance
 * Thu Feb 01 2024 Kuntal Nayak <nkuntal@vmware.com> 2.14.12-2

@@ -1,6 +1,6 @@
 sources:
-- archive: ansible-posix-1.5.1.tar.gz
-  archive_sha512sum: 5132d792b75c2b6d3779e95c28c1141807286b6f77370a5fa95325a74f723409393eb2d2585aa1b99f92b390925b6b76e208f0b25367397db7ccb5de869c252f
+- archive: ansible-posix-2.0.0.tar.gz
+  archive_sha512sum: 30e71afefc7415d04ac46eb32ce247b01c3f8c074f8ed72f6c9ca355f2018a1617161826d6f2ac40e0b8cb5d99048c866f58777a1b9c093fd2fbc5290799cbe6
   skip_validation: true
   spdx:
     package:

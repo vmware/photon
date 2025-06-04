@@ -3,8 +3,8 @@
 
 Summary:        Modules and plugins supported by Ansible community
 Name:           ansible-community-general
-Version:        6.3.0
-Release:        3%{?dist}
+Version:        10.7.0
+Release:        1%{?dist}
 URL:            https://github.com/ansible-collections/community.general
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ rm -vr %{buildroot}%{ansible_collection_files}/%{collection_name}/tests
 %{ansible_collection_files}
 
 %changelog
+* Wed Jun 04 2025 Tapas Kundu <tapas.kundu@broadcom.com> 10.7.0-1
+- Update to 10.7.0
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 6.3.0-3
 - Release bump for SRP compliance
 * Tue Dec 26 2023 Nitesh Kumar <kunitesh@vmware.com> 6.3.0-2

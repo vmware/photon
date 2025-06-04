@@ -1,6 +1,6 @@
 sources:
-- archive: ansible-community-general-6.3.0.tar.gz
-  archive_sha512sum: 33881ae519e6378152cf5ef9d9dcc209bc7e5e218190ba48b61a7635890c6abf5089b8d199e78518d1a06a3e8e0e8c25b5da1d03fc6cbb8929c3bd07cd0798f4
+- archive: ansible-community-general-10.7.0.tar.gz
+  archive_sha512sum: 0205c73758e8f483560e731127f80b4061218e01da03ba21cbc5457b1249a67a1e075a85e711189a84efe475a15aacf1d736eef567aa10650aa6cc9b211e8aff
   skip_validation: true
   spdx:
     package:
