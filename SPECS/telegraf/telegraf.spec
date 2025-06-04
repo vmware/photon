@@ -1,11 +1,13 @@
-%define network_required 1
-%define debug_package   %{nil}
-%define plugin_ver      1.4.0
+%define network_required    1
+%define debug_package       %{nil}
+%define branch              %{version}-%{release}
+%define tag                 %{version}
+%define commit              e7ce1e1e74
 
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
-Version:          1.28.1
-Release:          10%{?dist}
+Version:          1.34.4
+Release:          1%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -13,20 +15,15 @@ Distribution:     Photon
 
 Source0: https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
 
-Source1: https://github.com/wavefrontHQ/telegraf/archive/%{name}-plugin-%{plugin_ver}.zip
-
-Source2: %{name}.conf
-Source3: %{name}.sysusers
+Source1: %{name}.sysusers
+Source2: post.inc
+Source3: %{name}.preset
 
 Source4: license.txt
 %include %{SOURCE4}
 
-Patch0: fix-compile-error.patch
-
 BuildRequires:    go
-BuildRequires:    git
 BuildRequires:    systemd-devel
-BuildRequires:    unzip
 
 Requires:         systemd
 Requires:         logrotate
@@ -40,52 +37,46 @@ the community can easily add support for collecting metrics from well known serv
 Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Google Analytics).
 
 %prep
-%autosetup -p1 -b1
+%autosetup -p1
 
 %build
-mkdir -p ${GOPATH}/src/github.com/influxdata/%{name} \
-         ${GOPATH}/src/github.com/wavefronthq/%{name}/plugins/outputs/wavefront
-
-cp -r * ${GOPATH}/src/github.com/influxdata/%{name}
-rm -rf ./*
-
-pushd ../%{name}-%{plugin_ver}
-cp -r * ${GOPATH}/src/github.com/wavefronthq/%{name}/
-popd
-rm -rf ../%{name}-%{plugin_ver}
-
-pushd ${GOPATH}/src/github.com/influxdata/%{name}
-%make_build
-popd
+make %{?_smp_mflags} \
+    config \
+    %{name} \
+    commit=%{commit} tag=%{tag} branch=%{branch}
 
 %install
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/%{name} \
-    %{buildroot}%{_bindir}/%{name}
+%make_install %{?_smp_mflags} \
+  commit=%{commit} tag=%{tag} branch=%{branch} \
+  prefix=%{_prefix} \
+  localstatedir=%{_var} \
+  sysconfdir=%{_sysconfdir} \
+  buildbin=%{name}
 
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/scripts/%{name}.service \
-    %{buildroot}%{_unitdir}/%{name}.service
+install -pDm 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/%{name}/etc/logrotate.d/%{name} \
-    %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name} \
+         %{buildroot}%{_var}/log/%{name} \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{_sysconfdir}/%{name}/%{name}.d \
+         %{buildroot}%{_sysconfdir}/default
 
-install -m 640 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+mv %{buildroot}%{_libdir}/%{name}/scripts/%{name}.service \
+   %{buildroot}%{_unitdir}
 
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
+install -pDm 0644 %{SOURCE3} %{buildroot}%{_presetdir}/99-%{name}.preset
 
-mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
+touch %{buildroot}%{_sysconfdir}/default/%{name}
 
 %clean
 rm -rf %{buildroot}/*
 
 %pre
-%sysusers_create_compat %{SOURCE3}
+%sysusers_create_compat %{SOURCE1}
 
 %post
-chown -R root:%{name} %{_sharedstatedir}/%{name}
-chmod 0770 %{_sharedstatedir}/%{name}
-chown -R %{name}:%{name} %{_sysconfdir}/%{name}
+%include %{SOURCE2}
 %systemd_post %{name}.service
-systemctl daemon-reload
 
 %preun
 %systemd_preun %{name}.service
@@ -97,11 +88,20 @@ systemctl daemon-reload
 %defattr(-,root,root)
 %{_bindir}/%{name}
 %{_unitdir}/%{name}.service
-%{_sysconfdir}/logrotate.d/%{name}
-%{_sysusersdir}/%{name}.conf
+%{_presetdir}/99-%{name}.preset
+%attr(0644,%{name},%{name}) %{_sysconfdir}/logrotate.d/%{name}
+%attr(0644,%{name},%{name}) %{_sysconfdir}/default/%{name}
+%attr(0644,%{name},%{name}) %{_sysusersdir}/%{name}.conf
+%attr(0755,-,-) %{_libdir}/%{name}/scripts/init.sh
+%dir %{_sharedstatedir}/%{name}
+%dir %{_var}/log/%{name}
+%dir %{_libdir}/%{name}
+%dir %{_sysconfdir}/%{name}/%{name}.d
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Jun 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.4-1
+- Upgrade to v1.34.4
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.28.1-10
 - Renaming sysusers to conf to fix auto user creation
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.28.1-9

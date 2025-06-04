@@ -1,32 +1,20 @@
 sources:
-- archive: telegraf-1.28.1.tar.gz
-  archive_sha512sum: ab5d84ed665c16e90fa0a5c97cc4e34580f6f2079007328cba9c0b579245e0dbdae712e5d4079221d7b1bbaf674ae2994b68a37567ea5f9a6600787a31ab0082
-  skip_validation: true
+- archive: telegraf-1.34.4.tar.gz
+  archive_sha512sum: 9c52f9b42875a4c78bd7f8a11cdb31b91218c043ae6d66505653c4ddad4b499d1d0b8e65efce8dd2f721f611022b199ec32e6d16640c3a079d8e3854951fbefd
+  archive_type: upstream
+  commit_id: e7ce1e1e740b1983f86a0587ce67858bb67eb4d1
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: telegraf-1.34.4
+  version: 1.34.4
+  repo_url: https://github.com/influxdata/telegraf
+  url: https://github.com/influxdata/telegraf/archive/refs/tags/v1.34.4.tar.gz
   spdx:
     package:
-      detailed_description: 'Telegraf is an agent written in Go for collecting, processing,
-        aggregating, and writing metrics. Design goals are to have a minimal memory
-        footprint with a plugin system so that developers in the community can easily
-        add support for collecting metrics from well known services (like Hadoop,
-        Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch,
-        or Google Analytics). '
+      detailed_description: Telegraf is an agent written in Go for collecting, processing, aggregating, and writing metrics. Design goals are to have a minimal memory footprint with a plugin system so that developers in the community can easily add support for collecting metrics from well known services (like Hadoop, Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Google Analytics).
       home_page: https://github.com/influxdata/telegraf
-      license_concluded: JSON AND Zlib AND BSD-2-Clause-Views AND BSD-2-Clause AND
-        EPL-2.0 AND Unlicense AND BSD-3-Clause-Clear AND MPL-2.0 AND MIT AND ISC AND
-        EFL-2.0 AND BSD-3-Clause AND Apache-2.0
-      license_declared: JSON AND Zlib AND BSD-2-Clause-Views AND BSD-2-Clause AND
-        EPL-2.0 AND Unlicense AND BSD-3-Clause-Clear AND MPL-2.0 AND MIT AND ISC AND
-        EFL-2.0 AND BSD-3-Clause AND Apache-2.0
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-3-Clause-Clear AND EFL-2.0 AND EPL-2.0 AND ISC AND JSON AND MIT AND MPL-2.0 AND Unlicense
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-3-Clause-Clear AND EFL-2.0 AND EPL-2.0 AND ISC AND JSON AND MIT AND MPL-2.0 AND Unlicense
       short_summary: agent for collecting, processing, aggregating, and writing metrics.
-      supplier: 'Organization: Broadcom, Inc.'
-- archive: telegraf-plugin-1.4.0.zip
-  archive_sha512sum: 3f49e403a92da5e45eaab7e9683c2f36e1143036db59e167568bec348499af6b7cc2b37135a37f6ebaf4be63bee25cf7859b6f164c6ed3064ad786a55111bfcc
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: Wavefront Output Plugin
-      home_page: https://github.com/influxdata/telegraf/tree/master/plugins/outputs/wavefront
-      license_concluded: MIT
-      license_declared: MIT
-      short_summary: Wavefront Output Plugin
       supplier: 'Organization: Broadcom, Inc.'
