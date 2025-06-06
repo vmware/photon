@@ -30,7 +30,6 @@ static int __init fcw_subsys_initcall(void)
 	rsa_init();
 	crypto_ecb_module_init();
 	seqiv_module_init();
-	sha1_generic_mod_init();
 	sha256_generic_mod_init();
 	sha512_generic_mod_init();
 	aes_init();
@@ -74,7 +73,6 @@ static void __exit fcw_module_exit(void)
 	ghash_mod_exit();
 	hmac_module_exit();
 	rsa_exit();
-	sha1_generic_mod_fini();
 	sha256_generic_mod_fini();
 	sha512_generic_mod_fini();
 	sha3_generic_mod_fini();

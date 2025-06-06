@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.1
-Release:        17%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        18%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -259,6 +259,10 @@ Patch323: 0444-drivers-base-memory-use-MHP_MEMMAP_ON_MEMORY-from-th.patch
 Patch324: 0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 %endif
 
+%ifarch x86_64
+Patch450: 0001-jitterentropy-Makefile-changes.patch
+%endif
+
 # Crypto: [500..529]
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
 Patch500: 0002-FIPS-crypto-self-tests.patch
@@ -281,10 +285,6 @@ Patch507: 0001-linux-canister-Eliminate-codetag-and-other-taggings-.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 #Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
-%endif
-
-%ifarch x86_64
-Patch510: 0001-jitterentropy-Makefile-changes.patch
 %endif
 
 %if 0%{?acvp_build:1}
@@ -327,7 +327,7 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.12.1-13-0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.12.1-18-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0003-FIPS-canister-creation.patch
@@ -340,6 +340,7 @@ Patch10009: 0009-ecc-Add-pairwise-consistency-test-for-every-generate.patch
 Patch10010: 0010-List-canister-objs-in-a-file.patch
 Patch10011: 0011-Handle-approved-and-non-approved-services.patch
 Patch10012: 0012-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
+Patch10013: 0013-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
 
 %if 0%{?kat_build}
 Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -518,6 +519,8 @@ The kernel fips-canister
 %autopatch -p1 -m300 -M339
 %endif
 
+# jitterentropy
+%autopatch -p1 -m450 -M450
 # crypto
 %autopatch -p1 -m500 -M507
 
@@ -554,7 +557,7 @@ popd
 #popd
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10000 -M10012
+%autopatch -p1 -m10000 -M10013
 
 %if 0%{?kat_build}
 %autopatch -p1 -m10014 -M10014
@@ -914,6 +917,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.1-18
+- Move sha1 functions out of canister boundry
+- Do not register sha1 to crypt api when fips is enabled
 * Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-17
 - Introduce FIPS canister plugins
 * Tue Jun 03 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-16

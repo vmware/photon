@@ -1,7 +1,7 @@
-From a216ef83e25cc5cae3101394d8b8e3de5cb796f9 Mon Sep 17 00:00:00 2001
+From f4be8de0a995c211599beb4a1f8ceb99e8c656bf Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 2 May 2025 03:09:39 -0500
-Subject: [PATCH 11/12] Handle approved and non-approved services
+Subject: [PATCH 11/13] Handle approved and non-approved services
 
 - Add log indicator prints in algorithm initialization path
 - Add XTS error log when XTS duplicate test fails
@@ -53,13 +53,12 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  crypto/rsa-pkcs1pad.c              |   7 +-
  crypto/rsa.c                       |   5 ++
  crypto/seqiv.c                     |   4 +
- crypto/sha1_generic.c              |  10 ++-
  crypto/sha256_generic.c            |  13 ++-
  crypto/sha3_generic.c              |  12 ++-
  crypto/sha512_generic.c            |  12 ++-
  crypto/testmgr.c                   |  14 ++--
  crypto/xts.c                       |   9 ++-
- 24 files changed, 351 insertions(+), 24 deletions(-)
+ 23 files changed, 342 insertions(+), 23 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index ca62f83d1..a123404a9 100644
@@ -830,34 +829,6 @@ index 6d83eda77..e13b87f03 100644
  	}
  	return err;
  }
-diff --git a/crypto/sha1_generic.c b/crypto/sha1_generic.c
-index aa9cfd6e1..7e4201794 100644
---- a/crypto/sha1_generic.c
-+++ b/crypto/sha1_generic.c
-@@ -18,6 +18,7 @@
- #include <crypto/sha1.h>
- #include <crypto/sha1_base.h>
- #include <asm/byteorder.h>
-+#include <linux/fips.h>
- #include "fips_canister_wrapper.h"
- 
- const u8 sha1_zero_message_hash[SHA1_DIGEST_SIZE] = {
-@@ -75,7 +76,14 @@ static struct shash_alg alg = {
- 
- int __init sha1_generic_mod_init(void)
- {
--	return crypto_register_shash(&alg);
-+	int ret;
-+
-+	ret = crypto_register_shash(&alg);
-+	if (!ret && fips_enabled) {
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
-+				   alg.base.cra_driver_name, alg.base.cra_name);
-+	}
-+	return ret;
- }
- 
- void __exit sha1_generic_mod_fini(void)
 diff --git a/crypto/sha256_generic.c b/crypto/sha256_generic.c
 index 9bc82ab39..bb8859607 100644
 --- a/crypto/sha256_generic.c
@@ -1052,5 +1023,5 @@ index 0e619e399..c3bccc80a 100644
  	return err;
  }
 -- 
-2.39.4
+2.49.0
 

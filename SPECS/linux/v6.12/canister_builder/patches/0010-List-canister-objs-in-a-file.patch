@@ -1,7 +1,7 @@
-From b86acb06706466c9639ef750e64a28d227c1b744 Mon Sep 17 00:00:00 2001
-From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
-Date: Mon, 2 Dec 2024 08:02:22 +0000
-Subject: [PATCH 10/12] List canister objs in a file
+From dab1484cd698b9ba3e719dda5d259ae87a3b475b Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Wed, 4 Jun 2025 01:19:21 -0500
+Subject: [PATCH 10/13] List canister objs in a file
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
-index ea127f8b5..2441f0209 100644
+index 08867dcda..a345c5bda 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -222,14 +222,17 @@ OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y
+@@ -220,14 +220,17 @@ OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y
  crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
  	$(call cmd,force_checksrc)
  	$(call if_changed_rule,cc_o_c)
@@ -22,7 +22,7 @@ index ea127f8b5..2441f0209 100644
  	$(call if_changed_rule,as_o_S)
 +	@$(foreach obj,$(aesni-intel-y),echo x86-$(obj) >> objs;)
  
- lib-crypto-y := aes.o sha256.o sha1.o
+ lib-crypto-y := aes.o sha256.o
  crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
  	$(call cmd,force_checksrc)
  	$(call if_changed_rule,cc_o_c)
@@ -30,7 +30,7 @@ index ea127f8b5..2441f0209 100644
  
  canister += crypto_self_test.o
  
-@@ -238,6 +241,7 @@ canister += fips_integrity.o
+@@ -236,6 +239,7 @@ canister += fips_integrity.o
  extra-y += $(canister)
  $(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
  	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@

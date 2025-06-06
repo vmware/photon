@@ -1,7 +1,7 @@
-From cefe1bd1ed16a86ed3abfd60a3d499eb5df8633d Mon Sep 17 00:00:00 2001
+From 09809c122cf290a24325aa3a68806a75d7dc6aa4 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 29 Nov 2024 11:39:30 +0000
-Subject: [PATCH 06/12] Move __bug_table section to fips_canister_wrapper
+Subject: [PATCH 06/13] Move __bug_table section to fips_canister_wrapper
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
@@ -19,11 +19,10 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  crypto/hmac.c                      |   4 +-
  crypto/rsa-pkcs1pad.c              |   6 +-
  crypto/seqiv.c                     |   3 +-
- crypto/sha1_generic.c              |   5 +-
  crypto/sha512_generic.c            |   5 +-
  crypto/testmgr.c                   | 116 +++++++++++++++--------------
  lib/crypto/sha256.c                |  11 +++
- 18 files changed, 173 insertions(+), 153 deletions(-)
+ 17 files changed, 170 insertions(+), 151 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index 9c4cb927d..d07b3ff76 100644
@@ -801,36 +800,6 @@ index 17e11d51d..14d230ff6 100644
  
  out:
  	kfree_sensitive(subreq->iv);
-diff --git a/crypto/sha1_generic.c b/crypto/sha1_generic.c
-index 325b57fe2..193345133 100644
---- a/crypto/sha1_generic.c
-+++ b/crypto/sha1_generic.c
-@@ -19,6 +19,7 @@
- #include <crypto/sha1.h>
- #include <crypto/sha1_base.h>
- #include <asm/byteorder.h>
-+#include "fips_canister_wrapper.h"
- 
- const u8 sha1_zero_message_hash[SHA1_DIGEST_SIZE] = {
- 	0xda, 0x39, 0xa3, 0xee, 0x5e, 0x6b, 0x4b, 0x0d,
-@@ -42,7 +43,7 @@ static void sha1_generic_block_fn(struct sha1_state *sst, u8 const *src,
- int crypto_sha1_update(struct shash_desc *desc, const u8 *data,
- 		       unsigned int len)
- {
--	return sha1_base_do_update(desc, data, len, sha1_generic_block_fn);
-+	return fcw_sha1_base_do_update(desc, data, len, sha1_generic_block_fn);
- }
- EXPORT_SYMBOL(crypto_sha1_update);
- 
-@@ -55,7 +56,7 @@ static int sha1_final(struct shash_desc *desc, u8 *out)
- int crypto_sha1_finup(struct shash_desc *desc, const u8 *data,
- 		      unsigned int len, u8 *out)
- {
--	sha1_base_do_update(desc, data, len, sha1_generic_block_fn);
-+	fcw_sha1_base_do_update(desc, data, len, sha1_generic_block_fn);
- 	return sha1_final(desc, out);
- }
- EXPORT_SYMBOL(crypto_sha1_finup);
 diff --git a/crypto/sha512_generic.c b/crypto/sha512_generic.c
 index ed81813bd..dbdabde87 100644
 --- a/crypto/sha512_generic.c
