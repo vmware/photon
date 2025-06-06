@@ -1,7 +1,7 @@
 Summary:        WebOb provides objects for HTTP requests and responses..
 Name:           python3-webob
 Version:        1.8.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -49,6 +49,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jun 05 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.8.7-4
+- Release bump for SRP compliance
 * Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.7-3
 - Fix CVE-2024-42353
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.7-2
