@@ -24,7 +24,6 @@
 #include <crypto/kpp.h>
 #include <linux/uio.h>
 #include <crypto/algapi.h>
-#include <crypto/sha1_base.h>
 #include <crypto/sha512_base.h>
 
 #undef DEFINE_LOCK_GUARD_1_COND
@@ -65,10 +64,6 @@ extern void fcw_spin_lock_free(void *lock);
 extern bool fcw_schedule_work(struct work_struct *work);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
 extern void *fcw_memcpy(void *dst, const void *src, size_t len);
-extern int fcw_sha1_base_do_update(struct shash_desc *desc,
-				      const u8 *data,
-				      unsigned int len,
-				      sha1_block_fn *block_fn);
 extern int fcw_sha512_base_do_update(struct shash_desc *desc,
 					const u8 *data,
 					unsigned int len,
@@ -127,8 +122,6 @@ void __exit aes_fini(void);
 int __init crypto_self_test_init(void);
 int __init ecdsa_init(void);
 void __exit ecdsa_exit(void);
-int __init sha1_generic_mod_init(void);
-void __exit sha1_generic_mod_fini(void);
 int __init cryptomgr_init(void);
 void __exit cryptomgr_exit(void);
 int __init sha512_generic_mod_init(void);
@@ -156,4 +149,3 @@ int __init fips_integrity_check (void);
 int seqiv_module_init(void);
 void seqiv_module_exit(void);
 #endif
-

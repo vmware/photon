@@ -44,7 +44,6 @@
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6,1,0)
 #include <crypto/sha.h>
 #else
-#include <crypto/sha1.h>
 #include <crypto/sha2.h>
 #endif
 
@@ -63,7 +62,6 @@
 #include <linux/uio.h>
 #include <linux/scatterlist.h>
 #include <crypto/scatterwalk.h>
-#include <crypto/sha1_base.h>
 #include <crypto/sha256_base.h>
 #include <crypto/sha512_base.h>
 #include <crypto/sha3.h>
@@ -120,10 +118,6 @@ void fcw_bug_on(int cond);
 int fcw_warn_on_once(int cond);
 int fcw_is_warn_true(int cond);
 void fcw_warn(void);
-int fcw_sha1_base_do_update(struct shash_desc *desc,
-				      const u8 *data,
-				      unsigned int len,
-				      sha1_block_fn *block_fn);
 int fcw_sha512_base_do_update(struct shash_desc *desc,
 					const u8 *data,
 					unsigned int len,
@@ -443,13 +437,6 @@ void *fcw_memcpy(void *dst, const void *src, size_t len)
 	return memcpy(dst, src, len);
 }
 
-int fcw_sha1_base_do_update(struct shash_desc *desc,
-				      const u8 *data,
-				      unsigned int len,
-				      sha1_block_fn *block_fn)
-{
-	return sha1_base_do_update(desc, data, len, block_fn);
-}
 
 int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
 					    const u8 *data,
@@ -704,7 +691,6 @@ static char *canister_algs[] = {
 	"cipher_null-generic",
 	"ecb-cipher_null",
 	"rsa-generic",
-	"sha1-generic",
 	"sha256-generic",
 	"sha224-generic",
 	"sha512-generic",
@@ -714,12 +700,9 @@ static char *canister_algs[] = {
 	"drbg_pr_ctr_aes128",
 	"drbg_pr_ctr_aes192",
 	"drbg_pr_ctr_aes256",
-	"drbg_pr_sha1",
 	"drbg_pr_sha384",
 	"drbg_pr_sha512",
 	"drbg_pr_sha256",
-	"hmac(sha1-generic)",
-	"drbg_pr_hmac_sha1",
 	"hmac(sha384-generic)",
 	"drbg_pr_hmac_sha384",
 	"hmac(sha512-generic)",
@@ -729,11 +712,9 @@ static char *canister_algs[] = {
 	"drbg_nopr_ctr_aes128",
 	"drbg_nopr_ctr_aes192",
 	"drbg_nopr_ctr_aes256",
-	"drbg_nopr_sha1",
 	"drbg_nopr_sha384",
 	"drbg_nopr_sha512",
 	"drbg_nopr_sha256",
-	"drbg_nopr_hmac_sha1",
 	"drbg_nopr_hmac_sha384",
 	"drbg_nopr_hmac_sha512",
 	"drbg_nopr_hmac_sha256",
@@ -775,7 +756,6 @@ static char *canister_algs[] = {
 	"hmac(sha3-384-generic)",
 	"sha3-512-generic",
 	"hmac(sha3-512-generic)",
-	"pkcs1pad(rsa-generic,sha1)",
 	"pkcs1pad(rsa-generic,sha224)",
 	"pkcs1pad(rsa-generic,sha384)",
 	"ecdsa-nist-p384-generic",
@@ -902,9 +882,6 @@ EXPORT_SYMBOL_GPL(crypto_ecdh_encode_key);
 EXPORT_SYMBOL_GPL(crypto_ecdh_decode_key);
 EXPORT_SYMBOL_GPL(rsa_parse_pub_key);
 EXPORT_SYMBOL_GPL(rsa_parse_priv_key);
-EXPORT_SYMBOL_GPL(sha1_zero_message_hash);
-EXPORT_SYMBOL(crypto_sha1_update);
-EXPORT_SYMBOL(crypto_sha1_finup);
 EXPORT_SYMBOL_GPL(sha224_zero_message_hash);
 EXPORT_SYMBOL_GPL(sha256_zero_message_hash);
 EXPORT_SYMBOL(crypto_sha256_update);
@@ -919,8 +896,6 @@ EXPORT_SYMBOL(crypto_aes_inv_sbox);
 EXPORT_SYMBOL(aes_expandkey);
 EXPORT_SYMBOL(aes_encrypt);
 EXPORT_SYMBOL(aes_decrypt);
-EXPORT_SYMBOL(sha1_transform);
-EXPORT_SYMBOL(sha1_init);
 EXPORT_SYMBOL(sha256_update);
 EXPORT_SYMBOL(sha256_final);
 EXPORT_SYMBOL(sha224_final);

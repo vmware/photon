@@ -1,9 +1,9 @@
-From caf86a218fdc40d57cc55c097dc37b2a4da1321b Mon Sep 17 00:00:00 2001
-From: srinidhira0 <srinidhi.rao@broadcom.com>
-Date: Tue, 3 Jun 2025 05:04:11 +0000
+From b57e0c01327b9d48aa8f29891b4820ab558d7316 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Fri, 20 Jun 2025 11:07:36 -0500
 Subject: [PATCH] jitterentropy: Makefile changes
 
-  -  Add photon-jitterentropy-v6.12 to compile instead of
+-  Add photon-jitterentropy-v6.12 to compile instead of
      linux kernel's default jitterentropy.
 
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
@@ -12,7 +12,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
-index dc3b331ca..90a3fcbfa 100644
+index 4c99e5d37..af6614b46 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -6,6 +6,9 @@
@@ -25,10 +25,10 @@ index dc3b331ca..90a3fcbfa 100644
  obj-$(CONFIG_CRYPTO_ENGINE) += crypto_engine.o
  obj-$(CONFIG_CRYPTO_FIPS) += fips.o
  
-@@ -144,11 +147,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
- obj-$(CONFIG_CRYPTO_842) += 842.o
+@@ -163,11 +166,6 @@ obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
+ obj-$(CONFIG_CRYPTO_DRBG) += drbg.o
 -obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o
 -CFLAGS_jitterentropy.o = -O0
 -KASAN_SANITIZE_jitterentropy.o = n
@@ -36,7 +36,7 @@ index dc3b331ca..90a3fcbfa 100644
 -jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
  obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
- obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
+ obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
 -- 
-2.35.6
+2.49.0
 

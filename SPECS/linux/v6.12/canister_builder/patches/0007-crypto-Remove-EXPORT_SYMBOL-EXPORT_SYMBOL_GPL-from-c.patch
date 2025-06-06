@@ -1,7 +1,7 @@
-From 66ab11a786e8a1323db88278cda67d167679e695 Mon Sep 17 00:00:00 2001
+From a606b199c3099905b97a1c2775a0993ea2178e91 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 06:58:48 +0000
-Subject: [PATCH 07/12] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
+Subject: [PATCH 07/13] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from
  canister
 
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
@@ -12,15 +12,13 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  crypto/ecdh_helper.c    |  5 +----
  crypto/geniv.c          |  3 ---
  crypto/rsa_helper.c     |  2 --
- crypto/sha1_generic.c   |  3 ---
  crypto/sha256_generic.c |  4 ----
  crypto/sha3_generic.c   |  3 ---
  crypto/sha512_generic.c |  4 ----
  crypto/testmgr.c        |  2 --
  lib/crypto/aes.c        |  6 ------
- lib/crypto/sha1.c       |  2 --
  lib/crypto/sha256.c     |  4 ----
- 13 files changed, 1 insertion(+), 63 deletions(-)
+ 11 files changed, 1 insertion(+), 58 deletions(-)
 
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
 index 3c66d425c..c5bf42c63 100644
@@ -290,34 +288,6 @@ index 94266f290..9deb71e13 100644
  	return asn1_ber_decoder(&rsaprivkey_decoder, rsa_key, key, key_len);
  }
 -EXPORT_SYMBOL_GPL(rsa_parse_priv_key);
-diff --git a/crypto/sha1_generic.c b/crypto/sha1_generic.c
-index 193345133..c5efc0a3a 100644
---- a/crypto/sha1_generic.c
-+++ b/crypto/sha1_generic.c
-@@ -26,7 +26,6 @@ const u8 sha1_zero_message_hash[SHA1_DIGEST_SIZE] = {
- 	0x32, 0x55, 0xbf, 0xef, 0x95, 0x60, 0x18, 0x90,
- 	0xaf, 0xd8, 0x07, 0x09
- };
--EXPORT_SYMBOL_GPL(sha1_zero_message_hash);
- 
- static void sha1_generic_block_fn(struct sha1_state *sst, u8 const *src,
- 				  int blocks)
-@@ -45,7 +44,6 @@ int crypto_sha1_update(struct shash_desc *desc, const u8 *data,
- {
- 	return fcw_sha1_base_do_update(desc, data, len, sha1_generic_block_fn);
- }
--EXPORT_SYMBOL(crypto_sha1_update);
- 
- static int sha1_final(struct shash_desc *desc, u8 *out)
- {
-@@ -59,7 +57,6 @@ int crypto_sha1_finup(struct shash_desc *desc, const u8 *data,
- 	fcw_sha1_base_do_update(desc, data, len, sha1_generic_block_fn);
- 	return sha1_final(desc, out);
- }
--EXPORT_SYMBOL(crypto_sha1_finup);
- 
- static struct shash_alg alg = {
- 	.digestsize	=	SHA1_DIGEST_SIZE,
 diff --git a/crypto/sha256_generic.c b/crypto/sha256_generic.c
 index b00521f1a..c5c12378b 100644
 --- a/crypto/sha256_generic.c
@@ -466,26 +436,6 @@ index eafe14d02..d6876f690 100644
  
  MODULE_DESCRIPTION("Generic AES library");
  MODULE_AUTHOR("Ard Biesheuvel <ard.biesheuvel@linaro.org>");
-diff --git a/lib/crypto/sha1.c b/lib/crypto/sha1.c
-index ebb60519a..3c3b03b81 100644
---- a/lib/crypto/sha1.c
-+++ b/lib/crypto/sha1.c
-@@ -121,7 +121,6 @@ void sha1_transform(__u32 *digest, const char *data, __u32 *array)
- 	digest[3] += D;
- 	digest[4] += E;
- }
--EXPORT_SYMBOL(sha1_transform);
- 
- /**
-  * sha1_init - initialize the vectors for a SHA1 digest
-@@ -135,7 +134,6 @@ void sha1_init(__u32 *buf)
- 	buf[3] = 0x10325476;
- 	buf[4] = 0xc3d2e1f0;
- }
--EXPORT_SYMBOL(sha1_init);
- 
- MODULE_DESCRIPTION("SHA-1 Algorithm");
- MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
 index ca5cd6492..285384817 100644
 --- a/lib/crypto/sha256.c

@@ -1,7 +1,7 @@
-From aacda4630b73a6b12dd0ff33096534db87b6cc54 Mon Sep 17 00:00:00 2001
+From 5286d5f79500ab18c2ea6440a5f18c8892eb8d28 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 07:59:18 +0000
-Subject: [PATCH 08/12] Move kernel structures usage from canister to wrapper
+Subject: [PATCH 08/13] Move kernel structures usage from canister to wrapper
 
 - Module init and exit family of function calls moved to wrapper.
 - All MODULE_* macro usages have been removed as these macros add information
@@ -60,7 +60,6 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  crypto/rsa.c                        |  11 +-
  crypto/rsa_helper.c                 |   3 +-
  crypto/seqiv.c                      |  12 +-
- crypto/sha1_generic.c               |  13 +-
  crypto/sha256_generic.c             |  15 +-
  crypto/sha3_generic.c               |  19 +-
  crypto/sha512_generic.c             |  15 +-
@@ -72,14 +71,13 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  include/crypto/if_alg.h             |   4 +
  include/crypto/internal/geniv.h     |   4 +
  include/crypto/internal/skcipher.h  |   4 +
- include/crypto/sha1_base.h          |   1 -
  include/crypto/sha512_base.h        |   1 -
  include/linux/crypto.h              |   8 +
  include/linux/rtattr.h              |   6 +
  include/linux/spinlock.h            |  19 +-
  include/linux/spinlock_cond_guard.h |  16 +
  include/linux/swait.h               |   4 +
- 42 files changed, 426 insertions(+), 905 deletions(-)
+ 40 files changed, 424 insertions(+), 893 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
@@ -1584,42 +1582,6 @@ index 14d230ff6..6d83eda77 100644
 -MODULE_LICENSE("GPL");
 -MODULE_DESCRIPTION("Sequence Number IV Generator");
 -MODULE_ALIAS_CRYPTO("seqiv");
-diff --git a/crypto/sha1_generic.c b/crypto/sha1_generic.c
-index c5efc0a3a..aa9cfd6e1 100644
---- a/crypto/sha1_generic.c
-+++ b/crypto/sha1_generic.c
-@@ -13,7 +13,6 @@
-  */
- #include <crypto/internal/hash.h>
- #include <linux/init.h>
--#include <linux/module.h>
- #include <linux/mm.h>
- #include <linux/types.h>
- #include <crypto/sha1.h>
-@@ -74,21 +73,13 @@ static struct shash_alg alg = {
- 	}
- };
- 
--static int __init sha1_generic_mod_init(void)
-+int __init sha1_generic_mod_init(void)
- {
- 	return crypto_register_shash(&alg);
- }
- 
--static void __exit sha1_generic_mod_fini(void)
-+void __exit sha1_generic_mod_fini(void)
- {
- 	crypto_unregister_shash(&alg);
- }
- 
--subsys_initcall(sha1_generic_mod_init);
--module_exit(sha1_generic_mod_fini);
--
--MODULE_LICENSE("GPL");
--MODULE_DESCRIPTION("SHA1 Secure Hash Algorithm");
--
--MODULE_ALIAS_CRYPTO("sha1");
--MODULE_ALIAS_CRYPTO("sha1-generic");
 diff --git a/crypto/sha256_generic.c b/crypto/sha256_generic.c
 index c5c12378b..9bc82ab39 100644
 --- a/crypto/sha256_generic.c
@@ -3544,18 +3506,6 @@ index 7ae42afdc..8084a77f2 100644
  			unsigned long offset;
  		} phys;
  
-diff --git a/include/crypto/sha1_base.h b/include/crypto/sha1_base.h
-index 0c342ed0d..8850e929b 100644
---- a/include/crypto/sha1_base.h
-+++ b/include/crypto/sha1_base.h
-@@ -11,7 +11,6 @@
- #include <crypto/internal/hash.h>
- #include <crypto/sha1.h>
- #include <linux/crypto.h>
--#include <linux/module.h>
- #include <linux/string.h>
- 
- #include <linux/unaligned.h>
 diff --git a/include/crypto/sha512_base.h b/include/crypto/sha512_base.h
 index 679916a84..4a6001df3 100644
 --- a/include/crypto/sha512_base.h
@@ -3708,5 +3658,5 @@ index d32441948..6456666be 100644
  };
  
 -- 
-2.39.4
+2.49.0
 
