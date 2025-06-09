@@ -620,7 +620,7 @@ index 711de54eda98..0d43e65401d4 100644
  }
  EXPORT_SYMBOL_GPL(serial8250_em485_stop_tx);
 @@ -1697,7 +1750,7 @@ static void serial8250_disable_ms(struct uart_port *port)
- 	mctrl_gpio_disable_ms(up->gpios);
+ 	mctrl_gpio_disable_ms_no_sync(up->gpios);
  
  	up->ier &= ~UART_IER_MSI;
 -	serial_port_out(port, UART_IER, up->ier);

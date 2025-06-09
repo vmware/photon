@@ -22,7 +22,7 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.138
+Version:        6.1.141
 Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -576,6 +576,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-1
+- Update to version 6.1.141
 * Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.138-1
 - Update to version 6.1.138
 * Sun Apr 27 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.135-1
