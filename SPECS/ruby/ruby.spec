@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -45,7 +45,6 @@ BuildRequires:  readline
 BuildRequires:  tzdata
 
 Requires:       ca-certificates
-Requires:       openssl
 Requires:       gmp
 
 # CVE-2025-0306 requires "rsa: add implicit rejection in PKCS#1 v1.5 patch in openssl".
@@ -131,6 +130,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Mon Jun 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-18
+- Fix CVE-2025-0306
 * Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-17
 - Fix CVE-2025-27219, CVE-2025-27220 and CVE-2025-27221
 * Tue Feb 04 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-16
