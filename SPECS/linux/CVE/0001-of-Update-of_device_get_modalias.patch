@@ -1,6 +1,6 @@
-From 3bd1351982a91ea9c9cd566e4361909289ab6989 Mon Sep 17 00:00:00 2001
+From df6ace745045f2874aae4be85bfea169f689e4bb Mon Sep 17 00:00:00 2001
 From: Miquel Raynal <miquel.raynal@bootlin.com>
-Date: Tue, 4 Apr 2023 18:21:15 +0100
+Date: Wed, 11 Jun 2025 08:49:13 +0000
 Subject: [PATCH 7/8] of: Update of_device_get_modalias()
 
 commit 5c3d15e127ebfc0754cd18def7124633b6d46672 upstream
@@ -26,7 +26,7 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  1 file changed, 17 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 3a547793135c..426e065691d4 100644
+index 93f08f1..f24bb1a 100644
 --- a/drivers/of/device.c
 +++ b/drivers/of/device.c
 @@ -215,7 +215,7 @@ const void *of_device_get_match_data(const struct device *dev)
@@ -38,7 +38,7 @@ index 3a547793135c..426e065691d4 100644
  {
  	const char *compat;
  	char *c;
-@@ -223,19 +223,16 @@ static ssize_t of_device_get_modalias(struct device *dev, char *str, ssize_t len
+@@ -223,20 +223,17 @@ static ssize_t of_device_get_modalias(struct device *dev, char *str, ssize_t len
  	ssize_t csize;
  	ssize_t tsize;
  
@@ -52,16 +52,17 @@ index 3a547793135c..426e065691d4 100644
 +	csize = snprintf(str, len, "of:N%pOFn%c%s", np, 'T',
 +			 of_node_get_device_type(np));
  	tsize = csize;
+ 	if (csize >= len)
+ 		csize = len > 0 ? len - 1 : 0;
  	len -= csize;
- 	if (str)
- 		str += csize;
+ 	str += csize;
  
 -	of_property_for_each_string(dev->of_node, "compatible", p, compat) {
 +	of_property_for_each_string(np, "compatible", p, compat) {
  		csize = strlen(compat) + 1;
  		tsize += csize;
- 		if (csize > len)
-@@ -260,7 +257,10 @@ int of_device_request_module(struct device *dev)
+ 		if (csize >= len)
+@@ -261,7 +258,10 @@ int of_device_request_module(struct device *dev)
  	ssize_t size;
  	int ret;
  
@@ -73,7 +74,7 @@ index 3a547793135c..426e065691d4 100644
  	if (size < 0)
  		return size;
  
-@@ -271,7 +271,7 @@ int of_device_request_module(struct device *dev)
+@@ -272,7 +272,7 @@ int of_device_request_module(struct device *dev)
  	if (!str)
  		return -ENOMEM;
  
@@ -82,7 +83,7 @@ index 3a547793135c..426e065691d4 100644
  	str[size - 1] = '\0';
  	ret = request_module(str);
  	kfree(str);
-@@ -285,7 +285,12 @@ EXPORT_SYMBOL_GPL(of_device_request_module);
+@@ -286,7 +286,12 @@ EXPORT_SYMBOL_GPL(of_device_request_module);
   */
  ssize_t of_device_modalias(struct device *dev, char *str, ssize_t len)
  {
@@ -96,7 +97,7 @@ index 3a547793135c..426e065691d4 100644
  	if (sl < 0)
  		return sl;
  	if (sl > len - 2)
-@@ -348,8 +353,8 @@ int of_device_uevent_modalias(struct device *dev, struct kobj_uevent_env *env)
+@@ -349,8 +354,8 @@ int of_device_uevent_modalias(struct device *dev, struct kobj_uevent_env *env)
  	if (add_uevent_var(env, "MODALIAS="))
  		return -ENOMEM;
  

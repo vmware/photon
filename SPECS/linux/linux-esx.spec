@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.237
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.238
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=0fae2faf7b39cdadd988100171a26ca3877321a73200e91f91171ea263a8dd1443d84418cb6dfc268673069034e930ea33a762d21e26255deb56e22e2b8a1933
+%define sha512 linux=89a65f3fa470e9d15c0c2d980e569e2de330ccaaa77ba695a670f32250df8955f55e5019fa0db930efd7f5f27e6458764b1fb770ca53d6c922c884c233d5422b
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -217,9 +217,6 @@ Patch123: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
 # Fix CVE-2025-21863
 Patch125: 0001-io_uring-prevent-opcode-speculation.patch
 
-# Fix CVE-2024-26739
-Patch130: 0001-net-sched-act_mirred-don-t-override-retval-if-we-alr.patch
-
 # Fix CVE-2024-26718
 Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
 
@@ -369,8 +366,6 @@ Patch213: 0002-netfilter-nf_queue-remove-excess-nf_bridge-variable.patch
 Patch214: 0003-netfilter-propagate-net-to-nf_bridge_get_physindev.patch
 Patch215: 0004-netfilter-bridge-replace-physindev-with-physinif-in-.patch
 
-# Fix CVE-2022-21546
-Patch217: 0001-scsi-target-Fix-WRITE_SAME-No-Data-Buffer-crash.patch
 # Fix CVE-2022-49651
 Patch218: 0001-srcu-Tighten-cleanup_srcu_struct-GP-checks.patch
 
@@ -759,6 +754,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.238-1
+- Update to version 5.10.238
 * Mon May 26 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-2
 - Fixes CVE-2022-21546, CVE-2022-49651, CVE-2024-57795
 * Tue May 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.237-1
