@@ -3,8 +3,8 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.1.0724
-Release:        2%{?dist}
+Version:        9.1.1441
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,10 +12,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=47d49ce7f7c93eee38512c86c8071d6d72eca3e0284ecc53f1d9f22caf1ede3da1ebb5e60c11b213485b41eaf7784785216225316ddf1f92dd7b0ca32abb3e47
+%define sha512 %{name}=4e5c31dd3e76c90838daf6116232f95579d6d1551257d669fc812fef2fc0095fc1c94bfb9d6477e8f955308b119053a3878f7287bb90db5436a43a964bc1e461
 
 Source1:        vimrc
-Patch0:         CVE-2024-47814.patch
 
 BuildRequires:  ncurses-devel
 
@@ -75,6 +74,8 @@ fi
 %{_datadir}/vim/vim*/autoload/*
 %{_datadir}/vim/vim*/bugreport.vim
 %{_datadir}/vim/vim*/colors/*
+%{_datadir}/vim/vim*/LICENSE
+%{_datadir}/vim/vim*/README.txt
 %{_datadir}/applications/gvim.desktop
 %{_datadir}/applications/vim.desktop
 %{_datadir}/icons/hicolor/48x48/apps/gvim.png
@@ -125,6 +126,7 @@ fi
 %lang(fi) %{_datadir}/vim/vim*/lang/fi/LC_MESSAGES/vim.mo
 %lang(fr) %{_datadir}/vim/vim*/lang/fr/LC_MESSAGES/vim.mo
 %lang(ga) %{_datadir}/vim/vim*/lang/ga/LC_MESSAGES/vim.mo
+%lang(hy) %{_datadir}/vim/vim*/lang/hy/LC_MESSAGES/vim.mo
 %lang(it) %{_datadir}/vim/vim*/lang/it/LC_MESSAGES/vim.mo
 %lang(ja) %{_datadir}/vim/vim*/lang/ja/LC_MESSAGES/vim.mo
 %lang(ko.UTF-8) %{_datadir}/vim/vim*/lang/ko.UTF-8/LC_MESSAGES/vim.mo
@@ -178,6 +180,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Jun 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1.1441-1
+- Fix CVE-2025-29768, CVE-2025-26603, CVE-2025-1215, CVE-2025-24014, CVE-2025-22134
 * Mon Oct 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1.0724-2
 - Fix CVE-2024-47814
 * Tue Sep 10 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.1.0724-1
