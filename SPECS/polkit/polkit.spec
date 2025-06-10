@@ -1,7 +1,7 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.120
-Release:       7%{?dist}
+Release:       8%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
@@ -69,10 +69,14 @@ session  include        system-session
 EOF
 
 %pre
-getent group polkitd > /dev/null || groupadd -fg 27 polkitd
-getent passwd polkitd > /dev/null || \
-  useradd -c "PolicyKit Daemon Owner" -d %{_sysconfdir}/%{name}-1 -u 27 \
-    -g polkitd -s /bin/false polkitd
+getent group 'polkitd' >/dev/null || groupadd -f -g '114' -r 'polkitd' || :
+if ! getent passwd 'polkitd' >/dev/null; then
+  if ! getent passwd '114' >/dev/null; then
+    useradd -r -u '114' -g 'polkitd' -d '/etc/polkit-1' -s '/bin/false' -c 'PolicyKit Daemon Owner' 'polkitd' || :
+  else
+    useradd -r -g 'polkitd' -d '/etc/polkit-1' -s '/bin/false' -c 'PolicyKit Daemon Owner' 'polkitd' || :
+  fi
+fi
 
 %post
 /sbin/ldconfig
@@ -106,6 +110,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.120-8
+- Fix user creation
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.120-7
 - Version bump for expat upgrade
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 0.120-6

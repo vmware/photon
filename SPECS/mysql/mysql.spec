@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.41
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -132,14 +132,9 @@ popd
 rm -rf %{buildroot}/*
 
 %pre
-getent group 'mysql' >/dev/null || groupadd -f -g '27' -r 'mysql' || :
-if ! getent passwd 'mysql' >/dev/null; then
-  if ! getent passwd '27' >/dev/null; then
-    useradd -r -u '27' -g 'mysql' -d '/var/lib/mysql' -s '/bin/false' -c 'mysql' 'mysql' || :
-  else
-    useradd -r -g 'mysql' -d '/var/lib/mysql' -s '/bin/false' -c 'mysql' 'mysql' || :
-  fi
-fi
+getent group 'mysql' >/dev/null || groupadd -r 'mysql' || :
+getent passwd 'mysql' >/dev/null || \
+  useradd -r -g 'mysql' -d '/var/lib/mysql' -s '/usr/sbin/nologin' -c 'MariaDB and MySQL Server' 'mysql' || :
 
 %post
 /sbin/ldconfig
@@ -184,6 +179,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.41-2
+- Fix user creation, don't conflict with polkitd uid
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.41-1
 - Upgrade to v8.0.41
 * Fri Nov 29 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.40-1

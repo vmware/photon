@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -133,8 +133,9 @@ make test %{?_smp_mflags}
 
 %pre server
 if [ $1 -eq 1 ]; then
-  getent group mysql >/dev/null || groupadd -r mysql
-  getent passwd mysql >/dev/null || useradd -c "mysql" -s /bin/false -g mysql -M -r mysql
+  getent group 'mysql' >/dev/null || groupadd -r 'mysql' || :
+  getent passwd 'mysql' >/dev/null || \
+    useradd -r -g 'mysql' -d '/var/lib/mysql' -s '/usr/sbin/nologin' -c 'MariaDB and MySQL Server' 'mysql' || :
 fi
 
 %post server
@@ -456,6 +457,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.9.4-4
+- Fix user creation
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.9.4-3
 - Bump version as a part of gnutls upgrade
 * Tue Oct 31 2023 Nitesh Kumar <kunitesh@vmware.com> 10.9.4-2
