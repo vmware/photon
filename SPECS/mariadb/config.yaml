@@ -1,13 +1,13 @@
 sources:
-- archive: mariadb-10.11.14.tar.gz
-  archive_sha512sum: 24276e8b0f7ad555bf8faab8e5e065cbaeeb5d92b66964e470f41ac00db29a148e36b0f9f8078392a5fdae4cc3e77df28d0a570ef3735a73f4837ded3a50e476
+- archive: mariadb-11.4.7.tar.gz
+  archive_sha512sum: dba29199afcda7a974116f64bf7765444d8239455266f4a226396d228c2feaa03ba6551e1ef53e75efce833c109fac34a05a70c74a1c3e2cd06e4a7b2326b5c9
   archive_type: upstream
-  commit_id: 053f9bcb5b147bf00edb99e1310bae9125b7f125
+  commit_id: 118cfcf82107188f2295631193658b2ef94f4f3f
   skip_validation: false
-  name: mariadb-10.11.14
-  version: 10.11.14
+  name: mariadb-11.4.7
+  version: 11.4.7
   repo_url: https://github.com/MariaDB/server
-  url: https://archive.mariadb.org/mariadb-10.11.14/source/mariadb-10.11.14.tar.gz
+  url: https://archive.mariadb.org/mariadb-11.4.7/source/mariadb-11.4.7.tar.gz
   skip_list: []
   missing:
   - wolfssl.vcproj
@@ -200,53 +200,19 @@ sources:
   - exemgr
   license_manual_review:
   - file_paths:
-    - mariadb-10.11.14/storage/columnstore/columnstore/utils/libmarias3/libmarias3/docs/introduction/license.rst
-    - mariadb-10.11.14/storage/maria/libmarias3/docs/introduction/license.rst
+    - mariadb-11.4.7/storage/columnstore/columnstore/utils/libmarias3/libmarias3/docs/introduction/license.rst
+    - mariadb-11.4.7/storage/maria/libmarias3/docs/introduction/license.rst
     sha256sum: 7091df43d6ded9b0e798c59e524821d2b798fee514dd01be57243cfc7638ac18
     spdx_exp: LGPL-2.1-or-later
   - file_paths:
-    - mariadb-10.11.14/storage/columnstore/columnstore/utils/udfsdk/docs/source/license.rst
+    - mariadb-11.4.7/storage/columnstore/columnstore/utils/udfsdk/docs/source/license.rst
     sha256sum: 44db5157c4b46c42f1e366f569d58deb3a8e1526ad93602e247cbb162308a414
     spdx_exp: LGPL-2.1-or-later
   spdx:
     package:
-      detailed_description: 'MariaDB is a community developed fork from MySQL - a
-        multi-user, multi-threaded SQL database server. It is a client/server implementation
-        consisting of a server daemon (mariadbd) and many different client programs
-        and libraries. The base package contains the standard MariaDB/MySQL client
-        programs and utilities. '
+      detailed_description: MariaDB is a community developed fork from MySQL - a multi-user, multi-threaded SQL database server. It is a client/server implementation consisting of a server daemon (mariadbd) and many different client programs and libraries. The base package contains the standard MariaDB/MySQL client programs and utilities.
       home_page: https://mariadb.org
-      license_concluded: (Apache-2.0 OR GPL-2.0-only) AND (Artistic-1.0-Perl OR GPL-1.0-or-later)
-        AND (Artistic-1.0-Perl OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later
-        OR MIT) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MIT)
-        AND Apache-2.0 AND Artistic-1.0 AND Artistic-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views
-        AND BSD-2-Clause-first-lines AND BSD-3-Clause AND BSD-4-Clause-UC AND BSD-Source-Code
-        AND BSL-1.0 AND CC-BY-4.0 AND CC-BY-SA-4.0 AND CC0-1.0 AND FSFAP AND FSFULLR
-        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH
-        Universal-FOSS-exception-1.0 AND GPL-2.0-or-later AND GPL-2.0-or-later WITH
-        Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND HPND-sell-variant-MIT-disclaimer AND ISC AND ISC-Veillard
-        AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
-        AND LPD-document AND MIT AND NGPL AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone
-        AND PHP-3.0 AND PHP-3.01 AND PostgreSQL AND RSA-MD AND SSLeay-standalone AND
-        Unicode-TOU AND X11-distribute-modifications-variant AND Zlib AND blessing
-        AND dtoa
-      license_declared: (Apache-2.0 OR GPL-2.0-only) AND (Artistic-1.0-Perl OR GPL-1.0-or-later)
-        AND (Artistic-1.0-Perl OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later
-        OR MIT) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MIT)
-        AND Apache-2.0 AND Artistic-1.0 AND Artistic-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views
-        AND BSD-2-Clause-first-lines AND BSD-3-Clause AND BSD-4-Clause-UC AND BSD-Source-Code
-        AND BSL-1.0 AND CC-BY-4.0 AND CC-BY-SA-4.0 AND CC0-1.0 AND FSFAP AND FSFULLR
-        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH
-        Universal-FOSS-exception-1.0 AND GPL-2.0-or-later AND GPL-2.0-or-later WITH
-        Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND HPND-sell-variant-MIT-disclaimer AND ISC AND ISC-Veillard
-        AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
-        AND LPD-document AND MIT AND NGPL AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone
-        AND PHP-3.0 AND PHP-3.01 AND PostgreSQL AND RSA-MD AND SSLeay-standalone AND
-        Unicode-TOU AND X11-distribute-modifications-variant AND Zlib AND blessing
-        AND dtoa
+      license_concluded: (Apache-2.0 OR GPL-2.0-only) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND AGPL-3.0-only AND Apache-2.0 AND Artistic-1.0 AND Artistic-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-2-Clause-first-lines AND BSD-3-Clause AND BSD-4-Clause-UC AND BSD-Source-Code AND BSL-1.0 AND CC-BY-4.0 AND CC-BY-SA-4.0 AND CC0-1.0 AND FSFAP AND FSFULLR AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Universal-FOSS-exception-1.0 AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND HPND-sell-variant-MIT-disclaimer AND ISC AND ISC-Veillard AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LPD-document AND MIT AND NGPL AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone AND PHP-3.0 AND PHP-3.01 AND RSA-MD AND SSLeay-standalone AND Unicode-TOU AND X11-distribute-modifications-variant AND Zlib AND blessing AND curl AND dtoa
+      license_declared: (Apache-2.0 OR GPL-2.0-only) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND AGPL-3.0-only AND Apache-2.0 AND Artistic-1.0 AND Artistic-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-2-Clause-first-lines AND BSD-3-Clause AND BSD-4-Clause-UC AND BSD-Source-Code AND BSL-1.0 AND CC-BY-4.0 AND CC-BY-SA-4.0 AND CC0-1.0 AND FSFAP AND FSFULLR AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Universal-FOSS-exception-1.0 AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND HPND-sell-variant-MIT-disclaimer AND ISC AND ISC-Veillard AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LPD-document AND MIT AND NGPL AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone AND PHP-3.0 AND PHP-3.01 AND RSA-MD AND SSLeay-standalone AND Unicode-TOU AND X11-distribute-modifications-variant AND Zlib AND blessing AND curl AND dtoa
       short_summary: Database servers made by the original developers of MySQL.
       supplier: 'Organization: Broadcom, Inc.'

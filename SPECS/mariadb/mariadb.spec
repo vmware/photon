@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.11.14
-Release:          2%{?dist}
+Version:          11.4.7
+Release:          1%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -87,6 +87,7 @@ errmsg for maridb
 
 %prep
 %autosetup -p1
+
 # uses agpl-3.0
 rm -r storage/rocksdb
 
@@ -135,9 +136,7 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -D -m 644 %{SOURCE2} %{buildroot}%{_presetdir}/50-%{name}.preset
 
 rm %{buildroot}%{_sbindir}/rcmysql \
-   %{buildroot}%{_libdir}/*.a \
-   %{buildroot}%{_mandir}/man1/{mysql_,mariadb-}ldb.1* \
-   %{buildroot}%{_mandir}/man1/myrocks_hotbackup.1*
+   %{buildroot}%{_libdir}/*.a
 
 %if 0%{?with_check}
 %check
@@ -290,7 +289,6 @@ rm -rf %{buildroot}
 
 %files server
 %defattr(-,root,root)
-%dir %{_sysconfdir}/my.cnf.d
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %{_sysconfdir}/my.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/client.cnf
@@ -412,14 +410,12 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/maria_add_gis_sp_bootstrap.sql
 %{_datadir}/mysql/mroonga/install.sql
 %{_datadir}/mysql/mroonga/uninstall.sql
-%{_datadir}/mysql/mysql_performance_tables.sql
-%{_datadir}/mysql/mysql_system_tables.sql
-%{_datadir}/mysql/mysql_system_tables_data.sql
-%{_datadir}/mysql/mysql_test_data_timezone.sql
-%{_datadir}/mysql/mysql_test_db.sql
-%{_datadir}/mysql/mysql_sys_schema.sql
-%dir %{_datadir}/groonga
-%dir %{_datadir}/groonga-normalizer-mysql
+%{_datadir}/mysql/mariadb_performance_tables.sql
+%{_datadir}/mysql/mariadb_system_tables.sql
+%{_datadir}/mysql/mariadb_system_tables_data.sql
+%{_datadir}/mysql/mariadb_test_data_timezone.sql
+%{_datadir}/mysql/mariadb_test_db.sql
+%{_datadir}/mysql/mariadb_sys_schema.sql
 %license %{_datadir}/mysql/mroonga/AUTHORS
 %license %{_datadir}/mysql/mroonga/COPYING
 %license %{_datadir}/groonga-normalizer-mysql/lgpl-2.0.txt
@@ -451,9 +447,10 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %dir %{_datadir}/mysql
 %{_datadir}/mysql/*/errmsg.sys
-%{_datadir}/mysql/errmsg-utf8.txt
 
 %changelog
+* Fri Oct 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.4.7-1
+- Upgrade to v11.4.7, newer LTS release
 * Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 10.11.14-2
 - Bump for building with updated libaio
 * Wed Sep 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.14-1
