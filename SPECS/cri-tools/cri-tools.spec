@@ -2,8 +2,8 @@
 
 Summary:        CRI tools
 Name:           cri-tools
-Version:        1.22.0
-Release:        17%{?dist}
+Version:        1.33.0
+Release:        1%{?dist}
 URL:            https://github.com/kubernetes-incubator/cri-tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Source0:        https://github.com/kubernetes-incubator/%{name}/releases/tag/arc
 
 Source1: license.txt
 %include %{SOURCE1}
+
 BuildRequires:  go
 BuildRequires:  git
 
@@ -30,13 +31,15 @@ rm vendor/github.com/opencontainers/go-digest/CONTRIBUTING.md
 %build
 
 %install
-make install BUILD_BIN_PATH=%{buildroot}%{_bindir} BUILD_PATH=%{buildroot} %{?_smp_mflags}
+make install %{?_smp_mflags} \
+  BUILD_PATH=%{buildroot} \
+  BUILD_BIN_PATH=%{buildroot}%{_bindir} \
 
 %clean
 rm -rf %{buildroot}/*
 
-%check
 %if 0%{?with_check}
+%check
 make test-e2e %{?_smp_mflags}
 %endif
 
@@ -46,6 +49,8 @@ make test-e2e %{?_smp_mflags}
 %exclude %{_bindir}/critest
 
 %changelog
+* Thu Oct 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.33.0-1
+- Upgrade to v1.33.0
 * Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.0-17
 - Remove files to handle unintended copyright inclusions
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.22.0-16

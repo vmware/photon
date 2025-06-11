@@ -1,7 +1,7 @@
 Summary:    slirp for network namespaces
 Name:       slirp4netns
 Version:    1.2.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        https://github.com/rootless-containers/%{name}
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.0-7
+- Bump version as a part of go upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.2.0-6
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.0-5

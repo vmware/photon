@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        23%{?dist}
+Release:        24%{?dist}
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
@@ -164,6 +164,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-24
+- Bump version as a part of go upgrade
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.9-23
 - Remove tcp_wrappers support
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.0.9-22

@@ -1,10 +1,10 @@
-%define toolchain_prefix        2023-06-01
-%define bootstrap_toolchain_ver 1.70.0
+%define toolchain_prefix 2025-04-03
+%define bootstrap_toolchain_ver 1.86.0
 
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.71.1
-Release:        8%{?dist}
+Version:        1.87.0
+Release:        1%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -21,14 +21,18 @@ Source3: https://static.rust-lang.org/dist/%{toolchain_prefix}/rust-std-%{bootst
 Source4: license.txt
 %include %{SOURCE4}
 
-Patch0: 0001-Convert-valid-feature-name-warning-to-an-error.patch
+Patch0: 0001_remove_spdx_dependency.patch
 
 BuildRequires: cmake
 BuildRequires: ninja-build
 BuildRequires: glibc-devel
 BuildRequires: clang
-BuildRequires: llvm-devel
+BuildRequires: xz-devel
 BuildRequires: libxml2-devel
+BuildRequires: ncurses-devel
+# Use bundled llvm instead of system provided,
+# because it requires to update llvm
+#BuildRequires: llvm-devel
 
 Requires: glibc
 Requires: gcc
@@ -51,18 +55,19 @@ Documentation files for rust
 %prep
 # Using autosetup is not feasible
 %setup -q -n %{name}c-%{version}-src
-
-pushd src/tools/cargo
 %autopatch -p1 -M0
-popd
 
-rm -r src/llvm-project/
+# Remove other unused vendored libraries except 'llvm' and 'cmake'
+%define libraries libunwind clang clang-tools-extra lldb lld compiler-rt runtimes llvm-libgcc
+for library in %{libraries}; do
+  rm -rf src/llvm-project/$library
+done
 
 %if 0%{?with_check} == 0
 # Remove files to handle unintended licenses
-rm -r tests
-rm -r library/stdarch/crates/intrinsic-test/acle
+rm -r tests/*
 %endif
+rm -r vendor/spdx-0.10.8/*
 
 mkdir -p build/cache/%{toolchain_prefix}
 cp %{SOURCE1} %{SOURCE2} %{SOURCE3} build/cache/%{toolchain_prefix}/
@@ -73,10 +78,15 @@ sh ./configure \
     --prefix=%{_prefix} \
     --enable-extended \
     --tools="cargo" \
-    --llvm-root=%{_prefix} \
+    --disable-llvm-static-stdcpp \
+    --disable-llvm-bitcode-linker \
+    --disable-lld \
+    --disable-rpath \
+    --enable-ninja \
+    --set build.optimized-compiler-builtins=false \
+    --set rust.llvm-tools=false \
     --disable-codegen-tests \
     --enable-vendor \
-    --enable-ninja \
     --enable-llvm-link-shared
 
 # Output sync option (-O) in make results in buffered logging.
@@ -89,9 +99,6 @@ sh ./configure \
 
 find %{buildroot}%{_libdir} -maxdepth 1 -type f -name '*.so' -exec chmod -v +x '{}' '+'
 
-rm -rf %{buildroot}%{_docdir} \
-       %{buildroot}%{_datadir}/zsh*
-
 %clean
 rm -rf %{buildroot}/*
 
@@ -103,20 +110,25 @@ rm -rf %{buildroot}/*
 %{_bindir}/rustc
 %{_bindir}/rustdoc
 %{_bindir}/rust-lldb
-%{_libdir}/lib*.so
+%{_libdir}/lib*.so*
 %{_libdir}/rustlib/*
-%{_libexecdir}/cargo-credential-1password
 %{_bindir}/rust-gdb
 %{_bindir}/rust-gdbgui
 %{_bindir}/cargo
+%{_datadir}/zsh/*
 %{_sysconfdir}/bash_completion.d/cargo
+%doc src/tools/rustfmt/{README,CHANGELOG,Configurations}.md
+%doc src/tools/clippy/{README.md,CHANGELOG.md}
 
 %files doc
 %defattr(-,root,root,-)
+%doc %{_docdir}
 %doc CONTRIBUTING.md README.md RELEASES.md
 %{_mandir}/man1/*
 
 %changelog
+* Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.87.0-1
+- Update to v1.87.0
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-8
 - Rebuild with llvm shared libs
 * Fri Jul 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.71.1-7

@@ -11,8 +11,8 @@ sources:
       license_declared: Apache-2.0 AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
       short_summary: Python cryptography library
       supplier: 'Organization: Broadcom, Inc.'
-- archive: python3-cryptography-registry.ph5-41.0.7.tar.gz
-  archive_sha512sum: 903d3aea41799d6e889194c50464ce651d283c977706104b1d30a803882d7e5faa427b4aa0c0fcd655d2c9b39e3a716b945648b774e5613db4ec2d75741b7d34
+- archive: python3-cryptography-registry-41.0.7-7.ph5.tar.gz
+  archive_sha512sum: 883deb32c63027a300ac4b6402faa63c4daaa31ee1723845f4ffbde56d8bc2cdece79a3692016018c5160dab3e41bb40659897652dbe0285bed6f82ca061d47a
   skip_validation: true
   spdx:
     package:

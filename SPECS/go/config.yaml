@@ -1,11 +1,45 @@
 sources:
-- archive: go1.21.13.src.tar.gz
-  archive_sha512sum: f316984154ead8256d9ec0613e3cfef5699553387d87c24bb2a96265f986bf4450838e6451841def3713d65ebaa9bf55e36ff39c5690d79522e1c1ba7655be2f
-  skip_validation: true
+- archive: go1.24.5.linux-amd64.tar.gz
+  archive_sha512sum: 26712383b9bf74121a07818f4863f5294240b1632870420699904c0447ce9d4db52441d4bf83ca31c280c94b2ac0e9ac984a2c61b5fa35a9ccfa8ac73714e2a5
+  skip_validation: false
+  archive_type: upstream
+  name: go
+  version: 1.24.5
+  url: https://go.dev/dl/go1.24.5.linux-amd64.tar.gz
+  repo_url: https://github.com/golang/go
+  commit_id: 9d828e80fa1f3cc52de60428cae446b35b576de8
+  skip_list: []
+  missing: [zdefaultcc.go, zcgo.go, .gitattributes, bin, pkg, .github, zbootstrap.go, zversion.go, zzipdata.go, .gitignore]
   spdx:
     package:
       detailed_description: 'Go is an open source programming language that makes
-        it easy to build simple, reliable, and efficient software. '
+        it easy to build simple, reliable, and efficient software.'
+      home_page: https://golang.org
+      license_concluded: IJG AND OpenSSL-standalone AND MIT-testregex AND BSD-1-Clause
+        AND GPL-2.0-only AND SSLeay-standalone AND MIT AND BSD-3-Clause AND Apache-2.0
+        AND ISC AND BSD-2-Clause AND GPL-1.0-or-later AND MPEG-SSG AND SunPro AND
+        CC-BY-4.0
+      license_declared: IJG AND OpenSSL-standalone AND MIT-testregex AND BSD-1-Clause
+        AND GPL-2.0-only AND SSLeay-standalone AND MIT AND BSD-3-Clause AND Apache-2.0
+        AND ISC AND BSD-2-Clause AND GPL-1.0-or-later AND MPEG-SSG AND SunPro AND
+        CC-BY-4.0
+      short_summary: Go
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: go1.24.5.linux-arm64.tar.gz
+  archive_sha512sum: 7b38338e350faf4989b5d4fb6b837fab62e4e6d6197f8030c2659f5a40dce1d3a1b18f359c2e971643d11874cc796817451e99d5f5cac750c5f3791f4d442c1c
+  skip_validation: false
+  archive_type: upstream
+  name: go
+  version: 1.24.5
+  url: https://go.dev/dl/go1.24.5.linux-arm64.tar.gz
+  repo_url: https://github.com/golang/go
+  commit_id: 9d828e80fa1f3cc52de60428cae446b35b576de8
+  skip_list: []
+  missing: [zdefaultcc.go, zcgo.go, .gitattributes, bin, pkg, .github, zbootstrap.go, zversion.go, zzipdata.go, .gitignore]
+  spdx:
+    package:
+      detailed_description: 'Go is an open source programming language that makes
+        it easy to build simple, reliable, and efficient software.'
       home_page: https://golang.org
       license_concluded: IJG AND OpenSSL-standalone AND MIT-testregex AND BSD-1-Clause
         AND GPL-2.0-only AND SSLeay-standalone AND MIT AND BSD-3-Clause AND Apache-2.0

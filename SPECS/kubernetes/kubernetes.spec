@@ -14,7 +14,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.16
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -271,6 +271,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-4
+- Bump version as a part of go upgrade
 * Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-3
 - Clean up unintended licenses
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-2

@@ -7,7 +7,7 @@
 Summary:        photon-os-container-builder is an open source project to compose and deploy photon OS containers
 Name:           photon-os-container-builder
 Version:        0.1.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 Group:          Deployment/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,7 +18,8 @@ Source0:        %{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  glibc
+Patch0: fix-release-string.patch
+
 BuildRequires:  git
 BuildRequires:  go
 BuildRequires:  systemd-devel
@@ -38,20 +39,19 @@ fs consisting packages depending on the user choice. It automatically prepares t
 root fs and boots into the container quickly. VMDK images can be automatically
 deployed via cntrctl and tested.
 
-%prep -p exit
-%autosetup -p1 -n %{name}-%{version}
+%prep
+%autosetup -p1
 
 %build
-mkdir -p bin
-go build -ldflags="-X 'main.buildVersion=${VERSION}' -X 'main.buildDate=${BUILD_DATE}'" -o bin/cntrctl ./cmd/cntrctl
+make %{_smp_mflags} \
+  VERSION="%{version}-%{release}" \
+  build
 
 %install
-install -m 755 -d %{buildroot}%{_bindir}
-install -m 755 -d %{buildroot}%{_sysconfdir}/photon-os-container
+install -vDm 755 bin/cntrctl %{buildroot}%{_bindir}/cntrctl
 
-install bin/cntrctl %{buildroot}%{_bindir}
-ln -sf %{_bindir}/cntrctl %{_bindir}/containerctl
-install -m 755 distribution/photon-os-container.toml %{buildroot}%{_sysconfdir}/photon-os-container
+install -vDm 644 distribution/photon-os-container.toml \
+    %{buildroot}%{_sysconfdir}/photon-os-container/photon-os-container.toml
 
 %clean
 rm -rf %{buildroot}/*
@@ -62,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/photon-os-container/photon-os-container.toml
 
 %changelog
+* Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1.1-13
+- Bump version as a part of go upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1.1-12
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.1.1-11

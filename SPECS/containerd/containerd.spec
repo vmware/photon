@@ -4,8 +4,8 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        1.6.21
-Release:        15%{?dist}
+Version:        2.1.3
+Release:        1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -14,7 +14,7 @@ Distribution:   Photon
 Source0: https://github.com/containerd/containerd/archive/%{name}-%{version}.tar.gz
 
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT 3dce8eb055cbb6872793272b4f20ed16117344f8
+%define CONTAINERD_GITCOMMIT c787fb98911740dd3ff2d0e45ce88cdf01410486
 
 Source1: %{name}-config.toml
 Source2: disable-%{name}-by-default.preset
@@ -23,8 +23,6 @@ Source3: license.txt
 %include %{SOURCE3}
 
 Patch0: %{name}-service.patch
-Patch1: build-bin-gen-manpages-instead-of-using-go-run.patch
-Patch2: containerd-CVE-2024-40635.patch
 
 BuildRequires: btrfs-progs
 BuildRequires: btrfs-progs-devel
@@ -34,6 +32,7 @@ BuildRequires: libseccomp-devel
 BuildRequires: go >= 1.16
 BuildRequires: go-md2man
 BuildRequires: systemd-devel
+BuildRequires: procps-ng
 
 Requires: libseccomp
 Requires: systemd
@@ -125,7 +124,6 @@ make %{?_smp_mflags} integration
 %defattr(-,root,root)
 %{_bindir}/ctr
 %{_bindir}/%{name}
-%{_bindir}/%{name}-shim
 %{_datadir}/licenses/%{name}
 %{_unitdir}/%{name}.service
 %{_presetdir}/50-%{name}.preset
@@ -133,7 +131,6 @@ make %{?_smp_mflags} integration
 
 %files extras
 %defattr(-,root,root)
-%{_bindir}/%{name}-shim-runc-v1
 %{_bindir}/%{name}-shim-runc-v2
 %{_bindir}/%{name}-stress
 
@@ -144,6 +141,9 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Thu Oct 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.3-1
+- Upgrade to v2.1.3
+- This addresses https://github.com/containerd/containerd/pull/11998
 * Tue Aug 26 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.6.21-15
 - Fixes CVE-2024-40635
 * Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-14

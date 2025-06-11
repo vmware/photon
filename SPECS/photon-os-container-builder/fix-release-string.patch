@@ -1,0 +1,28 @@
+From b1da4939c85062e78014eda3eb61dc2e15e0ddd0 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 26 Jul 2025 02:51:48 +0530
+Subject: [PATCH] fix release string
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmd/cntrctl/main.go | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/cmd/cntrctl/main.go b/cmd/cntrctl/main.go
+index 170860f..ae37325 100644
+--- a/cmd/cntrctl/main.go
++++ b/cmd/cntrctl/main.go
+@@ -94,7 +94,9 @@ func main() {
+ 					fmt.Printf("link='%s' is specified but network is missing", link)
+ 					os.Exit(1)
+ 				}
+-
++				if release == "" {
++					release = cfg.System.Release
++				}
+ 				if c.String("packages") == "" {
+ 					if err := container.Spawn(conf.DefaultStorageDir, c.Args().First(), release, conf.DefaultPackages, network, link, machine, dir, ephemeral); err != nil {
+ 						os.Exit(1)
+--
+2.50.1
+

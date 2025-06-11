@@ -1,20 +1,20 @@
+%define _default_cni_plugins_dir /opt/cni/bin
+
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
-Version:        1.1.1
-Release:        13%{?dist}
+Version:        1.7.1
+Release:        1%{?dist}
 URL:            https://github.com/containernetworking/plugins
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
+Source0: https://github.com/containernetworking/plugins/archive/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  go
-
-%define _default_cni_plugins_dir /opt/cni/bin
 
 %description
 The CNI (Container Network Interface) project consists of a specification and
@@ -36,11 +36,16 @@ install -vpm 0755 -t %{buildroot}%{_default_cni_plugins_dir} bin/*
 make -k check %{?_smp_mflags}
 %endif
 
+%clean
+rm -rf %{buildroot}
+
 %files
 %defattr(-,root,root)
 %{_default_cni_plugins_dir}/*
 
 %changelog
+* Fri Jul 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.1-1
+- Upgrade to v1.7.1
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.1-13
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-12

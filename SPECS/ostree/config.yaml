@@ -1,6 +1,14 @@
 sources:
-- archive: libostree-2023.5.tar.xz
-  archive_sha512sum: 0bb19f199344d8db7299cf710f2ba0b2657cdcb5b1fc6d85446cef9538b069e470b47fc0c2c1029e12b8b9adb978f32a6f44f48949ff5c97a01051a425a9f2d5
+- archive: libostree-2025.2.tar.xz
+  archive_type: upstream
+  version: 2025.2
+  name: libostree-2025.2
+  url: https://github.com/ostreedev/ostree/releases/download/v2025.2/libostree-2025.2.tar.xz
+  repo_url: https://github.com/ostreedev/ostree.git
+  commit_id: 1dd64eb264be462475a1163c6fee686c1f191994
+  skip_list: []
+  missing: []
+  archive_sha512sum: 5e732a22da238b378e779c3886445977da49e2f810d18cb3580b030175e5e9db53408bcba245e840cdaea7e193907d284a369c42b3b7104c270e58a8c38f4f6a
   skip_validation: true
   spdx:
     package:
@@ -30,6 +38,6 @@ sources:
       supplier: 'Organization: Broadcom, Inc.'
   license_manual_review:
   - file_paths:
-    - libostree-2023.5/README.md
-    sha256sum: eba1289d6de5467cb6e02b18295fee3f33e14c8ed220065e9ab20f775883afdc
+    - libostree-2025.2/README.md
+    sha256sum: 8673dfeea260a26dcad4d3456264f2a1ccdc96fc1c4009ae8b5623e6ce5555ca
     spdx_exp: LGPL-2.0-or-later

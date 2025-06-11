@@ -1,7 +1,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        41.0.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,9 +13,9 @@ Source0: https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.
 # Extract cryptography tarball
 # Trigger build
 # cd ~/.cargo
-# tar czf <tar-name>.tar.gz registry-<version>
+# tar czf <tar-name>.tar.gz registry
 
-Source1: %{name}-registry%{?dist}-%{version}.tar.gz
+Source1: %{name}-registry-%{version}-7%{?dist}.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -84,6 +84,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jun 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 41.0.7-7
+- Bump with updated rust
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-6
 - Release bump for SRP compliance
 * Tue Oct 08 2024 Tapas Kundu <tapas.kundu@broadcom.com> 41.0.7-5

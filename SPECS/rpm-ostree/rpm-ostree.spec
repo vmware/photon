@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2022.19
-Release:        10%{?dist}
+Version:        2025.8
+Release:        1%{?dist}
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -15,8 +15,8 @@ Source3:        mkostreerepo
 Source4: license.txt
 %include %{SOURCE4}
 
-Patch0:         rpm-ostree-libdnf-build.patch
-Patch1:         rpm-ostree-use-a-socket-in-run.patch
+Patch0: rpm-ostree-libdnf-build.patch
+Patch1: 0001-Disable-default-composefs-enablement-in-postprocess.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -56,6 +56,8 @@ BuildRequires:  dbus
 BuildRequires:  rust
 BuildRequires:  libmodulemd-devel
 BuildRequires:  gpgme-devel
+BuildRequires:  libsoup-devel
+BuildRequires:  xz-devel
 
 Requires:       libsolv >= 0.7.22
 Requires:       libcap
@@ -132,6 +134,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/%{name}/
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/*.typelib
+%{_libdir}/kernel/install.d/05-rpmostree.install
 %{_unitdir}/*.service
 %{_libexecdir}/*
 %{_datadir}/dbus-1/system.d/*.conf
@@ -165,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Tue Jun 17 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2025.8-1
+- Version Update to v2025.8 to build with updated rust
 * Fri Jan 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2022.19-10
 - Update License
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2022.19-9

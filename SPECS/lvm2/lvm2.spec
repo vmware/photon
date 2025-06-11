@@ -4,7 +4,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.16
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
@@ -22,7 +22,6 @@ BuildRequires: libsepol-devel
 BuildRequires: ncurses-devel
 BuildRequires: readline-devel
 BuildRequires: systemd-devel
-BuildRequires: thin-provisioning-tools
 BuildRequires: libaio-devel
 BuildRequires: boost
 
@@ -297,6 +296,8 @@ fi
 %{_libdir}/pkgconfig/devmapper-event.pc
 
 %changelog
+* Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.03.16-8
+- Fix BuildRequires
 * Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.03.16-7
 - Bump for building with updated libaio
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.03.16-6

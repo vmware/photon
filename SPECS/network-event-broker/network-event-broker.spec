@@ -3,7 +3,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 Source1:        %{name}.sysusers
@@ -78,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/network-broker.service
 
 %changelog
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-17
+- Bump version as a part of go upgrade
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-16
 - Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.3-15

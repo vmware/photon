@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2023.5
-Release:        5%{?dist}
+Version:        2025.2
+Release:        1%{?dist}
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -129,7 +129,6 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}
 %{_libdir}/initcpio/*
 %dir %{_libdir}/dracut/modules.d/98ostree
-%{_unitdir}/%{name}-finalize-staged.path
 %{_libdir}/dracut/modules.d/98ostree/*
 %{_systemdgeneratordir}/%{name}-system-generator
 %{_presetdir}/91-%{name}.preset
@@ -161,6 +160,7 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man1/%{name}-admin*
 %{_mandir}/man1/*.gz
 %{_mandir}/man5/*.gz
+%{_mandir}/man8/*.gz
 
 %files grub2
 %defattr(-,root,root)
@@ -168,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2025.2-1
+- Updated to v2025.2 to build with updated rust
 * Fri Jul 25 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2023.5-5
 - Bump up release to rescan licenses.
 * Wed May 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2023.5-4

@@ -3,7 +3,7 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       3.1.0
-Release:       19%{?dist}
+Release:       20%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/osrg/gobgp
@@ -56,6 +56,8 @@ install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 %doc LICENSE README.md
 
 %changelog
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.0-20
+- Bump version as a part of go upgrade
 * Wed Jul 02 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.1.0-19
 - Fix CVE-2025-43973,CVE-2025-43970 CVE-2025-43972
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.0-18

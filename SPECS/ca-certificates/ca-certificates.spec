@@ -4,8 +4,8 @@
 
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
-Version:        20230315
-Release:        6%{?dist}
+Version:        20250612
+Release:        1%{?dist}
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -95,6 +95,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Tue Jun 17 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 20250612-1
+- Version upgrade
 * Thu Nov 21 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-6
 - Cleanup make-ca.sh
 - Tweak remove-expired-certificates script to do the removal properly

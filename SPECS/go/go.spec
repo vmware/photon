@@ -1,37 +1,37 @@
-%global goroot          /usr/lib/golang
+%global goroot          %{_libdir}/golang
 %global gopath          %{_datadir}/gocode
+%define debug_package   %{nil}
+%define __strip         /bin/true
+%global __requires_exclude_from ^/.*$
+%global __provides_exclude_from ^/.*$
+
 %ifarch aarch64
 %global gohostarch      arm64
 %else
 %global gohostarch      amd64
 %endif
-%define debug_package %{nil}
-%define __strip /bin/true
-# To disable rpm requires on libc.so
-%define _use_internal_dependency_generator 0
-%define __find_requires %{nil}
 
 Summary:        Go
 Name:           go
-Version:        1.21.13
-Release:        2%{?dist}
+Version:        1.24.5
+Release:        1%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
+%ifarch aarch64
+Source0: https://go.dev/dl/%{name}%{version}.linux-arm64.tar.gz
+%endif
+
+%ifarch x86_64
+Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
+%endif
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Requires:       glibc
-Requires:       gcc
-
-Patch1: CVE-2024-34156.patch
-Patch2: CVE-2024-34158.patch
-
-%define ExtraBuildRequires go
+Requires: glibc
+Requires: gcc
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
@@ -39,39 +39,40 @@ Go is an open source programming language that makes it easy to build simple, re
 %prep
 %autosetup -p1 -n %{name}
 
+mkdir -p %{goroot}
+test -e bin/go && mv bin %{goroot} || :
+
+%if 0%{?with_check} == 0
+find . -type d -name "testdata" -exec rm -rf {} +
+%endif
+
 %build
 export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOROOT_BOOTSTRAP=%{goroot}
-
-export GOROOT="`pwd`"
+export GOROOT="$PWD"
 export GOPATH=%{gopath}
 export GOROOT_FINAL=%{_bindir}/go
-rm -f  %{gopath}/src/runtime/*.c
+
+cp -a api doc lib pkg src misc VERSION go.env $GOROOT_BOOTSTRAP
+
 pushd src
-./make.bash --no-clean
+bash make.bash -v
 popd
 
 %install
-rm -rf %{buildroot}
+mkdir -p %{buildroot}%{_bindir} \
+         %{buildroot}%{goroot}
 
-mkdir -p %{buildroot}%{_bindir} %{buildroot}%{goroot}
-
-cp -R api bin doc lib pkg src misc VERSION go.env %{buildroot}%{goroot}
-
-# remove the unnecessary zoneinfo file (Go will always use the system one first)
-rm -rfv %{buildroot}%{goroot}/lib/time
-
-# remove the doc Makefile
-rm -rfv %{buildroot}%{goroot}/doc/Makefile
+cp -a api bin doc lib pkg src misc VERSION go.env %{buildroot}%{goroot}
 
 # put binaries to bindir, linked to the arch we're building,
 # leave the arch independent pieces in %{goroot}
 mkdir -p %{buildroot}%{goroot}/bin/linux_%{gohostarch}
 ln -sfv ../go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
 ln -sfv ../gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
-ln -sfv %{goroot}/bin/gofmt %{buildroot}%{_bindir}/gofmt
-ln -sfv %{goroot}/bin/go %{buildroot}%{_bindir}/go
+ln -sfrv %{buildroot}%{goroot}/bin/gofmt %{buildroot}%{_bindir}/gofmt
+ln -sfrv %{buildroot}%{goroot}/bin/go %{buildroot}%{_bindir}/go
 
 # ensure these exist and are owned
 mkdir -p %{buildroot}%{gopath}/src/github.com/ \
@@ -80,16 +81,14 @@ mkdir -p %{buildroot}%{gopath}/src/github.com/ \
          %{buildroot}%{gopath}/src/code.google.com/p/
 
 install -vdm755 %{buildroot}%{_sysconfdir}/profile.d
-cat >> %{buildroot}%{_sysconfdir}/profile.d/go-exports.sh <<- "EOF"
+
+cat > %{buildroot}%{_sysconfdir}/profile.d/go-exports.sh <<- "EOF"
 export GOROOT=%{goroot}
 export GOPATH=%{_datadir}/gocode
 export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
-
-#chown -R root:root %{buildroot}%{_sysconfdir}/profile.d/go-exports.sh
-#%%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -108,12 +107,9 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %exclude %{goroot}/src/*.rc
-%exclude %dir %{goroot}/include/plan9
 %{_sysconfdir}/profile.d/go-exports.sh
 %{goroot}/*
 %{gopath}/src
-%exclude %dir %{goroot}/src/pkg/debug/dwarf/testdata
-%exclude %dir %{goroot}/src/pkg/debug/elf/testdata
 %ifarch aarch64
 %exclude %dir %{goroot}/src/debug/dwarf/testdata
 %exclude %dir %{goroot}/src/debug/elf/testdata
@@ -121,6 +117,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.5-1
+- Upgrade to v1.24.5
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.21.13-2
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <msikka@vmware.com> 1.21.13-1

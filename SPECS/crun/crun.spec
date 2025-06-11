@@ -1,6 +1,6 @@
 Name:          crun
 Version:       1.8
-Release:       8%{?dist}
+Release:       9%{?dist}
 Summary:       OCI runtime in C
 Group:         Development/Other
 Vendor:        VMware, Inc.
@@ -58,6 +58,8 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
+* Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8-9
+- Bump version as a part of go upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8-8
 - Release bump for SRP compliance
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8-7

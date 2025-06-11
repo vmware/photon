@@ -7,7 +7,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-14
+- Bump version as a part of go upgrade
 * Tue Sep 16 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-13
 - Fix CVE-2025-58063
 * Thu Jun 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-12

@@ -3,8 +3,8 @@
 
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
-Version:        1.0.2
-Release:        7%{?dist}
+Version:        1.0.14
+Release:        1%{?dist}
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
@@ -16,6 +16,10 @@ BuildRequires:  expat-devel
 BuildRequires:  libaio-devel
 BuildRequires:  boost-devel
 BuildRequires:  rust
+BuildRequires:  ca-certificates
+BuildRequires:  systemd-devel
+BuildRequires:  clang-devel
+BuildRequires:  device-mapper-devel
 Requires:       expat
 Requires:       libaio
 Requires:       libgcc
@@ -45,6 +49,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.14-1
+- Bump for building with updated rust
 * Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2-7
 - Bump for building with updated libaio
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.2-6

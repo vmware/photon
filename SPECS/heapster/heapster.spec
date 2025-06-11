@@ -3,7 +3,7 @@
 Summary:        Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:           heapster
 Version:        1.5.4
-Release:        22%{?dist}
+Release:        23%{?dist}
 URL:            https://github.com/wavefrontHQ/cadvisor
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -16,9 +16,10 @@ Source1: license.txt
 
 Patch0: go-27704.patch
 Patch1: go-27842.patch
+Patch2: fix-base64-encoding-issue.patch
 
 %if 0%{?with_check}
-Patch2: make-check-failure.patch
+Patch3: make-check-failure.patch
 %endif
 
 BuildRequires:  go
@@ -33,35 +34,49 @@ Heapster collects and interprets various signals like compute resource usage, li
 
 mkdir -p "$(dirname src/%{gopath_comp_heapster})"
 mv %{name}-%{version} src/%{gopath_comp_heapster}
-cd src/%{gopath_comp_heapster}
+
+pushd src/%{gopath_comp_heapster}
 
 pushd vendor/golang.org/x/net
-%autopatch -p1
+%autopatch -p1 -m0 -M1
+popd
+
+pushd vendor
+%patch -p1 2
 popd
 
 %if 0%{?with_check}
-%patch -p1 2
+%patch -p1 3
 %endif
+
+popd
 
 %build
 export GO111MODULE=auto
 export GOPATH="${PWD}"
-cd src/%{gopath_comp_heapster}
+
+pushd src/%{gopath_comp_heapster}
 %make_build
+popd
 
 %install
-cd src/%{gopath_comp_heapster}
+pushd src/%{gopath_comp_heapster}
 install -d -p %{buildroot}%{_bindir}
 install -p -m 0755 %{name} %{buildroot}%{_bindir}
 install -p -m 0755 eventer %{buildroot}%{_bindir}
+popd
 
 %if 0%{?with_check}
 %check
 export GO111MODULE=auto
 export GOPATH="${PWD}"
-cd src/%{gopath_comp_heapster}
+pushd src/%{gopath_comp_heapster}
 make test-unit %{?_smp_mflags}
+popd
 %endif
+
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
@@ -69,6 +84,8 @@ make test-unit %{?_smp_mflags}
 %{_bindir}/eventer
 
 %changelog
+* Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.4-23
+- Bump version as a part of go upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.5.4-22
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-21

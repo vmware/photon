@@ -1,7 +1,15 @@
 sources:
-- archive: thin-provisioning-tools-1.0.2.tar.gz
-  archive_sha512sum: f5401631f0d10cb0fbd8e4b2979b38d2dc42621de558ffb23b2bcc12f1b7fead49ffa8b143af61227917edce9abc7b5a48c94036ae74c035a181661f82e80ed1
-  skip_validation: true
+- archive: thin-provisioning-tools-1.0.14.tar.gz
+  archive_type: upstream
+  version: 1.0.14
+  name: thin-provisioning-tools-1.0.14
+  url: https://github.com/jthornber/thin-provisioning-tools/archive/refs/tags/v1.0.14.tar.gz
+  repo_url: https://github.com/jthornber/thin-provisioning-tools.git
+  commit_id: 6be3e0937800cb947f1be7c0150825f155cfca14
+  skip_list: []
+  missing: []
+  archive_sha512sum: a421ebf732f6595dcfec93ae14671cf9e5475b3289370209a658c77fe0760bbfc316c023035775608ced217bf23c535010af97062875178558c6b922c0cd0ff3
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'thin-provisioning-tools contains check,dump, restore,
@@ -14,8 +22,8 @@ sources:
       license_declared: GPL-2.0-or-later AND GPL-3.0-only
       short_summary: Thin provisioning tools
       supplier: 'Organization: Broadcom, Inc.'
-- archive: thin-provisioning-tools-deps-1.0.2p1.tar.xz
-  archive_sha512sum: f9219cca4bfcb3ace17417fc4de8581c306d7c19013e0d5b9273ebcd96cea3a90945b4abe2df36e73a44a1054c3a49fa40661b1af2880350de7717860981e50c
+- archive: thin-provisioning-tools-deps-1.0.14p1.tar.xz
+  archive_sha512sum: 815f9f90613a77dbaa49df8b9d6f51f1da152c2bcd8e772e22a792ab8899b38d7895e6ec298cac99a7a83b376a6b21cb37004df7d650d0921436a46f94f762ba
   skip_validation: true
   spdx:
     package:

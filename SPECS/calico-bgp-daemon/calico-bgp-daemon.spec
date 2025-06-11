@@ -1,35 +1,42 @@
-%define gopath_comp_bgp_daemon github.com/projectcalico/calico-bgp-daemon
+%define debug_package %{nil}
+%define gopath_comp_bgp_daemon github.com/projectcalico/%{name}
 
 Summary:        GoBGP based Calico BGP Daemon
 Name:           calico-bgp-daemon
 Version:        0.2.2
-Release:        23%{?dist}
+Release:        24%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 URL:            https://github.com/projectcalico/calico-bgp-daemon
 Distribution:   Photon
 
-Source0:        https://github.com/projectcalico/calico-bgp-daemon/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/projectcalico/calico-bgp-daemon/archive/refs/tags/%{name}-%{version}.tar.gz
 
-# Created by `glide install --strip-vendor && tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,${name}-${version}/," -c vendor | gzip -9`
-Source1:        glide-vendor-for-%{name}-%{version}.tar.gz
+# Generated using:
+# glide install --strip-vendor
+# tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,${name}-${version}/," -c vendor | gzip -9
+Source1: glide-vendor-for-%{name}-%{version}.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
 
+Patch0: fix-base64-encoding-issue.patch
+
 BuildRequires: git
 BuildRequires: glide
-BuildRequires: go >= 1.7
+BuildRequires: go
 
 %description
 GoBGP based Calico BGP Daemon, an alternative to BIRD in calico/node.
 
-%define debug_package %{nil}
-
 %prep
 # Using autosetup is not feasible
-%setup -q -c -n %{name}-%{version}
+%setup -q -c
 tar -xf %{SOURCE1}
+
+pushd %{name}-%{version}/vendor
+%patch -p1 0
+popd
 
 mkdir -p "$(dirname src/%{gopath_comp_bgp_daemon})"
 mv %{name}-%{version} src/%{gopath_comp_bgp_daemon}
@@ -44,23 +51,24 @@ export GO111MODULE=auto
 export GOPATH="${PWD}"
 
 pushd src/%{gopath_comp_bgp_daemon}
-go build -v -o dist/calico-bgp-daemon -ldflags "-X main.VERSION=%{version} -s -w" main.go ipam.go
+go build -v -o dist/%{name} -ldflags "-X main.VERSION=%{version} -s -w" main.go ipam.go
 popd
 
 %install
 pushd src/%{gopath_comp_bgp_daemon}
-install -vdm 755 %{buildroot}%{_bindir}
-install dist/calico-bgp-daemon %{buildroot}%{_bindir}/
+install -vDm 755 dist/%{name} %{buildroot}%{_bindir}/%{name}
 popd
 
-#%%check
-# No tests available for this pkg
+%clean
+rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_bindir}/calico-bgp-daemon
+%{_bindir}/%{name}
 
 %changelog
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-24
+- Bump version as a part of go upgrade
 * Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.2.2-23
 - Clean up unintended licenses
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.2.2-22

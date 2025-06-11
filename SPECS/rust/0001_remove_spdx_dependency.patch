@@ -1,0 +1,87 @@
+From 0a5b9d978d64ddcae89e42b679edf49bd708b1e5 Mon Sep 17 00:00:00 2001
+From: Mukul Sikka <mukul.sikka@broadcom.com>
+Date: Fri, 24 Oct 2025 11:28:49 +0000
+Subject: [PATCH] Remove 'spdx' dependency from wasm-metadata and related Cargo files
+
+---
+ Cargo.lock | 10 ----------
+ vendor/wasm-component-ld-0.5.12/Cargo.lock | 10 ----------
+ vendor/wasm-metadata-0.223.0/Cargo.toml | 3 ---
+ 3 file changed, 23 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index a5d8d6f86..fc6b11005 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -4902,15 +4902,6 @@ dependencies = [
+  "color-eyre",
+ ]
+ 
+-[[package]]
+-name = "spdx"
+-version = "0.10.8"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "58b69356da67e2fc1f542c71ea7e654a361a79c938e4424392ecf4fa065d2193"
+-dependencies = [
+- "smallvec",
+-]
+-
+ [[package]]
+ name = "spdx-expression"
+ version = "0.5.2"
+@@ -5883,7 +5874,6 @@ dependencies = [
+  "serde",
+  "serde_derive",
+  "serde_json",
+- "spdx",
+  "url",
+  "wasm-encoder 0.223.0",
+  "wasmparser 0.223.0",
+
+diff --git a/vendor/wasm-component-ld-0.5.12/Cargo.lock b/vendor/wasm-component-ld-0.5.12/Cargo.lock
+index 22f4ca8..47ba356 100644
+--- a/vendor/wasm-component-ld-0.5.12/Cargo.lock
++++ b/vendor/wasm-component-ld-0.5.12/Cargo.lock
+@@ -500,15 +500,6 @@ version = "1.13.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
+ 
+-[[package]]
+-name = "spdx"
+-version = "0.10.8"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "58b69356da67e2fc1f542c71ea7e654a361a79c938e4424392ecf4fa065d2193"
+-dependencies = [
+- "smallvec",
+-]
+-
+ [[package]]
+ name = "stable_deref_trait"
+ version = "1.2.0"
+@@ -665,7 +656,6 @@ dependencies = [
+  "serde",
+  "serde_derive",
+  "serde_json",
+- "spdx",
+  "url",
+  "wasm-encoder",
+  "wasmparser",
+
+diff --git a/vendor/wasm-metadata-0.223.0/Cargo.toml b/vendor/wasm-metadata-0.223.0/Cargo.toml
+index 5f9248d..b31d717 100644
+--- a/vendor/wasm-metadata-0.223.0/Cargo.toml
++++ b/vendor/wasm-metadata-0.223.0/Cargo.toml
+@@ -61,9 +61,6 @@ version = "1.0.166"
+ [dependencies.serde_json]
+ version = "1"
+ 
+-[dependencies.spdx]
+-version = "0.10.1"
+-
+ [dependencies.url]
+ version = "2.0.0"
+ 
+-- 
+2.43.7
+
+

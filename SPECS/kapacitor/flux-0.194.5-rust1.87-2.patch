@@ -1,0 +1,37 @@
+From 08b6cb784759242fd1455f1d28e653194745c0c6 Mon Sep 17 00:00:00 2001
+From: Rui Chen <rui@chenrui.dev>
+Date: Sat, 30 Nov 2024 17:46:33 -0500
+Subject: [PATCH] fix: add missing explicit lifetime for rust 1.83 build
+
+Signed-off-by: Rui Chen <rui@chenrui.dev>
+---
+ libflux/flux-core/src/ast/walk/mod.rs | 2 +-
+ libflux/flux-core/src/parser/mod.rs   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libflux/flux-core/src/ast/walk/mod.rs b/libflux/flux-core/src/ast/walk/mod.rs
+index 90f70ba6f7..a6966827e8 100644
+--- a/libflux/flux-core/src/ast/walk/mod.rs
++++ b/libflux/flux-core/src/ast/walk/mod.rs
+@@ -180,7 +180,7 @@ impl<'a> Node<'a> {
+ 
+ impl<'a> Node<'a> {
+     #[allow(missing_docs)]
+-    pub fn from_expr(expr: &'a Expression) -> Node {
++    pub fn from_expr(expr: &'a Expression) -> Node<'a> {
+         match expr {
+             Expression::Identifier(e) => Node::Identifier(e),
+             Expression::Array(e) => Node::ArrayExpr(e),
+diff --git a/libflux/flux-core/src/parser/mod.rs b/libflux/flux-core/src/parser/mod.rs
+index ac7d4b9a72..561c3a0ff6 100644
+--- a/libflux/flux-core/src/parser/mod.rs
++++ b/libflux/flux-core/src/parser/mod.rs
+@@ -41,7 +41,7 @@ pub struct Parser<'input> {
+ 
+ impl<'input> Parser<'input> {
+     /// Instantiates a new parser with the given string as input.
+-    pub fn new(src: &'input str) -> Parser {
++    pub fn new(src: &'input str) -> Parser<'input> {
+         let s = Scanner::new(src);
+         Parser {
+             s,

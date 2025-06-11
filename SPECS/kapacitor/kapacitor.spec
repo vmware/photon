@@ -1,9 +1,9 @@
-%define libflux_version 0.191.0
+%define libflux_version 0.194.5
 %define libflux_vendor kapacitor-libflux-vendor-%{libflux_version}.tar.gz
 %define network_required 1
 Name:           kapacitor
-Version:        1.6.6
-Release:        15%{?dist}
+Version:        1.7.7
+Release:        1%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
@@ -23,13 +23,18 @@ Requires:       systemd
 Requires:       systemd-rpm-macros
 
 Patch0:         fix-build-1.patch
-Patch1:         fix-build-2.patch
+Patch1:         flux-0.194.5-go1.23.patch
+Patch2:         flux-0.194.5-rust1.87-1.patch
+Patch3:         flux-0.194.5-rust1.87-2.patch
+Patch4:         flux-0.194.5-proc-macro2.patch
 
 %description
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
 
 %prep
-%autosetup -a 1 -n %{name}-%{version} -p1
+%autosetup -a 1 -n %{name}-%{version} -N
+%autopatch -p1 -M0
+
 mkdir -p ~/.cargo
 mv kapacitor-libflux-vendor-%{libflux_version} ~/.cargo/vendor
 cat > ~/.cargo/config.toml << _EOF
@@ -50,6 +55,12 @@ export GOPATH=$PWD
 export PKG_CONFIG=${GOPATH}/src/github.com/influxdata/kapacitor/pkg-config.sh
 export CARGO_NET_OFFLINE=true
 cd src/github.com/influxdata/kapacitor
+
+go get ./cmd/kapacitor
+pushd ../../../../pkg/mod/github.com/influxdata/flux@v%{libflux_version}
+%autopatch -p1 -m1 -M4
+popd
+
 go build ./cmd/kapacitor
 go build ./cmd/kapacitord
 go build ./tick/cmd/tickfmt
@@ -107,6 +118,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.7-1
+- Upgrade to 1.7.7
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-15
 - Renaming sysusers to conf to fix auto user creation
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-14

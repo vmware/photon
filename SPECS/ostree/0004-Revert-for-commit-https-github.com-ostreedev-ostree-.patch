@@ -14,15 +14,6 @@ diff --git a/src/libostree/ostree-sysroot-deploy.c b/src/libostree/ostree-sysroo
 index 13387af..1394b50 100644
 --- a/src/libostree/ostree-sysroot-deploy.c
 +++ b/src/libostree/ostree-sysroot-deploy.c
-@@ -3224,7 +3224,7 @@ get_var_dfd (OstreeSysroot *self, int osdeploy_dfd, OstreeDeployment *deployment
-   return glnx_opendirat (base_dfd, base_path, TRUE, ret_fd, error);
- }
- 
--#ifdef HAVE_SELINUX
-+#if 0
- static void
- child_setup_fchdir (gpointer data)
- {
 @@ -3399,7 +3399,7 @@ sysroot_finalize_deployment (OstreeSysroot *self, OstreeDeployment *deployment,
                                       cancellable, error))
          return FALSE;

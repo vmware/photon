@@ -1,5 +1,6 @@
 %define debug_package   %{nil}
-%define gopath_comp_libnetwork_plugin github.com/projectcalico/libnetwork-plugin
+%define src_name        libnetwork-plugin
+%define gopath_comp_libnetwork_plugin github.com/projectcalico/%{src_name}
 # if you are fetching glide dependencies freshly, set this to 1
 # for dev purpose only
 %define refetch_deps    0
@@ -7,7 +8,7 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       24%{?dist}
+Release:       25%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -15,12 +16,17 @@ URL:           https://github.com/projectcalico/libnetwork-plugin
 
 Source0: https://github.com/projectcalico/libnetwork-plugin/archive/refs/tags/%{name}-%{version}.tar.gz
 
-# Be aware that the source tarball has a different prefix as the package name: libnetwork-plugin vs. calico-libnetwork, thus use libnetwork-plugin-%{version} as prefix
-# Created by `glide install --strip-vendor && tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,libnetwork-plugin-${version}/," -c vendor | gzip -9`
+# Be aware that the source tarball has a different prefix as the package name:
+# libnetwork-plugin vs. calico-libnetwork, thus use libnetwork-plugin-%{version} as prefix
+# Created by:
+# glide install --strip-vendor
+# tar --owner=root --group=root --mtime='2000-01-01 00:00Z' --transform "s,^,libnetwork-plugin-${version}/," -c vendor | gzip -9
 Source1: glide-vendor-for-%{name}-%{version}.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: fix-base64-encoding-issue.patch
 
 BuildRequires: git
 BuildRequires: glide
@@ -31,15 +37,18 @@ Docker libnetwork plugin for Calico.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -c -n libnetwork-plugin-%{version}
+%setup -q -c -n %{src_name}-%{version}
 
 # If not fetching dependencies, populate the vendor/ directory ourselves
 %if 0%{?refetch_deps} == 0
 tar -xf %{SOURCE1}
+pushd %{src_name}-%{version}/vendor
+%patch -p1 0
+popd
 %endif
 
 mkdir -p "$(dirname src/%{gopath_comp_libnetwork_plugin})"
-mv libnetwork-plugin-%{version} src/%{gopath_comp_libnetwork_plugin}
+mv %{src_name}-%{version} src/%{gopath_comp_libnetwork_plugin}
 
 # If fetching deoendencies, use `glide install -strip-vendor` the same as in Makefile
 %if 0%{?refetch_deps}
@@ -59,13 +68,13 @@ export GO111MODULE=auto
 export GOPATH="${PWD}"
 
 pushd src/%{gopath_comp_libnetwork_plugin}
-CGO_ENABLED=0 go build -v -o dist/libnetwork-plugin -ldflags "-X main.VERSION=%{version} -s -w" main.go
+CGO_ENABLED=0 go build -v -o dist/%{src_name} -ldflags "-X main.VERSION=%{version} -s -w" main.go
 popd
 
 %install
 pushd src/%{gopath_comp_libnetwork_plugin}
 install -vdm 0755 %{buildroot}%{_datadir}/calico/docker
-install -vpm 0755 -t %{buildroot}%{_datadir}/calico/docker/ dist/libnetwork-plugin
+install -vpm 0755 -t %{buildroot}%{_datadir}/calico/docker/ dist/%{src_name}
 popd
 
 %clean
@@ -73,9 +82,11 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_datadir}/calico/docker/libnetwork-plugin
+%{_datadir}/calico/docker/%{src_name}
 
 %changelog
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-25
+- Bump version as a part of go upgrade
 * Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.3-24
 - Clean up unintended licenses
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.3-23

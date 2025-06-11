@@ -3,25 +3,22 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT 3ab5c7d
-%define DOCKER_CLI_GITCOMMIT 3ab4256
+%define DOCKER_ENGINE_GITCOMMIT e6534b4
+%define DOCKER_CLI_GITCOMMIT e6534b4
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
-%define gopath_comp_libnetwork github.com/docker/libnetwork
 
 Summary:        Docker
 Name:           docker
-Version:        27.3.1
-Release:        7%{?dist}
+Version:        28.2.2
+Release:        1%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-
-Source1: https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
 
 Source2: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
 
@@ -32,8 +29,6 @@ Source5:       default-disable.preset
 Source6: license.txt
 %include %{SOURCE6}
 
-Patch0:        bridge-networking.patch
-
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
@@ -41,7 +36,7 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
-BuildRequires:  go
+BuildRequires:  go >= 1.23
 BuildRequires:  go-md2man
 BuildRequires:  cmake
 BuildRequires:  sed
@@ -107,25 +102,30 @@ Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
 # Using autosetup is not feasible
 %setup -q -c -n moby-%{version}
 pushd moby-%{version}
-%autopatch -p1 0
+%autopatch -p1
 popd
 
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
-         "src/%{gopath_comp_libnetwork}" \
          bin
 
 mv moby-%{version} src/%{gopath_comp_engine}
 
+pushd src/%{gopath_comp_engine}
+rm -f man/go.mod
+popd
+
 tar -xf %{SOURCE2}
 mv cli-%{version} src/%{gopath_comp_cli}
-
-tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE1}
 
 # Remove files to handle unintended inclusions
 find src/github.com/docker/docker/vendor \( -name "README.md" -o -name "LICENSE.docs" \) -type f -delete
 find src/github.com/docker/cli/vendor \( -name "README.md" -o -name "LICENSE.docs" \) -type f -delete
-find src/github.com/docker/libnetwork/vendor \( -name "README.md" -o -name "LICENSE.docs" \) -type f -delete
+
+pushd "src/%{gopath_comp_cli}"
+cp vendor.mod go.mod
+cp vendor.sum go.sum
+popd
 
 %build
 export GOPATH="${PWD}"
@@ -164,11 +164,6 @@ pushd "src/%{gopath_comp_engine}"
   ./hack/make.sh dynbinary
 popd
 
-# proxy
-pushd "src/%{gopath_comp_libnetwork}"
-  go build -buildmode=pie -ldflags=-linkmode=external -o "$GOPATH/bin/docker-proxy" %{gopath_comp_libnetwork}/cmd/proxy
-popd
-
 jq -n \
   --arg platform "$PLATFORM" \
   --arg engine_image "$ENGINE_IMGE" \
@@ -190,9 +185,7 @@ install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 # install binary
 install -p -m 755 src/%{gopath_comp_cli}/build/docker %{buildroot}%{_bindir}/docker
 install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd %{buildroot}%{_bindir}/dockerd
-
-# install proxy
-install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
+install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 
 # install tini
 ln -srv %{buildroot}%{_bindir}/tini %{buildroot}%{_bindir}/docker-init
@@ -213,7 +206,6 @@ install -p -m 644 src/%{gopath_comp_cli}/contrib/completion/bash/docker %{buildr
 # install manpages
 install -p -m 644 src/%{gopath_comp_cli}/man/man1/*.1 %{buildroot}%{_mandir}/man1
 install -p -m 644 src/%{gopath_comp_cli}/man/man5/*.5 %{buildroot}%{_mandir}/man5
-install -p -m 644 src/%{gopath_comp_cli}/man/man8/*.8 %{buildroot}%{_mandir}/man8
 
 # vimfiles are now upstream, no vim files installed
 
@@ -300,13 +292,16 @@ rm -rf %{buildroot}/*
 %doc
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_mandir}/man8/*
 
 %files rootless
 %{_bindir}/dockerd-rootless.sh
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Oct 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-1
+- Upgrade to v28.2.2
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.1-8
+- Bump version as a part of go upgrade
 * Wed Jul 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 27.3.1-7
 - Remove unintended license for SRP compliance
 * Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.1-6
