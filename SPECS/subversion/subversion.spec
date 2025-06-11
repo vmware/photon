@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
@@ -104,6 +104,8 @@ userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 1.14.2-15
+- Release bump for perl 5.40.2
 * Thu Jul 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.14.2-14
 - Cleanup licenses
 * Wed May 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.14.2-13

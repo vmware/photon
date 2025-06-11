@@ -1,7 +1,7 @@
 Summary:        Perl wrapper for JSON. Provides JSON.pm
 Name:           perl-JSON
 Version:        4.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/pod/JSON
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ make test %{?_smp_mflags}
 %exclude %{_mandir}/man?/*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.10-3
+-   Release bump for perl 5.40.2
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.10-2
 -   Release bump for SRP compliance
 *   Tue Feb 14 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 4.10-1

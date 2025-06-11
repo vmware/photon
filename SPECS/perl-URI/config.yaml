@@ -1,6 +1,6 @@
 sources:
-- archive: perl-URI-5.17.tar.gz
-  archive_sha512sum: 52171e16137bfaa77ab31007245a561614c5c42336473022ebbe370b395d3052d3de80da0b42754ca2e0b09f47520ef96afdbdb72fe5c25cab87441eda03ec12
+- archive: URI-5.32.tar.gz
+  archive_sha512sum: 856b95173adddc0099d00012981ab34f3b853871e590ef7f3e33fbf369b51c03e9f89011f390caf03c7b975b3632d3efb8456b14cc240d5b8a0fe8b8d147fe2c
   skip_validation: true
   spdx:
     package:
@@ -8,7 +8,11 @@ sources:
         class represent "Uniform Resource Identifier references" as specified in RFC
         2396 (andupdated by RFC 2732). '
       home_page: https://metacpan.org/release/URI
-      license_concluded: GPL-1.0-only AND Apache-2.0 AND Artistic-2.0 AND Artistic-1.0
-      license_declared: GPL-1.0-only AND Apache-2.0 AND Artistic-2.0 AND Artistic-1.0
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
+        OR Artistic-1.0) AND (GPL-1.0-or-later OR Artistic-2.0) AND GPL-1.0-only AND
+        Artistic-1.0-Perl AND Artistic-1.0 AND Apache-2.0
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
+        OR Artistic-1.0) AND (GPL-1.0-or-later OR Artistic-2.0) AND GPL-1.0-only AND
+        Artistic-1.0-Perl AND Artistic-1.0 AND Apache-2.0
       short_summary: A Perl module implementing URI parsing and manipulation
       supplier: 'Organization: Broadcom, Inc.'

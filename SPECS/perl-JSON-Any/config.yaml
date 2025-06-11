@@ -1,6 +1,6 @@
 sources:
-- archive: JSON-Any-1.39.tar.gz
-  archive_sha512sum: a4e9494ef650fe6f0144fddad49962e717470390b5783ab7bed6ef1c34fa7aa3d4f8699b9967ec8ca8813f43ee8c1d594e5af4d4962929791aa95b470104cd9b
+- archive: JSON-Any-1.40.tar.gz
+  archive_sha512sum: 1fd4c892175660fade685d635c090ff76f57ae044a09e4baf84f1096aa1fde80e7d9c8282f47e93b0525fce42520b1512c25b76fec0fb7eca4b597f2b040a797
   skip_validation: true
   spdx:
     package:
@@ -9,7 +9,9 @@ sources:
         you to code to any JSON API and have it work regardless of which JSON module
         is actually installed. '
       home_page: http://search.cpan.org/~ether/JSON-Any-1.39/lib/JSON/Any.pm
-      license_concluded: Artistic-2.0 AND GPL-1.0-only AND Artistic-1.0
-      license_declared: Artistic-2.0 AND GPL-1.0-only AND Artistic-1.0
+      license_concluded: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0 AND Artistic-1.0-Perl AND GPL-1.0-only
+      license_declared: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0 AND Artistic-1.0-Perl AND GPL-1.0-only
       short_summary: Wrapper Class for the various JSON classes
       supplier: 'Organization: Broadcom, Inc.'

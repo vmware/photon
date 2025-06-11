@@ -1,7 +1,7 @@
 Summary:        Wrapper Class for the various JSON classes
 Name:           perl-JSON-Any
-Version:        1.39
-Release:        7%{?dist}
+Version:        1.40
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~ether/JSON-Any-1.39/lib/JSON/Any.pm
 Source0:        http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/JSON-Any-%{version}.tar.gz
@@ -40,6 +40,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.40-1
+- Upgrade to 1.40
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.39-7
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.39-6

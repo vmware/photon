@@ -7,18 +7,20 @@ sources:
       detailed_description: 'Net-SNMP is a suite of applications used to implement
         SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. '
       home_page: http://net-snmp.sourceforge.net
-      license_concluded: FSFUL AND snprintf AND ISC AND FSFULLRWD AND BSD-3-Clause
-        AND MIT AND MIT-CMU AND GPL-3.0-or-later AND OpenSSL-standalone AND GPL-3.0-or-later
-        WITH Libtool-exception AND OpenSSL AND APSL-1.1 AND GPL-3.0-or-later WITH
-        Autoconf-exception-generic-3.0 AND FSFULLR AND SSLeay-standalone AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND BSD-4-Clause-Shortened AND X11
-      license_declared: FSFUL AND snprintf AND ISC AND FSFULLRWD AND BSD-3-Clause
-        AND MIT AND MIT-CMU AND GPL-3.0-or-later AND OpenSSL-standalone AND GPL-3.0-or-later
-        WITH Libtool-exception AND OpenSSL AND APSL-1.1 AND GPL-3.0-or-later WITH
-        Autoconf-exception-generic-3.0 AND FSFULLR AND SSLeay-standalone AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND BSD-4-Clause-Shortened AND X11
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND SSLeay-standalone
+        AND OpenSSL-standalone AND ISC AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND BSD-4-Clause-Shortened AND MIT-CMU AND MIT AND
+        BSD-3-Clause AND snprintf AND GPL-3.0-or-later WITH Libtool-exception AND
+        GPL-3.0-or-later AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND APSL-1.1 AND X11
+        AND OpenSSL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND SSLeay-standalone
+        AND OpenSSL-standalone AND ISC AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND BSD-4-Clause-Shortened AND MIT-CMU AND MIT AND
+        BSD-3-Clause AND snprintf AND GPL-3.0-or-later WITH Libtool-exception AND
+        GPL-3.0-or-later AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND APSL-1.1 AND X11
+        AND OpenSSL
       short_summary: Net-SNMP is a suite of applications used to implement SNMP v1,
         SNMP v2c and SNMP v3 using both IPv4 and IPv6.
       supplier: 'Organization: Broadcom, Inc.'

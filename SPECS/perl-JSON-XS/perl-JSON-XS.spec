@@ -3,7 +3,7 @@ Summary:        JSON serializing/deserializing, done correctly and fast
 Name:           perl-JSON-XS
 Epoch:          1
 Version:        4.03
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/JSON-XS/
 Source0:        https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-%{version}.tar.gz
@@ -55,9 +55,10 @@ make %{?_smp_mflags} test
 %{_mandir}/man[13]/*
 
 %changelog
+* Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 4.03-4
+- Release bump for perl 5.40.2
 * Thu Sep 18 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.03-3
 - Fix cve-2025-40928
-* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.03-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 4.03-1
 - Automatic Version Bump

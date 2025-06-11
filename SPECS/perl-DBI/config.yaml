@@ -1,6 +1,6 @@
 sources:
-- archive: DBI-1.643.tar.gz
-  archive_sha512sum: 03812f3eb1e43c8290dadb8cb14bbced9ec6e237228ea2a2ba91f22e52143906a91a7e82945dab30b1d1b9fc925073721111adafd9a09fac070808ab88f908b8
+- archive: DBI-1.647.tgz
+  archive_sha512sum: 365b9d51d3c17bb3d8ce6941ef5141512e5aaf4886a62297cb4b56f8bfce9d49d45163ba3841cef59040ff649c752136407c6e8355f8f5a3b2244efd8ef6b0d7
   skip_validation: true
   spdx:
     package:
@@ -9,9 +9,11 @@ sources:
         variables and conventions that provide a consistent database interface independent
         of the actual database being used. '
       home_page: http://dbi.perl.org/
-      license_concluded: Artistic-1.0-Perl AND (GPL-3.0-or-later OR BSD-2-Clause)
-        AND GPL-1.0-or-later AND Artistic-2.0 AND GPL-1.0-only
-      license_declared: Artistic-1.0-Perl AND (GPL-3.0-or-later OR BSD-2-Clause) AND
-        GPL-1.0-or-later AND Artistic-2.0 AND GPL-1.0-only
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
+        OR Artistic-1.0-Perl) AND Artistic-1.0 AND GPL-1.0-only AND Artistic-1.0-Perl
+        AND GPL-1.0-or-later
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
+        OR Artistic-1.0-Perl) AND Artistic-1.0 AND GPL-1.0-only AND Artistic-1.0-Perl
+        AND GPL-1.0-or-later
       short_summary: A database access API for perl
       supplier: 'Organization: Broadcom, Inc.'

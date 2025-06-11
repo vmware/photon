@@ -1,13 +1,13 @@
 sources:
-- archive: perl-5.36.0.tar.xz
-  archive_sha512sum: 6dd6ac2a77566c173c5ab9c238cf555f2c3e592e89abb5600bc23ce1cbd0c349e0233f6417cbbf1f6d0aefc6a734ba491285af0d3dc68a605b658b65c89f1dab
+- archive: perl-5.40.2.tar.xz
+  archive_sha512sum: 1324b119e4370bbeb47a343d152f46c637addb0373ff07f0e214aa9d5912c03cd2bd23987a6e86d43453166412d3a03a52e780201941f679ef4186df16590e41
   license_manual_review:
   - file_paths:
-    - perl-5.36.0/cpan/CPAN-Meta/lib/CPAN/Meta/Converter.pm
+    - perl-5.40.2/cpan/CPAN-Meta/lib/CPAN/Meta/Converter.pm
     sha256sum: 9528d678363d4857b45cba7a0b9efadc488aab4a1d5495baceec58f731444490
     spdx_exp: GPL-1.0-or-later
   - file_paths:
-    - perl-5.36.0/cpan/CPAN-Meta/lib/CPAN/Meta/Validator.pm
+    - perl-5.40.2/cpan/CPAN-Meta/lib/CPAN/Meta/Validator.pm
     sha256sum: cc02695d6c683879171ebd513e3e8e6c2a06b7ec1938fe41f0663ee36a925292
     spdx_exp: GPL-1.0-or-later
   skip_validation: true
@@ -40,8 +40,8 @@ sources:
         AND bzip2-1.0.6 AND metamail
       short_summary: Practical Extraction and Report Language
       supplier: 'Organization: Broadcom, Inc.'
-- archive: perl-cross-1.2.tar.gz
-  archive_sha512sum: 81d86d0ad1dab55da9debcdf705f4937e36f4b3b3c3ce93e7d6eeef4a3b1e1d9498b3db5e2b6abf92525e6767d639da7587d95136c46e50808386767ee7e5b13
+- archive: perl-cross-1.6.2.tar.gz
+  archive_sha512sum: 51b45bf972304634d706d09e27d457636e43f9f27f739004eca529b21245ba78612dcb08b54225fc7ca19511983642c37915939ea8aa1c1a4560093474d9e76b
   skip_validation: true
   spdx:
     package:

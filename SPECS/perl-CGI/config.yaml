@@ -1,6 +1,6 @@
 sources:
-- archive: CGI-4.54.tar.gz
-  archive_sha512sum: be7ecdd9eab81ad95d527aac2f10ef7a15322675fe002558c6ab4951f496a8964025b7d0426241fb3f61aba103964a40f99acc05a39c84a2434f70d90ac47be6
+- archive: CGI-4.69.tar.gz
+  archive_sha512sum: d8dbb476fdfb43bac1d7674c25e046eabaf15dcf582c453e1810367cb2ed435b7fcc597ecaab32692832997e16d04152928cc145502781f8c6698bfdefcc4407
   skip_validation: true
   spdx:
     package:
@@ -12,7 +12,7 @@ sources:
         well in in a vanilla CGI.pm environment and also comes with built-in support
         for mod_perl and mod_perl2 as well as FastCGI. '
       home_page: http://search.cpan.org/dist/CGI
-      license_concluded: Apache-2.0 AND Artistic-2.0
-      license_declared: Apache-2.0 AND Artistic-2.0
+      license_concluded: Artistic-2.0
+      license_declared: Artistic-2.0
       short_summary: Handle Common Gateway Interface requests and responses
       supplier: 'Organization: Broadcom, Inc.'

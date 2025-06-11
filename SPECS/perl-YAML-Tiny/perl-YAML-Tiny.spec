@@ -1,8 +1,8 @@
 # Got the intial spec from Fedora and modified it
 Summary:        Read/Write YAML files with as little code as possible
 Name:           perl-YAML-Tiny
-Version:        1.73
-Release:        4%{?dist}
+Version:        1.76
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML-Tiny/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/YAML-Tiny-%{version}.tar.gz
@@ -39,6 +39,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Tiny.3*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.76-1
+- Upgrade to 1.76
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.73-4
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.73-3

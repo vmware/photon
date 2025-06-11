@@ -1,13 +1,13 @@
 Summary:       XML-Parser perl module
 Name:          XML-Parser
-Version:       2.46
-Release:       6%{?dist}
+Version:       2.47
+Release:       1%{?dist}
 URL:           http://search.cpan.org/~toddr/%{name}-%{version}/
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0: http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
+Source0: https://cpan.metacpan.org/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -42,7 +42,7 @@ make %{?_smp_mflags}
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
-%define __perl_version 5.36.0
+%define __perl_version 5.40.2
 rm %{buildroot}/%{_libdir}/perl5/%{__perl_version}/*/perllocal.pod
 
 %check
@@ -54,6 +54,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 2.47-1
+- Upgrade to 2.47
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.46-6
 - Version bump for expat upgrade
 * Mon Dec 16 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.46-5

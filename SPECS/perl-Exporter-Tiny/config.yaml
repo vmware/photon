@@ -1,6 +1,6 @@
 sources:
-- archive: Exporter-Tiny-1.004004.tar.gz
-  archive_sha512sum: 491f7bb86d6a53e8f2553fcff8c612124692562ddacd0cb67774cd28777fbc709961a0ca64fa374a4bc331fd4c1dd60f71010ae0e24bc50b38afb92317a0e221
+- archive: Exporter-Tiny-1.006002.tar.gz
+  archive_sha512sum: 684dc97d854686910928f413bd84df3e2d2b351c2304116d5c567ec74eb7384f4085881f2bdeaf96dcf9ade2a959076ebd2bde3977dd5b876f75daaf6ca9d763
   skip_validation: true
   spdx:
     package:
@@ -16,10 +16,12 @@ sources:
         as method calls, which means they can be overridden to provide interesting
         behavior. '
       home_page: http://search.cpan.org/dist/Exporter-Tiny/
-      license_concluded: GPL-1.0-or-later AND Artistic-2.0 AND MIT AND GPL-1.0-only
-        AND Artistic-1.0 AND Ruby
-      license_declared: GPL-1.0-or-later AND Artistic-2.0 AND MIT AND GPL-1.0-only
-        AND Artistic-1.0 AND Ruby
+      license_concluded: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0 AND GPL-1.0-only AND GPL-1.0-or-later
+        AND MIT
+      license_declared: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0 AND GPL-1.0-only AND GPL-1.0-or-later
+        AND MIT
       short_summary: An exporter with the features of Sub::Exporter but only core
         dependencies
       supplier: 'Organization: Broadcom, Inc.'

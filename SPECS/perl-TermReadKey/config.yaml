@@ -9,7 +9,7 @@ sources:
         stdin, as well as several other terminal related features, including retrieval/modification
         of the screen size, and retrieval/modification of the control characters '
       home_page: https://metacpan.org/release/TermReadKey
-      license_concluded: TermReadKey AND Artistic-2.0
-      license_declared: TermReadKey AND Artistic-2.0
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND TermReadKey
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND TermReadKey
       short_summary: TermReadKey Perl module
       supplier: 'Organization: Broadcom, Inc.'

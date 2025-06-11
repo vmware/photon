@@ -2,7 +2,7 @@
 Summary:       Provide the stuff missing in List::Util
 Name:          perl-List-MoreUtils
 Version:       0.430
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/List-MoreUtils/
 Source0:       https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
@@ -47,6 +47,8 @@ make  %{?_smp_mflags} test
 %{_mandir}/man3/List::MoreUtils::Contributing.3.gz
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.430-3
+- Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.430-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 0.430-1

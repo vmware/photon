@@ -1,6 +1,6 @@
 sources:
-- archive: Perl4-CoreLibs-0.004.tar.gz
-  archive_sha512sum: 71083f1640e95559ee4bc5a7f1bbe6beacec048a073e211ab7f6ee4de26463f6ae3d87e99e00a41ea8f2f93a5e96367bafe907ef3367e400de35123c22eb7b88
+- archive: Perl4-CoreLibs-0.005.tar.gz
+  archive_sha512sum: 87e4c153f2fead9eae9ea338b965294d8a2a1b0b5c6a25c7a4b18cab049526c26efaa7bb99f264e025d4a2893165b5960a6bff83c18f50af2106174b5b344981
   skip_validation: true
   spdx:
     package:

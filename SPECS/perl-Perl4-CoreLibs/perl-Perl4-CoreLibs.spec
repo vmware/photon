@@ -1,8 +1,8 @@
 %define cpan_name Perl4-CoreLibs
 Summary:        Core Perl4 Libs
 Name:           perl-Perl4-CoreLibs
-Version:        0.004
-Release:        4%{?dist}
+Version:        0.005
+Release:        1%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -75,6 +75,8 @@ perl Build.PL installdirs=vendor
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.005-1
+-   Upgrade to 0.005
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.004-4
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.004-3

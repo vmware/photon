@@ -1,6 +1,6 @@
 sources:
-- archive: IO-Socket-SSL-2.075.tar.gz
-  archive_sha512sum: ed693aa360e669401d5d2b81d988d6d2bd39f042452d7194cc8a7ec2dccf1dfa213ecb29572178a3abfdd20af999217d19a3d9a4c7978207a2edaac5148c9853
+- archive: IO-Socket-SSL-2.090.tar.gz
+  archive_sha512sum: d75d3fff50045f41c5ccfe6bbd80149f5d06845423a9149d7c2e9631cbe5cc68b1d9edc5e05a802609928b05ef4648ff645cc4d7cb8f46f194ec2a441aef7428
   skip_validation: true
   spdx:
     package:
@@ -9,8 +9,8 @@ sources:
         secure defaults whenever possible. This way, existing applications can be
         made SSL-aware without much effort, at least if you do blocking I/O and don''t
         use select or poll. '
-      home_page: http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/SSL.pod
-      license_concluded: MPL-2.0
-      license_declared: MPL-2.0
+      home_page: https://metacpan.org/dist/IO-Socket-SSL
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND MPL-2.0
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND MPL-2.0
       short_summary: SSL sockets with IO::Socket interface
       supplier: 'Organization: Broadcom, Inc.'

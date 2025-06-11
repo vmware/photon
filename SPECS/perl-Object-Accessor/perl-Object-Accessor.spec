@@ -3,7 +3,7 @@
 Summary:        Interface to create per object accessors
 Name:           perl-Object-Accessor
 Version:        0.48
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Object-Accessor/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Object-Accessor-%{version}.tar.gz
@@ -41,6 +41,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.48-7
+- Release bump for perl 5.40.2 upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.48-6
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.48-5

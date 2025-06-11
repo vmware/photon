@@ -18,7 +18,9 @@ sources:
         which on the command line in an environment that does not provide it, install
         App::pwhich which provides a command line interface to this API.
       home_page: http://search.cpan.org/dist/File-Which/
-      license_concluded: Artistic-1.0 AND Artistic-2.0 AND GPL-1.0-only
-      license_declared: Artistic-1.0 AND Artistic-2.0 AND GPL-1.0-only
+      license_concluded: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND GPL-1.0-only AND Artistic-1.0
+      license_declared: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND GPL-1.0-only AND Artistic-1.0
       short_summary: File-Which
       supplier: 'Organization: Broadcom, Inc.'

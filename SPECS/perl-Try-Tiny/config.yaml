@@ -1,6 +1,6 @@
 sources:
-- archive: Try-Tiny-0.31.tar.gz
-  archive_sha512sum: 1a3c852e56797d81da60a4f4887cb70fc575eca83d10b8cd12fe5d5d0008a967801218f3a5277a2f1347ade95b9515c1f237333e491742d06614c0beecf44768
+- archive: Try-Tiny-0.32.tar.gz
+  archive_sha512sum: 18610525e1b754760f41a5d9a836a4e78c22ba1b008f7ac16b2796916ef688b03c7cc3002cfc61b274492455a906e75dbe0e2a06ead4e08b33e1c6a0a8569c4e
   skip_validation: true
   spdx:
     package:

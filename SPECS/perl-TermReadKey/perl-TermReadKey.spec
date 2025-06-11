@@ -1,6 +1,6 @@
 Name:          perl-TermReadKey
 Version:       2.38
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       TermReadKey Perl module
 Group:         Development/Perl
 Vendor:        VMware, Inc.
@@ -37,6 +37,8 @@ perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.com> 2.38-4
+- Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.38-3
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2.38-2

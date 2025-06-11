@@ -2,7 +2,7 @@
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
 Version:        3.000003
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Config-IniFiles/
 Source0:        https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
@@ -51,6 +51,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 3.000003-4
+- Release bump for perl 5.40.2 version upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.000003-3
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 3.000003-2

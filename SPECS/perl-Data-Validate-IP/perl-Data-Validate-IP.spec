@@ -1,7 +1,7 @@
 Summary:        IPv4 and IPv6 validation methods
 Name:           perl-Data-Validate-IP
-Version:        0.30
-Release:        2%{?dist}
+Version:        0.31
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/Data-Validate-IP
 Source0:        https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Data-Validate-IP-%{version}.tar.gz
@@ -46,6 +46,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.31-1
+- Upgrade to 0.31
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.30-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 0.30-1

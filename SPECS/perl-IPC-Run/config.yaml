@@ -1,6 +1,6 @@
 sources:
-- archive: IPC-Run-20220807.0.tar.gz
-  archive_sha512sum: ddfd0ceb78bd56c8c95a0a293a59d605959ba8d1b161a2c5959ac185c18fffa5cf047c3448d3b83a2733aa1372550f93d74d86eb05d49748f789fa46282694aa
+- archive: IPC-Run-20231003.0.tar.gz
+  archive_sha512sum: 81b94715e61f2a302ba4cfbd03f6af14ab66d438dfdf58187ccf8b0f7ff562fd343ef560ad48dad8118342dd493530560ac89beca6de2818663d556d18feff90
   skip_validation: true
   spdx:
     package:
@@ -9,8 +9,10 @@ sources:
         are supported and may be mixed. Likewise, functional and OO API styles are
         both supported and may be mixed. '
       home_page: https://metacpan.org/pod/IPC::Run
-      license_concluded: GPL-1.0-or-later AND Artistic-2.0 AND GPL-2.0-only
-      license_declared: GPL-1.0-or-later AND Artistic-2.0 AND GPL-2.0-only
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-only
+        AND Artistic-1.0 AND GPL-1.0-or-later
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-only AND
+        Artistic-1.0 AND GPL-1.0-or-later
       short_summary: system() and background procs w/ piping, redirs, ptys (Unix,
         Win32)
       supplier: 'Organization: Broadcom, Inc.'

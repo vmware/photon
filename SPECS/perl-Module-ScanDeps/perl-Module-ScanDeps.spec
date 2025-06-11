@@ -1,8 +1,8 @@
 # Got the intial spec from Fedora and modified it
 Summary:        Recursively scan Perl code for dependencies
 Name:           perl-Module-ScanDeps
-Version:        1.31
-Release:        2%{?dist}
+Version:        1.37
+Release:        1%{?dist}
 Group:          Development/Libraries
 Source0:        https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz
 
@@ -45,6 +45,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.37-1
+- Upgrade to 1.37
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.31-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.31-1

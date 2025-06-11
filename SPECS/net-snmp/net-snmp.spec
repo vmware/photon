@@ -3,7 +3,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.9.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://net-snmp.sourceforge.net
 Group:          Productivity/Networking/Other
 Vendor:         VMware, Inc.
@@ -132,6 +132,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 5.9.3-4
+- Release bump for perl 5.40.2
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.9.3-3
 - Release bump for SRP compliance
 * Tue Jun 06 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 5.9.3-2

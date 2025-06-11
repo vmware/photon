@@ -1,10 +1,10 @@
 Summary:        A Perl module implementing URI parsing and manipulation
 Name:           perl-URI
-Version:        5.17
-Release:        2%{?dist}
+Version:        5.32
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/URI
-Source0:        https://cpan.metacpan.org/modules/by-module/URI/perl-URI-%{version}.tar.gz
+Source0:        https://cpan.metacpan.org/modules/by-module/URI/URI-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -43,6 +43,8 @@ make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 5.32-1
+- Upgrade to 5.32
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 5.17-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 5.17-1

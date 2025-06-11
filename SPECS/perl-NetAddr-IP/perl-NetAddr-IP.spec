@@ -1,7 +1,7 @@
 Summary:        Manages IPv4 and IPv6 addresses and subnets
 Name:           perl-NetAddr-IP
 Version:        4.079
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/NetAddr-IP
 Source0:        https://cpan.metacpan.org/authors/id/M/MI/MIKER/NetAddr-IP-%{version}.tar.gz
@@ -36,6 +36,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.079-5
+-   Release bump for perl 5.40.2
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.079-4
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 4.079-3

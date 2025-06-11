@@ -1,7 +1,7 @@
 Summary:        File-HomeDir
 Name:           perl-File-HomeDir
 Version:        1.006
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-HomeDir/
 Source0:        https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-HomeDir-%{version}.tar.gz
@@ -59,6 +59,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/File::HomeDir::Windows.3.gz
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.006-3
+- Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.006-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.006-1

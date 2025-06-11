@@ -13,7 +13,9 @@ sources:
         it, or use it in a way that won''t actually work properly on platforms significantly
         different than the ones they''ve tested their code on. '
       home_page: http://search.cpan.org/~kwilliams/Path-Class-0.37/
-      license_concluded: Artistic-2.0 AND Artistic-1.0 AND GPL-1.0-or-later AND GPL-1.0-only
-      license_declared: Artistic-2.0 AND Artistic-1.0 AND GPL-1.0-or-later AND GPL-1.0-only
+      license_concluded: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0 AND GPL-1.0-only AND GPL-1.0-or-later
+      license_declared: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0 AND GPL-1.0-only AND GPL-1.0-or-later
       short_summary: Cross-platform path specification manipulation for Perl
       supplier: 'Organization: Broadcom, Inc.'

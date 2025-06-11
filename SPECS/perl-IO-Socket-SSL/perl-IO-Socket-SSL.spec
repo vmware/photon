@@ -1,7 +1,7 @@
 Summary:        SSL sockets with IO::Socket interface
 Name:           perl-IO-Socket-SSL
-Version:        2.075
-Release:        2%{?dist}
+Version:        2.090
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/SSL.pod
 Vendor:         VMware, Inc.
@@ -47,6 +47,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 2.090-1
+- Upgrade to version 2.090
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.075-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 2.075-1

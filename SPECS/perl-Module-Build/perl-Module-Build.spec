@@ -5,8 +5,8 @@
 
 Summary:        Build and install Perl modules
 Name:           perl-Module-Build
-Version:        0.4231
-Release:        3%{?dist}
+Version:        0.4234
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Build/
 Source0:        https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-%{version}.tar.gz
@@ -46,6 +46,8 @@ LANG=C TEST_SIGNATURE=1 MB_TEST_EXPERIMENTAL=1 ./Build test
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.4234-1
+-   Upgrade to 0.4234
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.4231-3
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.4231-2

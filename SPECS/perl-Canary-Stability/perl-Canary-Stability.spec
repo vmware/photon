@@ -1,7 +1,7 @@
 Summary:        Canary to check perl compatibility for Schmorp's modules
 Name:           perl-Canary-Stability
 Version:        2013
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Canary-Stability/
 Source0:        http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Canary-Stability-%{version}.tar.gz
@@ -41,6 +41,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 2013-4
+-   Release bump for perl 5.40.2 upgrade
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2013-3
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 2013-2

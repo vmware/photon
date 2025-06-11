@@ -6,13 +6,9 @@ sources:
     package:
       detailed_description: 'WWW::Curl is a Perl extension interface for libcurl. '
       home_page: http://search.cpan.org/dist/WWW-Curl/
-      license_concluded: GPL-1.0-only AND Artistic-2.0 AND LGPL-2.1-or-later AND LGPL-2.0-only
-        AND LGPL-2.1-only AND GPL-2.0-only AND LGPL-2.0-or-later AND Apache-2.0 AND
-        BSD-3-Clause AND MIT AND MPL-1.1 AND GPL-1.0-or-later AND LGPL-3.0-only AND
-        GPL-3.0-only
-      license_declared: GPL-1.0-only AND Artistic-2.0 AND LGPL-2.1-or-later AND LGPL-2.0-only
-        AND LGPL-2.1-only AND GPL-2.0-only AND LGPL-2.0-or-later AND Apache-2.0 AND
-        BSD-3-Clause AND MIT AND MPL-1.1 AND GPL-1.0-or-later AND LGPL-3.0-only AND
-        GPL-3.0-only
+      license_concluded: BSD-3-Clause AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+        AND MIT AND GPL-1.0-only AND Artistic-1.0-Perl AND Artistic-2.0 AND GPL-1.0-or-later
+      license_declared: BSD-3-Clause AND LGPL-2.1-or-later AND LGPL-2.0-or-later AND
+        MIT AND GPL-1.0-only AND Artistic-1.0-Perl AND Artistic-2.0 AND GPL-1.0-or-later
       short_summary: Perl extension interface for libcurl
       supplier: 'Organization: Broadcom, Inc.'

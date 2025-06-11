@@ -1,7 +1,7 @@
 Summary:        Cross-platform path specification manipulation for Perl
 Name:           perl-Path-Class
 Version:        0.37
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://search.cpan.org/~kwilliams/Path-Class-0.37/
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.37-7
+- Release bump for perl 5.40.2 upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.37-6
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 0.37-5

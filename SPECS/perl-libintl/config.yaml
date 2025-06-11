@@ -1,6 +1,6 @@
 sources:
-- archive: libintl-perl-1.32.tar.gz
-  archive_sha512sum: fca6c8863dfd36c7604bc80a401e825eb707bc75016521c09006c34c170a41b009d30ec93d7e2a7f61caa1dbdf0333511c3d515d4fdc0fea32242eca68a7e35d
+- archive: libintl-perl-1.35.tar.gz
+  archive_sha512sum: 2952a0cfb8bc84307208d71b974777fd7883266f595309cf7f38f7f640a20c1a3852c6daf4b02e758dc94d37cc84fc23ef9a51a892b3de50b4eaf28ee253ac77
   skip_validation: true
   spdx:
     package:

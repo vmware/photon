@@ -12,13 +12,13 @@
 
 Summary:        A database access API for perl
 Name:           perl-DBI
-Version:        1.643
-Release:        3%{?dist}
+Version:        1.647
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://dbi.perl.org/
 # The source tarball must be repackaged to remove the DBI/FAQ.pm, since the
 # license is not a FSF free license.
-Source0:        https://cpan.metacpan.org/authors/id/T/TI/TIMB/DBI-%{version}.tar.gz
+Source0:        https://cpan.metacpan.org/authors/id/H/HM/HMBRAND/DBI-%{version}.tgz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -95,6 +95,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*.3*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.647-1
+-   Upgrade to 1.647
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.643-3
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.643-2

@@ -8,8 +8,8 @@
 
 Summary:        Practical Extraction and Report Language
 Name:           perl
-Version:        5.36.0
-Release:        11%{?dist}
+Version:        5.40.2
+Release:        1%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -17,7 +17,7 @@ Distribution:   Photon
 
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.xz
 
-Source1:    https://github.com/arsv/perl-cross/releases/download/1.2/perl-cross-1.2.tar.gz
+Source1:    https://github.com/arsv/perl-cross/raw/releases/perl-cross-1.6.2.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -28,10 +28,6 @@ Patch1:         make-check-failure2.patch
 %endif
 
 Patch2:         0001-Remove-libdb-support.patch
-Patch3:         CVE-2023-31486.patch
-Patch4:         CVE-2023-47100.patch
-Patch5:         CVE-2024-56406.patch
-Patch6:         CVE-2025-40909.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -110,6 +106,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 5.40.2-1
+- Upgrade perl to 5.40.2
 * Wed Oct 08 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.36.0-11
 - Fixed CVE-2025-40909
 * Thu Jul 31 2025 Dweep Advani <dweep.advani@broadcom.com> 5.36.0-10

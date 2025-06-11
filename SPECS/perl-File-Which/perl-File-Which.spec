@@ -1,7 +1,7 @@
 Summary:        File-Which
 Name:           perl-File-Which
 Version:        1.27
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
 Source0:        https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-%{version}.tar.gz
@@ -52,6 +52,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/File::Which.3.gz
 
 %changelog
+*  Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.27-3
+-  Release bump for perl 5.40.2
 *  Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.27-2
 -  Release bump for SRP compliance
 *  Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27-1

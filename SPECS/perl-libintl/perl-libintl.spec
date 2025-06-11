@@ -1,8 +1,8 @@
 # Got the intial spec from Fedora and modified it
 Summary:       Internationalization library for Perl, compatible with gettext
 Name:          perl-libintl
-Version:       1.32
-Release:       3%{?dist}
+Version:       1.35
+Release:       1%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/libintl-perl/
 Source0:       https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
@@ -11,9 +11,9 @@ Source1: license.txt
 %include %{SOURCE1}
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Requires:      perl
+Requires:      perl = 5.40.2
 Provides:      perl-libintl-perl = %{version}-%{release}
-BuildRequires: perl
+BuildRequires: perl = 5.40.2
 
 %description
 The package libintl-perl is an internationalization library for Perl that
@@ -45,6 +45,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.35-1
+-   Upgrade to 1.35
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.32-3
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.32-2

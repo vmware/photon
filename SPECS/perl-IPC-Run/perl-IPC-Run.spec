@@ -1,7 +1,7 @@
 Summary:        system() and background procs w/ piping, redirs, ptys (Unix, Win32)
 Name:           perl-IPC-Run
-Version:        20220807.0
-Release:        2%{?dist}
+Version:        20231003.0
+Release:        1%{?dist}
 URL:            https://metacpan.org/pod/IPC::Run
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/IPC::Run::Timer.3.gz
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 20231003.0-1
+- Upgrade to 20231003.0
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 20220807.0-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 20220807.0-1

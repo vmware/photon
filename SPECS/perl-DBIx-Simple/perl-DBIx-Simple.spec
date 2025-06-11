@@ -2,7 +2,7 @@
 Summary:        Easy-to-use OO interface to DBI
 Name:           perl-DBIx-Simple
 Version:        1.37
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Libraries
 
 Source0:        https://cpan.metacpan.org/authors/id/J/JU/JUERD/DBIx-Simple-%{version}.tar.gz
@@ -50,6 +50,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.37-6
+- Release bump for SRP compliance
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.37-5
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.37-4

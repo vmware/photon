@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        3.1.2
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 URL:            https://launchpad.net/apparmor
 Vendor:         VMware, Inc.
@@ -328,6 +328,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 3.1.2-17
+- Release bump for perl 5.40.2
 * Mon Apr 07 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.1.2-16
 - Remove licenses from subpackages
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.2-15

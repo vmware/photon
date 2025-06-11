@@ -1,11 +1,11 @@
 # Got the intial spec from Fedora and modified it
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
-Version:        1.30
-Release:        3%{?dist}
+Version:        1.31
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
-Source0:        https://cpan.metacpan.org/authors/id/T/TI/TINITA/YAML-%{version}.tar.gz
+Source0:        https://cpan.metacpan.org/authors/id/I/IN/INGY/YAML-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -84,6 +84,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.31-1
+-   Upgrade to 1.31
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.30-3
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.30-2

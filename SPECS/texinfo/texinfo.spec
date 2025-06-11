@@ -1,7 +1,7 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
 Version:        7.0.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -13,6 +13,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  perl
+Requires:  perl
+Requires:  perl-libintl
 
 %description
 The Texinfo package contains programs for reading, writing,
@@ -57,6 +59,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 7.0.2-4
+-   Release bump for perl 5.40.2
 *   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.0.2-3
 -   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.2-2

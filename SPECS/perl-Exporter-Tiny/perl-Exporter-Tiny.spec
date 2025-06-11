@@ -1,8 +1,8 @@
 # Got the intial spec from Fedora and modified it
 Summary:       An exporter with the features of Sub::Exporter but only core dependencies
 Name:          perl-Exporter-Tiny
-Version:       1.004004
-Release:       2%{?dist}
+Version:       1.006002
+Release:       1%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/Exporter-Tiny/
 Source0:       https://cpan.metacpan.org/authors/id/T/TO/TOBYINK/Exporter-Tiny-%{version}.tar.gz
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/Exporter::Tiny::Manual*
 
 %changelog
+*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.006002-1
+-   Upgrade to 1.006002
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.004004-2
 -   Release bump for SRP compliance
 *   Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.004004-1

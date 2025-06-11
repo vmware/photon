@@ -7,7 +7,7 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
@@ -66,6 +66,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.17-11
+- Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.17-10
 - Release bump for SRP compliance
 * Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 4.17-9

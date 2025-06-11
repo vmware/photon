@@ -13,7 +13,7 @@ sources:
         Crypt::SSLeay::X509 Work on Crypt::SSLeay has been continued only to provide
         https support for the LWP (libwww-perl) libraries. '
       home_page: http://search.cpan.org/dist/Crypt-SSLeay/
-      license_concluded: Artistic-2.0
-      license_declared: Artistic-2.0
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Artistic-2.0
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Artistic-2.0
       short_summary: Crypt::SSLeay - OpenSSL support for LWP
       supplier: 'Organization: Broadcom, Inc.'

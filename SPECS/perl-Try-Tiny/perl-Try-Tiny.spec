@@ -1,7 +1,7 @@
 Summary:        Minimal try/catch with proper preservation of $@
 Name:           perl-Try-Tiny
-Version:        0.31
-Release:        2%{?dist}
+Version:        0.32
+Release:        1%{?dist}
 URL:            http://search.cpan.org/~ether/Try-Tiny-0.28/
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.32-1
+- Upgrade to 0.32
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.31-2
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 0.31-1

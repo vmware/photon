@@ -5,7 +5,7 @@
 Summary:       "Common sense" Perl defaults
 Name:          perl-common-sense
 Version:       3.75
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/common-sense
 Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
@@ -66,6 +66,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/common::sense.3*
 
 %changelog
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 3.75-4
+- Release bump for perl 5.40.2 upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.75-3
 - Release bump for SRP compliance
 * Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 3.75-2

@@ -1,6 +1,6 @@
 sources:
-- archive: YAML-Tiny-1.73.tar.gz
-  archive_sha512sum: 5999e220025aa8076e5e0e9e73e80c2da21660e77f6744d73e8e29962221d02d33a36e9829c44abf7d4f45abae069d8e121c8019bd1600b7e64db5e54efd9987
+- archive: YAML-Tiny-1.76.tar.gz
+  archive_sha512sum: dff7f494bd2640b1577f793e4d8a11de381e7b928db1f62a60ce2e19636b4355df7fffb5613a496dda7e98dc404d7106d1538a0610dec210a8e922d5ec5c06a1
   skip_validation: true
   spdx:
     package:
@@ -8,7 +8,9 @@ sources:
         files, written with as little code as possible, reducing load time and memory
         overhead. '
       home_page: http://search.cpan.org/dist/YAML-Tiny/
-      license_concluded: Artistic-1.0 AND GPL-1.0-only AND Artistic-2.0
-      license_declared: Artistic-1.0 AND GPL-1.0-only AND Artistic-2.0
+      license_concluded: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0-Perl AND GPL-1.0-only AND Artistic-1.0
+      license_declared: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND Artistic-1.0-Perl AND GPL-1.0-only AND Artistic-1.0
       short_summary: Read/Write YAML files with as little code as possible
       supplier: 'Organization: Broadcom, Inc.'
