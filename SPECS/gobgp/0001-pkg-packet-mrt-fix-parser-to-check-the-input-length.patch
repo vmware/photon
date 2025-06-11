@@ -1,0 +1,86 @@
+From 5153bafbe8dbe1a2f02a70bbf0365e98b80e47b0 Mon Sep 17 00:00:00 2001
+From: Ivan Gotovchits <ivg@mayhem.security>
+Date: Fri, 7 Feb 2025 09:59:42 +0900
+Subject: [PATCH] pkg/packet/mrt: fix parser to check the input length
+
+ 1 func (m *BGP4MPHeader) decodeFromBytes(data []byte) ([]byte, error) {
+ 2     if m.isAS4 && len(data) < 8 {
+ 3         return nil, errors.New("not all BGP4MPMessageAS4 bytes available")
+ 4     } else if !m.isAS4 && len(data) < 4 {
+ 5         return nil, errors.New("not all BGP4MPMessageAS bytes available")
+ 6     }
+ 7
+ 8     if m.isAS4 {
+ 9         m.PeerAS = binary.BigEndian.Uint32(data[:4])
+10         m.LocalAS = binary.BigEndian.Uint32(data[4:8])
+11         data = data[8:]
+12     } else {
+13         m.PeerAS = uint32(binary.BigEndian.Uint16(data[:2]))
+14         m.LocalAS = uint32(binary.BigEndian.Uint16(data[2:4]))
+15         data = data[4:]
+16     }
+17     m.InterfaceIndex = binary.BigEndian.Uint16(data[:2])
+18     m.AddressFamily = binary.BigEndian.Uint16(data[2:4])
+19     switch m.AddressFamily {
+20     case bgp.AFI_IP:
+21         m.PeerIpAddress = net.IP(data[4:8]).To4()
+22         m.LocalIpAddress = net.IP(data[8:12]).To4()
+23         data = data[12:]
+24     case bgp.AFI_IP6:
+25         m.PeerIpAddress = net.IP(data[4:20])
+26         m.LocalIpAddress = net.IP(data[20:36])
+27         data = data[36:]
+28     default:
+29         return nil, fmt.Errorf("unsupported address family: %d",
+m.AddressFamily)
+30     }
+31     return data, nil
+32 }
+
+The check  at lines 2-6 is sufficient only to safely extract `PeerAS`
+and `LocalAS`, after that slice is rebound to the leftover bytes,
+i.e., the length of the slice is not 8 or 4 bytes less, depending on
+the it is AS4 or not. That means that it could be empty, therefore any
+line beyond 16 is vulnerable. E.g., we need to check for at least 4
+bytes for lines 17 and 18, and then depending on the address family,
+for 12 or 36 bytes.
+---
+ pkg/packet/mrt/mrt.go | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/pkg/packet/mrt/mrt.go b/pkg/packet/mrt/mrt.go
+index cdb0c9c9..fb4ec596 100644
+--- a/pkg/packet/mrt/mrt.go
++++ b/pkg/packet/mrt/mrt.go
+@@ -677,9 +677,9 @@ type BGP4MPHeader struct {
+ }
+ 
+ func (m *BGP4MPHeader) decodeFromBytes(data []byte) ([]byte, error) {
+-	if m.isAS4 && len(data) < 8 {
++	if m.isAS4 && len(data) < 12 {
+ 		return nil, errors.New("not all BGP4MPMessageAS4 bytes available")
+-	} else if !m.isAS4 && len(data) < 4 {
++	} else if !m.isAS4 && len(data) < 8 {
+ 		return nil, errors.New("not all BGP4MPMessageAS bytes available")
+ 	}
+ 
+@@ -696,10 +696,16 @@ func (m *BGP4MPHeader) decodeFromBytes(data []byte) ([]byte, error) {
+ 	m.AddressFamily = binary.BigEndian.Uint16(data[2:4])
+ 	switch m.AddressFamily {
+ 	case bgp.AFI_IP:
++		if len(data) < 12 {
++			return nil, errors.New("not all IPv4 peer bytes available")
++		}
+ 		m.PeerIpAddress = net.IP(data[4:8]).To4()
+ 		m.LocalIpAddress = net.IP(data[8:12]).To4()
+ 		data = data[12:]
+ 	case bgp.AFI_IP6:
++		if len(data) < 36 {
++			return nil, errors.New("not all IPv6 peer bytes available")
++		}
+ 		m.PeerIpAddress = net.IP(data[4:20])
+ 		m.LocalIpAddress = net.IP(data[20:36])
+ 		data = data[36:]
+-- 
+2.34.1
+

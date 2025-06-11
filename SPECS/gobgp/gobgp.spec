@@ -1,14 +1,21 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       2.20.0
-Release:       27%{?dist}
+Release:       28%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/osrg/gobgp
 Source0:       %{name}-%{version}.tar.gz
 %define sha512  gobgp=a344be35f70bbbfde696677a89728b3861081407b69a01e592f4b46ebd9e1e04a565837ff65a1adf762c9ad80e145451759b8248e5e15f05d419791679a118f7
-Patch0:        0001-pkg-packet-rtr-fix-parser-to-check-the-input-length.patch
+
+# CVE-2025-43970
+Patch0:        0001-pkg-packet-mrt-fix-parser-to-check-the-input-length.patch
+# CVE-2025-43972
+Patch1:        0001-pkg-packet-bgp-fix-flowspec-parser-to-check-the-inpu.patch
+# CVE-2025-43973
+Patch2:        0001-pkg-packet-rtr-fix-parser-to-check-the-input-length.patch
+
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: go
@@ -48,6 +55,8 @@ install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 %doc LICENSE README.md
 
 %changelog
+* Fri Jun 06 2025 Bo Gan <bo.gan@broadcom.com> 2.20.0-28
+- Fix CVE-2025-43970 CVE-2025-43972
 * Fri May 23 2025 Bo Gan <bo.gan@broadcom.com> 2.20.0-27
 - Fix CVE-2025-43973
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.20.0-26
