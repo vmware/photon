@@ -4,11 +4,13 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.4.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
 Group:          shells
+
+BuildArch:      x86_64
 
 # Clone PowerShell source repo from https://github.com/PowerShell/PowerShell.git
 # Checkout to desired tag & create tarball from that branch
@@ -31,7 +33,6 @@ Source1: %{name}-native-%{ps_native_ver}.tar.gz
 Source2: %{name}-%{version}-linux-x64.tar.gz
 
 Source3: build.sh
-
 Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
 # The default libmi.so file that comes with powershell (for example powershell-7.1.5-linux-x64.tar.gz)
@@ -52,8 +53,6 @@ Source7: license.txt
 
 Patch0: fix-nuget-url.patch
 
-BuildArch:      x86_64
-
 BuildRequires:  dotnet-sdk
 BuildRequires:  dotnet-runtime
 BuildRequires:  psmisc
@@ -61,8 +60,6 @@ BuildRequires:  cmake
 BuildRequires:  clang
 BuildRequires:  git
 BuildRequires:  photon-release
-
-# Needed for libmi
 BuildRequires:  build-essential
 BuildRequires:  openssl-devel
 BuildRequires:  wget
@@ -71,7 +68,6 @@ BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  which
 BuildRequires:  icu-devel
-# Gallery download scripts will fail without this
 BuildRequires:  zlib-devel
 
 Requires:       icu >= 70.1
@@ -176,6 +172,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Jun 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.7-2
+- Bump version as a part of dotnet-runtime upgrade
 * Thu Apr 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.7-1
 - Upgrade to v7.4.7
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.3-3

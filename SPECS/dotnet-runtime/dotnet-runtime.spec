@@ -2,12 +2,14 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        8.0.14
+Version:        8.0.17
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
+
+BuildArch: x86_64
 
 # Download source tarball from the links provided in:
 # https://github.com/dotnet/core/tree/main/release-notes
@@ -19,8 +21,6 @@ Source0: %{name}-%{version}-linux-x64.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-BuildArch: x86_64
 
 BuildRequires: lttng-ust-devel
 
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*
 
 %changelog
+* Thu Jun 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.17-1
+- Upgrade to 8.0.17, fixes CVE-2025-26646
 * Thu Apr 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.14-1
 - Upgrade to v8.0.14
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.0.7-2
