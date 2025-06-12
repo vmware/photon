@@ -1,0 +1,42 @@
+From 38ff242115c4df3575a145f663ca127a7dffbc38 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 16 May 2025 17:51:33 +0530
+Subject: [PATCH] The URL shipped by upstream needs password authentication.
+
+Use a nuget alternate URL
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ nuget.config             | 2 +-
+ src/Modules/nuget.config | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/nuget.config b/nuget.config
+index fc6b5ff4e..424e695c9 100644
+--- a/nuget.config
++++ b/nuget.config
+@@ -2,7 +2,7 @@
+ <configuration>
+   <packageSources>
+     <clear />
+-    <add key="powershell" value="https://pkgs.dev.azure.com/powershell/PowerShell/_packaging/powershell/nuget/v3/index.json" />
++    <add key="powershell" value="https://api.nuget.org/v3/index.json" />
+   </packageSources>
+   <disabledPackageSources>
+     <clear />
+diff --git a/src/Modules/nuget.config b/src/Modules/nuget.config
+index fc6b5ff4e..424e695c9 100644
+--- a/src/Modules/nuget.config
++++ b/src/Modules/nuget.config
+@@ -2,7 +2,7 @@
+ <configuration>
+   <packageSources>
+     <clear />
+-    <add key="powershell" value="https://pkgs.dev.azure.com/powershell/PowerShell/_packaging/powershell/nuget/v3/index.json" />
++    <add key="powershell" value="https://api.nuget.org/v3/index.json" />
+   </packageSources>
+   <disabledPackageSources>
+     <clear />
+-- 
+2.43.0
+
