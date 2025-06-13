@@ -1,0 +1,73 @@
+From 490bcb1abaab0ef3b989f1f6943e26baa5dbedba Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Mon, 30 Jun 2025 18:01:30 +0000
+Subject: [PATCH] FIPS: Mark structure field differences between kernel and
+ canister
+
+Use the newly added plugin attribute to mark the intentional type differences
+between structure fields. These will be allowed to pass the matching
+type check in the matching GCC plugin.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ include/crypto/internal/geniv.h | 3 ++-
+ include/linux/plugin-attr.h     | 9 +++++++++
+ include/linux/swait.h           | 3 ++-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+ create mode 100644 include/linux/plugin-attr.h
+
+diff --git a/include/crypto/internal/geniv.h b/include/crypto/internal/geniv.h
+index 7fd7126f5..336296062 100644
+--- a/include/crypto/internal/geniv.h
++++ b/include/crypto/internal/geniv.h
+@@ -11,9 +11,10 @@
+ #include <crypto/internal/aead.h>
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
++#include <linux/plugin-attr.h>
+
+ struct aead_geniv_ctx {
+-	spinlock_t lock;
++	spinlock_t lock CANISTER_MISMATCH("spinlock_t", "void *");
+ 	struct crypto_aead *child;
+ 	struct crypto_sync_skcipher *sknull;
+ 	u8 salt[] __attribute__ ((aligned(__alignof__(u32))));
+diff --git a/include/linux/plugin-attr.h b/include/linux/plugin-attr.h
+new file mode 100644
+index 000000000..386a90eac
+--- /dev/null
++++ b/include/linux/plugin-attr.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* This attribute is only registered by the match_canister_structs plugin */
++#ifdef MATCH_CANISTER_STRUCTS
++#define CANISTER_MISMATCH(KERN_TYPE, CANISTER_TYPE) \
++	__attribute__((canister_mismatch(KERN_TYPE, CANISTER_TYPE)))
++#else
++#define CANISTER_MISMATCH(KERN_TYPE, CANISTER_TYPE)
++#endif
+diff --git a/include/linux/swait.h b/include/linux/swait.h
+index d32441948..53a69c157 100644
+--- a/include/linux/swait.h
++++ b/include/linux/swait.h
+@@ -7,6 +7,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/wait.h>
+ #include <asm/current.h>
++#include <linux/plugin-attr.h>
+
+ /*
+  * Simple waitqueues are semantically very different to regular wait queues
+@@ -41,7 +42,7 @@
+ struct task_struct;
+
+ struct swait_queue_head {
+-	raw_spinlock_t		lock;
++	raw_spinlock_t		lock CANISTER_MISMATCH("raw_spinlock_t", "void *");
+ 	struct list_head	task_list;
+ };
+
+--
+2.40.4
+
