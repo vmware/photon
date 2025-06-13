@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.34
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -65,13 +65,8 @@ Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
 %if 0%{?fips}
-%define struct_comparator struct-comparator
-%define struct_comp_dir struct-comp-dir
-Source9:        struct-comparator.c
-
 %define fips_canister_version 6.12.34-3%{?dist}
 Source16:       fips-canister-6.12.34-3%{?dist}.tar.bz2
-
 %endif
 
 %ifarch x86_64
@@ -131,16 +126,6 @@ Source54: check_for_acvp_config_applicability.inc
 
 Source55: license.txt
 %include %{SOURCE55}
-
-%if 0%{?fips}
-# known vmlinux struct definitions
-%define vmlinux_definition_loc canister_known_struct_def_vmlinux
-Source75: crypto_alg.txt
-Source76: crypto_template.txt
-Source77: skcipher_walk.txt
-Source78: swait_queue_head.txt
-Source79: aead_geniv_ctx.txt
-%endif
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -285,6 +270,7 @@ Patch507: 0001-linux-canister-Eliminate-codetag-and-other-taggings-.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 #Patch510: FIPS-do-not-allow-not-certified-algos-in-fips-2.patch
+Patch511: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 %endif
 
 %if 0%{?acvp_build:1}
@@ -353,6 +339,7 @@ Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
 Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
 Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
 Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+Patch10504: 0001-Canister-GCC-Plugins-Implement-type-check.patch
 %endif
 
 BuildRequires:  bc
@@ -374,6 +361,9 @@ BuildRequires:  dwarves-devel
 BuildRequires:  libtraceevent-devel
 BuildRequires:  clang-devel
 BuildRequires:  readline-devel
+%if 0%{?fips_plugins}
+BuildRequires:  gcc >= 12.2.0-6
+%endif
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -526,11 +516,7 @@ The kernel fips-canister
 %autopatch -p1 -m500 -M507
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M509
-%endif
-
-%ifarch x86_64
-%autopatch -p1 -m510 -M510
+%autopatch -p1 -m508 -M511
 %endif
 
 %if 0%{?acvp_build:1}
@@ -566,7 +552,7 @@ popd
 %endif
 
 %if 0%{?fips_plugins}
-%autopatch -p1 -m10500 -M10503
+%autopatch -p1 -m10500 -M10504
 %endif
 
 %ifarch x86_64
@@ -594,13 +580,6 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-mkdir -p %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE9}  %{struct_comp_dir}
-cp %{SOURCE75} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE76} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE77} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE78} %{struct_comp_dir}/%{vmlinux_definition_loc}
-cp %{SOURCE79} %{struct_comp_dir}/%{vmlinux_definition_loc}
 %endif
 
 %if 0%{?canister_build}
@@ -623,9 +602,8 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 %if 0%{?canister_build}
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
 sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
-# Disable until stable
-# sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
-# sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
+sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
+sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
@@ -633,8 +611,7 @@ sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
 %endif
 
 %if 0%{?fips}
-# Disable until stable
-# sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
+sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
 %endif
 
 %ifarch x86_64
@@ -663,17 +640,6 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 bldroot="${PWD}"
-%if 0%{?fips}
-# compare struct definitions between fips canister and vmlinux
-# fails out if there is a mismatch, and the offending definition
-# has not been documented in %{vmlinux_definition_loc}
-pushd %{struct_comp_dir}
-gcc -o %{struct_comparator} %{SOURCE9} -ldwarves
-./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
-popd
-
-rm -rf %{struct_comp_dir}
-%endif
 
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
@@ -920,6 +886,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jul 16 2025 Brennan Lamoreaux <brenna.lamoreaux@broadcom.com> 6.12.34-5
+- Implement structure member type check within GCC plugins. Obsoletes
+- old structure comparator test.
 * Tue Jul 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.34-4
 - linux: Use canister 6.12.34-3
 * Fri Jul 11 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.34-3

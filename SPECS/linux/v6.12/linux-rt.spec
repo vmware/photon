@@ -19,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.12.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -48,13 +48,8 @@ Source6: preempt_rt.patches
 Source7: https://gitlab.com/rt-linux-tools/stalld/-/archive/v%{stalld_version}/stalld-v%{stalld_version}.tar.gz
 
 %if 0%{?fips}
-%define struct_comparator struct-comparator
-%define struct_comp_dir struct-comp-dir
-Source9: struct-comparator.c
-
 %define fips_canister_version 6.0.0-6.12.1-4%{?dist}
 Source16: fips-canister-%{fips_canister_version}.tar.bz2
-
 %endif
 
 Source19: spec_install_post.inc
@@ -94,16 +89,6 @@ Source41: fips_canister_wrapper_internal.c
 
 Source42: license-rt.txt
 %include %{SOURCE42}
-
-%if 0%{?fips}
- # known vmlinux struct definitions
-%define vmlinux_definition_loc canister_known_struct_def_vmlinux
-Source75: crypto_alg.txt
-Source76: crypto_template.txt
-Source77: skcipher_walk.txt
-Source78: swait_queue_head.txt
-Source79: aead_geniv_ctx.txt
-%endif
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -204,6 +189,7 @@ Patch1004: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 # FIPS canister usage patch
 Patch1008: 0001-FIPS-canister-binary-usage.patch
 Patch1009: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch1010: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 %endif
 
 # stalld eBPF plugin patches
@@ -215,6 +201,7 @@ Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
 Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
 Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
 Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+Patch10504: 0001-Canister-GCC-Plugins-Implement-type-check.patch
 %endif
 
 BuildArch:      x86_64
@@ -237,6 +224,7 @@ BuildRequires:  dwarves-devel
 BuildRequires:  libbpf-devel
 BuildRequires:  libtraceevent-devel
 BuildRequires:  clang-devel
+BuildRequires:  readline-devel
 
 %if 0%{?fips}
 BuildRequires: gdb
@@ -337,7 +325,7 @@ stalld to use eBPF based backend.
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m1008 -M1009
+%autopatch -p1 -m1008 -M1010
 %endif
 
 pushd ../stalld-v%{stalld_version}/
@@ -345,7 +333,7 @@ pushd ../stalld-v%{stalld_version}/
 popd
 
 %if 0%{?fips}
-%autopatch -p1 -m10500 -M10503
+%autopatch -p1 -m10500 -M10504
 %endif
 
 %ifarch x86_64
@@ -401,17 +389,6 @@ sed -e "s,@@NAME@@,%{name},g" \
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch} %{?_smp_mflags}
 
 bldroot="${PWD}"
-%if 0%{?fips}
-# compare struct definitions between fips canister and vmlinux
-# fails out if there is a mismatch, and the offending definition
-# has not been documented in %{vmlinux_definition_loc}
-pushd %{struct_comp_dir}
-gcc -o %{struct_comparator} %{SOURCE9} -ldwarves
-./%{struct_comparator} ${bldroot}/crypto/fips_canister.o ${bldroot}/vmlinux %{vmlinux_definition_loc}
-popd
-
-rm -rf %{struct_comp_dir}
-%endif
 
 # build bpftool
 make %{?_smp_mflags} -C tools/bpf/bpftool
@@ -529,6 +506,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jun 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-4
+- Implement type check within canister GCC plugins
 * Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-3
 - Introduce FIPS canister plugins
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.1-2

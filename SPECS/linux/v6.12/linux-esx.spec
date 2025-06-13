@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.34
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -204,10 +204,11 @@ Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: 0001-crypto-Export-symbol-crypto_shash_alg_has_setkey.patch
+Patch511: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 %endif
 
 %ifarch x86_64
-Patch511: 0001-jent-makefile-changes-esx.patch
+Patch512: 0001-jent-makefile-changes-esx.patch
 %endif
 
 %ifarch x86_64
@@ -225,6 +226,7 @@ Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
 Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
 Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
 Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+Patch10504: 0001-Canister-GCC-Plugins-Implement-type-check.patch
 %endif
 
 BuildRequires: bc
@@ -240,11 +242,11 @@ BuildRequires: procps-ng-devel
 BuildRequires: lz4
 BuildRequires: elfutils-libelf-devel
 BuildRequires: bison
-BuildRequires:  libtraceevent-devel
-BuildRequires:  clang-devel
-
+BuildRequires: libtraceevent-devel
+BuildRequires: clang-devel
+BuildRequires: readline-devel
 %if 0%{?fips}
-BuildRequires: gdb
+BuildRequires: gcc >= 12.2.0-6
 %endif
 
 Requires: kmod
@@ -324,11 +326,11 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m500 -M504
 
 %if 0%{?fips}
-%autopatch -p1 -m508 -M510
+%autopatch -p1 -m508 -M511
 %endif
 
 %ifarch x86_64
-%autopatch -p1 -m511 -M511
+%autopatch -p1 -m511 -M512
 %endif
 
 %ifarch x86_64
@@ -337,7 +339,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %if 0%{?fips}
-%autopatch -p1 -m10500 -M10503
+%autopatch -p1 -m10500 -M10504
 %endif
 
 %ifarch x86_64
@@ -475,6 +477,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jun 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-2
+- Mark certain structure fields as known differences between kernel and
+- canister.
 * Fri Jun 27 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-1
 - Upgrade linux to version 6.12.34
 * Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-5
