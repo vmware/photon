@@ -1,7 +1,7 @@
 Summary:        cpio archive utility
 Name:           cpio
 Version:        2.13
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.gnu.org/software/cpio
 Group:          System Environment/System utilities
 Vendor:         VMware, Inc.
@@ -18,8 +18,10 @@ Patch2:         cpio-2.12-gcc-10.patch
 Patch3:         cpio-CVE-2021-38185.patch
 Patch4:         cpio-CVE-2021-38185_2.patch
 Patch5:         cpio-CVE-2021-38185_3.patch
+Patch6:         CVE-2023-7207.patch
 
 BuildRequires:  lua
+BuildRequires:  texinfo
 
 Requires:       lua
 
@@ -73,6 +75,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Jun 16 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.13-11
+- Fix CVE-2023-7207
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.13-10
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13-9
