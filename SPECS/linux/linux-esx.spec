@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.143
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -187,6 +187,9 @@ Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 
 # SBX driver
 Patch85: 0001-Adding-SBX-kernel-driver.patch
+
+# vmxnet
+Patch86: 0001-vmxnet3-update-MTU-after-device-quiesce.patch
 
 # CVE: [100..199]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -425,7 +428,10 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 # linux-esx
-%autopatch -p1 -m60 -M89
+%autopatch -p1 -m60 -M85
+
+# vmxnet
+%autopatch -p1 -m86 -M86
 
 # CVE
 %autopatch -p1 -m100 -M159
@@ -618,6 +624,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 14 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-2
+- fix for vmxnet3
 * Mon Jul 07 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.143-1
 - Update to version 6.1.143
 * Mon Jun 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.141-6

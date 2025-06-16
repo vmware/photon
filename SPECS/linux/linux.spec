@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.143
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -209,6 +209,9 @@ Patch60: 0003-Verify-SBAT-on-kexec.patch
 Patch61: gcc-rap-plugin-with-kcfi.patch
 Patch62: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 Patch63: fix-warn-definition.patch
+
+# vmxnet
+Patch64: 0001-vmxnet3-update-MTU-after-device-quiesce.patch
 
 # CVE: [100..199]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -609,6 +612,9 @@ The kernel fips-canister
 
 #Secure
 %autopatch -p1 -m61 -M63
+
+#Secure
+%autopatch -p1 -m64 -M64
 
 # CVE
 %autopatch -p1 -m100 -M159
@@ -1017,6 +1023,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 14 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-2
+- fix for vmxnet3
 * Mon Jul 07 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.143-1
 - Update to version 6.1.143
 * Mon Jun 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.141-7

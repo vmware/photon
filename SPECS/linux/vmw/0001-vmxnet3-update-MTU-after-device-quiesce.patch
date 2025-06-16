@@ -1,0 +1,63 @@
+From e6049358497a2db2855a6438fe1ff51a4ac3a7e1 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <ronak.doshi@broadcom.com>
+Date: Mon, 16 Jun 2025 10:53:52 +0000
+Subject: [PATCH v6.1.y] vmxnet3: update MTU after device quiesce
+
+commit 43f0999af011fba646e015f0bb08b6c3002a0170 upstream.
+
+Currently, when device mtu is updated, vmxnet3 updates netdev mtu, quiesces
+the device and then reactivates it for the ESXi to know about the new mtu.
+So, technically the OS stack can start using the new mtu before ESXi knows
+about the new mtu.
+
+This can lead to issues for TSO packets which use mss as per the new mtu
+configured. This patch fixes this issue by moving the mtu write after
+device quiesce.
+
+Cc: stable@vger.kernel.org
+Fixes: d1a890fa37f2 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
+Signed-off-by: Ronak Doshi <ronak.doshi@broadcom.com>
+Acked-by: Guolin Yang <guolin.yang@broadcom.com>
+Changes v1-> v2:
+  Moved MTU write after destroy of rx rings
+Link: https://patch.msgid.link/20250515190457.8597-1-ronak.doshi@broadcom.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Ajay: - Modified to apply on v6.1.y]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 6c629a8..9c11c8f 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3336,8 +3336,6 @@ vmxnet3_change_mtu(struct net_device *netdev, int new_mtu)
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+ 	int err = 0;
+ 
+-	netdev->mtu = new_mtu;
+-
+ 	/*
+ 	 * Reset_work may be in the middle of resetting the device, wait for its
+ 	 * completion.
+@@ -3351,6 +3349,7 @@ vmxnet3_change_mtu(struct net_device *netdev, int new_mtu)
+ 
+ 		/* we need to re-create the rx queue based on the new mtu */
+ 		vmxnet3_rq_destroy_all(adapter);
++		WRITE_ONCE(netdev->mtu, new_mtu);
+ 		vmxnet3_adjust_rx_ring_size(adapter);
+ 		err = vmxnet3_rq_create_all(adapter);
+ 		if (err) {
+@@ -3367,6 +3366,8 @@ vmxnet3_change_mtu(struct net_device *netdev, int new_mtu)
+ 				   "Closing it\n", err);
+ 			goto out;
+ 		}
++	} else {
++		WRITE_ONCE(netdev->mtu, new_mtu);
+ 	}
+ 
+ out:
+-- 
+2.39.4
+

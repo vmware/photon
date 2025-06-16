@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.143
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -156,6 +156,9 @@ Patch60: 0003-Verify-SBAT-on-kexec.patch
 %ifarch x86_64
 Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 %endif
+
+# vmxnet
+Patch62: 0001-vmxnet3-update-MTU-after-device-quiesce.patch
 
 # CVE:
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -381,6 +384,9 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m61 -M61
 %endif
 
+# vmxnet
+%autopatch -p1 -m62 -M62
+
 # CVE
 %autopatch -p1 -m100 -M159
 
@@ -596,6 +602,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jul 14 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-2
+- fix for vmxnet3
 * Mon Jul 07 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.143-1
 - Update to version 6.1.143
 * Mon Jun 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.141-6
