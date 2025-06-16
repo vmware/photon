@@ -1,6 +1,6 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.2.11
+Version:        4.2.12
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512  %{name}=de4a067402f8f2e72024f32e5ee1549e3691bf80f092d1b3eb55cdbdc6aace2253cae1938ce52bc4c9eeb2cd9208bc16b4b0cf73edfc87e7cd70c620a74a9ff1
+%define sha512  %{name}=b479864c30d85c6ccdbe4b56fbefee02bc4b3e60ea2f723ee46723ab0c710e63fb25c7ff31b142f0d8b3fafcb6d6fac71fc44809d5b049921b6f27e56fac1cef
 
 Patch0: 0001-Remove-SpeexDSP-library-dependencies-from-photon-wir.patch
 
@@ -98,6 +98,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Mon Jun 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.12-1
+- Fix CVE-2025-5601
 * Wed Feb 26 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.11-1
 - Fix CVE-2025-1492
 * Tue Dec 10 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.9-1
