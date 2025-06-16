@@ -1,11 +1,11 @@
 sources:
-- archive: wireshark-4.2.11.tar.xz
+- archive: wireshark-4.2.12.tar.xz
   archive_type: upstream
-  archive_sha512sum: de4a067402f8f2e72024f32e5ee1549e3691bf80f092d1b3eb55cdbdc6aace2253cae1938ce52bc4c9eeb2cd9208bc16b4b0cf73edfc87e7cd70c620a74a9ff1
-  name: wireshark-4.2.11
+  archive_sha512sum: b479864c30d85c6ccdbe4b56fbefee02bc4b3e60ea2f723ee46723ab0c710e63fb25c7ff31b142f0d8b3fafcb6d6fac71fc44809d5b049921b6f27e56fac1cef
+  name: wireshark-4.2.12
   repo_url: https://github.com/wireshark/wireshark
-  url: https://www.wireshark.org/download/src/wireshark-4.2.11.tar.xz
-  commit_id: 53ee01efc5211493027894ac18e8749e4f91da64
+  url: https://www.wireshark.org/download/src/wireshark-4.2.12.tar.xz
+  commit_id: 07769b946e98cf8f6e76a2da06363f5323dbd0ee
   missing: [ '.gitattributes', '.gitignore' ]
   skip_list: [ 'make-version.py', 'org.wireshark.Wireshark.metainfo.xml', 'git-export-release.sh.in' ]
   spdx:

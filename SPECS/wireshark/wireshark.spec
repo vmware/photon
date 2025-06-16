@@ -1,6 +1,6 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.2.11
+Version:        4.2.12
 Release:        1%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -100,6 +100,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Mon Jun 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.12-1
+- Fix CVE-2025-5601
 * Wed Feb 26 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.11-1
 - Fix CVE-2025-1492
 * Thu Jan 09 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.9-3
