@@ -1,12 +1,12 @@
 sources:
-- archive: apache-tomcat-10.1.40-src.tar.gz
+- archive: apache-tomcat-10.1.42-src.tar.gz
   archive_type: upstream
-  name: apache-tomcat-10.1.40-src
-  version: 10.1.40
-  url: https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.40/src/apache-tomcat-10.1.40-src.tar.gz
+  archive_sha512sum: bed9b8120728addeda86fd87c72af9659f4195ff11701f2b3d92f0a059adfc1f33e0deacef1cba2586af26e70dfaa4b0440aadb60f9e677b195d559c25a479c3
+  name: apache-tomcat-10.1.42-src
+  version: 10.1.42
+  url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.42/src/apache-tomcat-10.1.42-src.tar.gz
   repo_url: https://github.com/apache/tomcat.git
-  commit_id: 1ee4bc9109d48cd062d1bc1a4c002358e03455e9
-  archive_sha512sum: 8174f0c6a4deb505bf8edc29917a237a52ea20166d582849ca7d5623f318c34f8adfd0576e2b4434292507d0237a1dfb54b9d496a379b1db51d46225ab6f5d87
+  commit_id: 0289da4f342744334e0fc5a53ee958e68024fead
   skip_list:
   - RCS
   - CVS
@@ -35,14 +35,14 @@ sources:
         AND EPL-1.0 AND CC0-1.0 AND Apache-2.0
       short_summary: Apache Tomcat 10.1
       supplier: 'Organization: Broadcom, Inc.'
-- archive: apache-tomcat-9.0.104-src.tar.gz
+- archive: apache-tomcat-9.0.106-src.tar.gz
   archive_type: upstream
-  archive_sha512sum: d2d66a1e0bf55cd6379154a023aaccec5e4007a95412e7207ecf729d315c6afdc3125a985cdf1289ad66162a180f24798161436e99d792e24deee71aaf521a4c
-  name: apache-tomcat-9.0.104-src
-  version: 9.0.104
-  url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.104/src/apache-tomcat-9.0.104-src.tar.gz
+  archive_sha512sum: 1b95f7899a488bd3435ab45999e371a9d8cdd42e4e575ae14b4fcb0387034d150d96c8d62d036b95fad187c810015eda43db50a46919296812653c0a153e8cee
+  name: apache-tomcat-9.0.106-src
+  version: 9.0.106
+  url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.106/src/apache-tomcat-9.0.106-src.tar.gz
   repo_url: https://github.com/apache/tomcat.git
-  commit_id: f8cfae0a0d1c8dc592099a1430cd08e352430823
+  commit_id: 05ccf0c3e22d388f0cf853e32485d8249d051f2f
   skip_list:
   - RCS
   - CVS
@@ -68,36 +68,36 @@ sources:
         AND EPL-1.0 AND CC0-1.0 AND CDDL-1.0 AND Zlib
       short_summary: Apache Tomcat 9
       supplier: 'Organization: Broadcom, Inc.'
-- archive: base-for-apache-tomcat-10.1.40.tar.gz
-  archive_sha512sum: d601a9c0f97746eea679d2e7ea88caeea82bb281df93e35d45554ede4943cb298ef62fc635ca723d94e1ff3cc468286907f3bbf2a93d4e7843830ca363d30e18
+- archive: base-for-apache-tomcat-10.1.42.tar.gz
+  archive_sha512sum: 206b0151098fa6568949f370d9f6f06058622026e63adfd9d6872d765d33c440a558749ce30d39b0bee673e0001127dd7f8b863dec71beccea464f8fd90ca8bd
   skip_validation: true
   spdx:
     package:
       detailed_description: base-for-apache-tomcat is a cached -Dbase.path folder
         after apache-tomcat build
       home_page: https://github.com/vmware/photon
-      license_concluded: (Apache-2.0 OR EPL-2.0) AND bzip2-1.0.6 AND GPL-3.0-only
-        AND UPL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Bitstream-Vera
-        AND CDDL-1.0 AND EPL-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0 AND
-        FSFULLRWD AND MPL-2.0 AND FSFULLR AND LGPL-2.1-or-later AND EPL-1.0 AND GPL-3.0-or-later
-        AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND CC-BY-SA-4.0 AND X11
-        AND GPL-3.0-or-later WITH Libtool-exception AND FSFUL AND LGPL-2.0-or-later
-        WITH WxWindows-exception-3.1 AND MIT AND LGPL-2.1-only AND BSD-2-Clause AND
-        OpenSSL AND BSD-3-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception
-        AND BSD-2-Clause-Views AND CPL-1.0 AND Zlib
-      license_declared: (Apache-2.0 OR EPL-2.0) AND bzip2-1.0.6 AND GPL-3.0-only AND
-        UPL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Bitstream-Vera
-        AND CDDL-1.0 AND EPL-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0 AND
-        FSFULLRWD AND MPL-2.0 AND FSFULLR AND LGPL-2.1-or-later AND EPL-1.0 AND GPL-3.0-or-later
-        AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND CC-BY-SA-4.0 AND X11
-        AND GPL-3.0-or-later WITH Libtool-exception AND FSFUL AND LGPL-2.0-or-later
-        WITH WxWindows-exception-3.1 AND MIT AND LGPL-2.1-only AND BSD-2-Clause AND
-        OpenSSL AND BSD-3-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception
-        AND BSD-2-Clause-Views AND CPL-1.0 AND Zlib
+      license_concluded: (Apache-2.0 OR EPL-2.0) AND Zlib AND FSFULLR AND OpenSSL
+        AND Bitstream-Vera AND GPL-3.0-or-later AND GPL-2.0-or-later AND CC-BY-SA-4.0
+        AND BSD-2-Clause-Views AND bzip2-1.0.6 AND FSFULLRWD AND EPL-2.0 AND CC0-1.0
+        AND MPL-2.0 AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT AND EPL-1.0 AND
+        BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        X11 AND CPL-1.0 AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND CDDL-1.0 AND LGPL-2.1-only AND FSFUL AND UPL-1.0 AND
+        GPL-2.0-only WITH Classpath-exception-2.0 AND LGPL-2.0-or-later WITH WxWindows-exception-3.1
+        AND Apache-2.0
+      license_declared: (Apache-2.0 OR EPL-2.0) AND Zlib AND FSFULLR AND OpenSSL AND
+        Bitstream-Vera AND GPL-3.0-or-later AND GPL-2.0-or-later AND CC-BY-SA-4.0
+        AND BSD-2-Clause-Views AND bzip2-1.0.6 AND FSFULLRWD AND EPL-2.0 AND CC0-1.0
+        AND MPL-2.0 AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT AND EPL-1.0 AND
+        BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        X11 AND CPL-1.0 AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND CDDL-1.0 AND LGPL-2.1-only AND FSFUL AND UPL-1.0 AND
+        GPL-2.0-only WITH Classpath-exception-2.0 AND LGPL-2.0-or-later WITH WxWindows-exception-3.1
+        AND Apache-2.0
       short_summary: Cached -Dbase.path folder of apache-tomcat build
       supplier: 'Organization: Broadcom, Inc.'
-- archive: base-for-apache-tomcat-9.0.104.tar.gz
-  archive_sha512sum: 32d62088169847ecc7f9bf0da3041c42636171d156e6ef1518045b8146433d066b0c56c1da7ca451545e6bd8e9e15a87de4a029915d3691c09cf8ba9c3d1a0f0
+- archive: base-for-apache-tomcat-9.0.106.tar.gz
+  archive_sha512sum: 104895bcea43deb066a97dc659ed488f23b29216a8929bac08ec478f173d8ce85b0ab5e3486bfc548b09480a219d788429fee36344dfc447b8f02d1b9784dba5
   skip_validation: true
   spdx:
     package:

@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
-Version:        10.1.40
+Version:        10.1.42
 Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -36,8 +36,6 @@ Source1: base-for-%{_origname}-%{version}.tar.gz
 
 Source2: license-apache-tomcat10.txt
 %include %{SOURCE2}
-
-Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
 BuildArch: noarch
 
@@ -154,6 +152,9 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Jun 17 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.42-1
+- Version upgrade
+- Fixes CVE-2025-46701
 * Wed May 07 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.40-1
 - Version upgrade
 - Fixes CVE-2025-31651,CVE-2025-31650
