@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -30,6 +30,7 @@ Patch4:         systemd-ignore-DEVICE_FOUND_UDEV-bit-on-switching-root.patch
 Patch5:         network-attempt-to-trigger-kernel-IPv6LL-address-gen.patch
 Patch6:         sd-netlink-make-default-timeout-configurable.patch
 Patch7:         CVE-2023-7008.patch
+Patch8:         CVE-2025-4598.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -669,6 +670,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Wed Jun 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-16
+- Fix CVE-2025-4598
 * Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-15
 - Fix CVE-2023-7008
 * Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-14
