@@ -9,7 +9,6 @@ source ./livepatch.sh 2>/dev/null || source /usr/lib/livepatch.sh 2>/dev/null ||
     echo "Error: livepatch.sh not found in current directory or /usr/lib"
     exit 1
 }
-
 GCC=/usr/bin/gcc
 BUILD_DIR="$(pwd)/gen_livepatch_workspace"
 DEFAULT_OUTPUT_FOLDER="$(pwd)/output"
@@ -26,12 +25,11 @@ PH_TAG=""
 KERNEL_RELEASE=""
 KERNEL_FLAVOR=""
 KERNEL_VERSION=""
-KERNEL_RELEASE_TAG=""
 IS_RT=0
 NON_REPLACE_FLAG=""
 EXPORT_DEBUGINFO=0
 DEBUGINFO_DIR="$BUILD_DIR/debuginfo"
-GENLOGS_DIR="$BUILD_DIR/logs"
+GENLOGS_DIR=""
 DESC_FILE=""
 RPM_DESCFILE=""
 PACKAGE_AS_RPM=0
@@ -40,6 +38,7 @@ RPM_RELEASE=0
 RPM_NAME=""
 BUILD_RPM_SPECFILE="/usr/share/livepatch/livepatch_spec.template"
 patches=()
+DEBUG_LOGS=0
 
 # parse the command line arguments and fill in variables
 module_name_string() {
@@ -49,15 +48,15 @@ module_name_string() {
 parse_args() {
     # just print help message if no arguments
     if [ $# -eq 0 ]; then
-        print_help 0
+        print_help 1
     elif [[ $1 != -* ]]; then
         echo "A flag must be set before any other parameters"
         print_help 1
     fi
 
     local opt=""
-    local options=( "-s" "-p" "-v" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" )
-    local no_arg_options=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" )
+    local options=( "-s" "-p" "-v" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" "--verbose" )
+    local no_arg_options=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" "--verbose" )
     while (( "$#" )); do
         if [[ $1 = -* ]]; then
             opt=$1
@@ -73,6 +72,8 @@ parse_args() {
                 EXPORT_DEBUGINFO=1
             elif [[ $1 == --rpm ]]; then
                 PACKAGE_AS_RPM=1
+            elif [[ $1 == --verbose ]]; then
+                DEBUG_LOGS=1
             elif ! is_in_array "$opt" ${no_arg_options[*]} && [[ $2 == -* || -z $2 ]]; then
                 error "$1 needs at least one argument"
             elif  [[ $3 != -* && $opt != -p && -n $3 ]] && ! is_in_array "$opt" ${no_arg_options[*]} ; then
@@ -95,14 +96,17 @@ parse_args() {
                 -d)
                     DESC_FILE=$1
                     [[ -f "$DESC_FILE" ]] || error "Module description file does not exist"
+                    DESC_FILE=$(readlink -f "$DESC_FILE")
                     ;;
                 -s)
                     SRC_RPM_LOCAL_PATH=$1
                     [[ -f "$SRC_RPM_LOCAL_PATH" ]] || error "Unable to locate local src rpm at $SRC_RPM_LOCAL_PATH"
+                    SRC_RPM_LOCAL_PATH=$(readlink -f "$SRC_RPM_LOCAL_PATH")
                     ;;
                 -v)
                     DEBUGINFO_LOCAL_PATH=$1
                     [[ -f "$DEBUGINFO_LOCAL_PATH" ]] || error "Unable to locate local debuginfo rpm at $DEBUGINFO_LOCAL_PATH"
+                    DEBUGINFO_LOCAL_PATH=$(readlink -f "$DEBUGINFO_LOCAL_PATH")
                     ;;
                 --rpm-version)
                     RPM_VERSION=$1
@@ -113,6 +117,7 @@ parse_args() {
                 --rpm-desc)
                     RPM_DESCFILE=$1
                     [ -f "$RPM_DESCFILE" ] || error "RPM description file does not exist"
+                    RPM_DESCFILE=$(readlink -f "$RPM_DESCFILE")
                     ;;
                 esac
         fi
@@ -141,11 +146,13 @@ parse_args() {
         exit 1
     fi
 
-    KERNEL_RELEASE_TAG=${KERNEL_RELEASE}.${PH_TAG}
-
     if [[ -z "$LIVEPATCH_NAME" ]]; then
-        LIVEPATCH_NAME="linux-livepatch-"${VERSION_RELEASE_FLAVOR}-${RPM_RELEASE}.${RPM_RELEASE}
-        RPM_NAME="linux-livepatch-"${VERSION_RELEASE_FLAVOR}
+        if [[ $PACKAGE_AS_RPM -eq 1 ]]; then
+            LIVEPATCH_NAME="linux-livepatch-"${VERSION_RELEASE_FLAVOR}-${RPM_VERSION}.${RPM_RELEASE}
+            RPM_NAME="linux-livepatch-"${VERSION_RELEASE_FLAVOR}
+        else
+            LIVEPATCH_NAME="linux-livepatch-"${VERSION_RELEASE_FLAVOR}
+        fi
     elif [[ "${LIVEPATCH_NAME##*.}" == "ko" ]]; then
         LIVEPATCH_NAME="${LIVEPATCH_NAME%.*}"
         RPM_NAME=${LIVEPATCH_NAME}
@@ -158,12 +165,16 @@ parse_args() {
 
     if [ -z "$OUTPUT_FOLDER" ]; then
         echo "Output folder not specified, using default."
-        echo "Outputting livepatches to: $DEFAULT_OUTPUT_FOLDER"
         OUTPUT_FOLDER="$DEFAULT_OUTPUT_FOLDER"
     fi
+    echo "Outputting livepatches to: $OUTPUT_FOLDER"
+    GENLOGS_DIR="$OUTPUT_FOLDER/logs/"
+    mkdir -p $GENLOGS_DIR
+    GENLOGS_DIR=$(readlink -f "$GENLOGS_DIR")
+
 
     # if building an rpm, and rpm description is not specified, use the kernel module desc file if it is set
-    if [[ ! -z "$DESC_FILE" && "$PACKAGE_AS_RPM" == 1 && -z "$RPM_DESCFILE" ]]; then
+    if [[ -n "$DESC_FILE" && $PACKAGE_AS_RPM -eq 1 && -z "$RPM_DESCFILE" ]]; then
         echo "Separate RPM description not specified, using module description"
         RPM_DESCFILE=$DESC_FILE
     fi
@@ -176,7 +187,7 @@ parse_args() {
 # ex) 4.19.247-2.ph3-aws
 get_kernel_flavor() {
     # check for rt kernel extension
-    if [[ $IS_RT != 1 ]]; then
+    if [[ $IS_RT -ne 1 ]]; then
         KERNEL_FLAVOR=$(cut -d '-' -f 3 <<< "$1")
         if [ -z "$KERNEL_FLAVOR" ]; then
             KERNEL_FLAVOR="generic"
@@ -187,7 +198,8 @@ get_kernel_flavor() {
 }
 
 is_rt() {
-    local rt_ext="$(cut -d '-' -f 4 <<< "$1")"
+    local rt_ext
+    rt_ext="$(cut -d '-' -f 4 <<< "$1")"
     if [[ -n $rt_ext ]]; then
         IS_RT=1
     fi
@@ -197,13 +209,14 @@ is_rt() {
 # returns the release number
 get_kernel_release() {
     local field_num=2
-    if [[ $IS_RT == 1 ]]; then
+    if [[ $IS_RT -eq 1 ]]; then
         # rt kernel
         field_num=3
     fi
 
-    local release_tag=$(cut -d '-' -f $field_num <<< "$1")
-    local release=$(cut -d '.' -f 1 <<< "$release_tag")
+    local release_tag release
+    release_tag=$(cut -d '-' -f $field_num <<< "$1")
+    release=$(cut -d '.' -f 1 <<< "$release_tag")
     KERNEL_RELEASE=$release
 }
 
@@ -218,7 +231,7 @@ get_kernel_version() {
 # uname -r formatted string
 get_photon_tag() {
     local field_num=2
-    if [[ $IS_RT == 1 ]]; then
+    if [[ $IS_RT -eq 1 ]]; then
         # rt kernel
         field_num=3
     fi
@@ -283,7 +296,7 @@ install_kernel_dependencies() {
     mapfile -t to_be_installed_pkgs < <(rpm -qpR "$1" | grep -vw rpmlib)
     echo "The following packages will be installed if they are not already installed:"
     echo "${to_be_installed_pkgs[*]}"
-    tdnf install -qy "${to_be_installed_pkgs[@]}" 2>/dev/null || error "Error installing required packages"
+    tdnf install -qy "${to_be_installed_pkgs[@]}" || error "Error installing required packages"
 }
 
 extract_source_rpm() {
@@ -295,7 +308,9 @@ extract_source_rpm() {
     if [ -n "${SRC_RPM_LOCAL_PATH}" ]; then
         cp "$SRC_RPM_LOCAL_PATH" "$SRC_PKGNAME" || error "Couldn't find local src rpm"
     else
-        curl "$src_rpm_url" --output "$SRC_PKGNAME"  &> $GENLOGS_DIR/curl_source_rpm_download.log || error "Couldn't download photon kernel source rpm"
+        if ! wget --quiet --show-progress "$src_rpm_url" ; then
+            error "Couldn't download photon kernel source rpm"
+        fi
     fi
 
     # set up temporary rpm build environment
@@ -306,7 +321,11 @@ extract_source_rpm() {
 
     install_kernel_dependencies "$SRC_PKGNAME"
 
-    rpmbuild -bp "rpmbuild/SPECS/$SPEC_FILENAME" --define "$rpmdir" --define "%dist .$PH_TAG" &> $GENLOGS_DIR/rpmbuild-source-rpm-extract.log || error "Failed to extract kernel source and create linux source directory"
+    rpmbuild -bp "rpmbuild/SPECS/$SPEC_FILENAME" --define "$rpmdir" --define "%dist .$PH_TAG" &> $GENLOGS_DIR/rpmbuild-source-rpm-extract.log
+    status=$?
+    [[ $DEBUG_LOGS -eq 1 ]] && cat "$GENLOGS_DIR"/rpmbuild-source-rpm-extract.log
+    [[ $status -ne 0 ]] && error "Failed to extract kernel source and create linux source directory"
+
 }
 
 parse_debuginfo_rpm() {
@@ -315,7 +334,9 @@ parse_debuginfo_rpm() {
     if [[ -n "$DEBUGINFO_LOCAL_PATH" ]]; then
         cp "$DEBUGINFO_LOCAL_PATH" "$DEBUG_PKGNAME"
     else
-        curl "https://packages.vmware.com/photon/$PHOTON_VERSION/photon_debuginfo_${PHOTON_VERSION}_x86_64/x86_64/$DEBUG_PKGNAME" --output "$DEBUG_PKGNAME"  &> $GENLOGS_DIR/curl_debug_rpm_download.log || error
+        if ! wget --quiet --show-progress "https://packages.vmware.com/photon/$PHOTON_VERSION/photon_debuginfo_${PHOTON_VERSION}_x86_64/x86_64/$DEBUG_PKGNAME"; then
+            error "Couldn't download photon kernel debug rpm"
+        fi
     fi
     local absolute_path
     absolute_path=$(rpm -qlp "$DEBUG_PKGNAME" | grep "vmlinux-$KERNEL_VERSION")
@@ -353,7 +374,7 @@ kpatch_build() {
     fi
 
     local skip_cleanup=""
-    if [[ $EXPORT_DEBUGINFO == 1 ]]; then
+    if [[ $EXPORT_DEBUGINFO -eq 1 ]]; then
         skip_cleanup="--skip-cleanup"
     fi
 
@@ -373,7 +394,7 @@ kpatch_build() {
     echo "Livepatch module successfully built"
     # save all of the debug info like vmlinux, changed objects, etc if asked to
     # vmlinux is the patched vmlinux, not original
-    if [[ $EXPORT_DEBUGINFO == 1 ]]; then
+    if [[ $EXPORT_DEBUGINFO -eq 1 ]]; then
         echo "Saving kpatch-build debug files to $DEBUGINFO_DIR"
 
         [[ -n "$DEBUGINFO_DIR" ]] && rm -rf "${DEBUGINFO_DIR:?}"/*  > /dev/null
@@ -422,7 +443,10 @@ package_module_in_rpm() {
     echo "* $(date "+%a %b %d %Y") Auto Livepatch $RPM_VERSION-$RPM_RELEASE" >> "$spec_file"
     echo "- Auto Livepatch version $RPM_VERSION-$RPM_RELEASE built">> "$spec_file"
     echo "Building rpm"
-    rpmbuild -ba $spec_file --define "$rpmdir" --define "%dist .$PH_TAG" &> $GENLOGS_DIR/rpmbuild-livepatch-pkg.log|| error "Packaging kernel module as rpm failed"
+    rpmbuild -ba $spec_file --define "$rpmdir" --define "%dist .$PH_TAG" &> $GENLOGS_DIR/rpmbuild-livepatch-pkg.log
+    status=$?
+    [[ $DEBUG_LOGS -eq 1 ]] && cat "$GENLOGS_DIR"/rpmbuild-livepatch-pkg.log
+    [[ $status -ne 0 ]] && error "Packaging kernel module as rpm failed"
 
     # should only build for x86_64 arch but put a * there just in case
     cp "$TEMP_DIR"/rpmbuild/RPMS/*/"$RPM_NAME"*.rpm "$OUTPUT_FOLDER" || error "Current dir: $(pwd). Failed to save RPM to $OUTPUT_FOLDER"
@@ -431,8 +455,8 @@ package_module_in_rpm() {
 }
 
 cleanup() {
-    if [[ $GEN_LIVEPATCH_DEBUG != 1 ]]; then
-        rm -rf $TEMP_DIR || error "Failed to delete temp dir: $TEMP_DIR"
+    if [[ $GEN_LIVEPATCH_DEBUG -ne 1 ]]; then
+        rm -rf $BUILD_DIR || error "Failed to delete temp dir: $BUILD_DIR"
     fi
 }
 
@@ -440,22 +464,19 @@ cleanup() {
 trap cleanup EXIT SIGINT SIGTERM
 
 #make sure our working directory is clean before we start
-rm -rf $TEMP_DIR
-rm -rf $GENLOGS_DIR
+rm -rf "$TEMP_DIR"
+rm -rf "$GENLOGS_DIR"
 
 #parse command line arguments
 parse_args "$@"
 
-# make sure output folder exists
-mkdir -p "$OUTPUT_FOLDER"
+mkdir -p "$TEMP_DIR"
 
 #set variables for all filenames/paths
 set_kernel_package_paths
 
 print_config
 
-mkdir -p $TEMP_DIR
-mkdir -p $GENLOGS_DIR
 
 pushd $TEMP_DIR > /dev/null || error
 extract_source_rpm
@@ -468,6 +489,6 @@ echo -e "\nAll sources ready, building livepatch module."
 echo -e "This may take up to one hour\n"
 kpatch_build
 
-if [[ $PACKAGE_AS_RPM == 1 ]]; then
+if [[ $PACKAGE_AS_RPM -eq 1 ]]; then
     package_module_in_rpm
 fi

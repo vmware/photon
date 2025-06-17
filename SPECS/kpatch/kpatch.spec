@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -75,6 +75,7 @@ Requires: %{name} = %{version}-%{release}
 Requires: %{name}-build = %{version}-%{release}
 Requires: docker
 Requires: docker-buildx
+Requires: wget
 
 %description utils
 Contains auto_livepatch and gen_livepatch scripts.
@@ -126,6 +127,9 @@ cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfile
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Wed Jun 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-2
+- Bug fixes
+- Various code improvements
 * Tue May 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-1
 - upgrade to 0.9.10 to get latest fixes upstream by Photon
 - Allow non-root users in the docker group to run the autolive patch script

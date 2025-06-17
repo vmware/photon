@@ -20,17 +20,18 @@ Options:
   --rpm-version <ver>    Specify the version number for the RPM package.
   --rpm-release <rel>    Specify the release number for the RPM package.
   --rpm-desc <file>      Specify a description file for the RPM. Defaults to using the module description if not specified.
+  --verbose              Print detailed logs of curl, rpmbuild and other operations.
   -h, --help             Display this help message and exit.
 
 Examples:
   1. Build a basic livepatch module:
-     ./build_livepatch.sh -k 5.10.12-1.ph3 -p fix_bug-01.patch fix_bug-02.patch
+     $0 -k 5.10.12-1.ph3 -p fix_bug-01.patch fix_bug-02.patch
 
   2. Build and package the livepatch module as an RPM:
-     ./build_livepatch.sh -k 5.10.12-1.ph3 -p fix_bug.patch --rpm --rpm-version 1.0 --rpm-release 1
+     $0 -k 5.10.12-1.ph3 -p fix_bug.patch --rpm --rpm-version 1.0 --rpm-release 1
 
   3. Build using local source and debuginfo RPMs:
-     ./build_livepatch.sh -k 5.10.12-1.ph3 -p fix_bug.patch -s /path/to/kernel.src.rpm -v /path/to/debuginfo.rpm
+     $0 -k 5.10.12-1.ph3 -p fix_bug.patch -s /path/to/kernel.src.rpm -v /path/to/debuginfo.rpm
 
   If GEN_LIVEPATCH_DEBUG is set to 1, the temporary directory will be preserved after the script completes. This is useful for debugging.
 EOF
