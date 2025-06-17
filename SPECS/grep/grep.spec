@@ -1,7 +1,7 @@
 Summary:    Programs for searching through files
 Name:       grep
 Version:    3.7
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://www.gnu.org/software/grep
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -13,6 +13,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: pcre-devel
+BuildRequires: pcre-libs
 
 Requires: pcre-libs
 
@@ -61,6 +62,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.7-6
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.7-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7-4

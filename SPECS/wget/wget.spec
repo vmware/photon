@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.21.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.21.3-7
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.21.3-6
 - Release bump for SRP compliance
 * Tue Jul 23 2024 Oliver Kurth <oliver.kurth@broadcom.com> 1.21.3-5

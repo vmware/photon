@@ -1,7 +1,7 @@
 Summary:    A portable, high level programming interface to various calling conventions
 Name:       libffi
 Version:    3.4.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://sourceware.org/libffi
 Group:      System Environment/GeneralLibraries
 Vendor:     VMware, Inc.
@@ -73,6 +73,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.2-4
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.2-3
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.2-2

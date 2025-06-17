@@ -1,7 +1,7 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
 Version:        5.4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://tukaani.org/xz
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -112,6 +112,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.4.0-5
+- Release bump for aarch64 SRP compliance
 * Thu Apr 03 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.4.0-4
 - fix CVE-2025-31115
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.4.0-3

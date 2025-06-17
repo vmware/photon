@@ -1,7 +1,7 @@
 Summary:    Programs for generating Makefiles
 Name:       automake
 Version:    1.16.5
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software/automake
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -50,6 +50,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.16.5-4
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.16.5-3
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.5-2

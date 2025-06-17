@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -358,6 +358,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-17
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-16
 - Release bump for SRP compliance
 * Thu Nov 14 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-15

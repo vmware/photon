@@ -1,7 +1,7 @@
 Summary:         Math libraries
 Name:            gmp
 Version:         6.2.1
-Release:         4%{?dist}
+Release:         5%{?dist}
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
 Vendor:          VMware, Inc.
@@ -72,6 +72,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
+*   Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2.1-5
+-   Release bump for aarch64 SRP compliance
 *   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2.1-4
 -   Release bump for SRP compliance
 *   Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 6.2.1-3

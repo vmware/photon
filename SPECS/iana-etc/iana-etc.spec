@@ -1,7 +1,7 @@
 Summary:        Data for network services and protocols
 Name:           iana-etc
 Version:        2.30
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://freshmeat.net/projects/iana-etc
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -28,6 +28,8 @@ make %{?_smp_mflags} test
 %config %_sysconfdir/protocols
 %config %_sysconfdir/services
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.30-4
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.30-3
 - Release bump for SRP compliance
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.30-2

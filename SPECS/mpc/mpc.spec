@@ -1,7 +1,7 @@
 Summary:        Library for the arithmetic of complex numbers
 Name:           mpc
 Version:        1.3.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.multiprecision.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so.*
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-4
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-3
 - Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.1-2

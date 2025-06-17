@@ -1,7 +1,7 @@
 Summary:       A macro processor
 Name:          m4
 Version:       1.4.19
-Release:       3%{?dist}
+Release:       4%{?dist}
 URL:           http://www.gnu.org/software/m4
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -43,6 +43,8 @@ make  %{?_smp_mflags}  check
 %{_mandir}/*/*
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.19-4
+- Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.19-3
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.19-2

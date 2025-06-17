@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.40.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -138,6 +138,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.40.4-3
+- Release bump for aarch64 SRP compliance
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.40.4-2
 - Version bump for expat upgrade
 * Thu Jan 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-1

@@ -1,7 +1,7 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
 Version:        34.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -70,6 +70,8 @@ autoreconf -vfi
 %{_libdir}/*.so
 
 %changelog
+* Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 34.1-2
+- Release bump for aarch64 SRP compliance
 * Mon Mar 10 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 34.1-1
 - Build with openssl
 - This version fixes problem while fetching hash algo
