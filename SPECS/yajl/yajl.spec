@@ -1,6 +1,6 @@
 Name:          yajl
 Version:       2.1.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Yet Another JSON Library
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
@@ -15,6 +15,7 @@ BuildRequires: cmake
 
 Patch0: 0001-CVE-2023-33460.patch
 Patch1: 0002-CVE-2023-33460.patch
+Patch2: CVE-2022-24795.patch
 
 %package devel
 Summary: Include files, Libraries for development with YAJL
@@ -58,6 +59,8 @@ files which are required for development with YAJL
 %{_datadir}/pkgconfig/yajl.pc
 
 %changelog
+* Wed Jun 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.1.0-4
+- Fix CVE-2022-24795
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.1.0-3
 - Release bump for SRP compliance
 * Tue Sep 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.0-2
