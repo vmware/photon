@@ -1,13 +1,13 @@
-From 3994a70c88c56830592d8ba6fe29ac07e47359d0 Mon Sep 17 00:00:00 2001
+From 624103ec45307ef41231d2610075abee671420be Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 Date: Tue, 25 Mar 2025 23:03:56 +0000
 Subject: [PATCH] gcc: add plugin callback before struct layout
 
 ---
  gcc/c/c-decl.cc | 3 +++
- gcc/plugin.cc   | 4 +++-
+ gcc/plugin.cc   | 2 ++
  gcc/plugin.def  | 3 +++
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ 3 files changed, 8 insertions(+)
 
 diff --git a/gcc/c/c-decl.cc b/gcc/c/c-decl.cc
 index c701f07be..38e4d12d7 100644
@@ -24,7 +24,7 @@ index c701f07be..38e4d12d7 100644
 
    layout_type (t);
 diff --git a/gcc/plugin.cc b/gcc/plugin.cc
-index da4dec5b4..1f8530174 100644
+index da4dec5b4..3dc0fc698 100644
 --- a/gcc/plugin.cc
 +++ b/gcc/plugin.cc
 @@ -499,6 +499,7 @@ register_callback (const char *plugin_name,
@@ -44,19 +44,19 @@ index da4dec5b4..1f8530174 100644
            /* Iterate over every callback registered with this event and
               call it.  */
 diff --git a/gcc/plugin.def b/gcc/plugin.def
-index 2fa6b3548..09b9ef774 100644
+index 2fa6b3548..a84f5e800 100644
 --- a/gcc/plugin.def
 +++ b/gcc/plugin.def
-@@ -29,6 +29,9 @@ DEFEVENT (PLUGIN_PASS_MANAGER_SETUP)
- /* After finishing parsing a type.  */
- DEFEVENT (PLUGIN_FINISH_TYPE)
+@@ -106,6 +106,9 @@ DEFEVENT (PLUGIN_TYPE_CAST)
+    ana::plugin_analyzer_init_iface *.  */
+ DEFEVENT (PLUGIN_ANALYZER_INIT)
 
 +/* Before finalizing struct */
 +DEFEVENT (PLUGIN_BEFORE_STRUCT_LAYOUT)
 +
- /* After finishing parsing a declaration. */
- DEFEVENT (PLUGIN_FINISH_DECL)
-
+ /* When adding a new hard-coded plugin event, don't forget to edit in
+    file plugin.cc the functions register_callback and
+    invoke_plugin_callbacks_full accordingly!  */
 --
-2.39.4
+2.40.4
 
