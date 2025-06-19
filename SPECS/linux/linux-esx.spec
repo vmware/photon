@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.141
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -216,6 +216,9 @@ Patch132: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 
 # Fix CVE-2023-52452
 Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
+
+# Fix CVE-2024-46813
+Patch134: 0001-drm-amd-display-Check-link_index-before-accessing-dc.patch
 
 # Fix CVE-2024-46811
 Patch136: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
@@ -588,6 +591,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jun 18 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.141-2
+- Fix CVE-2024-46813
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-1
 - Update to version 6.1.141
 * Thu May 22 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.138-2
