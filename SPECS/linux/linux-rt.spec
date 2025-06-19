@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.141
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -216,6 +216,9 @@ Patch155: 0001-smb-client-fix-use-after-free-of-signing-key.patch
 # Fix CVE-2024-53168
 Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
 
+# Fix CVE-2025-21969
+Patch157: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -376,7 +379,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M156
+%autopatch -p1 -m100 -M157
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -590,6 +593,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Jun 26 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-4
+- Fix CVE-2025-21969
 * Thu Jun 26 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-3
 - Report guest crash to vmware hypervisor
 * Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-2

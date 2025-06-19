@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.141
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -273,6 +273,9 @@ Patch155: 0001-smb-client-fix-use-after-free-of-signing-key.patch
 
 # Fix CVE-2024-53168
 Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
+# Fix CVE-2025-21969
+Patch157: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -605,7 +608,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M156
+%autopatch -p1 -m100 -M157
 
 %ifarch aarch64
 # aarch64 patches
@@ -1011,6 +1014,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jun 26 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-5
+- Fix CVE-2025-2196
 * Mon Jun 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-4
 - Report guest crash to vmware hypervisor
 * Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-3
