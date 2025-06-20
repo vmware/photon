@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.141
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1014,8 +1014,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jun 27 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-6
+- Disable Bluetooth and CAN support
 * Thu Jun 26 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-5
-- Fix CVE-2025-2196
+- Fix CVE-2025-21969
 * Mon Jun 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-4
 - Report guest crash to vmware hypervisor
 * Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-3
