@@ -1,7 +1,7 @@
 Name:           rubygem-async-io
-Summary:        Provides support for asynchonous TCP, UDP, UNIX and SSL sockets.
+Summary:        Metapackage to install rubygem-async-io
 Version:        1.34.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Libraries
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -17,15 +17,20 @@ Requires: rubygem-io-endpoint
 Requires: rubygem-io-stream
 
 %description
-Metapackage to install rubygem-async-io
+This is a metapackage to ensure compatibility with the original rubygem-async-io package.
+The upstream project has split rubygem-async-io into two independent packages:
+- rubygem-io-stream
+- rubygem-io-endpoint
+To support seamless upgrades, this metapackage ensures both replacement packages are installed in place of rubygem-async-io.
 
 %prep
 %build
 
 %files
-%defattr(-,root,root,0755)
 
 %changelog
+* Fri Jun 20 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-7
+- Minor spec format
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-6
 - Changing to metapackage for rubygem-async-io
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.0-5
