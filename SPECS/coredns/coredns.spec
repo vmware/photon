@@ -8,7 +8,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -19,6 +19,8 @@ Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0:         coredns-CVE-2025-47950.patch
+
 BuildRequires: go
 BuildRequires: git
 
@@ -26,8 +28,12 @@ BuildRequires: git
 CoreDNS is a DNS server that chains plugins
 
 %prep -p exit
+#%setup -q
 # Using autosetup is not feasible
 %setup -q -c -n %{name}-%{version}
+pushd %{name}-%{version}
+%patch -p1 -P 0
+popd
 
 mkdir -p "$(dirname src/%{gopath_comp_coredns})"
 mv %{name}-%{version} src/%{gopath_comp_coredns}
@@ -53,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Fri Jun 20 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-11
+- Fix for CVE-2025-47950
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.11.1-10
 - Fix go input dependencies which have Capital letters in name.
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.11.1-9
