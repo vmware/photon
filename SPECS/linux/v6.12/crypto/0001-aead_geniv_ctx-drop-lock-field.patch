@@ -1,0 +1,42 @@
+From ee8a90adafe791137795628d88708037034371a7 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Thu, 24 Jul 2025 17:58:12 +0000
+Subject: [PATCH] aead_geniv_ctx: drop lock field
+
+Drop lock field for aead_geniv_ctx to match canister version.
+This lock is never used.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ crypto/geniv.c                  | 2 --
+ include/crypto/internal/geniv.h | 1 -
+ 2 files changed, 3 deletions(-)
+
+diff --git a/crypto/geniv.c b/crypto/geniv.c
+index bee4621b4..a1f98fe54 100644
+--- a/crypto/geniv.c
++++ b/crypto/geniv.c
+@@ -113,8 +113,6 @@ int aead_init_geniv(struct crypto_aead *aead)
+ 	struct crypto_aead *child;
+ 	int err;
+ 
+-	spin_lock_init(&ctx->lock);
+-
+ 	err = crypto_get_default_rng();
+ 	if (err)
+ 		goto out;
+diff --git a/include/crypto/internal/geniv.h b/include/crypto/internal/geniv.h
+index 7fd7126f5..fbdabe9d4 100644
+--- a/include/crypto/internal/geniv.h
++++ b/include/crypto/internal/geniv.h
+@@ -13,7 +13,6 @@
+ #include <linux/types.h>
+ 
+ struct aead_geniv_ctx {
+-	spinlock_t lock;
+ 	struct crypto_aead *child;
+ 	struct crypto_sync_skcipher *sknull;
+ 	u8 salt[] __attribute__ ((aligned(__alignof__(u32))));
+-- 
+2.40.4
+

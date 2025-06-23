@@ -11,7 +11,6 @@
 #include <linux/gfp.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
-#include <linux/spinlock.h>
 #include <linux/version.h>
 #include <linux/printk.h>
 
@@ -94,8 +93,6 @@ void * __init fcw_mem_alloc(size_t size);
 void __init fcw_mem_free(void *p);
 void *fcw_mutex_init(void);
 void fcw_mutex_lock(void *m);
-void *fcw_spin_lock_init(void);
-void fcw_spin_lock_free(void *lock);
 void fcw_mutex_unlock(void *m);
 bool fcw_schedule_work(struct work_struct *work);
 struct aead_request *fcw_aead_request_alloc(struct crypto_aead *tfm,
@@ -266,19 +263,6 @@ void *fcw_mutex_init(void)
 void fcw_mutex_lock(void *m)
 {
 	mutex_lock((struct mutex *)m);
-}
-
-void *fcw_spin_lock_init(void)
-{
-	spinlock_t *lock = kzalloc(sizeof(struct spinlock), GFP_KERNEL);
-	if (lock)
-		spin_lock_init(lock);
-	return (void *)lock;
-}
-
-void fcw_spin_lock_free(void *lock)
-{
-	kfree((spinlock_t *)lock);
 }
 
 void fcw_mutex_unlock(void *m)

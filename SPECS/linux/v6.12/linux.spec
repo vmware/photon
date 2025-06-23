@@ -61,7 +61,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.34
-Release:        7%{?acvp_build:.acvp}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -183,6 +183,8 @@ Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
+Patch23: 0001-aead_geniv_ctx-drop-lock-field.patch
+
 #VMCI/VSOCK
 Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
@@ -303,6 +305,9 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # in both places until final canister binary is released
 Patch10000: 0001-FIPS-canister-binary-usage.patch
 Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
+%endif
+
+%if 0%{?canister_usage}
 Patch10002: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 %endif
 
@@ -544,7 +549,11 @@ popd
 #popd
 
 %if 0%{?fips}
-%autopatch -p1 -m10000 -M10002
+%autopatch -p1 -m10000 -M10001
+%endif
+
+%if 0%{?canister_usage}
+%autopatch -p1 -m10002 -M10002
 %endif
 
 %if 0%{?canister_build}
@@ -895,6 +904,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 28 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-8
+- Convert canister structure spinlock fields to static memory
 * Thu Jul 24 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.34-7
 - Fix KAT build
 - Spec clean up around fips macros
