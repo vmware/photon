@@ -1,7 +1,7 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        25.1
+Version:        25.1.3
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -151,6 +151,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Tue Jun 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-1
+- Upgrade to v25.1.3
 * Thu Feb 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1-1
 - Upgrade to v25.1
 * Mon Jan 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.4-1

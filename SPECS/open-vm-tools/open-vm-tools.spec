@@ -3,8 +3,8 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.5.0
-Release:        2%{?dist}
+Version:        13.0.0
+Release:        1%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -25,12 +25,6 @@ Source4: license.txt
 Patch0: ovt-linux-deployment.patch
 Patch1: gosc-root-password-update.patch
 Patch2: gosc-change-order-of-args-to-cloud-init-in-Ph4-and-above.patch
-Patch3: CVE-2025-22247-1230-1250-VGAuth-updates.patch
-
-%ifarch aarch64
-# TODO: This must be removed once VMCI config is enabled in aarch64 kernel
-Patch4: ovt-unknown-ioctl.patch
-%endif
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -180,6 +174,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Mon Jun 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-1
+- Upgrade to v13.0.0
 * Fri May 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 12.5.0-2
 - Fix for CVE-2025-22247
 * Mon Jan 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.5.0-1
