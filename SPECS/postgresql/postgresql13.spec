@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.20
+Version:        13.21
 Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -683,6 +683,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Jun 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.21-1
+- Upgrade to v13.21
 * Thu Mar 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.20-1
 - Upgrade to v13.20
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.18-2
