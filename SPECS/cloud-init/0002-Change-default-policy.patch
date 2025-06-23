@@ -1,4 +1,4 @@
-From 5a471f4e7799eb76e0f94f15e5eefdc4ae52bdde Mon Sep 17 00:00:00 2001
+From 94b60d4c1ef60fdc71c8cdc111b6c301837c8714 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 25 Aug 2021 19:48:43 +0530
 Subject: [PATCH 2/9] Change default policy
@@ -8,22 +8,31 @@ cloud-init services won't get started during boot and gosc tests fail.
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
- tools/ds-identify | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/ds-identify | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/tools/ds-identify b/tools/ds-identify
-index ac0f82f5e..cf40fbba6 100755
+index ec33710..6741315 100755
 --- a/tools/ds-identify
 +++ b/tools/ds-identify
 @@ -100,7 +100,7 @@ DI_MAIN=${DI_MAIN:-main}
  
  DI_BLKID_EXPORT_OUT=""
  DI_GEOM_LABEL_STATUS_OUT=""
--DI_DEFAULT_POLICY="search,found=all,maybe=all,notfound=${DI_DISABLED}"
-+DI_DEFAULT_POLICY="search,found=all,maybe=all,notfound=${DI_ENABLED}"
- DI_DEFAULT_POLICY_NO_DMI="search,found=all,maybe=all,notfound=${DI_ENABLED}"
+-DI_DEFAULT_POLICY="search,found=all,maybe=none,notfound=${DI_DISABLED}"
++DI_DEFAULT_POLICY="search,found=all,maybe=none,notfound=${DI_ENABLED}"
+ DI_DEFAULT_POLICY_NO_DMI="search,found=all,maybe=none,notfound=${DI_ENABLED}"
  DI_DMI_BOARD_NAME=""
  DI_DMI_CHASSIS_ASSET_TAG=""
+@@ -846,7 +846,7 @@ check_config() {
+     # key: [ some_value ]
+     # key : [ "some value" ]
+     # key\t:\t[\tsome_value\t]\t
+-    # 
++    #
+     # The syntax warned about is not valid posix shell, and we are not
+     # attempting to access an index of arrays. Silence it.
+     # shellcheck disable=1087
 -- 
-2.48.1
+2.43.0
 

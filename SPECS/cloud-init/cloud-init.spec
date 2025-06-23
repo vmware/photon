@@ -1,7 +1,7 @@
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
 Name:           cloud-init
-Version:        25.1
+Version:        25.1.3
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5d016bfc4b5c600722b6a8ff460d0e6d896ea5eda9fcde76edc21910f4e2f71d371e019b54e50cb58497b7c0c5c051e12ba88f4c9e7146b3e406f241e7cff039
+%define sha512 %{name}=b8b6ab8b4649cacaa8d30abe5b9e738ea9443ef16cda49c3c018632563920d67248965f3ee461f0e908b49e97169f1074446e936436d5b0c131e6b1050510eb6
 
 Patch0: 0001-azure-ds.patch
 Patch1: 0002-Change-default-policy.patch
@@ -151,6 +151,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Mon Jun 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-1
+- Upgrade to v25.1.3
 * Tue Feb 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1-1
 - Upgrade to v25.1
 * Tue Dec 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.4-1

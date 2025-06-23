@@ -3,8 +3,8 @@
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        12.5.0
-Release:        2%{?dist}
+Version:        13.0.0
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha512 %{name}=a7c1920c93baa1189e6d40cb14ecdb9dfefcf74a3bef4f09ad5816bf4f9be255b8983f5ebf2c6c42de1d4bb4e405f22ffb00f20b382498b4ab71ee4d7544a694
+%define sha512 %{name}=22e0e12b9b033f4934b99ef92d39d3c96f2e551676231c57c8da8e70cc94826a1ae1bfe10c70005b59d7464de89c95ae9c8fb3d445e6c51cf2b9a4ef413dce9a
 
 Source1: https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha512 %{gosc_scripts}-%{gosc_ver}=b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
@@ -25,12 +25,6 @@ Source3: vgauthd.service
 Patch0: ovt-linux-deployment.patch
 Patch1: gosc-root-password-update.patch
 Patch2: gosc-change-order-of-args-to-cloud-init-in-Ph4-and-above.patch
-Patch3: CVE-2025-22247-1230-1250-VGAuth-updates.patch
-
-%ifarch aarch64
-# TODO: This must be removed once VMCI config is enabled in aarch64 kernel
-Patch4: ovt-unknown-ioctl.patch
-%endif
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -177,6 +171,9 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Mon Jun 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-1
+- Upgrade to v13.0.0
+- VMCI support is enabled in aarch64 hypervisor, so dropped ioctl patch
 * Fri May 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 12.5.0-2
 - Fix for CVE-2025-22247
 * Fri Dec 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.5.0-1
