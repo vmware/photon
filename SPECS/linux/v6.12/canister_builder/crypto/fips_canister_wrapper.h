@@ -58,8 +58,6 @@ extern void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char
 extern void *fcw_mutex_init(void);
 extern void fcw_mutex_lock(void *m);
 extern void fcw_mutex_unlock(void *m);
-extern void *fcw_spin_lock_init(void);
-extern void fcw_spin_lock_free(void *lock);
 
 extern bool fcw_schedule_work(struct work_struct *work);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);

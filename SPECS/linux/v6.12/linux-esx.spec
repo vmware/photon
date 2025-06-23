@@ -114,6 +114,8 @@ Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
+Patch25: 0001-aead_geniv_ctx-drop-lock-field.patch
+
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch

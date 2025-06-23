@@ -1,4 +1,6 @@
-From da5134350edf90e95f57e0e2f099da66e73ca834 Mon Sep 17 00:00:00 2001
+From 0c41d7a1638466d60ca55cdab828d8f35564c8b0 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 18 Jul 2025 17:48:37 +0000
 Subject: [PATCH 4/4] FIPS Canister Plugins: Add self tests
 
 Self tests for FIPS canister GCC plugins.
@@ -49,7 +51,7 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  .../match_canister/reorder-fields.c           |  23 ++
  .../self_tests/match_canister/self-test.sh    |  17 ++
  .../match_canister/struct-assignment.c        |  28 +++
- .../match_canister/struct-assignment.expected |  25 ++
+ .../match_canister/struct-assignment.expected |  29 +++
  .../match_canister/unnamed-struct-init.c      |  11 +
  .../unnamed-struct-init.expected              |   9 +
  .../self_tests/pad_canister/bad-cast.c        |  13 +
@@ -72,7 +74,7 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  .../pad_canister/unnamed-struct-init.expected |   9 +
  .../self_tests/run_tests.sh                   |  13 +
  .../self_tests/self-test-lib.sh               | 231 ++++++++++++++++++
- 49 files changed, 1150 insertions(+)
+ 49 files changed, 1154 insertions(+)
  create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
  create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
  create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
@@ -125,7 +127,7 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
 new file mode 100644
-index 000000000000..e4b970b8b5c0
+index 000000000..e4b970b8b
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
 @@ -0,0 +1,36 @@
@@ -167,7 +169,7 @@ index 000000000000..e4b970b8b5c0
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
 new file mode 100644
-index 000000000000..573a7cada651
+index 000000000..573a7cada
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
 @@ -0,0 +1,28 @@
@@ -201,7 +203,7 @@ index 000000000000..573a7cada651
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
 new file mode 100644
-index 000000000000..198206c42992
+index 000000000..198206c42
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
 @@ -0,0 +1,30 @@
@@ -237,7 +239,7 @@ index 000000000000..198206c42992
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
 new file mode 100644
-index 000000000000..6b00439d325d
+index 000000000..6b00439d3
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
 @@ -0,0 +1,26 @@
@@ -269,7 +271,7 @@ index 000000000000..6b00439d325d
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
 new file mode 100644
-index 000000000000..8cbe706474c9
+index 000000000..8cbe70647
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
 @@ -0,0 +1,27 @@
@@ -302,7 +304,7 @@ index 000000000000..8cbe706474c9
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
 new file mode 100644
-index 000000000000..7a690ca1d7c7
+index 000000000..7a690ca1d
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
 @@ -0,0 +1,4 @@
@@ -312,7 +314,7 @@ index 000000000000..7a690ca1d7c7
 +      | ^
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.c
 new file mode 100644
-index 000000000000..3e77a6ae5117
+index 000000000..3e77a6ae5
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.c
 @@ -0,0 +1,13 @@
@@ -331,7 +333,7 @@ index 000000000000..3e77a6ae5117
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
 new file mode 100644
-index 000000000000..0d813b0e0ac7
+index 000000000..0d813b0e0
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
 @@ -0,0 +1,8 @@
@@ -345,7 +347,7 @@ index 000000000000..0d813b0e0ac7
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.gcc.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.gcc.expected
 new file mode 100644
-index 000000000000..931acedc3350
+index 000000000..931acedc3
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.gcc.expected
 @@ -0,0 +1,5 @@
@@ -356,7 +358,7 @@ index 000000000000..931acedc3350
 +      |               ^
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.c
 new file mode 100644
-index 000000000000..6031af3f9b02
+index 000000000..6031af3f9
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.c
 @@ -0,0 +1,12 @@
@@ -374,7 +376,7 @@ index 000000000000..6031af3f9b02
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.expected
 new file mode 100644
-index 000000000000..14af6e9b2cc7
+index 000000000..14af6e9b2
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.expected
 @@ -0,0 +1,12 @@
@@ -392,7 +394,7 @@ index 000000000000..14af6e9b2cc7
 +cc1: some warnings being treated as errors
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
 new file mode 100644
-index 000000000000..f08f54a729a2
+index 000000000..f08f54a72
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
 @@ -0,0 +1,20 @@
@@ -418,7 +420,7 @@ index 000000000000..f08f54a729a2
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
 new file mode 100644
-index 000000000000..55499de81033
+index 000000000..55499de81
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
 @@ -0,0 +1,12 @@
@@ -436,7 +438,7 @@ index 000000000000..55499de81033
 +      | ^
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
 new file mode 100644
-index 000000000000..74061f8fdaee
+index 000000000..74061f8fd
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
 @@ -0,0 +1,28 @@
@@ -470,7 +472,7 @@ index 000000000000..74061f8fdaee
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
 new file mode 100644
-index 000000000000..d5875707da0a
+index 000000000..d5875707d
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
 @@ -0,0 +1,16 @@
@@ -492,7 +494,7 @@ index 000000000000..d5875707da0a
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
 new file mode 100644
-index 000000000000..a1a64d504a6d
+index 000000000..a1a64d504
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
 @@ -0,0 +1,52 @@
@@ -550,7 +552,7 @@ index 000000000000..a1a64d504a6d
 +
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
 new file mode 100644
-index 000000000000..9ae2783db535
+index 000000000..9ae2783db
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
 @@ -0,0 +1,10 @@
@@ -566,7 +568,7 @@ index 000000000000..9ae2783db535
 +Explicit offset write: crypto_tfm->node = 75439
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.c
 new file mode 100644
-index 000000000000..1c40a6f022a4
+index 000000000..1c40a6f02
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.c
 @@ -0,0 +1,36 @@
@@ -608,7 +610,7 @@ index 000000000000..1c40a6f022a4
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.expected
 new file mode 100644
-index 000000000000..44dcb0a39b5f
+index 000000000..44dcb0a39
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.expected
 @@ -0,0 +1,8 @@
@@ -622,7 +624,7 @@ index 000000000000..44dcb0a39b5f
 +ecdh->key_sz = 53
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
 new file mode 100644
-index 000000000000..09964b51250a
+index 000000000..09964b512
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
 @@ -0,0 +1,35 @@
@@ -663,7 +665,7 @@ index 000000000000..09964b51250a
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
 new file mode 100644
-index 000000000000..814dcb7a929d
+index 000000000..814dcb7a9
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
 @@ -0,0 +1,32 @@
@@ -701,7 +703,7 @@ index 000000000000..814dcb7a929d
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
 new file mode 100644
-index 000000000000..f7f435d58cec
+index 000000000..f7f435d58
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
 @@ -0,0 +1,19 @@
@@ -727,7 +729,7 @@ index 000000000000..f7f435d58cec
 \ No newline at end of file
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
 new file mode 100644
-index 000000000000..4ca5ba886690
+index 000000000..4ca5ba886
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
 @@ -0,0 +1,3 @@
@@ -736,7 +738,7 @@ index 000000000000..4ca5ba886690
 +      | ^
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/reorder-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/reorder-fields.c
 new file mode 100644
-index 000000000000..3f5e90aaefaf
+index 000000000..3f5e90aae
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/reorder-fields.c
 @@ -0,0 +1,23 @@
@@ -765,7 +767,7 @@ index 000000000000..3f5e90aaefaf
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
 new file mode 100755
-index 000000000000..2a765a24e7f3
+index 000000000..2a765a24e
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
 @@ -0,0 +1,17 @@
@@ -788,7 +790,7 @@ index 000000000000..2a765a24e7f3
 +exit_return_code
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.c
 new file mode 100644
-index 000000000000..4d004277f117
+index 000000000..1feeffee6
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.c
 @@ -0,0 +1,28 @@
@@ -797,7 +799,7 @@ index 000000000000..4d004277f117
 +};
 +
 +struct swait_queue_head {
-+	void *			lock;
++	unsigned char		lock[4];
 +	struct list_head	task_list;
 +};
 +
@@ -822,10 +824,10 @@ index 000000000000..4d004277f117
 +
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.expected
 new file mode 100644
-index 000000000000..fbc65966014c
+index 000000000..cfdd3e224
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.expected
-@@ -0,0 +1,25 @@
+@@ -0,0 +1,29 @@
 +struct list_head {
 +	struct list_head *         next;                 /*     0     8 */
 +	struct list_head *         prev;                 /*     8     8 */
@@ -834,10 +836,14 @@ index 000000000000..fbc65966014c
 +	/* last cacheline: 16 bytes */
 +};
 +struct swait_queue_head {
-+	void *                     lock;                 /*     0     8 */
++	unsigned char              lock[4];              /*     0     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
 +	struct list_head           task_list;            /*     8    16 */
 +
 +	/* size: 24, cachelines: 1, members: 2 */
++	/* sum members: 20, holes: 1, sum holes: 4 */
 +	/* last cacheline: 24 bytes */
 +};
 +struct completion {
@@ -853,7 +859,7 @@ index 000000000000..fbc65966014c
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.c
 new file mode 100644
-index 000000000000..b8bee9068f84
+index 000000000..b8bee9068
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.c
 @@ -0,0 +1,11 @@
@@ -870,7 +876,7 @@ index 000000000000..b8bee9068f84
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.expected
 new file mode 100644
-index 000000000000..a59936d5784a
+index 000000000..a59936d57
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.expected
 @@ -0,0 +1,9 @@
@@ -885,7 +891,7 @@ index 000000000000..a59936d5784a
 +cc1: some warnings being treated as errors
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.c
 new file mode 100644
-index 000000000000..3e77a6ae5117
+index 000000000..3e77a6ae5
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.c
 @@ -0,0 +1,13 @@
@@ -904,7 +910,7 @@ index 000000000000..3e77a6ae5117
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.expected
 new file mode 100644
-index 000000000000..7f235c032a5a
+index 000000000..7f235c032
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.expected
 @@ -0,0 +1,9 @@
@@ -919,7 +925,7 @@ index 000000000000..7f235c032a5a
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.gcc.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.gcc.expected
 new file mode 100644
-index 000000000000..931acedc3350
+index 000000000..931acedc3
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.gcc.expected
 @@ -0,0 +1,5 @@
@@ -930,7 +936,7 @@ index 000000000000..931acedc3350
 +      |               ^
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.c
 new file mode 100644
-index 000000000000..080d0c811f37
+index 000000000..080d0c811
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.c
 @@ -0,0 +1,32 @@
@@ -968,7 +974,7 @@ index 000000000000..080d0c811f37
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.expected
 new file mode 100644
-index 000000000000..6a92a74d12ac
+index 000000000..6a92a74d1
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.expected
 @@ -0,0 +1,16 @@
@@ -990,7 +996,7 @@ index 000000000000..6a92a74d12ac
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.c
 new file mode 100644
-index 000000000000..a0f0119473d9
+index 000000000..a0f011947
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.c
 @@ -0,0 +1,49 @@
@@ -1045,7 +1051,7 @@ index 000000000000..a0f0119473d9
 +
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.expected
 new file mode 100644
-index 000000000000..19fdd0b746fa
+index 000000000..19fdd0b74
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.expected
 @@ -0,0 +1,9 @@
@@ -1060,7 +1066,7 @@ index 000000000000..19fdd0b746fa
 +Explicit offset write: crypto_tfm->__crt_ctx = hello
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.c
 new file mode 100644
-index 000000000000..53119fc01b15
+index 000000000..53119fc01
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.c
 @@ -0,0 +1,26 @@
@@ -1092,7 +1098,7 @@ index 000000000000..53119fc01b15
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.expected
 new file mode 100644
-index 000000000000..2a55c986af95
+index 000000000..2a55c986a
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.expected
 @@ -0,0 +1,5 @@
@@ -1103,7 +1109,7 @@ index 000000000000..2a55c986af95
 +ecdh->key_sz = 53
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.c
 new file mode 100644
-index 000000000000..c88b7c3fb823
+index 000000000..c88b7c3fb
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.c
 @@ -0,0 +1,20 @@
@@ -1129,7 +1135,7 @@ index 000000000000..c88b7c3fb823
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.expected
 new file mode 100644
-index 000000000000..d41bd844ae77
+index 000000000..d41bd844a
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.expected
 @@ -0,0 +1,17 @@
@@ -1152,7 +1158,7 @@ index 000000000000..d41bd844ae77
 +} __attribute__((__aligned__(8)));
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/self-test.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/self-test.sh
 new file mode 100755
-index 000000000000..4f2f5f5bb515
+index 000000000..4f2f5f5bb
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/self-test.sh
 @@ -0,0 +1,12 @@
@@ -1170,7 +1176,7 @@ index 000000000000..4f2f5f5bb515
 +exit_return_code
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.c
 new file mode 100644
-index 000000000000..3f4fc15e1537
+index 000000000..3f4fc15e1
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.c
 @@ -0,0 +1,19 @@
@@ -1195,7 +1201,7 @@ index 000000000000..3f4fc15e1537
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.expected
 new file mode 100644
-index 000000000000..66266727723d
+index 000000000..662667277
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.expected
 @@ -0,0 +1,16 @@
@@ -1217,7 +1223,7 @@ index 000000000000..66266727723d
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.c
 new file mode 100644
-index 000000000000..4d004277f117
+index 000000000..4d004277f
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.c
 @@ -0,0 +1,28 @@
@@ -1251,7 +1257,7 @@ index 000000000000..4d004277f117
 +
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.expected
 new file mode 100644
-index 000000000000..fbc65966014c
+index 000000000..fbc659660
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.expected
 @@ -0,0 +1,25 @@
@@ -1282,7 +1288,7 @@ index 000000000000..fbc65966014c
 +};
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.c
 new file mode 100644
-index 000000000000..b8bee9068f84
+index 000000000..b8bee9068
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.c
 @@ -0,0 +1,11 @@
@@ -1299,7 +1305,7 @@ index 000000000000..b8bee9068f84
 +}
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.expected
 new file mode 100644
-index 000000000000..a59936d5784a
+index 000000000..a59936d57
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.expected
 @@ -0,0 +1,9 @@
@@ -1314,7 +1320,7 @@ index 000000000000..a59936d5784a
 +cc1: some warnings being treated as errors
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/run_tests.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/run_tests.sh
 new file mode 100755
-index 000000000000..f7a24ea02691
+index 000000000..f7a24ea02
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/run_tests.sh
 @@ -0,0 +1,13 @@
@@ -1333,7 +1339,7 @@ index 000000000000..f7a24ea02691
 +exit_return_code
 diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
 new file mode 100755
-index 000000000000..e596a4287aa0
+index 000000000..e596a4287
 --- /dev/null
 +++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
 @@ -0,0 +1,231 @@
