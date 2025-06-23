@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.141
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -268,6 +268,12 @@ Patch152: 0001-scsi-ufs-core-Fix-use-after-free-in-init-error-and-r.patch
 Patch153: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
 Patch154: 0001-RDMA-mlx5-Fix-implicit-ODP-hang-on-parent-deregistra.patch
 
+# Fix CVE-2024-53179
+Patch155: 0001-smb-client-fix-use-after-free-of-signing-key.patch
+
+# Fix CVE-2024-53168
+Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
 %ifarch aarch64
 # aarch specific patches [200..219]
 # Rpi of_configfs patches
@@ -283,6 +289,9 @@ Patch209: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch211: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch212: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+
+# Fix CVE-2024-53068
+Patch213: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
 %endif
 
 # perf: off-cpu sample
@@ -586,7 +595,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M154
+%autopatch -p1 -m100 -M156
 
 %ifarch aarch64
 # aarch64 patches
@@ -989,6 +998,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-3
+- Fix CVE-2024-53068, CVE-2024-53168, CVE-2024-53179
 * Wed Jun 18 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.141-2
 - Fix CVE-2024-46813
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-1

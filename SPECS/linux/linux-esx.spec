@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.141
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -246,6 +246,12 @@ Patch149: 0001-scsi-ufs-core-Fix-use-after-free-in-init-error-and-r.patch
 Patch150: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
 Patch151: 0001-RDMA-mlx5-Fix-implicit-ODP-hang-on-parent-deregistra.patch
 
+# Fix CVE-2024-53179
+Patch155: 0001-smb-client-fix-use-after-free-of-signing-key.patch
+
+# Fix CVE-2024-53168
+Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -256,6 +262,9 @@ Patch204: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch205: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch206: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch207: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+
+# Fix CVE-2024-53068
+Patch211: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
 %endif
 
 # 9p: [300..350]
@@ -403,7 +412,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M151
+%autopatch -p1 -m100 -M156
 
 %ifarch aarch64
 # aarch64 patches
@@ -591,6 +600,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-3
+- Fix CVE-2024-53068, CVE-2024-53168, CVE-2024-53179
 * Wed Jun 18 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.141-2
 - Fix CVE-2024-46813
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-1

@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.141
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -210,6 +210,12 @@ Patch152: 0001-scsi-ufs-core-Fix-use-after-free-in-init-error-and-r.patch
 Patch153: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
 Patch154: 0001-RDMA-mlx5-Fix-implicit-ODP-hang-on-parent-deregistra.patch
 
+# Fix CVE-2024-53179
+Patch155: 0001-smb-client-fix-use-after-free-of-signing-key.patch
+
+# Fix CVE-2024-53168
+Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -364,7 +370,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M154
+%autopatch -p1 -m100 -M156
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -576,6 +582,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jun 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-2
+- Fix CVE-2024-53168, CVE-2024-53179
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.141-1
 - Update to version 6.1.141
 * Sun May 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.138-1
