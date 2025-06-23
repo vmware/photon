@@ -8,7 +8,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -18,6 +18,8 @@ Distribution:   Photon
 Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512  %{name}=f8752811e9e7913311f47ae13f35c755ac86ea240572be1c1dabc1712b6c42380c60ac385fa9573c77d6fcf4c144df2bc00574f18e8d7b70da21ed8ae4fb87cd
 
+Patch0:         coredns-CVE-2025-47950.patch
+
 BuildRequires: go
 BuildRequires: git
 
@@ -25,7 +27,7 @@ BuildRequires: git
 CoreDNS is a DNS server that chains plugins
 
 %prep -p exit
-%autosetup -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 
 %build
 export ARCH=%{gohostarch}
@@ -60,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Mon Jun 23 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-7
+- Fix for CVE-2025-47950
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-6
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-5
