@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        18.20.8
-Release:        2%{?dist}
+Version:        22.16.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,9 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512  node=e15226fe7c7fed5ea82033047674c20108b3ef8223c79cd6da7de45f0d9b59ed75836eee69d4be50a63041a6a22d906ed58ca220ceda8a47c1b1d0ded149ef0c
-
-Patch0:         CVE-2025-23166.patch
+%define sha512  node=50a41c315f86a682e9f67c8259d4e1180571ea1d66efe8454662acaa1a5f6ee2297f88ca3dc4b7a6a76885739e0c5de25a1b13ccb4e39e987ae6b3b3f03152ab
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -53,7 +51,7 @@ sh ./configure \
 %endif
 
 %install
-./tools/install.py install %{buildroot} %{_prefix}
+%make_install %{?_smp_mflags}
 rm -fr %{buildroot}%{_libdir}/dtrace/
 install -m 755 -d %{buildroot}%{_libdir}/node_modules/
 install -m 755 -d %{buildroot}%{_datadir}/%{name}
@@ -83,9 +81,10 @@ make cctest %{?_smp_mflags}
 %{_includedir}/*
 %{_docdir}/node/lldb_commands.py
 %{_docdir}/node/gdbinit
-%{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+* Mon Jun 23 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.16.0-1
+- Upgrade to 22.16.0 to fix CVE-2025-23167 and CVE-2025-23090
 * Mon May 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.20.8-2
 - Fix CVE-2025-23166
 * Fri May 16 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.20.8-1
