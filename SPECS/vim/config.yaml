@@ -1,18 +1,28 @@
 sources:
-    - archive: vim-9.1.1113.tar.gz
-      archive_sha512sum: 4ed1b21b8acfb2a71ef37f012e17b61d9161819c03e4474abe345ad0861b8cb346cee459ff17f895a4abe0b6710b756bac0468b42b7ebb87af181fafab213c47
-      archive_type: upstream
-      name: vim-9.1.1113
-      url: https://github.com/vim/vim/archive/refs/tags/v9.1.1113.tar.gz
-      repo_url: https://github.com/vim/vim
-      commit_id: e67eff2e24f7289c5a40c90253b0b01910ab898d
-      skip_list: []
-      missing: []
-      spdx:
-          package:
-              detailed_description: "The VIM package contains a powerful text editor. "
-              home_page: http://www.vim.org
-              license_concluded: (GPL-1.0-or-later OR Artistic-1.0-Perl) AND (MIT OR GPL-1.0-or-later) AND GPL-3.0-or-later AND MIT AND PSF-2.0 AND Spencer-86 AND 0BSD AND HPND-Markus-Kuhn AND GPL-2.0-only AND LGPL-3.0-or-later AND LGPL-2.1-or-later AND Vim AND GPL-1.0-or-later AND Apache-2.0 AND Apache-2.0 WITH Swift-exception AND Python-2.0 AND LGPL-2.1-only AND FSFUL AND BSD-2-Clause AND LGPL-2.0-or-later AND MIT-Modern-Variant AND X11 AND BSD-3-Clause AND GPL-2.0-or-later
-              license_declared: (GPL-1.0-or-later OR Artistic-1.0-Perl) AND (MIT OR GPL-1.0-or-later) AND GPL-3.0-or-later AND MIT AND PSF-2.0 AND Spencer-86 AND 0BSD AND HPND-Markus-Kuhn AND GPL-2.0-only AND LGPL-3.0-or-later AND LGPL-2.1-or-later AND Vim AND GPL-1.0-or-later AND Apache-2.0 AND Apache-2.0 WITH Swift-exception AND Python-2.0 AND LGPL-2.1-only AND FSFUL AND BSD-2-Clause AND LGPL-2.0-or-later AND MIT-Modern-Variant AND X11 AND BSD-3-Clause AND GPL-2.0-or-later
-              short_summary: Text editor
-              supplier: "Organization: Broadcom, Inc."
+- archive: vim-9.1.1473.tar.gz
+  archive_sha512sum: 2c6dc8005fd9c49390e8a8e2331bf638d54f121569ba3bcce2f3bddf6d6d82dc6a9cadc6bfba0b39b8e440fb9880930d415b2e25da9427caf6f7d47b6c513bc9
+  archive_type: upstream
+  name: vim-9.1.1473
+  url: https://github.com/vim/vim/archive/refs/tags/v9.1.1473.tar.gz
+  repo_url: https://github.com/vim/vim
+  commit_id: d75ab0cbf5cfaefab3edb0aa553954de70b236f8
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'The VIM package contains a powerful text editor. '
+      home_page: http://www.vim.org
+      license_concluded: (MIT OR GPL-1.0-or-later) AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
+        AND Apache-2.0 AND LGPL-2.0-or-later AND LGPL-3.0-or-later AND GPL-1.0-or-later
+        AND GPL-3.0-or-later AND MIT-Modern-Variant AND Python-2.0 AND GPL-2.0-only
+        AND 0BSD AND PSF-2.0 AND LGPL-2.1-only AND Spencer-86 AND BSD-2-Clause AND
+        GPL-2.0-or-later AND MIT AND LGPL-2.1-or-later AND Apache-2.0 WITH Swift-exception
+        AND FSFUL AND HPND-Markus-Kuhn AND Vim AND X11 AND BSD-3-Clause AND ISC
+      license_declared: (MIT OR GPL-1.0-or-later) AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
+        AND Apache-2.0 AND LGPL-2.0-or-later AND LGPL-3.0-or-later AND GPL-1.0-or-later
+        AND GPL-3.0-or-later AND MIT-Modern-Variant AND Python-2.0 AND GPL-2.0-only
+        AND 0BSD AND PSF-2.0 AND LGPL-2.1-only AND Spencer-86 AND BSD-2-Clause AND
+        GPL-2.0-or-later AND MIT AND LGPL-2.1-or-later AND Apache-2.0 WITH Swift-exception
+        AND FSFUL AND HPND-Markus-Kuhn AND Vim AND X11 AND BSD-3-Clause AND ISC
+      short_summary: Text editor
+      supplier: 'Organization: Broadcom, Inc.'

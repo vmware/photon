@@ -3,7 +3,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.1.1113
+Version:        9.1.1473
 Release:        1%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -118,7 +118,6 @@ fi
 %{_datadir}/vim/vim*/lang/*.vim
 %doc %{_datadir}/vim/vim*/lang/*.txt
 %lang(af) %{_datadir}/vim/vim*/lang/af/LC_MESSAGES/vim.mo
-%lang(am) %{_datadir}/vim/vim*/lang/am/LC_MESSAGES/vim.mo
 %lang(ca) %{_datadir}/vim/vim*/lang/ca/LC_MESSAGES/vim.mo
 %lang(cs) %{_datadir}/vim/vim*/lang/cs/LC_MESSAGES/vim.mo
 %lang(de) %{_datadir}/vim/vim*/lang/de/LC_MESSAGES/vim.mo
@@ -128,6 +127,7 @@ fi
 %lang(fi) %{_datadir}/vim/vim*/lang/fi/LC_MESSAGES/vim.mo
 %lang(fr) %{_datadir}/vim/vim*/lang/fr/LC_MESSAGES/vim.mo
 %lang(ga) %{_datadir}/vim/vim*/lang/ga/LC_MESSAGES/vim.mo
+%lang(hy) %{_datadir}/vim/vim*/lang/hy/LC_MESSAGES/vim.mo
 %lang(it) %{_datadir}/vim/vim*/lang/it/LC_MESSAGES/vim.mo
 %lang(ja) %{_datadir}/vim/vim*/lang/ja/LC_MESSAGES/vim.mo
 %lang(ko.UTF-8) %{_datadir}/vim/vim*/lang/ko.UTF-8/LC_MESSAGES/vim.mo
@@ -181,6 +181,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Jun 23 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1.1473-1
+- Fix CVE-2025-29768, CVE-2025-26603, CVE-2025-27423
 * Fri Feb 14 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.1.1113-1
 - Upgrade to 9.1.1113
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 9.1.0724-3
