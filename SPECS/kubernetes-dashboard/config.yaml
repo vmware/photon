@@ -6,10 +6,8 @@ sources:
     package:
       detailed_description: Shows the Kubernetes Dashboard UI.
       home_page: https://github.com/kubernetes/dashboard
-      license_concluded: MIT AND 0BSD AND Apache-2.0 AND JSON AND BSD-3-Clause AND
-        CC0-1.0
-      license_declared: MIT AND 0BSD AND Apache-2.0 AND JSON AND BSD-3-Clause AND
-        CC0-1.0
+      license_concluded: CC0-1.0 AND MIT AND BSD-3-Clause AND Apache-2.0
+      license_declared: CC0-1.0 AND MIT AND BSD-3-Clause AND Apache-2.0
       short_summary: Shows the Kubernetes Dashboard UI.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: kubernetes-dashboard-2.7.0.tar.gz
