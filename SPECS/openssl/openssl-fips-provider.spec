@@ -1,7 +1,7 @@
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
-Version:        3.0.8
-Release:        7%{?dist}
+Version:        3.1.2
+Release:        1%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -17,7 +17,7 @@ Source2: license.txt
 Requires: bash
 Requires: glibc
 Requires: libgcc
-Requires: openssl >= %{version}
+Requires: openssl >= 3.0
 
 %description
 Fips library for enabling fips.
@@ -27,7 +27,7 @@ if grep -q "^Patch[0-9]*:" %{_specdir}/%{name}.spec; then
   echo "ERROR: Patches detected in the %{name} spec file" 1>&2
   exit 1
 fi
-%autosetup -n openssl-%{version}
+%autosetup -n openssl-openssl-%{version}
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -83,6 +83,8 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 
 %changelog
+* Tue Jun 24 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.1.2-1
+- Update OpenSSL Fips Provider to 3.1.2
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.8-7
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.8-6
