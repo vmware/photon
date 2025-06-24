@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        17%{?dist}
+Release:        18%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -26,6 +26,13 @@ Patch1:         0002-malloc-arena-fix.patch
 #release branch patches
 #generate using ./tools/scripts/generate-glibc-release-patches.sh %{version}
 %include %{SOURCE3}
+
+# CVE-2025-4802 (skipped tests)
+Patch501: 0001-elf-Ignore-LD_LIBRARY_PATH-and-debug-env-var-for-set.patch
+Patch502: 0002-support-Use-const-char-argument-in-support_capture_s.patch
+Patch503: 0003-support-Add-support_record_failure_barrier.patch
+Patch504: 0004-support-Don-t-fail-on-fchown-when-spawning-sgid-proc.patch
+Patch505: 0005-support-Pick-group-in-support_capture_subprogram_sel.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -358,6 +365,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 24 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-18
+- Fix CVE-2025-4802
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-17
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-16
