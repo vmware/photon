@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
@@ -22,6 +22,7 @@ Patch5: CVE-2023-36054.patch
 Patch6: CVE-2024-26458.patch
 Patch7: CVE-2024-26461.patch
 Patch8: CVE-2024-37370-37371.patch
+Patch9: CVE-2024-3596.patch
 
 Requires:       openssl
 Requires:       e2fsprogs-libs
@@ -143,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+* Mon Jun 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.17-14
+- Fix for CVE-2024-3596
 * Fri Aug 30 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.17-13
 - Include e2fsprogs-devel as Requires for krb5 devel package
 - This needed to resolve linking issues in elfutils build
