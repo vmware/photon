@@ -114,8 +114,8 @@ sources:
         random numbers, ensuring robust security in systems that rely on high-quality
         entropy for encryption and other sensitive operations.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: fips-canister-6.0.0-6.12.1-11-1.ph5.tar.bz2
-  archive_sha512sum: 093ba059e07483313d29cb993aed157efe56717d6c7d6e18d69595c6ef6053f647629c9ff9763b37f8c3f85b13775af8cc4696a86e6adc8debb8195f8f09dc98
+- archive: fips-canister-6.12.1-18.ph5.tar.bz2
+  archive_sha512sum: ed95d8b7d6c8483affef3d0cf85529aabc9748451e28bb52a54a635f654c0e9409854c3af67067a8d2283b066787d4fc929c82ce83274f9db7122a4fb9c314c2
   skip_validation: true
   spdx:
     package:
