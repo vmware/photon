@@ -2,14 +2,14 @@
 
 Summary:    Very fast, header only, C++ logging library.
 Name:       spdlog
-Version:    1.11.0
-Release:    2%{?dist}
+Version:    1.15.3
+Release:    1%{?dist}
 URL:        https://github.com/gabime/spdlog
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    %{name}-%{version}.tar.gz
+Source0:  https://github.com/gabime/spdlog/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -17,6 +17,7 @@ Source1: license.txt
 BuildRequires:  automake
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  ninja-build
 
 %description
 Very fast, header only, C++ logging library.
@@ -32,34 +33,40 @@ Development headers and libraries for %{name}.
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} -G Ninja \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_BUILD_TYPE=Release \
     -DSPDLOG_BUILD_SHARED=ON
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
-%if 0%{?with_check}
-%check
-cd %{__cmake_builddir}
-make test %{?_smp_mflags}
-%endif
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
 %{_libdir}/libspdlog.so.*
 
 %files devel
+%defattr(-,root,root)
 %{_libdir}/libspdlog.so
 %{_includedir}/%{name}/*
 %{_libdir}/cmake/%{name}/*.cmake
 %{_libdir}/pkgconfig/spdlog.pc
 
 %changelog
+* Wed Jun 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.3-1
+- Upgrade to v1.15.3
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.11.0-2
 - Release bump for SRP compliance
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.11.0-1

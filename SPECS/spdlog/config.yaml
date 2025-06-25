@@ -1,12 +1,20 @@
 sources:
-- archive: spdlog-1.11.0.tar.gz
-  archive_sha512sum: 210f3135c7af3ec774ef9a5c77254ce172a44e2fa720bf590e1c9214782bf5c8140ff683403a85b585868bc308286fbdeb1c988e4ed1eb3c75975254ffe75412
-  skip_validation: true
+- archive: spdlog-1.15.3.tar.gz
+  archive_sha512sum: 21c35f4091850ea3a0cd6a24867e06e943df70d76cd5a7ec0b15a33e0e9e0cc3584ed7930e1ac6f347e7e06f0e002d0e759884eaf05310014e24ea0e0419fcc4
+  archive_type: upstream
+  commit_id: 6fa36017cfd5731d617e1a934f0e5ea9c4445b13
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: spdlog-1.15.3
+  version: 1.15.3
+  repo_url: https://github.com/gabime/spdlog
+  url: https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz
   spdx:
     package:
-      detailed_description: 'Very fast, header only, C++ logging library. '
+      detailed_description: Very fast, header only, C++ logging library.
       home_page: https://github.com/gabime/spdlog
-      license_concluded: MIT AND BSL-1.0
-      license_declared: MIT AND BSL-1.0
+      license_concluded: MIT
+      license_declared: MIT
       short_summary: Very fast, header only, C++ logging library.
       supplier: 'Organization: Broadcom, Inc.'
