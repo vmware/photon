@@ -1,17 +1,17 @@
-%global build_for %{BUILD_FOR}
-%define network_required 1
-%global security_hardening none
-%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-%define _modulesdir /lib/modules/%{uname_r}
+%global build_for           %{BUILD_FOR}
+%define network_required    1
+%global security_hardening  none
+%define uname_r             %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define _modulesdir         /lib/modules/%{uname_r}
+%define uthash_path         %{falcosecurity_libs}/userspace/libscap
 %define falcosecurity_libs_prefix_src %{_arch}-vmware-linux/falcosecurity-libs-repo/falcosecurity-libs-prefix/src
-%define falcosecurity_libs %{falcosecurity_libs_prefix_src}/falcosecurity-libs
-%define falcosecurity_src  %{falcosecurity_libs_prefix_src}/0.13.4.tar.gz
-%define uthash_path %{falcosecurity_libs}/userspace/libscap
+%define falcosecurity_libs  %{falcosecurity_libs_prefix_src}/falcosecurity-libs
+%define falcosecurity_src   %{falcosecurity_libs_prefix_src}/0.13.4.tar.gz
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        11%{?kernelsubrelease}%{?dist}
+Release:        12%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -42,12 +42,10 @@ BuildRequires: zlib-devel
 BuildRequires: ncurses-devel
 BuildRequires: linux-devel = %{uname_r}
 BuildRequires: jq-devel
-BuildRequires: git
 BuildRequires: lua-devel
+BuildRequires: jsoncpp-devel
 BuildRequires: libyaml-devel
 BuildRequires: linux-api-headers
-BuildRequires: wget
-BuildRequires: which
 BuildRequires: grpc-devel
 BuildRequires: c-ares-devel
 BuildRequires: protobuf-devel
@@ -71,6 +69,10 @@ Requires: c-ares
 Requires: re2
 Requires: yaml-cpp
 
+%description
+Sysdig %{name} is an open source, behavioral activity monitor designed to detect anomalous activity in your applications.
+Falco lets you continuously monitor and detect container, application, host, and network activity; all in one place, from one source of data, with one set of customizable rules.
+
 %package    devel
 Summary:    falco
 Group:      Development/Libraries
@@ -78,10 +80,6 @@ Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Development files for %{name}
-
-%description
-Sysdig %{name} is an open source, behavioral activity monitor designed to detect anomalous activity in your applications.
-Falco lets you continuously monitor and detect container, application, host, and network activity; all in one place, from one source of data, with one set of customizable rules.
 
 %prep
 %autosetup -p1
@@ -98,6 +96,8 @@ cp %{SOURCE2} %{uthash_path}
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
     -DUSE_BUNDLED_JQ:BOOL=OFF \
     -DUSE_BUNDLED_YAMLCPP:BOOL=OFF \
+    -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_RE2=OFF \
     -DBUILD_SHARED_LIBS:BOOL=OFF \
     -DUSE_BUNDLED_LIBELF=OFF \
     -DLIBELF_LIB=%{_libdir}/libelf.so \
@@ -140,6 +140,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Wed Jun 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.36.2-12
+- Use system provided yamlcpp, re2
 * Tue May 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.36.2-11
 - Use local falcosecurility libs source and uthash.h
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-10
