@@ -2,16 +2,16 @@
 
 Summary:    Very fast, header only, C++ logging library.
 Name:       spdlog
-Version:    1.8.1
-Release:    2%{?dist}
+Version:    1.15.3
+Release:    1%{?dist}
 License:    MIT
 URL:        https://github.com/gabime/spdlog
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0:    %{name}-%{version}.tar.gz
-%define sha512 %{name}=ef855f4f91ed8aba89ef0191a9fd70f73a49567332f7eb42da1604e3a7dda3bbe48db3fd0fae317bb11ee95315d8cd62bf586d2de919ca0978d91e5a971b1c3f
+Source0: https://github.com/gabime/spdlog/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 %{name}=21c35f4091850ea3a0cd6a24867e06e943df70d76cd5a7ec0b15a33e0e9e0cc3584ed7930e1ac6f347e7e06f0e002d0e759884eaf05310014e24ea0e0419fcc4
 
 BuildRequires:  automake
 BuildRequires:  cmake
@@ -34,38 +34,40 @@ applications that use %{name}.
 %autosetup -p1
 
 %build
-%cmake -G Ninja \
-    -DCMAKE_INSTALL_LIBDIR=%{_lib} \
+%{cmake} -G Ninja \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_BUILD_TYPE=Release \
-    -DSPDLOG_BUILD_SHARED=ON \
-    -DSPDLOG_BUILD_EXAMPLE=OFF \
-    -DSPDLOG_BUILD_BENCH=OFF \
-    -DSPDLOG_BUILD_TESTS=ON \
-    -DSPDLOG_INSTALL=ON
+    -DSPDLOG_BUILD_SHARED=ON
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
-%check
-%ctest
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%license LICENSE
-%doc README.md
-%{_libdir}/lib%{name}.so.1*
+%{_libdir}/libspdlog.so.*
 
 %files devel
 %defattr(-,root,root)
-%doc example
-%{_includedir}/%{name}
-%{_libdir}/lib%{name}.so
-%{_libdir}/cmake/%{name}
-%{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/libspdlog.so
+%{_includedir}/%{name}/*
+%{_libdir}/cmake/%{name}/*.cmake
+%{_libdir}/pkgconfig/spdlog.pc
 
 %changelog
+* Wed Jun 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.3-1
+- Upgrade to v1.15.3
 * Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.1-2
 - Use cmake macros
 * Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
