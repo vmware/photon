@@ -1,5 +1,4 @@
 %define network_required 1
-%define gopath_comp_coredns github.com/coredns/coredns
 %define debug_package %{nil}
 
 # Must be in sync with package version
@@ -8,7 +7,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -27,29 +26,14 @@ BuildRequires: git
 %description
 CoreDNS is a DNS server that chains plugins
 
-%prep -p exit
-#%setup -q
-# Using autosetup is not feasible
-%setup -q -c -n %{name}-%{version}
-pushd %{name}-%{version}
-%patch -p1 -P 0
-popd
-
-mkdir -p "$(dirname src/%{gopath_comp_coredns})"
-mv %{name}-%{version} src/%{gopath_comp_coredns}
+%prep
+%autosetup -p1
 
 %build
-export GO111MODULE=auto
-export GOPATH="${PWD}"
-pushd src/%{gopath_comp_coredns}
 %make_build GITCOMMIT=%{COREDNS_GIT_COMMIT}
-popd
 
 %install
-pushd src/%{gopath_comp_coredns}
-install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} coredns
-popd
+install -D -m 755 %{name} %{buildroot}%{_bindir}/%{name}
 
 %clean
 rm -rf %{buildroot}/*
@@ -59,6 +43,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Jun 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-12
+- Fix build instructions
 * Fri Jun 20 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-11
 - Fix for CVE-2025-47950
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.11.1-10
