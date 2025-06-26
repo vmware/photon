@@ -2,17 +2,18 @@
 
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
-Version:        15.0.7
-Release:        8%{?dist}
+Version:        18.1.8
+Release:        1%{?dist}
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
+Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
 
-Source1: license.txt
-%include %{SOURCE1}
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: cmake
 BuildRequires: llvm-devel = %{version}
@@ -52,9 +53,10 @@ Requires:       python3-six
 The package contains the LLDB Python3 module.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}.src
+%autosetup -p1 -a1 -n %{name}-%{version}.src
 
 %build
+mv cmake-%{version}.src ../cmake
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
 build_jobs="$(( ($(nproc)+1) / 2 ))"
@@ -110,6 +112,9 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 18.1.8-1
+- Update to version 18.1.8 for llvm and rust upgrade
+- corresponding cmake is required to build
 * Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 15.0.7-8
 - Bump version as a part of ncurses upgrade
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-7

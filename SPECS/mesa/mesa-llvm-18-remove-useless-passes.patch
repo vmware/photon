@@ -1,0 +1,58 @@
+From bc7e363f8e1a26342e6fd7241c1f0ebb722338d6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Kai=20Wasserb=C3=A4ch?= <kai@dev.carbon-project.org>
+Date: Wed, 22 Nov 2023 20:21:11 +0100
+Subject: [PATCH] fix: ac/llvm: LLVM 18: remove useless passes, partially
+ removed upstream
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream removed llvm::createLoopSinkPass() in commit
+<https://github.com/llvm/llvm-project/commit/b9975cec0ea0a2f10d65b7bd1197d9e1706cbd3d>
+and there is no useful alternative except moving to the new pass
+manager.
+
+On top of that, the usage of this optimisation pass and
+PromoteMemoryToRegisterPass were just useless, according to the
+upstream developer of the commit named above. Therefore the easiest
+solution is, as him, Marek and Dave suggested, to just remove these two
+passes from the pipeline for now.
+
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/10192
+Reference: https://github.com/llvm/llvm-project/pull/72811
+Reference: https://github.com/llvm/llvm-project/commit/b9975cec0ea0a2f10d65b7bd1197d9e1706cbd3d
+Suggested-by: Dave Airlie <airlied@redhat.com>
+Suggested-by: Aiden Grossman <agrossman154@yahoo.com>
+Suggested-by: Marek Olšák <maraeo@gmail.com>
+Signed-off-by: Kai Wasserbäch <kai@dev.carbon-project.org>
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26336>
+---
+ src/amd/llvm/ac_llvm_helper.cpp | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/src/amd/llvm/ac_llvm_helper.cpp b/src/amd/llvm/ac_llvm_helper.cpp
+index 40a4399e70505..5d065279ad1fb 100644
+--- a/src/amd/llvm/ac_llvm_helper.cpp
++++ b/src/amd/llvm/ac_llvm_helper.cpp
+@@ -299,17 +299,12 @@ LLVMPassManagerRef ac_create_passmgr(LLVMTargetLibraryInfoRef target_library_inf
+     */
+    unwrap(passmgr)->add(createBarrierNoopPass());
+ 
+-   /* This pass eliminates all loads and stores on alloca'd pointers. */
+-   unwrap(passmgr)->add(createPromoteMemoryToRegisterPass());
+    #if LLVM_VERSION_MAJOR >= 16
+    unwrap(passmgr)->add(createSROAPass(true));
+    #else
+    unwrap(passmgr)->add(createSROAPass());
+    #endif
+    /* TODO: restore IPSCCP */
+-   if (LLVM_VERSION_MAJOR >= 16)
+-      unwrap(passmgr)->add(createLoopSinkPass());
+-   /* TODO: restore IPSCCP */
+    unwrap(passmgr)->add(createLICMPass());
+    unwrap(passmgr)->add(createCFGSimplificationPass());
+    /* This is recommended by the instruction combining pass. */
+-- 
+GitLab
+

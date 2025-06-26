@@ -1,11 +1,11 @@
 %define network_required 1
 %global debug_package   %{nil}
-%define llvm_maj_ver    15
+%define llvm_maj_ver    18
 
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        15.0.7
-Release:        6%{?dist}
+Version:        18.1.8
+Release:        1%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -26,6 +26,8 @@ BuildRequires:  ninja-build
 BuildRequires:  glibc-devel
 
 Requires:       libllvm = %{version}-%{release}
+
+Patch0: 0001-llvm-CodeGen-Fix-build-failure-for-MI-dump.patch
 
 %description
 The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
@@ -52,7 +54,7 @@ The libllvm package contains shared libraries for llvm
 %autosetup -p1 -n %{name}-%{version}.src -a1
 
 %build
-mv cmake-%{version}.src/Modules/*.cmake cmake/modules
+mv cmake-%{version}.src ../cmake
 
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
@@ -72,6 +74,10 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
   -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
   -DLLVM_ENABLE_FFI:BOOL=ON \
   -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_INCLUDE_TESTS=OFF \
+  -DLLVM_ENABLE_LIBPFM:BOOL=OFF \
+  -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF \
+  -DLLVM_ENABLE_LIBCXX:BOOL=OFF \
   -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
   -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
   -DLLVM_INCLUDE_GO_TESTS=No \
@@ -126,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 18.1.8-1
+- Update llvm to 18.1.8 to build latest version of rust-1.87.0
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-6
 - Enable shared libs
 * Tue Jan 28 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 15.0.7-5

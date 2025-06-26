@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql16
 Version:        16.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -736,6 +736,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 16.10-2
+- Bump to build with updated llvm
 * Tue Aug 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.10-1
 - Upgrade to v16.10
 * Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.9-2

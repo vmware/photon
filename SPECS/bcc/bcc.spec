@@ -2,8 +2,8 @@
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
-Version:         0.28.0
-Release:         6%{?dist}
+Version:         0.35.0
+Release:         1%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -13,9 +13,6 @@ Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0:        CVE-2024-2314-1.patch
-Patch1:        CVE-2024-2314-2.patch
 
 BuildRequires: cmake
 BuildRequires: build-essential
@@ -134,6 +131,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.35.0-1
+- Bump to build with updated llvm
 * Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.28.0-6
 - Bump version as a part of ncurses upgrade
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.28.0-5

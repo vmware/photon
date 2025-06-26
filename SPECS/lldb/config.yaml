@@ -1,6 +1,9 @@
+shared_sources:
+  - shared-cfg-yml/cmake.yaml
+
 sources:
-- archive: lldb-15.0.7.src.tar.xz
-  archive_sha512sum: 27f94fd87827d08959a572038c22fd558e1776f94e1678e900d6e28517ae6fe2d89cbc719d9c65cd2879fc6bd97d291f90c4b8e6fe283f02fdf210ed138c80fa
+- archive: lldb-18.1.8.src.tar.xz
+  archive_sha512sum: f356a657d1aec860aeaaeb3aa3190652735160dd1e86dfbbae0441ace0a21cc774621198b0fc26c37d3e7c34d68d8a5f56806097f0c8d94718f5fc03495b1a3e
   skip_validation: true
   spdx:
     package:

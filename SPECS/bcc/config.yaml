@@ -1,7 +1,15 @@
 sources:
-- archive: bcc-0.28.0.tar.gz
-  archive_sha512sum: 792ce93dba64b1f87390b2602dcaeba04ac8b2863652b06eb9a907b93bc6137a944b856cc6fa9c7a38671c89814740967561ca4f3b29c267babca7dc5e78aa02
-  skip_validation: true
+- archive: bcc-0.35.0.tar.gz
+  archive_type: upstream
+  version: 0.35.0
+  name: bcc-0.35.0
+  url: https://github.com/iovisor/bcc/archive/refs/tags/v0.35.0.tar.gz
+  repo_url: https://github.com/iovisor/bcc.git
+  commit_id: c31a1ca305f787ba53e001ead45ebf65233a32cf
+  skip_list: []
+  missing: []
+  archive_sha512sum: 23cc1413fef785165fe9fd29a242fb13e4e56da7d63699dbed3d6d12902a1de392b412cb0e5754eff5aeecf0a023568d593c9f4cb5bca7a88013aadfaef4fa3d
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'BCC is a toolkit for creating efficient kernel tracing

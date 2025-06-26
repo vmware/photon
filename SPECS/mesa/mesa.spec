@@ -1,16 +1,18 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        23.0.0
-Release:        5%{?dist}
+Version:        23.3.6
+Release:        1%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
+Source0: https://gitlab.freedesktop.org/%{name}/%{name}/-/archive/%{name}-%{version}/%{name}-%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: mesa-llvm-18-remove-useless-passes.patch
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -30,6 +32,7 @@ BuildRequires:  libwayland-egl
 BuildRequires:  libpciaccess-devel
 BuildRequires:  glslang-devel
 BuildRequires:  bison
+BuildRequires:  libunwind-devel
 
 Requires:       libllvm
 Requires:       expat-libs
@@ -84,6 +87,9 @@ Mesa libgbm development package.
     -Dopengl=false \
     -Dgbm=enabled \
     -Dglx=disabled \
+    -Dxlib-lease=disabled \
+    -Dandroid-libbacktrace=disabled \
+    -Dlmsensors=disabled \
     -Degl=disabled \
     -Dglvnd=false \
     -Dllvm=enabled \
@@ -141,6 +147,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/gbm.pc
 
 %changelog
+* Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 23.3.6-1
+- Bump to build with updated llvm
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.0.0-5
 - Rebuild with llvm shared libs
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 23.0.0-4

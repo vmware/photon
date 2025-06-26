@@ -1,6 +1,6 @@
 sources:
-- archive: cmake-15.0.7.src.tar.xz
-  archive_sha512sum: a87c3c0976c7295e5d51f7a3dbd4129c4b5ff0dc95bac494a5011641743a5950a0aa7d9c44fae570284573b9f673a395fc3160b45b6b4ba54ced9ed5f21dd717
+- archive: cmake-18.1.8.src.tar.xz
+  archive_sha512sum: e02243b491f9e688db28d7b53270fcf87debf09d3c95b136a7c7b96e26890de68712c60a1e85f5a448a95ad8c81f2d8ae77047780822443bbe39f1a9e6211007
   skip_validation: true
   spdx:
     package:

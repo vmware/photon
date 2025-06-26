@@ -4,7 +4,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.87.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -30,9 +30,7 @@ BuildRequires: clang
 BuildRequires: xz-devel
 BuildRequires: libxml2-devel
 BuildRequires: ncurses-devel
-# Use bundled llvm instead of system provided,
-# because it requires to update llvm
-#BuildRequires: llvm-devel
+BuildRequires: llvm-devel
 
 Requires: glibc
 Requires: gcc
@@ -57,8 +55,8 @@ Documentation files for rust
 %setup -q -n %{name}c-%{version}-src
 %autopatch -p1 -M0
 
-# Remove other unused vendored libraries except 'llvm' and 'cmake'
-%define libraries libunwind clang clang-tools-extra lldb lld compiler-rt runtimes llvm-libgcc
+# Remove other unused vendored libraries except 'cmake'
+%define libraries libunwind clang clang-tools-extra lldb lld compiler-rt runtimes llvm-libgcc llvm
 for library in %{libraries}; do
   rm -rf src/llvm-project/$library
 done
@@ -78,6 +76,7 @@ sh ./configure \
     --prefix=%{_prefix} \
     --enable-extended \
     --tools="cargo" \
+    --llvm-root=%{_prefix} \
     --disable-llvm-static-stdcpp \
     --disable-llvm-bitcode-linker \
     --disable-lld \
@@ -127,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.87.0-2
+- Consume system provided llvm
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.87.0-1
 - Update to v1.87.0
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-8

@@ -2,8 +2,8 @@
 
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
-Version:        15.0.7
-Release:        6%{?dist}
+Version:        18.1.8
+Release:        1%{?dist}
 URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -11,8 +11,10 @@ Distribution:   Photon
 
 Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
 
-Source1: license.txt
-%include %{SOURCE1}
+Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires: cmake
 BuildRequires: llvm-devel = %{version}
@@ -41,9 +43,10 @@ Requires:       ncurses-devel
 The clang-devel package contains libraries, header files and documentation for developing applications that use clang.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}.src
+%autosetup -p1 -a1 -n %{name}-%{version}.src
 
 %build
+mv cmake-%{version}.src ../cmake
 # if we use a bigger value, we will hit OOM, so don't increase it
 # unless you are absolutely sure
 build_jobs="$(( ($(nproc)+1) / 2 ))"
@@ -58,7 +61,9 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
 %{cmake} -G Ninja \
   -DCMAKE_INSTALL_PREFIX=%{_usr} \
   -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_INCLUDE_TESTS=OFF \
   -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
+  -DLLVM_INCLUDE_DIRS=%{_includedir} \
   -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
   -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
   -DBUILD_SHARED_LIBS=ON \
@@ -104,6 +109,9 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/libscanbuild
 
 %changelog
+* Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 18.1.8-1
+- Update to version 18.1.8 for llvm and rust upgrade
+- corresponding cmake is required to build
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-6
 - Enable shared libs
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 15.0.7-5
