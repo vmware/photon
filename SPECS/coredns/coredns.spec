@@ -1,14 +1,9 @@
-%ifarch aarch64
-%global gohostarch      arm64
-%else
-%global gohostarch      amd64
-%endif
 %define debug_package %{nil}
 
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -26,33 +21,14 @@ BuildRequires: git
 %description
 CoreDNS is a DNS server that chains plugins
 
-%prep -p exit
-%autosetup -n %{name}-%{version} -p1
+%prep
+%autosetup -p1
 
 %build
-export ARCH=%{gohostarch}
-export VERSION=%{version}
-export PKG=github.com/%{name}/%{name}
-export GOARCH=${ARCH}
-export GOHOSTARCH=${ARCH}
-export GOOS=linux
-export GOHOSTOS=linux
-export GOROOT=%{_libdir}/golang
-export GOPATH=%{_datadir}/gocode
-export GOBIN=%{_datadir}/gocode/bin
-export PATH=$PATH:$GOBIN
-mkdir -p ${GOPATH}/src/${PKG}
-cp -rf . ${GOPATH}/src/${PKG}
-pushd ${GOPATH}/src/${PKG}
-# Just download (do not compile), since it's not compilable with go-1.9.
-# TODO: use prefetched tarball instead.
-sed -i 's#go get -u github.com/mholt/caddy#go get -u -d github.com/mholt/caddy#' Makefile
-sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
 %make_build
 
 %install
-install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/%{name}/%{name}/coredns
+install -D -m 755 %{name} %{buildroot}%{_bindir}/%{name}
 
 %clean
 rm -rf %{buildroot}/*
@@ -62,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Jun 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-8
+- Fix build instructions
 * Mon Jun 23 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-7
 - Fix for CVE-2025-47950
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-6
