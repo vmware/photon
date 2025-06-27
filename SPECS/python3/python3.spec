@@ -3,8 +3,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.10.11
-Release:        13%{?dist}
+Version:        3.10.18
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -12,28 +12,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512 Python=fa113b4b635d271a1412999587ec64654d337db263851a6a9d88b3cab4ed66dba76fe03e65c4d341f0a83fd8182d35e245bfd9827465d7aebcb4deb71af4d047
+%define sha512 Python=2c444f024cd15babd156964b50aa0245020a17c0c600250ffcf112e91594a3d6e1fb87c9b87a57cb7a802dae90004d801ed95a3103d79aefb8ed714279997708
 
 Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels%{?dist}-1.0.tar.xz
-%define sha512 setuptools-pip-wheels=2cf58e212034fe280e13990e42f9159c3d70757dc8ef8337db67c26f01618584e1810444ce2e965b8f4b4b2bc34f34b39cecb93363198b1a4f2e3477fb2271b2
+Source2: setuptools-pip-wheels%{?dist}-2.0.tar.xz
+%define sha512 setuptools-pip-wheels=3949a17915c9040efce6eb5743553bffcc9ec1befe0daa2e3f15c0b7f116f13fd65015af99144d2f39d43c9caab4c73246346b9959ef245843356e85785a13c3
 
 Patch0:         cgi3.patch
-Patch1:         CVE-2023-27043.patch
-Patch2:         CVE-2007-4559.patch
-Patch3:         CVE-2023-24329.patch
 Patch4:         use-HMAC-SHA256-in-FIPS-mode.patch
-Patch5:         CVE-2023-40217.patch
 Patch6:         ensurepip-upgrade-bundled-pip-and-setuptools.patch
-Patch7:         CVE-2024-4032.patch
-Patch8:         CVE-2023-6597.patch
-Patch11:        CVE-2024-6923.patch
-patch12:        CVE-2024-7592.patch
-Patch13:        CVE-2024-6232.patch
-Patch14:        CVE-2024-9287.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -309,6 +299,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri Jun 27 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-1
+- Update to 3.10.18, Fixes multiple CVEs
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.10.11-13
 - Version bump for expat upgrade
 * Tue Dec 31 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.11-12
