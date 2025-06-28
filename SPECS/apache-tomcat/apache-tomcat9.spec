@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.104
+Version:        9.0.106
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=d2d66a1e0bf55cd6379154a023aaccec5e4007a95412e7207ecf729d315c6afdc3125a985cdf1289ad66162a180f24798161436e99d792e24deee71aaf521a4c
+%define sha512 %{_origname}=1b95f7899a488bd3435ab45999e371a9d8cdd42e4e575ae14b4fcb0387034d150d96c8d62d036b95fad187c810015eda43db50a46919296812653c0a153e8cee
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -32,9 +32,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=32d62088169847ecc7f9bf0da3041c42636171d156e6ef1518045b8146433d066b0c56c1da7ca451545e6bd8e9e15a87de4a029915d3691c09cf8ba9c3d1a0f0
-
-Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
+%define sha512 base=104895bcea43deb066a97dc659ed488f23b29216a8929bac08ec478f173d8ce85b0ab5e3486bfc548b09480a219d788429fee36344dfc447b8f02d1b9784dba5
 
 BuildArch: noarch
 
@@ -148,6 +146,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Sat Jun 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 9.0.106-1
+- Version upgrade to v9.0.106
 * Mon May 12 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.104-1
 - Version upgrade
 - Fixes CVE-2025-31650,CVE-2025-31651
