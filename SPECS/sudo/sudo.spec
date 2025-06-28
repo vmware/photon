@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.15p5
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -19,12 +19,15 @@ BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
 
+Patch0:         sudo-CVE-2025-32462.patch
+Patch1:         sudo-CVE-2025-32463.patch
+
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users)
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
-%autosetup -n sudo-%{version}
+%autosetup -n sudo-%{version} -p1
 
 %build
 %configure --host=%{_host} --build=%{_build} \
@@ -110,6 +113,8 @@ rm -rf %{buildroot}/*
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Sat Jun 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.9.15p5-5
+- Fix for CVE-2025-32462 and CVE-2025-32463
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.9.15p5-4
 - Renaming sysusers to conf to fix auto user creation
 * Fri Mar 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.15p5-3
