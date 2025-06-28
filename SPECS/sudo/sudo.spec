@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.15p5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -17,6 +17,9 @@ BuildRequires:  sed
 
 Requires:       Linux-PAM
 Requires:       shadow
+
+Patch0:         sudo-CVE-2025-32462.patch
+Patch1:         sudo-CVE-2025-32463.patch
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users)
@@ -114,6 +117,8 @@ rm -rf %{buildroot}/*
 %exclude  %{_sysconfdir}/sudoers.dist
 
 %changelog
+* Sat Jun 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.9.15p5-3
+- Fix for CVE-2025-32462 and CVE-2025-32463
 * Fri Mar 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.15p5-2
 - Add colon to password prompt
 * Fri Jan 05 2024 Mukul Sikka <msikka@vmware.com> 1.9.15p5-1
