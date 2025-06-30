@@ -18,6 +18,7 @@ import json
 
 class Scanner:
     _extra_repo_urls = None
+    _config_yaml = {}
 
     # parse scan yaml output and produce a valid SPDX expression
     def _parse_scan_yaml(self, yaml_fn=None, exceptions_list=[], cached_spdx_ids=set()):
@@ -198,10 +199,7 @@ class Scanner:
         src_url = ""
         local_checksum = ""
 
-        with open(config_yaml_path, "r") as config_yaml_f:
-            config_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
-
-        for source in config_yaml["sources"]:
+        for source in self._config_yaml["sources"]:
             archive = source["archive"]
             archive_checksum = source["archive_sha512sum"]
             src_url = f"https://packages.vmware.com/photon/photon_sources/1.0/{archive}"
@@ -332,8 +330,7 @@ class Scanner:
     # e.g SPECS/<pkg name>/<pkg.spec>. Similar to extract_src_rpm()
     def _build_scan_dir_from_spec_dir(self,
                                       spec_path=None,
-                                      alt_src_url=None,
-                                      config_yaml_path=None):
+                                      alt_src_url=None):
         dist_tag = ""
         attempts = 0
         ph_root = ""
@@ -363,7 +360,6 @@ class Scanner:
             f"{common.rpm_build_root}/SOURCES",
             alt_src_url=alt_src_url,
             photon_root=ph_root,
-            config_yaml_path=config_yaml_path
         )
 
         rpm_build_cmds = [
@@ -408,7 +404,10 @@ class Scanner:
                 )
                 return scan_dir
 
-            scan_dir = self._build_scan_dir_from_spec_dir(path, alt_src_url, config_yaml_path)
+            with open(config_yaml_path, "r") as config_yaml_f:
+                self._config_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
+
+            scan_dir = self._build_scan_dir_from_spec_dir(path, alt_src_url)
 
             if not scan_dir:
                 err_exit(f"Failed to build source directory for {path}")
@@ -465,8 +464,116 @@ class Scanner:
                     os.remove(full_path)
 
 
+    # For some packages with multiple sources, there can be multiple subdirectories under BUILD/
+    # each corresponding to a different source archive. Only one is the main source/build directory,
+    # but to outsiders we can't really tell which one.
+    #
+    # As in the case of Linux, for example, some files are copied from one BUILD subdirectory to
+    # another, resulting in the same file existing in two separate locations, with different paths.
+    #
+    # We need to grab the manual review licenses AND delete the file in each place where it exists,
+    # and to do this we need the relative paths for both the main source/build directory and the
+    # archive directory.
+    def _parse_manual_review(self, scan_dir):
+        spdx_exp = []
+
+        # Check manual review paths relative to the archive directories
+        for archive in self._config_yaml['sources']:
+            if 'license_manual_review' not in archive:
+                continue
+
+            spdx_exp.extend(
+                self.__parse_manual_review(scan_dir, archive['license_manual_review'])
+            )
+
+        return spdx_exp
+
+    def __parse_found_manual_review_file(self, reviewed_md5sum, reviewed_spdx_exp, path):
+        spdx_exp = []
+        checksum = None
+
+        if not path or not os.path.exists(path):
+            return []
+
+        with open(path, "rb") as check_f:
+            checksum = hashlib.file_digest(check_f, "md5").hexdigest()
+
+        if checksum != reviewed_md5sum:
+            err_exit(
+                f"Manual review required for '{path}'. The checksum has changed, "
+                "please review and update the checksum/spdx expression accordingly"
+            )
+
+        spdx_exp.extend(
+            extract_top_level_expressions(reviewed_spdx_exp)
+        )
+
+        os.remove(path)
+
+        return spdx_exp
+
+
+    def __parse_manual_review(self, scan_dir, manual_review):
+        spdx_exp = []
+
+        for reviewed_f in manual_review:
+            # required
+            archive_path = reviewed_f['archive_path']
+            # optional, if different from archive_path
+            source_path = ""
+            if 'final_source_path' in reviewed_f:
+                source_path = reviewed_f['final_build_path']
+
+            found_archive_path = ""
+            found_source_path = ""
+
+            # check the path relative to each subdirectory under BUILD/
+            for dir_name in os.listdir(f'{scan_dir}'):
+                if not os.path.isdir(f"{scan_dir}/{dir_name}"):
+                    continue
+
+                if found_source_path and found_archive_path:
+                    break
+
+                full_archive_path = f'{scan_dir}/{dir_name}/{archive_path}'
+                if os.path.exists(full_archive_path):
+                    found_archive_path = full_archive_path
+
+                if not source_path:
+                    continue
+
+                full_source_path = f'{scan_dir}/{dir_name}/{source_path}'
+                if os.path.exists(full_source_path):
+                    found_source_path = full_source_path
+
+            if not found_archive_path and not found_source_path:
+                err_exit(
+                    f"Manual review: '{source_path}' not found! Please check and update the "
+                    "configuration yaml file accordingly"
+                )
+
+            spdx_exp.extend(
+                self.__parse_found_manual_review_file(
+                    reviewed_f['md5sum'],
+                    reviewed_f['spdx_exp'],
+                    found_source_path
+                )
+            )
+
+            spdx_exp.extend(
+                self.__parse_found_manual_review_file(
+                    reviewed_f['md5sum'],
+                    reviewed_f['spdx_exp'],
+                    found_archive_path
+                )
+            )
+
+        return spdx_exp
+
+
     def _emit_spdx(self, spdx_exp="None"):
         print(f"SPDX Expression: {spdx_exp}")
+
 
     def _cleanup_scan(self, scan_dir=""):
         try:
@@ -533,6 +640,11 @@ class Scanner:
             self._emit_spdx()
             self._cleanup_scan()
             return
+
+        if build_spec:
+            cached_spdx_ids.update(
+                self._parse_manual_review(scan_dir)
+            )
 
         if not cpus:
             cpus = multiprocessing.cpu_count()

@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
 Vendor:         VMware, Inc.
@@ -87,6 +87,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Jul 1 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.4.1-2
+- Bump for new license scan
 * Fri Jan 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.4.1-1
 - Update to 3.4.1
 * Thu Jan 02 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.7-5

@@ -145,16 +145,16 @@ def parse_config(config_path=None):
     with open(config_path, "r") as config_f:
         config_yaml = yaml.load(config_f, Loader=yaml.SafeLoader)
 
-        try:
-            common.ignore_list = config_yaml["license_ignore_list"]
-            common.disallowed_licenses = config_yaml["disallowed_licenses"]
-            common.redis_host = config_yaml["redis_host"]
-            common.redis_port = config_yaml["redis_port"]
-            common.redis_ttl = config_yaml["redis_ttl"]
-            common.no_trimming = config_yaml["no_trimming"]
-            common.known_failures = config_yaml["known_failures"]
-        except KeyError as exception:
-            err_exit(f"Missing required field in {config_path}!\n{exception}")
+    try:
+        common.ignore_list = config_yaml["license_ignore_list"]
+        common.disallowed_licenses = config_yaml["disallowed_licenses"]
+        common.redis_host = config_yaml["redis_host"]
+        common.redis_port = config_yaml["redis_port"]
+        common.redis_ttl = config_yaml["redis_ttl"]
+        common.no_trimming = config_yaml["no_trimming"]
+        common.known_failures = config_yaml["known_failures"]
+    except KeyError as exception:
+        err_exit(f"Missing required field in {config_path}!\n{exception}")
 
 
 def parse_input():

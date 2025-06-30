@@ -4,11 +4,18 @@ license_ignore_list:
 
 # Illegal licenses - packages cannot be licensed under any of these.
 # Taken from https://github-vcf.devops.broadcom.net/vcf/srp-policy-controls
-# from data/legal/osc/license_family_to_license_map/data.json other_non_permissive
+# from data/legal/osc/license_family_to_license_map/data.json
+# other_non_permissive and network_copyleft
 disallowed_licenses:
     - Abstyles
     - AFL-2.0
     - Aladdin
+    - AGPL-1.0
+    - AGPL-1.0-only
+    - AGPL-1.0-or-later
+    - AGPL-3.0
+    - AGPL-3.0-only
+    - AGPL-3.0-or-later
     - CC-BY-NC-1.0
     - CC-BY-NC-2.0
     - CC-BY-NC-2.5
@@ -29,6 +36,11 @@ disallowed_licenses:
     - CC-BY-ND-2.5
     - CC-BY-ND-3.0
     - CC-BY-ND-4.0
+    - CC-BY-SA-2.0
+    - CC-BY-SA-2.5
+    - CC-BY-SA-3.0
+    - CC-BY-SA-4.0
+    - CPAL-1.0
     - CPOL-1.02
     - Elastic License
     - Facebook BSD License with Patent Provision
@@ -48,6 +60,7 @@ disallowed_licenses:
     - MS-LPL
     - ODbL-1.0
     - OGDL-Taiwan-1.0
+    - OSL-3.0
     - Netscape Public License v1.1
 
 # Redis cache options (OPTIONAL)
