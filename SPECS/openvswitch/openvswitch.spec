@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -80,6 +80,7 @@ It contains the documentation and manpages for openvswitch.
 
 %build
 export PYTHON2=no
+autoreconf -vif
 %configure \
     --enable-ssl \
     --enable-shared
@@ -174,6 +175,8 @@ sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}%{_sysconfdir}/%{name}/defau
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+* Tue Jul 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.14.0-15
+- Fix build with automake-1.16.5
 * Thu Oct 19 2023 Anmol Jain <anmolja@vmware.com> 2.14.0-14
 - Fix for CVE-2023-5366
 * Thu May 04 2023 Anmol Jain <anmolja@vmware.com> 2.14.0-13

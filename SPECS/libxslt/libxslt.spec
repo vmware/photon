@@ -1,26 +1,29 @@
+
 Summary:        Libxslt
 Name:           libxslt
-Version:        1.1.34
-Release:        8%{?dist}
+Version:        1.1.39
+Release:        1%{?dist}
 License:        MIT
-URL:            http://http://xmlsoft.org/libxslt
+URL:            http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1516a11ad608b04740674060d2c5d733b88889de5e413b9a4e8bf8d1a90d712149df6d2b1345b615f529d7c7d3fa6dae12e544da828b39c7d415e54c0ee0776b
+Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.xz
+%define sha512 %{name}=c0c99dc63f8b2acb6cc3ad7ad684ffa2a427ee8d1740495cbf8a7c9b9c8679f96351b4b676c73ccc191014db4cb4ab42b9a0070f6295565f39dbc665c5c16f89
 
 Patch0: patch-to-fix-samba-build.patch
-Patch1: CVE-2021-30560.patch
-Patch2: CVE-2024-55549.patch
-Patch3: CVE-2025-24855.patch
+Patch1: CVE-2024-55549.patch
+Patch2: CVE-2025-24855.patch
 
 Requires:       libxml2
 Requires:       libgcrypt
+Requires:       libgpg-error
 
+BuildRequires:  automake
 BuildRequires:  libxml2-devel
 BuildRequires:  libgcrypt-devel
+BuildRequires:  libgpg-error-devel
 
 %description
 The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files.
@@ -55,10 +58,10 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check
-%make_build tests
+%make_build check
 %endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %clean
@@ -76,12 +79,16 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root,-)
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.so
+%{_libdir}/cmake/libxslt/*
 %{_includedir}/*
 %{_docdir}/*
 %{_datadir}/aclocal/*
 %{_mandir}/man3/*
+%{_datadir}/gtk-doc/*
 
 %changelog
+* Mon Jun 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.39-1
+- Upgrade to v1.1.39, fixes CVE-2023-40403
 * Tue Mar 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.34-8
 - Fix CVE-2024-55549, CVE-2025-24855
 * Thu May 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.1.34-7
