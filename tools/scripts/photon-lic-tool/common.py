@@ -72,6 +72,7 @@ no_trimming = False
 
 # List of files to skip during scanning, as they will fail the scanner
 known_failures = []
+
 ###################################################################
 
 
