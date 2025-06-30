@@ -10,7 +10,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.34.1
-Release:        5%{?kernelsubrelease}%{?dist}
+Release:        6%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -24,8 +24,10 @@ Source2: %{name}-%{version}-dependencies.tar.gz
 
 Source3: uthash.h
 
-Source4: license.txt
-%include %{SOURCE4}
+Source4: spec_install_post.inc
+
+Source5: license.txt
+%include %{SOURCE5}
 
 Patch0: get-googletest-sources-from-photonstage.patch
 Patch1: falcosecurity-libs-nodownload.patch
@@ -52,6 +54,12 @@ BuildRequires: re2-devel
 BuildRequires: tinydir-devel
 BuildRequires: elfutils-devel
 BuildRequires: abseil-cpp-devel
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  python3-requests
+%endif
 
 Requires: linux = %{uname_r}
 Requires: zlib
@@ -125,7 +133,8 @@ rm -rf %{buildroot}%{_datadir}/zsh/ \
 
 mkdir -p %{buildroot}%{_modulesdir}/extra
 mv %{__cmake_builddir}/driver/scap.ko %{buildroot}%{_modulesdir}/extra
-find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
+%include %{SOURCE4}
 
 %clean
 rm -rf %{buildroot}/*
@@ -147,6 +156,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.34.1-6
+- Adding signing to scap module
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-5
 - Release bump for SRP compliance
 * Fri Aug 16 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-4

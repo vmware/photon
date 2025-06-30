@@ -18,27 +18,27 @@ Distribution:   Photon
 Source0: https://sourceforge.net/projects/e1000/files/ice%20stable/%{src_ver}/ice-%{src_ver}.tar.gz
 
 %if "%{src_ver}" == "1.14.9"
-Release:        4%{?kernelsubrelease}%{?dist}
+Release:        5%{?kernelsubrelease}%{?dist}
 %endif
 
 %if "%{src_ver}" == "1.13.7"
-Release:        6%{?kernelsubrelease}%{?dist}
+Release:        7%{?kernelsubrelease}%{?dist}
 %endif
 
 %if "%{src_ver}" == "1.12.7"
-Release:        6%{?kernelsubrelease}%{?dist}
+Release:        7%{?kernelsubrelease}%{?dist}
 
 Patch0:         ice-v1.12.7-Remove-inline-from-ethtool_sprintf.patch
 %endif
 
 %if "%{src_ver}" == "1.11.14"
-Release:        6%{?kernelsubrelease}%{?dist}
+Release:        7%{?kernelsubrelease}%{?dist}
 
 Patch0:         ice-v1.11.14-linux-rt-fix-build-errors-on-6.1.y.patch
 %endif
 
 %if "%{src_ver}" == "1.9.11"
-Release:        6%{?kernelsubrelease}%{?dist}
+Release:        7%{?kernelsubrelease}%{?dist}
 
 Patch0:         ice-v1.9.11-linux-rt-ice-Fix-build-errors-on-kernel-6.0.y.patch
 Patch1:         ice-v1.9.11-ice-Make-ice-driver-honor-default-and-user-defined-I.patch
@@ -56,6 +56,11 @@ BuildRequires:  which
 BuildRequires:  kmod-devel
 BuildRequires:  util-linux
 BuildRequires:  %{kern_pkg_name}-devel = %{kernel_ver}
+%if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  python3-requests
+%endif
 
 Requires:       kmod
 Requires:       %{kern_pkg_name} = %{kernel_ver}
@@ -105,6 +110,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 
 %changelog
 %if "%{src_ver}" == "1.14.9"
+* Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-5
+- Adding signing to the module
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-4
 - Bump-up to build with kmod-34.1
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> %{PKG_VERSION}-3
@@ -116,6 +123,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %endif
 
 %if "%{src_ver}" != "1.14.9"
+* Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-7
+- Adding signing to the module
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-6
 - Bump-up to build with kmod-34.1
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> %{PKG_VERSION}-5

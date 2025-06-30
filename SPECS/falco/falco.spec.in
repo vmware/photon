@@ -11,7 +11,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        12%{?kernelsubrelease}%{?dist}
+Release:        13%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -26,8 +26,10 @@ Source1: %{name}-%{version}-dependencies.tar.gz
 #https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h
 Source2: uthash.h
 
-Source3: license.txt
-%include %{SOURCE3}
+Source3: spec_install_post.inc
+
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0: build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1: 0001-build-plugins-locally.patch
@@ -52,6 +54,12 @@ BuildRequires: protobuf-devel
 BuildRequires: go
 BuildRequires: re2-devel
 BuildRequires: yaml-cpp-devel
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  python3-requests
+%endif
 
 Requires: linux = %{uname_r}
 Requires: zlib
@@ -112,7 +120,8 @@ export KERNELDIR="%{_modulesdir}/build"
 %{cmake_install}
 mkdir -p %{buildroot}%{_modulesdir}/extra
 install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
-find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 xz
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
+%include %{SOURCE3}
 
 %clean
 rm -rf %{buildroot}/*
@@ -140,6 +149,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.36.2-13
+- Adding signing to falco module
 * Wed Jun 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.36.2-12
 - Use system provided yamlcpp, re2
 * Tue May 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.36.2-11
