@@ -1,7 +1,7 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
 Version:       0.3.11
-Release:       1%{?dist}
+Release:       2%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/open-vmdk
@@ -11,6 +11,8 @@ Source0:       https://github.com/vmware/open-vmdk/archive/refs/tags/%{name}-%{v
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-Remove-vmware-specific-path.patch
 
 BuildRequires: zlib-devel
 
@@ -42,7 +44,7 @@ were presented to this VM in guestinfo or on a cdrom.
 Optionally, allows a property value to be modified.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %make_build
@@ -50,10 +52,16 @@ Optionally, allows a property value to be modified.
 %install
 %make_install
 install -d -m 755 %{buildroot}%{_datadir}/%{name}
+install -d -m 755 %{buildroot}%{_sharedstatedir}/ovfenv
 install templates/*.ovf %{buildroot}%{_datadir}/%{name}
 
 %clean
 rm -rf %{buildroot}/*
+
+%post -n ovfenv
+if [ -f /opt/vmware/etc/vami/ovfEnv.xml -a ! -f %{_sharedstatedir}/ovfenv/ovfEnv.xml ] ; then
+    mv /opt/vmware/etc/vami/ovfEnv.xml %{_sharedstatedir}/ovfenv/ovfEnv.xml
+fi
 
 %files
 %defattr(-,root,root)
@@ -66,8 +74,11 @@ rm -rf %{buildroot}/*
 %files -n ovfenv
 %defattr(-,root,root)
 %{_bindir}/ovfenv
+%dir %{_sharedstatedir}/ovfenv
 
 %changelog
+* Tue Jul 01 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.11-2
+- fix directory paths in ovfenv
 * Tue Mar 11 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.11-1
 - update to 0.3.11
 - add ovfenv utility

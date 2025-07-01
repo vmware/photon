@@ -1,0 +1,36 @@
+From 377444c90d50fdf686e2c159ac2f6744b5eb9e1d Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Tue, 1 Jul 2025 19:23:21 +0000
+Subject: [PATCH] Remove vmware specific path * change direcory for ovfEnv.xml
+ to %{_sharedstatedir}/ovfenv * fix locale path
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ ovfenv/ovfenv | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ovfenv/ovfenv b/ovfenv/ovfenv
+index 090b7ab..ddf68f2 100755
+--- a/ovfenv/ovfenv
++++ b/ovfenv/ovfenv
+@@ -83,7 +83,7 @@ import tempfile
+ 
+ import gettext
+ 
+-__t = gettext.translation('ovfenv', '/opt/vmware/lib/locale', fallback=True)
++__t = gettext.translation('ovfenv', '/usr/share/locale', fallback=True)
+ _ = __t.ugettext if sys.version_info[0] < 3 else __t.gettext
+ 
+ debug = False
+@@ -117,7 +117,7 @@ UNMOUNTCD         = ["/bin/umount"]
+ #
+ OVFENV            = "ovf-env.xml"
+ CDDRIVES          = "/proc/sys/dev/cdrom/info"
+-STUDIOENVCOPY     = "/opt/vmware/etc/vami/ovfEnv.xml"
++STUDIOENVCOPY     = "/var/lib/ovfenv/ovfEnv.xml"
+ 
+ 
+ #
+-- 
+2.43.0
+
