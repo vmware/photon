@@ -1,0 +1,25 @@
+From 5693c58a4815cc6327b8d3b6980f0e5aced28abe Mon Sep 17 00:00:00 2001
+From: Ivan Gotovchits <ivg@mayhem.security>
+Date: Fri, 7 Feb 2025 10:02:57 +0900
+Subject: [PATCH] pkg/packet/rtr: fix parser to check the input length
+
+---
+ pkg/packet/rtr/rtr.go | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/pkg/packet/rtr/rtr.go b/pkg/packet/rtr/rtr.go
+index d332f84b..4a5fee38 100644
+--- a/pkg/packet/rtr/rtr.go
++++ b/pkg/packet/rtr/rtr.go
+@@ -364,6 +364,9 @@ func SplitRTR(data []byte, atEOF bool) (advance int, token []byte, err error) {
+ }
+ 
+ func ParseRTR(data []byte) (RTRMessage, error) {
++	if len(data) < 1 {
++		return nil, fmt.Errorf("not all bytes are available for RTR message")
++	}
+ 	var msg RTRMessage
+ 	switch data[1] {
+ 	case RTR_SERIAL_NOTIFY:
+-- 
+2.34.1

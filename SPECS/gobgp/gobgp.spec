@@ -3,11 +3,18 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       3.1.0
-Release:       18%{?dist}
+Release:       19%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/osrg/gobgp
 Source0:       https://github.com/osrg/gobgp/archive/refs/tags/%{name}-%{version}.tar.gz
+
+# CVE-2025-43970Add commentMore actions
+Patch0:        0001-pkg-packet-mrt-fix-parser-to-check-the-input-length.patch
+# CVE-2025-43972
+Patch1:        0001-pkg-packet-bgp-fix-flowspec-parser-to-check-the-inpu.patch
+# CVE-2025-43973
+Patch2:        0001-pkg-packet-rtr-fix-parser-to-check-the-input-length.patch
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -20,7 +27,7 @@ GoBGP is an open source BGP implementation designed from scratch for modern envi
 and implemented in a modern programming language, the Go Programming Language.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 mkdir -p ${GOPATH}/src/github.com/osrg/gobgp
@@ -49,6 +56,8 @@ install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 %doc LICENSE README.md
 
 %changelog
+* Wed Jul 02 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.1.0-19
+- Fix CVE-2025-43973,CVE-2025-43970 CVE-2025-43972
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.0-18
 - Fix go input dependencies which have Capital letters in name.
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.0-17

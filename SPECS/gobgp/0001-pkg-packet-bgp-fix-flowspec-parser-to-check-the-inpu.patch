@@ -1,0 +1,34 @@
+From ca7383f450f7b296c5389feceef2467de5ab6e5a Mon Sep 17 00:00:00 2001
+From: Ivan Gotovchits <ivg@mayhem.security>
+Date: Fri, 7 Feb 2025 10:05:01 +0900
+Subject: [PATCH] pkg/packet/bgp: fix flowspec parser to check the input length
+
+case EC_SUBTYPE_FLOWSPEC_REDIRECT_IP6:
+   ipv6 := net.IP(data[2:18]).String()
+   localAdmin := binary.BigEndian.Uint16(data[18:20])
+   return NewRedirectIPv6AddressSpecificExtended(ipv6, localAdmin), nil
+
+Note that the `data` length is only checked for being at least 8
+bytes, so any message with the given subtype but less than 20 bytes
+will crash the application.
+---
+ pkg/packet/bgp/bgp.go | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/pkg/packet/bgp/bgp.go b/pkg/packet/bgp/bgp.go
+index f16af09d..2655f750 100644
+--- a/pkg/packet/bgp/bgp.go
++++ b/pkg/packet/bgp/bgp.go
+@@ -12708,6 +12708,10 @@ func parseGenericTransitiveExperimentalExtended(data []byte) (ExtendedCommunityI
+ 		dscp := data[7]
+ 		return NewTrafficRemarkExtended(dscp), nil
+ 	case EC_SUBTYPE_FLOWSPEC_REDIRECT_IP6:
++		if len(data) < 20 {
++			return nil, NewMessageError(BGP_ERROR_UPDATE_MESSAGE_ERROR, BGP_ERROR_SUB_MALFORMED_ATTRIBUTE_LIST, nil, "not all extended community bytes for IPv6 FlowSpec are available")
++		}
++
+ 		ipv6 := net.IP(data[2:18]).String()
+ 		localAdmin := binary.BigEndian.Uint16(data[18:20])
+ 		return NewRedirectIPv6AddressSpecificExtended(ipv6, localAdmin), nil
+-- 
+2.34.1
