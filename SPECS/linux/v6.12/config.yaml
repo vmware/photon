@@ -1,6 +1,6 @@
 sources:
-- archive: linux-6.12.1.tar.xz
-  archive_sha512sum: c7523dc5b012367301ab43a685b766dce025c4993041acd3dacd085b052b3fccc7f50c892357acf481e24ccad512770ef46a13d2da16c2a178c44a27f7022932
+- archive: linux-6.12.34.tar.xz
+  archive_sha512sum: b20afb64443656ab01d070405cda010a7133a157917ec33a9dec4957787c93ef9da9de277f08382be12ead66088d00919dc77a238e8618c443a9bf2bb7fa1224
   skip_validation: true
   spdx:
     package:

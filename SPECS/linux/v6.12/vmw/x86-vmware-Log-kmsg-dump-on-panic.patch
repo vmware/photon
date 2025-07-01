@@ -1,4 +1,4 @@
-From da36664987d27ab567bf59b56aebf636f90a741a Mon Sep 17 00:00:00 2001
+From bbe9790e18b6582dd5e6cf41f63f433854f23d34 Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
 Date: Tue, 2 Jun 2020 19:35:47 -0700
 Subject: [PATCH] x86/vmware: Log kmsg dump on panic
@@ -15,11 +15,11 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  1 file changed, 207 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 00189cdeb775..c0a1058c50c4 100644
+index cb3f900c46fc..8dfc59222dc8 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -28,6 +28,8 @@
- #include <linux/cpu.h>
+@@ -29,6 +29,8 @@
+ #include <linux/efi.h>
  #include <linux/reboot.h>
  #include <linux/static_call.h>
 +#include <linux/kmsg_dump.h>
@@ -27,7 +27,7 @@ index 00189cdeb775..c0a1058c50c4 100644
  #include <asm/div64.h>
  #include <asm/x86_init.h>
  #include <asm/hypervisor.h>
-@@ -35,6 +37,7 @@
+@@ -36,6 +38,7 @@
  #include <asm/apic.h>
  #include <asm/vmware.h>
  #include <asm/svm.h>
@@ -35,7 +35,7 @@ index 00189cdeb775..c0a1058c50c4 100644
  
  #undef pr_fmt
  #define pr_fmt(fmt)	"vmware: " fmt
-@@ -139,6 +142,12 @@ static unsigned long vmware_get_tsc_khz(void)
+@@ -140,6 +143,12 @@ static unsigned long vmware_get_tsc_khz(void)
  	return vmware_tsc_khz;
  }
  
@@ -48,7 +48,7 @@ index 00189cdeb775..c0a1058c50c4 100644
  #ifdef CONFIG_PARAVIRT
  static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
  static bool vmw_sched_clock __initdata = true;
-@@ -436,6 +445,204 @@ static void __init vmware_platform_setup(void)
+@@ -440,6 +449,204 @@ static void __init vmware_platform_setup(void)
  #endif
  
  	vmware_set_capabilities();

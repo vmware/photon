@@ -40,8 +40,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.1
-Release:        19%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.34
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -919,6 +919,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jun 27 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-1
+- Upgrade linux kernel to version 6.12.34.
 * Wed Jun 25 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.1-19
 - linux: Use canister version 6.12.1-18.ph5
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.1-18

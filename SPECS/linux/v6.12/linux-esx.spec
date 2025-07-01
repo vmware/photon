@@ -20,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.1
-Release:        5%{?dist}
+Version:        6.12.34
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -475,6 +475,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jun 27 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-1
+- Upgrade linux to version 6.12.34
 * Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-5
 - Introduce FIPS canister plugins
 * Tue Jun 03 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.1-4
