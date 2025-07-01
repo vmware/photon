@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        22.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -15,7 +15,6 @@ BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
 BuildRequires:  python3-devel
 BuildRequires:  which
-BuildRequires:  ninja-build
 
 Requires:       (coreutils or coreutils-selinux)
 Requires:       python3
@@ -37,18 +36,12 @@ for developing applications that use nodejs.
 %autosetup -p1 -n node-v%{version}
 
 %build
-sh ./configure \
-       --prefix=%{_prefix} \
-       --ninja
+%{python3} configure.py \
+         --enable-lto \
+         --prefix=%{_prefix} \
+         --libdir=%{_libdir}
 
-%ifarch aarch64
-# aarch64 build ends up in OOM kill with -j32
-%ninja_build -C out/Release -j16
-%endif
-
-%ifarch x86_64
-%ninja_build -C out/Release
-%endif
+%make_build
 
 %install
 %make_install %{?_smp_mflags}
@@ -83,6 +76,8 @@ make cctest %{?_smp_mflags}
 %{_docdir}/node/gdbinit
 
 %changelog
+* Tue Jul 01 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.16.0-2
+- Fix ARM build
 * Mon Jun 23 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.16.0-1
 - Upgrade to 22.16.0 to fix CVE-2025-23167 and CVE-2025-23090
 * Mon May 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.20.8-2
