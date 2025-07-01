@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.141
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -255,6 +255,12 @@ Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
 # Fix CVE-2025-21969
 Patch157: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
 
+# Fix CVE-2024-27042
+Patch158: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
+
+# Fix CVE-2024-26669
+Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -425,7 +431,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M157
+%autopatch -p1 -m100 -M159
 
 %ifarch aarch64
 # aarch64 patches
@@ -615,6 +621,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jun 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.141-6
+- Fix CVE-2024-27042, CVE-2024-26669
 * Thu Jun 26 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-5
 - Fix CVE-2025-21969
 * Mon Jun 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-4

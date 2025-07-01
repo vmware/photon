@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.141
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -219,6 +219,12 @@ Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
 # Fix CVE-2025-21969
 Patch157: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
 
+# Fix CVE-2024-27042
+Patch158: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
+
+# Fix CVE-2024-26669
+Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -379,7 +385,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M157
+%autopatch -p1 -m100 -M159
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -593,6 +599,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jun 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.141-6
+- Fix CVE-2024-27042, CVE-2024-26669
 * Fri Jun 27 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-5
 - Disable Bluetooth and CAN support
 * Thu Jun 26 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-4
