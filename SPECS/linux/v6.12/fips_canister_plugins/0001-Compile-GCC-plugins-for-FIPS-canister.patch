@@ -1,7 +1,7 @@
-From f9449c12547ee0023a32f0183dcc2b75c75a7f60 Mon Sep 17 00:00:00 2001
+From 7fdff36b69fea4b2c66d93f51a7dee8ac1c4279e Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 Date: Wed, 7 May 2025 19:56:42 +0000
-Subject: [PATCH 1/4] Compile GCC plugins for FIPS canister
+Subject: [PATCH] Compile GCC plugins for FIPS canister
 
 Makefile/kbuild modifications for compiling GCC plugins,
 which come in a subsequent patch.
@@ -15,24 +15,24 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  4 files changed, 61 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index ee4f661bd..0251d5365 100644
+index 17a0807e3..91051d3a7 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1007,6 +1007,14 @@ ifdef CONFIG_CC_IS_GCC
- KBUILD_CFLAGS   += -fconserve-stack
- endif
-
+@@ -1016,6 +1016,14 @@ KBUILD_CFLAGS += -fno-builtin-wcslen
+ # Ensure compilers do not transform certain loops into calls to wcslen()
+ KBUILD_CFLAGS += -fno-builtin-wcslen
+ 
 +ifdef CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS
-+KBUILD_CFLAGS	+= -Werror=designated-init
++KBUILD_CFLAGS  += -Werror=designated-init
 +endif
 +
 +ifdef CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS
-+KBUILD_CFLAGS	+= -Werror=designated-init
++KBUILD_CFLAGS  += -Werror=designated-init
 +endif
 +
  # change __FILE__ to the relative path from the srctree
  KBUILD_CPPFLAGS += $(call cc-option,-fmacro-prefix-map=$(srctree)/=)
-
+ 
 diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
 index 7acd78f9d..318a8c2cf 100644
 --- a/scripts/Makefile.gcc-plugins
@@ -40,7 +40,7 @@ index 7acd78f9d..318a8c2cf 100644
 @@ -30,6 +30,9 @@ ifdef CONFIG_PAX_RAP
  endif
  gcc-plugin-aflags-$(CONFIG_PAX_RAP)                    += -DRAP_PLUGIN
-
+ 
 +gcc-plugin-$(CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS) += match_canister_structs.so
 +gcc-plugin-$(CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS) += pad_canister_structs.so
 +
@@ -50,7 +50,7 @@ index 7acd78f9d..318a8c2cf 100644
 @@ -50,6 +53,7 @@ ifdef CONFIG_GCC_PLUGIN_ARM_SSP_PER_TASK
  endif
  export DISABLE_ARM_SSP_PER_TASK_PLUGIN
-
+ 
 +
  # All the plugin CFLAGS are collected here in case a build target needs to
  # filter them out of the KBUILD_CFLAGS.
@@ -62,7 +62,7 @@ index e383cda05..3495361cf 100644
 @@ -50,4 +50,25 @@ config GCC_PLUGIN_ARM_SSP_PER_TASK
  	bool
  	depends on GCC_PLUGINS && ARM
-
+ 
 +config GCC_PLUGIN_MATCH_CANISTER_STRUCTS
 +	bool "Match kernel structs to FIPS canister structs"
 +	depends on !GCC_PLUGIN_PAD_CANISTER_STRUCTS
@@ -90,9 +90,9 @@ index 0d3c8bdec..74a775556 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
 @@ -26,6 +26,14 @@ always-y += $(GCC_PLUGIN)
-
+ 
  GCC_PLUGINS_DIR = $(shell $(CC) -print-file-name=plugin)
-
+ 
 +plugin_cflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCFLAGS) -fPIC \
 +		  -include $(srctree)/include/linux/compiler-version.h \
 +		  -DPLUGIN_VERSION=$(call stringify,$(KERNELVERSION)) \
@@ -105,9 +105,9 @@ index 0d3c8bdec..74a775556 100644
  		  -include $(srctree)/include/linux/compiler-version.h \
  		  -DPLUGIN_VERSION=$(call stringify,$(KERNELVERSION)) \
 @@ -42,6 +50,18 @@ plugin_ldflags	= -shared
-
+ 
  rap_plugin-objs := $(patsubst $(srctree)/$(src)/rap_plugin/%.c,rap_plugin/%.o,$(wildcard $(srctree)/$(src)/rap_plugin/*.c))
-
+ 
 +fips_canister_common-objs := $(patsubst $(srctree)/$(src)/fips_canister_plugins/%.c,fips_canister_plugins/%.o,$(wildcard $(srctree)/$(src)/fips_canister_plugins/*.c))
 +
 +match_canister_structs-cobjs := $(patsubst $(srctree)/$(src)/fips_canister_plugins/match_canister_structs/%.c,fips_canister_plugins/match_canister_structs/%.o,$(wildcard $(srctree)/$(src)/fips_canister_plugins/match_canister_structs/*.c))
@@ -124,16 +124,16 @@ index 0d3c8bdec..74a775556 100644
  plugin-multi	:= $(filter-out $(plugin-single), $(GCC_PLUGIN))
  plugin-objs	:= $(sort $(foreach m, $(plugin-multi), $($(m:%.so=%-objs))))
 @@ -61,7 +81,7 @@ $(plugin-single): $(obj)/%.so: $(src)/%.c FORCE
-
+ 
  quiet_cmd_plugin_ld_so_o = HOSTLD  $@
        cmd_plugin_ld_so_o = $(HOSTCXX) $(plugin_ldflags) -o $@ \
 -			   $(addprefix $(obj)/, $($(target-stem)-objs))
 +			   $(addprefix $(obj)/, $($(target-stem)-objs)) $(HOSTLDLIBS_$(target-stem))
-
+ 
  $(plugin-multi): FORCE
  	$(call if_changed,plugin_ld_so_o)
 @@ -72,3 +92,10 @@ quiet_cmd_plugin_cxx_o_c = HOSTCXX $@
-
+ 
  $(plugin-objs): $(obj)/%.o: $(src)/%.c FORCE
  	$(call if_changed_dep,plugin_cxx_o_c)
 +
@@ -143,6 +143,6 @@ index 0d3c8bdec..74a775556 100644
 +match_canister_structs-cobjs	:= $(addprefix $(obj)/, $(match_canister_structs-cobjs))
 +$(match_canister_structs-cobjs): $(obj)/%.o: $(src)/%.c FORCE
 +	$(call if_changed_dep,plugin_cc_o_c)
---
-2.40.4
+-- 
+2.35.6
 
