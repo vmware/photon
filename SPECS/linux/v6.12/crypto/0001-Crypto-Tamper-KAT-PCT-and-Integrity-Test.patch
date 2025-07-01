@@ -5,11 +5,11 @@ Subject: [PATCH] Crypto: Tamper KAT, PCT and Integrity Test
 
 - Introduced new kernel command line parameter(tampertest) to tamper KAT,
   PCT and integrity test for FIPS CMVP testing.
-- tampertest parameter takes values [-2,-1,1,2,...56]. Each corresponds to
+- tampertest parameter takes values [-2,-1,1,2,...47]. Each corresponds to
   breaking a test.
 - Value of -2 tampers Pairwise Consistency Test and simulate a failure.
 - Value of -1 tampers Canister Integrity test.
-- Values [1,..56] tampers KAT test for the supported algorithms
+- Values [1,..47] tampers KAT test for the supported algorithms
   in LKCM 5.0.
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
@@ -28,7 +28,7 @@ diff --git a/crypto/Kconfig b/crypto/Kconfig
 index c849bb918..93bcc5ae7 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -250,6 +250,35 @@ config CRYPTO_SELF_TEST
+@@ -250,6 +250,33 @@ config CRYPTO_SELF_TEST
  	help
  	  Crypto self test module for FIPS.
  
@@ -38,7 +38,6 @@ index c849bb918..93bcc5ae7 100644
 +	select CRYPTO_FIPS
 +	select CRYPTO_AES
 +	select CRYPTO_CBC
-+	select CRYPTO_ECB
 +	select CRYPTO_CTR
 +	select CRYPTO_XTS
 +	select CRYPTO_HMAC
@@ -53,7 +52,6 @@ index c849bb918..93bcc5ae7 100644
 +	select CRYPTO_CFB
 +	select CRYPTO_CTS
 +	select CRYPTO_CMAC
-+	select CRYPTO_SHA1
 +	select CRYPTO_SHA256
 +	select CRYPTO_SHA512
 +	select CRYPTO_SHA3
@@ -81,7 +79,7 @@ new file mode 100644
 index 000000000..a6cfbf627
 --- /dev/null
 +++ b/crypto/crypto_tamper_test.c
-@@ -0,0 +1,114 @@
+@@ -0,0 +1,108 @@
 +/*
 + * Tamper test module
 + *
@@ -112,10 +110,8 @@ index 000000000..a6cfbf627
 +
 +static const char * const alg_list[] = {
 +	"cbc(aes)",
-+	"ecb(aes)",
 +	"xts(aes)",
 +	"ctr(aes)",
-+	"hmac(sha1)",
 +	"hmac(sha224)",
 +	"hmac(sha256)",
 +	"hmac(sha384)",
@@ -125,22 +121,18 @@ index 000000000..a6cfbf627
 +	"drbg_pr_ctr_aes128",
 +	"drbg_pr_ctr_aes192",
 +	"drbg_pr_ctr_aes256",
-+	"drbg_pr_sha1",
 +	"drbg_pr_sha256",
 +	"drbg_pr_sha384",
 +	"drbg_pr_sha512",
-+	"drbg_pr_hmac_sha1",
 +	"drbg_pr_hmac_sha256",
 +	"drbg_pr_hmac_sha384",
 +	"drbg_pr_hmac_sha512",
 +	"drbg_nopr_ctr_aes128",
 +	"drbg_nopr_ctr_aes192",
 +	"drbg_nopr_ctr_aes256",
-+	"drbg_nopr_sha1",
 +	"drbg_nopr_sha256",
 +	"drbg_nopr_sha384",
 +	"drbg_nopr_sha512",
-+	"drbg_nopr_hmac_sha1",
 +	"drbg_nopr_hmac_sha256",
 +	"drbg_nopr_hmac_sha384",
 +	"drbg_nopr_hmac_sha512",
@@ -158,7 +150,6 @@ index 000000000..a6cfbf627
 +	"hmac(sha3-256)",
 +	"hmac(sha3-384)",
 +	"hmac(sha3-512)",
-+	"sha1",
 +	"sha224",
 +	"sha256",
 +	"sha384",
@@ -169,13 +160,14 @@ index 000000000..a6cfbf627
 +	"sha3-512",
 +};
 +
++void tamper_input_vector(const char *alg, const char *driver, const char *vector);
 +void tamper_input_vector(const char *alg, const char *driver, const char *vector)
 +{
 +	int idx = tamper_testbuild - 1;
 +	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
 +
 +	switch (tamper_testbuild) {
-+		case 1 ... 56:
++		case 1 ... 47:
 +			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
 +				break;
 +
@@ -200,10 +192,29 @@ diff --git a/crypto/ecc.c b/crypto/ecc.c
 index 6805210a8..5ab88d2ac 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
-@@ -1646,6 +1646,17 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+@@ -1559,7 +1559,7 @@ struct static_keypair {
+ 	u64 pub_key[ECC_MAX_PUB_KEY_SZ];
+ };
+ 
+-static const struct static_keypair ecc_p256 = {
++static struct static_keypair ecc_p256 = {
+ 		.priv_key = {
+ 				9452439779319861540ULL,
+ 				11761858801976435446ULL,
+@@ -1580,7 +1580,7 @@ static const struct static_keypair ecc_p256 = {
+ 		},
+ };
+ 
+-static const struct static_keypair ecc_p384 = {
++static struct static_keypair ecc_p384 = {
+ 		.priv_key = {
+ 				14313235887423266569ULL,
+ 				9198168633825396889ULL,
+@@ -1646,6 +1646,18 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  	return ret;
  }
  
++void tamper_ecc_static_keypairs(void);
 +void tamper_ecc_static_keypairs(void)
 +{
 +	u64 *test = fcw_kmalloc(sizeof(u64), GFP_KERNEL);
@@ -222,7 +233,7 @@ diff --git a/crypto/testmgr.c b/crypto/testmgr.c
 index 1ee694edb..a5a18a456 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -39,11 +39,75 @@
+@@ -39,11 +39,68 @@
  #include "fips_canister_wrapper.h"
  #include "fips_canister_wrapper_common.h"
  
@@ -234,7 +245,6 @@ index 1ee694edb..a5a18a456 100644
 +   (const char **)&aes_tv_template[3].ctext,
 +   (const char **)&aes_xts_tv_template[4].ctext,
 +   (const char **)&aes_ctr_tv_template[2].ctext,
-+   (const char **)&hmac_sha1_tv_template[0].digest,
 +   (const char **)&hmac_sha224_tv_template[2].digest,
 +   (const char **)&hmac_sha256_tv_template[0].digest,
 +   (const char **)&hmac_sha384_tv_template[0].digest,
@@ -244,22 +254,18 @@ index 1ee694edb..a5a18a456 100644
 +   (const char **)&drbg_pr_ctr_aes128_tv_template[0].expected,
 +   (const char **)&drbg_pr_ctr_aes192_tv_template[0].expected,
 +   (const char **)&drbg_pr_ctr_aes256_tv_template[0].expected,
-+   (const char **)&drbg_pr_sha1_tv_template[0].expected,
 +   (const char **)&drbg_pr_sha256_tv_template[0].expected,
 +   (const char **)&drbg_pr_sha384_tv_template[0].expected,
 +   (const char **)&drbg_pr_sha512_tv_template[0].expected,
-+   (const char **)&drbg_pr_hmac_sha1_tv_template[0].expected,
 +   (const char **)&drbg_pr_hmac_sha256_tv_template[0].expected,
 +   (const char **)&drbg_pr_hmac_sha384_tv_template[0].expected,
 +   (const char **)&drbg_pr_hmac_sha512_tv_template[0].expected,
 +   (const char **)&drbg_nopr_ctr_aes128_tv_template[0].expected,
 +   (const char **)&drbg_nopr_ctr_aes192_tv_template[0].expected,
 +   (const char **)&drbg_nopr_ctr_aes256_tv_template[0].expected,
-+   (const char **)&drbg_nopr_sha1_tv_template[0].expected,
 +   (const char **)&drbg_nopr_sha256_tv_template[0].expected,
 +   (const char **)&drbg_nopr_sha384_tv_template[0].expected,
 +   (const char **)&drbg_nopr_sha512_tv_template[0].expected,
-+   (const char **)&drbg_nopr_hmac_sha1_tv_template[0].expected,
 +   (const char **)&drbg_nopr_hmac_sha256_tv_template[0].expected,
 +   (const char **)&drbg_nopr_hmac_sha384_tv_template[0].expected,
 +   (const char **)&drbg_nopr_hmac_sha512_tv_template[0].expected,
@@ -270,14 +276,12 @@ index 1ee694edb..a5a18a456 100644
 +   (const char **)&aes_gcm_tv_template[0].ctext,
 +   (const char **)&aes_gcm_rfc4106_tv_template[0].ctext,
 +   (const char **)&aes_ccm_tv_template[0].ctext,
-+   (const char **)&aes_cfb_tv_template[0].ctext,
 +   (const char **)&cts_mode_tv_template[0].ctext,
 +   (const char **)&aes_cmac128_tv_template[0].digest,
 +   (const char **)&hmac_sha3_224_tv_template[0].digest,
 +   (const char **)&hmac_sha3_256_tv_template[0].digest,
 +   (const char **)&hmac_sha3_384_tv_template[0].digest,
 +   (const char **)&hmac_sha3_512_tv_template[0].digest,
-+   (const char **)&sha1_tv_template[0].digest,
 +   (const char **)&sha224_tv_template[0].digest,
 +   (const char **)&sha256_tv_template[0].digest,
 +   (const char **)&sha384_tv_template[0].digest,
@@ -302,7 +306,7 @@ index 1ee694edb..a5a18a456 100644
  			goto non_fips_alg;
  	}
  
-+	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild < 57) {
++	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild <= 47) {
 +		tamper_input_vector(alg, driver, *poison_alg_strs[tamper_testbuild-1]);
 +	}
 +
@@ -328,17 +332,16 @@ index 962edcc54..14836bd5f 100644
 +extern int tamper_testbuild;
 +extern char canister_sections[];
  
- void __init __weak arch_call_rest_init(void)
+ static void __init print_unknown_bootoptions(void)
  {
-@@ -985,6 +988,13 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+@@ -985,6 +988,12 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
  	/* Architectural and non-timekeeping rng init, before allocator init */
  	random_init_early(command_line);
  
 +	if (fips_enabled && tamper_testbuild == -1) {
-+		unsigned long *p = kallsyms_lookup_name(canister_sections);
++		unsigned long p = kallsyms_lookup_name(canister_sections);
 +		printk("Simulating broken Integrity test... corrupting canister section\n");
-+		p+=2;
-+		*p = 0;
++		memset((void *)(p + 8), 0, sizeof(unsigned long));
 +	}
 +
  	fips_integrity_init();

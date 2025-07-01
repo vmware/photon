@@ -164,25 +164,28 @@ static int canister_bytecode_interpreter(struct relocation *r, int *pos)
 		r->symbol = ((c & 0x0F) << 4) + (n_1 >> 4);
 		/* Rel Type, Addend combination (4 bits) = 5, 6, 7, 8 bits from next byte */
 		rel_add = n_1 & 0x0F;
-		if (rel_add == SREL_INSN_TYPE_ADD_1) {
-			r->type = 1;
-			r->addend = -4;
-		} else if (rel_add == SREL_INSN_TYPE_ADD_2) {
-			r->type = 1;
-			r->addend = -5;
-		} else if (rel_add == SREL_INSN_TYPE_ADD_3) {
-			r->type = 1;
+		if (rel_add == SREL_INSN_TA_0) {
+			r->type = 0;
 			r->addend = 0;
-		} else if (rel_add == SREL_INSN_TYPE_ADD_4) {
-			r->type = 2;
-			r->addend = 0;
-		} else if (rel_add == SREL_INSN_TYPE_ADD_5) {
-			r->type = 1;
-			r->addend = 4;
-		} else if (rel_add == SREL_INSN_TYPE_ADD_6) {
+		} else if (rel_add == SREL_INSN_TA_1) {
 			r->type = 0;
 			r->addend = 5;
-		} else if (rel_add == SREL_INSN_TYPE_ADD_7) {
+		} else if (rel_add == SREL_INSN_TA_2) {
+			r->type = 1;
+			r->addend = -5;
+		} else if (rel_add == SREL_INSN_TA_3) {
+			r->type = 1;
+			r->addend = -4;
+		} else if (rel_add == SREL_INSN_TA_4) {
+			r->type = 1;
+			r->addend = 0;
+		} else if (rel_add == SREL_INSN_TA_5) {
+			r->type = 1;
+			r->addend = 4;
+		} else if (rel_add == SREL_INSN_TA_6) {
+			r->type = 2;
+			r->addend = 0;
+		} else if (rel_add == SREL_INSN_TA_7) {
 			r->type = 3;
 			r->addend = 0;
 		} else {

@@ -50,44 +50,14 @@
 |-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
 |	|   	|   			|			| S - 8 bits of unsigned symbol	|   Symbol range [0;255]	|
 | SREL	|   2	|   1100 {S:8}{C:4}	|	12		| C - 4 bits of rel type and	|				|
-|	|	|			|			|     addend combination	|				|
+|	|	|			|			|     addend combination, see	|				|
+|	|	|			|			|     fips_integrity.h		|				|
 |-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
 |	|	|			|			|R - 2 bits of rel type		|   Rel type range [0;3]	|
 | LREL	|   4	|  111 {R:2}{S:8}{A:19}	|			|S - 8 bits of unsigned symbol	|   Symbol range [0;255]	|
 |	|	|			|	29		|A - 19 bits of unsigned addend	|   Addend range[0;524287]	|
 |	|   	|  			|			|				|				|
 *-------------------------------------------------------------------------------------------------------------------------------*
-
-*
-* SREL - Rel type Addend combination
-*
-*---------------------------------------*
-| {Type, Addend} |	Substitute	|
-|________________|______________________|
-|  {0, 0}	 |	0000		|
-|----------------|----------------------|
-|  {1, -1}	 |	0001		|
-|----------------|----------------------|
-|  {1, -2}	 |	0010		|
-|----------------|----------------------|
-|  {1, -3}	 |	0011		|
-|----------------|----------------------|
-|  {1, -4}	 |	0110		|
-|----------------|----------------------|
-|  {1, -5}	 |	0101		|
-|----------------|----------------------|
-|  {1, 0}	 |	0100		|
-|----------------|----------------------|
-|  {1, 5}	 |	0111		|
-|----------------|----------------------|
-|  {1, 7}	 |	1101		|
-|----------------|----------------------|
-|  {2, 0}	 |	1100		|
-|----------------|----------------------|
-|  {2, 4}	 |	1110		|
-*---------------------------------------*
-*
-*
 */
 
 #define ONE_BYTE_UNSIGNED_MAX_VALUE				(1 << 8) - 1
@@ -699,20 +669,22 @@ static void print_srel_insn(int nfd, unsigned short type, unsigned short symbol,
 	unsigned int srel;
 
 	srel = SREL_INSN_OPCODE | (symbol << 4);
-	if (type == 1 && addend == -4) {
-		srel = srel | SREL_INSN_TYPE_ADD_1;
-	} else if (type == 1 && addend == -5) {
-		srel = srel | SREL_INSN_TYPE_ADD_2;
-	} else if (type == 1 && addend == 0) {
-		srel = srel | SREL_INSN_TYPE_ADD_3;
-	} else if (type == 2 && addend == 0) {
-		srel = srel | SREL_INSN_TYPE_ADD_4;
-	} else if (type == 1 && addend == 4) {
-		srel = srel | SREL_INSN_TYPE_ADD_5;
+	if (type == 0 && addend == 0) {
+		srel = srel | SREL_INSN_TA_0;
 	} else if (type == 0 && addend == 5) {
-		srel = srel | SREL_INSN_TYPE_ADD_6;
+		srel = srel | SREL_INSN_TA_1;
+	} else if (type == 1 && addend == -5) {
+		srel = srel | SREL_INSN_TA_2;
+	} else if (type == 1 && addend == -4) {
+		srel = srel | SREL_INSN_TA_3;
+	} else if (type == 1 && addend == 0) {
+		srel = srel | SREL_INSN_TA_4;
+	} else if (type == 1 && addend == 4) {
+		srel = srel | SREL_INSN_TA_5;
+	} else if (type == 2 && addend == 0) {
+		srel = srel | SREL_INSN_TA_6;
 	} else if (type == 3 && addend == 0) {
-		srel = srel | SREL_INSN_TYPE_ADD_7;
+		srel = srel | SREL_INSN_TA_7;
 	} else {
 		error("Unknown rel type and addend combination!!! %d %d\n", type, addend);
 	}

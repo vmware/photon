@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.34
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -327,7 +327,7 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 0001-FIPS-canister-binary-usage.patch
+Patch10000: 6.12.34-2-0001-FIPS-canister-binary-usage.patch
 Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0003-FIPS-canister-creation.patch
@@ -373,6 +373,7 @@ BuildRequires:  bison
 BuildRequires:  dwarves-devel
 BuildRequires:  libtraceevent-devel
 BuildRequires:  clang-devel
+BuildRequires:  readline-devel
 
 %ifarch x86_64
 BuildRequires:  pciutils-devel
@@ -919,6 +920,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jul 03 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.34-2
+- Move ecb out of canister
+- Clean up and reorder SREL type & addon combinations
+- Add readline-devel as a build requirement for tools
 * Fri Jun 27 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-1
 - Upgrade linux kernel to version 6.12.34.
 * Wed Jun 25 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.1-19
