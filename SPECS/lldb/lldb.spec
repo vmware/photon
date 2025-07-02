@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        18.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -70,11 +70,7 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
 
 %{cmake} -G Ninja\
   -DCMAKE_BUILD_TYPE=Release \
-  -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
-  -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
   -DLLVM_DIR=%{_libdir}/cmake/llvm \
-  -DLLVM_BUILD_LLVM_DYLIB=ON \
-  -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
   -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3} \
   -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
@@ -112,8 +108,9 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.8-2
+- Rebuild with shared llvm libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 18.1.8-1
-- Update to version 18.1.8 for llvm and rust upgrade
 - corresponding cmake is required to build
 * Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 15.0.7-8
 - Bump version as a part of ncurses upgrade

@@ -1,6 +1,6 @@
 sources:
-- archive: SPIRV-Tools-1.3.231.1.tar.gz
-  archive_sha512sum: e999bcd7002fd821b2aa5e53de37d501113735059ca61cb7df4c6383fb2566a5371adbe82faff52461c8791f76cd30b13e22e2b39954f7ec1942d80dd8f50636
+- archive: SPIRV-Tools-vulkan-sdk-1.4.313.0.tar.gz
+  archive_sha512sum: 2e0cffc9550fa95da8622424012e1fa2decbc6b981e30114ac0b7a332d7a9abed9a2138dc83ff6eb0b6d3946c1f1b43679de0754ccb98380d4981e8130a5e248
   skip_validation: true
   spdx:
     package:

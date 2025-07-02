@@ -1,0 +1,13 @@
+sources:
+- archive: SPIRV-LLVM-Translator-18.1.13.tar.gz
+  archive_sha512sum: af31bf8ed8f240eecb96dc408ecce3b757928cf078a6a881eb559ce5b6bbee8339b6e9258f5624c30b943e9fb15ee21e5ea2b7e2a157b791bf175981fc400b4f
+  skip_validation: true
+  spdx:
+    package:
+      short_summary: SPIRV-LLVM-Translator is a library and tool for converting between LLVM IR and SPIR-V.
+      detailed_description: SPIRV-LLVM-Translator provides both a library and a command-line tool (llvm-spirv) for translating LLVM Intermediate Representation (IR) to and from SPIR-V, the binary intermediate language used by Vulkan and OpenCL. It is essential for toolchains that target SPIR-V from LLVM-based languages or need to consume SPIR-V in LLVM-based environments.
+      home_page: https://github.com/KhronosGroup/SPIRV-LLVM-Translator
+      supplier: 'Organization: VMware, Inc.'
+      license_concluded: Apache-2.0 WITH LLVM-exception AND MIT-Khronos-old AND NCSA
+      license_declared: Apache-2.0 WITH LLVM-exception AND MIT-Khronos-old AND NCSA
+      copyright_text: Copyright (c) 2025 VMware, Inc.

@@ -1,18 +1,18 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        23.3.6
+Version:        25.1.4
 Release:        1%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://gitlab.freedesktop.org/%{name}/%{name}/-/archive/%{name}-%{version}/%{name}-%{name}-%{version}.tar.gz
+Source0:        https://archive.mesa3d.org/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: mesa-llvm-18-remove-useless-passes.patch
+Patch0:         0001-Remove-Nouveau-from-vulkan-drivers-and-gallium-drive.patch
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -33,6 +33,14 @@ BuildRequires:  libpciaccess-devel
 BuildRequires:  glslang-devel
 BuildRequires:  bison
 BuildRequires:  libunwind-devel
+BuildRequires:  libclc-devel
+BuildRequires:  libclc-spirv
+BuildRequires:  python3-PyYAML
+BuildRequires:  spirv-tools-devel
+BuildRequires:  spirv-llvm-translator-devel
+BuildRequires:  clang-devel
+BuildRequires:  libunwind-devel
+BuildRequires:  lm-sensors-devel
 
 Requires:       libllvm
 Requires:       expat-libs
@@ -46,8 +54,9 @@ Mesa is an OpenGL compatible 3D graphics library.
 
 %package        vulkan-drivers
 Summary:        Mesa Vulkan drivers
+Requires:       spirv-tools-devel
 
-%description     vulkan-drivers
+%description    vulkan-drivers
 The drivers with support for the Vulkan API.
 
 %package        libgbm
@@ -68,13 +77,41 @@ Provides:       libgbm-devel
 %description    libgbm-devel
 Mesa libgbm development package.
 
+%package libEGL
+Summary: Mesa EGL runtime library
+Group: System/Libraries
+
+%description libEGL
+This package contains the Mesa implementation of the EGL library.
+
+%package libEGL-devel
+Summary: EGL development headers for Mesa
+Group: Development/C
+Requires: %{name}-libEGL = %{version}-%{release}
+
+%description libEGL-devel
+Development files (headers and pkg-config) for Mesa EGL.
+
+%package dri-devel
+Summary: Development files for Mesa DRI
+Group: Development/Libraries
+
+%description dri-devel
+This package contains development files for the Mesa Direct Rendering Infrastructure (DRI).
+
+%package libgallium
+Summary: Gallium shared library from Mesa
+Group: System/Libraries
+
+%description libgallium
+This package contains the Gallium shared library from Mesa.
+
 %prep
-%autosetup -n %{name}-%{name}-%{version} -p1
+%autosetup -n %{name}-%{version} -p1
 
 %build
 %{meson} \
     -Dgallium-vdpau=disabled \
-    -Dgallium-omx=disabled \
     -Dgallium-va=disabled \
     -Dgallium-xa=disabled \
     -Dgallium-nine=false \
@@ -90,7 +127,7 @@ Mesa libgbm development package.
     -Dxlib-lease=disabled \
     -Dandroid-libbacktrace=disabled \
     -Dlmsensors=disabled \
-    -Degl=disabled \
+    -Degl=enabled \
     -Dglvnd=false \
     -Dllvm=enabled \
     -Dshared-llvm=enabled \
@@ -98,11 +135,13 @@ Mesa libgbm development package.
     -Dbuild-tests=false \
     -Dselinux=false \
     -Dvulkan-drivers=auto \
-    -Dintel-clc=disabled \
+    -Dintel-clc=auto \
     -Dgles2=disabled \
-    -Ddri3=disabled \
     -Dmicrosoft-clc=disabled \
     -Dbuild-aco-tests=false \
+    -Dxlib-lease=false \
+    -Dgallium-rusticl=false \
+    -Dandroid-libbacktrace=disabled \
     %{nil}
 
 %{meson_build}
@@ -139,14 +178,42 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/libgbm.so.1
 %{_libdir}/libgbm.so.1.*
+%{_libdir}/gbm/dri_gbm.so
 
 %files libgbm-devel
 %defattr(-,root,root)
 %{_libdir}/libgbm.so
 %{_includedir}/gbm.h
 %{_libdir}/pkgconfig/gbm.pc
+%{_includedir}/gbm_backend_abi.h
+
+%files libEGL
+%defattr(-,root,root)
+%{_libdir}/libEGL.so.1*
+%{_libdir}/libEGL.so
+
+%files libEGL-devel
+%defattr(-,root,root)
+%{_includedir}/EGL/egl.h
+%{_includedir}/EGL/eglext.h
+%{_includedir}/EGL/eglext_angle.h
+%{_includedir}/EGL/eglmesaext.h
+%{_includedir}/EGL/eglplatform.h
+%{_includedir}/KHR/khrplatform.h
+%{_libdir}/pkgconfig/egl.pc
+
+%files dri-devel
+%defattr(-,root,root)
+%{_includedir}/GL/internal/dri_interface.h
+%{_libdir}/pkgconfig/dri.pc
+
+%files libgallium
+%defattr(-,root,root)
+%{_libdir}/libgallium-*.so
 
 %changelog
+* Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 25.1.4-1
+- Upgrade mesa to 25.1.4 version to support the VK_KHR_sampler_ycbcr_conversion extension
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 23.3.6-1
 - Bump to build with updated llvm
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.0.0-5

@@ -1,12 +1,12 @@
 Summary:        API and commands for processing SPIR-V modules
 Name:           spirv-tools
-Version:        1.3.231.1
-Release:        4%{?dist}
+Version:        1.4.313.0
+Release:        1%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Tools/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/SPIRV-Tools-%{version}.tar.gz
+Source0:        https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/SPIRV-Tools-vulkan-sdk-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -41,7 +41,7 @@ Requires:       libxml2-devel
 Development files for spirv-tools
 
 %prep
-%autosetup -p1 -n SPIRV-Tools-sdk-%{version}
+%autosetup -p1 -n SPIRV-Tools-vulkan-sdk-%{version}
 
 %build
 %cmake  \
@@ -70,6 +70,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/spirv-lesspipe.sh
 %{_bindir}/spirv-link
 %{_bindir}/spirv-lint
+%{_bindir}/spirv-objdump
 %{_bindir}/spirv-opt
 %{_bindir}/spirv-reduce
 %{_bindir}/spirv-val
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libSPIRV-Tools-shared.so
 
 %changelog
+*   Thu Jun 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.313.0-1
+-   Upgarde to 1.4.313.0
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.3.231.1-4
 -   Release bump for SRP compliance
 *   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.3.231.1-3

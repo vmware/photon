@@ -1,0 +1,54 @@
+From 4732d38cd23c0121213202377afe32b5463fbc4d Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivani.agarwal@broadcom.com>
+Date: Wed, 25 Jun 2025 03:48:23 +0000
+Subject: [PATCH] Remove Nouveau from vulkan-drivers and gallium-drivers auto
+ list
+
+Removed Nouveau due to rust and bindgen dependency
+---
+ meson.build | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 58194e7..1ec491a 100644
+--- a/meson.build
++++ b/meson.build
+@@ -138,22 +138,22 @@ if gallium_drivers.contains('auto')
+     # TODO: Sparc
+     if ['x86', 'x86_64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+-        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'svga', 'llvmpipe', 'softpipe',
++        'r300', 'r600', 'radeonsi', 'virgl', 'svga', 'llvmpipe', 'softpipe',
+         'iris', 'crocus', 'i915', 'zink'
+       ]
+     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+-        'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
++        'v3d', 'vc4', 'freedreno', 'etnaviv', 'svga',
+         'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
+         'zink'
+       ]
+     elif ['mips', 'mips64', 'ppc', 'ppc64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+-        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'llvmpipe', 'softpipe', 'zink'
++        'r300', 'r600', 'radeonsi', 'virgl', 'llvmpipe', 'softpipe', 'zink'
+       ]
+     elif ['loongarch64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+-        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'etnaviv', 'llvmpipe', 'softpipe', 'zink'
++        'r300', 'r600', 'radeonsi', 'virgl', 'etnaviv', 'llvmpipe', 'softpipe', 'zink'
+       ]
+     else
+       error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
+@@ -223,7 +223,7 @@ _vulkan_drivers = get_option('vulkan-drivers')
+ if _vulkan_drivers.contains('auto')
+   if system_has_kms_drm
+     if host_machine.cpu_family().startswith('x86')
+-      _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'nouveau', 'swrast']
++      _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'swrast']
+     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
+       _vulkan_drivers = ['swrast', 'intel', 'panfrost', 'freedreno']
+     elif ['mips', 'mips64', 'ppc', 'ppc64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
+-- 
+2.40.4
+

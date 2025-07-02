@@ -1,7 +1,7 @@
 Summary:    Wayland Compositor Infrastructure
 Name:       wayland
-Version:    1.21.0
-Release:    6%{?dist}
+Version:    1.23.93
+Release:    1%{?dist}
 URL:        http://wayland.freedesktop.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwayland-server.so.0*
 
 %changelog
+* Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.23.93-1
+- Upgrade to 1.23.93 to be compatible with mesa
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.21.0-6
 - Version bump for expat upgrade
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.21.0-5

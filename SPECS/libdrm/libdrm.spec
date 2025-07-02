@@ -1,7 +1,7 @@
 Summary:        user space library for accessing the DRM.
 Name:           libdrm
-Version:        2.4.113
-Release:        4%{?dist}
+Version:        2.4.125
+Release:        1%{?dist}
 URL:            http://dri.freedesktop.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -70,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig*
 
 %changelog
+* Fri Jun 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.4.125-1
+- Upgrade to 2.4.125
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.4.113-4
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.113-3

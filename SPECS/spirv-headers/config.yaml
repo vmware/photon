@@ -1,6 +1,6 @@
 sources:
-- archive: SPIRV-Headers-1.3.231.1.tar.gz
-  archive_sha512sum: d2c47127fd81430383e8656917f76933b713ca6cb93b2a9c16c9e0b125e2f62f8c497cab3a4fcc2a711decd911ec5d15f1eb0270add05442aff6672e08c890d7
+- archive: SPIRV-Headers-vulkan-sdk-1.4.313.0.tar.gz
+  archive_sha512sum: c89b7992d8bdf956b551b3efa0fe67135574379973be446d18d215b4868799a3f5dab3002d230ccc54d723391ee37240cf0f2cd394898326d40685cbec673670
   skip_validation: true
   spdx:
     package:

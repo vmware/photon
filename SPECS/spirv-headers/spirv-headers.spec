@@ -1,12 +1,12 @@
 Summary:        Header files from the SPIR-V registry
 Name:           spirv-headers
-Version:        1.3.231.1
-Release:        2%{?dist}
+Version:        1.4.313.0
+Release:        1%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Headers/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/SPIRV-Headers-%{version}.tar.gz
+Source0:        https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/SPIRV-Headers-vulkan-sdk-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -36,7 +36,7 @@ This includes:
 * The XML registry file
 
 %prep
-%autosetup -p1 -n SPIRV-Headers-sdk-%{version}
+%autosetup -p1 -n SPIRV-Headers-vulkan-sdk-%{version}
 
 chmod a-x include/spirv/1.2/spirv.py
 
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/spirv/
 
 %changelog
+*   Thu Jun 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.313.0-1
+-   Upgrade to be compatible with spirv-llvm-translator
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.3.231.1-2
 -   Release bump for SRP compliance
 *   Tue Nov 15 2022 Shivani Agarwal <shivania2@vmware.com> 1.3.231.1-1

@@ -4,7 +4,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.87.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -36,6 +36,7 @@ Requires: glibc
 Requires: gcc
 Requires: libstdc++
 Requires: libgcc
+Requires: zlib
 Requires: libllvm
 
 %description
@@ -126,6 +127,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.87.0-3
+- Rebuild with shared llvm libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.87.0-2
 - Consume system provided llvm
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.87.0-1

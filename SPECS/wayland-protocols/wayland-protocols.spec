@@ -1,7 +1,7 @@
 Summary:        Wayland protocols that adds functionality not available in the core protocol
 Name:           wayland-protocols
-Version:        1.31
-Release:        4%{?dist}
+Version:        1.44
+Release:        1%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,8 +63,11 @@ rm -rf %{buildroot}
 %doc README.md
 %{_datadir}/pkgconfig/%{name}.pc
 %{_datadir}/%{name}/
+%{_includedir}/%{name}/
 
 %changelog
+*       Fri Jun 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.44-1
+-       Upgrade to 1.34 to be compatible with mesa
 *       Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.31-4
 -       Bump version as a part of meson upgrade
 *       Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.31-3

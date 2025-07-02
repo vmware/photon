@@ -1,22 +1,12 @@
 sources:
-- archive: mesa-mesa-23.3.6.tar.gz
-  archive_sha512sum: 52ab15c9fbf40e98a50f8d30e848d7b30caa5296c5897e64325f4776a4d2eb812fa6c5ce42e597755418a8d2ee53eede69eb4be4f21691caf090d8a3ac3715b4
+- archive: mesa-25.1.4.tar.xz
+  archive_sha512sum: b97a0fa185181e86ea39bf71a6031edf9e9477378aba2c1ff6dbe88399cc9f7dc728591b49918c0dccb170dce11335b2b8fa015c7b7495f2e166b295d47fd343
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Mesa is an OpenGL compatible 3D graphics library. '
       home_page: http://www.mesa3d.org
-      license_concluded: (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (GPL-3.0-only
-        OR MIT) AND (MIT OR Unlicense) AND (GPL-2.0-only OR MIT) AND (Apache-2.0 OR
-        MIT) AND Apache-2.0 AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note
-        AND BSL-1.0 AND ISC AND X11 AND MIT AND BSD-2-Clause AND BSD-3-Clause AND
-        NCSA AND MIT-Khronos-old AND GPL-2.0-only AND HPND AND HPND-sell-variant AND
-        GPL-2.0-only WITH Linux-syscall-note AND CC0-1.0 AND SGI-B-2.0 AND ICU
-      license_declared: (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (GPL-3.0-only
-        OR MIT) AND (MIT OR Unlicense) AND (GPL-2.0-only OR MIT) AND (Apache-2.0 OR
-        MIT) AND Apache-2.0 AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note
-        AND BSL-1.0 AND ISC AND X11 AND MIT AND BSD-2-Clause AND BSD-3-Clause AND
-        NCSA AND MIT-Khronos-old AND GPL-2.0-only AND HPND AND HPND-sell-variant AND
-        GPL-2.0-only WITH Linux-syscall-note AND CC0-1.0 AND SGI-B-2.0 AND ICU
+      license_concluded: (Apache-2.0 OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND HPND AND HPND-sell-variant AND ICU AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Khronos-old AND NCSA AND SGI-B-2.0 AND X11
+      license_declared: (Apache-2.0 OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND HPND AND HPND-sell-variant AND ICU AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Khronos-old AND NCSA AND SGI-B-2.0 AND X11
       short_summary: Mesa is an OpenGL compatible 3D graphics library.
       supplier: 'Organization: Broadcom, Inc.'
