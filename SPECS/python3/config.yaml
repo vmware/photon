@@ -1,7 +1,14 @@
 sources:
-- archive: Python-3.11.9.tar.xz
-  archive_sha512sum: 2b0a1d936b4ef8376f9655797aece8ffdff75031ad7bfa840f330cac2aed189aecc80c163edc12ea772851d7a011f3fc1960470a73d9d4290cf3ab8ad6ed7e6a
-  skip_validation: true
+- archive: Python-3.11.13.tar.xz
+  archive_sha512sum: 70f57464d548eac4fe0d0c7f85a14b0e549a4e25ef66de4fc36b06ce72a3efe87dadfcd56ee275c10483cf802fbc9d73b61f9fb2941a46e2f92f075aeb1afe85
+  archive_type: upstream
+  skip_validation: false
+  name: Python-3.11.13
+  version: "3.11.13"
+  url: https://www.python.org/ftp/python/3.11.13/Python-3.11.13.tar.xz
+  repo_url: https://github.com/python/cpython
+  commit_id: 498b971ea3673012a1d4b21860b229d55fc6e575
+  missing: ['.gitignore', 'NEWS', 'NEWS.d', '.github', '.gitattributes', '.azure-pipelines']
   spdx:
     package:
       detailed_description: 'The Python 3 package contains a new version of Python
@@ -27,8 +34,8 @@ sources:
         AND MS-RL
       short_summary: A high-level scripting language
       supplier: 'Organization: Broadcom, Inc.'
-- archive: setuptools-pip-wheels.ph5-1.0-2.tar.xz
-  archive_sha512sum: bb98b9975b611d3bb99644803f9579b8d4ee5216a9d057c5191d214dd4d6a6cc0a8d72b4f33c893c85543a78faf7feec002c53648646c19baa0eeba5f9c0ed7e
+- archive: setuptools-pip-wheels.ph5-1.0-3.tar.xz
+  archive_sha512sum: fe850c7b78127ebdb019ea3e6b94862310725b659ad5f5b6818115f9a6ab4a524313652fa8493ee7477dbe32ed8ad8017d045e038f99ae818e9ff2bebbb7de26
   skip_validation: true
   spdx:
     package:

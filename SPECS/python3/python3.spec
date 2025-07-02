@@ -3,8 +3,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.11.9
-Release:        11%{?dist}
+Version:        3.11.13
+Release:        1%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -16,7 +16,7 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels%{?dist}-1.0-2.tar.xz
+Source2: setuptools-pip-wheels.ph5-1.0-3.tar.xz
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -24,12 +24,6 @@ Source3: license.txt
 Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
 Patch2: ensurepip-upgrade-bundled-pip-and-setuptools.patch
-Patch3: CVE-2024-4032.patch
-Patch4: CVE-2024-6923.patch
-Patch5: CVE-2024-6232.patch
-Patch6: CVE-2024-7592.patch
-Patch7: CVE-2023-27043.patch
-Patch8: CVE-2024-9287.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -309,6 +303,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Jun 23 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-1
+- Update to 3.11.13, Fixes multiple CVEs
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.11.9-11
 - Release bump for aarch64 SRP compliance
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.11.9-10
