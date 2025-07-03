@@ -8,6 +8,7 @@ from constants import constants
 from SpecStructures import dependentPackageData
 from SpecStructures import Package
 from SpecStructures import SpecObject
+from argparse import ArgumentParser
 
 strUtils = StringUtils()
 
@@ -47,6 +48,7 @@ class SpecParser(object):
 
     def _parseSpecFile(self, file):
         lines = []
+        inMacro = 0
 
         with open(file) as specFile:
             lines = specFile.read().splitlines()
@@ -58,14 +60,18 @@ class SpecParser(object):
         i = 0
         totalLines = len(lines)
 
-        def skip_conditional_body(line):
+        def skip_conditional_body():
             deep = 1
             nonlocal i
+            nonlocal inMacro
             while i < totalLines and deep:
                 i += 1
                 line = lines[i].strip()
                 if self._isConditionalMacroStart(line):
                     deep += 1
+                elif self._isConditionalMacroElse(line) and deep == 1:
+                    deep -= 1
+                    inMacro += 1
                 elif self._isConditionalMacroEnd(line):
                     deep -= 1
 
@@ -73,10 +79,19 @@ class SpecParser(object):
             line = lines[i].strip()
             if self._isConditionalArch(line):
                 if self.arch != self._readConditionalArch(line):
-                    skip_conditional_body(line)
+                    skip_conditional_body()
+                else:
+                    inMacro += 1
             elif self._isIfCondition(line):
                 if not self._isConditionTrue(line, file):
-                    skip_conditional_body(line)
+                    skip_conditional_body()
+                else:
+                    inMacro += 1
+            elif self._isConditionalMacroElse(line) and inMacro:
+                skip_conditional_body()
+                inMacro -= 1
+            elif self._isConditionalMacroEnd(line) and inMacro:
+                inMacro -= 1
             elif self._isSpecMacro(line):
                 macro, i = self._readMacroFromFile(i, lines)
                 self._updateSpecMacro(macro)
@@ -643,6 +658,9 @@ class SpecParser(object):
     def _isConditionalMacroStart(self, line):
         return line.startswith("%if")
 
+    def _isConditionalMacroElse(self, line):
+        return line.startswith("%else")
+
     def _isConditionalMacroEnd(self, line):
         return line.strip() == "%endif"
 
@@ -758,3 +776,21 @@ class SpecParser(object):
             specObj.descriptions[pkg.name] = pkg.description
 
         return specObj
+
+def main():
+    usage = "Usage: %prog [options]"
+    parser = ArgumentParser(usage)
+    parser.add_argument(dest="spec_file", default=None)
+    parser.add_argument("-a", "--arch", dest="arch", default="x86_64")
+    parser.add_argument("-d", "--dist", dest="dist", default=".ph5")
+
+    options = parser.parse_args()
+
+    sp = SpecParser(options.spec_file, options.arch, options.dist)
+    so = sp.createSpecObject()
+    # Useful for standalone parser development and debugging.
+    # Print whatever property you need.
+    print(*so.listSources, sep='\n')
+
+if __name__ == "__main__":
+    main()
