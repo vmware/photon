@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.40.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -18,6 +18,9 @@ BuildRequires: openssl-devel
 Requires: expat
 Requires: curl
 Requires: openssl
+
+Patch0:   CVE-2025-48384.patch
+Patch1:   CVE-2025-48385.patch
 
 %description
 Git is a free and open source, distributed version control system
@@ -134,6 +137,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Thu Jul 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-3
+- Fix CVE-2025-48384, CVE-2025-48385
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.40.4-2
 - Version bump for expat upgrade
 * Thu Jan 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-1
