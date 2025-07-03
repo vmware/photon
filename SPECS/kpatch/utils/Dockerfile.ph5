@@ -30,5 +30,9 @@ coreutils \
 util-linux \
 kpatch \
 kpatch-build \
-kpatch-utils
+kpatch-utils \
+sudo \
+shadow \
+awk
+
 RUN mkdir -p  /var/opt/gen_livepatch/gen_livepatch_workspace

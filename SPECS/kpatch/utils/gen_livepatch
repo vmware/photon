@@ -39,6 +39,9 @@ RPM_NAME=""
 BUILD_RPM_SPECFILE="/usr/share/livepatch/livepatch_spec.template"
 patches=()
 DEBUG_LOGS=0
+SIGNC=""
+SIGNC_UID=0
+SIGNC_UNAME=""
 
 # parse the command line arguments and fill in variables
 module_name_string() {
@@ -55,8 +58,8 @@ parse_args() {
     fi
 
     local opt=""
-    local options=( "-s" "-p" "-v" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" "--verbose" )
-    local no_arg_options=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" "--verbose" )
+    local options=( "-s" "-p" "-v" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" "--verbose" "--sign" "--signer-id" "--signer-name" )
+    local no_arg_options=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" "--verbose" "--sign" )
     while (( "$#" )); do
         if [[ $1 = -* ]]; then
             opt=$1
@@ -74,6 +77,9 @@ parse_args() {
                 PACKAGE_AS_RPM=1
             elif [[ $1 == --verbose ]]; then
                 DEBUG_LOGS=1
+            elif [[ $1 == --sign ]]; then
+                SIGNC="/usr/bin/sign_livepatch"
+                [[ -f "$SIGNC" ]] || error "Signc does not exist in the system: $SIGNC"
             elif ! is_in_array "$opt" ${no_arg_options[*]} && [[ $2 == -* || -z $2 ]]; then
                 error "$1 needs at least one argument"
             elif  [[ $3 != -* && $opt != -p && -n $3 ]] && ! is_in_array "$opt" ${no_arg_options[*]} ; then
@@ -119,6 +125,12 @@ parse_args() {
                     [ -f "$RPM_DESCFILE" ] || error "RPM description file does not exist"
                     RPM_DESCFILE=$(readlink -f "$RPM_DESCFILE")
                     ;;
+                --signer-id)
+                    SIGNC_UID=$1
+                    ;;
+                --signer-name)
+                    SIGNC_UNAME=$1
+                    ;;
                 esac
         fi
         # shift to the next argument
@@ -139,6 +151,7 @@ parse_args() {
     get_kernel_version "$VERSION_RELEASE_FLAVOR"
     get_kernel_release "$VERSION_RELEASE_FLAVOR"
     get_photon_tag "$VERSION_RELEASE_FLAVOR"
+    [[ -n "$SIGNC" ]] && config_sign_user
 
     if [[ "$PH_TAG" != *ph* ]]; then
         echo "Wrong kernel version detected: $KERNEL_VERSION_RELEASE"
@@ -181,6 +194,11 @@ parse_args() {
 
     # make sure output folder exists
     mkdir -p "$OUTPUT_FOLDER"
+}
+
+config_sign_user() {
+    echo "Adding user uid=$SIGNC_UID($SIGNC_UNAME) for signing."
+    useradd -u $SIGNC_UID $SIGNC_UNAME 2>/dev/null || error "Cannot add signing user."
 }
 
 # takes in uname -r formatted string
@@ -423,6 +441,12 @@ package_module_in_rpm() {
 
     cp "$OUTPUT_FOLDER"/"$LIVEPATCH_NAME".ko "$TEMP_DIR"/rpmbuild/SOURCES || error
 
+    local signc_args=()
+    [[ -n "$SIGNC" ]] && signc_args+=(
+        --define "%signing_script %(echo $SIGNC)"
+        --define "%signing_user %(echo $SIGNC_UNAME)"
+    )
+
     # fill in needed info in spec file skeleton
     local spec_file="$TEMP_DIR/rpmbuild/SPECS/livepatch.spec"
     cp "$BUILD_RPM_SPECFILE" "$spec_file" || error
@@ -443,7 +467,7 @@ package_module_in_rpm() {
     echo "* $(date "+%a %b %d %Y") Auto Livepatch $RPM_VERSION-$RPM_RELEASE" >> "$spec_file"
     echo "- Auto Livepatch version $RPM_VERSION-$RPM_RELEASE built">> "$spec_file"
     echo "Building rpm"
-    rpmbuild -ba $spec_file --define "$rpmdir" --define "%dist .$PH_TAG" &> $GENLOGS_DIR/rpmbuild-livepatch-pkg.log
+    rpmbuild -ba $spec_file "${signc_args[@]}" --define "$rpmdir" --define "%dist .$PH_TAG" &> $GENLOGS_DIR/rpmbuild-livepatch-pkg.log
     status=$?
     [[ $DEBUG_LOGS -eq 1 ]] && cat "$GENLOGS_DIR"/rpmbuild-livepatch-pkg.log
     [[ $status -ne 0 ]] && error "Packaging kernel module as rpm failed"
@@ -452,6 +476,11 @@ package_module_in_rpm() {
     cp "$TEMP_DIR"/rpmbuild/RPMS/*/"$RPM_NAME"*.rpm "$OUTPUT_FOLDER" || error "Current dir: $(pwd). Failed to save RPM to $OUTPUT_FOLDER"
 
     echo "SUCCESS: Building rpm finished"
+
+    if [ -n "$SIGNC" ]; then
+        echo "Signing RPM now."
+        find "$OUTPUT_FOLDER" -type f -name "*.rpm" -exec "$SIGNC" -t rpm -u "$SIGNC_UNAME" -a {} \; || error "Signing livepatch RPM failed!"
+    fi
 }
 
 cleanup() {

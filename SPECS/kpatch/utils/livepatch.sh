@@ -21,6 +21,9 @@ Options:
   --rpm-release <rel>    Specify the release number for the RPM package.
   --rpm-desc <file>      Specify a description file for the RPM. Defaults to using the module description if not specified.
   --verbose              Print detailed logs of curl, rpmbuild and other operations.
+  --sign                 Sign release artifacts using the signc script provided in the build infrastructure. Applicable only for GoBuild targets.
+  --signer-id <id>       User ID assigned by GoBuild infrastructure for builds.
+  --signer-name <name>   User name assigned by GoBuild infrastructure for builds.
   -h, --help             Display this help message and exit.
 
 Examples:

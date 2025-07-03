@@ -22,6 +22,9 @@ Options:
 --rpm-version: Set the version number for the rpm.
 --rpm-release: Set the release number for the rpm.
 --rpm-desc: Set a separate description for the rpm. Input is a file.
+--sign: Sign release artifacts using the signc script provided in the build infrastructure. Applicable only for GoBuild targets.
+--signer-id: User ID assigned by GoBuild infrastructure for builds.
+--signer-name: User name assigned by GoBuild infrastructure for builds.
 -h/--help: Prints help message and exits
 
 ** Examples **

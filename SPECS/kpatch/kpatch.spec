@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -127,6 +127,8 @@ cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfile
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Tue Jul 08 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 0.9.10-3
+- Add optional signing option to be utilized by GoBuilds
 * Wed Jun 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-2
 - Bug fixes
 - Various code improvements

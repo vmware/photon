@@ -23,6 +23,13 @@ DESC_GIVEN=0
 RPM_DESC_GIVEN=0
 SRC_RPM_LOCAL_PATH=""
 DEBUGINFO_LOCAL_PATH=""
+SIGNC=""
+SIGNC_UID=0
+SIGNC_UNAME=""
+TMP_DIR=/tmp
+BLD_DIR=/build
+BLDLIB_DIR=/bldmnt
+AUTH_DIR=/etc/signing
 
 DOCKERFILE_DIR=${DOCKERFILE_DIR:-/usr/share/livepatch/dockerfiles/}
 DOCKER_KPATCH_BUILDLOG=/root/.kpatch/build.log
@@ -49,8 +56,8 @@ parse_args() {
 
     mkdir -p "$PATCHES_DIR"
     local opt=""
-    local options=( "-s" "-v" "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" "--verbose" )
-    local no_arg_options=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" "--verbose")
+    local options=( "-s" "-v" "-p" "-o" "-h" "--help" "-k" "-n" "-R" "--export-debuginfo" "-d" "--rpm" "--rpm-version" "--rpm-release" "--rpm-desc" "--verbose" "--sign" )
+    local no_arg_options=( "-R" "--export-debuginfo" "-h" "--help" "--rpm" "--verbose" "--sign" )
 
     while (( "$#" )); do
         arg=$1
@@ -62,6 +69,11 @@ parse_args() {
                 print_help 0
             elif [[ $1 == --export-debuginfo ]]; then
                 EXPORT_DEBUGINFO=1
+            elif [[ $1 == --sign ]]; then
+                SIGNC=sign_livepatch
+                [[ -f "$SIGNC" ]] || error "Signc does not exist in the system: $SIGNC"
+                SIGNC_UID=$(id -u)
+                SIGNC_UNAME="$(id -u -n)"
             elif ! is_in_array "$opt" ${no_arg_options[*]} && [[ ($2 == -* || -z $2) ]]; then
                 error "$1 needs at least one argument"
             elif  [[ $3 != -* && $opt != -p && -n $3 ]] && ! is_in_array "$opt" ${no_arg_options[*]} ; then
@@ -118,6 +130,7 @@ parse_args() {
     [[ -n "$DEBUGINFO_LOCAL_PATH" ]] && ARGS="$ARGS -v $GEN_LIVEPATCH_WORKSPACE/$(basename "$DEBUGINFO_LOCAL_PATH")"
     [[ $DESC_GIVEN -eq 1 ]] && ARGS="$ARGS -d $GEN_LIVEPATCH_WORKSPACE/description.txt"
     [[ $RPM_DESC_GIVEN -eq 1 ]] && ARGS="$ARGS --rpm-desc $GEN_LIVEPATCH_WORKSPACE/rpm-description.txt"
+    [[ -n "$SIGNC" ]] && ARGS="$ARGS --signer-id $SIGNC_UID --signer-name $SIGNC_UNAME"
 
     ARGS="$ARGS -o ${DOCKER_LIVEPATCH_OUTPUT_DIR}"
 
@@ -137,6 +150,7 @@ config_container() {
     DOCKER_IMAGE_NAME=livepatch-$PH_TAG
     DOCKER_CONTAINER_NAME=$PH_TAG-livepatch-container
     DOCKERFILE_NAME=Dockerfile.$PH_TAG
+    local signc_mnts=()
     check_dockerfile
 
     if [[ -n "$(docker ps -a -f "name=$DOCKER_CONTAINER_NAME" -q 2> /dev/null)" ]]; then
@@ -145,10 +159,16 @@ config_container() {
         echo "Deleted Docker container from the previous run."
     fi
     $DOCKER rmi -f "$DOCKER_IMAGE_NAME" > /dev/null
+    [[ -n "$SIGNC" ]] && signc_mnts+=(
+        -v "$TMP_DIR":"$TMP_DIR"
+        -v "$AUTH_DIR":"$AUTH_DIR"
+        -v "$BLD_DIR":"$BLD_DIR"
+        -v "$BLDLIB_DIR":"$BLDLIB_DIR"
+    )
 
     echo -e "Building Docker image. This may take a few minutes.\n"
     $DOCKER buildx build --network=host -f $DOCKERFILE_DIR/"$DOCKERFILE_NAME" -t "$DOCKER_IMAGE_NAME" . > /dev/null || error "Failed to create Livepatch docker image."
-    $DOCKER run --network=host -t -d --name "$DOCKER_CONTAINER_NAME" "$DOCKER_IMAGE_NAME" /bin/bash > /dev/null || error "Creation of docker container failed"
+    $DOCKER run "${signc_mnts[@]}" -t -d --name "$DOCKER_CONTAINER_NAME" "$DOCKER_IMAGE_NAME" /bin/bash > /dev/null || error "Creation of docker container failed"
 
     # copy all necessary files into docker container, put patches into patches folder
     $DOCKER cp $PATCHES_DIR "$DOCKER_CONTAINER_NAME":$GEN_LIVEPATCH_WORKSPACE/ || error "Failed to copy patch files to docker container."
@@ -163,6 +183,9 @@ config_container() {
     fi
     if [[ -n "$DEBUGINFO_LOCAL_PATH" ]]; then
        $DOCKER cp "$DEBUGINFO_LOCAL_PATH" "$DOCKER_CONTAINER_NAME":$GEN_LIVEPATCH_WORKSPACE/ || error "Failed to copy kernel debuginfo rpm to docker container."
+    fi
+    if [[ -n "$SIGNC" ]]; then
+       $DOCKER cp "$SIGNC" "$DOCKER_CONTAINER_NAME":/usr/bin || error "Failed to copy sign_livepatch script."
     fi
 }
 
