@@ -6,7 +6,7 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        131.0.6778.268
+Version:        138.0.7204.145
 Release:        1%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
@@ -16,7 +16,7 @@ Distribution:   Photon
 # generated using tools/scripts/fetch-chromium-source.sh
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.gz
 
-Source1: depot_tools-d6c2e1b.tar.xz
+Source1: depot_tools-abc5109.tar.xz
 
 Source2: headless.gn
 
@@ -31,6 +31,7 @@ BuildRequires: glibc-devel
 BuildRequires: nspr-devel
 BuildRequires: ninja-build
 BuildRequires: gperf
+BuildRequires: python3
 
 # TODO: need to revisit for aarch64
 BuildArch: x86_64
@@ -60,6 +61,9 @@ popd
 mkdir -p %{builddir}
 cp %{SOURCE2} %{builddir}/args.gn
 
+py_path="$(realpath -s --relative-to=$PWD/depot_tools %{_bindir})"
+echo "${py_path}" > depot_tools/python3_bin_reldir.txt
+
 %{_builddir}/src/depot_tools/gn gen %{builddir}
 
 ninja -C %{builddir} headless_shell -j $(nproc)
@@ -83,6 +87,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Fri Jul 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 138.0.7204.145-1
+- Upgrade to v138.0.7204.145
 * Wed Jan 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 131.0.6778.268-1
 - Upgrade to v131.0.6778.268
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 125.0.6422.65-2
