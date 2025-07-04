@@ -1,6 +1,6 @@
 Name:           gpsd
 Version:        3.25
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -24,15 +24,16 @@ BuildRequires:  cairo
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  python3-pyserial
-BuildRequires:  bluez-devel
 BuildRequires:  systemd-devel
 BuildRequires:  libusb-devel
+%ifarch aarch64
+BuildRequires:  bluez-devel
+%endif
 
 Requires: %{name}-libs = %{version}-%{release}
 Requires: dbus
 Requires: systemd
 Requires: libical
-Requires: bluez
 Requires: libusb
 Requires: util-linux-libs
 Requires: ncurses-libs
@@ -40,6 +41,9 @@ Requires: libcap
 Requires: libgpg-error
 Requires: xz-libs
 Requires: glibc
+%ifarch aarch64
+Requires: bluez
+%endif
 
 %description
 gpsd is a service daemon that mediates access to a GPS sensor
@@ -53,7 +57,9 @@ parse than NMEA 0183.
 
 %package libs
 Summary: Client libraries in C for talking to a running gpsd or GPS
+%ifarch aarch64
 Requires: bluez
+%endif
 
 %description libs
 This package contains the gpsd libraries that manage access
@@ -110,6 +116,11 @@ export LINKFLAGS="-lm"
 
 # breaks with %{_smp_mflags}
 scons \
+%ifarch x86_64
+    bluez=no \
+%else
+    bluez=yes \
+%endif
     bindir=%{_bindir} \
     build packaging \
     dbus_export=yes \
@@ -196,7 +207,6 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %defattr(-,root,root)
 %{_bindir}/gpsprof
 %{python3_sitearch}/gps*
-%{python3_sitearch}/gps/fake*
 
 %files devel
 %defattr(-,root,root)
@@ -229,6 +239,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Sat Jul 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25-4
+- Disable bluez support
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.25-3
 - Release bump for SRP compliance
 * Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.25-2
