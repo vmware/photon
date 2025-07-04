@@ -6,7 +6,7 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        131.0.6778.268
+Version:        138.0.7204.145
 Release:        1%{?dist}
 License:        BSD 3
 URL:            https://chromium.googlesource.com/chromium/src
@@ -16,10 +16,10 @@ Distribution:   Photon
 
 # generated using tools/scripts/fetch-chromium-source.sh
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=f7f4c1533481bc318cc73314a1676af07c5be4193ba75c5480b0b50c1c99a9826b353f8e6ef7f08a72d96ab462188873def695d05edae5e469eb6857e860d187
+%define sha512 %{name}=c9d9eb2bf7003110934bec29d4106bbdcc0d0b87afc6afcdd91e149893afd982e93e56312849a1eda2a98b14646a57c3b3c42a313ca76cbe87781b698f5bf480
 
-Source1: depot_tools-d6c2e1b.tar.xz
-%define sha512 depot_tools=508cd88f42309aacdf74492d0602f91eec85d0d829ecde839c72dc5bb718d61d79e20948fc2206b521a8cf55f48ac61fb62d465cbdbe6f7b2005d3e661835338
+Source1: depot_tools-abc5109.tar.xz
+%define sha512 depot_tools=5841286adf6e610d3b7d7888f096c728f6535e1fba4163661d0a1cf5fbaec037f643bab6490b832eacd41dfadf4dd2e27a4b7afb3c166679e94fd2439846b480
 
 Source2: headless.gn
 
@@ -31,6 +31,7 @@ BuildRequires: glibc-devel
 BuildRequires: nspr-devel
 BuildRequires: ninja-build
 BuildRequires: gperf
+BuildRequires: python3
 
 # TODO: need to revisit for aarch64
 BuildArch: x86_64
@@ -60,6 +61,9 @@ popd
 mkdir -p %{builddir}
 cp %{SOURCE2} %{builddir}/args.gn
 
+py_path="$(realpath -s --relative-to=$PWD/depot_tools %{_bindir})"
+echo "${py_path}" > depot_tools/python3_bin_reldir.txt
+
 %{_builddir}/src/depot_tools/gn gen %{builddir}
 
 ninja -C %{builddir} headless_shell -j $(nproc)
@@ -83,6 +87,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Fri Jul 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 138.0.7204.145-1
+- Upgrade to v138.0.7204.145
 * Wed Jan 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 131.0.6778.268-1
 - Upgrade to v131.0.6778.268
 * Thu May 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 125.0.6422.65-1
