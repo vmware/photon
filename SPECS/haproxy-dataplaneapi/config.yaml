@@ -1,7 +1,12 @@
 sources:
-- archive: haproxy-dataplaneapi-2.7.1.tar.gz
-  archive_sha512sum: f534e6a6622e09cfe505201317f9a6237df6bf347758b844c92266fb9606d493fc43bdb11f6bd16e63372caf1fb3642c6c944805a5c1e7e5791433b64a73dacc
-  skip_validation: true
+- archive: haproxy-dataplaneapi-3.2.1.tar.gz
+  archive_type: upstream
+  archive_sha512sum: f2ddb8612efc3bdde0fa98cf8fb24a6baca69f64ac29d12f63942ecfb19b333c4d201b49c5e986c41dec3d9ee8f12bf02f23169ae3e472a6803247e8a637c9aa
+  name: "dataplaneapi-3.2.1"
+  version: 3.2.1
+  repo_url: https://github.com/haproxytech/dataplaneapi
+  url: https://github.com/haproxytech/dataplaneapi/archive/refs/tags/v3.2.1.tar.gz
+  commit_id: 32af2b443ecd40f6772d73d2f4b62cb95a2b90ce
   spdx:
     package:
       detailed_description: 'HAProxy Data Plane API is a sidecar process that runs

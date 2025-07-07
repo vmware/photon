@@ -2,14 +2,14 @@
 %global debug_package   %{nil}
 %global repo            https://github.com/haproxytech/dataplaneapi
 %global srcname         dataplaneapi
-%global commit          891e0ebb8a07fa0babcc31579700021561b4d017
+%global commit          32af2b443ecd40f6772d73d2f4b62cb95a2b90ce
 %global build_date      %(date -u '+%Y-%m-%dT%H:%M:%SZ')
 %global build_id        %(echo %{build_date} | openssl sha1 | cut -d' ' -f2)
 
 Summary:        A sidecar process for managing HAProxy.
 Name:           haproxy-dataplaneapi
-Version:        2.7.1
-Release:        18%{?dist}
+Version:        3.2.1
+Release:        1%{?dist}
 URL:            %{repo}
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/haproxy/%{srcname}
 
 %changelog
+* Mon Jul 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.1-1
+- Update to 3.2.1
 * Wed Mar 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7.1-18
 - Spec cleanups
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.7.1-17
