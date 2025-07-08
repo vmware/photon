@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.239
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -336,6 +336,18 @@ Patch221: 0002-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
 # Fix CVE-2025-21759
 Patch222: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
 
+# Fix CVE-2021-46987
+Patch223: 0001-btrfs-fix-deadlock-when-cloning-inline-extents-and-u.patch
+
+# Fix CVE-2021-47432
+Patch224: 0001-lib-generic-radix-tree.c-Don-t-overflow-in-peek.patch
+
+# Fix CVE-2021-47412
+Patch225: 0001-block-don-t-call-rq_qos_ops-done_bio-if-the-bio-isn-.patch
+
+# Fix CVE-2021-47455
+Patch226: 0001-ptp-Fix-possible-memory-leak-in-ptp_clock_register.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -612,6 +624,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Jul 14 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-2
+- Fix CVE-2021-46987, CVE-2021-47432, CVE-2021-47412 and CVE-2021-47455
 * Thu Jul 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.239-1
 - Update to version 5.10.239
 * Wed Jun 11 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.238-2
