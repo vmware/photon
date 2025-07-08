@@ -22,8 +22,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.141
-Release:        6%{?dist}
+Version:        6.1.143
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -193,9 +193,6 @@ Patch142: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 
 # Fix CVE-2024-46786
 Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
-
-# Fix CVE-2024-41013
-Patch144: 0001-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
 
 # Fix CVE-2024-50018
 Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
@@ -599,6 +596,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jul 07 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.143-1
+- Update to version 6.1.143
 * Mon Jun 30 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.141-6
 - Fix CVE-2024-27042, CVE-2024-26669
 * Fri Jun 27 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.141-5

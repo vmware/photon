@@ -1,0 +1,20 @@
+From 98cd1591cc69f69a9e6687faa194c580e8f81305 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Mon, 16 Jun 2025 23:17:47 -0500
+Subject: [PATCH 68/68] Linux 6.1.141-rt52 REBASE
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 75493460c41f..66a5ed8bf3d7 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt51
++-rt52
+-- 
+2.49.0
+
