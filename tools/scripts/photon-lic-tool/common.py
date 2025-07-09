@@ -19,7 +19,7 @@ try:
 except ImportError:
     print(
         f'Failed to import local library "license_tree". '
-        f'license_tree is found in {script_dir}/license_tree'
+        f"license_tree is found in {script_dir}/license_tree"
     )
     raise
 
@@ -44,6 +44,7 @@ db_dir = f"{site_pkg_dir}/licensedcode/data/licenses"
 rules_dir = f"{site_pkg_dir}/licensedcode/data/rules/"
 
 ph_scan_dir = f"{ph_scan_tool_dir}/scan_dir"
+ph_srcs_dir = f"{ph_scan_tool_dir}/sources"
 tmp_lic_db = f"{ph_scan_tool_dir}/unofficial-license.db"
 tmp_rules_dir = f"{ph_scan_tool_dir}/unofficial-rules.db"
 rpm_install_root = f"{ph_scan_dir}/rpmbuild"
@@ -53,9 +54,7 @@ cached_yaml_fn = "cached.yaml"
 
 sc_toolkit_cicd_ver = "32.2.1"
 
-spdx_data_base_url = (
-    "https://raw.githubusercontent.com/spdx/license-list-data/"
-)
+spdx_data_base_url = "https://raw.githubusercontent.com/spdx/license-list-data/"
 spdx_license_list_ext = "refs/heads/main/json/licenses.json"
 spdx_exceptions_list_ext = "refs/heads/main/json/exceptions.json"
 """ ################################################################# """
@@ -231,27 +230,22 @@ def strip_license_id(lic_id=None):
 # cleans any ignorable SPDX IDs from the expression, such as standalone
 # exceptions or other license IDs in the ignore list like
 # "LicenseRef-unknown-spdx"
-def cleanup_license_expression(
-    ignore_list=None, exception_list=None, license_exp=None
-):
+def cleanup_license_expression(ignore_list=None, exception_list=None, license_exp=None):
     if not license_exp:
         return None
 
     try:
         import license_expression
     except ImportError:
-        print(
-            "license_expression import failed, do 'pip3 install license_expression'"
-        )
+        print("license_expression import failed, do 'pip3 install license_expression'")
         raise
 
-    lic_tree = license_tree.create_exp_tree(
-        license_exp, exception_list, ignore_list
-    )
+    lic_tree = license_tree.create_exp_tree(license_exp, exception_list, ignore_list)
     parsed_exp = license_tree.render_exp_tree(lic_tree)
 
     # remove duplicates - this returns a set
     top_lvl_exps = extract_top_level_expressions(parsed_exp)
+    top_lvl_exps.sort()
     parsed_exp = " AND ".join(top_lvl_exps)
 
     # do some cleanup for us
@@ -267,7 +261,7 @@ def cleanup_license_expression(
 # but keep all parantheses together
 def extract_top_level_expressions(spdx_exp=None):
     if not spdx_exp:
-        return ""
+        return []
 
     # this should not have duplicates.
     # not using a set because want to preserve order
@@ -295,11 +289,7 @@ def extract_top_level_expressions(spdx_exp=None):
             paran_str = spdx_exp[start_pos:end_pos]
             if paran_str not in expressions:
                 expressions.append(paran_str)
-            spdx_exp = (
-                spdx_exp[:start_pos]
-                + " " * len(paran_str)
-                + spdx_exp[end_pos:]
-            )
+            spdx_exp = spdx_exp[:start_pos] + " " * len(paran_str) + spdx_exp[end_pos:]
         i += 1
 
     # Handle top level OR - whole expression should be concatenated
@@ -487,9 +477,9 @@ def read_license_from_file(file_path=None):
             if line.startswith("License:"):
                 line_spl = line.split(":")
                 # (sub)package name : license expression
-                license_expressions[line_spl[1].strip(" \r\t\n\"'")] = (
-                    line_spl[2].strip(" \r\t\n\"'")
-                )
+                license_expressions[line_spl[1].strip(" \r\t\n\"'")] = line_spl[
+                    2
+                ].strip(" \r\t\n\"'")
 
         if not license_expressions:
             err_exit(f"ERROR: No license expression found in {file_path}")
@@ -541,9 +531,7 @@ def check_scancode_ver():
     try:
         import scancode_config
     except ImportError:
-        print(
-            "Failed to import scancode_config, do 'pip3 install scancode-toolkit'"
-        )
+        pr_err("Failed to import scancode_config, do 'pip3 install scancode-toolkit'")
         raise
 
     print("Checking scancode-toolkit version before run...")

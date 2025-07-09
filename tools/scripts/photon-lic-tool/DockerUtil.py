@@ -35,9 +35,7 @@ class DockerUtil:
         if result.returncode != 0:
             return False
 
-        result = run_cmd(
-            f"docker images -q {self._docker_img_name}", ignore_rc=True
-        )
+        result = run_cmd(f"docker images -q {self._docker_img_name}", ignore_rc=True)
         if result.stdout:
             return True
 
@@ -66,9 +64,7 @@ class DockerUtil:
         # Don't try to build the image if already in the process of building
         if os.path.exists(self._docker_lock_fn):
             print("Docker build already in progress, skipping ...")
-            print(
-                f"If you are sure, remove {self._docker_lock_fn} to skip this check."
-            )
+            print(f"If you are sure, remove {self._docker_lock_fn} to skip this check.")
             return
 
         cwd = os.getcwd()
@@ -144,14 +140,17 @@ class DockerUtil:
         redis_port=None,
         redis_ttl=None,
         score=None,
-        yaml=None,
+        yaml_out=None,
         cpus=None,
         alt_src_url=None,
         extra_repo_urls=None,
+        config_yaml=None,
     ):
         tool_cmd = []
         docker_scan_mnt = f"{common.ph_scan_tool_dir}/scan-mnt"
         docker_yaml_mnt = f"{common.ph_scan_tool_dir}/yaml-mnt"
+        docker_cfg_yaml_mnt = f"{common.ph_scan_tool_dir}/cfg-mnt"
+        mount_list = []
         local_scan_path = ""
         docker_scan_mnt_src = ""
         docker_scan_mnt_target = ""
@@ -160,24 +159,21 @@ class DockerUtil:
             return (None, None)
 
         # scan dir needs to be the full photon repo
-        if build_spec:
+        if build_spec or config_yaml:
             local_scan_path = os.path.abspath(path)
 
             if "SPECS" not in path:
-                err_exit("--build_spec must be run within photon repo!")
+                err_exit("--build_spec/--config_yaml must be run within photon repo!")
 
             relative_path = os.path.basename(local_scan_path)
-            while (
-                local_scan_path
-                and os.path.basename(local_scan_path) != "SPECS"
-            ):
+            while local_scan_path and os.path.basename(local_scan_path) != "SPECS":
                 local_scan_path = os.path.dirname(local_scan_path)
-                relative_path = (
-                    f"{os.path.basename(local_scan_path)}/{relative_path}"
-                )
+                relative_path = f"{os.path.basename(local_scan_path)}/{relative_path}"
 
             if not local_scan_path:
-                err_exit("Failed to find parent SPECS dir for --build_spec!")
+                err_exit(
+                    "Failed to find parent SPECS dir for --build_spec/--config_yaml!"
+                )
 
             local_scan_path = os.path.dirname(local_scan_path)
 
@@ -219,19 +215,24 @@ class DockerUtil:
         if extra_repo_urls:
             tool_cmd.append(f"--extra_repo_urls={extra_repo_urls}")
 
-        if yaml:
-            yaml_src = os.path.abspath(os.path.dirname(yaml))
-            yaml_mount = self._build_mount(
-                yaml_src, docker_yaml_mnt, readonly=False
-            )
+        if yaml_out:
+            yaml_src = os.path.abspath(os.path.dirname(yaml_out))
+            yaml_mount = self._build_mount(yaml_src, docker_yaml_mnt, readonly=False)
             mount_list.append(yaml_mount)
 
-            tool_cmd.append(
-                f"--yaml={docker_yaml_mnt}/{os.path.basename(yaml)}"
-            )
+            tool_cmd.append(f"--yaml={docker_yaml_mnt}/{os.path.basename(yaml_out)}")
 
         if cpus:
             tool_cmd.append(f"--cpus={cpus}")
+
+        if config_yaml:
+            cfg_src = os.path.abspath(os.path.dirname(config_yaml))
+            cfg_mnt = self._build_mount(cfg_src, docker_cfg_yaml_mnt, readonly=False)
+            mount_list.append(cfg_mnt)
+
+            tool_cmd.append(
+                f"--config_yaml={docker_cfg_yaml_mnt}/{os.path.basename(config_yaml)}"
+            )
 
         return (mount_list, tool_cmd)
 
@@ -255,14 +256,9 @@ class DockerUtil:
                 )
 
             relative_path = os.path.basename(local_scan_path)
-            while (
-                local_scan_path
-                and os.path.basename(local_scan_path) != "SPECS"
-            ):
+            while local_scan_path and os.path.basename(local_scan_path) != "SPECS":
                 local_scan_path = os.path.dirname(local_scan_path)
-                relative_path = (
-                    f"{os.path.basename(local_scan_path)}/{relative_path}"
-                )
+                relative_path = f"{os.path.basename(local_scan_path)}/{relative_path}"
 
             if not local_scan_path:
                 err_exit("Failed to find parent SPECS dir for validator!")
@@ -304,14 +300,9 @@ class DockerUtil:
                 )
 
             relative_path = os.path.basename(local_scan_path)
-            while (
-                local_scan_path
-                and os.path.basename(local_scan_path) != "SPECS"
-            ):
+            while local_scan_path and os.path.basename(local_scan_path) != "SPECS":
                 local_scan_path = os.path.dirname(local_scan_path)
-                relative_path = (
-                    f"{os.path.basename(local_scan_path)}/{relative_path}"
-                )
+                relative_path = f"{os.path.basename(local_scan_path)}/{relative_path}"
 
             if not local_scan_path:
                 err_exit("Failed to find parent SPECS dir for validator!")
@@ -337,18 +328,12 @@ class DockerUtil:
     # Run the command in a docker container
     def run_docker_cmd(self, cmd=None, mount_list=[]):
         docker_prefix = "docker run --detach --network=host"
-        tool_prefix = (
-            f"python3 -u {self._docker_tool_dir}/{common.tool_filename}"
-        )
+        tool_prefix = f"python3 -u {self._docker_tool_dir}/{common.tool_filename}"
 
         if cmd[0] not in self._supported_cmds:
-            err_exit(
-                f"Command '{cmd[0]}' not compatible with docker, refusing to run"
-            )
+            err_exit(f"Command '{cmd[0]}' not compatible with docker, refusing to run")
 
-        mount_list += [
-            self._build_mount(script_dir, self._docker_tool_dir)
-        ]
+        mount_list += [self._build_mount(script_dir, self._docker_tool_dir)]
 
         full_cmd = (
             f"{docker_prefix} "
@@ -362,12 +347,8 @@ class DockerUtil:
         # Don't try to build the image if already in the process of building.
         # Also, wait for build to finish before running.
         while os.path.exists(self._docker_lock_fn):
-            print(
-                "Cannot start container while image build is in progress, wait ..."
-            )
-            print(
-                f"If you are sure, remove {self._docker_lock_fn} to skip this check."
-            )
+            print("Cannot start container while image build is in progress, wait ...")
+            print(f"If you are sure, remove {self._docker_lock_fn} to skip this check.")
             sleep(10)
 
         # Check if need to create docker image
@@ -380,18 +361,18 @@ class DockerUtil:
         container_id = result.stdout.decode().strip()
 
         # Watch the logs...
-        run_cmd(
-            f"docker container logs --follow {container_id}", capture=False
-        )
+        run_cmd(f"docker container logs --follow {container_id}", capture=False)
 
         # Check for exit code
         result = run_cmd(f"docker wait {container_id}", ignore_rc=True)
+
+        # Clean the container on exit
+        run_cmd(f"docker container rm {container_id}")
+
         if result.returncode != 0:
-            run_cmd(f"docker container rm {container_id}")
             err_exit(f"Failed to check return code from {container_id}...")
 
         exit_code = result.stdout.decode().strip()
-        run_cmd(f"docker container rm {container_id}")
         if int(exit_code) != 0:
             err_exit(
                 f'\nCommand "{full_cmd}" failed inside container {container_id} '

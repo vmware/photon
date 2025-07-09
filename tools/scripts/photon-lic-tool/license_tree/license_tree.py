@@ -150,6 +150,7 @@ def create_exp_tree(exp=None, exception_list=[], ignore_list=[]):
 
 
 # Convert the expression tree to text form
+# Sorts the paranthetical expressions alphabetically
 def render_exp_tree(exp_tree=None, parent_value="", string=""):
     if exp_tree is None:
         return
@@ -161,10 +162,20 @@ def render_exp_tree(exp_tree=None, parent_value="", string=""):
     if exp_tree.value == "AND":
         sub_str = f"{lhs} {exp_tree.value} {rhs}"
         if parent_value == "OR":
+            sub_str_exps = sub_str.split("AND")
+            sub_str_exps = [ x.strip() for x in sub_str_exps ]
+            sub_str_exps.sort()
+            sub_str = " AND ".join(sub_str_exps).strip()
+
             sub_str = f"({sub_str})"
     elif exp_tree.value == "OR":
         sub_str = f"{lhs} {exp_tree.value} {rhs}"
         if parent_value == "AND":
+            sub_str_exps = sub_str.split("OR")
+            sub_str_exps = [ x.strip() for x in sub_str_exps ]
+            sub_str_exps.sort()
+            sub_str = " OR ".join(sub_str_exps).strip()
+
             sub_str = f"({sub_str})"
     else:
         sub_str = exp_tree.value

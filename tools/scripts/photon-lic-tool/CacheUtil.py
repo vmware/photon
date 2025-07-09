@@ -26,9 +26,7 @@ class CacheUtil:
         self.cached_spdx_ids = set()
         self.cached_licenses_info = {}
         # scan dir with only uncached files
-        self._non_cached_scan_dir = (
-            f"{common.ph_scan_tool_dir}/non_cached_scan_dir"
-        )
+        self._non_cached_scan_dir = f"{common.ph_scan_tool_dir}/non_cached_scan_dir"
 
         self._redis_cache = redis.Redis(
             host=redis_host, port=redis_port, decode_responses=True
@@ -96,9 +94,7 @@ class CacheUtil:
                 # directory. Worst case, we move the entire package source, but this
                 # only happens on the very first scan. Subsequent scans should be
                 # much faster and move only a couple files.
-                new_path = os.path.join(
-                    self._non_cached_scan_dir, file.strip("/")
-                )
+                new_path = os.path.join(self._non_cached_scan_dir, file.strip("/"))
                 os.makedirs(os.path.dirname(new_path), exist_ok=True)
                 shutil.move(file, new_path)
                 continue
@@ -117,9 +113,7 @@ class CacheUtil:
 
     # after successful scan completion, update the database
     # with the data for these files
-    def _add_scan_result_to_db(
-        self, redis_pipeline=None, spdx_id=None, filepath=None
-    ):
+    def _add_scan_result_to_db(self, redis_pipeline=None, spdx_id=None, filepath=None):
         if not redis_pipeline or not filepath:
             return
 
@@ -222,9 +216,9 @@ class CacheUtil:
                 if i >= num_cpus:
                     i = 0
                 file_path = os.path.join(root, file)
-                if os.path.basename(
+                if os.path.basename(file_path) not in git_files and os.path.isfile(
                     file_path
-                ) not in git_files and os.path.isfile(file_path):
+                ):
                     file_lists[i].append(file_path)
                 i += 1
 

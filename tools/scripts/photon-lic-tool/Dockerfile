@@ -31,6 +31,7 @@ RUN pip3 install \
     redis==6.0.0 \
     argparse==1.4.0 \
     click==8.1.8 \
+    ruamel.yaml==0.18.10 \
    && pip3 cache purge
 
 ENV LIC_TOOL_DIR=/root/photon-lic-tool

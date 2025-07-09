@@ -41,16 +41,29 @@ def sig_handler(sig, frame):
 
 def scan(args):
     scanner = Scanner()
-    scanner.scan(
-        build_spec=args.build_spec,
-        score=args.score,
-        yaml=args.yaml,
-        cpus=args.cpus,
-        docker=args.docker,
-        path=args.path,
-        alt_src_url=args.alt_src_url,
-        extra_repo_urls=args.extra_repo_urls,
-    )
+    if not args.config_yaml:
+        scanner.scan(
+            build_spec=args.build_spec,
+            score=args.score,
+            yaml_out=args.yaml,
+            cpus=args.cpus,
+            docker=args.docker,
+            path=args.path,
+            alt_src_url=args.alt_src_url,
+            extra_repo_urls=args.extra_repo_urls,
+        )
+    else:
+        scanner.scan_config_yaml(
+            build_spec=args.build_spec,
+            score=args.score,
+            yaml_out=args.yaml,
+            cpus=args.cpus,
+            docker=args.docker,
+            path=args.path,
+            alt_src_url=args.alt_src_url,
+            extra_repo_urls=args.extra_repo_urls,
+            config_yaml=args.config_yaml,
+        )
 
 
 def validate(args):
@@ -85,6 +98,13 @@ def clean_exp(args):
 
 def compare_exps(args):
     comparator = Comparator()
+
+    if not args.a:
+        err_exit("Please input expression A with -a <exp>")
+
+    if not args.b:
+        err_exit("Please input expression B with -b <exp>")
+
     comparator.compare_exps(args.a, args.b)
 
 
@@ -217,6 +237,13 @@ def parse_input():
                     {
                         "action": "store_true",
                         "help": "Path is a SPEC file to build and scan.",
+                    },
+                ),
+                (
+                    "--config_yaml",
+                    {
+                        "action": "store",
+                        "help": "Path to output newly scanned config.yaml",
                     },
                 ),
             ],
