@@ -7,7 +7,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.9.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -143,6 +143,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Wed Jul 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-2
+- Release bump up for SRP compliance
 * Thu May 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-1
 - Update to 3.9.1, fixes multiple CVEs
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.4.0-10
