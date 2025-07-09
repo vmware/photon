@@ -47,9 +47,7 @@ class LicDB:
                     ret = 0 if res.returncode == 0 else -1
 
                     # ignore all rules that mention this key
-                    self._trim_rules_for_key(
-                        key, rule_ignore_list, rule_ignore_lock
-                    )
+                    self._trim_rules_for_key(key, rule_ignore_list, rule_ignore_lock)
                     break
 
         return ret
@@ -196,8 +194,7 @@ class LicDB:
             )
 
             spdx_ids = [
-                exp.strip(" \r\t\n()")
-                for exp in re.split("AND|WITH|OR", lic_exp_line)
+                exp.strip(" \r\t\n()") for exp in re.split("AND|WITH|OR", lic_exp_line)
             ]
             if key in spdx_ids:
                 with rule_ignore_lock:
