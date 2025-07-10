@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.238
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.239
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=89a65f3fa470e9d15c0c2d980e569e2de330ccaaa77ba695a670f32250df8955f55e5019fa0db930efd7f5f27e6458764b1fb770ca53d6c922c884c233d5422b
+%define sha512 linux=23240ad431fdf11b4b621d4de2b27ff8ae3d9c8318c4bd56663fcbece5ebc36dba93964921240fc352230d1f75ce37b98d60d0b56ae0c037a5dfbd34c370620b
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -1056,6 +1056,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Jul 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.239-1
+- Update to version 5.10.239
 * Wed Jun 11 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.238-2
 - Fix CVE-2025-21759
 * Mon Jun 09 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.238-1
