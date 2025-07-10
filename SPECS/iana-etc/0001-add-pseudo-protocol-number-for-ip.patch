@@ -1,0 +1,25 @@
+From 3ec9f1a3a19e574b64fbaa057514482df422713e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 18 Jul 2025 14:46:52 +0530
+Subject: [PATCH] add pseudo protocol number for ip
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ protocols | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/protocols b/protocols
+index 1211b7d..70eeec7 100644
+--- a/protocols
++++ b/protocols
+@@ -2,6 +2,7 @@
+ # https://www.iana.org/assignments/protocol-numbers
+ #
+ # (last updated 2025-07-11)
++ip               0 IP             # internet protocol, pseudo protocol number
+ hopopt           0 HOPOPT         # IPv6 Hop-by-Hop Option
+ icmp             1 ICMP           # Internet Control Message
+ igmp             2 IGMP           # Internet Group Management
+-- 
+2.43.0
+
