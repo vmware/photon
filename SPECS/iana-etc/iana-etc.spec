@@ -1,33 +1,48 @@
 Summary:        Data for network services and protocols
 Name:           iana-etc
-Version:        2.30
-Release:        4%{?dist}
-URL:            http://freshmeat.net/projects/iana-etc
+Version:        20250711
+Release:        1%{?dist}
+URL:            https://www.iana.org/protocols
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      noarch
-Source0:        http://anduin.linuxfromscratch.org/sources/LFS/lfs-packages/conglomeration//iana-etc/%{name}-%{version}.tar.bz2
 
-Source1: license.txt
-%include %{SOURCE1}
+BuildArch:      noarch
+
+Source0: https://github.com/Mic92/iana-etc/releases/download/%{version}/%{name}-%{version}.tar.gz
+
+Source2: license.txt
+%include %{SOURCE2}
+
+Patch0: 0001-add-pseudo-protocol-number-for-ip.patch
+
 %description
 The Iana-Etc package provides data for network services and protocols.
+/etc/protocols and /etc/services provided by IANA
+
 %prep
 %autosetup -p1
-%build
-make %{?_smp_mflags}
-%install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
-%check
-make %{?_smp_mflags} test
+%build
+# remove trailing spaces from the files
+sed -i 's/[[:space:]]*$//' protocols
+sed -i 's/[[:space:]]*$//' services
+
+%install
+install -vDm644 protocols %{buildroot}%{_sysconfdir}/protocols
+install -vDm644 services %{buildroot}%{_sysconfdir}/services
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%config %_sysconfdir/protocols
-%config %_sysconfdir/services
+%config(noreplace) %{_sysconfdir}/protocols
+%config(noreplace) %{_sysconfdir}/services
+
 %changelog
+* Thu Jul 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250711-1
+- Update to latest protocols, services
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.30-4
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.30-3

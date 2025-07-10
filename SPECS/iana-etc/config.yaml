@@ -1,13 +1,14 @@
 sources:
-- archive: iana-etc-2.30.tar.bz2
-  archive_sha512sum: d841b9c177fb0675bab10c9b0ebc4d3c2b743754c615e3fabcaebb29ffefaf2491278d0e672b99af3cbc9b300138700f56c1026f6d41659783150aea97583936
+- archive: iana-etc-20250711.tar.gz
+  archive_sha512sum: dae7d23d03e33766071bcacc7e6fa2f4c3d3ee87554ca34b1004257731b30556bce314ebb189e8352e32b67d0f819d45178627ad5873401924ddd6a02dbca96f
   skip_validation: true
+  repo_url: https://github.com/Mic92/iana-etc
   spdx:
     package:
       detailed_description: The Iana-Etc package provides data for network services
-        and protocols.
-      home_page: http://freshmeat.net/projects/iana-etc
-      license_concluded: OSL-3.0
-      license_declared: OSL-3.0
+        and protocols. /etc/protocols and /etc/services provided by IANA
+      home_page: https://github.com/Mic92/iana-etc
+      license_concluded: MIT
+      license_declared: MIT
       short_summary: Data for network services and protocols
       supplier: 'Organization: Broadcom, Inc.'
