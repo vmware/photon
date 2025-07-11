@@ -1,0 +1,26 @@
+From 08f9af21a02e6145f2f4d7bd0b75676b095a92b3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 10 Jul 2025 20:21:53 +0530
+Subject: [PATCH] Make CFLAGS overrideable; set SOCKLEN_T to socklen_t
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index fd7de37..cb131e7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -11,7 +11,7 @@ else
+ endif
+ 
+ CC=gcc
+-CFLAGS=-DSOCKLEN_T=int
++CFLAGS ?= -DSOCKLEN_T=socklen_t
+ LDLIBS=
+ 
+ ## for Mac OS X environment, use one of options
+-- 
+2.40.4
+
