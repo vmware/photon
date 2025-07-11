@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.11
+Version:        3.5.12
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -296,6 +296,10 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Jul 11 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-1
+- update to 3.5.12
+- check for unsigned packages when gpgcheck is enabled (PR 525)
+- add --forcearch option (PR 524)
 * Wed Mar 12 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.11-1
 - update to 3.5.11
 - fix for SRPM install when binary package is installed #515
