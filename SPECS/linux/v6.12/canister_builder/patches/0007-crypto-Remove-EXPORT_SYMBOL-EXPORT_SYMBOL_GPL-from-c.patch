@@ -1,4 +1,4 @@
-From a606b199c3099905b97a1c2775a0993ea2178e91 Mon Sep 17 00:00:00 2001
+From 4ba43216a42fef955cd9a274f1c035ac898b0243 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 06:58:48 +0000
 Subject: [PATCH 07/13] crypto: Remove EXPORT_SYMBOL, EXPORT_SYMBOL_GPL from

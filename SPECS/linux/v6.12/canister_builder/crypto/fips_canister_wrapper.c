@@ -689,7 +689,6 @@ void *fcw_scatterwalk_map(struct scatter_walk *walk)
 
 static char *canister_algs[] = {
 	"cipher_null-generic",
-	"ecb-cipher_null",
 	"rsa-generic",
 	"sha256-generic",
 	"sha224-generic",
@@ -721,7 +720,6 @@ static char *canister_algs[] = {
 	"ecdh-generic",
 	"cbc(aes-generic)",
 	"cbc(aes-aesni)",
-	"ecb(aes-generic)",
 	"cbc(ecb(aes-generic))",
 	"hmac(sha224-generic)",
 	"pkcs1pad(rsa-generic,sha256)",
@@ -729,12 +727,9 @@ static char *canister_algs[] = {
 	"pkcs1pad(rsa-generic,sha3-512)",
 	"xts(ecb(aes-generic))",
 	"aes-aesni",
-	"__ecb-aes-aesni",
 	"__cbc-aes-aesni",
 	"__ctr-aes-aesni",
 	"__xts-aes-aesni",
-	"cryptd(__ecb-aes-aesni)",
-	"ecb-aes-aesni",
 	"cryptd(__cbc-aes-aesni)",
 	"cbc-aes-aesni",
 	"cryptd(__ctr-aes-aesni)",

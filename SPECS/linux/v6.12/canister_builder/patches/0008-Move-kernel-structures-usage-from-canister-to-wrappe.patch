@@ -1,4 +1,4 @@
-From 5286d5f79500ab18c2ea6440a5f18c8892eb8d28 Mon Sep 17 00:00:00 2001
+From b97849cf35fed761640c4882372b72aa2ef6472e Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 2 Dec 2024 07:59:18 +0000
 Subject: [PATCH 08/13] Move kernel structures usage from canister to wrapper
@@ -47,7 +47,6 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  crypto/ctr.c                        |  13 +-
  crypto/cts.c                        |  11 +-
  crypto/drbg.c                       | 123 +++---
- crypto/ecb.c                        |  12 +-
  crypto/ecc.c                        |  19 +-
  crypto/ecdh.c                       |  10 +-
  crypto/ecdsa.c                      |  20 +-
@@ -77,7 +76,7 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  include/linux/spinlock.h            |  19 +-
  include/linux/spinlock_cond_guard.h |  16 +
  include/linux/swait.h               |   4 +
- 40 files changed, 424 insertions(+), 893 deletions(-)
+ 39 files changed, 422 insertions(+), 883 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
@@ -1083,41 +1082,6 @@ index 78341ecbb..96b645954 100644
 -		   CRYPTO_DRBG_CTR_STRING);
 -MODULE_ALIAS_CRYPTO("stdrng");
 -MODULE_IMPORT_NS(CRYPTO_INTERNAL);
-diff --git a/crypto/ecb.c b/crypto/ecb.c
-index c8047736c..5473b97d6 100644
---- a/crypto/ecb.c
-+++ b/crypto/ecb.c
-@@ -10,7 +10,6 @@
- #include <linux/err.h>
- #include <linux/init.h>
- #include <linux/kernel.h>
--#include <linux/module.h>
- #include <linux/slab.h>
- 
- static int crypto_ecb_crypt(struct crypto_cipher *cipher, const u8 *src,
-@@ -209,20 +208,13 @@ static struct crypto_template crypto_ecb_tmpl = {
- 	.module = THIS_MODULE,
- };
- 
--static int __init crypto_ecb_module_init(void)
-+int __init crypto_ecb_module_init(void)
- {
- 	return crypto_register_template(&crypto_ecb_tmpl);
- }
- 
--static void __exit crypto_ecb_module_exit(void)
-+void __exit crypto_ecb_module_exit(void)
- {
- 	crypto_unregister_template(&crypto_ecb_tmpl);
- }
- 
--subsys_initcall(crypto_ecb_module_init);
--module_exit(crypto_ecb_module_exit);
--
--MODULE_LICENSE("GPL");
--MODULE_DESCRIPTION("ECB block cipher mode of operation");
--MODULE_ALIAS_CRYPTO("ecb");
--MODULE_IMPORT_NS(CRYPTO_INTERNAL);
 diff --git a/crypto/ecc.c b/crypto/ecc.c
 index e0cc81ec9..8dd7fe10d 100644
 --- a/crypto/ecc.c
@@ -1224,7 +1188,7 @@ index 93996076c..4e53880b1 100644
 -MODULE_LICENSE("GPL");
 -MODULE_DESCRIPTION("ECDH generic algorithm");
 diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
-index e097ba178..faa678b89 100644
+index 81b246e39..e36438b2e 100644
 --- a/crypto/ecdsa.c
 +++ b/crypto/ecdsa.c
 @@ -3,7 +3,6 @@
@@ -1235,7 +1199,7 @@ index e097ba178..faa678b89 100644
  #include <crypto/internal/akcipher.h>
  #include <crypto/internal/ecc.h>
  #include <crypto/akcipher.h>
-@@ -101,8 +100,10 @@ static int _ecdsa_verify(struct ecc_ctx *ctx, const u64 *hash, const u64 *r, con
+@@ -96,8 +95,10 @@ static int _ecdsa_verify(struct ecc_ctx *ctx, const u64 *hash, const u64 *r, con
  		return -EBADMSG;
  
  	/* hash is given */
@@ -1247,7 +1211,7 @@ index e097ba178..faa678b89 100644
  
  	/* s1 = (s^-1) mod n */
  	vli_mod_inv(s1, s, curve->n, ndigits);
-@@ -341,7 +342,7 @@ static struct akcipher_alg ecdsa_nist_p192 = {
+@@ -336,7 +337,7 @@ static struct akcipher_alg ecdsa_nist_p192 = {
  };
  static bool ecdsa_nist_p192_registered;
  
@@ -1256,7 +1220,7 @@ index e097ba178..faa678b89 100644
  {
  	int ret;
  
-@@ -375,7 +376,7 @@ static int __init ecdsa_init(void)
+@@ -370,7 +371,7 @@ static int __init ecdsa_init(void)
  	return ret;
  }
  
@@ -1265,7 +1229,7 @@ index e097ba178..faa678b89 100644
  {
  	if (ecdsa_nist_p192_registered)
  		crypto_unregister_akcipher(&ecdsa_nist_p192);
-@@ -384,14 +385,3 @@ static void __exit ecdsa_exit(void)
+@@ -379,14 +380,3 @@ static void __exit ecdsa_exit(void)
  	crypto_unregister_akcipher(&ecdsa_nist_p521);
  }
  
@@ -3385,7 +3349,7 @@ index 347bc0c41..89d96ddb9 100644
   * cipher_testvec:	structure to describe a symmetric cipher test
   * @key:	Pointer to key
 diff --git a/crypto/xts.c b/crypto/xts.c
-index 54259a7f6..0e619e399 100644
+index e271be931..3f255ec8f 100644
 --- a/crypto/xts.c
 +++ b/crypto/xts.c
 @@ -13,7 +13,6 @@

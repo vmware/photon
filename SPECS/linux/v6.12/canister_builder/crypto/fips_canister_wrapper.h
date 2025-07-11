@@ -111,8 +111,6 @@ int __init crypto_cmac_module_init(void);
 void __exit crypto_cmac_module_exit(void);
 int __init sha3_generic_mod_init(void);
 void __exit sha3_generic_mod_fini(void);
-int __init crypto_ecb_module_init(void);
-void __exit crypto_ecb_module_exit(void);
 int __init crypto_ctr_module_init(void);
 void __exit crypto_ctr_module_exit(void);
 int __init ghash_mod_init(void);
