@@ -28,7 +28,6 @@ arch_initcall(fcw_arch_initcall);
 static int __init fcw_subsys_initcall(void)
 {
 	rsa_init();
-	crypto_ecb_module_init();
 	seqiv_module_init();
 	sha256_generic_mod_init();
 	sha512_generic_mod_init();
@@ -66,7 +65,6 @@ static void __exit fcw_module_exit(void)
 	crypto_ctr_module_exit();
 	crypto_cts_module_exit();
 	drbg_exit();
-	crypto_ecb_module_exit();
 	ecdh_exit();
 	ecdsa_exit();
 	crypto_gcm_module_exit();

@@ -1,4 +1,4 @@
-From d5cdd98daa5041625c3e4a95a73573b530462cbf Mon Sep 17 00:00:00 2001
+From 61425225ad19baa222ef19d0fc54f6d92af24fbe Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
 Subject: [PATCH 03/13] FIPS canister creation
@@ -25,14 +25,13 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  77 ++++++-------
- crypto/Makefile                    |  90 ++++++++++++++++
+ crypto/Makefile                    |  89 +++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
  crypto/ctr.c                       |   3 +-
  crypto/cts.c                       |   3 +-
  crypto/drbg.c                      |  50 +++++----
- crypto/ecb.c                       |   2 +-
  crypto/ecc.c                       |   5 +-
  crypto/ecdh.c                      |   5 +-
  crypto/ecdsa.c                     |   3 +-
@@ -44,7 +43,7 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  crypto/testmgr.c                   | 108 ++++++++++---------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 20 files changed, 270 insertions(+), 289 deletions(-)
+ 19 files changed, 268 insertions(+), 288 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -317,7 +316,7 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 7e466087a..08867dcda 100644
+index 32ddbce74..0d2dc0fb4 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -17,9 +17,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -368,7 +367,7 @@ index 7e466087a..08867dcda 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -77,13 +87,19 @@ obj-$(CONFIG_CRYPTO_WP512) += wp512.o
+@@ -78,13 +88,19 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
  obj-$(CONFIG_CRYPTO_ECB) += ecb.o
@@ -388,7 +387,7 @@ index 7e466087a..08867dcda 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -118,6 +135,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -119,6 +135,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -396,7 +395,7 @@ index 7e466087a..08867dcda 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -150,6 +168,7 @@ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
+@@ -151,6 +168,7 @@ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
  obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
@@ -404,7 +403,7 @@ index 7e466087a..08867dcda 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -157,11 +176,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -158,11 +176,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
@@ -419,7 +418,7 @@ index 7e466087a..08867dcda 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -185,6 +207,74 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -186,6 +207,74 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -800,19 +799,6 @@ index 1ff3052d4..c0a8e4f66 100644
  	kfree(drbg);
  	return rc;
  }
-diff --git a/crypto/ecb.c b/crypto/ecb.c
-index e3a677890..c8047736c 100644
---- a/crypto/ecb.c
-+++ b/crypto/ecb.c
-@@ -107,7 +107,7 @@ static struct lskcipher_instance *lskcipher_alloc_instance_simple2(
- 	if (err)
- 		return ERR_PTR(err);
- 
--	inst = kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
-+	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
- 	if (!inst)
- 		return ERR_PTR(-ENOMEM);
- 	spawn = lskcipher_instance_ctx(inst);
 diff --git a/crypto/ecc.c b/crypto/ecc.c
 index 234eb2b89..1bb19b7f0 100644
 --- a/crypto/ecc.c
@@ -871,7 +857,7 @@ index 72cfd1590..93996076c 100644
  			goto free_pubkey;
  
 diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
-index d5a10959e..e097ba178 100644
+index 80ef16ae6..81b246e39 100644
 --- a/crypto/ecdsa.c
 +++ b/crypto/ecdsa.c
 @@ -12,6 +12,7 @@
@@ -882,7 +868,7 @@ index d5a10959e..e097ba178 100644
  
  struct ecc_ctx {
  	unsigned int curve_id;
-@@ -141,7 +142,7 @@ static int ecdsa_verify(struct akcipher_request *req)
+@@ -136,7 +137,7 @@ static int ecdsa_verify(struct akcipher_request *req)
  	if (unlikely(!ctx->pub_key_set))
  		return -EINVAL;
  
@@ -1673,7 +1659,7 @@ index f3d7cd846..846b5323e 100644
  	if ((type & CRYPTO_ALG_TYPE_MASK) == CRYPTO_ALG_TYPE_CIPHER) {
  		char nalg[CRYPTO_MAX_ALG_NAME];
 diff --git a/crypto/xts.c b/crypto/xts.c
-index 672e1a3f0..54259a7f6 100644
+index 91e391a6b..e271be931 100644
 --- a/crypto/xts.c
 +++ b/crypto/xts.c
 @@ -20,6 +20,7 @@

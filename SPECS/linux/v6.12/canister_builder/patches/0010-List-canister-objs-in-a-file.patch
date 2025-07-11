@@ -1,4 +1,4 @@
-From dab1484cd698b9ba3e719dda5d259ae87a3b475b Mon Sep 17 00:00:00 2001
+From d626019c1c3f671400c979d37368567fb1b535d9 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Wed, 4 Jun 2025 01:19:21 -0500
 Subject: [PATCH 10/13] List canister objs in a file
@@ -9,7 +9,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 08867dcda..a345c5bda 100644
+index 0d2dc0fb4..c99902894 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -220,14 +220,17 @@ OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y

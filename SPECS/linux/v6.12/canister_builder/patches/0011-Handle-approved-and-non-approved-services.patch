@@ -1,6 +1,6 @@
-From f4be8de0a995c211599beb4a1f8ceb99e8c656bf Mon Sep 17 00:00:00 2001
+From 8be19bb75cb4bfa624bc19f64c8584958ca5a448 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
-Date: Fri, 2 May 2025 03:09:39 -0500
+Date: Fri, 11 Jul 2025 04:20:16 -0500
 Subject: [PATCH 11/13] Handle approved and non-approved services
 
 - Add log indicator prints in algorithm initialization path
@@ -43,7 +43,6 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  crypto/ctr.c                       |   7 ++
  crypto/cts.c                       |   4 +
  crypto/drbg.c                      |  10 ++-
- crypto/ecb.c                       |   8 +-
  crypto/ecc.c                       |   1 +
  crypto/ecdh.c                      |  11 +++
  crypto/ecdsa.c                     |  16 ++++
@@ -58,7 +57,7 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  crypto/sha512_generic.c            |  12 ++-
  crypto/testmgr.c                   |  14 ++--
  crypto/xts.c                       |   9 ++-
- 23 files changed, 342 insertions(+), 23 deletions(-)
+ 22 files changed, 335 insertions(+), 22 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index ca62f83d1..a123404a9 100644
@@ -483,33 +482,6 @@ index 96b645954..890f05050 100644
  }
  
  void __exit drbg_exit(void)
-diff --git a/crypto/ecb.c b/crypto/ecb.c
-index 5473b97d6..2bd8d211e 100644
---- a/crypto/ecb.c
-+++ b/crypto/ecb.c
-@@ -11,6 +11,8 @@
- #include <linux/init.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
-+#include <linux/fips.h>
-+#include "fips_canister_wrapper.h"
- 
- static int crypto_ecb_crypt(struct crypto_cipher *cipher, const u8 *src,
- 			    u8 *dst, unsigned nbytes, bool final,
-@@ -196,8 +198,12 @@ static int crypto_ecb_create(struct crypto_template *tmpl, struct rtattr **tb)
- 	inst->alg.exit = cipher_alg->exit;
- 
- 	err = lskcipher_register_instance(tmpl, inst);
--	if (err)
-+	if (err) {
- 		inst->free(inst);
-+	} else if (fips_enabled) {
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
-+				   inst->alg.co.base.cra_driver_name, inst->alg.co.base.cra_name);
-+	}
- 
- 	return err;
- }
 diff --git a/crypto/ecc.c b/crypto/ecc.c
 index e456517a2..cdd069e89 100644
 --- a/crypto/ecc.c
@@ -556,7 +528,7 @@ index 4e53880b1..8609b029b 100644
  
  nist_p384_error:
 diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
-index faa678b89..41d3309bb 100644
+index e36438b2e..ae3e0a689 100644
 --- a/crypto/ecdsa.c
 +++ b/crypto/ecdsa.c
 @@ -8,6 +8,7 @@
@@ -567,7 +539,7 @@ index faa678b89..41d3309bb 100644
  #include <linux/scatterlist.h>
  
  #include "ecdsasignature.asn1.h"
-@@ -354,14 +355,29 @@ int __init ecdsa_init(void)
+@@ -349,14 +350,29 @@ int __init ecdsa_init(void)
  	if (ret)
  		goto nist_p256_error;
  
@@ -988,7 +960,7 @@ index 10c160647..1a3ec52c2 100644
  			.aead = {
  				____VECS(aes_ccm_rfc4309_tv_template),
 diff --git a/crypto/xts.c b/crypto/xts.c
-index 0e619e399..c3bccc80a 100644
+index 3f255ec8f..d559bef87 100644
 --- a/crypto/xts.c
 +++ b/crypto/xts.c
 @@ -19,6 +19,7 @@
