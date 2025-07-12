@@ -4,15 +4,18 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.71.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://static.rust-lang.org/dist/%{name}c-%{version}-src.tar.xz
+
 Source1: https://static.rust-lang.org/dist/%{toolchain_prefix}/cargo-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
+
 Source2: https://static.rust-lang.org/dist/%{toolchain_prefix}/rustc-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
+
 Source3: https://static.rust-lang.org/dist/%{toolchain_prefix}/rust-std-%{bootstrap_toolchain_ver}-%{_arch}-unknown-linux-gnu.tar.xz
 
 Source4: license.txt
@@ -21,26 +24,16 @@ Source4: license.txt
 Patch0: 0001-Convert-valid-feature-name-warning-to-an-error.patch
 
 BuildRequires: cmake
+BuildRequires: ninja-build
 BuildRequires: glibc-devel
-BuildRequires: binutils-devel
-BuildRequires: curl-devel
-BuildRequires: python3-devel
-BuildRequires: openssl-devel
-BuildRequires: libssh2-devel
-BuildRequires: zlib-devel
 BuildRequires: clang
 BuildRequires: llvm-devel
-BuildRequires: xz-devel
 BuildRequires: libxml2-devel
-BuildRequires: ncurses-devel
 
 Requires: glibc
 Requires: gcc
 Requires: libstdc++
-Requires: openssl
-Requires: ncurses-libs
 Requires: libgcc
-Requires: zlib
 
 %description
 Rust Programming Language
@@ -53,12 +46,9 @@ pushd src/tools/cargo
 %autopatch -p1 -M0
 popd
 
-# Remove other unused vendored libraries
 rm -rf src/llvm-project/
 
-mkdir -p src/llvm-project/libunwind/ \
-         build/cache/%{toolchain_prefix}/
-
+mkdir -p build/cache/%{toolchain_prefix}
 cp %{SOURCE1} %{SOURCE2} %{SOURCE3} build/cache/%{toolchain_prefix}/
 
 %build
@@ -68,14 +58,21 @@ sh ./configure \
     --tools="cargo" \
     --llvm-root=%{_prefix} \
     --disable-codegen-tests \
-    --enable-vendor
+    --enable-vendor \
+    --enable-ninja
 
-%make_build
+# Output sync option (-O) in make results in buffered logging.
+# For a long time we don't say any logs during build, hence disabling it
+%define _make_output_sync %{nil}
+%make_build BOOTSTRAP_ARGS=-vv
 
 %install
 %make_install %{?_smp_mflags}
+
 find %{buildroot}%{_libdir} -maxdepth 1 -type f -name '*.so' -exec chmod -v +x '{}' '+'
-rm %{buildroot}%{_docdir}/%{name}/html/.lock %{buildroot}%{_docdir}/%{name}/*.old
+
+rm -rf %{buildroot}%{_docdir} \
+       %{buildroot}%{_datadir}/zsh*
 
 %clean
 rm -rf %{buildroot}/*
@@ -95,20 +92,12 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/cargo-credential-1password
 %{_bindir}/rust-gdb
 %{_bindir}/rust-gdbgui
-%doc %{_docdir}/%{name}/html/*
-%exclude %{_docdir}/%{name}/html/.stamp
-%doc %{_docdir}/%{name}/README.md
-%doc %{_docdir}/%{name}/COPYRIGHT
-%doc %{_docdir}/%{name}/LICENSE-APACHE
-%doc %{_docdir}/%{name}/LICENSE-MIT
-%doc src/tools/rustfmt/{README,CHANGELOG,Configurations}.md
-%doc src/tools/clippy/{README.md,CHANGELOG.md}
 %{_bindir}/cargo
-%{_datadir}/zsh/*
-%doc %{_docdir}/%{name}/LICENSE-THIRD-PARTY
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-6
+- Enable verbose build
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-5
 - Release bump for SRP compliance
 * Thu Jul 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-4
