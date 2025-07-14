@@ -1,0 +1,24 @@
+sources:
+- archive: ena_linux_2.8.3.tar.gz
+  archive_sha512sum: 173435137b6fe47d110db376c4c3eff8da7a10803dde5f41f694d04e74319861c16398f257a1c917a4fc05477c86e6e7b42e6a63e2f42de7ea9166f77ba9b01d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: AWS Linux kernel drivers for Elastic Network Adapter(ENA).
+        ENA is a networking interface designed to make good use of modern CPU features
+        and system architectures. The ENA device exposes a lightweight management
+        interface with a minimal set of memory mapped registers and extendible command
+        set through an Admin Queue.
+      home_page: https://github.com/amzn/amzn-drivers
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only WITH Linux-syscall-note
+        OR BSD-2-Clause) AND BSD-2-Clause AND (GPL-2.0-only OR Linux-OpenIB) AND GPL-2.0-or-later
+        AND GPL-2.0-only AND MIT AND BSD-3-Clause AND Linux-OpenIB AND (GPL-2.0-only
+        OR BSD-2-Clause)
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only WITH Linux-syscall-note
+        OR BSD-2-Clause) AND BSD-2-Clause AND (GPL-2.0-only OR Linux-OpenIB) AND GPL-2.0-or-later
+        AND GPL-2.0-only AND MIT AND BSD-3-Clause AND Linux-OpenIB AND (GPL-2.0-only
+        OR BSD-2-Clause)
+      short_summary: The open source linux kernel drivers for devices(ENA) used on
+        AWS platforms.
+      supplier: 'Organization: Broadcom, Inc.'
+

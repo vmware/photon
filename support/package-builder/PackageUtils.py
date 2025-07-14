@@ -327,9 +327,8 @@ class PackageUtils(object):
         self.logger.debug(f"Copying {src} to {dest} in sandbox {sandbox.name}")
         sandbox.putFiles(src, dest)
 
-    def _verifyShaAndGetSourcePath(self, source, package, version):
-        # Fetch/verify sources if checksum not None.
-        checksum = SOURCES.getData().getChecksum(source)
+    def _verifyShaAndGetSourcePath(self, specDir, source, package, version):
+        checksum = SOURCES(specDir).getData().getChecksum(source)
         if checksum is not None:
             PullSources.get(
                 package,
@@ -342,10 +341,7 @@ class PackageUtils(object):
 
         sourcePath = CommandUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
-            sourcePath = CommandUtils.findFile(
-                source,
-                os.path.dirname(SPECS.getData().getSpecFile(package, version)),
-            )
+            sourcePath = CommandUtils.findFile(source, specDir)
             if not sourcePath:
                 if checksum is None:
                     msg = f"No checksum found or missing source for {source}"
@@ -370,9 +366,13 @@ class PackageUtils(object):
 
     def _copySources(self, sandbox, listSourceFiles, package, version, destDir):
         files_to_copy = []
-        # Fetch and verify checksum if missing
+
+        specDir = os.path.dirname(SPECS.getData().getSpecFile(package, version))
+        if not os.path.isdir(specDir):
+            raise Exception(f"ERROR: {package}-{version}, '{specDir}' does not exist ...")
+
         for source in listSourceFiles:
-            sourcePath = self._verifyShaAndGetSourcePath(source, package, version)
+            sourcePath = self._verifyShaAndGetSourcePath(specDir, source, package, version)
             files_to_copy.extend(sourcePath)
 
         sandbox.putFiles(files_to_copy, destDir)

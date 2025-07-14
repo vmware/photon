@@ -1,0 +1,21 @@
+sources:
+- archive: fips-canister-5.0.0-6.1.75-2.ph5-secure.tar.bz2
+  archive_sha512sum: ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: A FIPS (Federal Information Processing Standards) canister
+        is a binary blob of cryptographic algorithms designed to store, manage, and
+        protect cryptographic keys, tokens, or other sensitive data in accordance
+        with FIPS security standards. These canisters are typically used in environments
+        that require high levels of data protection and compliance with governmental
+        or industry-specific security guidelines. FIPS canisters are engineered to
+        prevent unauthorized access, tampering, and data breaches.
+      home_page: https://github.com/vmware/photon
+      license_concluded: GPL-2.0-only AND GPL-1.0-or-later
+      license_declared: GPL-2.0-only AND GPL-1.0-or-later
+      short_summary: A FIPS canister serves as a critical component consists of binary
+        blob of cryptographic algorithms which helps in secure information handling,
+        ensuring that cryptographic operations and sensitive data storage comply with
+        strict security and regulatory standards.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,22 @@
+sources:
+- archive: efa_linux_2.1.1.tar.gz
+  archive_sha512sum: 2ceb5a4011a6b5f69d0a389e3d6f188d29cb87373202b42fe6c1f29ac2a310d1180a9ffad3e362680b675edc8007850b541e477b918781ef406afc55ca0d1c6e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: AWS Linux kernel drivers for Elastic Fabric Adapter(EFA).
+        Elastic Fabric Adapter (EFA) is a network device that provides reliable userspace
+        communication and kernel bypass capabilities, targeting more consistent latency
+        and higher throughput than traditional TCP-based communication.
+      home_page: https://github.com/amzn/amzn-drivers
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only AND Linux-OpenIB
+        AND MIT AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-2-Clause) AND GPL-2.0-or-later
+        AND BSD-2-Clause AND BSD-3-Clause AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only
+        OR Linux-OpenIB)
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND GPL-2.0-only AND Linux-OpenIB
+        AND MIT AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-2-Clause) AND GPL-2.0-or-later
+        AND BSD-2-Clause AND BSD-3-Clause AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only
+        OR Linux-OpenIB)
+      short_summary: The open source linux kernel drivers for devices(EFA) used on
+        AWS platforms.
+      supplier: 'Organization: Broadcom, Inc.'

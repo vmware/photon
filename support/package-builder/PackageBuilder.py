@@ -110,8 +110,12 @@ class PackageBuilder(object):
             # SRP: Add input sources only after pkgUtils.buildRPMSForGivenPackage() as it
             # also fetches any missing ones.
             if self.srp.isEnabled():
+                specDir = os.path.dirname(SPECS.getData().getSpecFile(self.package, self.version))
+                if not os.path.isdir(specDir):
+                    raise Exception(f"ERROR: {package}-{version}, '{specDir}' does not exist ...")
+
                 for source in SPECS.getData().getSources(self.package, self.version):
-                    checksum = SOURCES.getData().getChecksum(source)
+                    checksum = SOURCES(specDir).getData().getChecksum(source)
                     # If checksum present - report this source tarball.
                     if checksum:
                         self.srp.addInputSource(source, checksum)

@@ -1,0 +1,2 @@
+shared_sources:
+  - shared-cfg-yml/stalld.yaml

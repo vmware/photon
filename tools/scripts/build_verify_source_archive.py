@@ -289,6 +289,26 @@ Commands
 
         assert csum.hexdigest() == expected_shasum
 
+    def get_include_keys(self, yaml_file):
+        includes = []
+        data = {}
+
+        with open(yaml_file, "r") as f:
+            data = yaml.safe_load(f)
+
+        sources = data.get("sources")
+        if not sources:
+            return includes
+
+        for item in sources:
+            if "include" not in item:
+                continue
+            rel_path = item["include"]
+            abs_path = os.path.abspath(f"SPECS/{rel_path}")
+            includes.append(abs_path)
+
+        return includes
+
     def build(self):
         parser = argparse.ArgumentParser(description="build")
         parser.add_argument("yaml")
@@ -300,15 +320,22 @@ Commands
         sourcesLocation = args.sources
         sourcesURLBase = args.sources_url
         outdir = args.outdir
+        yamlArg = args.yaml
 
         global gForce
         gForce = args.force
 
-        if not args.yaml:
+        if not yamlArg:
             logging.info("No yaml arg given ...")
             return
 
-        files = self._load(args.yaml)
+        includes = self.get_include_keys(yamlArg)
+        includes.append(yamlArg)
+
+        files = []
+        for yml in includes:
+            files += self._load(yml)
+
         for sourceFile in files:
             if sourceFile.archive_type == "custom":
                 self._generateArchive(sourceFile, sourcesLocation)
@@ -355,7 +382,7 @@ Commands
                     downloadedFile, sourceFile.archive_sha512sum
                 )
 
-                logging.warning(f"Feel free to remove {downloadedFile} now ...\n")
+                logging.warning(f"Feel free to remove {downloadedFile} now ...")
 
             self._writeSchematic(
                 outdir, sourceFile, sourcesLocation, sourcesURLBase
@@ -431,6 +458,8 @@ Commands
                 sys.exit(1)
 
             for source in sources:
+                if not source.get("archive", ""):
+                    continue
                 # processing one source entry
                 if source and type(source) is dict:
                     archive = source.get("archive")

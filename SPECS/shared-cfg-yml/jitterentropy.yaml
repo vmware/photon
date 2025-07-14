@@ -1,0 +1,21 @@
+sources:
+- archive: jitterentropy-3.4.1-4.tar.bz2
+  archive_sha512sum: 37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: A JitterEntropy is a software-based random number generator
+        that derives entropy from the unpredictable fluctuations (jitter) in a system's
+        timing or clock signals. The RNG is based on a high-resolution timer like
+        the x86 RDTSC instruction. The generated random bit stream does not show any
+        statistical significant patterns. The output of the random number generator
+        passes all standard statistical tools analyzing the quality of a random data
+        stream.
+      home_page: https://github.com/vmware/photon
+      license_concluded: GPL-2.0-or-later
+      license_declared: GPL-2.0-or-later
+      short_summary: A JitterEntropy is a reliable, software based random number generator
+        that uses the randomness of CPU jitter to produce cryptographically secure
+        random numbers, ensuring robust security in systems that rely on high-quality
+        entropy for encryption and other sensitive operations.
+      supplier: 'Organization: Broadcom, Inc.'

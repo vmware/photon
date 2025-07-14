@@ -1,31 +1,21 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import yaml
-from Logger import Logger
-from constants import constants
 
 
-class Source(object):
-    def __init__(
-        self,
-        archive,
-        archive_sha512sum,
-        name,
-        version,
-    ):
+class Source:
+    def __init__(self, archive, archive_sha512sum, name, version):
         self.archive = archive
         self.archive_sha512sum = archive_sha512sum
         self.name = name if name else archive
         self.version = version
 
 
-class SourceConfigData(object):
-
-    def __init__(self, logPath, specFilePaths):
-        self.logger = Logger.getLogger("SourceConfigData", logPath, constants.logLevel)
-        self.mapSourceObjects: dict[str, Source] = {}
-        self._readSpecs(specFilePaths)
+class SourceConfigData:
+    def __init__(self):
+        self.mapSourceObjects = {}
 
     def getChecksum(self, sourceName):
         sourceDef = self.mapSourceObjects.get(sourceName, None)
@@ -34,37 +24,54 @@ class SourceConfigData(object):
 
         return None
 
-    # Read all config.yaml files from the given folder
-    # creates corresponding Source Objects and put them in internal mappings.
-    def _readSpecs(self, specFilePaths):
-        for configFile in self._getListConfigFiles(specFilePaths):
-            config = self._parseConfig(configFile)
+    def _readCfgYaml(self, specDir):
+        cfgYaml = f"{specDir}/config.yaml"
+        if not os.path.exists(cfgYaml):
+            return None
 
+        sharedCfgs = self.getSharedCfgs(cfgYaml)
+        sharedCfgs.append(cfgYaml)
+
+        for yml in sharedCfgs:
+            config = self._parseConfig(yml)
             for sourceEntry in config["sources"]:
                 self.mapSourceObjects[sourceEntry.archive] = sourceEntry
 
-    def _getListConfigFiles(self, paths):
-        listConfigFiles = []
-        for path in paths:
-            for dirEntry in os.listdir(path):
-                dirEntryPath = os.path.join(path, dirEntry)
-                if os.path.isfile(dirEntryPath) and dirEntryPath.endswith("config.yaml"):
-                    listConfigFiles.append(dirEntryPath)
-                elif os.path.isdir(dirEntryPath) and not os.path.islink(dirEntryPath):
-                    listConfigFiles.extend(self._getListConfigFiles([dirEntryPath]))
-        return listConfigFiles
+    def getSharedCfgs(self, yamlFile):
+        sharedCfgs = []
+        data = {}
 
-    def _parseConfig(self, filepath) -> dict:
+        with open(yamlFile, "r") as f:
+            data = yaml.safe_load(f)
+
+        sources = data.get("shared_sources")
+        if not sources:
+            return sharedCfgs
+
+        for item in sources:
+            absPath = os.path.abspath(f"SPECS/{item}")
+            if absPath in sharedCfgs:
+                print(f"ERROR: Duplicate entry '{item}' found in '{yamlFile}' ...")
+                sys.exit(-1)
+            if not os.path.exists(absPath):
+                print(f"ERROR: '{item}' file not found ...")
+                sys.exit(-1)
+            sharedCfgs.append(absPath)
+        return sharedCfgs
+
+    def _parseConfig(self, filepath):
         response = {}
         response["sources"] = []
         with open(filepath, "r") as file:
             config = yaml.safe_load(file)
-            sources = config.get("sources", [])
 
+            sources = config.get("sources", [])
             if not sources:
-                self.logger.error("missing sources in package configuration")
-                return response
+                raise Exception(f"ERROR: Missing sources in '{filepath}' ...")
+
             for sourceEntry in sources:
+                if not sourceEntry.get("archive", ""):
+                    continue
                 # processing one source entry
                 if sourceEntry and isinstance(sourceEntry, dict):
                     archive = sourceEntry.get("archive")
@@ -82,24 +89,37 @@ class SourceConfigData(object):
         return response
 
 
-class SOURCES(object):
-    __instance = None
-    sourceData: SourceConfigData
+class SOURCES:
+    def __init__(self, specDir):
+        self.sourceData = SourceConfigData()
+        self.sourceData._readCfgYaml(specDir)
 
-    @staticmethod
-    def getData() -> SourceConfigData:
-        """Static access method."""
-        if SOURCES.__instance is None:
-            SOURCES()
-        return SOURCES.__instance.sourceData
+    def getData(self):
+        return self.sourceData
 
-    def __init__(self):
-        """Virtually private constructor."""
-        if SOURCES.__instance is not None:
-            raise Exception("This class is a singleton!")
 
-        self.initialize()
-        SOURCES.__instance = self
+def main():
+    import sys
 
-    def initialize(self):
-        self.sourceData = SourceConfigData(constants.logPath, constants.specPaths)
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} <spec_directory>", file=sys.stderr)
+        sys.exit(1)
+
+    specDir = sys.argv[1]
+    if not os.path.isdir(specDir):
+        print(f"ERROR: '{specDir}' is not a valid directory.", file=sys.stderr)
+        sys.exit(1)
+
+    sources = SOURCES(specDir)
+    data = sources.getData()
+
+    print("Loaded sources:")
+    for archiveName, sourceObj in data.mapSourceObjects.items():
+        print(f" - Archive: {sourceObj.archive}")
+        print(f"   SHA512 : {sourceObj.archive_sha512sum}")
+        print(f"   Name   : {sourceObj.name}")
+        print(f"   Version: {sourceObj.version}\n")
+
+
+if __name__ == "__main__":
+    main()

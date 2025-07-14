@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 
+import calendar
+import json
 import os
 import re
 import sys
-import calendar
-import json
 import license_expression
 
 from datetime import datetime
 
-sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/../package-builder")
+sys.path.append(
+    f"{os.path.dirname(os.path.realpath(__file__))}/../package-builder"
+)
 from CommandUtils import CommandUtils
 
 from pyrpm.spec import Spec, replace_macros
+from source_archive_validator import SourceArchiveChecker
 
 cfg_dict = {}
 cfg_fn = "check-spec-cfg.json"
 
+specPaths = []
+distTag = ""
+
 source_regex = re.compile(r"^(Source\d*\s*):\s*(.+)", re.IGNORECASE)
 patch_regex = re.compile(r"^([#]*Patch\d*\s*):\s*(\S+)", re.IGNORECASE)
 
-with open(os.path.dirname(os.path.realpath(__file__)) + f"/{cfg_fn}", "r") as f:
+scriptPath = os.path.dirname(os.path.realpath(__file__))
+with open(f"{scriptPath}/{cfg_fn}", "r") as f:
     cfg_dict = json.load(f)
 
 g_ignore_list = []
@@ -49,6 +56,7 @@ class ErrorDict:
             "_smp_mflags": ["_smp_mflags errors"],
             "unused_files": ["List of unused files"],
             "license": ["License errors"],
+            "cfgYml": ["Config Yaml errors"],
             "others": ["Other errors"],
         }
 
@@ -73,18 +81,21 @@ class ErrorDict:
                 continue
 
             if not pr_flg:
-                print(f"--- List of errors in {self.spec_fn} ---")
+                print(
+                    f"--- List of errors in {self.spec_fn} ---",
+                    file=sys.stderr,
+                )
                 pr_flg = True
 
             print("\n --- %s ---" % (v[0]))
 
             for msg in v[1:]:
                 if k == "unused_files":
-                    print(f"{msg}")
+                    print(f"{msg}", file=sys.stderr)
                 else:
-                    print(f"ERROR in {self.spec_fn}: {msg}")
+                    print(f"ERROR in {self.spec_fn}: {msg}", file=sys.stderr)
 
-        print("\n")
+        print("\n", file=sys.stderr)
 
 
 def check_spec_header(spec, err_dict):
@@ -182,13 +193,17 @@ def check_for_unallowed_usages(spec_fn, err_dict):
             empty_line_count = 0
 
         if empty_line_count >= 2:
-            err_msg = f"multiple empty lines found at line number {line_num + 1}"
+            err_msg = (
+                f"multiple empty lines found at line number {line_num + 1}"
+            )
             err_dict.update_err_dict(sec, err_msg)
             empty_line_count = 0
             ret = True
 
         if line.endswith((" ", "\t")):
-            err_msg = ("trailing space(s) found at line number: %s:\n" "%s") % (
+            err_msg = (
+                "trailing space(s) found at line number: %s:\n" "%s"
+            ) % (
                 line_num + 1,
                 line,
             )
@@ -280,7 +295,9 @@ def check_changelog(spec, err_dict):
         # line[1] is week name, line[2] is month name
         d, m = line[1], line[2]
         if not (d.istitle() and m.istitle()):
-            err_msg = f"Day-'{d}' or Month-'{m}' name is improper, use proper case"
+            err_msg = (
+                f"Day-'{d}' or Month-'{m}' name is improper, use proper case"
+            )
             err_dict.update_err_dict(sec, err_msg)
             ret = True
 
@@ -323,7 +340,8 @@ def check_sub_pkg(spec, err_dict):
             subpkg_hdr = [pkg.name, pkg.summary, pkg.description]
             if "" in subpkg_hdr or None in subpkg_hdr:
                 err_msg += (
-                    "One of Name/Summary/Description is missing in sub" " package %s"
+                    "One of Name/Summary/Description is missing in sub"
+                    " package %s"
                 ) % (pkg)
 
             if err_msg:
@@ -367,7 +385,8 @@ def check_for_configure(lines_dict, err_dict):
             prev_line = lines[idx - 1]
             if prev_line.endswith("\\"):
                 err_msg = (
-                    "Trailing backslash before configure found." " Use export instead"
+                    "Trailing backslash before configure found."
+                    " Use export instead"
                 )
 
                 err_dict.update_err_dict(sec, err_msg)
@@ -455,7 +474,8 @@ def check_make_smp_flags(lines_dict, err_dict):
 
 def check_mentioned_but_unused_files(spec_fn, dirname):
     parsed_spec, _, _ = CommandUtils.runCmd(
-        ["rpmspec", "-D", f"%_sourcedir {dirname}", "-P", spec_fn], capture=True
+        ["rpmspec", "-D", f"%_sourcedir {dirname}", "-P", spec_fn],
+        capture=True,
     )
 
     parsed_spec = parsed_spec.split("\n")
@@ -481,6 +501,41 @@ def check_mentioned_but_unused_files(spec_fn, dirname):
     return source_patch_list
 
 
+def get_source_patches_from_all_specs(spec_fn, dirname):
+    sources = []
+    patches = []
+    other_files = []
+
+    for _, _, fns in os.walk(dirname):
+        for fn in fns:
+            if not fn.endswith(".spec"):
+                fn = os.path.basename(fn)
+                other_files.append(fn)
+                continue
+
+            if fn == os.path.basename(spec_fn):
+                fn = spec_fn
+            else:
+                fn = create_altered_spec(f"{dirname}/{fn}")
+
+            tmp = getSpecObj(fn)
+            if fn != spec_fn:
+                os.remove(fn)
+
+            for item in tmp.sources:
+                s = replace_macros(item, tmp)
+                if isinstance(s, str):
+                    sources.append(s)
+                elif isinstance(s, list):
+                    sources.extend(s)
+
+            for item in tmp.patches:
+                s = replace_macros(item, tmp)
+                patches.append(s)
+
+    return sources, patches, other_files
+
+
 def check_for_unused_files(spec_fn, err_dict, dirname):
     global g_ignore_list
 
@@ -501,35 +556,11 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
 
     check_for_unused_files.prev_dir = dirname
 
-    other_files = []
-    source_patch_list = []
+    sources, patches, other_files = get_source_patches_from_all_specs(
+        spec_fn, dirname
+    )
 
-    def populate_list(src_list, dest_list):
-        for s in src_list:
-            s = replace_macros(s, tmp)
-            if isinstance(s, str):
-                dest_list.append(s)
-            elif isinstance(s, list):
-                dest_list += s
-
-    for r, _, fns in os.walk(dirname):
-        for fn in fns:
-            if not fn.endswith(".spec"):
-                fn = os.path.basename(fn)
-                other_files.append(fn)
-                continue
-
-            if fn == os.path.basename(spec_fn):
-                fn = spec_fn
-            else:
-                fn = create_altered_spec(f"{dirname}/{fn}")
-
-            tmp = Spec.from_file(fn)
-            populate_list(tmp.sources, source_patch_list)
-            populate_list(tmp.patches, source_patch_list)
-
-            if fn != spec_fn:
-                os.remove(fn)
+    source_patch_list = sources + patches
 
     # keep only basenames in source list
     source_patch_list = [os.path.basename(s) for s in source_patch_list]
@@ -578,15 +609,107 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     return ret
 
 
-def check_for_sha1_usage(spec, err_dict):
-    if hasattr(spec, "sha1"):
-        err_dict.update_err_dict("others", "sha1 usage found, use sha512")
+def check_spec_cfg_yml(spec_fn, specDir, err_dict, specTopDir):
+    checker = SourceArchiveChecker([specTopDir])
+    checker.scanDirectory(specDir)
+    archiveMap = checker.getArchiveMap()
+
+    srcs, _, _ = get_source_patches_from_all_specs(spec_fn, specDir)
+
+    def get_non_local_files(rootDir, fList):
+        foundFiles = []
+        for _, _, fns in os.walk(rootDir):
+            foundFiles.extend(fns)
+        return [os.path.basename(f) for f in fList if f not in foundFiles]
+
+    nonLocalsSrcs = set(get_non_local_files(specDir, srcs))
+    archives = set(archiveMap.keys())
+
+    only_in_nonlocals = nonLocalsSrcs - archives
+    only_in_archives = archives - nonLocalsSrcs
+
+    if only_in_nonlocals or only_in_archives:
+        final_msg = "Mismatch between sources in config.yaml and spec:"
+        if only_in_nonlocals:
+            final_msg += f"\nOnly in spec file: {only_in_nonlocals}"
+        if only_in_archives:
+            final_msg += f"\nOnly in config.yaml: {only_in_archives}"
+
+        err_dict.update_err_dict("cfgYml", final_msg)
         return True
+
     return False
+
+
+def check_entire_cfg_ymls():
+    global specPaths
+
+    retVal = 0
+    checkers = []
+    phCfgJson = "build-config.json"
+    filteredPaths = []
+
+    for path in specPaths:
+        with open(f"{path}/../{phCfgJson}", "r") as f:
+            data = json.load(f)
+        # skip this check for Ph5
+        if data["photon-branch"] == "5.0":
+            print("Skipping check_entire_cfg_ymls for Ph5 ...")
+            continue
+        filteredPaths.append(path)
+
+    specPaths = filteredPaths
+
+    for path in specPaths:
+        checker = SourceArchiveChecker(specPaths)
+        checker.scanDirectory(path)
+        hasConflict, logs = checker.checkConflicts()
+        if hasConflict:
+            print("\n".join(logs), file=sys.stderr)
+            retVal = 1
+        checkers.append(checker)
+
+    if len(specPaths) == 1:
+        return retVal
+
+    # Check across both archive maps
+    map1, map2 = checkers[0].archiveMap, checkers[1].archiveMap
+    outputLines = []
+    hasConflict = False
+
+    def get_origins(entries):
+        return {src["_src_origin"] for src, _ in entries}
+
+    def check_across_maps(mapA, mapB):
+        nonlocal hasConflict
+        commonKeys = set(mapA.keys()) & set(mapB.keys())
+        for archiveName in sorted(commonKeys):
+            originsA = get_origins(mapA[archiveName])
+            originsB = get_origins(mapB[archiveName])
+            if originsA != originsB:
+                hasConflict = True
+                outputLines.append(
+                    f"\n[Across maps] Conflict in archive: {archiveName}"
+                )
+                outputLines.append(
+                    f" - Origins in map1: {', '.join(originsA)}"
+                )
+                outputLines.append(
+                    f" - Origins in map2: {', '.join(originsB)}"
+                )
+
+    check_across_maps(map1, map2)
+
+    if hasConflict:
+        print("\n".join(outputLines), file=sys.stderr)
+        retVal = 1
+
+    return retVal
+
 
 def check_proper_spdx_license(spec, err_dict):
     sec = "license"
-    bad_ids = [ "unknown-spdx", "LicenseRef", "scancode" ]
+    bad_ids = ["unknown-spdx", "LicenseRef", "scancode"]
     spdx_licensing = license_expression.get_spdx_licensing()
 
     # for some reason, the license_expression package, which is used by the official spdx-tools
@@ -595,19 +718,22 @@ def check_proper_spdx_license(spec, err_dict):
     for lic_sym in spdx_licensing.license_symbols(spec.license):
         for bad_id in bad_ids:
             if bad_id in lic_sym.key:
-                err_dict.update_err_dict(sec,
-                                         f"Bad SPDX identifier {bad_id} in license expression!")
+                err_dict.update_err_dict(
+                    sec, f"Bad SPDX identifier {bad_id} in license expression!"
+                )
                 return True
 
     try:
         # create license expression object - throws an exception for any validation errors
         spdx_licensing.parse(spec.license, validate=True, strict=True)
     except Exception as e:
-        err_dict.update_err_dict(sec,
-                                 f"Caught exception while attempting to validate license: {e}")
+        err_dict.update_err_dict(
+            sec, f"Caught exception while attempting to validate license: {e}"
+        )
         return True
 
     return False
+
 
 def find_file_in_dir(fn, path):
     for root_d, dirs, files in os.walk(path):
@@ -650,7 +776,7 @@ def create_altered_spec(spec_fn):
                 included_fn = v
                 break
 
-        included_fn = replace_macros(included_fn, Spec.from_file(spec_fn))
+        included_fn = replace_macros(included_fn, getSpecObj(spec_fn))
 
         g_ignore_list.append(included_fn)
         included_fn = find_file_in_dir(included_fn, dirname)
@@ -668,13 +794,43 @@ def create_altered_spec(spec_fn):
     return altered_spec
 
 
+def getSpecObj(spec_fn):
+    spec = Spec.from_file(spec_fn)
+    spec.macros["dist"] = distTag
+    return spec
+
+
+def setSpecPaths():
+    global specPaths
+    global distTag
+
+    topDir = os.path.realpath(f"{scriptPath}/../..")
+
+    specPaths = [f"{topDir}/SPECS"]
+    phCfgJson = f"{topDir}/build-config.json"
+
+    with open(phCfgJson, "r") as f:
+        data = json.load(f)
+
+    distTag = data["photon-build-param"]["photon-dist-tag"]
+
+
 def check_specs(files_list):
     ret = False
+    global specPaths
+
+    setSpecPaths()
+
     for spec_fn in files_list:
         if not spec_fn.endswith(".spec"):
             continue
 
         print(f"Checking spec file: {spec_fn}")
+
+        specTopDir = spec_fn.split("SPECS/", 1)[0] + "SPECS"
+        specTopDir = os.path.realpath(specTopDir)
+        if specTopDir not in specPaths:
+            specPaths.append(specTopDir)
 
         if not os.path.isfile(spec_fn):
             print(f"{spec_fn} has been deleted in this changeset")
@@ -684,9 +840,11 @@ def check_specs(files_list):
 
         altered_spec = create_altered_spec(spec_fn)
 
-        spec = Spec.from_file(altered_spec)
+        spec = getSpecObj(altered_spec)
 
         err, lines_dict = check_for_unallowed_usages(altered_spec, err_dict)
+
+        currSpecDir = os.path.dirname(spec_fn)
 
         if any(
             [
@@ -698,11 +856,9 @@ def check_specs(files_list):
                 check_for_configure(lines_dict, err_dict),
                 check_setup(lines_dict, err_dict),
                 check_make_smp_flags(lines_dict, err_dict),
-                check_for_unused_files(
-                    altered_spec, err_dict, os.path.dirname(spec_fn)
-                ),
-                check_for_sha1_usage(spec, err_dict),
+                check_for_unused_files(altered_spec, err_dict, currSpecDir),
                 check_proper_spdx_license(spec, err_dict),
+                check_spec_cfg_yml(altered_spec, currSpecDir, err_dict, specTopDir),
             ]
         ):
             err = True
@@ -714,33 +870,48 @@ def check_specs(files_list):
         if os.path.exists(altered_spec):
             os.remove(altered_spec)
 
+    retVal = check_entire_cfg_ymls()
+    if retVal:
+        ret = True
+        print("\nERROR: config.yaml sanity check failed ...", file=sys.stderr)
+
     return ret
 
 
-if __name__ == "__main__":
+def main():
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <directory>|<spec-path>", file=sys.stderr)
+        return 1
+
     files = []
 
     def get_specs_in_dir(dirname):
-        files = []
-        for r, d, fns in os.walk(dirname):
+        spec_files = []
+        for r, _, fns in os.walk(dirname):
             for fn in fns:
                 if fn.endswith(".spec"):
                     files.append(os.path.join(r, fn))
-        return files
+        return spec_files
 
-    arglen = len(sys.argv)
-    if arglen >= 2:
-        for arg in range(1, arglen):
-            if sys.argv[arg].endswith(".spec"):
-                files.append(sys.argv[arg])
-            elif os.path.isdir(sys.argv[arg]):
-                files += get_specs_in_dir(sys.argv[arg])
-    else:
-        dirname = "SPECS/"
-        files = get_specs_in_dir(dirname)
+    for arg in range(1, len(sys.argv)):
+        if sys.argv[arg].endswith(".spec"):
+            files.append(sys.argv[arg])
+        elif os.path.isdir(sys.argv[arg]):
+            files += get_specs_in_dir(sys.argv[arg])
+
+    if not files:
+        print(
+            "spec-checker: No spec files found in the specified directory/directories.",
+            file=sys.stderr,
+        )
+        return 1
 
     if check_specs(files):
-        print("ERROR: spec check failed")
-        sys.exit(1)
+        print("ERROR: spec check failed", file=sys.stderr)
+        return 1
 
-    sys.exit(0)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

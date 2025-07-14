@@ -1,0 +1,15 @@
+sources:
+- archive: iavf-4.11.1.tar.gz
+  archive_sha512sum: 201961b1f4b891368060f321e414d3d28b18a7c7b15bb6ad7c8e517216228bd67cbf68a018d59ce6b38e97cbb620f5ca1d88f829679d15930bc06688f40fa757
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel iavf v4.11.1
+        driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND (GPL-2.0-only
+        OR MIT)
+      license_declared: BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND (GPL-2.0-only
+        OR MIT)
+      short_summary: Intel iavf driver v4.11.1
+      supplier: 'Organization: Broadcom, Inc.'

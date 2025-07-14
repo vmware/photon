@@ -37,6 +37,7 @@
       }
     }
   },
+  "photon-branch": "common",
   "photon-path": "",
   "stage-path": "./stage",
   "spec-path": "",

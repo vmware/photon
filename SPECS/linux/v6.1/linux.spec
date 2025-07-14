@@ -111,7 +111,7 @@ Source49: check_kernel_struct_in_canister.inc
 Source50: CVE-2023-39191.patches
 
 %if 0%{?acvp_build}
-Source53: config_%{_arch}_acvp
+Source53: config_x86_64_acvp
 Source54: check_for_acvp_config_applicability.inc
 %endif
 
