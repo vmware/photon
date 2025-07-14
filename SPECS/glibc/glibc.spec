@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        20%{?dist}
+Release:        21%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -41,6 +41,7 @@ Patch301:     CVE-2023-4813.patch
 Patch302:     0001_gmon_Fix_allocated_buffer_overflow.patch
 
 Patch303:     CVE-2023-4911.patch
+Patch304:     CVE-2025-4802.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -136,7 +137,6 @@ _EOF
 chmod +x find_requires.sh
 
 %build
-
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
         --prefix=%{_prefix} \
@@ -327,6 +327,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Thu Jun 26 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-21
+- Fix CVE-2025-4802
 * Wed Nov 27 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-20
 - Adjust nsswitch.conf formatting
 * Sun Jun 30 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.32-19
