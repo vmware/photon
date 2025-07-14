@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.12
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
@@ -19,20 +19,23 @@ Patch3:  libxml2-CVE-2022-2309-fix1.patch
 Patch4:  libxml2-CVE-2022-2309-fix2.patch
 Patch5:  libxml2-CVE-2022-40303.patch
 Patch6:  libxml2-CVE-2022-40304.patch
-Patch7:  libxml2-CVE-2023-29469.patch
-Patch8:  libxml2-CVE-2023-28484-1.patch
-Patch9:  libxml2-CVE-2023-28484-2.patch
-Patch10: libxml2-CVE-2023-39615-1.patch
-Patch11: libxml2-CVE-2023-39615-2.patch
-Patch12: 0001-malloc-fail-Fix-memory-leak-in-xmlStaticCopyNodeList.patch
-Patch13: libxml2-CVE-2023-45322.patch
-Patch14: libxml2-CVE-2024-25062.patch
-Patch15: libxml2-CVE-2024-34459.patch
-Patch16: libxml2-CVE-2024-56171.patch
-Patch17: libxml2-CVE-2025-24928.patch
-Patch18: libxml2-CVE-2025-27113.patch
-Patch19: libxml2-CVE-2025-32414.patch
-Patch20: libxml2-CVE-2025-32415.patch
+Patch7:  libxml2-CVE-2022-49043.patch
+Patch8:  libxml2-CVE-2023-29469.patch
+Patch9:  libxml2-CVE-2023-28484-1.patch
+Patch10: libxml2-CVE-2023-28484-2.patch
+Patch11: libxml2-CVE-2023-39615-1.patch
+Patch12: libxml2-CVE-2023-39615-2.patch
+Patch13: 0001-malloc-fail-Fix-memory-leak-in-xmlStaticCopyNodeList.patch
+Patch14: libxml2-CVE-2023-45322.patch
+Patch15: libxml2-CVE-2024-25062.patch
+Patch16: libxml2-CVE-2024-34459.patch
+Patch17: libxml2-CVE-2024-56171.patch
+Patch18: libxml2-CVE-2025-24928.patch
+Patch19: libxml2-CVE-2025-27113.patch
+Patch20: libxml2-CVE-2025-32414.patch
+Patch21: libxml2-CVE-2025-32415.patch
+Patch22: libxml2-CVE-2025-49794-96.patch
+Patch23: libxml2-CVE-2025-6021.patch
 
 BuildRequires: python3-devel
 BuildRequires: zlib-devel
@@ -113,6 +116,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon Jul 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.9.12-18
+- Fix Multiple CVE'S
+- CVE-2022-49043, CVE-2025-49794, CVE-2025-49796
+- CVE-2025-6021
 * Tue Jun 24 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.9.12-17
 - Fix CVE-2025-32414
 * Mon Apr 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.9.12-16
