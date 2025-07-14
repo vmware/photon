@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -27,6 +27,10 @@ Requires: zlib
 
 Patch0: CVE-2025-32414.patch
 Patch1: CVE-2025-32415.patch
+Patch2: CVE-2025-49794-96.patch
+Patch3: CVE-2025-49795-1.patch
+Patch4: CVE-2025-49795-2.patch
+Patch5: CVE-2025-6021.patch
 
 Provides:       pkgconfig(libxml-2.0)
 
@@ -95,6 +99,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon Jul 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-4
+- Fix Multiple CVE'S
+- CVE-2025-49794, CVE-2025-49795, CVE-2025-49796
+- CVE-2025-6021
 * Tue Apr 29 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-3
 - Fix CVE-2025-32414
 * Mon Apr 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-2
