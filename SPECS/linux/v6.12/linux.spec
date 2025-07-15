@@ -61,7 +61,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.34
-Release:        8%{?acvp_build:.acvp}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -354,6 +354,9 @@ Patch10520:       0009-DRBG-Fix-issues-with-DRBG.patch
 Patch10522:       0011-sock-Remove-sendpage-in-favour-of-sendmsg-MSG_SPLICE.patch
 Patch10523:       0012-jitterentropy-kcapi-Support-for-sample-collection.patch
 Patch10524:       0013-jitterentropy-Add-prototype-for-sample-collection.patch
+%if 0%{?kat_build}
+Patch10525:       0014-crypto-api-return-status-prints-for-LKCM6-demo.patch
+%endif
 %endif
 
 BuildRequires:  bc
@@ -571,7 +574,11 @@ popd
 %if 0%{?acvp_build:1}
 # ACVP test harness patches.
 # Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-%autopatch -p1 -m10512 -M10524
+%autopatch -p1 -m10512 -M10522
+pushd ../%{jent_name}
+%autopatch -p1 -m10523 -M10523
+popd
+%autopatch -p1 -m10524 -M10525
 %endif
 
 %ifarch x86_64
@@ -904,6 +911,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 5 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-9
+- Convert ACVP printk to pr_debug
 * Mon Jul 28 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-8
 - Convert canister structure spinlock fields to static memory
 * Thu Jul 24 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.34-7
