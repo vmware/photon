@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.34
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -69,8 +69,8 @@ Source7:        check_for_config_applicability.inc
 %define struct_comp_dir struct-comp-dir
 Source9:        struct-comparator.c
 
-%define fips_canister_version 6.12.1-18%{?dist}
-Source16:       fips-canister-6.12.1-18%{?dist}.tar.bz2
+%define fips_canister_version 6.12.34-3%{?dist}
+Source16:       fips-canister-6.12.34-3%{?dist}.tar.bz2
 
 %endif
 
@@ -327,7 +327,7 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # Below patches are common for fips and canister_build flags
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
-Patch10000: 6.12.34-3-0001-FIPS-canister-binary-usage.patch
+Patch10000: 0001-FIPS-canister-binary-usage.patch
 Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Below patches are specific to canister_build flag
 Patch10003: 0003-FIPS-canister-creation.patch
@@ -920,6 +920,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.34-4
+- linux: Use canister 6.12.34-3
 * Fri Jul 11 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.34-3
 - Pending ECB move changes
 * Thu Jul 03 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.34-2
