@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -208,6 +208,15 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
 
+# Report guest crash to vmware hypervisor
+%ifarch aarch64
+Patch1000: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
+%ifarch x86_64
+Patch1000: 0001-x86-esx-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
 # Only LKCM/JENT related patches below
 # Jitterentropy support and FIPS compliance
 Patch10000: 0001-New-memsize-options-for-jent.patch
@@ -363,8 +372,11 @@ cp %{SOURCE30} Makefile
 cp %{SOURCE31} .
 popd
 
+%autopatch -p1 -m1000 -M1000
+
 # Jitterentropy support and FIPS compliance
 %autopatch -p1 -m10000 -M10000
+
 %if 0%{?fips}
 
 # Using autosetup is not feasible
@@ -539,6 +551,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-16
+- Port ARM patches to v6.12 and include new patch to
+- report guest crashes to the VMware hypervisor
 * Fri Feb 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-15
 - Update canister version to 6.12.60-18
 * Fri Feb 06 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-14

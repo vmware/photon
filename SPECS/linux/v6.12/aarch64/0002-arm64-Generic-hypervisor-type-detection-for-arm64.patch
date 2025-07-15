@@ -1,4 +1,4 @@
-From 36bb8f83347a3127397c259a4266b12fa9c52258 Mon Sep 17 00:00:00 2001
+From 6fafb399a88dd41e784abc105ed3f3b2c392ec81 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 25 May 2022 12:31:05 +0000
 Subject: [PATCH 2/6] arm64: Generic hypervisor type detection for arm64
@@ -17,10 +17,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  create mode 100644 arch/arm64/kernel/hypervisor.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 6618e9b91b6c..488ba58c317d 100644
+index b878ddc99..eb18f3383 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -21118,6 +21118,15 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/vmware
+@@ -24730,6 +24730,15 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/vmware
  F:	arch/x86/include/asm/vmware.h
  F:	arch/x86/kernel/cpu/vmware.c
  
@@ -34,13 +34,13 @@ index 6618e9b91b6c..488ba58c317d 100644
 +F:	arch/arm64/kernel/vmware.c
 +
  VMWARE PVRDMA DRIVER
- M:	Bryan Tan <bryantan@vmware.com>
- M:	Vishnu Dasa <vdasa@vmware.com>
+ M:	Bryan Tan <bryan-bt.tan@broadcom.com>
+ M:	Vishnu Dasa <vishnu.dasa@broadcom.com>
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index d550f5acfaf3..8b2a8e2220f0 100644
+index 22f8a7bca..6e6fee606 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1349,6 +1349,16 @@ config TRANS_TABLE
+@@ -1586,6 +1586,16 @@ config TRANS_TABLE
  	def_bool y
  	depends on HIBERNATION || KEXEC_CORE
  
@@ -58,12 +58,12 @@ index d550f5acfaf3..8b2a8e2220f0 100644
  	def_bool y
  	depends on XEN
 diff --git a/arch/arm64/include/asm/hypervisor.h b/arch/arm64/include/asm/hypervisor.h
-index 0ae427f352c8..7981f22a5a56 100644
+index 409e23983..1783d3515 100644
 --- a/arch/arm64/include/asm/hypervisor.h
 +++ b/arch/arm64/include/asm/hypervisor.h
-@@ -7,4 +7,27 @@
- void kvm_init_hyp_services(void);
- bool kvm_arm_hyp_service_available(u32 func_id);
+@@ -18,4 +18,27 @@ static inline void kvm_arch_init_hyp_services(void)
+ 	pkvm_init_hyp_services();
+ };
  
 +#ifdef CONFIG_HYPERVISOR_GUEST
 +
@@ -90,10 +90,10 @@ index 0ae427f352c8..7981f22a5a56 100644
 +#endif /* CONFIG_HYPERVISOR_GUEST */
  #endif
 diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-index fa7981d0d917..9191e1debc56 100644
+index 2b112f3b7..156a47036 100644
 --- a/arch/arm64/kernel/Makefile
 +++ b/arch/arm64/kernel/Makefile
-@@ -74,6 +74,7 @@ obj-$(CONFIG_ARM64_PTR_AUTH)		+= pointer_auth.o
+@@ -70,6 +70,7 @@ obj-$(CONFIG_ARM64_PTR_AUTH)		+= pointer_auth.o
  obj-$(CONFIG_ARM64_MTE)			+= mte.o
  obj-y					+= vdso-wrap.o
  obj-$(CONFIG_COMPAT_VDSO)		+= vdso32-wrap.o
@@ -103,7 +103,7 @@ index fa7981d0d917..9191e1debc56 100644
  $(obj)/vdso-wrap.o: $(obj)/vdso/vdso.so
 diff --git a/arch/arm64/kernel/hypervisor.c b/arch/arm64/kernel/hypervisor.c
 new file mode 100644
-index 000000000000..dbf0170edfdd
+index 000000000..dbf0170ed
 --- /dev/null
 +++ b/arch/arm64/kernel/hypervisor.c
 @@ -0,0 +1,52 @@
@@ -160,5 +160,5 @@ index 000000000000..dbf0170edfdd
 +}
 +arch_initcall(init_hypervisor_platform);
 -- 
-2.28.0
+2.40.4
 

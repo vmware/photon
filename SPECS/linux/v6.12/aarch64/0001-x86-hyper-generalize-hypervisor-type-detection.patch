@@ -1,4 +1,4 @@
-From a657e68f41a94b3bf3af9b2782fd293db37935cd Mon Sep 17 00:00:00 2001
+From b467c9389a7b5a3d7665a2d140b55903ff2bc86e Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Mon, 28 Nov 2022 11:40:58 +0000
 Subject: [PATCH 1/6] x86, hyper: generalize hypervisor type detection
@@ -17,6 +17,7 @@ Tested by building x86_64 with all hypervisor guest configs enabled.
 
 Signed-off-by: Cyprien Laplace <claplace@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  arch/x86/hyperv/hv_init.c         |  4 ++--
  arch/x86/include/asm/hypervisor.h | 25 +++----------------------
@@ -38,10 +39,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  17 files changed, 52 insertions(+), 45 deletions(-)
 
 diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-index 85863b9c9..6b14babab 100644
+index 95eada299..086c9b83f 100644
 --- a/arch/x86/hyperv/hv_init.c
 +++ b/arch/x86/hyperv/hv_init.c
-@@ -390,7 +390,7 @@ void __init hyperv_init(void)
+@@ -460,7 +460,7 @@ void __init hyperv_init(void)
  	union hv_x64_msr_hypercall_contents hypercall_msr;
  	int cpuhp;
  
@@ -50,7 +51,7 @@ index 85863b9c9..6b14babab 100644
  		return;
  
  	if (hv_common_init())
-@@ -597,7 +597,7 @@ bool hv_is_hyperv_initialized(void)
+@@ -714,7 +714,7 @@ bool hv_is_hyperv_initialized(void)
  	 * Ensure that we're really on Hyper-V, and not a KVM or Xen
  	 * emulation of Hyper-V
  	 */
@@ -58,7 +59,7 @@ index 85863b9c9..6b14babab 100644
 +	if (hyper_type != HYPER_MS_HYPERV)
  		return false;
  
- 	/*
+ 	/* A TDX VM with no paravisor uses TDX GHCI call rather than hv_hypercall_pg */
 diff --git a/arch/x86/include/asm/hypervisor.h b/arch/x86/include/asm/hypervisor.h
 index e41cbf2ec..9b26424b7 100644
 --- a/arch/x86/include/asm/hypervisor.h
@@ -114,7 +115,7 @@ index e41cbf2ec..9b26424b7 100644
  #endif /* CONFIG_HYPERVISOR_GUEST */
  #endif /* _ASM_X86_HYPERVISOR_H */
 diff --git a/arch/x86/kernel/cpu/acrn.c b/arch/x86/kernel/cpu/acrn.c
-index 485441b7f..1333a34a0 100644
+index 2c5b51aad..cc3cde40a 100644
 --- a/arch/x86/kernel/cpu/acrn.c
 +++ b/arch/x86/kernel/cpu/acrn.c
 @@ -75,7 +75,7 @@ EXPORT_SYMBOL_GPL(acrn_remove_intr_handler);
@@ -127,16 +128,16 @@ index 485441b7f..1333a34a0 100644
  	.init.x2apic_available  = acrn_x2apic_available,
  };
 diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index f54992887..d3f03e41e 100644
+index d1d8e5ab2..90631c291 100644
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -2416,7 +2416,7 @@ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr
+@@ -2955,7 +2955,7 @@ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr
  		if (boot_cpu_has(X86_FEATURE_PTI))
- 			return sprintf(buf, "Mitigation: PTI\n");
+ 			return sysfs_emit(buf, "Mitigation: PTI\n");
  
 -		if (hypervisor_is_type(X86_HYPER_XEN_PV))
 +		if (hypervisor_is_type(HYPER_XEN_PV))
- 			return sprintf(buf, "Unknown (XEN PV detected, hypervisor mitigation required)\n");
+ 			return sysfs_emit(buf, "Unknown (XEN PV detected, hypervisor mitigation required)\n");
  
  		break;
 diff --git a/arch/x86/kernel/cpu/hypervisor.c b/arch/x86/kernel/cpu/hypervisor.c
@@ -163,10 +164,10 @@ index 553bfbfc3..b9120b134 100644
  	x86_init.hyper.init_platform();
  }
 diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-index 34d9e899e..e9c3fb46f 100644
+index d18078834..34909a970 100644
 --- a/arch/x86/kernel/cpu/mshyperv.c
 +++ b/arch/x86/kernel/cpu/mshyperv.c
-@@ -495,7 +495,7 @@ static bool __init ms_hyperv_msi_ext_dest_id(void)
+@@ -644,7 +644,7 @@ static bool hv_sev_es_hcall_finish(struct ghcb *ghcb, struct pt_regs *regs)
  const __initconst struct hypervisor_x86 x86_hyper_ms_hyperv = {
  	.name			= "Microsoft Hyper-V",
  	.detect			= ms_hyperv_platform,
@@ -176,10 +177,10 @@ index 34d9e899e..e9c3fb46f 100644
  	.init.msi_ext_dest_id	= ms_hyperv_msi_ext_dest_id,
  	.init.init_platform	= ms_hyperv_init_platform,
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 02039ec35..6e23b3c90 100644
+index 27132984b..1e8868414 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -518,7 +518,7 @@ static bool vmware_sev_es_hcall_finish(struct ghcb *ghcb, struct pt_regs *regs)
+@@ -586,7 +586,7 @@ static bool vmware_sev_es_hcall_finish(struct ghcb *ghcb, struct pt_regs *regs)
  const __initconst struct hypervisor_x86 x86_hyper_vmware = {
  	.name				= "VMware",
  	.detect				= vmware_platform,
@@ -189,10 +190,10 @@ index 02039ec35..6e23b3c90 100644
  	.init.x2apic_available		= vmware_legacy_x2apic_available,
  #ifdef CONFIG_AMD_MEM_ENCRYPT
 diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index d4e48b4a4..2ae89be1d 100644
+index 21e9e4845..e2cce348e 100644
 --- a/arch/x86/kernel/kvm.c
 +++ b/arch/x86/kernel/kvm.c
-@@ -1008,7 +1008,7 @@ static bool kvm_sev_es_hcall_finish(struct ghcb *ghcb, struct pt_regs *regs)
+@@ -1006,7 +1006,7 @@ static bool kvm_sev_es_hcall_finish(struct ghcb *ghcb, struct pt_regs *regs)
  const __initconst struct hypervisor_x86 x86_hyper_kvm = {
  	.name				= "KVM",
  	.detect				= kvm_detect,
@@ -202,10 +203,10 @@ index d4e48b4a4..2ae89be1d 100644
  	.init.x2apic_available		= kvm_para_available,
  	.init.msi_ext_dest_id		= kvm_msi_ext_dest_id,
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 3463ef7f3..4b049e72e 100644
+index 83fe0a781..8ac6ea809 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -9438,7 +9438,7 @@ int kvm_x86_vendor_init(struct kvm_x86_init_ops *ops)
+@@ -9776,7 +9776,7 @@ int kvm_x86_vendor_init(struct kvm_x86_init_ops *ops)
  #ifdef CONFIG_X86_64
  	pvclock_gtod_register_notifier(&pvclock_gtod_notifier);
  
@@ -214,9 +215,9 @@ index 3463ef7f3..4b049e72e 100644
  		set_hv_tscchange_cb(kvm_hyperv_tsc_notifier);
  #endif
  
-@@ -9455,7 +9455,7 @@ EXPORT_SYMBOL_GPL(kvm_x86_vendor_init);
- void kvm_x86_vendor_exit(void)
- {
+@@ -9825,7 +9825,7 @@ void kvm_x86_vendor_exit(void)
+ 	kvm_unregister_perf_callbacks();
+ 
  #ifdef CONFIG_X86_64
 -	if (hypervisor_is_type(X86_HYPER_MS_HYPERV))
 +	if (hypervisor_is_type(HYPER_MS_HYPERV))
@@ -224,23 +225,23 @@ index 3463ef7f3..4b049e72e 100644
  #endif
  	kvm_lapic_exit();
 diff --git a/arch/x86/mm/pti.c b/arch/x86/mm/pti.c
-index ffe3b3a08..2d06c8af4 100644
+index 851ec8f13..4fbc9060a 100644
 --- a/arch/x86/mm/pti.c
 +++ b/arch/x86/mm/pti.c
-@@ -83,7 +83,7 @@ void __init pti_check_boottime_disable(void)
- 	/* Assume mode is auto unless overridden. */
- 	pti_mode = PTI_AUTO;
+@@ -78,7 +78,7 @@ static enum pti_mode {
  
+ void __init pti_check_boottime_disable(void)
+ {
 -	if (hypervisor_is_type(X86_HYPER_XEN_PV)) {
 +	if (hypervisor_is_type(HYPER_XEN_PV)) {
  		pti_mode = PTI_FORCE_OFF;
  		pti_print_if_insecure("disabled on XEN PV.");
  		return;
 diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index c1cd28e91..17d3734c6 100644
+index 24d2957a4..60bb2494c 100644
 --- a/arch/x86/xen/enlighten_hvm.c
 +++ b/arch/x86/xen/enlighten_hvm.c
-@@ -325,7 +325,7 @@ static uint32_t __init xen_platform_hvm(void)
+@@ -326,7 +326,7 @@ static uint32_t __init xen_platform_hvm(void)
  struct hypervisor_x86 x86_hyper_xen_hvm __initdata = {
  	.name                   = "Xen HVM",
  	.detect                 = xen_platform_hvm,
@@ -250,10 +251,10 @@ index c1cd28e91..17d3734c6 100644
  	.init.x2apic_available  = xen_x2apic_available,
  	.init.init_mem_mapping	= xen_hvm_init_mem_mapping,
 diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
-index 333539bdb..95e3885a7 100644
+index d6818c6ca..19927f25b 100644
 --- a/arch/x86/xen/enlighten_pv.c
 +++ b/arch/x86/xen/enlighten_pv.c
-@@ -1479,7 +1479,7 @@ static uint32_t __init xen_platform_pv(void)
+@@ -1570,7 +1570,7 @@ static uint32_t __init xen_platform_pv(void)
  const __initconst struct hypervisor_x86 x86_hyper_xen_pv = {
  	.name                   = "Xen PV",
  	.detect                 = xen_platform_pv,
@@ -263,10 +264,10 @@ index 333539bdb..95e3885a7 100644
  	.ignore_nopv		= true,
  };
 diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
-index 6c14d1336..c5699d430 100644
+index 71bdc89bd..f23e34168 100644
 --- a/drivers/gpu/drm/i915/i915_utils.h
 +++ b/drivers/gpu/drm/i915/i915_utils.h
-@@ -388,7 +388,7 @@ static inline bool timer_expired(const struct timer_list *t)
+@@ -364,7 +364,7 @@ static inline bool timer_expired(const struct timer_list *t)
  static inline bool i915_run_as_guest(void)
  {
  #if IS_ENABLED(CONFIG_X86)
@@ -276,7 +277,7 @@ index 6c14d1336..c5699d430 100644
  	/* Not supported yet */
  	return false;
 diff --git a/drivers/input/mouse/vmmouse.c b/drivers/input/mouse/vmmouse.c
-index ea9eff7c8..75c28ad6d 100644
+index fb1d986a6..8c24f6443 100644
 --- a/drivers/input/mouse/vmmouse.c
 +++ b/drivers/input/mouse/vmmouse.c
 @@ -15,7 +15,7 @@
@@ -288,7 +289,7 @@ index ea9eff7c8..75c28ad6d 100644
  #include <asm/vmware.h>
  
  #include "psmouse.h"
-@@ -313,9 +313,9 @@ static int vmmouse_enable(struct psmouse *psmouse)
+@@ -281,9 +281,9 @@ static int vmmouse_enable(struct psmouse *psmouse)
  /*
   * Array of supported hypervisors.
   */
@@ -301,7 +302,7 @@ index ea9eff7c8..75c28ad6d 100644
  };
  
  /**
-@@ -326,7 +326,7 @@ static bool vmmouse_check_hypervisor(void)
+@@ -294,7 +294,7 @@ static bool vmmouse_check_hypervisor(void)
  	int i;
  
  	for (i = 0; i < ARRAY_SIZE(vmmouse_supported_hypervisors); i++)
@@ -311,23 +312,23 @@ index ea9eff7c8..75c28ad6d 100644
  
  	return false;
 diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-index e190bb8c2..9559f5b14 100644
+index 8a5c17b97..920aeedb9 100644
 --- a/drivers/iommu/hyperv-iommu.c
 +++ b/drivers/iommu/hyperv-iommu.c
-@@ -122,7 +122,7 @@ static int __init hyperv_prepare_irq_remapping(void)
- 	const char *name;
- 	const struct irq_domain_ops *ops;
- 
+@@ -126,7 +126,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+ 	 * For a Hyper-V root partition, ms_hyperv_msi_ext_dest_id()
+ 	 * will always return false.
+ 	 */
 -	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
 +	if (!hypervisor_is_type(HYPER_MS_HYPERV) ||
- 	    x86_init.hyper.msi_ext_dest_id() ||
- 	    !x2apic_supported())
+ 	    x86_init.hyper.msi_ext_dest_id())
  		return -ENODEV;
+ 
 diff --git a/drivers/misc/vmw_balloon.c b/drivers/misc/vmw_balloon.c
-index 9ce9b9e0e..303e332f6 100644
+index c817d8c21..775bf67d2 100644
 --- a/drivers/misc/vmw_balloon.c
 +++ b/drivers/misc/vmw_balloon.c
-@@ -1876,7 +1876,7 @@ static int __init vmballoon_init(void)
+@@ -1865,7 +1865,7 @@ static int __init vmballoon_init(void)
  	 * Check if we are running on VMware's hypervisor and bail out
  	 * if we are not.
  	 */
@@ -372,5 +373,5 @@ index 9efbc54e3..97dc3481f 100644
 +
  #endif /* __LINUX_HYPEVISOR_H */
 -- 
-2.30.0
+2.40.4
 

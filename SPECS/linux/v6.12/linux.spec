@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        20%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        21%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -237,7 +237,6 @@ Patch102: 0001-crypto-seqiv-Do-not-use-req-iv-after-crypto_aead_enc.patch
 # aarch specific patches [200..219]
 # Rpi of_configfs patches
 Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
-Patch202: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
 Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
 # Rpi fan driver
 # arm64 hypervisor detection and kmsg dumper
@@ -311,6 +310,15 @@ Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
 Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
 Patch718: 0018-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
 Patch719: 0019-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
+
+# Report guest crash to vmware hypervisor
+%ifarch aarch64
+Patch1000: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
+%ifarch x86_64
+Patch1000: 0001-x86-report-guest-crash-to-vmware-hypervisor.patch
+%endif
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -582,6 +590,8 @@ The kernel fips-canister
 %endif
 
 %autopatch -p1 -m701 -M720
+
+%autopatch -p1 -m1000 -M1000
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -952,6 +962,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-21
+- Port ARM patches to v6.12 and include new patch for reporting guest crashes
+- the VMware hypervisor
 * Tue Feb 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-20
 - HCX patches ported to 6.12 kernel
 * Fri Feb 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-19

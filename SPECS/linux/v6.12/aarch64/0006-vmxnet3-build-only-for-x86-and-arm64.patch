@@ -1,4 +1,4 @@
-From 36811c5d55b2fec60bdde6c0a33a74ef57848b8a Mon Sep 17 00:00:00 2001
+From 7495ae90b1dc68f2cea4a124b78e5ee876220d9c Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 25 May 2022 12:53:16 +0000
 Subject: [PATCH 6/6] vmxnet3: build only for x86 and arm64
@@ -18,10 +18,10 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index b2a4f998c180..0593cd0d7bfa 100644
+index 9920b3a68..21d181ef0 100644
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
-@@ -565,8 +565,8 @@ config XEN_NETDEV_BACKEND
+@@ -614,8 +614,8 @@ config XEN_NETDEV_BACKEND
  
  config VMXNET3
  	tristate "VMware VMXNET3 ethernet driver"
@@ -29,9 +29,9 @@ index b2a4f998c180..0593cd0d7bfa 100644
 -	depends on PAGE_SIZE_LESS_THAN_64KB
 +	depends on PCI && INET && (X86 || ARM64)
 +	depends on PAGE_SIZE_LESS_THAN_64KB && !ARM64_16K_PAGES && !CPU_BIG_ENDIAN
+ 	select PAGE_POOL
  	help
  	  This driver supports VMware's vmxnet3 virtual ethernet NIC.
- 	  To compile this driver as a module, choose M here: the
 -- 
-2.28.0
+2.40.4
 
