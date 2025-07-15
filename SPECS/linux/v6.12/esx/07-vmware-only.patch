@@ -1,4 +1,4 @@
-From ecfcabd03d5510315d562855d9df078d30c93dff Mon Sep 17 00:00:00 2001
+From bccf15015c4506a0fe0a8de16feae81385ca04ef Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <ajay.kaher@broadcom.com>
 Date: Thu, 23 Jan 2025 10:37:56 +0000
 Subject: [PATCH] vmware only
@@ -30,10 +30,10 @@ index 5857a0f5d..0541a2be7 100644
  obj-y			+= bugs.o
  obj-y			+= aperfmperf.o
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index f43bb974f..31993b128 100644
+index b54717e6f..bd5be59c8 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1875,7 +1875,10 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -1964,7 +1964,10 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  				c->x86, c->x86_model);
  	}
  
@@ -45,18 +45,18 @@ index f43bb974f..31993b128 100644
  	setup_cet(c);
  
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index da937aad2..5197ce66b 100644
+index 889bb8619..1565cd2d5 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,6 +30,7 @@
+ #include <linux/reboot.h>
  #include <linux/static_call.h>
  #include <linux/kmsg_dump.h>
- #include <linux/objtool.h>
 +#include <asm/pci_x86.h>
  #include <asm/div64.h>
  #include <asm/x86_init.h>
  #include <asm/hypervisor.h>
-@@ -462,6 +463,10 @@ static void __init vmware_platform_setup(void)
+@@ -473,6 +474,10 @@ static void __init vmware_platform_setup(void)
  	vmware_set_capabilities();
  
  	kmsg_dump_register(&kmsg_dumper);
@@ -65,8 +65,8 @@ index da937aad2..5197ce66b 100644
 +	pci_probe &= ~PCI_PROBE_BIOS;
 +#endif
  }
- #define RETRIES_MAX		3
- #define MESSAGE_STATUS_SUCCESS  0x0001
+ 
+ static u8 __init vmware_select_hypercall(void)
 -- 
-2.39.4
+2.43.7
 

@@ -1,0 +1,77 @@
+From 82fc8b8a10349ec149c45a03ca8307b1f2793033 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Tue, 1 Jul 2025 18:38:14 +0000
+Subject: [PATCH] x86: report guest crash to vmware hypervisor
+
+Register the guest crash reporter to panic_notifier_list,
+which will be called at panic time. Guest crash reporter
+will report the crash to the hypervisor through
+a hypercall.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ arch/x86/include/asm/vmware.h |  1 +
+ arch/x86/kernel/cpu/vmware.c  | 21 +++++++++++++++++++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
+index d70ee4c0e..03e487151 100644
+--- a/arch/x86/include/asm/vmware.h
++++ b/arch/x86/include/asm/vmware.h
+@@ -62,6 +62,7 @@
+ #define VMWARE_CMD_GETHZ		45
+ #define VMWARE_CMD_GETVCPU_INFO		68
+ #define VMWARE_CMD_STEALCLOCK		91
++#define VMWARE_CMD_REPORTGUESTCRASH	102
+ /*
+  * Hypercall command mask:
+  *   bits [6:0] command, range [0, 127]
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 8b6728509..909bac6ce 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -30,6 +30,7 @@
+ #include <linux/reboot.h>
+ #include <linux/static_call.h>
+ #include <linux/kmsg_dump.h>
++#include <linux/panic_notifier.h>
+ #include <asm/div64.h>
+ #include <asm/x86_init.h>
+ #include <asm/hypervisor.h>
+@@ -410,6 +411,24 @@ static void __init vmware_paravirt_ops_setup(void)
+ #define vmware_paravirt_ops_setup() do {} while (0)
+ #endif
+ 
++static int vmware_report_guest_crash(struct notifier_block *self,
++				     unsigned long action, void *data)
++{
++	vmware_hypercall1(VMWARE_CMD_REPORTGUESTCRASH, 0);
++	return 0;
++}
++
++static struct notifier_block guest_crash_reporter = {
++	.notifier_call = vmware_report_guest_crash
++};
++
++static int __init register_guest_crash_reporter(void)
++{
++	atomic_notifier_chain_register(&panic_notifier_list,
++					&guest_crash_reporter);
++
++	return 0;
++}
+ /*
+  * VMware hypervisor takes care of exporting a reliable TSC to the guest.
+  * Still, due to timing difference when running on virtual cpus, the TSC can
+@@ -480,6 +499,8 @@ static void __init vmware_platform_setup(void)
+ 	vmware_set_capabilities();
+ 
+ 	kmsg_dump_register(&kmsg_dumper);
++
++	register_guest_crash_reporter();
+ }
+ 
+ static u8 __init vmware_select_hypercall(void)
+-- 
+2.43.7
+

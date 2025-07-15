@@ -1,4 +1,4 @@
-From afad9332031e9e48a81752f782d992dedf8e08ee Mon Sep 17 00:00:00 2001
+From 7c9b1443a5a5293fd6375fa43d3e81d0f3adb2dd Mon Sep 17 00:00:00 2001
 From: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
 Date: Wed, 3 Dec 2014 13:23:28 +0200
 Subject: [PATCH] OF: DT-Overlay configfs interface
@@ -43,21 +43,30 @@ The .default_groups is linked list since commit
 This commit uses configfs_add_default_group to fix this problem.
 
 Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-Signed-off-by: Ajay Kaher <akaher@vmware.com>
 
 configfs: New of_overlay API
+
+of: configfs: Use of_overlay_fdt_apply API call
+
+The published API to the dynamic overlay application mechanism now
+takes a Flattened Device Tree blob as input so that it can manage the
+lifetime of the unflattened tree. Conveniently, the new API call -
+of_overlay_fdt_apply - is virtually a drop-in replacement for
+create_overlay, which can now be deleted.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
 ---
- Documentation/devicetree/configfs-overlays.txt |  31 +++
- drivers/of/Kconfig                             |   7 +
- drivers/of/Makefile                            |   1 +
- drivers/of/configfs.c                          | 310 +++++++++++++++++++++++++
- 4 files changed, 349 insertions(+)
+ .../devicetree/configfs-overlays.txt          |  31 ++
+ drivers/of/Kconfig                            |  11 +
+ drivers/of/Makefile                           |   1 +
+ drivers/of/configfs.c                         | 277 ++++++++++++++++++
+ 4 files changed, 320 insertions(+)
  create mode 100644 Documentation/devicetree/configfs-overlays.txt
  create mode 100644 drivers/of/configfs.c
 
 diff --git a/Documentation/devicetree/configfs-overlays.txt b/Documentation/devicetree/configfs-overlays.txt
 new file mode 100644
-index 0000000..5fa43e0
+index 00000000000000..5fa43e0643072c
 --- /dev/null
 +++ b/Documentation/devicetree/configfs-overlays.txt
 @@ -0,0 +1,31 @@
@@ -93,13 +102,17 @@ index 0000000..5fa43e0
 +intended to be used by hardware managers in the kernel, while the copy interface
 +make sense for developers (since it avoids problems with namespaces).
 diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
-index d916186..f664362 100644
+index 0e2d608c3e207d..c634bd8a084327 100644
 --- a/drivers/of/Kconfig
 +++ b/drivers/of/Kconfig
-@@ -107,4 +107,11 @@ config OF_DMA_DEFAULT_COHERENT
- 	# arches should select this if DMA is coherent by default for OF devices
+@@ -120,4 +120,15 @@ config OF_OVERLAY_KUNIT_TEST
+ config OF_NUMA
  	bool
  
++config OF_DMA_DEFAULT_COHERENT
++	# arches should select this if DMA is coherent by default for OF devices
++	bool
++
 +config OF_CONFIGFS
 +	bool "Device Tree Overlay ConfigFS interface"
 +	select CONFIGFS_FS
@@ -109,23 +122,23 @@ index d916186..f664362 100644
 +
  endif # OF
 diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-index 663a4af..b00a95a 100644
+index 379a0afcbdc0bf..f294b36207f80c 100644
 --- a/drivers/of/Makefile
 +++ b/drivers/of/Makefile
 @@ -1,6 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
- obj-y = base.o device.o platform.o property.o
+ obj-y = base.o cpu.o device.o module.o platform.o property.o
  obj-$(CONFIG_OF_KOBJ) += kobj.o
 +obj-$(CONFIG_OF_CONFIGFS) += configfs.o
  obj-$(CONFIG_OF_DYNAMIC) += dynamic.o
- obj-$(CONFIG_OF_FLATTREE) += fdt.o
+ obj-$(CONFIG_OF_FLATTREE) += fdt.o empty_root.dtb.o
  obj-$(CONFIG_OF_EARLY_FLATTREE) += fdt_address.o
 diff --git a/drivers/of/configfs.c b/drivers/of/configfs.c
 new file mode 100644
-index 0000000..178f062
+index 00000000000000..0e6bccb8ff2ef5
 --- /dev/null
 +++ b/drivers/of/configfs.c
-@@ -0,0 +1,310 @@
+@@ -0,0 +1,277 @@
 +/*
 + * Configfs entries for device-tree
 + *
@@ -168,41 +181,6 @@ index 0000000..178f062
 +	int			dtbo_size;
 +};
 +
-+static int create_overlay(struct cfs_overlay_item *overlay, void *blob)
-+{
-+	int err;
-+
-+	/* unflatten the tree */
-+	of_fdt_unflatten_tree(blob, NULL, &overlay->overlay);
-+	if (overlay->overlay == NULL) {
-+		pr_err("%s: failed to unflatten tree\n", __func__);
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+	pr_debug("%s: unflattened OK\n", __func__);
-+
-+	/* mark it as detached */
-+	of_node_set_flag(overlay->overlay, OF_DETACHED);
-+
-+	/* perform resolution */
-+	err = of_resolve_phandles(overlay->overlay);
-+	if (err != 0) {
-+		pr_err("%s: Failed to resolve tree\n", __func__);
-+		goto out_err;
-+	}
-+	pr_debug("%s: resolved OK\n", __func__);
-+
-+	err = of_overlay_apply(overlay->overlay, &overlay->ov_id);
-+	if (err < 0) {
-+		pr_err("%s: Failed to create overlay (err=%d)\n",
-+				__func__, err);
-+		goto out_err;
-+	}
-+
-+out_err:
-+	return err;
-+}
-+
 +static inline struct cfs_overlay_item *to_cfs_overlay_item(
 +		struct config_item *item)
 +{
@@ -243,7 +221,8 @@ index 0000000..178f062
 +	if (err != 0)
 +		goto out_err;
 +
-+	err = create_overlay(overlay, (void *)overlay->fw->data);
++	err = of_overlay_fdt_apply((void *)overlay->fw->data,
++				   (u32)overlay->fw->size, &overlay->ov_id, NULL);
 +	if (err != 0)
 +		goto out_err;
 +
@@ -264,7 +243,7 @@ index 0000000..178f062
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
 +
 +	return sprintf(page, "%s\n",
-+			overlay->ov_id >= 0 ? "applied" : "unapplied");
++			overlay->ov_id > 0 ? "applied" : "unapplied");
 +}
 +
 +CONFIGFS_ATTR(cfs_overlay_item_, path);
@@ -276,7 +255,7 @@ index 0000000..178f062
 +	NULL,
 +};
 +
-+ssize_t cfs_overlay_item_dtbo_read(struct config_item *item,
++static ssize_t cfs_overlay_item_dtbo_read(struct config_item *item,
 +		void *buf, size_t max_count)
 +{
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
@@ -299,7 +278,7 @@ index 0000000..178f062
 +	return overlay->dtbo_size;
 +}
 +
-+ssize_t cfs_overlay_item_dtbo_write(struct config_item *item,
++static ssize_t cfs_overlay_item_dtbo_write(struct config_item *item,
 +		const void *buf, size_t count)
 +{
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
@@ -316,7 +295,8 @@ index 0000000..178f062
 +
 +	overlay->dtbo_size = count;
 +
-+	err = create_overlay(overlay, overlay->dtbo);
++	err = of_overlay_fdt_apply(overlay->dtbo, overlay->dtbo_size,
++				   &overlay->ov_id, NULL);
 +	if (err != 0)
 +		goto out_err;
 +
@@ -326,6 +306,7 @@ index 0000000..178f062
 +	kfree(overlay->dtbo);
 +	overlay->dtbo = NULL;
 +	overlay->dtbo_size = 0;
++	overlay->ov_id = 0;
 +
 +	return err;
 +}
@@ -341,7 +322,7 @@ index 0000000..178f062
 +{
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
 +
-+	if (overlay->ov_id >= 0)
++	if (overlay->ov_id > 0)
 +		of_overlay_remove(&overlay->ov_id);
 +	if (overlay->fw)
 +		release_firmware(overlay->fw);
@@ -369,7 +350,6 @@ index 0000000..178f062
 +	overlay = kzalloc(sizeof(*overlay), GFP_KERNEL);
 +	if (!overlay)
 +		return ERR_PTR(-ENOMEM);
-+	overlay->ov_id = -1;
 +
 +	config_item_init_type_name(&overlay->item, name, &cfs_overlay_type);
 +	return &overlay->item;
@@ -436,6 +416,3 @@ index 0000000..178f062
 +	return ret;
 +}
 +late_initcall(of_cfs_init);
--- 
-2.7.4
-

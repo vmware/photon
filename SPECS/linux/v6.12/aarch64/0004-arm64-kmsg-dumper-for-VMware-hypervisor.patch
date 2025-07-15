@@ -1,4 +1,4 @@
-From 67aed76b2ac902c25603e116f7993bc4f5b82514 Mon Sep 17 00:00:00 2001
+From 6523e01b0ef1ec965555842b07746effe6bb04c2 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 25 May 2022 12:37:48 +0000
 Subject: [PATCH 4/6] arm64: kmsg dumper for VMware hypervisor
@@ -7,6 +7,8 @@ kmsg_dumper dumps kmsg to vmware.log in VMware hosts in case of
 a kernel panic in the guest.
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+[ Ported to v6.12 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  arch/arm64/include/asm/vmware.h |  51 ++++++++
  arch/arm64/kernel/vmware.c      | 222 +++++++++++++++++++++++++++++++-
@@ -15,7 +17,7 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 
 diff --git a/arch/arm64/include/asm/vmware.h b/arch/arm64/include/asm/vmware.h
 new file mode 100644
-index 000000000000..834986a2cbfd
+index 000000000..834986a2c
 --- /dev/null
 +++ b/arch/arm64/include/asm/vmware.h
 @@ -0,0 +1,51 @@
@@ -71,7 +73,7 @@ index 000000000000..834986a2cbfd
 +
 +#endif /* _ASM_ARM64_VMWARE_H */
 diff --git a/arch/arm64/kernel/vmware.c b/arch/arm64/kernel/vmware.c
-index a8d17233b17b..50391b49555e 100644
+index a8d17233b..2364a92d6 100644
 --- a/arch/arm64/kernel/vmware.c
 +++ b/arch/arm64/kernel/vmware.c
 @@ -12,7 +12,227 @@
@@ -275,7 +277,7 @@ index a8d17233b17b..50391b49555e 100644
 +}
 +
 +static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
-+				enum kmsg_dump_reason reason)
++				struct kmsg_dump_detail *detail)
 +{
 +	struct vmw_msg msg;
 +	struct kmsg_dump_iter iter;
@@ -310,5 +312,5 @@ index a8d17233b17b..50391b49555e 100644
 +	.init.init_platform	= vmware_platform_setup,
  };
 -- 
-2.28.0
+2.40.4
 
