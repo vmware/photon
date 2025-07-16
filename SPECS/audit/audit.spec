@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        24%{?dist}
+Release:        25%{?dist}
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
@@ -13,6 +13,8 @@ Source0: http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Source2: default.rules
 
 # patches for audit workaround for linux-headers >= 5.17
 # https://github.com/linux-audit/audit-userspace/issues/252
@@ -93,7 +95,8 @@ mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/%{name}/rules.d} \
 %make_install %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_presetdir}
-echo "disable auditd.service" > %{buildroot}%{_presetdir}/50-auditd.preset
+echo "enable auditd.service" > %{buildroot}%{_presetdir}/50-auditd.preset
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/rules.d/default.rules
 
 # undo the workaround
 pushd %{buildroot}
@@ -113,10 +116,12 @@ end
 
 %post
 /sbin/ldconfig
+systemctl daemon-reload
 %systemd_post auditd.service
 
 %postun
 /sbin/ldconfig
+systemctl daemon-reload
 %systemd_postun_with_restart auditd.service
 
 %files
@@ -141,6 +146,7 @@ end
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/audisp-remote.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/zos-remote.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/plugins.d/*.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/rules.d/default.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/rules.d/%{name}.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/%{name}.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/%{name}-stop.rules
@@ -164,6 +170,8 @@ end
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-25
+- Load haredening rules by default
 * Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-24
 - Bump version as a part of go upgrade
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.9-23
