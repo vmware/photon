@@ -1,15 +1,16 @@
-Name:           @@RPM_NAME@@
-Version:        @@VERSION@@
-Release:        @@RELEASE@@%{?dist}
+%include        %{_topdir}/macros
+Name:           %{RPM_NAME}
+Version:        %{RPM_VERSION}
+Release:        %{RPM_RELEASE}%{?dist}
 Vendor:         VMware, Inc.
 Group:          System Environment/Kernel
 License:        GPLv2
 Summary:        Package containing a livepatch module for Photon OS
 Distribution:   Photon
 
-Requires: kpatch >= 0.9.10-1
+Requires:       kpatch >= 0.9.10-1
 
-%define _modulesdir /lib/modules/@@LINUX_VERSION@@
+%define _modulesdir /lib/modules/%{LINUX_VERSION}
 %define __modules_install_post \
     if [ -n "%{?signing_script}" ]; then \
         find %{buildroot}%{_modulesdir} -type f -name "*.ko" -print0 \\\
@@ -25,33 +26,62 @@ Requires: kpatch >= 0.9.10-1
     %{__modules_install_post}\
 %{nil}
 
-%description
-@@DESCRIPTION@@
+Source0:        vmlinux-%{LINUX_VERSION}
+Source1:        %{KERNEL_SRC_RPM}
+Source2:        sources.inc
+%include        %{SOURCE2}
 
+%description
+%{RPM_DESCRIPTION}
+
+%build
+kpatch-build -v %{SOURCE0} \
+            -r %{SOURCE1} \
+            -j "$(nproc)" \
+            -n %{LIVEPATCH_NAME} \
+            %{NON_REPLACE_FLAG} \
+            %{SKIP_CLEANUP} \
+            %{DESCRIPTION_FILE} \
+            %{PATCHES}
+
+if [ -n "$SIGNC" ]; then
+    echo "Signing RPM now."
+    find "$OUTPUT_FOLDER" -type f -name "*.rpm" -exec "$SIGNC" -t rpm -u "$SIGNC_UNAME" -a {} \; || error "Signing livepatch RPM failed!"
+fi
 
 %install
-mkdir -p %{buildroot}%{_modulesdir}/extra/livepatches/
-cp ../SOURCES/@@LIVEPATCH_NAME@@.ko %{buildroot}%{_modulesdir}/extra/livepatches/
+install -d %{buildroot}%{_modulesdir}/extra/livepatches/
+install -D -m 744  %{LIVEPATCH_NAME}.ko %{buildroot}%{_modulesdir}/extra/livepatches/
+
+%debug_package
 
 %pre
-echo "Required linux version is: @@LINUX_VERSION@@, current version is $(uname -r)"
-if [[ @@LINUX_VERSION@@ != $(uname -r) ]]; then
+echo "Required linux version is %{LINUX_VERSION}, current version is $(uname -r)"
+if [[ %{LINUX_VERSION} != $(uname -r) ]]; then
     echo "ABORT: Looks like you have the wrong linux version installed. This package is compatible only with @@LINUX_VERSION@@"
     exit 1
 fi
 
 %postun
 # uninstall and unload livepatch module
-kpatch uninstall @@LIVEPATCH_NAME@@ || echo "kpatch unload failed - maybe module was not loaded?"
+kpatch uninstall %{LIVEPATCH_NAME} || echo "kpatch unload failed - maybe module was not loaded?"
 
 %post
+set -e
+cleanup() {
+    echo "Cleaning up due to failure..." >&2
+    kpatch uninstall %{LIVEPATCH_NAME} || true
+    exit 1
+}
+trap cleanup ERR
+
 # load livepatch module
-kpatch install %{_modulesdir}/extra/livepatches/@@LIVEPATCH_NAME@@.ko
-kpatch load %{_modulesdir}/extra/livepatches/@@LIVEPATCH_NAME@@.ko
+kpatch install %{_modulesdir}/extra/livepatches/%{LIVEPATCH_NAME}.ko
+kpatch load %{_modulesdir}/extra/livepatches/%{LIVEPATCH_NAME}.ko
 depmod -a
 
 %files
 %defattr(-,root,root,-)
-%{_modulesdir}/extra/livepatches/@@LIVEPATCH_NAME@@.ko
+%{_modulesdir}/extra/livepatches/%{LIVEPATCH_NAME}.ko
 
 %changelog

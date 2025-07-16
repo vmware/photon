@@ -1,0 +1,146 @@
+From f07f3794b3bc97a6ca713dcf93e27a2c9abfd4d1 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Thu, 3 Jul 2025 07:54:32 +0000
+Subject: [PATCH] Support building of photon live patch from kernel source RPM
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ kpatch-build/kpatch-build | 64 +++++++++++++++------------------------
+ 1 file changed, 24 insertions(+), 40 deletions(-)
+
+diff --git a/kpatch-build/kpatch-build b/kpatch-build/kpatch-build
+index fe08fcb..bf7595b 100755
+--- a/kpatch-build/kpatch-build
++++ b/kpatch-build/kpatch-build
+@@ -849,6 +849,13 @@ if [[ ${#PATCH_LIST[@]} -eq 0 ]]; then
+ fi
+ 
+ trace_on
++# Don't check external file.
++# shellcheck disable=SC1090
++if [[ -z "$USERSRCDIR" ]] && [[ -f "$RELEASE_FILE" ]]; then
++	source "$RELEASE_FILE"
++	DISTRO="$ID"
++fi
++
+ 
+ if [[ -n "$SRCRPM" ]]; then
+ 	if  [[ -n "$ARCHVERSION" ]]; then
+@@ -856,9 +863,14 @@ if [[ -n "$SRCRPM" ]]; then
+ 		exit 1
+ 	fi
+ 	rpmname="$(basename "$SRCRPM")"
+-	ARCHVERSION="${rpmname%.src.rpm}.$(uname -m)"
++	if [[ "$DISTRO" = photon ]]; then
++		ARCHVERSION="${rpmname%.src.rpm}"
++	else
++		ARCHVERSION="${rpmname%.src.rpm}.$(uname -m)"
++	fi
+ 	ARCHVERSION="${ARCHVERSION#kernel-}"
+ 	ARCHVERSION="${ARCHVERSION#alt-}"
++	ARCHVERSION="${ARCHVERSION#linux-}"
+ fi
+ 
+ if [[ -n "$OOT_MODULE" ]] &&  [[ -z "$OOT_MODULE_SRCDIR" ]]; then
+@@ -908,13 +920,6 @@ fi
+ 
+ [[ "$SKIPCLEANUP" -eq 0 ]] && trap cleanup EXIT INT TERM HUP
+ 
+-# Don't check external file.
+-# shellcheck disable=SC1090
+-if [[ -z "$USERSRCDIR" ]] && [[ -f "$RELEASE_FILE" ]]; then
+-	source "$RELEASE_FILE"
+-	DISTRO="$ID"
+-fi
+-
+ KVER="${ARCHVERSION%%-*}"
+ if [[ "$ARCHVERSION" =~ - ]]; then
+ 	# handle flavor extension on Photon ex) -rt, -esx
+@@ -926,12 +931,12 @@ if [[ "$ARCHVERSION" =~ - ]]; then
+ 		KREL="${KREL%-*}"
+ 		KREL="${KREL#*-}"
+ 
+-		PH_TAG="${ARCHVERSION##*.}"
+-		PH_FLAVOR="${PH_TAG##*-}"
+-		PH_TAG="${PH_TAG%%-*}"
+-
+-		# if no flavor, these will be the same
+-		[[ "$PH_FLAVOR" = "$PH_TAG" ]] && PH_FLAVOR=""
++		PH_TAG=$(echo "$ARCHVERSION" | grep -oE 'ph[0-9]+')
++		if [[ "$ARCHVERSION" =~ (^|[-\.])(rt|esx|aws)($|[-\.]) ]]; then
++			PH_FLAVOR="${BASH_REMATCH[2]}"
++		else
++			PH_FLAVOR=""
++		fi
+ 	else
+ 		KREL="${ARCHVERSION##*-}"
+ 	fi
+@@ -1009,11 +1014,9 @@ else
+ 			if [ -z "$SRCRPM" ]; then
+ 				SRCRPM="$TEMPDIR/kernel$ALT-$KVER-$KREL.src.rpm"
+ 			fi
+-
+ 		fi
+ 
+ 		echo "Unpacking kernel source"
+-
+ 		if [[ "$DISTRO" = photon ]]; then
+ 			[[ -n "$PH_FLAVOR" ]] && SPECNAME="linux-$PH_FLAVOR.spec" || SPECNAME="linux.spec"
+ 		else
+@@ -1024,7 +1027,7 @@ else
+ 
+ 		# Define dist tag to handle rpmbuild of the linux src rpm in Photon
+ 		if [[ "$DISTRO" = photon ]] && [ "$(rpm -E %dist)" = "%dist" ]; then
+-			sed -i "1s/^/%define dist .$PH_TAG/" "$RPMTOPDIR"/SPECS/"$SPECNAME"
++			sed -i "1s|^|%define dist .$PH_TAG\n\n|" "$RPMTOPDIR"/SPECS/"$SPECNAME"
+ 		fi
+ 
+ 		rpmbuild -D "_topdir $RPMTOPDIR" -bp --nodeps "--target=$(uname -m)" "$RPMTOPDIR"/SPECS/"$SPECNAME" 2>&1 | logger || die "rpmbuild -bp failed.  you may need to run 'yum-builddep kernel' first."
+@@ -1036,19 +1039,6 @@ else
+ 		elif [[ "$DISTRO" = opencloudos ]]; then
+ 			mv "$RPMTOPDIR"/BUILD/kernel-*/kernel-* "$KERNEL_SRCDIR" 2>&1 | logger || die
+ 		elif [[ "$DISTRO" = photon ]]; then
+-			# Photon has some files that are copied over during the build section of the spec file (instead of prep)
+-			# These change occasionally, so check they exist before copying
+-			ls "$RPMTOPDIR"/BUILD/fips*canister* &> /dev/null && ( cp -rT "$RPMTOPDIR"/BUILD/fips*canister* "$RPMTOPDIR"/BUILD/linux-"$KVER"/crypto | logger || die )
+-			[[ -f "$RPMTOPDIR"/SOURCES/fips_canister-kallsyms ]] && ( cp "$RPMTOPDIR"/SOURCES/fips_canister-kallsyms rpmbuild/BUILD/linux-"$KVER"/crypto | logger || die )
+-
+-			if [[ -z "$CONFIGFILE" ]]; then
+-				# Photon has multiple config files per src rpm sometimes, and naming is not consistent.
+-				# So do our best to find the right one by parsing the spec file
+-				SRC_CFG=$(rpmspec -P -D "_topdir $RPMTOPDIR" "$RPMTOPDIR"/SPECS/"$SPECNAME" | awk '/^cp .*\/SOURCES\/config.* \.config$/{print $2}')
+-				[[ -z "$SRC_CFG" ]] && die "Failed to locate kernel config file"
+-				SRC_CFG="${SRC_CFG##*/}"
+-				cp "$RPMTOPDIR"/SOURCES/"$SRC_CFG" "$RPMTOPDIR"/BUILD/linux-"$KVER" | logger || die
+-			fi
+ 			mv "$RPMTOPDIR"/BUILD/linux-"$KVER" "$KERNEL_SRCDIR" 2>&1 | logger || die
+ 		else
+ 			mv "$RPMTOPDIR"/BUILD/kernel-*/linux-* "$KERNEL_SRCDIR" 2>&1 | logger || die
+@@ -1066,20 +1056,14 @@ else
+ 		if [[ "$DISTRO" = openEuler ]] || [[ "$DISTRO" = opencloudos ]]; then
+ 			[[ -z "$CONFIGFILE" ]] && CONFIGFILE="/boot/config-${ARCHVERSION}"
+ 		elif [[ "$DISTRO" = photon ]]; then
+-			[[ -z "$CONFIGFILE" ]] && CONFIGFILE="$KERNEL_SRCDIR/$SRC_CFG"
+-
+-			# modify config file here to get the right vermagic, as Photon does not always listen to localversion file
+-			if [[ -z "$PH_FLAVOR" ]]; then
+-				sed -i s/^CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"-"$KREL"."$PH_TAG"\"/g "$CONFIGFILE" || die
+-			else
+-				sed -i s/^CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"-"$KREL"."$PH_TAG"-"$PH_FLAVOR"\"/g "$CONFIGFILE" || die
+-			fi
+-
++			[[ -z "$CONFIGFILE" ]] && CONFIGFILE="$KERNEL_SRCDIR"/.config
+ 		else
+ 			[[ -z "$CONFIGFILE" ]] && CONFIGFILE="$KERNEL_SRCDIR/configs/kernel$ALT-$KVER-$ARCH.config"
+ 		fi
++		if [[ ! "$DISTRO" = photon ]]; then
++			(cd "$KERNEL_SRCDIR" && make mrproper 2>&1 | logger) || die
++		fi
+ 
+-		(cd "$KERNEL_SRCDIR" && make mrproper 2>&1 | logger) || die
+ 
+ 	elif is_supported_deb_distro "$DISTRO"; then
+ 
+-- 
+2.40.4
+

@@ -62,12 +62,6 @@ is_in_array() {
 
 check_permission() {
   if ! docker info > /dev/null 2>&1; then
-    error "Docker daemon is not running or not accessible. Please start Docker using: sudo systemctl start docker"
+    error "Docker daemon is not running or not accessible. Try starting Docker using: sudo systemctl start docker"
   fi
-  local container_id
-  container_id=$(docker container create busybox true 2>/dev/null)
-  if [[ -z "$container_id" ]]; then
-    error "Docker is running but you cannot create containers. Ensure your user is in the 'docker' group."
-  fi
-  docker container rm -f "$container_id" > /dev/null 2>&1
 }

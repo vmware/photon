@@ -36,7 +36,6 @@ DOCKER_KPATCH_BUILDLOG=/root/.kpatch/build.log
 DOCKER=/usr/bin/docker
 DOCKER_LIVEPATCH_OUTPUT_DIR=${GEN_LIVEPATCH_DIR}/livepatches
 DOCKER_IMAGE_NAME=""
-DOCKER_DEBUGINFO_DIR=${GEN_LIVEPATCH_WORKSPACE}/debuginfo
 DOCKER_CONTAINER_NAME=""
 DOCKERFILE_NAME=""
 
@@ -202,11 +201,6 @@ cleanup() {
         mkdir -p "$OUTPUT_DIR"
         $DOCKER cp "$DOCKER_CONTAINER_NAME":$DOCKER_LIVEPATCH_OUTPUT_DIR/. "$OUTPUT_DIR" || echo "Failed to copy gen_livepatch output dir from docker container."
         [[ $FAILED -eq 1 ]] && save_kpatch_buildlog
-        # debug flag, save files if set, otherwise let them get deleted
-        if [[ $EXPORT_DEBUGINFO -eq 1 && $FAILED -eq 0 ]]; then
-            echo "Saving build debug files to $OUTPUT_DIR"
-            $DOCKER cp "$DOCKER_CONTAINER_NAME":$DOCKER_DEBUGINFO_DIR/. "$OUTPUT_DIR" || echo "Couldn't find debug files"
-        fi
         docker rm -f "$DOCKER_CONTAINER_NAME" || echo "Failed to delete existing docker container: $DOCKER_CONTAINER_NAME"
     fi
 

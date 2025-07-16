@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -27,6 +27,7 @@ Patch0:         0001-adding-option-to-set-description-field-of-module.patch
 # Compatibility with linux-secure->linux merger
 Patch1:         0002-kpatch-compatibility-with-Photon-gcc-RAP-patch.patch
 Patch2:         0003-patch-hook-fix-cast-errors.patch
+Patch3:         0004-Support-building-of-photon-live-patch-from-kernel-so.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -127,6 +128,9 @@ cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfile
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Fri Jul 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-4
+- Generate livepatch debug rpm
+- Fixed upstream kpatch-build to build livepatch using kernel source rpm
 * Tue Jul 08 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 0.9.10-3
 - Add optional signing option to be utilized by GoBuilds
 * Wed Jun 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-2
