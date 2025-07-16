@@ -121,9 +121,9 @@ class PackageBuilder(object):
             if self.sandbox:
                 self.sandbox.destroy()
             self.srp.finalize()
-            self.logger.debug(f"Successfully built the package: {self.package}")
+            self.logger.debug(f"Successfully built the package: {self.package}-{self.version}")
         except Exception as e:
-            self.logger.error(f"Failed while building package: {self.package}")
+            self.logger.error(f"Failed while building package: {self.package}-{self.version}")
             self.logger.debug(
                 f"Sandbox: {self.sandbox.name} not deleted for debugging."
             )

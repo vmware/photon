@@ -117,7 +117,7 @@ class PackageUtils(object):
                 raise
 
     def buildRPMSForGivenPackage(self, sandbox, package, version, destLogPath):
-        self.logger.info(f"Building package: {package}")
+        self.logger.info(f"Building package: {package}-{version}")
 
         listSourcesFiles = SPECS.getData().getSources(package, version)
         listPatchFiles = SPECS.getData().getPatches(package, version)
@@ -178,7 +178,7 @@ class PackageUtils(object):
             logmsg = f"{package} build done - RPMs: [ {logmsg}]\n"
             self.logger.info(logmsg)
         except Exception as e:
-            self.logger.error(f"Failed while building rpm: {package}")
+            self.logger.error(f"Failed while building rpm: {package}-{version}")
             raise e
         self.logger.debug("RPM build is successful")
 
