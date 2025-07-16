@@ -41,7 +41,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.34
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -71,7 +71,7 @@ Source16:       fips-canister-6.12.34-3%{?dist}.tar.bz2
 
 %ifarch x86_64
 %define jent_name photon-jitterentropy-v6.12
-%define jent_rel_ver 1
+%define jent_rel_ver 2
 Source17:       %{jent_name}-%{jent_rel_ver}.tar.gz
 %endif
 
@@ -246,6 +246,7 @@ Patch324: 0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 
 %ifarch x86_64
 Patch450: 0001-jitterentropy-Makefile-changes.patch
+Patch451: 0001-New-memsize-options-for-jent.patch
 %endif
 
 # Crypto: [500..529]
@@ -286,8 +287,10 @@ Patch518:       0007-crypto-AF_ALG-add-KPP-support.patch
 Patch519:       0008-crypto-AF_ALG-add-ECC-support.patch
 Patch520:       0009-DRBG-Fix-issues-with-DRBG.patch
 Patch522:       0011-sock-Remove-sendpage-in-favour-of-sendmsg-MSG_SPLICE.patch
+Patch523:       0012-jitterentropy-kcapi-Support-for-sample-collection.patch
+Patch524:       0013-jitterentropy-Add-prototype-for-sample-collection.patch
 %if 0%{?kat_build:1}
-Patch523:       0013-crypto-api-return-status-prints-for-LKCM5-demo.patch
+Patch525:       0014-crypto-api-return-status-prints-for-LKCM5-demo.patch
 %endif
 %endif
 
@@ -511,7 +514,9 @@ The kernel fips-canister
 %endif
 
 # jitterentropy
-%autopatch -p1 -m450 -M450
+%ifarch x86_64
+%autopatch -p1 -m450 -M451
+%endif
 # crypto
 %autopatch -p1 -m500 -M507
 
@@ -523,8 +528,12 @@ The kernel fips-canister
 #ACVP test harness patches.
 #Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
 %autopatch -p1 -m512 -M522
-%if 0%{?kat_build:1}
+pushd ../%{jent_name}
 %autopatch -p1 -m523 -M523
+popd
+%autopatch -p1 -m524 -M524
+%if 0%{?kat_build:1}
+%autopatch -p1 -m525 -M525
 %endif
 %endif
 
@@ -886,6 +895,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jul 18 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-6
+- Add sample collection support for Jitterentropy.
 * Wed Jul 16 2025 Brennan Lamoreaux <brenna.lamoreaux@broadcom.com> 6.12.34-5
 - Implement structure member type check within GCC plugins. Obsoletes
 - old structure comparator test.

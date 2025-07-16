@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.34
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -46,8 +46,8 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 
 %ifarch x86_64
 %define jent_name photon-jitterentropy-v6.12
-%define jent_rel_ver 1
-Source17: photon-jitterentropy-v6.12-1.tar.gz
+%define jent_rel_ver 2
+Source17: %{jent_name}-%{jent_rel_ver}.tar.gz
 %endif
 
 %if 0%{?fips}
@@ -209,6 +209,7 @@ Patch511: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 
 %ifarch x86_64
 Patch512: 0001-jent-makefile-changes-esx.patch
+Patch513: 0001-New-memsize-options-for-jent.patch
 %endif
 
 %ifarch x86_64
@@ -330,7 +331,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %ifarch x86_64
-%autopatch -p1 -m511 -M512
+%autopatch -p1 -m512 -M513
 %endif
 
 %ifarch x86_64
@@ -477,6 +478,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 18 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-3
+- Add sample collection support for Jitterentropy.
 * Mon Jun 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-2
 - Mark certain structure fields as known differences between kernel and
 - canister.
