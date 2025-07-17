@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
-Version:          3.8.0
-Release:          2%{?dist}
+Version:          3.9.3
+Release:          1%{?dist}
 URL:              http://zookeeper.apache.org
 License:          Apache License, Version 2.0
 Group:            Applications/System
@@ -9,7 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=d66e3a40451f840406901b2cd940992b001f92049a372ae48d8b420891605871cd1ae5f6cceb3b10665491e7abef36a4078dace158bd1e0938fcd3567b5234ca
+%define sha512 %{name}=d44d870c1691662efbf1a8baf1859c901b820dc5ff163b36e81beb27b6fbf3cd31b5f1f075697edaaf6d3e7a4cb0cc92f924dcff64b294ef13d535589bdaf143
 
 Source1: %{name}.service
 Source2: zkEnv.sh
@@ -86,6 +86,8 @@ getent passwd %{name} >/dev/null || \
 %{_prefix}/*
 
 %changelog
+* Wed Jul 16 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.3-1
+- Update to 3.9.3, fixes many second level CVEs
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-2
 - Require jre8 or jdk11-jre or jdk17-jre
 * Tue Sep 5 2023 Michelle Wang <michellew@vmware.com> 3.8.0-1
