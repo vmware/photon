@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.239
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -399,6 +399,28 @@ Patch229: 0001-block-don-t-call-rq_qos_ops-done_bio-if-the-bio-isn-.patch
 
 # Fix CVE-2021-47455
 Patch230: 0001-ptp-Fix-possible-memory-leak-in-ptp_clock_register.patch
+
+# Fix CVE-2021-47421
+Patch231:  0001-drm-amdgpu-handle-the-case-of-pci_channel_io_frozen-.patch
+
+# Fix CVE-2021-47498
+Patch232:  0001-dm-rearrange-core-declarations-for-extended-use-from.patch
+Patch233:  0001-dm-rq-don-t-queue-request-to-blk-mq-during-DM-suspen.patch
+
+# Fix CVE-2021-47182
+Patch234:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
+
+# Fix CVE-2021-47193
+Patch235:  0001-scsi-pm80xx-Fix-memory-leak-during-rmmod.patch
+
+# Fix CVE-2021-47183
+Patch236:  0001-scsi-lpfc-Fix-link-down-processing-to-address-NULL-p.patch
+
+# Fix CVE-2021-47070
+Patch237:  0001-uio_hv_generic-Fix-another-memory-leak-in-error-hand.patch
+
+# Fix CVE-2021-47076
+Patch238:  0001-RDMA-rxe-Return-CQE-error-if-invalid-lkey-was-suppli.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1068,6 +1090,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jul 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-4
+- Fix CVE-2021-47076, CVE-2021-47421, CVE-2021-47498, CVE-2021-47182
+- CVE-2021-47193, CVE-2021-47183, CVE-2021-47070
 * Sun Jul 20 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-3
 - Fix aarch build
 * Mon Jul 14 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-2

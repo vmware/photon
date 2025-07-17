@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.239
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -348,6 +348,28 @@ Patch225: 0001-block-don-t-call-rq_qos_ops-done_bio-if-the-bio-isn-.patch
 # Fix CVE-2021-47455
 Patch226: 0001-ptp-Fix-possible-memory-leak-in-ptp_clock_register.patch
 
+# Fix CVE-2021-47421
+Patch227:  0001-drm-amdgpu-handle-the-case-of-pci_channel_io_frozen-.patch
+
+# Fix CVE-2021-47498
+Patch228:  0001-dm-rearrange-core-declarations-for-extended-use-from.patch
+Patch229:  0001-dm-rq-don-t-queue-request-to-blk-mq-during-DM-suspen.patch
+
+# Fix CVE-2021-47182
+Patch230:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
+
+# Fix CVE-2021-47193
+Patch231:  0001-scsi-pm80xx-Fix-memory-leak-during-rmmod.patch
+
+# Fix CVE-2021-47183
+Patch232:  0001-scsi-lpfc-Fix-link-down-processing-to-address-NULL-p.patch
+
+# Fix CVE-2021-47070
+Patch233:  0001-uio_hv_generic-Fix-another-memory-leak-in-error-hand.patch
+
+# Fix CVE-2021-47076
+Patch234:  0001-RDMA-rxe-Return-CQE-error-if-invalid-lkey-was-suppli.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -624,6 +646,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jul 16 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-3
+- Fix CVE-2021-47076, CVE-2021-47421, CVE-2021-47498, CVE-2021-47182
+- CVE-2021-47193, CVE-2021-47183, CVE-2021-47070
 * Mon Jul 14 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-2
 - Fix CVE-2021-46987, CVE-2021-47432, CVE-2021-47412 and CVE-2021-47455
 * Thu Jul 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.239-1

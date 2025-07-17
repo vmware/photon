@@ -1,0 +1,59 @@
+From f0f342c5ff00675a4e3a1e614dd947b5c4dd2f24 Mon Sep 17 00:00:00 2001
+From: James Smart <jsmart2021@gmail.com>
+Date: Wed, 16 Jul 2025 09:28:16 +0000
+Subject: [PATCH] scsi: lpfc: Fix link down processing to address NULL pointer 
+ dereference
+
+[ Upstream commit 1854f53ccd88ad4e7568ddfafafffe71f1ceb0a6 ]
+
+If an FC link down transition while PLOGIs are outstanding to fabric well
+known addresses, outstanding ABTS requests may result in a NULL pointer
+dereference. Driver unload requests may hang with repeated "2878" log
+messages.
+
+The Link down processing results in ABTS requests for outstanding ELS
+requests. The Abort WQEs are sent for the ELSs before the driver had set
+the link state to down. Thus the driver is sending the Abort with the
+expectation that an ABTS will be sent on the wire. The Abort request is
+stalled waiting for the link to come up. In some conditions the driver may
+auto-complete the ELSs thus if the link does come up, the Abort completions
+may reference an invalid structure.
+
+Fix by ensuring that Abort set the flag to avoid link traffic if issued due
+to conditions where the link failed.
+
+Link: https://lore.kernel.org/r/20211020211417.88754-7-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Shivani: Modified to apply on 5.10.y]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ drivers/scsi/lpfc/lpfc_sli.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index ff39c596f000..49931577da38 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -11432,10 +11432,12 @@ lpfc_sli_abort_iotag_issue(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
+ 	if (cmdiocb->iocb_flag & LPFC_IO_FOF)
+ 		abtsiocbp->iocb_flag |= LPFC_IO_FOF;
+ 
+-	if (phba->link_state >= LPFC_LINK_UP)
+-		iabt->ulpCommand = CMD_ABORT_XRI_CN;
+-	else
++	if (phba->link_state < LPFC_LINK_UP ||
++	    (phba->sli_rev == LPFC_SLI_REV4 &&
++	     phba->sli4_hba.link_state.status == LPFC_FC_LA_TYPE_LINK_DOWN))
+ 		iabt->ulpCommand = CMD_CLOSE_XRI_CN;
++	else
++		iabt->ulpCommand = CMD_ABORT_XRI_CN;
+ 
+ 	abtsiocbp->iocb_cmpl = lpfc_sli_abort_els_cmpl;
+ 	abtsiocbp->vport = vport;
+-- 
+2.40.4
+

@@ -1,0 +1,225 @@
+From f0790cfe6352592fef8c73589adfce5dc449e8c2 Mon Sep 17 00:00:00 2001
+From: Damien Le Moal <damien.lemoal@wdc.com>
+Date: Thu, 17 Jul 2025 06:11:50 +0000
+Subject: [PATCH] dm: rearrange core declarations for extended use from 
+ dm-zone.c
+
+commit e2118b3c3d94289852417f70ec128c25f4833aad upstream.
+
+Move the definitions of struct dm_target_io, struct dm_io and the bits
+of the flags field of struct mapped_device from dm.c to dm-core.h to
+make them usable from dm-zone.c. For the same reason, declare
+dec_pending() in dm-core.h after renaming it to dm_io_dec_pending().
+And for symmetry of the function names, introduce the inline helper
+dm_io_inc_pending() instead of directly using atomic_inc() calls.
+
+Signed-off-by: Damien Le Moal <damien.lemoal@wdc.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+[Shivani: Modified to apply on 5.10.y]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ drivers/md/dm-core.h | 52 ++++++++++++++++++++++++++++++++++++++
+ drivers/md/dm.c      | 59 ++++++--------------------------------------
+ 2 files changed, 59 insertions(+), 52 deletions(-)
+
+diff --git a/drivers/md/dm-core.h b/drivers/md/dm-core.h
+index ff73b2c17be5..99b2d2e2cf59 100644
+--- a/drivers/md/dm-core.h
++++ b/drivers/md/dm-core.h
+@@ -124,6 +124,19 @@ struct mapped_device {
+ 	struct srcu_struct io_barrier;
+ };
+ 
++/*
++ * Bits for the flags field of struct mapped_device.
++ */
++#define DMF_BLOCK_IO_FOR_SUSPEND 0
++#define DMF_SUSPENDED 1
++#define DMF_FROZEN 2
++#define DMF_FREEING 3
++#define DMF_DELETING 4
++#define DMF_NOFLUSH_SUSPENDING 5
++#define DMF_DEFERRED_REMOVE 6
++#define DMF_SUSPENDED_INTERNALLY 7
++#define DMF_POST_SUSPENDING 8
++
+ void disable_discard(struct mapped_device *md);
+ void disable_write_same(struct mapped_device *md);
+ void disable_write_zeroes(struct mapped_device *md);
+@@ -177,6 +190,45 @@ struct dm_table {
+ 	struct dm_md_mempools *mempools;
+ };
+ 
++/*
++ * One of these is allocated per clone bio.
++ */
++#define DM_TIO_MAGIC 7282014
++struct dm_target_io {
++	unsigned int magic;
++	struct dm_io *io;
++	struct dm_target *ti;
++	unsigned int target_bio_nr;
++	unsigned int *len_ptr;
++	bool inside_dm_io;
++	struct bio clone;
++};
++
++/*
++ * One of these is allocated per original bio.
++ * It contains the first clone used for that original.
++ */
++#define DM_IO_MAGIC 5191977
++struct dm_io {
++	unsigned int magic;
++	struct mapped_device *md;
++	blk_status_t status;
++	atomic_t io_count;
++	struct bio *orig_bio;
++	unsigned long start_time;
++	spinlock_t endio_lock;
++	struct dm_stats_aux stats_aux;
++	/* last member of dm_target_io is 'struct bio' */
++	struct dm_target_io tio;
++};
++
++static inline void dm_io_inc_pending(struct dm_io *io)
++{
++	atomic_inc(&io->io_count);
++}
++
++void dm_io_dec_pending(struct dm_io *io, blk_status_t error);
++
+ static inline struct completion *dm_get_completion_from_kobject(struct kobject *kobj)
+ {
+ 	return &container_of(kobj, struct dm_kobject_holder, kobj)->completion;
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index 4fdf0e666777..0868358a7a8d 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -73,38 +73,6 @@ struct clone_info {
+ 	unsigned sector_count;
+ };
+ 
+-/*
+- * One of these is allocated per clone bio.
+- */
+-#define DM_TIO_MAGIC 7282014
+-struct dm_target_io {
+-	unsigned magic;
+-	struct dm_io *io;
+-	struct dm_target *ti;
+-	unsigned target_bio_nr;
+-	unsigned *len_ptr;
+-	bool inside_dm_io;
+-	struct bio clone;
+-};
+-
+-/*
+- * One of these is allocated per original bio.
+- * It contains the first clone used for that original.
+- */
+-#define DM_IO_MAGIC 5191977
+-struct dm_io {
+-	unsigned magic;
+-	struct mapped_device *md;
+-	blk_status_t status;
+-	atomic_t io_count;
+-	struct bio *orig_bio;
+-	unsigned long start_time;
+-	spinlock_t endio_lock;
+-	struct dm_stats_aux stats_aux;
+-	/* last member of dm_target_io is 'struct bio' */
+-	struct dm_target_io tio;
+-};
+-
+ void *dm_per_bio_data(struct bio *bio, size_t data_size)
+ {
+ 	struct dm_target_io *tio = container_of(bio, struct dm_target_io, clone);
+@@ -132,19 +100,6 @@ EXPORT_SYMBOL_GPL(dm_bio_get_target_bio_nr);
+ 
+ #define MINOR_ALLOCED ((void *)-1)
+ 
+-/*
+- * Bits for the md->flags field.
+- */
+-#define DMF_BLOCK_IO_FOR_SUSPEND 0
+-#define DMF_SUSPENDED 1
+-#define DMF_FROZEN 2
+-#define DMF_FREEING 3
+-#define DMF_DELETING 4
+-#define DMF_NOFLUSH_SUSPENDING 5
+-#define DMF_DEFERRED_REMOVE 6
+-#define DMF_SUSPENDED_INTERNALLY 7
+-#define DMF_POST_SUSPENDING 8
+-
+ #define DM_NUMA_NODE NUMA_NO_NODE
+ static int dm_numa_node = DM_NUMA_NODE;
+ 
+@@ -897,7 +852,7 @@ static int __noflush_suspending(struct mapped_device *md)
+  * Decrements the number of outstanding ios that a bio has been
+  * cloned into, completing the original io if necc.
+  */
+-static void dec_pending(struct dm_io *io, blk_status_t error)
++void dm_io_dec_pending(struct dm_io *io, blk_status_t error)
+ {
+ 	unsigned long flags;
+ 	blk_status_t io_error;
+@@ -1041,7 +996,7 @@ static void clone_endio(struct bio *bio)
+ 	}
+ 
+ 	free_tio(tio);
+-	dec_pending(io, error);
++	dm_io_dec_pending(io, error);
+ }
+ 
+ /*
+@@ -1309,7 +1264,7 @@ static blk_qc_t __map_bio(struct dm_target_io *tio)
+ 	 * anything, the target has assumed ownership of
+ 	 * this io.
+ 	 */
+-	atomic_inc(&io->io_count);
++	dm_io_inc_pending(io);
+ 	sector = clone->bi_iter.bi_sector;
+ 
+ 	if (unlikely(swap_bios_limit(ti, clone))) {
+@@ -1336,7 +1291,7 @@ static blk_qc_t __map_bio(struct dm_target_io *tio)
+ 			up(&md->swap_bios_semaphore);
+ 		}
+ 		free_tio(tio);
+-		dec_pending(io, BLK_STS_IOERR);
++		dm_io_dec_pending(io, BLK_STS_IOERR);
+ 		break;
+ 	case DM_MAPIO_REQUEUE:
+ 		if (unlikely(swap_bios_limit(ti, clone))) {
+@@ -1344,7 +1299,7 @@ static blk_qc_t __map_bio(struct dm_target_io *tio)
+ 			up(&md->swap_bios_semaphore);
+ 		}
+ 		free_tio(tio);
+-		dec_pending(io, BLK_STS_DM_REQUEUE);
++		dm_io_dec_pending(io, BLK_STS_DM_REQUEUE);
+ 		break;
+ 	default:
+ 		DMWARN("unimplemented target map return value: %d", r);
+@@ -1640,7 +1595,7 @@ static blk_qc_t __split_and_process_bio(struct mapped_device *md,
+ 
+ 	if (bio->bi_opf & REQ_PREFLUSH) {
+ 		error = __send_empty_flush(&ci);
+-		/* dec_pending submits any data associated with flush */
++		/* dm_io_dec_pending submits any data associated with flush */
+ 	} else if (op_is_zone_mgmt(bio_op(bio))) {
+ 		ci.bio = bio;
+ 		ci.sector_count = 0;
+@@ -1684,7 +1639,7 @@ static blk_qc_t __split_and_process_bio(struct mapped_device *md,
+ 	}
+ 
+ 	/* drop the extra reference count */
+-	dec_pending(ci.io, errno_to_blk_status(error));
++	dm_io_dec_pending(ci.io, errno_to_blk_status(error));
+ 	return ret;
+ }
+ 
+-- 
+2.40.4
+
