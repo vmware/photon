@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -24,7 +24,7 @@ Source5: %{name}.sysusers
 Source6: license.txt
 %include %{SOURCE6}
 
-Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
+Patch0: 0001-hardened-sshd-config.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch2: CVE-2023-51385.patch
 Patch3: openssh-CVE-2023-48795.patch
@@ -214,6 +214,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-15
+- Hardened sshd_config
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 9.3p2-14
 - Renaming sysusers to conf to fix auto user creation
 * Tue Apr 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 9.3p2-13
