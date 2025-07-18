@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -154,6 +154,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.8.9-5
+- Bump up to build with latest jansson
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.8.9-4
 - Release bump for SRP compliance
 * Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.9-3

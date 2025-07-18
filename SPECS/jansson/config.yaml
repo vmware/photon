@@ -1,19 +1,20 @@
 sources:
-- archive: jansson-2.13.1.tar.gz
-  archive_sha512sum: e32be6665e41cf1763608c2f1ac4ce0824d4d7ffa5f4a5824cefde279250fdd399d49ba93d8894e16a473731f629b846554654347f027ca9a0a96ed047f10192
-  skip_validation: true
+- archive: jansson-2.14.1.tar.gz
+  archive_type: upstream
+  version: 2.14.1
+  name: jansson-2.14.1
+  url: https://github.com/akheron/jansson/releases/download/v2.14.1/jansson-2.14.1.tar.gz
+  repo_url: https://github.com/akheron/jansson.git
+  commit_id: ed5cae4ed0621ef409510f94270c9f8f263736d0
+  skip_list: []
+  missing: [ossfuzz.sh, appveyor.yml, .gitignore, aclocal.m4, SECURITY.md, release.sh, Makefile.in, install-sh, .gitattributes, encoding-flags, CleanSpec.mk, CONTRIBUTING.md, ltmain.sh, compile, depcomp, config.guess, .github, test-driver, jansson_private_config.h.in, missing, configure, config.sub, Android.mk, .clang-format]
+  archive_sha512sum: 4c6fdf2efa74788fd1711d44293991346d70d22178109b3309ada079f59c30bd716f91e976235c40c640b177d82919a0e13d264ee714d359db266e2f1078c953
+  skip_validation: false
   spdx:
     package:
-      detailed_description: 'Jansson is a C library for encoding, decoding and manipulating
-        JSON data. '
+      detailed_description: 'Jansson is a C library for encoding, decoding and manipulating JSON data. '
       home_page: http://www.digip.org/jansson
-      license_concluded: GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only
-        AND FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSL-1.0
-        AND GPL-3.0-or-later AND MIT AND X11 AND FSFULLR AND GPL-3.0-or-later WITH
-        Autoconf-exception-generic-3.0 AND FSFUL
-      license_declared: GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND
-        FSFULLRWD AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSL-1.0
-        AND GPL-3.0-or-later AND MIT AND X11 AND FSFULLR AND GPL-3.0-or-later WITH
-        Autoconf-exception-generic-3.0 AND FSFUL
+      license_concluded: BSL-1.0 AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND X11 AND dtoa
+      license_declared: BSL-1.0 AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND X11 AND dtoa
       short_summary: Jansson json parser
       supplier: 'Organization: Broadcom, Inc.'

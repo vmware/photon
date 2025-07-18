@@ -1,7 +1,7 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -143,6 +143,8 @@ chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 %{python3_sitelib}/%{name}/
 
 %changelog
+* Mon Oct 27 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.6-6
+- Bump up to build with latest jansson
 * Wed Jul 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.0.6-5
 - Avoid illegal licenses
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.6-4

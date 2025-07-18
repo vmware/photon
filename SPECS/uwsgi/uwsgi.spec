@@ -1,7 +1,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.21
-Release:        22%{?dist}
+Release:        23%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -234,6 +234,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Mon Oct 27 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.0.21-23
+- Bump up to build with latest jansson
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.21-22
 - Build gems properly
 * Mon Sep 15 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.21-21

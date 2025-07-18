@@ -3,7 +3,7 @@
 Summary:        A C programming language indexing and/or cross-reference tool
 Name:           ctags
 Version:        6.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://ctags.io/
 Source0:         https://github.com/universal-ctags/ctags/archive/%{name}-%{version}.%{upstreamversion}.tar.gz
 
@@ -56,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.0-4
+- Bump up to build with latest jansson
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0-3
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0-2

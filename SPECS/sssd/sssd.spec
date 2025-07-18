@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -991,6 +991,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.8.2-15
+- Bump up to build with latest jansson
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-14
 - Update due to libtalloc bump up to 2.4.1 required by samba-client 4.19.3
 - samba-client bump up to 4.19.3 for CVE-2023-5568 and CVE-2018-14628

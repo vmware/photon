@@ -1,11 +1,11 @@
 Summary:       Jansson json parser
 Name:          jansson
-Version:       2.13.1
-Release:       2%{?dist}
+Version:       2.14.1
+Release:       1%{?dist}
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
-URL:           http://www.digip.org/jansson
-Source0:       http://www.digip.org/jansson/releases/%{name}-%{version}.tar.gz
+URL:           https://github.com/akheron/jansson
+Source0:       https://github.com/akheron/jansson/releases/download/v%{version}/%{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 Distribution:  Photon
@@ -35,12 +35,8 @@ find %{buildroot} -name '*.la' -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
 
-%post
-
-    /sbin/ldconfig
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -55,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*  Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.14.1-1
+-  Updated to version 2.14.1
 *  Thu Dec 12 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.13.1-2
 -  Release bump for SRP compliance
 *  Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.1-1

@@ -1,7 +1,7 @@
 Summary:       Team driver
 Name:          libteam
 Version:       1.31
-Release:       4%{?dist}
+Release:       5%{?dist}
 URL:           http://www.libteam.org
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
@@ -98,6 +98,8 @@ install -p -m 644 teamd/example_configs/* %{buildroot}%{_datadir}/teamd/example_
 %{_datadir}/teamd/*
 
 %changelog
+* Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.31-5
+- Bump up to build with latest jansson
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.31-4
 - Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.31-3

@@ -1,7 +1,7 @@
 Summary:        nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
 Name:           nghttp2
 Version:        1.57.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://nghttp2.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -62,6 +62,8 @@ These are the header files of nghttp2.
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.57.0-4
+- Bump up to build with latest jansson
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.57.0-3
 - Release bump for SRP compliance
 * Fri Apr 05 2024 Harinadh D <hdommaraju@vmware.com> 1.57.0-2

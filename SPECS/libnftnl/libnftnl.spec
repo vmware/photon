@@ -1,7 +1,7 @@
 Summary:        Library for low-level netlink programming interface to the in-kernel nf_tables subsystem
 Name:           libnftnl
 Version:        1.2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 URL:            http://netfilter.org/projects/libnftnl/
@@ -53,6 +53,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}
 
 %changelog
+* Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.2.4-3
+- Bump up to build with latest jansson
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.4-2
 - Release bump for SRP compliance
 * Thu Jan 05 2023 Susant sahani <ssahani@vmware.com> 1.2.4-1
