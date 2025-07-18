@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.143
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -624,6 +624,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jul 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-3
+- fix aarch64 build
 * Mon Jul 14 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-2
 - fix for vmxnet3
 * Mon Jul 07 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.143-1

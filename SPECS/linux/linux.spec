@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.143
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1023,6 +1023,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jul 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-3
+- fix aarch64 build
 * Mon Jul 14 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-2
 - fix for vmxnet3
 * Mon Jul 07 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.143-1
