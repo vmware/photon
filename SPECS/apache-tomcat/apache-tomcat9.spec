@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.106
+Version:        9.0.107
 Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -148,6 +148,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Jul 18 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.107-1
+- Version upgrade
 * Tue Jun 17 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.106-1
 - Version upgrade
 - Fixes CVE-2025-46701

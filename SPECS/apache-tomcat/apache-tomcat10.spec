@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
-Version:        10.1.42
+Version:        10.1.43
 Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -152,6 +152,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Jul 18 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.43-1
+- Version upgrade
 * Tue Jun 17 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.42-1
 - Version upgrade
 - Fixes CVE-2025-46701
