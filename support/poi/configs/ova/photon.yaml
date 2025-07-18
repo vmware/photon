@@ -1,6 +1,6 @@
 system:
     name: photon
-    type: vmx-14
+    type: vmx-14 vmx-15 vmx-16 vmx-17 vmx-18 vmx-19 vmx-20 vmx-21 vmx-22
     os_vmw: vmwarePhoton64Guest
     firmware: efi
     secure_boot: false
