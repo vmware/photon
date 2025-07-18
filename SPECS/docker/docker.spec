@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        27.3.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -302,6 +302,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.1-6
+- Bump version as a part of jq upgrade
 * Mon Apr 21 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 27.3.1-5
 - Make tini a separate package
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 27.3.1-4

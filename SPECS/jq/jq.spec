@@ -1,7 +1,7 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
-Version:       1.6
-Release:       4%{?dist}
+Version:       1.8.1
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/stedolan/jq
@@ -31,7 +31,7 @@ Requires:   %{name} = %{version}-%{release}
 Development files for jq
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{name}-%{version}
 
 %build
 autoreconf -fiv
@@ -62,9 +62,13 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_libdir}/libjq.so
+%{_libdir}/pkgconfig/libjq.pc
 %{_includedir}/*
 
 %changelog
+* Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.1-1
+- Upgrade to 1.8.1
+- Fix CVE-2025-48060 and CVE-2024-23337
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6-4
 - Release bump for SRP compliance
 * Wed Jul 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6-3

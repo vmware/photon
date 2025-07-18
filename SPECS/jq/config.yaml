@@ -1,7 +1,14 @@
 sources:
-- archive: jq-1.6.tar.gz
-  archive_sha512sum: 5da71f53c325257f1f546a2520fe47828b495c953270df25ea0e37741463fdda72f0ba4d5b05b25114ec30f27a559344c2b024bacabf610759f4e3e9efadb480
-  skip_validation: true
+- archive: jq-1.8.1.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 7eece5744008710d6098d2b945b52250184e981ed3b7a66d4e8e1d0484539a281031900fa9dda7e1004a3fcfa8b5be39814d499c66c34707b35962a365d24fde
+  name: jq-jq-1.8.1
+  version: 1.8.1
+  url: https://github.com/jqlang/jq/archive/refs/tags/jq-1.8.1.tar.gz
+  repo_url: https://github.com/jqlang/jq.git
+  commit_id: 4467af7068b1bcd7f882defff6e7ea674c5357f4
+  missing: ['.gitattributes', '.gitignore']
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'jq is a lightweight and flexible command-line JSON processor. '

@@ -11,7 +11,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        13%{?kernelsubrelease}%{?dist}
+Release:        14%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -149,6 +149,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-14
+- Bump version as a part of jq upgrade
 * Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.36.2-13
 - Adding signing to falco module
 * Wed Jun 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.36.2-12
