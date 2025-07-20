@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.239
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -1068,6 +1068,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sun Jul 20 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-3
+- Fix aarch build
 * Mon Jul 14 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-2
 - Fix CVE-2021-46987, CVE-2021-47432, CVE-2021-47412 and CVE-2021-47455
 * Thu Jul 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.239-1
