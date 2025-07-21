@@ -193,8 +193,12 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             sourceName = None
             listSourceNames = SPECS.getData().getSources(package, version)
             if listSourceNames:
+                specDir = os.path.dirname(SPECS.getData().getSpecFile(package, version))
+                if not os.path.isdir(specDir):
+                    raise Exception(f"ERROR: {package}-{version}, '{specDir}' does not exist ...")
+
                 sourceName = listSourceNames[0]
-                sha512 = SOURCES.getData().getChecksum(sourceName)
+                sha512 = SOURCES(specDir).getData().getChecksum(sourceName)
                 if sha512:
                     PullSources.get(
                         package,

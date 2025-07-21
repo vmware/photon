@@ -289,6 +289,31 @@ Commands
 
         assert csum.hexdigest() == expected_shasum
 
+    def get_shared_srcs(self, yaml_file):
+        shared_cfgs = []
+        data = {}
+
+        with open(yaml_file, "r") as f:
+            data = yaml.safe_load(f)
+
+        sources = data.get("shared_sources")
+        if not sources:
+            return shared_cfgs
+
+        for item in sources:
+            abs_path = os.path.abspath(f"SPECS/{item}")
+            if abs_path in shared_cfgs:
+                print(f"ERROR: Duplicate entry '{item}' found in '{yaml_file}' ...")
+                sys.exit(-1)
+
+            if not os.path.exists(abs_path):
+                print(f"ERROR: '{item}' file not found ...")
+                sys.exit(-1)
+
+            shared_cfgs.append(abs_path)
+
+        return shared_cfgs
+
     def build(self):
         parser = argparse.ArgumentParser(description="build")
         parser.add_argument("yaml")
@@ -300,15 +325,22 @@ Commands
         sourcesLocation = args.sources
         sourcesURLBase = args.sources_url
         outdir = args.outdir
+        yamlArg = args.yaml
 
         global gForce
         gForce = args.force
 
-        if not args.yaml:
+        if not yamlArg:
             logging.info("No yaml arg given ...")
             return
 
-        files = self._load(args.yaml)
+        shared_cfgs = self.get_shared_srcs(yamlArg)
+        shared_cfgs.append(yamlArg)
+
+        files = []
+        for yml in shared_cfgs:
+            files += self._load(yml)
+
         for sourceFile in files:
             if sourceFile.archive_type == "custom":
                 self._generateArchive(sourceFile, sourcesLocation)
@@ -355,7 +387,7 @@ Commands
                     downloadedFile, sourceFile.archive_sha512sum
                 )
 
-                logging.warning(f"Feel free to remove {downloadedFile} now ...\n")
+                logging.warning(f"Feel free to remove {downloadedFile} now ...")
 
             self._writeSchematic(
                 outdir, sourceFile, sourcesLocation, sourcesURLBase
@@ -402,8 +434,7 @@ Commands
         )
         source_dir = sourceFile.archive
         source_dir_path = os.path.join(outdir, source_dir)
-        if not os.path.exists(source_dir_path):
-            os.makedirs(source_dir_path)
+        os.makedirs(source_dir_path, exist_ok=True)
         schematic_file_path = os.path.join(
             source_dir_path, f"{sourceFile.archive}.schematic.yaml"
         )
@@ -431,6 +462,8 @@ Commands
                 sys.exit(1)
 
             for source in sources:
+                if not source.get("archive", ""):
+                    continue
                 # processing one source entry
                 if source and type(source) is dict:
                     archive = source.get("archive")
@@ -506,7 +539,7 @@ Commands
     def _extractGem(self, downloadedFile, source, extractedDir):
         self._run(extractedDir, f"tar xf {downloadedFile}")
         path = f"{extractedDir}/{source.name}"
-        os.mkdir(path)
+        os.makedirs(path, exist_ok=True)
         self._run(path, f"tar xf {extractedDir}/data.tar.gz")
 
     def fetchFromStageArea(self, srcName, downloadedFile):
