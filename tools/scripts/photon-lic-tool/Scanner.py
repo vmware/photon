@@ -521,7 +521,7 @@ class Scanner:
             archive_path = reviewed_f['archive_path']
             # optional, if different from archive_path
             source_path = ""
-            if 'final_source_path' in reviewed_f:
+            if 'final_build_path' in reviewed_f:
                 source_path = reviewed_f['final_build_path']
 
             found_archive_path = ""
