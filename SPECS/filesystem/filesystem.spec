@@ -3,7 +3,7 @@
 Summary:    Default file system
 Name:       filesystem
 Version:    1.1
-Release:    8%{?dist}
+Release:    9%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://www.linuxfromscratch.org
@@ -67,7 +67,6 @@ ln -svfn var/srv %{buildroot}/srv
 ln -svfn ../run %{buildroot}%{_var}/run
 ln -svfn ../run/lock %{buildroot}%{_var}/lock
 install -vdm 755 %{buildroot}%{_var}/{opt,cache,lib/{color,misc,locate},local}
-install -vdm 755 %{buildroot}/mnt/cdrom
 install -vdm 755 %{buildroot}/mnt/hgfs
 
 #   6.6. Creating Essential Files and Symlinks
@@ -137,8 +136,16 @@ install -p -D -m 644 group.sysusers %{buildroot}%{_sysusersdir}/group.conf
 install -p -D -m 644 users.sysusers %{buildroot}%{_sysusersdir}/users.conf
 
 %pretrans -p <lua>
-posix.mkdir("/sys")
-posix.chmod("/sys", 0555)
+posix = require("posix")
+function safe_mkdir(path, mode)
+  if not posix.stat(path) then
+    posix.mkdir(path)
+    posix.chmod(path, mode)
+  end
+end
+
+safe_mkdir("/sys", "0555")
+safe_mkdir("/mnt/cdrom", "0755")
 
 %clean
 rm -rf %{buildroot}
@@ -190,7 +197,7 @@ rm -rf %{buildroot}
 #   run filesystem
 %dir /run/lock
 #   usr filesystem
-%dir /mnt/cdrom
+%ghost %dir /mnt/cdrom
 %dir /mnt/hgfs
 %dir %{_bindir}
 %dir %{_includedir}
@@ -274,6 +281,8 @@ rm -rf %{buildroot}
 %{_libdir}/debug%{_lib64dir}
 
 %changelog
+* Mon Jul 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-9
+- Create /mnt/cdrom in pretrans
 * Fri May 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1-8
 - Adding default sysusers conf file for automatic creation by
 - systemd from '/usr/lib/sysusers.d/'
