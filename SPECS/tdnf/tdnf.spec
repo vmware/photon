@@ -1,16 +1,16 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-
-Source1: license.txt
+Source1:        license.txt
 %include %{SOURCE1}
+Source2:        tdnf.conf
 
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 
@@ -164,6 +164,8 @@ ln -sfv %{name} %{buildroot}%{_bindir}/tyum
 ln -sfv %{name} %{buildroot}%{_bindir}/yum
 ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
 
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}
+cp %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}/protected.d && \
     echo %{name} > %{buildroot}%{_sysconfdir}/%{name}/protected.d/%{name}.conf
 
@@ -296,6 +298,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Jul 22 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-2
+- set clean_requirements_on_remove=1 for STIG compliance
 * Fri Jul 11 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-1
 - update to 3.5.12
 - check for unsigned packages when gpgcheck is enabled (PR 525)
