@@ -15,8 +15,8 @@ class Validator:
         spdx_licensing = license_expression.get_spdx_licensing()
         spdx_list = []
         exceptions_list = []
-        warnings = 0
         errors = 0
+        warnings = 0
 
         spdx_list = get_official_spdx_list()
         exceptions_list = get_exceptions_list()
@@ -42,10 +42,16 @@ class Validator:
 
             # Check for disallowed licenses
             for key in spdx_licensing.license_keys(license_exp):
-                if key in common.disallowed_licenses:
+                if key in common.disallowed_licenses["network_copyleft"]:
                     pr_err(
-                        f"WARNING: {key} is not allowed according to Broadcom "
+                        f"ERROR: {key} is not allowed according to Broadcom "
                         + "legal policy!"
+                    )
+                    errors += 1
+                elif key in common.disallowed_licenses["other_non_permissive"]:
+                    pr_err(
+                        f"WARNING: {key} is currently only permitted by Broadcom legal "
+                        + "by an exception to standard legal policy for Photon"
                     )
                     warnings += 1
 
@@ -59,6 +65,8 @@ class Validator:
         if errors == 0 and warnings == 0:
             print("SPDX license validation successful")
         elif errors == 0 and warnings > 0:
-            print(f"SPDX validation successful - with {warnings} warnings")
+            print(f"SPDX license validation successful - with {warnings} warning(s)")
         else:
-            err_exit(f"Failed to validate SPDX license - found {errors} error(s)")
+            err_exit(
+                    f"Failed to validate SPDX license - "
+                    + f"found {errors} error(s) and {warnings} warning(s)")
