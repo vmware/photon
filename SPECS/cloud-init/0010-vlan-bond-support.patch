@@ -1,0 +1,903 @@
+From 01b93d065bc793093e5dfe73dcdd764e2e659f21 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <53473811+sshedi@users.noreply.github.com>
+Date: Sat, 2 Aug 2025 03:57:00 +0530
+Subject: [PATCH] feat(networkd): support vlan and bond rendering (#6324)
+
+Networkd renderer used in Photon OS doesn't support vlan and bond
+settings specified through network config yaml.
+This is an effort towards supporting the same in networkd renderer.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cloudinit/net/networkd.py                     | 334 ++++++++++++++++--
+ tests/unittests/cmd/devel/test_net_convert.py |   1 -
+ .../network/10-cloud-init-bond.200.netdev     |   8 +
+ .../network/10-cloud-init-bond.200.network    |  14 +
+ .../network/10-cloud-init-bond0.netdev        |  11 +
+ .../network/10-cloud-init-bond0.network       |  10 +
+ .../network/10-cloud-init-eth0.network        |  11 +
+ .../network/10-cloud-init-eth1.network        |   5 +
+ .../network/10-cloud-init-eth2.network        |  16 +
+ .../network/10-cloud-init-vl101.netdev        |   6 +
+ .../network/10-cloud-init-vl101.network       |   5 +
+ .../network/10-cloud-init-vlan100.netdev      |   8 +
+ .../network/10-cloud-init-vlan100.network     |  27 ++
+ .../net/artifacts/photon_net_config_v2.yaml   |  86 +++++
+ tests/unittests/net/network_configs.py        |   4 +-
+ tests/unittests/net/test_net_rendering.py     |  48 ++-
+ 16 files changed, 543 insertions(+), 51 deletions(-)
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth1.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config_v2.yaml
+
+diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
+index 64c1925296a..8672e56e364 100644
+--- a/cloudinit/net/networkd.py
++++ b/cloudinit/net/networkd.py
+@@ -1,12 +1,11 @@
+-# Copyright (C) 2021-2022 VMware Inc.
++# Copyright (C) 2021-2025 VMware by Broadcom.
+ #
+ # Author: Shreenidhi Shedi <yesshedi@gmail.com>
+ #
+ # This file is part of cloud-init. See LICENSE file for license information.
+ 
+ import logging
+-from collections import OrderedDict
+-from typing import Optional
++from typing import Any, Dict, List, Optional
+ 
+ from cloudinit import subp, util
+ from cloudinit.net import renderer, should_add_gateway_onlink_flag
+@@ -15,25 +14,64 @@
+ LOG = logging.getLogger(__name__)
+ 
+ 
++def normalize(data: Dict[str, List[Any]]) -> Dict[str, List[Any]]:
++    """
++    Normalize a dictionary of lists.
++    - Assumes top-level keys map to lists.
++    - Each list and any nested dicts/lists will be recursively normalized.
++    """
++    normalized = {}
++    for key, value in data.items():
++        normalized[key] = _normalize_value(value)
++    return normalized
++
++
++def _normalize_value(data: Any) -> Any:
++    """
++    Recursively normalize a dictionary or list:
++    - Dicts: keys sorted, values normalized
++    - Lists: items normalized and sorted (if comparable)
++    """
++    if isinstance(data, dict):
++        normalized = {}
++        for key in sorted(data):
++            normalized[key] = _normalize_value(data[key])
++        return normalized
++    elif isinstance(data, list):
++        normalized_items = []
++        for item in data:
++            if isinstance(item, (dict, list)):
++                normalized_item = _normalize_value(item)
++            else:
++                normalized_item = item
++            normalized_items.append(normalized_item)
++        try:
++            return sorted(normalized_items)
++        except TypeError:
++            return normalized_items
++
++    return data
++
++
+ class CfgParser:
+     def __init__(self):
+-        self.conf_dict = OrderedDict(
+-            {
+-                "Match": [],
+-                "Link": [],
+-                "Network": [],
+-                "DHCPv4": [],
+-                "DHCPv6": [],
+-                "Address": [],
+-                "Route": {},
+-            }
+-        )
++        self.conf_dict = {
++            "Match": [],
++            "Link": [],
++            "Network": [],
++            "DHCPv4": [],
++            "DHCPv6": [],
++            "Address": [],
++            "Route": {},
++            "NetDev": [],
++            "VLAN": [],
++            "Bond": [],
++        }
+ 
+     def update_section(self, sec, key, val):
+         for k in self.conf_dict.keys():
+             if k == sec:
+-                self.conf_dict[k].append(key + "=" + str(val))
+-                # remove duplicates from list
++                self.conf_dict[k].append(f"{key}={val}")
+                 self.conf_dict[k] = list(dict.fromkeys(self.conf_dict[k]))
+                 self.conf_dict[k].sort()
+ 
+@@ -46,7 +84,7 @@ def update_route_section(self, sec, rid, key, val):
+             if k == sec:
+                 if rid not in self.conf_dict[k]:
+                     self.conf_dict[k][rid] = []
+-                self.conf_dict[k][rid].append(key + "=" + str(val))
++                self.conf_dict[k][rid].append(f"{key}={val}")
+                 # remove duplicates from list
+                 self.conf_dict[k][rid] = list(
+                     dict.fromkeys(self.conf_dict[k][rid])
+@@ -55,24 +93,25 @@ def update_route_section(self, sec, rid, key, val):
+ 
+     def get_final_conf(self):
+         contents = ""
++
++        self.conf_dict = normalize(self.conf_dict)
++
+         for k, v in sorted(self.conf_dict.items()):
+             if not v:
+                 continue
+             if k == "Address":
+                 for e in sorted(v):
+-                    contents += "[" + k + "]\n"
+-                    contents += e + "\n"
+-                    contents += "\n"
++                    contents += f"[{k}]\n{e}\n\n"
+             elif k == "Route":
+                 for n in sorted(v):
+-                    contents += "[" + k + "]\n"
++                    contents += f"[{k}]\n"
+                     for e in sorted(v[n]):
+-                        contents += e + "\n"
++                        contents += f"{e}\n"
+                     contents += "\n"
+             else:
+-                contents += "[" + k + "]\n"
++                contents += f"[{k}]\n"
+                 for e in sorted(v):
+-                    contents += e + "\n"
++                    contents += f"{e}\n"
+                 contents += "\n"
+ 
+         return contents
+@@ -101,9 +140,11 @@ def generate_match_section(self, iface, cfg: CfgParser):
+         match_dict = {
+             "name": "Name",
+             "driver": "Driver",
+-            "mac_address": "MACAddress",
+         }
+ 
++        if iface["type"] == "physical":
++            match_dict["mac_address"] = "MACAddress"
++
+         if not iface:
+             return
+ 
+@@ -119,9 +160,12 @@ def generate_link_section(self, iface, cfg: CfgParser):
+         if not iface:
+             return
+ 
+-        if "mtu" in iface and iface["mtu"]:
++        if iface.get("mtu"):
+             cfg.update_section(sec, "MTUBytes", iface["mtu"])
+ 
++        if iface["type"] != "physical" and iface.get("mac_address"):
++            cfg.update_section(sec, "MACAddress", iface["mac_address"])
++
+         if "optional" in iface and iface["optional"]:
+             cfg.update_section(sec, "RequiredForOnline", "no")
+ 
+@@ -140,7 +184,7 @@ def parse_routes(self, rid, conf, cfg: CfgParser):
+         # prefix is derived using netmask by network_state
+         prefix = ""
+         if "prefix" in conf:
+-            prefix = "/" + str(conf["prefix"])
++            prefix = f"/{conf['prefix']}"
+ 
+         for k, v in conf.items():
+             if k not in route_cfg_map:
+@@ -155,7 +199,7 @@ def parse_subnets(self, iface, cfg: CfgParser):
+         rid = 0
+         for e in iface.get("subnets", []):
+             t = e["type"]
+-            if t == "dhcp4" or t == "dhcp":
++            if t in {"dhcp4", "dhcp"}:
+                 if dhcp == "no":
+                     dhcp = "ipv4"
+                 elif dhcp == "ipv6":
+@@ -174,7 +218,7 @@ def parse_subnets(self, iface, cfg: CfgParser):
+             if "address" in e:
+                 addr = e["address"]
+                 if "prefix" in e:
+-                    addr += "/" + str(e["prefix"])
++                    addr += f"/{e['prefix']}"
+                 subnet_cfg_map = {
+                     "address": "Address",
+                     "gateway": "Gateway",
+@@ -201,13 +245,16 @@ def parse_subnets(self, iface, cfg: CfgParser):
+                                 "Route", f"a{rid}", "GatewayOnLink", "yes"
+                             )
+                         rid = rid + 1
+-                    elif k == "dns_nameservers" or k == "dns_search":
++                    elif k in {"dns_nameservers", "dns_search"}:
+                         cfg.update_section(sec, subnet_cfg_map[k], " ".join(v))
+ 
+         cfg.update_section(sec, "DHCP", dhcp)
+ 
+-        if isinstance(iface.get("accept-ra", ""), bool):
+-            cfg.update_section(sec, "IPv6AcceptRA", iface["accept-ra"])
++        if isinstance(iface.get("accept-ra"), bool):
++            val = "no"
++            if iface["accept-ra"]:
++                val = "yes"
++            cfg.update_section(sec, "IPv6AcceptRA", val)
+ 
+         return dhcp
+ 
+@@ -275,12 +322,14 @@ def parse_dhcp_overrides(self, cfg: CfgParser, device, dhcp, version):
+                 if v in dhcp_overrides:
+                     cfg.update_section(f"DHCPv{version}", k, dhcp_overrides[v])
+ 
+-    def create_network_file(self, link, conf, nwk_dir):
++    def create_network_file(self, link, conf, nwk_dir, ext=".network"):
+         net_fn_owner = "systemd-network"
+ 
+         LOG.debug("Setting Networking Config for %s", link)
++        net_fn = f"{nwk_dir}10-cloud-init-{link}{ext}"
+ 
+-        net_fn = nwk_dir + "10-cloud-init-" + link + ".network"
++        if conf.endswith("\n\n"):
++            conf = conf[:-1]
+         util.write_file(net_fn, conf)
+         util.chownbyname(net_fn, net_fn_owner, net_fn_owner)
+ 
+@@ -296,16 +345,65 @@ def render_network_state(
+ 
+         util.ensure_dir(network_dir)
+ 
+-        ret_dict = self._render_content(network_state)
+-        for k, v in ret_dict.items():
++        network = self._render_content(network_state)
++        vlan_netdev = network.pop("vlan_netdev", {})
++        bond_netdev = network.pop("bond_netdev", {})
++
++        for k, v in network.items():
+             self.create_network_file(k, v, network_dir)
+ 
+-    def _render_content(self, ns: NetworkState) -> dict:
++        for k, v in vlan_netdev.items():
++            self.create_network_file(k, v, network_dir, ext=".netdev")
++
++        for k, v in bond_netdev.items():
++            self.create_network_file(k, v, network_dir, ext=".netdev")
++
++    def _render_content(self, ns: NetworkState):
+         ret_dict = {}
++        vlan_link = {}
++        bond_link = {}
++
++        if "vlans" in ns.config:
++            vlan_dict = self.render_vlans(ns)
++            vlan_netdev = vlan_dict["vlan_netdev"]
++            vlan_link = vlan_dict["vlan_link"]
++            ret_dict["vlan_netdev"] = vlan_netdev
++
++        if "bonds" in ns.config:
++            bond_dict = self.render_bonds(ns)
++            bond_netdev = bond_dict["bond_netdev"]
++            bond_link = bond_dict["bond_link"]
++            ret_dict["bond_netdev"] = bond_netdev
++
+         for iface in ns.iter_interfaces():
+             cfg = CfgParser()
+ 
++            iface_name = iface["name"]
++
++            vlan_link_name = vlan_link.get(iface_name)
++            if vlan_link_name:
++                cfg.update_section("Network", "VLAN", vlan_link_name)
++
++            # TODO: revisit this once network state renders macaddress
++            # properly for vlan config
++            if not iface["mac_address"] and vlan_link.get("macaddress"):
++                mac = vlan_link["macaddress"].get(iface_name)
++                if mac:
++                    iface["mac_address"] = mac
++
++            bond_link_name = bond_link.get(iface_name)
++            if bond_link_name:
++                cfg.update_section("Network", "Bond", bond_link_name)
++
++            # TODO: revisit this once network state renders macaddress
++            # properly for bond config
++            if not iface["mac_address"] and bond_link.get("macaddress"):
++                mac = bond_link["macaddress"].get(iface_name)
++                if mac:
++                    iface["mac_address"] = mac
++
+             link = self.generate_match_section(iface, cfg)
++
+             self.generate_link_section(iface, cfg)
+             dhcp = self.parse_subnets(iface, cfg)
+             self.parse_dns(iface, cfg, ns)
+@@ -358,6 +456,168 @@ def _render_content(self, ns: NetworkState) -> dict:
+ 
+         return ret_dict
+ 
++    def render_vlans(self, ns: NetworkState) -> dict:
++        vlan_link_info: Dict[str, Any] = {}
++        vlan_ndev_configs = {}
++        vlan_link_info["macaddress"] = {}
++
++        vlans = ns.config.get("vlans", {})
++        for vlan_name, vlan_cfg in vlans.items():
++            vlan_id = vlan_cfg.get("id")
++            parent = vlan_cfg.get("link")
++
++            if vlan_id is None or parent is None:
++                LOG.warning(
++                    "Skipping VLAN %s - missing 'id' or 'link'", vlan_name
++                )
++                continue
++
++            vlan_link_info[parent] = vlan_name
++
++            # -------- .netdev for VLAN --------
++            cfg = CfgParser()
++            cfg.update_section("NetDev", "Name", vlan_name)
++            cfg.update_section("NetDev", "Kind", "vlan")
++
++            val = vlan_cfg.get("mtu")
++            if val:
++                cfg.update_section("NetDev", "MTUBytes", val)
++
++            val = vlan_cfg.get("macaddress")
++            if val:
++                val = val.lower()
++                cfg.update_section("NetDev", "MACAddress", val)
++                vlan_link_info["macaddress"][vlan_name] = val
++
++            cfg.update_section("VLAN", "Id", vlan_id)
++            vlan_ndev_configs[vlan_name] = cfg.get_final_conf()
++
++        ret_dict = {
++            "vlan_netdev": vlan_ndev_configs,
++            "vlan_link": vlan_link_info,
++        }
++        return ret_dict
++
++    def render_bonds(self, ns: NetworkState) -> dict:
++        bond_link_info: Dict[str, Any] = {}
++        bond_ndev_configs = {}
++        section = "Bond"
++
++        bond_link_info["macaddress"] = {}
++
++        bonds = ns.config.get("bonds", {})
++        for bond_name, bond_cfg in bonds.items():
++            interfaces = bond_cfg.get("interfaces")
++            if not interfaces:
++                LOG.warning(
++                    "Skipping bond %s - missing 'interfaces'", bond_name
++                )
++                continue
++
++            bond_link_info.update({iface: bond_name for iface in interfaces})
++
++            # -------- .netdev for Bond --------
++            cfg = CfgParser()
++            cfg.update_section("NetDev", "Name", bond_name)
++            cfg.update_section("NetDev", "Kind", "bond")
++
++            val = bond_cfg.get("mtu")
++            if val:
++                cfg.update_section("NetDev", "MTUBytes", val)
++
++            val = bond_cfg.get("macaddress")
++            if val:
++                val = val.lower()
++                cfg.update_section("NetDev", "MACAddress", val)
++                bond_link_info["macaddress"][bond_name] = val
++
++            # Optional bond parameters
++            params = bond_cfg.get("parameters", {})
++
++            if "mode" in params:
++                cfg.update_section(section, "Mode", params["mode"])
++
++            if "mii-monitor-interval" in params:
++                cfg.update_section(
++                    section,
++                    "MIIMonitorSec",
++                    f"{params['mii-monitor-interval']}ms",
++                )
++
++            if "updelay" in params:
++                cfg.update_section(
++                    section, "UpDelaySec", f"{params['updelay']}ms"
++                )
++
++            if "downdelay" in params:
++                cfg.update_section(
++                    section, "DownDelaySec", f"{params['downdelay']}ms"
++                )
++
++            if "arp-interval" in params:
++                cfg.update_section(
++                    section, "ARPIntervalSec", f"{params['arp-interval']}ms"
++                )
++
++            if "arp-ip-target" in params:
++                targets = params["arp-ip-target"]
++                if isinstance(targets, str):
++                    targets = [targets]
++                ip_list = " ".join(targets)
++                cfg.update_section(section, "ARPIPTargets", ip_list)
++
++            if "arp-validate" in params:
++                cfg.update_section(
++                    section, "ARPValidate", params["arp-validate"]
++                )
++
++            if "arp-all-targets" in params:
++                cfg.update_section(
++                    section, "ARPAllTargets", params["arp-all-targets"]
++                )
++
++            if "primary-reselect" in params:
++                cfg.update_section(
++                    section,
++                    "PrimaryReselectPolicy",
++                    params["primary-reselect"],
++                )
++
++            if "lacp-rate" in params:
++                cfg.update_section(
++                    section, "LACPTransmitRate", params["lacp-rate"]
++                )
++
++            if "transmit-hash-policy" in params:
++                cfg.update_section(
++                    section,
++                    "TransmitHashPolicy",
++                    params["transmit-hash-policy"],
++                )
++
++            if "ad-select" in params:
++                cfg.update_section(section, "AdSelect", params["ad-select"])
++
++            if "min-links" in params:
++                cfg.update_section(
++                    section, "MinLinks", str(params["min-links"])
++                )
++
++            if "all-slaves-active" in params:
++                cfg.update_section(
++                    section,
++                    "AllSlavesActive",
++                    str(params["all-slaves-active"]).lower(),
++                )
++
++            bond_ndev_configs[bond_name] = cfg.get_final_conf()
++
++        ret_dict = {
++            "bond_netdev": bond_ndev_configs,
++            "bond_link": bond_link_info,
++        }
++        return ret_dict
++
+ 
+ def available(target=None):
+     expected = ["ip", "systemctl"]
+diff --git a/tests/unittests/cmd/devel/test_net_convert.py b/tests/unittests/cmd/devel/test_net_convert.py
+index 39e049227b5..9328150d5bc 100644
+--- a/tests/unittests/cmd/devel/test_net_convert.py
++++ b/tests/unittests/cmd/devel/test_net_convert.py
+@@ -54,7 +54,6 @@
+ 
+ [Network]
+ DHCP=ipv4
+-
+ """
+ 
+ SAMPLE_SYSCONFIG_CONTENT = """\
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.netdev
+new file mode 100644
+index 00000000000..c82fd6f5394
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.netdev
+@@ -0,0 +1,8 @@
++[NetDev]
++Kind=vlan
++MACAddress=00:11:22:33:44:99
++MTUBytes=111
++Name=bond.200
++
++[VLAN]
++Id=200
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.network
+new file mode 100644
+index 00000000000..6456336478c
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond.200.network
+@@ -0,0 +1,14 @@
++[Address]
++Address=192.168.200.10/24
++
++[Link]
++MACAddress=00:11:22:33:44:99
++MTUBytes=111
++
++[Match]
++Name=bond.200
++
++[Network]
++DHCP=ipv6
++DNS=1.1.1.1 8.8.4.4
++Domains=bond.vlan.test
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.netdev
+new file mode 100644
+index 00000000000..dd2da41dc16
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.netdev
+@@ -0,0 +1,11 @@
++[Bond]
++LACPTransmitRate=fast
++MIIMonitorSec=100ms
++Mode=802.3ad
++TransmitHashPolicy=layer2+3
++
++[NetDev]
++Kind=bond
++MACAddress=00:11:22:33:44:77
++MTUBytes=333
++Name=bond0
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.network
+new file mode 100644
+index 00000000000..bbebbf26da3
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-bond0.network
+@@ -0,0 +1,10 @@
++[Link]
++MACAddress=00:11:22:33:44:77
++MTUBytes=333
++
++[Match]
++Name=bond0
++
++[Network]
++DHCP=no
++VLAN=bond.200
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
+new file mode 100644
+index 00000000000..e3a8358fd7a
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
+@@ -0,0 +1,11 @@
++[Link]
++MTUBytes=1500
++
++[Match]
++MACAddress=00:11:22:33:44:55
++Name=eth0
++
++[Network]
++Bond=bond0
++DHCP=no
++VLAN=vlan100
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth1.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth1.network
+new file mode 100644
+index 00000000000..19e5db2fedc
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth1.network
+@@ -0,0 +1,5 @@
++[Match]
++Name=eth1
++
++[Network]
++DHCP=yes
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network
+new file mode 100644
+index 00000000000..712c52b71b6
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network
+@@ -0,0 +1,16 @@
++[Address]
++Address=10.20.30.40/24
++
++[Link]
++MTUBytes=1400
++
++[Match]
++MACAddress=00:aa:bb:cc:dd:ee
++Name=eth2
++
++[Network]
++Bond=bond0
++DHCP=no
++DNS=9.9.9.9 8.8.8.8
++Domains=example.org
++VLAN=vl101
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.netdev
+new file mode 100644
+index 00000000000..3fa9ff336b2
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.netdev
+@@ -0,0 +1,6 @@
++[NetDev]
++Kind=vlan
++Name=vl101
++
++[VLAN]
++Id=101
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network
+new file mode 100644
+index 00000000000..fb82925b4e6
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network
+@@ -0,0 +1,5 @@
++[Match]
++Name=vl101
++
++[Network]
++DHCP=no
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.netdev
+new file mode 100644
+index 00000000000..5c6a1c097fe
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.netdev
+@@ -0,0 +1,8 @@
++[NetDev]
++Kind=vlan
++MACAddress=00:11:22:33:44:66
++MTUBytes=901
++Name=vlan100
++
++[VLAN]
++Id=100
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network
+new file mode 100644
+index 00000000000..f8afc4724f9
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network
+@@ -0,0 +1,27 @@
++[Address]
++Address=192.168.100.10/24
++
++[Address]
++Address=192.168.100.11/24
++
++[Link]
++MACAddress=00:11:22:33:44:66
++MTUBytes=901
++
++[Match]
++Name=vlan100
++
++[Network]
++DHCP=ipv6
++DNS=8.8.8.8 1.1.1.1
++Domains=corp.example.com vlan.test
++
++[Route]
++Destination=10.10.200.0/24
++Gateway=192.168.100.1
++Metric=50
++
++[Route]
++Destination=10.10.201.0/24
++Gateway=192.168.100.2
++Metric=150
+diff --git a/tests/unittests/net/artifacts/photon_net_config_v2.yaml b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+new file mode 100644
+index 00000000000..7984f8438fe
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+@@ -0,0 +1,86 @@
++network:
++  version: 2
++
++  ethernets:
++    eth0:
++      match:
++        macaddress: "00:11:22:33:44:55"
++      set-name: eth0
++      dhcp4: false
++      mtu: 1500
++
++    eth1:
++      dhcp4: true
++      dhcp6: true
++
++    eth2:
++      match:
++        macaddress: "00:aa:bb:cc:dd:ee"
++      set-name: eth2
++      mtu: 1400
++      dhcp4: false
++      addresses:
++        - 10.20.30.40/24
++      nameservers:
++        addresses:
++          - 9.9.9.9
++          - 8.8.8.8
++        search:
++          - example.org
++
++  bonds:
++    bond0:
++      interfaces: [eth0, eth2]
++      parameters:
++        mode: 802.3ad
++        mii-monitor-interval: 100
++        transmit-hash-policy: layer2+3
++        lacp-rate: fast
++      dhcp4: false
++      dhcp6: false
++      mtu: 333
++      macaddress: "00:11:22:33:44:77"
++
++  vlans:
++    vlan100:
++      id: 100
++      link: eth0
++      addresses:
++        - 192.168.100.10/24
++        - 192.168.100.11/24
++      dhcp6: true
++      mtu: 901
++      macaddress: "00:11:22:33:44:66"
++      nameservers:
++        addresses:
++          - 8.8.8.8
++          - 1.1.1.1
++        search:
++          - corp.example.com
++          - vlan.test
++      routes:
++        - to: 10.10.200.0/24
++          via: 192.168.100.1
++          metric: 50
++        - to: 10.10.201.0/24
++          via: 192.168.100.2
++          metric: 150
++
++    vl101:
++      id: 101
++      link: eth2
++
++    bond.200:
++      id: 200
++      link: bond0
++      macaddress: "00:11:22:33:44:99"
++      addresses:
++        - 192.168.200.10/24
++      nameservers:
++        addresses:
++          - 1.1.1.1
++          - 8.8.4.4
++        search:
++          - bond.vlan.test
++      mtu: 111
++      dhcp6: true
+diff --git a/tests/unittests/net/network_configs.py b/tests/unittests/net/network_configs.py
+index 6e870f6ede5..2fdfc73baaf 100644
+--- a/tests/unittests/net/network_configs.py
++++ b/tests/unittests/net/network_configs.py
+@@ -1000,7 +1000,7 @@
+                 Name=iface0
+                 [Network]
+                 DHCP=ipv6
+-                IPv6AcceptRA=True
++                IPv6AcceptRA=yes
+             """
+         ).rstrip(" "),
+     },
+@@ -1075,7 +1075,7 @@
+                 Name=iface0
+                 [Network]
+                 DHCP=ipv6
+-                IPv6AcceptRA=False
++                IPv6AcceptRA=no
+             """
+         ).rstrip(" "),
+     },
+diff --git a/tests/unittests/net/test_net_rendering.py b/tests/unittests/net/test_net_rendering.py
+index 0f3c766fdeb..72fe3b1b167 100644
+--- a/tests/unittests/net/test_net_rendering.py
++++ b/tests/unittests/net/test_net_rendering.py
+@@ -35,6 +35,8 @@
+ from cloudinit.net.netplan import Renderer as NetplanRenderer
+ from cloudinit.net.network_manager import Renderer as NetworkManagerRenderer
+ from cloudinit.net.network_state import NetworkState, parse_net_config_data
++from cloudinit.net.networkd import Renderer as NetworkdRenderer
++from tests.unittests.helpers import mock
+ 
+ ARTIFACT_DIR = Path(__file__).parent.absolute() / "artifacts"
+ 
+@@ -50,6 +52,19 @@ def setup(mocker):
+     mocker.patch("cloudinit.net.network_state.get_interfaces_by_mac")
+ 
+ 
++def _check_file_diff(expected_paths: list, tmp_path: Path):
++    for expected_path in expected_paths:
++        expected_contents = Path(expected_path).read_text()
++        actual_path = tmp_path / expected_path.split(
++            str(ARTIFACT_DIR), maxsplit=1
++        )[1].lstrip("/")
++        assert (
++            actual_path.exists()
++        ), f"Expected {actual_path} to exist, but it does not"
++        actual_contents = actual_path.read_text()
++        assert expected_contents.strip() == actual_contents.strip()
++
++
+ def _check_netplan(
+     network_state: NetworkState, netplan_path: Path, expected_config
+ ):
+@@ -73,21 +88,30 @@ def _check_network_manager(network_state: NetworkState, tmp_path: Path):
+         str(ARTIFACT_DIR / "no_matching_mac" / "**/*.nmconnection"),
+         recursive=True,
+     )
+-    for expected_path in expected_paths:
+-        expected_contents = Path(expected_path).read_text()
+-        actual_path = tmp_path / expected_path.split(
+-            str(ARTIFACT_DIR), maxsplit=1
+-        )[1].lstrip("/")
+-        assert (
+-            actual_path.exists()
+-        ), f"Expected {actual_path} to exist, but it does not"
+-        actual_contents = actual_path.read_text()
+-        assert expected_contents.strip() == actual_contents.strip()
++    _check_file_diff(expected_paths, tmp_path)
++
++
++@mock.patch("cloudinit.net.util.chownbyname", return_value=True)
++def _check_networkd_renderer(
++    network_state: NetworkState, tmp_path: Path, m_chown
++):
++    renderer = NetworkdRenderer()
++    renderer.render_network_state(
++        network_state, target=str(tmp_path / "photon_net_config")
++    )
++    expected_paths = glob.glob(
++        str(ARTIFACT_DIR / "photon_net_config" / "**/*.net*"),
++        recursive=True,
++    )
++    _check_file_diff(expected_paths, tmp_path)
+ 
+ 
+ @pytest.mark.parametrize(
+     "test_name, renderers",
+-    [("no_matching_mac_v2", Renderer.Netplan | Renderer.NetworkManager)],
++    [
++        ("no_matching_mac_v2", Renderer.Netplan | Renderer.NetworkManager),
++        ("photon_net_config_v2", Renderer.Networkd),
++    ],
+ )
+ def test_convert(test_name, renderers, tmp_path):
+     network_config = yaml.safe_load(
+@@ -100,3 +124,5 @@ def test_convert(test_name, renderers, tmp_path):
+         )
+     if Renderer.NetworkManager in renderers:
+         _check_network_manager(network_state, tmp_path)
++    if Renderer.Networkd in renderers:
++        _check_networkd_renderer(network_state, tmp_path)
