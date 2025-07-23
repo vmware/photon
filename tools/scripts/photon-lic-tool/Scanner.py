@@ -677,6 +677,8 @@ class Scanner:
                 str(score),
                 "--yaml",
                 yaml_tmp_path,
+                "--timeout",
+                str(10000),
                 scan_dir,
             ]
         )
