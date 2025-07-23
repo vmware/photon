@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        25.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -27,6 +27,7 @@ Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
 Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
 Patch7: 0008-No-single-process.patch
 Patch8: 0009-Show-stdout-logs-in-journal-only.patch
+Patch9: 0010-vlan-bond-support.patch
 
 BuildRequires: photon-release
 BuildRequires: python3-devel
@@ -112,11 +113,13 @@ sed -i -e "0,/'OpenStack', / s/'OpenStack', //" \
 mkdir -p %{buildroot}%{_sharedstatedir}/cloud \
          %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
 
+%if 0%{?with_check}
 %check
 %define pkglist pytest-metadata unittest2 responses pytest-mock passlib
 
 pip3 install --upgrade %{pkglist}
 %make_build check
+%endif
 
 %clean
 rm -rf %{buildroot}
@@ -151,6 +154,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Tue Jul 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-2
+- VLAN and Bond support in networkd
 * Tue Jun 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-1
 - Upgrade to v25.1.3
 * Thu Feb 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1-1
