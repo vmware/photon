@@ -1,11 +1,12 @@
 Summary:        Intrusion Detection System
 Name:           suricata
 Version:        7.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://suricata.io
 Group:          System Environment/Security
+
 Source0:        https://www.openinfosecfoundation.org/download/%{name}-%{version}.tar.gz
 
 Source1: suricata.sysconfig
@@ -17,13 +18,14 @@ Source4: license.txt
 
 # Patches from https://github.com/jasonish/suricata-rpms.git
 # Irrelevant docs are getting installed, drop them
-Patch1: 0001-suricata-docs.patch
+Patch0: 0001-suricata-docs.patch
 # Suricata service file needs some options supplied
-Patch2: 0002-suricata-service.patch
+Patch1: 0002-suricata-service.patch
 #Patches from Fedora
 # The log path has an extra '/' at the end
-Patch3: 0003-suricata-log-path-fixup.patch
-Patch4: 0005-suricata-sysconfig.patch
+Patch2: 0003-suricata-log-path-fixup.patch
+Patch3: 0005-suricata-sysconfig.patch
+Patch4: exclude-pawpatrules-from-source-yaml.patch
 
 BuildRequires: build-essential
 BuildRequires: libmnl-devel
@@ -86,36 +88,40 @@ and preventing intrusion in computer networks.
 install -m 644 %{SOURCE2} doc/
 
 %build
-
-%configure --enable-gccprotect \
-        --enable-pie \
-        --disable-gccmarch-native \
-        --disable-coccinelle \
-        --enable-nfqueue \
-        --enable-af-packet \
-        --with-libnss-includes=/usr/include/nss \
-        --enable-jansson \
-        --enable-lua \
-        --enable-hiredis \
-        --enable-python
+%configure \
+   --enable-gccprotect \
+   --enable-pie \
+   --disable-gccmarch-native \
+   --disable-coccinelle \
+   --enable-nfqueue \
+   --enable-af-packet \
+   --with-libnss-includes=%{_includedir}/nss \
+   --enable-jansson \
+   --enable-lua \
+   --enable-hiredis \
+   --enable-python
 
 %make_build
 
 %install
-%make_install DESTDIR="%{buildroot}" "bindir=%{_sbindir}"  %{?_smp_mflags}
-mkdir -p %{buildroot}%{_sysconfdir}/%{name}/rules
+%make_install bindir=%{_sbindir} %{?_smp_mflags}
+
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}/rules \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{_var}/log/%{name} \
+         %{buildroot}%{_sysconfdir}/logrotate.d \
+         %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}%{_sharedstatedir}/%{name} \
+         %{buildroot}%{_tmpfilesdir}
+
 install -m 640 rules/*.rules %{buildroot}%{_sysconfdir}/%{name}/rules
 install -m 600 etc/*.config %{buildroot}%{_sysconfdir}/%{name}
 install -m 600 threshold.config %{buildroot}%{_sysconfdir}/%{name}
 install -m 600 %{name}.yaml %{buildroot}%{_sysconfdir}/%{name}
-mkdir -p %{buildroot}%{_unitdir}
 install -m 0644 etc/%{name}.service %{buildroot}%{_unitdir}/
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 install -m 0755 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 # Set up logging
-mkdir -p %{buildroot}%{_var}/log/%{name}
-mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 etc/%{name}.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # Remove a couple things so they don't get picked up
@@ -124,15 +130,13 @@ rm -rf %{buildroot}%{_includedir} \
        %{buildroot}%{_libdir}/libhtp.so \
        %{buildroot}%{_libdir}/pkgconfig
 
-# Setup suricata-update data directory
-mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
-
 # Setup tmpdirs
-mkdir -p %{buildroot}%{_tmpfilesdir}
 install -m 0644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
+%endif
 
 %post
 /sbin/ldconfig
@@ -165,11 +169,13 @@ make %{?_smp_mflags} check
 %attr(750,root,root) %dir %{_var}/log/%{name}
 %attr(750,root,root) %dir %{_sysconfdir}/%{name}
 %attr(750,root,root) %dir %{_sysconfdir}/%{name}/rules
-%attr(2770,root,root) %dir %{_var}/lib/%{name}
+%attr(2770,root,root) %dir %{_sharedstatedir}/%{name}
 %{_tmpfilesdir}/%{name}.conf
 %{_datadir}/%{name}/rules
 
 %changelog
+* Thu Jul 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.6-3
+- Cleanup licenses
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 7.0.6-2
 - Release bump for SRP compliance
 * Mon Jul 15 2024 Mukul Sikka <mukul.sikka@broadcom.com> 7.0.6-1

@@ -1,0 +1,53 @@
+From d75946fe08e7bbfed8c6d3172e55f8373ebcd500 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 1 Aug 2025 14:48:20 +0530
+Subject: [PATCH] Exclude pawpatrules
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ suricata-update/suricata/update/data/index.py | 24 +------------------
+ 1 file changed, 1 insertion(+), 23 deletions(-)
+
+diff --git a/suricata-update/suricata/update/data/index.py b/suricata-update/suricata/update/data/index.py
+index 02a9c4f..d3a4bfa 100644
+--- a/suricata-update/suricata/update/data/index.py
++++ b/suricata-update/suricata/update/data/index.py
+@@ -51,28 +51,6 @@ index = {   'sources': {   'et/open': {   'description': 'Proofpoint ET Open is
+                                          'support-url': 'https://redmine.openinfosecfoundation.org/',
+                                          'url': 'https://openinfosecfoundation.org/rules/trafficid/trafficid.rules',
+                                          'vendor': 'OISF'},
+-                   'pawpatrules': {   'checksum': False,
+-                                      'description': 'PAW Patrules ruleset '
+-                                                     'permit to detect many '
+-                                                     'events on\n'
+-                                                     'network. Suspicious '
+-                                                     'flow, malicious tool, '
+-                                                     'unsuported and\n'
+-                                                     'vulnerable system, known '
+-                                                     'threat actors with '
+-                                                     'various IOCs,\n'
+-                                                     'lateral movement, bad '
+-                                                     'practice, shadow IT... '
+-                                                     'Rules are\n'
+-                                                     'frequently updated.\n',
+-                                      'homepage': 'https://pawpatrules.fr/',
+-                                      'license': 'CC-BY-SA-4.0',
+-                                      'min-version': '6.0.0',
+-                                      'summary': 'PAW Patrules is a collection '
+-                                                 'of rules for IDPS / NSM '
+-                                                 'Suricata engine',
+-                                      'url': 'https://rules.pawpatrules.fr/suricata/paw-patrules.tar.gz',
+-                                      'vendor': 'pawpatrules'},
+                    'ptresearch/attackdetection': {   'description': 'The '
+                                                                     'Attack '
+                                                                     'Detection '
+@@ -473,4 +451,4 @@ index = {   'sources': {   'et/open': {   'description': 'Proofpoint ET Open is
+                                          'summary': 'Threat hunting rules',
+                                          'url': 'https://raw.githubusercontent.com/travisbgreen/hunting-rules/master/hunting.rules',
+                                          'vendor': 'tgreen'}},
+-    'version': 1}
+\ No newline at end of file
++    'version': 1}
+-- 
+2.50.1
+

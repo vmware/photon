@@ -1,21 +1,23 @@
-%global security_hardening none
-%define zlibver 1.2.13
-%define libpngver 1.6.39
+%global security_hardening  none
+%define zlibver             1.2.13
+%define libpngver           1.6.39
 
 Summary:      Simple kernel loader which boots from a FAT filesystem
 Name:         syslinux
 Version:      6.04
-Release:      11%{?dist}
+Release:      12%{?dist}
 URL:          http://www.syslinux.org
 Group:        Applications/System
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0:    https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
+BuildArch: x86_64
 
-Source1:        https://sourceforge.net/projects/libpng/files/libpng16/%{libpngver}/libpng-%{libpngver}.tar.xz
+Source0: https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
 
-Source2:        https://www.zlib.net/zlib-%{zlibver}.tar.gz
+Source1: https://sourceforge.net/projects/libpng/files/libpng16/%{libpngver}/libpng-%{libpngver}.tar.xz
+
+Source2: https://www.zlib.net/zlib-%{zlibver}.tar.gz
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -25,8 +27,6 @@ Patch1:     syslinux-6.04_pre1-fcommon.patch
 Patch2:     0006-Replace-builtin-strlen-that-appears-to-get-optimized.patch
 Patch3:     0001-zlib-update-to-version-1.2.11.patch
 Patch4:     0001-libpng-update-to-1.6.36.patch
-
-BuildArch:      x86_64
 
 BuildRequires:  nasm
 BuildRequires:  util-linux-devel
@@ -43,6 +43,7 @@ MEMDISK, which loads legacy operating systems from these media.
 Summary:    Headers and libraries for syslinux development.
 Requires:   %{name} = %{version}-%{release}
 Provides:   %{name}-static = %{version}-%{release}
+
 %description devel
 Headers and libraries for syslinux development.
 
@@ -56,9 +57,13 @@ tar xf %{SOURCE2} -C com32/lib/
 mv com32/lib/libpng-%{libpngver} com32/lib/libpng
 mv com32/lib/zlib-%{zlibver} com32/lib/zlib
 
-%build
 #make some fixes required by glibc-2.28:
 sed -i '/unistd/a #include <sys/sysmacros.h>' extlinux/main.c
+
+# should not be packaged due to licensing constraints
+rm doc/logo/*
+
+%build
 # make doesn't support _smp_mflags
 make bios clean all
 
@@ -90,6 +95,8 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
+* Thu Jul 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-12
+- Cleanup licenses
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.04-11
 - Release bump for SRP compliance
 * Fri Jun 16 2023 Srish Srinivasan <ssrish@vmware.com> 6.04-10

@@ -31,14 +31,14 @@ sources:
         (PXELINUX), or ISO 9660 CD-ROMs (ISOLINUX).  It also includes a tool, MEMDISK,
         which loads legacy operating systems from these media. '
       home_page: http://www.syslinux.org
-      license_concluded: (LGPL-2.0-or-later OR GPL-1.0-or-later) AND GPL-2.0-only
-        AND BSD-4-Clause AND MIT AND CMU-Mach AND GPL-1.0-or-later AND CC-BY-SA-3.0
-        AND BSD-4.3TAHOE AND GPL-2.0-or-later AND Zlib AND BSD-3-Clause AND BSD-2-Clause
-        AND Libpng AND LGPL-2.1-only AND RSA-MD
-      license_declared: (LGPL-2.0-or-later OR GPL-1.0-or-later) AND GPL-2.0-only AND
-        BSD-4-Clause AND MIT AND CMU-Mach AND GPL-1.0-or-later AND CC-BY-SA-3.0 AND
-        BSD-4.3TAHOE AND GPL-2.0-or-later AND Zlib AND BSD-3-Clause AND BSD-2-Clause
-        AND Libpng AND LGPL-2.1-only AND RSA-MD
+      license_concluded: (GPL-1.0-or-later OR LGPL-2.0-or-later) AND BSD-2-Clause
+        AND BSD-3-Clause AND BSD-4-Clause AND BSD-4.3TAHOE AND CC-BY-SA-3.0 AND CMU-Mach
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only
+        AND Libpng AND MIT AND RSA-MD AND Zlib
+      license_declared: (GPL-1.0-or-later OR LGPL-2.0-or-later) AND BSD-2-Clause AND
+        BSD-3-Clause AND BSD-4-Clause AND BSD-4.3TAHOE AND CC-BY-SA-3.0 AND CMU-Mach
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only
+        AND Libpng AND MIT AND RSA-MD AND Zlib
       short_summary: Simple kernel loader which boots from a FAT filesystem
       supplier: 'Organization: Broadcom, Inc.'
 - archive: zlib-1.2.13.tar.gz

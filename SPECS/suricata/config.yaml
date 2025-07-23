@@ -7,25 +7,25 @@ sources:
       detailed_description: 'The Suricata Engine is an open-source system designed
         for detecting and preventing intrusion in computer networks. '
       home_page: https://suricata.io
-      license_concluded: GPL-2.0-only AND CC-BY-SA-4.0 AND MIT-testregex AND FSFUL
-        AND GPL-2.0-only WITH Linux-syscall-note AND X11 AND FSFULLRWD AND FSFULLR
-        AND (MIT OR Unlicense) AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause-Views
-        AND (MIT OR Apache-2.0) AND (Apache-2.0 OR MIT) AND Apache-2.0 AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later AND BSD-2-Clause AND NTP-0 AND
-        MIT AND Unlicense AND CC-BY-NC-4.0 AND GPL-1.0-or-later AND FSFAP AND LGPL-3.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (Apache-2.0 WITH
-        LLVM-exception OR Apache-2.0 OR MIT) AND Unicode-DFS-2016 AND Python-2.0 AND
-        GPL-3.0-only AND LGPL-2.1-only AND SunPro AND BSD-3-Clause AND 0BSD AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND CC0-1.0 AND Zlib AND (MIT OR Apache-2.0)
-      license_declared: GPL-2.0-only AND CC-BY-SA-4.0 AND MIT-testregex AND FSFUL
-        AND GPL-2.0-only WITH Linux-syscall-note AND X11 AND FSFULLRWD AND FSFULLR
-        AND (MIT OR Unlicense) AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause-Views
-        AND (MIT OR Apache-2.0) AND (Apache-2.0 OR MIT) AND Apache-2.0 AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later AND BSD-2-Clause AND NTP-0 AND
-        MIT AND Unlicense AND CC-BY-NC-4.0 AND GPL-1.0-or-later AND FSFAP AND LGPL-3.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND (Apache-2.0 WITH
-        LLVM-exception OR Apache-2.0 OR MIT) AND Unicode-DFS-2016 AND Python-2.0 AND
-        GPL-3.0-only AND LGPL-2.1-only AND SunPro AND BSD-3-Clause AND 0BSD AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND CC0-1.0 AND Zlib AND (MIT OR Apache-2.0)
+      license_concluded: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) AND
+        (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND (MIT OR Unlicense) AND 0BSD
+        AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-2-Clause-Views
+        AND BSD-3-Clause AND CC-BY-NC-4.0 AND CC-BY-SA-4.0 AND CC0-1.0 AND FSFAP AND
+        FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.1-only AND LGPL-3.0-or-later AND MIT AND MIT-testregex AND NTP-0
+        AND Python-2.0 AND SunPro AND Unicode-DFS-2016 AND Unlicense AND X11 AND Zlib
+      license_declared: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) AND
+        (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND (MIT OR Unlicense) AND 0BSD
+        AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-2-Clause-Views
+        AND BSD-3-Clause AND CC-BY-NC-4.0 AND CC-BY-SA-4.0 AND CC0-1.0 AND FSFAP AND
+        FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND LGPL-2.1-only AND LGPL-3.0-or-later AND MIT AND MIT-testregex AND NTP-0
+        AND Python-2.0 AND SunPro AND Unicode-DFS-2016 AND Unlicense AND X11 AND Zlib
       short_summary: Intrusion Detection System
       supplier: 'Organization: Broadcom, Inc.'
