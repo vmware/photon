@@ -2,6 +2,10 @@ sources:
 - archive: talloc-2.4.1.tar.gz
   archive_sha512sum: 4de3b66d7cd1ff3f53e28e86bf9e89528635465c67868e1262aab6946106c228b2c184e988561361c3194fb260d83e016477254c9dbea7abff40c4dc0d31c76c
   archive_type: None
+  license_manual_review:
+    - archive_path: "man/talloc.3.xml"
+      sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
+      spdx_exp: "LGPL-3.0-or-later"
   skip_validation: true
   name: "talloc-2.4.1"
   version: 2.4.1

@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
 Version:        2.4.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Tue Jul 01 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.11-2
+- Bump release to rescan licenses
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.11-1
 - Update to v2.4.11 to fix CVEs
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.7-4
