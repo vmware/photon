@@ -3,11 +3,14 @@
 %define _conf_dir     %{_sysconfdir}/%{name}
 %define _log_dir      %{_var}/log/%{name}
 %define _data_dir     %{_sharedstatedir}/%{name}
+%define _lib_dir      %{_prefix}/%{name}/libs
+%define _scalaver     2.13
+%define dep_libs_ver  %{_scalaver}.15
 
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.9.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -18,14 +21,10 @@ Source0: %{name}-%{version}-src.tgz
 Source1:       %{name}.service
 Source2:       %{name}.sysusers
 
-#Download https://raw.githubusercontent.com/gradle/gradle/v8.8.0/gradle/wrapper/gradle-wrapper.jar
-Source3:       gradle-wrapper-8.8.0-jar.tar.gz
-
-Source4: license.txt
-%include %{SOURCE4}
+Source3: license.txt
+%include %{SOURCE3}
 
 Patch0:     0001-Use-proxy-if-available.patch
-Patch1:     kafka_doc.patch
 
 Provides:   kafka
 Provides:   kafka-server
@@ -49,7 +48,7 @@ Data streams are partitioned and spread over a cluster of machines to allow data
 Messages are persisted on disk and replicated within the cluster to prevent data loss.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}-src -a3
+%autosetup -p1 -n %{name}-%{version}-src
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
@@ -58,20 +57,12 @@ JAVA_HTTP_PROXY_OPTS="$(echo "$HTTP_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-D
 JAVA_HTTPS_PROXY_OPTS="$(echo "$HTTPS_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttps.proxyHost=\1 -Dhttps.proxyPort=\2|p')"
 export GRADLE_OPTS="$JAVA_HTTP_PROXY_OPTS $JAVA_HTTPS_PROXY_OPTS"
 
-cp gradle-wrapper.jar gradle/wrapper/
-
 if [ -n "${GRADLE_PROXY_URL}" ]; then
   PROP_FILE="gradle/wrapper/gradle-wrapper.properties"
   sed -i "s|\(distributionUrl=\).*/\(gradle-.*.zip\)|\1${GRADLE_DISTRIBUTION_URL}/\2|" "$PROP_FILE"
 fi
 
-./gradlew jar
-./gradlew srcJar
-./gradlew javadoc
-./gradlew javadocJar
-./gradlew scaladoc
-./gradlew scaladocJar
-./gradlew docsJar
+./gradlew compileJava compileScala releaseTargz
 
 %install
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
@@ -82,27 +73,17 @@ mkdir -p %{buildroot}/%{_prefix}/%{name}/{libs,bin,config} \
          %{buildroot}/%{_unitdir} \
          %{buildroot}/%{_conf_dir}/
 
-cp -pr config/* %{buildroot}/%{_prefix}/%{name}/config
-install -p -D -m 755 bin/*.sh %{buildroot}/%{_prefix}/%{name}/bin
-install -p -D -m 644 config/server.properties %{buildroot}/%{_conf_dir}/
-install -p -D -m 644 config/zookeeper.properties %{buildroot}/%{_conf_dir}/
+mkdir dist
+tar -xf "core/build/distributions/%{name}_%{_scalaver}-%{version}.tgz" --strip 1 -C "dist"
+
+cp -pr dist/config/* %{buildroot}/%{_prefix}/%{name}/config
+
+install -p -D -m 644 dist/config/server.properties %{buildroot}/%{_conf_dir}/
+install -p -D -m 644 dist/config/zookeeper.properties %{buildroot}/%{_conf_dir}/
+install -p -D -m 644 dist/config/log4j.properties %{buildroot}/%{_conf_dir}/
+install -p -D -m 755 dist/bin/*.sh %{buildroot}/%{_prefix}/%{name}/bin
+install -p -D -m 755 dist/libs/* %{buildroot}%{_lib_dir}
 install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
-install -p -D -m 644 config/log4j.properties %{buildroot}/%{_conf_dir}/
-install -p -D -m 644 connect/mirror/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/runtime/build/dependant-libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 tools/build/dependant-libs-2.13.15/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/dependant-libs-2.13.15/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 core/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 clients/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/api/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/basic-auth-extension/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/json/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/transforms/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/file/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 connect/mirror-client/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/examples/build/dependant-libs-2.13.15/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/upgrade-system-tests-0100/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
-install -p -D -m 644 streams/build/libs/* %{buildroot}/%{_prefix}/%{name}/libs
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 cat << EOF >> %{buildroot}/%{_conf_dir}/%{name}.env
@@ -143,6 +124,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Thu Jul 24 2025 Prashant S Chauha <prashant.singh-chauhan@broadcom.com> 3.9.1-3
+- Package additional missing jar files
 * Wed Jul 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-2
 - Release bump up for SRP compliance
 * Thu May 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-1
