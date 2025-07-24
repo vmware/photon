@@ -1,6 +1,6 @@
 Name:           python3-setuptools-rust
 Version:        1.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Setuptools plugin for Rust support
 Group:          Development/Languages/Python
 Url:            https://github.com/PyO3/setuptools-rust
@@ -24,6 +24,8 @@ BuildRequires:  python3-more-itertools
 BuildRequires:  python3-atmoicwrites
 %endif
 Requires:       python3
+Requires:       python3-semantic-version
+Requires:       python3-typing-extensions
 
 BuildArch:      noarch
 
@@ -33,6 +35,7 @@ Compile and distribute Python extensions written in Rust as easily as if they we
 
 %prep
 %autosetup -n setuptools-rust-%{version}
+rm -rf examples/html-py-ever/tests
 
 %build
 %py3_build
@@ -48,6 +51,8 @@ Compile and distribute Python extensions written in Rust as easily as if they we
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jul 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.5.2-3
+- Avoid illegal licenses
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.5.2-2
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.2-1

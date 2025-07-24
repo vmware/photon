@@ -9,19 +9,19 @@ sources:
         (NAT) and other packet mangling. Two of the most common uses of nftables is
         to provide  1. firewall 2. NAT '
       home_page: https://netfilter.org/projects/nftables
-      license_concluded: FSFUL AND GPL-3.0-or-later AND CC-BY-SA-4.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND GPL-1.0-or-later AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Libtool-exception
-        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND ISC AND FSFULLRWD AND GPL-2.0-only
-        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND X11
-        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND GPL-2.0-only WITH
-        Linux-syscall-note
-      license_declared: FSFUL AND GPL-3.0-or-later AND CC-BY-SA-4.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND GPL-1.0-or-later AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Libtool-exception
-        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND ISC AND FSFULLRWD AND GPL-2.0-only
-        AND GPL-2.0-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2 AND X11
-        AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND GPL-2.0-only WITH
-        Linux-syscall-note
+      license_concluded: (GPL-2.0-or-later OR LGPL-3.0-or-later) AND CC-BY-SA-4.0
+        AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Libtool-exception
+        AND ISC AND X11
+      license_declared: (GPL-2.0-or-later OR LGPL-3.0-or-later) AND CC-BY-SA-4.0 AND
+        FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Libtool-exception
+        AND ISC AND X11
       short_summary: Netfilter Tables userspace utillites
       supplier: 'Organization: Broadcom, Inc.'

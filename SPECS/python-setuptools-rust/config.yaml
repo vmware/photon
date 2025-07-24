@@ -8,15 +8,8 @@ sources:
         Python extensions implemented with PyO3 or rust-cpython. Compile and distribute
         Python extensions written in Rust as easily as if they were written in C. '
       home_page: https://github.com/PyO3/setuptools-rust
-      license_concluded: Unlicense AND CDDL-1.0 AND Zlib AND Sleepycat AND Apache-2.0
-        AND Python-2.0 AND LGPL-2.1-or-later AND APSL-1.0 AND ISC AND AFL-3.0 AND
-        GPL-1.0-or-later AND CDDL-1.1 AND EPL-2.0 AND CC-BY-SA-3.0 AND MPL-2.0 AND
-        BSL-1.0 AND Beerware AND MIT AND CC0-1.0 AND EPL-1.0 AND LGPL-2.0-or-later
-        AND BSD-3-Clause AND Artistic-2.0 AND CC-BY-SA-4.0 AND AFL-2.1 AND MPL-1.0
-      license_declared: Unlicense AND CDDL-1.0 AND Zlib AND Sleepycat AND Apache-2.0
-        AND Python-2.0 AND LGPL-2.1-or-later AND APSL-1.0 AND ISC AND AFL-3.0 AND
-        GPL-1.0-or-later AND CDDL-1.1 AND EPL-2.0 AND CC-BY-SA-3.0 AND MPL-2.0 AND
-        BSL-1.0 AND Beerware AND MIT AND CC0-1.0 AND EPL-1.0 AND LGPL-2.0-or-later
-        AND BSD-3-Clause AND Artistic-2.0 AND CC-BY-SA-4.0 AND AFL-2.1 AND MPL-1.0
+      license_concluded: CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND MIT AND Python-2.0 AND
+        WTFPL
+      license_declared: CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND MIT AND Python-2.0 AND WTFPL
       short_summary: Setuptools plugin for Rust support
       supplier: 'Organization: Broadcom, Inc.'

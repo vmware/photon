@@ -1,7 +1,7 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +15,8 @@ Source3: nft_ruleset_photon.nft
 
 Source4: license.txt
 %include %{SOURCE4}
+
+Patch0:  0001-config-remove-doc-directory-inclusion.patch
 
 BuildRequires: flex
 BuildRequires: bison
@@ -72,6 +74,7 @@ The nftables python module provides an interface to libnftables via ctypes.
 
 %prep
 %autosetup -p1
+rm -f doc/*
 
 %build
 %configure \
@@ -140,6 +143,8 @@ chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 %{python3_sitelib}/%{name}/
 
 %changelog
+* Wed Jul 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.0.6-5
+- Avoid illegal licenses
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.6-4
 - Release bump for SRP compliance
 * Tue Mar 12 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.6-3
