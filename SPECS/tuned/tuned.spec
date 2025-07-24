@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.21.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
@@ -72,6 +72,13 @@ minimal, maximal and average time between operations to be able to
 identify applications that behave power inefficient (many small operations
 instead of fewer large ones).
 
+%package        docs
+Summary:        tuned docs
+Group:          Documentation
+Requires:       tuned = %{version}-%{release}
+%description    docs
+The package contains tuned doc files.
+
 %prep
 %autosetup -p1
 
@@ -107,7 +114,6 @@ make test %{?_smp_mflags}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING README.md
 %{python3_sitelib}/tuned
 %{_sbindir}/tuned
 %{_sbindir}/tuned-adm
@@ -128,7 +134,6 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/tuned*
 %{_datadir}/tuned/grub2
 %{_libdir}/tuned/
-%{_datadir}/doc
 %exclude %{_datadir}/icons/hicolor/scalable/apps/tuned.svg
 %{_datadir}/man/man7/*
 %{_datadir}/polkit-1/actions/com.redhat.tuned.policy
@@ -149,7 +154,14 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/diskdevstat.*
 %{_mandir}/man8/scomes.*
 
+%files docs
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING README.md
+%{_datadir}/doc
+
 %changelog
+* Thu Jul 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.21.0-3
+- Remove files to handle unintended copyright inclusions
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.21.0-2
 - Release bump for SRP compliance
 * Tue Jan 23 2024 Roye Eshed <roye.eshed@broadcom.com> 2.21.0-1

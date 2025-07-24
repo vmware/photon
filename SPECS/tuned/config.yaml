@@ -2,6 +2,17 @@ sources:
 - archive: tuned-2.21.0.tar.gz
   archive_sha512sum: f1f58d582997db7789af990895c63c1fd4f6329b95cda7fa0fb314f95f05be120b90228e347d0239e4a4bed13baad66a42f006880e369f46741ecf8705bb92d0
   skip_validation: true
+  license_manual_review:
+    - archive_path: "README.md"
+      final_build_path: "README.md"
+      sha256sum: 285e19b88931d91c5e1e1c744de5d49576ed1712c150bd2fee76b29da643b8df
+      spdx_exp: ""
+    # contians a url link for CC-BY-SA-3.0
+    - archive_path: "doc/manual/master.adoc"
+      final_build_path: "doc/manual/master.adoc"
+      sha256sum: 8d834eea4804aa370da5aedb43a3f1120ba229d50ce43999446b1c709dcf2fe9
+      spdx_exp: ""
+    # contians a url link for CC-BY-SA-3.0
   spdx:
     package:
       detailed_description: 'The tuned package contains a daemon that tunes system

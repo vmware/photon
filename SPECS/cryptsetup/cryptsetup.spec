@@ -1,7 +1,7 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 URL:            https://gitlab.com/cryptsetup/cryptsetup
@@ -83,6 +83,13 @@ Requires:       libssh
 %description ssh-token
 This package contains the LUKS2 SSH token.
 
+%package        doc
+Summary:        cryptsetup documentation
+Group:          Documentation
+Requires:       cryptsetup = %{version}-%{release}
+%description    doc
+The package contains cryptsetup doc files.
+
 %prep
 %autosetup -n %{name}-v%{version}
 
@@ -106,7 +113,6 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %files
 %defattr(-,root,root)
 %license COPYING
-%doc AUTHORS FAQ docs/*ReleaseNotes
 %{_mandir}/man8/cryptsetup.8.gz
 %{_sbindir}/cryptsetup
 
@@ -131,7 +137,7 @@ rm -rf %{buildroot}%{_libdir}/*.la
 
 %files devel
 %defattr(-,root,root)
-%doc docs/examples/*
+
 %{_includedir}/libcryptsetup.h
 %{_libdir}/libcryptsetup.so
 %{_libdir}/pkgconfig/libcryptsetup.pc
@@ -150,7 +156,13 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %{_sbindir}/cryptsetup-ssh
 %exclude %{_libdir}/%{name}/libcryptsetup-token-ssh.la
 
+%files doc
+%defattr(-,root,root)
+%doc AUTHORS FAQ docs/*ReleaseNotes docs/examples/*
+
 %changelog
+* Wed Jul 23 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.4.3-5
+- Remove files to handle unintended copyright inclusions
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.3-4
 - Release bump for SRP compliance
 * Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 2.4.3-3

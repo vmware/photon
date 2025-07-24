@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          2.0.1
-Release:          7%{?dist}
+Release:          8%{?dist}
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -169,6 +169,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Wed Jul 23 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 2.0.1-8
+- Remove files to handle unintended copyright inclusions
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.1-7
 - Renaming sysusers to conf to fix auto user creation
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.1-6

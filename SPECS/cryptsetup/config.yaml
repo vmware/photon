@@ -2,16 +2,25 @@ sources:
 - archive: cryptsetup-v2.4.3.tar.gz
   archive_sha512sum: c3d56a9d89253ad56e729a7faa334ca2b1650229e0527123f5fdb77e6801b920b9e2b5154db6247fadc08591c25c458666f5369e7a894f7ae635e1e31c09d2cf
   skip_validation: true
+  license_manual_review:
+  - archive_path: FAQ
+    final_build_path: FAQ
+    sha256sum: c26aaae8fdc78f2fa2fb07d13a7e35de089bc655ddc56b5e25aa20deff99e0d2
+    spdx_exp: ''
+  - archive_path: docs/on-disk-format-luks2.pdf
+    final_build_path: docs/on-disk-format-luks2.pdf
+    sha256sum: bc03b692a2536a2bb6aa118582989bfb7566938962655a9dd4f4ee4ab77777d3
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'Cryptsetup is a utility used to conveniently set up disk
         encryption based on the DMCrypt kernel module. '
       home_page: https://gitlab.com/cryptsetup/cryptsetup
-      license_concluded: (CC0-1.0 OR Apache-2.0) AND CC0-1.0 AND CC-BY-SA-4.0 AND
-        LGPL-2.0-or-later AND GPL-2.0-or-later AND LGPL-2.1-only AND GPL-2.0-only
-        AND LGPL-2.1-or-later AND CC-BY-SA-3.0
-      license_declared: (CC0-1.0 OR Apache-2.0) AND CC0-1.0 AND CC-BY-SA-4.0 AND LGPL-2.0-or-later
-        AND GPL-2.0-or-later AND LGPL-2.1-only AND GPL-2.0-only AND LGPL-2.1-or-later
-        AND CC-BY-SA-3.0
+      license_concluded: (Apache-2.0 OR CC0-1.0) AND CC-BY-SA-3.0 AND CC-BY-SA-4.0
+        AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later
+      license_declared: (Apache-2.0 OR CC0-1.0) AND CC-BY-SA-3.0 AND CC-BY-SA-4.0
+        AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later
       short_summary: Utility to setup encrypted disks
       supplier: 'Organization: Broadcom, Inc.'
