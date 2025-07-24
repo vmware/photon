@@ -1,7 +1,7 @@
-From e38a817ecb7b1fde9709a8db571cc7736be3a894 Mon Sep 17 00:00:00 2001
+From 1a194ba0fabf048be0a2a7262d48d3538674717f Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Thu, 5 Jun 2025 23:39:23 -0500
-Subject: [PATCH 13/13] sha1: Do not register sha1 to crypto backend when fips
+Subject: [PATCH 11/11] sha1: Do not register sha1 to crypto backend when fips
  is enabled
 
 ---
@@ -40,5 +40,5 @@ index 325b57fe2..24ab7da36 100644
  
  subsys_initcall(sha1_generic_mod_init);
 -- 
-2.49.0
+2.50.1
 

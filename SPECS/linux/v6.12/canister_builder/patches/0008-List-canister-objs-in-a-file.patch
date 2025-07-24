@@ -1,7 +1,7 @@
-From d626019c1c3f671400c979d37368567fb1b535d9 Mon Sep 17 00:00:00 2001
+From 87c9f7f64b523b86ea026d5af56349e98c726a38 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Wed, 4 Jun 2025 01:19:21 -0500
-Subject: [PATCH 10/13] List canister objs in a file
+Subject: [PATCH 08/11] List canister objs in a file
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---
@@ -39,5 +39,5 @@ index 0d2dc0fb4..c99902894 100644
    CFLAGS_$1 += -DFIPS_CANISTER
    CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 -- 
-2.49.0
+2.50.1
 

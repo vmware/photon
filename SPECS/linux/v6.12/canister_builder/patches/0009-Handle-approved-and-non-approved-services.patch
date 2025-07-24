@@ -1,7 +1,7 @@
-From 8be19bb75cb4bfa624bc19f64c8584958ca5a448 Mon Sep 17 00:00:00 2001
+From b24b1f3cd63a4a478d88c1f7ca4191ccbdabf96c Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 11 Jul 2025 04:20:16 -0500
-Subject: [PATCH 11/13] Handle approved and non-approved services
+Subject: [PATCH 09/11] Handle approved and non-approved services
 
 - Add log indicator prints in algorithm initialization path
 - Add XTS error log when XTS duplicate test fails
@@ -995,5 +995,5 @@ index 3f255ec8f..d559bef87 100644
  	return err;
  }
 -- 
-2.49.0
+2.50.1
 

@@ -1,7 +1,7 @@
-From b97849cf35fed761640c4882372b72aa2ef6472e Mon Sep 17 00:00:00 2001
+From adeb2b923e4028335b5e3cd647ca997d2eb7cf43 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
-Date: Mon, 2 Dec 2024 07:59:18 +0000
-Subject: [PATCH 08/13] Move kernel structures usage from canister to wrapper
+Date: Fri, 25 Jul 2025 04:15:23 -0500
+Subject: [PATCH 06/11] Move kernel structures usage from canister to wrapper
 
 - Module init and exit family of function calls moved to wrapper.
 - All MODULE_* macro usages have been removed as these macros add information
@@ -29,7 +29,32 @@ Subject: [PATCH 08/13] Move kernel structures usage from canister to wrapper
   DEFINE_LOCK_GUARD_1_COND is expanded as following which introduces struct spinlock_t:
 
   DEFINE_LOCK_GUARD_1_COND(raw_spinlock_irqsave, _try,
-			 raw_spin_trylock_irqsave(_T->lock, _T->flags))
+                         raw_spin_trylock_irqsave(_T->lock, _T->flags))
+
+  typedef class_raw_spinlock_irqsave_t class_raw_spinlock_irqsave_try_t; static inline __attribute__((__gnu_inline__)) __attribute__((__unused__)) __attribute__((no_instrument_function)) void class_raw@@@
+"/work/src/photon/lkcm/common/SPECS/linux/v6.12/canister_builder/patches/0008-Move-kernel-structures-usage-from-canister-to-wrappe.patch" [readonly] 3626L, 131247B                    1,1           Top
+- Structures like module, raw_spinlock_t, crypto_type that are not directly
+  accessed inside canister but are nested inside other structures are made
+  to void pointers.
+- Strctures like task_struct, mutex etc that are directly accessed inside
+  canister are made void pointers and get allocated from wrapper functions.
+- Implemented wrapper for printk family of funtions.
+- Implemented wrapper for pr_ratelimited family of functions.
+- Introduced testmgr and aesni_intel_glue wrapper files to move scatterwalk
+  and scatterlist APIs as these APIs use struct page.
+- Removed module params like panic_on_fail, noextratests, notests, fuzz_iterations
+  and their functionality from testmgr as these params are not used when built-in
+- Added wrapper functions for functions that use struct page to avoid task_struct
+  usage.
+- Moved DEFINE_LOCK_GUARD_1_COND macros to a new header file to prevent
+  struct spinlock_t getting added to canister objs. As canister files do not
+  use the functions and variables from the expanded macro, but it gets added
+  irrespective of the usage. so, removing the macro from canister.
+  Refer commit: https://github.com/gregkh/linux/commit/e4ab322
+  DEFINE_LOCK_GUARD_1_COND is expanded as following which introduces struct spinlock_t:
+
+  DEFINE_LOCK_GUARD_1_COND(raw_spinlock_irqsave, _try,
+                         raw_spin_trylock_irqsave(_T->lock, _T->flags))
 
   typedef class_raw_spinlock_irqsave_t class_raw_spinlock_irqsave_try_t; static inline __attribute__((__gnu_inline__)) __attribute__((__unused__)) __attribute__((no_instrument_function)) void class_raw_spinlock_irqsave_try_destructor(class_raw_spinlock_irqsave_t *p){ class_raw_spinlock_irqsave_destructor(p); } static inline __attribute__((__gnu_inline__)) __attribute__((__unused__)) __attribute__((no_instrument_function)) class_raw_spinlock_irqsave_t class_raw_spinlock_irqsave_try_constructor(typeof(((class_raw_spinlock_irqsave_t*)0)->lock) l) { class_raw_spinlock_irqsave_t t = ({ class_raw_spinlock_irqsave_t _t = { .lock = l }, *_T = &_t; if (_T->lock && !(({ do { do { ({ unsigned long __dummy; typeof(_T->flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); _T->flags = arch_local_irq_save(); } while (0); } while (0); (_raw_spin_trylock(_T->lock)) ? 1 : ({ do { do { ({ unsigned long __dummy; typeof(_T->flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); do { } while (0); arch_local_irq_restore(_T->flags); } while (0); } while (0); 0; }); }))) _T->lock = ((void *)0); _t; }); return t; } static inline __attribute__((__gnu_inline__)) __attribute__((__unused__)) __attribute__((no_instrument_function)) void * class_raw_spinlock_irqsave_try_lock_ptr(class_raw_spinlock_irqsave_t *_T) { return class_raw_spinlock_irqsave_lock_ptr(_T); }
 - Moved struct x86_cpu_id to wrapper
@@ -75,8 +100,8 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  include/linux/rtattr.h              |   6 +
  include/linux/spinlock.h            |  19 +-
  include/linux/spinlock_cond_guard.h |  16 +
- include/linux/swait.h               |   4 +
- 39 files changed, 422 insertions(+), 883 deletions(-)
+ include/linux/swait.h               |   6 +-
+ 39 files changed, 423 insertions(+), 884 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
@@ -3439,17 +3464,17 @@ index f7b3b93f3..c694dea3b 100644
  };
  
 diff --git a/include/crypto/internal/geniv.h b/include/crypto/internal/geniv.h
-index 7fd7126f5..c7ba4d8b7 100644
+index 336296062..93dcf42fc 100644
 --- a/include/crypto/internal/geniv.h
 +++ b/include/crypto/internal/geniv.h
-@@ -13,7 +13,11 @@
- #include <linux/types.h>
+@@ -14,7 +14,11 @@
+ #include <linux/plugin-attr.h>
  
  struct aead_geniv_ctx {
 +#ifdef FIPS_CANISTER
-+	void *lock;
++	void *lock CANISTER_MISMATCH("spinlock_t", "void *");
 +#else
- 	spinlock_t lock;
+ 	spinlock_t lock CANISTER_MISMATCH("spinlock_t", "void *");
 +#endif
  	struct crypto_aead *child;
  	struct crypto_sync_skcipher *sknull;
@@ -3606,21 +3631,22 @@ index 000000000..e80ef8514
 +			 spin_trylock_irqsave(_T->lock, _T->flags))
 +
 diff --git a/include/linux/swait.h b/include/linux/swait.h
-index d32441948..6456666be 100644
+index 53a69c157..337521816 100644
 --- a/include/linux/swait.h
 +++ b/include/linux/swait.h
-@@ -41,7 +41,11 @@
+@@ -42,7 +42,11 @@
  struct task_struct;
  
  struct swait_queue_head {
+-	raw_spinlock_t		lock CANISTER_MISMATCH("raw_spinlock_t", "void *");
 +#ifdef FIPS_CANISTER
-+	void			*lock;
++	void			*lock CANISTER_MISMATCH("raw_spinlock_t", "void *");
 +#else
- 	raw_spinlock_t		lock;
++ 	raw_spinlock_t		lock CANISTER_MISMATCH("raw_spinlock_t", "void *");
 +#endif
  	struct list_head	task_list;
  };
  
 -- 
-2.49.0
+2.50.1
 
