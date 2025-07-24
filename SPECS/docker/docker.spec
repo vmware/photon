@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -325,6 +325,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Jul 24 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-2
+- Bump version as a part of jq upgrade
 * Thu Oct 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0.9-1
 - Update to 24.0.9, Fixes CVE-2024-24557
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.5-8

@@ -1,7 +1,7 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
-Version:       1.6
-Release:       3%{?dist}
+Version:       1.8.1
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
@@ -9,7 +9,7 @@ URL:           https://github.com/stedolan/jq
 Distribution:  Photon
 
 Source0: https://github.com/stedolan/jq/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5da71f53c325257f1f546a2520fe47828b495c953270df25ea0e37741463fdda72f0ba4d5b05b25114ec30f27a559344c2b024bacabf610759f4e3e9efadb480
+%define sha512 %{name}=7eece5744008710d6098d2b945b52250184e981ed3b7a66d4e8e1d0484539a281031900fa9dda7e1004a3fcfa8b5be39814d499c66c34707b35962a365d24fde
 
 BuildRequires: oniguruma-devel
 %if 0%{?with_check}
@@ -30,7 +30,7 @@ Requires:   %{name} = %{version}-%{release}
 Development files for jq
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{name}-%{version}
 
 %build
 autoreconf -fiv
@@ -61,9 +61,13 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_libdir}/libjq.so
+%{_libdir}/pkgconfig/libjq.pc
 %{_includedir}/*
 
 %changelog
+* Thu Jul 24 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.1-1
+- Upgrade to 1.8.1
+- Fix CVE-2025-48060 and CVE-2024-23337
 * Wed Jul 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6-3
 - Add oniguruma support
 * Tue Oct 27 2020 Dweep Advani <dadvani@vmware.com> 1.6-2

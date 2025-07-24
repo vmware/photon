@@ -9,7 +9,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.34.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org
 Group:          Applications/System
@@ -138,6 +138,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko*
 
 %changelog
+* Thu Jul 24 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-2
+- Bump version as a part of jq upgrade
 * Mon Nov 25 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-1
 - Fix build requires as part of grpc upgrade
 * Wed Jun 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.30.2-1
