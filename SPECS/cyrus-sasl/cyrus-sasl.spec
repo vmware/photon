@@ -18,11 +18,13 @@ BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  Linux-PAM-devel
+BuildRequires:  lmdb-devel
 
 Requires:       openssl
 Requires:       krb5 >= 1.12
 Requires:       Linux-PAM
 Requires:       systemd
+Requires:       lmdb
 
 %description
 The Cyrus SASL package contains a Simple Authentication and Security
@@ -51,7 +53,7 @@ sh ./autogen.sh
     CFLAGS="%{optflags} -fPIC" \
     CXXFLAGS="%{optflags}" \
     --with-plugindir=%{_libdir}/sasl2 \
-    --without-dblib \
+    --with-dblib=lmdb \
     --with-saslauthd=%{socket_dir} \
     --without-authdaemond \
     --disable-macos-framework \
@@ -65,6 +67,7 @@ sh ./autogen.sh
     --enable-gss_mutexes \
     --disable-static \
     --enable-shared \
+    --enable-auth-sasldb \
     --enable-fast-install \
     --enable-krb4
 
