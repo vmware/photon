@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.1.4
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -132,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Fri Jul 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-11
+- Remove unintended license for SRP compliance
 * Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-10
 - Fix CVE-2025-27219, CVE-2025-27220 and CVE-2025-27221
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.4-9

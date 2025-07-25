@@ -11,7 +11,7 @@
 Summary:        Command-line editing and history capabilities
 Name:           readline
 Version:        8.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -59,6 +59,9 @@ sed -i '/{OLDSUFF}/c:' support/shlib-install
 popd
 %endif
 
+# Remove files to handle unintended licenses
+rm %{name}-%{major_version}/doc/*.dvi
+
 %build
 pushd %{name}-%{major_version}
 %configure --disable-silent-rules
@@ -85,7 +88,7 @@ install -vdm 755 %{buildroot}%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libreadline.so) %{buildroot}%{_libdir}/libreadline.so
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so ) %{buildroot}%{_libdir}/libhistory.so
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-install -v -m644 doc/*.{ps,pdf,html,dvi} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -v -m644 doc/*.{ps,pdf,html} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
 popd
 
@@ -139,11 +142,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}/README
 %{_docdir}/%{name}/CHANGES
 %{_docdir}/%{name}-%{version}/readline.html
-%{_docdir}/%{name}-%{version}/readline.dvi
 %{_docdir}/%{name}-%{version}/history.pdf
 %{_docdir}/%{name}-%{version}/rluserman.html
-%{_docdir}/%{name}-%{version}/rluserman.dvi
-%{_docdir}/%{name}-%{version}/history.dvi
 %{_docdir}/%{name}-%{version}/readline.ps
 %{_docdir}/%{name}-%{version}/history.ps
 %{_docdir}/%{name}-%{version}/rluserman.ps
@@ -156,6 +156,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
+* Thu Jul 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.2-5
+- Remove .dvi files to remove unintended license for SRP compliance
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2-4
 - Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 8.2-3
