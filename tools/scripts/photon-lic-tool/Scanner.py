@@ -447,22 +447,6 @@ class Scanner:
 
         return scan_dir
 
-    def _remove_known_failures_from_scan_dir(self, scan_dir=None):
-        if not scan_dir:
-            return
-
-        for root, dirs, files in os.walk(scan_dir):
-            for file in files:
-                full_path = f"{root}/{file}"
-                if not os.path.exists(full_path) or os.path.isdir(full_path):
-                    continue
-
-                with open(full_path, "rb") as check_f:
-                    checksum = hashlib.file_digest(check_f, "md5").hexdigest()
-
-                if checksum in common.known_failures:
-                    os.remove(full_path)
-
 
     # For some packages with multiple sources, there can be multiple subdirectories under BUILD/
     # each corresponding to a different source archive. Only one is the main source/build directory,
@@ -488,7 +472,7 @@ class Scanner:
 
         return spdx_exp
 
-    def __parse_found_manual_review_file(self, reviewed_md5sum, reviewed_spdx_exp, path):
+    def __parse_found_manual_review_file(self, reviewed_shasum, reviewed_spdx_exp, path):
         spdx_exp = []
         checksum = None
 
@@ -496,9 +480,9 @@ class Scanner:
             return []
 
         with open(path, "rb") as check_f:
-            checksum = hashlib.file_digest(check_f, "md5").hexdigest()
+            checksum = hashlib.file_digest(check_f, "sha256").hexdigest()
 
-        if checksum != reviewed_md5sum:
+        if checksum != reviewed_shasum:
             err_exit(
                 f"Manual review required for '{path}'. The checksum has changed, "
                 "please review and update the checksum/spdx expression accordingly"
@@ -552,9 +536,15 @@ class Scanner:
                     "configuration yaml file accordingly"
                 )
 
+            if "md5sum" in reviewed_f:
+                err_exit("ERROR: md5 checksums have been phased out in all areas.\n "
+                         "Please replace 'md5sum' in 'license_manual_review' in the package's "
+                         "config.yaml with sha256:\n"
+                         "\t'sha256sum: <checksum value>'")
+
             spdx_exp.extend(
                 self.__parse_found_manual_review_file(
-                    reviewed_f['md5sum'],
+                    reviewed_f['sha256sum'],
                     reviewed_f['spdx_exp'],
                     found_source_path
                 )
@@ -562,7 +552,7 @@ class Scanner:
 
             spdx_exp.extend(
                 self.__parse_found_manual_review_file(
-                    reviewed_f['md5sum'],
+                    reviewed_f['sha256sum'],
                     reviewed_f['spdx_exp'],
                     found_archive_path
                 )
@@ -675,10 +665,6 @@ class Scanner:
         # if redis cache, use it
         if cache_util:
             scan_dir = cache_util.populate_scan_dir(scan_dir)
-        else:
-            # Don't need to run this if cache_util, because cache_util
-            # will check when populating the scan dir
-            self._remove_known_failures_from_scan_dir(scan_dir)
 
         # run the scan
         result = run_cmd(

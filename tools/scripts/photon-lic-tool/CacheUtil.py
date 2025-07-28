@@ -42,7 +42,7 @@ class CacheUtil:
 
         # compute checksum
         with open(file_path, "rb") as f_to_check:
-            checksum = hashlib.file_digest(f_to_check, "md5").hexdigest()
+            checksum = hashlib.file_digest(f_to_check, "sha256").hexdigest()
 
         # Key for known failures should not be returned
         if checksum in common.known_failures:
