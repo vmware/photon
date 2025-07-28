@@ -60,6 +60,9 @@ def check_scancode_ver():
             + f"CI/CD version: {common.sc_toolkit_cicd_ver}\n"
         )
 
+    from commoncode import fileutils
+    fileutils.delete(scancode_config.scancode_temp_dir)
+
     print("scancode-toolkit up to date")
 
 
@@ -152,7 +155,6 @@ def parse_config(config_path=None):
         common.redis_port = config_yaml["redis_port"]
         common.redis_ttl = config_yaml["redis_ttl"]
         common.no_trimming = config_yaml["no_trimming"]
-        common.known_failures = config_yaml["known_failures"]
     except KeyError as exception:
         err_exit(f"Missing required field in {config_path}!\n{exception}")
 
@@ -370,8 +372,8 @@ def check_prereqs(cmd_name=None):
         # check for extractcode command existence
         if not shutil.which("extractcode"):
             pr_err(
-                "'extractcpde' command not found, please install with "
-                + "'tdnf install -y extractcode'"
+                "'extractcode' command not found, please install with "
+                + "'pip3 install extractcode'"
             )
             ret = -1
 
