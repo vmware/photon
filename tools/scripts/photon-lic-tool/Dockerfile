@@ -1,12 +1,14 @@
 FROM photon:5.0
 RUN tdnf install -y \
          python3 \
+         python3-devel \
          python3-pip \
          redis \
          rpm \
          rpm-build \
          build-essential \
          ruby-devel \
+         icu icu-devel \
          dwarves-devel
 RUN pip3 install \
          scancode-toolkit==32.2.1 \
