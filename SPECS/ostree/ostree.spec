@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2023.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -168,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Fri Jul 25 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2023.5-5
+- Bump up release to rescan licenses.
 * Wed May 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2023.5-4
 - Release bump for fixing sysusers in ostree-iso
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2023.5-3
