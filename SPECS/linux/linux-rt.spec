@@ -22,15 +22,15 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.143
-Release:        2%{?dist}
+Version:        6.1.147
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt51
+%define rt_version rt53
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
@@ -602,6 +602,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jul 28 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.147-1
+- Update to version 6.1.147
 * Mon Jul 14 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.143-2
 - fix for vmxnet3
 * Mon Jul 07 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.143-1
