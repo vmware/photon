@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.62
-Release:        2%{?dist}
+Version:        2.4.65
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -9,18 +9,16 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=7db1876805d5c0f60f49bcb51f75cdf567120f2ff6349e68f084e9a86ae38265d9f1c67e7fca0082c9db136f3c408a88501ee11f26b1b68724ba240867171d77
+%define sha512 %{name}=202f8bfe2aafcfbcd7315191d466e9c10b9a8c0abafb7864510b6e1abe4cb660aaacc2456aa77d43e48ef7a49e591d0b54170d3daf67abc3e06c3da1c63fdffc
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
 Patch0: %{name}-%{version}-blfs_layout-1.patch
 Patch1: %{name}-uncomment-ServerName.patch
 
-BuildRequires: openssl >= 1.1.1
 BuildRequires: openssl-devel >= 1.1.1
 BuildRequires: pcre-devel
 BuildRequires: apr
-BuildRequires: apr-util
 BuildRequires: apr-util-devel
 BuildRequires: openldap
 BuildRequires: expat-devel
@@ -203,6 +201,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Tue Jul 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.65-1
+- Upgrade to v2.4.65, fixes a bunch of CVEs
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.62-2
 - Version bump for expat upgrade
 * Tue Jul 23 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 2.4.62-1
