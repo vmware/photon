@@ -3,7 +3,7 @@
 Summary:        CRI tools
 Name:           cri-tools
 Version:        1.22.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            https://github.com/kubernetes-incubator/cri-tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -22,6 +22,10 @@ critest: validation test suites for kubelet CRI.
 
 %prep
 %autosetup -Sgit -p1 -n %{name}-%{version}
+# Remove files to handle unintended copyright inclusions
+rm vendor/github.com/opencontainers/go-digest/LICENSE.docs
+rm vendor/github.com/opencontainers/go-digest/README.md
+rm vendor/github.com/opencontainers/go-digest/CONTRIBUTING.md
 
 %build
 
@@ -42,6 +46,8 @@ make test-e2e %{?_smp_mflags}
 %exclude %{_bindir}/critest
 
 %changelog
+* Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.0-17
+- Remove files to handle unintended copyright inclusions
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.22.0-16
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.0-15

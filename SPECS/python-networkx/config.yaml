@@ -2,6 +2,10 @@ sources:
 - archive: networkx-3.2.tar.gz
   archive_sha512sum: f9fdfbe0c716c5cc6cf3f47b44e02bbd8a166724c2ef7044497b01baf468f354123aeac3c032e31293c7eedd762a29f89628cbe2ecfea280cf6012d7b0d9bdfe
   skip_validation: true
+  license_manual_review:
+    - archive_path: "networkx/algorithms/bipartite/matching.py"
+      sha256sum: 917829bf5e05b8bea4e0aaca37af19f3976428d81f066c5a853327e0df1a5682
+      spdx_exp: ""
   spdx:
     package:
       detailed_description: 'NetworkX is a Python package for the creation, manipulation,

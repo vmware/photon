@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.21
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -67,6 +67,13 @@ cd %{name}-%{version}
 %autopatch -p1
 cd ..
 mv %{name}-%{version} src/%{gopath_comp}
+
+# Remove files to handle unintended copyright inclusions
+rm src/%{gopath_comp}/vendor/github.com/docker/go-metrics/LICENSE.docs
+rm src/%{gopath_comp}/vendor/github.com/docker/go-metrics/README.md
+rm src/%{gopath_comp}/vendor/github.com/opencontainers/go-digest/LICENSE.docs
+rm src/%{gopath_comp}/vendor/github.com/opencontainers/go-digest/README.md
+rm src/%{gopath_comp}/vendor/github.com/opencontainers/go-digest/CONTRIBUTING.md
 
 %build
 export GOPATH="${PWD}"
@@ -136,6 +143,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-14
+- Remove files to handle unintended copyright inclusions
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.6.21-13
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-12

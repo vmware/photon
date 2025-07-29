@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -55,6 +55,8 @@ Static libraries and header files for the support library for libxml
 
 %prep
 %autosetup -p1
+# Remove files to handle unintended copyright inclusions
+rm test/schemas/changelog093_1.xsd
 
 %build
 %configure \
@@ -99,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-5
+- Remove files to handle unintended copyright inclusions
 * Mon Jul 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-4
 - Fix Multiple CVE'S
 - CVE-2025-49794, CVE-2025-49795, CVE-2025-49796
