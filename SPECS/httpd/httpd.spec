@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.62
-Release:        6%{?dist}
+Version:        2.4.65
+Release:        1%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -190,6 +190,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Tue Jul 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.65-1
+- Upgrade to v2.4.65, fixes a bunch of CVEs
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.62-6
 - Renaming sysusers to conf to fix auto user creation
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.62-5
