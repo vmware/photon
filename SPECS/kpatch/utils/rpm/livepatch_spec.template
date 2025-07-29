@@ -44,11 +44,6 @@ kpatch-build -v %{SOURCE0} \
             %{DESCRIPTION_FILE} \
             %{PATCHES}
 
-if [ -n "$SIGNC" ]; then
-    echo "Signing RPM now."
-    find "$OUTPUT_FOLDER" -type f -name "*.rpm" -exec "$SIGNC" -t rpm -u "$SIGNC_UNAME" -a {} \; || error "Signing livepatch RPM failed!"
-fi
-
 %install
 install -d %{buildroot}%{_modulesdir}/extra/livepatches/
 install -D -m 744  %{LIVEPATCH_NAME}.ko %{buildroot}%{_modulesdir}/extra/livepatches/

@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -128,6 +128,8 @@ cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfile
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Thu Aug 07 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-5
+- Signing related fixes
 * Fri Jul 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-4
 - Generate livepatch debug rpm
 - Fixed upstream kpatch-build to build livepatch using kernel source rpm

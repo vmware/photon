@@ -385,8 +385,8 @@ create_macro_file() {
     echo "%define KERNEL_SRC_RPM $KERNEL_SRC_RPM" >> $macrofile
     echo "%define LIVEPATCH_NAME $LIVEPATCH_NAME" >> $macrofile
     if [[ -n "$SIGNC" ]]; then
-        echo "%define signing_script $signc" >> $macrofile
-        echo "%define signing_user $signc_uname" >> $macrofile
+        echo "%define signing_script $SIGNC" >> $macrofile
+        echo "%define signing_user $SIGNC_UNAME" >> $macrofile
     fi
 
     # For 3.0 kernels, default to using the -R flag since klp_replace is not supported.
@@ -457,11 +457,6 @@ build_and_package_kpatch_module() {
     [[ $status -ne 0 ]] && error "Building and/or packaging kernel module as rpm failed"
     echo "Livepatch module successfully built"
 
-    if [ -n "$SIGNC" ]; then
-        echo "Signing RPM now."
-        find "$OUTPUT_FOLDER" -type f -name "*.rpm" -exec "$SIGNC" -t rpm -u "$SIGNC_UNAME" -a {} \; || error "Signing livepatch RPM failed!"
-    fi
-
     # save all of the debug info like vmlinux, changed objects, etc if asked to
     # vmlinux is the patched vmlinux, not original
     if [[ $EXPORT_DEBUGINFO -eq 1 ]]; then
@@ -482,8 +477,12 @@ build_and_package_kpatch_module() {
         cp "$TEMP_DIR"/rpmbuild/SRPMS/"$RPM_NAME"*.rpm "$OUTPUT_FOLDER" || error "Current dir: $(pwd). Failed to save source RPM to $OUTPUT_FOLDER"
     fi
     cp "$TEMP_DIR"/rpmbuild/BUILD/"$LIVEPATCH_NAME".ko "$OUTPUT_FOLDER"  || error "Current dir: $(pwd). Failed to save ko file to $OUTPUT_FOLDER"
-    echo "SUCCESS: Building rpm finished"
 
+    if [ -n "$SIGNC" ]; then
+        echo "Signing RPM now."
+        find "$OUTPUT_FOLDER" -type f -name "*.rpm" -exec "$SIGNC" -t rpm -u "$SIGNC_UNAME" -a {} \; || error "Signing livepatch RPM failed!"
+    fi
+    echo "SUCCESS: Building rpm finished"
 }
 
 cleanup() {
