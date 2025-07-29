@@ -1,0 +1,109 @@
+/* MIT License
+ * Copyright (c) 2025 Broadcom, Inc.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this file to use, modify, and distribute without restriction.
+ */
+
+/*Apply a universal font style*/
+* {
+    font-family: Verdana, sans-serif;
+}
+
+html body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 2em;
+    line-height: 1.6;
+}
+
+#titles {
+    margin-bottom: 1em;
+}
+
+#titles h1 {
+    color: #d9534f;
+    font-size: 2em;
+    margin-bottom: 0.5em;
+}
+
+#titles h2 {
+    color: #555;
+    font-size: 1.2em;
+    font-weight: normal;
+    margin-top: 0;
+}
+
+/* Special style for FTP success messages */
+#ftpsuccess {
+    background-color: #28a745;  /* more visually pleasing green */
+    width: 100%;
+    padding: 0.75rem;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+#content {
+    margin-top: 1.5em;
+    font-size: 1em;
+}
+
+p {
+}
+
+#error p {
+}
+
+pre {
+}
+
+/* Directory listing message */
+#dirmsg {
+    font-family: 'Courier New', Courier, monospace;
+    color: #000000;
+    font-size: 0.9rem;
+}
+
+/* Table layout for directory content */
+#dirlisting {
+    margin: 0 2%;
+    width: 96%;
+    border-collapse: collapse;
+}
+
+/* Table rows: styling for icon, filename, size, and date columns */
+#dirlisting tr.entry td.icon,
+#dirlisting tr.entry td.filename,
+#dirlisting tr.entry td.size,
+#dirlisting tr.entry td.date {
+    border-bottom: 1px groove #aaa;
+    padding: 0.4em;
+}
+
+/* Align size column to the right */
+#dirlisting td.size {
+    width: 60px;
+    text-align: right;
+    padding-right: 0.5em;
+}
+
+/* Minimal horizontal rule for layout separation */
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 0.5rem 0;
+}
+
+/* Footer styling */
+#footer {
+    font-size: 0.75rem;
+    padding-left: 0.6rem;
+    color: #666;
+}
+
+#data {
+}
+
+#sysmsg {
+}

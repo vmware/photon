@@ -4,7 +4,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -17,9 +17,10 @@ Source3: %{name}.service
 Source4: cache_swap.sh
 Source5: %{name}.logrotate
 Source6: %{name}.sysusers
+Source7: errorpage_custom.css
 
-Source7: license.txt
-%include %{SOURCE7}
+Source8: license.txt
+%include %{SOURCE8}
 
 BuildRequires: Linux-PAM-devel
 BuildRequires: ed
@@ -68,6 +69,7 @@ lookup program (dnsserver), a program for retrieving FTP data
 
 %prep
 %autosetup -p1
+cp %{SOURCE7} errors/errorpage.css
 
 %build
 %define _lto_cflags %{nil}
@@ -236,6 +238,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Tue Jul 29 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12-4
+- Converted errorpage.css from Creative-Commons-license to MIT
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.12-3
 - Renaming sysusers to conf to fix auto user creation
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12-2
