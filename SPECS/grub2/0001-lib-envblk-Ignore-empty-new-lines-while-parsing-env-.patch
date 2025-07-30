@@ -1,0 +1,38 @@
+From 8abb76a719c273304ebca472a42d740dc5d5a73a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Mon, 28 Jul 2025 15:55:32 +0530
+Subject: [PATCH 1/2] lib/envblk: Ignore empty new lines while parsing env
+ files
+
+Environment files may contain empty lines, which should be ignored
+during parsing. Currently, these lines are not skipped and resulting in
+incorrect behavior. This patch adds a check to skip empty lines along
+with those starting with "#".
+
+Upstream link:
+https://cgit.git.savannah.gnu.org/cgit/grub.git/commit/?id=be303f8c1859b17e0dbee88cb7c8490058c150f4
+
+Reviewed-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ grub-core/lib/envblk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/grub-core/lib/envblk.c b/grub-core/lib/envblk.c
+index 2e4e78b..4862de5 100644
+--- a/grub-core/lib/envblk.c
++++ b/grub-core/lib/envblk.c
+@@ -235,7 +235,7 @@ grub_envblk_iterate (grub_envblk_t envblk,
+ 
+   while (p < pend)
+     {
+-      if (*p != '#')
++      if (*p != '#' && *p != '\n' && *p != '\r')
+         {
+           char *name;
+           char *value;
+-- 
+2.50.1
+

@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    12%{?dist}
+Release:    13%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -14,8 +14,8 @@ Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 %define sha512 grub=4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
 
 %ifarch x86_64
-Source1: grub2-2.06~rc1-grubx64.efi.gz
-%define sha512 grub2-2.06~rc1-grubx64=d7530649ee0fe5a29809850ee27dde15d977e36a784407e74bcf2a42a6f56f9b30127392771b8c188dd271408b731318abefeb2a9704b6515dbf850efb0c2763
+Source1: %{name}-2.06~rc1-grubx64.efi.gz
+%define sha512 %{name}-2.06~rc1-grubx64=d7530649ee0fe5a29809850ee27dde15d977e36a784407e74bcf2a42a6f56f9b30127392771b8c188dd271408b731318abefeb2a9704b6515dbf850efb0c2763
 %endif
 
 Source2: %{name}.patches
@@ -38,6 +38,7 @@ The GRUB package contains the GRand Unified Bootloader.
 Summary:    Additional language files for grub
 Group:      System Environment/Programming
 Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of grub.
 
@@ -46,6 +47,7 @@ These are the additional language files of grub.
 Summary:    GRUB Library for BIOS
 Group:      System Environment/Programming
 Requires:   %{name} = %{version}-%{release}
+
 %description pc
 Additional library files for grub
 %endif
@@ -54,6 +56,7 @@ Additional library files for grub
 Summary:    GRUB Library for UEFI
 Group:      System Environment/Programming
 Requires:   %{name} = %{version}-%{release}
+
 %description efi
 Additional library files for grub
 
@@ -63,6 +66,7 @@ Group:      System Environment/Base
 %ifarch x86_64
 Requires:   shim-signed >= 15.4
 %endif
+
 %description efi-image
 GRUB UEFI image signed by vendor key
 
@@ -80,7 +84,7 @@ sh ../configure \
     --sysconfdir=%{_sysconfdir} \
     --disable-werror \
     --disable-efiemu \
-    --with-grubdir=grub2 \
+    --with-grubdir=%{name} \
     --with-platform=pc \
     --target=i386 \
     --program-transform-name=s,grub,%{name}, \
@@ -100,7 +104,7 @@ sh ../configure \
     --sysconfdir=%{_sysconfdir} \
     --disable-werror \
     --disable-efiemu \
-    --with-grubdir=grub2 \
+    --with-grubdir=%{name} \
     --with-platform=efi \
     --target=%{_arch} \
     --program-transform-name=s,grub,%{name}, \
@@ -134,22 +138,22 @@ gunzip -c %{SOURCE1} > %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi
 #cat << EOF > grub-sbat.csv
 #sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
 #grub,1,Free Software Foundation,grub,2.06~rc1,https//www.gnu.org/software/grub/
-#grub.photon,1,VMware Photon OS,grub2,2.06~rc1-1.ph4,https://github.com/vmware/photon/tree/4.0/SPECS/grub2/
+#grub.photon,1,VMware Photon OS,%{name},2.06~rc1-1.ph4,https://github.com/vmware/photon/tree/4.0/SPECS/%{name}/
 #EOF
 #
-#grub2-mkimage -d /usr/lib/grub/x86_64-efi/ -o grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+#%{name}-mkimage -d /usr/lib/grub/x86_64-efi/ -o grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 
 # Local alternative:
-# ./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+# ./install-for-efi/usr/bin/%{name}-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 
 %endif
 %ifarch aarch64
 cat > grub-embed-config.cfg << EOF
 search.fs_label rootfs root
-configfile /boot/grub2/grub.cfg
+configfile /boot/%{name}/grub.cfg
 EOF
 
-./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/grub2 -O arm64-efi -c grub-embed-config.cfg fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
+./install-for-efi/usr/bin/%{name}-mkimage -d ./install-for-efi/usr/lib/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/%{name} -O arm64-efi -c grub-embed-config.cfg fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
 %endif
 
 %if 0%{?with_check}
@@ -210,6 +214,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Jul 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.06-13
+- Add grub configuration fixes
 * Tue Jan 02 2024 Ajay Kaher <akaher@vmware.com> 2.06-12
 - Fix for CVE-2021-3696
 * Wed Oct 25 2023 Ajay Kaher <akaher@vmware.com> 2.06-11

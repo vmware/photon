@@ -1,0 +1,160 @@
+From a8610193e9e1efb2266a5be6b40f9f885b7c8b85 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 14 May 2025 14:47:15 +0530
+Subject: [PATCH] cmdline: fix command line parsing in grub
+
+Previously, the command line construction function
+(grub_create_loader_cmdline) escaped single and double quotes, which is
+unnecessary and potentially problematic since the kernel command line
+handler does not support escaped quotes. This patch removes the escaping
+of these characters, ensuring that the constructed command line is
+passed to the kernel as intended.
+
+For example:
+
+In /boot/grub/grub.cfg
+...
+set user_cmdline="dyndbg='+p; func smp_callin -p'"
+...
+menuentry "Photon" {
+  linux /boot/$photon_linux root=$rootpartition $photon_cmdline $systemd_cmdline $user_cmdline
+  if [ -f /boot/$photon_initrd ]; then
+    initrd /boot/$photon_initrd
+  fi
+}
+...
+
+Post reboot,
+
+$ cat /proc/cmdline
+... dyndbg=\'+p; func smp_callin -p\'
+
+Refer:
+https://lists.gnu.org/archive/html/grub-devel/2025-05/msg00119.html
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Reviewed-by: Alexey Makhalov  <alexey.makhalov@broadcom.com>
+---
+ grub-core/lib/cmdline.c | 73 +++++++++++++++++++----------------------
+ 1 file changed, 33 insertions(+), 40 deletions(-)
+
+diff --git a/grub-core/lib/cmdline.c b/grub-core/lib/cmdline.c
+index ed0b149..91fe734 100644
+--- a/grub-core/lib/cmdline.c
++++ b/grub-core/lib/cmdline.c
+@@ -20,29 +20,35 @@
+ #include <grub/lib/cmdline.h>
+ #include <grub/misc.h>
+ 
+-static unsigned int check_arg (char *c, int *has_space)
++static int
++is_hex(char c)
+ {
+-  int space = 0;
+-  unsigned int size = 0;
+-
+-  while (*c)
+-    {
+-      if (*c == '\\' || *c == '\'' || *c == '"')
+-	size++;
+-      else if (*c == ' ')
+-	space = 1;
+-
+-      size++;
+-      c++;
+-    }
+-
+-  if (space)
+-    size += 2;
+-
+-  if (has_space)
+-    *has_space = space;
++  return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
++}
+ 
+-  return size;
++static unsigned int check_arg (char *c, int *has_space)
++{
++    unsigned int size = 0;
++
++    while (*c) {
++        if (*c == '\\' && *(c+1) == 'x' && is_hex(*(c+2)) && is_hex(*(c+3))) {
++            size += 4;
++            c += 4;
++            continue;
++        }
++
++        if (*c == ' ') {
++            if (*has_space == 0) {
++                *has_space = 1;
++                size += 2;
++            }
++        }
++        size++;
++        c++;
++   }
++
++  /* For separator space or NULL. */
++  return size + 1;
+ }
+ 
+ unsigned int grub_loader_cmdline_size (int argc, char *argv[])
+@@ -51,15 +57,9 @@ unsigned int grub_loader_cmdline_size (int argc, char *argv[])
+   unsigned int size = 0;
+ 
+   for (i = 0; i < argc; i++)
+-    {
+       size += check_arg (argv[i], 0);
+-      size++; /* Separator space or NULL.  */
+-    }
+-
+-  if (size == 0)
+-    size = 1;
+ 
+-  return size;
++  return size ? size : 1;
+ }
+ 
+ grub_err_t
+@@ -73,8 +73,8 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
+   for (i = 0; i < argc; i++)
+     {
+       c = argv[i];
++      space = 0;
+       arg_size = check_arg(argv[i], &space);
+-      arg_size++; /* Separator space or NULL.  */
+ 
+       if (size < arg_size)
+ 	break;
+@@ -86,24 +86,17 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
+ 
+       while (*c)
+ 	{
+-	  if (*c == '\\' || *c == '\'' || *c == '"')
+-	    *buf++ = '\\';
+-
+-	  *buf++ = *c;
+-	  c++;
++	  *buf++ = *c++;
+ 	}
+ 
+       if (space)
+ 	*buf++ = '"';
+ 
+-      *buf++ = ' ';
++      if (argv[i+1])
++          *buf++ = ' ';
+     }
+ 
+-  /* Replace last space with null.  */
+-  if (i)
+-    buf--;
+-
+-  *buf = 0;
++  *buf = '\0';
+ 
+   return grub_verify_string (orig_buf, type);
+ }
+-- 
+2.50.1
+
