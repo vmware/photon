@@ -216,6 +216,14 @@ BuildRequires:  clang-devel
 BuildRequires: gdb
 %endif
 
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  sbsigntools
+BuildRequires:  python3-requests
+%endif
+
 Requires: kmod
 Requires: filesystem
 Requires(pre):    coreutils
@@ -389,6 +397,12 @@ if [ "$ID1" != "$ID2" ] ; then
   exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%if "%{?signing_script}" != ""
+%{signing_script} --file_type pe \
+      --config_file %{signing_params} \
+      --auth_file %{signing_auth} \
+      --artifact %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
 %endif
 
 # Restrict the permission on System.map-X file

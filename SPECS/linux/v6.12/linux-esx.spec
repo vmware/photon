@@ -246,6 +246,16 @@ BuildRequires: readline-devel
 BuildRequires: gcc >= 12.2.0-6
 %endif
 
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%ifarch x86_64
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  sbsigntools
+BuildRequires:  python3-requests
+%endif
+%endif
+
 Requires: kmod
 Requires: filesystem
 Requires(pre):    coreutils
@@ -390,6 +400,12 @@ make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%if "%{?signing_script}" != ""
+%{signing_script} --file_type pe \
+      --config_file %{signing_params} \
+      --auth_file %{signing_auth} \
+      --artifact %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
 %endif
 
 %ifarch aarch64
