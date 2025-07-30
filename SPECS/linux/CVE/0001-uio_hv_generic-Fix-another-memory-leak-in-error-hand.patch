@@ -20,32 +20,30 @@ Link: https://lore.kernel.org/r/0d86027b8eeed8e6360bc3d52bcdb328ff9bdca1.1620544
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 [Shivani: Modified to apply on 5.10.y]
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+[Harinadh: Modified to apply on 5.10.240]
+Signed-off-by: Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com>
 ---
  drivers/uio/uio_hv_generic.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
-
 diff --git a/drivers/uio/uio_hv_generic.c b/drivers/uio/uio_hv_generic.c
-index 67cfe838a787..a2fff31a637c 100644
+index 6625d340f..865a5b289 100644
 --- a/drivers/uio/uio_hv_generic.c
 +++ b/drivers/uio/uio_hv_generic.c
-@@ -300,7 +300,7 @@ hv_uio_probe(struct hv_device *dev,
+@@ -306,7 +306,7 @@ hv_uio_probe(struct hv_device *dev,
  	pdata->recv_buf = vzalloc(RECV_BUFFER_SIZE);
  	if (pdata->recv_buf == NULL) {
  		ret = -ENOMEM;
 -		goto fail_close;
 +		goto fail_free_ring;
  	}
- 
+
  	ret = vmbus_establish_gpadl(channel, pdata->recv_buf,
-@@ -360,6 +360,8 @@ hv_uio_probe(struct hv_device *dev,
- 
+@@ -366,6 +366,8 @@ hv_uio_probe(struct hv_device *dev,
+
  fail_close:
  	hv_uio_cleanup(dev, pdata);
 +fail_free_ring:
 +	vmbus_free_ring(dev->channel);
- fail:
- 	kfree(pdata);
- 
--- 
-2.40.4
 
+ 	return ret;
+ }

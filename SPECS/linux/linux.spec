@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.239
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.240
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=23240ad431fdf11b4b621d4de2b27ff8ae3d9c8318c4bd56663fcbece5ebc36dba93964921240fc352230d1f75ce37b98d60d0b56ae0c037a5dfbd34c370620b
+%define sha512 linux=ddff83678fd39465b2e92141267403db58b64e95fb746259c92cd439ffd695f5aa3aed81b9bf1891f193e8476a2ab3e03fcdad77ebb953f934b8e19ae609a827
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -1090,6 +1090,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Jul 28 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.240-1
+- Update to version 5.10.240
 * Tue Jul 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-4
 - Fix CVE-2021-47076, CVE-2021-47421, CVE-2021-47498, CVE-2021-47182
 - CVE-2021-47193, CVE-2021-47183, CVE-2021-47070
