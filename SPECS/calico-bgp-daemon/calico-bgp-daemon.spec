@@ -3,7 +3,7 @@
 Summary:        GoBGP based Calico BGP Daemon
 Name:           calico-bgp-daemon
 Version:        0.2.2
-Release:        22%{?dist}
+Release:        23%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 URL:            https://github.com/projectcalico/calico-bgp-daemon
@@ -34,6 +34,11 @@ tar -xf %{SOURCE1}
 mkdir -p "$(dirname src/%{gopath_comp_bgp_daemon})"
 mv %{name}-%{version} src/%{gopath_comp_bgp_daemon}
 
+# Remove files to handle unintended inclusions
+rm src/%{gopath_comp_bgp_daemon}/vendor/golang.org/x/text/cases/map_test.go
+rm src/%{gopath_comp_bgp_daemon}/vendor/golang.org/x/text/internal/testtext/text.go
+rm src/%{gopath_comp_bgp_daemon}/vendor/golang.org/x/text/unicode/norm/normalize_test.go
+
 %build
 export GO111MODULE=auto
 export GOPATH="${PWD}"
@@ -56,6 +61,8 @@ popd
 %{_bindir}/calico-bgp-daemon
 
 %changelog
+* Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.2.2-23
+- Clean up unintended licenses
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.2.2-22
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-21

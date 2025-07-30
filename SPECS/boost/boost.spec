@@ -2,7 +2,7 @@
 Summary:        Boost
 Name:           boost
 Version:        1.80.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.boost.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -37,6 +37,11 @@ The boost-static package contains boost static libraries.
 
 %prep
 %autosetup -p1 -n boost_%{main_version}
+# Remove files to handle unintended inclusions
+rm doc/gs.version
+%if 0%{?with_check} == 0
+rm -r tools/boost_install/test/iostreams/*
+%endif
 
 %build
 ./bootstrap.sh --prefix=%{buildroot}%{_prefix}
@@ -67,6 +72,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libboost_*.a
 
 %changelog
+* Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.80.0-3
+- Clean up unintended licenses
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.80.0-2
 - Release bump for SRP compliance
 * Fri Aug 19 2022 Ajay Kaher <akaher@vmware.com> 1.80.0-1

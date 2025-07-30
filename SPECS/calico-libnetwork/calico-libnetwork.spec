@@ -7,7 +7,7 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       23%{?dist}
+Release:       24%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -49,6 +49,11 @@ glide install --strip-vendor
 popd
 %endif
 
+# Remove files to handle unintended inclusions
+rm src/%{gopath_comp_libnetwork_plugin}/vendor/golang.org/x/text/cases/map_test.go
+rm src/%{gopath_comp_libnetwork_plugin}/vendor/golang.org/x/text/internal/testtext/text.go
+rm src/%{gopath_comp_libnetwork_plugin}/vendor/golang.org/x/text/unicode/norm/normalize_test.go
+
 %build
 export GO111MODULE=auto
 export GOPATH="${PWD}"
@@ -71,6 +76,8 @@ rm -rf %{buildroot}
 %{_datadir}/calico/docker/libnetwork-plugin
 
 %changelog
+* Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.3-24
+- Clean up unintended licenses
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.3-23
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-22

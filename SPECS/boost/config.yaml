@@ -1,7 +1,12 @@
 sources:
 - archive: boost_1_80_0.tar.bz2
-  archive_sha512sum: 829a95b463473d69ff79ea41799c68429bb79d3b2321fbdb71df079af237ab01de9ad7e9612d8783d925730acada010068d2d1aa856c34244ee5c0ece16f208f
+  archive_sha512sum: 
+    829a95b463473d69ff79ea41799c68429bb79d3b2321fbdb71df079af237ab01de9ad7e9612d8783d925730acada010068d2d1aa856c34244ee5c0ece16f208f
   skip_validation: true
+  license_manual_review:
+  - archive_path: libs/json/bench/data/gsoc-2018.json
+    sha256sum: 72f1ef4898d88049da856c2ab8f4ec3e2c968ce209b2bbfd16cef842eb2e185f
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'Boost provides a set of free peer-reviewed portable C++
@@ -9,27 +14,27 @@ sources:
         generation, multithreading, image processing, regular expressions and unit
         testing. '
       home_page: http://www.boost.org
-      license_concluded: MIT AND LGPL-2.0-or-later AND (MIT OR GPL-2.0-only) AND (NCSA
-        OR MIT) AND (BSL-1.0 OR MIT) AND Apache-2.0 AND FSFUL AND GPL-3.0-or-later
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND BSD-2-Clause AND Jam AND
-        CC-PDDC AND CC0-1.0 AND AGPL-3.0-or-later AND GPL-1.0-or-later AND Spencer-86
-        AND LGPL-3.0-only AND Zlib AND BSD-3-Clause AND ODbL-1.0 AND Python-2.0 AND
-        BSL-1.0 AND AGPL-3.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND
-        GPL-2.0-or-later WITH Bison-exception-1.24 AND GPL-2.0-or-later AND bzip2-1.0.6
-        AND GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817 AND (MIT OR BSD-3-Clause
-        OR GPL-2.0-only) AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        WITH GNAT-exception AND GPL-3.0-only AND (GPL-2.0-only OR MIT) AND OFL-1.1
-        AND LPD-document
-      license_declared: MIT AND LGPL-2.0-or-later AND (MIT OR GPL-2.0-only) AND (NCSA
-        OR MIT) AND (BSL-1.0 OR MIT) AND Apache-2.0 AND FSFUL AND GPL-3.0-or-later
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND BSD-2-Clause AND Jam AND
-        CC-PDDC AND CC0-1.0 AND AGPL-3.0-or-later AND GPL-1.0-or-later AND Spencer-86
-        AND LGPL-3.0-only AND Zlib AND BSD-3-Clause AND ODbL-1.0 AND Python-2.0 AND
-        BSL-1.0 AND AGPL-3.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND
-        GPL-2.0-or-later WITH Bison-exception-1.24 AND GPL-2.0-or-later AND bzip2-1.0.6
-        AND GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817 AND (MIT OR BSD-3-Clause
-        OR GPL-2.0-only) AND LGPL-2.1-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        WITH GNAT-exception AND GPL-3.0-only AND (GPL-2.0-only OR MIT) AND OFL-1.1
-        AND LPD-document
+      license_concluded: (BSD-3-Clause OR GPL-1.0-or-later OR MIT) AND 
+        (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSL-1.0 OR MIT) AND 
+        (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MIT) AND (MIT OR NCSA) AND 
+        AGPL-3.0-or-later AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND 
+        BSL-1.0 AND CC-PDDC AND CC0-1.0 AND FSFUL AND GPL-1.0-or-later AND 
+        GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817 AND 
+        GPL-2.0-or-later AND GPL-2.0-or-later WITH Bison-exception-1.24 AND 
+        GPL-2.0-or-later WITH GNAT-exception AND GPL-3.0-only AND 
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND Jam AND LGPL-2.0-or-later 
+        AND LGPL-2.1-or-later AND LPD-document AND MIT AND OFL-1.1 AND 
+        Python-2.0 AND Spencer-86 AND Zlib AND bzip2-1.0.6
+      license_declared: (BSD-3-Clause OR GPL-1.0-or-later OR MIT) AND 
+        (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSL-1.0 OR MIT) AND 
+        (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MIT) AND (MIT OR NCSA) AND 
+        AGPL-3.0-or-later AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND 
+        BSL-1.0 AND CC-PDDC AND CC0-1.0 AND FSFUL AND GPL-1.0-or-later AND 
+        GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817 AND 
+        GPL-2.0-or-later AND GPL-2.0-or-later WITH Bison-exception-1.24 AND 
+        GPL-2.0-or-later WITH GNAT-exception AND GPL-3.0-only AND 
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND Jam AND LGPL-2.0-or-later 
+        AND LGPL-2.1-or-later AND LPD-document AND MIT AND OFL-1.1 AND 
+        Python-2.0 AND Spencer-86 AND Zlib AND bzip2-1.0.6
       short_summary: Boost
       supplier: 'Organization: Broadcom, Inc.'

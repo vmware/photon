@@ -14,7 +14,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -92,6 +92,11 @@ cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-%{contrib_ver}/init/systemd/environ/apiserver
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-%{contrib_ver}/init/systemd/kubelet.service
+
+# Remove files to handle unintended inclusions
+# README.md & LICENSE.docs of vendor projects mentions license of content not code.
+find contrib-%{contrib_ver} -name "LICENSE.docs" -print -delete
+find %{name}-%{version}/vendor/github.com/opencontainers \( -name "LICENSE.docs" -o -name "README.md" \) -print -delete
 
 %build
 export FORCE_HOST_GO=y
@@ -266,6 +271,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-3
+- Clean up unintended licenses
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-2
 - Renaming sysusers to conf to fix auto user creation
 * Tue Feb 25 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-1

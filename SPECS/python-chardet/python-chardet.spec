@@ -1,7 +1,7 @@
 Summary:        A Universal Character Encoding Detector in Python
 Name:           python3-chardet
 Version:        5.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.org/project/chardet
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -30,6 +30,10 @@ chardet is a universal character encoding detector in Python.
 
 %prep
 %autosetup -p1 -n chardet-%{version}
+# Remove files to handle unintended inclusions
+%if 0%{?with_check} == 0
+rm tests/ascii/*
+%endif
 
 %build
 %py3_build
@@ -48,6 +52,8 @@ chardet is a universal character encoding detector in Python.
 %{_bindir}/chardetect
 
 %changelog
+* Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-3
+- Clean up unintended licenses
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 5.0.0-1
