@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    21%{?dist}
+Release:    22%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -45,7 +45,7 @@ BuildRequires:  python3-requests
 Requires:   xz-libs
 Requires:   device-mapper-libs
 Requires:   systemd-udev
-Requires:   grub2-theme
+Requires:   %{name}-theme
 
 %description
 The GRUB package contains the GRand Unified Bootloader.
@@ -54,6 +54,7 @@ The GRUB package contains the GRand Unified Bootloader.
 Summary:    Additional language files for grub
 Group:      System Environment/Programming
 Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of grub.
 
@@ -62,6 +63,7 @@ These are the additional language files of grub.
 Summary:    GRUB Library for BIOS
 Group:      System Environment/Programming
 Requires:   %{name} = %{version}-%{release}
+
 %description pc
 Additional library files for grub
 %endif
@@ -70,6 +72,7 @@ Additional library files for grub
 Summary:    GRUB user space emulator
 Group:      System Environment/Programming
 Requires:   %{name} = %{version}-%{release}
+
 %description emu
 GRUB Emulator
 
@@ -77,6 +80,7 @@ GRUB Emulator
 Summary:    GRUB Library for UEFI
 Group:      System Environment/Programming
 Requires:   %{name} = %{version}-%{release}
+
 %description efi
 Additional library files for grub
 
@@ -86,7 +90,8 @@ Group:      System Environment/Base
 %ifarch x86_64
 Requires:   shim-signed >= 15.4
 %endif
-Requires:   grub2-theme
+Requires:   %{name}-theme
+
 %description efi-image
 GRUB UEFI image signed by vendor key
 
@@ -105,7 +110,7 @@ sh ../configure \
     --disable-werror \
     --disable-efiemu \
     --disable-nls \
-    --with-grubdir=grub2 \
+    --with-grubdir=%{name} \
     --with-platform=pc \
     --target=i386 \
     --program-transform-name=s,grub,%{name}, \
@@ -125,7 +130,7 @@ sh ../configure \
     --sysconfdir=%{_sysconfdir} \
     --disable-werror \
     --disable-nls \
-    --with-grubdir=grub2 \
+    --with-grubdir=%{name} \
     --with-platform=emu \
     --target=%{_arch} \
     --program-transform-name=s,grub,%{name}, \
@@ -144,7 +149,7 @@ sh ../configure \
     --sysconfdir=%{_sysconfdir} \
     --disable-werror \
     --disable-efiemu \
-    --with-grubdir=grub2 \
+    --with-grubdir=%{name} \
     --with-platform=efi \
     --target=%{_arch} \
     --program-transform-name=s,grub,%{name}, \
@@ -178,7 +183,7 @@ sed -e "s,@@VERSION@@,%{version},g" \
     %{SOURCE2} > grub-sbat.csv
 
 %ifarch x86_64
-./install-for-efi/%{_bindir}/grub2-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 
 %if "%{?signing_script}" != ""
 %{signing_script} --file_type pe \
@@ -191,10 +196,10 @@ sed -e "s,@@VERSION@@,%{version},g" \
 %ifarch aarch64
 cat > grub-embed-config.cfg << EOF
 search.fs_label rootfs root
-configfile /boot/grub2/grub.cfg
+configfile /boot/%{name}/grub.cfg
 EOF
 
-./install-for-efi/%{_bindir}/grub2-mkimage -d ./install-for-efi/%{_libdir}/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/grub2 -O arm64-efi -c grub-embed-config.cfg --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
+./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/%{name} -O arm64-efi -c grub-embed-config.cfg --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
 %endif
 
 %if 0%{?with_check}
@@ -259,6 +264,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Wed Jul 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.06-22
+- Add grub configuration fixes
 * Fri Feb 28 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-21
 - Include a fix to fs/ext2 code to address initramfs unpack failure caused by previous commit
 - https: //bugzilla.redhat.com/show_bug.cgi?id=2346804

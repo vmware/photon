@@ -1,4 +1,7 @@
 Patch0: Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
+# grub.cfg tweaks, author: sshedi
+Patch1: 0001-lib-envblk-Ignore-empty-new-lines-while-parsing-env-.patch
+Patch2: 0002-cmdline-fix-command-line-parsing-in-grub.patch
 
 # grub2-emu
 Patch1501: 0001-grub2-emu-hide-menu-skip-retry.patch
