@@ -3,7 +3,7 @@
 Summary:    Default file system
 Name:       filesystem
 Version:    1.1
-Release:    9%{?dist}
+Release:    10%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://www.linuxfromscratch.org
@@ -137,15 +137,9 @@ install -p -D -m 644 users.sysusers %{buildroot}%{_sysusersdir}/users.conf
 
 %pretrans -p <lua>
 posix = require("posix")
-function safe_mkdir(path, mode)
-  if not posix.stat(path) then
-    posix.mkdir(path)
-    posix.chmod(path, mode)
-  end
-end
-
-safe_mkdir("/sys", "0555")
-safe_mkdir("/mnt/cdrom", "0755")
+posix.mkdir("/sys", "0555")
+posix.mkdir("/mnt", "0755")
+posix.mkdir("/mnt/cdrom", "0755")
 
 %clean
 rm -rf %{buildroot}
@@ -281,6 +275,8 @@ rm -rf %{buildroot}
 %{_libdir}/debug%{_lib64dir}
 
 %changelog
+* Wed Jul 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-10
+- Fix /mnt/cdrom issue, this time for real
 * Mon Jul 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-9
 - Create /mnt/cdrom in pretrans
 * Fri May 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1-8
