@@ -1,7 +1,7 @@
 Summary:        Command Line XML Toolkit
 Name:           xmlstarlet
 Version:        1.6.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://xmlstar.sourceforge.net/
 Group:          Text Tools
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -fr %{buildroot}
 %{_bindir}/xml
 
 %changelog
+* Tue Jul 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.1-7
+- Handle unintended copyrights inclusions
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.1-6
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.6.1-5

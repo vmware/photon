@@ -6,8 +6,18 @@ sources:
   repo_url: https://github.com/wireshark/wireshark
   url: https://www.wireshark.org/download/src/wireshark-4.2.12.tar.xz
   commit_id: 07769b946e98cf8f6e76a2da06363f5323dbd0ee
-  missing: [ '.gitattributes', '.gitignore' ]
-  skip_list: [ 'make-version.py', 'org.wireshark.Wireshark.metainfo.xml', 'git-export-release.sh.in' ]
+  missing:
+  - .gitattributes
+  - .gitignore
+  skip_list:
+  - make-version.py
+  - org.wireshark.Wireshark.metainfo.xml
+  - git-export-release.sh.in
+  license_manual_review:
+  - archive_path: tools/licensecheck.pl
+    final_build_path: tools/licensecheck.pl
+    sha256sum: dbf7222366debb63f6f1fa73b8fcc147e3682afee6b0417e8cffc54cb3b36131
+    spdx_exp: GPL-2.0-or-later
   spdx:
     package:
       detailed_description: 'Wireshark is a network protocol analyzer. It allows examining
@@ -16,7 +26,27 @@ sources:
         packet. Wireshark has several features, including a rich display filter language
         and the ability to view the reconstructed stream of a TCP session. '
       home_page: http://www.wireshark.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (ISC OR GPL-2.0-only) AND (NCSA OR MIT) AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later AND HPND AND CDDL-1.0 AND BSD-2-Clause-Views AND MS-PL AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND AGPL-3.0-or-later AND MIT AND GPL-2.0-or-later AND GPL-3.0-only AND WTFPL AND GPL-1.0-or-later AND EPL-1.0 AND LGPL-2.0-only AND X11 AND CC0-1.0 AND Kazlib AND MIT-open-group AND Artistic-1.0 AND BSL-1.0 AND blessing AND ODbL-1.0 AND MPL-1.0 AND Artistic-2.0 AND Python-2.0 AND BSD-2-Clause AND Artistic-1.0-Perl AND BSD-1-Clause AND CC-PDDC AND MS-RL AND Apache-2.0 AND BSD-3-Clause AND AGPL-3.0-only AND ISC AND Beerware AND Libpng AND BSD-4-Clause AND AML AND Zlib AND GPL-2.0-only AND LGPL-3.0-only AND NCSA AND AFL-3.0 AND CC-BY-4.0
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (ISC OR GPL-2.0-only) AND (NCSA OR MIT) AND (BSD-3-Clause OR GPL-2.0-only) AND GPL-3.0-or-later AND HPND AND CDDL-1.0 AND BSD-2-Clause-Views AND MS-PL AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND AGPL-3.0-or-later AND MIT AND GPL-2.0-or-later AND GPL-3.0-only AND WTFPL AND GPL-1.0-or-later AND EPL-1.0 AND LGPL-2.0-only AND X11 AND CC0-1.0 AND Kazlib AND MIT-open-group AND Artistic-1.0 AND BSL-1.0 AND blessing AND ODbL-1.0 AND MPL-1.0 AND Artistic-2.0 AND Python-2.0 AND BSD-2-Clause AND Artistic-1.0-Perl AND BSD-1-Clause AND CC-PDDC AND MS-RL AND Apache-2.0 AND BSD-3-Clause AND AGPL-3.0-only AND ISC AND Beerware AND Libpng AND BSD-4-Clause AND AML AND Zlib AND GPL-2.0-only AND LGPL-3.0-only AND NCSA AND AFL-3.0 AND CC-BY-4.0
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-3-Clause
+        OR GPL-2.0-only) AND (GPL-2.0-only OR ISC) AND (MIT OR NCSA) AND AFL-3.0 AND
+        AGPL-3.0-only AND AGPL-3.0-or-later AND AML AND Apache-2.0 AND Artistic-1.0
+        AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND
+        BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause AND BSL-1.0 AND Beerware
+        AND CC-BY-4.0 AND CC-PDDC AND CC0-1.0 AND CDDL-1.0 AND EPL-1.0 AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        AND HPND AND ISC AND Kazlib AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND LGPL-3.0-only AND Libpng AND MIT AND MIT-open-group AND MPL-1.0 AND MS-PL
+        AND MS-RL AND NCSA AND ODbL-1.0 AND Python-2.0 AND WTFPL AND X11 AND Zlib
+        AND blessing
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-3-Clause
+        OR GPL-2.0-only) AND (GPL-2.0-only OR ISC) AND (MIT OR NCSA) AND AFL-3.0 AND
+        AGPL-3.0-only AND AGPL-3.0-or-later AND AML AND Apache-2.0 AND Artistic-1.0
+        AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND
+        BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause AND BSL-1.0 AND Beerware
+        AND CC-BY-4.0 AND CC-PDDC AND CC0-1.0 AND CDDL-1.0 AND EPL-1.0 AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        AND HPND AND ISC AND Kazlib AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND LGPL-3.0-only AND Libpng AND MIT AND MIT-open-group AND MPL-1.0 AND MS-PL
+        AND MS-RL AND NCSA AND ODbL-1.0 AND Python-2.0 AND WTFPL AND X11 AND Zlib
+        AND blessing
       short_summary: Wireshark is the world's foremost protocol analyzer
       supplier: 'Organization: Broadcom, Inc.'
