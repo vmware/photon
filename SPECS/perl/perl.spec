@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.36.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -109,6 +109,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Thu Jul 31 2025 Dweep Advani <dweep.advani@broadcom.com> 5.36.0-10
+- Bump release to rescan licenses
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.36.0-9
 - Release bump for aarch64 SRP compliance
 * Mon Apr 21 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.36.0-8
