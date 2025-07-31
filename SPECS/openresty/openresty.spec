@@ -10,7 +10,7 @@
 Summary:        A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:           openresty
 Version:        1.21.4.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://openresty.org/en
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -224,6 +224,8 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Thu Jul 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 1.21.4.3-4
+- Remove files to handle unintended copyright inclusions
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.4.3-3
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21.4.3-2
