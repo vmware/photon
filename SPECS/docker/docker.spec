@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        27.3.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -121,6 +121,11 @@ tar -xf %{SOURCE2}
 mv cli-%{version} src/%{gopath_comp_cli}
 
 tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE1}
+
+# Remove files to handle unintended inclusions
+find src/github.com/docker/docker/vendor \( -name "README.md" -o -name "LICENSE.docs" \) -type f -delete
+find src/github.com/docker/cli/vendor \( -name "README.md" -o -name "LICENSE.docs" \) -type f -delete
+find src/github.com/docker/libnetwork/vendor \( -name "README.md" -o -name "LICENSE.docs" \) -type f -delete
 
 %build
 export GOPATH="${PWD}"
@@ -302,6 +307,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Wed Jul 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 27.3.1-7
+- Remove unintended license for SRP compliance
 * Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.1-6
 - Bump version as a part of jq upgrade
 * Mon Apr 21 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 27.3.1-5

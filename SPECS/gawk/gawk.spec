@@ -1,7 +1,7 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.1.1
-Release:      5%{?dist}
+Release:      6%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -24,6 +24,15 @@ Requires:   readline
 
 %description
 The Gawk package contains programs for manipulating text files.
+
+%package        doc
+Summary:        Documentation files for gawk
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}
+Conflicts:      %{name} < 5.1.1-6
+
+%description    doc
+Documentation files for gawk
 
 %prep
 %autosetup -p1
@@ -57,12 +66,17 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 %{_libexecdir}/*
 %{_datarootdir}/awk/*
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_mandir}/*/*
 %{_sysconfdir}/profile.d/gawk.csh
 %{_sysconfdir}/profile.d/gawk.sh
 
+%files doc
+%defattr(-,root,root,-)
+%{_mandir}/*/*
+%{_defaultdocdir}/%{name}-%{version}/*
+
 %changelog
+* Wed Jul 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.1.1-6
+- Remove unintended license for SRP compliance
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.1.1-5
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.1.1-4
