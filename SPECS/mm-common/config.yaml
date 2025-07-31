@@ -1,6 +1,12 @@
 sources:
 - archive: libstdc++-1.0.5.ph5.tar.xz
   archive_sha512sum: c5073c558252ef1238fd310d428033f58252649a3ae5ba5a780047fb62727cf3335b22742f363155957bc94dfba58727bdbecf13ac94fb124fed71512bd494b7
+  license_manual_review:
+    - archive_path: libstdc++.tag
+      # Above stated file is the only file in the archive getting empty license picked up
+      # Explicitly setting the license here
+      sha256sum: cb01f8aebdb7b9874b100d13a006fb688ee25d2e93e02ff294e6c2483606c7a3
+      spdx_exp: GPL-3.0-only
   skip_validation: true
   spdx:
     package:
@@ -12,6 +18,11 @@ sources:
       supplier: 'Organization: Broadcom, Inc.'
 - archive: mm-common-1.0.5.tar.gz
   archive_sha512sum: dc538fb134c5f385a7508bbe702c562a796f0fafd3e25b46c5eb652bf3df36c6a309d36e8b6c074234c4ad4be3a75dd68c47d9d2a807e9a87bd10a10d1a0743b
+  license_manual_review:
+    - archive_path: "util/tagfile-to-devhelp2.xsl"
+      # The file explicitly calls out GPLv2+
+      sha256sum: c97bf92b8abd8bef43c7670b92dd60daf6b3414af674a522c5e56473f875ac6c
+      spdx_exp: "GPL-2.0-or-later"
   skip_validation: true
   spdx:
     package:
@@ -22,9 +33,9 @@ sources:
         repository. An installation of mm-common is not required for building tarball
         releases, unless configured to use maintainer-mode. '
       home_page: https://gitlab.gnome.org/GNOME/mm-common
-      license_concluded: LGPL-2.1-or-later AND AGPL-3.0-only AND FSFAP AND GPL-2.0-only
+      license_concluded: LGPL-2.1-or-later AND FSFAP AND GPL-2.0-only
         AND LGPL-2.1-only AND GPL-2.0-or-later
-      license_declared: LGPL-2.1-or-later AND AGPL-3.0-only AND FSFAP AND GPL-2.0-only
+      license_declared: LGPL-2.1-or-later AND FSFAP AND GPL-2.0-only
         AND LGPL-2.1-only AND GPL-2.0-or-later
       short_summary: Build Tools
       supplier: 'Organization: Broadcom, Inc.'

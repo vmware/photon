@@ -4,7 +4,7 @@
 Summary:        Build Tools
 Name:           mm-common
 Version:        1.0.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://gitlab.gnome.org/GNOME/mm-common
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ cp libstdc++.tag doctags/
 %{_datadir}/%{name}/doctool/*.*
 
 %changelog
+* Thu Jul 31 2025 Dweep Advani <dweep.advani@broadcom.com> 1.0.5-5
+- Bump release to rescan licenses
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.5-4
 - Release bump for network_required packages
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.0.5-3
