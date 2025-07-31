@@ -32,38 +32,12 @@ from Comparator import Comparator
 from ExpCleaner import ExpCleaner
 from Validator import Validator
 from Scanner import Scanner
-from LicDB import LicDB
 import common
 from common import err_exit, pr_err, read_license_from_file
-
-try:
-    import scancode_config
-except ImportError:
-    print("Failed to import scancode_config, do 'pip3 install scancode-toolkit'")
-    raise
 
 
 def sig_handler(sig, frame):
     err_exit()
-
-
-# check if scancode package is up to date
-# it is important to have an updated license DB
-def check_scancode_ver():
-    print("Checking scancode-toolkit version before run...")
-    sc_version = scancode_config.__version__
-
-    if sc_version != common.sc_toolkit_cicd_ver:
-        err_exit(
-            "scancode-toolkit version does not match CI/CD version!\n"
-            + f"Local version: {sc_version}\n"
-            + f"CI/CD version: {common.sc_toolkit_cicd_ver}\n"
-        )
-
-    from commoncode import fileutils
-    fileutils.delete(scancode_config.scancode_temp_dir)
-
-    print("scancode-toolkit up to date")
 
 
 def scan(args):
@@ -76,27 +50,18 @@ def scan(args):
         docker=args.docker,
         path=args.path,
         alt_src_url=args.alt_src_url,
-        extra_repo_urls=args.extra_repo_urls
+        extra_repo_urls=args.extra_repo_urls,
     )
 
 
 def validate(args):
     validator = Validator()
-    license_expressions = {}
-
-    # read from file
-    if args.f:
-        license_expressions = read_license_from_file(args.f)
-    # read from stdin
-    elif args.i:
-        license_expressions["stdin"] = args.i
-    else:
-        err_exit("License expression must be provided!")
-
-    validator.validate(license_expressions)
+    validator.validate(file=args.f, stdin=args.i)
 
 
 def lic_db(args):
+    from LicDB import LicDB
+
     lic_db = LicDB()
 
     if args.trim:
@@ -115,15 +80,8 @@ def lic_db(args):
 
 
 def clean_exp(args):
-    license_expressions = dict()
     cleaner = ExpCleaner()
-
-    if args.i:
-        license_expressions["stdin"] = args.i
-    elif args.f:
-        license_expressions = read_license_from_file(args.f)
-
-    cleaner.clean_exp(license_expressions)
+    cleaner.clean_exp(file=args.f, stdin=args.i)
 
 
 def compare_exps(args):
@@ -264,7 +222,6 @@ and the package source should be built and scanned. Otherwise, scan will just be
 for the SPEC file only.""",
     )
 
-
     scan_sub_p.set_defaults(func=scan)
     ########## END SCAN ###################################
 
@@ -344,66 +301,6 @@ This assumes the format: License: <spdx expression>""",
     return args
 
 
-# check for prerequisites before running
-def check_prereqs(cmd_name=None):
-    ret = 0
-
-    if cmd_name == "--help":
-        return ret
-
-    # these are required only for scanning
-    if cmd_name is None or cmd_name == "scan":
-        # check for rpm command existence
-        if not shutil.which("rpm"):
-            pr_err(
-                "'rpm' command not found, please install with "
-                + "'tdnf install -y rpm'"
-            )
-            ret = -1
-
-        # check for scancode command existence
-        if not shutil.which("scancode"):
-            pr_err(
-                "'scancode' command not found, please install with "
-                + "'pip3 install scancode-toolkit'"
-            )
-            ret = -1
-
-        # check for extractcode command existence
-        if not shutil.which("extractcode"):
-            pr_err(
-                "'extractcode' command not found, please install with "
-                + "'pip3 install extractcode'"
-            )
-            ret = -1
-
-        # check for rpmbuild command existence
-        if not shutil.which("rpmbuild"):
-            pr_err(
-                "'rpmbuild' command not found, please install with "
-                + "'tdnf install -y rpm-build'"
-            )
-            ret = -1
-
-    # check for pip3 command existence
-    if not shutil.which("pip3"):
-        pr_err(
-            "'pip3' command not found, please install with "
-            + "'tdnf install -y python3-pip'"
-        )
-        ret = -1
-
-    # check for rpmspec command existence, required for reading from spec files
-    if not shutil.which("rpmspec"):
-        pr_err(
-            "'rpmspec' command not found, please install with "
-            + "'tdnf install -y rpm-build'"
-        )
-        ret = -1
-
-    return ret
-
-
 def set_global_options(args):
     if not args:
         return
@@ -427,11 +324,6 @@ def main():
     # print help if no args given on cmdline
     if len(sys.argv) <= 1:
         sys.argv.append("--help")
-
-    if check_prereqs(sys.argv[1]) < 0:
-        return -1
-
-    check_scancode_ver()
 
     # proper cleanup on unexpected exits
     signal.signal(signal.SIGINT, sig_handler)

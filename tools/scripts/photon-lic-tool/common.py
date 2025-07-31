@@ -10,12 +10,6 @@ import time
 import yaml
 
 try:
-    import license_expression
-except ImportError:
-    print("license_expression import failed, do 'pip3 install license_expression'")
-    raise
-
-try:
     from license_tree import license_tree
 except ImportError:
     print(
@@ -224,6 +218,12 @@ def cleanup_license_expression(ignore_list=None, exception_list=None, license_ex
     if not license_exp:
         return None
 
+    try:
+        import license_expression
+    except ImportError:
+        print("license_expression import failed, do 'pip3 install license_expression'")
+        raise
+
     lic_tree = license_tree.create_exp_tree(license_exp, exception_list, ignore_list)
     parsed_exp = license_tree.render_exp_tree(lic_tree)
 
@@ -414,6 +414,13 @@ def read_license_from_file(file_path=None):
     if file_path.endswith(".spec") or file_path.endswith(".spec.in"):
         copy_spec_to_rpm_build_root(file_path)
 
+        # check for rpmspec command existence, required for reading from spec files
+        if not shutil.which("rpmspec"):
+            err_exit(
+                "'rpmspec' command not found, please install with "
+                + "'tdnf install -y rpm-build'"
+            )
+
         result = run_cmd(
             [
                 "rpmspec",
@@ -451,7 +458,7 @@ def read_license_from_file(file_path=None):
         return license_expressions
     elif file_path.endswith("config.yaml"):
         # parse the config.yaml
-        with open(file_path, 'r') as config_yaml_f:
+        with open(file_path, "r") as config_yaml_f:
             config_yaml = yaml.load(config_yaml_f, yaml.SafeLoader)
 
         for source in config_yaml["sources"]:
@@ -482,3 +489,36 @@ def read_license_from_file(file_path=None):
             err_exit(f"ERROR: No license expression found in {file_path}")
 
     return license_expressions
+
+
+def running_in_container():
+    # This file is created inside the image by the Dockerfile
+    if os.path.exists("/.dockerenv"):
+        return True
+    return False
+
+
+# check if scancode package is up to date
+# it is important to have an updated license DB
+def check_scancode_ver():
+    try:
+        import scancode_config
+    except ImportError:
+        print("Failed to import scancode_config, do 'pip3 install scancode-toolkit'")
+        raise
+
+    print("Checking scancode-toolkit version before run...")
+    sc_version = scancode_config.__version__
+
+    if sc_version != sc_toolkit_cicd_ver:
+        err_exit(
+            "scancode-toolkit version does not match CI/CD version!\n"
+            + f"Local version: {sc_version}\n"
+            + f"CI/CD version: {sc_toolkit_cicd_ver}\n"
+        )
+
+    from commoncode import fileutils
+
+    fileutils.delete(scancode_config.scancode_temp_dir)
+
+    print("scancode-toolkit up to date")

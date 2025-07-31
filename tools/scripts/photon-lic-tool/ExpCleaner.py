@@ -1,12 +1,34 @@
-from common import cleanup_license_expression, get_exceptions_list, err_exit
+from common import (
+    cleanup_license_expression,
+    get_exceptions_list,
+    err_exit,
+    running_in_container,
+    read_license_from_file,
+)
+from DockerUtil import DockerUtil
 
 
 class ExpCleaner:
-    def clean_exp(self, license_expressions={}):
+    def clean_exp(self, file=None, stdin=None):
         exceptions_list = []
+        license_expressions = {}
+        docker_util = DockerUtil()
 
-        if not license_expressions:
-            err_exit("No license expression given")
+        if not running_in_container() and docker_util.docker_img_exists():
+            mount_list, cmd = docker_util.build_clean_exp_docker_cmd(
+                file=file, stdin=stdin
+            )
+            docker_util.run_docker_cmd(cmd=cmd, mount_list=mount_list)
+            return
+
+        # read from file
+        if file:
+            license_expressions = read_license_from_file(file)
+        # read from stdin
+        elif stdin:
+            license_expressions["stdin"] = stdin
+        else:
+            err_exit("License expression must be provided!")
 
         exceptions_list = get_exceptions_list()
 

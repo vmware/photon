@@ -6,7 +6,6 @@ from common import (
     extract_top_level_expressions,
     pr_err,
 )
-import scancode_config
 import os
 import hashlib
 import pathlib
@@ -37,6 +36,8 @@ class CacheUtil:
 
     # Convert file path to key (checksum)
     def _conv_filepath_to_key(self, file_path=None):
+        import scancode_config
+
         sc_version = scancode_config.__version__
         checksum = None
 
