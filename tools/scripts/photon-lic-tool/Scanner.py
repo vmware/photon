@@ -4,7 +4,6 @@
 import common
 from common import *
 from CacheUtil import CacheUtil
-from LicDB import LicDB
 from DockerUtil import DockerUtil
 
 import yaml
@@ -107,14 +106,21 @@ class Scanner:
     # Keep this in line with list in Dockerfile
     def _restore_python_reqs(self):
         pkgs_vers = {
-                        "requests": "2.32.3",
-                        "charset-normalizer": "3.4.2",
-                        "lxml": "5.4.0",
-                        "markupsafe": "3.0.2",
-                        "pyyaml": "6.0.2",
-                        "redis": "6.0.0",
-                        "argparse": "1.4.0"
-                    }
+            "requests": "2.32.3",
+            "charset-normalizer": "3.4.2",
+            "lxml": "5.4.0",
+            "markupsafe": "3.0.2",
+            "pyyaml": "6.0.2",
+            "redis": "6.0.0",
+            "argparse": "1.4.0",
+        }
+
+        # check for pip3 command existence
+        if not shutil.which("pip3"):
+            err_exit(
+                "'pip3' command not found, please install with "
+                + "'tdnf install -y python3-pip'"
+            )
 
         pkg_update_cmd = "pip3 install"
 
@@ -122,7 +128,6 @@ class Scanner:
             pkg_update_cmd += f" {pkg}=={pkgs_vers[pkg]}"
 
         run_cmd(pkg_update_cmd)
-
 
     def _install_build_reqs(self, spec_path=None):
         build_reqs = []
@@ -157,9 +162,7 @@ class Scanner:
                 f"{result.stdout.decode()}"
             )
 
-        print(
-            "Restoring Python package versions after tdnf packge install..."
-        )
+        print("Restoring Python package versions after tdnf packge install...")
         self._restore_python_reqs()
 
     # Find all extracted archives, i.e dirs with -extract at the end.
@@ -187,13 +190,8 @@ class Scanner:
     # downloads all required sources from .spec file and validates
     # against checksum
     def _download_srcs(
-        self,
-        output_dir=None,
-        alt_src_url="",
-        photon_root="",
-        config_yaml_path=""
+        self, output_dir=None, alt_src_url="", photon_root="", config_yaml_path=""
     ):
-        config_yaml = None
         archive = ""
         archive_checksum = ""
         src_url = ""
@@ -247,7 +245,6 @@ class Scanner:
             else:
                 print(f"Checksum integrity check passed for {archive}")
 
-
     def _rpmbuild_prep(self, rpm_build_cmds=None, spec_path=None):
         attempts = 0
         spec_fn = os.path.basename(spec_path)
@@ -274,7 +271,6 @@ class Scanner:
                 self._install_build_reqs(spec_path)
             else:
                 err_exit()
-
 
     # run rpmbuild -bp to get the source RPM to scan
     def _extract_src_rpm(self, rpm_path=None):
@@ -325,14 +321,10 @@ class Scanner:
 
         return f"{common.rpm_build_root}/BUILD"
 
-
     # Build the scan directory from a photon spec file,
     # e.g SPECS/<pkg name>/<pkg.spec>. Similar to extract_src_rpm()
-    def _build_scan_dir_from_spec_dir(self,
-                                      spec_path=None,
-                                      alt_src_url=None):
+    def _build_scan_dir_from_spec_dir(self, spec_path=None, alt_src_url=None):
         dist_tag = ""
-        attempts = 0
         ph_root = ""
 
         if not spec_path:
@@ -380,7 +372,6 @@ class Scanner:
         self._rpmbuild_prep(rpm_build_cmds, spec_path)
 
         return f"{common.rpm_build_root}/BUILD"
-
 
     def _setup_scan_dir(self, path="", build_spec=False, alt_src_url=None):
         scan_dir = ""
@@ -447,7 +438,6 @@ class Scanner:
 
         return scan_dir
 
-
     # For some packages with multiple sources, there can be multiple subdirectories under BUILD/
     # each corresponding to a different source archive. Only one is the main source/build directory,
     # but to outsiders we can't really tell which one.
@@ -462,17 +452,19 @@ class Scanner:
         spdx_exp = []
 
         # Check manual review paths relative to the archive directories
-        for archive in self._config_yaml['sources']:
-            if 'license_manual_review' not in archive:
+        for archive in self._config_yaml["sources"]:
+            if "license_manual_review" not in archive:
                 continue
 
             spdx_exp.extend(
-                self.__parse_manual_review(scan_dir, archive['license_manual_review'])
+                self.__parse_manual_review(scan_dir, archive["license_manual_review"])
             )
 
         return spdx_exp
 
-    def __parse_found_manual_review_file(self, reviewed_shasum, reviewed_spdx_exp, path):
+    def __parse_found_manual_review_file(
+        self, reviewed_shasum, reviewed_spdx_exp, path
+    ):
         spdx_exp = []
         checksum = None
 
@@ -488,45 +480,42 @@ class Scanner:
                 "please review and update the checksum/spdx expression accordingly"
             )
 
-        spdx_exp.extend(
-            extract_top_level_expressions(reviewed_spdx_exp)
-        )
+        spdx_exp.extend(extract_top_level_expressions(reviewed_spdx_exp))
 
         os.remove(path)
 
         return spdx_exp
-
 
     def __parse_manual_review(self, scan_dir, manual_review):
         spdx_exp = []
 
         for reviewed_f in manual_review:
             # required
-            archive_path = reviewed_f['archive_path']
+            archive_path = reviewed_f["archive_path"]
             # optional, if different from archive_path
             source_path = ""
-            if 'final_build_path' in reviewed_f:
-                source_path = reviewed_f['final_build_path']
+            if "final_build_path" in reviewed_f:
+                source_path = reviewed_f["final_build_path"]
 
             found_archive_path = ""
             found_source_path = ""
 
             # check the path relative to each subdirectory under BUILD/
-            for dir_name in os.listdir(f'{scan_dir}'):
+            for dir_name in os.listdir(f"{scan_dir}"):
                 if not os.path.isdir(f"{scan_dir}/{dir_name}"):
                     continue
 
                 if found_source_path and found_archive_path:
                     break
 
-                full_archive_path = f'{scan_dir}/{dir_name}/{archive_path}'
+                full_archive_path = f"{scan_dir}/{dir_name}/{archive_path}"
                 if os.path.exists(full_archive_path):
                     found_archive_path = full_archive_path
 
                 if not source_path:
                     continue
 
-                full_source_path = f'{scan_dir}/{dir_name}/{source_path}'
+                full_source_path = f"{scan_dir}/{dir_name}/{source_path}"
                 if os.path.exists(full_source_path):
                     found_source_path = full_source_path
 
@@ -537,33 +526,29 @@ class Scanner:
                 )
 
             if "md5sum" in reviewed_f:
-                err_exit("ERROR: md5 checksums have been phased out in all areas.\n "
-                         "Please replace 'md5sum' in 'license_manual_review' in the package's "
-                         "config.yaml with sha256:\n"
-                         "\t'sha256sum: <checksum value>'")
+                err_exit(
+                    "ERROR: md5 checksums have been phased out in all areas.\n "
+                    "Please replace 'md5sum' in 'license_manual_review' in the package's "
+                    "config.yaml with sha256:\n"
+                    "\t'sha256sum: <checksum value>'"
+                )
 
             spdx_exp.extend(
                 self.__parse_found_manual_review_file(
-                    reviewed_f['sha256sum'],
-                    reviewed_f['spdx_exp'],
-                    found_source_path
+                    reviewed_f["sha256sum"], reviewed_f["spdx_exp"], found_source_path
                 )
             )
 
             spdx_exp.extend(
                 self.__parse_found_manual_review_file(
-                    reviewed_f['sha256sum'],
-                    reviewed_f['spdx_exp'],
-                    found_archive_path
+                    reviewed_f["sha256sum"], reviewed_f["spdx_exp"], found_archive_path
                 )
             )
 
         return spdx_exp
 
-
     def _emit_spdx(self, spdx_exp="None"):
         print(f"SPDX Expression: {spdx_exp}")
-
 
     def _cleanup_scan(self, scan_dir=""):
         try:
@@ -575,6 +560,57 @@ class Scanner:
         except Exception as e:
             pr_err(f"Failed to remove temp dir(s) after scan: {e}")
 
+    def _check_prereqs(self):
+        check_scancode_ver()
+
+        # check for scancode command existence
+        if not shutil.which("scancode"):
+            err_exit(
+                "'scancode' command not found, please install with "
+                + "'pip3 install scancode-toolkit'"
+            )
+
+        # check for extractcode command existence
+        if not shutil.which("extractcode"):
+            err_exit(
+                "'extractcode' command not found, please install with "
+                + "'pip3 install extractcode'"
+            )
+
+        # check for rpmbuild command existence
+        if not shutil.which("rpmbuild"):
+            err_exit(
+                "'rpmbuild' command not found, please install with "
+                + "'tdnf install -y rpm-build'"
+            )
+
+        # check for rpm command existence
+        if not shutil.which("rpm"):
+            err_exit(
+                "'rpm' command not found, please install with "
+                + "'tdnf install -y rpm'"
+            )
+
+    def _export_yaml(
+        self, sc_yaml_out_path="", user_yaml_path=None, cache_util=None, cwd=""
+    ):
+        if not user_yaml_path:
+            return
+
+        if user_yaml_path.startswith("/"):
+            yaml_output_path = user_yaml_path
+        else:
+            # local file, relative path
+            yaml_output_path = f"{cwd}/{yaml}"
+
+        shutil.copy(sc_yaml_out_path, yaml_output_path)
+        print(f"Detailed scan yaml produced at: {yaml_output_path}")
+
+        # also produce a yaml for the cached results
+        if cache_util:
+            cache_util.report_cache_results(
+                yaml_output_dir=os.path.dirname(yaml_output_path)
+            )
 
     # Main scanning function
     def scan(
@@ -586,7 +622,7 @@ class Scanner:
         cpus=1,
         docker=False,
         alt_src_url=None,
-        extra_repo_urls=None
+        extra_repo_urls=None,
     ):
         yaml_tmp_path = f"{common.ph_scan_dir}/scan-results.yaml"
         cwd = os.getcwd()
@@ -597,14 +633,17 @@ class Scanner:
         lic_db = None
         cached_spdx_ids = set()
         self._extra_repo_urls = extra_repo_urls
+        abs_path = os.path.abspath(path)
 
         if not path:
             err_exit("ERROR: No input given for scan!")
 
-        if docker:
-            docker_util = DockerUtil()
-            docker_util.run_docker_cmd(
-                cmd="scan",
+        if not os.path.exists(abs_path):
+            err_exit(f"Path: '{abs_path}' does not exist! Exiting...")
+
+        docker_util = DockerUtil()
+        if docker or (not running_in_container() and docker_util.docker_img_exists()):
+            mnt_list, cmd = docker_util.build_scan_docker_cmd(
                 build_spec=build_spec,
                 path=path,
                 redis_host=common.redis_host,
@@ -614,9 +653,17 @@ class Scanner:
                 yaml=yaml,
                 cpus=cpus,
                 alt_src_url=alt_src_url,
-                extra_repo_urls=extra_repo_urls
+                extra_repo_urls=extra_repo_urls,
             )
+            docker_util.run_docker_cmd(cmd=cmd, mount_list=mnt_list)
+            if yaml:
+                print(
+                    f"yaml output can be found at {yaml} and/or "
+                    + f"{os.path.dirname(yaml)}/{common.cached_yaml_fn}"
+                )
             return
+
+        self._check_prereqs()
 
         # clean out the dir if anything there before
         if os.path.exists(common.ph_scan_dir):
@@ -632,9 +679,7 @@ class Scanner:
             return
 
         if build_spec:
-            cached_spdx_ids.update(
-                self._parse_manual_review(scan_dir)
-            )
+            cached_spdx_ids.update(self._parse_manual_review(scan_dir))
 
         if not cpus:
             cpus = multiprocessing.cpu_count()
@@ -650,6 +695,8 @@ class Scanner:
             err_exit("For redis cache, need both the host and the port!")
 
         if not common.no_trimming:
+            from LicDB import LicDB
+
             lic_db = LicDB()
             print(
                 "Trimming license DB to include only valid SPDX licenses "
@@ -687,6 +734,13 @@ class Scanner:
             pr_err("ERROR: scancode failed during scanning process :(")
             if not common.no_trimming:
                 lic_db.restore_lic_db()
+
+            self._export_yaml(
+                user_yaml_path=yaml,
+                cache_util=cache_util,
+                cwd=cwd,
+                sc_yaml_out_path=yaml_tmp_path,
+            )
             err_exit()
 
         if not common.no_trimming:
@@ -708,21 +762,12 @@ class Scanner:
             cached_spdx_ids=cached_spdx_ids,
         )
 
-        if yaml:
-            if yaml.startswith("/"):
-                yaml_output_path = yaml
-            else:
-                # local file, relative path
-                yaml_output_path = f"{cwd}/{yaml}"
-
-            shutil.copy(yaml_tmp_path, yaml_output_path)
-            print(f"Detailed scan yaml produced at: {yaml_output_path}")
-
-            # also produce a yaml for the cached results
-            if cache_util:
-                cache_util.report_cache_results(
-                    yaml_output_dir=os.path.dirname(yaml_output_path)
-                )
+        self._export_yaml(
+            user_yaml_path=yaml,
+            cache_util=cache_util,
+            cwd=cwd,
+            sc_yaml_out_path=yaml_tmp_path,
+        )
 
         self._emit_spdx(spdx_exp)
         self._cleanup_scan(scan_dir)

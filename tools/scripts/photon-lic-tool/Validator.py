@@ -1,15 +1,34 @@
 import common
-from common import get_official_spdx_list, get_exceptions_list, err_exit, pr_err
-
-try:
-    import license_expression
-except ImportError:
-    print("license_expression import failed, do 'pip3 install license_expression'")
-    raise
+from DockerUtil import DockerUtil
+from common import (
+    get_official_spdx_list,
+    get_exceptions_list,
+    err_exit,
+    pr_err,
+    read_license_from_file,
+)
 
 
 class Validator:
-    def validate(self, license_expressions={}):
+    def validate(self, file=None, stdin=None):
+        license_expressions = {}
+
+        docker_util = DockerUtil()
+        if not common.running_in_container() and docker_util.docker_img_exists():
+            mount_list, cmd = docker_util.build_validate_docker_cmd(
+                file=file, stdin=stdin
+            )
+            docker_util.run_docker_cmd(cmd=cmd, mount_list=mount_list)
+            return
+
+        try:
+            import license_expression
+        except ImportError:
+            print(
+                "license_expression import failed, do 'pip3 install license_expression'"
+            )
+            raise
+
         license_exp = ""
         bad_ids = ["unknown-spdx", "LicenseRef", "scancode"]
         spdx_licensing = license_expression.get_spdx_licensing()
@@ -18,8 +37,18 @@ class Validator:
         errors = 0
         warnings = 0
 
+        # TODO: Cache these inside the docker image? Downside is may be outdated.
         spdx_list = get_official_spdx_list()
         exceptions_list = get_exceptions_list()
+
+        # read from file
+        if file:
+            license_expressions = read_license_from_file(file)
+        # read from stdin
+        elif stdin:
+            license_expressions["stdin"] = stdin
+        else:
+            err_exit("License expression must be provided!")
 
         for license_exp in license_expressions:
             print(f"Validating license for {license_exp}")
