@@ -1,12 +1,10 @@
-Summary:	Photon repo files, gpg keys
-Name:		photon-repos
-Version:	4.0
-Release:	3%{?dist}
-License:	Apache License
-Group:		System Environment/Base
-URL:		https://vmware.github.io/photon/
-Source0:        photon-repos-4.0.tar.gz
-%define sha1    photon-repos=6dcaac0748e7fba12c4f5f01f05f6aeae5ec7fa3
+Summary:        Photon repo files, gpg keys
+Name:           photon-repos
+Version:        4.0
+Release:        4%{?dist}
+License:        Apache License
+Group:          System Environment/Base
+URL:            https://vmware.github.io/photon/
 Source1:        VMWARE-RPM-GPG-KEY
 Source2:        VMWARE-RPM-GPG-KEY-4096
 Source3:        photon.repo
@@ -15,16 +13,29 @@ Source5:        photon-iso.repo
 Source6:        photon-debuginfo.repo
 Source7:        photon-extras.repo
 Source8:        photon-release.repo
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Provides:	photon-repos
-BuildArch:	noarch
+Source9:        migrate-repo-url.inc
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Provides:       photon-repos
+BuildArch:      noarch
+%include %{SOURCE9}
 
 %description
 Photon repo files and gpg keys
 
 %build
 # Nothing to do
+
+%post
+[ $1 -gt 1 ] || exit 0
+# On upgrade, migrate the baseurl of remote repos
+%{migrate_vmw_repo_url \
+  photon \
+  photon-extras \
+  photon-release \
+  photon-updates \
+  photon-debuginfo \
+}
 
 %install
 rm -rf %{buildroot}
@@ -56,6 +67,8 @@ rm -rf %{buildroot}
 %config(noreplace) /etc/yum.repos.d/photon-release.repo
 
 %changelog
+*   Wed Jul 23 2025 Bo Gan <bo.gan@broadcom.com> 4.0-4
+-   Update baseurl and logic to patch existing (noreplace) files
 *   Tue Mar 1 2022 Oliver Kurth <okurth@vmware.com> 4.0-3
 -   add 4096 bit RSA key
 -   disable filelists metadata in photon.repo
