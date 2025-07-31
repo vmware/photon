@@ -1,12 +1,10 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        3.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
-Source0:        photon-repos-3.0.tar.gz
-%define sha1 photon-repos=6dcaac0748e7fba12c4f5f01f05f6aeae5ec7fa3
 Source1:        VMWARE-RPM-GPG-KEY
 Source2:        VMWARE-RPM-GPG-KEY-4096
 Source3:        photon.repo
@@ -14,12 +12,15 @@ Source4:        photon-updates.repo
 Source5:        photon-iso.repo
 Source6:        photon-debuginfo.repo
 Source7:        photon-extras.repo
+Source8:        migrate-repo-url.inc
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Provides:       photon-repos
 BuildArch:      noarch
 # tdnf < 3.0.0 does not support multiple keys
 Conflicts:      tdnf < 3.0.0
+%include %{SOURCE8}
+
 %description
 Photon repo files and gpg keys
 
@@ -54,6 +55,14 @@ for f in /etc/yum.repos.d/photon{,-debuginfo,-iso,-updates,-extras}.repo ; do
         sed -i 's@gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY@gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096@' $f
     fi
 done
+[ $1 -gt 1 ] || exit 0
+# On upgrade, migrate the baseurl of remote repos
+%{migrate_vmw_repo_url \
+  photon \
+  photon-extras \
+  photon-updates \
+  photon-debuginfo \
+}
 
 %files
 %defattr(-,root,root,-)
@@ -67,6 +76,8 @@ done
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Wed Dec 03 2025 Bo Gan <bo.gan@broadcom.com> 3.0-9
+-   Patch old vmware URLs to new broadcom ones
 *   Tue Mar 8 2022 Oliver Kurth <okurth@vmware.com> 3.0-8
 -   conflicts with tdnf < 3.0.0, which doesn't support multiple keys
 -   make sure 4096 bit key is configured
