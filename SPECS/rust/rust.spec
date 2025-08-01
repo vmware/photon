@@ -4,7 +4,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.71.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -38,6 +38,15 @@ Requires: libgcc
 %description
 Rust Programming Language
 
+%package        doc
+Summary:        Documentation files for rust
+BuildArch:      noarch
+Requires:     %{name} = %{version}-%{release}
+Conflicts:    %{name} < 1.71.1-7
+
+%description    doc
+Documentation files for rust
+
 %prep
 # Using autosetup is not feasible
 %setup -q -n %{name}c-%{version}-src
@@ -47,6 +56,12 @@ pushd src/tools/cargo
 popd
 
 rm -rf src/llvm-project/
+
+%if 0%{?with_check} == 0
+# Remove files to handle unintended licenses
+rm -r tests
+rm -r library/stdarch/crates/intrinsic-test/acle
+%endif
 
 mkdir -p build/cache/%{toolchain_prefix}
 cp %{SOURCE1} %{SOURCE2} %{SOURCE3} build/cache/%{toolchain_prefix}/
@@ -82,11 +97,9 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%doc CONTRIBUTING.md README.md RELEASES.md
 %{_bindir}/rustc
 %{_bindir}/rustdoc
 %{_bindir}/rust-lldb
-%{_mandir}/man1/*
 %{_libdir}/lib*.so
 %{_libdir}/rustlib/*
 %{_libexecdir}/cargo-credential-1password
@@ -95,7 +108,14 @@ rm -rf %{buildroot}/*
 %{_bindir}/cargo
 %{_sysconfdir}/bash_completion.d/cargo
 
+%files doc
+%defattr(-,root,root,-)
+%doc CONTRIBUTING.md README.md RELEASES.md
+%{_mandir}/man1/*
+
 %changelog
+* Fri Jul 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.71.1-7
+- Remove unintended license for SRP compliance
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-6
 - Enable verbose build
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-5
