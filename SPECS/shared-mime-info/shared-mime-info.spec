@@ -1,7 +1,7 @@
 Summary:        MIME database
 Name:           shared-mime-info
 Version:        2.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://freedesktop.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -28,6 +28,9 @@ This allows central updates of MIME information for all supporting applications.
 
 %prep
 %autosetup -p1
+%if 0%{?with_check} == 0
+rm tests/mime-detection/nrl.trig
+%endif
 
 %build
 %meson
@@ -50,6 +53,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Fri Aug 01 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.2-6
+- Removed nrl.trig test file
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.2-5
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2-4

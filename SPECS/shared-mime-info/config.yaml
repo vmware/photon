@@ -7,11 +7,11 @@ sources:
       detailed_description: 'The Shared Mime Info package contains a MIME database.
         This allows central updates of MIME information for all supporting applications. '
       home_page: http://freedesktop.org
-      license_concluded: CC0-1.0 AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND
-        MPL-2.0 AND CC-BY-SA-4.0 AND AGPL-3.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later
-        AND BSD-2-Clause AND GPL-2.0-only
-      license_declared: CC0-1.0 AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND
-        MPL-2.0 AND CC-BY-SA-4.0 AND AGPL-3.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later
-        AND BSD-2-Clause AND GPL-2.0-only
+      license_concluded: AGPL-3.0-only AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-SA-4.0
+        AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND
+        GPL-3.0-or-later AND LGPL-2.0-or-later AND MIT AND MPL-2.0
+      license_declared: AGPL-3.0-only AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-SA-4.0
+        AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND
+        GPL-3.0-or-later AND LGPL-2.0-or-later AND MIT AND MPL-2.0
       short_summary: MIME database
       supplier: 'Organization: Broadcom, Inc.'
