@@ -1,7 +1,29 @@
 sources:
-- archive: dotnet-sdk-8.0.407-linux-x64.tar.gz
-  archive_sha512sum: eb62153ecc9e53a5422ff44f1c6966a89ee442a91f779e971aaa47ad6a66bb131af9b38e4ca012567547b9357b72b0476b77d2b7399a38a9224a8e6ca02a8155
+- archive: dotnet-sdk-8.0.411-linux-x64.tar.gz
+  archive_sha512sum: e7304c3798c3ad3278a23cfac7e3f873a760d6bfe0719eaafdf6a9666afeff8f2730e7c84f7ff597d34b5e26d1bccb08ecc6e23c7ef4376564c4ed568d6d2430
   skip_validation: true
+  license_manual_review:
+  - archive_path: "sdk/8.0.411/NuGet.Packaging.dll"
+    sha256sum: 5be664349d79037c6aefd29df91bf18c61dca31bc7195c022e58316ed1ab722f
+    spdx_exp: ""
+  - archive_path: "sdk/8.0.411/Containers/containerize/NuGet.Packaging.dll"
+    sha256sum: cfb5f07068e73ef0262ed3f5b9d1145d2d315314bdb51657ab918b57032f0859
+    spdx_exp: ""
+  - archive_path: "sdk/8.0.411/Containers/tasks/net472/NuGet.Packaging.dll"
+    sha256sum: cae3caa5087a13e9a1b0630d5d62dbf711f6cdace08c4c3ab4eccd6d36fa47f3
+    spdx_exp: ""
+  - archive_path: "sdk/8.0.411/Sdks/Microsoft.NET.Sdk/tools/net472/NuGet.Packaging.dll"
+    sha256sum: cae3caa5087a13e9a1b0630d5d62dbf711f6cdace08c4c3ab4eccd6d36fa47f3
+    spdx_exp: ""
+  - archive_path: "sdk/8.0.411/Sdks/NuGet.Build.Tasks.Pack/CoreCLR/NuGet.Build.Tasks.Pack.dll"
+    sha256sum: 2f27e0f1ae3c7b1263a44b3b6f0a7cc301f4925b6ceead6d171a6dea38054365
+    spdx_exp: ""
+  - archive_path: "sdk/8.0.411/Sdks/NuGet.Build.Tasks.Pack/Desktop/NuGet.Build.Tasks.Pack.dll"
+    sha256sum: a153f2d4e922c63cf80f30ef987012eda872b266a38fec408089377e7998c554
+    spdx_exp: ""
+  - archive_path: "sdk/8.0.411/Containers/tasks/net8.0/NuGet.Packaging.dll"
+    sha256sum: 5be664349d79037c6aefd29df91bf18c61dca31bc7195c022e58316ed1ab722f
+    spdx_exp: ""
   spdx:
     package:
       detailed_description: '.NET Core is a development platform that you can use

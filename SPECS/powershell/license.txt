@@ -1,1 +1,1 @@
-License: Parity-6.0.0 AND LGPL-2.1-or-later AND BSD-2-Clause AND CC-BY-SA-2.0 AND JSON AND BSD-3-Clause AND MS-PL AND Apache-2.0 AND Parity-7.0.0 AND MIT AND HPND-export-US-modify
+License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND HPND-export-US-modify AND JSON AND LGPL-2.1-or-later AND MIT AND MS-PL

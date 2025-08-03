@@ -1,10 +1,11 @@
 %global ps_native_ver   7.4.0
 %global libmi_tag       1.9.0-0
+%global gen_nuget_deps  0
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.4.7
-Release:        2%{?dist}
+Version:        7.4.11
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -16,10 +17,11 @@ BuildArch:      x86_64
 # Checkout to desired tag & create tarball from that branch
 #
 # For example:
-# git clone https://github.com/PowerShell/PowerShell.git
-# mv PowerShell PowerShell-7.2.0 && cd PowerShell-7.2.0
-# git checkout -b v7.2.0 tags/v7.2.0
-# cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
+# v="7.4.11"; tag=v${v}
+# git clone --branch $tag --depth 1 https://github.com/PowerShell/PowerShell.git
+# cd PowerShell && git checkout -b $tag
+# cd ..; mv PowerShell PowerShell-$v
+# tar czf powershell-$v.tar.gz PowerShell-$v
 Source0: %{name}-%{version}.tar.gz
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
@@ -46,7 +48,9 @@ Source5: omi-%{libmi_tag}.tar.gz
 # Then archive $HOME/.nuget directory
 # mv $HOME/.nuget <NAME>-<VERSION>-nuget-deps
 # tar cJf <NAME>-<VERSION>-nuget-deps.tar.xz <NAME>-<VERSION>-nuget-deps
+%if 0%{?gen_nuget_deps} == 0
 Source6: %{name}-%{version}-nuget-deps.tar.xz
+%endif
 
 Source7: license.txt
 %include %{SOURCE7}
@@ -62,17 +66,19 @@ BuildRequires:  git
 BuildRequires:  photon-release
 BuildRequires:  build-essential
 BuildRequires:  openssl-devel
-BuildRequires:  wget
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  which
 BuildRequires:  icu-devel
 BuildRequires:  zlib-devel
+%if 0%{?gen_nuget_deps}
+BuildRequires:  wget
+%endif
 
 Requires:       icu >= 70.1
 Requires:       zlib
-Requires:       dotnet-sdk = 8.0.407
+Requires:       dotnet-sdk = 8.0.411
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -89,19 +95,31 @@ It consists of a cross-platform command-line shell and associated scripting lang
 %setup -qcTDa 5 -n omi
 
 pushd %{_builddir}/PowerShell-%{version}
-%patch -p1 0
-popd
 
+%patch -p1 0
+
+%if 0%{?gen_nuget_deps} == 0
 tar xf %{SOURCE6}
 rm -rf ${HOME}/.nuget
 mv %{name}-%{version}-nuget-deps ${HOME}/.nuget
+%else
+dotnet restore .
+mv $HOME/.nuget %{name}-%{version}-nuget-deps
+tar cJf %{name}-%{version}-nuget-deps.tar.xz %{name}-%{version}-nuget-deps
+echo "$PWD/%{name}-%{version}-nuget-deps.tar.xz is ready ..."
+echo "You can get the archive from chroot now ..."
+echo "Aborting build now ..."
+exit 1
+%endif
+
+popd
 
 %build
 # Build libmi
 pushd %{_builddir}/omi/omi-%{libmi_tag}/Unix
 sh ./configure
 %make_build
-mv ./output/lib/libmi.so %{_builddir}/powershell-linux-%{version}
+mv ./output/lib/libmi.so %{_builddir}/%{name}-linux-%{version}
 popd
 
 pushd %{_builddir}/PowerShell-%{version}
@@ -126,10 +144,10 @@ mkdir -p %{buildroot}%{_libdir}/%{name} \
 cd %{_builddir}/PowerShell-%{version}
 rm -rf src/%{name}-unix/bin/{Debug,Linux}
 mv bin/ThirdPartyNotices.txt bin/LICENSE.txt %{buildroot}%{_docdir}/%{name}
-cp -r bin/* %{buildroot}%{_libdir}/%{name}
+cp -a bin/* %{buildroot}%{_libdir}/%{name}
 rm -f %{buildroot}%{_libdir}/%{name}/libpsl-native.so
 
-cp -rf %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/%{name}-unix/libpsl-native.so \
+cp -a %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/%{name}-unix/libpsl-native.so \
         %{buildroot}%{_libdir}/%{name}
 
 chmod 755 %{buildroot}%{_libdir}/%{name}/pwsh
@@ -138,15 +156,17 @@ ln -srv %{buildroot}%{_libdir}/%{name}/pwsh %{buildroot}%{_bindir}/pwsh
 cp %{_builddir}/%{name}-linux-%{version}/ref/* %{buildroot}%{_libdir}/%{name}/ref
 cp %{_builddir}/%{name}-linux-%{version}/libmi.so %{buildroot}%{_libdir}/%{name}/
 
-cp -r %{_builddir}/%{name}-linux-%{version}/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
+cp -a %{_builddir}/%{name}-linux-%{version}/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
       %{buildroot}%{_libdir}/%{name}/Modules
 
+%if 0%{?with_check}
 %check
 cd %{_builddir}/PowerShell-%{version}/test/xUnit
 dotnet test
 export LANG=en_US.UTF-8
 cd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/libpsl-native
 %make_build test
+%endif
 
 %post
 #in case of upgrade, delete the soft links
@@ -156,7 +176,8 @@ if [ $1 -eq 2 ]; then
   popd
 fi
 
-grep -qF %{_bindir}/pwsh %{_sysconfdir}/shells || echo "%{_bindir}/pwsh" >> %{_sysconfdir}/shells
+grep -qF %{_bindir}/pwsh %{_sysconfdir}/shells || \
+  echo "%{_bindir}/pwsh" >> %{_sysconfdir}/shells
 
 %preun
 #remove on uninstall
@@ -172,6 +193,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Sun Aug 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.11-1
+- Upgrade to v7.4.11
 * Thu Jun 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.7-2
 - Bump version as a part of dotnet-runtime upgrade
 * Thu Apr 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.7-1

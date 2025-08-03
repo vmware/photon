@@ -2,8 +2,8 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        8.0.407
-Release:        2%{?dist}
+Version:        8.0.411
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -47,6 +47,8 @@ echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Sun Aug 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.411-1
+- Upgrade to v8.0.411
 * Thu Jun 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.407-2
 - Bump version as a part of dotnet-runtime upgrade
 * Thu Apr 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.407-1
