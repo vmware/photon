@@ -3,7 +3,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       102.12.0
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://spidermonkey.dev
@@ -36,6 +36,7 @@ BuildRequires: icu-devel >= 70.1
 BuildRequires: rust
 BuildRequires: autoconf
 BuildRequires: nss-devel
+BuildRequires: readline-devel
 
 Requires:      icu >= 70.1
 Requires:      python3
@@ -62,7 +63,16 @@ developing applications that use %{name}.
 
 %prep
 %autosetup -p1 -n firefox-%{version}
-rm -rf modules/zlib security/nss
+rm -rf modules/zlib security/nss third_party/rust/mp4parse/link-u-avif-sample-images/*
+# Tests are disabled anyways - avoid detecting CC-BY-SA licensed test components
+# Need to keep testing/mozbase/mozfile as this python module is used in many places
+# outside of ./testing/
+rm -rf testing/web-platform
+rm -rf browser/components/translation/test
+
+# mozscreenshots extension borderify uses CC-BY-SA licensed .png
+# we don't need this for the library we package
+rm -rf browser/tools/mozscreenshots
 
 %build
 export CC=gcc
@@ -81,8 +91,6 @@ chmod +x configure
   --with-system-nss \
   --with-system-zlib \
   --disable-tests \
-  --disable-strip \
-  --with-intl-api \
   --enable-shared-js \
   --enable-optimize \
   --disable-debug \
@@ -142,6 +150,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Sun Aug 03 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 102.12.0-7
+- Bump up release to rescan licenses
 * Fri Apr 11 2025 Mukul Sikka <mukul.sikka@broadcom.com> 102.12.0-6
 - Fix for CVE-2022-46175, CVE-2024-45491, CVE-2024-45492
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 102.12.0-5
