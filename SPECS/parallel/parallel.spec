@@ -1,7 +1,7 @@
 Summary:        Shell tool for executing jobs in parallel
 Name:           parallel
 Version:        20221122
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Productivity/File utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,27 +20,18 @@ a list of URLs, or a list of tables.
 
 %package        doc
 Summary:        Documentation for parallel tool
+Requires:       %{name} = %{version}-%{release}
+Conflicts:      %{name} < 20221122-4
 %description    doc
 It contains documentation for parallel shell tool
 
 %prep
 %autosetup
 
-# Excluding below documents only files which are categorised under copyleft license
-%define features env_parallel niceload parallel parallel_alternatives parallel_examples parcat parset sem
-%define doc_types 1 7 html pod texi rst
-for feature in %{features}; do
-  for doc_type in %{doc_types}; do
-    find src/ -name "$feature.$doc_type" -print -delete
-  done
-done
-rm src/niceload.pdf src/parcat.pdf src/parset.pdf src/sem.pdf
-rm src/parallel_tutorial.pod src/parallel_design.pod src/parallel_book.pod
 rm CITATION CITATION.cff LICENSES/CC-BY-SA-4.0.txt
 
 %build
-# used "--disable-documentation" because document files which are categorised under copyleft license
-%configure --disable-documentation
+%configure
 %make_build %{?_smp_mflags}
 
 %install
@@ -68,8 +59,12 @@ make %{?_smp_mflags} install DESTDIR=%{buildroot}
 %files doc
 %defattr(-,root,root)
 %{_docdir}/*
+%{_mandir}/man1/*
+%{_mandir}/man7/*
 
 %changelog
+* Mon Aug 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 20221122-4
+- Enable documentation
 * Mon Jul 28 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 20221122-3
 - Bump up release to rescan licenses.
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20221122-2

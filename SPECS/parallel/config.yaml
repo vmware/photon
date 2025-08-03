@@ -23,7 +23,148 @@ sources:
   license_manual_review:
   - archive_path: Makefile.am
     sha256sum: a7da03a4b36708229a8e1e2e6894fa295947beb28d27b9a08c01535a83468166
-    spdx_exp: GPL-3.0-or-later
+    spdx_exp: 'GPL-3.0-or-later'
   - archive_path: Makefile.in
     sha256sum: 204d1dc7ca8c6d19295eb025074a6c374b748dd58c6f6bbe9b1dc8d0e8a282a5
-    spdx_exp: GPL-3.0-or-later AND FSFULLRWD
+    spdx_exp: 'GPL-3.0-or-later AND FSFULLRWD'
+  - archive_path: src/env_parallel.1
+    sha256sum: 76dbc5a09094d72744d250644180580bc893426489608f44ffa1163f33e468c1
+    spdx_exp: ''
+  - archive_path: src/env_parallel.html
+    sha256sum: 77f340c59fc384cd7cce12f4fd0af51967ac182458631f6fa0008f0ccfefd4c5
+    spdx_exp: ''
+  - archive_path: src/env_parallel.pod
+    sha256sum: d46eb6b314e9d3c648630b74aa172899528137b85268ff989fd75dca3b6ce1d4
+    spdx_exp: ''
+  - archive_path: src/env_parallel.rst
+    sha256sum: 9b4440bcdef735bec86974dc8e5ce4a85b3f185012188f85e4435f103efdaeb9
+    spdx_exp: ''
+  - archive_path: src/env_parallel.texi
+    sha256sum: 65ba31db049413f8fd6f6f779fac42126c1b2a687c0bb7404bc4337589aa9362
+    spdx_exp: ''
+  - archive_path: src/niceload.1
+    sha256sum: c00231acf7416afba33449a5c2907b3dc2c7da758cb67f51e156f6025960823d
+    spdx_exp: ''
+  - archive_path: src/niceload.html
+    sha256sum: a16268d1df51dd82d335189c8bbdfec91281c83226e6fa1a207be984257226e2
+    spdx_exp: ''
+  - archive_path: src/niceload.pdf
+    sha256sum: eaacfc5dc1248e2afb2d299ece96ee62afb66e4ff9b5116af5eb44d7900225ed
+    spdx_exp: ''
+  - archive_path: src/niceload.pod
+    sha256sum: 75494c5c851ec073a607ae9bd3c7af756e67766cd6043c1da89056503e2c6ad9
+    spdx_exp: ''
+  - archive_path: src/niceload.rst
+    sha256sum: f4191db27710bf5258bbfe173bce8ec78a79efa1a7fef043bad32e6ff5a645e4
+    spdx_exp: ''
+  - archive_path: src/niceload.texi
+    sha256sum: 93fd78800759ead6ebae5aa37c5ae3b0bf23158da2cd9dc59a882fc2976cd5fd
+    spdx_exp: ''
+  - archive_path: src/parallel.1
+    sha256sum: 956c1c612867e87ed9e1d3ffcf2f9a331bae716bade8b47f4f2b8a82902bcb67
+    spdx_exp: ''
+  - archive_path: src/parallel.html
+    sha256sum: 1e7097ca25be26e9ab3e80fab9a845d4d1b3c2bd7d937a82e0ba5b1ca6fce808
+    spdx_exp: ''
+  - archive_path: src/parallel.pod
+    sha256sum: 59c852a8566fce7bed1685c92e2225013b0511ddeaa47bc9bb3b1085971accf4
+    spdx_exp: ''
+  - archive_path: src/parallel.rst
+    sha256sum: db5c0f765aa65db87bf81ec7e5a509860e1c96dd43658dd61fda39a439b987e1
+    spdx_exp: ''
+  - archive_path: src/parallel.texi
+    sha256sum: a3bf5c63863147fa9f8467eb1f407bab494b2d7c23fc63a5df8b1182fc3965f5
+    spdx_exp: ''
+  - archive_path: src/parallel_alternatives.7
+    sha256sum: 3fcb332d48aa1c115236493cc93a5c8b0f71e87fd9978d1dacbd839cbd1ef18a
+    spdx_exp: ''
+  - archive_path: src/parallel_alternatives.html
+    sha256sum: d432f202e4e789b009c918b879182476450ce74fa2c7dc9dca9dc76fcb9dea54
+    spdx_exp: ''
+  - archive_path: src/parallel_alternatives.pod
+    sha256sum: d29a2c2fdcabc3a0b29c49aaeade57d973e1557439f0318adfc398e50655ab1a
+    spdx_exp: ''
+  - archive_path: src/parallel_alternatives.rst
+    sha256sum: 7323405b1ad1aea256298f36b2a8e4cfbd5df9434a68b525e9d49df2c6e18894
+    spdx_exp: ''
+  - archive_path: src/parallel_alternatives.texi
+    sha256sum: 1e633759668661915d4d62d7fc66abf3410e73325cadeeaf95d48d0ad5c5b428
+    spdx_exp: ''
+  - archive_path: src/parallel_book.pod
+    sha256sum: 9681684fe4687587089472e9d3753bbacfc0ab6c08bccedb4e1851556e5e729f
+    spdx_exp: ''
+  - archive_path: src/parallel_design.pod
+    sha256sum: e7dd2ff9fb3f866f75780dd0a719e5f12a120d9a9650f0500cda51a4c967114f
+    spdx_exp: ''
+  - archive_path: src/parallel_examples.7
+    sha256sum: 509663f0a3bc81493acea39e0087a17ab899384a72d7323bf3cfc8499d61b237
+    spdx_exp: ''
+  - archive_path: src/parallel_examples.html
+    sha256sum: 4de61e7be585a2e85afc20a39af87d425ee25ba63f00f53c0a79ed5012f00219
+    spdx_exp: ''
+  - archive_path: src/parallel_examples.pod
+    sha256sum: 01019bb8eae262edd77450664242b60e528a5778f3a01f41bff6b921e0ae8ce1
+    spdx_exp: ''
+  - archive_path: src/parallel_examples.rst
+    sha256sum: 23c0ac86372b693b474b8a455d59e74a806ba7fb54e7f46d584147056341d620
+    spdx_exp: ''
+  - archive_path: src/parallel_examples.texi
+    sha256sum: d2cd7df47ceb82be174e5b14a0c2b73b133352346647ffc2ccf79520cef4bd9c
+    spdx_exp: ''
+  - archive_path: src/parallel_tutorial.pod
+    sha256sum: b0a010e96b0947498ab884a13895c0e96a9779167e53a56c7d9686997900bd4c
+    spdx_exp: ''
+  - archive_path: src/parcat.1
+    sha256sum: 6c84ac434f44b570649aa60288753174bf6711dce2c2d80c8b80f7aa26f82cf1
+    spdx_exp: ''
+  - archive_path: src/parcat.html
+    sha256sum: 718316c78543ff5c6f50de716268b6eddde41c8ec320a9c7baba888c5f1a1904
+    spdx_exp: ''
+  - archive_path: src/parcat.pdf
+    sha256sum: aa82724270f3a524366f73dc068e1a4038d735275fd757471030c03ffff1855d
+    spdx_exp: ''
+  - archive_path: src/parcat.pod
+    sha256sum: dbdc544b442c369bfa923afafdc9d3a0c245d9c44b93ba2d955582b0319334a3
+    spdx_exp: ''
+  - archive_path: src/parcat.rst
+    sha256sum: f87b5dacc7c47f801dd0c0f9ecae5fccccfc698f179ae13e07ded14ae3cb6716
+    spdx_exp: ''
+  - archive_path: src/parcat.texi
+    sha256sum: e9c067224e45b3b92ebbfced06a4321b13a6663ee653e7c066f534168044da6e
+    spdx_exp: ''
+  - archive_path: src/parset.1
+    sha256sum: eb0caeed0a1efe62ce6227067467012cff294fc45c7a18191fe01b793453cf39
+    spdx_exp: ''
+  - archive_path: src/parset.html
+    sha256sum: 24cf45caafc1fe82778c76ced5f15575b87a4cd1c22c29e69e8b5a6878a205e0
+    spdx_exp: ''
+  - archive_path: src/parset.pdf
+    sha256sum: b059c171bd199ab59b17b69f0a4ff965c696dd6ed45d297eb163355d0306b274
+    spdx_exp: ''
+  - archive_path: src/parset.pod
+    sha256sum: 70137ed89b9980f2b6a7d3acb23976d82dce4d2781f1d7f0f89c00eb767f165a
+    spdx_exp: ''
+  - archive_path: src/parset.rst
+    sha256sum: daada88f8db1817400024315120d759e312018c8778b27b6632d82ec7e702147
+    spdx_exp: ''
+  - archive_path: src/parset.texi
+    sha256sum: bacda4a9520ee021d00f6c5e782c7a1da94a075d2e7bf0808cef40dd635e84eb
+    spdx_exp: ''
+  - archive_path: src/sem.1
+    sha256sum: 7e5a7cf28180c6e232ea3c34d7f308eebfc644d7d280d4eaad3615c31e7ad895
+    spdx_exp: ''
+  - archive_path: src/sem.html
+    sha256sum: b3bb033e6f9e956be40df57521bf97983b94319fdf7a8050af393879693ce793
+    spdx_exp: ''
+  - archive_path: src/sem.pdf
+    sha256sum: 25afd0a0d18d47c90bf57c34ca008f1a942acaf7972e35921e2ab9122442b542
+    spdx_exp: ''
+  - archive_path: src/sem.pod
+    sha256sum: d9220e4930c8463f9c126486d4533043b062c16f43f83f03ea49da8bd47b365d
+    spdx_exp: ''
+  - archive_path: src/sem.rst
+    sha256sum: cb2903a09583c3785e4dc7594962c76ec55f255e87d84ffb30ff2b66be7288f0
+    spdx_exp: ''
+  - archive_path: src/sem.texi
+    sha256sum: 608421613624a0c8e3906d4dc05869b5deecf3e27826100c3900e6fa650ad78e
+    spdx_exp: ''

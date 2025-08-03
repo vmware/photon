@@ -3,7 +3,7 @@
 Summary:        Conversion between markup formats
 Name:           pandoc-bin
 Version:        2.19.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/jgm/pandoc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ popd
 %{_mandir}/*
 
 %changelog
+* Sun Aug 03 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.19.2-5
+- Bump up release to rescan licenses
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.19.2-4
 - Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.19.2-3
