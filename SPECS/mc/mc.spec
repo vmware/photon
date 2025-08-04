@@ -1,7 +1,7 @@
 Summary:        File manager
 Name:           mc
 Version:        4.8.28
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.midnight-commander.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,8 +9,8 @@ Distribution:   Photon
 
 Source0:        http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
 
-Source1: license.txt
-%include %{SOURCE1}
+Source1:        license.txt
+%include        %{SOURCE1}
 
 Requires:       glib
 Requires:       pcre
@@ -48,6 +48,8 @@ make %{?_smp_mflags} -k check
 %exclude %dir %{_libdir}
 
 %changelog
+* Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> 4.8.28-4
+- Override false positive copyleft license AGPL-3.0-or-later
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.8.28-3
 - Release bump for SRP compliance
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.8.28-2
