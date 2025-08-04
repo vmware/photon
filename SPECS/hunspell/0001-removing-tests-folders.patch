@@ -1,0 +1,37 @@
+From 05717c460178c3ab5f303ab9a05ba747080b013a Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 4 Aug 2025 05:35:53 +0000
+Subject: [PATCH] removing tests folders
+
+---
+ Makefile.am  | 2 +-
+ configure.ac | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index c0aae53..2771c0b 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,6 +1,6 @@
+ ACLOCAL_AMFLAGS = -I m4
+ 
+-SUBDIRS= po src man tests
++SUBDIRS= po src man
+ 
+ pkgconfdir = $(libdir)/pkgconfig
+ pkgconf_DATA = hunspell.pc
+diff --git a/configure.ac b/configure.ac
+index 4bdec50..f73a572 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -111,7 +111,5 @@ AC_CONFIG_FILES([
+ 	src/hunspell/hunvisapi.h
+ 	src/parsers/Makefile
+ 	src/tools/Makefile
+-	tests/Makefile
+-	tests/suggestiontest/Makefile
+ ])
+ AC_OUTPUT
+-- 
+2.40.4
+

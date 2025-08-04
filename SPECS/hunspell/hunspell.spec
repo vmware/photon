@@ -1,6 +1,6 @@
 Name:           hunspell
 Version:        1.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A spell checker and morphological analyzer library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -17,6 +17,10 @@ Source1: dictionaries-1.0.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
+
+%if 0%{?with_check} == 0
+Patch0:  0001-removing-tests-folders.patch
+%endif
 
 BuildRequires: perl
 BuildRequires: libtool
@@ -46,6 +50,10 @@ Libraries, headers, and support files necessary to compile applications using hu
 %prep
 %autosetup -a0 -a1 -p1
 
+%if 0%{?with_check} == 0
+rm -rf tests
+%endif
+
 %build
 autoreconf -vfi
 
@@ -74,6 +82,8 @@ install -m0644 dictionaries/*.dic %{buildroot}%{_datadir}/%{name}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Jul 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 1.7.2-3
+- Remove tests to handle unintended copyright inclusions
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.7.2-2
 - Release bump for SRP compliance
 * Mon Feb 12 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.7.2-1
