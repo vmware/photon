@@ -1,21 +1,18 @@
-From addff8e853094b2346a59b96b2120cc227e3d409 Mon Sep 17 00:00:00 2001
-From: Keerthana K <keerthanak@vmware.com>
-Date: Fri, 11 Jun 2021 09:30:39 +0000
-Subject: [PATCH 10/11] RPS flow balance
+From cfcc529cafd8f4d9a468188de959aa5b2588e7f8 Mon Sep 17 00:00:00 2001
+From: Jonathan Shao <jonathan.shao@broadcom.com>
+Date: Mon, 4 Aug 2025 17:14:46 +0000
+Subject: [PATCH] RPS flow balance
 
-Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
-Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
-Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
  include/linux/netdevice.h  |  26 +++
- net/core/dev.c             | 403 +++++++++++++++++++++++++++++++++++--
- net/core/net-procfs.c      |  70 ++++++-
+ net/core/dev.c             | 402 +++++++++++++++++++++++++++++++++++--
+ net/core/net-procfs.c      |  66 +++++-
  net/core/net-sysfs.c       | 187 +++++++++++++++++
  net/core/sysctl_net_core.c |  42 ++++
- 5 files changed, 709 insertions(+), 19 deletions(-)
+ 5 files changed, 704 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index bc58f23af..d8601f0cd 100644
+index 4c79c84..4c0bf4f 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
 @@ -777,6 +777,18 @@ struct netdev_rx_queue {
@@ -37,7 +34,7 @@ index bc58f23af..d8601f0cd 100644
  #endif
  	struct kobject			kobj;
  	struct net_device		*dev;
-@@ -3166,6 +3178,13 @@ struct softnet_data {
+@@ -3196,6 +3208,13 @@ struct softnet_data {
  	struct softnet_data	*rps_ipi_next;
  	unsigned int		cpu;
  	unsigned int		input_queue_tail;
@@ -51,7 +48,7 @@ index bc58f23af..d8601f0cd 100644
  #endif
  	unsigned int		dropped;
  	struct sk_buff_head	input_pkt_queue;
-@@ -4852,6 +4871,13 @@ static inline ktime_t netdev_get_tstamp(struct net_device *dev,
+@@ -4895,6 +4914,13 @@ static inline ktime_t netdev_get_tstamp(struct net_device *dev,
  	return hwtstamps->hwtstamp;
  }
  
@@ -66,10 +63,10 @@ index bc58f23af..d8601f0cd 100644
  					      struct sk_buff *skb, struct net_device *dev,
  					      bool more)
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 20d8b9195..0697a9fe8 100644
+index 212a909..7c74f98 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4366,6 +4366,19 @@ EXPORT_SYMBOL(__dev_direct_xmit);
+@@ -4407,6 +4407,19 @@ EXPORT_SYMBOL(__dev_direct_xmit);
  int netdev_max_backlog __read_mostly = 1000;
  EXPORT_SYMBOL(netdev_max_backlog);
  
@@ -89,7 +86,7 @@ index 20d8b9195..0697a9fe8 100644
  int netdev_tstamp_prequeue __read_mostly = 1;
  unsigned int sysctl_skb_defer_max __read_mostly = 64;
  int netdev_budget __read_mostly = 300;
-@@ -4467,6 +4480,173 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+@@ -4508,6 +4521,175 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  	rflow->cpu = next_cpu;
  	return rflow;
  }
@@ -260,10 +257,12 @@ index 20d8b9195..0697a9fe8 100644
 +	return ((flow_backlog > 0) && (flow_backlog <= backlog));
 +}
 +
++/* this macro checks if the head of queue has moved beyond last recorded tail */
++#define CHECK_QTAIL(t,r) (((int)(per_cpu(softnet_data, (t)).input_queue_head - (r)->last_qtail)) >= 0)
  
  /*
   * get_rps_cpu is called from netif_receive_skb and returns the target
-@@ -4474,15 +4654,21 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+@@ -4515,7 +4697,9 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
   * rcu_read_lock must be held on entry.
   */
  static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
@@ -274,10 +273,9 @@ index 20d8b9195..0697a9fe8 100644
  {
  	const struct rps_sock_flow_table *sock_flow_table;
  	struct netdev_rx_queue *rxqueue = dev->_rx;
- 	struct rps_dev_flow_table *flow_table;
+@@ -4523,7 +4707,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  	struct rps_map *map;
  	int cpu = -1;
-+	bool qtail_advanced;
  	u32 tcpu;
 +	u32 raw_hash = 0;
  	u32 hash;
@@ -286,7 +284,7 @@ index 20d8b9195..0697a9fe8 100644
  
  	if (skb_rx_queue_recorded(skb)) {
  		u16 index = skb_get_rx_queue(skb);
-@@ -4505,6 +4691,9 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+@@ -4546,6 +4733,9 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  		goto done;
  
  	skb_reset_network_header(skb);
@@ -296,7 +294,7 @@ index 20d8b9195..0697a9fe8 100644
  	hash = skb_get_hash(skb);
  	if (!hash)
  		goto done;
-@@ -4515,12 +4704,30 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+@@ -4556,12 +4746,30 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  		u32 next_cpu;
  		u32 ident;
  
@@ -328,7 +326,7 @@ index 20d8b9195..0697a9fe8 100644
  
  		next_cpu = ident & rps_cpu_mask;
  
-@@ -4529,6 +4736,99 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+@@ -4570,6 +4778,97 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  		 */
  		rflow = &flow_table->flows[hash & flow_table->mask];
  		tcpu = rflow->cpu;
@@ -343,12 +341,10 @@ index 20d8b9195..0697a9fe8 100644
 +		 *     This guarantees that all previous packets for the flow
 +		 *     have been dequeued, thus preserving in order delivery.
 +		 */
-+		qtail_advanced = ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
-+					rflow->last_qtail)) >= 0;
 +		if (unlikely(tcpu != next_cpu) &&
 +		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
 +		     (netdev_custom_steer == 1 ?
-+			 !rps_flow_is_backlogged(tcpu, rflow) : qtail_advanced))) {
++			 !rps_flow_is_backlogged(tcpu, rflow) : CHECK_QTAIL(tcpu, rflow)))) {
 +			if (netdev_custom_steer) {
 +				if (tcpu >= nr_cpu_ids || !cpu_online(tcpu)) {
 +					local_sd->first_place++;
@@ -428,7 +424,7 @@ index 20d8b9195..0697a9fe8 100644
  
  		/*
  		 * If the desired CPU (where last recvmsg was done) is
-@@ -4543,8 +4843,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+@@ -4584,8 +4883,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  		 */
  		if (unlikely(tcpu != next_cpu) &&
  		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
@@ -441,7 +437,7 @@ index 20d8b9195..0697a9fe8 100644
  			tcpu = next_cpu;
  			rflow = set_rps_cpu(dev, skb, rflow, next_cpu);
  		}
-@@ -4557,8 +4859,14 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+@@ -4598,8 +4899,14 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  	}
  
  try_rps:
@@ -457,7 +453,7 @@ index 20d8b9195..0697a9fe8 100644
  		tcpu = map->cpus[reciprocal_scale(hash, map->len)];
  		if (cpu_online(tcpu)) {
  			cpu = tcpu;
-@@ -4663,7 +4971,8 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
+@@ -4704,7 +5011,8 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
  	struct softnet_data *sd;
  	unsigned int old_flow, new_flow;
  
@@ -467,7 +463,7 @@ index 20d8b9195..0697a9fe8 100644
  		return false;
  
  	sd = this_cpu_ptr(&softnet_data);
-@@ -4692,17 +5001,34 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
+@@ -4733,17 +5041,34 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
  	return false;
  }
  
@@ -503,7 +499,7 @@ index 20d8b9195..0697a9fe8 100644
  
  	reason = SKB_DROP_REASON_NOT_SPECIFIED;
  	sd = &per_cpu(softnet_data, cpu);
-@@ -4711,7 +5037,29 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+@@ -4752,7 +5077,29 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
  	if (!netif_running(skb->dev))
  		goto drop;
  	qlen = skb_queue_len(&sd->input_pkt_queue);
@@ -534,7 +530,7 @@ index 20d8b9195..0697a9fe8 100644
  		if (qlen) {
  enqueue:
  			__skb_queue_tail(&sd->input_pkt_queue, skb);
-@@ -4721,8 +5069,8 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+@@ -4762,8 +5109,8 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
  		}
  
  		/* Schedule NAPI for backlog device
@@ -545,7 +541,7 @@ index 20d8b9195..0697a9fe8 100644
  		if (!__test_and_set_bit(NAPI_STATE_SCHED, &sd->backlog.state))
  			napi_schedule_rps(sd);
  		goto enqueue;
-@@ -4975,14 +5323,20 @@ static int netif_rx_internal(struct sk_buff *skb)
+@@ -5016,14 +5363,20 @@ static int netif_rx_internal(struct sk_buff *skb)
  	if (static_branch_unlikely(&rps_needed)) {
  		struct rps_dev_flow voidflow, *rflow = &voidflow;
  		int cpu;
@@ -568,7 +564,7 @@ index 20d8b9195..0697a9fe8 100644
  
  		rcu_read_unlock();
  	} else
-@@ -4990,7 +5344,7 @@ static int netif_rx_internal(struct sk_buff *skb)
+@@ -5031,7 +5384,7 @@ static int netif_rx_internal(struct sk_buff *skb)
  	{
  		unsigned int qtail;
  
@@ -577,7 +573,7 @@ index 20d8b9195..0697a9fe8 100644
  	}
  	return ret;
  }
-@@ -5716,10 +6070,18 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
+@@ -5757,10 +6110,18 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
  #ifdef CONFIG_RPS
  	if (static_branch_unlikely(&rps_needed)) {
  		struct rps_dev_flow voidflow, *rflow = &voidflow;
@@ -598,7 +594,7 @@ index 20d8b9195..0697a9fe8 100644
  			rcu_read_unlock();
  			return ret;
  		}
-@@ -5749,12 +6111,19 @@ void netif_receive_skb_list_internal(struct list_head *head)
+@@ -5790,12 +6151,19 @@ void netif_receive_skb_list_internal(struct list_head *head)
  	if (static_branch_unlikely(&rps_needed)) {
  		list_for_each_entry_safe(skb, next, head, list) {
  			struct rps_dev_flow voidflow, *rflow = &voidflow;
@@ -621,7 +617,7 @@ index 20d8b9195..0697a9fe8 100644
  		}
  	}
 diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index 1ec23bf8b..206ba4785 100644
+index 1ec23bf..8a29e1b 100644
 --- a/net/core/net-procfs.c
 +++ b/net/core/net-procfs.c
 @@ -153,6 +153,7 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
@@ -693,7 +689,7 @@ index 1ec23bf8b..206ba4785 100644
  static const struct seq_operations dev_seq_ops = {
  	.start = dev_seq_start,
  	.next  = dev_seq_next,
-@@ -192,6 +235,26 @@ static const struct seq_operations softnet_seq_ops = {
+@@ -192,6 +231,26 @@ static const struct seq_operations softnet_seq_ops = {
  	.show  = softnet_seq_show,
  };
  
@@ -720,7 +716,7 @@ index 1ec23bf8b..206ba4785 100644
  static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
  {
  	struct list_head *ptype_list = NULL;
-@@ -322,6 +385,9 @@ static int __net_init dev_proc_net_init(struct net *net)
+@@ -322,6 +381,9 @@ static int __net_init dev_proc_net_init(struct net *net)
  	if (!proc_create_seq("softnet_stat", 0444, net->proc_net,
  			 &softnet_seq_ops))
  		goto out_dev;
@@ -731,7 +727,7 @@ index 1ec23bf8b..206ba4785 100644
  			sizeof(struct seq_net_private)))
  		goto out_softnet;
 diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index fdf3308b0..a356c0819 100644
+index 4ce57e7..8073971 100644
 --- a/net/core/net-sysfs.c
 +++ b/net/core/net-sysfs.c
 @@ -27,6 +27,8 @@
@@ -743,7 +739,7 @@ index fdf3308b0..a356c0819 100644
  #ifdef CONFIG_SYSFS
  static const char fmt_hex[] = "%#x\n";
  static const char fmt_dec[] = "%d\n";
-@@ -977,18 +979,198 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
+@@ -981,18 +983,198 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
  	return len;
  }
  
@@ -942,7 +938,7 @@ index fdf3308b0..a356c0819 100644
  #endif
  	NULL
  };
-@@ -1012,6 +1194,11 @@ static void rx_queue_release(struct kobject *kobj)
+@@ -1016,6 +1198,11 @@ static void rx_queue_release(struct kobject *kobj)
  		RCU_INIT_POINTER(queue->rps_flow_table, NULL);
  		call_rcu(&flow_table->rcu, rps_dev_flow_table_release);
  	}
@@ -955,10 +951,10 @@ index fdf3308b0..a356c0819 100644
  
  	memset(kobj, 0, sizeof(*kobj));
 diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index d281d5343..f778e17eb 100644
+index 75efc71..28080b2 100644
 --- a/net/core/sysctl_net_core.c
 +++ b/net/core/sysctl_net_core.c
-@@ -385,6 +385,48 @@ static struct ctl_table net_core_table[] = {
+@@ -389,6 +389,48 @@ static struct ctl_table net_core_table[] = {
  		.mode		= 0644,
  		.proc_handler	= proc_dointvec
  	},
@@ -1008,4 +1004,5 @@ index d281d5343..f778e17eb 100644
  		.procname	= "netdev_rss_key",
  		.data		= &netdev_rss_key,
 -- 
-2.39.0
+2.39.4
+
