@@ -10,6 +10,7 @@ import yaml
 import os.path
 import shutil
 import hashlib
+import fnmatch
 
 from pathlib import Path
 
@@ -19,6 +20,7 @@ yaml.emitter.Emitter.prepare_tag = lambda self, tag: ""
 
 SOURCE_SUPPLIER = "Organization: Broadcom, Inc."
 
+gForce = False
 
 class SpdxInfo(object):
     def __init__(
@@ -41,13 +43,17 @@ class SpdxInfo(object):
 
 
 class SourceSchematic(object):
-    def __init__(self, source_uid, sources_url, archive_name, archive_spdx: SpdxInfo):
+    def __init__(
+        self, source_uid, sources_url, archive_name, archive_spdx: SpdxInfo
+    ):
         self.schema_id = "1.1"
         self.spdx_templates = {"spdx": archive_spdx}
         self.outputs = {}
         self.outputs[source_uid] = {
             "url_base": sources_url,
-            "manifest": [{"$(env:PHOTON_SOURCES_PATH)": {"include": [archive_name]}}],
+            "manifest": [
+                {"$(env:PHOTON_SOURCES_PATH)": {"include": [archive_name]}}
+            ],
             "manifest_root": "./",
             "merge_spdx_template": "spdx",
         }
@@ -134,7 +140,11 @@ class CustomSource(Source):
 
 class SourceArchiveHelper(object):
     def __init__(self, argv):
-        logging.getLogger().setLevel(logging.INFO)
+        logging.basicConfig(
+            level=logging.INFO,
+            format='\n%(levelname)s: %(message)s'
+        )
+
         parser = argparse.ArgumentParser(
             description="Tool to help with source code archive metadata",
             usage="""photon_source_archive_helper <command> [<args>]
@@ -145,7 +155,9 @@ Commands
     build generates one or more schematic files for a source archive yaml
 """,
         )
-        parser.add_argument("command", help="generate or validate a source yaml file")
+        parser.add_argument(
+            "command", help="generate or validate a source yaml file"
+        )
         args = parser.parse_args(argv[1:2])
         self.argv = argv
         getattr(self, args.command)()
@@ -177,7 +189,7 @@ Commands
                     default_flow_style=False,
                     width=float("inf"),
                 )
-                print(f"Written to file {outputFilePath} successfully")
+                logging.info(f"Written to file {outputFilePath} successfully")
 
     def _add_source_args(self, parser):
         parser.add_argument("--name", required=True)
@@ -193,7 +205,9 @@ Commands
     def upstream_source(self):
         parser = argparse.ArgumentParser(description="Generate yaml")
         self._add_source_args(parser)
-        parser.add_argument("upstream_source", help="generate source yaml file")
+        parser.add_argument(
+            "upstream_source", help="generate source yaml file"
+        )
         parser.add_argument("--url", required=True)
         parser.add_argument("--repo-url", required=True)
         parser.add_argument("--commit-id", required=True)
@@ -221,7 +235,9 @@ Commands
             missing=[],
             spdx=spdxInfo,
         )
-        archive, diff_list, missing_list = self._verifySingleSource(source, args.sources)
+        archive, diff_list, missing_list = self._verifySingleSource(
+            source, args.sources
+        )
         source.skip_list = diff_list
         source.missing = missing_list
         self._writeYaml(source, args.output)
@@ -248,9 +264,19 @@ Commands
         )
         self._writeYaml(source, args.output)
 
-    def _download_source(self, srcdir, downloadedFile, sourceFileUrl):
+    def _download_source(
+        self, srcdir, downloadedFile, sourceFileUrl
+    ):
+        global gForce
+        force = gForce
+
+        if not force and os.path.exists(downloadedFile):
+            logging.info(f"{downloadedFile} exists, not downloading again ...")
+            return
+
         self._run(
-            srcdir, f"curl -s -k -L -o {downloadedFile} -f {sourceFileUrl}".split()
+            srcdir,
+            f"curl -s -k -L -o {downloadedFile} -f {sourceFileUrl}".split(),
         )
 
     def _verify_shasum(self, downloadedFile, expected_shasum):
@@ -269,61 +295,95 @@ Commands
         parser.add_argument("--sources-url", required=True)
         parser.add_argument("--outdir", required=True)
         parser.add_argument("--sources", required=True)
+        parser.add_argument("--force", required=False, action="store_true")
         args = parser.parse_args(self.argv[2:])
         sourcesLocation = args.sources
         sourcesURLBase = args.sources_url
         outdir = args.outdir
-        if args.yaml:
-            files = self._load(args.yaml)
-            for sourceFile in files:
-                if sourceFile.archive_type == "custom":
-                    self._generateArchive(sourceFile, sourcesLocation)
-                elif sourceFile.archive_type == "upstream":
-                    archive, diff_list, missing_list = self._verifySingleSource(sourceFile, sourcesLocation)
-                    if diff_list or missing_list:
-                        logging.error(
-                            f"source {sourceFile.name} files do not match with provided commit id."
-                        )
-                        logging.info(
-                            f"diff_list: {diff_list}, hint: add them to skip_list to stop comparing."
-                        )
-                        logging.info(
-                            f"missing: {missing_list}, hint: add them to missing list if appropriate."
-                        )
-                        if not sourceFile.skip_validation:
-                            # clean downloaded source
-                            Path(archive).unlink(missing_ok=True)
-                            sys.exit(1)
-                    else:
-                        logging.info(f"source {sourceFile.name} validated succesfuly.")
-                else:
-                    logging.warning(
-                        f"source {sourceFile.name} has unknown type {sourceFile.archive_type}"
-                    )
-                    downloadedFile = f"{sourcesLocation}/{sourceFile.archive}"
-                    sourceFileUrl = f"{sourcesURLBase}/{sourceFile.archive}"
-                    self._download_source(sourcesLocation, downloadedFile, sourceFileUrl)
-                    self._verify_shasum(downloadedFile, sourceFile.archive_sha512sum)
-                self._writeSchematic(
-                    outdir, sourceFile, sourcesLocation, sourcesURLBase
+
+        global gForce
+        gForce = args.force
+
+        if not args.yaml:
+            logging.info("No yaml arg given ...")
+            return
+
+        files = self._load(args.yaml)
+        for sourceFile in files:
+            if sourceFile.archive_type == "custom":
+                self._generateArchive(sourceFile, sourcesLocation)
+            elif sourceFile.archive_type == "upstream":
+                archive, diff_list, missing_list = (
+                    self._verifySingleSource(sourceFile, sourcesLocation)
                 )
+                if diff_list or missing_list:
+                    logging.error(
+                        f"Source {sourceFile.name} files do not match with provided commit id.\n"
+                    )
+                    if diff_list:
+                        logging.info(
+                            f"Diff_list: {diff_list}, hint: add them to skip_list to stop comparing.\n"
+                        )
+                    if missing_list:
+                        logging.info(
+                            f"Missing: {missing_list}, hint: add them to missing list if appropriate.\n"
+                        )
+                    if not sourceFile.skip_validation:
+                        # clean downloaded source
+                        Path(archive).unlink(missing_ok=True)
+                        sys.exit(1)
+                else:
+                    logging.info(
+                        f"Source {sourceFile.name} validated succesfuly.\n"
+                    )
+                logging.warning("Clear /tmp/verify-* dirs if you want to ...\n")
+            else:
+                logging.warning(
+                    f"Source {sourceFile.name} has unknown type {sourceFile.archive_type}\n"
+                )
+                downloadedFile = f"{sourcesLocation}/{sourceFile.archive}"
+                sourceFileUrl = f"{sourcesURLBase}/{sourceFile.archive}"
+
+                if not self.fetchFromStageArea(
+                    sourceFile.archive, downloadedFile
+                ):
+                    self._download_source(
+                        sourcesLocation, downloadedFile, sourceFileUrl
+                    )
+
+                self._verify_shasum(
+                    downloadedFile, sourceFile.archive_sha512sum
+                )
+
+                logging.warning(f"Feel free to remove {downloadedFile} now ...\n")
+
+            self._writeSchematic(
+                outdir, sourceFile, sourcesLocation, sourcesURLBase
+            )
 
     def _generateArchive(self, sourceFile, sourcesLocation):
         tmpdir = tempfile.mkdtemp()
         script = sourceFile.script
-        generator_script_file = open(os.path.join(tmpdir, "source_generator.sh"), "w")
+        generator_script_file = open(
+            os.path.join(tmpdir, "source_generator.sh"), "w"
+        )
         for line in script:
             generator_script_file.write(line)
         generator_script_file.close()
-        logging.error(f"Archive {sourceFile.archive} being generated in {tmpdir}.")
+        logging.error(
+            f"Archive {sourceFile.archive} being generated in {tmpdir}."
+        )
         self._run(tmpdir, "bash source_generator.sh".split())
         generated_archive = os.path.join(tmpdir, sourceFile.archive)
         if os.path.isfile(generated_archive):
             shutil.copyfile(
-                generated_archive, os.path.join(sourcesLocation, sourceFile.archive)
+                generated_archive,
+                os.path.join(sourcesLocation, sourceFile.archive),
             )
         else:
-            logging.error(f"Archive {sourceFile.archive} not generated in {tmpdir}.")
+            logging.error(
+                f"Archive {sourceFile.archive} not generated in {tmpdir}."
+            )
 
     def _writeSchematic(
         self,
@@ -358,7 +418,7 @@ Commands
                 default_flow_style=False,
                 width=float("inf"),
             )
-            print(f"Written to file {schematic_file_path} successfully")
+            logging.info(f"Written to file {schematic_file_path} successfully")
 
     def _load(self, configPath):
         files = []
@@ -388,7 +448,9 @@ Commands
                         license_concluded=source_spdx["license_concluded"],
                         home_page=source_spdx["home_page"],
                         short_summary=source_spdx["short_summary"],
-                        detailed_description=source_spdx["detailed_description"],
+                        detailed_description=source_spdx[
+                            "detailed_description"
+                        ],
                     )
                     if archive_type == "custom":
                         env = {}
@@ -408,7 +470,10 @@ Commands
                         url = source.get("url")
                         repo_url = source.get("repo_url")
                         commit_id = source.get("commit_id")
-                        skip_list = DEFAULT_IGNORES + source.get("skip_list", [])
+
+                        skip_list = DEFAULT_IGNORES + source.get(
+                            "skip_list", []
+                        )
                         missing = source.get("missing", [])
 
                         source = UpstreamSource(
@@ -444,28 +509,64 @@ Commands
         os.mkdir(path)
         self._run(path, f"tar xf {extractedDir}/data.tar.gz")
 
+    def fetchFromStageArea(self, srcName, downloadedFile):
+        force = gForce
+
+        if force:
+            logging.warning("force is set, doing everything fresh ...")
+            return False
+
+        if os.path.exists(downloadedFile):
+            logging.info(f"{downloadedFile} already exists ...")
+            return True
+
+        sourcePath = f"stage/SOURCES/{srcName}"
+        if not os.path.exists(sourcePath):
+            return False
+        logging.info(f"{sourcePath} exists, using the same ...")
+        shutil.copy(sourcePath, downloadedFile)
+        return True
+
     def _verifySingleSource(self, sourceFile, sourcesLocation):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            extractedDir = f"{tmpdir}/extracted"
-            repoDir = f"{tmpdir}/repo"
-            projectDir = f"{repoDir}/{sourceFile.name}"
-            downloadedFile = f"{sourcesLocation}/{sourceFile.archive}"
-            extractedProject = f"{tmpdir}/extracted/{sourceFile.name}"
-            os.mkdir(repoDir)
-            os.mkdir(projectDir)
-            os.mkdir(extractedDir)
-            # Download and extract source
-            self._download_source(tmpdir, downloadedFile, sourceFile.url)
-            self._verify_shasum(downloadedFile, sourceFile.archive_sha512sum)
-            # Extract the source
-            ext = os.path.splitext(downloadedFile)[1]
-            if ext != ".gem":
-                self._run(extractedDir, f"tar -xf {downloadedFile}".split())
+        tmpdir = f"/tmp/verify-{sourceFile.archive}"
+        extractedDir = f"{tmpdir}/extracted"
+        repoDir = f"{tmpdir}/repo"
+        projectDir = f"{repoDir}/{sourceFile.name}"
+        downloadedFile = f"{sourcesLocation}/{sourceFile.archive}"
+        extractedProject = f"{tmpdir}/extracted/{sourceFile.name}"
+
+        global gForce
+        force = gForce
+
+        if os.path.isdir(tmpdir):
+            if not force:
+                logging.info(f"{tmpdir} exists, remove it manually if you want to start fresh ...")
+                logging.info(f"Or use '--force' arg with this script.")
             else:
-                self._extractGem(downloadedFile, sourceFile, extractedDir)
+                logging.warning(f"force is set, so removing {tmpdir} ...")
+                shutil.rmtree(tmpdir)
+
+        for d in [tmpdir, repoDir, projectDir, extractedDir]:
+            os.makedirs(d, exist_ok=True)
+
+        # Download and extract source
+        if not self.fetchFromStageArea(sourceFile.archive, downloadedFile):
+            self._download_source(tmpdir, downloadedFile, sourceFile.url)
+
+        self._verify_shasum(downloadedFile, sourceFile.archive_sha512sum)
+
+        # Extract the source
+        ext = os.path.splitext(downloadedFile)[1]
+        if ext != ".gem":
+            self._run(extractedDir, f"tar xf {downloadedFile}".split())
+        else:
+            self._extractGem(downloadedFile, sourceFile, extractedDir)
+
+        if force or not os.path.isdir(f"{projectDir}/.git"):
             self._run(projectDir, "git init -q .".split())
             self._run(
-                projectDir, f"git remote add origin {sourceFile.repo_url}".split()
+                projectDir,
+                f"git remote add origin {sourceFile.repo_url}".split(),
             )
             self._run(
                 projectDir,
@@ -475,42 +576,69 @@ Commands
                 projectDir,
                 "git -c advice.detachedHead=false checkout FETCH_HEAD".split(),
             )
-            # Compare both the trees
-            logging.info(f"skip {sourceFile.skip_list}, missing {sourceFile.missing}")
-            treediff = dircmp(
-                projectDir,
-                extractedProject,
-                ignore=sourceFile.skip_list + sourceFile.missing,
-            )
-            fileDiff, missing = self._detectTreeDiff(treediff)
-            return downloadedFile, fileDiff, missing
 
-    def _detectTreeDiff(self, treediff):
+        # Compare both the trees
+        logging.info(
+            f"Skip {sourceFile.skip_list}, missing {sourceFile.missing}"
+        )
+
+        ignore = sourceFile.skip_list + sourceFile.missing
+        treediff = dircmp(projectDir, extractedProject, ignore=ignore)
+
+        fileDiff, missing = self._detectTreeDiff(
+            treediff, sourceFile.skip_list, sourceFile.missing
+        )
+
+        return downloadedFile, fileDiff, missing
+
+    def filterFiles(self, files, ignore_patterns):
+        fileSet = set()
+
+        for name in files:
+            ignored = False
+            for pattern in ignore_patterns:
+                if fnmatch.fnmatch(name, pattern):
+                    ignored = True
+                    break
+            if not ignored:
+                fileSet.add(name)
+
+        return fileSet
+
+    def _detectTreeDiff(self, treediff, skipList, missingList):
         fileDiff = set()
         missing = set()
         if treediff.diff_files:
-            fileDiff = fileDiff.union(set(treediff.diff_files))
-            logging.warning(
-                "diff %s found in %s and %s"
-                % (treediff.diff_files, treediff.left, treediff.right)
-            )
+            fileSet = self.filterFiles(set(treediff.diff_files), skipList)
+            if fileSet:
+                fileDiff = fileDiff.union(fileSet)
+                logging.warning(
+                    "Diff %s found in %s and %s\n"
+                    % (treediff.diff_files, treediff.left, treediff.right)
+                )
 
         if treediff.left_only:
-            missing = missing.union(set(treediff.left_only))
-            logging.warning(
-                "left only %s found in %s and %s"
-                % (treediff.left_only, treediff.left, treediff.right)
-            )
+            fileSet = self.filterFiles(set(treediff.left_only), missingList)
+            if fileSet:
+                missing = missing.union(fileSet)
+                logging.warning(
+                    "Left only %s found in %s and %s\n"
+                    % (treediff.left_only, treediff.left, treediff.right)
+                )
 
         if treediff.right_only:
-            missing = missing.union(set(treediff.right_only))
-            logging.warning(
-                "right only files %s found in %s and %s"
-                % (treediff.right_only, treediff.left, treediff.right)
-            )
+            fileSet = self.filterFiles(set(treediff.right_only), missingList)
+            if fileSet:
+                missing = missing.union(fileSet)
+                logging.warning(
+                    "Right only files %s found in %s and %s\n"
+                    % (treediff.right_only, treediff.left, treediff.right)
+                )
 
         for subTreeDiff in treediff.subdirs.values():
-            subTreeFileDiff, subTreeMissing = self._detectTreeDiff(subTreeDiff)
+            subTreeFileDiff, subTreeMissing = self._detectTreeDiff(
+                subTreeDiff, skipList, missingList
+            )
             fileDiff = fileDiff.union(subTreeFileDiff)
             missing = missing.union(subTreeMissing)
 
