@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        30.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -26,6 +26,7 @@ without leaving the editor.
 
 %prep
 %autosetup -p1
+rm etc/images/{left.svg,right.svg,up.svg,down.svg}
 
 %build
 %configure \
@@ -74,6 +75,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Tue Aug 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 30.1-2
+- Remove few unused svg files during prep
 * Mon Apr 14 2025 Harinadh Dommaraju  <Harinadh.Dommaraju@broadcom.com> 30.1-1
 - Version upgrade to fix multiple CVEs
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2-6

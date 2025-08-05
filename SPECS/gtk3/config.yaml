@@ -2,30 +2,46 @@ sources:
 - archive: gtk+-3.23.3.tar.xz
   archive_sha512sum: c4d519735d0292e1e503e2dfdf764f9a5b039a77d055ba4d8b98e9acd0451a2f9f4b92ec4051722f234e652f895a2712a5e56d1387a52ea583c4bf6ef346403c
   skip_validation: true
+  license_manual_review:
+  - archive_path: NEWS
+    sha256sum: ccdb2fd1ecbc3b7581f92b6697bcfeda0069d2ffd1b4a48a7a96fa9584ed8ab3
+    spdx_exp: ''
+  - archive_path: gtk/gtktypebuiltins.c
+    sha256sum: 352d84bd226ae6d39b8710f460477f3b552f5a7492bfde41cbd22e6ac2ab67df
+    spdx_exp: ''
+  - archive_path: docs/reference/gtk/html/GtkAboutDialog.html
+    sha256sum: 19d1af62f7698fbb894073f53450e17c4a4035653309f77b889f9378a8a5e70f
+    spdx_exp: ''
+  - archive_path: gtk/gtkaboutdialog.c
+    sha256sum: a5b91d7a44f018de4568f08d58dbb8c5aea051199e842770b3fd4e44869ff5b0
+    spdx_exp: ''
+  - archive_path: gtk/gtkaboutdialog.h
+    sha256sum: 1fe6faf2fe7ea60f845ef1154b8bff4e82672f45ea1d279056c64e23b7b2b47d
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'The GTK+ 3 package contains libraries used for creating
         graphical user interfaces for applications. '
       home_page: http://www.gtk.org
-      license_concluded: GPL-3.0-or-later AND MIT-open-group AND Zlib AND LGPL-3.0-only
-        AND AGPL-3.0-or-later AND BSD-2-Clause AND FSFULLRWD AND FSFAP AND GPL-3.0-or-later
-        WITH Libtool-exception AND MIT AND TCL AND FSFULLR AND (MPL-1.1 OR GPL-2.0-or-later
-        OR LGPL-2.1-or-later) AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only
-        AND HPND-sell-variant AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
-        AGPL-3.0-only AND Artistic-2.0 AND LGPL-2.0-or-later AND FSFUL AND GPL-1.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-only AND
-        LGPL-2.1-or-later AND LGPL-2.0-only AND LGPL-3.0-or-later AND X11 AND LGPL-2.1-only
-        AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-2.0-or-later
-      license_declared: GPL-3.0-or-later AND MIT-open-group AND Zlib AND LGPL-3.0-only
-        AND AGPL-3.0-or-later AND BSD-2-Clause AND FSFULLRWD AND FSFAP AND GPL-3.0-or-later
-        WITH Libtool-exception AND MIT AND TCL AND FSFULLR AND (MPL-1.1 OR GPL-2.0-or-later
-        OR LGPL-2.1-or-later) AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only
-        AND HPND-sell-variant AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
-        AGPL-3.0-only AND Artistic-2.0 AND LGPL-2.0-or-later AND FSFUL AND GPL-1.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-only AND
-        LGPL-2.1-or-later AND LGPL-2.0-only AND LGPL-3.0-or-later AND X11 AND LGPL-2.1-only
-        AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-2.0-or-later
+      license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND AGPL-3.0-only
+        AND AGPL-3.0-or-later AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0
+        AND BSD-2-Clause AND BSD-3-Clause AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Libtool-exception AND HPND-sell-variant AND LGPL-2.0-only AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later
+        AND MIT AND MIT-open-group AND TCL AND X11 AND Zlib
+      license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND AGPL-3.0-only
+        AND AGPL-3.0-or-later AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0
+        AND BSD-2-Clause AND BSD-3-Clause AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Libtool-exception AND HPND-sell-variant AND LGPL-2.0-only AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later
+        AND MIT AND MIT-open-group AND TCL AND X11 AND Zlib
       short_summary: GUI library.
       supplier: 'Organization: Broadcom, Inc.'

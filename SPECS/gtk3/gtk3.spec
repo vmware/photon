@@ -1,19 +1,20 @@
 Summary:        GUI library.
 Name:           gtk3
 Version:        3.23.3
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://www.gtk.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.gnome.org/pub/gnome/sources/gtk/3.23/gtk+-%{version}.tar.xz
-Patch0:         CVE-2024-6655.patch
 
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  meson >= 0.50
+Patch0: CVE-2024-6655.patch
+
+BuildRequires:  meson
 BuildRequires:  cmake
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  atk-devel
@@ -21,8 +22,8 @@ BuildRequires:  libXi-devel
 BuildRequires:  libglvnd-devel
 BuildRequires:  libepoxy-devel
 BuildRequires:  at-spi2-core-devel
-BuildRequires:  glib-devel >= 2.68.0
-BuildRequires:  glib-schemas >= 2.68.0
+BuildRequires:  glib-devel
+BuildRequires:  glib-schemas
 BuildRequires:  fontconfig-devel
 BuildRequires:  libpng-devel
 BuildRequires:  harfbuzz-devel
@@ -106,35 +107,46 @@ It contains the libraries and header files to create applications
 
 %prep
 %autosetup -n gtk+-%{version} -p1
+rm po/*.po* po/*.gmo
 
 %build
 export CFLAGS="-Wno-maybe-uninitialized"
-%configure --enable-xkb \
-        --enable-xinerama \
-        --enable-xrandr \
-        --enable-xfixes \
-        --enable-xcomposite \
-        --enable-xdamage \
-        --enable-wayland-backend \
-        --enable-x11-backend
+%configure \
+  --enable-xkb \
+  --enable-xinerama \
+  --enable-xrandr \
+  --enable-xfixes \
+  --enable-xcomposite \
+  --enable-xdamage \
+  --enable-wayland-backend \
+  --enable-x11-backend \
+  --disable-gtk-doc-html \
+  --disable-gtk-doc \
+  --disable-nls
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
-%ldconfig_scriptlets
-
+%if 0%{?with_check}
 %check
 cd tests
-make %{?_smp_mflags}
+%make_build
 fns=$(find -name 'test*' -executable -maxdepth 1)
 for fn in $fns; do
   $fn || :
 done
+%endif
 
 %clean
 rm -rf %{buildroot}/*
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -143,7 +155,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/gtk-3.0/*
 %{_libdir}/girepository-1.0/
 %{_datadir}/glib-2.0/*
-%{_datadir}/locale/*
 %{_datadir}/gettext/*
 %{_datadir}/gtk-doc
 %{_datadir}/man
@@ -162,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/gtk-3.0/
 
 %changelog
+* Tue Aug 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.23.3-14
+- Remove unused po files
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.23.3-13
 - Bump version as a part of meson upgrade
 * Tue Jan 07 2025 Oliver Kurth <oliver.kurth@@broadcom.com> 3.23.3-12
