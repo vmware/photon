@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        22.17.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -76,6 +76,8 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Tue Aug 05 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 22.17.1-2
+- Cleanup licenses
 * Tue Jul 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.17.1-1
 - Upgrade to 22.17.1 to fix CVE-2025-27210
 * Mon Jun 23 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.16.0-1

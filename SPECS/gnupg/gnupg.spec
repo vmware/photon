@@ -1,7 +1,7 @@
 Summary:        OpenPGP standard implementation used for encrypted communication and data storage.
 Name:           gnupg
 Version:        2.2.41
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://gnupg.org/index.html
 Group:          Applications/Cryptography.
 Vendor:         VMware, Inc.
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %exclude %{_docdir}/*
 
 %changelog
+* Tue Aug 05 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 2.2.41-3
+- Cleanup licenses
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.41-2
 - Release bump for SRP compliance
 * Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 2.2.41-1

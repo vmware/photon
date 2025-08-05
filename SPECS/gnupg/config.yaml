@@ -2,6 +2,28 @@ sources:
 - archive: gnupg-2.2.41.tar.bz2
   archive_sha512sum: f472e5058ea9881355f0c754a47acd0b5360c36e8976b8563dbc763a7cef792bf88227cc15fe5172d3e9bb9fc34d8448dd5c183949031e91a1997cc7f0f83b55
   skip_validation: true
+  license_manual_review:
+  - archive_path: tests/openpgp/secdemo.asc
+    sha256sum: 8a8364849e9c5f2bf721012b1191cef7d492a9b7a97f30b107340856ddc03061
+    spdx_exp: ''
+  - archive_path: tests/openpgp/bug537-test.data.asc
+    sha256sum: 582528865d21da28471a95fbb4df91c3b9543afdae1dc98fef7d1b338a849106
+    spdx_exp: ''
+  - archive_path: tests/openpgp/plain-large.asc
+    sha256sum: 17e7f5a863488ce1413c03235ba10632501dd56d99f52d879c51ab4783cb74e9
+    spdx_exp: ''
+  - archive_path: common/mbox-util.h
+    sha256sum: aadfd5d58df7fe841fec2453015bfa80e62ffbcae64871c62ffb27b3200cc6ad
+    spdx_exp: LGPL-2.1-or-later
+  - archive_path: common/mbox-util.c
+    sha256sum: ca83e55911952c9b01d440331e0717ad08a35cbb400099ba904c5bf9f2dcbbc8
+    spdx_exp: LGPL-2.1-or-later
+  - archive_path: common/tlv-builder.c
+    sha256sum: 54e57c85b8e0f673ce9afe6047090d4d5b97ca06792850adbe4efdd9dc8b16d4
+    spdx_exp: LGPL-2.1-or-later
+  - archive_path: doc/whats-new-in-2.1.txt
+    sha256sum: 3a5f46203286ef12a3b256ebf4c96e9d118ad79adc42393dbf7c2c87f57e5873
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'GnuPG is a complete and free implementation of the OpenPGP
@@ -11,26 +33,24 @@ sources:
         GnuPG, also known as GPG, is a command line tool with features for easy integration
         with other applications. '
       home_page: https://gnupg.org/index.html
-      license_concluded: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-2.0-or-later
-        AND Furuseth AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND Apache-2.0 AND
-        GPL-1.0-or-later WITH Autoconf-exception-generic AND blessing AND LGPL-3.0-or-later
-        AND FSFUL AND BSD-3-Clause AND CC0-1.0 AND LGPL-2.1-only AND GPL-3.0-only
-        AND OLDAP-2.8 AND Zlib AND X11 AND MIT AND BSD-4.3RENO AND LGPL-2.1-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-2-Clause-Views
-        AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-or-later
-        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Texinfo-exception AND CC-BY-SA-4.0 AND Spencer-86
-        AND LGPL-3.0-only AND FSFULLR AND bzip2-1.0.6
-      license_declared: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-2.0-or-later
-        AND Furuseth AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND Apache-2.0 AND
-        GPL-1.0-or-later WITH Autoconf-exception-generic AND blessing AND LGPL-3.0-or-later
-        AND FSFUL AND BSD-3-Clause AND CC0-1.0 AND LGPL-2.1-only AND GPL-3.0-only
-        AND OLDAP-2.8 AND Zlib AND X11 AND MIT AND BSD-4.3RENO AND LGPL-2.1-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-2-Clause-Views
-        AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-or-later
-        AND GPL-2.0-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Texinfo-exception AND CC-BY-SA-4.0 AND Spencer-86
-        AND LGPL-3.0-only AND FSFULLR AND bzip2-1.0.6
+      license_concluded: (GPL-2.0-or-later OR LGPL-3.0-or-later) AND AGPL-3.0-or-later
+        AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4.3RENO AND CC-BY-SA-4.0 AND
+        CC0-1.0 AND FSFUL AND FSFULLR AND FSFULLRWD AND Furuseth AND GPL-1.0-or-later
+        AND GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND
+        GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND
+        OLDAP-2.8 AND Spencer-86 AND X11 AND Zlib AND blessing AND bzip2-1.0.6
+      license_declared: (GPL-2.0-or-later OR LGPL-3.0-or-later) AND AGPL-3.0-or-later
+        AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4.3RENO AND CC-BY-SA-4.0 AND
+        CC0-1.0 AND FSFUL AND FSFULLR AND FSFULLRWD AND Furuseth AND GPL-1.0-or-later
+        AND GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND
+        GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND
+        OLDAP-2.8 AND Spencer-86 AND X11 AND Zlib AND blessing AND bzip2-1.0.6
       short_summary: OpenPGP standard implementation used for encrypted communication
         and data storage.
       supplier: 'Organization: Broadcom, Inc.'

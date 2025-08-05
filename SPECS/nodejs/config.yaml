@@ -2,6 +2,28 @@ sources:
 - archive: node-v22.17.1.tar.gz
   archive_sha512sum: ed8d0ed499ef5f6731860cf81cc3b34cd2cb5edfbc7837b1b09ab32ac5f89bd80812deccadab83762b81eff2c7727f7f0eb019830b26ff49a52e101d3b4ff4f3
   skip_validation: true
+  license_manual_review:
+    - archive_path: "deps/npm/node_modules/spdx-license-ids/index.json"
+      sha256sum: 1a97b1472de86efe56d5d9129f17038e12cf3053713644da8f8292dfcd4c6fc2
+      spdx_exp: ""
+      # index.json contains list of all licenses in an array as string for parsing.
+      # Removed AGPL-30, AGPL-1.0, CC-BY-SA & SSPL-1.0
+    - archive_path: "deps/npm/node_modules/spdx-license-ids/deprecated.json"
+      sha256sum: 29c9e630daa0adc09dec96ddeb6f81d1046210e81824bebda6486250450fb130
+      spdx_exp: ""
+      # deprecated.json contains list of all licenses in an array as string for parsing.
+      # Removed AGPL-3.0 & AGPL-1.0
+    - archive_path: "deps/npm/node_modules/spdx-correct/index.js"
+      sha256sum: bf6aaa22f934f48c945a0302eff34d6e0edb265fa06917f82cd41551465c8f6c
+      spdx_exp: ""
+      # index.js contains list of all Licenses for identification purpose.
+      # Removed AGPL-1.0, AGPL-2.0, AGPL-3.0 & AGPL-3.0-or-later
+    - archive_path: "deps/npm/test/schemas/cyclonedx/spdx.schema.json"
+      sha256sum: 4f6e2b05c05d26a4f2dc5879fbc2fca94b0a28db46289d0c51345621b71cfbfc
+      spdx_exp: ""
+      # spdx.schema.json contains all Licenses as strings for identification purpose
+      # Removed AGPL-1.0, AGPL-1.0-only, AGPL-1.0-or-later, AGPL-3.0, AGPL-3.0-only,
+      # AGPL-3.0-or-later, CC-BY-SA-2.0, CC-BY-SA-4.0 & SSPL-1.0
   spdx:
     package:
       detailed_description: 'Node.js is a JavaScript runtime built on Chrome''s V8
