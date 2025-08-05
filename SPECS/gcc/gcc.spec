@@ -4,7 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -101,6 +101,12 @@ This package contains development headers and static library for libgomp
 
 # disable no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
+
+%if 0%{?with_check} == 0
+# Remove test files that prevent license scan
+rm -r libgo/go/archive/tar/testdata
+rm -r libgo/go/regexp/testdata
+%endif
 
 %build
 export glibcxx_cv_c99_math_cxx98=yes glibcxx_cv_c99_math_cxx11=yes
@@ -244,6 +250,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Tue Aug 05 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-9
+- Clean up unintended licenses
 * Wed Jun 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 12.2.0-8
 - Move new enum value for PLUGIN_BEFORE_STRUCT_LAYOUT to the end,
 - to maintain compatibility.

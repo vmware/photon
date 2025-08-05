@@ -1,6 +1,19 @@
 sources:
 - archive: gcc-12.2.0.tar.xz
   archive_sha512sum: e9e857bd81bf7a370307d6848c81b2f5403db8c7b5207f54bce3f3faac3bde63445684092c2bc1a2427cddb6f7746496d9fbbef05fbbd77f2810b2998f1f9173
+  license_manual_review:
+    - archive_path: "gcc/doc/gcc.info"
+      sha256sum: e652c4c30e3feaf2d8fbb8d4c3b1ed71cc2631a8635f19e98c733b35512987f8
+      spdx_exp: "GFDL-1.3-or-later"
+    - archive_path: "gcc/doc/gccint.info"
+      sha256sum: 57507ab14dfe2b35ddc58cf31f0424eb8d6a9536cd08e9ffe56a30c740b68437
+      spdx_exp: "GFDL-1.3-or-later"
+    - archive_path: "gcc/doc/gpl.7"
+      sha256sum: 3784d5acb5c0ef66e160554b63c2a94a8b335fc49b112e0a24afe80a48b3f5de
+      spdx_exp: "GPL-3.0-only"
+    - archive_path: "gcc/doc/gfdl.7"
+      sha256sum: 59353a6b4cd8fd65f22169a6dd944816c903a7e90ef218ae558f6ce81ff6d511
+      spdx_exp: "GFDL-1.3-or-later"
   skip_validation: true
   spdx:
     package:
