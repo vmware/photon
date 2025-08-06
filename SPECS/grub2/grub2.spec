@@ -97,6 +97,8 @@ GRUB UEFI image signed by vendor key
 
 %prep
 %autosetup -p1 -n grub-%{version}
+# Remove unused theme dir
+rm -r themes
 
 %build
 sh ./autogen.sh
