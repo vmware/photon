@@ -3,21 +3,18 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.9.4
-Release:          10%{?dist}
+Release:          11%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org
 
-Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
-
-Source1: https://github.com/fmtlib/fmt/archive/refs/tags/libfmt-%{libfmt_ver}.zip
-
-Source2: %{name}.sysusers
-
-Source3: license.txt
-%include %{SOURCE3}
-Patch0:        libfmt-nodownload.patch
+Source0:          https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
+Source1:          https://github.com/fmtlib/fmt/archive/refs/tags/libfmt-%{libfmt_ver}.zip
+Source2:          %{name}.sysusers
+Source3:          license.txt
+%include          %{SOURCE3}
+Patch0:           libfmt-nodownload.patch
 
 BuildRequires: cmake
 BuildRequires: Linux-PAM-devel
@@ -52,36 +49,36 @@ a server daemon (mariadbd) and many different client programs and libraries.
 The base package contains the standard MariaDB/MySQL client programs and
 utilities.
 
-%package server
-Summary:    MariaDB server
-Requires:   %{name}-errmsg = %{version}-%{release}
-Requires:   shadow
-Requires:   libaio
+%package     server
+Summary:     MariaDB server
+Requires:    %{name}-errmsg = %{version}-%{release}
+Requires:    shadow
+Requires:    libaio
 
 %description server
 The MariaDB server and related files
 
-%package server-galera
-Summary:    MariaDB Galera Cluster is a synchronous multi-master cluster for MariaDB
-Group:      Applications/Databases
-Requires:   %{name}-server = %{version}-%{release}
+%package     server-galera
+Summary:     MariaDB Galera Cluster is a synchronous multi-master cluster for MariaDB
+Group:       Applications/Databases
+Requires:    %{name}-server = %{version}-%{release}
 
 %description server-galera
 MariaDB Galera Cluster is a synchronous multi-master cluster for MariaDB.
 It is available on Linux only, and only supports the XtraDB/InnoDB storage engines
 (although there is experimental support for MyISAM - see the wsrep_replicate_myisam system variable).
 
-%package devel
-Summary:    Development headers for mariadb
-Requires:   %{name} = %{version}-%{release}
-Requires:   openssl-devel
-Requires:   zlib-devel
+%package     devel
+Summary:     Development headers for mariadb
+Requires:    %{name} = %{version}-%{release}
+Requires:    openssl-devel
+Requires:    zlib-devel
 
 %description devel
 Development headers for developing applications linking to maridb
 
-%package errmsg
-Summary:    errmsg for mariadb
+%package     errmsg
+Summary:     errmsg for mariadb
 
 %description errmsg
 errmsg for maridb
@@ -468,6 +465,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/chinese/errmsg.sys
 
 %changelog
+* Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> 10.9.4-11
+- Ignore copyleft license CC-BY-SA-4.0 for docs files
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 10.9.4-10
 - Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 10.9.4-9
