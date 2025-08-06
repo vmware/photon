@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.40.4
-Release:        4%{?dist}
+Version:        2.43.7
+Release:        1%{?dist}
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -19,9 +19,6 @@ BuildRequires: openssl-devel
 Requires: expat
 Requires: curl
 Requires: openssl
-
-Patch0:   CVE-2025-48384.patch
-Patch1:   CVE-2025-48385.patch
 
 %description
 Git is a free and open source, distributed version control system
@@ -141,6 +138,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 06 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.43.7-1
+- Version upgrade to v2.43.7
 * Thu Jul 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-4
 - Fix CVE-2025-48384, CVE-2025-48385
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.40.4-3
