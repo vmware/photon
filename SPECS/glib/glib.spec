@@ -1,7 +1,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.75.2
-Release:      8%{?dist}
+Release:      9%{?dist}
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -138,6 +138,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Tue Aug 05 2025 Dweep Advani <dweep.advani@broadcom.com> 2.75.2-9
+- Fix licenses
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.75.2-8
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.75.2-7

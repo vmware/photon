@@ -1,6 +1,15 @@
 sources:
 - archive: glib-2.75.2.tar.xz
   archive_sha512sum: f8e34d112c720e17fbc2325e5091f55d120cc82aa2a9012c6e9e3b81a969af97e501910f3f986fa305ab1abfbd77e69ee9c71bcdda33c6795c3b087e684272f6
+  license_manual_review:
+    - archive_path: ".reuse/dep5"
+      # This file itself is not licensed and just lists the tests files
+      sha256sum: c2d91289b082d7502c1b1f10834e83bd8c646cff7b8bfda30b9bd71d85cdd770
+      spdx_exp: "LGPL-2.1-or-later"
+    - archive_path: "docs/reference/glib/gvariant-specification-1.0.rst"
+      # Documentation is not shipped, override
+      sha256sum: 3a20a387cc9a0b0d27ed858bc23ca3eeca48b8f836b1f7ccd3d4898a06e61c6b
+      spdx_exp: ''
   skip_validation: true
   spdx:
     package:
