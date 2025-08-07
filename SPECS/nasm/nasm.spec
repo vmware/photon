@@ -1,7 +1,7 @@
 Summary:        Netwide Assembler.
 Name:           nasm
 Version:        2.16.01
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.nasm.us
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -71,6 +71,8 @@ make %{?_smp_mflags} -k test
 %{_docdir}/*.ps
 
 %changelog
+* Thu Aug 07 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.16.01-3
+- Bump release to rescan licenses
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.16.01-2
 - Release bump for SRP compliance
 * Mon Apr 17 2023 Nitesh Kumar <kunitesh@vmware.com> 2.16.01-1

@@ -13,6 +13,12 @@ sources:
 - archive: nasm-2.16.01.tar.xz
   archive_sha512sum: 51fccb5639ce019d9c423c0f279750ffbd74c64cd41dd3b185d1aa1a1aaed79c5d3cd8d4bebbc13ee249a375ed27457ea2abde1a4dbb24d354598fffd1254833
   skip_validation: true
+  license_manual_review:
+    - archive_path: "doc/pspdf.pl"
+      final_build_path: "doc/pspdf.pl"
+      sha256sum: d229a9849a97faad93f8476353f96be92227e145e016c429d88da01546d84f3f
+      spdx_exp: ""
+    # Reported incorrect license
   spdx:
     package:
       detailed_description: 'NASM (Netwide Assembler) is an 80x86 assembler designed
