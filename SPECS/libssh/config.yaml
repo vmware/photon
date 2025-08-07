@@ -1,7 +1,29 @@
 sources:
-- archive: libssh-0.10.6.tar.xz
-  archive_sha512sum: 40c62d63c44e882999b71552c237d73fc7364313bd00b15a211a34aeff1b73693da441d2c8d4e40108d00fb7480ec7c5b6d472f9c0784b2359a179632ab0d6c1
-  skip_validation: true
+- archive: libssh-0.11.2.tar.xz
+  skip_validation: false
+  archive_sha512sum: 
+    15d56c3f82ee81c3ab4af2b17eba054626bb53c3337ef45f829479f8b64c552f6e7cbf307e41c9792bcb3438f282d2690acbe994150bd03a8b6c21ba8b1cfe50
+  archive_type: upstream
+  name: libssh-0.11.2
+  version: 0.11.2
+  repo_url: https://git.libssh.org/projects/libssh.git
+  commit_id: dff6c0821ed54f6fbf5b755af43f54cbb723b1b1
+  url: https://www.libssh.org/files/0.11/libssh-0.11.2.tar.xz
+  skip_list:
+  - RCS
+  - CVS
+  - tags
+  - .git
+  - .hg
+  - .bzr
+  - _darcs
+  - __pycache__
+  missing:
+  - .gitignore
+  - .gitlab-c
+  - .gitlab-ci.yml
+  - .gitleaks.toml
+  - .gitlab-ci
   spdx:
     package:
       detailed_description: 'The ssh library was designed to be used by programmers
@@ -12,11 +34,13 @@ sources:
         remote files easily, without third-party programs others than libcrypto (from
         openssl). '
       home_page: https://www.libssh.org
-      license_concluded: LGPL-2.1-only AND BSD-2-Clause AND LGPL-2.0-or-later AND
-        GPL-1.0-or-later AND ISC AND MIT AND BSD-3-Clause AND BSD-4-Clause AND LGPL-2.1-or-later
-        AND GPL-2.0-only AND Apache-2.0 AND GPL-2.0-or-later AND SSH-short
-      license_declared: LGPL-2.1-only AND BSD-2-Clause AND LGPL-2.0-or-later AND GPL-1.0-or-later
-        AND ISC AND MIT AND BSD-3-Clause AND BSD-4-Clause AND LGPL-2.1-or-later AND
-        GPL-2.0-only AND Apache-2.0 AND GPL-2.0-or-later AND SSH-short
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND 
+        GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND 
+        LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND 
+        SSH-short
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND 
+        GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND 
+        LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND 
+        SSH-short
       short_summary: A library implementing the SSH protocol
       supplier: 'Organization: Broadcom, Inc.'

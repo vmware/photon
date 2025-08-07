@@ -1,7 +1,7 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 URL:            https://gitlab.com/cryptsetup/cryptsetup
@@ -161,6 +161,8 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %doc AUTHORS FAQ docs/*ReleaseNotes docs/examples/*
 
 %changelog
+* Mon Aug 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.3-6
+- Version bump up to use libssh v0.11.2
 * Wed Jul 23 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.4.3-5
 - Remove files to handle unintended copyright inclusions
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.3-4
