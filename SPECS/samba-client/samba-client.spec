@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -586,6 +586,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Thu Aug 07 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.19.3-2
+- config.yaml changes
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 4.19.3-1
 - Bump up version to 4.19.3 for CVE-2023-5568 and CVE-2018-14628
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.8-4
