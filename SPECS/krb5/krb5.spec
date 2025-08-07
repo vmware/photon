@@ -3,7 +3,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -52,6 +52,14 @@ Requires:   %{name} = %{version}-%{release}
 
 %description lang
 These are the additional language files of krb5.
+
+%package doc
+Summary:    Documentation files for krb5
+Group:      System Environment/Security
+Requires:   %{name} = %{version}-%{release}
+
+%description doc
+Additional files containing documentation for krb5.
 
 %prep
 %autosetup -p1
@@ -102,12 +110,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 %{_libdir}/krb5/plugins/*
 %{_sbindir}/*
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man8/*
-%{_mandir}/man7/*
-%{_datadir}/man/man5/.k5identity.5.gz
-%{_datadir}/man/man5/.k5login.5.gz
 
 %files devel
 %defattr(-,root,root)
@@ -120,7 +122,18 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_datadir}/locale/*
 
+%files doc
+%defattr(-,root,root)
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
+%{_mandir}/man7/*
+%{_datadir}/man/man5/.k5identity.5.gz
+%{_datadir}/man/man5/.k5login.5.gz
+
 %changelog
+* Mon Aug 04 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.20.2-8
+- Ship separate documentation
 * Mon Jun 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.2-7
 - Fix for CVE-2024-3596
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.2-6
