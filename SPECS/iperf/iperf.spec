@@ -1,6 +1,6 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.19
+Version:        3.19.1
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
@@ -8,9 +8,8 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-#Source download URL: https://github.com/esnet/iperf/archive/%{version}.tar.gz
-Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
-%define sha512 iperf=f0631cd1158a90dc402fa30563e6f26dbdbc5d5b0665bed25248f9153118f55296913abeb89bf0b1db760ca2c68f60e0c9cf2df82aa096318ca618ca09176388
+Source0:        https://github.com/esnet/iperf/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha512 iperf=116110d5c588395c5e0b11ebcd736bc7aaa0d9c848d65cd1cb32880f5ef02fcc07a1dc95ceaf17fa33fc822636ca74f7caf9e07936cd4e0bc832a0fa89556f35
 
 Patch1:         disablepg.patch
 
@@ -57,6 +56,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Fri Aug 08 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 3.19.1-1
+- Update to v3.19.1, fixes CVE-2025-54349, CVE-2025-54350, CVE-2025-54351
 * Mon May 19 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 3.19-1
 - Update to v3.19, fixes CVE-2024-26306, CVE-2024-53580
 * Tue Apr 2 2024 Roye Eshed <roye.eshed@broadcom.com> 3.16-1
