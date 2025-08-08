@@ -1,11 +1,11 @@
 %define srcname repmgr
 
-%define _pg16basedir    %{_usr}/pgsql/16
+%define _pgbasedir    %{_usr}/pgsql/16
 
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr16
 Version:        5.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -52,10 +52,16 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %exclude %dir %{_libdir}/debug
-%{_pg16basedir}/bin/*
-%{_pg16basedir}/lib/*
-%{_pg16basedir}/share/*
+%dir %{_usr}/pgsql
+%dir %{_pgbasedir}
+%dir %{_pgbasedir}/bin
+%dir %{_pgbasedir}/share
+%{_pgbasedir}/bin/*
+%{_pgbasedir}/lib/*
+%{_pgbasedir}/share/*
 
 %changelog
+* Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.3-2
+- Fix directory ownership during file packaging
 * Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.3-1
 - Build with pgsql16

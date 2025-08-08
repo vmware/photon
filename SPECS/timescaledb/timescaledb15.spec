@@ -7,7 +7,7 @@
 Summary:        A PostgreSQL extension for high-performance real-time analytics
 Name:           timescaledb15
 Version:        2.20.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.timescale.com
 Group:          Productivity/Databases/Tools
 Vendor:         VMware, Inc.
@@ -49,6 +49,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %license LICENSE-APACHE
 %doc README.md
+%dir %{_usr}/pgsql
+%dir %{_pgbaseinstdir}
+%dir %{_pgbaseinstdir}/lib
+%dir %{_pglibdir}
+%dir %{_pgbaseinstdir}/share
+%dir %{_pgdatadir}
+%dir %{_pgdatadir}/extension
 %{_pglibdir}/%{srcname}-%{version}.so
 %{_pglibdir}/%{srcname}.so
 %{_pgdatadir}/extension/%{srcname}--*%{version}.sql
@@ -56,5 +63,7 @@ rm -rf %{buildroot}/*
 %exclude %{_pglibdir}/pgxs/src/test/perl/TimescaleNode.pm
 
 %changelog
+* Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.20.2-2
+- Fix directory ownership during file packaging
 * Thu Jun 05 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.20.2-1
 - Initial Build

@@ -1,11 +1,11 @@
 %define srcname repmgr
 
-%define _pg15basedir    %{_usr}/pgsql/15
+%define _pgbasedir    %{_usr}/pgsql/15
 
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr15
 Version:        5.3.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -52,11 +52,17 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %exclude %dir %{_libdir}/debug
-%{_pg15basedir}/bin/*
-%{_pg15basedir}/lib/*
-%{_pg15basedir}/share/*
+%dir %{_usr}/pgsql
+%dir %{_pgbasedir}
+%dir %{_pgbasedir}/bin
+%dir %{_pgbasedir}/share
+%{_pgbasedir}/bin/*
+%{_pgbasedir}/lib/*
+%{_pgbasedir}/share/*
 
 %changelog
+* Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.3-5
+- Fix directory ownership during file packaging
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.3.3-4
 - Release bump for SRP compliance
 * Wed Sep 06 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.3-3

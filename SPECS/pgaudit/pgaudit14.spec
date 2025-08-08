@@ -6,7 +6,7 @@
 
 Name:       pgaudit14
 Version:    1.6.2
-Release:    4%{?dist}
+Release:    5%{?dist}
 Summary:    PostgreSQL Audit Extension
 URL:        http://pgaudit.org
 Group:      Applications/Databases
@@ -54,6 +54,13 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%dir %{_pgbaseinstdir}/lib
+%dir %{_pglibdir}
+%dir %{_pglibdir}/bitcode
+%dir %{_pglibdir}/bitcode/%{srcname}
+%dir %{_pgbaseinstdir}/share
+%dir %{_pgdatadir}/extension
+%dir %{_pgdatadir}
 %{_pglibdir}/%{srcname}.so
 %{_pgdatadir}/extension/*.sql
 %{_pgdatadir}/extension/*.control
@@ -61,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.2-5
+- Fix directory ownership during file packaging
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.2-4
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.2-3

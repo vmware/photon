@@ -6,7 +6,7 @@
 
 Name:       pgaudit16
 Version:    16.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    PostgreSQL Audit Extension
 License:    PostgreSQL
 URL:        http://pgaudit.org
@@ -52,6 +52,13 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%dir %{_pgbaseinstdir}/lib
+%dir %{_pglibdir}
+%dir %{_pglibdir}/bitcode
+%dir %{_pglibdir}/bitcode/%{srcname}
+%dir %{_pgbaseinstdir}/share
+%dir %{_pgdatadir}/extension
+%dir %{_pgdatadir}
 %{_pglibdir}/%{srcname}.so
 %{_pgdatadir}/extension/*.sql
 %{_pgdatadir}/extension/*.control
@@ -59,5 +66,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.0-2
+- Fix directory ownership during file packaging
 * Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.0-1
 - pgAudit for pgsql16
