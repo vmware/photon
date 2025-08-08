@@ -4,25 +4,25 @@ sources:
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'The GStreamer Good Plug-ins is a set of plug-ins considered
-        by the GStreamer developers to have good quality code, correct functionality,
-        and the preferred license (LGPL). A wide range of video and audio decoders,
-        encoders, and filters are included. '
+      detailed_description: The GStreamer Bad Plug-ins is a set of plug-ins that are
+        not up to par compared to the rest. They might be close to being good quality,
+        but they are missing something - be it a good code review, some documentation,
+        a set of tests, a real live maintainer, or some actual wide use.
       home_page: http://gstreamer.freedesktop.org/
-      license_concluded: (MPL-1.1 OR MIT OR LGPL-2.0-or-later) AND (GPL-2.0-or-later
-        WITH Linux-syscall-note OR BSD-3-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause)
-        AND GPL-2.0-only AND BSD-2-Clause AND LGPL-2.1-or-later AND HPND-Pbmplus AND
-        GPL-2.0-or-later AND CC-BY-SA-4.0 AND BSL-1.0 AND GPL-1.0-or-later AND Apache-2.0
-        AND MIT-Festival AND MIT AND GPL-2.0-or-later WITH Linux-syscall-note AND
-        GPL-2.0-only WITH Linux-syscall-note AND ISC AND LGPL-2.1-only AND BSD-3-Clause
-        AND LGPL-2.0-or-later AND BSD-2-Clause-Views AND MPL-1.1 AND DOC
-      license_declared: (MPL-1.1 OR MIT OR LGPL-2.0-or-later) AND (GPL-2.0-or-later
-        WITH Linux-syscall-note OR BSD-3-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause)
-        AND GPL-2.0-only AND BSD-2-Clause AND LGPL-2.1-or-later AND HPND-Pbmplus AND
-        GPL-2.0-or-later AND CC-BY-SA-4.0 AND BSL-1.0 AND GPL-1.0-or-later AND Apache-2.0
-        AND MIT-Festival AND MIT AND GPL-2.0-or-later WITH Linux-syscall-note AND
-        GPL-2.0-only WITH Linux-syscall-note AND ISC AND LGPL-2.1-only AND BSD-3-Clause
-        AND LGPL-2.0-or-later AND BSD-2-Clause-Views AND MPL-1.1 AND DOC
+      license_concluded: (BSD-3-Clause OR GPL-2.0-or-later WITH Linux-syscall-note)
+        AND (BSD-3-Clause OR GPL-2.0-or-later) AND (LGPL-2.0-or-later OR MIT OR MPL-1.1)
+        AND Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND
+        BSL-1.0 AND CC-BY-SA-4.0 AND DOC AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Linux-syscall-note AND HPND-Pbmplus AND ISC AND LGPL-2.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Festival AND MPL-1.1
+      license_declared: (BSD-3-Clause OR GPL-2.0-or-later WITH Linux-syscall-note)
+        AND (BSD-3-Clause OR GPL-2.0-or-later) AND (LGPL-2.0-or-later OR MIT OR MPL-1.1)
+        AND Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND
+        BSL-1.0 AND CC-BY-SA-4.0 AND DOC AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Linux-syscall-note AND HPND-Pbmplus AND ISC AND LGPL-2.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Festival AND MPL-1.1
       short_summary: The GStreamer Bad Plug-ins package contains a set a set of plug-ins
         that aren't up to par compared to the rest
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,7 @@
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
 Version:        1.25.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
 Vendor:         VMware, Inc.
@@ -12,15 +12,18 @@ Source0:        http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0:  0001-gst-plugins-bad-remove-ext-iqa-directory-compilation.patch
+
 BuildRequires:  meson
 BuildRequires:  cmake
 BuildRequires:  gstreamer-plugins-base-devel
 Requires:       gstreamer-plugins-base
 
 %description
-The GStreamer Good Plug-ins is a set of plug-ins considered by the GStreamer developers
-to have good quality code, correct functionality, and the preferred license (LGPL).
-A wide range of video and audio decoders, encoders, and filters are included.
+The GStreamer Bad Plug-ins is a set of plug-ins that aren't up to par
+compared to the rest. They might be close to being good quality, but
+they're missing something - be it a good code review, some documentation,
+a set of tests, a real live maintainer, or some actual wide use.
 
 %package        devel
 Summary:        GStreamer Plugin Library Headers
@@ -33,6 +36,9 @@ The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't 
 
 %prep
 %autosetup -p1
+# Remove uncompiled files to handle unintended copyright inclusions
+rm NEWS
+rm -r ext/iqa
 
 %build
 %meson \
@@ -69,6 +75,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Mon Aug 04 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.25.1-2
+- Avoid illegal licenses
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.25.1-1
 - Update to 1.25.1
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.7-4

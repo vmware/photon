@@ -1,0 +1,25 @@
+From 93b42872422dde9f0c149ae475e313494c6f6954 Mon Sep 17 00:00:00 2001
+From: Kuntal Nayak <kuntal.nayak@broadcom.com>
+Date: Mon, 11 Aug 2025 17:46:42 +0000
+Subject: [PATCH] gst-plugins-bad: remove ext/iqa directory compilation
+
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ ext/meson.build | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/ext/meson.build b/ext/meson.build
+index 9fc71a9..845fe8a 100644
+--- a/ext/meson.build
++++ b/ext/meson.build
+@@ -25,7 +25,6 @@ subdir('gs')
+ subdir('gsm')
+ subdir('gtk')
+ subdir('hls')
+-subdir('iqa')
+ subdir('isac')
+ subdir('ladspa')
+ subdir('lc3')
+-- 
+2.39.4
+
