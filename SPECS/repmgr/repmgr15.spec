@@ -1,11 +1,11 @@
 %define srcname repmgr
 
-%define _pg15basedir    %{_usr}/pgsql/15
+%define _pgbasedir    %{_usr}/pgsql/15
 
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr15
 Version:        5.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org
 Group:          Applications/Databases
@@ -53,10 +53,16 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %exclude %dir %{_libdir}/debug
-%{_pg15basedir}/bin/*
-%{_pg15basedir}/lib/*
-%{_pg15basedir}/share/*
+%dir %{_usr}/pgsql
+%dir %{_pgbasedir}
+%dir %{_pgbasedir}/bin
+%dir %{_pgbasedir}/share
+%{_pgbasedir}/bin/*
+%{_pgbasedir}/lib/*
+%{_pgbasedir}/share/*
 
 %changelog
+* Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.3-2
+- Fix directory ownership during file packaging
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 5.3.3-1
 - Initial version

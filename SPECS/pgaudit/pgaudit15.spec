@@ -6,7 +6,7 @@
 
 Name:           pgaudit15
 Version:        1.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PostgreSQL Audit Extension
 License:        PostgreSQL
 URL:            http://pgaudit.org
@@ -53,10 +53,17 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%dir %{_pgbaseinstdir}/lib
+%dir %{_pglibdir}
+%dir %{_pgbaseinstdir}/share
+%dir %{_pgdatadir}/extension
+%dir %{_pgdatadir}
 %{_pglibdir}/%{srcname}.so
 %{_pgdatadir}/extension/*.sql
 %{_pgdatadir}/extension/*.control
 
 %changelog
+* Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-2
+- Fix directory ownership during file packaging
 * Wed Jun 19 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.7.0-1
 - Initial version.

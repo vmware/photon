@@ -1,11 +1,11 @@
 %define srcname repmgr
 
-%define _pg13basedir    %{_usr}/pgsql/13
+%define _pgbasedir    %{_usr}/pgsql/13
 
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr13
 Version:        5.3.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org
 Group:          Applications/Databases
@@ -46,10 +46,16 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %exclude %dir %{_libdir}/debug
-%{_pg13basedir}/bin/*
-%{_pg13basedir}/lib/*
-%{_pg13basedir}/share/*
+%dir %{_usr}/pgsql
+%dir %{_pgbasedir}
+%dir %{_pgbasedir}/bin
+%dir %{_pgbasedir}/share
+%{_pgbasedir}/bin/*
+%{_pgbasedir}/lib/*
+%{_pgbasedir}/share/*
 
 %changelog
+* Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.0-6
+- Fix directory ownership during file packaging
 * Thu Aug 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.0-5
 - repmgr13 for pgsql13

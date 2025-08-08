@@ -12,7 +12,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -223,10 +223,17 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%dir %{_usr}/pgsql
+%dir %{_pgbaseinstdir}
+%dir %{_pgbaseinstdir}/share
 %dir %{_pgbindir}
-%dir %{_pglibdir}
 %dir %{_pgdatadir}
+%dir %{_pgbaseinstdir}/lib
+%dir %{_pglibdir}
+%dir %{_pgbaseinstdir}/share
+%dir %{_pgbaseinstdir}/share/doc
 %dir %{_pgdocdir}
+%dir %{_pgdocdir}/extension
 %{_pgbindir}/initdb
 %{_pgbindir}/pg_amcheck
 %{_pgbindir}/oid2name
@@ -265,8 +272,14 @@ rm -rf %{buildroot}/*
 
 %files libs
 %defattr(-,root,root)
+%dir %{_usr}/pgsql
+%dir %{_pgbaseinstdir}
+%dir %{_pgbindir}
+%dir %{_pgbaseinstdir}/lib
 %dir %{_pgbindir}
 %dir %{_pglibdir}
+%dir %{_pgbaseinstdir}/share
+%dir %{_pgdatadir}
 %{_pgbaseinstdir}/%{srcname}.conf
 %{_pgbindir}/clusterdb
 %{_pgbindir}/createdb
@@ -290,6 +303,14 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
+%dir %{_usr}/pgsql
+%dir %{_pgbaseinstdir}
+%dir %{_pgbindir}
+%dir %{_pgbaseinstdir}/include
+%dir %{_pgincludedir}
+%dir %{_pgbaseinstdir}/lib
+%dir %{_pglibdir}
+%dir %{_pglibdir}/pkgconfig
 %{_pgincludedir}/*
 %{_pglibdir}/pkgconfig/*
 %{_pglibdir}/libecpg*.so
@@ -304,6 +325,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.13-2
+- Fix directory ownership during file packaging
 * Wed Jun 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.13-1
 - Upgrade to v15.13
 * Thu Mar 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.12-1
