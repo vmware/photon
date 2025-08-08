@@ -3,7 +3,6 @@
 # build source trees from spec files under SPECS/<pkg>/<pkg>.spec
 import common
 from common import *
-from CacheUtil import CacheUtil
 from DockerUtil import DockerUtil
 
 import yaml
@@ -688,6 +687,7 @@ class Scanner:
             score = 90
 
         if common.redis_host and common.redis_port:
+            from CacheUtil import CacheUtil
             cache_util = CacheUtil(
                 common.redis_host, common.redis_port, common.redis_ttl
             )
