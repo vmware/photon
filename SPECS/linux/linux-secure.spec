@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.240
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -370,6 +370,9 @@ Patch233:  0001-uio_hv_generic-Fix-another-memory-leak-in-error-hand.patch
 # Fix CVE-2021-47076
 Patch234:  0001-RDMA-rxe-Return-CQE-error-if-invalid-lkey-was-suppli.patch
 
+# Fix CVE-2024-57982
+Patch235:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -646,6 +649,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2
+- Fix for CVE-2024-57982
 * Tue Jul 29 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 5.10.240-1
 - Update to version 5.10.240
 * Wed Jul 16 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-3

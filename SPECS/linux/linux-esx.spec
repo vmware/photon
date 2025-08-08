@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.240
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -410,6 +410,9 @@ Patch232:  0001-uio_hv_generic-Fix-another-memory-leak-in-error-hand.patch
 # Fix CVE-2021-47076
 Patch233:  0001-RDMA-rxe-Return-CQE-error-if-invalid-lkey-was-suppli.patch
 
+# Fix CVE-2024-57982
+Patch234:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -791,6 +794,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2
+- Fix for CVE-2024-57982
 * Fri Aug 01 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.240-1
 - Update to version 5.10.240
 * Wed Jul 16 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-3

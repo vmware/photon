@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.240
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -421,6 +421,9 @@ Patch237:  0001-uio_hv_generic-Fix-another-memory-leak-in-error-hand.patch
 
 # Fix CVE-2021-47076
 Patch238:  0001-RDMA-rxe-Return-CQE-error-if-invalid-lkey-was-suppli.patch
+
+# Fix CVE-2024-57982
+Patch239:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1090,6 +1093,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2
+- Fix for CVE-2024-57982
 * Mon Jul 28 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.240-1
 - Update to version 5.10.240
 * Tue Jul 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-4

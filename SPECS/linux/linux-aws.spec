@@ -16,7 +16,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.240
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -355,6 +355,9 @@ Patch232:  0001-uio_hv_generic-Fix-another-memory-leak-in-error-hand.patch
 
 # Fix CVE-2021-47076
 Patch233:  0001-RDMA-rxe-Return-CQE-error-if-invalid-lkey-was-suppli.patch
+
+# Fix CVE-2024-57982
+Patch234:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -702,6 +705,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2
+- Fix for CVE-2024-57982
 * Tue Jul 29 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.240-1
 - Update to version 5.10.240
 * Wed Jul 16 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.239-3
