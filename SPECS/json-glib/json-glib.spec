@@ -1,13 +1,13 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.6.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.6/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -45,6 +45,7 @@ Header files for the json-glib library.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
+rm -r subprojects/gi-docgen/
 
 %build
 export LANG=en_US.UTF-8
@@ -88,6 +89,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Fri Aug 08 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.6-5
+- Remove not required docuementation
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-4
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-3
