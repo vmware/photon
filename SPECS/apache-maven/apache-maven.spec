@@ -1,24 +1,24 @@
-%define ExtraBuildRequires apache-maven
-
-%define _prefix %{_var}/opt/%{name}
-%define _bindir %{_prefix}/bin
-%define _libdir %{_prefix}/lib
+%define maven_prefix %{_var}/opt/%{name}
+%define maven_bindir %{maven_prefix}/bin
+%define maven_libdir %{maven_prefix}/lib
 
 Summary:    Apache Maven
 Name:       apache-maven
-Version:    3.6.3
-Release:    5%{?dist}
+Version:    3.9.0
+Release:    1%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: http://mirrors.wuchna.com/apachemirror/maven/maven-3/%{version}/source/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=14eef64ad13c1f689f2ab0d2b2b66c9273bf336e557d81d5c22ddb001c47cf51f03bb1465d6059ce9fdc2e43180ceb0638ce914af1f53af9c2398f5d429f114c
+Source0: https://github.com/apache/maven/archive/refs/tags/maven-%{version}.tar.gz
+%define sha512 maven=488a47b9f04889b12c2c62ea1ffec3aa071dbdd6def384b77dce259249ca49e92d7cc211a0711ff69f3b54ac7c5171bff22809089807cdaa96fc9d337fbd150c
 
 BuildRequires: openjdk8
 BuildRequires: apache-ant
+
+%define ExtraBuildRequires apache-maven
 
 Requires: (openjdk8 or openjdk11 or openjdk17)
 Requires: /usr/bin/which
@@ -27,26 +27,26 @@ Requires: /usr/bin/which
 The Maven package contains binaries for a build system
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n maven-maven-%{version}
 
 %build
 
 %install
-MAVEN_DIST_DIR=%{buildroot}%{_prefix}
-export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
-sed -i 's/www.opensource/opensource/g' DEPENDENCIES
+MAVEN_DIST_DIR=%{buildroot}%{maven_prefix}
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-*)
 mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
-mkdir -p %{buildroot}%{_datadir}/java/maven
-for jar in %{buildroot}/%{_libdir}/*.jar; do
+mkdir -p %{buildroot}%{_datadir}/java/maven \
+         %{buildroot}%{_bindir}
+
+for jar in %{buildroot}%{maven_libdir}/*.jar; do
   jarname=$(basename $jar .jar)
-  ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
+  ln -sfv %{maven_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
 done
 
-mkdir -p %{buildroot}/bin
-for b in %{buildroot}%{_bindir}/*; do
+for b in %{buildroot}%{maven_bindir}/*; do
   binaryname=$(basename $b)
-  ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
+  ln -sfv %{maven_bindir}/${binaryname} %{buildroot}%{_bindir}/${binaryname}
 done
 
 %clean
@@ -54,26 +54,28 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%dir %{_libdir}
-%dir %{_bindir}
-%dir %{_prefix}/conf
-%dir %{_prefix}/boot
+%dir %{maven_libdir}
+%dir %{maven_bindir}
+%dir %{maven_prefix}/conf
+%dir %{maven_prefix}/boot
 %dir %{_datadir}/java/maven
-%{_libdir}/*
+%{maven_libdir}/*
+%{maven_bindir}/*
 %{_bindir}/*
-/bin/*
 %{_datadir}/java/maven/*.jar
-%{_prefix}/boot/plexus-classworlds-2.6.0.jar
-%{_prefix}/boot/plexus-classworlds.license
-%{_prefix}/conf/logging/simplelogger.properties
-%{_prefix}/conf/settings.xml
-%{_prefix}/conf/toolchains.xml
-%{_prefix}/LICENSE
-%{_prefix}/NOTICE
-%{_prefix}/README.txt
-%exclude %{_libdir}/jansi-native
+%{maven_prefix}/boot/plexus-classworlds-2.6.0.jar
+%{maven_prefix}/boot/plexus-classworlds.license
+%{maven_prefix}/conf/logging/simplelogger.properties
+%{maven_prefix}/conf/settings.xml
+%{maven_prefix}/conf/toolchains.xml
+%{maven_prefix}/LICENSE
+%{maven_prefix}/NOTICE
+%{maven_prefix}/README.txt
+%exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Sun Aug 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.0-1
+- Upgrade to v3.9.0 to fix CVE-2021-26291
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.3-5
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-4

@@ -4,7 +4,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -154,6 +154,8 @@ popd
 %{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Sun Aug 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.23.3-3
+- Bump version as a part of maven upgrade
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-2
 - Fix for CVE-2024-7254
 * Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-1
