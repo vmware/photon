@@ -1,0 +1,131 @@
+From 9942b6fccdc9b691f96b5b73664cbac56416c39b Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Wed, 20 Aug 2025 00:05:55 +0000
+Subject: [PATCH 13/13] Disable ret sites section in x86 shasum object files
+
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+---
+ arch/x86/crypto/sha256-avx-asm.S   | 5 +++++
+ arch/x86/crypto/sha256-avx2-asm.S  | 5 +++++
+ arch/x86/crypto/sha256-ssse3-asm.S | 5 +++++
+ arch/x86/crypto/sha256_ni_asm.S    | 5 +++++
+ arch/x86/crypto/sha512-avx-asm.S   | 5 +++++
+ arch/x86/crypto/sha512-avx2-asm.S  | 5 +++++
+ arch/x86/crypto/sha512-ssse3-asm.S | 5 +++++
+ 7 files changed, 35 insertions(+)
+
+diff --git a/arch/x86/crypto/sha256-avx-asm.S b/arch/x86/crypto/sha256-avx-asm.S
+index 53de72bdd..f8b367cf6 100644
+--- a/arch/x86/crypto/sha256-avx-asm.S
++++ b/arch/x86/crypto/sha256-avx-asm.S
+@@ -53,6 +53,11 @@
+ ## assume buffers not aligned
+ #define    VMOVDQ vmovdqu
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ ################################ Define Macros
+ 
+ # addm [mem], reg
+diff --git a/arch/x86/crypto/sha256-avx2-asm.S b/arch/x86/crypto/sha256-avx2-asm.S
+index 0bbec1c75..6f52a1444 100644
+--- a/arch/x86/crypto/sha256-avx2-asm.S
++++ b/arch/x86/crypto/sha256-avx2-asm.S
+@@ -54,6 +54,11 @@
+ ## assume buffers not aligned
+ #define	VMOVDQ vmovdqu
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ ################################ Define Macros
+ 
+ # addm [mem], reg
+diff --git a/arch/x86/crypto/sha256-ssse3-asm.S b/arch/x86/crypto/sha256-ssse3-asm.S
+index 93264ee44..81fcc7c06 100644
+--- a/arch/x86/crypto/sha256-ssse3-asm.S
++++ b/arch/x86/crypto/sha256-ssse3-asm.S
+@@ -52,6 +52,11 @@
+ ## assume buffers not aligned
+ #define    MOVDQ movdqu
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ ################################ Define Macros
+ 
+ # addm [mem], reg
+diff --git a/arch/x86/crypto/sha256_ni_asm.S b/arch/x86/crypto/sha256_ni_asm.S
+index d515a55a3..82adb42bd 100644
+--- a/arch/x86/crypto/sha256_ni_asm.S
++++ b/arch/x86/crypto/sha256_ni_asm.S
+@@ -76,6 +76,11 @@
+ #define ABEF_SAVE	%xmm9
+ #define CDGH_SAVE	%xmm10
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ .macro do_4rounds	i, m0, m1, m2, m3
+ .if \i < 16
+ 	movdqu		\i*4(DATA_PTR), \m0
+diff --git a/arch/x86/crypto/sha512-avx-asm.S b/arch/x86/crypto/sha512-avx-asm.S
+index 5bfce4b04..863c8e8d0 100644
+--- a/arch/x86/crypto/sha512-avx-asm.S
++++ b/arch/x86/crypto/sha512-avx-asm.S
+@@ -50,6 +50,11 @@
+ #include <linux/linkage.h>
+ #include <linux/cfi_types.h>
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ .text
+ 
+ # Virtual Registers
+diff --git a/arch/x86/crypto/sha512-avx2-asm.S b/arch/x86/crypto/sha512-avx2-asm.S
+index 24973f42c..5f36411f8 100644
+--- a/arch/x86/crypto/sha512-avx2-asm.S
++++ b/arch/x86/crypto/sha512-avx2-asm.S
+@@ -52,6 +52,11 @@
+ #include <linux/linkage.h>
+ #include <linux/cfi_types.h>
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ .text
+ 
+ # Virtual Registers
+diff --git a/arch/x86/crypto/sha512-ssse3-asm.S b/arch/x86/crypto/sha512-ssse3-asm.S
+index 30a2c4777..3efc5214c 100644
+--- a/arch/x86/crypto/sha512-ssse3-asm.S
++++ b/arch/x86/crypto/sha512-ssse3-asm.S
+@@ -50,6 +50,11 @@
+ #include <linux/linkage.h>
+ #include <linux/cfi_types.h>
+ 
++#if defined(RET)
++#undef RET
++#define RET ret
++#endif
++
+ .text
+ 
+ # Virtual Registers
+-- 
+2.40.4
+

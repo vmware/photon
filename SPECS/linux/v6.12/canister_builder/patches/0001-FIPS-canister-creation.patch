@@ -1,7 +1,7 @@
 From b5186bb7095087e24ccd06b4035da792096e0d2e Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
-Subject: [PATCH 01/11] FIPS canister creation
+Subject: [PATCH 01/13] FIPS canister creation
 
 Canister creation patch.
  - Makefile changes to generate canister binary (fips_canister.o)
@@ -514,7 +514,13 @@ index a20926bfd..1159e51da 100644
  	if (!param)
  		goto err_put_module;
  
-@@ -195,7 +196,7 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
+@@ -195,10 +196,13 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
+ 	if (IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS))
+ 		return NOTIFY_DONE;
+ 
++	if (fcw_skip_tests())
++		return NOTIFY_DONE;
++
  	if (!try_module_get(THIS_MODULE))
  		goto err;
  

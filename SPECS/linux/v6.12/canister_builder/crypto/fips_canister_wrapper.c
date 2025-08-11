@@ -89,6 +89,8 @@ void *fcw_kzalloc(size_t size, gfp_t flags);
 bool fcw_boot_cpu_has(unsigned long bit);
 bool fcw_x86_match_cpu_zmm_exclusion_list(void);
 bool fcw_x86_match_cpu_aesni_cpu_id(void);
+bool fcw_x86_match_cpu_sha256_ssse3_cpu_id(void);
+bool fcw_x86_match_cpu_sha512_ssse3_cpu_id(void);
 void * __init fcw_mem_alloc(size_t size);
 void __init fcw_mem_free(void *p);
 void *fcw_mutex_init(void);
@@ -140,6 +142,7 @@ void fcw_sg_assign_page(struct scatterlist *sg, struct page *page);
 void *fcw_sg_virt(struct scatterlist *sg);
 void *fcw_scatterwalk_map(struct scatter_walk *walk);
 int fcw_fips_not_allowed_alg(char *name);
+int fcw_skip_tests(void);
 bool fcw_need_resched(void);
 void fcw_scatterwalk_pagedone(struct scatter_walk *walk, int out,
 				     unsigned int more);
@@ -220,7 +223,6 @@ static const struct x86_cpu_id aesni_cpu_id[] = {
         X86_MATCH_FEATURE(X86_FEATURE_AES, NULL),
         {}
 };
-MODULE_DEVICE_TABLE(x86cpu, aesni_cpu_id);
 
 bool fcw_x86_match_cpu_zmm_exclusion_list(void)
 {
@@ -232,6 +234,37 @@ bool fcw_x86_match_cpu_zmm_exclusion_list(void)
 bool fcw_x86_match_cpu_aesni_cpu_id(void)
 {
 	if (x86_match_cpu(aesni_cpu_id))
+		return true;
+	return false;
+}
+
+static const struct x86_cpu_id sha256_ssse3_cpu_ids[] = {
+#ifdef CONFIG_AS_SHA256_NI
+	X86_MATCH_FEATURE(X86_FEATURE_SHA_NI, NULL),
+#endif
+	X86_MATCH_FEATURE(X86_FEATURE_AVX2, NULL),
+	X86_MATCH_FEATURE(X86_FEATURE_AVX, NULL),
+	X86_MATCH_FEATURE(X86_FEATURE_SSSE3, NULL),
+	{}
+};
+
+bool fcw_x86_match_cpu_sha256_ssse3_cpu_id(void)
+{
+	if (x86_match_cpu(sha256_ssse3_cpu_ids))
+		return true;
+	return false;
+}
+
+static const struct x86_cpu_id sha512_ssse3_cpu_ids[] = {
+	X86_MATCH_FEATURE(X86_FEATURE_AVX2, NULL),
+	X86_MATCH_FEATURE(X86_FEATURE_AVX, NULL),
+	X86_MATCH_FEATURE(X86_FEATURE_SSSE3, NULL),
+	{}
+};
+
+bool fcw_x86_match_cpu_sha512_ssse3_cpu_id(void)
+{
+	if (x86_match_cpu(sha512_ssse3_cpu_ids))
 		return true;
 	return false;
 }
@@ -672,12 +705,25 @@ void *fcw_scatterwalk_map(struct scatter_walk *walk)
 }
 
 static char *canister_algs[] = {
-	"cipher_null-generic",
 	"rsa-generic",
 	"sha256-generic",
 	"sha224-generic",
 	"sha512-generic",
 	"sha384-generic",
+	"sha256-avx",
+	"sha224-avx",
+	"sha512-avx",
+	"sha384-avx",
+	"sha256-avx2",
+	"sha224-avx2",
+	"sha512-avx2",
+	"sha384-avx2",
+	"sha256-ssse3",
+	"sha224-ssse3",
+	"sha512-ssse3",
+	"sha384-ssse3",
+	"sha256-ni",
+	"sha224-ni",
 	"aes-generic",
 	"ctr(aes-generic)",
 	"drbg_pr_ctr_aes128",
@@ -687,10 +733,20 @@ static char *canister_algs[] = {
 	"drbg_pr_sha512",
 	"drbg_pr_sha256",
 	"hmac(sha384-generic)",
+	"hmac(sha384-avx)",
+	"hmac(sha384-avx2)",
+	"hmac(sha384-ssse3)",
 	"drbg_pr_hmac_sha384",
 	"hmac(sha512-generic)",
+	"hmac(sha512-avx)",
+	"hmac(sha512-avx2)",
+	"hmac(sha512-ssse3)",
 	"drbg_pr_hmac_sha512",
 	"hmac(sha256-generic)",
+	"hmac(sha256-avx)",
+	"hmac(sha256-avx2)",
+	"hmac(sha256-ssse3)",
+	"hmac(sha256-ni)",
 	"drbg_pr_hmac_sha256",
 	"drbg_nopr_ctr_aes128",
 	"drbg_nopr_ctr_aes192",
@@ -706,6 +762,10 @@ static char *canister_algs[] = {
 	"cbc(aes-aesni)",
 	"cbc(ecb(aes-generic))",
 	"hmac(sha224-generic)",
+	"hmac(sha224-avx)",
+	"hmac(sha224-avx2)",
+	"hmac(sha224-ssse3)",
+	"hmac(sha224-ni)",
 	"pkcs1pad(rsa-generic,sha256)",
 	"pkcs1pad(rsa-generic,sha512)",
 	"pkcs1pad(rsa-generic,sha3-512)",
@@ -765,6 +825,9 @@ static char *canister_algs[] = {
 	"__rfc4106-gcm-aesni",
 	"cryptd(__rfc4106-gcm-aesni)",
 	// no certification require
+	"cipher_null-generic",
+	"compress_null-generic",
+	"digest_null-generic",
 	"crc32c-generic",
 	"crct10dif-generic",
 	"crc32c-intel",
@@ -787,6 +850,11 @@ int fcw_fips_not_allowed_alg(char *name)
 		return 1;
 	}
 	return 0;
+}
+
+int fcw_skip_tests(void)
+{
+	return !fips_enabled;
 }
 
 static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
@@ -813,6 +881,9 @@ static struct notifier_block crypto_msg_notifier = {
 
 static int __init wrapper_init(void)
 {
+	if (fcw_skip_tests())
+		set_crypto_boot_test_finished();
+
 	return crypto_register_notifier(&crypto_msg_notifier);
 }
 arch_initcall(wrapper_init);

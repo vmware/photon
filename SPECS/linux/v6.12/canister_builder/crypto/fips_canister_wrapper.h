@@ -100,6 +100,7 @@ extern void fcw_scatterwalk_pagedone(struct scatter_walk *walk, int out,
 extern bool fcw_need_resched(void);
 extern void *fcw_kmap_local_page(void *page);
 extern void fcw_kunmap_local(const void *addr);
+extern int fcw_skip_tests(void);
 
 int __init rsa_init(void);
 void __exit rsa_exit(void);

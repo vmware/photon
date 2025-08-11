@@ -1,7 +1,7 @@
 From 59ff940e91f549431f08c47c857062cbbc94c147 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 20 Jun 2025 12:53:33 -0500
-Subject: [PATCH 01/13] FIPS canister binary usage
+Subject: [PATCH 01/02] FIPS canister binary usage
 
 Build with fips canister and skip building crypto algorithms.
 Invoke fips canister integrity check during kernel startup.
