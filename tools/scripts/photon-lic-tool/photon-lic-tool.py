@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Photon License Scanning and Validation Tool
 # This tool is intended for use by developers to aid
@@ -23,17 +23,16 @@
 import sys
 import os
 import signal
-import shutil
 import yaml
-from argparse import ArgumentParser
+import common
 
+from argparse import ArgumentParser
 from DockerUtil import DockerUtil
 from Comparator import Comparator
 from ExpCleaner import ExpCleaner
 from Validator import Validator
 from Scanner import Scanner
-import common
-from common import err_exit, pr_err, read_license_from_file
+from common import err_exit, pr_err
 
 
 def sig_handler(sig, frame):
@@ -119,186 +118,195 @@ def parse_config(config_path=None):
 
 def parse_input():
     parser = ArgumentParser(description="Photon License Tool")
+
     subparsers = parser.add_subparsers(
         help="""--help|-h for more info on individual sub-commands.
-Works recursively for all levels."""
+ Works recursively for all levels."""
     )
 
-    ########## VALIDATE ##############################
-    validate_sub_p = subparsers.add_parser(
-        "validate",
-        help="""Validate a given SPDX expression for
-semantic correctness. Does not validate accuracy.""",
-    )
-    validate_sub_p.add_argument(
-        "-f",
-        action="store",
-        help="""Read SPDX expression from input file.
-This assumes the format: License: <spdx expression>""",
-    )
-    validate_sub_p.add_argument(
-        "-i", action="store", help="Read SPDX expression directly from stdin"
-    )
-    validate_sub_p.set_defaults(func=validate)
-    ########## END VALIDATE ###########################
+    # Define subcommand metadata
+    commands = {
+        "validate": {
+            "help": "Validate a given SPDX expression for semantic correctness. Does not validate accuracy.",
+            "func": validate,
+            "args": [
+                (
+                    "-f",
+                    {
+                        "action": "store",
+                        "help": "Read SPDX expression from input file. Format: License: <expression>",
+                    },
+                ),
+                (
+                    "-i",
+                    {
+                        "action": "store",
+                        "help": "Read SPDX expression directly from stdin",
+                    },
+                ),
+            ],
+        },
+        "scan": {
+            "help": "Scan all files in the given file (tarball, SRPM, etc.) and produce an SPDX expression.",
+            "func": scan,
+            "args": [
+                (
+                    "--path",
+                    {
+                        "action": "store",
+                        "help": "Path to file/directory to be scanned.",
+                    },
+                ),
+                (
+                    "--yaml",
+                    {
+                        "action": "store",
+                        "help": "Output YAML mapping SPDX IDs to files.",
+                    },
+                ),
+                (
+                    "--score",
+                    {
+                        "action": "store",
+                        "help": "Minimum license matching score.",
+                    },
+                ),
+                (
+                    "--redis_host",
+                    {"action": "store", "help": "Redis host for caching."},
+                ),
+                (
+                    "--redis_port",
+                    {"action": "store", "help": "Redis port for caching."},
+                ),
+                (
+                    "--redis_ttl",
+                    {"action": "store", "help": "TTL for Redis entries."},
+                ),
+                (
+                    "--docker",
+                    {
+                        "action": "store_true",
+                        "help": "Run scan inside Docker container.",
+                    },
+                ),
+                (
+                    "--cpus",
+                    {"action": "store", "help": "Number of CPUs to use."},
+                ),
+                (
+                    "--no_trim",
+                    {
+                        "action": "store_true",
+                        "help": "Do not trim unofficial licenses.",
+                    },
+                ),
+                (
+                    "--alt_src_url",
+                    {"action": "store", "help": "Alternative source URL."},
+                ),
+                (
+                    "--extra_repo_urls",
+                    {
+                        "action": "store",
+                        "help": "Comma-separated extra tdnf repo URLs.",
+                    },
+                ),
+                (
+                    "--build_spec",
+                    {
+                        "action": "store_true",
+                        "help": "Path is a SPEC file to build and scan.",
+                    },
+                ),
+            ],
+        },
+        "lic-db": {
+            "help": "Operations on the scancode license database.",
+            "func": lic_db,
+            "args": [
+                (
+                    "--trim",
+                    {
+                        "action": "store_true",
+                        "help": "Trim unofficial licenses from DB.",
+                    },
+                ),
+                (
+                    "--restore",
+                    {
+                        "action": "store_true",
+                        "help": "Restore DB with all licenses.",
+                    },
+                ),
+            ],
+        },
+        "clean-exp": {
+            "help": "Cleanup/flatten the given SPDX expression.",
+            "func": clean_exp,
+            "args": [
+                (
+                    "-i",
+                    {
+                        "action": "store",
+                        "help": "Read SPDX expression from stdin.",
+                    },
+                ),
+                (
+                    "-f",
+                    {
+                        "action": "store",
+                        "help": "Read SPDX expression from file.",
+                    },
+                ),
+            ],
+        },
+        "compare": {
+            "help": "Compare two license expressions for equivalency.",
+            "func": compare_exps,
+            "args": [
+                (
+                    "-a",
+                    {
+                        "action": "store",
+                        "help": "SPDX expression A (stdin or file).",
+                    },
+                ),
+                (
+                    "-b",
+                    {
+                        "action": "store",
+                        "help": "SPDX expression B (stdin or file).",
+                    },
+                ),
+            ],
+        },
+        "docker": {
+            "help": "Manipulate Docker capabilities.",
+            "func": docker_entry,
+            "args": [
+                (
+                    "--build",
+                    {
+                        "action": "store_true",
+                        "help": "Build the Docker image.",
+                    },
+                ),
+                (
+                    "--clean-img",
+                    {"action": "store_true", "help": "Delete Docker image."},
+                ),
+            ],
+        },
+    }
 
-    ########## SCAN ###################################
-    scan_sub_p = subparsers.add_parser(
-        "scan",
-        help="""Scan all files in the given file,
-i.e tarball, src RPM, etc. Produces a full SPDX expression.""",
-    )
-    scan_sub_p.add_argument(
-        "--path", action="store", help="Path to file/directory to be scanned."
-    )
-    scan_sub_p.add_argument(
-        "--yaml",
-        action="store",
-        help="""Optional. Produce yaml document mapping each
-SPDX identifier to the file it was discovered in. Save to the specified path.""",
-    )
+    for cmd_name, cmd_data in commands.items():
+        sub_p = subparsers.add_parser(cmd_name, help=cmd_data["help"])
+        for arg_name, arg_opts in cmd_data.get("args", []):
+            sub_p.add_argument(arg_name, **arg_opts)
+        sub_p.set_defaults(func=cmd_data["func"])
 
-    scan_sub_p.add_argument(
-        "--score",
-        action="store",
-        help="Optional. Set the minimum license matching score.",
-    )
-
-    scan_sub_p.add_argument(
-        "--redis_host",
-        action="store",
-        help="Optional. Host name for redis cache. Both host and port are required.",
-    )
-
-    scan_sub_p.add_argument(
-        "--redis_port",
-        action="store",
-        help="Optional. Port for redis cache. Both host and port are required.",
-    )
-
-    scan_sub_p.add_argument(
-        "--redis_ttl",
-        action="store",
-        help="Optional. TTL for entries in the redis cache",
-    )
-
-    scan_sub_p.add_argument(
-        "--docker",
-        action="store_true",
-        help="Optional. Run scan inside docker container.",
-    )
-
-    scan_sub_p.add_argument(
-        "--cpus",
-        action="store",
-        help="Optional. Number of CPUs to use for scanning",
-    )
-
-    scan_sub_p.add_argument(
-        "--no_trim",
-        action="store_true",
-        help="""Do not trim license DB to remove unofficial licenses before
-scanning. Also will not restore license DB after the scan.""",
-    )
-
-    scan_sub_p.add_argument(
-        "--alt_src_url",
-        action="store",
-        help="""Provide an alternative URL to download sources from,
-in addition to packages.vmware.com""",
-    )
-
-    scan_sub_p.add_argument(
-        "--extra_repo_urls",
-        action="store",
-        help="""Comma separated list of additional package repository URLs for tdnf""",
-    )
-
-    scan_sub_p.add_argument(
-        "--build_spec",
-        action="store_true",
-        help="""Indicates that the path given points to a SPEC file within Photon,
-and the package source should be built and scanned. Otherwise, scan will just be
-for the SPEC file only.""",
-    )
-
-    scan_sub_p.set_defaults(func=scan)
-    ########## END SCAN ###################################
-
-    ########## LIC-DB ###################################
-    licdb_sub_p = subparsers.add_parser(
-        "lic-db",
-        help="Operations on the scancode license database",
-    )
-    licdb_sub_p.add_argument(
-        "--trim",
-        action="store_true",
-        help="""Trim DB by removing unofficial (non-SPDX)
-licenses. Does NOT impact the database index used for license expression
-validation.""",
-    )
-    licdb_sub_p.add_argument(
-        "--restore", action="store_true", help="Restore DB with all licenses"
-    )
-
-    licdb_sub_p.set_defaults(func=lic_db)
-    ########## END LIC-DB ###################################
-
-    ########## CLEAN ###################################
-    clean_sub_p = subparsers.add_parser(
-        "clean-exp",
-        help="Cleanup/flatten the given expression",
-    )
-
-    clean_sub_p.add_argument(
-        "-i", action="store", help="Read SPDX expression directly from stdin"
-    )
-
-    clean_sub_p.add_argument(
-        "-f",
-        action="store",
-        help="""Read SPDX expression from input file.
-This assumes the format: License: <spdx expression>""",
-    )
-
-    clean_sub_p.set_defaults(func=clean_exp)
-    ########## END CLEAN ###################################
-
-    ########## COMPARE ###################################
-    compare_sub_p = subparsers.add_parser(
-        "compare",
-        help="Compare two license expressions for equivalency",
-    )
-
-    compare_sub_p.add_argument(
-        "-a", action="store", help="SPDX expresssion A. Can be stdin or file."
-    )
-
-    compare_sub_p.add_argument(
-        "-b", action="store", help="SPDX expression B. Can be stdin or file."
-    )
-
-    compare_sub_p.set_defaults(func=compare_exps)
-    ########## END COMPARE ###################################
-
-    docker_sub_p = subparsers.add_parser(
-        "docker",
-        help="Manipulate docker capabilities",
-    )
-
-    docker_sub_p.add_argument(
-        "--build", action="store_true", help="Build the docker image"
-    )
-
-    docker_sub_p.add_argument(
-        "--clean-img", action="store_true", help="Force deletion of docker image."
-    )
-
-    docker_sub_p.set_defaults(func=docker_entry)
-
-    args = parser.parse_args()
-
-    return args
+    return parser.parse_args()
 
 
 def set_global_options(args):

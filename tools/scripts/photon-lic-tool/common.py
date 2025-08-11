@@ -1,5 +1,6 @@
-# This file holds global constants and common/general functions
+#!/usr/bin/env python3
 
+# This file holds global constants and common/general functions
 import sys
 import subprocess
 import site
@@ -8,18 +9,21 @@ import shutil
 import json
 import time
 import yaml
+import requests
+import builtins
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 try:
     from license_tree import license_tree
 except ImportError:
     print(
-        'Failed to import local library "license_tree".'
-        + "license_tree is found in "
-        + "photon/tools/scripts/photon-lic-tool/license_tree"
+        f'Failed to import local library "license_tree". '
+        f'license_tree is found in {script_dir}/license_tree'
     )
     raise
 
-################ Constants ######################################
+""" ################ Constants ################ """
 user_home = os.path.expanduser("~")
 ph_scan_tool_dir = f"{user_home}/.ph-scanner-tool"
 
@@ -28,6 +32,8 @@ tool_dir_path = os.path.abspath(os.path.dirname(__file__))
 
 # Default value, will also be overwritten in photon-lic-tool.py
 tool_filename = "photon-lic-tool.py"
+
+ph_pub_url = "https://packages-prod.broadcom.com/photon"
 
 if os.geteuid() == 0:
     site_pkg_dir = site.getsitepackages()[0]
@@ -47,12 +53,14 @@ cached_yaml_fn = "cached.yaml"
 
 sc_toolkit_cicd_ver = "32.2.1"
 
-spdx_data_base_url = "https://raw.githubusercontent.com/spdx/license-list-data/"
+spdx_data_base_url = (
+    "https://raw.githubusercontent.com/spdx/license-list-data/"
+)
 spdx_license_list_ext = "refs/heads/main/json/licenses.json"
 spdx_exceptions_list_ext = "refs/heads/main/json/exceptions.json"
-#################################################################
+""" ################################################################# """
 
-################ Globals from config yaml #######################
+""" ################ Globals from config yaml ####################### """
 ignore_list = []
 disallowed_licenses = []
 
@@ -67,36 +75,57 @@ no_trimming = False
 # List of files to skip during scanning, as they will fail the scanner
 known_failures = []
 
-###################################################################
+""" ################################################################### """
+
+_real_print = builtins.print
+
+
+def safe_print(*args, **kwargs):
+    MAX_COLS = 80
+    text = " ".join(str(arg) for arg in args)
+    start = 0
+    line_len = len(text)
+    while start < line_len:
+        _real_print(text[start : start + MAX_COLS], **kwargs)
+        start += MAX_COLS
+
+
+builtins.print = safe_print
 
 
 def err_exit(msg=None):
     if msg:
-        pr_err(msg)
+        pr_err(f"ERROR: {msg}")
 
     cleanup()
     sys.exit(1)
 
 
-def run_cmd(cmd, ignore_rc=False, quiet=False, capture=True):
-    result = None
-
-    if not cmd:
-        return None
-
-    if type(cmd) is str:
+def run_cmd(cmd, ignore_rc=False, quiet=False, capture=True, shell=False):
+    if isinstance(cmd, str) and not shell:
         cmd = cmd.split()
 
     if not quiet:
-        print(f"RUNNING CMD: {' '.join(cmd)}")
+        print("\nRUNNING CMD:\n")
+        if not shell:
+            print(f"{' '.join(cmd)}\n")
+        else:
+            print(cmd)
 
     if capture:
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell
+        )
     else:
-        result = subprocess.run(cmd)
+        result = subprocess.run(cmd, shell=shell)
 
     if not ignore_rc and result.returncode != 0:
-        err_exit(f"Failed to run command {cmd}\n: {result.stdout.decode()}")
+        print(f"Error while running command '{cmd}':\n")
+        if result.stdout:
+            print(f"Stdout:\n{result.stdout.decode()}")
+        if result.stderr:
+            print(f"Stderr:\n{result.stderr.decode()}")
+        err_exit("Aborting now ...")
 
     return result
 
@@ -130,54 +159,39 @@ def copy_flat(src_dir=None, dst_dir=None):
 
 
 def cleanup():
-    if os.path.exists(ph_scan_dir):
-        shutil.rmtree(ph_scan_dir)
-
-    if os.path.exists(rpm_install_root):
-        shutil.rmtree(rpm_install_root)
+    for d in [ph_scan_dir, rpm_install_root]:
+        if os.path.exists(d):
+            shutil.rmtree(d)
 
 
-def download_file(input_url=None, output_path=None, allow_failure=False):
-    try:
-        import requests
-    except ImportError:
-        pr_err("requests not found, install with 'pip install requests'")
-        raise
-
-    if not input_url or not output_path:
-        err_exit("download_file() requires input url and output path!")
-
-    print(f"DOWNLOADING FILE: {input_url}")
-
-    retries = 5
+def download_file(input_url, output_path, retries=5, allow_failure=False):
     while retries > 0:
-        response = requests.get(input_url, stream=True)
+        try:
+            response = requests.get(input_url, stream=True)
+        except requests.RequestException as e:
+            pr_err(f"Request to {input_url} failed: {e}")
+            response = None
 
-        if response.status_code != 200:
+        if not response or response.status_code != 200:
             retries -= 1
             if retries > 0:
-                pr_err(
-                    f"{input_url} returned code: {response.status_code}, "
-                    "retrying after delay..."
-                )
+                pr_err(f"{input_url} failed, retrying after delay...")
                 time.sleep(5)
-            elif not allow_failure:
-                err_exit(
-                    f"ERROR: Exhausted all retries getting {input_url}!\n"
-                    f"Final error code: {response.status_code}"
-                )
+                continue
 
-            else:
+            if allow_failure:
                 return -1
 
-            continue
+            err_exit(
+                f"ERROR: Exhausted all retries getting {input_url}!\n"
+                f"Last status: {response.status_code if response else 'no response'}"
+            )
 
         with open(output_path, "wb") as out_f:
             for chunk in response.iter_content(chunk_size=8192):
-                out_f.write(chunk)
-        break
-
-    return 0
+                if chunk:
+                    out_f.write(chunk)
+        return 0
 
 
 def strip_license_id(lic_id=None):
@@ -214,17 +228,23 @@ def strip_license_id(lic_id=None):
 # cleans any ignorable SPDX IDs from the expression, such as standalone
 # exceptions or other license IDs in the ignore list like
 # "LicenseRef-unknown-spdx"
-def cleanup_license_expression(ignore_list=None, exception_list=None, license_exp=None):
+def cleanup_license_expression(
+    ignore_list=None, exception_list=None, license_exp=None
+):
     if not license_exp:
         return None
 
     try:
         import license_expression
     except ImportError:
-        print("license_expression import failed, do 'pip3 install license_expression'")
+        print(
+            "license_expression import failed, do 'pip3 install license_expression'"
+        )
         raise
 
-    lic_tree = license_tree.create_exp_tree(license_exp, exception_list, ignore_list)
+    lic_tree = license_tree.create_exp_tree(
+        license_exp, exception_list, ignore_list
+    )
     parsed_exp = license_tree.render_exp_tree(lic_tree)
 
     # remove duplicates - this returns a set
@@ -272,7 +292,11 @@ def extract_top_level_expressions(spdx_exp=None):
             paran_str = spdx_exp[start_pos:end_pos]
             if paran_str not in expressions:
                 expressions.append(paran_str)
-            spdx_exp = spdx_exp[:start_pos] + " " * len(paran_str) + spdx_exp[end_pos:]
+            spdx_exp = (
+                spdx_exp[:start_pos]
+                + " " * len(paran_str)
+                + spdx_exp[end_pos:]
+            )
         i += 1
 
     # Handle top level OR - whole expression should be concatenated
@@ -304,7 +328,9 @@ def get_all_extractable_exts():
 
     exts = set()
 
-    kindkey = lambda x: x.kind
+    def kindkey(x):
+        return x.kind
+
     by_kind = groupby(sorted(archive_handlers, key=kindkey), key=kindkey)
     for kind, handlers in by_kind:
         for handler in handlers:
@@ -397,7 +423,8 @@ def copy_spec_to_rpm_build_root(spec_path=None):
 
     os.makedirs(f"{rpm_build_root}/SPECS")
     shutil.move(
-        f"{rpm_build_root}/SOURCES/{spec_fn}", f"{rpm_build_root}/SPECS/{spec_fn}"
+        f"{rpm_build_root}/SOURCES/{spec_fn}",
+        f"{rpm_build_root}/SPECS/{spec_fn}",
     )
 
 
@@ -418,16 +445,16 @@ def read_license_from_file(file_path=None):
         if not shutil.which("rpmspec"):
             err_exit(
                 "'rpmspec' command not found, please install with "
-                + "'tdnf install -y rpm-build'"
+                "'tdnf install -y rpm-build'"
             )
 
         result = run_cmd(
             [
                 "rpmspec",
                 "-q",
-                '--queryformat="License: %{Name}: %{License}\n"',
-                "--define",
-                f"%_topdir {rpm_build_root}",
+                '--qf="License: %{Name}: %{License}\n"',
+                "-D",
+                f"_topdir {rpm_build_root}",
                 f"{rpm_build_root}/SPECS/{os.path.basename(file_path)}",
             ],
             ignore_rc=True,
@@ -438,19 +465,21 @@ def read_license_from_file(file_path=None):
             shutil.rmtree(rpm_install_root)
 
         if result.returncode != 0:
-            err_exit(
-                "Failed to extract license line from spec file!: "
-                + f"{result.stdout.decode()}"
-            )
+            msg = "Failed to extract license line from spec file!: "
+            if result.stdout:
+                msg += f"Stdout:\n{result.stdout.decode()}\n"
+            if result.stderr:
+                msg += f"Stderr:\n{result.stderr.decode()}\n"
+            err_exit(msg)
 
         for line in result.stdout.decode().split("\n"):
             line = line.strip(" \r\t\n\"'")
             if line.startswith("License:"):
                 line_spl = line.split(":")
                 # (sub)package name : license expression
-                license_expressions[line_spl[1].strip(" \r\t\n\"'")] = line_spl[
-                    2
-                ].strip(" \r\t\n\"'")
+                license_expressions[line_spl[1].strip(" \r\t\n\"'")] = (
+                    line_spl[2].strip(" \r\t\n\"'")
+                )
 
         if not license_expressions:
             err_exit(f"ERROR: No license expression found in {file_path}")
@@ -479,7 +508,7 @@ def read_license_from_file(file_path=None):
         elif len(lines) > 1:
             err_exit(
                 f"ERROR: More than one line found in {file_path}.  "
-                + "Tool expects only one line: License: <SPDX Expression>"
+                "Tool expects only one line: License: <SPDX Expression>"
             )
 
         if lines[0].startswith("License:"):
@@ -493,9 +522,7 @@ def read_license_from_file(file_path=None):
 
 def running_in_container():
     # This file is created inside the image by the Dockerfile
-    if os.path.exists("/.dockerenv"):
-        return True
-    return False
+    return os.path.exists("/.dockerenv")
 
 
 # check if scancode package is up to date
@@ -504,7 +531,9 @@ def check_scancode_ver():
     try:
         import scancode_config
     except ImportError:
-        print("Failed to import scancode_config, do 'pip3 install scancode-toolkit'")
+        print(
+            "Failed to import scancode_config, do 'pip3 install scancode-toolkit'"
+        )
         raise
 
     print("Checking scancode-toolkit version before run...")

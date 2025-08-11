@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import common
+
 from DockerUtil import DockerUtil
 from common import (
     get_official_spdx_list,
@@ -14,7 +17,10 @@ class Validator:
         license_expressions = {}
 
         docker_util = DockerUtil()
-        if not common.running_in_container() and docker_util.docker_img_exists():
+        if (
+            not common.running_in_container()
+            and docker_util.docker_img_exists()
+        ):
             mount_list, cmd = docker_util.build_validate_docker_cmd(
                 file=file, stdin=stdin
             )
@@ -60,14 +66,18 @@ class Validator:
             # spdx and scancode licenses. So let's do our own filtering here.
             for bad_id in bad_ids:
                 if bad_id in license_exp:
-                    pr_err(f"Bad/unofficial identifier {bad_id} in license expression!")
+                    pr_err(
+                        f"Bad/unofficial identifier {bad_id} in license expression!"
+                    )
                     errors += 1
             try:
                 # create license expression object - throws an exception for any
                 # validation errors
                 spdx_licensing.parse(license_exp, validate=True, strict=True)
             except Exception as e:
-                err_exit(f"Caught exception while attempting to validate license: {e}")
+                err_exit(
+                    f"Caught exception while attempting to validate license: {e}"
+                )
 
             # Check for disallowed licenses
             for key in spdx_licensing.license_keys(license_exp):
@@ -94,8 +104,11 @@ class Validator:
         if errors == 0 and warnings == 0:
             print("SPDX license validation successful")
         elif errors == 0 and warnings > 0:
-            print(f"SPDX license validation successful - with {warnings} warning(s)")
+            print(
+                f"SPDX license validation successful - with {warnings} warning(s)"
+            )
         else:
             err_exit(
-                    f"Failed to validate SPDX license - "
-                    + f"found {errors} error(s) and {warnings} warning(s)")
+                f"Failed to validate SPDX license - "
+                f"found {errors} error(s) and {warnings} warning(s)"
+            )

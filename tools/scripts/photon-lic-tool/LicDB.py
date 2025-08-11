@@ -1,15 +1,13 @@
+#!/usr/bin/env python3
+
 import common
-from common import copytree, run_cmd, err_exit
 import shutil
 import os
 import multiprocessing
 import re
 
-try:
-    from licensedcode.cache import get_index
-except ImportError:
-    print("licensedcode import failed, do 'pip3 install scancode-toolkit'")
-    raise
+from common import copytree, run_cmd, err_exit
+from licensedcode.cache import get_index
 
 
 class LicDB:
@@ -49,7 +47,9 @@ class LicDB:
                     ret = 0 if res.returncode == 0 else -1
 
                     # ignore all rules that mention this key
-                    self._trim_rules_for_key(key, rule_ignore_list, rule_ignore_lock)
+                    self._trim_rules_for_key(
+                        key, rule_ignore_list, rule_ignore_lock
+                    )
                     break
 
         return ret
@@ -73,7 +73,11 @@ class LicDB:
 
             if (
                 self._trim_license_file(
-                    lic_file, taint, taint_lock, rule_ignore_list, rule_ignore_lock
+                    lic_file,
+                    taint,
+                    taint_lock,
+                    rule_ignore_list,
+                    rule_ignore_lock,
                 )
                 != 0
             ):
@@ -154,10 +158,10 @@ class LicDB:
         # reindex with official licenses only
         print(
             "Reindexing license cache without scancode's unofficial licenses, "
-            + "this may take a few mins..."
+            "this may take a few mins..."
         )
         if get_index(force=True, index_all_languages=True) is None:
-            raise Exception("Failed to reindex license cache!")
+            raise Exception("ERROR: Failed to reindex license cache!")
 
     def _get_lic_exp_from_rule_file(self, rule_f_path=None):
         rule_f = None
@@ -192,7 +196,8 @@ class LicDB:
             )
 
             spdx_ids = [
-                exp.strip(" \r\t\n()") for exp in re.split("AND|WITH|OR", lic_exp_line)
+                exp.strip(" \r\t\n()")
+                for exp in re.split("AND|WITH|OR", lic_exp_line)
             ]
             if key in spdx_ids:
                 with rule_ignore_lock:

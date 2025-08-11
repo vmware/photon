@@ -1,5 +1,12 @@
-from common import read_license_from_file, extract_top_level_expressions, err_exit
+#!/usr/bin/env python3
+
 import os
+
+from common import (
+    read_license_from_file,
+    extract_top_level_expressions,
+    err_exit,
+)
 
 
 class Comparator:
