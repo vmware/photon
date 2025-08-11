@@ -1,4 +1,16 @@
 sources:
+- archive: gradle-wrapper-8.10.2-jar.tar.gz
+  archive_sha512sum: f84426a38e66e2bad757640ffc40c7a01122fca50b51685ae4fa4d9356d46e17b94b85cfa3899e315691ca525d92cd3b92380ef3c8654abf21b6470718278f60
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: The Wrapper JAR file containing code for downloading the
+        Gradle distribution
+      home_page: https://github.com/gradle/gradle
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Contains Gradle jar file
+      supplier: 'Organization: Broadcom, Inc.'
 - archive: kafka-3.9.1-src.tgz
   archive_sha512sum: 28b3066cb554e573428ef69d366cd344b0e7114a560eb57b2d3dda0507d266e6e804389457e8788f27b9c8f1dab027698a448bd82ca1d38b788e2874683e8019
   archive_type: upstream

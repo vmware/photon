@@ -10,7 +10,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.9.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -23,6 +23,9 @@ Source2:       %{name}.sysusers
 
 Source3: license.txt
 %include %{SOURCE3}
+
+#Download https://raw.githubusercontent.com/gradle/gradle/v8.10.2/gradle/wrapper/gradle-wrapper.jar
+Source4:       gradle-wrapper-8.10.2-jar.tar.gz
 
 Patch0:     0001-Use-proxy-if-available.patch
 
@@ -48,7 +51,7 @@ Data streams are partitioned and spread over a cluster of machines to allow data
 Messages are persisted on disk and replicated within the cluster to prevent data loss.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}-src
+%autosetup -p1 -n %{name}-%{version}-src -a4
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
@@ -56,6 +59,8 @@ export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
 JAVA_HTTP_PROXY_OPTS="$(echo "$HTTP_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttp.proxyHost=\1 -Dhttp.proxyPort=\2|p')"
 JAVA_HTTPS_PROXY_OPTS="$(echo "$HTTPS_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttps.proxyHost=\1 -Dhttps.proxyPort=\2|p')"
 export GRADLE_OPTS="$JAVA_HTTP_PROXY_OPTS $JAVA_HTTPS_PROXY_OPTS"
+
+cp gradle-wrapper.jar gradle/wrapper/
 
 if [ -n "${GRADLE_PROXY_URL}" ]; then
   PROP_FILE="gradle/wrapper/gradle-wrapper.properties"
@@ -124,6 +129,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Mon Aug 11 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-4
+- Add gradle-wrapper.jar tar for SRP compliance
 * Thu Jul 24 2025 Prashant S Chauha <prashant.singh-chauhan@broadcom.com> 3.9.1-3
 - Package additional missing jar files
 * Wed Jul 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-2
