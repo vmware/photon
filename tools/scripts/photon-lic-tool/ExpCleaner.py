@@ -35,7 +35,9 @@ class ExpCleaner:
         for key in license_expressions:
             lic_exp = license_expressions[key]
             new_exp = cleanup_license_expression(
-                ignore_list=[], exception_list=exceptions_list, license_exp=lic_exp
+                ignore_list=[],
+                exception_list=exceptions_list,
+                license_exp=lic_exp,
             )
 
             print(f"\nFor {key}, original expression:\n{lic_exp}")
