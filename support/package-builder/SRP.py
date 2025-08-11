@@ -17,7 +17,8 @@ from datetime import datetime, timezone
 
 GO_REMOTE_PREFIX = "/artifactory/proxy-golang-remote/"
 MAVEN_REMOTE_PREFIX = "/artifactory/maven/"
-GRADLE_REMOTE_PREFIX = "/artifactory/plugins-gradle-org-m2/"
+GRADLE_PLUGINS_REMOTE_PREFIX = "/artifactory/plugins-gradle-org-m2/"
+GRADLE_SERVICES_VIRTUAL_PREFIX = "/artifactory/upstream-services-gradle-virtual/distributions/"
 
 
 class SRP(object):
@@ -185,13 +186,19 @@ class SRP(object):
         return f"uid.obj.comp.package.maven(name='{name}',version='{version}')"
 
     def gradlePathToUid(self, path):
-        path = path.removeprefix(GRADLE_REMOTE_PREFIX)
+        path = path.removeprefix(GRADLE_PLUGINS_REMOTE_PREFIX)
         tokenstr, _ = os.path.split(path)
         mod_str, version = os.path.split(tokenstr)
         package_path, module_name = os.path.split(mod_str)
         package_path = package_path.replace("/", ".")
         name = f"{package_path}:{module_name}"
         return f"uid.obj.comp.package.gradle(name='{name}',version='{version}')"
+
+    def gradleDistPathToUid(self, path):
+        filename = path.removeprefix(GRADLE_SERVICES_VIRTUAL_PREFIX)
+        filename = filename.removesuffix(".zip")
+        name, version, _ = filename.split('-')
+        return f"uid.obj.comp.file(org='upstream-services-gradle-virtual',name='{name}',version='{version}')"
 
     def extractPathsFromObservations(self, observationFile) -> list[str]:
         observations = json.load(observationFile)
@@ -246,8 +253,11 @@ class SRP(object):
                     elif path.startswith(MAVEN_REMOTE_PREFIX) and path.endswith(".jar"):
                         self.schematic["input_templates"]["maven-comps"][self.mavenPathToUid(path)] = {
                             "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
-                    elif path.startswith(GRADLE_REMOTE_PREFIX) and path.endswith(".jar"):
+                    elif path.startswith(GRADLE_PLUGINS_REMOTE_PREFIX) and path.endswith(".jar"):
                         self.schematic["input_templates"]["gradle-comps"][self.gradlePathToUid(path)] = {
+                            "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+                    elif path.startswith(GRADLE_SERVICES_VIRTUAL_PREFIX) and path.endswith(".zip"):
+                        self.schematic["input_templates"]["gradle-comps"][self.gradleDistPathToUid(path)] = {
                             "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
         except Exception as e:
             self.logger.exception(e)
