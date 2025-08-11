@@ -1,0 +1,337 @@
+From a43c5f5d998e08b1d5bd51b402eb946b889607c5 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Mon, 11 Aug 2025 22:18:52 +0000
+Subject: [PATCH 12/13] Add shasums accelerators
+
+Prepare glue C files to be included into the canister binary.
+Move to wrapper calls. Remove modules related stuff
+
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+---
+ arch/x86/crypto/sha256_ssse3_glue.c | 74 +++++++++++------------------
+ arch/x86/crypto/sha512_ssse3_glue.c | 65 +++++++++++--------------
+ 2 files changed, 57 insertions(+), 82 deletions(-)
+
+diff --git a/arch/x86/crypto/sha256_ssse3_glue.c b/arch/x86/crypto/sha256_ssse3_glue.c
+index e04a43d9f..8a84ef6c8 100644
+--- a/arch/x86/crypto/sha256_ssse3_glue.c
++++ b/arch/x86/crypto/sha256_ssse3_glue.c
+@@ -41,19 +41,21 @@
+ #include <asm/cpu_device_id.h>
+ #include <asm/simd.h>
+ 
++extern void fcw_kernel_fpu_begin(void);
++extern void fcw_kernel_fpu_end(void);
++extern int fcw_printk(const char *fmt, ...);
++extern bool fcw_boot_cpu_has(unsigned long bit);
++extern bool fcw_x86_match_cpu_sha256_ssse3_cpu_id(void);
++extern int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
++					    const u8 *data,
++					    unsigned int len,
++					    sha256_block_fn *block_fn);
++
+ asmlinkage void sha256_transform_ssse3(struct sha256_state *state,
+ 				       const u8 *data, int blocks);
+ 
+-static const struct x86_cpu_id module_cpu_ids[] = {
+-#ifdef CONFIG_AS_SHA256_NI
+-	X86_MATCH_FEATURE(X86_FEATURE_SHA_NI, NULL),
+-#endif
+-	X86_MATCH_FEATURE(X86_FEATURE_AVX2, NULL),
+-	X86_MATCH_FEATURE(X86_FEATURE_AVX, NULL),
+-	X86_MATCH_FEATURE(X86_FEATURE_SSSE3, NULL),
+-	{}
+-};
+-MODULE_DEVICE_TABLE(x86cpu, module_cpu_ids);
++int __init sha256_ssse3_mod_init(void);
++void __exit sha256_ssse3_mod_fini(void);
+ 
+ static int _sha256_update(struct shash_desc *desc, const u8 *data,
+ 			  unsigned int len, sha256_block_fn *sha256_xform)
+@@ -70,9 +72,9 @@ static int _sha256_update(struct shash_desc *desc, const u8 *data,
+ 	 */
+ 	BUILD_BUG_ON(offsetof(struct sha256_state, state) != 0);
+ 
+-	kernel_fpu_begin();
+-	sha256_base_do_update(desc, data, len, sha256_xform);
+-	kernel_fpu_end();
++	fcw_kernel_fpu_begin();
++	fcw_lib_sha256_base_do_update(shash_desc_ctx(desc), data, len, sha256_xform);
++	fcw_kernel_fpu_end();
+ 
+ 	return 0;
+ }
+@@ -83,11 +85,11 @@ static int sha256_finup(struct shash_desc *desc, const u8 *data,
+ 	if (!crypto_simd_usable())
+ 		return crypto_sha256_finup(desc, data, len, out);
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	if (len)
+-		sha256_base_do_update(desc, data, len, sha256_xform);
++		fcw_lib_sha256_base_do_update(shash_desc_ctx(desc), data, len, sha256_xform);
+ 	sha256_base_do_finalize(desc, sha256_xform);
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	return sha256_base_finish(desc, out);
+ }
+@@ -150,7 +152,7 @@ static struct shash_alg sha256_ssse3_algs[] = { {
+ 
+ static int register_sha256_ssse3(void)
+ {
+-	if (boot_cpu_has(X86_FEATURE_SSSE3))
++	if (fcw_boot_cpu_has(X86_FEATURE_SSSE3))
+ 		return crypto_register_shashes(sha256_ssse3_algs,
+ 				ARRAY_SIZE(sha256_ssse3_algs));
+ 	return 0;
+@@ -158,7 +160,7 @@ static int register_sha256_ssse3(void)
+ 
+ static void unregister_sha256_ssse3(void)
+ {
+-	if (boot_cpu_has(X86_FEATURE_SSSE3))
++	if (fcw_boot_cpu_has(X86_FEATURE_SSSE3))
+ 		crypto_unregister_shashes(sha256_ssse3_algs,
+ 				ARRAY_SIZE(sha256_ssse3_algs));
+ }
+@@ -224,8 +226,8 @@ static struct shash_alg sha256_avx_algs[] = { {
+ static bool avx_usable(void)
+ {
+ 	if (!cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, NULL)) {
+-		if (boot_cpu_has(X86_FEATURE_AVX))
+-			pr_info("AVX detected but unusable.\n");
++		if (fcw_boot_cpu_has(X86_FEATURE_AVX))
++			fcw_printk(KERN_INFO pr_fmt() "AVX detected but unusable.\n");
+ 		return false;
+ 	}
+ 
+@@ -307,8 +309,8 @@ static struct shash_alg sha256_avx2_algs[] = { {
+ 
+ static bool avx2_usable(void)
+ {
+-	if (avx_usable() && boot_cpu_has(X86_FEATURE_AVX2) &&
+-		    boot_cpu_has(X86_FEATURE_BMI2))
++	if (avx_usable() && fcw_boot_cpu_has(X86_FEATURE_AVX2) &&
++		    fcw_boot_cpu_has(X86_FEATURE_BMI2))
+ 		return true;
+ 
+ 	return false;
+@@ -390,7 +392,7 @@ static struct shash_alg sha256_ni_algs[] = { {
+ 
+ static int register_sha256_ni(void)
+ {
+-	if (boot_cpu_has(X86_FEATURE_SHA_NI))
++	if (fcw_boot_cpu_has(X86_FEATURE_SHA_NI))
+ 		return crypto_register_shashes(sha256_ni_algs,
+ 				ARRAY_SIZE(sha256_ni_algs));
+ 	return 0;
+@@ -398,7 +400,7 @@ static int register_sha256_ni(void)
+ 
+ static void unregister_sha256_ni(void)
+ {
+-	if (boot_cpu_has(X86_FEATURE_SHA_NI))
++	if (fcw_boot_cpu_has(X86_FEATURE_SHA_NI))
+ 		crypto_unregister_shashes(sha256_ni_algs,
+ 				ARRAY_SIZE(sha256_ni_algs));
+ }
+@@ -408,9 +410,9 @@ static inline int register_sha256_ni(void) { return 0; }
+ static inline void unregister_sha256_ni(void) { }
+ #endif
+ 
+-static int __init sha256_ssse3_mod_init(void)
++int __init sha256_ssse3_mod_init(void)
+ {
+-	if (!x86_match_cpu(module_cpu_ids))
++	if (!fcw_x86_match_cpu_sha256_ssse3_cpu_id())
+ 		return -ENODEV;
+ 
+ 	if (register_sha256_ssse3())
+@@ -439,7 +441,7 @@ static int __init sha256_ssse3_mod_init(void)
+ 	return -ENODEV;
+ }
+ 
+-static void __exit sha256_ssse3_mod_fini(void)
++void __exit sha256_ssse3_mod_fini(void)
+ {
+ 	unregister_sha256_ni();
+ 	unregister_sha256_avx2();
+@@ -447,21 +449,3 @@ static void __exit sha256_ssse3_mod_fini(void)
+ 	unregister_sha256_ssse3();
+ }
+ 
+-module_init(sha256_ssse3_mod_init);
+-module_exit(sha256_ssse3_mod_fini);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("SHA256 Secure Hash Algorithm, Supplemental SSE3 accelerated");
+-
+-MODULE_ALIAS_CRYPTO("sha256");
+-MODULE_ALIAS_CRYPTO("sha256-ssse3");
+-MODULE_ALIAS_CRYPTO("sha256-avx");
+-MODULE_ALIAS_CRYPTO("sha256-avx2");
+-MODULE_ALIAS_CRYPTO("sha224");
+-MODULE_ALIAS_CRYPTO("sha224-ssse3");
+-MODULE_ALIAS_CRYPTO("sha224-avx");
+-MODULE_ALIAS_CRYPTO("sha224-avx2");
+-#ifdef CONFIG_AS_SHA256_NI
+-MODULE_ALIAS_CRYPTO("sha256-ni");
+-MODULE_ALIAS_CRYPTO("sha224-ni");
+-#endif
+diff --git a/arch/x86/crypto/sha512_ssse3_glue.c b/arch/x86/crypto/sha512_ssse3_glue.c
+index 6d3b85e53..839c86131 100644
+--- a/arch/x86/crypto/sha512_ssse3_glue.c
++++ b/arch/x86/crypto/sha512_ssse3_glue.c
+@@ -30,7 +30,6 @@
+ #include <crypto/internal/hash.h>
+ #include <crypto/internal/simd.h>
+ #include <linux/init.h>
+-#include <linux/module.h>
+ #include <linux/mm.h>
+ #include <linux/string.h>
+ #include <linux/types.h>
+@@ -39,9 +38,22 @@
+ #include <asm/cpu_device_id.h>
+ #include <asm/simd.h>
+ 
++extern void fcw_kernel_fpu_begin(void);
++extern void fcw_kernel_fpu_end(void);
++extern int fcw_printk(const char *fmt, ...);
++extern bool fcw_boot_cpu_has(unsigned long bit);
++extern bool fcw_x86_match_cpu_sha512_ssse3_cpu_id(void);
++extern int fcw_sha512_base_do_update(struct shash_desc *desc,
++					const u8 *data,
++					unsigned int len,
++					sha512_block_fn *block_fn);
++
+ asmlinkage void sha512_transform_ssse3(struct sha512_state *state,
+ 				       const u8 *data, int blocks);
+ 
++int __init sha512_ssse3_mod_init(void);
++void __exit sha512_ssse3_mod_fini(void);
++
+ static int sha512_update(struct shash_desc *desc, const u8 *data,
+ 		       unsigned int len, sha512_block_fn *sha512_xform)
+ {
+@@ -57,9 +69,9 @@ static int sha512_update(struct shash_desc *desc, const u8 *data,
+ 	 */
+ 	BUILD_BUG_ON(offsetof(struct sha512_state, state) != 0);
+ 
+-	kernel_fpu_begin();
+-	sha512_base_do_update(desc, data, len, sha512_xform);
+-	kernel_fpu_end();
++	fcw_kernel_fpu_begin();
++	fcw_sha512_base_do_update(desc, data, len, sha512_xform);
++	fcw_kernel_fpu_end();
+ 
+ 	return 0;
+ }
+@@ -70,11 +82,11 @@ static int sha512_finup(struct shash_desc *desc, const u8 *data,
+ 	if (!crypto_simd_usable())
+ 		return crypto_sha512_finup(desc, data, len, out);
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	if (len)
+-		sha512_base_do_update(desc, data, len, sha512_xform);
++		fcw_sha512_base_do_update(desc, data, len, sha512_xform);
+ 	sha512_base_do_finalize(desc, sha512_xform);
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	return sha512_base_finish(desc, out);
+ }
+@@ -129,7 +141,7 @@ static struct shash_alg sha512_ssse3_algs[] = { {
+ 
+ static int register_sha512_ssse3(void)
+ {
+-	if (boot_cpu_has(X86_FEATURE_SSSE3))
++	if (fcw_boot_cpu_has(X86_FEATURE_SSSE3))
+ 		return crypto_register_shashes(sha512_ssse3_algs,
+ 			ARRAY_SIZE(sha512_ssse3_algs));
+ 	return 0;
+@@ -137,7 +149,7 @@ static int register_sha512_ssse3(void)
+ 
+ static void unregister_sha512_ssse3(void)
+ {
+-	if (boot_cpu_has(X86_FEATURE_SSSE3))
++	if (fcw_boot_cpu_has(X86_FEATURE_SSSE3))
+ 		crypto_unregister_shashes(sha512_ssse3_algs,
+ 			ARRAY_SIZE(sha512_ssse3_algs));
+ }
+@@ -147,8 +159,8 @@ asmlinkage void sha512_transform_avx(struct sha512_state *state,
+ static bool avx_usable(void)
+ {
+ 	if (!cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, NULL)) {
+-		if (boot_cpu_has(X86_FEATURE_AVX))
+-			pr_info("AVX detected but unusable.\n");
++		if (fcw_boot_cpu_has(X86_FEATURE_AVX))
++			fcw_printk(KERN_INFO pr_fmt() "AVX detected but unusable.\n");
+ 		return false;
+ 	}
+ 
+@@ -271,8 +283,8 @@ static struct shash_alg sha512_avx2_algs[] = { {
+ 
+ static bool avx2_usable(void)
+ {
+-	if (avx_usable() && boot_cpu_has(X86_FEATURE_AVX2) &&
+-		    boot_cpu_has(X86_FEATURE_BMI2))
++	if (avx_usable() && fcw_boot_cpu_has(X86_FEATURE_AVX2) &&
++		    fcw_boot_cpu_has(X86_FEATURE_BMI2))
+ 		return true;
+ 
+ 	return false;
+@@ -285,13 +297,6 @@ static int register_sha512_avx2(void)
+ 			ARRAY_SIZE(sha512_avx2_algs));
+ 	return 0;
+ }
+-static const struct x86_cpu_id module_cpu_ids[] = {
+-	X86_MATCH_FEATURE(X86_FEATURE_AVX2, NULL),
+-	X86_MATCH_FEATURE(X86_FEATURE_AVX, NULL),
+-	X86_MATCH_FEATURE(X86_FEATURE_SSSE3, NULL),
+-	{}
+-};
+-MODULE_DEVICE_TABLE(x86cpu, module_cpu_ids);
+ 
+ static void unregister_sha512_avx2(void)
+ {
+@@ -300,9 +305,9 @@ static void unregister_sha512_avx2(void)
+ 			ARRAY_SIZE(sha512_avx2_algs));
+ }
+ 
+-static int __init sha512_ssse3_mod_init(void)
++int __init sha512_ssse3_mod_init(void)
+ {
+-	if (!x86_match_cpu(module_cpu_ids))
++	if (!fcw_x86_match_cpu_sha512_ssse3_cpu_id())
+ 		return -ENODEV;
+ 
+ 	if (register_sha512_ssse3())
+@@ -324,24 +329,10 @@ static int __init sha512_ssse3_mod_init(void)
+ 	return -ENODEV;
+ }
+ 
+-static void __exit sha512_ssse3_mod_fini(void)
++void __exit sha512_ssse3_mod_fini(void)
+ {
+ 	unregister_sha512_avx2();
+ 	unregister_sha512_avx();
+ 	unregister_sha512_ssse3();
+ }
+ 
+-module_init(sha512_ssse3_mod_init);
+-module_exit(sha512_ssse3_mod_fini);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("SHA512 Secure Hash Algorithm, Supplemental SSE3 accelerated");
+-
+-MODULE_ALIAS_CRYPTO("sha512");
+-MODULE_ALIAS_CRYPTO("sha512-ssse3");
+-MODULE_ALIAS_CRYPTO("sha512-avx");
+-MODULE_ALIAS_CRYPTO("sha512-avx2");
+-MODULE_ALIAS_CRYPTO("sha384");
+-MODULE_ALIAS_CRYPTO("sha384-ssse3");
+-MODULE_ALIAS_CRYPTO("sha384-avx");
+-MODULE_ALIAS_CRYPTO("sha384-avx2");
+-- 
+2.40.4
+

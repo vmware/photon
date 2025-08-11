@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.41
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -42,16 +42,9 @@ Source9:        check_fips_canister_struct_compatibility.inc
 
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%endif
-
-%ifarch x86_64
 %define jent_name photon-jitterentropy-v6.12
 %define jent_rel_ver 2
 Source17: %{jent_name}-%{jent_rel_ver}.tar.gz
-%endif
-
-%if 0%{?fips}
-Source18:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 
 Source19:       spec_install_post.inc
@@ -61,13 +54,13 @@ Source20:       %{name}-dracut.conf
 %ifarch x86_64
 # Secure Boot
 Source25:       linux-sbat.csv.in
-
-Source33: jitterentropy_canister_wrapper.c
-Source34: jitterentropy_canister_wrapper.h
-Source35: jitterentropy_canister_wrapper_asm.S
 %endif
 
 %if 0%{?fips}
+Source33: jitterentropy_canister_wrapper.c
+Source34: jitterentropy_canister_wrapper.h
+Source35: jitterentropy_canister_wrapper_asm.S
+
 Source36: fips_canister_wrapper.c
 Source37: fips_canister_wrapper.h
 Source38: fips_canister_wrapper_asm.S
@@ -191,6 +184,7 @@ Patch207: 0001-vmw_vmci-arm64-support-memory-ordering.patch
 
 # 9p: [300..350]
 
+%if 0%{?fips}
 # Crypto: [500..529]
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
 Patch500: 0002-FIPS-crypto-self-tests.patch
@@ -201,15 +195,14 @@ Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 
-%if 0%{?fips}
 # FIPS canister usage patch
 Patch508: 0001-FIPS-canister-binary-usage.patch
 Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
 Patch510: 0001-crypto-Export-symbol-crypto_shash_alg_has_setkey.patch
 Patch511: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
-%endif
+# TODO: enable it on the next canister tarball bump up
+#Patch512: 0002-FIPS-canister-binary-usage-algapi.c-honor-fcw_skip_tests.patch
 
-%ifarch x86_64
 Patch512: 0001-jent-makefile-changes-esx.patch
 Patch513: 0001-New-memsize-options-for-jent.patch
 %endif
@@ -224,7 +217,7 @@ Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
 
 # FIPS canister plugins
-%if 0%{?fips_plugins}
+%if 0%{?fips}
 Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
 Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
 Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
@@ -288,12 +281,10 @@ The Linux package contains the Linux kernel doc files
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
+
 %if 0%{?fips}
 # Using autosetup is not feasible
 %setup -q -T -D -b 16 -n linux-%{version}
-%endif
-
-%ifarch x86_64
 # Using autosetup is not feasible
 %setup -q -T -D -b 17 -n linux-%{version}
 %endif
@@ -325,15 +316,9 @@ The Linux package contains the Linux kernel doc files
 # 9P
 %autopatch -p1 -m300 -M309
 
-# crypto
-%autopatch -p1 -m500 -M504
-
 %if 0%{?fips}
-%autopatch -p1 -m508 -M511
-%endif
-
-%ifarch x86_64
-%autopatch -p1 -m512 -M513
+# crypto
+%autopatch -p1 -m500 -M513
 %endif
 
 %ifarch x86_64
@@ -345,18 +330,18 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m10500 -M10504
 %endif
 
-%ifarch x86_64
+make %{?_smp_mflags} mrproper
+cp %{SOURCE1} .config
+sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
+
+%if 0%{?fips}
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
 mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
 cp %{SOURCE33} crypto/%{jent_name}/
 cp %{SOURCE34} crypto/%{jent_name}/
 cp %{SOURCE35} crypto/%{jent_name}/
-%endif
 
-make %{?_smp_mflags} mrproper
-cp %{SOURCE1} .config
-%if 0%{?fips}
 cp %{SOURCE36} crypto/
 cp %{SOURCE37} crypto/
 cp %{SOURCE38} crypto/
@@ -367,13 +352,14 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
    crypto/
-# Patch canister wrapper
-patch -p1 < %{SOURCE18}
-%endif
-sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
-%if 0%{?fips}
 sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
+%else
+# Clean up .config of FIPS related configs
+sed -i "/CONFIG_CRYPTO_SELF_TEST=y/d" .config
+sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_8 is not set/d" .config
+sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32 is not set/d" .config
+sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_64 is not set/d" .config
 %endif
 
 %ifarch x86_64
@@ -480,6 +466,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Aug 21 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-2
+- Build jitterentropy only fips=1 build.
+- Prepare to apply newer canister binary.
 * Thu Aug 14 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-1
 - Update to version 6.12.41
 * Fri Jul 18 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-3

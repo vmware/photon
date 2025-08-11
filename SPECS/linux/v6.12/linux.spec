@@ -61,7 +61,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        1%{?acvp_build:.acvp}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -304,29 +304,32 @@ Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 # 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
 # in both places until final canister binary is released
 Patch10000: 0001-FIPS-canister-binary-usage.patch
-Patch10001: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
+Patch10001: 0002-FIPS-canister-binary-usage-algapi.c-honor-fcw_skip_tests.patch
+Patch10002: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
 %endif
 
 %if 0%{?canister_usage}
-Patch10002: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
+Patch10005: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 %endif
 
 %if 0%{?canister_build}
 # Below patches are specific to canister_build flag
-Patch10003: 0001-FIPS-canister-creation.patch
-Patch10004: 0002-aesni_intel-Remove-static-call.patch
-Patch10005: 0003-Disable-retpoline_sites-and-return_sites-sections-in.patch
-Patch10006: 0004-Move-__bug_table-section-to-fips_canister_wrapper.patch
-Patch10007: 0005-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
-Patch10008: 0006-Move-kernel-structures-usage-from-canister-to-wrappe.patch
-Patch10009: 0007-ecc-Add-pairwise-consistency-test-for-every-generate.patch
-Patch10010: 0008-List-canister-objs-in-a-file.patch
-Patch10011: 0009-Handle-approved-and-non-approved-services.patch
-Patch10012: 0010-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
-Patch10013: 0011-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
+Patch10010: 0001-FIPS-canister-creation.patch
+Patch10011: 0002-aesni_intel-Remove-static-call.patch
+Patch10012: 0003-Disable-retpoline_sites-and-return_sites-sections-in.patch
+Patch10013: 0004-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch10014: 0005-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
+Patch10015: 0006-Move-kernel-structures-usage-from-canister-to-wrappe.patch
+Patch10016: 0007-ecc-Add-pairwise-consistency-test-for-every-generate.patch
+Patch10017: 0008-List-canister-objs-in-a-file.patch
+Patch10018: 0009-Handle-approved-and-non-approved-services.patch
+Patch10019: 0010-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
+Patch10020: 0011-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
+Patch10021: 0012-Add-shasums-accelerators.patch
+Patch10022: 0013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
 
 %if 0%{?kat_build}
-Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
+Patch10050: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
 %endif
 %endif
 
@@ -552,18 +555,18 @@ popd
 #popd
 
 %if 0%{?fips}
-%autopatch -p1 -m10000 -M10001
+%autopatch -p1 -m10000 -M10002
 %endif
 
 %if 0%{?canister_usage}
-%autopatch -p1 -m10002 -M10002
+%autopatch -p1 -m10005 -M10005
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10003 -M10013
+%autopatch -p1 -m10010 -M10022
 
 %if 0%{?kat_build}
-%autopatch -p1 -m10014 -M10014
+%autopatch -p1 -m10050 -M10050
 %endif
 %endif
 
@@ -911,6 +914,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 21 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-2
+- Add shasums accelerators
+- Speedup algos registration in non-FIPS mode
 * Thu Aug 14 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-1
 - Update to version 6.12.41
 * Tue Aug 5 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-9
