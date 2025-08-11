@@ -11,7 +11,7 @@
 Summary:        Command-line editing and history capabilities
 Name:           readline
 Version:        8.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -41,6 +41,13 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications
 
+%package        doc
+Summary:        Documentation files for readline
+Requires:       %{name} = %{version}-%{release}
+
+%description    doc
+Documentation files for readline
+
 %prep
 tar xf %{SOURCE0} --no-same-owner
 %if 0%{?bootstrap}
@@ -59,8 +66,13 @@ sed -i '/{OLDSUFF}/c:' support/shlib-install
 popd
 %endif
 
-# Remove files to handle unintended licenses
-rm %{name}-%{major_version}/doc/*.dvi
+# Remove files to handle unintended inclusions
+rm -r %{name}-%{major_version}/doc/*.dvi
+rm -r %{name}-%{major_version}/doc/*.html
+rm %{name}-%{major_version}/doc/history.ps
+rm %{name}-%{major_version}/doc/readline.ps
+rm %{name}-%{major_version}/doc/rluserman.ps
+rm %{name}-%{major_version}/doc/fdl.texi
 
 %build
 pushd %{name}-%{major_version}
@@ -88,7 +100,7 @@ install -vdm 755 %{buildroot}%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libreadline.so) %{buildroot}%{_libdir}/libreadline.so
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so ) %{buildroot}%{_libdir}/libhistory.so
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-install -v -m644 doc/*.{ps,pdf,html} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -v -m644 doc/*.{ps,pdf} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
 popd
 
@@ -138,24 +150,23 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/fileman.c
 %{_datadir}/%{name}/rlkeymaps.c
 %{_datadir}/%{name}/rl-timeout.c
+
+%files doc
+%defattr(-,root,root,-)
 %{_docdir}/%{name}/INSTALL
 %{_docdir}/%{name}/README
 %{_docdir}/%{name}/CHANGES
-%{_docdir}/%{name}-%{version}/readline.html
 %{_docdir}/%{name}-%{version}/history.pdf
-%{_docdir}/%{name}-%{version}/rluserman.html
-%{_docdir}/%{name}-%{version}/readline.ps
-%{_docdir}/%{name}-%{version}/history.ps
-%{_docdir}/%{name}-%{version}/rluserman.ps
 %{_docdir}/%{name}-%{version}/readline.pdf
 %{_docdir}/%{name}-%{version}/history_3.ps
 %{_docdir}/%{name}-%{version}/readline_3.ps
-%{_docdir}/%{name}-%{version}/history.html
 %{_docdir}/%{name}-%{version}/rluserman.pdf
 %{_mandir}/man3/history.3.gz
 %{_mandir}/man3/readline.3.gz
 
 %changelog
+* Mon Aug 11 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.2-6
+- Create doc rpm to remove unintended license for SRP compliance
 * Thu Jul 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.2-5
 - Remove .dvi files to remove unintended license for SRP compliance
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2-4
