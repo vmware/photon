@@ -1,7 +1,7 @@
 Summary:        Monitoring plugins are used to monitor status of hosts and services on the network
 Name:           monitoring-plugins
 Version:        2.3.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Tools
 URL:            https://github.com/%{name}
 Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
@@ -49,6 +49,8 @@ rm -rf %{buildroot}
 %{_prefix}/share/locale/de
 
 %changelog
+* Mon Aug 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 2.3.5-3
+- handle unintended copyright inclusions
 * Thu Mar 27 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.5-2
 - Disable check_mssql since photon does not ship perl(DBD::Sybase)
 * Fri Mar 21 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.5-1
