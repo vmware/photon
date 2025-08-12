@@ -1,7 +1,7 @@
 Summary:        MIME database
 Name:           shared-mime-info
 Version:        2.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://freedesktop.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -29,7 +29,8 @@ This allows central updates of MIME information for all supporting applications.
 %prep
 %autosetup -p1
 %if 0%{?with_check} == 0
-rm tests/mime-detection/nrl.trig
+rm tests/mime-detection/{nrl.trig,test.v}
+rm tests/mime-detection/debian-goodies_*_all.deb
 %endif
 
 %build
@@ -53,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Tue Aug 12 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.2-7
+- Removed debian-goodies_0.63_all.deb and test.v when with_check is not set or zero
 * Fri Aug 01 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.2-6
 - Removed nrl.trig test file
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.2-5
