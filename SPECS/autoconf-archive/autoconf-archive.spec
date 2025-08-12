@@ -3,7 +3,7 @@
 Summary:        Autoconf macro archive
 Name:           autoconf-archive
 Version:        2022.09.03
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/autoconf-archive
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ rm -frv %{buildroot}%{_docdir}/%{name}
 %{_datadir}/aclocal/*.m4
 
 %changelog
+* Tue Aug 12 2025 Dweep Advani <dweep.advani@broadcom.com> 2022.09.03-3
+- Bump release to rescan licenses
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2022.09.03-2
 - Release bump for SRP compliance
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2022.09.03-1
