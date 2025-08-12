@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -181,6 +181,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Aug 12 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.4.4-3
+- Handle unintended copyrights inclusions
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 8.4.4-2
 - Renaming sysusers to conf to fix auto user creation
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.4-1

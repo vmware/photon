@@ -2,6 +2,28 @@ sources:
 - archive: mysql-8.4.4.tar.gz
   archive_sha512sum: 21f4d8162f57f63a589e3e5e140f89a8cc61f4c55a77dce4601e76192eb3d3fbeaf3bfb78f91345c517ad36bf4267f33202693cfc24812841c517a24fffcfd12
   skip_validation: true
+  license_manual_review:
+  - archive_path: LICENSE
+    final_build_path: LICENSE
+    sha256sum: 49a8cf0c5a7792fad3ff1a668d60c841a7a1ae9ee17619f61ae210148ffbeeae
+    spdx_exp: "GPL-2.0-only AND (GPL-2.0-only WITH Universal-FOSS-exception-1.0
+            AND GPL-2.0-only AND GPL-1.0-or-later) AND GPL-2.0-only WITH Universal-FOSS-exception-1.0
+            AND BSL-1.0 AND curl AND BSD-Attribution-HPND-disclaimer AND RSA-MD AND dtoa AND
+            BSD-3-Clause AND BSD-2-Clause AND Zlib AND (MIT AND fmt-exception) AND Apache-2.0
+            AND ICU AND (ICU AND BSD-3-Clause) AND (BSD-3-Clause AND NAIST-2003) AND NAIST-2003
+            AND CC-BY-4.0 AND OpenVision AND HPND-export2-US AND MIT AND FSFULLRWD
+            AND OLDAP-2.8 AND BSD-2-Clause-first-lines AND MIT-CMU AND CMU-Mach-nodoc AND (BSD-2-Clause
+            AND HPND-export-US-acknowledgement) AND BSD-4-Clause-UC AND BSD-4-Clause AND ISC
+            AND HPND-export-US-modify AND (BSD-2-Clause OR GPL-2.0-or-later) AND LGPL-2.1-only
+            AND (ISC AND MIT) AND (Apache-2.0 AND OpenSSL) AND (MIT AND JSON AND BSD-3-Clause)
+            AND (BSD-3-Clause AND JSON) AND (JSON AND MIT) AND Unicode-TOU AND ((BSD-3-Clause
+            OR GPL-2.0-only) AND BSD-3-Clause)"
+    #we do not build kerberos auth plugin
+  - archive_path: router/LICENSE.router
+    final_build_path: router/LICENSE.router
+    sha256sum: 4b95f70956d331a1420145ab01bbd78ca25e9d2dcc78624fd89f1c562a8d8c47
+    spdx_exp: ""
+    #we build with DWITH_ROUTER=OFF so this is not applicable
   spdx:
     package:
       detailed_description: 'MySQL is a free, widely used SQL engine. It can be used
