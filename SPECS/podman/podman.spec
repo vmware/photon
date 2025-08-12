@@ -4,7 +4,7 @@
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        4.5.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
@@ -85,8 +85,14 @@ Compared to libslirp, gvisor-tap-vsock brings a configurable DNS server and dyna
 
 %prep
 %autosetup -Sgit -n %{name}-%{version}
+rm -f vendor/github.com/opencontainers/go-digest/LICENSE.docs \
+      vendor/github.com/opencontainers/go-digest/README.md \
+      vendor/github.com/opencontainers/go-digest/CONTRIBUTING.md
 tar xf %{SOURCE1} --no-same-owner
-tar xf %{SOURCE2} --no-same-owner
+tar xf %{SOURCE2} --no-same-owner \
+  --exclude=vendor/github.com/opencontainers/go-digest/LICENSE.docs \
+  --exclude=vendor/github.com/opencontainers/go-digest/README.md \
+  --exclude=vendor/github.com/opencontainers/go-digest/CONTRIBUTING.md
 
 %build
 #build podman
@@ -174,6 +180,8 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Tue Aug 12 2025 Dweep Advani <dweep.advani@broadcom.com> 4.5.1-11
+- Bump release to rescan licenses
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.1-10
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-9

@@ -17,12 +17,12 @@ sources:
     package:
       detailed_description: A new network stack based on gVisor.
       home_page: https://github.com/containers/gvisor-tap-vsock
-      license_concluded: Unlicense AND CC-BY-3.0 AND Apache-2.0 AND CC-BY-SA-4.0 AND
-        GPL-1.0-or-later AND GPL-3.0-or-later AND MPL-2.0 AND GPL-3.0-only AND ISC
-        AND (MIT OR Unlicense) AND MIT AND BSD-2-Clause AND BSD-3-Clause
-      license_declared: Unlicense AND CC-BY-3.0 AND Apache-2.0 AND CC-BY-SA-4.0 AND
-        GPL-1.0-or-later AND GPL-3.0-or-later AND MPL-2.0 AND GPL-3.0-only AND ISC
-        AND (MIT OR Unlicense) AND MIT AND BSD-2-Clause AND BSD-3-Clause
+      license_concluded: (BSD-3-Clause OR OpenSSL) AND (MIT OR Unlicense) AND Apache-2.0
+        AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-3.0 AND CC-BY-SA-4.0 AND GPL-1.0-or-later
+        AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND MIT AND MPL-2.0 AND Unlicense
+      license_declared: (BSD-3-Clause OR OpenSSL) AND (MIT OR Unlicense) AND Apache-2.0
+        AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-3.0 AND CC-BY-SA-4.0 AND GPL-1.0-or-later
+        AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND MIT AND MPL-2.0 AND Unlicense
       short_summary: A new network stack based on gVisor.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: podman-4.5.1.tar.gz
@@ -34,11 +34,11 @@ sources:
         designed to make it easy to find, run, build, share and deploy applications
         using OCI Containers and Container Images. '
       home_page: https://github.com/containers/podman
-      license_concluded: MIT AND MPL-2.0 AND Unlicense AND BSD-2-Clause AND LGPL-2.1-or-later
-        AND blessing AND CC-BY-SA-4.0 AND Apache-2.0 AND GPL-1.0-or-later AND ISC
-        AND BSD-3-Clause AND MS-RL
-      license_declared: MIT AND MPL-2.0 AND Unlicense AND BSD-2-Clause AND LGPL-2.1-or-later
-        AND blessing AND CC-BY-SA-4.0 AND Apache-2.0 AND GPL-1.0-or-later AND ISC
-        AND BSD-3-Clause AND MS-RL
+      license_concluded: (BSD-3-Clause OR OpenSSL) AND Apache-2.0 AND BSD-2-Clause
+        AND BSD-3-Clause AND CC-BY-SA-4.0 AND ISC AND LGPL-2.1-or-later AND MIT AND
+        MPL-2.0 AND MS-RL AND Unlicense AND blessing
+      license_declared: (BSD-3-Clause OR OpenSSL) AND Apache-2.0 AND BSD-2-Clause
+        AND BSD-3-Clause AND CC-BY-SA-4.0 AND ISC AND LGPL-2.1-or-later AND MIT AND
+        MPL-2.0 AND MS-RL AND Unlicense AND blessing
       short_summary: A tool to manage Pods, Containers and Container Images
       supplier: 'Organization: Broadcom, Inc.'
