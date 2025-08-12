@@ -1,7 +1,7 @@
 Summary:        C++ interface to the glib
 Name:           glibmm
 Version:        2.74.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -45,6 +45,7 @@ These are the header files of glibmm.
 
 %prep
 %autosetup -p1
+rm untracked/docs/tagfile-to-devhelp2.xsl
 
 %build
 %meson
@@ -77,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Aug 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.74.0-4
+- License cleanup
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.74.0-3
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.74.0-2
