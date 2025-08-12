@@ -273,7 +273,9 @@ def extract_top_level_expressions(spdx_exp=None):
     start_pos = 0
     end_pos = 0
     paran_str = ""
+    exps = []
     original_exp = spdx_exp.strip()
+    uniq_ors = []
     while i < len(spdx_exp):
         # get everything inside the parantheses
         if spdx_exp[i] == "(":
@@ -302,9 +304,16 @@ def extract_top_level_expressions(spdx_exp=None):
     # Handle top level OR - whole expression should be concatenated
     # and put inside parantheses. Any OR left over will be a top level OR
     if "OR" in spdx_exp:
-        exp = f"{original_exp}"
-        if exp not in expressions:
-            expressions.append(exp)
+        ors = spdx_exp.split("OR")
+        ors = [x.strip() for x in ors]
+        for x in ors:
+            if x in uniq_ors:
+                continue
+
+            uniq_ors.append(x)
+
+        exp = f"({' OR '.join(uniq_ors)})"
+        return [exp]
     else:
         # get the rest of the licenses without the parantheses
         # All "OR" expressions should already be in parantheses
