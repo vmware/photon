@@ -12,7 +12,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.107
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -148,6 +148,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Aug 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.107-2
+- Handle copyleft licenses
 * Fri Jul 18 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.107-1
 - Version upgrade
 * Tue Jun 17 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.106-1

@@ -4,7 +4,7 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -36,6 +36,8 @@ framework that you can use to develop your own build rules.
 
 %prep
 %autosetup -p1 -c -n %{name}-%{version}
+# contains copyleft licenses
+rm ./third_party/java/proguard/proguard6.2.2/docs/proguard.appdata.xml
 
 %build
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
@@ -49,14 +51,18 @@ pushd output
 popd
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-cp output/bazel %{buildroot}%{_bindir}
+install -vDm 755 output/%{name} %{buildroot}%{_bindir}/%{name}
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Tue Aug 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-7
+- Fix copyleft licensing
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.3.2-6
 - Release bump for SRP compliance
 * Fri Jul 26 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 5.3.2-5

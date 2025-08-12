@@ -4,7 +4,7 @@ sources:
   archive_sha512sum: 24672a4ea4d6e0bfd5e7dbb8694f260216bea47f21c347dd549d3e0851915aa7616695356cbf6714780ff1527f346ad2119f7f52f66779c4d0510ad0f83e9978
   name: apache-tomcat-10.1.43-src
   version: 10.1.43
-  url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.43/src/apache-tomcat-10.1.43-src.tar.gz
+  url: https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.43/src/apache-tomcat-10.1.43-src.tar.gz
   repo_url: https://github.com/apache/tomcat.git
   commit_id: e6c2a4b773a2bf03f94a31ed8fc30df1a735217e
   skip_list:
@@ -40,7 +40,7 @@ sources:
   archive_sha512sum: 4db3eb936aaea9e0679504bb73c07e982d646a7e7a574f9be1f465f79dd1f229dff22055a049a7dc2ad59619752dae79505ab92f44a317df966fa3b039e459c3
   name: apache-tomcat-9.0.107-src
   version: 9.0.107
-  url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.107/src/apache-tomcat-9.0.107-src.tar.gz
+  url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.107/src/apache-tomcat-9.0.107-src.tar.gz
   repo_url: https://github.com/apache/tomcat.git
   commit_id: 43d5ad023d2eee2ca162eded597a23afa0b92296
   skip_list:
@@ -71,6 +71,11 @@ sources:
 - archive: base-for-apache-tomcat-10.1.43.tar.gz
   archive_sha512sum: 56bb0d1dd85bcbf8af0483ce0dee62515e7f0e5f59b74c3a9284c5ac21b475cb4037098c4209377913df7a8ba522d17e910c083e2e36718125d323c9af71b9d0
   skip_validation: true
+  license_manual_review:
+    # Icon uses cc-by-sa-4.0 license
+    - archive_path: "nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp"
+      sha256sum: 1cb56a65d201465110930fde78929f0ef0881b30c64d6b14dc014d97ca0d5774
+      spdx_exp: ""
   spdx:
     package:
       detailed_description: base-for-apache-tomcat is a cached -Dbase.path folder
