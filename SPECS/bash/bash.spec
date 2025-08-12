@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -69,6 +69,8 @@ The package contains bash doc files.
 
 %prep
 %autosetup -p1
+# uses copyleft licensing
+rm doc/bashref.dvi
 
 %build
 %configure \
@@ -157,6 +159,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/*/*
 
 %changelog
+* Tue Aug 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-8
+- Fix copyleft licensing
 * Thu Jan 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-7
 - Add compatibility data script to bash completion
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-6
