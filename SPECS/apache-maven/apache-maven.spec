@@ -2,10 +2,12 @@
 %define maven_bindir %{maven_prefix}/bin
 %define maven_libdir %{maven_prefix}/lib
 
+%define debug_package %{nil}
+
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.9.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
@@ -74,6 +76,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Wed Aug 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.0-2
+- Disable debug rpm build
 * Sun Aug 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.0-1
 - Upgrade to v3.9.0 to fix CVE-2021-26291
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.3-5
