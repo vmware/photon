@@ -1,7 +1,7 @@
 Summary:        NETCONF library in C intended for building NETCONF clients and servers.
 Name:           libnetconf2
 Version:        3.5.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Tools
 URL:            https://github.com/CESNET/libnetconf2
@@ -101,6 +101,8 @@ popd
 %dir %{_includedir}/%{name}
 
 %changelog
+* Tue Aug 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.5.5-2
+- Version bump up to use libssh v0.11.2
 * Mon Mar 24 2025 Harinadh Dommraju <Harinadh.Dommaraju@broadcom.com> 3.5.5-1
 - Version update
 * Tue Dec 26 2023 Mukul Sikka <msikka@vmware.com> 2.1.18-3
