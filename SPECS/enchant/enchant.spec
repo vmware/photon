@@ -4,7 +4,7 @@
 #3.tar the folder enchant-%{verson} to enchant-vendor-%{verson}.tar.gz
 Name:           enchant
 Version:        2.5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A spellchecking library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -75,6 +75,8 @@ Libraries, headers, and support files necessary to compile applications using li
 %{_includedir}/%{name}-2
 
 %changelog
+* Mon Aug 11 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.5.0-4
+- Bump release to rescan licenses
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.5.0-3
 - Release bump for SRP compliance
 * Wed Jul 24 2024 Harinadh D <Harinadh.Dommaraju@broadcom.com> 2.5.0-2
