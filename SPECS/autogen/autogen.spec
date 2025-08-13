@@ -2,7 +2,7 @@ Summary:    The Automated Text and Program Generation Tool
 Name:       autogen
 Version:    5.18.16
 # TODO: try to remove CFLAGS on next version update
-Release:    8%{?dist}
+Release:    9%{?dist}
 URL:        http://www.gnu.org/software/autogen
 Group:      System Environment/Tools
 Vendor:     VMware, Inc.
@@ -89,6 +89,8 @@ make check
 %{_libdir}/*.a
 
 %changelog
+* Wed Aug 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.18.16-9
+- Bump release to rescan licenses
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.18.16-8
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.18.16-7

@@ -2,6 +2,25 @@ sources:
 - archive: autogen-5.18.16.tar.xz
   archive_sha512sum: 5f12c982dbe27873f5649a96049bf019ff183c90cc0c8a9196556b0ca02e72940cd422f6d6601f68cc7d8763b1124f2765c3b1a6335fc92ba07f84b03d2a53a1
   skip_validation: true
+  license_manual_review:
+  - archive_path: agen5/expFormat.c
+    sha256sum: 826cc7a691f9499e7fd275cf911a0fcebcefc39f3d1ff67375bbb6fb4b039c41
+    spdx_exp: GPL-3.0-or-later
+  - archive_path: autoopts/Makefile.am
+    sha256sum: cc0eff7fe46f256bcc22a090dddecee138b823568e45661018965e85502bc6e5
+    spdx_exp: GPL-3.0-or-later AND LGPL-3.0-or-later AND BSD-3-Clause
+  - archive_path: autoopts/Makefile.in
+    sha256sum: 041361ed2bc4cbe2c638dc136b864b812905740befa5af4bbea1bd05b7a77bc9
+    spdx_exp: FSFULLRWD
+  - archive_path: autoopts/tpl/agpl.lic
+    sha256sum: 94be3e5c0534eac2fa1ac6ae5fcdd7c6e0da00b6b11f5bd1b8687f7a19679738
+    spdx_exp: GPL-3.0-or-later
+  - archive_path: doc/agdoc.texi
+    sha256sum: 0cff8d3ab98673aca9f0e7f40bb8e10c7f0c3aea7a2dc99c73f17132dda4af6f
+    spdx_exp: ''
+  - archive_path: doc/autogen.info-1
+    sha256sum: 70e406e2ef5651f90f17671d09c0941b05d0488b317b4b52f3a89a1b10a115d3
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'AutoGen is a tool designed to simplify the creation and
@@ -9,25 +28,26 @@ sources:
         is especially valuable in programs that have several blocks of text that must
         be kept synchronized. '
       home_page: http://www.gnu.org/software/autogen
-      license_concluded: GPL-1.0-or-later AND FSFULLRWD AND GPL-2.0-only AND GPL-3.0-or-later
-        WITH Libtool-exception AND FSFULLR AND GPL-3.0-or-later AND GPL-2.0-or-later
-        WITH Libtool-exception AND AGPL-3.0-or-later AND (LGPL-2.0-or-later OR BSD-3-Clause)
-        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GFDL-1.3-invariants-only
-        AND FSFUL AND GFDL-1.1-or-later AND LGPL-3.0-only AND X11 AND BSD-3-Clause
-        AND GFDL-1.3-only AND LGPL-2.0-only AND GFDL-1.2-or-later AND CC-BY-ND-3.0
-        AND GPL-3.0-only AND LGPL-2.0-or-later AND GPL-2.0-or-later AND BSD-2-Clause
-        AND LGPL-3.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
-        AND GPL-3.0-or-later WITH Texinfo-exception AND (LGPL-3.0-or-later OR BSD-3-Clause)
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic
-      license_declared: GPL-1.0-or-later AND FSFULLRWD AND GPL-2.0-only AND GPL-3.0-or-later
-        WITH Libtool-exception AND FSFULLR AND GPL-3.0-or-later AND GPL-2.0-or-later
-        WITH Libtool-exception AND AGPL-3.0-or-later AND (LGPL-2.0-or-later OR BSD-3-Clause)
-        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GFDL-1.3-invariants-only
-        AND FSFUL AND GFDL-1.1-or-later AND LGPL-3.0-only AND X11 AND BSD-3-Clause
-        AND GFDL-1.3-only AND LGPL-2.0-only AND GFDL-1.2-or-later AND CC-BY-ND-3.0
-        AND GPL-3.0-only AND LGPL-2.0-or-later AND GPL-2.0-or-later AND BSD-2-Clause
-        AND LGPL-3.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
-        AND GPL-3.0-or-later WITH Texinfo-exception AND (LGPL-3.0-or-later OR BSD-3-Clause)
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_concluded: (BSD-3-Clause OR LGPL-2.0-or-later) AND (BSD-3-Clause OR
+        LGPL-3.0-or-later) AND AGPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause
+        AND CC-BY-ND-3.0 AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later
+        AND GFDL-1.2-or-later AND GFDL-1.3-only AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-only AND LGPL-2.0-or-later
+        AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND OpenSSL
+        AND X11
+      license_declared: (BSD-3-Clause OR LGPL-2.0-or-later) AND (BSD-3-Clause OR LGPL-3.0-or-later)
+        AND AGPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-ND-3.0 AND
+        FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GFDL-1.2-or-later
+        AND GFDL-1.3-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
+        WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Texinfo-exception
+        AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-3.0-only
+        AND LGPL-3.0-or-later AND OpenSSL AND X11
       short_summary: The Automated Text and Program Generation Tool
       supplier: 'Organization: Broadcom, Inc.'
