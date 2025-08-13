@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.10
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -112,6 +112,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 3.7.10-8
+- Cleanup and rescan licenses
 * Mon Jul 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-7
 - Fix CVE-2025-32988, CVE-2025-32989, CVE-2025-32990, CVE-2025-6395
 * Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.10-6

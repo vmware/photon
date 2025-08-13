@@ -2,7 +2,7 @@
 
 Name:           libtevent
 Version:        0.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The tevent library
 URL:            http://tevent.samba.org/
 Vendor:         VMware, Inc.
@@ -89,6 +89,8 @@ Python 3 bindings for libtevent
 %{python3_sitearch}/_tevent.cpython*.so
 
 %changelog
+* Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 0.15.0-2
+- Cleanup and rescan licenses
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 0.15.0-1
 - Bump up version to 0.15.0 required by samba-client 4.19.3
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.14.1-2

@@ -2,6 +2,13 @@ sources:
 - archive: libksba-1.6.3.tar.bz2
   archive_sha512sum: 188f6d27b4904c10cd54ba949c1132dd6c167f53dd1b77eae39c5b8e3ac8b15e87b2a54cdfddac95ac4ed41ee83c3d4e1b17d95126f245b6c204fade6739a2ce
   skip_validation: true
+  license_manual_review:
+  - archive_path: src/der-builder.h
+    sha256sum: 66d370dc27be2e79a4378f064b222c729846a0c415d65a780849fbe61055fe6e
+    spdx_exp: LGPL-2.1-or-later
+  - archive_path: src/der-builder.c
+    sha256sum: 4914d781b75a900ff56250cbd9cb5824ce0f25191019eec7cb0121b2278d912e
+    spdx_exp: LGPL-2.1-or-later
   spdx:
     package:
       detailed_description: 'Libksba is a library to make the tasks of working with
@@ -9,23 +16,23 @@ sources:
         highlevel interface to the implemented protocols and presents the data in
         a consistent way. '
       home_page: https://www.gnupg.org/(fr)/download/index.html#libksba
-      license_concluded: FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-1.0-or-later
-        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND FSFULLR AND GPL-2.0-only AND GPL-3.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND LGPL-3.0-only AND GPL-2.0-or-later
-        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-3.0-or-later AND GPL-2.0-or-later
-        WITH Autoconf-exception-macro AND GPL-1.0-or-later AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND GPL-3.0-or-later
-        WITH Texinfo-exception AND FSFUL AND X11 AND LGPL-2.1-or-later
-      license_declared: FSFULLRWD AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-1.0-or-later
-        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND FSFULLR AND GPL-2.0-only AND GPL-3.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND LGPL-3.0-only AND GPL-2.0-or-later
-        AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND LGPL-3.0-or-later AND GPL-2.0-or-later
-        WITH Autoconf-exception-macro AND GPL-1.0-or-later AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND GPL-3.0-or-later
-        WITH Texinfo-exception AND FSFUL AND X11 AND LGPL-2.1-or-later
+      license_concluded: (GPL-2.0-or-later OR LGPL-3.0-or-later) AND AGPL-3.0-or-later
+        AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only AND GPL-2.0-or-later AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH
+        Autoconf-exception-macro AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later
+        AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND X11
+      license_declared: (GPL-2.0-or-later OR LGPL-3.0-or-later) AND AGPL-3.0-or-later
+        AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only AND GPL-2.0-or-later AND
+        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH
+        Autoconf-exception-macro AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later
+        AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND X11
       short_summary: Library for accessing X.509 and CMS data structure.
       supplier: 'Organization: Broadcom, Inc.'

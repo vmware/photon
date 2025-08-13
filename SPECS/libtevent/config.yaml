@@ -10,6 +10,10 @@ sources:
   commit_id: 6a80d170bca0c938f78ab12e37481b52792a9d83
   skip_list: []
   missing: []
+  license_manual_review:
+    - archive_path: "lib/talloc/man/talloc.3.xml"
+      sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
+      spdx_exp: "LGPL-3.0-or-later"
   spdx:
     package:
       detailed_description: 'Tevent is an event system based on the talloc memory
