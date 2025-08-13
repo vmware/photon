@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -13,6 +13,7 @@ Source1:        license.txt
 Source2:        tdnf.conf
 
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
+Patch1:         0001-provide-a-better-error-message-when-RPM-packages-are.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -298,6 +299,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Aug 13 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-3
+- improve error message when packages are unsigned
 * Tue Jul 22 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-2
 - set clean_requirements_on_remove=1 for STIG compliance
 * Fri Jul 11 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-1

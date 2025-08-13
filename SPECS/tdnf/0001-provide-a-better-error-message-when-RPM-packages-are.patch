@@ -1,0 +1,102 @@
+From 8f474ebbe6aa2ae4fff45831d6aa482c97ecaa27 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Mon, 11 Aug 2025 21:26:47 +0000
+Subject: [PATCH] provide a better error message when RPM packages are rejected
+ because they are unsigned
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ client/defines.h                |  3 ++-
+ client/gpgcheck.c               |  2 +-
+ include/tdnferror.h             |  2 ++
+ pytests/tests/test_signature.py | 20 ++++++++++++++++++--
+ 4 files changed, 23 insertions(+), 4 deletions(-)
+
+diff --git a/client/defines.h b/client/defines.h
+index 3af756a..541b095 100644
+--- a/client/defines.h
++++ b/client/defines.h
+@@ -251,6 +251,7 @@ typedef enum
+     {ERROR_TDNF_URL_INVALID,                          "ERROR_TDNF_URL_INVALID",          "URL is invalid."}, \
+     {ERROR_TDNF_SIZE_MISMATCH,                       "ERROR_TDNF_SIZE_MISMATCH",                       "File size does not match."}, \
+     {ERROR_TDNF_CHECKSUM_MISMATCH,                   "ERROR_TDNF_CHECKSUM_MISMATCH",                   "File checksum does not match."}, \
++    {ERROR_TDNF_RPM_UNSIGNED,                        "ERROR_TDNF_RPM_UNSIGNED",                        "RPM package is not signed."}, \
+     {ERROR_TDNF_BASEURL_DOES_NOT_EXISTS,             "ERROR_TDNF_BASEURL_DOES_NOT_EXISTS",             "Base URL and Metalink URL not found in the repo file"},\
+     {ERROR_TDNF_CHECKSUM_VALIDATION_FAILED,          "ERROR_TDNF_CHECKSUM_VALIDATION_FAILED",          "Checksum Validation failed for the repomd.xml downloaded using URL from metalink"},\
+     {ERROR_TDNF_METALINK_RESOURCE_VALIDATION_FAILED, "ERROR_TDNF_METALINK_RESOURCE_VALIDATION_FAILED", "No Resource present in metalink file for file download"},\
+@@ -259,7 +260,7 @@ typedef enum
+     {ERROR_TDNF_CURLE_FAILED_INIT,                   "ERROR_TDNF_CURLE_FAILED_INIT",                   "Curl Init Failed"},\
+     {ERROR_TDNF_CURLE_URL_MALFORMAT,                 "ERROR_TDNF_CURLE_URL_MALFORMAT",                 "URL seems to be corrupted. Please clean all and makecache"},\
+     {ERROR_TDNF_SYSTEM_BASE,                         "ERROR_TDNF_SYSTEM_BASE",                         "unknown system error"},\
+-    {ERROR_TDNF_HISTORY_NODB,                        "ERROR_TDNF_HISTORY_ERROR",                       "History database error"},\
++    {ERROR_TDNF_HISTORY_ERROR,                       "ERROR_TDNF_HISTORY_ERROR",                       "History database error"},\
+     {ERROR_TDNF_HISTORY_NODB,                        "ERROR_TDNF_HISTORY_NODB",                        "History database does not exist"},\
+ };
+ 
+diff --git a/client/gpgcheck.c b/client/gpgcheck.c
+index d9becb6..6cdec98 100644
+--- a/client/gpgcheck.c
++++ b/client/gpgcheck.c
+@@ -414,7 +414,7 @@ TDNFGPGCheckPackage(
+             ((pszTmp = headerGetAsString(rpmHeader, RPMTAG_DSAHEADER)) == NULL) &&
+             ((pszTmp = headerGetAsString(rpmHeader, RPMTAG_RSAHEADER)) == NULL))
+         {
+-            dwError = ERROR_TDNF_RPM_CHECK;
++            dwError = ERROR_TDNF_RPM_UNSIGNED;
+             BAIL_ON_TDNF_ERROR(dwError);
+         }
+     }
+diff --git a/include/tdnferror.h b/include/tdnferror.h
+index c9349a0..df0b300 100644
+--- a/include/tdnferror.h
++++ b/include/tdnferror.h
+@@ -157,6 +157,8 @@ extern "C" {
+ #define ERROR_TDNF_CHECKSUM_MISMATCH         1528
+ 
+ #define ERROR_TDNF_RPMTS_FDDUP_FAILED        1529
++#define ERROR_TDNF_INSTALLONLY_LIMIT_EXCEEDED 1530
++#define ERROR_TDNF_RPM_UNSIGNED              1531
+ 
+ /* event context */
+ #define ERROR_TDNF_EVENT_CTXT_ITEM_NOT_FOUND      1551
+diff --git a/pytests/tests/test_signature.py b/pytests/tests/test_signature.py
+index 5036bea..48b1ad0 100644
+--- a/pytests/tests/test_signature.py
++++ b/pytests/tests/test_signature.py
+@@ -32,7 +32,11 @@ def teardown_test(utils):
+ 
+ 
+ def set_gpgcheck(utils, enabled, repo='photon-test'):
+-    utils.edit_config({'gpgcheck': '1' if enabled else '0'}, repo)
++    if enabled is None:
++        # None means remove that entry (to use default)
++        utils.edit_config({'gpgcheck': None}, repo)
++    else:
++        utils.edit_config({'gpgcheck': '1' if enabled else '0'}, repo)
+ 
+ 
+ def set_repo_key(utils, url):
+@@ -46,7 +50,19 @@ def test_install_unsigned(utils):
+     set_repo_key(utils, DEFAULT_KEY)
+     pkgname = utils.config["sglversion_pkgname"]
+     ret = utils.run(['tdnf', '--repoid', 'photon-test-unsigned', 'install', '-y', pkgname])
+-    assert ret['retval'] == 1515
++    assert ret['retval'] == 1531
++    assert not utils.check_package(pkgname)
++
++
++# install unsigned package with gpgcheck enabled in global config,
++# expect failure
++def test_install_unsigned_global_gpgcheck(utils):
++    set_gpgcheck(utils, True, repo=None)
++    set_gpgcheck(utils, None, repo='photon-test-unsigned')
++    set_repo_key(utils, DEFAULT_KEY)
++    pkgname = utils.config["sglversion_pkgname"]
++    ret = utils.run(['tdnf', '--repoid', 'photon-test-unsigned', 'install', '-y', pkgname])
++    assert ret['retval'] == 1531
+     assert not utils.check_package(pkgname)
+ 
+ 
+-- 
+2.43.0
+
