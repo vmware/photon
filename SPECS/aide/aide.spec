@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.17.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://github.com/aide/aide
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -13,6 +13,9 @@ Source1: %{name}.conf
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: CVE-2025-54389.patch
+Patch1: CVE-2025-54409.patch
 
 BuildRequires: build-essential
 BuildRequires: pcre-devel
@@ -97,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Thu Aug 14 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17.4-8
+- Fixes CVE-2025-54389 and CVE-2025-54409
 * Wed Mar 19 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@vmware.com> 0.17.4-7
 - Introduce license.txt
 * Thu Aug 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.17.4-6
