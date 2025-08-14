@@ -60,8 +60,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.34
-Release:        9%{?acvp_build:.acvp}%{?dist}
+Version:        6.12.41
+Release:        1%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -911,6 +911,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 14 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-1
+- Update to version 6.12.41
 * Tue Aug 5 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-9
 - Convert ACVP printk to pr_debug
 * Mon Jul 28 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-8

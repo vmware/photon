@@ -44,7 +44,7 @@ index 33c2357..f9e8ca0 100644
 +
 +struct sample_file_param {
 +	struct file *fp;
-+	char name[256];
++	char name[224];
 +	bool full;
 +};
 +
