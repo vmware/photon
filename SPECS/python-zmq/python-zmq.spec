@@ -1,7 +1,7 @@
 Summary:        Software library for fast, message-based applications
 Name:           python3-zmq
 Version:        23.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,6 +39,8 @@ python bindings for zeromq
 %{python3_sitelib}/zmq
 
 %changelog
+* Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 23.2.1-3
+- Cleanup and rescan licenses
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.2.1-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 23.2.1-1

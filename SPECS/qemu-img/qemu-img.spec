@@ -3,16 +3,17 @@
 Summary:        QEMU disk image utility
 Name:           qemu-img
 Version:        7.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
-
-Source1: license.txt
+Source1:        license.txt
 %include %{SOURCE1}
+
+Patch0:         qemu-img-remove-unused-build-dir.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  glib-devel
@@ -24,6 +25,22 @@ Qemu-img is the tool used to create, manage, convert shrink etc. the disk images
 
 %prep
 %autosetup -p1 -n qemu-%{version}
+
+# cleanup hw/
+mv hw hw.0
+mkdir -p hw/display
+mv hw.0/core hw/
+mv hw.0/display/edid-generate.c hw/display
+
+# cleanup include/hw/
+mv include/hw include/hw.0
+mkdir -p include/hw
+for d in acpi block core display isa mem remote; do
+  mv include/hw.0/${d} include/hw/
+done
+mv include/hw.0/*.h include/hw/
+
+rm -rf roms pc-bios target hw.0 include/hw.0
 
 %build
 # Do not build QEMU's ivshmem
@@ -157,6 +174,8 @@ make %{?_smp_mflags} check
 %{_libexecdir}/qemu-bridge-helper
 
 %changelog
+* Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 7.2.0-4
+- Cleanup and rescan licenses
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.0-3
 - Release bump for SRP compliance
 * Wed May 24 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 7.2.0-2
