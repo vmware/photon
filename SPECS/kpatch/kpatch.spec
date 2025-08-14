@@ -1,7 +1,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -128,6 +128,8 @@ cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfile
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Wed Aug 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 0.9.10-6
+- Fix find-exec issue with signing script invocation
 * Thu Aug 07 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-5
 - Signing related fixes
 * Fri Jul 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-4

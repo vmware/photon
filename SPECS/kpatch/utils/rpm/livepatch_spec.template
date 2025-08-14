@@ -13,8 +13,9 @@ Requires:       kpatch >= 0.9.10-1
 %define _modulesdir /lib/modules/%{LINUX_VERSION}
 %define __modules_install_post \
     if [ -n "%{?signing_script}" ]; then \
-        find %{buildroot}%{_modulesdir} -type f -name "*.ko" -print0 \\\
-            -exec %{signing_script} -t ko -u %{signing_user} -a {} \\; \
+        while IFS= read -r -d '' file; do \
+            %{signing_script} -t ko -u %{signing_user} -a "$file" \
+        done < <(find %{buildroot}%{_modulesdir} -type f -name "*.ko" -print0) \
     fi \
 %{nil}
 

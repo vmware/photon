@@ -479,8 +479,9 @@ build_and_package_kpatch_module() {
     cp "$TEMP_DIR"/rpmbuild/BUILD/"$LIVEPATCH_NAME".ko "$OUTPUT_FOLDER"  || error "Current dir: $(pwd). Failed to save ko file to $OUTPUT_FOLDER"
 
     if [ -n "$SIGNC" ]; then
-        echo "Signing RPM now."
-        find "$OUTPUT_FOLDER" -type f -name "*.rpm" -exec "$SIGNC" -t rpm -u "$SIGNC_UNAME" -a {} \; || error "Signing livepatch RPM failed!"
+        while IFS= read -r -d '' file; do
+            "$SIGNC" -t rpm -u "$SIGNC_UNAME" -a "$file" || error "Signing livepatch RPM failed!"
+        done < <(find "$OUTPUT_FOLDER" -type f -name "*.rpm" -print0)
     fi
     echo "SUCCESS: Building rpm finished"
 }
