@@ -1,4 +1,4 @@
-From d31d1d91ae0f3967438ca5167dabc69d91fe0a6b Mon Sep 17 00:00:00 2001
+From 53f564f791c39eafd1eb78ac79b263c2e11c0f37 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 28 Jul 2025 18:00:18 +0000
 Subject: [PATCH 06/11] Move kernel structures usage from canister to wrapper
@@ -62,6 +62,9 @@ Subject: [PATCH 06/11] Move kernel structures usage from canister to wrapper
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Migrated this patch to v6.12.41]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c  | 110 ++---
  crypto/aes_generic.c                |  12 +-
@@ -98,10 +101,10 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  include/crypto/sha512_base.h        |   1 -
  include/linux/crypto.h              |  10 +-
  include/linux/rtattr.h              |   6 +
- include/linux/spinlock.h            |  19 +-
- include/linux/spinlock_cond_guard.h |  16 +
+ include/linux/spinlock.h            |  24 +-
+ include/linux/spinlock_cond_guard.h |  20 +
  include/linux/swait.h               |   4 +
- 38 files changed, 414 insertions(+), 883 deletions(-)
+ 38 files changed, 418 insertions(+), 888 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
@@ -633,7 +636,7 @@ index f3410fe44..8df4433f8 100644
 -MODULE_ALIAS_CRYPTO("cmac");
 -MODULE_IMPORT_NS(CRYPTO_INTERNAL);
 diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
-index efa26cccd..836808d7c 100644
+index a80648e69..00333196b 100644
 --- a/crypto/crypto_self_test.c
 +++ b/crypto/crypto_self_test.c
 @@ -5,12 +5,11 @@
@@ -650,7 +653,7 @@ index efa26cccd..836808d7c 100644
  
  extern int alg_test(const char *driver, const char *alg, u32 type, u32 mask);
  
-@@ -97,7 +96,7 @@ extern int FIPS_NOT_ALLOWED(char *);
+@@ -93,7 +92,7 @@ extern int FIPS_NOT_ALLOWED(char *);
  #define FIPS_NOT_ALLOWED(algname) 0
  #endif
  
@@ -659,7 +662,7 @@ index efa26cccd..836808d7c 100644
  {
  	int err = -ENOMEM;
  	int i = 0;
-@@ -110,7 +109,7 @@ static int __init crypto_self_test_init(void)
+@@ -106,7 +105,7 @@ static int __init crypto_self_test_init(void)
  			continue;
  		err = alg_test(alg_self_test_tbl[i].driver_name, alg_self_test_tbl[i].alg_name, 0, 0);
  		if (err) {
@@ -668,7 +671,7 @@ index efa26cccd..836808d7c 100644
  					 alg_self_test_tbl[i].driver_name,
  					 alg_self_test_tbl[i].alg_name);
  			goto error;
-@@ -120,4 +119,3 @@ static int __init crypto_self_test_init(void)
+@@ -116,4 +115,3 @@ static int __init crypto_self_test_init(void)
  error:
  	return err;
  }
@@ -1108,7 +1111,7 @@ index 78341ecbb..96b645954 100644
 -MODULE_ALIAS_CRYPTO("stdrng");
 -MODULE_IMPORT_NS(CRYPTO_INTERNAL);
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index e0cc81ec9..8dd7fe10d 100644
+index e30e38563..f323e7a2b 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -25,17 +25,13 @@
@@ -1152,7 +1155,7 @@ index e0cc81ec9..8dd7fe10d 100644
  		return false;
  	}
  
-@@ -1645,12 +1648,12 @@ static int get_jitter_ent_random_bytes(u64 *buf, unsigned int len)
+@@ -1767,12 +1770,12 @@ static int get_jitter_ent_random_bytes(u64 *buf, unsigned int len)
  	int ret = 0;
  
  	if (IS_ERR_OR_NULL(jitter_entropy)) {
@@ -1167,7 +1170,7 @@ index e0cc81ec9..8dd7fe10d 100644
  		return -EAGAIN;
  	}
  	crypto_free_rng(jitter_entropy);
-@@ -1716,5 +1719,3 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
+@@ -1838,5 +1841,3 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
  	return ret;
  }
  
@@ -1443,10 +1446,10 @@ index 711a6a5bf..fe6a3cb67 100644
  
  static inline int crypto_is_larval(struct crypto_alg *alg)
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index a631b4905..492cf3002 100644
+index 5244cccb6..933eae9aa 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
-@@ -13,7 +13,6 @@
+@@ -14,7 +14,6 @@
  #include <linux/err.h>
  #include <linux/init.h>
  #include <linux/kernel.h>
@@ -1455,7 +1458,7 @@ index a631b4905..492cf3002 100644
  #include <linux/scatterlist.h>
  #include "fips_canister_wrapper.h"
 diff --git a/crypto/rsa.c b/crypto/rsa.c
-index 78b28d14c..93cba5859 100644
+index d5e4d994e..deed6da40 100644
 --- a/crypto/rsa.c
 +++ b/crypto/rsa.c
 @@ -6,12 +6,12 @@
@@ -1472,7 +1475,7 @@ index 78b28d14c..93cba5859 100644
  
  struct rsa_mpi_key {
  	MPI n;
-@@ -398,7 +398,7 @@ static struct akcipher_alg rsa = {
+@@ -402,7 +402,7 @@ static struct akcipher_alg rsa = {
  	},
  };
  
@@ -1481,7 +1484,7 @@ index 78b28d14c..93cba5859 100644
  {
  	int err;
  
-@@ -415,14 +415,9 @@ static int __init rsa_init(void)
+@@ -419,14 +419,9 @@ static int __init rsa_init(void)
  	return 0;
  }
  
@@ -1673,7 +1676,7 @@ index 7920da6f9..c4e3c6c2d 100644
 -MODULE_ALIAS_CRYPTO("sha512");
 -MODULE_ALIAS_CRYPTO("sha512-generic");
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index b5e29b2ad..10c160647 100644
+index d8cbe8675..338f3f261 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -21,7 +21,6 @@
@@ -3236,7 +3239,7 @@ index b5e29b2ad..10c160647 100644
  		       driver, PTR_ERR(tfm));
  		return PTR_ERR(tfm);
  	}
-@@ -5842,13 +5537,13 @@ static void alg_check_test_descs_order(void)
+@@ -5835,13 +5530,13 @@ static void alg_check_test_descs_order(void)
  				  alg_test_descs[i].alg);
  
  		if (fcw_warn_on(diff > 0)) {
@@ -3252,7 +3255,7 @@ index b5e29b2ad..10c160647 100644
  				alg_test_descs[i].alg);
  		}
  	}
-@@ -5873,7 +5568,7 @@ static void testmgr_onetime_init(void)
+@@ -5866,7 +5561,7 @@ static void testmgr_onetime_init(void)
  	alg_check_testvec_configs();
  
  #ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS
@@ -3261,7 +3264,7 @@ index b5e29b2ad..10c160647 100644
  #endif
  }
  
-@@ -5904,7 +5599,7 @@ static int alg_find_test(const char *alg)
+@@ -5897,7 +5592,7 @@ static int alg_find_test(const char *alg)
  
  static int alg_fips_disabled(const char *driver, const char *alg)
  {
@@ -3270,7 +3273,7 @@ index b5e29b2ad..10c160647 100644
  
  	return -ECANCELED;
  }
-@@ -5916,11 +5611,6 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5909,11 +5604,6 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int rc;
  	static bool done = false;
  
@@ -3282,7 +3285,7 @@ index b5e29b2ad..10c160647 100644
  	/* Replace DO_ONCE by this. As DO_ONCE generates jump labels entry
  	 * and its data (__once_key) get changed at early boot time at
  	 * jump_label_init() from setup_arch(). We cannot run
-@@ -5972,13 +5662,12 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5965,13 +5655,12 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  
  test_done:
  	if (rc) {
@@ -3300,7 +3303,7 @@ index b5e29b2ad..10c160647 100644
  			alg, driver, rc);
  		if (fcw_is_warn_true(rc != -ENOENT)) {
  			fcw_warn_printk("alg: self-tests for %s using %s failed (rc=%d)",
-@@ -5987,7 +5676,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5980,7 +5669,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  		}
  	} else {
  		if (fips_enabled)
@@ -3309,7 +3312,7 @@ index b5e29b2ad..10c160647 100644
  				driver, alg);
  	}
  
-@@ -6013,7 +5702,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -6006,7 +5695,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	}
  
  notest2:
@@ -3475,7 +3478,7 @@ index 679916a84..4a6001df3 100644
  
  #include <linux/unaligned.h>
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-index b164da5e1..003698764 100644
+index 1aa9f67fe..3e880ca16 100644
 --- a/include/linux/crypto.h
 +++ b/include/linux/crypto.h
 @@ -355,7 +355,11 @@ struct crypto_alg {
@@ -3517,7 +3520,7 @@ index 000000000..6e1e563d2
 +};
 +
 diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
-index 63dd8cf3c..43767f213 100644
+index d3561c4a0..07528ef66 100644
 --- a/include/linux/spinlock.h
 +++ b/include/linux/spinlock.h
 @@ -536,8 +536,6 @@ DEFINE_LOCK_GUARD_1(raw_spinlock, raw_spinlock_t,
@@ -3529,11 +3532,17 @@ index 63dd8cf3c..43767f213 100644
  DEFINE_LOCK_GUARD_1(raw_spinlock_nested, raw_spinlock_t,
  		    raw_spin_lock_nested(_T->lock, SINGLE_DEPTH_NESTING),
  		    raw_spin_unlock(_T->lock))
-@@ -546,37 +544,24 @@ DEFINE_LOCK_GUARD_1(raw_spinlock_irq, raw_spinlock_t,
+@@ -546,50 +544,32 @@ DEFINE_LOCK_GUARD_1(raw_spinlock_irq, raw_spinlock_t,
  		    raw_spin_lock_irq(_T->lock),
  		    raw_spin_unlock_irq(_T->lock))
  
 -DEFINE_LOCK_GUARD_1_COND(raw_spinlock_irq, _try, raw_spin_trylock_irq(_T->lock))
+-
+ DEFINE_LOCK_GUARD_1(raw_spinlock_bh, raw_spinlock_t,
+ 		    raw_spin_lock_bh(_T->lock),
+ 		    raw_spin_unlock_bh(_T->lock))
+ 
+-DEFINE_LOCK_GUARD_1_COND(raw_spinlock_bh, _try, raw_spin_trylock_bh(_T->lock))
 -
  DEFINE_LOCK_GUARD_1(raw_spinlock_irqsave, raw_spinlock_t,
  		    raw_spin_lock_irqsave(_T->lock, _T->flags),
@@ -3556,6 +3565,13 @@ index 63dd8cf3c..43767f213 100644
 -DEFINE_LOCK_GUARD_1_COND(spinlock_irq, _try,
 -			 spin_trylock_irq(_T->lock))
 -
+ DEFINE_LOCK_GUARD_1(spinlock_bh, spinlock_t,
+ 		    spin_lock_bh(_T->lock),
+ 		    spin_unlock_bh(_T->lock))
+ 
+-DEFINE_LOCK_GUARD_1_COND(spinlock_bh, _try,
+-			 spin_trylock_bh(_T->lock))
+-
  DEFINE_LOCK_GUARD_1(spinlock_irqsave, spinlock_t,
  		    spin_lock_irqsave(_T->lock, _T->flags),
  		    spin_unlock_irqrestore(_T->lock, _T->flags),
@@ -3567,7 +3583,7 @@ index 63dd8cf3c..43767f213 100644
  DEFINE_LOCK_GUARD_1(read_lock, rwlock_t,
  		    read_lock(_T->lock),
  		    read_unlock(_T->lock))
-@@ -603,5 +588,9 @@ DEFINE_LOCK_GUARD_1(write_lock_irqsave, rwlock_t,
+@@ -616,5 +596,9 @@ DEFINE_LOCK_GUARD_1(write_lock_irqsave, rwlock_t,
  		    write_unlock_irqrestore(_T->lock, _T->flags),
  		    unsigned long flags)
  
@@ -3579,10 +3595,10 @@ index 63dd8cf3c..43767f213 100644
  #endif /* __LINUX_SPINLOCK_H */
 diff --git a/include/linux/spinlock_cond_guard.h b/include/linux/spinlock_cond_guard.h
 new file mode 100644
-index 000000000..e80ef8514
+index 000000000..8be8fa949
 --- /dev/null
 +++ b/include/linux/spinlock_cond_guard.h
-@@ -0,0 +1,16 @@
+@@ -0,0 +1,20 @@
 +
 +DEFINE_LOCK_GUARD_1_COND(raw_spinlock, _try, raw_spin_trylock(_T->lock))
 +
@@ -3599,6 +3615,10 @@ index 000000000..e80ef8514
 +DEFINE_LOCK_GUARD_1_COND(spinlock_irqsave, _try,
 +			 spin_trylock_irqsave(_T->lock, _T->flags))
 +
++DEFINE_LOCK_GUARD_1_COND(raw_spinlock_bh, _try, raw_spin_trylock_bh(_T->lock))
++
++DEFINE_LOCK_GUARD_1_COND(spinlock_bh, _try,
++				spin_trylock_bh(_T->lock))
 diff --git a/include/linux/swait.h b/include/linux/swait.h
 index d32441948..72da22755 100644
 --- a/include/linux/swait.h
@@ -3616,5 +3636,5 @@ index d32441948..72da22755 100644
  };
  
 -- 
-2.40.4
+2.39.4
 

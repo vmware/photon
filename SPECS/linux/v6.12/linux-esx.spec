@@ -20,8 +20,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.34
-Release:        3%{?dist}
+Version:        6.12.41
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -480,6 +480,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Aug 14 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-1
+- Update to version 6.12.41
 * Fri Jul 18 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.34-3
 - Add sample collection support for Jitterentropy.
 * Mon Jun 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.34-2
