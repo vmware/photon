@@ -1,4 +1,4 @@
-From a8610193e9e1efb2266a5be6b40f9f885b7c8b85 Mon Sep 17 00:00:00 2001
+From f9200dbfd47bc37947c91b292530e1b62a6eef02 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 14 May 2025 14:47:15 +0530
 Subject: [PATCH] cmdline: fix command line parsing in grub
@@ -35,46 +35,38 @@ https://lists.gnu.org/archive/html/grub-devel/2025-05/msg00119.html
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Reviewed-by: Alexey Makhalov  <alexey.makhalov@broadcom.com>
 ---
- grub-core/lib/cmdline.c | 73 +++++++++++++++++++----------------------
- 1 file changed, 33 insertions(+), 40 deletions(-)
+ grub-core/lib/cmdline.c | 70 +++++++++++++++--------------------------
+ 1 file changed, 26 insertions(+), 44 deletions(-)
 
 diff --git a/grub-core/lib/cmdline.c b/grub-core/lib/cmdline.c
-index ed0b149..91fe734 100644
+index 8e2294d..3764174 100644
 --- a/grub-core/lib/cmdline.c
 +++ b/grub-core/lib/cmdline.c
-@@ -20,29 +20,35 @@
- #include <grub/lib/cmdline.h>
- #include <grub/misc.h>
- 
+@@ -26,35 +26,29 @@ is_hex(char c)
+   return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
+ }
+
 -static unsigned int check_arg (char *c, int *has_space)
-+static int
-+is_hex(char c)
++static unsigned int check_arg (char *c, int *has_space)
  {
 -  int space = 0;
 -  unsigned int size = 0;
 -
 -  while (*c)
 -    {
--      if (*c == '\\' || *c == '\'' || *c == '"')
+-      if (*c == '\\' && *(c+1) == 'x' && is_hex(*(c+2)) && is_hex(*(c+3)))
+-	{
+-	  size += 4;
+-	  c += 4;
+-	  continue;
+-	}
+-      else if (*c == '\\' || *c == '\'' || *c == '"')
 -	size++;
 -      else if (*c == ' ')
 -	space = 1;
 -
 -      size++;
 -      c++;
--    }
--
--  if (space)
--    size += 2;
--
--  if (has_space)
--    *has_space = space;
-+  return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
-+}
- 
--  return size;
-+static unsigned int check_arg (char *c, int *has_space)
-+{
 +    unsigned int size = 0;
 +
 +    while (*c) {
@@ -87,21 +79,28 @@ index ed0b149..91fe734 100644
 +        if (*c == ' ') {
 +            if (*has_space == 0) {
 +                *has_space = 1;
-+                size += 2;
++            size += 2;
 +            }
 +        }
 +        size++;
 +        c++;
-+   }
-+
-+  /* For separator space or NULL. */
-+  return size + 1;
+     }
+
+-  if (space)
+-    size += 2;
+-
+-  if (has_space)
+-    *has_space = space;
+-
+-  return size;
++    /* For separator space or NULL.  */
++    return size + 1;
  }
- 
+
  unsigned int grub_loader_cmdline_size (int argc, char *argv[])
-@@ -51,15 +57,9 @@ unsigned int grub_loader_cmdline_size (int argc, char *argv[])
+@@ -63,15 +57,9 @@ unsigned int grub_loader_cmdline_size (int argc, char *argv[])
    unsigned int size = 0;
- 
+
    for (i = 0; i < argc; i++)
 -    {
        size += check_arg (argv[i], 0);
@@ -110,51 +109,51 @@ index ed0b149..91fe734 100644
 -
 -  if (size == 0)
 -    size = 1;
- 
+
 -  return size;
 +  return size ? size : 1;
  }
- 
+
  grub_err_t
-@@ -73,8 +73,8 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
+@@ -85,8 +73,8 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
    for (i = 0; i < argc; i++)
      {
        c = argv[i];
 +      space = 0;
        arg_size = check_arg(argv[i], &space);
 -      arg_size++; /* Separator space or NULL.  */
- 
+
        if (size < arg_size)
  	break;
-@@ -86,24 +86,17 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
- 
-       while (*c)
- 	{
--	  if (*c == '\\' || *c == '\'' || *c == '"')
+@@ -107,24 +95,18 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
+ 	      *buf++ = *c++;
+ 	      continue;
+ 	    }
+-	  else if (*c == '\\' || *c == '\'' || *c == '"')
 -	    *buf++ = '\\';
--
+
 -	  *buf++ = *c;
 -	  c++;
-+	  *buf++ = *c++;
++      *buf++ = *c++;
  	}
- 
+
        if (space)
  	*buf++ = '"';
- 
+
 -      *buf++ = ' ';
 +      if (argv[i+1])
-+          *buf++ = ' ';
++	*buf++ = ' ';
      }
- 
+
 -  /* Replace last space with null.  */
 -  if (i)
 -    buf--;
 -
 -  *buf = 0;
 +  *buf = '\0';
- 
+
    return grub_verify_string (orig_buf, type);
  }
--- 
+--
 2.50.1
 

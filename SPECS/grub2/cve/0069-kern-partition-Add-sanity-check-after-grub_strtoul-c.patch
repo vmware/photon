@@ -1,0 +1,52 @@
+From 321d04622a19584242e755d04b7106f5d6adcbd3 Mon Sep 17 00:00:00 2001
+From: Lidong Chen <lidong.chen@oracle.com>
+Date: Tue, 18 Feb 2025 08:25:15 +0000
+Subject: [PATCH 69/72] kern/partition: Add sanity check after grub_strtoul()
+ call
+
+The current code incorrectly assumes that both the input and the values
+returned by grub_strtoul() are always valid which can lead to potential
+errors. This fix ensures proper validation to prevent any unintended issues.
+
+Fixes: CID 473843
+
+Signed-off-by: Lidong Chen <lidong.chen@oracle.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ grub-core/kern/partition.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/grub-core/kern/partition.c b/grub-core/kern/partition.c
+index f3f125e..c6a578c 100644
+--- a/grub-core/kern/partition.c
++++ b/grub-core/kern/partition.c
+@@ -125,14 +125,22 @@ grub_partition_probe (struct grub_disk *disk, const char *str)
+   for (ptr = str; *ptr;)
+     {
+       grub_partition_map_t partmap;
+-      int num;
++      unsigned long num;
+       const char *partname, *partname_end;
+ 
+       partname = ptr;
+       while (*ptr && grub_isalpha (*ptr))
+ 	ptr++;
+-      partname_end = ptr; 
+-      num = grub_strtoul (ptr, &ptr, 0) - 1;
++      partname_end = ptr;
++
++      num = grub_strtoul (ptr, &ptr, 0);
++      if (*ptr != '\0' || num == 0 || num > GRUB_INT_MAX)
++	{
++	  grub_error (GRUB_ERR_BAD_NUMBER, N_("invalid partition number"));
++	  return 0;
++	}
++
++      num -= 1;
+ 
+       curpart = 0;
+       /* Use the first partition map type found.  */
+-- 
+2.39.4
+

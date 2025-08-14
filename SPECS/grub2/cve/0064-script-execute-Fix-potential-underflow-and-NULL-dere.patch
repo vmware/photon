@@ -1,0 +1,36 @@
+From ffc0c3f387ad6f14293eddc84bf3d072e067c7d1 Mon Sep 17 00:00:00 2001
+From: Lidong Chen <lidong.chen@oracle.com>
+Date: Wed, 29 Jan 2025 06:48:37 +0000
+Subject: [PATCH 64/72] script/execute: Fix potential underflow and NULL
+ dereference
+
+The result is initialized to 0 in grub_script_arglist_to_argv().
+If the for loop condition is not met both result.args and result.argc
+remain 0 causing result.argc - 1 to underflow and/or result.args NULL
+dereference. Fix the issues by adding relevant checks.
+
+Fixes: CID 473880
+
+Signed-off-by: Lidong Chen <lidong.chen@oracle.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/script/execute.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/grub-core/script/execute.c b/grub-core/script/execute.c
+index 0efa321..12129a0 100644
+--- a/grub-core/script/execute.c
++++ b/grub-core/script/execute.c
+@@ -791,6 +791,9 @@ cleanup:
+ 	}
+     }
+ 
++  if (result.args == NULL || result.argc == 0)
++    goto fail;
++
+   if (! result.args[result.argc - 1])
+     result.argc--;
+ 
+-- 
+2.39.4
+

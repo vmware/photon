@@ -1,0 +1,307 @@
+From 50abe2cad5e96675043bb8e1d3acffdd6ff150cc Mon Sep 17 00:00:00 2001
+From: Glenn Washburn <development@efficientek.com>
+Date: Mon, 17 Feb 2025 07:29:56 +0000
+Subject: [PATCH 01/72] efi: Add efitextmode command for getting/setting the
+ text mode resolution
+
+This command is meant to behave similarly to the "mode" command of the EFI
+Shell application. In addition to allowing mode selection by giving the
+number of columns and rows as arguments, the command allows specifying the
+mode number to select the mode. Also supported are the arguments "min" and
+"max", which set the mode to the minimum and maximum mode respectively as
+calculated by the columns * rows of that mode.
+
+Signed-off-by: Glenn Washburn <development@efficientek.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ docs/grub.texi                       |  42 ++++++++
+ grub-core/Makefile.core.def          |   6 ++
+ grub-core/commands/efi/efitextmode.c | 155 +++++++++++++++++++++++++++
+ include/grub/efi/api.h               |   6 ++
+ include/grub/err.h                   |   3 +-
+ 5 files changed, 211 insertions(+), 1 deletion(-)
+ create mode 100644 grub-core/commands/efi/efitextmode.c
+
+diff --git a/docs/grub.texi b/docs/grub.texi
+index 4816be8..110f588 100644
+--- a/docs/grub.texi
++++ b/docs/grub.texi
+@@ -4005,6 +4005,7 @@ you forget a command, you can run the command @command{help}
+ * distrust_certificate::        Remove a certificate from the list of trusted certificates
+ * drivemap::                    Map a drive to another
+ * echo::                        Display a line of text
++* efitextmode::                 Set/Get text output mode resolution
+ * eval::                        Evaluate agruments as GRUB commands
+ * export::                      Export an environment variable
+ * false::                       Do nothing, unsuccessfully
+@@ -4479,6 +4480,47 @@ character will print that character.
+ @end deffn
+ 
+ 
++@node efitextmode
++@subsection efitextmode
++
++@deffn Command efitextmode [min | max | <mode_num> | <cols> <rows>]
++When used with no arguments displays all available text output modes. The
++set mode determines the columns and rows of the text display when in
++text mode. An asterisk, @samp{*}, will be at the end of the line of the
++currently set mode.
++
++If given a single parameter, it must be @samp{min}, @samp{max}, or a mode
++number given by the listing when run with no arguments. These arguments set
++the mode to the minimum, maximum, and particular mode respectively.
++
++Otherwise, the command must be given two numerical arguments specifying the
++columns and rows of the desired mode. Specifying a columns and rows
++combination that corresponds to no supported mode, will return error, but
++otherwise have no effect.
++
++By default GRUB will start in whatever mode the EFI firmware defaults to.
++There are firmwares known to set up the default mode such that output
++behaves strangely, for example the cursor in the GRUB shell never reaches
++the bottom of the screen or, when typing characters at the prompt,
++characters from previous command output are overwritten. Setting the mode
++may fix this.
++
++The EFI specification says that mode 0 must be available and have
++columns and rows of 80 and 25 respectively. Mode 1 may be defined and if
++so must have columns and rows of 80 and 50 respectively. Any other modes
++may have columns and rows arbitrarily defined by the firmware. This means
++that a mode with columns and rows of 100 and 31 on one firmware may be
++a different mode number on a different firmware or not exist at all.
++Likewise, mode number 2 on one firmware may have a different number of
++columns and rows than mode 2 on a different firmware. So one should not
++rely on a particular mode number or a mode of a certain number of columns
++and rows existing on all firmwares, except for mode 0.
++
++Note: This command is only available on EFI platforms and is similar to
++EFI shell "mode" command.
++@end deffn
++
++
+ @node eval
+ @subsection eval
+ 
+diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
+index c114a05..fb413d6 100644
+--- a/grub-core/Makefile.core.def
++++ b/grub-core/Makefile.core.def
+@@ -828,6 +828,12 @@ module = {
+   enable = efi;
+ };
+ 
++module = {
++  name = efitextmode;
++  efi = commands/efi/efitextmode.c;
++  enable = efi;
++};
++
+ module = {
+   name = blocklist;
+   common = commands/blocklist.c;
+diff --git a/grub-core/commands/efi/efitextmode.c b/grub-core/commands/efi/efitextmode.c
+new file mode 100644
+index 0000000..3679f6b
+--- /dev/null
++++ b/grub-core/commands/efi/efitextmode.c
+@@ -0,0 +1,155 @@
++/*
++ *  GRUB  --  GRand Unified Bootloader
++ *  Copyright (C) 2022  Free Software Foundation, Inc.
++ *
++ *  GRUB is free software: you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation, either version 3 of the License, or
++ *  (at your option) any later version.
++ *
++ *  GRUB is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ *  Set/Get UEFI text output mode resolution.
++ */
++
++#include <grub/dl.h>
++#include <grub/misc.h>
++#include <grub/mm.h>
++#include <grub/command.h>
++#include <grub/i18n.h>
++#include <grub/efi/efi.h>
++#include <grub/efi/api.h>
++
++GRUB_MOD_LICENSE ("GPLv3+");
++
++static grub_err_t
++grub_efi_set_mode (grub_efi_simple_text_output_interface_t *o,
++		   grub_efi_int32_t mode)
++{
++  grub_efi_status_t status;
++
++  if (mode != o->mode->mode)
++    {
++      status = efi_call_2 (o->set_mode, o, mode);
++      if (status == GRUB_EFI_SUCCESS)
++	;
++      else if (status == GRUB_EFI_DEVICE_ERROR)
++	return grub_error (GRUB_ERR_BAD_DEVICE,
++			   N_("device error: could not set requested mode"));
++      else if (status == GRUB_EFI_UNSUPPORTED)
++	return grub_error (GRUB_ERR_OUT_OF_RANGE,
++			   N_("invalid mode: number not valid"));
++      else
++	return grub_error (GRUB_ERR_BAD_FIRMWARE,
++			   N_("unexpected EFI error number: `%u'"),
++			   (unsigned) status);
++    }
++
++  return GRUB_ERR_NONE;
++}
++
++static grub_err_t
++grub_cmd_efitextmode (grub_command_t cmd __attribute__ ((unused)),
++		      int argc, char **args)
++{
++  grub_efi_simple_text_output_interface_t *o = grub_efi_system_table->con_out;
++  unsigned long mode;
++  const char *p = NULL;
++  grub_err_t err;
++  grub_efi_uintn_t columns, rows;
++  grub_efi_int32_t i;
++
++  if (o == NULL)
++    return grub_error (GRUB_ERR_BAD_DEVICE, N_("no UEFI output console interface"));
++
++  if (o->mode == NULL)
++    return grub_error (GRUB_ERR_BUG, N_("no mode struct for UEFI output console"));
++
++  if (argc > 2)
++    return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("at most two arguments expected"));
++
++  if (argc == 0)
++    {
++      grub_printf_ (N_("Available modes for console output device.\n"));
++
++      for (i = 0; i < o->mode->max_mode; i++)
++	if (GRUB_EFI_SUCCESS == efi_call_4 (o->query_mode, o, i,
++					    &columns, &rows))
++	  grub_printf_ (N_(" [%" PRIuGRUB_EFI_UINT32_T "]  Col %5"
++			   PRIuGRUB_EFI_UINTN_T " Row %5" PRIuGRUB_EFI_UINTN_T
++			   " %c\n"),
++			i, columns, rows, (i == o->mode->mode) ? '*' : ' ');
++    }
++  else if (argc == 1)
++    {
++      if (grub_strcmp (args[0], "min") == 0)
++	mode = 0;
++      else if (grub_strcmp (args[0], "max") == 0)
++	mode = o->mode->max_mode - 1;
++      else
++	{
++	  mode = grub_strtoul (args[0], &p, 0);
++
++	  if (*args[0] == '\0' || *p != '\0')
++	    return grub_error (GRUB_ERR_BAD_ARGUMENT,
++			       N_("non-numeric or invalid mode `%s'"), args[0]);
++	}
++
++      if (mode < (unsigned long) o->mode->max_mode)
++	{
++	  err = grub_efi_set_mode (o, (grub_efi_int32_t) mode);
++	  if (err != GRUB_ERR_NONE)
++	    return err;
++	}
++      else
++	return grub_error (GRUB_ERR_BAD_ARGUMENT,
++			   N_("invalid mode: `%lu' is greater than maximum mode `%lu'"),
++			   mode, (unsigned long) o->mode->max_mode);
++    }
++  else if (argc == 2)
++    {
++      grub_efi_uintn_t u_columns, u_rows;
++
++      u_columns = (grub_efi_uintn_t) grub_strtoul (args[0], &p, 0);
++
++      if (*args[0] == '\0' || *p != '\0')
++	return grub_error (GRUB_ERR_BAD_ARGUMENT,
++			   N_("non-numeric or invalid columns number `%s'"), args[0]);
++
++      u_rows = (grub_efi_uintn_t) grub_strtoul (args[1], &p, 0);
++
++      if (*args[1] == '\0' || *p != '\0')
++	return grub_error (GRUB_ERR_BAD_ARGUMENT,
++			   N_("non-numeric or invalid rows number `%s'"), args[1]);
++
++      for (i = 0; i < o->mode->max_mode; i++)
++	if (GRUB_EFI_SUCCESS == efi_call_4 (o->query_mode, o, i,
++					    &columns, &rows))
++	  if (u_columns == columns && u_rows == rows)
++	    return grub_efi_set_mode (o, (grub_efi_int32_t) i);
++
++      return grub_error (GRUB_ERR_BAD_ARGUMENT,
++			 N_("no mode found with requested columns and rows"));
++    }
++
++  return GRUB_ERR_NONE;
++}
++
++static grub_command_t cmd;
++GRUB_MOD_INIT (efitextmode)
++{
++  cmd = grub_register_command ("efitextmode", grub_cmd_efitextmode,
++			       N_("[min | max | <mode_num> | <cols> <rows>]"),
++			       N_("Get or set EFI text mode."));
++}
++
++GRUB_MOD_FINI (efitextmode)
++{
++  grub_unregister_command (cmd);
++}
+diff --git a/include/grub/efi/api.h b/include/grub/efi/api.h
+index 464842b..f224037 100644
+--- a/include/grub/efi/api.h
++++ b/include/grub/efi/api.h
+@@ -545,9 +545,13 @@ typedef char grub_efi_boolean_t;
+ #if GRUB_CPU_SIZEOF_VOID_P == 8
+ typedef grub_int64_t grub_efi_intn_t;
+ typedef grub_uint64_t grub_efi_uintn_t;
++#define PRIxGRUB_EFI_UINTN_T	PRIxGRUB_UINT64_T
++#define PRIuGRUB_EFI_UINTN_T	PRIuGRUB_UINT64_T
+ #else
+ typedef grub_int32_t grub_efi_intn_t;
+ typedef grub_uint32_t grub_efi_uintn_t;
++#define PRIxGRUB_EFI_UINTN_T	PRIxGRUB_UINT32_T
++#define PRIuGRUB_EFI_UINTN_T	PRIuGRUB_UINT32_T
+ #endif
+ typedef grub_int8_t grub_efi_int8_t;
+ typedef grub_uint8_t grub_efi_uint8_t;
+@@ -555,6 +559,8 @@ typedef grub_int16_t grub_efi_int16_t;
+ typedef grub_uint16_t grub_efi_uint16_t;
+ typedef grub_int32_t grub_efi_int32_t;
+ typedef grub_uint32_t grub_efi_uint32_t;
++#define PRIxGRUB_EFI_UINT32_T	PRIxGRUB_UINT32_T
++#define PRIuGRUB_EFI_UINT32_T	PRIuGRUB_UINT32_T
+ typedef grub_int64_t grub_efi_int64_t;
+ typedef grub_uint64_t grub_efi_uint64_t;
+ typedef grub_uint8_t grub_efi_char8_t;
+diff --git a/include/grub/err.h b/include/grub/err.h
+index c0f90ef..3c587b9 100644
+--- a/include/grub/err.h
++++ b/include/grub/err.h
+@@ -72,7 +72,8 @@ typedef enum
+     GRUB_ERR_NET_PACKET_TOO_BIG,
+     GRUB_ERR_NET_NO_DOMAIN,
+     GRUB_ERR_EOF,
+-    GRUB_ERR_BAD_SIGNATURE
++    GRUB_ERR_BAD_SIGNATURE,
++    GRUB_ERR_BAD_FIRMWARE
+   }
+ grub_err_t;
+ 
+-- 
+2.39.4
+

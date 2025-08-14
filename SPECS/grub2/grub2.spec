@@ -1,9 +1,11 @@
 %define debug_package %{nil}
 
+%define grub_photon_generation 2
+
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    13%{?dist}
+Release:    14%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -13,14 +15,15 @@ Distribution:   Photon
 Source0: https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 %define sha512 grub=4f11c648f3078567e53fc0c74d5026fdc6da4be27d188975e79d9a4df817ade0fe5ad2ddd694238a07edc45adfa02943d83c57767dd51548102b375e529e8efe
 
-%ifarch x86_64
-Source1: %{name}-2.06~rc1-grubx64.efi.gz
-%define sha512 %{name}-2.06~rc1-grubx64=d7530649ee0fe5a29809850ee27dde15d977e36a784407e74bcf2a42a6f56f9b30127392771b8c188dd271408b731318abefeb2a9704b6515dbf850efb0c2763
-%endif
+Source1: fedora.patches
+Source2: grub-sbat.csv.in
+Source3: %{name}.patches
 
-Source2: %{name}.patches
+# fedora patches
+%include %{SOURCE1}
 
-%include %{SOURCE2}
+# grub patches
+%include %{SOURCE3}
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -30,6 +33,7 @@ BuildRequires:  bison
 Requires:   xz-libs
 Requires:   device-mapper-libs
 Requires:   systemd-udev
+Requires:   %{name}-theme
 
 %description
 The GRUB package contains the GRand Unified Bootloader.
@@ -66,6 +70,7 @@ Group:      System Environment/Base
 %ifarch x86_64
 Requires:   shim-signed >= 15.4
 %endif
+Requires:   %{name}-theme
 
 %description efi-image
 GRUB UEFI image signed by vendor key
@@ -90,9 +95,9 @@ sh ../configure \
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 
-make %{?_smp_mflags}
+%make_build
 
-make DESTDIR=${PWD}/../install-for-pc install %{?_smp_mflags}
+%make_install DESTDIR=${PWD}/../install-for-pc %{?_smp_mflags}
 popd
 %endif
 
@@ -110,9 +115,9 @@ sh ../configure \
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 
-make %{?_smp_mflags}
+%make_build
 
-make DESTDIR=${PWD}/../install-for-efi install %{?_smp_mflags}
+%make_install DESTDIR=${PWD}/../install-for-efi %{?_smp_mflags}
 popd
 
 %install
@@ -130,30 +135,23 @@ touch %{buildroot}/boot/%{name}/grub.cfg
 rm -rf %{buildroot}%{_infodir}
 # Generate grub efi image
 install -d %{buildroot}/boot/efi/EFI/BOOT
+
+sed -e "s,@@VERSION@@,%{version},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@GRUB_PH_GEN@@,%{grub_photon_generation},g" \
+    %{SOURCE2} > grub-sbat.csv
+
 %ifarch x86_64
-# Use presigned image from tarball as of now.
-gunzip -c %{SOURCE1} > %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi
-# The image was created by following commands:
-
-#cat << EOF > grub-sbat.csv
-#sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
-#grub,1,Free Software Foundation,grub,2.06~rc1,https//www.gnu.org/software/grub/
-#grub.photon,1,VMware Photon OS,%{name},2.06~rc1-1.ph4,https://github.com/vmware/photon/tree/4.0/SPECS/%{name}/
-#EOF
-#
-#%{name}-mkimage -d /usr/lib/grub/x86_64-efi/ -o grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
-
-# Local alternative:
-# ./install-for-efi/usr/bin/%{name}-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
-
+./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 %endif
+
 %ifarch aarch64
 cat > grub-embed-config.cfg << EOF
 search.fs_label rootfs root
 configfile /boot/%{name}/grub.cfg
 EOF
 
-./install-for-efi/usr/bin/%{name}-mkimage -d ./install-for-efi/usr/lib/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/%{name} -O arm64-efi -c grub-embed-config.cfg fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
+./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/%{name} -O arm64-efi -c grub-embed-config.cfg --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
 %endif
 
 %if 0%{?with_check}
@@ -173,7 +171,6 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %files
 %defattr(-,root,root)
 %dir %{_sysconfdir}/grub.d
-%config() %{_sysconfdir}/bash_completion.d/grub
 %config() %{_sysconfdir}/grub.d/00_header
 %config() %{_sysconfdir}/grub.d/10_linux
 %config() %{_sysconfdir}/grub.d/20_linux_xen
@@ -184,6 +181,7 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_sysconfdir}/grub.d/README
 %{_sbindir}/*
 %{_bindir}/*
+%{_datarootdir}/bash-completion/completions/grub
 %{_datarootdir}/grub/*
 %{_sysconfdir}/sysconfig/grub
 %{_sysconfdir}/default/grub
@@ -214,6 +212,15 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Thu Aug 14 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.06-14
+- Sync fedora grub patches to latest
+- Update grub sbat to gen 4 since the NFTS CVEs are in place.
+- Misc CVE fixes
+- CVE-2024-45774 CVE-2024-45775 CVE-2024-45776 CVE-2024-45777 CVE-2024-45778 CVE-2024-45779 CVE-2024-45780
+- CVE-2024-45781 CVE-2024-45782 CVE-2024-45783 CVE-2025-0622 CVE-2025-0624 CVE-2025-0677 CVE-2025-0678
+- CVE-2025-0684 CVE-2025-0685 CVE-2025-0686 CVE-2025-0689 CVE-2025-0690 CVE-2025-1118 CVE-2025-1125
+- Include a fix to fs/ext2 code to address initramfs unpack failure caused by previous commit
+- https: //bugzilla.redhat.com/show_bug.cgi?id=2346804
 * Wed Jul 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.06-13
 - Add grub configuration fixes
 * Tue Jan 02 2024 Ajay Kaher <akaher@vmware.com> 2.06-12

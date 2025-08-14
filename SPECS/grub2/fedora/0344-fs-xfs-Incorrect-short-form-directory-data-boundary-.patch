@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lidong Chen <lidong.chen@oracle.com>
+Date: Thu, 28 Sep 2023 22:33:44 +0000
+Subject: [PATCH] fs/xfs: Incorrect short form directory data boundary check
+
+After parsing of the current entry, the entry pointer is advanced
+to the next entry at the end of the "for" loop. In case where the
+last entry is at the end of the data boundary, the advanced entry
+pointer can point off the data boundary. The subsequent boundary
+check for the advanced entry pointer can cause a failure.
+
+The fix is to include the boundary check into the "for" loop
+condition.
+
+Signed-off-by: Lidong Chen <lidong.chen@oracle.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Tested-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Tested-by: Marta Lewandowska <mlewando@redhat.com>
+---
+ grub-core/fs/xfs.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/grub-core/fs/xfs.c b/grub-core/fs/xfs.c
+index b91cd32b49ab..ebf962793fa7 100644
+--- a/grub-core/fs/xfs.c
++++ b/grub-core/fs/xfs.c
+@@ -810,7 +810,8 @@ grub_xfs_iterate_dir (grub_fshelp_node_t dir,
+ 	if (iterate_dir_call_hook (parent, "..", &ctx))
+ 	  return 1;
+ 
+-	for (i = 0; i < head->count; i++)
++	for (i = 0; i < head->count &&
++	     (grub_uint8_t *) de < ((grub_uint8_t *) dir + grub_xfs_fshelp_size (dir->data)); i++)
+ 	  {
+ 	    grub_uint64_t ino;
+ 	    grub_uint8_t *inopos = grub_xfs_inline_de_inopos(dir->data, de);
+@@ -845,10 +846,6 @@ grub_xfs_iterate_dir (grub_fshelp_node_t dir,
+ 	    de->name[de->len] = c;
+ 
+ 	    de = grub_xfs_inline_next_de(dir->data, head, de);
+-
+-	    if ((grub_uint8_t *) de >= (grub_uint8_t *) dir + grub_xfs_fshelp_size (dir->data))
+-	      return grub_error (GRUB_ERR_BAD_FS, "invalid XFS directory entry");
+-
+ 	  }
+ 	break;
+       }

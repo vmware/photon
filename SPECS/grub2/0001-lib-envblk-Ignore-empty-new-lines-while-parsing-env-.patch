@@ -1,4 +1,4 @@
-From 8abb76a719c273304ebca472a42d740dc5d5a73a Mon Sep 17 00:00:00 2001
+From 74088c4392d19ce2b1fc1dc42387d9c4a93c8fa3 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Mon, 28 Jul 2025 15:55:32 +0530
 Subject: [PATCH 1/2] lib/envblk: Ignore empty new lines while parsing env
@@ -21,10 +21,10 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/grub-core/lib/envblk.c b/grub-core/lib/envblk.c
-index 2e4e78b..4862de5 100644
+index 874506d..50a9dd8 100644
 --- a/grub-core/lib/envblk.c
 +++ b/grub-core/lib/envblk.c
-@@ -235,7 +235,7 @@ grub_envblk_iterate (grub_envblk_t envblk,
+@@ -278,7 +278,7 @@ grub_envblk_iterate (grub_envblk_t envblk,
  
    while (p < pend)
      {

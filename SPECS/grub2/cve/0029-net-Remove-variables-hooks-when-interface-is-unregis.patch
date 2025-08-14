@@ -1,0 +1,88 @@
+From c01d7ee0d6ca519f6403341e23d86679b4aa8f51 Mon Sep 17 00:00:00 2001
+From: B Horn <b@horn.uk>
+Date: Mon, 17 Feb 2025 08:03:57 +0000
+Subject: [PATCH 29/72] net: Remove variables hooks when interface is
+ unregisted
+
+The grub_net_network_level_interface_unregister(), previously
+implemented in a header, did not remove the variables hooks that
+were registered in grub_net_network_level_interface_register().
+Fix this by implementing the same logic used to register the
+variables and move the function into the grub-core/net/net.c.
+
+Signed-off-by: B Horn <b@horn.uk>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ grub-core/net/net.c | 32 ++++++++++++++++++++++++++++++++
+ include/grub/net.h  | 11 +----------
+ 2 files changed, 33 insertions(+), 10 deletions(-)
+
+diff --git a/grub-core/net/net.c b/grub-core/net/net.c
+index fd78f09..d1e5c0f 100644
+--- a/grub-core/net/net.c
++++ b/grub-core/net/net.c
+@@ -932,6 +932,38 @@ defmac_set_env (struct grub_env_var *var __attribute__ ((unused)),
+   return NULL;
+ }
+ 
++void
++grub_net_network_level_interface_unregister (struct grub_net_network_level_interface *inter)
++{
++  char *name;
++
++  {
++    char buf[GRUB_NET_MAX_STR_HWADDR_LEN];
++
++    grub_net_hwaddr_to_str (&inter->hwaddress, buf);
++    name = grub_xasprintf ("net_%s_mac", inter->name);
++    if (name != NULL)
++      grub_register_variable_hook (name, NULL, NULL);
++    grub_free (name);
++  }
++
++  {
++    char buf[GRUB_NET_MAX_STR_ADDR_LEN];
++
++    grub_net_addr_to_str (&inter->address, buf);
++    name = grub_xasprintf ("net_%s_ip", inter->name);
++    if (name != NULL)
++      grub_register_variable_hook (name, NULL, NULL);
++    grub_free (name);
++  }
++
++  inter->card->num_ifaces--;
++  *inter->prev = inter->next;
++  if (inter->next)
++    inter->next->prev = inter->prev;
++  inter->next = 0;
++  inter->prev = 0;
++}
+ 
+ static void
+ grub_net_network_level_interface_register (struct grub_net_network_level_interface *inter)
+diff --git a/include/grub/net.h b/include/grub/net.h
+index 9e4898c..43eba92 100644
+--- a/include/grub/net.h
++++ b/include/grub/net.h
+@@ -618,16 +618,7 @@ void grub_bootp_fini (void);
+ void grub_dns_init (void);
+ void grub_dns_fini (void);
+ 
+-static inline void
+-grub_net_network_level_interface_unregister (struct grub_net_network_level_interface *inter)
+-{
+-  inter->card->num_ifaces--;
+-  *inter->prev = inter->next;
+-  if (inter->next)
+-    inter->next->prev = inter->prev;
+-  inter->next = 0;
+-  inter->prev = 0;
+-}
++void grub_net_network_level_interface_unregister (struct grub_net_network_level_interface *inter);
+ 
+ void
+ grub_net_tcp_retransmit (void);
+-- 
+2.39.4
+
