@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.12
-Release:        3%{?dist}
+Version:        3.5.13
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -13,7 +13,6 @@ Source1:        license.txt
 Source2:        tdnf.conf
 
 Patch0:         0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
-Patch1:         0001-provide-a-better-error-message-when-RPM-packages-are.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -299,6 +298,9 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Aug 15 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.13-1
+- support for substitution variables in files ("vars")
+- support for snapshot repositories
 * Wed Aug 13 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-3
 - improve error message when packages are unsigned
 * Tue Jul 22 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.12-2
