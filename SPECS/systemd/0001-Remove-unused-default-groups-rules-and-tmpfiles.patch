@@ -1,13 +1,19 @@
-From 1d1a3e5522fd70c298cd3246042de3f27d2d8ade Mon Sep 17 00:00:00 2001
+From fa8d2a357bac9f51c6dd652e2460015b10e0ef7f Mon Sep 17 00:00:00 2001
 From: Nitesh <kunitesh@vmware.com>
 Date: Thu, 6 Jun 2024 11:47:07 +0530
 Subject: [PATCH] Remove unused default groups, rules and tmpfiles
 
+Some of these groups and users are also created by filesystem
 ---
- rules.d/50-udev-default.rules.in            | 13 -------------
- sysusers.d/basic.conf.in                    |  3 ---
+ rules.d/50-udev-default.rules.in            | 13 -----------
+ sysusers.d/basic.conf.in                    | 26 ---------------------
+ sysusers.d/systemd-journal.conf.in          |  2 --
+ sysusers.d/systemd-network.conf.in          |  2 --
+ sysusers.d/systemd-remote.conf              |  2 --
+ sysusers.d/systemd-resolve.conf.in          |  2 --
+ sysusers.d/systemd-timesync.conf.in         |  2 --
  tmpfiles.d/static-nodes-permissions.conf.in |  3 ---
- 3 files changed, 19 deletions(-)
+ 8 files changed, 52 deletions(-)
 
 diff --git a/rules.d/50-udev-default.rules.in b/rules.d/50-udev-default.rules.in
 index 7ff6225..7892e83 100644
@@ -44,20 +50,97 @@ index 7ff6225..7892e83 100644
  SUBSYSTEM=="ptp", ATTR{clock_name}=="KVM virtual PTP", SYMLINK += "ptp_kvm"
  
 diff --git a/sysusers.d/basic.conf.in b/sysusers.d/basic.conf.in
-index 0aec080..f9fb408 100644
+index 0aec080..c66181b 100644
 --- a/sysusers.d/basic.conf.in
 +++ b/sysusers.d/basic.conf.in
-@@ -29,10 +29,7 @@ g dialout {{DIALOUT_GID}}     -            -
- g disk    {{DISK_GID   }}     -            -
- g input   {{INPUT_GID  }}     -            -
- g kmem    {{KMEM_GID   }}     -            -
+@@ -5,37 +5,11 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ 
+-# The superuser
+-g root    0       -            -
+-u root    0:0     "Super User" /root
+-
+ # The nobody user/group for NFS file systems
+ g {{NOBODY_GROUP_NAME}} 65534       -            -
+-u {{NOBODY_USER_NAME }} 65534:65534 "Kernel Overflow User"     -
+-
+-# Administrator group: can *see* more than normal users
+-g adm     {{ADM_GID    }}     -            -
+-
+-# Administrator group: can *do* more than normal users
+-g wheel   {{WHEEL_GID  }}     -            -
+ 
+ # Access to shared database of users on the system
+ g utmp    {{UTMP_GID   }}     -            -
+ 
+ # Physical and virtual hardware access groups
+-g audio   {{AUDIO_GID  }}     -            -
+-g cdrom   {{CDROM_GID  }}     -            -
+-g dialout {{DIALOUT_GID}}     -            -
+-g disk    {{DISK_GID   }}     -            -
+-g input   {{INPUT_GID  }}     -            -
+-g kmem    {{KMEM_GID   }}     -            -
 -g kvm     {{KVM_GID    }}     -            -
- g lp      {{LP_GID     }}     -            -
+-g lp      {{LP_GID     }}     -            -
 -g render  {{RENDER_GID }}     -            -
 -g sgx     {{SGX_GID    }}     -            -
- g tape    {{TAPE_GID   }}     -            -
+-g tape    {{TAPE_GID   }}     -            -
  g tty     {{TTY_GID    }}     -            -
- g video   {{VIDEO_GID  }}     -            -
+-g video   {{VIDEO_GID  }}     -            -
+-
+-# Default group for normal users
+-g users   {{USERS_GID  }}     -            -
+diff --git a/sysusers.d/systemd-journal.conf.in b/sysusers.d/systemd-journal.conf.in
+index 61768b2..5873bfa 100644
+--- a/sysusers.d/systemd-journal.conf.in
++++ b/sysusers.d/systemd-journal.conf.in
+@@ -4,5 +4,3 @@
+ #  under the terms of the GNU Lesser General Public License as published by
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+-
+-g systemd-journal {{SYSTEMD_JOURNAL_GID}} -
+diff --git a/sysusers.d/systemd-network.conf.in b/sysusers.d/systemd-network.conf.in
+index 7c64a46..5873bfa 100644
+--- a/sysusers.d/systemd-network.conf.in
++++ b/sysusers.d/systemd-network.conf.in
+@@ -4,5 +4,3 @@
+ #  under the terms of the GNU Lesser General Public License as published by
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+-
+-u systemd-network {{SYSTEMD_NETWORK_UID}} "systemd Network Management"
+diff --git a/sysusers.d/systemd-remote.conf b/sysusers.d/systemd-remote.conf
+index ca20c24..5873bfa 100644
+--- a/sysusers.d/systemd-remote.conf
++++ b/sysusers.d/systemd-remote.conf
+@@ -4,5 +4,3 @@
+ #  under the terms of the GNU Lesser General Public License as published by
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+-
+-u systemd-journal-remote  - "systemd Journal Remote"
+diff --git a/sysusers.d/systemd-resolve.conf.in b/sysusers.d/systemd-resolve.conf.in
+index 9f02ef9..5873bfa 100644
+--- a/sysusers.d/systemd-resolve.conf.in
++++ b/sysusers.d/systemd-resolve.conf.in
+@@ -4,5 +4,3 @@
+ #  under the terms of the GNU Lesser General Public License as published by
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+-
+-u systemd-resolve {{SYSTEMD_RESOLVE_UID}} "systemd Resolver"
+diff --git a/sysusers.d/systemd-timesync.conf.in b/sysusers.d/systemd-timesync.conf.in
+index e50f025..5873bfa 100644
+--- a/sysusers.d/systemd-timesync.conf.in
++++ b/sysusers.d/systemd-timesync.conf.in
+@@ -4,5 +4,3 @@
+ #  under the terms of the GNU Lesser General Public License as published by
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+-
+-u systemd-timesync {{SYSTEMD_TIMESYNC_UID}} "systemd Time Synchronization"
 diff --git a/tmpfiles.d/static-nodes-permissions.conf.in b/tmpfiles.d/static-nodes-permissions.conf.in
 index f77312a..aaa3f91 100644
 --- a/tmpfiles.d/static-nodes-permissions.conf.in
@@ -70,5 +153,5 @@ index f77312a..aaa3f91 100644
 -z /dev/vhost-net    {{DEV_KVM_MODE}} - kvm -
 -z /dev/vhost-vsock  {{DEV_KVM_MODE}} - kvm -
 -- 
-2.34.1
+2.40.4
 

@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -677,6 +677,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Aug 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-12
+- Fix sysuser creation warnings
 * Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-11
 - Mark various configuration files as %config(noreplace) to preserve user modifications
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 253.19-10
