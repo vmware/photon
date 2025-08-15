@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        25.1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -27,6 +27,7 @@ Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
 Patch7: 0008-No-single-process.patch
 Patch8: 0009-Show-stdout-logs-in-journal-only.patch
 Patch9: 0010-vlan-bond-support.patch
+Patch10: 0011-bridge-multi-vlan-same-interface.patch
 
 BuildRequires: photon-release
 BuildRequires: python3-devel
@@ -154,6 +155,9 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Fri Aug 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-3
+- Add bridge config rendering support to networkd
+- Support multi vlan on same interface
 * Sun Jul 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-2
 - VLAN and Bond support in networkd
 * Mon Jun 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-1
