@@ -5,7 +5,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        5.12.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -21,7 +21,7 @@ Patch0: jna_remove_clover_jar.patch
 BuildRequires:  openjdk11
 BuildRequires:  apache-ant
 
-Requires: (openjdk11-jre or openjdk17-jre)
+Requires: jre >= 11.0
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
@@ -85,6 +85,8 @@ rm -rf %{buildroot}
 %{_prefix}/*.aar
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.12.1-6
+- Update Requires to jre >= 11.0
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.12.1-5
 - Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.12.1-4

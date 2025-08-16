@@ -4,7 +4,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -71,7 +71,7 @@ This contains %{name} python3 libraries.
 %package        java
 Summary:        %{name} java
 Group:          Development/Libraries
-Requires:       (openjdk11-jre or openjdk17-jre)
+Requires:       jre >= 11.0
 
 %description    java
 This contains %{name} java package.
@@ -155,6 +155,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.23.3-5
+- Update Requires to jre >= 11.0
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-4
 - Fix for CVE-2024-7254
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.23.3-3

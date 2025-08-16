@@ -6,7 +6,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.14
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -65,6 +65,8 @@ Requires:       libgcc
 Requires:       zlib
 
 Conflicts:      %{name} < 17.0.8-4%{?dist}
+Provides:       libjli.so()(64bit)
+Provides:       jre = %{version}
 
 %description    jre
 %{summary}
@@ -83,8 +85,6 @@ Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
-
-Provides:       jre = %{version}
 
 %description    src
 This package provides the runtime library class sources.
@@ -242,6 +242,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Tue Aug 19 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.14-2
+- java17: Add provides jre = %{version}
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.14-1
 - Upgrade to v17.0.14
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.13-3

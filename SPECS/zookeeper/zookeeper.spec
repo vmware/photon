@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.9.3
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://zookeeper.apache.org/
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -21,7 +21,7 @@ Patch0: zkSever_remove_cygwin_cypath.patch
 BuildRequires: systemd-devel
 
 Requires: systemd
-Requires: (openjdk11-jre or openjdk17-jre)
+Requires: jre >= 11.0
 Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
@@ -90,6 +90,8 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_prefix}/*
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.3-2
+- Update Requires to jre >= 11.0
 * Mon May 26 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.3-1
 - Update to 3.9.3, fixes many second level CVEs
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.8.0-7

@@ -3,7 +3,7 @@
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    19%{?dist}
+Release:    20%{?dist}
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -23,7 +23,7 @@ BuildRequires: openjdk11
 BuildRequires: apache-ant
 BuildRequires: commons-httpclient
 
-Requires: (openjdk11-jre or openjdk17-jre)
+Requires: jre >= 11.0
 Requires: apache-ant
 
 %description
@@ -59,6 +59,8 @@ rm -rf %{buildroot}
 %{ant_prefix}/lib/*.jar
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0b3-20
+- Update Requires to jre >= 11.0
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.0b3-19
 - Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-18

@@ -12,7 +12,7 @@
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
 Version:        10.1.43
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -42,7 +42,7 @@ BuildArch: noarch
 BuildRequires: openjdk17
 BuildRequires: apache-ant
 
-Requires:         (openjdk11-jre or openjdk17-jre)
+Requires:         jre >= 11.0
 Requires:         apache-ant
 Requires:         chkconfig
 Requires(postun): chkconfig
@@ -152,6 +152,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.1.43-3
+- Update Requires to jre >= 11.0
 * Tue Aug 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.43-2
 - Handle copyleft licenses
 * Fri Jul 18 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.43-1

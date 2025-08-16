@@ -7,7 +7,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.12
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -22,7 +22,7 @@ Source2: license.txt
 
 BuildRequires: openjdk11
 
-Requires: (openjdk11 or openjdk17)
+Requires: (openjdk11 or openjdk17 or openjdk21)
 
 BuildArch:      noarch
 
@@ -129,6 +129,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.12-6
+- Update java requires
 * Wed Mar 26 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.12-5
 - Remove unused source hamcrest
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.10.12-4

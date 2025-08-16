@@ -2,7 +2,7 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
 Version:        1.3.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -16,7 +16,7 @@ Source1: license.txt
 BuildRequires:  apache-maven
 BuildRequires:  openjdk11
 
-Requires: (openjdk11-jre or openjdk17-jre)
+Requires: jre >= 11.0
 
 %description
 The Daemon Component contains a set of Java and native code,
@@ -60,6 +60,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.3-6
+- Update Requires to jre >= 11.0
 * Sat Jan 18 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.3-5
 - Stop re-packaging dist jar and build locally
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.3.3-4

@@ -10,7 +10,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.9.1
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -39,7 +39,7 @@ BuildRequires: openjdk11
 
 Requires: zookeeper
 Requires: systemd-rpm-macros
-Requires: (openjdk11-jre or openjdk17-jre)
+Requires: jre >= 11.0
 Requires(post): (coreutils or coreutils-selinux)
 
 %{?systemd_requires}
@@ -129,6 +129,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.1-5
+- Update Requires to jre >= 11.0
 * Mon Aug 11 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-4
 - Add gradle-wrapper.jar tar for SRP compliance
 * Thu Jul 24 2025 Prashant S Chauha <prashant.singh-chauhan@broadcom.com> 3.9.1-3

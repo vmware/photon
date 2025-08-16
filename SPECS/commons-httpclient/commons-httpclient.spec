@@ -3,7 +3,7 @@
 Summary:    Apache commons-httpclient
 Name:       commons-httpclient
 Version:    3.1
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -27,7 +27,7 @@ Patch1: 06_fix_CVE-2012-5783.patch
 Patch2: CVE-2014-3577.patch
 Patch3: CVE-2015-5262.patch
 
-Requires: (openjdk11-jre or openjdk17-jre)
+Requires: jre >= 11.0
 
 BuildRequires:  openjdk11
 BuildRequires:  wget
@@ -86,6 +86,8 @@ ant -Ddist.dir="." -Dbuild.sysclasspath=first -Dtest.failonerror=false \
 %{_datadir}/java/%{name}/*.jar
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1-7
+- Update Requires to jre >= 11.0
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.1-6
 - Release bump for SRP compliance
 * Mon May 20 2024 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1-5

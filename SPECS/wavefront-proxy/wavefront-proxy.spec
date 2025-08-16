@@ -2,7 +2,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.4
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -20,7 +20,7 @@ BuildRequires:    openjdk11
 BuildRequires:    systemd-devel
 
 Requires:         systemd
-Requires:         (openjdk11-jre or openjdk17-jre)
+Requires:         jre >= 11.0
 Requires:         commons-daemon
 Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
@@ -125,6 +125,8 @@ rm -rf %{buildroot}/*
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.4-5
+- Update Requires to jre >= 11.0
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 13.4-4
 - Renaming sysusers to conf to fix auto user creation
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.4-3
