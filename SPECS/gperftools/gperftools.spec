@@ -1,7 +1,7 @@
 Summary:        A fast malloc tool for threads
 Name:           gperftools
 Version:        2.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/gperftools/gperftools
 Source0:        https://github.com/gperftools/gperftools/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 
@@ -24,6 +24,7 @@ This contains development tools and libraries for gperftools.
 %package docs
 Summary:        gperftools docs
 Group:          Development/Tools
+Requires:       %{name} = %{version}-%{release}
 %description docs
 The contains gperftools package doc files.
 
@@ -63,6 +64,8 @@ TCMALLOC_SAMPLE_PARAMETER=128 && make check
 %{_mandir}/man1/*
 
 %changelog
+*    Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.10-3
+-    Fix requires on doc sub package
 *    Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.10-2
 -    Release bump for SRP compliance
 *    Mon Jul 11 2022 Gerrit Photon <photon-checkins@vmware.com> 2.10-1

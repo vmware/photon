@@ -1,7 +1,7 @@
 Summary:      simple interface for defining and acessing commandline arguments
 Name:         tclap
 Version:      1.2.5
-Release:      2%{?dist}
+Release:      3%{?dist}
 URL:          http://tclap.sourceforge.net
 Group:        Development/Libraries
 Vendor:       VMware, Inc.
@@ -22,6 +22,7 @@ or POSIX standards, it is close.
 %package      doc
 Summary:      API Documentation for tclap
 Group:        Documentation
+Requires:     %{name} = %{version}-%{release}
 
 %description  doc
 API documentation for TCLAP
@@ -49,6 +50,8 @@ make check %{?_smp_mflags}
 %{_docdir}/*
 
 %changelog
+*   Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.5-3
+-   Fix requires on doc sub package
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.2.5-2
 -   Release bump for SRP compliance
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.5-1

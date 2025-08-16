@@ -1,7 +1,7 @@
 Summary:        Netwide Assembler.
 Name:           nasm
 Version:        2.16.01
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.nasm.us
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -20,6 +20,7 @@ It includes a disassembler as well.
 
 %package        doc
 Summary:        Detailed manual for the Netwide Assembler
+Requires:       %{name} = %{version}-%{release}
 
 %description    doc
 Extensive documentation for the Netwide Assembler (NASM) in HTML and PDF formats.
@@ -71,6 +72,8 @@ make %{?_smp_mflags} -k test
 %{_docdir}/*.ps
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.16.01-4
+- Fix requires on doc sub package
 * Thu Aug 07 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.16.01-3
 - Bump release to rescan licenses
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.16.01-2

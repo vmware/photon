@@ -11,7 +11,7 @@
 Summary:        Command-line editing and history capabilities
 Name:           readline
 Version:        8.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -44,6 +44,7 @@ It contains the libraries and header files to create applications
 %package        doc
 Summary:        Documentation files for readline
 Requires:       %{name} = %{version}-%{release}
+Conflicts:      %{name}-devel < 8.2-6
 
 %description    doc
 Documentation files for readline
@@ -165,6 +166,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.2-7
+- Fix conflicts on doc sub package
 * Mon Aug 11 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.2-6
 - Create doc rpm to remove unintended license for SRP compliance
 * Thu Jul 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.2-5

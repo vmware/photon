@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.147
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -537,6 +537,7 @@ The Linux package contains the Linux kernel sound support
 Summary:        Kernel docs
 Group:          System Environment/Kernel
 Requires:       python3
+Requires:       %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
 
@@ -1023,6 +1024,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.147-4
+- Fix requires on doc sub package
 * Tue Aug 12 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.147-3
 - Override false positive network copyleft license detections
 * Mon Aug 04 2025 Jonathan Shao <jonathan.shao@broadcom.com> 6.1.147-2

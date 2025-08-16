@@ -1,7 +1,7 @@
 Summary:        Hardware lister
 Name:           lshw
 Version:        B.02.19
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/lyonel/lshw/releases
 Source0:        http://www.ezix.org/software/files/%{name}-%{version}.tar.gz
 Source1:        license.txt
@@ -20,6 +20,7 @@ XML or HTML.
 %package        docs
 Summary:        lshw docs
 Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
 
 %description    docs
 The package contains lshw doc files.
@@ -41,6 +42,8 @@ The package contains lshw doc files.
 /usr/share/*
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> B.02.19-4
+- Fix requires on doc sub package
 * Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> B.02.19-3
 - Ignore copyleft license CC-BY-SA-3.0 for docs subpackage
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> B.02.19-2

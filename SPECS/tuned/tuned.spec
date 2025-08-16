@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.21.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
@@ -75,7 +75,8 @@ instead of fewer large ones).
 %package        docs
 Summary:        tuned docs
 Group:          Documentation
-Requires:       tuned = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Conflicts:      %{name} < 2.21.0-3
 %description    docs
 The package contains tuned doc files.
 
@@ -160,6 +161,8 @@ make test %{?_smp_mflags}
 %{_datadir}/doc
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.21.0-4
+- Fix conflicts on doc sub package
 * Thu Jul 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.21.0-3
 - Remove files to handle unintended copyright inclusions
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.21.0-2

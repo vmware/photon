@@ -10,7 +10,7 @@
 Summary:        A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:           openresty
 Version:        1.21.4.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://openresty.org/en
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -102,6 +102,7 @@ Requires:       groff
 Provides:       restydoc
 Provides:       restydoc-index
 Provides:       md2pod.pl
+Requires:       %{name} = %{version}-%{release}
 BuildArch:      noarch
 
 %description    doc
@@ -224,6 +225,8 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.21.4.3-5
+- Fix requires on doc sub package
 * Thu Jul 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 1.21.4.3-4
 - Remove files to handle unintended copyright inclusions
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.4.3-3

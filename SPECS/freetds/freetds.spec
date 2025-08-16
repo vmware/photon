@@ -1,7 +1,7 @@
 Summary:       ODBC driver manager
 Name:          freetds
 Version:       1.3.10
-Release:       6%{?dist}
+Release:       7%{?dist}
 URL:           http://www.unixodbc.org
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
@@ -44,6 +44,7 @@ The freetds-unixodbc package contains ODBC driver build for unixODBC.
 %package       doc
 Summary:       User documentation for FreeTDS
 Group:         Documentation
+Requires:      %{name} = %{version}-%{release}
 
 %description   doc
 The freetds-doc package contains the userguide and reference of FreeTDS
@@ -106,6 +107,8 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.10-7
+- Fix requires on doc sub package
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.3.10-6
 - Release bump for SRP compliance
 * Mon Apr 22 2024 Roye Eshed <roye.eshed@broadcom.com> 1.3.10-5

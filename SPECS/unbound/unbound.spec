@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.21.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,6 +39,7 @@ Development files for unbound dns server
 %package        docs
 Summary:        unbound docs
 Group:          Documentation
+Requires:       %{name} = %{version}-%{release}
 
 %description    docs
 unbound dns server docs
@@ -94,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.21.0-6
+- Fix requires on doc sub package
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.0-5
 - Renaming sysusers to conf to fix auto user creation
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.21.0-4

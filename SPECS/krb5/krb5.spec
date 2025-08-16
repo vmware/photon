@@ -3,7 +3,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -57,6 +57,7 @@ These are the additional language files of krb5.
 Summary:    Documentation files for krb5
 Group:      System Environment/Security
 Requires:   %{name} = %{version}-%{release}
+Conflicts:  %{name} <= 1.20.2-7
 
 %description doc
 Additional files containing documentation for krb5.
@@ -132,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/man/man5/.k5login.5.gz
 
 %changelog
+* Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.20.2-9
+- Fix conflicts on doc sub package
 * Mon Aug 04 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.20.2-8
 - Ship separate documentation
 * Mon Jun 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.2-7

@@ -1,7 +1,7 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 URL:            https://gitlab.com/cryptsetup/cryptsetup
@@ -86,7 +86,9 @@ This package contains the LUKS2 SSH token.
 %package        doc
 Summary:        cryptsetup documentation
 Group:          Documentation
-Requires:       cryptsetup = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Conflicts:      %{name} < 2.4.3-5
+Conflicts:      %{name}-devel < 2.4.3-5
 %description    doc
 The package contains cryptsetup doc files.
 
@@ -161,6 +163,8 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %doc AUTHORS FAQ docs/*ReleaseNotes docs/examples/*
 
 %changelog
+* Wed Aug 20 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.3-7
+- Fix conflicts on doc sub package
 * Mon Aug 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.3-6
 - Version bump up to use libssh v0.11.2
 * Wed Jul 23 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.4.3-5
