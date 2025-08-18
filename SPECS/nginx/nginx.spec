@@ -4,7 +4,7 @@
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.26.2
+Version:        1.26.3
 Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=470efe9ae5d6150ecbf133979c6c36415679a2156499a3b6820a85eb8f3038a8aa06f7b28ddd834cffb0e982f3ddc89e4b1649d536eba4f84019a72d4cfa3539
+%define sha512 %{name}=cd780e495796bf7413e54a6730d11d55127b0ca6563acf5c75eb2698f62cddbbf5ba61820c57b2316c0bb789fcfd17f98a27a84b525ed50f304d1b1043ffa05d
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
 %define sha512 %{name}-njs=c6d70167ba91305ff859fcbb389662eb7654074845349599d00586d87aa8b086308d154fe3be2ea773ddd015ae5b04e4fba40ec82d1c461d1a3a10c23a2fb7b4
@@ -22,6 +22,8 @@ Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tag
 %define sha512 headers-more-nginx-module=0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
 
 Source3: %{name}.service
+
+Patch0: CVE-2025-53859.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -43,6 +45,7 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 %prep
 # Using autosetup is not feasible
 %setup -q -a1 -a2
+%autopatch -p1
 
 %build
 sh ./configure \
@@ -122,6 +125,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Mon Aug 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.3-1
+- Upgrade to v1.26.3, fixes CVE-2025-53859
 * Mon Aug 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.2-1
 - Version upgrade to v1.26.2 to fix CVE-2024-7347
 * Wed Jun 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.1-1
