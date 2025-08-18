@@ -19,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.12.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -150,6 +150,10 @@ Patch61: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 %if "%{dist}" == ".ph5"
 Patch62: 0001-block-Fix-validation-of-ioprio-level.patch
 %endif
+
+# vmxnet3
+Patch63: 0001-vmxnet3_unregister_xdp_rxq_info_in_the_reset_path.patch
+Patch64: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
 
 # CVE:
 
@@ -313,6 +317,9 @@ stalld to use eBPF based backend.
 %if "%{dist}" == ".ph5"
 %autopatch -p1 -m62 -M62
 %endif
+
+# vmxnet3
+%autopatch -p1 -m63 -M64
 
 # CVE
 %autopatch -p1 -m100 -M134
@@ -520,6 +527,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Aug 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.1-5
+- Fixes for vmwnet3 driver
 * Mon Jun 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-4
 - Implement type check within canister GCC plugins
 * Fri Jun 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.1-3

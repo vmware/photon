@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.41
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -148,6 +148,10 @@ Patch68: halt-on-panic.patch
 %if 0%{?vmxnet3_sw_timestamp}
 Patch71: 0009-esx-vmxnet3-software-timestamping.patch
 %endif
+
+# vmxnet3
+Patch72: 0001-vmxnet3_unregister_xdp_rxq_info_in_the_reset_path.patch
+Patch73: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
 
 # initialize MMCONFIG
 Patch75: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
@@ -487,6 +491,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.41-4
+- Fixes for vmwnet3 driver
 * Thu Sep 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-3
 - Select jitterentropy mem size as 32KB
 - Disable jent_loop_shuffle in Jitterentropy.
