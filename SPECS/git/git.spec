@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.40.4
-Release:        3%{?dist}
+Version:        2.43.7
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha512 %{name}=0491d759d9bc44edb705acc30058ba24bf03dc9336ee825680d00c4690a825bdd36b2b2911e7f12889bca9a6a72644ce9b299cc16fe74fd033e74f7f114a4c2f
+%define sha512 %{name}=b6d912e70eb4e8bb899c1243b0b2b9b18d9d861ae2a18e85714658385f194407dc83e717827fd902c024e0492e8eb3a37b09ebf1e9048258eb4ba43e55c9e833
 
 BuildRequires: curl-devel
 BuildRequires: python3-devel
@@ -18,9 +18,6 @@ BuildRequires: openssl-devel
 Requires: expat
 Requires: curl
 Requires: openssl
-
-Patch0:   CVE-2025-48384.patch
-Patch1:   CVE-2025-48385.patch
 
 %description
 Git is a free and open source, distributed version control system
@@ -137,6 +134,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon Aug 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.43.7-1
+- Version upgrade to v2.43.7
 * Thu Jul 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-3
 - Fix CVE-2025-48384, CVE-2025-48385
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.40.4-2
