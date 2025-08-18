@@ -1,7 +1,7 @@
 Summary:        GStreamer streaming media framework plug-ins
 Name:           gstreamer-plugins-base
 Version:        1.25.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://gstreamer.freedesktop.org
 Group:          Applications/Multimedia
 Vendor:         VMware, Inc.
@@ -53,6 +53,7 @@ GStreamer Plugins Base library development and header files.
 
 %prep
 %autosetup -n gst-plugins-base-%{version} -p1
+rm -r NEWS
 
 %build
 %meson \
@@ -93,6 +94,8 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*   Mon Aug 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.25.1-2
+-   License cleanup
 *   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.25.1-1
 -   update to 1.25.1
 *   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.7-3

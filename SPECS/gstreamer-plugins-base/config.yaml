@@ -2,6 +2,25 @@ sources:
 - archive: gst-plugins-base-1.25.1.tar.xz
   archive_sha512sum: 8644542e34499d140c5dcf65a33d1c9df6738a45844d508f1adae03f9023bea1d25541bbb3d89cd919434fff70965f3ab105f26443f6e383a819fb1eedc8b554
   skip_validation: true
+  license_manual_review:
+  - archive_path: gst-libs/gst/tag/licenses-tables.dat
+    sha256sum: 72619e35c59ec2527c561ff5757a2d0fead3a502c3024add007f1e93c16b5d70
+    spdx_exp: ''
+    # licenses-tables.dat is a metadata file that holds information about various licenses.
+    # It does not indicate the license of gst-plugins-base itself.
+  - archive_path: gst-libs/gst/tag/license-translations.dict
+    sha256sum: 25ebb771dd2bc53bedf66e1b4bee7e6169bd5c0eee84621e7c4ac2d91f9826c2
+    spdx_exp: ''
+    # Sits right next to licenses-tables.dat
+    # dictionary of synonyms/aliases → canonical license IDs.
+  - archive_path: tests/check/libs/tag.c
+    sha256sum: 0bd85c1b35490b48064ffed7b7bce02cb9de0b4db504be29036b2149330767be
+    spdx_exp: ''
+    # False positive, CC-BY-SA-1.0 string present.
+  - archive_path: tests/files/license-uris
+    sha256sum: de0f312e9784884e211d50d4344dae0d9beb9074bfb9812566f904888c47c121
+    spdx_exp: ''
+    # Test input file containing various license website URLs
   spdx:
     package:
       detailed_description: 'GStreamer is a streaming media framework, based on graphs
