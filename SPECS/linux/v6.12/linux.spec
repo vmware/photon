@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        9%{?acvp_build:.acvp}%{?dist}
+Release:        10%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -206,6 +206,10 @@ Patch60: 0003-Verify-SBAT-on-kexec.patch
 Patch61: 0001-gcc-rap-plugin-with-kcfi.patch
 Patch62: 0002-objtool-Return-error-in-case-of-failures.patch
 Patch63: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+
+# vmxnet3
+Patch64: 0001-vmxnet3_unregister_xdp_rxq_info_in_the_reset_path.patch
+Patch65: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
 
 # Backward compatibility
 %if "%{dist}" == ".ph5"
@@ -527,6 +531,9 @@ The kernel fips-canister
 
 #Secure
 %autopatch -p1 -m61 -M63
+
+# vmxnet3
+%autopatch -p1 -m64 -M65
 
 # Backward compatibility
 %if "%{dist}" == ".ph5"
@@ -937,6 +944,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.41-10
+- Fixes for vmwnet3 driver
 * Wed Sep 17 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-9
 - Canister: Move crypto_inc to lib/crypto/utils.c
 * Wed Sep 17 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-8
