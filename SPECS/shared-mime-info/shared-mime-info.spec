@@ -1,7 +1,7 @@
 Summary:        MIME database
 Name:           shared-mime-info
 Version:        2.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://freedesktop.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Mon Aug 18 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.2-8
+- License cleanup
 * Tue Aug 12 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.2-7
 - Removed debian-goodies_0.63_all.deb and test.v when with_check is not set or zero
 * Fri Aug 01 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.2-6
