@@ -1,45 +1,49 @@
+%global debug_package %{nil}
+%define srcname SQLAlchemy
+
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python3-sqlalchemy
-Version:        1.4.40
-Release:        3%{?dist}
+Version:        2.0.0
+Release:        1%{?dist}
 Url:            http://www.sqlalchemy.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://pypi.python.org/packages/29/18/a78469bc449d9f92f6269cc62d0d6fbe6bf394d1031b447ad5e54463c3a0/SQLAlchemy-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/54/55/a475df74f583b4ceeefd5a121fd28045af54efe204863de1e3b154385674/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
+
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-typing-extensions
 
 %description
 SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL. SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performing database access, adapted into a simple and Pythonic domain language.
 
 %prep
-%autosetup -n SQLAlchemy-%{version}
+%autosetup -n %{srcname}-%{version}
 
 %build
-%py3_build
-
-%check
-easy_install apipkg
-easy_install py
-easy_install mock
-export PYTHONPATH=$PYTHONPATH:%{_builddir}/SQLAlchemy-%{version}/.eggs/pytest-3.0.3-py2.7.egg
-python3 setup.py test
+%{pyproject_wheel}
 
 %install
-%py3_install
+%{pyproject_install}
+
+%check
+pip3 install tox
+tox -e py311-sqlite
 
 %files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1
+- Update to 2.0.0, fixes PVE-2022-51668
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.40-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.40-2

@@ -1,7 +1,15 @@
 sources:
-- archive: SQLAlchemy-1.4.40.tar.gz
-  archive_sha512sum: 49b8ad8becd6fb2c43615890ef05554ce151f44cda20971a585ff5b325a6a91bb356a3c4320f4b1ac877a9eccdca9bec65cc9942bc5948d4143495b5c884f458
-  skip_validation: true
+- archive: SQLAlchemy-2.0.0.tar.gz
+  archive_sha512sum: 54bde6047a94fc6b050ca6e4b6136ab2a62de0f55665c07a7bec953c75462e32908e88de5c2dc42ee45cd0b8b9f155dd33d148408ab5e3cc579b0e13cdf00801
+  archive_type: upstream
+  version: 2.0.0
+  name: SQLAlchemy-2.0.0
+  url: https://files.pythonhosted.org/packages/54/55/a475df74f583b4ceeefd5a121fd28045af54efe204863de1e3b154385674/SQLAlchemy-2.0.0.tar.gz
+  repo_url: https://github.com/sqlalchemy/sqlalchemy
+  commit_id: ad2a65ef7e3cd57912c6c0373c8b843b8a1730eb
+  missing: ['errors.html', 'glossary.html', 'SQLAlchemy.egg-info', 'faq', 'dialects', 'regen_callcounts.tox.ini', 'searchindex.js', '_images', 'contents.html', 'intro.html', 'reap_dbs.py', 'profiles.txt', 'copyright.html', 'index.html', '.pre-commit-config.yaml', 'PKG-INFO', '.github', '.git-blame-ignore-revs', 'genindex.html', '.gitreview', 'mypy_plugin.ini', 'space_invaders.jpg', 'changelog', '.gitignore', 'core', 'tutorial', 'notfound.html', '_static', 'orm', 'search.html', '_modules']
+  skip_list: ['setup.cfg']
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'SQLAlchemy is the Python SQL toolkit and Object Relational
