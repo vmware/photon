@@ -13,7 +13,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -36,7 +36,9 @@ Source97:       docker-post19.service
 Source98:       docker-post19.socket
 Source99:       default-disable.preset
 
-Patch97:        tini-disable-git.patch
+Patch0:        tini-disable-git.patch
+Patch1:        CVE-2024-41110-1.patch
+Patch2:        CVE-2024-41110-2.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -130,7 +132,12 @@ tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 
 # Patch sources
 pushd tini
-%patch97 -p1
+%patch0 -p1
+popd
+
+pushd src/%{gopath_comp_engine} #moby source directory
+%patch1 -p1
+%patch2 -p1
 popd
 
 %build
@@ -325,6 +332,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Aug 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.0.9-3
+- Fixes CVE-2024-41110
 * Thu Jul 24 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-2
 - Bump version as a part of jq upgrade
 * Thu Oct 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.0.9-1
