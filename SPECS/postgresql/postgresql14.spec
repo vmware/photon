@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.18
-Release:        2%{?dist}
+Version:        14.19
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=fe40ba9fcc001f8c7eb3557c6248fa42af82b487ea4f31b8b20f5fa7ab930246659a4c8cf0bfa9a52f5143c766c0660d36b092474d2909020114ea3a1810adfd
+%define sha512 %{srcname}=8f7f49c439b954fc1091c32d857d16e25db0b6f3687d44a6a2360a6c72002545eb2f9d09f2b460aeed3371aeabbe7abf599d92ff60baa2d1e4882a106ad14139
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -321,6 +321,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Tue Aug 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.19-1
+- Upgrade to v14.19
 * Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.18-2
 - Fix directory ownership during file packaging
 * Wed Jun 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.18-1

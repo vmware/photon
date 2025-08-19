@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.21
-Release:        2%{?dist}
+Version:        13.22
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=800f58b7651babafcca43411d6215474422e57ed16e5af246bf8beb72afaf844ca325d5d02443089fb9848d0b42872f0251aaa873a79f5094806fcdd2e10ed4b
+%define sha512 %{srcname}=0f578526aad852285de001369dd1c8308f03479c8f4f6c1a1d066b6b77103e340df95b9ab41df3f959c4e17d4fb0c0441b02a04d3e6c01cfcd40a2632c3ac7eb
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -304,6 +304,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Tue Aug 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.22-1
+- Upgrade to v13.22
 * Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.21-2
 - Fix directory ownership during file packaging
 * Wed Jun 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.21-1
