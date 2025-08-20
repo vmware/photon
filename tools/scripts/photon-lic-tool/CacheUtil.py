@@ -9,6 +9,7 @@ import multiprocessing
 import yaml
 import shutil
 import redis
+import errno
 
 from common import (
     strip_license_id,
@@ -65,7 +66,16 @@ class CacheUtil:
         redis_pipeline = self._redis_cache.pipeline()
 
         for file in file_list:
-            key = self._conv_filepath_to_key(file_path=os.path.abspath(file))
+            file = os.path.abspath(file)
+
+            if not os.path.exists(file):
+                raise FileNotFoundError(
+                            errno.ENOENT,
+                            os.strerror(errno.ENOENT),
+                            file
+                        )
+
+            key = self._conv_filepath_to_key(file_path=file)
 
             # Skip files which are known to fail the scanner
             if not key:
@@ -117,7 +127,11 @@ class CacheUtil:
         if not redis_pipeline or not filepath:
             return
 
-        key = self._conv_filepath_to_key(file_path=os.path.abspath(filepath))
+        filepath = os.path.abspath(filepath)
+        if not os.path.exists(filepath):
+            return
+
+        key = self._conv_filepath_to_key(file_path=filepath)
 
         # Redis doesn't like 'None'
         if not spdx_id:
@@ -206,7 +220,7 @@ class CacheUtil:
             os.makedirs(self._non_cached_scan_dir)
 
         while i < num_cpus:
-            f_list = list()
+            f_list = set()
             file_lists.append(f_list)
             i += 1
 
@@ -219,7 +233,7 @@ class CacheUtil:
                 if os.path.basename(file_path) not in git_files and os.path.isfile(
                     file_path
                 ):
-                    file_lists[i].append(file_path)
+                    file_lists[i].add(file_path)
                 i += 1
 
         for f_list in file_lists:
