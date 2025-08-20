@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        18%{?dist}
+Release:        19%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -33,6 +33,9 @@ Patch502: 0002-support-Use-const-char-argument-in-support_capture_s.patch
 Patch503: 0003-support-Add-support_record_failure_barrier.patch
 Patch504: 0004-support-Don-t-fail-on-fchown-when-spawning-sgid-proc.patch
 Patch505: 0005-support-Pick-group-in-support_capture_subprogram_sel.patch
+
+# CVE-2025-8058
+Patch506: 0001-posix-Fix-double-free-after-allocation-failure-in-re.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -365,6 +368,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Aug 20 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-19
+- Fix CVE-2025-8058
 * Tue Jun 24 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-18
 - Fix CVE-2025-4802
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-17
