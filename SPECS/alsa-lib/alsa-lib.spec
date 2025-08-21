@@ -1,7 +1,7 @@
 Summary:        ALSA library
 Name:           alsa-lib
 Version:        1.2.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -11,10 +11,6 @@ Source0:        https://www.alsa-project.org/files/pub/lib/%{name}-%{version}.ta
 
 Source1: license.txt
 %include %{SOURCE1}
-
-BuildRequires:  python3-devel
-
-Requires:       python3
 
 %description
 The ALSA Library package contains the ALSA library used by programs
@@ -36,12 +32,12 @@ It contains the libraries and header files to create applications
 
 %install
 %make_install %{?_smp_mflags}
-rm -f %{buildroot}%{_libdir}/*.la
+rm %{buildroot}%{_libdir}/*.la
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so*
+%{_libdir}/*.so.*
 %{_libdir}/pkgconfig/*
 %exclude %dir %{_libdir}/debug
 %{_datadir}/*
@@ -49,8 +45,11 @@ rm -f %{buildroot}%{_libdir}/*.la
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
+%{_libdir}/*.so
 
 %changelog
+* Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.8-3
+- Remove python3 from requires
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.2.8-2
 - Release bump for SRP compliance
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 1.2.8-1
