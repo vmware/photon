@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -137,6 +137,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-10
+- Fix few systemd-resolved policies
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-9
 - Release bump for SRP compliance
 * Mon Jun 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 36.5-8
