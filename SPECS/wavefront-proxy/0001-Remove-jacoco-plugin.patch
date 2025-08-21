@@ -1,0 +1,134 @@
+From a5c1ab6e271aae6a59d220873c6b59bf548a43b5 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Thu, 21 Aug 2025 15:57:52 +0000
+Subject: [PATCH] Remove jacoco plugin
+
+---
+ proxy/pom.xml | 104 +-------------------------------------------------
+ 1 file changed, 1 insertion(+), 103 deletions(-)
+
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index 44a5115..05e4f60 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -113,7 +113,7 @@
+         <configuration>
+           <forkCount>4</forkCount>
+           <reuseForks>true</reuseForks>
+-          <argLine>${jacocoArgLine} -Xmx512m -Duser.country=US</argLine>
++          <argLine>-Xmx512m -Duser.country=US</argLine>
+           <rerunFailingTestsCount>3</rerunFailingTestsCount>
+           <systemProperties>
+             <property>
+@@ -127,108 +127,6 @@
+           </systemProperties>
+         </configuration>
+       </plugin>
+-      <plugin>
+-        <groupId>org.jacoco</groupId>
+-        <artifactId>jacoco-maven-plugin</artifactId>
+-        <version>0.8.3</version>
+-        <executions>
+-          <execution>
+-            <id>prepare-agent</id>
+-            <goals>
+-              <goal>prepare-agent</goal>
+-            </goals>
+-            <configuration>
+-              <propertyName>jacocoArgLine</propertyName>
+-              <excludes>
+-                <exclude>com.tdunning.math.*</exclude>
+-                <exclude>org.logstash.*</exclude>
+-                <exclude>condition.parser.*</exclude>
+-                <exclude>datadog.*</exclude>
+-              </excludes>
+-            </configuration>
+-          </execution>
+-          <execution>
+-            <id>check</id>
+-            <phase>test</phase>
+-            <goals>
+-              <goal>check</goal>
+-            </goals>
+-            <configuration>
+-              <rules>
+-                <rule>
+-                  <element>BUNDLE</element>
+-                  <limits>
+-                    <limit>
+-                      <counter>LINE</counter>
+-                      <value>COVEREDRATIO</value>
+-                      <minimum>0.78</minimum>
+-                    </limit>
+-                  </limits>
+-                </rule>
+-                <rule>
+-                  <element>PACKAGE</element>
+-                  <includes>
+-                    <include>com.wavefront.agent.preprocessor</include>
+-                  </includes>
+-                  <limits>
+-                    <limit>
+-                      <counter>LINE</counter>
+-                      <value>COVEREDRATIO</value>
+-                      <minimum>0.90</minimum>
+-                    </limit>
+-                  </limits>
+-                </rule>
+-                <rule>
+-                  <element>PACKAGE</element>
+-                  <includes>
+-                    <include>com.wavefront.agent.preprocessor.predicate</include>
+-                  </includes>
+-                  <limits>
+-                    <limit>
+-                      <counter>LINE</counter>
+-                      <value>COVEREDRATIO</value>
+-                      <minimum>0.90</minimum>
+-                    </limit>
+-                  </limits>
+-                </rule>
+-                <rule>
+-                  <element>PACKAGE</element>
+-                  <includes>
+-                    <include>com.wavefront.agent.histogram</include>
+-                  </includes>
+-                  <limits>
+-                    <limit>
+-                      <counter>LINE</counter>
+-                      <value>COVEREDRATIO</value>
+-                      <minimum>0.89</minimum>
+-                    </limit>
+-                  </limits>
+-                </rule>
+-              </rules>
+-              <excludes>
+-                <exclude>condition/parser/**</exclude>
+-                <exclude>com/tdunning/**</exclude>
+-                <exclude>org/logstash/**</exclude>
+-                <exclude>datadog/**</exclude>
+-              </excludes>
+-            </configuration>
+-          </execution>
+-          <execution>
+-            <id>coverage-report</id>
+-            <phase>test</phase>
+-            <goals>
+-              <goal>report</goal>
+-            </goals>
+-            <configuration>
+-              <excludes>
+-                <exclude>condition/parser/**</exclude>
+-                <exclude>com/tdunning/**</exclude>
+-                <exclude>org/logstash/**</exclude>
+-              </excludes>
+-            </configuration>
+-          </execution>
+-        </executions>
+-      </plugin>
+ 
+       <plugin>
+         <groupId>org.springframework.boot</groupId>
+-- 
+2.43.7
+

@@ -2,7 +2,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.4
-Release:          5%{?dist}
+Release:          6%{?dist}
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -14,6 +14,8 @@ Source1:          %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch001: 0001-Remove-jacoco-plugin.patch
 
 BuildRequires:    apache-maven
 BuildRequires:    openjdk11
@@ -125,6 +127,9 @@ rm -rf %{buildroot}/*
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu Aug 21 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.4-6
+- Disable jacoco plugin
+- Update license
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.4-5
 - Update Requires to jre >= 11.0
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 13.4-4
