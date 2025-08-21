@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -312,6 +312,7 @@ sed -i '/srv/d' %{buildroot}%{_tmpfilesdir}/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}%{_tmpfilesdir}/legacy.conf
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}%{_systemd_util_dir}/network/99-default.link
 
+sed -i "s:#ShowStatus=yes:ShowStatus=yes:g" %{buildroot}%{_sysconfdir}/%{name}/system.conf
 sed -i "s:#LLMNR=yes:LLMNR=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 sed -i "s:#DNSSEC=no:DNSSEC=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
 sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
@@ -670,6 +671,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-17
+- Enable ShowStatus config
 * Wed Jun 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-16
 - Fix CVE-2025-4598
 * Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-15
