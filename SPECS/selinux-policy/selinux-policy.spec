@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -132,6 +132,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-9
+- Fix systemd-resolved failure
 * Mon Jun 10 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 36.5-8
 - Fix sshd_t config file permission
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-7
