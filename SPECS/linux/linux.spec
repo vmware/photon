@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.147
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -142,6 +142,9 @@ Source42: CVE-2023-39191.patches
 Source53: config_%{_arch}_acvp
 Source54: check_for_acvp_config_applicability.inc
 %endif
+
+Source100: Makefile.viomem
+Source101: viomem.c
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -808,6 +811,17 @@ cd build
 %cmake_build
 popd
 
+%ifarch x86_64
+# build viomem module
+mkdir ../viomem
+pushd ../viomem
+cp %{SOURCE100} Makefile
+cp %{SOURCE101} .
+cd ../viomem
+%make_build -C ${bldroot} M="${PWD}" V=1 modules
+popd
+%endif
+
 %if 0%{?canister_build}
 %include %{SOURCE50}
 %endif
@@ -843,6 +857,13 @@ bldroot="${PWD}"
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
 %make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
+
+%ifarch x86_64
+# install viomem module
+pushd ../viomem
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+%endif
 
 %ifarch x86_64
 # Verify for build-id match
@@ -1027,6 +1048,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 21 2025 Mounesh Badiger <mounesh.badiger@broadcom.com> 6.1.147-6
+- linux:Add viomem kernel module
 * Tue Aug 19 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.147-5
 - Fix CVE-2024-57982
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.147-4
