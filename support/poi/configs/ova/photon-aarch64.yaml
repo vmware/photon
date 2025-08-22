@@ -20,14 +20,12 @@ hardware:
     cdrom1:
         type: cd_drive
         parent: sata1
-    floppy1:
-        type: floppy
     rootdisk:
         type: hard_disk
         parent: scsi1
         disk_image: !param disk
     usb1:
-        type: usb_controller
+        type: usb3_controller
     ethernet1:
         type: ethernet
         subtype: VmxNet3

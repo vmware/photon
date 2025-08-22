@@ -192,7 +192,7 @@ class Poi(object):
                 "--raw-images",
                 image_file,
                 "--ova-config",
-                "photon.yaml",
+                f"photon-{self.arch}.yaml",
                 "--ova-name",
                 ova_name,
                 "--param",
