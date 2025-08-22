@@ -7,7 +7,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.9.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -30,7 +30,7 @@ BuildRequires: curl
 BuildRequires: zookeeper
 
 Requires: zookeeper
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 Requires(post): (coreutils or coreutils-selinux)
 
 %{?systemd_requires}
@@ -123,6 +123,8 @@ fi
 %attr(0700,kafka,kafka) %dir %{_data_dir}
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.1-2
+- Add jdk21 to requires list
 * Thu May 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-1
 - Update to 3.9.1, fixes multiple CVEs
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.4.0-4

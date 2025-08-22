@@ -1,7 +1,7 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
 Version:        1.2.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
 Group:          Applications/System
@@ -17,7 +17,7 @@ Source1: https://mirrors.ocf.berkeley.edu/apache//commons/daemon/binaries/%{name
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
 
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description
 The Daemon Component contains a set of Java and native code,
@@ -67,6 +67,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-5
+- Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-4
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-3

@@ -9,7 +9,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.99
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -36,7 +36,7 @@ Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires: openjdk11
 BuildRequires: apache-ant
 
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 Requires: apache-ant
 
 BuildArch: noarch
@@ -132,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.99-3
+- Add jdk21 to requires list
 * Fri Apr 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.99-2
 - Fix prep section to solve build regression
 * Tue Mar 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 8.5.99-1

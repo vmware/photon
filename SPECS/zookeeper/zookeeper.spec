@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.9.3
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://zookeeper.apache.org
 License:          Apache License, Version 2.0
 Group:            Applications/System
@@ -19,7 +19,7 @@ Patch0: zkSever_remove_cygwin_cypath.patch
 BuildRequires: systemd-devel
 
 Requires:   systemd
-Requires:   (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires:   (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
@@ -86,6 +86,8 @@ getent passwd %{name} >/dev/null || \
 %{_prefix}/*
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.3-2
+- Add jdk21 to requires list
 * Wed Jul 16 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.3-1
 - Update to 3.9.3, fixes many second level CVEs
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.8.0-2

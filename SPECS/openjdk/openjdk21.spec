@@ -5,7 +5,7 @@
 
 Summary:    OpenJDK
 Name:       openjdk21
-Version:    21.0.6
+Version:    21.0.8
 Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk21u
@@ -14,7 +14,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-21=fb03362608a35b0f6e131eaa974a52e6ff8a96f90d3bdaeccd2e1268f46db65c72387ed7bba1c8b0d9457c56950eae607fba29e102a338b009259262e1024726
+%define sha512 jdk-21=be96bfa216efedd0cb094c8b4a2307f84ff6fa8a3a2c30f2f6610023e24979eee7be6b96305d893eb7cf19ed3750167a76436201cfdbc623713236c852eea917
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -229,6 +229,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.8-1
+- Upgrade to v21.0.8
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.6-1
 - Upgrade to v21.0.6
 * Sun Dec 15 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 21.0.5-1

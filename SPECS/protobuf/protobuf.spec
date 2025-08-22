@@ -4,7 +4,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -70,7 +70,7 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-Requires:       (openjdk8 or openjdk11-jre or openjdk17-jre)
+Requires:       (openjdk8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description    java
 This contains protobuf java package.
@@ -154,6 +154,8 @@ popd
 %{_libdir}/java/%{name}/*.jar
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.23.3-4
+- Add jdk21 to requires list
 * Sun Aug 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.23.3-3
 - Bump version as a part of maven upgrade
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-2

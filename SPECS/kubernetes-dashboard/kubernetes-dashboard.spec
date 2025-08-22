@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
@@ -27,7 +27,7 @@ BuildRequires:  bc
 BuildRequires:  openjdk8
 
 Requires:       nodejs
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description
 Kubernetes Dashboard UI.
@@ -70,6 +70,8 @@ popd
 /opt/k8dashboard/public/*
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7.0-17
+- Add jdk21 to requires list
 * Mon Jun 23 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-16
 - Bump version as a part of nodejs upgrade
 * Fri May 16 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-15

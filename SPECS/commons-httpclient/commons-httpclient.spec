@@ -3,7 +3,7 @@
 Summary:    Apache commons-httpclient
 Name:       commons-httpclient
 Version:    3.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -31,7 +31,7 @@ BuildRequires:  wget
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
 
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description
 The Hyper-Text Transfer Protocol (HTTP) is perhaps the most significant
@@ -97,6 +97,8 @@ ant -Ddist.dir="." \
 %{_datadir}/java/%{name}/*.jar
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1-5
+- Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1-4
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.1-3

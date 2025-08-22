@@ -8,7 +8,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.10
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -30,7 +30,7 @@ Patch0: %{name}-CVE-2021-36373-CVE-2021-36374.patch
 
 BuildRequires: openjdk8
 
-Requires: (openjdk8 or openjdk11 or openjdk17)
+Requires: (openjdk8 or openjdk11 or openjdk17 or openjdk21)
 
 %description
 The Ant package contains binaries for a build system
@@ -138,6 +138,8 @@ rm -rf %{buildroot}
 %{_bindir}/runant.pl
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.10-6
+- Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.10-5
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.10-4

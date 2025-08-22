@@ -3,7 +3,7 @@
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    18%{?dist}
+Release:    19%{?dist}
 License:    Apache
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
@@ -21,7 +21,7 @@ BuildRequires: apache-ant
 BuildRequires: commons-httpclient
 
 Requires: apache-ant
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description
 The Ant Contrib project is a collection of tasks for Apache Ant.
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %{_prefix}/lib/*.jar
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0b3-19
+- Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0b3-18
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0b3-17

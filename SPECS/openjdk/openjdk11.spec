@@ -5,7 +5,7 @@
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.26
+Version:        11.0.28
 Release:        1%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
@@ -14,7 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-11.0=b5375de7c39aafa4fe1ef6556e17bf5c8ace577953ea8e666c4e8adc3e8b0f6fdbf20b7c426a156420acb99787363e0e4c9d36df20cefcef5e74a48bb75eeb24
+%define sha512 jdk-11.0=01d166fa8a4914c402a340409096530ab6313f5850d13b866ba354e02343a8b567bccee563b1d8b9b4ac5101f16d31c73a6549e21a96dd306da4b644d4609f89
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -61,6 +61,7 @@ Requires:       libgcc
 Requires:       zlib
 
 Provides: libjli.so()(64bit)
+Provides: jre = %{version}
 Conflicts: %{name} < 11.0.20-4%{?dist}
 
 %description    jre
@@ -246,6 +247,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.28-1
+- Upgrade to v11.0.28
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1
 - Upgrade to v11.0.26
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.22-2

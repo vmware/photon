@@ -5,7 +5,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        5.6.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
@@ -21,7 +21,7 @@ Patch1: jna-gcc-10.patch
 BuildRequires: openjdk8
 BuildRequires: apache-ant
 
-Requires: (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
@@ -92,6 +92,8 @@ rm -rf %{buildroot}
 %{_prefix}/*.aar
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.6.0-7
+- Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 5.6.0-6
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.6.0-5

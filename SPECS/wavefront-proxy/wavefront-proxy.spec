@@ -1,7 +1,7 @@
 Summary:          lightweight java application to send metrics to.
 Name:             wavefront-proxy
 Version:          13.4
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          Apache 2.0
 URL:              https://github.com/wavefrontHQ/java
 Group:            Development/Tools
@@ -16,7 +16,7 @@ BuildRequires:    openjdk8
 BuildRequires:    systemd-devel
 
 Requires:         systemd
-Requires:         (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires:         (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 Requires:         commons-daemon
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
@@ -103,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.4-4
+- Add jdk21 to requires list
 * Sun Aug 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.4-3
 - Bump version as a part of maven upgrade
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 13.4-2

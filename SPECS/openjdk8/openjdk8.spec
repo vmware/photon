@@ -1,13 +1,13 @@
 %global security_hardening  none
 %define jdk_major_version   1.8.0
-%define subversion          442
+%define subversion          462
 %define bootstrapjdkversion 1.8.0.112
 %define _use_internal_dependency_generator 0
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:    OpenJDK
 Name:       openjdk8
-Version:    1.8.0.442
+Version:    1.8.0.462
 Release:    1%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
@@ -16,7 +16,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/jdk8u%{subversion}-ga.tar.gz
-%define sha512 jdk8u=6c0fe0b7aaf5ff887c720cced4203231c7ea6490817a5cb10196dabe0f3941833ddcc8024d2fe04f3a84502b6fe08277a6ff2f84ce605f4209a3494b9f0a80b7
+%define sha512 jdk8u=e444fb52190c1464a5707615e2f3046bad5e5273c553a1b04cf93450b32e9bfdd49f06fbbe5d91217b6d22c6398db35c9bcb91010dfb237c760a95de02f6073e
 
 Patch0: Awt_build_headless_only.patch
 Patch1: check-system-ca-certs-x86.patch
@@ -55,6 +55,8 @@ AutoReqProv:    no
 Obsoletes:      openjre <= %{version}
 Requires:       chkconfig
 Requires:       libstdc++
+Provides:       jre = %{version}
+
 %description    -n openjre8
 It contains the libraries files for Java runtime environment
 
@@ -279,6 +281,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.462-1
+- Upgrade to v1.8.0.462
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.442-1
 - Upgrade to v 1.8.0.442
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.0.402-1

@@ -4,7 +4,7 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.14
+Version:    17.0.16
 Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
@@ -13,7 +13,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-17=0643ac52b68e5884734289ab13592feef7273db96f7b5c0fd77d801e4d4e44a84abcc439fd1b138119c5583986f1d0b058aa74f55b00e0dfd31333cbb536744d
+%define sha512 jdk-17=df6cf32fa5884a004c1edc8de6fac9210efb740dd962860d415e97cfd3d2a232f19210c3d7fc21d1248e3424a160ca9e087db92c509eb79e815aeec0a40f212c
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -60,6 +60,7 @@ Requires:       libgcc
 Requires:       zlib
 
 Provides: libjli.so()(64bit)
+Provides: jre = %{version}
 Conflicts: %{name} < 17.0.8-4%{?dist}
 
 %description    jre
@@ -236,6 +237,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.16-1
+- Upgrade to v17.0.16
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.14-1
 - Upgrade to v17.0.14
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.10-2

@@ -3,7 +3,7 @@
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        1.2.24
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache 2.0
 URL:            https://tomcat.apache.org/native-doc
 Group:          Applications/System
@@ -22,7 +22,7 @@ BuildRequires:  apr-devel
 
 Requires:       apr
 Requires:       openssl
-Requires:       (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires:       (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description
 The Apache Tomcat Native Library is an optional component for use with Apache Tomcat
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/libtcnative-1.a
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.24-7
+- Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.24-6
 - Bump version as a part of openjdk8 upgrade
 * Fri Sep 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.24-5

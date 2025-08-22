@@ -12,7 +12,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.107
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -39,7 +39,7 @@ BuildArch: noarch
 BuildRequires: openjdk17
 BuildRequires: apache-ant
 
-Requires:         (openjre8 or openjdk11-jre or openjdk17-jre)
+Requires:         (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 Requires:         apache-ant
 Requires:         chkconfig
 Requires(postun): chkconfig
@@ -146,6 +146,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.107-2
+- Add jdk21 to requires list
 * Fri Jul 18 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.107-1
 - Version upgrade to v9.0.107
 - Fixes CVE-2025-52520,CVE-2025-53506,CVE-2025-52434

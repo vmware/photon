@@ -7,7 +7,7 @@
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.9.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        http://maven.apache.org
 Group:      Applications/System
@@ -22,7 +22,7 @@ BuildRequires: apache-ant
 
 %define ExtraBuildRequires apache-maven
 
-Requires: (openjdk8 or openjdk11 or openjdk17)
+Requires: (openjdk8 or openjdk11 or openjdk17 or openjdk21)
 Requires: /usr/bin/which
 
 %description
@@ -76,6 +76,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.0-3
+- Add jdk21 to requires list
 * Wed Aug 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.0-2
 - Disable debug rpm build
 * Sun Aug 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.0-1
