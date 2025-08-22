@@ -14,6 +14,11 @@ import json
 
 from DockerUtil import DockerUtil
 
+from common import(
+    err_exit,
+    pr_err,
+    safe_print
+)
 
 class Scanner:
     _extra_repo_urls = None
@@ -28,7 +33,7 @@ class Scanner:
         lic_str = None
 
         if yaml_fn is None:
-            common.pr_err("No yaml file passed to parse function!")
+            pr_err("No yaml file passed to parse function!")
             return None
 
         print(f"Opening: '{yaml_fn}'")
@@ -122,7 +127,7 @@ class Scanner:
 
         # check for pip3 command existence
         if not shutil.which("pip3"):
-            common.err_exit(
+            err_exit(
                 "'pip3' command not found, please install with "
                 "'tdnf install -y python3-pip'"
             )
@@ -166,7 +171,7 @@ class Scanner:
             if result.stderr:
                 err_msg += f"\nStderr:\n{result.stderr.decode()}"
 
-            common.err_exit(err_msg)
+            err_exit(err_msg)
 
         print("Restoring Python package versions after tdnf packge install...")
         self._restore_python_reqs()
@@ -187,7 +192,7 @@ class Scanner:
                 print(f"[DELETE EXTRACTED ARCHIVE]: {archive_path}")
                 os.remove(archive_path)
             except Exception as e:
-                common.pr_err(
+                pr_err(
                     f"Failed to delete extracted archive {archive_path} "
                     f"for extracted dir {root}!\n"
                     f"Error: {e}"
@@ -217,7 +222,7 @@ class Scanner:
             src_url = f"{common.ph_pub_url}/photon_sources/1.0/{archive}"
 
             if not common.is_extractable(archive):
-                common.pr_err(
+                pr_err(
                     f"WARNING: {archive} doesn't appear to have an archive extension, is "
                     "this intentional?"
                 )
@@ -233,7 +238,7 @@ class Scanner:
                     src_url, output_path, allow_failure=True
                 )
                 if rc < 0 and alt_src_url:
-                    common.pr_err(
+                    pr_err(
                         f"Failed to download {src_url}, trying alternative"
                     )
                     src_url = f"{alt_src_url}/{archive}"
@@ -244,7 +249,7 @@ class Scanner:
 
                 # Finally, try downloading from the outside URL
                 if rc < 0 and "url" in source:
-                    common.pr_err(
+                    pr_err(
                         f"Failed to download {src_url}, trying directly"
                     )
                     src_url = source["url"]
@@ -253,7 +258,7 @@ class Scanner:
                     )
 
                 if rc < 0:
-                    common.err_exit(f"Failed to download {src_url}!")
+                    err_exit(f"Failed to download {src_url}!")
 
             # Validate checksum
             with open(output_path, "rb") as src_f:
@@ -262,7 +267,7 @@ class Scanner:
                 ).hexdigest()
 
             if local_checksum != archive_checksum:
-                common.err_exit(
+                err_exit(
                     f"For source: {archive}\n"
                     f"Downloaded {local_checksum} != {archive_checksum} from config.yaml\n"
                     f"config.yaml: {archive_checksum}\n"
@@ -276,7 +281,7 @@ class Scanner:
         spec_fn = os.path.basename(spec_path)
 
         if not rpm_build_cmds:
-            common.err_exit(
+            err_exit(
                 "No RPM build command passed to Scanner._rpmbuild_prep()!"
             )
 
@@ -290,12 +295,12 @@ class Scanner:
             if result.returncode == 0:
                 return
 
-            common.pr_err(
+            pr_err(
                 f"Failed to build src directory for {spec_fn}:\n{result.stdout.decode()}"
             )
 
             if result.stderr:
-                common.pr_err(result.stderr.decode())
+                pr_err(result.stderr.decode())
 
             if attempts < 2:
                 print(
@@ -303,7 +308,7 @@ class Scanner:
                 )
                 self._install_build_reqs(spec_path)
             else:
-                common.err_exit()
+                err_exit()
 
     # run rpmbuild -bp to get the source RPM to scan
     def _extract_src_rpm(self, rpm_path=None):
@@ -323,7 +328,7 @@ class Scanner:
             f"rpm -i {rpm_path} --root {common.rpm_install_root}"
         )
         if result.returncode != 0:
-            common.pr_err("Failed to install source RPM!")
+            pr_err("Failed to install source RPM!")
             return None
 
         # should only be one spec file here, since it's a clean dir
@@ -377,7 +382,7 @@ class Scanner:
             ph_root = os.path.dirname(ph_root)
 
         if not ph_root:
-            common.err_exit(f"Failed to find the SPECS path for {spec_path}!")
+            err_exit(f"Failed to find the SPECS path for {spec_path}!")
 
         ph_root = os.path.dirname(ph_root)
 
@@ -417,23 +422,23 @@ class Scanner:
         scan_dir = ""
 
         if not path:
-            common.err_exit("No path given to Scanner._setup_scan_dir()")
+            err_exit("No path given to Scanner._setup_scan_dir()")
 
         if path.endswith(".src.rpm"):
             scan_dir = self._extract_src_rpm(path)
             if not scan_dir:
-                common.err_exit(f"Failed to extract {path} as .src.rpm")
+                err_exit(f"Failed to extract {path} as .src.rpm")
         elif build_spec:
             # this is a Photon spec directory, i.e SPECS/<pkg name>
             if not path.endswith(".spec"):
-                common.err_exit(
+                err_exit(
                     "--build_spec option requires --path to point to a .spec file"
                 )
 
             specDir = os.path.dirname(path)
             config_yaml_path = f"{specDir}/config.yaml"
             if not os.path.exists(config_yaml_path):
-                common.pr_err(
+                pr_err(
                     f"config.yaml for {path} not found at {config_yaml_path}, nothing to scan"
                 )
                 return scan_dir
@@ -451,7 +456,7 @@ class Scanner:
             scan_dir = self._build_scan_dir_from_spec_dir(path, alt_src_url)
 
             if not scan_dir:
-                common.err_exit(f"Failed to build source directory for {path}")
+                err_exit(f"Failed to build source directory for {path}")
         elif not os.path.isdir(path):
             shutil.copy2(path, f"{common.ph_scan_dir}")
 
@@ -461,7 +466,7 @@ class Scanner:
             print(f"Extracting output from {input_file}...")
             res = common.run_cmd(f"extractcode {input_file} --shallow")
             if res.returncode != 0:
-                common.err_exit(f"ERROR: Extraction of {input_file} failed!")
+                err_exit(f"ERROR: Extraction of {input_file} failed!")
 
             if os.path.exists(f"{input_file}-extract"):
                 scan_dir = f"{common.ph_scan_dir}/{os.path.basename(input_file)}-extract"
@@ -568,12 +573,12 @@ class Scanner:
         if missing_files:
             pr_err("\nERROR: Invalid manual review entries found in config.yaml ...")
             pr_err("Entries:\n" + "\n".join(missing_files))
-            common.err_exit()
+            err_exit()
 
         return spdx_exp
 
     def _emit_spdx(self, spdx_exp="None"):
-        print(f"SPDX Expression: {spdx_exp}")
+        safe_print(f"SPDX Expression: {spdx_exp}", columnLimit=False)
 
     def _cleanup_scan(self, scan_dir=""):
         try:
@@ -583,7 +588,7 @@ class Scanner:
             if os.path.exists(common.ph_scan_dir):
                 shutil.rmtree(common.ph_scan_dir)
         except Exception as e:
-            common.pr_err(f"Failed to remove temp dir(s) after scan: {e}")
+            pr_err(f"Failed to remove temp dir(s) after scan: {e}")
 
     def _check_prereqs(self):
         common.check_scancode_ver()
@@ -600,7 +605,7 @@ class Scanner:
                 print(
                     f"'{cmd}' command not found, please install with '{install_hint}'"
                 )
-                common.err_exit("")
+                err_exit("")
 
     def _export_yaml(
         self, sc_yaml_out_path="", user_yaml_path=None, cache_util=None, cwd=""
@@ -646,10 +651,10 @@ class Scanner:
         abs_path = os.path.abspath(path)
 
         if not path:
-            common.err_exit("ERROR: No input given for scan!")
+            err_exit("ERROR: No input given for scan!")
 
         if not os.path.exists(abs_path):
-            common.err_exit(f"Path: '{abs_path}' does not exist! Exiting...")
+            err_exit(f"Path: '{abs_path}' does not exist! Exiting...")
 
         if not yaml:
             yaml = "/tmp/%s.yaml" % os.path.splitext(os.path.basename(path))[0]
@@ -708,7 +713,7 @@ class Scanner:
                 common.redis_host, common.redis_port, common.redis_ttl
             )
         elif common.redis_host or common.redis_port:
-            common.err_exit(
+            err_exit(
                 "For redis cache, need both the host and the port!"
             )
 
@@ -723,9 +728,9 @@ class Scanner:
             try:
                 lic_db.trim_lic_db()
             except Exception as e:
-                common.pr_err(f"Failed to trim license database: {e}")
+                pr_err(f"Failed to trim license database: {e}")
                 lic_db.restore_lic_db()
-                common.err_exit()
+                err_exit()
 
         # if redis cache, use it
         if cache_util:
@@ -749,7 +754,7 @@ class Scanner:
         )
 
         if result.returncode != 0:
-            common.pr_err("ERROR: scancode failed during scanning process :(")
+            pr_err("ERROR: scancode failed during scanning process :(")
             if not common.no_trimming:
                 lic_db.restore_lic_db()
 
@@ -759,7 +764,7 @@ class Scanner:
                 cwd=cwd,
                 sc_yaml_out_path=yaml_tmp_path,
             )
-            common.err_exit()
+            err_exit()
 
         if not common.no_trimming:
             print("Restoring license DB after scan completion")

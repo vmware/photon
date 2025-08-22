@@ -119,7 +119,7 @@ class DockerUtil:
             os.remove(self._docker_lock_fn)
 
         if result.returncode != 0:
-            msg = f"Docker image build failed:\n"
+            msg = "Docker image build failed:\n"
             if result.stdout:
                 msg += f"Stdout:\n{result.stdout.decode()}\n"
             if result.stderr:
