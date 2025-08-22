@@ -1,8 +1,8 @@
-%global ncursessubversion 20210807
+%global ncursessubversion 20250816
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
-Version:        6.2
-Release:        6%{?dist}
+Version:        6.5
+Release:        1%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses
 Group:          Applications/System
@@ -10,9 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha512  %{name}=2bad95a7062d4aba6e693630032f02b03a52280dfbd5a9adf30463822b39a14a3bb6d63187e18628b8fccb7e23d316733042e939be4804abd703430125dcfbed
-
-Patch0:         0001-CVE-2022-29458.patch
+%define sha512  %{name}=310b6e85dfc7500486bd252c8f495ef4df7fc15e175e358014bf8b654f596692d0151a37d189e09064e7bd90756e4b438d2e82e9fd24b28db528c94350cc0365
 
 Requires:       ncurses-libs = %{version}-%{release}
 Requires:       glibc
@@ -218,6 +216,8 @@ make %{?_smp_mflags}
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+* Fri Aug 22 2025 Guruswamy Basavaiah <guruswamy.basavaiah@vmware.com> 6.5-1
+- Upgrade to fix CVE-2025-6141
 * Mon May 09 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.2-6
 - Fix for CVE-2022-29458
 * Mon Mar 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.2-5
