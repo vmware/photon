@@ -3,7 +3,7 @@
 
 Name:           rubygem-kubeclient
 Version:        4.10.1
-Release:        7%{?dist}
+Release:        6%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -52,8 +52,6 @@ A client for Kubernetes REST api.
 %{gem_base}
 
 %changelog
-*   Fri Aug 22 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.10.1-7
--   Bump version with rubygem-activesupport bump
 *   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.10.1-6
 -   Bump version with rubygem-activesupport bump
 *   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.10.1-5

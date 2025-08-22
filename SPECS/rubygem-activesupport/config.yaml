@@ -1,12 +1,12 @@
 sources:
-- archive: activesupport-7.1.5.2.gem
+- archive: activesupport-7.0.8.5.gem
   archive_type: upstream
-  archive_sha512sum: 4a1add87f02f794ff12acaf43330e31b185d9e76f27e8b02b2a5aeefaf8f15b92cc8d933b33a409742d6ae0de620667473911b8cce15e4f1fc62d7bba36e0032
-  name: rubygem-activesupport-7.1.5.2
-  version: "7.1.5.2"
-  url: https://rubygems.org/downloads/activesupport-7.1.5.2.gem
+  archive_sha512sum: d9a3bcb2b06c8015eb47047d63282929d212a34c23205159be7a7e328d3e2f1639635a6e268ff0dd43c9b9a310208eac0a66e7ed57eb97e58bf41bdb90e55859
+  name: rubygem-activesupport-7.0.8.5
+  version: "7.0.8.5"
+  url: https://rubygems.org/downloads/activesupport-7.0.8.5.gem
   repo_url: https://github.com/rails/rails/
-  commit_id: ddb56de25997491b57868d3a119b6aa3cd31ad4b
+  commit_id: f61f4ef957f80e1668797fce8a2393f3edb7ed76
   skip_list: []
   missing: []
   skip_validation: true
@@ -15,7 +15,7 @@ sources:
       detailed_description: 'A toolkit of support libraries and Ruby core extensions
         extracted from the Rails framework. Rich support for multibyte strings, internationalization,
         time zones, and testing. '
-      home_page: https://rubygems.org/gems/activesupport/versions/7.1.5.2
+      home_page: https://rubygems.org/gems/activesupport/versions/7.0.8.5
       license_concluded: MIT
       license_declared: MIT
       short_summary: Support libaries for Rails framework.

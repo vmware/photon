@@ -5,7 +5,7 @@
 
 Name: rubygem-backports
 Version:        3.23.0
-Release:        4%{?dist}
+Release:        3%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -57,8 +57,6 @@ rake test
 %{gemdir}
 
 %changelog
-*   Fri Aug 22 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.23.0-4
--   Bump version with rubygem-activesupport bump
 *   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.23.0-3
 -   Bump version with rubygem-activesupport bump
 *   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.23.0-2
