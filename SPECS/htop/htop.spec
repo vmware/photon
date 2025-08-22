@@ -1,6 +1,6 @@
 Name:          htop
 Version:       3.2.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Interactive process viewer
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -49,6 +49,8 @@ autoreconf -vfi
 %{_mandir}/man1/htop.1*
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.2.1-4
+- Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.1-3
 - Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.2.1-2

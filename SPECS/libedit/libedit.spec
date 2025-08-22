@@ -4,7 +4,7 @@
 Summary:        The NetBSD Editline library
 Name:           libedit
 Version:        3.1.20221030
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.thrysoee.dk/editline
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.1.20221030-4
+- Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.20221030-3
 - Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 3.1.20221030-2

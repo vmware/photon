@@ -1,7 +1,7 @@
 Summary:        Text editor
 Name:           nano
 Version:        8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.nano-editor.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -61,6 +61,8 @@ make %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.2-3
+- Bump version as a part of ncurses upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 8.2-2
 - Release bump for SRP compliance
 * Tue Oct 01 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 8.2-1

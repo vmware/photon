@@ -1,11 +1,11 @@
-%global ncursessubversion 20230603
+%global ncursessubversion 20250816
 %define v6_so_ver   %{version}
 %define v5_so_ver   5.9
 
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
-Version:        6.4
-Release:        5%{?dist}
+Version:        6.5
+Release:        1%{?dist}
 URL:            http://invisible-island.net/ncurses
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -198,6 +198,8 @@ sh ./configure
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+* Fri Aug 22 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.5-1
+- Fixes CVE-2025-6141
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.4-5
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.4-4

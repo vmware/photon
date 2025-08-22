@@ -1,7 +1,7 @@
 Summary:          Z shell
 Name:             zsh
 Version:          5.9
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://zsh.org
 Group:            System Environment/Shells
 Vendor:           VMware, Inc.
@@ -125,6 +125,8 @@ fi
 %config(noreplace) %{_sysconfdir}/z*
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.9-5
+- Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.9-4
 - Release bump for SRP compliance
 * Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.9-3

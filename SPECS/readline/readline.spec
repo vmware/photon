@@ -11,7 +11,7 @@
 Summary:        Command-line editing and history capabilities
 Name:           readline
 Version:        8.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -20,7 +20,7 @@ Distribution:   Photon
 Source0: http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
 
 %if 0%{?bootstrap}
-Source1: http://ftp.gnu.org/gnu/readline/%{name}-%{bootstrap_major_version}.tar.gz
+#Source1: http://ftp.gnu.org/gnu/readline/%{name}-%{bootstrap_major_version}.tar.gz
 %endif
 
 Source2: license.txt
@@ -166,6 +166,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.2-8
+- Bump version as a part of ncurses upgrade
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.2-7
 - Fix conflicts on doc sub package
 * Mon Aug 11 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.2-6

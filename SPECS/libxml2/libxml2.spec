@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -101,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.12.10-6
+- Bump version as a part of ncurses upgrade
 * Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-5
 - Remove files to handle unintended copyright inclusions
 * Mon Jul 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-4

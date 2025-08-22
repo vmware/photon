@@ -1,7 +1,7 @@
 Summary:        Displays information about running processes
 Name:           psmisc
 Version:        23.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://gitlab.com/psmisc/psmisc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 23.6-5
+- Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.6-4
 - Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 23.6-3

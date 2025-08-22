@@ -3,7 +3,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.28.0
-Release:         5%{?dist}
+Release:         6%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -134,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.28.0-6
+- Bump version as a part of ncurses upgrade
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.28.0-5
 - Rebuild with llvm shared libs
 * Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.28.0-4

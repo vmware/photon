@@ -1,6 +1,6 @@
 Name:           gpsd
 Version:        3.25
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -239,6 +239,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.25-5
+- Bump version as a part of ncurses upgrade
 * Sat Jul 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.25-4
 - Disable bluez support
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.25-3

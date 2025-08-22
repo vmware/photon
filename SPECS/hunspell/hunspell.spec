@@ -1,6 +1,6 @@
 Name:           hunspell
 Version:        1.7.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A spell checker and morphological analyzer library
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ install -m0644 dictionaries/*.dic %{buildroot}%{_datadir}/%{name}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.7.2-4
+- Bump version as a part of ncurses upgrade
 * Thu Jul 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 1.7.2-3
 - Remove tests to handle unintended copyright inclusions
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.7.2-2

@@ -3,7 +3,7 @@
 Summary:       A utility for creating TTY dialog boxes
 Name:          dialog
 Version:       1.3
-Release:       10.20220728%{?dist}
+Release:       11.20220728%{?dist}
 URL:           http://invisible-island.net/dialog/dialog.html
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -84,6 +84,8 @@ rm -rf %{buildroot}%{_libdir}/.libs
 %{_mandir}/man3/dialog.*
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.3-11.20220728
+- Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.3-10.20220728
 - Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 1.3-9.20220728

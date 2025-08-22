@@ -1,7 +1,7 @@
 Summary:        gptfdisk-1.0.4
 Name:           gptfdisk
 Version:        1.0.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://sourceforge.net/projects/gptfdisk
 Group:          System Environment/Filesystem and Disk management
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.9-5
+- Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.9-4
 - Release bump for SRP compliance
 * Wed Sep 20 2023 Oliver Kurth <okurth@vmware.com> 1.0.9-3

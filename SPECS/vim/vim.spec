@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.1.1473
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -182,6 +182,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 9.1.1473-3
+- Bump version as a part of ncurses upgrade
 * Mon Sep 01 2025 Dweep Advani <dweep.advani@broadcom.com> 9.1.1473-2
 - Fix CVE-2025-9390
 * Mon Jun 23 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1.1473-1

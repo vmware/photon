@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        15.0.7
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -110,6 +110,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 15.0.7-8
+- Bump version as a part of ncurses upgrade
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-7
 - Enable shared libs
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 15.0.7-6

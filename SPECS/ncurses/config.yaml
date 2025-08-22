@@ -1,17 +1,25 @@
 sources:
-- archive: ncurses-6.4-20230603.tgz
-  archive_sha512sum: 5f62eeeba3a826a9c7e447cfe673d3b1f176dd39c930ddfac2550531588dbe7c73c5cc99ef0b844629c6dcd3676d4a93b5cb78d607fee824bdccfc030bdb6541
-  skip_validation: true
+- archive: ncurses-6.5-20250816.tgz
+  skip_validation: false
+  archive_sha512sum: 310b6e85dfc7500486bd252c8f495ef4df7fc15e175e358014bf8b654f596692d0151a37d189e09064e7bd90756e4b438d2e82e9fd24b28db528c94350cc0365
+  archive_type: upstream
+  name: ncurses-6.5-20250816
+  version: 6.5-20250816
+  repo_url: https://github.com/ThomasDickey/ncurses-snapshots.git
+  commit_id: 45e78e514f1b96be0f0094d8a1e05ec8f91932c5
+  url: https://invisible-island.net/archives/ncurses/current/ncurses-6.5-20250816.tgz
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The Ncurses package contains libraries for terminal-independent
         handling of character screens. '
       home_page: http://invisible-island.net/ncurses
-      license_concluded: FSFUL AND BSD-3-Clause AND MIT AND GPL-1.0-or-later AND X11
-        AND BSD-4-Clause-UC AND HPND-Markus-Kuhn AND GPL-2.0-only AND HPND AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND X11-distribute-modifications-variant
-      license_declared: FSFUL AND BSD-3-Clause AND MIT AND GPL-1.0-or-later AND X11
-        AND BSD-4-Clause-UC AND HPND-Markus-Kuhn AND GPL-2.0-only AND HPND AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND X11-distribute-modifications-variant
+      license_concluded: BSD-3-Clause AND BSD-4-Clause-UC AND FSFUL AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND AND HPND-Markus-Kuhn AND
+        MIT AND SMLNJ AND X11 AND X11-distribute-modifications-variant
+      license_declared: BSD-3-Clause AND BSD-4-Clause-UC AND FSFUL AND
+        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND AND HPND-Markus-Kuhn AND
+        MIT AND SMLNJ AND X11 AND X11-distribute-modifications-variant
       short_summary: Libraries for terminal handling of character screens
       supplier: 'Organization: Broadcom, Inc.'

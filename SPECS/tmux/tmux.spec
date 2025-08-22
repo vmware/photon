@@ -1,7 +1,7 @@
 Summary:        Terminal multiplexer
 Name:           tmux
 Version:        3.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://tmux.github.io
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -45,6 +45,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_usrsrc}
 
 %changelog
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.5-3
+- Bump version as a part of ncurses upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.5-2
 - Release bump for SRP compliance
 * Wed Oct 02 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 3.5-1
