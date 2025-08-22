@@ -80,7 +80,10 @@ known_failures = []
 _real_print = builtins.print
 
 
-def safe_print(*args, **kwargs):
+def safe_print(*args, columnLimit=True, **kwargs):
+    if not columnLimit:
+        _real_print(*args, **kwargs)
+        return
     MAX_COLS = 80
     text = " ".join(str(arg) for arg in args)
     start = 0
@@ -273,8 +276,6 @@ def extract_top_level_expressions(spdx_exp=None):
     start_pos = 0
     end_pos = 0
     paran_str = ""
-    exps = []
-    original_exp = spdx_exp.strip()
     uniq_ors = []
     while i < len(spdx_exp):
         # get everything inside the parantheses
