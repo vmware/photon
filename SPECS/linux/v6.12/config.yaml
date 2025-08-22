@@ -214,9 +214,9 @@ sources:
         BSD-3-Clause-acpica AND X11 AND HPND-export2-US AND Unlicense
       short_summary: Kernel
       supplier: 'Organization: Broadcom, Inc.'
-- archive: photon-jitterentropy-v6.12-2.tar.gz
+- archive: photon-jitterentropy-v6.12-3.tar.gz
   archive_sha512sum:
-    c4f7f77d03d33ef55e04c8c5882099343a0a2aa942f68da8c258ad346b829483df81c2b2984fc084c20e432a87f63a754455e6d0a12a2fc8435e4ad4f5025cc6
+    19d79f1b2706621a2de90781a76a5d4fa3f8689f41340828db30536e0dfabd026ead5762a46644fe2240391d518821b96ffe72d25ec46e404975119eaaa12368
   skip_validation: true
   spdx:
     package:

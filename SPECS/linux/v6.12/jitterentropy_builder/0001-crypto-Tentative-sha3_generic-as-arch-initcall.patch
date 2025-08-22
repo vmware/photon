@@ -1,0 +1,36 @@
+From 79c00518deec85b63bcd5d43d9bca4633684d68a Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Mon, 8 Sep 2025 12:21:06 +0000
+Subject: [PATCH] crypto: Tentative sha3_generic as arch initcall
+
+  -  In linux-esx, fips build flag is still not enabled
+     and canister consumption is still not supported.
+     But jitterentropy depends on sha3_generic & sha3_generic
+     needs to initialize before jitterentropy. Though this
+     is already taken care of in the canister, since it is still
+     not enabled, tentatively add a patch to force sha3_generic
+     as arch_initcall.
+     THIS PATCH SHOULD BE REMOVED when BUILD FIPS FLAG is enabled
+     in the spec file.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ crypto/sha3_generic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
+index b103642b5..4441b1432 100644
+--- a/crypto/sha3_generic.c
++++ b/crypto/sha3_generic.c
+@@ -289,7 +289,7 @@ static void __exit sha3_generic_mod_fini(void)
+ 	crypto_unregister_shashes(algs, ARRAY_SIZE(algs));
+ }
+ 
+-subsys_initcall(sha3_generic_mod_init);
++arch_initcall(sha3_generic_mod_init);
+ module_exit(sha3_generic_mod_fini);
+ 
+ MODULE_LICENSE("GPL");
+-- 
+2.35.6
+

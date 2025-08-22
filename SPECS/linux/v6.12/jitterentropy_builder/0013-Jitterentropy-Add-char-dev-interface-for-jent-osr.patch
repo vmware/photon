@@ -1,0 +1,301 @@
+From 1b51f12c10839cfa37ca7b42909b8d033f54f926 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Fri, 25 Jul 2025 08:25:38 +0000
+Subject: [PATCH] Jitterentropy: Add char dev interface for jent-osr
+
+  -  Add a char dev in jitterentropy-kcapi int and export
+     open, read, ioctl & release calls to user space such that
+     jitterentropy-osr tool can call the jent-osr char dev &
+     calculate OSR(max).
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ jitterentropy-kcapi.c | 213 +++++++++++++++++++++++++++++++++++++++++-
+ jitterentropy.c       |   3 +-
+ 2 files changed, 214 insertions(+), 2 deletions(-)
+
+diff --git a/jitterentropy-kcapi.c b/jitterentropy-kcapi.c
+index 8cfc77e..b4f42b8 100644
+--- a/jitterentropy-kcapi.c
++++ b/jitterentropy-kcapi.c
+@@ -42,12 +42,16 @@
+ #include <linux/fips.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/device.h>
++#include <linux/device/class.h>
++#include <linux/ioctl.h>
+ #include <linux/slab.h>
+ #include <linux/time.h>
+ #include <linux/sched.h>
+ #include <linux/stat.h>
+ #include <linux/namei.h>
+ #include <linux/string.h>
++#include <linux/device/devres.h>
+ #include <linux/fs.h>
+ #include <asm/uaccess.h>
+ #include <linux/vmalloc.h>
+@@ -72,9 +76,19 @@ MODULE_PARM_DESC(mem_access_type, "jent Mem Block Access default=random");
+  */
+ #define NUM_SAMPLE_FILES 3
+ 
++#define JENT_OSR_DEVICE_NAME "jent_osr"
++static struct class*  jent_osr_class  = NULL;
++static struct device* jent_osr_device = NULL;
++static int jent_osr_major;
++DEFINE_MUTEX(jent_osr_lock);
++
++#define JENT_OSR_MAGIC 'J'
++#define JENT_ALLOC_AND_INIT _IOW(JENT_OSR_MAGIC, 1, unsigned long *)
++#define JENT_SET_FLAGS _IOW(JENT_OSR_MAGIC, 2, unsigned long *)
++
+ struct sample_file_param {
+ 	struct file *fp;
+-	char name[224];
++	char name[224]; /* Max File name with path */
+ 	bool full;
+ };
+ 
+@@ -615,6 +629,180 @@ static struct rng_alg jent_alg = {
+ 	}
+ };
+ 
++struct jent_osr_data {
++	struct rand_data *ec;
++	struct crypto_shash *hash;
++	struct shash_desc *sdesc;
++	u32 osr;
++	u32 flags;
++};
++
++static int jent_osr_data_alloc(struct jent_osr_data *data)
++{
++	int size = 0, ret = -EINVAL;
++
++	data->hash = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
++	if (IS_ERR(data->hash)) {
++		pr_err("Jitterentropy: Failed to alloc hash: jent_osr_data\n");
++		ret = PTR_ERR(data->hash);
++		devm_kfree(jent_osr_device, data);
++		return ret;
++	}
++	size = sizeof(struct shash_desc) + crypto_shash_descsize(data->hash);
++	data->sdesc = devm_kzalloc(jent_osr_device, size, GFP_KERNEL);
++	if (!data->sdesc) {
++		pr_err("Jitterentropy: Fail to alloc sdesc: jent_osr_data\n");
++		crypto_free_shash(data->hash);
++		ret = -ENOMEM;
++		return ret;
++	}
++	data->sdesc->tfm = data->hash;
++	crypto_shash_init(data->sdesc);
++	return 0;
++}
++
++static void jent_osr_data_destroy(struct jent_osr_data * data)
++{
++	if (data->ec)
++		jent_entropy_collector_free(data->ec);
++	data->ec = NULL;
++
++	if (data->sdesc) {
++		shash_desc_zero(data->sdesc);
++		devm_kfree(jent_osr_device, data->sdesc);
++	}
++	data->sdesc = NULL;
++
++	if (data->hash)
++		crypto_free_shash(data->hash);
++	data->hash = NULL;
++}
++
++static int dev_open(struct inode *inod, struct file *filep)
++{
++	int ret = -EINVAL;
++	struct jent_osr_data *data = devm_kzalloc(jent_osr_device,
++				sizeof(struct jent_osr_data), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(data)) {
++		pr_err("Jitterentropy: Failed to alloc mem: jent_osr_data\n");
++		return -ENOMEM;
++	}
++	ret = jent_osr_data_alloc((struct jent_osr_data *)data);
++	if (ret) {
++		pr_err("Jitterentropy: Fail to alloc jent_osr_data\n");
++		devm_kfree(jent_osr_device, data);
++		return ret;
++	}
++	filep->private_data = (struct jent_osr_data *)data;
++	pr_info("Jitterentropy: Device opened %s\n", JENT_OSR_DEVICE_NAME);
++	return 0;
++}
++
++static ssize_t dev_read(struct file *filep, char *buf, size_t len, loff_t *off)
++{
++	int ret = -EINVAL;
++	char tmp_buf[32] = {0};
++	struct jent_osr_data *data = (struct jent_osr_data *)filep->private_data;
++
++	mutex_lock(&jent_osr_lock);
++	if (32 < len)
++		len = 32;
++	ret = jent_read_entropy(data->ec, tmp_buf, len);
++	if (ret) {
++		pr_err("Jitterentropy: Failed to read jent\n");
++		jent_entropy_collector_free(data->ec);
++		jent_osr_data_destroy(data);
++		return ret;
++	}
++	if (copy_to_user(buf, tmp_buf, len)) {
++		pr_err("Jitterentropy: Failed to copy_to_user\n");
++		return -EFAULT;
++	}
++	mutex_unlock(&jent_osr_lock);
++	return len;
++}
++
++static ssize_t dev_write(struct file *filep, const char *buf, size_t len,
++							loff_t *off)
++{
++	return -EINVAL;
++}
++
++static int dev_release(struct inode *inod, struct file *filep)
++{
++	struct jent_osr_data *data = (struct jent_osr_data *)filep->private_data;
++	jent_osr_data_destroy(data);
++	devm_kfree(jent_osr_device, data);
++	filep->private_data = NULL;
++	pr_info("Jitterentropy: Device closed\n");
++	return 0;
++}
++
++static long jent_osr_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
++{
++	int ret = -EINVAL;
++	unsigned long arg_val = 0;
++	u32 osr = 0;
++	u32 flags = 0;
++
++	struct jent_osr_data *data = (struct jent_osr_data *)filep->private_data;
++
++	mutex_lock(&jent_osr_lock);
++
++	if (copy_from_user(&arg_val, (unsigned long __user *)arg,
++						sizeof(arg_val))) {
++		pr_err("Jitterentropy: FAIL to copy arg from user\n");
++		return ret;
++	}
++	osr = (u32)(arg_val & 0xFFFFFFFFULL);
++	flags = (u32)((arg_val >> 32) & 0xFFFFFFFFULL);
++	pr_err("jent: Input osr = %u & Input flags = 0x%X\n", osr, flags);
++	switch(cmd) {
++
++	case JENT_ALLOC_AND_INIT:
++		data->osr = osr;
++		data->flags = flags;
++		if (!filep || !filep->private_data) {
++			pr_err("Jitterentropy: IOCTL called with Null buf or ptr\n");
++			return ret;
++		}
++		data->ec = jent_entropy_collector_alloc(data->osr, data->flags, data->sdesc);
++		if (!data->ec) {
++			pr_err("Jitterentropy: Fail to alloc ec\n");
++			jent_osr_data_destroy(data);
++			return PTR_ERR(data->ec);
++		}
++		ret = jent_entropy_init(data->osr, data->flags, data->sdesc, data->ec);
++		if (ret || !data->ec) {
++			pr_err("Jitterentropy: Failed to initialize\n");
++			jent_osr_data_destroy(data);
++			jent_entropy_collector_free(data->ec);
++			return ret;
++		}
++		break;
++
++	case JENT_SET_FLAGS:
++				data->flags = (u32)(arg_val & 0xFFFFFFFFULL);
++				break;
++
++	default:
++				pr_err("Jitterentropy: Unsupported IOCTL\n");
++				break;
++	}
++
++	mutex_unlock(&jent_osr_lock);
++	return ret;
++}
++
++static struct file_operations fops=
++{
++	.read=dev_read,
++	.write=dev_write,
++	.open=dev_open,
++	.release=dev_release,
++	.unlocked_ioctl = jent_osr_ioctl,
++};
++
+ static int __init jent_mod_init(void)
+ {
+ 	SHASH_DESC_ON_STACK(desc, tfm);
+@@ -623,6 +811,26 @@ static int __init jent_mod_init(void)
+ 
+ 	jent_testing_init();
+ 
++	jent_osr_major = register_chrdev(0, JENT_OSR_DEVICE_NAME, &fops);
++	if (jent_osr_major < 0 ) {
++		pr_info("jitterentropy: Failed to register chr dev for OSR\n");
++		jent_testing_exit();
++		return jent_osr_major;
++	}
++	jent_osr_class = class_create("jent_osr_class");
++	if (IS_ERR_OR_NULL(jent_osr_class)) {
++		pr_info("jitterentropy: Failed to register device class \n");
++		jent_testing_exit();
++		return PTR_ERR(jent_osr_class);
++        }
++	jent_osr_device = device_create(jent_osr_class, NULL,
++			MKDEV(jent_osr_major, 0), NULL, JENT_OSR_DEVICE_NAME);
++	if (IS_ERR_OR_NULL(jent_osr_device)) {
++		pr_info("jitterentropy: Failed to register char device \n");
++		class_destroy(jent_osr_class);
++		jent_testing_exit();
++		return PTR_ERR(jent_osr_device);
++	}
+ 	tfm = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
+ 	if (IS_ERR(tfm)) {
+ 		jent_testing_exit();
+@@ -650,7 +858,10 @@ static int __init jent_mod_init(void)
+ static void __exit jent_mod_exit(void)
+ {
+ 	jent_testing_exit();
++	device_destroy(jent_osr_class, MKDEV(jent_osr_major, 0));
++	class_destroy(jent_osr_class);
+ 	crypto_unregister_rng(&jent_alg);
++	unregister_chrdev(jent_osr_major, JENT_OSR_DEVICE_NAME);
+ }
+ 
+ /* Must be initialized before tcrypt */
+diff --git a/jitterentropy.c b/jitterentropy.c
+index e30908f..41cd090 100644
+--- a/jitterentropy.c
++++ b/jitterentropy.c
+@@ -842,7 +842,7 @@ static int jent_measure_jitter(struct rand_data *ec, __u64 *ret_current_delta)
+  */
+ static void jent_gen_entropy(struct rand_data *ec)
+ {
+-	unsigned int k = 0, safety_factor = 0;
++	unsigned long k = 0, safety_factor = 0;
+ 
+ 	if (jcw_fips_enabled())
+ 		safety_factor = JENT_ENTROPY_SAFETY_FACTOR;
+@@ -954,6 +954,7 @@ struct rand_data *jent_entropy_collector_alloc(unsigned int osr,
+ 	/* Initialize GCD to 1 */
+ 	entropy_collector->gcd = JENT_GCD_DEFAULT;
+ 
++	jcw_printk("jent: In %s, osr = %u & flags = 0x%X\n", __func__, osr, flags);
+ 	if (!(flags & JENT_DISABLE_MEMORY_ACCESS)) {
+ 		/* Allocate memory for adding variations based on memory
+ 		 * access
+-- 
+2.35.6
+

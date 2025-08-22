@@ -1,20 +1,26 @@
-From 08273defef082bffbfecf9f61ac135c38ab24aaa Mon Sep 17 00:00:00 2001
+From cf8f4e570dc1a3ceb07236753829fae765ca6123 Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhi.rao@broadcom.com>
 Date: Wed, 25 Jun 2025 09:03:43 +0000
 Subject: [PATCH] jitterentropy-kcapi: Support-for-sample-collection
 
   -  Add support for jitterentropy sample collection
      which will be enabled under ACVP build.
+     This patch enables functions which can capture 300 million
+     raw data samples & 1000 restart samples.
+     one raw data sample consists of a u64 value of high resolution
+     time delta between two successive jent measurements.
+     Modify sample write functions to only collect lower bound
+     raw values i.e. raw data with no conditioning from jitterentropy.
 
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- jitterentropy-kcapi.c | 358 +++++++++++++++++++++++++++++++++++++++++-
- jitterentropy.c       |  63 +++++++-
+ jitterentropy-kcapi.c | 290 +++++++++++++++++++++++++++++++++++++++++-
+ jitterentropy.c       |  65 +++++++++-
  jitterentropy.h       |   6 +
- 3 files changed, 424 insertions(+), 3 deletions(-)
+ 3 files changed, 358 insertions(+), 3 deletions(-)
 
 diff --git a/jitterentropy-kcapi.c b/jitterentropy-kcapi.c
-index 33c2357..f9e8ca0 100644
+index dceadb7..8cfc77e 100644
 --- a/jitterentropy-kcapi.c
 +++ b/jitterentropy-kcapi.c
 @@ -44,6 +44,13 @@
@@ -31,16 +37,17 @@ index 33c2357..f9e8ca0 100644
  #include <crypto/internal/rng.h>
  
  #include "photon-jitterentropy-v6.12/jitterentropy.h"
-@@ -57,13 +64,37 @@ module_param_string(mem_access_type, mem_access_method,
+@@ -57,13 +64,38 @@ module_param_string(mem_access_type, mem_access_method,
                                          ARRAY_SIZE(mem_access_method), 0444);
  MODULE_PARM_DESC(mem_access_type, "jent Mem Block Access default=random");
  
-+#ifndef TOTAL_SAMPLES
-+#define TOTAL_SAMPLES 1000000
-+#endif
-+
-+#define RESTART_ROUNDS 1
-+#define TOTAL_ROUNDS 1000
++/*
++ * We need to collect 300 million samples for ESV certification. However,
++ * Max file size in linux is limited by FILE_MAX which is around 2.3GB.
++ * The Total size of 300 million samples will be around 5GB, we need
++ * 3 files to collect 300 million samples in total
++ */
++#define NUM_SAMPLE_FILES 3
 +
 +struct sample_file_param {
 +	struct file *fp;
@@ -70,7 +77,7 @@ index 33c2357..f9e8ca0 100644
  		return true;
  	}
  	if (!jcw_strncasecmp(mem_access_method, "sequential",
-@@ -92,6 +123,325 @@ void jent_get_nstime(__u64 *out)
+@@ -100,6 +132,256 @@ void jent_get_nstime(__u64 *out)
  	jent_raw_hires_entropy_store(tmp);
  }
  
@@ -81,7 +88,7 @@ index 33c2357..f9e8ca0 100644
 +	struct path path;
 +	struct kstat stat;
 +
-+	for (i = 0; i < 4; i++) {
++	for (i = 0; i < NUM_SAMPLE_FILES; i++) {
 +		memset(&stat, 0, sizeof(struct kstat));
 +		if (sampl[i].full == true)
 +			continue;
@@ -117,27 +124,29 @@ index 33c2357..f9e8ca0 100644
 +							unsigned long rounds)
 +{
 +	struct file *wr_fp = NULL;
-+	char tmp_rdata[53] = {0};
-+	struct sample_file_param smp_files[4] = {0};
++	/*
++	 * One sample is collected as a u64 value. To express the MAX Value
++	 * of a u64 in terms of char bytes will required 20 bytes. Accounting
++	 * for new line character, allocate a char array of 24 to hold one
++	 * sample.
++	 */
++	char tmp_rdata[24] = {0};
++	struct sample_file_param smp_files[NUM_SAMPLE_FILES] = {0};
 +	loff_t ppos = 0;
 +	int wr_siz = 0;
 +	__u64 *duration = NULL;
-+	__u64 *duration_min = NULL;
-+	__u64 size = 0;
 +
 +	unsigned int health_test_result = 0;
 +	int ret = 0, indx = 0, i = 0;
 +
-+	struct rand_data *ec = NULL, *ec_min = NULL;
++	struct rand_data *ec = NULL;
 +
-+	struct crypto_shash *tfm, *tfm_min;
++	struct crypto_shash *tfm;
 +	SHASH_DESC_ON_STACK(f_desc, tfm);
-+	SHASH_DESC_ON_STACK(f_desc_min, tfm_min);
 +
 +	snprintf(smp_files[0].name, sizeof(smp_files[0].name), "%s-%.4u", sample_file_name, 1);
 +	snprintf(smp_files[1].name, sizeof(smp_files[1].name), "%s-%.4u", sample_file_name, 2);
 +	snprintf(smp_files[2].name, sizeof(smp_files[2].name), "%s-%.4u", sample_file_name, 3);
-+	snprintf(smp_files[3].name, sizeof(smp_files[3].name), "%s-%.4u", sample_file_name, 4);
 +
 +	tfm = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
 +	if (IS_ERR(tfm))
@@ -145,13 +154,6 @@ index 33c2357..f9e8ca0 100644
 +
 +	f_desc->tfm = tfm;
 +	crypto_shash_init(f_desc);
-+
-+	tfm_min = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
-+	if (IS_ERR(tfm_min))
-+		return PTR_ERR(tfm_min);
-+
-+	f_desc_min->tfm = tfm_min;
-+	crypto_shash_init(f_desc_min);
 +
 +	ec = jent_entropy_collector_alloc(CONFIG_CRYPTO_JITTERENTROPY_OSR,
 +							0, f_desc);
@@ -165,19 +167,7 @@ index 33c2357..f9e8ca0 100644
 +		pr_err("\n Failed to initialize jitterentropy \n");
 +		goto out_2;
 +	}
-+	ec_min = jent_entropy_collector_alloc(CONFIG_CRYPTO_JITTERENTROPY_OSR,
-+							0, f_desc_min);
-+	if (!ec_min) {
-+		pr_err("Failed to allocate jitter entropy rng for sample\n");
-+		goto out_2;
-+	}
-+	ret = jent_entropy_init(CONFIG_CRYPTO_JITTERENTROPY_OSR,
-+						0, f_desc_min, ec_min);
-+	if (ret || !ec_min) {
-+		pr_err("\n Failed to initialize jitterentropy \n");
-+		goto out_2;
-+	}
-+	for (i = 0; i < 4; i++) {
++	for (i = 0; i < NUM_SAMPLE_FILES; i++) {
 +		smp_files[i].fp = filp_open(smp_files[i].name,
 +			O_CREAT | O_WRONLY | O_CLOEXEC,
 +			S_IRUSR | S_IWUSR);
@@ -188,47 +178,39 @@ index 33c2357..f9e8ca0 100644
 +		}
 +	}
 +	/* Prime the EC */
-+	jent_sample_collect(ec, 0, NULL);
-+	/* Prime the EC min */
-+	jent_sample_collect(ec_min, 0, NULL);
++	for (i = 0; i < 1024; i++)
++		jent_sample_collect(ec, 0, NULL);
 +
-+	/* TODO: Put a wide for loop of rounds/10000 iterations */
-+	/* TODO: Hardcode number of rounds to ten thousand */
-+	duration = (__u64 *)kzalloc(sizeof(__u64)*10000, GFP_KERNEL);
-+	duration_min = (__u64 *)kzalloc(sizeof(__u64)*10000, GFP_KERNEL);
-+	if (IS_ERR_OR_NULL(duration) || IS_ERR_OR_NULL(duration_min)) {
++	duration = (__u64 *)kzalloc(sizeof(__u64)*1, GFP_KERNEL);
++	if (IS_ERR_OR_NULL(duration)) {
 +		pr_err("\n Failed to allocate memory for duration\n");
 +		goto out;
 +	}
-+	/* TODO: Put a wide for loop of rounds/10000 iterations */
-+	for (indx = 0; indx <= rounds/10000; indx++) {
-+		jcw_memzero_explicit(duration, sizeof(__u64)*10000);
-+		jcw_memzero_explicit(duration_min, sizeof(__u64)*10000);
-+		for (size = 0; size < 10000; size++) {
++	/*
++	 * TODO: Read one sample from jent_collect_sample() & write it
++	 * immediately into the file. It doesn't matter if the file write takes
++	 * some additional cpu cycles. Keep writing to the file till the file
++	 * size reaches FILE_MAX. After that open the second file & keep
++	 * dumping the data into second file till 300 million samples are
++	 * collected.
++	 */
++	do {
++		jcw_memzero_explicit(duration, sizeof(__u64));
 +		/* Disregard stuck indicator*/
-+			jent_sample_collect(ec, 0, &duration[size]);
++		jent_sample_collect(ec, 0, duration);
++		ret = check_stat_and_fetch_fp(smp_files, &ppos, &wr_fp);
++		if (ret) {
++			jcw_printk("Error as all files are full %d\n", ret);
++			goto out;
 +		}
-+		for (size = 0; size < 10000; size++) {
-+			/* Disregard stuck indicator*/
-+			jent_sample_collect(ec_min, 1, &duration_min[size]);
-+		}
-+		for (size = 0; size < 10000; size++) {
-+			ret = check_stat_and_fetch_fp(smp_files, &ppos, &wr_fp);
-+			if (ret) {
-+				jcw_printk("Error as all files are full %d\n", ret);
-+				goto out;
-+			}
-+			memset(tmp_rdata, 0 ,sizeof(tmp_rdata));
-+			wr_siz = snprintf(tmp_rdata, sizeof(tmp_rdata),
-+					"%llu %llu", duration[size],
-+					duration_min[size]);
-+			kernel_write(wr_fp, &tmp_rdata, wr_siz, &ppos);
-+			ppos += wr_siz;
-+			kernel_write(wr_fp, "\n", sizeof(char), &ppos);
-+			ppos++;
-+		}
-+		cond_resched();
-+	}
++		memset(tmp_rdata, 0 ,sizeof(tmp_rdata));
++		wr_siz = snprintf(tmp_rdata, sizeof(tmp_rdata),
++					"%llu\n", *duration);
++		kernel_write(wr_fp, tmp_rdata, wr_siz, &ppos);
++		ppos += wr_siz;
++		indx++;
++	} while (indx <= rounds);
++
 +	if ((health_test_result = jent_health_failure(ec))) {
 +		jcw_printk("jent collector health test failure(s):\n");
 +		if(health_test_result & 1)
@@ -241,27 +223,19 @@ index 33c2357..f9e8ca0 100644
 +	}
 +
 +out:
-+	for (i = 0; i < 4; i++) {
++	for (i = 0; i < NUM_SAMPLE_FILES; i++) {
 +		if (!IS_ERR_OR_NULL(smp_files[i].fp))
 +			filp_close(smp_files[i].fp, NULL);
 +	}
 +	if (duration)
 +		kfree(duration);
-+	if (duration_min)
-+		kfree(duration_min);
 +out_2:
 +	if (ec)
 +		jent_entropy_collector_free(ec);
-+	if (ec_min)
-+		jent_entropy_collector_free(ec_min);
 +	if (f_desc)
 +		shash_desc_zero(f_desc);
-+	if (f_desc_min)
-+		shash_desc_zero(f_desc_min);
 +	if (tfm)
 +		crypto_free_shash(tfm);
-+	if (tfm_min)
-+		crypto_free_shash(tfm_min);
 +
 +	return ret;
 +}
@@ -271,21 +245,19 @@ index 33c2357..f9e8ca0 100644
 +						unsigned long rounds)
 +{
 +	struct file *fp = NULL;
-+	char tmp_rdata[53] = {0};
++	char tmp_rdata[24] = {0}; /* 24 char bytes to hold u64 MAX value */
 +	loff_t ppos = 0;
 +	int wr_siz = 0;
 +	__u64 *duration = NULL;
-+	__u64 *duration_min = NULL;
 +	__u64 size = 0;
 +
 +	unsigned int health_test_result = 0;
 +	int ret = 0;
 +
-+	struct rand_data *ec = NULL, *ec_min = NULL;
++	struct rand_data *ec = NULL;
 +
-+	struct crypto_shash *tfm, *tfm_min;
++	struct crypto_shash *tfm;
 +	SHASH_DESC_ON_STACK(f_desc, tfm);
-+	SHASH_DESC_ON_STACK(f_desc_min, tfm_min);
 +
 +	tfm = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
 +	if (IS_ERR(tfm))
@@ -293,13 +265,6 @@ index 33c2357..f9e8ca0 100644
 +
 +	f_desc->tfm = tfm;
 +	crypto_shash_init(f_desc);
-+
-+	tfm_min = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
-+	if (IS_ERR(tfm_min))
-+		return PTR_ERR(tfm_min);
-+
-+	f_desc_min->tfm = tfm_min;
-+	crypto_shash_init(f_desc_min);
 +
 +	ec = jent_entropy_collector_alloc(CONFIG_CRYPTO_JITTERENTROPY_OSR,
 +							0, f_desc);
@@ -313,21 +278,8 @@ index 33c2357..f9e8ca0 100644
 +		pr_err("\n Failed to initialize first jitterentropy \n");
 +		goto out_2;
 +	}
-+	ec_min = jent_entropy_collector_alloc(CONFIG_CRYPTO_JITTERENTROPY_OSR,
-+							0, f_desc_min);
-+	if (!ec_min) {
-+		pr_err("Failed to allocate jitter entropy rng for sample\n");
-+		goto out_2;
-+	}
-+	ret = jent_entropy_init(CONFIG_CRYPTO_JITTERENTROPY_OSR,
-+						0, f_desc_min, ec_min);
-+	if (ret || !ec_min) {
-+		pr_err("\n Failed to initialize jitterentropy \n");
-+		goto out_2;
-+	}
 +	duration = (__u64 *)vzalloc(sizeof(__u64)*rounds);
-+	duration_min = (__u64 *)vzalloc(sizeof(__u64)*rounds);
-+	if (IS_ERR_OR_NULL(duration) || IS_ERR_OR_NULL(duration_min)) {
++	if (IS_ERR_OR_NULL(duration)) {
 +		pr_err("\n Failed to allocate memory for duration\n");
 +		goto out;
 +	}
@@ -337,26 +289,20 @@ index 33c2357..f9e8ca0 100644
 +		/* Disregard stuck indicator*/
 +		jent_sample_collect(ec, 0, &duration[size]);
 +	}
-+	/* Prime the test */
-+	jent_sample_collect(ec_min, 0, NULL);
-+	for (size = 0; size < rounds; size++) {
-+		/* Disregard stuck indicator*/
-+		jent_sample_collect(ec_min, 1, &duration_min[size]);
-+	}
 +	fp = filp_open(sample_file_name,
 +			O_CREAT | O_WRONLY | O_CLOEXEC, S_IRUSR | S_IWUSR);
-+	if ( IS_ERR_OR_NULL(fp)) {
++	if (IS_ERR_OR_NULL(fp)) {
 +		pr_err("JENT: Failed to open fp for writing\n");
 +		goto out;
 +	}
 +	for (size = 0; size < rounds; size++) {
 +		memset(tmp_rdata, 0 ,sizeof(tmp_rdata));
-+		wr_siz = snprintf(tmp_rdata, sizeof(tmp_rdata), "%llu %llu",
-+					duration[size], duration_min[size]);
-+		kernel_write(fp, &tmp_rdata, wr_siz, &ppos);
++		wr_siz = snprintf(tmp_rdata, sizeof(tmp_rdata), "%llu\n",
++					duration[size]);
++		kernel_write(fp, tmp_rdata, wr_siz, &ppos);
++
++		/* Increment the file position after 1000 samples */
 +		ppos += wr_siz;
-+		kernel_write(fp, "\n", sizeof(char), &ppos);
-+		ppos++;
 +	}
 +	if ((health_test_result = jent_health_failure(ec))) {
 +		jcw_printk("ent collector health test failure(s):\n");
@@ -373,21 +319,13 @@ index 33c2357..f9e8ca0 100644
 +		filp_close(fp, NULL);
 +	if (duration)
 +		vfree(duration);
-+	if (duration_min)
-+		vfree(duration_min);
 +out_2:
 +	if (ec)
 +		jent_entropy_collector_free(ec);
-+	if (ec_min)
-+		jent_entropy_collector_free(ec_min);
 +	if (f_desc)
 +		shash_desc_zero(f_desc);
-+	if (f_desc_min)
-+		shash_desc_zero(f_desc_min);
 +	if (tfm)
 +		crypto_free_shash(tfm);
-+	if (tfm_min)
-+		crypto_free_shash(tfm_min);
 +
 +	return ret;
 +}
@@ -396,7 +334,7 @@ index 33c2357..f9e8ca0 100644
  int jent_hash_time(void *hash_state, __u64 time, u8 *addtl,
  		   unsigned int addtl_len, __u64 hash_loop_cnt,
  		   unsigned int stuck)
-@@ -130,7 +480,11 @@ int jent_hash_time(void *hash_state, __u64 time, u8 *addtl,
+@@ -138,7 +420,11 @@ int jent_hash_time(void *hash_state, __u64 time, u8 *addtl,
  		if (ret)
  			goto err;
  	}
@@ -410,7 +348,7 @@ index 33c2357..f9e8ca0 100644
  	 * Inject the data from the previous loop into the pool. This data is
  	 * not considered to contain any entropy, but it stirs the pool a bit.
 diff --git a/jitterentropy.c b/jitterentropy.c
-index b54544c..9ad5cb0 100644
+index ddfe1ed..e30908f 100644
 --- a/jitterentropy.c
 +++ b/jitterentropy.c
 @@ -562,7 +562,7 @@ static int jent_stuck(struct rand_data *ec, __u64 current_delta)
@@ -422,7 +360,7 @@ index b54544c..9ad5cb0 100644
  {
  	/* Test is only enabled in FIPS mode */
  	if (!jcw_fips_enabled())
-@@ -722,6 +722,67 @@ static void jent_memaccess_sequential(struct rand_data *ec, __u64 loop_cnt)
+@@ -730,6 +730,69 @@ static void jent_memaccess_sequential(struct rand_data *ec, __u64 loop_cnt)
   *
   * @return result of stuck test
   */
@@ -476,9 +414,11 @@ index b54544c..9ad5cb0 100644
 +		jcw_printk("In %s ec->hash_state is NULL\n", __func__);
 +		return -1;
 +	}
-+	if (jent_hash_time(ec->hash_state, time, (u8 *)&addtl,
-+				sizeof(addtl), loop_cnt, stuck))
-+		stuck = 1;
++	if (loop_cnt) {
++		if (jent_hash_time(ec->hash_state, time, (u8 *)&addtl,
++					sizeof(addtl), loop_cnt, stuck))
++			stuck = 1;
++	}
 +
 +	/* return the raw entropy value */
 +	if (ret_current_delta)
@@ -491,10 +431,10 @@ index b54544c..9ad5cb0 100644
  {
  	__u64 time = 0;
 diff --git a/jitterentropy.h b/jitterentropy.h
-index baeb7ea..da21949 100644
+index 95f4ce6..78fd109 100644
 --- a/jitterentropy.h
 +++ b/jitterentropy.h
-@@ -26,3 +26,9 @@ static inline int jent_raw_hires_entropy_store(__u32 value) { return 0; }
+@@ -37,3 +37,9 @@ static inline int jent_raw_hires_entropy_store(__u32 value) { return 0; }
  static inline void jent_testing_init(void) { }
  static inline void jent_testing_exit(void) { }
  #endif /* CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE */
