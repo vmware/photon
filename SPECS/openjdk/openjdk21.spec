@@ -5,7 +5,7 @@
 
 Summary:    OpenJDK
 Name:       openjdk21
-Version:    21.0.6
+Version:    21.0.8
 Release:    1%{?dist}
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
@@ -233,6 +233,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.8-1
+- Upgrade to v21.0.8
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.6-1
 - Upgrade to v21.0.6
 * Sun Dec 15 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 21.0.5-1

@@ -5,7 +5,7 @@
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.26
+Version:        11.0.28
 Release:        1%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
@@ -251,6 +251,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.28-1
+- Upgrade to v11.0.28
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1
 - Upgrade to v11.0.26
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.20-9

@@ -5,8 +5,8 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.14
-Release:    2%{?dist}
+Version:    17.0.16
+Release:    1%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -242,6 +242,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.16-1
+- Upgrade to v17.0.16
 * Tue Aug 19 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.14-2
 - java17: Add provides jre = %{version}
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.14-1

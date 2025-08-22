@@ -1,6 +1,6 @@
 sources:
-- archive: jdk-11.0.26-ga.tar.gz
-  archive_sha512sum: b5375de7c39aafa4fe1ef6556e17bf5c8ace577953ea8e666c4e8adc3e8b0f6fdbf20b7c426a156420acb99787363e0e4c9d36df20cefcef5e74a48bb75eeb24
+- archive: jdk-11.0.28-ga.tar.gz
+  archive_sha512sum: 01d166fa8a4914c402a340409096530ab6313f5850d13b866ba354e02343a8b567bccee563b1d8b9b4ac5101f16d31c73a6549e21a96dd306da4b644d4609f89
   skip_validation: true
   spdx:
     package:
@@ -29,8 +29,8 @@ sources:
         AND LGPL-2.1-only AND IJG
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
-- archive: jdk-17.0.14-ga.tar.gz
-  archive_sha512sum: 0643ac52b68e5884734289ab13592feef7273db96f7b5c0fd77d801e4d4e44a84abcc439fd1b138119c5583986f1d0b058aa74f55b00e0dfd31333cbb536744d
+- archive: jdk-17.0.16-ga.tar.gz
+  archive_sha512sum: df6cf32fa5884a004c1edc8de6fac9210efb740dd962860d415e97cfd3d2a232f19210c3d7fc21d1248e3424a160ca9e087db92c509eb79e815aeec0a40f212c
   skip_validation: true
   spdx:
     package:
@@ -55,8 +55,8 @@ sources:
         AND FTL AND Unicode-TOU AND Libpng AND MIT AND HPND-export2-US
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
-- archive: jdk-21.0.6-ga.tar.gz
-  archive_sha512sum: fb03362608a35b0f6e131eaa974a52e6ff8a96f90d3bdaeccd2e1268f46db65c72387ed7bba1c8b0d9457c56950eae607fba29e102a338b009259262e1024726
+- archive: jdk-21.0.8-ga.tar.gz
+  archive_sha512sum: be96bfa216efedd0cb094c8b4a2307f84ff6fa8a3a2c30f2f6610023e24979eee7be6b96305d893eb7cf19ed3750167a76436201cfdbc623713236c852eea917
   skip_validation: true
   spdx:
     package:
