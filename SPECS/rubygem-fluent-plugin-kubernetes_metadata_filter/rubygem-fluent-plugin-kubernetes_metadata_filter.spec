@@ -3,7 +3,7 @@
 
 Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
 Version:        3.4.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ proper log isolation.
 %{gem_base}
 
 %changelog
+*   Fri Aug 22 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.4.0-6
+-   Bump version with rubygem-activesupport bump
 *   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-5
 -   Bump version with rubygem-activesupport bump
 *   Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-4
