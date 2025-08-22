@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.147
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -228,6 +228,9 @@ Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
 # Fix CVE-2024-57982
 Patch160: 0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
 
+# Fix regression introduced by CVE-2025-38465 fix
+Patch161: netlink-avoid-infinite-retry-looping-in-netlink_unicast.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -392,7 +395,7 @@ stalld to use eBPF based backend.
 %autopatch -p1 -m62 -M62
 
 # CVE
-%autopatch -p1 -m100 -M160
+%autopatch -p1 -m100 -M161
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -606,6 +609,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Aug 20 2025 Bo Gan <bo.gan@broadcom.com> 6.1.147-5
+- Fix regression introduced by CVE-2025-38465 fix
 * Tue Aug 19 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.147-4
 - Fix CVE-2024-57982
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.147-3

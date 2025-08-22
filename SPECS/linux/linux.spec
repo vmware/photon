@@ -46,7 +46,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.147
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -288,6 +288,9 @@ Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
 
 # Fix CVE-2024-57982
 Patch160: 0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
+# Fix regression introduced by CVE-2025-38465 fix
+Patch161: netlink-avoid-infinite-retry-looping-in-netlink_unicast.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -624,7 +627,7 @@ The kernel fips-canister
 %autopatch -p1 -m64 -M64
 
 # CVE
-%autopatch -p1 -m100 -M160
+%autopatch -p1 -m100 -M161
 
 %ifarch aarch64
 # aarch64 patches
@@ -1048,6 +1051,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Aug 22 2025 Bo Gan <bo.gan@broadcom.com> 6.1.147-7
+- Fix regression introduced by CVE-2025-38465 fix
 * Thu Aug 21 2025 Mounesh Badiger <mounesh.badiger@broadcom.com> 6.1.147-6
 - linux:Add viomem kernel module
 * Tue Aug 19 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.147-5
