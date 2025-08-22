@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        6%{?acvp_build:.acvp}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -93,7 +93,7 @@ Source16:       fips-canister-6.12.34-3%{?dist}.tar.bz2
 %ifarch x86_64
 %if 0%{?fips}
 %define jent_name photon-jitterentropy-v6.12
-%define jent_rel_ver 2
+%define jent_rel_ver 3
 Source17:       %{jent_name}-%{jent_rel_ver}.tar.gz
 %endif
 %endif
@@ -261,7 +261,9 @@ Patch322: 0185-Introduce-page-touching-DMA-ops-binding.patch
 Patch323: 0444-drivers-base-memory-use-MHP_MEMMAP_ON_MEMORY-from-th.patch
 Patch324: 0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 
+%if 0%{?fips}
 Patch450: 0001-jitterentropy-Makefile-changes.patch
+%endif
 Patch451: 0001-New-memsize-options-for-jent.patch
 %endif
 
@@ -359,9 +361,10 @@ Patch10519:       0008-crypto-AF_ALG-add-ECC-support.patch
 Patch10520:       0009-DRBG-Fix-issues-with-DRBG.patch
 Patch10522:       0011-sock-Remove-sendpage-in-favour-of-sendmsg-MSG_SPLICE.patch
 Patch10523:       0012-jitterentropy-kcapi-Support-for-sample-collection.patch
-Patch10524:       0013-jitterentropy-Add-prototype-for-sample-collection.patch
+Patch10524:       0013-Jitterentropy-Add-char-dev-interface-for-jent-osr.patch
+Patch10525:       0014-jitterentropy-Add-prototype-for-sample-collection.patch
 %if 0%{?kat_build}
-Patch10525:       0014-crypto-api-return-status-prints-for-LKCM6-demo.patch
+Patch10526:       0015-crypto-api-return-status-prints-for-LKCM6-demo.patch
 %endif
 %endif
 
@@ -544,7 +547,10 @@ The kernel fips-canister
 
 # jitterentropy
 %ifarch x86_64
-%autopatch -p1 -m450 -M451
+%if 0%{?fips}
+%autopatch -p1 -m450 -M450
+%endif
+%autopatch -p1 -m451 -M451
 %endif
 # crypto
 %autopatch -p1 -m500 -M507
@@ -589,9 +595,9 @@ popd
 # Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
 %autopatch -p1 -m10512 -M10522
 pushd ../%{jent_name}
-%autopatch -p1 -m10523 -M10523
+%autopatch -p1 -m10523 -M10524
 popd
-%autopatch -p1 -m10524 -M10525
+%autopatch -p1 -m10525 -M10526
 %endif
 
 %ifarch x86_64
@@ -930,6 +936,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-7
+- Select jitterentropy mem size as 32KB
+- Disable jent_loop_shuffle in Jitterentropy.
+- Add support for OSR(max) calculation.
 * Thu Sep 11 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-6
 - Canister: Add ghasg accelerator and lib/crypto utils
 - Canister: fix shasum accelerators inclusion

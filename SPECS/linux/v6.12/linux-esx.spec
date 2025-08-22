@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.41
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -44,7 +44,7 @@ Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define jent_name photon-jitterentropy-v6.12
-%define jent_rel_ver 2
+%define jent_rel_ver 3
 Source17: %{jent_name}-%{jent_rel_ver}.tar.gz
 %endif
 
@@ -206,6 +206,7 @@ Patch511: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 
 Patch512: 0001-jent-makefile-changes-esx.patch
 Patch513: 0001-New-memsize-options-for-jent.patch
+Patch514: 0001-crypto-Tentative-sha3_generic-as-arch-initcall.patch
 %endif
 
 %ifarch x86_64
@@ -329,7 +330,7 @@ The Linux package contains the Linux kernel doc files
 
 %if 0%{?fips}
 # crypto
-%autopatch -p1 -m500 -M513
+%autopatch -p1 -m500 -M514
 %endif
 
 %ifarch x86_64
@@ -368,9 +369,12 @@ sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGI
 %else
 # Clean up .config of FIPS related configs
 sed -i "/CONFIG_CRYPTO_SELF_TEST=y/d" .config
+sed -i "s/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_2 is not set/CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_2=y/" .config
 sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_8 is not set/d" .config
-sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32 is not set/d" .config
+sed -i "/CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32=y/d" .config
 sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_64 is not set/d" .config
+sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKS=128/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKS=64/" .config
+sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKSIZE=256/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKSIZE=32/" .config
 %endif
 
 %ifarch x86_64
@@ -483,6 +487,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-3
+- Select jitterentropy mem size as 32KB
+- Disable jent_loop_shuffle in Jitterentropy.
 * Thu Aug 21 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-2
 - Build jitterentropy only fips=1 build.
 - Prepare to apply newer canister binary.
