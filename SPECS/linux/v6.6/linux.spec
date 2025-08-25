@@ -1,3 +1,4 @@
+%global build_for none
 %global security_hardening none
 %global __cmake_in_source_build 0
 %global lkcm_version 5.0.0
