@@ -26,8 +26,9 @@
 %global fips 1
 %endif
 
+# Disable canister_build always
 %if 0%{?canister_build}
-%global fips 0
+%global canister_build 0
 %endif
 
 %if 0%{?acvp_build}
@@ -45,8 +46,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.147
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.148
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1051,6 +1052,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Aug 25 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-1
+- Update to version 6.1.148
+- Disable canister_build
 * Fri Aug 22 2025 Bo Gan <bo.gan@broadcom.com> 6.1.147-7
 - Fix regression introduced by CVE-2025-38465 fix
 * Thu Aug 21 2025 Mounesh Badiger <mounesh.badiger@broadcom.com> 6.1.147-6
