@@ -1,34 +1,36 @@
-From cc521bf50581c6adef9b5fafa1ffb20b4f965a3a Mon Sep 17 00:00:00 2001
+From a2c7e8d4cadbadadfadf1621ff20258990552fd9 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 22 Nov 2023 08:47:46 +0000
 Subject: [PATCH] Crypto: Tamper KAT, PCT and Integrity Test
 
 - Introduced new kernel command line parameter(tampertest) to tamper KAT,
   PCT and integrity test for FIPS CMVP testing.
-- tampertest parameter takes values [-2,-1,1,2,...47]. Each corresponds to
+- tampertest parameter takes values [-2,-1,1,2,...48]. Each corresponds to
   breaking a test.
 - Value of -2 tampers Pairwise Consistency Test and simulate a failure.
 - Value of -1 tampers Canister Integrity test.
-- Values [1,..47] tampers KAT test for the supported algorithms
+- Values [1,..48] tampers KAT test for the supported algorithms
   in LKCM 5.0.
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+[Removed rsa, cfb(aes) and added ecdsa-nist-p521 to tamper alg_list]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- crypto/Kconfig              |  29 +++++++++
+ crypto/Kconfig              |  26 +++++++++
  crypto/Makefile             |   1 +
- crypto/crypto_tamper_test.c | 114 ++++++++++++++++++++++++++++++++++++
- crypto/ecc.c                |  11 ++++
- crypto/testmgr.c            |  68 +++++++++++++++++++++
- init/main.c                 |  10 ++++
- 6 files changed, 233 insertions(+)
+ crypto/crypto_tamper_test.c | 107 ++++++++++++++++++++++++++++++++++++
+ crypto/ecc.c                |  16 +++++-
+ crypto/testmgr.c            |  60 ++++++++++++++++++++
+ init/main.c                 |   9 +++
+ 6 files changed, 217 insertions(+), 2 deletions(-)
  create mode 100644 crypto/crypto_tamper_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index c849bb918..93bcc5ae7 100644
+index 9a5822775..866c358f8 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -250,6 +250,33 @@ config CRYPTO_SELF_TEST
+@@ -254,6 +254,32 @@ config CRYPTO_SELF_TEST
  	help
  	  Crypto self test module for FIPS.
  
@@ -49,7 +51,6 @@ index c849bb918..93bcc5ae7 100644
 +	select CRYPTO_ECDSA
 +	select CRYPTO_GCM
 +	select CRYPTO_CCM
-+	select CRYPTO_CFB
 +	select CRYPTO_CTS
 +	select CRYPTO_CMAC
 +	select CRYPTO_SHA256
@@ -63,10 +64,10 @@ index c849bb918..93bcc5ae7 100644
  	tristate
  	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 1fd7da7f4..ec0bbdd4c 100644
+index c99902894..3c6030ea9 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -235,6 +235,7 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORC
+@@ -233,6 +233,7 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORC
  	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
  
  canister += crypto_self_test.o
@@ -76,10 +77,10 @@ index 1fd7da7f4..ec0bbdd4c 100644
  
 diff --git a/crypto/crypto_tamper_test.c b/crypto/crypto_tamper_test.c
 new file mode 100644
-index 000000000..a6cfbf627
+index 000000000..748c28aee
 --- /dev/null
 +++ b/crypto/crypto_tamper_test.c
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,107 @@
 +/*
 + * Tamper test module
 + *
@@ -116,7 +117,6 @@ index 000000000..a6cfbf627
 +	"hmac(sha256)",
 +	"hmac(sha384)",
 +	"hmac(sha512)",
-+	"rsa",
 +	"pkcs1pad(rsa,sha256)",
 +	"drbg_pr_ctr_aes128",
 +	"drbg_pr_ctr_aes192",
@@ -140,10 +140,10 @@ index 000000000..a6cfbf627
 +	"ecdh-nist-p384",
 +	"ecdsa-nist-p256",
 +	"ecdsa-nist-p384",
++	"ecdsa-nist-p521",
 +	"gcm(aes)",
 +	"rfc4106(gcm(aes))",
 +	"ccm(aes)",
-+	"cfb(aes)",
 +	"cts(cbc(aes))",
 +	"cmac(aes)",
 +	"hmac(sha3-224)",
@@ -167,7 +167,7 @@ index 000000000..a6cfbf627
 +	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
 +
 +	switch (tamper_testbuild) {
-+		case 1 ... 47:
++		case 1 ... 48:
 +			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
 +				break;
 +
@@ -189,7 +189,7 @@ index 000000000..a6cfbf627
 +arch_initcall(crypto_tamper_test_init);
 +module_exit(crypto_tamper_test_exit);
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index 6805210a8..5ab88d2ac 100644
+index ac966e156..10a0b3656 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -1559,7 +1559,7 @@ struct static_keypair {
@@ -210,7 +210,7 @@ index 6805210a8..5ab88d2ac 100644
  		.priv_key = {
  				14313235887423266569ULL,
  				9198168633825396889ULL,
-@@ -1646,6 +1646,18 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
+@@ -1706,6 +1706,18 @@ int ecc_make_pub_key(unsigned int curve_id, unsigned int ndigits,
  	return ret;
  }
  
@@ -230,10 +230,10 @@ index 6805210a8..5ab88d2ac 100644
  int ecc_is_pubkey_valid_partial(const struct ecc_curve *curve,
  				struct ecc_point *pk)
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 1ee694edb..a5a18a456 100644
+index 45d667d16..210531256 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -39,11 +39,68 @@
+@@ -39,11 +39,67 @@
  #include "fips_canister_wrapper.h"
  #include "fips_canister_wrapper_common.h"
  
@@ -242,14 +242,12 @@ index 1ee694edb..a5a18a456 100644
 +extern int tamper_testbuild;
 +const char ** poison_alg_strs[] = {
 +   (const char **)&aes_cbc_tv_template[2].ctext,
-+   (const char **)&aes_tv_template[3].ctext,
 +   (const char **)&aes_xts_tv_template[4].ctext,
 +   (const char **)&aes_ctr_tv_template[2].ctext,
 +   (const char **)&hmac_sha224_tv_template[2].digest,
 +   (const char **)&hmac_sha256_tv_template[0].digest,
 +   (const char **)&hmac_sha384_tv_template[0].digest,
 +   (const char **)&hmac_sha512_tv_template[0].digest,
-+   (const char **)&rsa_tv_template[0].c,
 +   (const char **)&pkcs1pad_rsa_tv_template[0].c,
 +   (const char **)&drbg_pr_ctr_aes128_tv_template[0].expected,
 +   (const char **)&drbg_pr_ctr_aes192_tv_template[0].expected,
@@ -273,6 +271,7 @@ index 1ee694edb..a5a18a456 100644
 +   (const char **)&ecdh_p384_tv_template[0].expected_ss,
 +   (const char **)&ecdsa_nist_p256_tv_template[0].c,
 +   (const char **)&ecdsa_nist_p384_tv_template[0].c,
++   (const char **)&ecdsa_nist_p521_tv_template[0].c,
 +   (const char **)&aes_gcm_tv_template[0].ctext,
 +   (const char **)&aes_gcm_rfc4106_tv_template[0].ctext,
 +   (const char **)&aes_ccm_tv_template[0].ctext,
@@ -302,11 +301,11 @@ index 1ee694edb..a5a18a456 100644
  #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
  
  /* a perfect nop */
-@@ -5646,6 +5710,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5645,6 +5701,10 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  			goto non_fips_alg;
  	}
  
-+	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild <= 47) {
++	if (fips_enabled && tamper_testbuild > 0 && tamper_testbuild <= 48) {
 +		tamper_input_vector(alg, driver, *poison_alg_strs[tamper_testbuild-1]);
 +	}
 +
@@ -314,7 +313,7 @@ index 1ee694edb..a5a18a456 100644
  	if (i >= 0)
  		rc |= alg_test_descs[i].test(alg_test_descs + i, driver,
 diff --git a/init/main.c b/init/main.c
-index 962edcc54..14836bd5f 100644
+index 6c2afc299..880dc6ac1 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -20,6 +20,7 @@
@@ -325,7 +324,7 @@ index 962edcc54..14836bd5f 100644
  #include <linux/string.h>
  #include <linux/ctype.h>
  #include <linux/delay.h>
-@@ -883,6 +884,8 @@ early_param("randomize_kstack_offset", early_randomize_kstack_offset);
+@@ -844,6 +845,8 @@ early_param("randomize_kstack_offset", early_randomize_kstack_offset);
  #endif
  
  extern int fips_integrity_init(void);
@@ -334,7 +333,7 @@ index 962edcc54..14836bd5f 100644
  
  static void __init print_unknown_bootoptions(void)
  {
-@@ -985,6 +988,12 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+@@ -955,6 +958,12 @@ void start_kernel(void)
  	/* Architectural and non-timekeeping rng init, before allocator init */
  	random_init_early(command_line);
  
@@ -348,4 +347,5 @@ index 962edcc54..14836bd5f 100644
  	/*
  	 * These use large bootmem allocations and must precede
 -- 
-2.42.0
+2.40.4
+

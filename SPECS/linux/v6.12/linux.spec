@@ -61,7 +61,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        2%{?acvp_build:.acvp}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -914,6 +914,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Aug 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-3
+- Removed rsa, cfb(aes) and added ecdsa-nist-p521 to tamper alg_list,
+- Added HMAC and HASH DRBGs using SHA-384 in FIPS mode
 * Thu Aug 21 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-2
 - Add shasums accelerators
 - Speedup algos registration in non-FIPS mode
