@@ -1,7 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.2.6
-Release:       4%{?dist}
+Release:       5%{?dist}
 URL:           http://redis.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -16,6 +16,7 @@ Source2: license.txt
 
 Patch0: %{name}-conf.patch
 Patch1: CVE-2024-46981.patch
+Patch2: CVE-2025-27151.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -92,6 +93,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Mon Aug 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.6-5
+- Fix CVE-2025-27151
 * Fri May 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.6-4
 - Renaming sysusers to conf to fix auto user creation
 * Tue May 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 7.2.6-3
