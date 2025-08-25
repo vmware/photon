@@ -12,6 +12,7 @@ import shutil
 import re
 import hashlib
 import json
+import errno
 
 from DockerUtil import DockerUtil
 
@@ -25,6 +26,8 @@ class Scanner:
     _extra_repo_urls = None
     _config_yaml = {}
     _used_sources = []
+    _ph_root = None
+    _dist_tag = None
 
     # parse scan yaml output and produce a valid SPDX expression
     def _parse_scan_yaml(self, yaml_fn=None, exceptions_list=[], cached_spdx_ids=set()):
@@ -346,42 +349,37 @@ class Scanner:
 
         return f"{common.rpm_build_root}/BUILD"
 
-    def _find_ph_root(self, path):
-        ph_root = os.path.abspath(path)
+    def _set_spec_vars(self, spec_path):
+        # find build-config.json
+        ph_root = os.path.abspath(spec_path)
         while os.path.basename(ph_root) != "SPECS" and ph_root:
             ph_root = os.path.dirname(ph_root)
 
         if not ph_root:
-            err_exit(f"Failed to find the SPECS path for {path}!")
+            err_exit(f"Failed to find the SPECS path for {spec_path}!")
 
-        ph_root = os.path.dirname(ph_root)
+        self._ph_root = os.path.dirname(ph_root)
 
-        return ph_root
+        with open(f"{self._ph_root}/build-config.json") as build_conf:
+            build_config_json = json.load(build_conf)
+            self._dist_tag = build_config_json["photon-build-param"][
+                "photon-dist-tag"
+            ]
 
     # Build the scan directory from a photon spec file,
     # e.g SPECS/<pkg name>/<pkg.spec>. Similar to extract_src_rpm()
     def _build_scan_dir_from_spec_dir(self, spec_path=None, alt_src_url=None):
-        dist_tag = ""
-        ph_root = ""
-
         if not spec_path:
             return None
 
         common.copy_spec_to_rpm_build_root(spec_path)
 
-        # find build-config.json
-        ph_root = self._find_ph_root(spec_path)
-
         spec_fn = os.path.basename(spec_path)
-
-        with open(f"{ph_root}/build-config.json") as build_conf:
-            build_config_json = json.load(build_conf)
-            dist_tag = build_config_json["photon-build-param"]["photon-dist-tag"]
 
         self._download_srcs(
             f"{common.rpm_build_root}/SOURCES",
             alt_src_url=alt_src_url,
-            photon_root=ph_root,
+            photon_root=self._ph_root,
         )
 
         rpm_build_cmds = [
@@ -393,7 +391,7 @@ class Scanner:
             "-D",
             "with_check 0",
             "-D",
-            f"dist {dist_tag}",
+            f"dist {self._dist_tag}"
         ]
 
         rpm_build_cmds.append(f"{common.rpm_build_root}/SPECS/{spec_fn}")
@@ -401,6 +399,38 @@ class Scanner:
         self._rpmbuild_prep(rpm_build_cmds, spec_path)
 
         return f"{common.rpm_build_root}/BUILD"
+
+
+    def _get_used_sources(self, path):
+        cmd = []
+
+        if not os.path.exists(path):
+            raise FileNotFoundError(
+                            errno.ENOENT,
+                            os.strerror(errno.ENOENT),
+                            path
+                        )
+        elif not path.endswith(".spec"):
+            err_exit("_get_used_sources: path must end with .spec")
+
+        cmd = [
+                "rpmspec",
+                "-D",
+                f"%dist {self._dist_tag}",
+                "-D",
+                f"_sourcedir {os.path.dirname(path)}",
+                "-P",
+                path
+            ]
+
+        result = common.run_cmd(cmd, capture=True)
+        for line in result.stdout.decode().splitlines():
+            match = re.match(r"Source[0-9]+:", line)
+            if match:
+                span = match.span()
+                src = line[span[1]:].strip()
+                src = os.path.basename(src)
+                self._used_sources.append(src)
 
     def _setup_scan_dir(self, path="", build_spec=False, alt_src_url=None):
         scan_dir = ""
@@ -419,6 +449,8 @@ class Scanner:
                     "--build_spec option requires --path to point to a .spec file"
                 )
 
+            self._set_spec_vars(path)
+
             specDir = os.path.dirname(path)
             config_yaml_path = f"{specDir}/config.yaml"
             if not os.path.exists(config_yaml_path):
@@ -430,10 +462,7 @@ class Scanner:
             with open(config_yaml_path, "r") as config_yaml_f:
                 self._config_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
 
-            cmd = f"rpmspec -D \"_sourcedir {specDir}\" -P {path} 2>&1 | grep '^Source[0-9]*:'"
-            cmd += " | awk '{print $2}' | xargs -n1 basename"
-            result = common.run_cmd(cmd, shell=True, capture=True)
-            self._used_sources = result.stdout.decode().splitlines()
+            self._get_used_sources(path)
 
             scan_dir = self._build_scan_dir_from_spec_dir(path, alt_src_url)
 
