@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.21
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -24,6 +24,7 @@ Source3: license.txt
 
 Patch0: %{name}-service.patch
 Patch1: build-bin-gen-manpages-instead-of-using-go-run.patch
+Patch2: containerd-CVE-2024-40635.patch
 
 BuildRequires: btrfs-progs
 BuildRequires: btrfs-progs-devel
@@ -143,6 +144,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Tue Aug 26 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.6.21-15
+- Fixes CVE-2024-40635
 * Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.21-14
 - Remove files to handle unintended copyright inclusions
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.6.21-13
