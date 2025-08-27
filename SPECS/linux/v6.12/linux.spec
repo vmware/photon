@@ -81,7 +81,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        17%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        18%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -933,6 +933,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Feb 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-18
+- Improve FIPS canister matching plugin
 * Tue Feb 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-17
 - Add viomem kernel module
 * Tue Feb 03 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-16

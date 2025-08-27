@@ -17,7 +17,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 %endif
 
 %ifarch aarch64
@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -356,19 +356,19 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m600 -M609
 %endif
 
-# Jitterentropy support and FIPS compliance
-%autopatch -p1 -m10000 -M10000
-%if 0%{?fips}
-
-# Using autosetup is not feasible
-%setup -q -T -D -b 10000 -n linux-%{version}
-
 # prep for viomem out-of-tree module
 mkdir ../viomem
 pushd ../viomem
 cp %{SOURCE30} Makefile
 cp %{SOURCE31} .
 popd
+
+# Jitterentropy support and FIPS compliance
+%autopatch -p1 -m10000 -M10000
+%if 0%{?fips}
+
+# Using autosetup is not feasible
+%setup -q -T -D -b 10000 -n linux-%{version}
 
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
@@ -539,6 +539,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 06 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-14
+- Disabling FIPS build until canister finalised.
 * Tue Feb 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-13
 - Add viomem kernel module
 * Tue Feb 03 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-12
