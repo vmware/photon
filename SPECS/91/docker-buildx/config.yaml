@@ -1,22 +1,21 @@
 sources:
-- archive: docker-buildx-0.32.0.tar.gz
-  archive_type: upstream
-  name: buildx-0.32.0
-  url: https://github.com/docker/buildx/archive/refs/tags/v0.32.0.tar.gz
-  archive_sha512sum: d132e2d928a073400dc2f530f0b98caec3869d3cad8544d7552347032fd225e6a5f17299d807402f4f7a17addfb954e9eefb565fc09cf01e4ef40fede9c6b3e9
-  commit_id: a953c9b4b457d29a1559364f1006865fd042c66d
-  repo_url: https://github.com/docker/buildx.git
+- archive: buildx-0.17.1.tar.gz
+  archive_sha512sum: 16840bdfc79d4931253d2193ea43d9c47bc65e7f3049cecc27260ae98bc994637634fe7fa7333c01cd540205cd5c8aa73e65bee09f315098c15030bb799d172d
   skip_validation: true
   license_manual_review:
   - # CC-BY-SA covers the README and CONTRIBUTING.md only, neither of which are
     # packaged by us
     file_paths:
-    - buildx-0.32.0/vendor/github.com/opencontainers/go-digest/README.md
+      - buildx-0.17.1/vendor/github.com/opencontainers/go-digest/README.md
     sha256sum: cde5e79ad3a2c65cd30a5df53b0f990480ab632e9305065a8162ea204d7e297b
     spdx_exp: 'Apache-2.0'
   - # CC-BY-SA doesn't apply to any files we package (no docs)
     file_paths:
-    - buildx-0.32.0/vendor/github.com/opencontainers/go-digest/LICENSE.docs
+    - buildx-0.17.1/vendor/github.com/opencontainers/go-digest/LICENSE.docs
+    sha256sum: a1d1adec3ba691ef6e377a78bbe9e9e2501f2f4a1723d08857da1ac6564e4fed
+    spdx_exp: ''
+  - file_paths:
+    - buildx-0.17.1/vendor/github.com/docker/go-metrics/LICENSE.docs
     sha256sum: a1d1adec3ba691ef6e377a78bbe9e9e2501f2f4a1723d08857da1ac6564e4fed
     spdx_exp: ''
   spdx:

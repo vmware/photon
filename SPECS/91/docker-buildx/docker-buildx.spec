@@ -1,18 +1,17 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %define srcname     buildx
 %define plugins_dir %{_libexecdir}/docker/cli-plugins
-%define network_required 1
 
 Name:       docker-buildx
 Summary:    Docker CLI plugin for extended build capabilities with BuildKit
-Version:    0.32.0
-Release:    1%{?dist}
+Version:    0.17.1
+Release:    5.1%{?dist}
 URL:        https://github.com/docker/buildx
 Group:      Applications
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/docker/buildx/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/docker/buildx/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -28,23 +27,7 @@ Docker CLI plugin for extended build capabilities with BuildKit.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-# Modeled on deprecated ./hack/build
-REVISION=%{release}
-VERSION=%{version}
-PACKAGE=github.com/docker/buildx
-CGO_ENABLED=1
-DESTDIR=./bin/build/
-GO_PKG=github.com/docker/buildx
-GO_LDFLAGS="-X ${GO_PKG}/version.Version=${VERSION} \
-  -X ${GO_PKG}/version.Revision=${REVISION} \
-  -X ${GO_PKG}/version.Package=${PACKAGE}"
-
-go build \
-  -mod vendor \
-  -trimpath \
-  -ldflags "${GO_LDFLAGS}" \
-  -o "${DESTDIR}/docker-buildx" \
-  ./cmd/buildx
+REVISION=%{release} VERSION=%{version} CGO_ENABLED=1 ./hack/build
 
 %install
 install -Dpm 0755 ./bin/build/%{name} %{buildroot}%{plugins_dir}/%{name}
@@ -62,10 +45,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
-* Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.32.0-1
-- Upgrade to 0.32.0, fixes CVE-2025-0495
-* Tue Feb 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17.1-6
-- Bump up as part of docker upgrade
+* Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.17.1-5.1
+- Move 0.17.1 to stable subrelease
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.17.1-5
 - Bump version as a part of go upgrade
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.17.1-4
