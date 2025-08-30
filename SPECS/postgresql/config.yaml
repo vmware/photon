@@ -171,3 +171,38 @@ sources:
         AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
+- archive: postgresql-17.6.tar.bz2
+  skip_validation: true
+  archive_sha512sum: d377ed208b3fd1bf9611f148f4286e8c655374218cc3b12cd766917063001750f7dede140065874b7c8bdc2f2b3ecaf15c18cc6cd341929b2c3a574a7797a67e
+  name: postgresql-17.6
+  version: 17.6
+  url: http://ftp.postgresql.org/pub/source/v17.6/postgresql-17.6.tar.bz2
+  repo_url: https://github.com/postgres/postgres.git
+  commit_id: 7885b94dd81b98bbab9ed878680d156df7bf857f
+  missing: []
+  spdx:
+    package:
+      detailed_description: PostgreSQL is an advanced Object-Relational database management
+        system (DBMS). The base postgresql package contains the client programs that
+        you'll need to access a PostgreSQL DBMS server. These client programs can
+        be located on the same machine as the PostgreSQL server, or on a remote machine
+        that accesses a PostgreSQL server over a network connection. The PostgreSQL
+        server can be found in the postgresql-server sub-package.  If you want to
+        manipulate a PostgreSQL database on a local or remote PostgreSQL server, you
+        need this package. You also need to install this package if you're installing
+        the postgresql-server package.
+      home_page: www.postgresql.org
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
+        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
+        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
+        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
+        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'

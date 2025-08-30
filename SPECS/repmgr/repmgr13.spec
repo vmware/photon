@@ -4,8 +4,8 @@
 
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr13
-Version:        5.3.3
-Release:        3%{?dist}
+Version:        5.5.0
+Release:        1%{?dist}
 URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -23,7 +23,11 @@ BuildRequires: cyrus-sasl
 BuildRequires: openldap
 BuildRequires: krb5-devel
 BuildRequires: libedit-devel
+BuildRequires: curl-devel
+BuildRequires: json-c-devel
 
+Requires: json-c
+Requires: curl-libs
 Requires: libedit
 Requires: postgresql13
 Requires: openssl
@@ -62,6 +66,8 @@ rm -rf %{buildroot}
 %{_pgbasedir}/share/*
 
 %changelog
+* Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.5.0-1
+- Upgrade to v5.5.0
 * Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.3-3
 - Fix directory ownership during file packaging
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.3.3-2

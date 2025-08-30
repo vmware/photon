@@ -1,9 +1,9 @@
 %define srcname repmgr
 
-%define _pgbasedir    %{_usr}/pgsql/14
+%define _pgbasedir    %{_usr}/pgsql/17
 
 Summary:        Replication Manager for PostgreSQL Clusters
-Name:           repmgr14
+Name:           repmgr17
 Version:        5.5.0
 Release:        1%{?dist}
 URL:            https://repmgr.org
@@ -18,7 +18,7 @@ Source1: license.txt
 
 BuildRequires: cpio
 BuildRequires: Linux-PAM-devel
-BuildRequires: postgresql14-devel
+BuildRequires: postgresql17-devel
 BuildRequires: cyrus-sasl
 BuildRequires: openldap
 BuildRequires: krb5-devel
@@ -29,7 +29,7 @@ BuildRequires: json-c-devel
 Requires: json-c
 Requires: curl-libs
 Requires: libedit
-Requires: postgresql14
+Requires: postgresql17
 Requires: openssl
 Requires: krb5
 Requires: openldap
@@ -38,8 +38,7 @@ Requires: zlib
 Requires: readline
 
 %description
-repmgr is an open-source tool suite for managing replication and failover
-in a cluster of PostgreSQL servers.
+repmgr is an open-source tool suite for managing replication and failover in a cluster of PostgreSQL servers.
 
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
@@ -67,10 +66,4 @@ rm -rf %{buildroot}
 
 %changelog
 * Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.5.0-1
-- Upgrade to v5.5.0
-* Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.3-3
-- Fix directory ownership during file packaging
-* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.3.3-2
-- Release bump for SRP compliance
-* Sat Aug 19 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.3.3-1
-- repmgr14 for pgsql14
+- Initial version
