@@ -289,25 +289,31 @@ Commands
 
         assert csum.hexdigest() == expected_shasum
 
-    def get_include_keys(self, yaml_file):
-        includes = []
+    def get_shared_srcs(self, yaml_file):
+        shared_cfgs = []
         data = {}
 
         with open(yaml_file, "r") as f:
             data = yaml.safe_load(f)
 
-        sources = data.get("sources")
+        sources = data.get("shared_sources")
         if not sources:
-            return includes
+            return shared_cfgs
 
+        specDir = yaml_file.split("SPECS")[0] + "SPECS"
         for item in sources:
-            if "include" not in item:
-                continue
-            rel_path = item["include"]
-            abs_path = os.path.abspath(f"SPECS/{rel_path}")
-            includes.append(abs_path)
+            abs_path = os.path.abspath(f"{specDir}/{item}")
+            if abs_path in shared_cfgs:
+                print(f"ERROR: Duplicate entry '{item}' found in '{yaml_file}' ...")
+                sys.exit(-1)
 
-        return includes
+            if not os.path.exists(abs_path):
+                print(f"ERROR: '{item}' file not found ...")
+                sys.exit(-1)
+
+            shared_cfgs.append(abs_path)
+
+        return shared_cfgs
 
     def build(self):
         parser = argparse.ArgumentParser(description="build")
@@ -329,7 +335,7 @@ Commands
             logging.info("No yaml arg given ...")
             return
 
-        includes = self.get_include_keys(yamlArg)
+        includes = self.get_shared_srcs(yamlArg)
         includes.append(yamlArg)
 
         files = []

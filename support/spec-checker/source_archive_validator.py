@@ -9,10 +9,9 @@ from collections import defaultdict
 
 
 class SourceArchiveChecker:
-    def __init__(self, specPaths):
+    def __init__(self):
         self.archiveMap = defaultdict(list)
         self.loadedFiles = {}
-        self.specPaths = specPaths
 
     def loadYamlFile(self, path):
         if path in self.loadedFiles:
@@ -39,15 +38,14 @@ class SourceArchiveChecker:
             new_entry["_src_origin"] = filePath
             mergedSources.append(new_entry)
 
-        for entry in sharedSources:
-            includeFile = None
-            for specDir in self.specPaths:
-                includeFile = f"{specDir}/{entry}"
-                if os.path.exists(includeFile):
-                    break
+        if not sharedSources:
+            return mergedSources
 
-            if not includeFile:
-                raise Exception(f"ERROR: {entry} not found ...")
+        specDir = filePath.split("SPECS")[0] + "SPECS"
+        for entry in sharedSources:
+            includeFile = f"{specDir}/{entry}"
+            if not os.path.exists(includeFile):
+                raise Exception(f"ERROR: '{includeFile}' file not found ...")
 
             includeData = self.loadYamlFile(includeFile)
             if isinstance(includeData, dict):

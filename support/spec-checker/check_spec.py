@@ -610,7 +610,7 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
 
 
 def check_spec_cfg_yml(spec_fn, specDir, err_dict, specTopDir):
-    checker = SourceArchiveChecker([specTopDir])
+    checker = SourceArchiveChecker()
     checker.scanDirectory(specDir)
     archiveMap = checker.getArchiveMap()
 
@@ -660,8 +660,8 @@ def check_entire_cfg_ymls():
 
     specPaths = filteredPaths
 
+    checker = SourceArchiveChecker()
     for path in specPaths:
-        checker = SourceArchiveChecker(specPaths)
         checker.scanDirectory(path)
         hasConflict, logs = checker.checkConflicts()
         if hasConflict:
