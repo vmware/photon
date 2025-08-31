@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import yaml
 
 
@@ -48,14 +47,15 @@ class SourceConfigData:
         if not sources:
             return sharedCfgs
 
+        specDir = yamlFile.split("SPECS")[0] + "SPECS"
         for item in sources:
-            absPath = os.path.abspath(f"SPECS/{item}")
+            absPath = os.path.abspath(f"{specDir}/{item}")
             if absPath in sharedCfgs:
-                print(f"ERROR: Duplicate entry '{item}' found in '{yamlFile}' ...")
-                sys.exit(-1)
+                m = f"ERROR: Duplicate entry '{item}' found in '{yamlFile}' ..."
+                raise Exception(m)
             if not os.path.exists(absPath):
-                print(f"ERROR: '{item}' file not found ...")
-                sys.exit(-1)
+                m = f"ERROR: '{item}' file not found ..."
+                raise Exception(m)
             sharedCfgs.append(absPath)
         return sharedCfgs
 
