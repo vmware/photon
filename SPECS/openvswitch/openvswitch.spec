@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.14.0
-Release:        15%{?dist}
+Version:        2.17.12
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -9,15 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5fe377f9b2857e238e3d40e4452e8b36c80283230f1d0f4b983324532beba725913da817e545c8d7630762f170bb5b0dfe810fd1b8b559994d5eae828beb8ec1
-
-Patch0: openvswitch-CVE-2020-35498.patch
-Patch1: openvswitch-CVE-2020-27827.patch
-Patch2: openvswitch-CVE-2021-36980.patch
-Patch3: openvswitch-CVE-2021-3905.patch
-Patch4: openvswitch-CVE-2022-4337-CVE-2022-4338.patch
-Patch5: CVE-2023-1668.patch
-Patch6: CVE-2023-5366.patch
+%define sha512 %{name}=e434c1a2836efac45a295fe33f1fc7a9c47ac61919d86ac8b8a173b9528e5e0a58546772b47dc396ff006abb030df321cd8320e7faef132dba916d7a2d488e3b
 
 BuildRequires: gcc
 BuildRequires: libcap-ng
@@ -52,7 +44,7 @@ Requires:       python3
 Requires:       %{name} = %{version}
 
 %description -n python3-%{name}
-Python 3 version.
+Python 3 bindings for Open vSwitch.
 
 %package        devel
 Summary:        Header and development files for openvswitch
@@ -167,14 +159,16 @@ sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}%{_sysconfdir}/%{name}/defau
 %{_mandir}/man1/ovs-*.1.gz
 %{_mandir}/man1/ovsdb-*.1.gz
 %{_mandir}/man5/ovs-vswitchd.conf.db.5.gz
+%{_mandir}/man5/ovsdb-server.5.gz
+%{_mandir}/man5/ovsdb.local-config.5.gz
 %{_mandir}/man5/vtep.5.gz
 %{_mandir}/man7/ovs-fields.7.gz
 %{_mandir}/man8/ovs-*.8.gz
 %{_mandir}/man8/vtep-ctl.8.gz
-%{_mandir}/man5/ovsdb-server.5.gz
-%{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+* Mon Sep 22 2025 Dweep Advani <dweep.advani@broadcom.com> 2.17.12-1
+- Upgrade to 2.17.12 to address CVE-2023-3966
 * Tue Jul 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.14.0-15
 - Fix build with automake-1.16.5
 * Thu Oct 19 2023 Anmol Jain <anmolja@vmware.com> 2.14.0-14
