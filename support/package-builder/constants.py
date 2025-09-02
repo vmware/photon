@@ -40,6 +40,7 @@ class constants(object):
     buildNumber = None
     commonBuildNumber = None
     releaseVersion = None
+    photonBranch = None
     katBuild = False
     canisterBuild = False
     acvpBuild = False
@@ -234,6 +235,10 @@ class constants(object):
     @staticmethod
     def setReleaseVersion(releaseVersion):
         constants.releaseVersion = releaseVersion
+
+    @staticmethod
+    def setPhotonBranch(photonBranch):
+        constants.photonBranch = photonBranch
 
     @staticmethod
     def setKatBuild(katBuild):

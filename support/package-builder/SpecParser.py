@@ -331,6 +331,16 @@ class SpecParser(object):
         return False
 
     def _parseBuildForValues(self, condition):
+        dist = None
+
+        # Resolve conflict in dist check between Photon 5.0 and 6.0.
+        # For Photon 6.0, explicitly set distribution to 'ph6',
+        # otherwise use the default distribution value 'ph5'.
+        if constants.photonBranch == "6.0":
+            dist = "ph6"
+        else:
+            dist = self.dist
+
         err = ValueError(
                 f"\nInvalid condition format: '{condition}' in {self.specfile}."
                 "Correct formats are:\n"
@@ -366,13 +376,13 @@ class SpecParser(object):
             if "!" in options or "(" in options or ")" in options:
                 raise err
             options_list = [opt.strip() for opt in options.split(",")]
-            return self.dist not in options_list
+            return dist not in options_list
 
         # Handle the case where it's neither a list nor a simple value
         if "," in condition or "(" in condition or ")" in condition:
             raise err
 
-        return self.dist != condition
+        return dist != condition
 
     def _isConditionalArch(self, line):
         return re.search("^%ifarch", line)

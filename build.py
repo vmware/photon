@@ -1616,6 +1616,7 @@ def initialize_constants():
     constants.setReleaseVersion(
         configdict["photon-build-param"]["photon-release-version"]
     )
+    constants.setPhotonBranch(configdict["photon-branch"])
 
     src_url = configdict["photon-build-param"].get("pull-sources-config", "")
     if not src_url:
@@ -1993,9 +1994,10 @@ def main():
     if not configdict.get("release-branch-path", ""):
         raise Exception("build-config.json: release-branch-path is empty")
 
-    # releaseCfgPath = f"{releaseDir}/{build_cfg}"
-    # with open(releaseCfgPath) as jsonData:
-    #     releasedict = json.load(jsonData)
+    releaseCfgPath = f"{releaseDir}/{build_cfg}"
+    with open(releaseCfgPath) as jsonData:
+        releasedict = json.load(jsonData)
+    configdict['photon-branch'] = releasedict['photon-branch']
 
     # configdict = merge_dicts(releasedict, configdict)
 
