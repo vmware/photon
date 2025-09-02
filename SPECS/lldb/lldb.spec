@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        15.0.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -76,7 +76,8 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
   -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3} \
   -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
-  -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs}
+  -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
+  -DBUILD_SHARED_LIBS:BOOL=ON
 
 %{cmake_build}
 
@@ -109,6 +110,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-7
+- Enable shared libs
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 15.0.7-6
 - Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 15.0.7-5

@@ -1,6 +1,3 @@
-shared_sources:
-  - shared-cfg-yml/cmake.yaml
-
 sources:
 - archive: clang-15.0.7.src.tar.xz
   archive_sha512sum: 9fd2736a9f5993ddbb5b3c507fe497234a6def64f6f418f379d1ca56c9c361ad1ae9a5445ab938230fbc1671ec00b4f802a412b048569023863c20dc6bb46a1f

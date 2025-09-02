@@ -5,7 +5,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        15.0.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -25,7 +25,6 @@ BuildRequires:  python3-devel
 BuildRequires:  ninja-build
 BuildRequires:  glibc-devel
 
-Requires:       libxml2
 Requires:       libllvm = %{version}-%{release}
 
 %description
@@ -44,6 +43,8 @@ for developing applications that use llvm.
 %package -n     libllvm
 Summary:        llvm shared library
 Group:          System Environment/Libraries
+Requires:       libxml2
+
 %description -n libllvm
 The libllvm package contains shared libraries for llvm
 
@@ -66,7 +67,7 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
 
 %{cmake} -G Ninja \
   -DCMAKE_INSTALL_PREFIX=%{_usr} \
-  -DBUILD_SHARED_LIBS:BOOL=OFF \
+  -DBUILD_SHARED_LIBS:BOOL=ON \
   -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
   -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
   -DLLVM_ENABLE_FFI:BOOL=ON \
@@ -106,11 +107,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so
-%{_libdir}/*.so.*
-%exclude %{_libdir}/libLLVM-%{version}.so
-%exclude %{_libdir}/libLLVM-%{llvm_maj_ver}.so
-%exclude %{_libdir}/libLLVM.so
 %dir %{_datadir}/opt-viewer
 %{_datadir}/opt-viewer/opt-diff.py
 %{_datadir}/opt-viewer/opt-stats.py
@@ -121,15 +117,17 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_includedir}/*
+%{_libdir}/*.so
 
 %files -n libllvm
 %defattr(-,root,root)
-%{_libdir}/libLLVM*.so
+%{_libdir}/*.so.*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-6
+- Enable shared libs
 * Tue Jan 28 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 15.0.7-5
 - Use compiler -pipe option to reduce storage pressure
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 15.0.7-4

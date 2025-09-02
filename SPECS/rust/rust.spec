@@ -4,7 +4,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.71.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -34,6 +34,7 @@ Requires: glibc
 Requires: gcc
 Requires: libstdc++
 Requires: libgcc
+Requires: libllvm
 
 %description
 Rust Programming Language
@@ -55,7 +56,7 @@ pushd src/tools/cargo
 %autopatch -p1 -M0
 popd
 
-rm -rf src/llvm-project/
+rm -r src/llvm-project/
 
 %if 0%{?with_check} == 0
 # Remove files to handle unintended licenses
@@ -67,6 +68,7 @@ mkdir -p build/cache/%{toolchain_prefix}
 cp %{SOURCE1} %{SOURCE2} %{SOURCE3} build/cache/%{toolchain_prefix}/
 
 %build
+export LLVM_LINK_SHARED=1
 sh ./configure \
     --prefix=%{_prefix} \
     --enable-extended \
@@ -74,7 +76,8 @@ sh ./configure \
     --llvm-root=%{_prefix} \
     --disable-codegen-tests \
     --enable-vendor \
-    --enable-ninja
+    --enable-ninja \
+    --enable-llvm-link-shared
 
 # Output sync option (-O) in make results in buffered logging.
 # For a long time we don't say any logs during build, hence disabling it
@@ -114,6 +117,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-8
+- Rebuild with llvm shared libs
 * Fri Jul 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.71.1-7
 - Remove unintended license for SRP compliance
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.71.1-6

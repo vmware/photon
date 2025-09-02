@@ -3,7 +3,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.28.0
-Release:         4%{?dist}
+Release:         5%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -74,12 +74,20 @@ Command line tools for BPF Compiler Collection (BCC)
 %autosetup -p1 -n %{name}-%{version}
 
 %build
+# Extract LLVM library flags using llvm-config
+LLVM_LIBS="$(llvm-config --libs --system-libs all)"
+LLVM_CFLAGS="$(llvm-config --cxxflags) -fexceptions"
+
 %cmake -DREVISION_LAST=%{version} \
        -DREVISION=%{version} \
        -DPYTHON_CMD=%{python3} \
        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-       -DCMAKE_USE_LIBBPF_PACKAGE=TRUE
+       -DCMAKE_USE_LIBBPF_PACKAGE=TRUE \
+       -DCMAKE_CXX_FLAGS="${LLVM_CFLAGS}" \
+       -DCMAKE_EXE_LINKER_FLAGS="${LLVM_LIBS}" \
+       -DENABLE_LLVM_SHARED=ON \
+       -DBUILD_SHARED_LIBS:BOOL=ON
 
 %cmake_build
 
@@ -126,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.28.0-5
+- Rebuild with llvm shared libs
 * Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.28.0-4
 - Release bump for SRP compliance
 * Mon Dec 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.28.0-3

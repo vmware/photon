@@ -6,7 +6,7 @@
 
 Name:           bpftrace
 Version:        0.21.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -56,7 +56,13 @@ and predecessor tracers such as DTrace and SystemTap
 %autosetup -p1
 
 %build
-export LDFLAGS="-lz"
+# Extract LLVM library flags using llvm-config
+LLVM_LIBS="$(llvm-config --libs --system-libs all)"
+LLVM_CFLAGS="$(llvm-config --cxxflags | sed 's/-fno-exceptions//g') -fexceptions"
+
+export CXXFLAGS="$LLVM_CFLAGS"
+export LDFLAGS="$LLVM_LIBS -lz"
+
 %{cmake} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DBUILD_TESTING:BOOL=OFF \
@@ -93,6 +99,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.21.2-3
+- Rebuild with llvm shared libs
 * Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.21.2-2
 - Release bump for SRP compliance
 * Mon Dec 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.21.2-1

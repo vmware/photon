@@ -3,7 +3,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        15.0.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -61,7 +61,7 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
   -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
   -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
   -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
-  -DBUILD_SHARED_LIBS=OFF \
+  -DBUILD_SHARED_LIBS=ON \
   -Wno-dev
 
 # Build libclang-cpp.so separately to avoid OOM errors.
@@ -97,7 +97,6 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_libdir}/clang/*
 %{_includedir}/*
@@ -105,6 +104,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/libscanbuild
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.0.7-6
+- Enable shared libs
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 15.0.7-5
 - Release bump for SRP compliance
 * Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 15.0.7-4
