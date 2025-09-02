@@ -4,7 +4,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        12.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -20,7 +20,6 @@ BuildRequires:  libffi-devel
 BuildRequires:  python3-devel
 BuildRequires:  ninja-build
 
-Requires:       libxml2
 Requires:       libffi
 Requires:       zlib
 Requires:       libgcc
@@ -42,6 +41,8 @@ for developing applications that use llvm.
 %package -n     libllvm
 Summary:        llvm shared library
 Group:          System Environment/Libraries
+Requires:       libxml2
+
 %description -n libllvm
 The libllvm package contains shared libraries for llvm
 
@@ -62,7 +63,7 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
 
 %{cmake} -G Ninja \
       -DCMAKE_INSTALL_PREFIX=%{_usr} \
-      -DBUILD_SHARED_LIBS:BOOL=OFF \
+      -DBUILD_SHARED_LIBS:BOOL=ON \
       -DLLVM_PARALLEL_LINK_JOBS=1 \
       -DLLVM_ENABLE_FFI:BOOL=ON \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -100,11 +101,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so
-%{_libdir}/*.so.*
-%exclude %{_libdir}/libLLVM-%{version}.so
-%exclude %{_libdir}/libLLVM-%{llvm_maj_ver}.so
-%exclude %{_libdir}/libLLVM.so
 %dir %{_datadir}/opt-viewer
 %{_datadir}/opt-viewer/opt-diff.py
 %{_datadir}/opt-viewer/opt-stats.py
@@ -115,15 +111,17 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/*.a
+%{_libdir}/*.so
 %{_libdir}/cmake/*
 %{_includedir}/*
 
 %files -n libllvm
 %defattr(-,root,root)
-%{_libdir}/libLLVM*.so
+%{_libdir}/*.so.*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-4
+- Enable shared libs
 * Thu Feb 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-3
 - Build instruction improvements to reduce resource consumption
 * Sat Dec 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-2

@@ -1,6 +1,6 @@
 Name:           bpftrace
 Version:        0.16.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -47,7 +47,14 @@ and predecessor tracers such as DTrace and SystemTap
 %autosetup -p1
 
 %build
-%cmake \
+# Extract LLVM library flags using llvm-config
+LLVM_LIBS="$(llvm-config --libs --system-libs all)"
+LLVM_CFLAGS="$(llvm-config --cxxflags | sed 's/-fno-exceptions//g') -fexceptions"
+
+export CXXFLAGS="$LLVM_CFLAGS"
+export LDFLAGS="$LLVM_LIBS -lz"
+
+%{cmake} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DBUILD_TESTING:BOOL=OFF \
     -DBUILD_SHARED_LIBS:BOOL=OFF \
@@ -55,10 +62,10 @@ and predecessor tracers such as DTrace and SystemTap
     -DBUILD_DEPS=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 
 find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
   sed -i -e '1s=^#!/usr/bin/env %{name}\([0-9.]\+\)\?$=#!%{_bindir}/%{name}=' {} \;
@@ -79,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.16.0-4
+- Rebuild with llvm shared libs
 * Wed Dec 25 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.16.0-3
 - CVE-2024-2313 fix
 * Fri Apr 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.16.0-2

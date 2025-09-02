@@ -3,7 +3,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        12.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -59,7 +59,7 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
     -DCMAKE_INSTALL_PREFIX=%{_usr} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DLLVM_MAIN_INCLUDE_DIR=%{_includedir} \
-    -DBUILD_SHARED_LIBS=OFF \
+    -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_C_FLAGS=-pipe \
     -DCMAKE_CXX_FLAGS=-pipe \
     -Wno-dev
@@ -97,12 +97,13 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_libdir}/clang/*
 %{_includedir}/*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-3
+- Enable shared libs
 * Thu Feb 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-2
 - Build instruction improvements to reduce resource consumption
 * Mon Nov 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-1

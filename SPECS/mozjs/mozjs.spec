@@ -2,7 +2,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       78.15.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -102,6 +102,8 @@ rm -rf %{buildroot}%{_libdir}/libjs_static.ajs \
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 78.15.0-3
+- Rebuild with clang shared libs
 * Fri Sep 01 2023 Mukul Sikka <msikka@vmware.com> 78.15.0-2
 - Multiple CVE fix
 * Mon Aug 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-1

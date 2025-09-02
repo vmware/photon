@@ -3,7 +3,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.25.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -75,27 +75,34 @@ Command line tools for BPF Compiler Collection (BCC)
 
 %prep
 # Using autosetup is not feasible
-%setup -q -n %{name}-%{version}
+%setup -q
 # Using autosetup is not feasible
-%setup -q -D -c -T -a1 -n %{name}-%{version}
+%setup -q -D -c -T -a1
 cp -rf %{name}/* .
 rm -r %{name}
 
-%patch0 -p1
-%patch1 -p1
+%patch 0 -p1
+%patch 1 -p1
 
 %build
-%cmake -DREVISION_LAST=%{version} \
+# Extract LLVM library flags using llvm-config
+LLVM_LIBS="$(llvm-config --libs --system-libs all)"
+LLVM_CFLAGS="$(llvm-config --cxxflags) -fexceptions"
+
+%{cmake} -DREVISION_LAST=%{version} \
        -DREVISION=%{version} \
        -DPYTHON_CMD=%{python3} \
-       %{?with_llvm_shared:-DENABLE_LLVM_SHARED=1} \
        -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-       -DCMAKE_BUILD_TYPE=Debug
+       -DCMAKE_BUILD_TYPE=Debug \
+       -DCMAKE_CXX_FLAGS="${LLVM_CFLAGS}" \
+       -DCMAKE_EXE_LINKER_FLAGS="${LLVM_LIBS}" \
+       -DENABLE_LLVM_SHARED=ON \
+       -DBUILD_SHARED_LIBS:BOOL=ON
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 # mangle shebangs
 find %{buildroot}%{_datadir}/%{name}/{tools,examples} -type f -exec \
     sed -i -e '1 s|^#!/usr/bin/python$|#!'%{python3}'|' \
@@ -135,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.25.0-3
+- Rebuild with llvm shared libs
 * Mon Dec 23 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.25.0-2
 - CVE-2024-2314 fix
 * Tue Nov 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.25.0-1

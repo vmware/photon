@@ -4,7 +4,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.58.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -62,6 +62,7 @@ Requires:  openssl
 Requires:  zlib
 Requires:  libgcc
 Requires:  binutils
+Requires: libllvm
 
 %description
 Rust Programming Language
@@ -69,10 +70,10 @@ Rust Programming Language
 %prep
 %autosetup -p1 -n %{name}c-%{version}-src
 
-rm -rf src/llvm-project/
+rm -r src/llvm-project/
 
 # Remove other unused vendored libraries
-rm -rf vendor/curl-sys/curl/ \
+rm -r  vendor/curl-sys/curl/ \
        vendor/*jemalloc-sys*/jemalloc/ \
        vendor/libmimalloc-sys/c_src/mimalloc/ \
        vendor/libz-sys/src/zlib/ \
@@ -85,13 +86,15 @@ mkdir -p build/cache/%{toolchain_prefix}/
 cp %{SOURCE1} %{SOURCE2} %{SOURCE3} build/cache/%{toolchain_prefix}/
 
 %build
+export LLVM_LINK_SHARED=1
 sh ./configure \
     --prefix=%{_prefix} \
     --enable-extended \
     --tools="cargo" \
     --llvm-root=%{_prefix} \
     --disable-codegen-tests \
-    --enable-ninja
+    --enable-ninja \
+    --enable-llvm-link-shared
 
 # Output sync option (-O) in make results in buffered logging.
 # For a long time we don't say any logs during build, hence disabling it
@@ -102,8 +105,8 @@ sh ./configure \
 %make_install %{?_smp_mflags}
 find %{buildroot}%{_libdir} -maxdepth 1 -type f -name '*.so' -exec chmod -v +x '{}' '+'
 
-rm -rf %{buildroot}%{_docdir} \
-       %{buildroot}%{_datadir}/zsh*
+rm -r %{buildroot}%{_docdir} \
+      %{buildroot}%{_datadir}/zsh*
 
 %clean
 rm -rf %{buildroot}/*
@@ -126,6 +129,8 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.58.1-7
+- Rebuild with llvm shared libs
 * Thu Jul 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.58.1-6
 - Enable verbose build
 * Wed Aug 30 2023 Harinadh D <hdommaraju@vmware.com> 1.58.1-5

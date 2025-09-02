@@ -1,7 +1,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        12.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -72,7 +72,8 @@ link_jobs="$(( (build_jobs + 1) / 2 ))"
       -DLLDB_DISABLE_LIBEDIT:BOOL=ON \
       -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
       -DCMAKE_C_FLAGS=-pipe \
-      -DCMAKE_CXX_FLAGS=-pipe
+      -DCMAKE_CXX_FLAGS=-pipe \
+      -DBUILD_SHARED_LIBS:BOOL=ON
 
 %{cmake_build}
 
@@ -105,6 +106,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-3
+- Enable shared libs
 * Thu Feb 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.0.0-2
 - Build instruction improvements to reduce resource consumption
 * Mon Nov 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-1
