@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.240
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.241
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -22,7 +22,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=ddff83678fd39465b2e92141267403db58b64e95fb746259c92cd439ffd695f5aa3aed81b9bf1891f193e8476a2ab3e03fcdad77ebb953f934b8e19ae609a827
+%define sha512 linux=60edf5fccb6716b381416859f2339fbb1ebe773f63766ebb2daed7d04282f5bcb7331c428dd9ce9cd8af27428d7f856e25cc917610c4e906749544f251452a1a
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -336,39 +336,11 @@ Patch221: 0002-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
 # Fix CVE-2025-21759
 Patch222: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
 
-# Fix CVE-2021-46987
-Patch223: 0001-btrfs-fix-deadlock-when-cloning-inline-extents-and-u.patch
-
 # Fix CVE-2021-47432
 Patch224: 0001-lib-generic-radix-tree.c-Don-t-overflow-in-peek.patch
 
-# Fix CVE-2021-47412
-Patch225: 0001-block-don-t-call-rq_qos_ops-done_bio-if-the-bio-isn-.patch
-
-# Fix CVE-2021-47455
-Patch226: 0001-ptp-Fix-possible-memory-leak-in-ptp_clock_register.patch
-
-# Fix CVE-2021-47421
-Patch227:  0001-drm-amdgpu-handle-the-case-of-pci_channel_io_frozen-.patch
-
-# Fix CVE-2021-47498
-Patch228:  0001-dm-rearrange-core-declarations-for-extended-use-from.patch
-Patch229:  0001-dm-rq-don-t-queue-request-to-blk-mq-during-DM-suspen.patch
-
 # Fix CVE-2021-47182
 Patch230:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
-
-# Fix CVE-2021-47193
-Patch231:  0001-scsi-pm80xx-Fix-memory-leak-during-rmmod.patch
-
-# Fix CVE-2021-47183
-Patch232:  0001-scsi-lpfc-Fix-link-down-processing-to-address-NULL-p.patch
-
-# Fix CVE-2021-47070
-Patch233:  0001-uio_hv_generic-Fix-another-memory-leak-in-error-hand.patch
-
-# Fix CVE-2021-47076
-Patch234:  0001-RDMA-rxe-Return-CQE-error-if-invalid-lkey-was-suppli.patch
 
 # Fix CVE-2024-57982
 Patch235:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
@@ -649,6 +621,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 03 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.241-1
+- Update to version 5.10.241
 * Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2
 - Fix for CVE-2024-57982
 * Tue Jul 29 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 5.10.240-1
