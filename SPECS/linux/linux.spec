@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.148
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1052,6 +1052,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 03 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.148-2
+- .config: enable CONFIG_NF_FLOW_TABLE=m
 * Mon Aug 25 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-1
 - Update to version 6.1.148
 - Disable canister_build
