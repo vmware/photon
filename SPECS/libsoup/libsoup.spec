@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         16%{?dist}
+Release:         17%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -41,6 +41,7 @@ Patch24:       CVE-2025-46420.patch
 Patch26:       CVE-2025-52050.patch
 Patch27:       Backport-auth-tests-for-CVE-2025-32910.patch
 Patch28:       Backport-server-mem-limit-test-from-CVE-2025-32907.patch
+Patch29:       CVE-2025-4948.patch
 
 BuildRequires: glib-devel >= 2.68.4
 BuildRequires: gobject-introspection
@@ -136,6 +137,8 @@ These are the additional language files of libsoup.
 %defattr(-,root,root)
 
 %changelog
+* Thu Sep 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.72.0-17
+- Fix CVE-2025-4948
 * Tue May 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.72.0-16
 - Fix Multiple CVE's
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.72.0-15
