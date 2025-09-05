@@ -1,5 +1,8 @@
 %global security_hardening none
 
+# SBAT generation of "linux.photon" component
+%define linux_photon_generation 1
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -16,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.241
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -50,6 +53,10 @@ Source24:       0001-LKCM-4.0.1-binary-patching-to-fix-struct-aesni_cpu_i.patch
 
 Source22:       spec_install_post.inc
 Source23:       %{name}-dracut.conf
+%ifarch x86_64
+# Secure Boot
+Source25:       linux-sbat.csv.in
+%endif
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -116,8 +123,9 @@ Patch57: 0001-x86-vmware-avoid-TSC-recalibration.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch58: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-#Kernel lockdown
+# Secure Boot and Kernel lockdown
 Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch60: 0002-Add-.sbat-section.patch
 
 # CVE: [100..300]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -538,6 +546,13 @@ sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .co
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %endif
 
+%ifarch x86_64
+sed -e "s,@@NAME@@,%{name},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@LINUX_PH_GEN@@,%{linux_photon_generation},g" \
+    %{SOURCE25} > linux-sbat.csv
+%endif
+
 %include %{SOURCE4}
 
 %build
@@ -677,6 +692,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.241-2
+- Add .sbat section for bzImage
 * Wed Sep 03 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.241-1
 - Update to version 5.10.241
 * Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2

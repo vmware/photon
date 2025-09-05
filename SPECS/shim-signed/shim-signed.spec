@@ -22,8 +22,7 @@ Shim efi image signed by UEFI CA.
 install -d %{buildroot}/boot/efi/EFI/BOOT
 cp shimx64.efi %{buildroot}/boot/efi/EFI/BOOT/bootx64.efi
 # Revocation.efi is excluded knowingly as there was no usage in
-# ph4, also kernel doesn't support sbat in ph4.
-# if needed we can always introduce in later point of time
+# ph4 if needed we can always introduce in later point of time
 
 %files
 %defattr(-,root,root,-)

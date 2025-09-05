@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    14%{?dist}
+Release:    15%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -212,6 +212,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.06-15
+- Bump-up release to get signed grub binary.
 * Thu Aug 14 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.06-14
 - Sync fedora grub patches to latest
 - Update grub sbat to gen 4 since the NFTS CVEs are in place.

@@ -1,5 +1,8 @@
 %global security_hardening none
 
+# SBAT generation of "linux.photon" component
+%define linux_photon_generation 1
+
 # Set this flag to 0 to build without canister
 %global fips 1
 
@@ -11,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.241
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -61,6 +64,10 @@ Source25:       0001-LKCM-4.0.1-binary-patching-to-fix-struct-aesni_cpu_i.patch
 
 Source23:       spec_install_post.inc
 Source24:       %{name}-dracut.conf
+%ifarch x86_64
+# Secure Boot
+Source26:       linux-sbat.csv.in
+%endif
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -124,17 +131,18 @@ Patch56: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch57: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
 Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
-#Kernel lockdown
+# Secure Boot and Kernel lockdown
 Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch60: 0002-Add-.sbat-section.patch
 
 # -esx
-Patch60: init-do_mounts-recreate-dev-root.patch
-Patch61: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch62: 01-clear-linux.patch
-Patch63: 02-pci-probe.patch
-Patch64: poweroff-without-firmware.patch
-Patch65: 04-quiet-boot.patch
-Patch66: 05-pv-ops-clocksource.patch
+Patch61: init-do_mounts-recreate-dev-root.patch
+Patch62: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch63: 01-clear-linux.patch
+Patch64: 02-pci-probe.patch
+Patch65: poweroff-without-firmware.patch
+Patch66: 04-quiet-boot.patch
+Patch67: 05-pv-ops-clocksource.patch
 # TODO: make it working for v5.9+
 #Patch67: 06-pv-ops-boot_clock.patch
 Patch68: 07-vmware-only.patch
@@ -540,10 +548,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m0 -M44
 
 # VMW
-%autopatch -p1 -m50 -M59
+%autopatch -p1 -m50 -M60
 
 # -esx
-%autopatch -p1 -m60 -M97
+%autopatch -p1 -m61 -M97
 
 # CVE: [100..300]
 %autopatch -p1 -m100 -M300
@@ -616,6 +624,13 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 
 %if 0%{?kat_build}
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
+
+%ifarch x86_64
+sed -e "s,@@NAME@@,%{name},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@LINUX_PH_GEN@@,%{linux_photon_generation},g" \
+    %{SOURCE26} > linux-sbat.csv
 %endif
 
 %include %{SOURCE4}
@@ -766,6 +781,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.241-2
+- Add .sbat section for bzImage
 * Wed Sep 03 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.241-1
 - Update to version 5.10.241
 * Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2

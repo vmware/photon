@@ -1,4 +1,8 @@
 %global security_hardening none
+
+# SBAT generation of "linux.photon" component
+%define linux_photon_generation 1
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -22,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.241
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -83,6 +87,11 @@ Source24:       0001-LKCM-4.0.1-binary-patching-to-fix-struct-aesni_cpu_i.patch
 
 Source22:       spec_install_post.inc
 Source23:       %{name}-dracut-%{_arch}.conf
+
+%ifarch x86_64
+# Secure Boot
+Source25:       linux-sbat.csv.in
+%endif
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -160,8 +169,9 @@ Patch56: x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57: x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch58: 0001-x86-vmware-avoid-TSC-recalibration.patch
 
-#Kernel lockdown
+# Secure Boot and Kernel lockdown
 Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch60: 0002-Add-.sbat-section.patch
 %endif
 
 # CVE: [100..300]
@@ -752,6 +762,13 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
 %endif
 
+%ifarch x86_64
+sed -e "s,@@NAME@@,%{name},g" \
+    -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
+    -e "s,@@LINUX_PH_GEN@@,%{linux_photon_generation},g" \
+    %{SOURCE25} > linux-sbat.csv
+%endif
+
 %include %{SOURCE7}
 
 # Set/add CONFIG_CROSS_COMPILE= if needed
@@ -1065,6 +1082,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.241-2
+- Add .sbat section for bzImage
 * Wed Sep 03 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.241-1
 - Update to version 5.10.241
 * Fri Aug 08 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.240-2
