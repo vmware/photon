@@ -66,9 +66,8 @@ class SourceConfigData:
             config = yaml.safe_load(file)
 
             sources = config.get("sources", [])
-            if not sources:
+            if not (sources or config.get("shared_sources")):
                 raise Exception(f"ERROR: Missing sources in '{filepath}' ...")
-
             for sourceEntry in sources:
                 if not sourceEntry.get("archive", ""):
                     continue
