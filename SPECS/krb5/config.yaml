@@ -3,13 +3,16 @@ sources:
   archive_sha512sum: 69e263ef74116a3332c632a2a243499bcc47b01b1e57d02fe35aa6c2ff655674b6cf2b815457145f788bceac4d466d3f55f8c20ec9ee4a6051128417e1e7e99e
   skip_validation: true
   license_manual_review:
-  - archive_path: NOTICE
+  - file_paths:
+    - krb5-1.20.2/NOTICE
     sha256sum: d893d7767756bac33b5be0dceaca80a795da99e4bbfca7e80a3b6d36394bab67
     spdx_exp: ''
-  - archive_path: doc/notice.rst
+  - file_paths:
+    - krb5-1.20.2/doc/notice.rst
     sha256sum: 8126730ba09af6bb86c7f7686d81740114b799218a940db9c05fe0ff84075dba
     spdx_exp: ''
-  - archive_path: doc/html/mitK5license.html
+  - file_paths:
+    - krb5-1.20.2/doc/html/mitK5license.html
     sha256sum: 9459ae79e2bdc9ab7c5fb65a659388933fba9bf99e8da9a91737b479587b73ce
     spdx_exp: ''
   spdx:

@@ -1,15 +1,15 @@
 sources:
 - archive: autoconf-archive-2022.09.03.tar.xz
-  archive_sha512sum: 
-    157b5b6a979d5ec5bfab6ddf34422da620fec1e95f4c901821abbb7361544af77747b4a449029b84750d75679d6130a591e98da8772de2c121ecdea163f0340b
+  archive_sha512sum: 157b5b6a979d5ec5bfab6ddf34422da620fec1e95f4c901821abbb7361544af77747b4a449029b84750d75679d6130a591e98da8772de2c121ecdea163f0340b
   license_manual_review:
-  - archive_path: m4/ax_prog_help2man.m4
-      # This file explicitly calls out the LICENSE and it is as defined in spdx_exp
+  - file_paths:
+    # This file explicitly calls out the LICENSE and it is as defined in spdx_exp
+    - autoconf-archive-2022.09.03/m4/ax_prog_help2man.m4
     sha256sum: 596d43f813f806f58f05cf1948b4bbd4c1eccc92aaea4ecf08359097697d87a6
     spdx_exp: GPL-3.0-or-later WITH Autoconf-exception-3.0
-  - archive_path: m4/ax_subdirs_configure.m4
-      # This file explicitly calls out the LICENSE and it is as defined in spdx_exp
-    final_build_path: m4/ax_subdirs_configure.m4
+  - file_paths:
+    # This file explicitly calls out the LICENSE and it is as defined in spdx_exp
+    - autoconf-archive-2022.09.03/m4/ax_subdirs_configure.m4
     sha256sum: 4490d2e0d4d243bb7b47416b6c44037fd9f22391306c927ee682ae9695c4a855
     spdx_exp: GPL-3.0-or-later WITH Autoconf-exception-3.0
   skip_validation: true
@@ -18,27 +18,23 @@ sources:
       detailed_description: 'The package contains programs for producing shell scripts
         that can automatically configure source code. '
       home_page: http://www.gnu.org/software/autoconf-archive
-      license_concluded: AGPL-3.0-or-later AND Artistic-2.0 AND BSD-2-Clause AND
-        BSD-3-Clause AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND 
-        FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GFDL-1.3-only AND 
-        GFDL-1.3-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND 
-        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later 
-        WITH Autoconf-exception-macro AND GPL-3.0-only AND GPL-3.0-only WITH 
-        Autoconf-exception-3.0 AND GPL-3.0-or-later AND GPL-3.0-or-later WITH 
-        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH 
-        Autoconf-exception-macro AND GPL-3.0-or-later WITH Texinfo-exception AND
-        LGPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-3.0-or-later AND 
-        MPL-1.0 AND X11
-      license_declared: AGPL-3.0-or-later AND Artistic-2.0 AND BSD-2-Clause AND 
-        BSD-3-Clause AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND 
-        FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GFDL-1.3-only AND 
-        GFDL-1.3-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND 
-        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later 
-        WITH Autoconf-exception-macro AND GPL-3.0-only AND GPL-3.0-only WITH 
-        Autoconf-exception-3.0 AND GPL-3.0-or-later AND GPL-3.0-or-later WITH 
-        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH 
-        Autoconf-exception-macro AND GPL-3.0-or-later WITH Texinfo-exception AND
-        LGPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-3.0-or-later AND 
-        MPL-1.0 AND X11
+      license_concluded: AGPL-3.0-or-later AND Artistic-2.0 AND BSD-2-Clause AND BSD-3-Clause
+        AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD
+        AND GFDL-1.1-or-later AND GFDL-1.3-only AND GFDL-1.3-or-later AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-only AND GPL-3.0-only
+        WITH Autoconf-exception-3.0 AND GPL-3.0-or-later AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND LGPL-3.0-or-later AND MPL-1.0 AND X11
+      license_declared: AGPL-3.0-or-later AND Artistic-2.0 AND BSD-2-Clause AND BSD-3-Clause
+        AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD
+        AND GFDL-1.1-or-later AND GFDL-1.3-only AND GFDL-1.3-or-later AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
+        GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-only AND GPL-3.0-only
+        WITH Autoconf-exception-3.0 AND GPL-3.0-or-later AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later WITH Texinfo-exception AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND LGPL-3.0-or-later AND MPL-1.0 AND X11
       short_summary: Autoconf macro archive
       supplier: 'Organization: Broadcom, Inc.'

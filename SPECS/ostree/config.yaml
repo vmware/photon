@@ -29,6 +29,7 @@ sources:
       short_summary: Git for operating system binaries
       supplier: 'Organization: Broadcom, Inc.'
   license_manual_review:
-  - archive_path: README.md
+  - file_paths:
+    - libostree-2023.5/README.md
     sha256sum: eba1289d6de5467cb6e02b18295fee3f33e14c8ed220065e9ab20f775883afdc
     spdx_exp: LGPL-2.0-or-later

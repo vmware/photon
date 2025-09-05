@@ -2,7 +2,8 @@ sources:
 - archive: lshw-B.02.19.tar.gz
   archive_sha512sum: 168e7cf053d270f695da09dbdd4ee5207d447a13de3601f3861ab194f09c7358fe618551caf03adb628e0293f187d8fd5a842d1516b0dd16c4128ccc2126027b
   license_manual_review:
-  - archive_path: src/pnp.ids
+  - file_paths:
+    - lshw-B.02.19/src/pnp.ids
     sha256sum: abeb33bed7cf57cbe9fb72f94a19fa60078cfc480f2c012d89026609cac82717
     spdx_exp: ''
   skip_validation: true

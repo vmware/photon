@@ -1,6 +1,5 @@
 shared_sources:
-  - stalld/config.yaml
-
+- stalld/config.yaml
 sources:
 - archive: linux-6.1.148.tar.xz
   archive_type: upstream
@@ -14,16 +13,16 @@ sources:
   archive_sha512sum: 8e14371f632d44bee311a694e9dc47ffae4a5227dedad98d7ebc9db198fa28b5e0e4c7a7595f8d1b4b68d0ae03b03ed5f73220d57cde04d91fb5dc07c4a3b1c2
   skip_validation: false
   license_manual_review:
-    # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
-    - file_paths:
-      - linux-6.1.148/drivers/pci/controller/pci-mvebu.c
-      sha256sum: f2ed59ce938e92a0dff71c849860cafb5a5d2a78b34e5c0aa974288d98cccfcc
-      spdx_exp: GPL-2.0-only
-    # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
-    - file_paths:
-      - linux-6.1.148/Documentation/process/kernel-docs.rst
-      sha256sum: 6e641499dcde7927e30dcdea64a6be9f53234d7036f4069ec47bdf5490005166
-      spdx_exp: ''
+  # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
+  - file_paths:
+    - linux-6.1.148/drivers/pci/controller/pci-mvebu.c
+    sha256sum: f2ed59ce938e92a0dff71c849860cafb5a5d2a78b34e5c0aa974288d98cccfcc
+    spdx_exp: GPL-2.0-only
+  # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
+  - file_paths:
+    - linux-6.1.148/Documentation/process/kernel-docs.rst
+    sha256sum: 6e641499dcde7927e30dcdea64a6be9f53234d7036f4069ec47bdf5490005166
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: The Linux package contains the Linux kernel.

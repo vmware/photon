@@ -3,25 +3,32 @@ sources:
   archive_sha512sum: f472e5058ea9881355f0c754a47acd0b5360c36e8976b8563dbc763a7cef792bf88227cc15fe5172d3e9bb9fc34d8448dd5c183949031e91a1997cc7f0f83b55
   skip_validation: true
   license_manual_review:
-  - archive_path: tests/openpgp/secdemo.asc
+  - file_paths:
+    - gnupg-2.2.41/tests/openpgp/secdemo.asc
     sha256sum: 8a8364849e9c5f2bf721012b1191cef7d492a9b7a97f30b107340856ddc03061
     spdx_exp: ''
-  - archive_path: tests/openpgp/bug537-test.data.asc
+  - file_paths:
+    - gnupg-2.2.41/tests/openpgp/bug537-test.data.asc
     sha256sum: 582528865d21da28471a95fbb4df91c3b9543afdae1dc98fef7d1b338a849106
     spdx_exp: ''
-  - archive_path: tests/openpgp/plain-large.asc
+  - file_paths:
+    - gnupg-2.2.41/tests/openpgp/plain-large.asc
     sha256sum: 17e7f5a863488ce1413c03235ba10632501dd56d99f52d879c51ab4783cb74e9
     spdx_exp: ''
-  - archive_path: common/mbox-util.h
+  - file_paths:
+    - gnupg-2.2.41/common/mbox-util.h
     sha256sum: aadfd5d58df7fe841fec2453015bfa80e62ffbcae64871c62ffb27b3200cc6ad
     spdx_exp: LGPL-2.1-or-later
-  - archive_path: common/mbox-util.c
+  - file_paths:
+    - gnupg-2.2.41/common/mbox-util.c
     sha256sum: ca83e55911952c9b01d440331e0717ad08a35cbb400099ba904c5bf9f2dcbbc8
     spdx_exp: LGPL-2.1-or-later
-  - archive_path: common/tlv-builder.c
+  - file_paths:
+    - gnupg-2.2.41/common/tlv-builder.c
     sha256sum: 54e57c85b8e0f673ce9afe6047090d4d5b97ca06792850adbe4efdd9dc8b16d4
     spdx_exp: LGPL-2.1-or-later
-  - archive_path: doc/whats-new-in-2.1.txt
+  - file_paths:
+    - gnupg-2.2.41/doc/whats-new-in-2.1.txt
     sha256sum: 3a5f46203286ef12a3b256ebf4c96e9d118ad79adc42393dbf7c2c87f57e5873
     spdx_exp: ''
   spdx:

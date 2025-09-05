@@ -17,7 +17,8 @@ sources:
   archive_sha512sum: 46839371f415aff1cf4183449da2dfb570b0d57cb52e0f65e08114e27aa55d4f0f89c2293556b9b33ccba216ce265ddf43e56cd89e37bd1bd1775a1d6ee2a261
   skip_validation: true
   license_manual_review:
-  - archive_path: Modules/Microsoft.PowerShell.PSResourceGet/dependencies/NuGet.Packaging.dll
+  - file_paths:
+    - Modules/Microsoft.PowerShell.PSResourceGet/dependencies/NuGet.Packaging.dll
     sha256sum: 877e82582d7802aca0b2fd53d34175b42d01bcf713a77d6d0a9e8a73c47ee2a4
     spdx_exp: ''
   spdx:

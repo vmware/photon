@@ -2,12 +2,12 @@ sources:
 - archive: ruby-3.1.4.tar.gz
   archive_sha512sum: 41cf1561dd7eb249bb2c2f5ea958884880648cc1d11da9315f14158a2d0ff94b2c5c7d75291a67e57e1813d2ec7b618e5372a9f18ee93be6ed306f47b0d3199a
   license_manual_review:
-  - archive_path: lib/rubygems/util/licenses.rb
-    final_build_path: lib/rubygems/util/licenses.rb
+  - file_paths:
+    - ruby-3.1.4/lib/rubygems/util/licenses.rb
     sha256sum: 98e933fd9857b04e91e9996e92050b36d635005f578cce41c7d8158bb16c6a09
     spdx_exp: 2-clause BSDL
-  - archive_path: test/rubygems/test_gem_commands_build_command.rb
-    final_build_path: test/rubygems/test_gem_commands_build_command.rb
+  - file_paths:
+    - ruby-3.1.4/test/rubygems/test_gem_commands_build_command.rb
     sha256sum: c1d3717dd9e586fd56c82d0cb7ccc9c2a7d8b954a80591bf2ecf3da1e2632762
     spdx_exp: 2-clause BSDL
   skip_validation: true

@@ -2,10 +2,12 @@ sources:
 - archive: mc-4.8.28.tar.xz
   archive_sha512sum: ca3b3a57281e9387cb52bf1fcfc3f39a4d5f438aafc256dc492c192678824f67c983a852c759664efc5bc6d0de471c9b3929834f8301f6302ca1ebeee513fdfd
   license_manual_review:
-  - archive_path: lib/strutil/strverscmp.c
+  - file_paths:
+    - mc-4.8.28/lib/strutil/strverscmp.c
     sha256sum: cc753333a1f5160732de0fc2b693176967c89667e6f051f9732f31252d251c14
     spdx_exp: GPL-3.0-or-later AND LGPL-2.1-or-later
-  - archive_path: doc/hlp/es/xnc.hlp
+  - file_paths:
+    - mc-4.8.28/doc/hlp/es/xnc.hlp
     sha256sum: 25e1258a9d497b7e393d7e53a79950aea15e480b79bfe524aa37dbc873d89e26
     spdx_exp: GPL-3.0-or-later
   skip_validation: true

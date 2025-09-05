@@ -3,10 +3,11 @@ sources:
   archive_sha512sum: c8f2dc858076641a219ea37af91ad4a15ee811e8d2095b0337d414cc702eaf90ee4d6280bda7800667828dffaedcdb026553262d5473f9fb70bbd17c17b248f4
   skip_validation: true
   license_manual_review:
-    # Only the 0MQ logo is used under CC-BY-SA-3.0
-    - archive_path: "docs/source/conf.py"
-      sha256sum: a4433cfd2b222e8782c7cd4adbc8a7bc2375044fcb82a5b3eea1d6b350313b44
-      spdx_exp: "BSD-3-Clause"
+  # Only the 0MQ logo is used under CC-BY-SA-3.0
+  - file_paths:
+    - pyzmq-23.2.1/docs/source/conf.py
+    sha256sum: a4433cfd2b222e8782c7cd4adbc8a7bc2375044fcb82a5b3eea1d6b350313b44
+    spdx_exp: BSD-3-Clause
   spdx:
     package:
       detailed_description: 'python bindings for zeromq '

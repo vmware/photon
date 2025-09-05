@@ -10,37 +10,48 @@ sources:
   missing: []
   skip_validation: true
   license_manual_review:
-  - archive_path: src/psktool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/psktool-options.c
     sha256sum: 3ca5976d2c777d73cc8deb6724e89cc108b0e5aaa48468cb90f3e9c218b27995
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/srptool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/srptool-options.c
     sha256sum: c7a620ae793ae6c0d7e29af57282d249118105653cea1d5164dc24b71ff0bec3
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/systemkey-tool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/systemkey-tool-options.c
     sha256sum: 4a68e2537f78aaf74d4e7b79eed34785e36c42a07a440c11235371539a882350
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/tpmtool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/tpmtool-options.c
     sha256sum: ecbc2d923399cc897dacecdcd60576225abec9e4ed5e1c4960c6180dd78d4b82
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/gnutls-cli-debug-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/gnutls-cli-debug-options.c
     sha256sum: 729701b488a90fc1e17c4355909ff8c70ba604391b2a55c8710caa7855857262
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/gnutls-serv-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/gnutls-serv-options.c
     sha256sum: 26ece20963746d17373633d13242fd5ee5dc50e4976b0ab3c867725a08c9db24
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/gnutls-cli-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/gnutls-cli-options.c
     sha256sum: 4854bb6a0044c6ae56fabaa0fc7dcd2417b43dd85ba4e84b5898254d1ebe05ad
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/ocsptool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/ocsptool-options.c
     sha256sum: ae0b19f02d24bf02aefd45a094a8cb85c04fd5a18161ec819c1c0939efe77ffb
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/certtool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/certtool-options.c
     sha256sum: d65635916618188269b6aced3d422702c322b77317755effbab1ccd57745c48b
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/danetool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/danetool-options.c
     sha256sum: 25b72d181ee318bf5d86b02e8aaf2712c14fc5fc38afd7edd580664e4c775830
     spdx_exp: GPL-3.0-or-later
-  - archive_path: src/p11tool-options.c
+  - file_paths:
+    - gnutls-3.7.10/src/p11tool-options.c
     sha256sum: 76ae1bb02d3c8885d316dc9a098d00923f7c4b3790b431a72711a6e6db121b51
     spdx_exp: GPL-3.0-or-later
   spdx:

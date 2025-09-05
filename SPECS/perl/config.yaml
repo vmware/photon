@@ -1,12 +1,13 @@
 sources:
 - archive: perl-5.36.0.tar.xz
-  archive_sha512sum: 
-    6dd6ac2a77566c173c5ab9c238cf555f2c3e592e89abb5600bc23ce1cbd0c349e0233f6417cbbf1f6d0aefc6a734ba491285af0d3dc68a605b658b65c89f1dab
+  archive_sha512sum: 6dd6ac2a77566c173c5ab9c238cf555f2c3e592e89abb5600bc23ce1cbd0c349e0233f6417cbbf1f6d0aefc6a734ba491285af0d3dc68a605b658b65c89f1dab
   license_manual_review:
-  - archive_path: cpan/CPAN-Meta/lib/CPAN/Meta/Converter.pm
+  - file_paths:
+    - perl-5.36.0/cpan/CPAN-Meta/lib/CPAN/Meta/Converter.pm
     sha256sum: 9528d678363d4857b45cba7a0b9efadc488aab4a1d5495baceec58f731444490
     spdx_exp: GPL-1.0-or-later
-  - archive_path: cpan/CPAN-Meta/lib/CPAN/Meta/Validator.pm
+  - file_paths:
+    - perl-5.36.0/cpan/CPAN-Meta/lib/CPAN/Meta/Validator.pm
     sha256sum: cc02695d6c683879171ebd513e3e8e6c2a06b7ec1938fe41f0663ee36a925292
     spdx_exp: GPL-1.0-or-later
   skip_validation: true
@@ -15,48 +16,42 @@ sources:
       detailed_description: 'The Perl package contains the Practical Extraction and
         Report Language. '
       home_page: http://www.perl.org/
-      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND 
-        (Artistic-1.0-Perl OR GPL-1.0-or-later OR MIT) AND (Artistic-1.0-Perl OR
-        GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND 
-        (Artistic-1.0-Perl OR GPL-2.0-or-later) AND (Artistic-2.0 OR 
-        GPL-1.0-or-later) AND AGPL-3.0-only AND Apache-1.1 AND Apache-2.0 AND 
-        Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND 
-        BSD-2-Clause-Views AND BSD-3-Clause AND CC0-1.0 AND FSFAP AND 
-        GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later 
-        AND GPL-3.0-only AND GPL-3.0-or-later WITH Bison-exception-2.2 AND JSON 
-        AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-3.0-only AND MIT AND 
-        MPL-1.0 AND MPL-1.1 AND MPL-2.0 AND Martin-Birgmeier AND OpenSSL AND 
-        RSA-MD AND SISSL AND Spencer-86 AND TTWL AND X11 AND Zlib AND 
-        bzip2-1.0.6 AND metamail
-      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND 
-        (Artistic-1.0-Perl OR GPL-1.0-or-later OR MIT) AND (Artistic-1.0-Perl OR
-        GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND 
-        (Artistic-1.0-Perl OR GPL-2.0-or-later) AND (Artistic-2.0 OR 
-        GPL-1.0-or-later) AND AGPL-3.0-only AND Apache-1.1 AND Apache-2.0 AND 
-        Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND 
-        BSD-2-Clause-Views AND BSD-3-Clause AND CC0-1.0 AND FSFAP AND 
-        GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later 
-        AND GPL-3.0-only AND GPL-3.0-or-later WITH Bison-exception-2.2 AND JSON 
-        AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-3.0-only AND MIT AND 
-        MPL-1.0 AND MPL-1.1 AND MPL-2.0 AND Martin-Birgmeier AND OpenSSL AND 
-        RSA-MD AND SISSL AND Spencer-86 AND TTWL AND X11 AND Zlib AND 
-        bzip2-1.0.6 AND metamail
+      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later OR MIT) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+        (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-2.0-or-later)
+        AND (Artistic-2.0 OR GPL-1.0-or-later) AND AGPL-3.0-only AND Apache-1.1 AND
+        Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-2-Clause-Views
+        AND BSD-3-Clause AND CC0-1.0 AND FSFAP AND GPL-1.0-only AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND JSON AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND LGPL-3.0-only AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0 AND Martin-Birgmeier
+        AND OpenSSL AND RSA-MD AND SISSL AND Spencer-86 AND TTWL AND X11 AND Zlib
+        AND bzip2-1.0.6 AND metamail
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later OR MIT) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+        (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-2.0-or-later)
+        AND (Artistic-2.0 OR GPL-1.0-or-later) AND AGPL-3.0-only AND Apache-1.1 AND
+        Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-2-Clause-Views
+        AND BSD-3-Clause AND CC0-1.0 AND FSFAP AND GPL-1.0-only AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND JSON AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND LGPL-3.0-only AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0 AND Martin-Birgmeier
+        AND OpenSSL AND RSA-MD AND SISSL AND Spencer-86 AND TTWL AND X11 AND Zlib
+        AND bzip2-1.0.6 AND metamail
       short_summary: Practical Extraction and Report Language
       supplier: 'Organization: Broadcom, Inc.'
 - archive: perl-cross-1.2.tar.gz
-  archive_sha512sum: 
-    81d86d0ad1dab55da9debcdf705f4937e36f4b3b3c3ce93e7d6eeef4a3b1e1d9498b3db5e2b6abf92525e6767d639da7587d95136c46e50808386767ee7e5b13
+  archive_sha512sum: 81d86d0ad1dab55da9debcdf705f4937e36f4b3b3c3ce93e7d6eeef4a3b1e1d9498b3db5e2b6abf92525e6767d639da7587d95136c46e50808386767ee7e5b13
   skip_validation: true
   spdx:
     package:
-      detailed_description: perl-cross provides alternative configure script, 
-        top-level Makefile as well as some auxilliary files for the standard 
-        perl distribution intended to allow cross-compiling perl in a relatively
-        straighforward way.
+      detailed_description: perl-cross provides alternative configure script, top-level
+        Makefile as well as some auxilliary files for the standard perl distribution
+        intended to allow cross-compiling perl in a relatively straighforward way.
       home_page: https://arsv.github.io/perl-cross
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND 
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND 
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
       short_summary: Cross-compiling perl
       supplier: 'Organization: Broadcom, Inc.'

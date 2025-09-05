@@ -4,25 +4,26 @@ sources:
   skip_validation: false
   archive_type: upstream
   license_manual_review:
-  - archive_path: testdata/printing/example.ps
+  - file_paths:
+    - samba-4.19.3/testdata/printing/example.ps
     sha256sum: 3c15833db965cd270f3d574758bb293b2592399cc963bf9e0e1b9d75c8d3e9e7
     spdx_exp: ''
-  - archive_path: lib/talloc/man/talloc.3.xml
+  - file_paths:
+    - samba-4.19.3/lib/talloc/man/talloc.3.xml
     sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
     spdx_exp: ''
-  - archive_path: README.contributing
+  - file_paths:
+    - samba-4.19.3/README.contributing
     sha256sum: 9b760ebc3217f179250ccd6e60be29a48af86198ea03647c46d8739185896a82
     spdx_exp: ''
-  - archive_path: COPYING
+  - file_paths:
+    - samba-4.19.3/COPYING
+    - samba-4.19.3/ctdb/COPYING
+    - samba-4.19.3/examples/pcap2nbench/COPYING
     sha256sum: 8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903
     spdx_exp: ''
-  - archive_path: ctdb/COPYING
-    sha256sum: 8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903
-    spdx_exp: ''
-  - archive_path: examples/pcap2nbench/COPYING
-    sha256sum: 8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903
-    spdx_exp: ''
-  - archive_path: docs-xml/gpl-3.0.xml
+  - file_paths:
+    - samba-4.19.3/docs-xml/gpl-3.0.xml
     sha256sum: ef0b816050d7f82f66c3d1d7bab0273767d2a0c3a1047484a2ddb67cfdbfbbbb
     spdx_exp: ''
   name: samba-4.19.3

@@ -14,8 +14,8 @@ sources:
   - org.wireshark.Wireshark.metainfo.xml
   - git-export-release.sh.in
   license_manual_review:
-  - archive_path: tools/licensecheck.pl
-    final_build_path: tools/licensecheck.pl
+  - file_paths:
+    - wireshark-4.2.12/tools/licensecheck.pl
     sha256sum: dbf7222366debb63f6f1fa73b8fcc147e3682afee6b0417e8cffc54cb3b36131
     spdx_exp: GPL-2.0-or-later
   spdx:

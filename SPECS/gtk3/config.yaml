@@ -3,19 +3,24 @@ sources:
   archive_sha512sum: c4d519735d0292e1e503e2dfdf764f9a5b039a77d055ba4d8b98e9acd0451a2f9f4b92ec4051722f234e652f895a2712a5e56d1387a52ea583c4bf6ef346403c
   skip_validation: true
   license_manual_review:
-  - archive_path: NEWS
+  - file_paths:
+    - gtk+-3.23.3/NEWS
     sha256sum: ccdb2fd1ecbc3b7581f92b6697bcfeda0069d2ffd1b4a48a7a96fa9584ed8ab3
     spdx_exp: ''
-  - archive_path: gtk/gtktypebuiltins.c
+  - file_paths:
+    - gtk+-3.23.3/gtk/gtktypebuiltins.c
     sha256sum: 352d84bd226ae6d39b8710f460477f3b552f5a7492bfde41cbd22e6ac2ab67df
     spdx_exp: ''
-  - archive_path: docs/reference/gtk/html/GtkAboutDialog.html
+  - file_paths:
+    - gtk+-3.23.3/docs/reference/gtk/html/GtkAboutDialog.html
     sha256sum: 19d1af62f7698fbb894073f53450e17c4a4035653309f77b889f9378a8a5e70f
     spdx_exp: ''
-  - archive_path: gtk/gtkaboutdialog.c
+  - file_paths:
+    - gtk+-3.23.3/gtk/gtkaboutdialog.c
     sha256sum: a5b91d7a44f018de4568f08d58dbb8c5aea051199e842770b3fd4e44869ff5b0
     spdx_exp: ''
-  - archive_path: gtk/gtkaboutdialog.h
+  - file_paths:
+    - gtk+-3.23.3/gtk/gtkaboutdialog.h
     sha256sum: 1fe6faf2fe7ea60f845ef1154b8bff4e82672f45ea1d279056c64e23b7b2b47d
     spdx_exp: ''
   spdx:

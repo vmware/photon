@@ -3,8 +3,8 @@ sources:
   archive_sha512sum: 7ab61f19416426fb8284de7bddc1ea9a5a7b3148fc54c018a243071ba5854610ef38a248f6a22634a2acb7d3ea408b582af1f48818dfe698ade0b7b8c00fd183
   skip_validation: true
   license_manual_review:
-  - archive_path: CREDITS
-    final_build_path: CREDITS
+  - file_paths:
+    - squid-6.12/CREDITS
     sha256sum: dbcc5ee4312134c8045e74fb0405e531a507dfe560158f3a1bb63bed3d246404
     spdx_exp: GPL-2.0-or-later
   spdx:

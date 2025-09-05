@@ -1,71 +1,70 @@
 sources:
 - archive: cargo-1.70.0-x86_64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 
-    9e7a61ff6bb5a67a0ea4138259e0289c285ef7a5b3fbcad5ddcf780d2d5ec36000a5a3757b9a182b020abf646a25de3509789cf7df0fd4236231d5b92157c4e5
+  archive_sha512sum: 9e7a61ff6bb5a67a0ea4138259e0289c285ef7a5b3fbcad5ddcf780d2d5ec36000a5a3757b9a182b020abf646a25de3509789cf7df0fd4236231d5b92157c4e5
   skip_validation: true
   spdx:
     package:
       detailed_description: cargo bootstrap toolchain to build rust-lang
       home_page: https://static.rust-lang.org
-      license_concluded: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND
-        GPL-2.0-only AND GPL-2.0-only WITH GCC-exception-2.0 AND 
-        LGPL-2.0-or-later AND LGPL-2.1-only AND MIT AND OpenSSL AND 
-        OpenSSL-standalone AND SSLeay-standalone AND Unlicense AND Zlib
-      license_declared: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND 
-        GPL-2.0-only AND GPL-2.0-only WITH GCC-exception-2.0 AND 
-        LGPL-2.0-or-later AND LGPL-2.1-only AND MIT AND OpenSSL AND 
-        OpenSSL-standalone AND SSLeay-standalone AND Unlicense AND Zlib
+      license_concluded: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only
+        AND GPL-2.0-only WITH GCC-exception-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND MIT AND OpenSSL AND OpenSSL-standalone AND SSLeay-standalone AND Unlicense
+        AND Zlib
+      license_declared: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only
+        AND GPL-2.0-only WITH GCC-exception-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND MIT AND OpenSSL AND OpenSSL-standalone AND SSLeay-standalone AND Unlicense
+        AND Zlib
       short_summary: cargo bootstrap toolchain to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
 - archive: rust-std-1.70.0-x86_64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 
-    81ff6c73da530a5a0397ad777de2a33f7773eb58c38ba04410a3751a744c68631b0b02840170f5507c44cb4e9d2be882860e2ce663a406333ab6c57d73596956
+  archive_sha512sum: 81ff6c73da530a5a0397ad777de2a33f7773eb58c38ba04410a3751a744c68631b0b02840170f5507c44cb4e9d2be882860e2ce663a406333ab6c57d73596956
   skip_validation: true
   spdx:
     package:
       detailed_description: std toolchain requried to build rust-lang
       home_page: https://static.rust-lang.org
-      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND Unicode-3.0
-      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND Unicode-3.0
+      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND Unicode-3.0
+      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND Unicode-3.0
       short_summary: std toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
 - archive: rustc-1.70.0-x86_64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 
-    790ff039749654fa3ff2f481e5fe8012e3b5fe75d075c2210e49cd4093d3d3ddcdb6690e4d9b3012e7d6361a9629ab909723f1dee8171de1f87b6b418c99aaf9
+  archive_sha512sum: 790ff039749654fa3ff2f481e5fe8012e3b5fe75d075c2210e49cd4093d3d3ddcdb6690e4d9b3012e7d6361a9629ab909723f1dee8171de1f87b6b418c99aaf9
   skip_validation: true
   spdx:
     package:
       detailed_description: Bootstrap toolchain requried to build rust-lang
       home_page: https://static.rust-lang.org
-      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND OFL-1.1 AND Unicode-3.0
-      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND OFL-1.1 AND Unicode-3.0
+      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND OFL-1.1
+        AND Unicode-3.0
+      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND OFL-1.1
+        AND Unicode-3.0
       short_summary: Bootstrap toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
 - archive: rustc-1.71.1-src.tar.xz
-  archive_sha512sum: 
-    fd0e5a16bdbeb539184513583089e55f681cb772810df357b6b1464853f7022ac02edab3dd155b2262ed0047e2a25dea3808dd078dcdfce9d399384465009db4
+  archive_sha512sum: fd0e5a16bdbeb539184513583089e55f681cb772810df357b6b1464853f7022ac02edab3dd155b2262ed0047e2a25dea3808dd078dcdfce9d399384465009db4
   license_manual_review:
-  - archive_path: src/doc/embedded-book/LICENSE-CC-BY-SA
+  - file_paths:
+    - rustc-1.71.1-src/src/doc/embedded-book/LICENSE-CC-BY-SA
     sha256sum: 3b2890eacd851373001c4a14623458e3adaf1b1967939aa9c38a318e28d61c00
     spdx_exp: ''
-  - archive_path: src/doc/index.md
+  - file_paths:
+    - rustc-1.71.1-src/src/doc/index.md
     sha256sum: fe424dafe18214d6f3b8926209cad5f27485033cf9f614d47965a8a227063eda
     spdx_exp: ''
-  - archive_path: src/doc/embedded-book/README.md
+  - file_paths:
+    - rustc-1.71.1-src/src/doc/embedded-book/README.md
     sha256sum: 1fb6453a8e07ce11e4e1e452dd73f7c1ab142acf244b721074fbae8303e1af79
     spdx_exp: ''
-  - archive_path: src/doc/embedded-book/src/intro/index.md
+  - file_paths:
+    - rustc-1.71.1-src/src/doc/embedded-book/src/intro/index.md
     sha256sum: e66038ddf163aff1221fb63e6c8064adce851759b83ba2417984895731f4f8c0
     spdx_exp: ''
-  - archive_path: src/tools/rust-analyzer/docs/user/manual.adoc
+  - file_paths:
+    - rustc-1.71.1-src/src/tools/rust-analyzer/docs/user/manual.adoc
     sha256sum: f166f7fcdf34b42a0fc5a5badd314371a4bdc36ef105debb32774a008c60f331
     spdx_exp: ''
   skip_validation: true
@@ -73,119 +72,104 @@ sources:
     package:
       detailed_description: 'Rust Programming Language '
       home_page: https://github.com/rust-lang/rust
-      license_concluded: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) 
-        AND (Apache-2.0 OR BSD-1-Clause OR MIT) AND (Apache-2.0 OR MIT) AND 
-        (Apache-2.0 OR MIT) AND (Artistic-2.0 OR GPL-2.0-or-later) AND 
-        (BSD-2-Clause OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later OR 
-        GPL-2.0-only OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later OR 
-        OpenSSL) AND (BSD-3-Clause OR GPL-2.0-or-later OR LGPL-2.1-or-later OR 
-        MPL-1.1) AND (BSD-3-Clause OR OpenSSL) AND (CC0-1.0 OR MIT) AND 
-        (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR
-        MIT) AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND 
-        (GPL-2.0-or-later OR MIT) AND (MIT OR NCSA) AND (MIT OR Unlicense) AND 
-        0BSD AND APSL-2.0 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND 
-        Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND
-        BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause-UC AND 
-        BSD-Source-Code AND BSL-1.0 AND Beerware AND BlueOak-1.0.0 AND CC-BY-3.0
-        AND CC-BY-4.0 AND CC-BY-NC-SA-4.0 AND CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND 
-        CC-PDDC AND CC0-1.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL
-        AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GPL-1.0-or-later AND
-        GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND 
-        GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-or-later AND 
-        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later 
-        WITH GNAT-exception AND GPL-2.0-or-later WITH Libtool-exception AND 
-        GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH 
-        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH 
-        Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH 
-        Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2 
-        AND GPL-3.0-or-later WITH Texinfo-exception AND HPND-UC AND ICU AND ISC 
-        AND JSON AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later 
-        AND LPD-document AND MIT AND MIT-0 AND MIT-testregex AND MPL-2.0 AND 
-        NCSA AND NTP AND Nokia AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone 
-        AND Python-2.0 AND SSH-short AND SSLeay-standalone AND Spencer-94 AND 
-        SunPro AND Unicode-3.0 AND Unicode-DFS-2016 AND Unlicense AND W3C AND 
-        X11 AND Zlib AND curl AND snprintf
-      license_declared: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) 
-        AND (Apache-2.0 OR BSD-1-Clause OR MIT) AND (Apache-2.0 OR MIT) AND 
-        (Apache-2.0 OR MIT) AND (Artistic-2.0 OR GPL-2.0-or-later) AND 
-        (BSD-2-Clause OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later OR 
-        GPL-2.0-only OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later OR 
-        OpenSSL) AND (BSD-3-Clause OR GPL-2.0-or-later OR LGPL-2.1-or-later OR 
-        MPL-1.1) AND (BSD-3-Clause OR OpenSSL) AND (CC0-1.0 OR MIT) AND 
-        (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR
-        MIT) AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND 
-        (GPL-2.0-or-later OR MIT) AND (MIT OR NCSA) AND (MIT OR Unlicense) AND 
-        0BSD AND APSL-2.0 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND 
-        Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND
-        BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause-UC AND 
-        BSD-Source-Code AND BSL-1.0 AND Beerware AND BlueOak-1.0.0 AND CC-BY-3.0
-        AND CC-BY-4.0 AND CC-BY-NC-SA-4.0 AND CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND 
-        CC-PDDC AND CC0-1.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL
-        AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GPL-1.0-or-later AND
-        GPL-1.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-only AND 
-        GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-or-later AND 
-        GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later 
-        WITH GNAT-exception AND GPL-2.0-or-later WITH Libtool-exception AND 
-        GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH 
-        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH 
-        Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH 
-        Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2 
-        AND GPL-3.0-or-later WITH Texinfo-exception AND HPND-UC AND ICU AND ISC 
-        AND JSON AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later 
-        AND LPD-document AND MIT AND MIT-0 AND MIT-testregex AND MPL-2.0 AND 
-        NCSA AND NTP AND Nokia AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone 
-        AND Python-2.0 AND SSH-short AND SSLeay-standalone AND Spencer-94 AND 
-        SunPro AND Unicode-3.0 AND Unicode-DFS-2016 AND Unlicense AND W3C AND 
-        X11 AND Zlib AND curl AND snprintf
+      license_concluded: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) AND
+        (Apache-2.0 OR BSD-1-Clause OR MIT) AND (Apache-2.0 OR MIT) AND (Apache-2.0
+        OR MIT) AND (Artistic-2.0 OR GPL-2.0-or-later) AND (BSD-2-Clause OR OpenSSL)
+        AND (BSD-3-Clause OR GPL-1.0-or-later OR GPL-2.0-only OR OpenSSL) AND (BSD-3-Clause
+        OR GPL-1.0-or-later OR OpenSSL) AND (BSD-3-Clause OR GPL-2.0-or-later OR LGPL-2.1-or-later
+        OR MPL-1.1) AND (BSD-3-Clause OR OpenSSL) AND (CC0-1.0 OR MIT) AND (GPL-1.0-or-later
+        OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-or-later
+        OR LGPL-2.1-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR MIT) AND (MIT OR
+        NCSA) AND (MIT OR Unlicense) AND 0BSD AND APSL-2.0 AND Apache-2.0 AND Apache-2.0
+        WITH LLVM-exception AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause
+        AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause-UC
+        AND BSD-Source-Code AND BSL-1.0 AND Beerware AND BlueOak-1.0.0 AND CC-BY-3.0
+        AND CC-BY-4.0 AND CC-BY-NC-SA-4.0 AND CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND CC-PDDC
+        AND CC0-1.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR
+        AND FSFULLRWD AND GFDL-1.1-or-later AND GPL-1.0-or-later AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only AND GPL-2.0-only WITH GCC-exception-2.0
+        AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH GNAT-exception AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Texinfo-exception AND HPND-UC AND ICU AND ISC AND
+        JSON AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LPD-document
+        AND MIT AND MIT-0 AND MIT-testregex AND MPL-2.0 AND NCSA AND NTP AND Nokia
+        AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone AND Python-2.0 AND SSH-short
+        AND SSLeay-standalone AND Spencer-94 AND SunPro AND Unicode-3.0 AND Unicode-DFS-2016
+        AND Unlicense AND W3C AND X11 AND Zlib AND curl AND snprintf
+      license_declared: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) AND
+        (Apache-2.0 OR BSD-1-Clause OR MIT) AND (Apache-2.0 OR MIT) AND (Apache-2.0
+        OR MIT) AND (Artistic-2.0 OR GPL-2.0-or-later) AND (BSD-2-Clause OR OpenSSL)
+        AND (BSD-3-Clause OR GPL-1.0-or-later OR GPL-2.0-only OR OpenSSL) AND (BSD-3-Clause
+        OR GPL-1.0-or-later OR OpenSSL) AND (BSD-3-Clause OR GPL-2.0-or-later OR LGPL-2.1-or-later
+        OR MPL-1.1) AND (BSD-3-Clause OR OpenSSL) AND (CC0-1.0 OR MIT) AND (GPL-1.0-or-later
+        OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-or-later
+        OR LGPL-2.1-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR MIT) AND (MIT OR
+        NCSA) AND (MIT OR Unlicense) AND 0BSD AND APSL-2.0 AND Apache-2.0 AND Apache-2.0
+        WITH LLVM-exception AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause
+        AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause-UC
+        AND BSD-Source-Code AND BSL-1.0 AND Beerware AND BlueOak-1.0.0 AND CC-BY-3.0
+        AND CC-BY-4.0 AND CC-BY-NC-SA-4.0 AND CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND CC-PDDC
+        AND CC0-1.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR
+        AND FSFULLRWD AND GFDL-1.1-or-later AND GPL-1.0-or-later AND GPL-1.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only AND GPL-2.0-only WITH GCC-exception-2.0
+        AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-or-later WITH GNAT-exception AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND GPL-3.0-or-later WITH Texinfo-exception AND HPND-UC AND ICU AND ISC AND
+        JSON AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LPD-document
+        AND MIT AND MIT-0 AND MIT-testregex AND MPL-2.0 AND NCSA AND NTP AND Nokia
+        AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone AND Python-2.0 AND SSH-short
+        AND SSLeay-standalone AND Spencer-94 AND SunPro AND Unicode-3.0 AND Unicode-DFS-2016
+        AND Unlicense AND W3C AND X11 AND Zlib AND curl AND snprintf
       short_summary: Rust Programming Language
       supplier: 'Organization: Broadcom, Inc.'
 - archive: cargo-1.70.0-aarch64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 
-    70e2078a77752e51ac8bc6affcb2f81be082791ff35ef03dd5480cad9da9654234c298d8f19b418b39984a3cf885d238fe0e16d3a7b9b71b006aebf925107475
+  archive_sha512sum: 70e2078a77752e51ac8bc6affcb2f81be082791ff35ef03dd5480cad9da9654234c298d8f19b418b39984a3cf885d238fe0e16d3a7b9b71b006aebf925107475
   skip_validation: true
   spdx:
     package:
       detailed_description: cargo bootstrap toolchain to build rust-lang
       home_page: https://static.rust-lang.org
-      license_concluded: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND
-        GPL-2.0-only AND GPL-2.0-only WITH GCC-exception-2.0 AND 
-        LGPL-2.0-or-later AND LGPL-2.1-only AND MIT AND OpenSSL AND 
-        OpenSSL-standalone AND SSLeay-standalone AND Unlicense AND Zlib
-      license_declared: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND 
-        GPL-2.0-only AND GPL-2.0-only WITH GCC-exception-2.0 AND 
-        LGPL-2.0-or-later AND LGPL-2.1-only AND MIT AND OpenSSL AND 
-        OpenSSL-standalone AND SSLeay-standalone AND Unlicense AND Zlib
+      license_concluded: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only
+        AND GPL-2.0-only WITH GCC-exception-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND MIT AND OpenSSL AND OpenSSL-standalone AND SSLeay-standalone AND Unlicense
+        AND Zlib
+      license_declared: (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only
+        AND GPL-2.0-only WITH GCC-exception-2.0 AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND MIT AND OpenSSL AND OpenSSL-standalone AND SSLeay-standalone AND Unlicense
+        AND Zlib
       short_summary: cargo bootstrap toolchain to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
 - archive: rust-std-1.70.0-aarch64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 
-    8c472c23c4911c96ceea8c67c8a29aa7c99501df09ae078d6506860f5613e96039a08684ecb488b95a941550fceafec58726ea99139542cd0e27f6e126fa1b05
+  archive_sha512sum: 8c472c23c4911c96ceea8c67c8a29aa7c99501df09ae078d6506860f5613e96039a08684ecb488b95a941550fceafec58726ea99139542cd0e27f6e126fa1b05
   skip_validation: true
   spdx:
     package:
       detailed_description: std toolchain requried to build rust-lang
       home_page: https://static.rust-lang.org
-      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND Unicode-3.0
-      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND Unicode-3.0
+      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND Unicode-3.0
+      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND Unicode-3.0
       short_summary: std toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
 - archive: rustc-1.70.0-aarch64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 
-    786baefc4e4f4bda540bba9fa6fac668b8c166336a6494f1fa4057980f1ee95e34f4105409717cc61e034f98382cf8d5b59be6304d4b85de23651a2d15ed2ce2
+  archive_sha512sum: 786baefc4e4f4bda540bba9fa6fac668b8c166336a6494f1fa4057980f1ee95e34f4105409717cc61e034f98382cf8d5b59be6304d4b85de23651a2d15ed2ce2
   skip_validation: true
   spdx:
     package:
       detailed_description: Bootstrap toolchain requried to build rust-lang
       home_page: https://static.rust-lang.org
-      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND OFL-1.1 AND Unicode-3.0
-      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND 
-        Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT 
-        AND NCSA AND OFL-1.1 AND Unicode-3.0
+      license_concluded: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND OFL-1.1
+        AND Unicode-3.0
+      license_declared: (Apache-2.0 OR MIT) AND (Apache-2.0 OR MIT) AND Apache-2.0
+        AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND MIT AND NCSA AND OFL-1.1
+        AND Unicode-3.0
       short_summary: Bootstrap toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'

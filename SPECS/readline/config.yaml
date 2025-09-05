@@ -2,11 +2,11 @@ sources:
 - archive: readline-8.2.tar.gz
   archive_sha512sum: 0a451d459146bfdeecc9cdd94bda6a6416d3e93abd80885a40b334312f16eb890f8618a27ca26868cebbddf1224983e631b1cbc002c1a4d1cd0d65fba9fea49a
   license_manual_review:
-    - archive_path: "doc/rluserman.info"
-      # Optional - only needed if copied from this archive to the final build directory
-      final_build_path: "doc/rluserman.info"
-      sha256sum: 6d64db954627199edad6bf6cea65a026455a9dd72a342c3ce7e071d482ab4bf0
-      spdx_exp: ""
+  # Optional - only needed if copied from this archive to the final build directory
+  - file_paths:
+    - readline-8.2/doc/rluserman.info
+    sha256sum: 6d64db954627199edad6bf6cea65a026455a9dd72a342c3ce7e071d482ab4bf0
+    spdx_exp: ''
   skip_validation: true
   spdx:
     package:

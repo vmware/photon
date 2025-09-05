@@ -1,7 +1,6 @@
 sources:
 - archive: pandoc-2.19.2.tar.xz
-  archive_sha512sum: 
-    067bffafcb8efe217b3fa1b5135115f037e8a524e255f8e4b86409db7c9648aa1b80dde7f0af2b195a79c984fba5f48ad409dc10a12734ec44b3df50b68ad820
+  archive_sha512sum: 067bffafcb8efe217b3fa1b5135115f037e8a524e255f8e4b86409db7c9648aa1b80dde7f0af2b195a79c984fba5f48ad409dc10a12734ec44b3df50b68ad820
   skip_validation: true
   spdx:
     package:
@@ -12,15 +11,17 @@ sources:
       short_summary: Conversion between markup formats
       supplier: 'Organization: Broadcom, Inc.'
   license_manual_review:
-  - archive_path: x86_64/bin/pandoc
-      # https://github.com/jgm/pandoc/discussions/11001 is GPL-2.0-or-later
-      # pandoc-server -> pandoc , pandoc-server is symlink to pandoc
-      # so not adding pandoc-server here as seperate entry.
+  # https://github.com/jgm/pandoc/discussions/11001 is GPL-2.0-or-later
+  # pandoc-server -> pandoc , pandoc-server is symlink to pandoc
+  # so not adding pandoc-server here as seperate entry.
+  - file_paths:
+    - pandoc-2.19.2/x86_64/bin/pandoc
     sha256sum: d6596ea001e0ea3a09d862158481bca287417cb870b7a9834fb8efa8363dbb15
     spdx_exp: GPL-2.0-or-later
-  - archive_path: aarch64/bin/pandoc
-      # https://github.com/jgm/pandoc/discussions/11001 is GPL-2.0-or-later
-      # pandoc-server -> pandoc , pandoc-server is symlink to pandoc
-      # so not adding pandoc-server here as seperate entry.
+  # https://github.com/jgm/pandoc/discussions/11001 is GPL-2.0-or-later
+  # pandoc-server -> pandoc , pandoc-server is symlink to pandoc
+  # so not adding pandoc-server here as seperate entry.
+  - file_paths:
+    - pandoc-2.19.2/aarch64/bin/pandoc
     sha256sum: c310715c012216d1340357afe62f045490ff1f7aabfe30f2a09b2111baa7bc74
     spdx_exp: GPL-2.0-or-later

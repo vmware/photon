@@ -3,10 +3,10 @@ sources:
   archive_sha512sum: 4228df812caec7059d7a76986c4d9a4262bd861cc53dca05f341ae6c062be05f1c39fc637918ab00f60f40587c6c556e3c9bfaf8a18b149e3c321a92214dbe8b
   skip_validation: true
   license_manual_review:
-    - archive_path: "doc/xmlstarlet-ug.ps"
-      final_build_path: "doc/xmlstarlet-ug.ps"
-      sha256sum: e61237e16d8f8d9412b6d775b3d7f4b7d0c759d4e9cce8eb7da6b9667dbc5852
-      spdx_exp: "MIT"
+  - file_paths:
+    - xmlstarlet-1.6.1/doc/xmlstarlet-ug.ps
+    sha256sum: e61237e16d8f8d9412b6d775b3d7f4b7d0c759d4e9cce8eb7da6b9667dbc5852
+    spdx_exp: MIT
   spdx:
     package:
       detailed_description: 'XMLStarlet is a set of command line utilities which can

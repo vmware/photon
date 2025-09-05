@@ -3,12 +3,12 @@ sources:
   archive_sha512sum: 5e46d8c3e36034de8424937cdfac59acdfaf332203e6e5d8b290614cbbe0340998d53b0583b0ef93189f41dc89219a75f50572757ebcea9abd83bd9aad861a73
   skip_validation: true
   license_manual_review:
-  - archive_path: test/files/LICENSE.fodt
-    final_build_path: test/files/LICENSE.fodt
+  - file_paths:
+    - zchunk-1.2.3/test/files/LICENSE.fodt
     sha256sum: 394ed6c2fc4ac47e5ee111a46f2a35b8010a56c7747748216f52105e868d5a3e
     spdx_exp: BSD-2-Clause
-  - archive_path: test/files/LICENSE.nocomp.fodt.zck
-    final_build_path: test/files/LICENSE.nocomp.fodt.zck
+  - file_paths:
+    - zchunk-1.2.3/test/files/LICENSE.nocomp.fodt.zck
     sha256sum: 8d06d7a8badc83b2f47b4a827013cb1897407cad3fd9ff62fa4c6630de8f813b
     spdx_exp: BSD-2-Clause
   spdx:

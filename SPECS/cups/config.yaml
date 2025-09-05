@@ -2,18 +2,22 @@ sources:
 - archive: cups-2.4.11-source.tar.gz
   archive_sha512sum: 5868f069cb5eaa5c74e703ed7773914376fb819ebabd7881df8726092eab390c8a1db75c4d08377a836a87807765ad2c16a15b406ab0580fdda2b176e2da3162
   license_manual_review:
-    - archive_path: "doc/help/spec-ppd.html"
-      sha256sum: df1c0a31a9ff839e87e625c5bd52f21cb6538a89ae5edb4be5395607f6fd5f40
-      spdx_exp: "Apache-2.0"
-    - archive_path: "doc/help/ppd-compiler.html"
-      sha256sum: bb490c1203d8ce17dfb9fe34aef6d4812d0761cb282e9de5dcdeae5cf6ce8c31
-      spdx_exp: "Apache-2.0"
-    - archive_path: "filter/ppd-compiler.shtml"
-      sha256sum: cdcf87cf6abc9586982a2dd59946da7d2b6617a3c595d7d7bddbf7f6624a3b4b
-      spdx_exp: ""
-    - archive_path: "filter/spec-ppd.shtml"
-      sha256sum: e5947e4454682f216b6a34458fa93bd56b84534d004cd7b84adfae2626b13da4
-      spdx_exp: ""
+  - file_paths:
+    - cups-2.4.11/doc/help/spec-ppd.html
+    sha256sum: df1c0a31a9ff839e87e625c5bd52f21cb6538a89ae5edb4be5395607f6fd5f40
+    spdx_exp: Apache-2.0
+  - file_paths:
+    - cups-2.4.11/doc/help/ppd-compiler.html
+    sha256sum: bb490c1203d8ce17dfb9fe34aef6d4812d0761cb282e9de5dcdeae5cf6ce8c31
+    spdx_exp: Apache-2.0
+  - file_paths:
+    - cups-2.4.11/filter/ppd-compiler.shtml
+    sha256sum: cdcf87cf6abc9586982a2dd59946da7d2b6617a3c595d7d7bddbf7f6624a3b4b
+    spdx_exp: ''
+  - file_paths:
+    - cups-2.4.11/filter/spec-ppd.shtml
+    sha256sum: e5947e4454682f216b6a34458fa93bd56b84534d004cd7b84adfae2626b13da4
+    spdx_exp: ''
   skip_validation: true
   spdx:
     package:

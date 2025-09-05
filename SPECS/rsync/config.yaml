@@ -2,11 +2,11 @@ sources:
 - archive: rsync-3.4.1.tar.gz
   archive_sha512sum: a3ecde4843ddb795308dca88581b868ac0221eb6f88a1477d7a9a2ecb4e4686042966bdddbab40866f90a4715d3104daa7b83222ddf0f3387b796a86bde8e5c2
   license_manual_review:
-    - archive_path: "lib/sysacls.c"
-      # Optional - only needed if copied from this archive to the final build directory
-      final_build_path: "lib/sysacls.c"
-      md5sum: 109b3510e1dd8a756f6d9363697334d8
-      spdx_exp: "GPL-3.0-or-later"
+  # Optional - only needed if copied from this archive to the final build directory
+  - file_paths:
+    - rsync-3.4.1/lib/sysacls.c
+    sha256sum: 99c3a32dec83217e6eb7481c0ce959563b5c17100a57a22e0daf75fabdb90f15
+    spdx_exp: GPL-3.0-or-later
   skip_validation: true
   spdx:
     package:

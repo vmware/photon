@@ -18,11 +18,11 @@ sources:
   archive_sha512sum: feaa699595d500de1fab4617539838f1f52ad2b4e590323eed3a4c378afae75b43695e09f6c6ecabf621a188dcbf663e53fb6b6036e642a79c708148e17424a4
   skip_validation: true
   license_manual_review:
-    - archive_path: "_checkouts/hex_core/src/hex_licenses.erl"
-      final_build_path: "_checkouts/hex_core/src/hex_licenses.erl"
-      sha256sum: 90bbf01e1369c6265cf578811472f32877f0a57c0c3f5f719e8e7aca3dea02ae
-      spdx_exp: ""
-    # contians a string AGPL-1.0 ,AGPL-1.0-only ,AGPL-3.0,AGPL-3.0-only, CC-BY-SA-2.0 ,CC-BY-SA-4.0 ,SSPL-1.0
+  - file_paths:
+    - vernemq_vendor-2.0.1/_checkouts/hex_core/src/hex_licenses.erl
+    sha256sum: 90bbf01e1369c6265cf578811472f32877f0a57c0c3f5f719e8e7aca3dea02ae
+    spdx_exp: ''
+  # contians a string AGPL-1.0 ,AGPL-1.0-only ,AGPL-3.0,AGPL-3.0-only, CC-BY-SA-2.0 ,CC-BY-SA-4.0 ,SSPL-1.0
   spdx:
     package:
       detailed_description: Contains vendor sources for building vernemq to perform

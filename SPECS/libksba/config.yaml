@@ -3,10 +3,12 @@ sources:
   archive_sha512sum: 188f6d27b4904c10cd54ba949c1132dd6c167f53dd1b77eae39c5b8e3ac8b15e87b2a54cdfddac95ac4ed41ee83c3d4e1b17d95126f245b6c204fade6739a2ce
   skip_validation: true
   license_manual_review:
-  - archive_path: src/der-builder.h
+  - file_paths:
+    - libksba-1.6.3/src/der-builder.h
     sha256sum: 66d370dc27be2e79a4378f064b222c729846a0c415d65a780849fbe61055fe6e
     spdx_exp: LGPL-2.1-or-later
-  - archive_path: src/der-builder.c
+  - file_paths:
+    - libksba-1.6.3/src/der-builder.c
     sha256sum: 4914d781b75a900ff56250cbd9cb5824ce0f25191019eec7cb0121b2278d912e
     spdx_exp: LGPL-2.1-or-later
   spdx:

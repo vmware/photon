@@ -3,13 +3,16 @@ sources:
   archive_sha512sum: dd0f36a367177a2d03378abf7995bad466965705fb549fa1f2a3bfc1cf5ba153de2849f789a718e1a4abb85996fde90f79f7f7571677ec32ee596aa076261c52
   skip_validation: true
   license_manual_review:
-  - archive_path: bundle/opm-0.0.7/bin/opm
+  - file_paths:
+    - openresty-1.21.4.3/bundle/opm-0.0.7/bin/opm
     sha256sum: e190a396bcb82891b8df94f106d8e7911fe595432a4af6305179e0897e3dfb50
     spdx_exp: ''
-  - archive_path: bundle/pod/opm-0.0.7/opm-0.0.7.pod
+  - file_paths:
+    - openresty-1.21.4.3/bundle/pod/opm-0.0.7/opm-0.0.7.pod
     sha256sum: 163828894b196a9e0487669e3836d10c46207f75d6e614763f61d0409b7d1701
     spdx_exp: ''
-  - archive_path: bundle/pod/opm-0.0.7/web.docs.md.docs.pod
+  - file_paths:
+    - openresty-1.21.4.3/bundle/pod/opm-0.0.7/web.docs.md.docs.pod
     sha256sum: 708968ab64ade8240998447264774e89f2359a0ecddc38ee493ad76aa3abe3c5
     spdx_exp: ''
   spdx:

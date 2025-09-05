@@ -3,7 +3,7 @@ sources:
   archive_sha512sum: 470cc4489255a4f122ba1d680669589ba375d4081ff46631dd56f5104202d175bfb13356820eb9108a6b768b3837b2f5d26cc7b0acc3071c4787fb070df3cbab
   skip_validation: true
   archive_type: None
-  name: "tevent-0.15.0"
+  name: tevent-0.15.0
   version: 0.15.0
   url: https://download.samba.org/pub/tevent/tevent-0.15.0.tar.gz
   repo_url: https://gitlab.com/samba-team/samba/-/tree/master/lib/tevent
@@ -11,9 +11,10 @@ sources:
   skip_list: []
   missing: []
   license_manual_review:
-    - archive_path: "lib/talloc/man/talloc.3.xml"
-      sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
-      spdx_exp: "LGPL-3.0-or-later"
+  - file_paths:
+    - tevent-0.15.0/lib/talloc/man/talloc.3.xml
+    sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
+    spdx_exp: LGPL-3.0-or-later
   spdx:
     package:
       detailed_description: 'Tevent is an event system based on the talloc memory

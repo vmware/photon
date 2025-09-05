@@ -3,7 +3,8 @@ sources:
   archive_sha512sum: 8432f8ccdf84883d2e7764319429514d655248c1c6c7cc710bc76ffa0254b9bab98111281acf6233cc703f47c20a768c92d97839c3816df834bf6c35953febd7
   skip_validation: true
   license_manual_review:
-  - archive_path: NEWS
+  - file_paths:
+    - gstreamer-1.25.1/NEWS
     sha256sum: 5e90dc0f231ea215669963c1639e7d09cf7e09021fe65690fc265d903ac17b88
     spdx_exp: ''
   spdx:

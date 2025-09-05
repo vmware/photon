@@ -72,10 +72,11 @@ sources:
   archive_sha512sum: 56bb0d1dd85bcbf8af0483ce0dee62515e7f0e5f59b74c3a9284c5ac21b475cb4037098c4209377913df7a8ba522d17e910c083e2e36718125d323c9af71b9d0
   skip_validation: true
   license_manual_review:
-    # Icon uses cc-by-sa-4.0 license
-    - archive_path: "nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp"
-      sha256sum: 1cb56a65d201465110930fde78929f0ef0881b30c64d6b14dc014d97ca0d5774
-      spdx_exp: ""
+  # Icon uses cc-by-sa-4.0 license
+  - file_paths:
+    - base-for-apache-tomcat-10.1.43/nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp
+    sha256sum: 1cb56a65d201465110930fde78929f0ef0881b30c64d6b14dc014d97ca0d5774
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: base-for-apache-tomcat is a cached -Dbase.path folder
