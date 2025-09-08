@@ -1,7 +1,7 @@
 Summary:        cpio archive utility
 Name:           cpio
 Version:        2.13
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/cpio/
 Group:          System Environment/System utilities
@@ -17,7 +17,9 @@ Patch3:         cpio-CVE-2021-38185.patch
 Patch4:         cpio-CVE-2021-38185_2.patch
 Patch5:         cpio-CVE-2021-38185_3.patch
 Patch6:         newca_make_check_test.patch
+Patch7:         CVE-2023-7207.patch
 BuildRequires:  lua
+BuildRequires:  texinfo
 Requires:       lua
 
 %description
@@ -62,6 +64,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Sep 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.13-10
+- Fix CVE-2023-7207/CVE-2015-1197
 * Wed Mar 29 2023 Shivani Agarwal <shivania2@vmware.com> 2.13-9
 - Updated newca new archive format patch
 * Wed Dec 07 2022 Shivani Agarwal <shivania2@vmware.com> 2.13-8
