@@ -1,4 +1,4 @@
-From 136fe0719b504d2f1016570307c3c2c563700738 Mon Sep 17 00:00:00 2001
+From a1fb1e580ae8dd8c70bfcd9a2bdd2a5a814d75be Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
 Date: Tue, 23 Mar 2021 13:19:28 +0530
 Subject: [PATCH] crypto: AF_ALG - add KPP support
@@ -41,21 +41,23 @@ Added support for LKCM 5.0:
 Signed-off-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+[Add memset() to kpp_accept_parent_nokey() so that
+the new "inflight" field is initialized to zero]
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/Kconfig          |  10 +
  crypto/Makefile         |   1 +
  crypto/af_alg.c         |   2 +
- crypto/algif_kpp.c      | 578 ++++++++++++++++++++++++++++++++++++++++
+ crypto/algif_kpp.c      | 575 ++++++++++++++++++++++++++++++++++++++++
  include/crypto/if_alg.h |   2 +
- 5 files changed, 593 insertions(+)
+ 5 files changed, 590 insertions(+)
  create mode 100644 crypto/algif_kpp.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 26de7a94f..56bf05e9d 100644
+index 7da59dd68..c2bdd2b68 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -1470,6 +1470,16 @@ config CRYPTO_USER_API_AKCIPHER
+@@ -1511,6 +1511,16 @@ config CRYPTO_USER_API_AKCIPHER
  	  This option enables the user-space interface for asymmetric
  	  key cipher algorithms.
  
@@ -73,10 +75,10 @@ index 26de7a94f..56bf05e9d 100644
  	bool
  
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 777865005..54e34b93e 100644
+index be16d3992..512cf3cee 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -172,6 +172,7 @@ ecrdsa_generic-y += ecrdsa_params.asn1.o
+@@ -193,6 +193,7 @@ ecrdsa_generic-y += ecrdsa_params.asn1.o
  ecrdsa_generic-y += ecrdsa_pub_key.asn1.o
  obj-$(CONFIG_CRYPTO_ECRDSA) += ecrdsa_generic.o
  obj-$(CONFIG_CRYPTO_USER_API_AKCIPHER) += algif_akcipher.o
@@ -99,10 +101,10 @@ index 812e32f4b..f339d1da0 100644
  		default:
 diff --git a/crypto/algif_kpp.c b/crypto/algif_kpp.c
 new file mode 100644
-index 000000000..8e198245a
+index 000000000..d2f419400
 --- /dev/null
 +++ b/crypto/algif_kpp.c
-@@ -0,0 +1,578 @@
+@@ -0,0 +1,575 @@
 +/*
 + * algif_kpp: User-space interface for key protocol primitives algorithms
 + *
@@ -622,13 +624,10 @@ index 000000000..8e198245a
 +	if (!ctx)
 +		return -ENOMEM;
 +
++	memset(ctx, 0, len);
++
 +	INIT_LIST_HEAD(&ctx->tsgl_list);
 +	ctx->len = len;
-+	ctx->used = 0;
-+	atomic_set(&ctx->rcvused, 0);
-+	ctx->more = 0;
-+	ctx->merge = 0;
-+	ctx->op = 0;
 +	crypto_init_wait(&ctx->wait);
 +
 +	ask->private = ctx;
@@ -682,7 +681,7 @@ index 000000000..8e198245a
 +MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
 +MODULE_DESCRIPTION("Key protocol primitives kernel crypto API user space interface");
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index baad12ad4..a0af7305f 100644
+index a330bc18e..f4b219472 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
 @@ -19,6 +19,7 @@
@@ -693,7 +692,7 @@ index baad12ad4..a0af7305f 100644
  
  #define ALG_MAX_PAGES			16
  
-@@ -113,6 +114,7 @@ struct af_alg_async_req {
+@@ -117,6 +118,7 @@ struct af_alg_async_req {
  		struct aead_request aead_req;
  		struct skcipher_request skcipher_req;
  		struct akcipher_request akcipher_req;
@@ -702,5 +701,5 @@ index baad12ad4..a0af7305f 100644
  
  	/* req ctx trails this struct */
 -- 
-2.39.4
+2.40.4
 

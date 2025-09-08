@@ -1,4 +1,4 @@
-From 4114f2c60065e417380bceb36d39a52cc53b40e1 Mon Sep 17 00:00:00 2001
+From ee217883d5da1422f959abc89b6c6f565dc42523 Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
 Date: Tue, 23 Mar 2021 13:13:00 +0530
 Subject: [PATCH 3/7] crypto: AF_ALG -- add asymmetric cipher
@@ -12,20 +12,22 @@ code regarding TX and RX SGL handling.
 Signed-off-by: Stephan Mueller <smueller@chronox.de>
 Signed-off-by: Vikash Bansal <bvikas@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+[Add memset() to akcipher_accept_parent_nokey() so that
+the new "inflight" field is initialized to zero]
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/Kconfig          |   9 +
  crypto/Makefile         |   1 +
- crypto/algif_akcipher.c | 471 ++++++++++++++++++++++++++++++++++++++++
+ crypto/algif_akcipher.c | 468 ++++++++++++++++++++++++++++++++++++++++
  include/crypto/if_alg.h |   2 +
- 4 files changed, 483 insertions(+)
+ 4 files changed, 480 insertions(+)
  create mode 100644 crypto/algif_akcipher.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index ff8b81340..26de7a94f 100644
+index aec7ccaf3..7da59dd68 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -1461,6 +1461,15 @@ config CRYPTO_USER_API_ENABLE_OBSOLETE
+@@ -1502,6 +1502,15 @@ config CRYPTO_USER_API_ENABLE_OBSOLETE
  
  endmenu
  
@@ -42,10 +44,10 @@ index ff8b81340..26de7a94f 100644
  	bool
  
 diff --git a/crypto/Makefile b/crypto/Makefile
-index dc3b331ca..777865005 100644
+index 3c6030ea9..be16d3992 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -171,6 +171,7 @@ ecrdsa_generic-y += ecrdsa.o
+@@ -192,6 +192,7 @@ ecrdsa_generic-y += ecrdsa.o
  ecrdsa_generic-y += ecrdsa_params.asn1.o
  ecrdsa_generic-y += ecrdsa_pub_key.asn1.o
  obj-$(CONFIG_CRYPTO_ECRDSA) += ecrdsa_generic.o
@@ -55,10 +57,10 @@ index dc3b331ca..777865005 100644
  # generic algorithms and the async_tx api
 diff --git a/crypto/algif_akcipher.c b/crypto/algif_akcipher.c
 new file mode 100644
-index 000000000..eb4ca7f7d
+index 000000000..4dbbfbcd7
 --- /dev/null
 +++ b/crypto/algif_akcipher.c
-@@ -0,0 +1,471 @@
+@@ -0,0 +1,468 @@
 +/*
 + * algif_akcipher: User-space interface for asymmetric cipher algorithms
 + *
@@ -472,13 +474,10 @@ index 000000000..eb4ca7f7d
 +	if (!ctx)
 +		return -ENOMEM;
 +
++	memset(ctx, 0, len);
++
 +	INIT_LIST_HEAD(&ctx->tsgl_list);
 +	ctx->len = len;
-+	ctx->used = 0;
-+	atomic_set(&ctx->rcvused, 0);
-+	ctx->more = 0;
-+	ctx->merge = 0;
-+	ctx->op = 0;
 +	crypto_init_wait(&ctx->wait);
 +
 +	ask->private = ctx;
@@ -531,7 +530,7 @@ index 000000000..eb4ca7f7d
 +MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
 +MODULE_DESCRIPTION("Asymmetric kernel crypto API user space interface");
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index c7b009ad5..0a39ff193 100644
+index a26e7015e..e427e47f7 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
 @@ -18,6 +18,7 @@
@@ -542,7 +541,7 @@ index c7b009ad5..0a39ff193 100644
  
  #define ALG_MAX_PAGES			16
  
-@@ -109,6 +110,7 @@ struct af_alg_async_req {
+@@ -113,6 +114,7 @@ struct af_alg_async_req {
  	union {
  		struct aead_request aead_req;
  		struct skcipher_request skcipher_req;
@@ -551,5 +550,5 @@ index c7b009ad5..0a39ff193 100644
  
  	/* req ctx trails this struct */
 -- 
-2.39.4
+2.40.4
 
