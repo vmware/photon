@@ -63,8 +63,7 @@ class KernelSpecProcessor:
                                           spec_content, re.MULTILINE).group(1)
                 release_match = re.search(r"^Release:\s*(\S+)",
                                           spec_content, re.MULTILINE).group(1)
-                build_for_match = re.search(r"^\s*%global\s+build_for\s+(.*)",
-                                            spec_content, re.MULTILINE)
+                build_for_match = re.search(r"^\s*%(?:global|define)\s+build_for\s+(.*)", spec_content, re.MULTILINE)
 
                 if build_for_match:
                     build_for_value = build_for_match.group(1).strip()
