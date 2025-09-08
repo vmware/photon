@@ -1,3 +1,4 @@
+%global build_for !ph5
 %global security_hardening none
 %global __cmake_in_source_build 0
 
