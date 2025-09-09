@@ -1,0 +1,20 @@
+sources:
+- archive: versioningit-3.1.0.tar.gz
+  archive_sha512sum: d30ec0b2831ab3e77e51b3e41b542ef2e73838dd78a2b1bebb64db4f7fdb4c988299f7b9605c9ff884c130fe97b2491e1bb27866450346023b68dd1a2204e04d
+  archive_type: upstream
+  version: 3.1.0
+  name: versioningit-3.1.0
+  url: https://files.pythonhosted.org/packages/bd/cd/7a5ee8bb5a8c51632e51170bb125e439ae9d823239e88bffec08144418d4/versioningit-3.1.0.tar.gz
+  repo_url: https://github.com/jwodder/versioningit
+  commit_id: 8903e8f6683ddf016b14f13ec4005d9eec4bb377
+  missing: ['.readthedocs.yaml', '.github', 'PKG-INFO', '.pre-commit-config.yaml']
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'Versioningit is yet another Python packaging plugin for automatically determining
+                             your package’s version based on your version control repository’s tags.'
+      home_page: https://pypi.org/project/versioningit/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Versioning It with your Version In Git
+      supplier: 'Organization: Broadcom, Inc.'

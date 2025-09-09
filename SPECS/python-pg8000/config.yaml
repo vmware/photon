@@ -1,0 +1,20 @@
+sources:
+- archive: pg8000-1.31.2.tar.gz
+  archive_sha512sum: cdcd7d614e428a6c0b55d580f4174ab00e5d5faa6efa9288d6f39a203250d51cb920dd662dd1f62b090e965e4c673e4fdd85850f05c50058522cb64c97304575
+  archive_type: upstream
+  version: 1.31.2
+  name: pg8000-1.31.2
+  url: https://files.pythonhosted.org/packages/0f/d7/0554640cbe3e193184796bedb6de23f797c03958425176faf0e694c06eb0/pg8000-1.31.2.tar.gz
+  repo_url: https://codeberg.org/tlocke/pg8000.git
+  commit_id: 9945228f2cec51727f83058229f59fa7397b4d64
+  skip_list: []
+  missing: ['PKG-INFO']
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'pg8000 is a pure-Python PostgreSQL driver that complies with DB-API 2.0.'
+      home_page: https://pypi.org/project/pg8000/
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary:  A Pure-Python PostgreSQL Driver
+      supplier: 'Organization: Broadcom, Inc.'
