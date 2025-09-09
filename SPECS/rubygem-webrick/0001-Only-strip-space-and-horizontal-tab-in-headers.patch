@@ -1,0 +1,83 @@
+From 426e214532bb0be5e4ab8b3c9cef328432012d0d Mon Sep 17 00:00:00 2001
+From: Jeremy Evans <code@jeremyevans.net>
+Date: Fri, 5 Jul 2024 10:36:09 -0700
+Subject: [PATCH] Only strip space and horizontal tab in headers
+
+Previously, all whitespace was stripped, but that goes against
+the related RFCs.
+
+Fixes #139
+
+[Backport to webrick-1.7.0, dropped test file changes
+ Follow-up fix for CVE-2025-6442]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ lib/webrick/httputils.rb | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
+
+diff --git a/lib/webrick/httputils.rb b/lib/webrick/httputils.rb
+index bb2ca24..d5f0b68 100644
+--- a/lib/webrick/httputils.rb
++++ b/lib/webrick/httputils.rb
+@@ -152,12 +152,12 @@ module WEBrick
+           field.downcase!
+           header[field] = [] unless header.has_key?(field)
+           header[field] << value
+-        when /^\s+([^\r\n\0]*?)\r\n/om
++        when /^[ \t]+([^\r\n\0]*?)\r\n/om
+           unless field
+             raise HTTPStatus::BadRequest, "bad header '#{line}'."
+           end
+           value = line
+-          value.lstrip!
++          value.gsub!(/\A[ \t]+/, '')
+           value.slice!(-2..-1)
+           header[field][-1] << " " << value
+         else
+@@ -165,7 +165,10 @@ module WEBrick
+         end
+       }
+       header.each{|key, values|
+-        values.each(&:strip!)
++        values.each{|value|
++          value.gsub!(/\A[ \t]+/, '')
++          value.gsub!(/[ \t]+\z/, '')
++        }
+       }
+       header
+     end
+@@ -176,7 +179,7 @@ module WEBrick
+ 
+     def split_header_value(str)
+       str.scan(%r'\G((?:"(?:\\.|[^"])+?"|[^",]+)+)
+-                    (?:,\s*|\Z)'xn).flatten
++                    (?:,[ \t]*|\Z)'xn).flatten
+     end
+     module_function :split_header_value
+ 
+@@ -204,9 +207,9 @@ module WEBrick
+     def parse_qvalues(value)
+       tmp = []
+       if value
+-        parts = value.split(/,\s*/)
++        parts = value.split(/,[ \t]*/)
+         parts.each {|part|
+-          if m = %r{^([^\s,]+?)(?:;\s*q=(\d+(?:\.\d+)?))?$}.match(part)
++          if m = %r{^([^ \t,]+?)(?:;[ \t]*q=(\d+(?:\.\d+)?))?$}.match(part)
+             val = m[1]
+             q = (m[2] or 1).to_f
+             tmp.push([val, q])
+@@ -305,8 +308,8 @@ module WEBrick
+         elsif str == CRLF
+           @header = HTTPUtils::parse_header(@raw_header.join)
+           if cd = self['content-disposition']
+-            if /\s+name="(.*?)"/ =~ cd then @name = $1 end
+-            if /\s+filename="(.*?)"/ =~ cd then @filename = $1 end
++            if /[ \t]+name="(.*?)"/ =~ cd then @name = $1 end
++            if /[ \t]+filename="(.*?)"/ =~ cd then @filename = $1 end
+           end
+         else
+           @raw_header << str
+-- 
+2.40.4
+

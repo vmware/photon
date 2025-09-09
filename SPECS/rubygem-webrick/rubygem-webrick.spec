@@ -4,7 +4,7 @@
 
 Name:           rubygem-webrick
 Version:        1.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        HTTP server toolkit
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -16,7 +16,12 @@ Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  ruby
+Patch0:         CVE-2024-47220.patch
+Patch1:         CVE-2025-6442.patch
+# Follow-up fix for CVE-2025-6442
+Patch2:         0001-Only-strip-space-and-horizontal-tab-in-headers.patch
+
+BuildRequires:  ruby-devel
 
 Requires: ruby
 
@@ -27,18 +32,22 @@ WEBrick is an HTTP server toolkit that can be configured as an HTTPS server,
 a proxy server, and a virtual-host server.
 
 %prep
-%autosetup -p1 -n %{gem_name}-%{version}
+%gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+%gem_install
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+* Tue Sep 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-3
+- Fix CVE-2025-6442 and CVE-2024-47220
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-2
 - Release bump for SRP compliance
 * Fri Oct 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.7.0-1
