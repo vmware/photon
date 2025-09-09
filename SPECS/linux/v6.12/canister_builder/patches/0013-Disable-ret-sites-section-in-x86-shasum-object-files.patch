@@ -3,6 +3,8 @@ From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Wed, 20 Aug 2025 00:05:55 +0000
 Subject: [PATCH 13/13] Disable ret sites section in x86 shasum object files
 
+Use "ret;int3" for straight-line-speculation mitigation.
+
 Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
  arch/x86/crypto/sha256-avx-asm.S   | 5 +++++
@@ -24,7 +26,7 @@ index 53de72bdd..f8b367cf6 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  ################################ Define Macros
@@ -40,7 +42,7 @@ index 0bbec1c75..6f52a1444 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  ################################ Define Macros
@@ -56,7 +58,7 @@ index 93264ee44..81fcc7c06 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  ################################ Define Macros
@@ -72,7 +74,7 @@ index d515a55a3..82adb42bd 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  .macro do_4rounds	i, m0, m1, m2, m3
@@ -88,7 +90,7 @@ index 5bfce4b04..863c8e8d0 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  .text
@@ -104,7 +106,7 @@ index 24973f42c..5f36411f8 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  .text
@@ -120,7 +122,7 @@ index 30a2c4777..3efc5214c 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  .text

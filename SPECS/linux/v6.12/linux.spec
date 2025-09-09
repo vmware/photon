@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        4%{?acvp_build:.acvp}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -928,6 +928,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 10 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-5
+- Canister: introduce straight-line-speculation mitigation
 * Mon Sep 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-4
 - Resolve random EBUSY status for RSA signature verification test
 * Mon Aug 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-3
