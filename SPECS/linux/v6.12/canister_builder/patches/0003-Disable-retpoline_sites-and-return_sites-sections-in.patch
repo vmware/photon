@@ -4,7 +4,10 @@ Date: Fri, 29 Nov 2024 06:33:52 +0000
 Subject: [PATCH 03/13] Disable retpoline_sites and return_sites sections in
  canister
 
+Use "ret;int3" for straight-line-speculation mitigation.
+
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
  arch/x86/crypto/aes-gcm-aesni-x86_64.S  | 5 +++++
  arch/x86/crypto/aes-gcm-avx10-x86_64.S  | 5 +++++
@@ -23,7 +26,7 @@ index 45940e288..61cf71b93 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  .section .rodata
@@ -39,7 +42,7 @@ index 97e0ee515..529cf2a35 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  .section .rodata
@@ -55,7 +58,7 @@ index 48f97b79f..090c9aa29 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  .section .rodata
@@ -71,7 +74,7 @@ index 2402b9418..9855930f2 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  /*
@@ -87,7 +90,7 @@ index eb153eff9..ff17e987e 100644
  
 +#if defined(RET)
 +#undef RET
-+#define RET ret
++#define RET ret;int3
 +#endif
 +
  #ifdef __x86_64__

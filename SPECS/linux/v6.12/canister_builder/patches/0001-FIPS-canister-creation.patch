@@ -452,19 +452,19 @@ index 32ddbce74..0d2dc0fb4 100644
 +$(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
 +	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@
 +define UPDATE_CFLAGS =
-+  CFLAGS_$1 += -DFIPS_CANISTER
++  CFLAGS_$1 += -DFIPS_CANISTER -mharden-sls=all
 +  CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(canister),$(eval $(call UPDATE_CFLAGS,$(obj))))
 +
 +define UPDATE_CFLAGS_LIB_CRYPTO =
-+  CFLAGS_lib-crypto-$1 += -DFIPS_CANISTER
++  CFLAGS_lib-crypto-$1 += -DFIPS_CANISTER -mharden-sls=all
 +  CFLAGS_REMOVE_lib-crypto-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(lib-crypto-y),$(eval $(call UPDATE_CFLAGS_LIB_CRYPTO,$(obj))))
 +
 +define UPDATE_CFLAGS_X86 =
-+  CFLAGS_x86-$1 += -DFIPS_CANISTER
++  CFLAGS_x86-$1 += -DFIPS_CANISTER -mharden-sls=all
 +  CFLAGS_REMOVE_x86-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(aesni-intel-y),$(eval $(call UPDATE_CFLAGS_X86,$(obj))))

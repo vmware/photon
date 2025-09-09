@@ -36,7 +36,7 @@ index 0d2dc0fb4..c99902894 100644
  	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@
 +	@$(foreach obj,$(canister),echo $(obj) >> objs;)
  define UPDATE_CFLAGS =
-   CFLAGS_$1 += -DFIPS_CANISTER
+   CFLAGS_$1 += -DFIPS_CANISTER -mharden-sls=all
    CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 -- 
 2.50.1
