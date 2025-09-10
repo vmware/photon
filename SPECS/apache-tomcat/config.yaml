@@ -104,6 +104,12 @@ sources:
 - archive: base-for-apache-tomcat-9.0.107.tar.gz
   archive_sha512sum: 09b9bb27bc109734ae9daf3e501f1f5ddeff158ab466dc4d767c13b706272d3d2437a5400c9b12ab92ea467e7c3b9448dd61c6399673c528f91cb368751e74c8
   skip_validation: true
+  license_manual_review:
+  # Icon uses cc-by-sa-4.0 license
+  - file_paths:
+    - base-for-apache-tomcat-9.0.107/nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp
+    sha256sum: 1cb56a65d201465110930fde78929f0ef0881b30c64d6b14dc014d97ca0d5774
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: base-for-apache-tomcat is a cached -Dbase.path folder
