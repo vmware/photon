@@ -23,3 +23,15 @@ sources:
       license_declared: GPL-2.0-only AND GPL-2.0-or-later
       short_summary: Dynamic kernel patching
       supplier: 'Organization: Broadcom, Inc.'
+
+- archive: photon-kpatch-utils-v1.0.tar.gz
+  archive_sha512sum: c7daee412c478b2c2fb0778665d4325c375c989ba87c048433e023f4e01803df2106b2bb8f51388aea839db653b3ab1cb72965f02abf770706f739ec136d1ab6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: kpatch-build photon wrapper scripts
+      home_page: https://github-vcf.devops.broadcom.net/vcf/photon-kpatch
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: kpatch-build photon wrapper scripts
+      supplier: "Organization: Broadcom, Inc."

@@ -1,25 +1,20 @@
+
+%define photon_kpatch_utils_version 1.0
+%define kpatch_utils photon-kpatch-utils-v%{photon_kpatch_utils_version}
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
+Source0:        https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
+Source1:        https://packages.vmware.com/photon/photon_sources/1.0/%{kpatch_utils}.tar.gz
 
-Source1:        utils/auto_livepatch
-Source2:        utils/gen_livepatch
-Source3:        utils/livepatch.sh
-Source4:        utils/README.txt
-Source5:        utils/rpm/livepatch_spec.template
-Source6:        utils/Dockerfile.ph5
-Source7:        utils/Dockerfile.ph4
-Source8:        utils/Dockerfile.ph3
-
-Source9:        license.txt
-%include %{SOURCE9}
+Source2:        license.txt
+%include %{SOURCE2}
 
 BuildArch:      x86_64
 
@@ -82,7 +77,7 @@ Requires: wget
 Contains auto_livepatch and gen_livepatch scripts.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -a 0 -a 1
 
 %build
 %make_build
@@ -90,10 +85,10 @@ Contains auto_livepatch and gen_livepatch scripts.
 %install
 %make_install PREFIX=%{_usr} %{?_smp_mflags}
 install -vdm755 %{buildroot}%{_datadir}/livepatch/dockerfiles/
-cp %{SOURCE1} %{SOURCE2} %{buildroot}%{_bindir}
-cp %{SOURCE3} %{buildroot}%{_libdir}
-cp %{SOURCE4} %{SOURCE5} %{buildroot}%{_datadir}/livepatch
-cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfiles
+cp %{kpatch_utils}/auto_livepatch %{kpatch_utils}/gen_livepatch %{buildroot}%{_bindir}
+cp %{kpatch_utils}/livepatch.sh %{buildroot}%{_libdir}
+cp %{kpatch_utils}/README.md %{kpatch_utils}/rpm/livepatch_spec.template %{buildroot}%{_datadir}/livepatch
+cp %{kpatch_utils}/Dockerfile.ph* %{buildroot}%{_datadir}/livepatch/dockerfiles
 
 %files
 %defattr(-,root,root,-)
@@ -121,13 +116,15 @@ cp %{SOURCE6} %{SOURCE7} %{SOURCE8} %{buildroot}%{_datadir}/livepatch/dockerfile
 %{_bindir}/gen_livepatch
 %{_libdir}/livepatch.sh
 %defattr(0644,root,root,0755)
-%doc %{_datadir}/livepatch/README.txt
+%doc %{_datadir}/livepatch/README.md
 %{_datadir}/livepatch/livepatch_spec.template
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph5
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph4
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-7
+- Maintain kpatch utils scripts only in photon-kpatch repo in vcf github
 * Wed Aug 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 0.9.10-6
 - Fix find-exec issue with signing script invocation
 * Thu Aug 07 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-5
