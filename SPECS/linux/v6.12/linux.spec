@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        19%{?acvp_build:.acvp}%{?dist}
+Release:        20%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -223,6 +223,11 @@ Patch210: 0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch211: 0005-vmw_balloon-add-arm64-support.patch
 Patch212: 0001-vmw_vmci-arm64-support-memory-ordering.patch
 %endif
+
+# perf: off-cpu sample
+Patch221: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
+Patch222: 0002-perf-record-add-options-to-off-cpu.patch
+Patch223: 0003-perf-display-off-cpu-samples.patch
 
 %ifarch x86_64
 # AWS: [300..339]
@@ -503,6 +508,8 @@ The kernel fips-canister
 # aarch64 patches
 %autopatch -p1 -m200 -M219
 %endif
+
+%autopatch -p1 -m221 -M223
 
 %ifarch x86_64
 # AWS x86
@@ -857,6 +864,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Oct 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.41-20
+- perf: add patch to collect off-cpu sample
 * Mon Oct 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-19
 - Moving asn1-decoder API into canister boundry.
 - Restore rsa-pkcs1pad encrypt/decrypt in rsa-pkcs1pad.c, disallow in fips mode
