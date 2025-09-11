@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
 Version:        2.4.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -11,6 +11,8 @@ Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{versio
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch1:  0001-cups_Authentication_bypass_with_AuthType_Negotiate.patch
 
 BuildRequires:  automake
 BuildRequires:  dbus-devel
@@ -92,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Thu Sep 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 2.4.11-3
+- fix CVE-2025-58060
 * Tue Jul 01 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.11-2
 - Bump release to rescan licenses
 * Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.11-1
