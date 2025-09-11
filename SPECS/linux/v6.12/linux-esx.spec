@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.41
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -499,6 +499,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Oct 03 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.41-7
+- Enable CONFIG_X86_SGX
 * Mon Sep 29 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-6
 - Cleanup jcw_kvzalloc_align
 - Optimize jent init time during boot.
