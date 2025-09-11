@@ -1,7 +1,7 @@
 From a43c5f5d998e08b1d5bd51b402eb946b889607c5 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Mon, 11 Aug 2025 22:18:52 +0000
-Subject: [PATCH 12/13] Add shasums accelerators
+Subject: [PATCH 12/15] Add shasums accelerators
 
 Prepare glue C files to be included into the canister binary.
 Move to wrapper calls. Remove modules related stuff
@@ -10,13 +10,22 @@ Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
  arch/x86/crypto/sha256_ssse3_glue.c | 74 +++++++++++------------------
  arch/x86/crypto/sha512_ssse3_glue.c | 65 +++++++++++--------------
- 2 files changed, 57 insertions(+), 82 deletions(-)
+ crypto/Makefile                     | 16 ++++++++++++----
+ 3 files changed, 69 insertions(+), 86 deletions(-)
 
 diff --git a/arch/x86/crypto/sha256_ssse3_glue.c b/arch/x86/crypto/sha256_ssse3_glue.c
 index e04a43d9f..8a84ef6c8 100644
 --- a/arch/x86/crypto/sha256_ssse3_glue.c
 +++ b/arch/x86/crypto/sha256_ssse3_glue.c
-@@ -41,19 +41,21 @@
+@@ -32,7 +32,6 @@
+ #include <crypto/internal/hash.h>
+ #include <crypto/internal/simd.h>
+ #include <linux/init.h>
+-#include <linux/module.h>
+ #include <linux/mm.h>
+ #include <linux/types.h>
+ #include <crypto/sha2.h>
+@@ -41,19 +40,21 @@
  #include <asm/cpu_device_id.h>
  #include <asm/simd.h>
  
@@ -48,7 +57,7 @@ index e04a43d9f..8a84ef6c8 100644
  
  static int _sha256_update(struct shash_desc *desc, const u8 *data,
  			  unsigned int len, sha256_block_fn *sha256_xform)
-@@ -70,9 +72,9 @@ static int _sha256_update(struct shash_desc *desc, const u8 *data,
+@@ -70,9 +71,9 @@ static int _sha256_update(struct shash_desc *desc, const u8 *data,
  	 */
  	BUILD_BUG_ON(offsetof(struct sha256_state, state) != 0);
  
@@ -61,7 +70,7 @@ index e04a43d9f..8a84ef6c8 100644
  
  	return 0;
  }
-@@ -83,11 +85,11 @@ static int sha256_finup(struct shash_desc *desc, const u8 *data,
+@@ -83,11 +84,11 @@ static int sha256_finup(struct shash_desc *desc, const u8 *data,
  	if (!crypto_simd_usable())
  		return crypto_sha256_finup(desc, data, len, out);
  
@@ -76,7 +85,7 @@ index e04a43d9f..8a84ef6c8 100644
  
  	return sha256_base_finish(desc, out);
  }
-@@ -150,7 +152,7 @@ static struct shash_alg sha256_ssse3_algs[] = { {
+@@ -150,7 +151,7 @@ static struct shash_alg sha256_ssse3_algs[] = { {
  
  static int register_sha256_ssse3(void)
  {
@@ -85,7 +94,7 @@ index e04a43d9f..8a84ef6c8 100644
  		return crypto_register_shashes(sha256_ssse3_algs,
  				ARRAY_SIZE(sha256_ssse3_algs));
  	return 0;
-@@ -158,7 +160,7 @@ static int register_sha256_ssse3(void)
+@@ -158,7 +159,7 @@ static int register_sha256_ssse3(void)
  
  static void unregister_sha256_ssse3(void)
  {
@@ -94,7 +103,7 @@ index e04a43d9f..8a84ef6c8 100644
  		crypto_unregister_shashes(sha256_ssse3_algs,
  				ARRAY_SIZE(sha256_ssse3_algs));
  }
-@@ -224,8 +226,8 @@ static struct shash_alg sha256_avx_algs[] = { {
+@@ -224,8 +225,8 @@ static struct shash_alg sha256_avx_algs[] = { {
  static bool avx_usable(void)
  {
  	if (!cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, NULL)) {
@@ -105,7 +114,7 @@ index e04a43d9f..8a84ef6c8 100644
  		return false;
  	}
  
-@@ -307,8 +309,8 @@ static struct shash_alg sha256_avx2_algs[] = { {
+@@ -307,8 +308,8 @@ static struct shash_alg sha256_avx2_algs[] = { {
  
  static bool avx2_usable(void)
  {
@@ -116,7 +125,7 @@ index e04a43d9f..8a84ef6c8 100644
  		return true;
  
  	return false;
-@@ -390,7 +392,7 @@ static struct shash_alg sha256_ni_algs[] = { {
+@@ -390,7 +391,7 @@ static struct shash_alg sha256_ni_algs[] = { {
  
  static int register_sha256_ni(void)
  {
@@ -125,7 +134,7 @@ index e04a43d9f..8a84ef6c8 100644
  		return crypto_register_shashes(sha256_ni_algs,
  				ARRAY_SIZE(sha256_ni_algs));
  	return 0;
-@@ -398,7 +400,7 @@ static int register_sha256_ni(void)
+@@ -398,7 +399,7 @@ static int register_sha256_ni(void)
  
  static void unregister_sha256_ni(void)
  {
@@ -134,7 +143,7 @@ index e04a43d9f..8a84ef6c8 100644
  		crypto_unregister_shashes(sha256_ni_algs,
  				ARRAY_SIZE(sha256_ni_algs));
  }
-@@ -408,9 +410,9 @@ static inline int register_sha256_ni(void) { return 0; }
+@@ -408,9 +409,9 @@ static inline int register_sha256_ni(void) { return 0; }
  static inline void unregister_sha256_ni(void) { }
  #endif
  
@@ -146,7 +155,7 @@ index e04a43d9f..8a84ef6c8 100644
  		return -ENODEV;
  
  	if (register_sha256_ssse3())
-@@ -439,7 +441,7 @@ static int __init sha256_ssse3_mod_init(void)
+@@ -439,7 +440,7 @@ static int __init sha256_ssse3_mod_init(void)
  	return -ENODEV;
  }
  
@@ -155,7 +164,7 @@ index e04a43d9f..8a84ef6c8 100644
  {
  	unregister_sha256_ni();
  	unregister_sha256_avx2();
-@@ -447,21 +449,3 @@ static void __exit sha256_ssse3_mod_fini(void)
+@@ -447,21 +448,3 @@ static void __exit sha256_ssse3_mod_fini(void)
  	unregister_sha256_ssse3();
  }
  
@@ -332,6 +341,53 @@ index 6d3b85e53..839c86131 100644
 -MODULE_ALIAS_CRYPTO("sha384-ssse3");
 -MODULE_ALIAS_CRYPTO("sha384-avx");
 -MODULE_ALIAS_CRYPTO("sha384-avx2");
+diff --git a/crypto/Makefile b/crypto/Makefile
+index 6348d2362..935c41497 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -217,14 +217,22 @@ endif
+ OBJECT_FILES_NON_STANDARD_x86-aes-gcm-aesni-x86_64.o := y
+ OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y
+ 
++sha256-ssse3-y := sha256-ssse3-asm.o sha256-avx-asm.o sha256-avx2-asm.o sha256_ssse3_glue.o
++sha256-ssse3-$(CONFIG_AS_SHA256_NI) += sha256_ni_asm.o
++
++sha512-ssse3-y := sha512-ssse3-asm.o sha512-avx-asm.o sha512-avx2-asm.o sha512_ssse3_glue.o
++
++x86-hwaccelerated-y := $(aesni-intel-y) $(sha256-ssse3-y) $(sha512-ssse3-y)
++
++
+ crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
+ 	$(call cmd,force_checksrc)
+ 	$(call if_changed_rule,cc_o_c)
+-	@$(foreach obj,$(aesni-intel-y),echo x86-$(obj) >> objs;)
++	@$(foreach obj,$(x86-hwaccelerated-y),echo x86-$(obj) >> objs;)
+ 
+ crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep) FORCE
+ 	$(call if_changed_rule,as_o_S)
+-	@$(foreach obj,$(aesni-intel-y),echo x86-$(obj) >> objs;)
++	@$(foreach obj,$(x86-hwaccelerated-y),echo x86-$(obj) >> objs;)
+ 
+ lib-crypto-y := aes.o sha256.o
+ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
+@@ -237,7 +245,7 @@ canister += crypto_self_test.o
+ canister += fips_integrity.o
+ 
+ extra-y += $(canister)
+-$(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
++$(obj)/canister.o: $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
+ 	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@
+ 	@$(foreach obj,$(canister),echo $(obj) >> objs;)
+ define UPDATE_CFLAGS =
+@@ -256,7 +264,7 @@ define UPDATE_CFLAGS_X86 =
+   CFLAGS_x86-$1 += -DFIPS_CANISTER -mharden-sls=all
+   CFLAGS_REMOVE_x86-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
+ endef
+-$(foreach obj,$(aesni-intel-y),$(eval $(call UPDATE_CFLAGS_X86,$(obj))))
++$(foreach obj,$(x86-hwaccelerated-y),$(eval $(call UPDATE_CFLAGS_X86,$(obj))))
+ 
+ hostprogs := gen_canister_relocs
+ HOSTLDLIBS_gen_canister_relocs = -lelf
 -- 
 2.40.4
 

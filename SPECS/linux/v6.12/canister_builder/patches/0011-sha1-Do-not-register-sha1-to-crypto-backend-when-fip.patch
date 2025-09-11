@@ -1,7 +1,7 @@
 From 1a194ba0fabf048be0a2a7262d48d3538674717f Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Thu, 5 Jun 2025 23:39:23 -0500
-Subject: [PATCH 11/13] sha1: Do not register sha1 to crypto backend when fips
+Subject: [PATCH 11/15] sha1: Do not register sha1 to crypto backend when fips
  is enabled
 
 ---

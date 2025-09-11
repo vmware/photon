@@ -3,7 +3,10 @@
 # HMAC injection and canister sanity check script
 #
 # Copyright (C) 2020 - 2022 VMware, Inc.
-# Author: Alexey Makhalov <amakhalov@vmware.com>
+# Copyright (c) 2025 Broadcom. All Rights Reserved. The term "Broadcom"
+# refers to Broadcom Inc. and/or its subsidiaries.
+#
+# Author: Alexey Makhalov <alexey.makhalov@broadcom.com>
 #
 
 set -e
@@ -16,7 +19,7 @@ LD_SCRIPT=$2
 RAW_FILE=canister.raw
 # File with HMAC digest
 HMAC_FILE=canister.hmac
-KEY="FIPS-PH4-VMW2020"
+KEY="FIPS-PH5-VMW2025"
 
 trap "exit 1" TERM
 function abort() {

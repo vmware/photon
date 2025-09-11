@@ -2,7 +2,10 @@
  * canister functions invoked from wrapper layer.
  *
  * Copyright (C) 2023 VMware, Inc.
- * Author: Keerthana K <keerthanak@vmware.com>
+ * Copyright (c) 2025 Broadcom. All Rights Reserved. The term "Broadcom"
+ * refers to Broadcom Inc. and/or its subsidiaries.
+ *
+ * Author: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  *
  */
 
@@ -29,6 +32,7 @@ extern int crypto_cmac_module_init(void);
 extern int aesni_init(void);
 extern int sha256_ssse3_mod_init(void);
 extern int sha512_ssse3_mod_init(void);
+extern int ghash_pclmulqdqni_mod_init(void);
 extern void cryptomgr_exit(void);
 extern void crypto_cbc_module_exit(void);
 extern void crypto_ccm_module_exit(void);
@@ -49,6 +53,7 @@ extern void xts_module_exit(void);
 extern void aesni_exit(void);
 extern void sha256_ssse3_mod_fini(void);
 extern void sha512_ssse3_mod_fini(void);
+extern void ghash_pclmulqdqni_mod_exit(void);
 extern void aes_fini(void);
 extern int __init dh_init(void);
 extern void __exit dh_exit(void);

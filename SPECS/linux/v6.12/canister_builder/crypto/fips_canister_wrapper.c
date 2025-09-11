@@ -2,7 +2,10 @@
  * Kernel APIs wrapper for the canister.
  *
  * Copyright (C) 2020 - 2022 VMware, Inc.
- * Author: Alexey Makhalov <amakhalov@vmware.com>
+ * Copyright (c) 2025 Broadcom. All Rights Reserved. The term "Broadcom"
+ * refers to Broadcom Inc. and/or its subsidiaries.
+ *
+ * Author: Alexey Makhalov <alexey.makhalov@broadcom.com>
  *
  */
 
@@ -64,6 +67,9 @@
 #include <crypto/sha256_base.h>
 #include <crypto/sha512_base.h>
 #include <crypto/sha3.h>
+#include <crypto/cryptd.h>
+#include <asm/simd.h>
+#include <crypto/internal/simd.h>
 #include <linux/highmem-internal.h>
 #include <crypto/internal/geniv.h>
 #include <asm/cpu_device_id.h>
@@ -91,6 +97,7 @@ bool fcw_x86_match_cpu_zmm_exclusion_list(void);
 bool fcw_x86_match_cpu_aesni_cpu_id(void);
 bool fcw_x86_match_cpu_sha256_ssse3_cpu_id(void);
 bool fcw_x86_match_cpu_sha512_ssse3_cpu_id(void);
+bool fcw_x86_match_cpu_pcmul_cpu_id(void);
 void * __init fcw_mem_alloc(size_t size);
 void __init fcw_mem_free(void *p);
 void *fcw_mutex_init(void);
@@ -141,6 +148,7 @@ void fcw_scatterwalk_unmap(void *vaddr);
 void fcw_sg_assign_page(struct scatterlist *sg, struct page *page);
 void *fcw_sg_virt(struct scatterlist *sg);
 void *fcw_scatterwalk_map(struct scatter_walk *walk);
+bool fcw_ghash_do_async(struct cryptd_ahash *tfm);
 int fcw_fips_not_allowed_alg(char *name);
 int fcw_skip_tests(void);
 bool fcw_need_resched(void);
@@ -265,6 +273,18 @@ static const struct x86_cpu_id sha512_ssse3_cpu_ids[] = {
 bool fcw_x86_match_cpu_sha512_ssse3_cpu_id(void)
 {
 	if (x86_match_cpu(sha512_ssse3_cpu_ids))
+		return true;
+	return false;
+}
+
+static const struct x86_cpu_id pcmul_cpu_id[] = {
+	X86_MATCH_FEATURE(X86_FEATURE_PCLMULQDQ, NULL), /* Pickle-Mickle-Duck */
+	{}
+};
+
+bool fcw_x86_match_cpu_pcmul_cpu_id(void)
+{
+	if (x86_match_cpu(pcmul_cpu_id))
 		return true;
 	return false;
 }
@@ -704,6 +724,12 @@ void *fcw_scatterwalk_map(struct scatter_walk *walk)
 	return scatterwalk_map(walk);
 }
 
+bool fcw_ghash_do_async(struct cryptd_ahash *tfm)
+{
+	return (!crypto_simd_usable() ||
+	    (in_atomic() && cryptd_ahash_queued(tfm)));
+}
+
 static char *canister_algs[] = {
 	"rsa-generic",
 	"sha256-generic",
@@ -808,18 +834,26 @@ static char *canister_algs[] = {
 	"cryptd(__cts-cbc-aes-aesni)",
 	"seqiv(rfc4106-gcm-aesni)",
 	"seqiv(rfc4106(gcm_base(ctr(aes-generic),ghash-generic)))",
+	"seqiv(rfc4106(gcm_base(ctr(aes-generic),ghash-clmulni)))",
+	"seqiv(rfc4106(gcm_base(ctr(aes-generic),__ghash-pclmulqdqni)))",
 	"ghash-generic",
+	"ghash-clmulni",
+	"__ghash-pclmulqdqni",
 	"cts(cbc(aes-generic))",
 	"cts(cbc(aes-generic))",
 	"cts(cbc(ecb(aes-generic)))",
 	"cryptd(__cbc-aes-aesni)",
 	"cbc-aes-aesni",
 	"gcm_base(ctr(aes-generic),ghash-generic)",
+	"gcm_base(ctr(aes-generic),ghash-clmulni)",
+	"gcm_base(ctr(aes-generic),__ghash-pclmulqdqni)",
 	"generic-gcm-aesni",
 	"generic-gcm-aesni-avx",
 	"__generic-gcm-aesni",
 	"cryptd(__generic-gcm-aesni)",
 	"rfc4106(gcm_base(ctr(aes-generic),ghash-generic))",
+	"rfc4106(gcm_base(ctr(aes-generic),ghash-clmulni))",
+	"rfc4106(gcm_base(ctr(aes-generic),__ghash-pclmulqdqni))",
 	"rfc4106-gcm-aesni",
 	"rfc4106-gcm-aesni-avx",
 	"__rfc4106-gcm-aesni",
@@ -956,4 +990,6 @@ EXPORT_SYMBOL(crypto_sha3_final);
 EXPORT_SYMBOL_GPL(aead_geniv_alloc);
 EXPORT_SYMBOL_GPL(aead_init_geniv);
 EXPORT_SYMBOL_GPL(aead_exit_geniv);
+EXPORT_SYMBOL_GPL(__crypto_xor);
+EXPORT_SYMBOL(__crypto_memneq);
 /* End of Exports */

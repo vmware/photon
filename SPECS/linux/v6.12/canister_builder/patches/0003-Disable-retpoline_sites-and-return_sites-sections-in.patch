@@ -1,7 +1,7 @@
 From fc1616f79a48660ff7e65ac9ce04b06f523015bc Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 29 Nov 2024 06:33:52 +0000
-Subject: [PATCH 03/13] Disable retpoline_sites and return_sites sections in
+Subject: [PATCH 03/15] Disable retpoline_sites and return_sites sections in
  canister
 
 Use "ret;int3" for straight-line-speculation mitigation.

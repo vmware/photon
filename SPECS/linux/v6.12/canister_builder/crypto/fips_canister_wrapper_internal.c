@@ -2,7 +2,10 @@
  * canister functions invoked from wrapper layer.
  *
  * Copyright (C) 2023 VMware, Inc.
- * Author: Keerthana K <keerthanak@vmware.com>
+ * Copyright (c) 2025 Broadcom. All Rights Reserved. The term "Broadcom"
+ * refers to Broadcom Inc. and/or its subsidiaries.
+ *
+ * Author: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
  *
  */
 
@@ -39,6 +42,7 @@ static int __init fcw_subsys_initcall(void)
 	drbg_init();
 	ecdh_init();
 	ghash_mod_init();
+	ghash_pclmulqdqni_mod_init();
 	crypto_cbc_module_init();
 	xts_module_init();
 	crypto_ccm_module_init();
@@ -71,6 +75,7 @@ static void __exit fcw_module_exit(void)
 	ecdsa_exit();
 	crypto_gcm_module_exit();
 	ghash_mod_exit();
+	ghash_pclmulqdqni_mod_exit();
 	hmac_module_exit();
 	rsa_exit();
 	sha256_generic_mod_fini();

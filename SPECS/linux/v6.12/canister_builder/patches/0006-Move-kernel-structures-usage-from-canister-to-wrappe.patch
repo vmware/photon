@@ -1,7 +1,7 @@
 From 53f564f791c39eafd1eb78ac79b263c2e11c0f37 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 28 Jul 2025 18:00:18 +0000
-Subject: [PATCH 06/13] Move kernel structures usage from canister to wrapper
+Subject: [PATCH 06/15] Move kernel structures usage from canister to wrapper
 
 - Module init and exit family of function calls moved to wrapper.
 - All MODULE_* macro usages have been removed as these macros add information
