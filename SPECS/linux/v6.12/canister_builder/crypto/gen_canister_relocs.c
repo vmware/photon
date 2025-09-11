@@ -2,8 +2,11 @@
  * FIPS Integrity canister relocations generator.
  *
  * Copyright (C) 2020 - 2022 VMware, Inc.
- * Authors: Alexey Makhalov <amakhalov@vmware.com>
- *          Keerthana Kalyanasundaram <keerthanak@vmware.com>
+ * Copyright (c) 2025 Broadcom. All Rights Reserved. The term "Broadcom"
+ * refers to Broadcom Inc. and/or its subsidiaries.
+ *
+ * Authors: Alexey Makhalov <alexey.makhalov@broadcom.com>
+ *          Keerthana Kalyanasundaram <keerthana.kalyanasundaram@broadcom.com>
  *
  */
 
@@ -38,20 +41,20 @@
 *-------------------------------------------------------------------------------------------------------------------------------*
 | Name	|Bytes	|	Opcode		|	Param bits	|	Param			|	Notes	   		|
 |_______|_______|_______________________|_______________________|_______________________________|_______________________________|
-|SECTION|   1	|     1101 {N:4}	|	4		| 4 bits of section increment	|   Section increment from prev	|
-|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
 | JMP	|   1	|     00   {P:6}   	|	6		| 6 bits of unsigned offset	|   Offset range [0;63]		|
 |-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
 | LJMP	|   2	|     01   {P:14}	|	14		| 14 bits of unsigned offset	|   Offset range [0;16383]	|
 |-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
-| SRPR	|   1	|     101  {A:5}	|	5		| 5 bits of signed addend delta	|   Addend range [-16 ; 15] 	|
-|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
 | LRPR	|   2	|     100  {A:13}	|	13		| 13 bits of signed addend delta|   Addend range [-4096;4095]	|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+| SRPR	|   1	|     101  {A:5}	|	5		| 5 bits of signed addend delta	|   Addend range [-16 ; 15] 	|
 |-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
 |	|   	|   			|			| S - 8 bits of unsigned symbol	|   Symbol range [0;255]	|
 | SREL	|   2	|   1100 {S:8}{C:4}	|	12		| C - 4 bits of rel type and	|				|
 |	|	|			|			|     addend combination, see	|				|
 |	|	|			|			|     fips_integrity.h		|				|
+|-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
+|SECTION|   1	|     1101 {N:4}	|	4		| 4 bits of section increment	|   Section increment from prev	|
 |-------|-------------------------------|-----------------------|-------------------------------|-------------------------------|
 |	|	|			|			|R - 2 bits of rel type		|   Rel type range [0;3]	|
 | LREL	|   4	|  111 {R:2}{S:8}{A:19}	|			|S - 8 bits of unsigned symbol	|   Symbol range [0;255]	|
@@ -97,6 +100,8 @@
 #define MAX_VALUE_12_BITS				0xFFF		/* 1111 1111 1111 */
 #define MAX_VALUE_14_BITS				0x3FFF		/* 11 1111 1111 1111 */
 #define MAX_VALUE_19_BITS				0x7FFFF		/* 111 1111 1111 1111 1111 */
+
+#define MAX_SYMBOL					0xFF
 
 struct symbol_entry {
 	char *name;
@@ -486,7 +491,7 @@ static void dump_symbols(int ofd, int sfd, struct symbol_entry *symbols, int n_s
 			continue;
 		}
 		symbols[i].index = index;
-		dprintf(ofd, "\t\"%s\\0\" /* %d: %x %d %lx */\n", symbols[i].name, i, symtab[i].st_info, symtab[i].st_shndx, symtab[i].st_value);
+		dprintf(ofd, "\t\"%s\\0\" /* %d: %d %x %d %lx */\n", symbols[i].name, index, i, symtab[i].st_info, symtab[i].st_shndx, symtab[i].st_value);
 		dprintf(sfd, "%s\n", symbols[i].name);
 		index++;
 	}
@@ -668,6 +673,8 @@ static void print_srel_insn(int nfd, unsigned short type, unsigned short symbol,
 {
 	unsigned int srel;
 
+	if (symbol > MAX_SYMBOL)
+		error("Symbol index overflow!!! %d > %d\n", symbol, MAX_SYMBOL);
 	srel = SREL_INSN_OPCODE | (symbol << 4);
 	if (type == 0 && addend == 0) {
 		srel = srel | SREL_INSN_TA_0;
@@ -695,6 +702,8 @@ static void print_lrel_insn(int nfd, unsigned short type, unsigned short symbol,
 {
 	unsigned int lrel;
 
+	if (symbol > MAX_SYMBOL)
+		error("Symbol index overflow!!! %d > %d\n", symbol, MAX_SYMBOL);
 	// LREL instruction: 111{R:2}{S:8}{A:19}
 	lrel = LREL_INSN_OPCODE | (type << 27) | (symbol << 19) | addend;
 	print_insn_byte_wise(lrel, nfd);
@@ -728,14 +737,27 @@ static void print_lrpr_insn(int nfd, int add_del)
 	}
 	print_insn_byte_wise(lrpr, nfd);
 }
+
+static void relocation_comment(int ofd, int n, struct relocation *r)
+{
+	dprintf(ofd, "\n/* %6d %7d %4d %6d %8x %8d %7d */ ", n,
+			r->section,
+			r->type,
+			r->symbol,
+			r->offset,
+			r->addend,
+			bytecode_size);
+}
+
 static void dump_canister_relocations_bytecode(int ofd)
 {
 	int i;
 	struct relocation *r, *p = &canister_relocations[0];
 	unsigned short sec_incr = 0;
 
-	dprintf(ofd, "const __section(\".init.rodata\") unsigned char canister_relocations_bytecode[] = { ");
-
+	dprintf(ofd, "const __section(\".init.rodata\") unsigned char canister_relocations_bytecode[] = {\n");
+	dprintf(ofd, "/*      N section type symbol   offset   addend   BC IP -> bytecode (BC) */");
+	relocation_comment(ofd, 0, p);
 	print_sec_insn(ofd, p->section);
 	print_jmp_insn(ofd, p->offset);
 	if (p->addend >= MIN_VALUE_3_BITS_SIGN && p->addend <= MAX_VALUE_3_BITS) { /* SREL INSN */
@@ -746,6 +768,8 @@ static void dump_canister_relocations_bytecode(int ofd)
 
 	for (i = 1; i < n_relocs; i++) {
 		r = &canister_relocations[i];
+		relocation_comment(ofd, i, r);
+
 		if (p->section != r->section) {
 			sec_incr = r->section - p->section;
 			print_sec_insn(ofd, sec_incr);

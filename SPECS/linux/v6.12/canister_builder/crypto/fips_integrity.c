@@ -2,8 +2,11 @@
  * FIPS Integrity check for Crypto API
  *
  * Copyright (C) 2020 - 2022 VMware, Inc.
- * Authors: Alexey Makhalov <amakhalov@vmware.com>
- *          Keerthana Kalyanasundaram <keerthanak@vmware.com>
+ * Copyright (c) 2025 Broadcom. All Rights Reserved. The term "Broadcom"
+ * refers to Broadcom Inc. and/or its subsidiaries.
+ *
+ * Authors: Alexey Makhalov <alexey.makhalov@broadcom.com>
+ *          Keerthana Kalyanasundaram <keerthana.kalyanasundaram@broadcom.com>
  */
 
 #include <linux/crypto.h>
@@ -19,8 +22,8 @@
 #define FIPS_DEBUG 0
 #endif
 
-#define FIPS_CANISTER_VERSION "6.0.0"
-#define FIPS_KERNEL_VERSION "6.12.1-1.ph5"
+#define FIPS_CANISTER_VERSION "6.12"
+#define FIPS_KERNEL_VERSION "6.12.41-4.ph5"
 
 #define RUNTIME_HMAC_SIZE	32
 
@@ -133,7 +136,7 @@ static int canister_bytecode_interpreter(struct relocation *r, int *pos)
 		/* SRPR signed addend (1 sign bit + 4 bits) = 4th bit + 5, 6, 7, 8 bits of first byte */
 		if ((c & 0x10) >> 4 == 0) /* Sign bit is 0 */
 			r->addend += (c & 0xF);
-		else { /*Sign bit is 1 */
+		else { /* Sign bit is 1 */
 			/* Addend value of 10000 = -16 */
 			if ((c & 0xF) == 0x0)
 				r->addend += (-16);
@@ -226,6 +229,9 @@ int __init fips_integrity_init(void)
 	int bytes_remaining;
 	struct relocation *r = NULL;
 	int canister_relocations_size;
+#if FIPS_DEBUG > 1
+	int relocation_number = 0;
+#endif
 
 	if (!fips_enabled &&
 	    /* This function can be called before jump_label_init,
@@ -306,7 +312,7 @@ int __init fips_integrity_init(void)
 			const char *name = ptr + strlen("__kcfi_typeid_");
 			unsigned long addr = kallsyms_lookup_name(name);
 			if (addr) {
-				//kcfi hash will be present at addr(func-16) bytes
+				/* kcfi hash will be present at addr(func-15) bytes */
 				addr -= 0xF;
 				int *addrp = (int *)addr;
 				symbols_addr[i] = *addrp;
@@ -356,9 +362,9 @@ int __init fips_integrity_init(void)
 		pc = si[r->section].saddr + offset;
 		/* Where the reverse relocation will happen, inside canister image */
 		mem = si[r->section].daddr + offset;
-#if FIPS_DEBUG
-		fcw_printk("section %d, rel %d, symbol %d, offset %x(%x), addend %d, target %lx, pc %lx\n",
-		       r->section, r->type, r->symbol, offset, r->offset, r->addend, target, pc);
+#if FIPS_DEBUG > 1
+		fcw_printk("%6d: section %d, rel %d, symbol %d, offset %x(%x), addend %d, target %lx, pc %lx\n",
+		       relocation_number++, r->section, r->type, r->symbol, offset, r->offset, r->addend, target, pc);
 #endif
 		err = canister_perform_reverse_relocation(i, r, mem, target, pc);
 		if (err)
@@ -377,7 +383,7 @@ quit:
 		fcw_mem_free(c);
 		panic("FIPS(%s) canister initialization failed.", __FUNCTION__);
 	} else {
-		/* It is save to set 'canister' pointer now. */
+		/* It is safe to set 'canister' pointer now. */
 		canister = c;
 	}
 
@@ -397,7 +403,7 @@ int __init fips_integrity_check (void)
 	struct crypto_shash *tfm = NULL;
 	struct shash_desc *shash;
 	/* HMAC key. Same key as we used at canister build time. */
-	const unsigned char *key = "FIPS-PH4-VMW2020";
+	const unsigned char *key = "FIPS-PH5-VMW2025";
 
 	if (!fips_enabled)
 		return 0;

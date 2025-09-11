@@ -1,7 +1,7 @@
 From bfb7dfe83824672394fffe406df9febbe9745e5e Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 7 Apr 2025 08:02:02 +0000
-Subject: [PATCH 10/13] rsa-pkcs1pad: Add invalid_hash_len check in sign/verify
+Subject: [PATCH 10/15] rsa-pkcs1pad: Add invalid_hash_len check in sign/verify
 
 Upstream code after 6.13 added an additional check to compare
 last byte of hash_prefix/digest_info to slen/dlen appropriately

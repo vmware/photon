@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        5%{?acvp_build:.acvp}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -328,6 +328,8 @@ Patch10019: 0010-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
 Patch10020: 0011-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
 Patch10021: 0012-Add-shasums-accelerators.patch
 Patch10022: 0013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
+Patch10023: 0014-Add-ghash-accelerator.patch
+Patch10024: 0015-Add-lib-crypto-utils-to-the-canister.patch
 
 %if 0%{?kat_build}
 Patch10050: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -571,7 +573,7 @@ popd
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10010 -M10022
+%autopatch -p1 -m10010 -M10024
 
 %if 0%{?kat_build}
 %autopatch -p1 -m10050 -M10050
@@ -928,6 +930,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 11 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-6
+- Canister: Add ghasg accelerator and lib/crypto utils
+- Canister: fix shasum accelerators inclusion
+- Canister: creation and integrity ehnancements
 * Wed Sep 10 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-5
 - Canister: introduce straight-line-speculation mitigation
 * Mon Sep 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-4

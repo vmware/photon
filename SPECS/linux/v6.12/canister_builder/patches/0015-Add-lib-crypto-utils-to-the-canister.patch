@@ -1,0 +1,69 @@
+From 7fb677807e60d6b1dd33a49e6fefaa294cb841f7 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Thu, 11 Sep 2025 17:40:08 +0000
+Subject: [PATCH 15/15] Add lib/crypto/utils to the canister
+
+Add __crypto_xor and __crypto_memneq into the canister binary as
+they are part of the crypto implementations.
+
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+---
+ crypto/Makefile     | 2 +-
+ lib/crypto/memneq.c | 2 --
+ lib/crypto/utils.c  | 4 ----
+ 3 files changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/crypto/Makefile b/crypto/Makefile
+index 19e8d78a4..52fe47bfd 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -236,7 +236,7 @@ crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep) FORCE
+ 	$(call if_changed_rule,as_o_S)
+ 	@$(foreach obj,$(x86-hwaccelerated-y),echo x86-$(obj) >> objs;)
+ 
+-lib-crypto-y := aes.o sha256.o
++lib-crypto-y := aes.o sha256.o memneq.o utils.o
+ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
+ 	$(call cmd,force_checksrc)
+ 	$(call if_changed_rule,cc_o_c)
+diff --git a/lib/crypto/memneq.c b/lib/crypto/memneq.c
+index a2afd1034..9047469e8 100644
+--- a/lib/crypto/memneq.c
++++ b/lib/crypto/memneq.c
+@@ -61,7 +61,6 @@
+ 
+ #include <linux/unaligned.h>
+ #include <crypto/algapi.h>
+-#include <linux/module.h>
+ 
+ /* Generic path for arbitrary size */
+ static inline unsigned long
+@@ -170,4 +169,3 @@ noinline unsigned long __crypto_memneq(const void *a, const void *b,
+ 		return __crypto_memneq_generic(a, b, size);
+ 	}
+ }
+-EXPORT_SYMBOL(__crypto_memneq);
+diff --git a/lib/crypto/utils.c b/lib/crypto/utils.c
+index 87da2a6dd..67b3affa6 100644
+--- a/lib/crypto/utils.c
++++ b/lib/crypto/utils.c
+@@ -7,7 +7,7 @@
+ 
+ #include <linux/unaligned.h>
+ #include <crypto/utils.h>
+-#include <linux/module.h>
++#include <linux/bitops.h>
+ 
+ /*
+  * XOR @len bytes from @src1 and @src2 together, writing the result to @dst
+@@ -83,7 +83,4 @@ void __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int len)
+ 	while (len--)
+ 		*dst++ = *src1++ ^ *src2++;
+ }
+-EXPORT_SYMBOL_GPL(__crypto_xor);
+ 
+-MODULE_DESCRIPTION("Crypto library utility functions");
+-MODULE_LICENSE("GPL");
+-- 
+2.40.4
+
