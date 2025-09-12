@@ -29,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.148
-Release:        2%{?dist}
+Version:        6.1.153
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -188,9 +188,6 @@ Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 # SBX driver
 Patch85: 0001-Adding-SBX-kernel-driver.patch
 
-# vmxnet
-Patch86: 0001-vmxnet3-update-MTU-after-device-quiesce.patch
-
 # CVE: [100..199]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
@@ -266,9 +263,6 @@ Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
 
 # Fix CVE-2024-57982
 Patch160: 0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
-
-# Fix regression introduced by CVE-2025-38465 fix
-Patch161: netlink-avoid-infinite-retry-looping-in-netlink_unicast.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -439,11 +433,8 @@ The Linux package contains the Linux kernel doc files
 # linux-esx
 %autopatch -p1 -m60 -M85
 
-# vmxnet
-%autopatch -p1 -m86 -M86
-
 # CVE
-%autopatch -p1 -m100 -M161
+%autopatch -p1 -m100 -M160
 
 %ifarch aarch64
 # aarch64 patches
@@ -633,6 +624,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 24 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.153-1
+- Update to version 6.1.153
 * Mon Sep 22 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-2
 - Fix CVE-2024-56611
 * Mon Aug 25 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-1

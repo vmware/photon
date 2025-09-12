@@ -1,6 +1,6 @@
-From 2a03938c85b9d60390f476522c4f2016a31a5e18 Mon Sep 17 00:00:00 2001
-From: Bo Gan <ganb@vmware.com>
-Date: Thu, 27 Aug 2020 05:00:45 -0700
+From efb82a303ee88a2fd2ab0a0f0983362cdbbeb77a Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Thu, 25 Sep 2025 17:04:08 +0000
 Subject: [PATCH] Revert clockevents: Stop unused clockevent devices
 
 Since d25408756accb ("clockevents: Stop unused clockevent devices"),
@@ -20,17 +20,19 @@ present in the original code), in order to catch any unexpected bugs.
 
 Signed-off-by: Bo Gan <ganb@vmware.com>
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+[ Brennan: Regenerated context for v6.1.153 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  kernel/time/hrtimer.c      |  6 ++++--
  kernel/time/tick-oneshot.c | 17 +----------------
  2 files changed, 5 insertions(+), 18 deletions(-)
 
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 23af5eca11b1..24b353cf31d3 100644
+index c7e57206a..c0518895f 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -678,7 +678,8 @@ static void __hrtimer_reprogram(struct hrtimer_cpu_base *cpu_base,
- 	if (!__hrtimer_hres_active(cpu_base) || cpu_base->hang_detected)
+@@ -701,7 +701,8 @@ static void __hrtimer_reprogram(struct hrtimer_cpu_base *cpu_base,
+ 	if (!hrtimer_hres_active(cpu_base) || cpu_base->hang_detected)
  		return;
  
 -	tick_program_event(expires_next, 1);
@@ -39,7 +41,7 @@ index 23af5eca11b1..24b353cf31d3 100644
  }
  
  /*
-@@ -1821,7 +1822,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+@@ -1883,7 +1884,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
  	raw_spin_unlock_irqrestore(&cpu_base->lock, flags);
  
  	/* Reprogramming necessary ? */
@@ -50,7 +52,7 @@ index 23af5eca11b1..24b353cf31d3 100644
  		return;
  	}
 diff --git a/kernel/time/tick-oneshot.c b/kernel/time/tick-oneshot.c
-index 475ecceda768..fd2f981c14cf 100644
+index 475ecceda..fd2f981c1 100644
 --- a/kernel/time/tick-oneshot.c
 +++ b/kernel/time/tick-oneshot.c
 @@ -24,22 +24,7 @@ int tick_program_event(ktime_t expires, int force)
@@ -78,5 +80,5 @@ index 475ecceda768..fd2f981c14cf 100644
  	return clockevents_program_event(dev, expires, force);
  }
 -- 
-2.25.1
+2.40.4
 
