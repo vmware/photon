@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.155
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -64,6 +64,7 @@ Source19: spec_install_post.inc
 Source20: %{name}-dracut.conf
 
 Source21: photon_sb2020.pem
+Source22: photon_km_2025.pem
 
 %ifarch x86_64
 # Secure Boot
@@ -455,7 +456,7 @@ cp %{SOURCE36} crypto/
 %endif
 
 %make_build mrproper
-cp %{SOURCE21} photon_sb2020.pem
+cat %{SOURCE21} %{SOURCE22} > photon-cert-bundle.pem
 
 %ifarch x86_64
 cp %{SOURCE1} .config
@@ -635,6 +636,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Oct 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-6
+- Inject photon KM certificate to trusted keyring
 * Mon Oct 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-5
 - Fix CVE-2024-35949
 * Mon Oct 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.155-4

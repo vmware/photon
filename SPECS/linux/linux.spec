@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.155
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -83,6 +83,7 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 Source18:       spec_install_post.inc
 Source19:       %{name}-dracut-%{_arch}.conf
 Source20:       photon_sb2020.pem
+Source21:       photon_km_2025.pem
 
 %ifarch x86_64
 # Secure Boot
@@ -726,7 +727,7 @@ cp %{SOURCE35} crypto/jitterentropy-%{jent_major_version}/
 %make_build mrproper
 cp %{SOURCE1} .config
 
-cp %{SOURCE20} photon_sb2020.pem
+cat %{SOURCE20} %{SOURCE21} > photon-cert-bundle.pem
 %ifarch x86_64
 %if 0%{?fips}
 cp %{SOURCE36} \
@@ -1081,6 +1082,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-6
+- Inject photon KM certificate to trusted keyring
 * Mon Oct 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-5
 - Fix CVE-2024-35949
 * Mon Oct 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.155-4
