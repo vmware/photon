@@ -12,7 +12,7 @@ PH_COMMIT_URI_PREFIX = "https://github.com/vmware/photon/commit/"
 
 class constants(object):
     specPaths = []
-    gitSourcePath = ""
+    gitSourcePaths = {}
     stagePath = ""
     sourcePath = ""
     rpmPath = ""
@@ -129,8 +129,8 @@ class constants(object):
         constants.specPaths = specPaths
 
     @staticmethod
-    def setGitSourcePath(gitSourcePath):
-        constants.gitSourcePath = gitSourcePath
+    def addGitSourcePath(branch, gitSourcePath):
+        constants.gitSourcePaths[branch] = gitSourcePath
 
     @staticmethod
     def setStagePath(stagePath):

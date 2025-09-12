@@ -50,14 +50,19 @@ class SRP(object):
         self.schematic = {
             "schema_id": "1.0",
             "sources": {
-                "source": {
+                "common_repo": {
                     "typename": "source_tree.git",
-                    "path": f"{constants.gitSourcePath}",
+                    "path": constants.gitSourcePaths.get('common', 'Unknown')
+                },
+                "release_repo": {
+                    "typename": "source_tree.git",
+                    "path": constants.gitSourcePaths.get('release', 'Unknown')
                 }
             },
             "input_templates": {"rpm-comps": {}, "source-comps": {}, "maven-comps": {}, "gradle-comps": {}, "go-comps": {}},
             "outputs": {},
         }
+
         # SPDX template for output RPMs.
         self.spdx_package_common = {
             "package": {
@@ -290,7 +295,13 @@ class SRP(object):
                 "merge_input_templates": ["rpm-comps", "source-comps", "maven-comps", "gradle-comps", "go-comps"],
                 "spdx_info": spdx_info,
                 "inputs": {
-                    "$(sources:source_uid)": {
+                    "$(sources:common_repo_uid)": {
+                        "is_components_source": True,
+                        "incorporated": True,
+                        "usages": ["functionality", "building", "testing"],
+                        "modified": False, "interaction_type": "static_linking"
+                    },
+                    "$(sources:release_repo_uid)": {
                         "is_components_source": True,
                         "incorporated": True,
                         "usages": ["functionality", "building", "testing"],

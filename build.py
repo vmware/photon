@@ -1563,7 +1563,8 @@ def initialize_constants():
     if check_prerequesite["initialize-constants"]:
         return
 
-    constants.setGitSourcePath(photonDir)
+    constants.addGitSourcePath("common", photonDir)
+    constants.addGitSourcePath("release", str(releaseDir))
 
     Build_Config.setStagePath(
         os.path.join(
