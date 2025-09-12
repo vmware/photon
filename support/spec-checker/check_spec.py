@@ -618,7 +618,15 @@ def check_spec_cfg_yml(spec_fn, specDir, err_dict):
         foundFiles = []
         for _, _, fns in os.walk(rootDir):
             foundFiles.extend(fns)
-        return [os.path.basename(f) for f in fList if f not in foundFiles]
+
+        ret = []
+        for f in fList:
+            f = os.path.basename(f)
+            if f in foundFiles:
+                continue
+            ret.append(f)
+
+        return ret
 
     nonLocalsSrcs = set(get_non_local_files(specDir, srcs))
     archives = set(archiveMap.keys())
