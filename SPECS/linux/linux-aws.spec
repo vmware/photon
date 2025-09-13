@@ -18,8 +18,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.241
-Release:        2%{?dist}
+Version:        5.10.244
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -30,7 +30,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:    http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=60edf5fccb6716b381416859f2339fbb1ebe773f63766ebb2daed7d04282f5bcb7331c428dd9ce9cd8af27428d7f856e25cc917610c4e906749544f251452a1a
+%define sha512 linux=12c267442e93611c9249769ffe23fd2f1e7eb0f23b48fd16b0a83f3b83d8cb79cadca852eb51e92f943b89d759540df4e3d8d3861e0609202cec61b940c1bd38
 Source1:    config-aws
 Source2:    initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -692,6 +692,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Sep 12 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.244-1
+- Update to version 5.10.244
 * Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.241-2
 - Add .sbat section for bzImage
 * Wed Sep 03 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.241-1
