@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        10%{?acvp_build:.acvp}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -287,6 +287,8 @@ Patch505: 0004-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
 Patch506: 0001-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
 # Disable alloc_hook_tags if MEM_PROFILING is disabled
 Patch507: 0001-linux-canister-Eliminate-codetag-and-other-taggings-.patch
+# Add internal_iv field for aead_request
+Patch508: 0001-aead-add-internal_iv-field.patch
 
 %ifarch x86_64
 # SEV on VMware: [600..609]
@@ -371,6 +373,7 @@ Patch10525:       0014-jitterentropy-Add-prototype-for-sample-collection.patch
 %if 0%{?kat_build}
 Patch10526:       0015-crypto-api-return-status-prints-for-LKCM6-demo.patch
 %endif
+Patch10527:       0001-allow-external-IVs-for-ACVP.patch
 %endif
 
 BuildRequires:  bc
@@ -561,7 +564,7 @@ The kernel fips-canister
 %autopatch -p1 -m451 -M451
 %endif
 # crypto
-%autopatch -p1 -m500 -M507
+%autopatch -p1 -m500 -M508
 
 %ifarch x86_64
 # SEV on VMware
@@ -605,7 +608,7 @@ popd
 pushd ../%{jent_name}
 %autopatch -p1 -m10523 -M10524
 popd
-%autopatch -p1 -m10525 -M10526
+%autopatch -p1 -m10525 -M10527
 %endif
 
 %ifarch x86_64
@@ -687,7 +690,6 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 %build
-
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
@@ -944,6 +946,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Sep 22 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.41-11
+- Totally block external IVs for gcm(aes)
 * Thu Sep 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.41-10
 - Fixes for vmwnet3 driver
 * Wed Sep 17 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-9

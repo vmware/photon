@@ -1,0 +1,142 @@
+From af18e5c4a4b484c3127e3427c87f68e99e8b32ae Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Thu, 25 Sep 2025 18:14:41 +0000
+Subject: [PATCH] aead: add internal_iv field
+
+Add internal_iv field, used to mark request as using
+an internally generated IV (e.g from seqiv).
+
+Also, change to kzalloc for request allocation to ensure
+all request fields are zeroed out at the beginning.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ crypto/aead.c                  | 42 ++++++++++++++++++++++++++++++++++
+ include/crypto/aead.h          |  7 ++++--
+ include/crypto/internal/aead.h |  5 +++-
+ 3 files changed, 51 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/aead.c b/crypto/aead.c
+index cade53241..06af40b1c 100644
+--- a/crypto/aead.c
++++ b/crypto/aead.c
+@@ -16,6 +16,7 @@
+ #include <linux/slab.h>
+ #include <linux/seq_file.h>
+ #include <linux/string.h>
++#include <crypto/internal/rng.h>
+ #include <net/netlink.h>
+ 
+ #include "internal.h"
+@@ -290,5 +291,46 @@ int aead_register_instance(struct crypto_template *tmpl,
+ }
+ EXPORT_SYMBOL_GPL(aead_register_instance);
+ 
++static u8 internal_iv_magic = 0;
++static DEFINE_SPINLOCK(internal_iv_magic_lock);
++int aead_request_mark_internal_iv(struct aead_request *req) {
++	int err;
++	unsigned long flags;
++
++	spin_lock_irqsave(&internal_iv_magic_lock, flags);
++	while(!internal_iv_magic) {
++		err = crypto_get_default_rng();
++		if(err)
++			break;
++
++		err = crypto_rng_get_bytes(crypto_default_rng, (u8 *) &internal_iv_magic,
++						sizeof(internal_iv_magic));
++		crypto_put_default_rng();
++		if(err)
++			break;
++	}
++	spin_unlock_irqrestore(&internal_iv_magic_lock, flags);
++
++	if(err)
++		return err;
++
++	req->internal_iv = internal_iv_magic;
++	return 0;
++}
++
++int aead_request_is_internal_iv(struct aead_request *req) {
++	unsigned long flags;
++	int ret;
++
++	if(!req->internal_iv)
++		return 0;
++
++	spin_lock_irqsave(&internal_iv_magic_lock, flags);
++	ret = (req->internal_iv == internal_iv_magic);
++	spin_unlock_irqrestore(&internal_iv_magic_lock, flags);
++
++	return ret;
++}
++
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Authenticated Encryption with Associated Data (AEAD)");
+diff --git a/include/crypto/aead.h b/include/crypto/aead.h
+index 0e8a41638..8c8021b86 100644
+--- a/include/crypto/aead.h
++++ b/include/crypto/aead.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0-or-later */
+ /*
+  * AEAD: Authenticated Encryption with Associated Data
+- * 
++ *
+  * Copyright (c) 2007-2015 Herbert Xu <herbert@gondor.apana.org.au>
+  */
+ 
+@@ -85,6 +85,7 @@ struct scatterlist;
+  *	@iv: Initialisation vector
+  *	@src: Source data
+  *	@dst: Destination data
++ *	@internal_iv: Marks IV as internal
+  *	@__ctx: Start of private context data
+  */
+ struct aead_request {
+@@ -98,6 +99,8 @@ struct aead_request {
+ 	struct scatterlist *src;
+ 	struct scatterlist *dst;
+ 
++	u8 internal_iv;
++
+ 	void *__ctx[] CRYPTO_MINALIGN_ATTR;
+ };
+ 
+@@ -433,7 +436,7 @@ static inline struct aead_request *aead_request_alloc(struct crypto_aead *tfm,
+ {
+ 	struct aead_request *req;
+ 
+-	req = kmalloc(sizeof(*req) + crypto_aead_reqsize(tfm), gfp);
++	req = kzalloc(sizeof(*req) + crypto_aead_reqsize(tfm), gfp);
+ 
+ 	if (likely(req))
+ 		aead_request_set_tfm(req, tfm);
+diff --git a/include/crypto/internal/aead.h b/include/crypto/internal/aead.h
+index 28a95eb31..ddd99f92d 100644
+--- a/include/crypto/internal/aead.h
++++ b/include/crypto/internal/aead.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0-or-later */
+ /*
+  * AEAD: Authenticated Encryption with Associated Data
+- * 
++ *
+  * Copyright (c) 2007-2015 Herbert Xu <herbert@gondor.apana.org.au>
+  */
+ 
+@@ -163,6 +163,9 @@ int crypto_register_aeads(struct aead_alg *algs, int count);
+ void crypto_unregister_aeads(struct aead_alg *algs, int count);
+ int aead_register_instance(struct crypto_template *tmpl,
+ 			   struct aead_instance *inst);
++int aead_request_is_internal_iv(struct aead_request *req);
++int aead_request_mark_internal_iv(struct aead_request *req);
++
+ 
+ #endif	/* _CRYPTO_INTERNAL_AEAD_H */
+ 
+-- 
+2.40.4
+
