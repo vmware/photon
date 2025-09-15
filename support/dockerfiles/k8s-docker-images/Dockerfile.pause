@@ -1,7 +1,0 @@
-# Photon Base Build Container
-
-FROM scratch
-
-ADD tmp/k8s/usr/bin/pause-amd64 /pause
-
-ENTRYPOINT ["/pause"]

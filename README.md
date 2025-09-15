@@ -9,6 +9,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Photon OS Resources](#photon-os-resources)
+- [Build Photon OS](#building-photon-os)
 
 ## What is Photon OS?
 Photon OS&trade; is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. Some of the key highlights of Photon OS are:
@@ -57,3 +58,37 @@ With the exception of the 'libtdnf' source code, Photon OS source code is distri
 - **Documentation**: The Photon OS [Documentation](https://vmware.github.io/photon/docs/) provides information about how to install, configure, and use VMware Photon OS™.
 - **Security Updates**: Visit [Security-Advisories](https://github.com/vmware/photon/wiki/Security-Advisories).
 - **Vagrant box**: An official Vagrant box is available on Hashicorp Atlas, to get started: `vagrant init vmware/photon`. A plugin to support Photon OS guests in Vagrant is available at [https://github.com/vmware/vagrant-guests-photon](https://github.com/vmware/vagrant-guests-photon). Some users have found that our Vagrant box requires VirtualBox 4.3 or later. If you have issues, please check your version.
+
+## Building Photon OS
+
+Photon OS 5 now requires **common** branch as part of the build system. To successfully build Photon 5, you will need to clone `common` branch alongside the Photon 5.0 release branch and provide its path during the build process.
+
+### Steps to Build
+
+1. **Clone the Photon repository (this one):**
+
+   ```bash
+   git clone https://github.com/vmware/photon.git
+   ```
+
+2. **Clone the common branch:**
+
+   ```bash
+   git clone -b common https://github.com/vmware/photon.git common
+   ```
+3. **Specify the path to the common branch:**
+- **Option 1: Via `build-config.json`:**
+    In the photon directory, edit or create `build-config.json` and add the path:
+    ```json
+    {
+    "common-branch-path": "../common"
+    }
+    ```
+    By default, the build system looks for the `common` branch at the relative path `../common`.
+
+- **Option 2: Via command-line argument:**
+   You can pass the path when invoking the build:
+    ```bash
+    make package COMMON_BRANCH_PATH="../common"
+    ```
+
