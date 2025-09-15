@@ -1,0 +1,63 @@
+From e9f1cb28d5cc1c8fddd0281d3502ea2071028eef Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Thu, 18 Sep 2025 17:13:30 +0000
+Subject: [PATCH] allow external IVs for ACVP
+
+Convert external IV errors to warnings for ACVP testing.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ arch/x86/crypto/aesni-intel_glue.c | 3 +--
+ crypto/gcm.c                       | 6 ++----
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
+index 5c3ea6f79..c9756ff41 100644
+--- a/arch/x86/crypto/aesni-intel_glue.c
++++ b/arch/x86/crypto/aesni-intel_glue.c
+@@ -1387,11 +1387,10 @@ gcm_crypt(struct aead_request *req, int flags)
+ 
+ 	if (fips_enabled && flags & FLAG_ENC) {
+ 		if (!aead_request_is_internal_iv(req)) {
+-			fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
++			fcw_printk(KERN_WARNING "alg: (%s) (%s) Encryption with external IV is not"
+ 					" approved in FIPS mode\n",
+ 					crypto_tfm_alg_driver_name(req->base.tfm),
+ 					crypto_tfm_alg_name(req->base.tfm));
+-			return -EINVAL;
+ 		}
+ 	}
+ 
+diff --git a/crypto/gcm.c b/crypto/gcm.c
+index 22ec7477d..2ba2f83f5 100644
+--- a/crypto/gcm.c
++++ b/crypto/gcm.c
+@@ -454,11 +454,10 @@ static int crypto_gcm_encrypt(struct aead_request *req)
+ 	u32 flags = aead_request_flags(req);
+ 
+ 	if (fips_enabled && !aead_request_is_internal_iv(req)) {
+-		fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
++		fcw_printk(KERN_WARNING "alg: (%s) (%s) Encryption with external IV is not"
+ 				" approved in FIPS mode\n",
+ 				crypto_tfm_alg_driver_name(req->base.tfm),
+ 				crypto_tfm_alg_name(req->base.tfm));
+-		return -EINVAL;
+ 	}
+ 
+ 	crypto_gcm_init_common(req);
+@@ -780,11 +779,10 @@ static int crypto_rfc4106_encrypt(struct aead_request *req)
+ 	int err;
+ 
+ 	if (fips_enabled && !aead_request_is_internal_iv(req)) {
+-		fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
++		fcw_printk(KERN_WARNING "alg: (%s) (%s) Encryption with external IV is not"
+ 				" approved in FIPS mode\n",
+ 				crypto_tfm_alg_driver_name(req->base.tfm),
+ 				crypto_tfm_alg_name(req->base.tfm));
+-		return -EINVAL;
+ 	}
+ 
+ 	err = crypto_ipsec_check_assoclen(req->assoclen);
+-- 
+2.40.4
+
