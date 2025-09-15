@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.5.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.libtiff.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -21,6 +21,9 @@ Patch5: CVE-2024-7006.patch
 Patch6: CVE-2023-6228.patch
 Patch7: CVE-2025-8176.patch
 Patch8: CVE-2025-8177.patch
+Patch9: CVE-2025-8534.patch
+Patch10: CVE-2025-8851.patch
+Patch11: CVE-2025-9165.patch
 
 BuildRequires:  libjpeg-turbo-devel
 
@@ -73,6 +76,8 @@ It contains the libraries and header files to create applications
 %{_mandir}/man*/*
 
 %changelog
+* Mon Sep 15 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-9
+- Fix CVE-2025-8534, CVE-2025-8851 and CVE-2025-9165
 * Mon Aug 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-8
 - Fix CVE-2025-8176 and CVE-2025-8177
 * Tue Jan 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.1-7
