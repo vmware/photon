@@ -1,4 +1,4 @@
-From a2c7e8d4cadbadadfadf1621ff20258990552fd9 Mon Sep 17 00:00:00 2001
+From 84ba33379c1f55ccc4f32f7532dfe5558654ed28 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 22 Nov 2023 08:47:46 +0000
 Subject: [PATCH] Crypto: Tamper KAT, PCT and Integrity Test
@@ -27,10 +27,10 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  create mode 100644 crypto/crypto_tamper_test.c
 
 diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 9a5822775..866c358f8 100644
+index 6737f013c..aec7ccaf3 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -254,6 +254,32 @@ config CRYPTO_SELF_TEST
+@@ -253,6 +253,32 @@ config CRYPTO_SELF_TEST
  	help
  	  Crypto self test module for FIPS.
  
@@ -64,11 +64,11 @@ index 9a5822775..866c358f8 100644
  	tristate
  	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
-index c99902894..3c6030ea9 100644
+index b64406750..0a36a28c8 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -233,6 +233,7 @@ crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORC
- 	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
+@@ -252,6 +252,7 @@ $(obj)/lib-crypto-%.o: $(srctree)/lib/crypto/%.c FORCE
+ 	$(call if_changed_rule,cc_o_c)
  
  canister += crypto_self_test.o
 +canister += crypto_tamper_test.o

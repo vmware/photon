@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.41
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -211,6 +211,8 @@ Patch511: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
 Patch512: 0001-jent-makefile-changes-esx.patch
 Patch513: 0001-New-memsize-options-for-jent.patch
 Patch514: 0001-crypto-Tentative-sha3_generic-as-arch-initcall.patch
+# Crypto: zero initialize memory allocated via sock_kmalloc
+Patch515: 0001-crypto-zero-initialize-memory-allocated-via-sock_kma.patch
 %endif
 
 %ifarch x86_64
@@ -334,7 +336,7 @@ The Linux package contains the Linux kernel doc files
 
 %if 0%{?fips}
 # crypto
-%autopatch -p1 -m500 -M514
+%autopatch -p1 -m500 -M515
 %endif
 
 %ifarch x86_64
@@ -491,6 +493,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-5
+- crypto: zero initialize memory allocated via sock_kmalloc
 * Thu Sep 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.41-4
 - Fixes for vmwnet3 driver
 * Thu Sep 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-3

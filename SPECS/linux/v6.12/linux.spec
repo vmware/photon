@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        13%{?acvp_build:.acvp}%{?dist}
+Release:        14%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -290,6 +290,8 @@ Patch506: 0001-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
 Patch507: 0001-linux-canister-Eliminate-codetag-and-other-taggings-.patch
 # Add internal_iv field for aead_request
 Patch508: 0001-aead-add-internal_iv-field.patch
+# Crypto: zero initialize memory allocated via sock_kmalloc
+Patch509: 0001-crypto-zero-initialize-memory-allocated-via-sock_kma.patch
 
 %ifarch x86_64
 # SEV on VMware: [600..609]
@@ -562,7 +564,7 @@ The kernel fips-canister
 %autopatch -p1 -m451 -M451
 %endif
 # crypto
-%autopatch -p1 -m500 -M508
+%autopatch -p1 -m500 -M509
 
 %ifarch x86_64
 # SEV on VMware
@@ -942,6 +944,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Sep 29 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-14
+- crypto: zero initialize memory allocated via sock_kmalloc
 * Fri Sep 26 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-13
 - fips-canister: prepare for RPM consumption instead of a tarball
 * Fri Sep 26 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-12
