@@ -3,7 +3,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -14,6 +14,7 @@ Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}
 %define sha512  %{name}=f8752811e9e7913311f47ae13f35c755ac86ea240572be1c1dabc1712b6c42380c60ac385fa9573c77d6fcf4c144df2bc00574f18e8d7b70da21ed8ae4fb87cd
 
 Patch0:         coredns-CVE-2025-47950.patch
+Patch1:         coredns-CVE-2025-58063.patch
 
 BuildRequires: go
 BuildRequires: git
@@ -38,6 +39,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue Sep 16 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-9
+- Fix CVE-2025-58063
 * Thu Jun 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-8
 - Fix build instructions
 * Mon Jun 23 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-7
