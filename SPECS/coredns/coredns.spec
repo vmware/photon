@@ -7,7 +7,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:         coredns-CVE-2025-47950.patch
+Patch1:         coredns-CVE-2025-58063.patch
 
 BuildRequires: go
 BuildRequires: git
@@ -43,6 +44,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue Sep 16 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-13
+- Fix CVE-2025-58063
 * Thu Jun 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-12
 - Fix build instructions
 * Fri Jun 20 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-11
