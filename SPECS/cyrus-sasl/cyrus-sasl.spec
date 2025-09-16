@@ -3,7 +3,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.28
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/cyrusimap/cyrus-sasl
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -19,11 +19,13 @@ BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  Linux-PAM-devel
+BuildRequires:  lmdb-devel
 
 Requires:       openssl
 Requires:       krb5 >= 1.12
 Requires:       Linux-PAM
 Requires:       systemd
+Requires:       lmdb-libs
 
 %description
 The Cyrus SASL package contains a Simple Authentication and Security
@@ -52,7 +54,7 @@ sh ./autogen.sh
     CFLAGS="%{optflags} -fPIC" \
     CXXFLAGS="%{optflags}" \
     --with-plugindir=%{_libdir}/sasl2 \
-    --without-dblib \
+    --with-dblib=lmdb \
     --with-saslauthd=%{socket_dir} \
     --without-authdaemond \
     --disable-macos-framework \
@@ -66,6 +68,7 @@ sh ./autogen.sh
     --enable-gss_mutexes \
     --disable-static \
     --enable-shared \
+    --enable-auth-sasldb \
     --enable-fast-install \
     --enable-krb4
 
@@ -144,10 +147,15 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/saslauthd.8.gz
 %{_mandir}/man8/testsaslauthd.8.gz
+%{_mandir}/man8/pluginviewer.8.gz
+%{_mandir}/man8/sasldblistusers2.8.gz
+%{_mandir}/man8/saslpasswd2.8.gz
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 
 %changelog
+* Tue Sep 16 2025 Francisco Jose Mulero <francisco-jose.mulero@broadcom.com> 2.1.28-6
+- Enable SASLdb authentication module by default
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.28-5
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 2.1.28-4
