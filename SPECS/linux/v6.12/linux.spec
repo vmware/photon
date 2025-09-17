@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        7%{?acvp_build:.acvp}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -936,6 +936,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 17 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-8
+- Canister: Move shasum helpers to the canister
 * Thu Sep 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-7
 - Select jitterentropy mem size as 32KB
 - Disable jent_loop_shuffle in Jitterentropy.

@@ -64,8 +64,6 @@
 #include <linux/uio.h>
 #include <linux/scatterlist.h>
 #include <crypto/scatterwalk.h>
-#include <crypto/sha256_base.h>
-#include <crypto/sha512_base.h>
 #include <crypto/sha3.h>
 #include <crypto/cryptd.h>
 #include <asm/simd.h>
@@ -83,10 +81,6 @@ extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
 extern void *fcw_memcpy(void *dst, const void *src, size_t len);
 
 void *fcw_sg_page(struct scatterlist *sg);
-int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
-					    const u8 *data,
-					    unsigned int len,
-					    sha256_block_fn *block_fn);
 int fcw_signal_pending(void);
 void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char namefmt[]);
 int fcw_cond_resched(void);
@@ -124,10 +118,6 @@ void fcw_bug_on(int cond);
 int fcw_warn_on_once(int cond);
 int fcw_is_warn_true(int cond);
 void fcw_warn(void);
-int fcw_sha512_base_do_update(struct shash_desc *desc,
-					const u8 *data,
-					unsigned int len,
-					sha512_block_fn *block_fn);
 void *fcw_sg_page_address(struct scatterlist *sg);
 int fcw_build_hash_sglist(struct test_sglist *tsgl,
 			     const struct hash_testvec *vec,
@@ -474,22 +464,6 @@ void *fcw_memcpy(void *dst, const void *src, size_t len)
 	return memcpy(dst, src, len);
 }
 
-
-int fcw_lib_sha256_base_do_update(struct sha256_state *sctx,
-					    const u8 *data,
-					    unsigned int len,
-					    sha256_block_fn *block_fn)
-{
-	return lib_sha256_base_do_update(sctx, data, len, block_fn);
-}
-
-int fcw_sha512_base_do_update(struct shash_desc *desc,
-					const u8 *data,
-					unsigned int len,
-					sha512_block_fn *block_fn)
-{
-	return sha512_base_do_update(desc, data, len, block_fn);
-}
 size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i)
 {
 	return copy_from_iter(addr, bytes, i);

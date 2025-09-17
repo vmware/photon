@@ -54,10 +54,10 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  crypto/seqiv.c                     |   4 +
  crypto/sha256_generic.c            |  13 ++-
  crypto/sha3_generic.c              |  12 ++-
- crypto/sha512_generic.c            |  12 ++-
+ crypto/sha512_generic.c            |  13 ++-
  crypto/testmgr.c                   |  14 ++--
  crypto/xts.c                       |   9 ++-
- 22 files changed, 335 insertions(+), 22 deletions(-)
+ 22 files changed, 336 insertions(+), 22 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index ca62f83d1..a123404a9 100644
@@ -866,15 +866,16 @@ diff --git a/crypto/sha512_generic.c b/crypto/sha512_generic.c
 index c4e3c6c2d..83e5bb8b6 100644
 --- a/crypto/sha512_generic.c
 +++ b/crypto/sha512_generic.c
-@@ -16,6 +16,7 @@
+@@ -16,6 +16,8 @@
  #include <linux/percpu.h>
  #include <asm/byteorder.h>
  #include <linux/unaligned.h>
 +#include <linux/fips.h>
- #include "fips_canister_wrapper.h"
++#include "fips_canister_wrapper.h"
  
  const u8 sha384_zero_message_hash[SHA384_DIGEST_SIZE] = {
-@@ -203,7 +204,16 @@ static struct shash_alg sha512_algs[2] = { {
+ 	0x38, 0xb0, 0x60, 0xa7, 0x51, 0xac, 0x96, 0x38,
+@@ -203,7 +205,16 @@ static struct shash_alg sha512_algs[2] = { {
  
  int __init sha512_generic_mod_init(void)
  {

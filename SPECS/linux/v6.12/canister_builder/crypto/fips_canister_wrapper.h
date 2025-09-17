@@ -24,7 +24,6 @@
 #include <crypto/kpp.h>
 #include <linux/uio.h>
 #include <crypto/algapi.h>
-#include <crypto/sha512_base.h>
 
 #undef DEFINE_LOCK_GUARD_1_COND
 
@@ -62,10 +61,6 @@ extern void fcw_mutex_unlock(void *m);
 extern bool fcw_schedule_work(struct work_struct *work);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
 extern void *fcw_memcpy(void *dst, const void *src, size_t len);
-extern int fcw_sha512_base_do_update(struct shash_desc *desc,
-					const u8 *data,
-					unsigned int len,
-					sha512_block_fn *block_fn);
 extern void fcw_bug(void);
 extern void fcw_bug_on(int cond);
 extern int fcw_warn_on(bool cond);
