@@ -2,50 +2,34 @@
 
 import os
 import common
-import shutil
-import signal
-
+import docker
+import sys
+import json
+from contextlib import suppress
 from time import sleep
-from common import run_cmd, err_exit, script_dir
+from common import err_exit, script_dir, SignalContext
 
 
 class DockerUtil:
     _supported_cmds = ["scan", "validate", "clean-exp"]
+    # Docker specific constants
+    _docker_img_name = "photon-license-scanner"
+    # Location of the photon-lic-tool directory within the docker container
+    _docker_tool_dir = "/root/photon-lic-tool"
+    # Lock file - don't want multiple docker builds at once
+    _docker_lock_fn = "/tmp/.docker_lock_lic_tool"
 
     def __init__(self):
-        # Docker specific constants
-        self._docker_img_name = "photon-license-scanner"
-        # Location of the photon-lic-tool directory within the docker container
-        self._docker_tool_dir = "/root/photon-lic-tool"
+        # docker client
+        self.client = docker.from_env(version="auto")
 
-        # Lock file - don't want multiple docker builds at once
-        self._docker_lock_fn = "/tmp/.docker_lock_lic_tool"
-
-        # check for docker command existence - only if not inside a container already
-        if not common.running_in_container() and not shutil.which("docker"):
-            err_exit(
-                "'docker' command not found, please install with "
-                "'tdnf install -y docker'"
-            )
-
-    def docker_img_exists(self):
-        # For all intents and purposes, if the docker daemon isn't running,
-        # we can't use the image anyways, even if it exists.
-        result = run_cmd("systemctl is-active --quiet docker", ignore_rc=True)
-        if result.returncode != 0:
-            return False
-
-        result = run_cmd(f"docker images -q {self._docker_img_name}", ignore_rc=True)
-        if result.stdout:
-            return True
-
-        return False
-
-    def _build_mount(self, src, target, readonly=True):
-        parts = f"type=bind,src={src},target={target}"
-        if readonly:
-            parts = f"{parts},readonly"
-        return f"--mount {parts}"
+    @staticmethod
+    def detect():
+        try:
+            client = DockerUtil()
+        except:
+            return None
+        return client if client.docker_img_exists() else None
 
     def _write_list_to_dockerfile(self, dockerfile=None, write_list=None):
         if not dockerfile or not write_list:
@@ -57,79 +41,56 @@ class DockerUtil:
             else:
                 dockerfile.write(f"{item}\n")
 
-    def create_docker_image(self):
-        build_cmd = ""
-        dockerfile_local_path = "Dockerfile"
+    def docker_img_exists(self):
+        return self.client.images.list(self._docker_img_name)
 
-        # Don't try to build the image if already in the process of building
-        if os.path.exists(self._docker_lock_fn):
+    def ensure_docker_image(self):
+        if imgs := self.docker_img_exists():
+            print(f"Docker image has already been built: {imgs[0]}")
+            return True
+        buildargs = {}
+        if "BASE_URL" in os.environ:
+            buildargs.update({"URL": os.environ["BASE_URL"]})
+        try:
+            with open(self._docker_lock_fn, 'x'):
+                pass
+        except FileExistsError:
             print("Docker build already in progress, skipping ...")
             print(f"If you are sure, remove {self._docker_lock_fn} to skip this check.")
             return
-
-        cwd = os.getcwd()
-
-        if not os.path.exists(dockerfile_local_path):
-            err_exit(f"ERROR: No dockerfile found at {dockerfile_local_path}")
-
-        # indicate build is ongoing
-        with open(self._docker_lock_fn, "w") as docker_lock_f:
-            docker_lock_f.write("1")
-
-        def cleanup_lock(*_):
-            if not os.path.exists(self._docker_lock_fn):
-                return
-
+        except Exception as e:
+            err_exit(f"Failed to create lock file: {e}")
+        def handler(sig, frame):
+            raise Exception("Interrupted")
+        id = None
+        with SignalContext(handler):
             try:
-                os.remove(self._docker_lock_fn)
-                print(f"Removed lock file: {self._docker_lock_fn}")
-            except OSError as e:
-                print(
-                    f"WARNING: Could not remove lock file {self._docker_lock_fn}: {e}"
+                logstream = self.client.api.build(
+                    tag=self._docker_img_name,
+                    path=os.path.dirname(__file__),
+                    rm=True,
+                    buildargs=buildargs,
+                    dockerfile="Dockerfile",
                 )
-
-        signal.signal(signal.SIGINT, cleanup_lock)
-        signal.signal(signal.SIGTERM, cleanup_lock)
-
-        # build the docker image
-        print("Building docker image...")
-
-        os.chdir(common.tool_dir_path)
-        build_cmd = [
-            "docker",
-            "build",
-            "-t",
-            self._docker_img_name,
-            "--network=host",
-            ".",
-        ]
-
-        url = os.environ.get("BASE_URL")
-        if url:
-            build_cmd += ["--build-arg", f"URL={url}"]
-
-        result = run_cmd(build_cmd, ignore_rc=True)
-        os.chdir(cwd)
-
-        if os.path.exists(self._docker_lock_fn):
-            os.remove(self._docker_lock_fn)
-
-        if result.returncode != 0:
-            msg = "Docker image build failed:\n"
-            if result.stdout:
-                msg += f"Stdout:\n{result.stdout.decode()}\n"
-            if result.stderr:
-                msg += f"Stderr:\n{result.stderr.decode()}\n"
-
-            err_exit(msg)
-
-        print(f"Successfully built docker image {self._docker_img_name}")
+                for entry in logstream:
+                    resp = json.loads(entry.decode())
+                    if 'stream' in resp:
+                        sys.stdout.write(resp.pop('stream'))
+                    if 'aux' in resp:
+                        id = resp['aux'].pop('ID', None)
+                        break
+                    if 'errorDetail' in resp:
+                        raise Exception(resp['errorDetail'].pop('message', 'unknown'))
+            except Exception as e:
+                os.unlink(self._docker_lock_fn)
+                err_exit(f"Docker image build failed: {e}")
+        os.unlink(self._docker_lock_fn)
+        print(f"Successfully built docker image {self._docker_img_name}: {id}")
+        return True
 
     def clean_docker_image(self):
-        docker_clean_cmd = ["docker", "image", "rm", self._docker_img_name]
-
-        # Handles errors internally
-        run_cmd(docker_clean_cmd)
+        with suppress(Exception):
+            self.client.images.remove(self._docker_img_name, force=True)
 
     # Build docker scan command
     def build_scan_docker_cmd(
@@ -187,7 +148,7 @@ class DockerUtil:
             docker_scan_mnt_target = f"{docker_scan_mnt}/{relative_path}"
 
         mount_list = [
-            self._build_mount(docker_scan_mnt_src, docker_scan_mnt_target),
+            (docker_scan_mnt_src, docker_scan_mnt_target, "ro"),
         ]
 
         tool_cmd = [
@@ -217,7 +178,7 @@ class DockerUtil:
 
         if yaml_out:
             yaml_src = os.path.abspath(os.path.dirname(yaml_out))
-            yaml_mount = self._build_mount(yaml_src, docker_yaml_mnt, readonly=False)
+            yaml_mount = (yaml_src, docker_yaml_mnt, "rw")
             mount_list.append(yaml_mount)
 
             tool_cmd.append(f"--yaml={docker_yaml_mnt}/{os.path.basename(yaml_out)}")
@@ -227,7 +188,7 @@ class DockerUtil:
 
         if config_yaml:
             cfg_src = os.path.abspath(os.path.dirname(config_yaml))
-            cfg_mnt = self._build_mount(cfg_src, docker_cfg_yaml_mnt, readonly=False)
+            cfg_mnt = (cfg_src, docker_cfg_yaml_mnt, "rw")
             mount_list.append(cfg_mnt)
 
             tool_cmd.append(
@@ -264,13 +225,13 @@ class DockerUtil:
                 err_exit("Failed to find parent SPECS dir for validator!")
 
             local_scan_path = os.path.dirname(local_scan_path)
-            docker_mnt_cmd = self._build_mount(local_scan_path, docker_spec_mnt)
+            docker_mnt = (local_scan_path, docker_spec_mnt, "ro")
             tool_cmd.extend(["-f", f"{docker_spec_mnt}/{relative_path}"])
         elif file:
             file_mnt_path = f"{docker_spec_mnt}/{os.path.basename(file)}"
             file = os.path.abspath(file)
 
-            docker_mnt_cmd = self._build_mount(file, file_mnt_path)
+            docker_mnt = (file, file_mnt_path, "ro")
             tool_cmd.extend(["-f", file_mnt_path])
         # read from stdin
         elif stdin:
@@ -278,7 +239,7 @@ class DockerUtil:
         else:
             err_exit("License expression must be provided!")
 
-        return ([docker_mnt_cmd], tool_cmd)
+        return ([docker_mnt], tool_cmd)
 
     def build_clean_exp_docker_cmd(self, file=None, stdin=None):
         if not file and not stdin:
@@ -308,14 +269,14 @@ class DockerUtil:
                 err_exit("Failed to find parent SPECS dir for validator!")
 
             local_scan_path = os.path.dirname(local_scan_path)
-            docker_mnt_cmd = self._build_mount(local_scan_path, docker_spec_mnt)
+            docker_mnt = (local_scan_path, docker_spec_mnt, "ro")
 
             tool_cmd.extend(["-f", f"{docker_spec_mnt}/{relative_path}"])
         elif file:
             file_mnt_path = f"{docker_spec_mnt}/{os.path.basename(file)}"
             file = os.path.abspath(file)
 
-            docker_mnt_cmd = self._build_mount(file, file_mnt_path)
+            docker_mnt = (file, file_mnt_path, "ro")
             tool_cmd.extend(["-f", file_mnt_path])
         # read from stdin
         elif stdin:
@@ -323,60 +284,53 @@ class DockerUtil:
         else:
             err_exit("License expression must be provided!")
 
-        return ([docker_mnt_cmd], tool_cmd)
+        return ([docker_mnt], tool_cmd)
 
     # Run the command in a docker container
-    def run_docker_cmd(self, cmd=None, mount_list=[]):
-        docker_prefix = "docker run --detach --network=host"
-        tool_prefix = f"python3 -u {self._docker_tool_dir}/{common.tool_filename}"
-
-        if cmd[0] not in self._supported_cmds:
-            err_exit(f"Command '{cmd[0]}' not compatible with docker, refusing to run")
-
-        mount_list += [self._build_mount(script_dir, self._docker_tool_dir)]
-
-        full_cmd = (
-            f"{docker_prefix} "
-            f"{' '.join(mount_list)} "
-            f"{self._docker_img_name} "
-            f"{tool_prefix}"
-        ).split()
-
-        full_cmd.extend(cmd)
-
-        # Don't try to build the image if already in the process of building.
-        # Also, wait for build to finish before running.
-        while os.path.exists(self._docker_lock_fn):
+    def run_docker_cmd(self, cmd=None, mount_list=[], **kwargs):
+        while True:
+            if self.ensure_docker_image():
+                break
+            # Don't try to build the image if already in the process of building.
+            # Also, wait for build to finish before running.
             print("Cannot start container while image build is in progress, wait ...")
             print(f"If you are sure, remove {self._docker_lock_fn} to skip this check.")
             sleep(10)
 
-        # Check if need to create docker image
-        if not self.docker_img_exists():
-            self.create_docker_image()
-
-        print("\nRunning command inside docker container...\n")
-
-        result = run_cmd(full_cmd)
-        container_id = result.stdout.decode().strip()
-
-        # Watch the logs...
-        run_cmd(f"docker container logs --follow {container_id}", capture=False)
-
-        # Check for exit code
-        result = run_cmd(f"docker wait {container_id}", ignore_rc=True)
-
-        # Clean the container on exit
-        run_cmd(f"docker container rm {container_id}")
-
-        if result.returncode != 0:
-            err_exit(f"Failed to check return code from {container_id}...")
-
-        exit_code = result.stdout.decode().strip()
-        if int(exit_code) != 0:
+        if cmd[0] not in self._supported_cmds:
+            err_exit(f"Command '{cmd[0]}' not compatible with docker, refusing to run")
+        full_cmd = ["python3", f"{self._docker_tool_dir}/{common.tool_filename}"] + cmd
+        mounts = {
+            hostpath: {"bind": containerpath, "mode": mode} for
+            (hostpath, containerpath, mode) in mount_list + [(script_dir, self._docker_tool_dir, "ro")]
+        }
+        docker_inst = None
+        def handler(sig, frame):
+            # Try to kill the docker instance.
+            with suppress(Exception):
+                docker_inst.kill()
+            raise Exception("Interrupted")
+        with SignalContext(handler):
+            try:
+                docker_inst = self.client.containers.run(
+                    self._docker_img_name,
+                    entrypoint="/usr/bin/env",
+                    detach=True,
+                    auto_remove=True,
+                    network_mode="host",
+                    volumes=mounts,
+                    command=full_cmd,
+                    **kwargs,
+                )
+                logs = docker_inst.logs(stream=True, follow=True)
+                for log in logs:
+                    sys.stdout.buffer.write(log)
+                    sys.stdout.flush()
+                exit_code = docker_inst.wait()['StatusCode']
+            except Exception as e:
+                err_exit(f"Failed to run command in docker container: {e}")
+        if exit_code != 0:
             err_exit(
-                f'\nCommand "{full_cmd}" failed inside container {container_id} '
-                f"with exit code {exit_code}\n"
+                f'\nCommand {full_cmd} failed inside container with exit code {exit_code}\n'
             )
-        else:
-            print("\nDocker finished successfully\n")
+        print("\nDocker finished successfully\n")

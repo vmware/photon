@@ -22,8 +22,8 @@
 
 import sys
 import os
-import signal
 import yaml
+import atexit
 import common
 
 from argparse import ArgumentParser
@@ -32,12 +32,7 @@ from Comparator import Comparator
 from ExpCleaner import ExpCleaner
 from Validator import Validator
 from Scanner import Scanner
-from common import err_exit, pr_err
-
-
-def sig_handler(sig, frame):
-    err_exit()
-
+from common import err_exit, pr_err, SignalContext
 
 def scan(args):
     scanner = Scanner()
@@ -111,7 +106,7 @@ def compare_exps(args):
 def docker_entry(args):
     docker_util = DockerUtil()
     if args.build:
-        docker_util.create_docker_image()
+        docker_util.ensure_docker_image()
 
     if args.clean_img:
         docker_util.clean_docker_image()
@@ -360,9 +355,7 @@ def main():
     if len(sys.argv) <= 1:
         sys.argv.append("--help")
 
-    # proper cleanup on unexpected exits
-    signal.signal(signal.SIGINT, sig_handler)
-    signal.signal(signal.SIGTERM, sig_handler)
+    atexit.register(common.cleanup)
 
     parse_config(common.config_path)
 
@@ -370,7 +363,13 @@ def main():
 
     set_global_options(args)
 
-    args.func(args)
+    def default_handler(sig, frame):
+        raise Exception("Interrupted")
+
+    with SignalContext(default_handler):
+        args.func(args)
+
+    atexit.unregister(common.cleanup)
 
 
 if __name__ == "__main__":
