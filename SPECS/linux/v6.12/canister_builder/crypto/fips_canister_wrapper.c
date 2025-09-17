@@ -965,5 +965,6 @@ EXPORT_SYMBOL_GPL(aead_geniv_alloc);
 EXPORT_SYMBOL_GPL(aead_init_geniv);
 EXPORT_SYMBOL_GPL(aead_exit_geniv);
 EXPORT_SYMBOL_GPL(__crypto_xor);
+EXPORT_SYMBOL_GPL(crypto_inc);
 EXPORT_SYMBOL(__crypto_memneq);
 /* End of Exports */

@@ -1,7 +1,7 @@
 From 87c9f7f64b523b86ea026d5af56349e98c726a38 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Wed, 4 Jun 2025 01:19:21 -0500
-Subject: [PATCH 08/15] List canister objs in a file
+Subject: [PATCH 08/16] List canister objs in a file
 
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 ---

@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        8%{?acvp_build:.acvp}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -332,6 +332,7 @@ Patch10021: 0012-Add-shasums-accelerators.patch
 Patch10022: 0013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
 Patch10023: 0014-Add-ghash-accelerator.patch
 Patch10024: 0015-Add-lib-crypto-utils-to-the-canister.patch
+Patch10025: 0016-Move-crypto_inc-to-lib-crypto-utils.c.patch
 
 %if 0%{?kat_build}
 Patch10050: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -579,7 +580,7 @@ popd
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10010 -M10024
+%autopatch -p1 -m10010 -M10025
 
 %if 0%{?kat_build}
 %autopatch -p1 -m10050 -M10050
@@ -936,6 +937,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 17 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-9
+- Canister: Move crypto_inc to lib/crypto/utils.c
 * Wed Sep 17 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-8
 - Canister: Move shasum helpers to the canister
 * Thu Sep 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-7
