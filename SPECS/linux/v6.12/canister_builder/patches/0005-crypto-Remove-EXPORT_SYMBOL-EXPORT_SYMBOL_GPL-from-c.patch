@@ -374,14 +374,14 @@ index dbdabde87..7920da6f9 100644
  {
 @@ -160,7 +158,6 @@ int crypto_sha512_update(struct shash_desc *desc, const u8 *data,
  {
- 	return fcw_sha512_base_do_update(desc, data, len, sha512_generic_block_fn);
+ 	return sha512_base_do_update(desc, data, len, sha512_generic_block_fn);
  }
 -EXPORT_SYMBOL(crypto_sha512_update);
  
  static int sha512_final(struct shash_desc *desc, u8 *hash)
  {
 @@ -174,7 +171,6 @@ int crypto_sha512_finup(struct shash_desc *desc, const u8 *data,
- 	fcw_sha512_base_do_update(desc, data, len, sha512_generic_block_fn);
+ 	sha512_base_do_update(desc, data, len, sha512_generic_block_fn);
  	return sha512_final(desc, hash);
  }
 -EXPORT_SYMBOL(crypto_sha512_finup);
@@ -441,8 +441,8 @@ index ca5cd6492..285384817 100644
 --- a/lib/crypto/sha256.c
 +++ b/lib/crypto/sha256.c
 @@ -146,7 +146,6 @@ void sha256_update(struct sha256_state *sctx, const u8 *data, unsigned int len)
+ {
  	lib_sha256_base_do_update(sctx, data, len, sha256_transform_blocks);
- #endif
  }
 -EXPORT_SYMBOL(sha256_update);
  

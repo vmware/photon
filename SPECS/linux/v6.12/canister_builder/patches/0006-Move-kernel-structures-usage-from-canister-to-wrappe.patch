@@ -62,6 +62,7 @@ Subject: [PATCH 06/15] Move kernel structures usage from canister to wrapper
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 
 [Srinidhi Rao<srinidhi.rao@broadcom.com> Migrated this patch to v6.12.41]
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
@@ -98,13 +99,14 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  include/crypto/drbg.h               |   1 -
  include/crypto/if_alg.h             |   4 +
  include/crypto/internal/skcipher.h  |   4 +
- include/crypto/sha512_base.h        |   1 -
+ include/crypto/sha256_base.h        |   9 +-
+ include/crypto/sha512_base.h        |  10 +-
  include/linux/crypto.h              |  10 +-
  include/linux/rtattr.h              |   6 +
  include/linux/spinlock.h            |  24 +-
  include/linux/spinlock_cond_guard.h |  20 +
  include/linux/swait.h               |   4 +
- 38 files changed, 418 insertions(+), 888 deletions(-)
+ 39 files changed, 432 insertions(+), 892 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
@@ -3468,11 +3470,45 @@ index 7ae42afdc..8084a77f2 100644
  			unsigned long offset;
  		} phys;
  
+diff --git a/include/crypto/sha256_base.h b/include/crypto/sha256_base.h
+index e0418818d..5d90e47d7 100644
+--- a/include/crypto/sha256_base.h
++++ b/include/crypto/sha256_base.h
+@@ -15,6 +15,11 @@
+ #include <linux/string.h>
+ #include <linux/types.h>
+ 
++#ifdef FIPS_CANISTER
++extern void *fcw_memcpy(void *dst, const void *src, size_t len);
++#else
++#define fcw_memcpy memcpy
++#endif
+ typedef void (sha256_block_fn)(struct sha256_state *sst, u8 const *src,
+ 			       int blocks);
+ 
+@@ -49,7 +54,7 @@ static inline int lib_sha256_base_do_update(struct sha256_state *sctx,
+ 		if (partial) {
+ 			int p = SHA256_BLOCK_SIZE - partial;
+ 
+-			memcpy(sctx->buf + partial, data, p);
++			fcw_memcpy(sctx->buf + partial, data, p);
+ 			data += p;
+ 			len -= p;
+ 
+@@ -66,7 +71,7 @@ static inline int lib_sha256_base_do_update(struct sha256_state *sctx,
+ 		partial = 0;
+ 	}
+ 	if (len)
+-		memcpy(sctx->buf + partial, data, len);
++		fcw_memcpy(sctx->buf + partial, data, len);
+ 
+ 	return 0;
+ }
 diff --git a/include/crypto/sha512_base.h b/include/crypto/sha512_base.h
 index 679916a84..4a6001df3 100644
 --- a/include/crypto/sha512_base.h
 +++ b/include/crypto/sha512_base.h
-@@ -11,7 +11,6 @@
+@@ -11,11 +11,15 @@
  #include <crypto/internal/hash.h>
  #include <crypto/sha2.h>
  #include <linux/crypto.h>
@@ -3480,6 +3516,33 @@ index 679916a84..4a6001df3 100644
  #include <linux/string.h>
  
  #include <linux/unaligned.h>
+ 
++#ifdef FIPS_CANISTER
++extern void *fcw_memcpy(void *dst, const void *src, size_t len);
++#else
++#define fcw_memcpy memcpy
++#endif
+ typedef void (sha512_block_fn)(struct sha512_state *sst, u8 const *src,
+ 			       int blocks);
+ 
+@@ -71,7 +75,7 @@ static inline int sha512_base_do_update(struct shash_desc *desc,
+ 		if (partial) {
+ 			int p = SHA512_BLOCK_SIZE - partial;
+ 
+-			memcpy(sctx->buf + partial, data, p);
++			fcw_memcpy(sctx->buf + partial, data, p);
+ 			data += p;
+ 			len -= p;
+ 
+@@ -88,7 +92,7 @@ static inline int sha512_base_do_update(struct shash_desc *desc,
+ 		partial = 0;
+ 	}
+ 	if (len)
+-		memcpy(sctx->buf + partial, data, len);
++		fcw_memcpy(sctx->buf + partial, data, len);
+ 
+ 	return 0;
+ }
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
 index 1aa9f67fe..3e880ca16 100644
 --- a/include/linux/crypto.h
