@@ -12,6 +12,7 @@ RUN REPO_FILE=/etc/yum.repos.d/photon-updates.repo && \
 RUN tdnf install --nogpgcheck -y --refresh \
          python3-devel \
          python3-pip \
+         docker-py3 \
          redis \
          rpm-build \
          build-essential \

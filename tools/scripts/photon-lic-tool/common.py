@@ -5,12 +5,14 @@ import sys
 import subprocess
 import site
 import os
+import signal
 import shutil
 import json
 import time
 import yaml
 import requests
 import builtins
+import traceback
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -79,6 +81,20 @@ known_failures = []
 _real_print = builtins.print
 
 
+class SignalContext:
+    def __init__(self, handler):
+        self.handler = handler
+
+    def __enter__(self):
+        self.saved_int_handler = signal.signal(signal.SIGINT, self.handler)
+        self.saved_term_handler = signal.signal(signal.SIGTERM, self.handler)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        signal.signal(signal.SIGINT, self.saved_int_handler)
+        signal.signal(signal.SIGTERM, self.saved_term_handler)
+
+
 def safe_print(*args, columnLimit=True, **kwargs):
     if not columnLimit:
         _real_print(*args, **kwargs)
@@ -96,14 +112,13 @@ builtins.print = safe_print
 
 
 def err_exit(msg=None):
-    if msg:
-        pr_err(f"ERROR: {msg}")
-
-    cleanup()
+    et, exc, tb = sys.exc_info()
+    if exc is not None:
+        traceback.print_tb(tb, file=sys.stderr)
+    pr_err(f'Error: {msg}')
     sys.exit(1)
 
-
-def run_cmd(cmd, ignore_rc=False, quiet=False, capture=True, shell=False):
+def run_cmd(cmd, ignore_rc=False, quiet=False, capture=False, shell=False):
     if isinstance(cmd, str) and not shell:
         cmd = cmd.split()
 
@@ -161,6 +176,7 @@ def copy_flat(src_dir=None, dst_dir=None):
 
 
 def cleanup():
+    pr_err('Cleaning up...')
     for d in [ph_scan_dir, rpm_install_root]:
         if os.path.exists(d):
             shutil.rmtree(d)

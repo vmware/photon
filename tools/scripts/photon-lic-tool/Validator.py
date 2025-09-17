@@ -16,8 +16,7 @@ class Validator:
     def validate(self, file=None, stdin=None):
         license_expressions = {}
 
-        docker_util = DockerUtil()
-        if not common.running_in_container() and docker_util.docker_img_exists():
+        if docker_util := DockerUtil.detect() is not None:
             mount_list, cmd = docker_util.build_validate_docker_cmd(
                 file=file, stdin=stdin
             )

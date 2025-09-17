@@ -475,7 +475,7 @@ class Scanner:
 
             # extract with scancode universal extractor
             print(f"Extracting output from {input_file}...")
-            res = common.run_cmd(f"extractcode {input_file} --shallow")
+            res = common.run_cmd(f"extractcode --verbose {input_file} --shallow")
             if res.returncode != 0:
                 err_exit(f"ERROR: Extraction of {input_file} failed!")
 
@@ -499,7 +499,7 @@ class Scanner:
 
         # extract any latent archives which are not yet extracted
         # do it as a best effort, as it may fail occasionally
-        common.run_cmd(f"extractcode {scan_dir}", ignore_rc=True)
+        common.run_cmd(f"extractcode --verbose {scan_dir}", ignore_rc=True)
         self._remove_extracted_archives(scan_dir)
 
         return scan_dir
@@ -661,10 +661,8 @@ class Scanner:
         if not config_yaml:
             err_exit("--config_yaml requires a path!")
 
-        docker_util = DockerUtil()
-        if docker or (
-            not common.running_in_container() and docker_util.docker_img_exists()
-        ):
+        docker_util = DockerUtil() if docker else DockerUtil.detect()
+        if docker_util is not None:
             mnt_list, cmd = docker_util.build_scan_docker_cmd(
                 build_spec=build_spec,
                 path=path,
@@ -803,10 +801,8 @@ class Scanner:
             yaml_out = "/tmp/%s.yaml" % os.path.splitext(os.path.basename(path))[0]
             print(f"Warning: no output yaml path given, defaulting to: {yaml_out}")
 
-        docker_util = DockerUtil()
-        if docker or (
-            not common.running_in_container() and docker_util.docker_img_exists()
-        ):
+        docker_util = DockerUtil() if docker else DockerUtil.detect()
+        if docker_util is not None:
             mnt_list, cmd = docker_util.build_scan_docker_cmd(
                 build_spec=build_spec,
                 path=path,
@@ -899,6 +895,7 @@ class Scanner:
         result = common.run_cmd(
             [
                 "scancode",
+                "-v",
                 "--license",
                 "-n",
                 str(cpus),
