@@ -1,7 +1,7 @@
 From 7fb677807e60d6b1dd33a49e6fefaa294cb841f7 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Thu, 11 Sep 2025 17:40:08 +0000
-Subject: [PATCH 15/15] Add lib/crypto/utils to the canister
+Subject: [PATCH 15/16] Add lib/crypto/utils to the canister
 
 Add __crypto_xor and __crypto_memneq into the canister binary as
 they are part of the crypto implementations.

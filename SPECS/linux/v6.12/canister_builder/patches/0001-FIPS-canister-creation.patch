@@ -1,7 +1,7 @@
 From b5186bb7095087e24ccd06b4035da792096e0d2e Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
-Subject: [PATCH 01/15] FIPS canister creation
+Subject: [PATCH 01/16] FIPS canister creation
 
 Canister creation patch.
  - Makefile changes to generate canister binary (fips_canister.o)
