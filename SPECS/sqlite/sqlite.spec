@@ -1,20 +1,22 @@
-%define sourcever 3430200
-
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.43.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://sqlite.org/2022/%{name}-autoconf-%{sourcever}.tar.gz
+Source0: https://github.com/sqlite/sqlite/archive/refs/tags/%{name}-version-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: CVE-2025-29088.patch
+Patch1: CVE-2025-6965.patch
+Patch2: CVE-2025-7709.patch
+
+BuildRequires:  tcl
 
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
@@ -30,6 +32,7 @@ C/C++ interface specs and other miscellaneous documentation.
 Summary:        sqlite3 link library & header files
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Provides:       sqlite3-devel
 
 %description    devel
 The sqlite devel package include the needed library link and
@@ -39,6 +42,7 @@ header files for development.
 Summary:        sqlite3 library
 Group:          Libraries
 Provides:       pkgconfig(sqlite3)
+Provides:       sqlite3-libs
 Obsoletes:      libsqlite
 Obsoletes:      sqlite-autoconf
 
@@ -46,7 +50,7 @@ Obsoletes:      sqlite-autoconf
 The sqlite3 library.
 
 %prep
-%autosetup -p1 -n %{name}-autoconf-%{sourcever}
+%autosetup -p1 -n %{name}-version-%{version}
 
 %build
 export CFLAGS="%{optflags} \
@@ -55,14 +59,16 @@ export CFLAGS="%{optflags} \
            -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 \
            -DSQLITE_SECURE_DELETE=1"
 
-%configure --disable-static
+%configure \
+  --disable-static \
+  --disable-tcl
+
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 install -D -m644 sqlite3.1 %{buildroot}%{_mandir}/man1/sqlite3.1
 find %{buildroot}%{_libdir} -name '*.la' -delete
-rm -rf %{buildroot}%{_infodir}
 %{_fixperms} %{buildroot}/*
 
 %if 0%{?with_check}
@@ -86,16 +92,18 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/libsqlite3.so
+%{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 
 %files libs
 %defattr(-,root,root)
-%{_libdir}/libsqlite3.so.0.8.6
-%{_libdir}/libsqlite3.so.0
+%{_libdir}/libsqlite3.so.*
 
 %changelog
+* Tue Sep 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-5
+- Fix CVE-2025-7709
+- Build from git tag source
 * Wed Apr 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-4
 - Fix CVE-2025-29088
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.43.2-3
