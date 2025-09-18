@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -36,6 +36,7 @@ Patch4: revert-network-delay-to-configure-address-until-it-i.patch
 Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
 Patch6: do-not-allocate-1m-on-stack.patch
 Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
+Patch8: sd-netlink-make-default-timeout-configurable.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -323,11 +324,6 @@ sed -i 's/#DefaultOOMPolicy=stop/DefaultOOMPolicy=continue/' %{buildroot}%{_sysc
 
 rm -f %{buildroot}%{_var}/log/README \
       %{buildroot}%{_sysusersdir}/README
-
-mkdir -p %{buildroot}%{_var}/opt/journal/log \
-         %{buildroot}%{_var}/log
-
-ln -sfr %{buildroot}%{_var}/opt/journal/log %{buildroot}%{_var}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
@@ -678,6 +674,9 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Sep 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-14
+- Backport sd-netlink: make the default timeout configurable
+- Remove dangling symlink creation under /var/log
 * Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-13
 - Enable ShowStatus config
 * Fri Aug 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-12
