@@ -1,7 +1,7 @@
 From 3e672bd7d34400bad24deebf601ee3d67fad3e19 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Thu, 11 Sep 2025 17:26:16 +0000
-Subject: [PATCH 14/16] Add ghash accelerator
+Subject: [PATCH 08/15] Add ghash accelerator
 
 Prepare glue C files to be included into the canister binary. Move to
 wrapper calls. Remove modules related stuff and use fcw_ functions.
@@ -9,14 +9,11 @@ wrapper calls. Remove modules related stuff and use fcw_ functions.
 .S file: Disable retpoline and return sites and use "ret;int3" for
 straight-line-speculation mitigation.
 
-crypto/Makefile: include corresponding .o files.
-
 Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
  arch/x86/crypto/ghash-clmulni-intel_asm.S  |  5 +++
  arch/x86/crypto/ghash-clmulni-intel_glue.c | 52 +++++++---------------
- crypto/Makefile                            |  4 +-
- 3 files changed, 25 insertions(+), 36 deletions(-)
+ 2 files changed, 22 insertions(+), 35 deletions(-)
 
 diff --git a/arch/x86/crypto/ghash-clmulni-intel_asm.S b/arch/x86/crypto/ghash-clmulni-intel_asm.S
 index 99cb983de..3a50fee3a 100644
@@ -166,21 +163,6 @@ index 41bc02e48..4360991c1 100644
 -MODULE_LICENSE("GPL");
 -MODULE_DESCRIPTION("GHASH hash function, accelerated by PCLMULQDQ-NI");
 -MODULE_ALIAS_CRYPTO("ghash");
-diff --git a/crypto/Makefile b/crypto/Makefile
-index 935c41497..19e8d78a4 100644
---- a/crypto/Makefile
-+++ b/crypto/Makefile
-@@ -222,7 +222,9 @@ sha256-ssse3-$(CONFIG_AS_SHA256_NI) += sha256_ni_asm.o
- 
- sha512-ssse3-y := sha512-ssse3-asm.o sha512-avx-asm.o sha512-avx2-asm.o sha512_ssse3_glue.o
- 
--x86-hwaccelerated-y := $(aesni-intel-y) $(sha256-ssse3-y) $(sha512-ssse3-y)
-+ghash-clmulni-intel-y := ghash-clmulni-intel_asm.o ghash-clmulni-intel_glue.o
-+
-+x86-hwaccelerated-y := $(aesni-intel-y) $(sha256-ssse3-y) $(sha512-ssse3-y) $(ghash-clmulni-intel-y)
- 
- 
- crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
 -- 
 2.40.4
 

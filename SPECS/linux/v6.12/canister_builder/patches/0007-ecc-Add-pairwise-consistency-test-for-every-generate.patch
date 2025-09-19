@@ -1,7 +1,7 @@
 From d13eb73f33b818ab58d756eb6b60542cb5893482 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Sun, 15 Oct 2023 03:25:33 +0000
-Subject: [PATCH 07/16] ecc: Add pairwise consistency test for every generated
+Subject: [PATCH 07/15] ecc: Add pairwise consistency test for every generated
  ECC keypairs
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>

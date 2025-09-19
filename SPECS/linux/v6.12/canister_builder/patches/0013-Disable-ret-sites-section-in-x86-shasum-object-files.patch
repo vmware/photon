@@ -1,7 +1,7 @@
 From 9942b6fccdc9b691f96b5b73664cbac56416c39b Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Wed, 20 Aug 2025 00:05:55 +0000
-Subject: [PATCH 13/16] Disable ret sites section in x86 shasum object files
+Subject: [PATCH 13/15] Disable ret sites section in x86 shasum object files
 
 Use "ret;int3" for straight-line-speculation mitigation.
 

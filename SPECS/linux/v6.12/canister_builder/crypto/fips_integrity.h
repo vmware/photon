@@ -2,7 +2,10 @@
  * FIPS Integrity check for Crypto API
  *
  * Copyright (C) 2020 - 2022 VMware, Inc.
- * Author: Alexey Makhalov <amakhalov@vmware.com>
+ * Copyright (c) 2025 Broadcom. All Rights Reserved. The term "Broadcom"
+ * refers to Broadcom Inc. and/or its subsidiaries.
+ *
+ * Author: Alexey Makhalov <ailexey.makhalov@broadcom.com>
  *
  */
 
@@ -25,7 +28,6 @@
 #define SREL_INSN_TA_4	4	/*	1	0	*/
 #define SREL_INSN_TA_5	5	/*	1	4	*/
 #define SREL_INSN_TA_6	6	/*	2	0	*/
-#define SREL_INSN_TA_7	7	/*	3	0	*/
 
 struct __attribute__((packed)) relocation {
 	unsigned char section;
