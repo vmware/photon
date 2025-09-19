@@ -1,4 +1,4 @@
-From b5186bb7095087e24ccd06b4035da792096e0d2e Mon Sep 17 00:00:00 2001
+From 48fa306dec403ccce35a412b4bf038c803790ded Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
 Subject: [PATCH 01/15] FIPS canister creation
@@ -19,6 +19,7 @@ Canister creation patch.
  - Do not check indirect call destination signatures from canister
  - Remove rsa-pkcs1pad encrypt/decrypt functions from canister
  - List canister objs in a file
+ - Add MPI library API into canister
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
@@ -26,8 +27,8 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  77 ++++++-------
- crypto/Makefile                    | 114 ++++++++++++++++++++
- crypto/algboss.c                   |   5 +-
+ crypto/Makefile                    | 143 ++++++++++++++++++++++++
+ crypto/algboss.c                   |   8 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
  crypto/ctr.c                       |   3 +-
@@ -44,7 +45,7 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  crypto/testmgr.c                   | 108 ++++++++++---------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 19 files changed, 293 insertions(+), 288 deletions(-)
+ 19 files changed, 325 insertions(+), 288 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -317,7 +318,7 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 32ddbce74..0d2dc0fb4 100644
+index a5dc57339..3b7cd40e1 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -17,9 +17,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -419,7 +420,7 @@ index 32ddbce74..0d2dc0fb4 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -186,6 +207,97 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -186,6 +207,128 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -463,7 +464,31 @@ index 32ddbce74..0d2dc0fb4 100644
 +$(obj)/x86-%.o: $(srctree)/arch/x86/crypto/%.S FORCE
 +	$(call if_changed_rule,as_o_S)
 +
-+lib-crypto-y := aes.o sha256.o memneq.o utils.o
++lib-crypto-mpi-y := \
++	generic_mpih-lshift.o           \
++	generic_mpih-mul1.o             \
++	generic_mpih-mul2.o             \
++	generic_mpih-mul3.o             \
++	generic_mpih-rshift.o           \
++	generic_mpih-sub1.o             \
++	generic_mpih-add1.o             \
++	mpicoder.o                      \
++	mpi-add.o                       \
++	mpi-bit.o                       \
++	mpi-cmp.o                       \
++	mpi-sub-ui.o                    \
++	mpi-div.o                       \
++	mpi-mod.o                       \
++	mpi-mul.o                       \
++	mpih-cmp.o                      \
++	mpih-div.o                      \
++	mpih-mul.o                      \
++	mpi-pow.o                       \
++	mpiutil.o
++$(obj)/lib-crypto-mpi-%.o: $(srctree)/lib/crypto/mpi/%.c FORCE
++	$(call if_changed_rule,cc_o_c)
++
++lib-crypto-y := aes.o sha256.o memneq.o utils.o gf128mul.o
 +$(obj)/lib-crypto-%.o: $(srctree)/lib/crypto/%.c FORCE
 +	$(call if_changed_rule,cc_o_c)
 +
@@ -473,12 +498,13 @@ index 32ddbce74..0d2dc0fb4 100644
 +
 +extra-y += $(canister)
 +
-+canister-objs := $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
++canister-objs := $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
 +
 +$(obj)/canister.o: $(obj)/partial_reloc $(canister-objs)
 +	$(Q)$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $(canister-objs) -o $@
 +	$(call cmd,pr)
 +	@$(foreach obj,$(x86-hwaccelerated-y),echo x86-$(obj) > objs;)
++	@$(foreach obj,$(lib-crypto-mpi-y),echo lib-crypto-mpi-$(obj) >> objs;)
 +	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
 +	@$(foreach obj,$(canister),echo $(obj) >> objs;)
 +
@@ -487,6 +513,12 @@ index 32ddbce74..0d2dc0fb4 100644
 +  CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(canister),$(eval $(call UPDATE_CFLAGS,$(obj))))
++
++define UPDATE_CFLAGS_LIB_CRYPTO_MPI =
++  CFLAGS_lib-crypto-mpi-$1 += -DFIPS_CANISTER -mharden-sls=all
++  CFLAGS_REMOVE_lib-crypto-mpi-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
++endef
++$(foreach obj,$(lib-crypto-mpi-y),$(eval $(call UPDATE_CFLAGS_LIB_CRYPTO_MPI,$(obj))))
 +
 +define UPDATE_CFLAGS_LIB_CRYPTO =
 +  CFLAGS_lib-crypto-$1 += -DFIPS_CANISTER -mharden-sls=all
@@ -505,7 +537,7 @@ index 32ddbce74..0d2dc0fb4 100644
 +clean-files += canister_relocs.c
 +clean-files += fips_canister-kallsyms
 +# Make savecmd_ happy for proper incremental build
-+targets += canister_relocs.o $(addprefix x86-,$(x86-hwaccelerated-y)) $(addprefix lib-crypto-,$(lib-crypto-y))
++targets += canister_relocs.o $(addprefix x86-,$(x86-hwaccelerated-y)) $(addprefix lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix lib-crypto-,$(lib-crypto-y))
 +$(obj)/canister_markers.lds: $(src)/canister_relocs.c
 +
 +clean-files += canister_markers.lds
@@ -518,7 +550,7 @@ index 32ddbce74..0d2dc0fb4 100644
  obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_internal.o
  
 diff --git a/crypto/algboss.c b/crypto/algboss.c
-index a20926bfd..1159e51da 100644
+index a20926bfd..c905b560a 100644
 --- a/crypto/algboss.c
 +++ b/crypto/algboss.c
 @@ -19,6 +19,7 @@
@@ -538,7 +570,7 @@ index a20926bfd..1159e51da 100644
  	if (!param)
  		goto err_put_module;
  
-@@ -195,10 +196,13 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
+@@ -192,10 +193,13 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
  	if (IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS))
  		return NOTIFY_DONE;
  
@@ -830,7 +862,7 @@ index 1ff3052d4..c0a8e4f66 100644
  	return rc;
  }
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index 234eb2b89..1bb19b7f0 100644
+index ad17655de..41bcf16b0 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -38,6 +38,7 @@
@@ -1298,7 +1330,7 @@ index b103642b5..0e36ce003 100644
  
  	return 0;
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index f3d7cd846..846b5323e 100644
+index 05da1bb75..435907aaa 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -37,6 +37,7 @@
@@ -1664,7 +1696,7 @@ index f3d7cd846..846b5323e 100644
  	if (!outbuf_dec) {
  		err = -ENOMEM;
  		goto free_all;
-@@ -5913,13 +5914,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -5917,13 +5918,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int i;
  	int j;
  	int rc;
@@ -1731,5 +1763,5 @@ index af5ad51d3..f3e132d6f 100644
  	unsigned char *Vbuf;
  	/* hash: static value 10.1.1.1 1b) hmac / ctr: key */
 -- 
-2.50.1
+2.40.4
 

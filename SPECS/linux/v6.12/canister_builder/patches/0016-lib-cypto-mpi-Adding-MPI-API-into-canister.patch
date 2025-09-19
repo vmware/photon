@@ -1,0 +1,538 @@
+From d218c9070fb13dfadbb8ae8afadc6d8222d24835 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Fri, 12 Sep 2025 09:39:02 +0000
+Subject: [PATCH] lib/cypto/mpi: Adding MPI API into canister
+
+- Add MPI and gf128mul library into canister
+as they are part of the crypto implementation
+- Removed module.h from lib/crypto/{sha256,aes}.c
+as it is already part of canister
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ lib/crypto/aes.c              |  5 -----
+ lib/crypto/gf128mul.c         | 24 ++++++------------------
+ lib/crypto/mpi/mpi-add.c      |  4 ----
+ lib/crypto/mpi/mpi-bit.c      |  3 ---
+ lib/crypto/mpi/mpi-cmp.c      |  2 --
+ lib/crypto/mpi/mpi-internal.h | 12 +++++++++---
+ lib/crypto/mpi/mpi-mul.c      |  2 --
+ lib/crypto/mpi/mpi-pow.c      |  5 ++---
+ lib/crypto/mpi/mpi-sub-ui.c   |  1 -
+ lib/crypto/mpi/mpicoder.c     | 19 +++++++------------
+ lib/crypto/mpi/mpih-mul.c     |  2 +-
+ lib/crypto/mpi/mpiutil.c      | 17 ++++++-----------
+ lib/crypto/sha256.c           |  4 ----
+ 13 files changed, 31 insertions(+), 69 deletions(-)
+
+diff --git a/lib/crypto/aes.c b/lib/crypto/aes.c
+index d6876f690..d8ed26ca6 100644
+--- a/lib/crypto/aes.c
++++ b/lib/crypto/aes.c
+@@ -5,7 +5,6 @@
+ 
+ #include <crypto/aes.h>
+ #include <linux/crypto.h>
+-#include <linux/module.h>
+ #include <linux/unaligned.h>
+ 
+ /*
+@@ -344,7 +343,3 @@ void aes_decrypt(const struct crypto_aes_ctx *ctx, u8 *out, const u8 *in)
+ 	put_unaligned_le32(inv_subshift(st1, 2) ^ rkp[6], out + 8);
+ 	put_unaligned_le32(inv_subshift(st1, 3) ^ rkp[7], out + 12);
+ }
+-
+-MODULE_DESCRIPTION("Generic AES library");
+-MODULE_AUTHOR("Ard Biesheuvel <ard.biesheuvel@linaro.org>");
+-MODULE_LICENSE("GPL v2");
+diff --git a/lib/crypto/gf128mul.c b/lib/crypto/gf128mul.c
+index 8f8c45e0c..a977c82b5 100644
+--- a/lib/crypto/gf128mul.c
++++ b/lib/crypto/gf128mul.c
+@@ -50,7 +50,6 @@
+ 
+ #include <crypto/gf128mul.h>
+ #include <linux/kernel.h>
+-#include <linux/module.h>
+ #include <linux/slab.h>
+ 
+ #define gf128mul_dat(q) { \
+@@ -126,6 +125,8 @@
+ 	(i & 0x02 ? 0x0384 : 0) ^ (i & 0x01 ? 0x01c2 : 0) \
+ )
+ 
++extern void *fcw_kzalloc(size_t size, gfp_t flags);
++
+ static const u16 gf128mul_table_le[256] = gf128mul_dat(xda_le);
+ static const u16 gf128mul_table_be[256] = gf128mul_dat(xda_be);
+ 
+@@ -176,7 +177,6 @@ void gf128mul_x8_ble(le128 *r, const le128 *x)
+ 	r->a = cpu_to_le64((a << 8) | (b >> 56));
+ 	r->b = cpu_to_le64((b << 8) ^ _tt);
+ }
+-EXPORT_SYMBOL(gf128mul_x8_ble);
+ 
+ void gf128mul_lle(be128 *r, const be128 *b)
+ {
+@@ -223,7 +223,6 @@ void gf128mul_lle(be128 *r, const be128 *b)
+ 		gf128mul_x8_lle_ti(r); /* use the time invariant version */
+ 	}
+ }
+-EXPORT_SYMBOL(gf128mul_lle);
+ 
+ void gf128mul_bbe(be128 *r, const be128 *b)
+ {
+@@ -261,7 +260,6 @@ void gf128mul_bbe(be128 *r, const be128 *b)
+ 		gf128mul_x8_bbe(r);
+ 	}
+ }
+-EXPORT_SYMBOL(gf128mul_bbe);
+ 
+ /*      This version uses 64k bytes of table space.
+     A 16 byte buffer has to be multiplied by a 16 byte key
+@@ -282,12 +280,12 @@ struct gf128mul_64k *gf128mul_init_64k_bbe(const be128 *g)
+ 	struct gf128mul_64k *t;
+ 	int i, j, k;
+ 
+-	t = kzalloc(sizeof(*t), GFP_KERNEL);
++	t = fcw_kzalloc(sizeof(*t), GFP_KERNEL);
+ 	if (!t)
+ 		goto out;
+ 
+ 	for (i = 0; i < 16; i++) {
+-		t->t[i] = kzalloc(sizeof(*t->t[i]), GFP_KERNEL);
++		t->t[i] = fcw_kzalloc(sizeof(*t->t[i]), GFP_KERNEL);
+ 		if (!t->t[i]) {
+ 			gf128mul_free_64k(t);
+ 			t = NULL;
+@@ -317,7 +315,6 @@ struct gf128mul_64k *gf128mul_init_64k_bbe(const be128 *g)
+ out:
+ 	return t;
+ }
+-EXPORT_SYMBOL(gf128mul_init_64k_bbe);
+ 
+ void gf128mul_free_64k(struct gf128mul_64k *t)
+ {
+@@ -327,7 +324,6 @@ void gf128mul_free_64k(struct gf128mul_64k *t)
+ 		kfree_sensitive(t->t[i]);
+ 	kfree_sensitive(t);
+ }
+-EXPORT_SYMBOL(gf128mul_free_64k);
+ 
+ void gf128mul_64k_bbe(be128 *a, const struct gf128mul_64k *t)
+ {
+@@ -340,7 +336,6 @@ void gf128mul_64k_bbe(be128 *a, const struct gf128mul_64k *t)
+ 		be128_xor(r, r, &t->t[i]->t[ap[15 - i]]);
+ 	*a = *r;
+ }
+-EXPORT_SYMBOL(gf128mul_64k_bbe);
+ 
+ /*      This version uses 4k bytes of table space.
+     A 16 byte buffer has to be multiplied by a 16 byte key
+@@ -363,7 +358,7 @@ struct gf128mul_4k *gf128mul_init_4k_lle(const be128 *g)
+ 	struct gf128mul_4k *t;
+ 	int j, k;
+ 
+-	t = kzalloc(sizeof(*t), GFP_KERNEL);
++	t = fcw_kzalloc(sizeof(*t), GFP_KERNEL);
+ 	if (!t)
+ 		goto out;
+ 
+@@ -378,14 +373,13 @@ struct gf128mul_4k *gf128mul_init_4k_lle(const be128 *g)
+ out:
+ 	return t;
+ }
+-EXPORT_SYMBOL(gf128mul_init_4k_lle);
+ 
+ struct gf128mul_4k *gf128mul_init_4k_bbe(const be128 *g)
+ {
+ 	struct gf128mul_4k *t;
+ 	int j, k;
+ 
+-	t = kzalloc(sizeof(*t), GFP_KERNEL);
++	t = fcw_kzalloc(sizeof(*t), GFP_KERNEL);
+ 	if (!t)
+ 		goto out;
+ 
+@@ -400,7 +394,6 @@ struct gf128mul_4k *gf128mul_init_4k_bbe(const be128 *g)
+ out:
+ 	return t;
+ }
+-EXPORT_SYMBOL(gf128mul_init_4k_bbe);
+ 
+ void gf128mul_4k_lle(be128 *a, const struct gf128mul_4k *t)
+ {
+@@ -415,7 +408,6 @@ void gf128mul_4k_lle(be128 *a, const struct gf128mul_4k *t)
+ 	}
+ 	*a = *r;
+ }
+-EXPORT_SYMBOL(gf128mul_4k_lle);
+ 
+ void gf128mul_4k_bbe(be128 *a, const struct gf128mul_4k *t)
+ {
+@@ -430,7 +422,3 @@ void gf128mul_4k_bbe(be128 *a, const struct gf128mul_4k *t)
+ 	}
+ 	*a = *r;
+ }
+-EXPORT_SYMBOL(gf128mul_4k_bbe);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("Functions for multiplying elements of GF(2^128)");
+diff --git a/lib/crypto/mpi/mpi-add.c b/lib/crypto/mpi/mpi-add.c
+index 3015140d4..547e694f9 100644
+--- a/lib/crypto/mpi/mpi-add.c
++++ b/lib/crypto/mpi/mpi-add.c
+@@ -84,7 +84,6 @@ int mpi_add(MPI w, MPI u, MPI v)
+ 	w->sign = wsign;
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(mpi_add);
+ 
+ int mpi_sub(MPI w, MPI u, MPI v)
+ {
+@@ -101,18 +100,15 @@ int mpi_sub(MPI w, MPI u, MPI v)
+ 
+ 	return err;
+ }
+-EXPORT_SYMBOL_GPL(mpi_sub);
+ 
+ int mpi_addm(MPI w, MPI u, MPI v, MPI m)
+ {
+ 	return mpi_add(w, u, v) ?:
+ 	       mpi_mod(w, w, m);
+ }
+-EXPORT_SYMBOL_GPL(mpi_addm);
+ 
+ int mpi_subm(MPI w, MPI u, MPI v, MPI m)
+ {
+ 	return mpi_sub(w, u, v) ?:
+ 	       mpi_mod(w, w, m);
+ }
+-EXPORT_SYMBOL_GPL(mpi_subm);
+diff --git a/lib/crypto/mpi/mpi-bit.c b/lib/crypto/mpi/mpi-bit.c
+index 835a2f062..232860ce8 100644
+--- a/lib/crypto/mpi/mpi-bit.c
++++ b/lib/crypto/mpi/mpi-bit.c
+@@ -53,7 +53,6 @@ unsigned mpi_get_nbits(MPI a)
+ 		n = 0;
+ 	return n;
+ }
+-EXPORT_SYMBOL_GPL(mpi_get_nbits);
+ 
+ /****************
+  * Test whether bit N is set.
+@@ -71,7 +70,6 @@ int mpi_test_bit(MPI a, unsigned int n)
+ 	limb = a->d[limbno];
+ 	return (limb & (A_LIMB_1 << bitno)) ? 1 : 0;
+ }
+-EXPORT_SYMBOL_GPL(mpi_test_bit);
+ 
+ /****************
+  * Set bit N of A.
+@@ -171,4 +169,3 @@ int mpi_rshift(MPI x, MPI a, unsigned int n)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(mpi_rshift);
+diff --git a/lib/crypto/mpi/mpi-cmp.c b/lib/crypto/mpi/mpi-cmp.c
+index ceaebe181..5c5630c80 100644
+--- a/lib/crypto/mpi/mpi-cmp.c
++++ b/lib/crypto/mpi/mpi-cmp.c
+@@ -43,7 +43,6 @@ int mpi_cmp_ui(MPI u, unsigned long v)
+ 	else
+ 		return -1;
+ }
+-EXPORT_SYMBOL_GPL(mpi_cmp_ui);
+ 
+ int mpi_cmp(MPI u, MPI v)
+ {
+@@ -69,4 +68,3 @@ int mpi_cmp(MPI u, MPI v)
+ 		return -cmp;
+ 	return cmp;
+ }
+-EXPORT_SYMBOL_GPL(mpi_cmp);
+diff --git a/lib/crypto/mpi/mpi-internal.h b/lib/crypto/mpi/mpi-internal.h
+index 8a4f49e30..9fd82154b 100644
+--- a/lib/crypto/mpi/mpi-internal.h
++++ b/lib/crypto/mpi/mpi-internal.h
+@@ -17,15 +17,21 @@
+ #ifndef G10_MPI_INTERNAL_H
+ #define G10_MPI_INTERNAL_H
+ 
+-#include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+ #include <linux/mpi.h>
+ #include <linux/errno.h>
+ 
+-#define log_debug printk
+-#define log_bug printk
++extern int fcw_printk(const char *fmt, ...);
++extern void fcw_bug_on(int cond);
++extern void *fcw_memcpy(void *dst, const void *src, size_t len);
++extern void *fcw_kmalloc(size_t size, gfp_t flags);
++extern void *fcw_kcalloc(size_t n, size_t size, gfp_t flags);
++extern void *fcw_kzalloc(size_t size, gfp_t flags);
++
++#define log_debug fcw_printk
++#define log_bug fcw_printk
+ 
+ #define assert(x) \
+ 	do { \
+diff --git a/lib/crypto/mpi/mpi-mul.c b/lib/crypto/mpi/mpi-mul.c
+index 7e6ff1ce3..5343983c5 100644
+--- a/lib/crypto/mpi/mpi-mul.c
++++ b/lib/crypto/mpi/mpi-mul.c
+@@ -99,11 +99,9 @@ int mpi_mul(MPI w, MPI u, MPI v)
+ 		mpi_free_limb_space(tmp_limb);
+ 	return err;
+ }
+-EXPORT_SYMBOL_GPL(mpi_mul);
+ 
+ int mpi_mulm(MPI w, MPI u, MPI v, MPI m)
+ {
+ 	return mpi_mul(w, u, v) ?:
+ 	       mpi_tdiv_r(w, w, m);
+ }
+-EXPORT_SYMBOL_GPL(mpi_mulm);
+diff --git a/lib/crypto/mpi/mpi-pow.c b/lib/crypto/mpi/mpi-pow.c
+index 67fbd4c25..72f907ea4 100644
+--- a/lib/crypto/mpi/mpi-pow.c
++++ b/lib/crypto/mpi/mpi-pow.c
+@@ -118,7 +118,7 @@ int mpi_powm(MPI res, MPI base, MPI exp, MPI mod)
+ 	} else {		/* Make BASE, EXP and MOD not overlap with RES.  */
+ 		if (rp == bp) {
+ 			/* RES and BASE are identical.  Allocate temp. space for BASE.  */
+-			BUG_ON(bp_marker);
++			fcw_bug_on(bp_marker != NULL);
+ 			bp = bp_marker = mpi_alloc_limb_space(bsize);
+ 			if (!bp)
+ 				goto enomem;
+@@ -133,7 +133,7 @@ int mpi_powm(MPI res, MPI base, MPI exp, MPI mod)
+ 		}
+ 		if (rp == mp) {
+ 			/* RES and MOD are identical.  Allocate temporary space for MOD. */
+-			BUG_ON(mp_marker);
++			fcw_bug_on(mp_marker != NULL);
+ 			mp = mp_marker = mpi_alloc_limb_space(msize);
+ 			if (!mp)
+ 				goto enomem;
+@@ -306,4 +306,3 @@ int mpi_powm(MPI res, MPI base, MPI exp, MPI mod)
+ 		mpi_free_limb_space(tspace);
+ 	return rc;
+ }
+-EXPORT_SYMBOL_GPL(mpi_powm);
+diff --git a/lib/crypto/mpi/mpi-sub-ui.c b/lib/crypto/mpi/mpi-sub-ui.c
+index b41b082b5..48f4d33df 100644
+--- a/lib/crypto/mpi/mpi-sub-ui.c
++++ b/lib/crypto/mpi/mpi-sub-ui.c
+@@ -75,4 +75,3 @@ int mpi_sub_ui(MPI w, MPI u, unsigned long vval)
+ 	mpi_normalize(w);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(mpi_sub_ui);
+diff --git a/lib/crypto/mpi/mpicoder.c b/lib/crypto/mpi/mpicoder.c
+index dde010308..1a7729430 100644
+--- a/lib/crypto/mpi/mpicoder.c
++++ b/lib/crypto/mpi/mpicoder.c
+@@ -47,7 +47,7 @@ MPI mpi_read_raw_data(const void *xbuffer, size_t nbytes)
+ 
+ 	nbits = nbytes * 8;
+ 	if (nbits > MAX_EXTERN_MPI_BITS) {
+-		pr_info("MPI: mpi too large (%u bits)\n", nbits);
++		fcw_printk(KERN_INFO "MPI: mpi too large (%u bits)\n", nbits);
+ 		return NULL;
+ 	}
+ 	if (nbytes > 0)
+@@ -76,7 +76,6 @@ MPI mpi_read_raw_data(const void *xbuffer, size_t nbytes)
+ 	}
+ 	return val;
+ }
+-EXPORT_SYMBOL_GPL(mpi_read_raw_data);
+ 
+ MPI mpi_read_from_buffer(const void *xbuffer, unsigned *ret_nread)
+ {
+@@ -89,13 +88,13 @@ MPI mpi_read_from_buffer(const void *xbuffer, unsigned *ret_nread)
+ 	nbits = buffer[0] << 8 | buffer[1];
+ 
+ 	if (nbits > MAX_EXTERN_MPI_BITS) {
+-		pr_info("MPI: mpi too large (%u bits)\n", nbits);
++		fcw_printk(KERN_INFO "MPI: mpi too large (%u bits)\n", nbits);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	nbytes = DIV_ROUND_UP(nbits, 8);
+ 	if (nbytes + 2 > *ret_nread) {
+-		pr_info("MPI: mpi larger than buffer nbytes=%u ret_nread=%u\n",
++		fcw_printk(KERN_INFO "MPI: mpi larger than buffer nbytes=%u ret_nread=%u\n",
+ 				nbytes, *ret_nread);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+@@ -107,7 +106,6 @@ MPI mpi_read_from_buffer(const void *xbuffer, unsigned *ret_nread)
+ 	*ret_nread = nbytes + 2;
+ 	return val;
+ }
+-EXPORT_SYMBOL_GPL(mpi_read_from_buffer);
+ 
+ static int count_lzeros(MPI a)
+ {
+@@ -180,13 +178,12 @@ int mpi_read_buffer(MPI a, uint8_t *buf, unsigned buf_len, unsigned *nbytes,
+ #else
+ #error please implement for this limb size.
+ #endif
+-		memcpy(p, (u8 *)&alimb + lzeros, BYTES_PER_MPI_LIMB - lzeros);
++		fcw_memcpy(p, (u8 *)&alimb + lzeros, BYTES_PER_MPI_LIMB - lzeros);
+ 		p += BYTES_PER_MPI_LIMB - lzeros;
+ 		lzeros = 0;
+ 	}
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(mpi_read_buffer);
+ 
+ /*
+  * mpi_get_buffer() - Returns an allocated buffer with the MPI (msb first).
+@@ -214,7 +211,7 @@ void *mpi_get_buffer(MPI a, unsigned *nbytes, int *sign)
+ 	if (!n)
+ 		n++;
+ 
+-	buf = kmalloc(n, GFP_KERNEL);
++	buf = fcw_kmalloc(n, GFP_KERNEL);
+ 
+ 	if (!buf)
+ 		return NULL;
+@@ -227,7 +224,6 @@ void *mpi_get_buffer(MPI a, unsigned *nbytes, int *sign)
+ 	}
+ 	return buf;
+ }
+-EXPORT_SYMBOL_GPL(mpi_get_buffer);
+ 
+ /**
+  * mpi_write_to_sgl() - Funnction exports MPI to an sgl (msb first)
+@@ -310,9 +306,9 @@ int mpi_write_to_sgl(MPI a, struct scatterlist *sgl, unsigned nbytes,
+ 	}
+ 
+ 	sg_miter_stop(&miter);
++
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(mpi_write_to_sgl);
+ 
+ /*
+  * mpi_read_raw_from_sgl() - Function allocates an MPI and populates it with
+@@ -369,7 +365,7 @@ MPI mpi_read_raw_from_sgl(struct scatterlist *sgl, unsigned int nbytes)
+ 	nbits = nbytes * 8;
+ 	if (nbits > MAX_EXTERN_MPI_BITS) {
+ 		sg_miter_stop(&miter);
+-		pr_info("MPI: mpi too large (%u bits)\n", nbits);
++		fcw_printk(KERN_INFO "MPI: mpi too large (%u bits)\n", nbits);
+ 		return NULL;
+ 	}
+ 
+@@ -413,4 +409,3 @@ MPI mpi_read_raw_from_sgl(struct scatterlist *sgl, unsigned int nbytes)
+ 
+ 	return val;
+ }
+-EXPORT_SYMBOL_GPL(mpi_read_raw_from_sgl);
+diff --git a/lib/crypto/mpi/mpih-mul.c b/lib/crypto/mpi/mpih-mul.c
+index a93647564..c805ffb16 100644
+--- a/lib/crypto/mpi/mpih-mul.c
++++ b/lib/crypto/mpi/mpih-mul.c
+@@ -372,7 +372,7 @@ mpihelp_mul_karatsuba_case(mpi_ptr_t prodp,
+ 				return -ENOMEM;
+ 		} else {
+ 			if (!ctx->next) {
+-				ctx->next = kzalloc(sizeof *ctx, GFP_KERNEL);
++				ctx->next = fcw_kzalloc(sizeof *ctx, GFP_KERNEL);
+ 				if (!ctx->next)
+ 					return -ENOMEM;
+ 			}
+diff --git a/lib/crypto/mpi/mpiutil.c b/lib/crypto/mpi/mpiutil.c
+index 979ece5a8..58c8ab7fb 100644
+--- a/lib/crypto/mpi/mpiutil.c
++++ b/lib/crypto/mpi/mpiutil.c
+@@ -31,7 +31,7 @@ MPI mpi_alloc(unsigned nlimbs)
+ {
+ 	MPI a;
+ 
+-	a = kmalloc(sizeof *a, GFP_KERNEL);
++	a = fcw_kmalloc(sizeof *a, GFP_KERNEL);
+ 	if (!a)
+ 		return a;
+ 
+@@ -52,7 +52,6 @@ MPI mpi_alloc(unsigned nlimbs)
+ 	a->nbits = 0;
+ 	return a;
+ }
+-EXPORT_SYMBOL_GPL(mpi_alloc);
+ 
+ mpi_ptr_t mpi_alloc_limb_space(unsigned nlimbs)
+ {
+@@ -61,7 +60,7 @@ mpi_ptr_t mpi_alloc_limb_space(unsigned nlimbs)
+ 	if (!len)
+ 		return NULL;
+ 
+-	return kmalloc(len, GFP_KERNEL);
++	return fcw_kmalloc(len, GFP_KERNEL);
+ }
+ 
+ void mpi_free_limb_space(mpi_ptr_t a)
+@@ -91,14 +90,14 @@ int mpi_resize(MPI a, unsigned nlimbs)
+ 		return 0;	/* no need to do it */
+ 
+ 	if (a->d) {
+-		p = kcalloc(nlimbs, sizeof(mpi_limb_t), GFP_KERNEL);
++		p = fcw_kcalloc(nlimbs, sizeof(mpi_limb_t), GFP_KERNEL);
+ 		if (!p)
+ 			return -ENOMEM;
+-		memcpy(p, a->d, a->alloced * sizeof(mpi_limb_t));
++		fcw_memcpy(p, a->d, a->alloced * sizeof(mpi_limb_t));
+ 		kfree_sensitive(a->d);
+ 		a->d = p;
+ 	} else {
+-		a->d = kcalloc(nlimbs, sizeof(mpi_limb_t), GFP_KERNEL);
++		a->d = fcw_kcalloc(nlimbs, sizeof(mpi_limb_t), GFP_KERNEL);
+ 		if (!a->d)
+ 			return -ENOMEM;
+ 	}
+@@ -117,10 +116,9 @@ void mpi_free(MPI a)
+ 		mpi_free_limb_space(a->d);
+ 
+ 	if (a->flags & ~7)
+-		pr_info("invalid flag value in mpi\n");
++		fcw_printk(KERN_INFO "invalid flag value in mpi\n");
+ 	kfree(a);
+ }
+-EXPORT_SYMBOL_GPL(mpi_free);
+ 
+ /****************
+  * Note: This copy function should not interpret the MPI
+@@ -145,6 +143,3 @@ MPI mpi_copy(MPI a)
+ 		b = NULL;
+ 	return b;
+ }
+-
+-MODULE_DESCRIPTION("Multiprecision maths library");
+-MODULE_LICENSE("GPL");
+diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
+index e7c449c6b..f5a6ed249 100644
+--- a/lib/crypto/sha256.c
++++ b/lib/crypto/sha256.c
+@@ -14,7 +14,6 @@
+ #include <linux/unaligned.h>
+ #include <crypto/sha256_base.h>
+ #include <linux/kernel.h>
+-#include <linux/module.h>
+ #include <linux/string.h>
+ 
+ static const u32 SHA256_K[] = {
+@@ -160,6 +159,3 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
+ 	sha256_update(&sctx, data, len);
+ 	sha256_final(&sctx, out);
+ }
+-
+-MODULE_DESCRIPTION("SHA-256 Algorithm");
+-MODULE_LICENSE("GPL");
+-- 
+2.40.4
+

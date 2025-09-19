@@ -1,4 +1,4 @@
-From a43c5f5d998e08b1d5bd51b402eb946b889607c5 Mon Sep 17 00:00:00 2001
+From c514cb54f70f498a73cd04e8ac473335d5383dd9 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Mon, 11 Aug 2025 22:18:52 +0000
 Subject: [PATCH 12/15] Add shasums accelerators
@@ -8,12 +8,12 @@ Move to wrapper calls. Remove modules related stuff
 
 Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
- arch/x86/crypto/sha256_ssse3_glue.c | 74 +++++++++++------------------
- arch/x86/crypto/sha512_ssse3_glue.c | 65 +++++++++++--------------
- 2 files changed, 47 insertions(+), 82 deletions(-)
+ arch/x86/crypto/sha256_ssse3_glue.c | 67 ++++++++++-------------------
+ arch/x86/crypto/sha512_ssse3_glue.c | 57 ++++++++++--------------
+ 2 files changed, 45 insertions(+), 79 deletions(-)
 
 diff --git a/arch/x86/crypto/sha256_ssse3_glue.c b/arch/x86/crypto/sha256_ssse3_glue.c
-index e04a43d9f..8a84ef6c8 100644
+index e04a43d9f..3dc6efa76 100644
 --- a/arch/x86/crypto/sha256_ssse3_glue.c
 +++ b/arch/x86/crypto/sha256_ssse3_glue.c
 @@ -32,7 +32,6 @@
@@ -180,7 +180,7 @@ index e04a43d9f..8a84ef6c8 100644
 -MODULE_ALIAS_CRYPTO("sha224-ni");
 -#endif
 diff --git a/arch/x86/crypto/sha512_ssse3_glue.c b/arch/x86/crypto/sha512_ssse3_glue.c
-index 6d3b85e53..839c86131 100644
+index 6d3b85e53..e8f6a3570 100644
 --- a/arch/x86/crypto/sha512_ssse3_glue.c
 +++ b/arch/x86/crypto/sha512_ssse3_glue.c
 @@ -30,7 +30,6 @@
@@ -216,7 +216,7 @@ index 6d3b85e53..839c86131 100644
  
 -	kernel_fpu_begin();
 +	fcw_kernel_fpu_begin();
-	sha512_base_do_update(desc, data, len, sha512_xform);
+ 	sha512_base_do_update(desc, data, len, sha512_xform);
 -	kernel_fpu_end();
 +	fcw_kernel_fpu_end();
  
