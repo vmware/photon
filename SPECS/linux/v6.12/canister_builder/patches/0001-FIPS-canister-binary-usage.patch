@@ -1,4 +1,4 @@
-From 59ff940e91f549431f08c47c857062cbbc94c147 Mon Sep 17 00:00:00 2001
+From fac869b61e838c3b32f560018110a1e36bceae84 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 20 Jun 2025 12:53:33 -0500
 Subject: [PATCH 01/02] FIPS canister binary usage
@@ -15,14 +15,17 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
- arch/x86/crypto/Makefile |   9 ---
- crypto/Makefile          | 119 +++++++++++++++++++++++++++++++--------
- init/main.c              |   3 +
- lib/crypto/Makefile      |  10 +---
- 4 files changed, 101 insertions(+), 40 deletions(-)
+ arch/x86/crypto/Makefile    |  19 -----
+ crypto/Makefile             | 137 ++++++++++++++++++++++++++++++------
+ include/linux/scatterlist.h |   4 ++
+ init/main.c                 |   3 +
+ lib/crypto/Makefile         |  17 +----
+ lib/crypto/mpi/Makefile     |  28 --------
+ 6 files changed, 123 insertions(+), 85 deletions(-)
+ delete mode 100644 lib/crypto/mpi/Makefile
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
-index 53b4a2778..18671653a 100644
+index 53b4a2778..1e4aa1356 100644
 --- a/arch/x86/crypto/Makefile
 +++ b/arch/x86/crypto/Makefile
 @@ -46,32 +46,13 @@ obj-$(CONFIG_CRYPTO_CHACHA20_X86_64) += chacha-x86_64.o
@@ -59,7 +62,7 @@ index 53b4a2778..18671653a 100644
  polyval-clmulni-y := polyval-clmulni_asm.o polyval-clmulni_glue.o
  
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 7d4713949..32ddbce74 100644
+index 7d4713949..a5dc57339 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -17,7 +17,6 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -169,7 +172,7 @@ index 7d4713949..32ddbce74 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -208,3 +186,110 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -208,3 +186,116 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -279,7 +282,29 @@ index 7d4713949..32ddbce74 100644
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_GHASH)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_GHASH=y)
 +endif
++ifneq ($(subst Y,y,$(CONFIG_MPILIB)),y)
++  $(error FIPS canister requires CONFIG_MPILIB=y)
 +endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_LIB_GF128MUL)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_LIB_GF128MUL=y)
++endif
++endif
+diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+index 1bad36e3e..82caa9c39 100644
+--- a/include/linux/scatterlist.h
++++ b/include/linux/scatterlist.h
+@@ -674,7 +674,11 @@ sg_page_iter_dma_address(struct sg_dma_page_iter *dma_iter)
+ 
+ struct sg_mapping_iter {
+ 	/* the following three fields can be accessed directly */
++#ifdef FIPS_CANISTER
++	void 			*page;		/* currently mapped page */
++#else
+ 	struct page		*page;		/* currently mapped page */
++#endif
+ 	void			*addr;		/* pointer to the mapped area */
+ 	size_t			length;		/* length of the mapped area */
+ 	size_t			consumed;	/* number of consumed bytes */
 diff --git a/init/main.c b/init/main.c
 index c4778edae..6c2afc299 100644
 --- a/init/main.c
@@ -302,7 +327,7 @@ index c4778edae..6c2afc299 100644
  	 * These use large bootmem allocations and must precede
  	 * initalization of page allocator
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index baa2d50a2..de72fe62d 100644
+index 969baab8c..83c600776 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -1,15 +1,9 @@
@@ -321,7 +346,16 @@ index baa2d50a2..de72fe62d 100644
  obj-$(CONFIG_CRYPTO_LIB_AESCFB)			+= libaescfb.o
  libaescfb-y					:= aescfb.o
  
-@@ -45,11 +39,8 @@ libpoly1305-y					:= poly1305-donna32.o
+@@ -19,8 +13,6 @@ libaesgcm-y					:= aesgcm.o
+ obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
+ libarc4-y					:= arc4.o
+ 
+-obj-$(CONFIG_CRYPTO_LIB_GF128MUL)		+= gf128mul.o
+-
+ # blake2s is used by the /dev/random driver which is always builtin
+ obj-y						+= libblake2s.o
+ libblake2s-y					:= blake2s.o
+@@ -45,16 +37,11 @@ libpoly1305-y					:= poly1305-donna32.o
  libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
  libpoly1305-y					+= poly1305.o
  
@@ -335,6 +369,45 @@ index baa2d50a2..de72fe62d 100644
  
  ifneq ($(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS),y)
  libblake2s-y					+= blake2s-selftest.o
+ libchacha20poly1305-y				+= chacha20poly1305-selftest.o
+ libcurve25519-y					+= curve25519-selftest.o
+ endif
+-
+-obj-$(CONFIG_MPILIB) += mpi/
+diff --git a/lib/crypto/mpi/Makefile b/lib/crypto/mpi/Makefile
+deleted file mode 100644
+index 9ad840790..000000000
+--- a/lib/crypto/mpi/Makefile
++++ /dev/null
+@@ -1,28 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-#
+-# MPI multiprecision maths library (from gpg)
+-#
+-
+-obj-$(CONFIG_MPILIB) = mpi.o
+-
+-mpi-y = \
+-	generic_mpih-lshift.o		\
+-	generic_mpih-mul1.o		\
+-	generic_mpih-mul2.o		\
+-	generic_mpih-mul3.o		\
+-	generic_mpih-rshift.o		\
+-	generic_mpih-sub1.o		\
+-	generic_mpih-add1.o		\
+-	mpicoder.o			\
+-	mpi-add.o			\
+-	mpi-bit.o			\
+-	mpi-cmp.o			\
+-	mpi-sub-ui.o			\
+-	mpi-div.o			\
+-	mpi-mod.o			\
+-	mpi-mul.o			\
+-	mpih-cmp.o			\
+-	mpih-div.o			\
+-	mpih-mul.o			\
+-	mpi-pow.o			\
+-	mpiutil.o
 -- 
-2.49.0
+2.40.4
 
