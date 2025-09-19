@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -671,6 +671,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Fri Sep 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-18
+- Fix a missed out change in sd-netlink: make the default timeout configurable
 * Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-17
 - Enable ShowStatus config
 * Wed Jun 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-16

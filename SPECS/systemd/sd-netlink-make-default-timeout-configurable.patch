@@ -1,13 +1,17 @@
-From 852b2023cdac611ae60ee3c0ce665708177f0e3a Mon Sep 17 00:00:00 2001
+From d99a6156608432e8c0e4dda35cc8390c28ad170a Mon Sep 17 00:00:00 2001
 From: Yu Watanabe <watanabe.yu@gmail.com>
-Date: Mon, 9 Oct 2023 12:53:31 +0000
+Date: Fri, 19 Sep 2025 07:38:08 +0000
 Subject: [PATCH] systemd: sd-netlink - make the default timeout configurable
 
 backport https://github.com/systemd/systemd/pull/29390
+
+[sshedi: add a missed out change while porting]
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
  src/libsystemd/sd-netlink/netlink-internal.h |  2 +
+ src/libsystemd/sd-netlink/netlink-slot.c     |  2 +-
  src/libsystemd/sd-netlink/sd-netlink.c       | 53 +++++++++++---------
- 2 files changed, 31 insertions(+), 24 deletions(-)
+ 3 files changed, 32 insertions(+), 25 deletions(-)
 
 diff --git a/src/libsystemd/sd-netlink/netlink-internal.h b/src/libsystemd/sd-netlink/netlink-internal.h
 index a53b802..1fa2120 100644
@@ -22,6 +26,19 @@ index a53b802..1fa2120 100644
  #define RTNL_DEFAULT_TIMEOUT ((usec_t) (25 * USEC_PER_SEC))
  
  #define RTNL_RQUEUE_MAX 64*1024
+diff --git a/src/libsystemd/sd-netlink/netlink-slot.c b/src/libsystemd/sd-netlink/netlink-slot.c
+index fa951bf..d5f4812 100644
+--- a/src/libsystemd/sd-netlink/netlink-slot.c
++++ b/src/libsystemd/sd-netlink/netlink-slot.c
+@@ -63,7 +63,7 @@ void netlink_slot_disconnect(sd_netlink_slot *slot, bool unref) {
+         case NETLINK_REPLY_CALLBACK:
+                 (void) hashmap_remove(nl->reply_callbacks, &slot->reply_callback.serial);
+ 
+-                if (slot->reply_callback.timeout != 0)
++                if (slot->reply_callback.timeout != USEC_INFINITY)
+                         prioq_remove(nl->reply_callbacks_prioq, &slot->reply_callback, &slot->reply_callback.prioq_idx);
+ 
+                 break;
 diff --git a/src/libsystemd/sd-netlink/sd-netlink.c b/src/libsystemd/sd-netlink/sd-netlink.c
 index 167e160..f4910c0 100644
 --- a/src/libsystemd/sd-netlink/sd-netlink.c
@@ -144,5 +161,5 @@ index 167e160..f4910c0 100644
  
                          n = now(CLOCK_MONOTONIC);
 -- 
-2.35.6
+2.43.7
 
