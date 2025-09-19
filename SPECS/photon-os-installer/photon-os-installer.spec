@@ -3,7 +3,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.7
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -65,6 +65,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Tue Sep 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.7-3
+- Release bump to build with new pyinstaller
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7-2
 - Release bump for SRP compliance
 * Fri May 24 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 2.7-1

@@ -1,18 +1,20 @@
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
-Version:        21.3
-Release:        2%{?dist}
+Version:        25.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}.tar.gz
+Source0:        https://github.com/pypa/packaging/archive/refs/tags/packaging-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-pip
+BuildRequires:  python3-flit-core
 %if 0%{?with_check}
 BuildRequires:  python3-setuptools
 BuildRequires:  curl-devel
@@ -38,10 +40,10 @@ Cryptography is a Python library which exposes cryptographic recipes and primiti
 %autosetup -n packaging-%{version}
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
 
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -53,6 +55,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+* Wed Sep 24 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.0-1
+- Update to 25.0
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.3-2
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 21.3-1

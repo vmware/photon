@@ -1,1 +1,1 @@
-License: BSD-2-Clause AND BSD-3-Clause AND (BSD-2-Clause OR Apache-2.0) AND Apache-2.0 AND (BSD-2-Clause OR Apache-2.0) AND (BSD-3-Clause OR Apache-2.0)
+License: (Apache-2.0 OR BSD-2-Clause) AND (Apache-2.0 OR BSD-3-Clause) AND (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND MIT

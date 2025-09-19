@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
-Version:        5.5
-Release:        4%{?dist}
+Version:        6.16.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -11,6 +11,9 @@ Source0:        https://files.pythonhosted.org/packages/1e/d7/214b25c912d5f7d9c3
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:         0001-classifiers.patch
+
 BuildRequires:  cmocka-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -20,10 +23,17 @@ BuildRequires:  python3-wheel
 BuildRequires:  python3-xml
 BuildRequires:  zlib-devel
 BuildRequires:  dos2unix
+BuildRequires:  python3-hatchling
+BuildRequires:  python3-pip
+BuildRequires:  python3-pathspec
+BuildRequires:  python3-pluggy
+BuildRequires:  python3-packaging
+
 %if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 %endif
+
 Requires:       python3
 Requires:       python3-libs
 Requires:       zlib
@@ -31,8 +41,8 @@ Requires:       python3-setuptools
 Requires:       python3-xml
 Requires:       python3-pyinstaller-hooks-contrib
 Requires:       python3-altgraph
-
-Patch0:         0001-compat-add-ipaddress-module-to-base-modules-for-pyth.patch
+Requires:       python3-packaging
+Requires:       binutils
 
 %description
 PyInstaller bundles a Python application and all its dependencies into a single package. The user can run the packaged app without installing a Python interpreter or any modules.
@@ -52,16 +62,16 @@ for file in $(find . -type f); do
     dos2unix $file
 done
 
-%autopatch -p1 -m0 -M2
+%autopatch -p1
 
 %build
 pushd bootloader
 python3 ./waf distclean all
 popd
-%py3_build
+%pyproject_wheel
 
 %install
-python3 setup.py install --single-version-externally-managed -O1 --root=%{buildroot}
+%pyproject_install
 
 %check
 # Skip python3 make check, as python3.6 is not supported by 3.2.1
@@ -84,6 +94,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+* Fri Sep 19 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.16.0-1
+- Upgrade to latest
 * Thu Jan 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.5-4
 - Fix PyInstaller for Python >= 3.11.4
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.5-3
