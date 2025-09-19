@@ -285,10 +285,6 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 				symbols[r_sym].name = strdup(elf_strptr(elf, strndx, symtab[r_sym].st_name));
 			}
 		}
-		/* For reloc type R_X86_64_32 with __kcfi_typeid symbols, change reloc type to 3 */
-		if (r_type == 2 && strstr(symbols[r_sym].name, "__kcfi_typeid_")) {
-			r_type = 3;
-		}
 		if (rels[n].r_addend > INT_MAX || rels[n].r_addend < INT_MIN)
 			error("r_addend overflow");
 		if (rels[n].r_offset - offset > UINT_MAX)
@@ -690,8 +686,6 @@ static void print_srel_insn(int nfd, unsigned short type, unsigned short symbol,
 		srel = srel | SREL_INSN_TA_5;
 	} else if (type == 2 && addend == 0) {
 		srel = srel | SREL_INSN_TA_6;
-	} else if (type == 3 && addend == 0) {
-		srel = srel | SREL_INSN_TA_7;
 	} else {
 		error("Unknown rel type and addend combination!!! %d %d\n", type, addend);
 	}

@@ -73,7 +73,7 @@ static int canister_perform_reverse_relocation(int i, struct relocation *r, char
 		}
 #endif
 	/* Absolute signed 32bit relocation: value = target */
-	} else if (r->type == 2  || r->type == 3 /* R_X86_64_32S || R_X86_64_32 */) {
+	} else if (r->type == 2 /* R_X86_64_32S || R_X86_64_32 */) {
 		int32_t value = *(int32_t *)mem;
 		value -= target;
 		*(int32_t *)mem = value;
@@ -187,9 +187,6 @@ static int canister_bytecode_interpreter(struct relocation *r, int *pos)
 			r->addend = 4;
 		} else if (rel_add == SREL_INSN_TA_6) {
 			r->type = 2;
-			r->addend = 0;
-		} else if (rel_add == SREL_INSN_TA_7) {
-			r->type = 3;
 			r->addend = 0;
 		} else {
 			err = -ENOENT;
@@ -308,16 +305,6 @@ int __init fips_integrity_init(void)
 	ptr = canister_strtab;
 	for (i = 0; i < canister_strtab_size; i++) {
 		symbols_addr[i] = kallsyms_lookup_name(ptr);
-		if (!symbols_addr[i] && !strncmp(ptr, "__kcfi_typeid_", 14)) {
-			const char *name = ptr + strlen("__kcfi_typeid_");
-			unsigned long addr = kallsyms_lookup_name(name);
-			if (addr) {
-				/* kcfi hash will be present at addr(func-15) bytes */
-				addr -= 0xF;
-				int *addrp = (int *)addr;
-				symbols_addr[i] = *addrp;
-			}
-		}
 		if (!symbols_addr[i]) {
 			fcw_printk(KERN_ERR "FIPS(%s): unable to lookup: %s\n", __FUNCTION__, ptr);
 			err = -ENOENT;

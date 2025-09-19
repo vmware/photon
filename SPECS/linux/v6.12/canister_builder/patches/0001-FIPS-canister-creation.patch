@@ -1,7 +1,7 @@
 From b5186bb7095087e24ccd06b4035da792096e0d2e Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
-Subject: [PATCH 01/16] FIPS canister creation
+Subject: [PATCH 01/15] FIPS canister creation
 
 Canister creation patch.
  - Makefile changes to generate canister binary (fips_canister.o)
@@ -18,6 +18,7 @@ Canister creation patch.
  - Do not use latent entropy GCC plugin for canister objects
  - Do not check indirect call destination signatures from canister
  - Remove rsa-pkcs1pad encrypt/decrypt functions from canister
+ - List canister objs in a file
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
@@ -25,7 +26,7 @@ Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c |  77 ++++++-------
- crypto/Makefile                    |  89 +++++++++++++++
+ crypto/Makefile                    | 114 ++++++++++++++++++++
  crypto/algboss.c                   |   5 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
@@ -43,7 +44,7 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  crypto/testmgr.c                   | 108 ++++++++++---------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 19 files changed, 268 insertions(+), 288 deletions(-)
+ 19 files changed, 293 insertions(+), 288 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -418,10 +419,25 @@ index 32ddbce74..0d2dc0fb4 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -186,6 +207,74 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -186,6 +207,97 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
++
++hostprogs := partial_reloc gen_canister_relocs
++HOSTLDLIBS_partial_reloc = -lelf
++HOSTCFLAGS_partial_reloc = -g
++HOSTLDLIBS_gen_canister_relocs = -lelf
++HOSTCFLAGS_gen_canister_relocs = -g
++
++quiet_cmd_pr = RELOC   $@
++cmd_pr = $(obj)/partial_reloc $@
++
++quiet_cmd_gencr = GENCR   $@
++cmd_gencr = $(obj)/gen_canister_relocs $< $@ $(obj)/canister_markers.lds $(obj)/fips_canister-kallsyms
++
++quiet_cmd_update_hmac = HMAC    $@
++cmd_update_hmac = $(obj)/update_canister_hmac.sh $@ $(obj)/canister_markers.lds
 +
 +aesni-intel-y := aesni-intel_asm.o aesni-intel_glue.o
 +aesni-intel-$(CONFIG_64BIT) += aes_ctrby8_avx-x86_64.o aes-gcm-aesni-x86_64.o aes-xts-avx-x86_64.o
@@ -432,16 +448,23 @@ index 32ddbce74..0d2dc0fb4 100644
 +OBJECT_FILES_NON_STANDARD_x86-aes-gcm-aesni-x86_64.o := y
 +OBJECT_FILES_NON_STANDARD_x86-aes-xts-avx-x86_64.o := y
 +
-+crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
-+	$(call cmd,force_checksrc)
++sha256-ssse3-y := sha256-ssse3-asm.o sha256-avx-asm.o sha256-avx2-asm.o sha256_ssse3_glue.o
++sha256-ssse3-$(CONFIG_AS_SHA256_NI) += sha256_ni_asm.o
++
++sha512-ssse3-y := sha512-ssse3-asm.o sha512-avx-asm.o sha512-avx2-asm.o sha512_ssse3_glue.o
++
++ghash-clmulni-intel-y := ghash-clmulni-intel_asm.o ghash-clmulni-intel_glue.o
++
++x86-hwaccelerated-y := $(aesni-intel-y) $(sha256-ssse3-y) $(sha512-ssse3-y) $(ghash-clmulni-intel-y)
++
++$(obj)/x86-%.o: $(srctree)/arch/x86/crypto/%.c FORCE
 +	$(call if_changed_rule,cc_o_c)
 +
-+crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep) FORCE
++$(obj)/x86-%.o: $(srctree)/arch/x86/crypto/%.S FORCE
 +	$(call if_changed_rule,as_o_S)
 +
-+lib-crypto-y := aes.o sha256.o
-+crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep) FORCE
-+	$(call cmd,force_checksrc)
++lib-crypto-y := aes.o sha256.o memneq.o utils.o
++$(obj)/lib-crypto-%.o: $(srctree)/lib/crypto/%.c FORCE
 +	$(call if_changed_rule,cc_o_c)
 +
 +canister += crypto_self_test.o
@@ -449,8 +472,16 @@ index 32ddbce74..0d2dc0fb4 100644
 +canister += fips_integrity.o
 +
 +extra-y += $(canister)
-+$(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
-+	$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $^ -o $@
++
++canister-objs := $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
++
++$(obj)/canister.o: $(obj)/partial_reloc $(canister-objs)
++	$(Q)$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $(canister-objs) -o $@
++	$(call cmd,pr)
++	@$(foreach obj,$(x86-hwaccelerated-y),echo x86-$(obj) > objs;)
++	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
++	@$(foreach obj,$(canister),echo $(obj) >> objs;)
++
 +define UPDATE_CFLAGS =
 +  CFLAGS_$1 += -DFIPS_CANISTER -mharden-sls=all
 +  CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
@@ -467,28 +498,21 @@ index 32ddbce74..0d2dc0fb4 100644
 +  CFLAGS_x86-$1 += -DFIPS_CANISTER -mharden-sls=all
 +  CFLAGS_REMOVE_x86-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
-+$(foreach obj,$(aesni-intel-y),$(eval $(call UPDATE_CFLAGS_X86,$(obj))))
++$(foreach obj,$(x86-hwaccelerated-y),$(eval $(call UPDATE_CFLAGS_X86,$(obj))))
 +
-+hostprogs := gen_canister_relocs
-+HOSTLDLIBS_gen_canister_relocs = -lelf
-+HOSTCFLAGS_gen_canister_relocs = -g
-+
-+quiet_cmd_gencr = GENCR   $@
-+cmd_gencr = $(obj)/gen_canister_relocs $< $@ $(obj)/canister_markers.lds $(obj)/fips_canister-kallsyms
-+$(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs FORCE
-+	$(call if_changed,gencr)
++$(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs
++	$(call cmd,gencr)
 +clean-files += canister_relocs.c
 +clean-files += fips_canister-kallsyms
-+targets += canister_relocs.o
++# Make savecmd_ happy for proper incremental build
++targets += canister_relocs.o $(addprefix x86-,$(x86-hwaccelerated-y)) $(addprefix lib-crypto-,$(lib-crypto-y))
 +$(obj)/canister_markers.lds: $(src)/canister_relocs.c
 +
 +clean-files += canister_markers.lds
 +
-+quiet_cmd_update_hmac = HMAC    $@
-+cmd_update_hmac = $(obj)/update_canister_hmac.sh $@ $(obj)/canister_markers.lds
-+$(obj)/fips_canister.o: $(obj)/canister.o $(obj)/canister_relocs.o $(obj)/canister_markers.lds FORCE
-+	$(LD) -z noexecstack -T $(obj)/canister_markers.lds -r $(obj)/canister.o $(obj)/canister_relocs.o -o $@
-+	$(call if_changed,update_hmac)
++$(obj)/fips_canister.o: $(obj)/canister.o $(obj)/canister_relocs.o $(obj)/canister_markers.lds
++	$(Q)$(LD) -z noexecstack -T $(obj)/canister_markers.lds -r $(obj)/canister.o $(obj)/canister_relocs.o -o $@
++	$(call cmd_and_savecmd,update_hmac)
 +
  obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_asm.o fips_canister_wrapper.o fips_canister.o
  obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_internal.o

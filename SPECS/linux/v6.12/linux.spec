@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        11%{?acvp_build:.acvp}%{?dist}
+Release:        12%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -126,6 +126,7 @@ Source41: fips_canister_wrapper_internal.c
 %endif
 
 %if 0%{?canister_build}
+Source43: partial_reloc.c
 Source44: fips_integrity.c
 Source45: fips_integrity.h
 Source46: update_canister_hmac.sh
@@ -330,15 +331,14 @@ Patch10013: 0004-Move-__bug_table-section-to-fips_canister_wrapper.patch
 Patch10014: 0005-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
 Patch10015: 0006-Move-kernel-structures-usage-from-canister-to-wrappe.patch
 Patch10016: 0007-ecc-Add-pairwise-consistency-test-for-every-generate.patch
-Patch10017: 0008-List-canister-objs-in-a-file.patch
+Patch10017: 0008-Add-ghash-accelerator.patch
 Patch10018: 0009-Handle-approved-and-non-approved-services.patch
 Patch10019: 0010-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
 Patch10020: 0011-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
 Patch10021: 0012-Add-shasums-accelerators.patch
 Patch10022: 0013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
-Patch10023: 0014-Add-ghash-accelerator.patch
-Patch10024: 0015-Add-lib-crypto-utils-to-the-canister.patch
-Patch10025: 0016-Move-crypto_inc-to-lib-crypto-utils.c.patch
+Patch10023: 0014-Add-lib-crypto-utils-to-the-canister.patch
+Patch10024: 0015-Move-crypto_inc-to-lib-crypto-utils.c.patch
 
 %if 0%{?kat_build}
 Patch10050: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
@@ -590,7 +590,7 @@ popd
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m10010 -M10025
+%autopatch -p1 -m10010 -M10024
 
 %if 0%{?kat_build}
 %autopatch -p1 -m10050 -M10050
@@ -644,6 +644,7 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 %endif
 
 %if 0%{?canister_build}
+cp %{SOURCE43} crypto/
 cp %{SOURCE44} crypto/
 cp %{SOURCE45} crypto/
 install -m 755 %{SOURCE46} crypto/
@@ -946,6 +947,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Sep 26 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-12
+- Canister: Perform partial relocation for local symbols
 * Mon Sep 22 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.41-11
 - Totally block external IVs for gcm(aes)
 * Thu Sep 18 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.41-10

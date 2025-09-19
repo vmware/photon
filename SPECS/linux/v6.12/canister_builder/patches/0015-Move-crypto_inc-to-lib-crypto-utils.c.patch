@@ -1,7 +1,7 @@
 From b5bdd29596665e694b46071de3d9d6221dedc0df Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Tue, 16 Sep 2025 20:44:35 +0000
-Subject: [PATCH 16/16] Move crypto_inc to lib/crypto/utils.c
+Subject: [PATCH 15/15] Move crypto_inc to lib/crypto/utils.c
 
 crypto_inc is a utility function similar to crypto_xor.
 algapi.c is a wrong place for it.
