@@ -1,82 +1,19 @@
 sources:
-- archive: curl-8.12.0.tar.xz
+- archive: curl-8.16.0.tar.xz
   archive_type: upstream
-  archive_sha512sum: ed35f0020541050ce387f4ba80f9e87562ececd99082da1bae85840dee81c49b86a4a55909e15fcbf4eb116106a796c29a9b2678dee11326f80db75992c6edc5
-  name: curl-8.12.0
-  version: "8.12.0"
-  url: https://curl.se/download/curl-8.12.0.tar.xz
+  archive_sha512sum: 8262c3dc113cfd5744ef1b82dbccaa69448a9395ad5c094c22df5cf537a047a927d3332db2cb3be12a31a68a60d8d0fa8485b916e975eda36a4ebd860da4f621
+  name: curl-8.16.0
+  version: 8.16.0
+  url: https://curl.se/download/curl-8.16.0.tar.xz
   repo_url: https://github.com/curl/curl
-  commit_id: 34cf9d54a46598c44938aa7598820484d7af7133
-  skip_list:
-    [
-      Makefile.in,
-      .gitignore,
-      tool_version.h,
-      curlver.h,
-      GIT-INFO.md,
-      .circleci,
-      .dir-locals.el,
-      .git-blame-ignore-revs,
-      .gitattributes,
-      .github,
-      .mailmap,
-      LICENSES,
-      README.md,
-      REUSE.toml,
-      SECURITY.md,
-      appveyor.sh,
-      appveyor.yml,
-      buildconf,
-      renovate.json,
-      curl_config.h.in,
-      libtool.m4,
-      ltoptions.m4,
-      ltsugar.m4,
-      ltversion.m4,
-      lt~obsolete.m4,
-      ciconfig.pl,
-      cijobs.pl,
-      contributors.sh,
-      contrithanks.sh,
-      delta,
-      installcheck.sh,
-      release-notes.pl,
-      singleuse.pl,
-      config.guess,
-      missing,
-      THANKS-filter,
-      adddocsref.pl,
-      aclocal.m4,
-      configure,
-      RELEASE-TOOLS.md,
-      tool_hugehelp.c,
-      config.sub,
-      libcurl-symbols.md,
-      Windows,
-      ltmain.sh,
-      install-sh,
-      depcomp,
-      compile,
-      CI.md
-    ]
-  missing: []
+  commit_id: 11b991232fbcaa88e2b1faecac224416b0001e35
+  skip_list: [tool_version.h, curlver.h]
+  missing: [.dir-locals.el, cijobs.pl, renovate.json, THANKS-filter, adddocsref.pl, tool_hugehelp.c, SECURITY.md, compile, delta, .circleci, lt~obsolete.m4, buildconf, config.sub, aclocal.m4, libtool.m4, singleuse.pl, libtests.c, .gitignore, contributors.sh, .gitattributes, REUSE.toml, GIT-INFO.md, configure, config.guess, missing, appveyor.yml, .mailmap, depcomp, .git-blame-ignore-revs, installcheck.sh, RELEASE-TOOLS.md, contrithanks.sh, LICENSES, servers.c, ltmain.sh, release-notes.pl, README.md, ltoptions.m4, ltsugar.m4, Windows, tunits.c, Makefile.in, ltversion.m4, units.c, appveyor.sh, install-sh, curl_config.h.in, .github, libcurl-symbols.md, ciconfig.pl]
   spdx:
     package:
-      detailed_description: 'The cURL package contains an utility and a library used
-        for transferring files with URL syntax to any of the following protocols:
-        FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, DICT, LDAP, LDAPS and FILE.
-        Its ability to both download and upload files can be incorporated into other
-        programs to support functions like streaming media. '
+      detailed_description: 'The cURL package contains an utility and a library used for transferring files with URL syntax to any of the following protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, DICT, LDAP, LDAPS and FILE. Its ability to both download and upload files can be incorporated into other programs to support functions like streaming media. '
       home_page: http://curl.haxx.se
-      license_concluded: curl AND GPL-2.0-or-later WITH Libtool-exception AND BSD-3-Clause
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-4-Clause-UC AND
-        FSFUL AND GPL-1.0-or-later AND ISC AND GPL-2.0-only AND LGPL-2.0-or-later
-        AND (curl AND ISC) AND X11 AND FSFULLRWD AND MIT AND FSFULLR AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
-      license_declared: curl AND GPL-2.0-or-later WITH Libtool-exception AND BSD-3-Clause
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-4-Clause-UC AND
-        FSFUL AND GPL-1.0-or-later AND ISC AND GPL-2.0-only AND LGPL-2.0-or-later
-        AND (curl AND ISC) AND X11 AND FSFULLRWD AND MIT AND FSFULLR AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+      license_concluded: BSD-3-Clause AND BSD-4-Clause-UC AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND MIT AND X11 AND curl
+      license_declared: BSD-3-Clause AND BSD-4-Clause-UC AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND MIT AND X11 AND curl
       short_summary: An URL retrieval utility and library
       supplier: 'Organization: Broadcom, Inc.'

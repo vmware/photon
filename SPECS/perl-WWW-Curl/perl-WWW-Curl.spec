@@ -7,7 +7,7 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
@@ -22,6 +22,8 @@ Patch1:         Define-CURL-as-void.patch
 Patch2:         Skip-preprocessor-symbol-only-CURL_STRICTER.patch
 Patch3:         Adapt-to-changes-in-cURL.patch
 Patch4:         WWW-Curl-4.17-Adapt-to-curl-8.0.1.patch
+Patch5:         perl-compatibility-8-16-0.patch
+
 BuildRequires:  perl
 BuildRequires:  perl-Module-Install
 BuildRequires:  perl-YAML-Tiny
@@ -66,6 +68,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Oct 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.17-12
+- Build with curl 8.16.0
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.17-11
 - Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.17-10

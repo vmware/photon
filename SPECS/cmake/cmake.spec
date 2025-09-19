@@ -3,7 +3,7 @@
 Summary:      Cross-platform make system
 Name:         cmake
 Version:      3.25.2
-Release:      8%{?dist}
+Release:      9%{?dist}
 URL:          http://www.cmake.org
 Group:        Development/Tools
 Vendor:       VMware, Inc.
@@ -14,6 +14,9 @@ Source0: https://github.com/Kitware/CMake/releases/download/v%{version}/%{name}-
 Source1: macros.cmake
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: 0001-cmCurl-Avoid-using-undocumented-type-for-CURLOPT_NETRC-values.patch
+Patch1: 0002-Avoid-using-undocumented-type-for-CURLOPT_PROXYTYPE-values.patch
 
 BuildRequires: ncurses-devel
 BuildRequires: xz-devel
@@ -31,7 +34,7 @@ Requires: expat
 Requires: zlib
 Requires: libarchive
 Requires: bzip2
-Requires: curl-libs
+Requires: curl-libs >= 8.16.0
 
 %description
 CMake is an extensible, open-source system that manages the build process in an
@@ -74,6 +77,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Mon Oct 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.25.2-9
+- Avoid using undocumented type for CURLOPT_NETRC values
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.25.2-8
 - Bump version as a part of ncurses upgrade
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.25.2-7
