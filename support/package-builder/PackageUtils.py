@@ -182,11 +182,13 @@ class PackageUtils(object):
             raise e
         self.logger.debug("RPM build is successful")
 
-        if (constants.srpSigningScript and constants.srpSigningAuth
-           and constants.srpSigningParams):
+        signArgs = self.CheckForSigningArgs()
+        if signArgs:
             self.logger.debug("Initiate signing RPMs")
-            self.srpSigner(listRPMFiles, SRPM=False)
-            self.srpSigner(listSRPMFiles, SRPM=True)
+            self.signPackages(listRPMFiles, SRPM=False, cmd=signArgs)
+            self.signPackages(listSRPMFiles, SRPM=True, cmd=signArgs)
+        else:
+            self.logger.warning("Skip signing RPMs")
 
         return listRPMFiles, listSRPMFiles
 
@@ -271,7 +273,18 @@ class PackageUtils(object):
         out, _, _ = sandbox.runCmd(cmd, capture=True)
         return CommandUtils.splitlines(out)
 
-    def srpSigner(self, RpmsToSign, SRPM):
+    def CheckForSigningArgs(self):
+        if len(constants.signingOptsHost) != len(constants.signingMap):
+            return None
+
+        cmd = [constants.signingOptsHost['script'],
+                "--file_type", "rpm",
+                "--config_file", constants.signingOptsHost['params'],
+                "--auth_file", constants.signingOptsHost['auth'],
+                "--artifact"]
+        return cmd
+
+    def signPackages(self, RpmsToSign, SRPM, cmd):
         for rpm in RpmsToSign:
             if SRPM:
                 path = constants.sourceRpmPath
@@ -281,12 +294,7 @@ class PackageUtils(object):
                 arch = rpm.split(".")[-2]
             rpm = os.path.basename(rpm)
             rpm_full_path = os.path.join(path, arch, rpm)
-            cmd = [constants.srpSigningScript["src"],
-                   "--config_file", constants.srpSigningParams["src"],
-                   "--auth_file", constants.srpSigningAuth["src"],
-                   "--artifact", rpm_full_path, "--file_type", "rpm"]
-
-            CommandUtils.runCmd(cmd, logfn=self.logger.debug)
+            CommandUtils.runCmd(cmd + [rpm_full_path], logfn=self.logger.debug)
             self.logger.debug(f"Signed RPM: {rpm_full_path}")
 
     def adjustGCCSpecs(self, sandbox, package, version):

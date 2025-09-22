@@ -70,9 +70,13 @@ class constants(object):
     CopyToSandboxDict = {}
     SandboxEnv = {}
     adjustGCCSpecScript = None
-    srpSigningScript = {}
-    srpSigningParams = {}
-    srpSigningAuth = {}
+    signingOptsSandbox = {}
+    signingOptsHost = {}
+    signingMap = {
+        "srp-signing-script": "script",
+        "srp-signing-params": "params",
+        "srp-signing-auth": "auth"
+    }
     rebuild = False
 
     # Update to below constants lists will be provided by release branch as pkgPreq data
@@ -319,12 +323,9 @@ class constants(object):
             constants.listMakeCheckPkgToSkip.extend(pkgPreq["listMakeCheckPkgToSkip"])
             constants.providedBy = pkgPreq["providedBy"]
 
-        if constants.srpSigningScript:
-            constants.addMacro("signing_script", constants.srpSigningScript["dest"])
-        if constants.srpSigningParams:
-            constants.addMacro("signing_params", constants.srpSigningParams["dest"])
-        if constants.srpSigningAuth:
-            constants.addMacro("signing_auth", constants.srpSigningAuth["dest"])
+        if len(constants.signingOptsSandbox) == len(constants.signingMap):
+            for k, v in constants.signingOptsSandbox.items():
+                constants.addMacro(f"signing_{k}", v)
 
     @staticmethod
     def setTestForceRPMS(listsPackages):
@@ -354,18 +355,22 @@ class constants(object):
 
     @staticmethod
     def storeScriptsToCopy(key, val):
+        dest = val.get("dest")
+        if not dest:
+            self.logger.debug("Empty dest value, return ...")
+            return
         constants.CopyToSandboxDict[key] = deepcopy(val)
+
         if key == "adjust-gcc-specs":
-            constants.adjustGCCSpecScript = val["dest"]
-        if key == "srp-signing-script":
-            constants.srpSigningScript["src"] = val["src"]
-            constants.srpSigningScript["dest"] = val["dest"]
-        if key == "srp-signing-params":
-            constants.srpSigningParams["src"] = val["src"]
-            constants.srpSigningParams["dest"] = val["dest"]
-        if key == "srp-signing-auth":
-            constants.srpSigningAuth["src"] = val["src"]
-            constants.srpSigningAuth["dest"] = val["dest"]
+            constants.adjustGCCSpecScript = dest
+            return
+        if key in constants.signingMap:
+            signingOpt = constants.signingMap[key]
+            src = val.get("src")
+            if src:
+                constants.signingOptsHost[signingOpt] = src
+                constants.signingOptsSandbox[signingOpt] = dest
+            return
 
     @staticmethod
     def addSandboxEnv(key, val):
