@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.148
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -258,6 +258,9 @@ Patch142: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 
 # Fix CVE-2024-46786
 Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
+
+# Fix CVE-2024-56611
+Patch144: 0001-mm-mempolicy-fix-migrate_to_node-assuming-there-is-a.patch
 
 # Fix CVE-2024-50018
 Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
@@ -1052,6 +1055,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Sep 22 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-3
+- Fix CVE-2024-56611
 * Wed Sep 03 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.148-2
 - .config: enable CONFIG_NF_FLOW_TABLE=m
 * Mon Aug 25 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-1
