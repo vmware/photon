@@ -1,0 +1,100 @@
+From 9bdb8e98a0073c73ab3e6c631ec78877ceb64565 Mon Sep 17 00:00:00 2001
+From: Steve French <stfrench@microsoft.com>
+Date: Mon, 11 Aug 2025 23:14:55 -0500
+Subject: [PATCH] smb3: fix for slab out of bounds on mount to ksmbd
+
+[ Upstream commit 7d34ec36abb84fdfb6632a0f2cbda90379ae21fc ]
+
+With KASAN enabled, it is possible to get a slab out of bounds
+during mount to ksmbd due to missing check in parse_server_interfaces()
+(see below):
+
+ BUG: KASAN: slab-out-of-bounds in
+ parse_server_interfaces+0x14ee/0x1880 [cifs]
+ Read of size 4 at addr ffff8881433dba98 by task mount/9827
+
+ CPU: 5 UID: 0 PID: 9827 Comm: mount Tainted: G
+ OE       6.16.0-rc2-kasan #2 PREEMPT(voluntary)
+ Tainted: [O]=OOT_MODULE, [E]=UNSIGNED_MODULE
+ Hardware name: Dell Inc. Precision Tower 3620/0MWYPT,
+ BIOS 2.13.1 06/14/2019
+ Call Trace:
+  <TASK>
+ dump_stack_lvl+0x9f/0xf0
+ print_report+0xd1/0x670
+ __virt_addr_valid+0x22c/0x430
+ ? parse_server_interfaces+0x14ee/0x1880 [cifs]
+ ? kasan_complete_mode_report_info+0x2a/0x1f0
+ ? parse_server_interfaces+0x14ee/0x1880 [cifs]
+   kasan_report+0xd6/0x110
+   parse_server_interfaces+0x14ee/0x1880 [cifs]
+   __asan_report_load_n_noabort+0x13/0x20
+   parse_server_interfaces+0x14ee/0x1880 [cifs]
+ ? __pfx_parse_server_interfaces+0x10/0x10 [cifs]
+ ? trace_hardirqs_on+0x51/0x60
+ SMB3_request_interfaces+0x1ad/0x3f0 [cifs]
+ ? __pfx_SMB3_request_interfaces+0x10/0x10 [cifs]
+ ? SMB2_tcon+0x23c/0x15d0 [cifs]
+ smb3_qfs_tcon+0x173/0x2b0 [cifs]
+ ? __pfx_smb3_qfs_tcon+0x10/0x10 [cifs]
+ ? cifs_get_tcon+0x105d/0x2120 [cifs]
+ ? do_raw_spin_unlock+0x5d/0x200
+ ? cifs_get_tcon+0x105d/0x2120 [cifs]
+ ? __pfx_smb3_qfs_tcon+0x10/0x10 [cifs]
+ cifs_mount_get_tcon+0x369/0xb90 [cifs]
+ ? dfs_cache_find+0xe7/0x150 [cifs]
+ dfs_mount_share+0x985/0x2970 [cifs]
+ ? check_path.constprop.0+0x28/0x50
+ ? save_trace+0x54/0x370
+ ? __pfx_dfs_mount_share+0x10/0x10 [cifs]
+ ? __lock_acquire+0xb82/0x2ba0
+ ? __kasan_check_write+0x18/0x20
+ cifs_mount+0xbc/0x9e0 [cifs]
+ ? __pfx_cifs_mount+0x10/0x10 [cifs]
+ ? do_raw_spin_unlock+0x5d/0x200
+ ? cifs_setup_cifs_sb+0x29d/0x810 [cifs]
+ cifs_smb3_do_mount+0x263/0x1990 [cifs]
+
+Reported-by: Namjae Jeon <linkinjeon@kernel.org>
+Tested-by: Namjae Jeon <linkinjeon@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[msikka: Modified to apply on 5.10.y]
+Signed-off-by: Mukul Sikka <mukul.sikka@broadcom.com>
+---
+ fs/cifs/smb2ops.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 66d4cf5c2..b52903efd 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -468,6 +468,13 @@ parse_server_interfaces(struct network_interface_info_ioctl_rsp *buf,
+ 			bytes_left -= sizeof(*p);
+ 			break;
+ 		}
++		/* Validate that Next doesn't point beyond the buffer */
++		if (next > bytes_left) {
++			cifs_dbg(VFS, "%s: invalid Next pointer %zu > %zd\n",
++				 __func__, next, bytes_left);
++			rc = -EINVAL;
++			goto out;
++		}
+ 		p = (struct network_interface_info_ioctl_rsp *)((u8 *)p+next);
+ 		bytes_left -= next;
+ 	}
+@@ -479,7 +486,9 @@ parse_server_interfaces(struct network_interface_info_ioctl_rsp *buf,
+ 	}
+ 
+ 	/* Azure rounds the buffer size up 8, to a 16 byte boundary */
+-	if ((bytes_left > 8) || p->Next)
++	if ((bytes_left > 8) ||
++	    (bytes_left >= offsetof(struct network_interface_info_ioctl_rsp, Next)
++	     + sizeof(p->Next) && p->Next))
+ 		cifs_dbg(VFS, "%s: incomplete interface info\n", __func__);
+ 
+ 
+-- 
+2.43.7
+

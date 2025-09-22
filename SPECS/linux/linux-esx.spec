@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.244
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -391,21 +391,36 @@ Patch223: 0001-lib-generic-radix-tree.c-Don-t-overflow-in-peek.patch
 Patch229:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
 
 # Fix CVE-2024-57982
-Patch234:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+Patch230:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
+# Fix CVE-2022-49743
+Patch231:   0001-ovl-Use-buf-flexible-array-for-memcpy-destination.patch
+
+# Fix CVE-2023-52975
+Patch232:   0001-scsi-iscsi_tcp-Fix-UAF-during-logout-when-accessing-.patch
+
+# Fix CVE-2022-49226
+Patch233:   0001-net-asix-add-proper-error-handling-of-usb-read-error.patch
+
+# Fix CVE-2022-48816
+Patch234: 0001-SUNRPC-lock-against-sock-changing-during-sysfs-read.patch
+
+# Fix CVE-2025-38728
+Patch235: 0001-smb3-fix-for-slab-out-of-bounds-on-mount-to-ksmbd.patch
 
 # Fix CVE-2024-42321
-Patch235:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
+Patch236:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
 
 # Fix CVE-2024-38608
-Patch236:  0001-net-mlx5e-Fix-netif-state-handling.patch
+Patch237:  0001-net-mlx5e-Fix-netif-state-handling.patch
 
 # Fix CVE-2024-57798
-Patch237:  0001-drm-dp_mst-Skip-CSN-if-topology-probing-is-not-done-.patch
-Patch238:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
+Patch238:  0001-drm-dp_mst-Skip-CSN-if-topology-probing-is-not-done-.patch
+Patch239:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
 # Fix CVE-2024-36898
-Patch239: 0001-gpiolib-cdev-fix-uninitialised-kfifo.patch
+Patch240: 0001-gpiolib-cdev-fix-uninitialised-kfifo.patch
 # Fix CVE-2024-35932
-Patch240: 0001-drm-vc4-don-t-check-if-plane-state-fb-state-fb.patch
+Patch241: 0001-drm-vc4-don-t-check-if-plane-state-fb-state-fb.patch
 
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -795,6 +810,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Oct 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.244-4
+- Fix CVE-2025-38728, CVE-2022-49743, CVE-2023-52975
+- CVE-2022-49226, CVE-2022-48816 and CVE-2024-39490
 * Tue Oct 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.244-3
 - Fixes CVE-2024-36898, CVE-2024-35932
 * Wed Sep 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.244-2

@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.244
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -399,13 +399,33 @@ Patch225: 0005-wifi-iwlwifi-mvm-ensure-offloading-TID-queue-exists.patch
 Patch226: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
 
 # Fix CVE-2021-47432
-Patch228: 0001-lib-generic-radix-tree.c-Don-t-overflow-in-peek.patch
+Patch227: 0001-lib-generic-radix-tree.c-Don-t-overflow-in-peek.patch
 
 # Fix CVE-2021-47182
-Patch234:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
+Patch228:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
 
 # Fix CVE-2024-57982
-Patch239:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+Patch229:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
+# Fix CVE-2022-49743
+Patch230:   0001-ovl-Use-buf-flexible-array-for-memcpy-destination.patch
+
+# Fix CVE-2023-52975
+Patch231:   0001-scsi-iscsi_tcp-Fix-UAF-during-logout-when-accessing-.patch
+
+# Fix CVE-2022-49226
+Patch232:   0001-net-asix-add-proper-error-handling-of-usb-read-error.patch
+
+# Fix CVE-2024-40999
+%ifarch aarch64
+Patch233: 0001-net-ena-Add-validation-for-completion-descriptors-co.patch
+%endif
+
+# CVE-2022-48816
+Patch234: 0001-SUNRPC-lock-against-sock-changing-during-sysfs-read.patch
+
+# Fix CVE-2025-38728
+Patch235: 0001-smb3-fix-for-slab-out-of-bounds-on-mount-to-ksmbd.patch
 
 # Fix CVE-2024-42321
 Patch240:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
@@ -531,6 +551,10 @@ Patch1541:       0011-fix-error-handling-paths-in-vmci_guest_probe_device.patch
 Patch1542:       0012-check-exclusive-vectors-when-freeing-interrupt1.patch
 Patch1543:       0013-release-notification-bitmap-inn-error-path.patch
 Patch1544:       0014-add-support-for-arm64.patch
+
+# Out-of-tree driver fix for CVE-2024-40999
+Patch1600: 0001-linux-ena-Add-validation-for-completion-descriptors-.patch
+Patch1601: 0001-linux-ena-Add-check-for-specific-failure-in-ena_com_.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -734,6 +758,12 @@ popd
 pushd ../ice-%{ice_version}
 %patch1513 -p1
 %patch1514 -p1
+popd
+
+# Patches for ena driver
+pushd ../amzn-drivers-ena_linux_%{ena_version}
+%patch1600 -p1
+%patch1601 -p1
 popd
 
 %endif
@@ -1096,6 +1126,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Oct 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.244-4
+- Fix CVE-2025-38728, CVE-2022-49743, CVE-2023-52975
+- CVE-2022-49226, CVE-2022-48816 and CVE-2024-39490
 * Tue Oct 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.244-3
 - Fixes CVE-2024-36898, CVE-2024-35932
 * Mon Sep 22 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.244-2

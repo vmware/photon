@@ -1,0 +1,173 @@
+From 72adcd485bd3724dce472f25642766ff0185b578 Mon Sep 17 00:00:00 2001
+From: Pavel Skripkin <paskripkin@gmail.com>
+Date: Sun, 6 Feb 2022 21:05:16 +0300
+Subject: [PATCH] net: asix: add proper error handling of usb read errors
+
+[ Upstream commit 920a9fa27e7805499cfe78491b36fed2322c02ec ]
+
+Syzbot once again hit uninit value in asix driver. The problem still the
+same -- asix_read_cmd() reads less bytes, than was requested by caller.
+
+Since all read requests are performed via asix_read_cmd() let's catch
+usb related error there and add __must_check notation to be sure all
+callers actually check return value.
+
+So, this patch adds sanity check inside asix_read_cmd(), that simply
+checks if bytes read are not less, than was requested and adds missing
+error handling of asix_read_cmd() all across the driver code.
+
+Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+Reported-and-tested-by: syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Shivani: Modified to apply on 5.10.y]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+[ Brennan : Added missing error handling for asix_read_cmd() in asix_mdio_read(),
+            based on d275afb66. ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/net/usb/asix.h         |  4 ++--
+ drivers/net/usb/asix_common.c  | 30 +++++++++++++++++++++---------
+ drivers/net/usb/asix_devices.c | 21 ++++++++++++++++++---
+ 3 files changed, 41 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
+index 3b5368530..f5558783b 100644
+--- a/drivers/net/usb/asix.h
++++ b/drivers/net/usb/asix.h
+@@ -185,8 +185,8 @@ extern const struct driver_info ax88172a_info;
+ /* ASIX specific flags */
+ #define FLAG_EEPROM_MAC		(1UL << 0)  /* init device MAC from eeprom */
+ 
+-int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-		  u16 size, void *data, int in_pm);
++int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
++			       u16 size, void *data, int in_pm);
+ 
+ int asix_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 		   u16 size, void *data, int in_pm);
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index 11554bce1..acc53f6a9 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -9,8 +9,8 @@
+ 
+ #include "asix.h"
+ 
+-int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-		  u16 size, void *data, int in_pm)
++int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
++     			       u16 size, void *data, int in_pm)
+ {
+ 	int ret;
+ 	int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+@@ -25,9 +25,12 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 	ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+ 		 value, index, data, size);
+ 
+-	if (unlikely(ret < 0))
++	if (unlikely(ret < size)) {
++		ret = ret < 0 ? ret : -ENODATA;
++
+ 		netdev_warn(dev->net, "Failed to read reg index 0x%04x: %d\n",
+ 			    index, ret);
++	}
+ 
+ 	return ret;
+ }
+@@ -77,7 +80,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
+ 				    0, 0, 1, &smsr, in_pm);
+ 		if (ret == -ENODEV)
+ 			break;
+-		else if (ret < sizeof(smsr))
++		else if (ret < 0)
+ 			continue;
+ 		else if (smsr & AX_HOST_EN)
+ 			break;
+@@ -478,15 +481,20 @@ int asix_mdio_read(struct net_device *netdev, int phy_id, int loc)
+ 		return ret;
+ 	}
+ 
+-	asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
++	ret = asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
+ 				(__u16)loc, 2, &res, 0);
+-	asix_set_hw_mii(dev, 0);
++
++	if (ret < 0)
++		goto out;
++
++	ret = asix_set_hw_mii(dev, 0);
++out:
+ 	mutex_unlock(&dev->phy_mutex);
+ 
+ 	netdev_dbg(dev->net, "asix_mdio_read() phy_id=0x%02x, loc=0x%02x, returns=0x%04x\n",
+ 			phy_id, loc, le16_to_cpu(res));
+ 
+-	return le16_to_cpu(res);
++	return ret < 0 ? ret : le16_to_cpu(res);
+ }
+ 
+ void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
+@@ -526,8 +534,12 @@ int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc)
+ 		return ret;
+ 	}
+ 
+-	asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
+-		      (__u16)loc, 2, &res, 1);
++	ret = asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
++			    (__u16)loc, 2, &res, 1);
++	if (ret < 0) {
++		mutex_unlock(&dev->phy_mutex);
++		return ret;
++	}
+ 	asix_set_hw_mii(dev, 1);
+ 	mutex_unlock(&dev->phy_mutex);
+ 
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index ef548beba..2fdc6d63a 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -724,7 +724,12 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	dev->net->needed_headroom = 4; /* cf asix_tx_fixup() */
+ 	dev->net->needed_tailroom = 4; /* cf asix_tx_fixup() */
+ 
+-	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
++	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read STATMNGSTS_REG: %d\n", ret);
++		return ret;
++	}
++
+ 	chipcode &= AX_CHIPCODE_MASK;
+ 
+ 	ret = (chipcode == AX_AX88772_CHIPCODE) ? ax88772_hw_reset(dev, 0) :
+@@ -874,11 +879,21 @@ static int ax88178_reset(struct usbnet *dev)
+ 	int gpio0 = 0;
+ 	u32 phyid;
+ 
+-	asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
++	ret = asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read GPIOS: %d\n", ret);
++		return ret;
++	}
++
+ 	netdev_dbg(dev->net, "GPIO Status: 0x%04x\n", status);
+ 
+ 	asix_write_cmd(dev, AX_CMD_WRITE_ENABLE, 0, 0, 0, NULL, 0);
+-	asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
++	ret = asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read EEPROM: %d\n", ret);
++		return ret;
++	}
++
+ 	asix_write_cmd(dev, AX_CMD_WRITE_DISABLE, 0, 0, 0, NULL, 0);
+ 
+ 	netdev_dbg(dev->net, "EEPROM index 0x17 is 0x%04x\n", eeprom);
+-- 
+2.40.4
+

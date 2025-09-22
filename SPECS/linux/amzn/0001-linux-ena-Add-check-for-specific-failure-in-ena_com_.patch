@@ -1,0 +1,30 @@
+From 2bcba63887e659888649cf4bbd86c736fccb7f7d Mon Sep 17 00:00:00 2001
+From: David Arinzon <darinzon@amazon.com>
+Date: Tue, 31 Jan 2023 14:54:39 +0200
+Subject: [PATCH] linux/ena: Add check for specific failure in ena_com_rx_pkt()
+
+Added as a part of validation for consistency of completion descriptors.
+An invalid descriptor will cause device reset.
+
+Signed-off-by: Shahar Itzko <itzko@amazon.com>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ kernel/linux/ena/ena_netdev.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/linux/ena/ena_netdev.c b/kernel/linux/ena/ena_netdev.c
+index c0ef5e7..faa7847 100644
+--- a/kernel/linux/ena/ena_netdev.c
++++ b/kernel/linux/ena/ena_netdev.c
+@@ -2050,6 +2050,8 @@ error:
+ 		ena_increase_stat_atomic(&rx_ring->rx_stats.bad_desc_num, 1,
+ 					 &rx_ring->syncp);
+ 		adapter->reset_reason = ENA_REGS_RESET_TOO_MANY_RX_DESCS;
++	} else if (rc == -EFAULT) {
++		adapter->reset_reason = ENA_REGS_RESET_RX_DESCRIPTOR_MALFORMED;
+ 	} else {
+ 		ena_increase_stat_atomic(&rx_ring->rx_stats.bad_req_id, 1,
+ 					 &rx_ring->syncp);
+-- 
+2.40.4
+

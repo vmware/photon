@@ -1,0 +1,141 @@
+From bdd4fd8009d7ed5bb36f6a0dc38d6e9515f7e040 Mon Sep 17 00:00:00 2001
+From: David Arinzon <darinzon@amazon.com>
+Date: Sun, 12 May 2024 13:46:35 +0000
+Subject: [PATCH] net: ena: Add validation for completion descriptors
+ consistency
+
+[ Upstream commit b37b98a3a0c1198bafe8c2d9ce0bc845b4e7a9a7 ]
+
+Validate that `first` flag is set only for the first
+descriptor in multi-buffer packets.
+In case of an invalid descriptor, a reset will occur.
+A new reset reason for RX data corruption has been added.
+
+Signed-off-by: Shahar Itzko <itzko@amazon.com>
+Signed-off-by: David Arinzon <darinzon@amazon.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Link: https://lore.kernel.org/r/20240512134637.25299-4-darinzon@amazon.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Use adapter->reset_reason instead of ena_reset_device(),
+            as this function is not present in v5.10 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/net/ethernet/amazon/ena/ena_eth_com.c | 38 +++++++++++++------
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  2 +
+ .../net/ethernet/amazon/ena/ena_regs_defs.h   |  1 +
+ 3 files changed, 30 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/amazon/ena/ena_eth_com.c b/drivers/net/ethernet/amazon/ena/ena_eth_com.c
+index 3af9dbf245f2..196ba4c97438 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_eth_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_eth_com.c
+@@ -222,42 +222,54 @@ static struct ena_eth_io_rx_cdesc_base *
+ 		idx * io_cq->cdesc_entry_size_in_bytes);
+ }
+ 
+-static u16 ena_com_cdesc_rx_pkt_get(struct ena_com_io_cq *io_cq,
+-					   u16 *first_cdesc_idx)
++static int ena_com_cdesc_rx_pkt_get(struct ena_com_io_cq *io_cq,
++				    u16 *first_cdesc_idx,
++				    u16 *num_descs)
+ {
++	u16 count = io_cq->cur_rx_pkt_cdesc_count, head_masked;
+ 	struct ena_eth_io_rx_cdesc_base *cdesc;
+-	u16 count = 0, head_masked;
+ 	u32 last = 0;
+ 
+ 	do {
++		u32 status;
++
+ 		cdesc = ena_com_get_next_rx_cdesc(io_cq);
+ 		if (!cdesc)
+ 			break;
++		status = READ_ONCE(cdesc->status);
+ 
+ 		ena_com_cq_inc_head(io_cq);
++		if (unlikely((status & ENA_ETH_IO_RX_CDESC_BASE_FIRST_MASK) >>
++		    ENA_ETH_IO_RX_CDESC_BASE_FIRST_SHIFT && count != 0)) {
++			struct ena_com_dev *dev = ena_com_io_cq_to_ena_dev(io_cq);
++
++			netdev_err(dev->net_device,
++				   "First bit is on in descriptor #%d on q_id: %d, req_id: %u\n",
++				   count, io_cq->qid, cdesc->req_id);
++			return -EFAULT;
++		}
+ 		count++;
+-		last = (READ_ONCE(cdesc->status) &
+-			ENA_ETH_IO_RX_CDESC_BASE_LAST_MASK) >>
+-		       ENA_ETH_IO_RX_CDESC_BASE_LAST_SHIFT;
++		last = (status & ENA_ETH_IO_RX_CDESC_BASE_LAST_MASK) >>
++			ENA_ETH_IO_RX_CDESC_BASE_LAST_SHIFT;
+ 	} while (!last);
+ 
+ 	if (last) {
+ 		*first_cdesc_idx = io_cq->cur_rx_pkt_cdesc_start_idx;
+-		count += io_cq->cur_rx_pkt_cdesc_count;
+ 
+ 		head_masked = io_cq->head & (io_cq->q_depth - 1);
+ 
++		*num_descs = count;
+ 		io_cq->cur_rx_pkt_cdesc_count = 0;
+ 		io_cq->cur_rx_pkt_cdesc_start_idx = head_masked;
+ 
+ 		pr_debug("ENA q_id: %d packets were completed. first desc idx %u descs# %d\n",
+ 			 io_cq->qid, *first_cdesc_idx, count);
+ 	} else {
+-		io_cq->cur_rx_pkt_cdesc_count += count;
+-		count = 0;
++		io_cq->cur_rx_pkt_cdesc_count = count;
++		*num_descs = 0;
+ 	}
+ 
+-	return count;
++	return 0;
+ }
+ 
+ static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
+@@ -517,10 +529,14 @@ int ena_com_rx_pkt(struct ena_com_io_cq *io_cq,
+ 	u16 cdesc_idx = 0;
+ 	u16 nb_hw_desc;
+ 	u16 i = 0;
++	int rc;
+ 
+ 	WARN(io_cq->direction != ENA_COM_IO_QUEUE_DIRECTION_RX, "wrong Q type");
+ 
+-	nb_hw_desc = ena_com_cdesc_rx_pkt_get(io_cq, &cdesc_idx);
++	rc = ena_com_cdesc_rx_pkt_get(io_cq, &cdesc_idx, &nb_hw_desc);
++	if (unlikely(rc != 0))
++		return -EFAULT;
++
+ 	if (nb_hw_desc == 0) {
+ 		ena_rx_ctx->descs = nb_hw_desc;
+ 		return 0;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 9149c82c0a56..8881b0386468 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -1687,6 +1687,8 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 		rx_ring->rx_stats.bad_desc_num++;
+ 		u64_stats_update_end(&rx_ring->syncp);
+ 		adapter->reset_reason = ENA_REGS_RESET_TOO_MANY_RX_DESCS;
++	} else if (rc == -EFAULT) {
++		adapter->reset_reason = ENA_REGS_RESET_RX_DESCRIPTOR_MALFORMED;
+ 	} else {
+ 		u64_stats_update_begin(&rx_ring->syncp);
+ 		rx_ring->rx_stats.bad_req_id++;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_regs_defs.h b/drivers/net/ethernet/amazon/ena/ena_regs_defs.h
+index 1e007a41a525..23466d62fbc5 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_regs_defs.h
++++ b/drivers/net/ethernet/amazon/ena/ena_regs_defs.h
+@@ -21,6 +21,7 @@ enum ena_regs_reset_reason_types {
+ 	ENA_REGS_RESET_USER_TRIGGER                 = 12,
+ 	ENA_REGS_RESET_GENERIC                      = 13,
+ 	ENA_REGS_RESET_MISS_INTERRUPT               = 14,
++	ENA_REGS_RESET_RX_DESCRIPTOR_MALFORMED	    = 16,
+ };
+ 
+ /* ena_registers offsets */
+-- 
+2.40.4
+
