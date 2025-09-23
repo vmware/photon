@@ -1,15 +1,15 @@
 %define debug_package %{nil}
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
-Version:        4.7
+Version:        6.10.0
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
-%define sha1    PyInstaller=f02c34c8d1b9098f771a33b799be171327fd0ab1
+Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/pyinstaller-%{version}.tar.gz
+%define sha512  pyinstaller=3d7338c31b40468cece26eb294db046339bda09c1f195048503b386ab9da8d71546bcc50dd95b865403921007220b1e35f0ba4ccab6e96b9d9d40cebca028c47
 Patch0:         pyinstaller-gcc-10.patch
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -18,7 +18,8 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  zlib-devel
 BuildRequires:  python3-pip
-%if %{with_check}
+BuildRequires:  python3-wheel
+%if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 %endif
@@ -29,6 +30,7 @@ Requires:       python3-setuptools
 Requires:       python3-xml
 Requires:       python3-pyinstaller-hooks-contrib
 Requires:       python3-altgraph
+Requires:       python3-packaging
 
 %description
 PyInstaller bundles a Python application and all its dependencies into a single package. The user can run the packaged app without installing a Python interpreter or any modules.
@@ -71,6 +73,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Tue Sep 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.10.0-1
+-   Upgrade to fix CVE-2025-59042
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.7-1
 -   Update to version 4.7 to compile with python 3.10
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 4.0-4

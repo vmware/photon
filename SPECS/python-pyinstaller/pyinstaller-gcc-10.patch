@@ -1,31 +1,38 @@
-From 8ca4091804f414f7fff1533e1c7508f7905ba939 Mon Sep 17 00:00:00 2001
+From 996bc14bf71955416c2b48456f198346ad06ceca Mon Sep 17 00:00:00 2001
 From: Ruoyang <i@hsury.com>
 Date: Fri, 10 Apr 2020 00:00:01 +0800
 Subject: [PATCH] Bootloader: Fix GCC stringop error.
 
 Resolves #4196, resolves #4784
+
+[ Brennan: Regenerated for v6.10.0 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
- bootloader/wscript | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ bootloader/wscript | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/bootloader/wscript b/bootloader/wscript
-index 20d3297133..6c75361276 100644
+index ab7cf58..3ab20aa 100644
 --- a/bootloader/wscript
 +++ b/bootloader/wscript
-@@ -460,10 +460,14 @@ def configure(ctx):
-         ctx.env.append_value('CFLAGS', ['-Wall',
-                                         '-Werror',
-                                         '-Wno-error=unused-variable',
--                                        '-Wno-error=unused-function'])
-+                                        '-Wno-error=unused-function',
-+                                        '-Wno-error=stringop-overflow',
-+                                        '-Wno-error=stringop-truncation'])
-         if not ctx.options.show_warnings:
-             ctx.env.append_value('CFLAGS', ['-Wno-unused-variable',
--                                            '-Wno-unused-function'])
-+                                            '-Wno-unused-function',
-+                                            '-Wno-stringop-overflow',
-+                                            '-Wno-stringop-truncation'])
- 
-     ### Defines, Includes
- 
+@@ -498,6 +498,8 @@ def configure(ctx):
+                 '-Werror',
+                 '-Wno-error=unused-variable',
+                 '-Wno-error=unused-function',
++                '-Wno-error=stringop-overflow',
++                '-Wno-error=stringop-truncation'
+             ]
+         )
+
+@@ -513,6 +515,8 @@ def configure(ctx):
+                 '-Werror',
+                 '-Wno-error=unused-variable',
+                 '-Wno-error=unused-function',
++                '-Wno-stringop-overflow',
++                '-Wno-stringop-truncation'
+             ]
+         )
+
+--
+2.40.4
+
