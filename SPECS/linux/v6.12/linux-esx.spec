@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.41
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -213,6 +213,7 @@ Patch513: 0001-New-memsize-options-for-jent.patch
 Patch514: 0001-crypto-Tentative-sha3_generic-as-arch-initcall.patch
 # Crypto: zero initialize memory allocated via sock_kmalloc
 Patch515: 0001-crypto-zero-initialize-memory-allocated-via-sock_kma.patch
+Patch516: 0001-jitterentropy-Defer-jent_mod_init-in-non-fips-boot.patch
 %endif
 
 %ifarch x86_64
@@ -337,6 +338,9 @@ The Linux package contains the Linux kernel doc files
 %if 0%{?fips}
 # crypto
 %autopatch -p1 -m500 -M515
+pushd ../%{jent_name}
+%autopatch -p1 -m516 -M516
+popd
 %endif
 
 %ifarch x86_64
@@ -348,10 +352,6 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m10500 -M10504
 %endif
 
-make %{?_smp_mflags} mrproper
-cp %{SOURCE1} .config
-sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
-
 %if 0%{?fips}
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
@@ -359,7 +359,13 @@ mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
 cp %{SOURCE33} crypto/%{jent_name}/
 cp %{SOURCE34} crypto/%{jent_name}/
 cp %{SOURCE35} crypto/%{jent_name}/
+%endif
 
+make %{?_smp_mflags} mrproper
+cp %{SOURCE1} .config
+sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
+
+%if 0%{?fips}
 cp %{SOURCE36} crypto/
 cp %{SOURCE37} crypto/
 cp %{SOURCE38} crypto/
@@ -493,6 +499,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 29 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-6
+- Cleanup jcw_kvzalloc_align
+- Optimize jent init time during boot.
 * Mon Sep 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-5
 - crypto: zero initialize memory allocated via sock_kmalloc
 * Thu Sep 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.41-4

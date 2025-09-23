@@ -74,7 +74,7 @@ void *jcw_kvzalloc_align(unsigned char *ptr, unsigned int len)
 	if (len & ~PAGE_MASK)
 		algn_len = roundup(len, PAGE_SIZE);
 
-	ptr = kvzalloc(algn_len + PAGE_SIZE, GFP_KERNEL);
+	ptr = kvzalloc(algn_len, GFP_KERNEL);
 	if (IS_ERR_OR_NULL(ptr)) {
 		pr_err("\n Failed to allocate aligned memory");
 		return NULL;
