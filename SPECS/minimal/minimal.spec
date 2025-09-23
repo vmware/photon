@@ -1,7 +1,7 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -11,6 +11,7 @@ Source0: license.txt
 %include %{SOURCE0}
 
 # Keep this list alphabetically sorted
+Requires: bash-completion
 Requires: bc
 Requires: bridge-utils
 Requires: bzip2
@@ -63,6 +64,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5
+- Add bash-completion to requires
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0-4
 - Release bump for SRP compliance
 * Sat Mar 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-3

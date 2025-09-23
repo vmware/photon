@@ -6,19 +6,19 @@ sources:
     package:
       detailed_description: 'The package contains the Bourne-Again SHell '
       home_page: http://www.gnu.org/software/bash
-      license_concluded: BSD-3-Clause AND BSD-4-Clause-UC AND CC-BY-SA-4.0 AND FSFAP
-        AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GFDL-1.3-only
-        AND GFDL-1.3-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-only AND
-        GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Texinfo-exception
-        AND HPND AND LGPL-2.1-or-later AND Latex2e AND NTP AND OFL-1.1 AND X11
-      license_declared: BSD-3-Clause AND BSD-4-Clause-UC AND CC-BY-SA-4.0 AND FSFAP
-        AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GFDL-1.3-only
-        AND GFDL-1.3-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-only AND
-        GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Texinfo-exception
-        AND HPND AND LGPL-2.1-or-later AND Latex2e AND NTP AND OFL-1.1 AND X11
+      license_concluded: HPND AND BSD-4-Clause-UC AND GFDL-1.3-invariants-only AND
+        GFDL-1.3-or-later AND GPL-2.0-only AND Latex2e AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-only AND FSFUL AND GPL-3.0-or-later WITH
+        Texinfo-exception AND OFL-1.1 AND FSFULLRWD AND CC-BY-SA-4.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.3-only AND GPL-2.0-or-later AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFAP AND GFDL-1.1-or-later
+        AND X11 AND FSFULLR AND GPL-3.0-or-later
+      license_declared: HPND AND BSD-4-Clause-UC AND GFDL-1.3-invariants-only AND
+        GFDL-1.3-or-later AND GPL-2.0-only AND Latex2e AND LGPL-2.1-or-later AND GPL-1.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-only AND FSFUL AND GPL-3.0-or-later WITH
+        Texinfo-exception AND OFL-1.1 AND FSFULLRWD AND CC-BY-SA-4.0 AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GFDL-1.3-only AND GPL-2.0-or-later AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND FSFAP AND GFDL-1.1-or-later
+        AND X11 AND FSFULLR AND GPL-3.0-or-later
       short_summary: Bourne-Again SHell
       supplier: 'Organization: Broadcom, Inc.'
