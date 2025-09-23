@@ -1057,7 +1057,10 @@ class BuildImage:
         self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
         self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
         self.ph_builder_tag = configdict["photon-build-param"]["ph-builder-tag"]
-        self.ova_cloud_images = ["ami", "gce", "azure", "ova_uefi", "ova"]
+        self.ova_images = ["ova_uefi", "ova"]
+        self.cloud_images = ["ami", "gce", "azure"]
+        self.aarch64_images = ["rpi", "ls1012afrwy"]
+        self.all_images = self.ova_images + self.cloud_images + self.aarch64_images
         self.photon_release_version = constants.releaseVersion
 
     def set_Iso_Parameters(self, imgName):
@@ -1191,7 +1194,9 @@ class BuildImage:
         os.chdir(photonDir)
 
     def all_images(self):
-        for img in self.ova_cloud_images:
+        # Build only ova deliverables
+        # add cloud and aarch64 images when needed
+        for img in self.ova_images:
             self.img_name = img
             self.build_image()
 
@@ -1573,7 +1578,7 @@ def main():
             if targetName in ["iso", "src-iso", "minimal-iso"]:
                 buildImage.set_Iso_Parameters(targetName)
                 buildImage.build_iso()
-            elif targetName in buildImage.ova_cloud_images + ["rpi", "ls1012afrwy"]:
+            elif targetName in buildImage.all_images:
                 buildImage.build_image()
             else:
                 attr = getattr(buildImage, configdict["targetName"])
