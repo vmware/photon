@@ -1,11 +1,12 @@
 sources:
-- archive: motdgen-a152954.tar.gz
-  archive_sha512sum: 784d6fa426c48386a584c7d026a585718a8665a249cae9450073f812b5b4935fa20d4127dcb9c937ac4470b4f19e9349974bf0e4c341d95a162a04438ce98276
+- archive: photon-motdgen-1.0.tar.gz
+  archive_sha512sum: 
+    031d2209e0a582bab9457cf82e80d920b2b121eab9a685dee54aaa0e4556598b949462e4e1fba6342dbbef22231ba29cd9c66d72139a0ed727b093d75eed5004
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'Generates Dynamic MOTD. '
-      home_page: http://github.com/rtnpro/fedora-motd
+      detailed_description: Generates Dynamic MOTD.
+      home_page: https://github-vcf.devops.broadcom.net/vcf/photon-motdgen
       license_concluded: GPL-2.0-only
       license_declared: GPL-2.0-only
       short_summary: Message of the Day
