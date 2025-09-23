@@ -1,7 +1,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.26.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -11,8 +11,10 @@ Url:            http://python-requests.org
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 %define sha512  requests=c3397d77f0d2f1afb05661c4b98adad6c1ddaf360906254150b33ab0d9479fd306905bd6d61b8cf8becd9a40bdcf9b03542e8267c644ef19f03f44bfca0bc461
 
-Patch1: CVE-2024-35195.patch
-Patch2: CVE-2024-35195-2.patch
+Patch1: CVE-2023-32681.patch
+Patch2: CVE-2024-35195.patch
+Patch3: CVE-2024-35195-2.patch
+Patch4: CVE-2024-47081.patch
 
 %if 0%{?with_check}
 Patch0:         fix_makecheck.patch
@@ -94,6 +96,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.26.0-6
+- Fix CVE-2023-32681 and CVE-2024-47081
 * Wed Jan 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.26.0-5
 - Patch to fix issues with CVE-2024-35195
 * Tue Dec 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.26.0-4
