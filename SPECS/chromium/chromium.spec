@@ -6,22 +6,25 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        138.0.7204.145
+Version:        140.0.7339.127
 Release:        1%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-# generated using tools/scripts/fetch-chromium-source.sh
-Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.gz
+# Generated using tools/scripts/fetch-chromium-source.sh
+# Contact Shreenidhi Shedi for cleanup related info.
+Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.xz
 
-Source1: depot_tools-abc5109.tar.xz
+Source1: depot_tools-6c58dbd.tar.xz
 
 Source2: headless.gn
 
 Source3: license.txt
 %include %{SOURCE3}
+
+Patch0: swiftshader-buildgn.patch
 
 BuildRequires: git
 BuildRequires: nss-devel
@@ -32,6 +35,7 @@ BuildRequires: nspr-devel
 BuildRequires: ninja-build
 BuildRequires: gperf
 BuildRequires: python3
+BuildRequires: python3-PyYAML
 
 # TODO: need to revisit for aarch64
 BuildArch: x86_64
@@ -48,16 +52,6 @@ Chromium is an open-source browser project that aims to build a safer, faster, a
 %autosetup -a0 -a1 -p1 -n src
 
 %build
-pushd %{_builddir}/src/build/linux/debian_bullseye_amd64-sysroot%{_libdir}/pkgconfig
-
-cp glib-2.0.pc \
-   dbus-1.pc \
-   nss.pc \
-   nspr.pc \
-   %{_libdir}/pkgconfig
-
-popd
-
 mkdir -p %{builddir}
 cp %{SOURCE2} %{builddir}/args.gn
 
@@ -87,6 +81,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Tue Sep 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 140.0.7339.127-1
+- Upgrade to v140.0.7339.127
 * Fri Jul 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 138.0.7204.145-1
 - Upgrade to v138.0.7204.145
 * Wed Jan 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 131.0.6778.268-1

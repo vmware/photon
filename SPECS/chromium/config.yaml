@@ -1,6 +1,6 @@
 sources:
-- archive: chromium-138.0.7204.145.tar.gz
-  archive_sha512sum: c9d9eb2bf7003110934bec29d4106bbdcc0d0b87afc6afcdd91e149893afd982e93e56312849a1eda2a98b14646a57c3b3c42a313ca76cbe87781b698f5bf480
+- archive: chromium-140.0.7339.127.tar.xz
+  archive_sha512sum: 3162c2e8a94045ff0fd14846e21b427acd40d6c416ea15cb71f456501d5c4dc1c0a0f46256bb905a93b0653cd198fa2a3af2d8361d27c6197ea15cd57b001707
   skip_validation: true
   spdx:
     package:
@@ -8,86 +8,13 @@ sources:
         build a safer, faster, and more stable way for all users to experience the
         web.
       home_page: https://chromium.googlesource.com/chromium/src
-      license_concluded: NCL AND CC-BY-2.5 AND FTL AND AGPL-3.0-only AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-only WITH Font-exception-2.0 AND OpenSSL-standalone
-        AND 0BSD AND blessing AND NTP-0 AND MIT-open-group AND (BSD-2-Clause OR Apache-2.0)
-        AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND APSL-2.0 AND LGPL-2.0-or-later
-        AND metamail AND CC-BY-SA-3.0 AND GPL-3.0-only AND (MIT OR GPL-2.0-only) AND
-        Artistic-1.0-Perl AND CC-BY-SA-4.0 AND (AFL-2.1 OR BSD-3-Clause) AND NTP AND
-        CC-BY-ND-2.5 AND BSL-1.0 AND LGPL-2.1-only AND JSON AND (Apache-2.0 OR MIT)
-        AND NPL-1.1 AND NCSA AND (GPL-2.0-only OR MIT) AND GPL-1.0-or-later AND GPL-2.0-or-later
-        AND BSD-2-Clause AND (MPL-1.1 OR GPL-2.0-only OR LGPL-2.0-only) AND LGPL-2.0-only
-        AND BSD-4-Clause-UC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND WTFPL
-        AND Unicode-DFS-2016 AND OFL-1.1 AND GPL-3.0-or-later WITH Bison-exception-2.2
-        AND TCL AND LGPL-2.1-or-later AND CC0-1.0 AND Apache-2.0 AND Artistic-2.0
-        AND CC-BY-SA-2.0 AND LGPL-3.0-only AND MIT-0 AND MIT-Khronos-old AND (MPL-2.0
-        OR GPL-2.0-only) AND MS-PL AND CC-BY-NC-ND-3.0 AND MIT-Wu AND CDDL-1.0 AND
-        ICU AND SMLNJ AND (MPL-2.0 OR GPL-2.0-only) AND Martin-Birgmeier AND GFDL-1.1-or-later
-        AND Unlicense AND (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.1)
-        AND (NPL-1.1 AND MPL-1.1) AND AML AND HPND-sell-variant AND LGPL-3.0-or-later
-        AND ISC-Veillard AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1) AND FSFUL
-        AND IJG AND CC-BY-NC-SA-2.5 AND BSD-3-Clause AND MPL-1.1 AND Spencer-94 AND
-        (LGPL-2.1-or-later OR MPL-1.1 OR GPL-2.0-only) AND (Apache-2.0 OR MIT) AND
-        CC-PDDC AND CC-BY-4.0 AND Python-2.0 AND BSD-3-Clause-flex AND FSFAP-no-warranty-disclaimer
-        AND (LGPL-2.1-or-later OR MPL-1.1 OR GPL-2.0-only) AND MPL-2.0 AND Bitstream-Vera
-        AND RSA-MD AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Zlib AND
-        CC-BY-3.0 AND NAIST-2003 AND AFL-3.0 AND (MIT OR BSD-3-Clause OR GPL-2.0-only)
-        AND GPL-2.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND (MPL-1.1
-        OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND dtoa AND MPL-1.0 AND curl AND
-        ISC AND (MIT OR Unlicense) AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
-        AND BSD-4-Clause AND (NCSA OR MIT) AND Apache-2.0 WITH LLVM-exception AND
-        FSFULLR AND Beerware AND W3C AND CC-BY-SA-1.0 AND SSLeay-standalone AND LZMA-SDK-9.22
-        AND SGI-B-2.0 AND W3C-20150513 AND CC-BY-NC-ND-4.0 AND AFL-2.1 AND FSFULLRWD
-        AND CC-BY-NC-SA-1.0 AND SunPro AND (MIT OR CC0-1.0) AND (BSD-3-Clause OR MIT)
-        AND Multics AND OpenSSL AND BSD-Source-Code AND MS-LPL AND PSF-2.0 AND (MIT
-        OR Unlicense) AND FSFAP AND CMU-Mach AND CPL-1.0 AND (MIT OR Apache-2.0) AND
-        MIT AND (NPL-1.1 OR GPL-2.0-only) AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
-        AND Vim AND (MIT OR Apache-2.0) AND GPL-2.0-only WITH Classpath-exception-2.0
-        AND APSL-1.0 AND Libpng AND GPL-3.0-or-later AND (GPL-2.0-only OR LGPL-2.1-only
-        OR MPL-1.1) AND EPL-1.0 AND (Apache-2.0 OR GPL-2.0-only) AND CC-BY-NC-SA-2.0
-        AND X11 AND Apache-1.0 AND HPND
-      license_declared: NCL AND CC-BY-2.5 AND FTL AND AGPL-3.0-only AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-only WITH Font-exception-2.0 AND OpenSSL-standalone
-        AND 0BSD AND blessing AND NTP-0 AND MIT-open-group AND (BSD-2-Clause OR Apache-2.0)
-        AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND APSL-2.0 AND LGPL-2.0-or-later
-        AND metamail AND CC-BY-SA-3.0 AND GPL-3.0-only AND (MIT OR GPL-2.0-only) AND
-        Artistic-1.0-Perl AND CC-BY-SA-4.0 AND (AFL-2.1 OR BSD-3-Clause) AND NTP AND
-        CC-BY-ND-2.5 AND BSL-1.0 AND LGPL-2.1-only AND JSON AND (Apache-2.0 OR MIT)
-        AND NPL-1.1 AND NCSA AND (GPL-2.0-only OR MIT) AND GPL-1.0-or-later AND GPL-2.0-or-later
-        AND BSD-2-Clause AND (MPL-1.1 OR GPL-2.0-only OR LGPL-2.0-only) AND LGPL-2.0-only
-        AND BSD-4-Clause-UC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND WTFPL
-        AND Unicode-DFS-2016 AND OFL-1.1 AND GPL-3.0-or-later WITH Bison-exception-2.2
-        AND TCL AND LGPL-2.1-or-later AND CC0-1.0 AND Apache-2.0 AND Artistic-2.0
-        AND CC-BY-SA-2.0 AND LGPL-3.0-only AND MIT-0 AND MIT-Khronos-old AND (MPL-2.0
-        OR GPL-2.0-only) AND MS-PL AND CC-BY-NC-ND-3.0 AND MIT-Wu AND CDDL-1.0 AND
-        ICU AND SMLNJ AND (MPL-2.0 OR GPL-2.0-only) AND Martin-Birgmeier AND GFDL-1.1-or-later
-        AND Unlicense AND (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.1)
-        AND (NPL-1.1 AND MPL-1.1) AND AML AND HPND-sell-variant AND LGPL-3.0-or-later
-        AND ISC-Veillard AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1) AND FSFUL
-        AND IJG AND CC-BY-NC-SA-2.5 AND BSD-3-Clause AND MPL-1.1 AND Spencer-94 AND
-        (LGPL-2.1-or-later OR MPL-1.1 OR GPL-2.0-only) AND (Apache-2.0 OR MIT) AND
-        CC-PDDC AND CC-BY-4.0 AND Python-2.0 AND BSD-3-Clause-flex AND FSFAP-no-warranty-disclaimer
-        AND (LGPL-2.1-or-later OR MPL-1.1 OR GPL-2.0-only) AND MPL-2.0 AND Bitstream-Vera
-        AND RSA-MD AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Zlib AND
-        CC-BY-3.0 AND NAIST-2003 AND AFL-3.0 AND (MIT OR BSD-3-Clause OR GPL-2.0-only)
-        AND GPL-2.0-only AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND (MPL-1.1
-        OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND dtoa AND MPL-1.0 AND curl AND
-        ISC AND (MIT OR Unlicense) AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
-        AND BSD-4-Clause AND (NCSA OR MIT) AND Apache-2.0 WITH LLVM-exception AND
-        FSFULLR AND Beerware AND W3C AND CC-BY-SA-1.0 AND SSLeay-standalone AND LZMA-SDK-9.22
-        AND SGI-B-2.0 AND W3C-20150513 AND CC-BY-NC-ND-4.0 AND AFL-2.1 AND FSFULLRWD
-        AND CC-BY-NC-SA-1.0 AND SunPro AND (MIT OR CC0-1.0) AND (BSD-3-Clause OR MIT)
-        AND Multics AND OpenSSL AND BSD-Source-Code AND MS-LPL AND PSF-2.0 AND (MIT
-        OR Unlicense) AND FSFAP AND CMU-Mach AND CPL-1.0 AND (MIT OR Apache-2.0) AND
-        MIT AND (NPL-1.1 OR GPL-2.0-only) AND (GPL-1.0-or-later OR Artistic-1.0-Perl)
-        AND Vim AND (MIT OR Apache-2.0) AND GPL-2.0-only WITH Classpath-exception-2.0
-        AND APSL-1.0 AND Libpng AND GPL-3.0-or-later AND (GPL-2.0-only OR LGPL-2.1-only
-        OR MPL-1.1) AND EPL-1.0 AND (Apache-2.0 OR GPL-2.0-only) AND CC-BY-NC-SA-2.0
-        AND X11 AND Apache-1.0 AND HPND
+      license_concluded: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) AND (Apache-2.0 OR BSD-2-Clause) AND (Apache-2.0 OR BSD-3-Clause) AND (Apache-2.0 OR MIT) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note) AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later OR GPL-2.0-only OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later OR MIT) AND (BSD-3-Clause OR GPL-1.0-or-later OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSD-3-Clause OR GPL-2.0-only WITH Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-or-later WITH Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-or-later) AND (BSD-3-Clause OR MIT) AND (BSD-3-Clause OR OpenSSL) AND (CC0-1.0 OR MIT) AND (CDDL-1.0 OR GPL-2.0-only WITH Linux-syscall-note) AND (FTL OR GPL-3.0-only) AND (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR GPL-3.0-only OR LGPL-3.0-only) AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1) AND (GPL-2.0-only OR LGPL-2.1-or-later OR MPL-1.1) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MPL-2.0) AND (GPL-2.0-only OR Python-2.0) AND (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR LGPL-3.0-or-later) AND (GPL-2.0-or-later OR MPL-1.1) AND (GPL-2.0-or-later WITH Linux-syscall-note OR MIT) AND (GPL-3.0-only OR MIT) AND (LGPL-2.1-only OR LGPL-3.0-only) AND (LGPL-2.1-only OR MPL-1.1) AND (MIT OR NCSA) AND (MIT OR Unlicense) AND 0BSD AND ADSL AND AFL-2.1 AND AML-glslang AND APSL-1.0 AND APSL-2.0 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND BSD-2-Clause-Patent AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-3-Clause-Clear AND BSD-3-Clause-Open-MPI AND BSD-4-Clause AND BSD-4-Clause-UC AND BSD-4.3TAHOE AND BSD-Source-Code AND BSL-1.0 AND Beerware AND Bitstream-Vera AND BlueOak-1.0.0 AND Boehm-GC AND CC-BY-2.5 AND CC-BY-3.0 AND CC-BY-4.0 AND CC-BY-ND-4.0 AND CC0-1.0 AND CMU-Mach AND CNRI-Python AND CPL-1.0 AND ClArtistic AND EPL-1.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD AND FTL AND FTL WITH Autoconf-exception-generic AND GFDL-1.1-or-later AND GFDL-1.2-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Autoconf-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later WITH mif-exception AND GPL-3.0-only AND GPL-3.0-only WITH Autoconf-exception-3.0 AND GPL-3.0-only WITH Qt-GPL-exception-1.0 AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND HPND AND HPND-Kevlin-Henney AND HPND-Pbmplus AND HPND-export-US-modify AND HPND-export2-US AND HPND-sell-variant AND ICU AND IJG AND ISC AND ISC-Veillard AND JSON AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.0-or-later WITH Linux-syscall-note AND LGPL-2.1-only AND LGPL-2.1-only WITH Linux-syscall-note AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH Linux-syscall-note AND LGPL-3.0-only AND LGPL-3.0-or-later AND LPD-document AND LZMA-SDK-9.22 AND Libpng AND MIT AND MIT-0 AND MIT-CMU AND MIT-Khronos-old AND MIT-Modern-Variant AND MIT-Wu AND MIT-open-group AND MPL-1.1 AND MPL-2.0 AND Minpack AND NAIST-2003 AND NCL AND NCSA AND NTP AND NTP-0 AND OFL-1.1 AND OLDAP-2.8 AND OpenSSL AND OpenSSL-standalone AND Python-2.0 AND RSA-MD AND Rdisc AND Ruby AND SAX-PD AND SGI-B-1.1 AND SGI-B-2.0 AND SGI-OpenGL AND SPL-1.0 AND SSLeay-standalone AND Spencer-86 AND Spencer-94 AND SunPro AND TCL AND Unicode-3.0 AND Unicode-DFS-2015 AND Unicode-DFS-2016 AND Unlicense AND W3C AND W3C-20150513 AND WTFPL AND X11 AND X11-distribute-modifications-variant AND Zlib AND blessing AND bzip2-1.0.6 AND curl AND dtoa AND libpng-2.0 AND libselinux-1.0 AND libtiff AND softSurfer
+      license_declared: (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) AND (Apache-2.0 OR BSD-2-Clause) AND (Apache-2.0 OR BSD-3-Clause) AND (Apache-2.0 OR MIT) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note) AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later OR GPL-2.0-only OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later OR MIT) AND (BSD-3-Clause OR GPL-1.0-or-later OR OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSD-3-Clause OR GPL-2.0-only WITH Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-or-later WITH Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-or-later) AND (BSD-3-Clause OR MIT) AND (BSD-3-Clause OR OpenSSL) AND (CC0-1.0 OR MIT) AND (CDDL-1.0 OR GPL-2.0-only WITH Linux-syscall-note) AND (FTL OR GPL-3.0-only) AND (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR GPL-3.0-only OR LGPL-3.0-only) AND (GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1) AND (GPL-2.0-only OR LGPL-2.1-or-later OR MPL-1.1) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MPL-2.0) AND (GPL-2.0-only OR Python-2.0) AND (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR LGPL-3.0-or-later) AND (GPL-2.0-or-later OR MPL-1.1) AND (GPL-2.0-or-later WITH Linux-syscall-note OR MIT) AND (GPL-3.0-only OR MIT) AND (LGPL-2.1-only OR LGPL-3.0-only) AND (LGPL-2.1-only OR MPL-1.1) AND (MIT OR NCSA) AND (MIT OR Unlicense) AND 0BSD AND ADSL AND AFL-2.1 AND AML-glslang AND APSL-1.0 AND APSL-2.0 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND BSD-2-Clause-Patent AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-3-Clause-Clear AND BSD-3-Clause-Open-MPI AND BSD-4-Clause AND BSD-4-Clause-UC AND BSD-4.3TAHOE AND BSD-Source-Code AND BSL-1.0 AND Beerware AND Bitstream-Vera AND BlueOak-1.0.0 AND Boehm-GC AND CC-BY-2.5 AND CC-BY-3.0 AND CC-BY-4.0 AND CC-BY-ND-4.0 AND CC0-1.0 AND CMU-Mach AND CNRI-Python AND CPL-1.0 AND ClArtistic AND EPL-1.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD AND FTL AND FTL WITH Autoconf-exception-generic AND GFDL-1.1-or-later AND GFDL-1.2-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Autoconf-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later WITH mif-exception AND GPL-3.0-only AND GPL-3.0-only WITH Autoconf-exception-3.0 AND GPL-3.0-only WITH Qt-GPL-exception-1.0 AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND HPND AND HPND-Kevlin-Henney AND HPND-Pbmplus AND HPND-export-US-modify AND HPND-export2-US AND HPND-sell-variant AND ICU AND IJG AND ISC AND ISC-Veillard AND JSON AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.0-or-later WITH Linux-syscall-note AND LGPL-2.1-only AND LGPL-2.1-only WITH Linux-syscall-note AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH Linux-syscall-note AND LGPL-3.0-only AND LGPL-3.0-or-later AND LPD-document AND LZMA-SDK-9.22 AND Libpng AND MIT AND MIT-0 AND MIT-CMU AND MIT-Khronos-old AND MIT-Modern-Variant AND MIT-Wu AND MIT-open-group AND MPL-1.1 AND MPL-2.0 AND Minpack AND NAIST-2003 AND NCL AND NCSA AND NTP AND NTP-0 AND OFL-1.1 AND OLDAP-2.8 AND OpenSSL AND OpenSSL-standalone AND Python-2.0 AND RSA-MD AND Rdisc AND Ruby AND SAX-PD AND SGI-B-1.1 AND SGI-B-2.0 AND SGI-OpenGL AND SPL-1.0 AND SSLeay-standalone AND Spencer-86 AND Spencer-94 AND SunPro AND TCL AND Unicode-3.0 AND Unicode-DFS-2015 AND Unicode-DFS-2016 AND Unlicense AND W3C AND W3C-20150513 AND WTFPL AND X11 AND X11-distribute-modifications-variant AND Zlib AND blessing AND bzip2-1.0.6 AND curl AND dtoa AND libpng-2.0 AND libselinux-1.0 AND libtiff AND softSurfer
       short_summary: chromium
       supplier: 'Organization: Broadcom, Inc.'
-- archive: depot_tools-abc5109.tar.xz
-  archive_sha512sum: 5841286adf6e610d3b7d7888f096c728f6535e1fba4163661d0a1cf5fbaec037f643bab6490b832eacd41dfadf4dd2e27a4b7afb3c166679e94fd2439846b480
+
+- archive: depot_tools-6c58dbd.tar.xz
+  archive_sha512sum: 4f82e1eee557d7f9941dedd02eecfcb8e491474690770de7736c81868c0452b42140236593f6e7df201e08e61d4001349c4622e9f51ee525faf6cfeff7597047
   skip_validation: true
   spdx:
     package:
@@ -95,16 +22,8 @@ sources:
         manage interaction with the Chromium source code repository and the Chromium
         development process
       home_page: https://www.chromium.org/developers/how-tos/depottools
-      license_concluded: (MIT OR Apache-2.0) AND GPL-1.0-or-later AND NAIST-2003 AND
-        BSD-2-Clause AND Apache-2.0 AND MIT AND HPND AND (Apache-2.0 OR MIT) AND HPND-sell-variant
-        AND BSD-3-Clause AND GPL-2.0-only WITH Autoconf-exception-2.0 AND GPL-3.0-only
-        WITH Autoconf-exception-3.0 AND BSD-4-Clause AND CC0-1.0 AND BSD-4-Clause-UC
-        AND LGPL-2.0-only AND (Apache-2.0 OR MIT)
-      license_declared: (MIT OR Apache-2.0) AND GPL-1.0-or-later AND NAIST-2003 AND
-        BSD-2-Clause AND Apache-2.0 AND MIT AND HPND AND (Apache-2.0 OR MIT) AND HPND-sell-variant
-        AND BSD-3-Clause AND GPL-2.0-only WITH Autoconf-exception-2.0 AND GPL-3.0-only
-        WITH Autoconf-exception-3.0 AND BSD-4-Clause AND CC0-1.0 AND BSD-4-Clause-UC
-        AND LGPL-2.0-only AND (Apache-2.0 OR MIT)
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
       short_summary: Chromium uses a package of scripts, the depot_tools, to manage
         interaction with the Chromium source code repository and the Chromium development
         process
