@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.155
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -271,6 +271,21 @@ Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
 # Fix CVE-2024-57982
 Patch160: 0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
 
+# Fix CVE-2023-52653
+Patch161: 0001-SUNRPC-fix-a-memleak-in-gss_import_v2_context.patch
+
+# Fix CVE-2024-26661
+Patch162: 0001-drm-amd-display-Add-NULL-test-for-timing-generator-i.patch
+
+# Fix CVE-2024-26662
+Patch163: 0001-drm-amd-display-Fix-panel_cntl-could-be-null-in-dcn2.patch
+
+# Fixes patches 162 and 163
+Patch164: 0001-drm-amd-display-Fix-vs-typos.patch
+
+# Fix CVE-2024-26944
+Patch165: 0001-btrfs-zoned-fix-use-after-free-in-do_zone_finish.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -441,7 +456,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M85
 
 # CVE
-%autopatch -p1 -m100 -M160
+%autopatch -p1 -m100 -M165
 
 %ifarch aarch64
 # aarch64 patches
@@ -650,6 +665,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.155-2
+- Fix CVE-2023-52653, CVE-2024-26661, CVE-2024-26662, CVE-2024-26944
 * Fri Oct 10 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.155-1
 - Update to version 6.1.155
 * Mon Sep 29 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.153-3
