@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.244
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -392,6 +392,16 @@ Patch229:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
 
 # Fix CVE-2024-57982
 Patch234:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
+# Fix CVE-2024-42321
+Patch235:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
+
+# Fix CVE-2024-38608
+Patch236:  0001-net-mlx5e-Fix-netif-state-handling.patch
+
+# Fix CVE-2024-57798
+Patch237:  0001-drm-dp_mst-Skip-CSN-if-topology-probing-is-not-done-.patch
+Patch238:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
 
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -781,6 +791,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.244-2
+- Fixes CVE-2024-42321, CVE-2024-57798 and CVE-2024-38608
 * Fri Sep 12 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.244-1
 - Update to version 5.10.244
 * Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.241-2

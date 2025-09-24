@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.244
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -406,6 +406,16 @@ Patch234:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
 
 # Fix CVE-2024-57982
 Patch239:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
+
+# Fix CVE-2024-42321
+Patch240:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
+
+# Fix CVE-2024-38608
+Patch241:  0001-net-mlx5e-Fix-netif-state-handling.patch
+
+# Fix CVE-2024-57798
+Patch242:  0001-drm-dp_mst-Skip-CSN-if-topology-probing-is-not-done-.patch
+Patch243:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1082,6 +1092,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Sep 22 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.244-2
+- Fixes CVE-2024-42321, CVE-2024-57798 and CVE-2024-38608
 * Fri Sep 12 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.244-1
 - Update to version 5.10.244
 * Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.241-2

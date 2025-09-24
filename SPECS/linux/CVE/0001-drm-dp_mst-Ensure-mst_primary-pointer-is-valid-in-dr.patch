@@ -1,0 +1,97 @@
+From 4ecd2534ab67588364c649fb038831c223caf310 Mon Sep 17 00:00:00 2001
+From: Imre Deak <imre.deak@intel.com>
+Date: Thu, 25 Sep 2025 17:55:27 +0530
+Subject: [PATCH] drm/dp_mst: Ensure mst_primary pointer is valid in
+ drm_dp_mst_handle_up_req()
+
+[ Upstream commit e54b00086f7473dbda1a7d6fc47720ced157c6a8 ]
+
+While receiving an MST up request message from one thread in
+drm_dp_mst_handle_up_req(), the MST topology could be removed from
+another thread via drm_dp_mst_topology_mgr_set_mst(false), freeing
+mst_primary and setting drm_dp_mst_topology_mgr::mst_primary to NULL.
+This could lead to a NULL deref/use-after-free of mst_primary in
+drm_dp_mst_handle_up_req().
+
+Avoid the above by holding a reference for mst_primary in
+drm_dp_mst_handle_up_req() while it's used.
+
+v2: Fix kfreeing the request if getting an mst_primary reference fails.
+
+Cc: Lyude Paul <lyude@redhat.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com> (v1)
+Signed-off-by: Imre Deak <imre.deak@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20241204132007.3132494-1-imre.deak@intel.com
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ drivers/gpu/drm/drm_dp_mst_topology.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_dp_mst_topology.c b/drivers/gpu/drm/drm_dp_mst_topology.c
+index cd9f59e73ab2..bb79bbb93931 100644
+--- a/drivers/gpu/drm/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/drm_dp_mst_topology.c
+@@ -4118,9 +4118,10 @@ static void drm_dp_mst_up_req_work(struct work_struct *work)
+ static int drm_dp_mst_handle_up_req(struct drm_dp_mst_topology_mgr *mgr)
+ {
+ 	struct drm_dp_pending_up_req *up_req;
++	struct drm_dp_mst_branch *mst_primary;
+ 
+ 	if (!drm_dp_get_one_sb_msg(mgr, true, NULL))
+-		goto out;
++		goto out_clear_reply;
+ 
+ 	if (!mgr->up_req_recv.have_eomt)
+ 		return 0;
+@@ -4139,10 +4140,19 @@ static int drm_dp_mst_handle_up_req(struct drm_dp_mst_topology_mgr *mgr)
+ 		DRM_DEBUG_KMS("Received unknown up req type, ignoring: %x\n",
+ 			      up_req->msg.req_type);
+ 		kfree(up_req);
+-		goto out;
++		goto out_clear_reply;
++	}
++
++	mutex_lock(&mgr->lock);
++	mst_primary = mgr->mst_primary;
++	if (!mst_primary || !drm_dp_mst_topology_try_get_mstb(mst_primary)) {
++		mutex_unlock(&mgr->lock);
++		kfree(up_req);
++		goto out_clear_reply;
+ 	}
++	mutex_unlock(&mgr->lock);
+ 
+-	drm_dp_send_up_ack_reply(mgr, mgr->mst_primary, up_req->msg.req_type,
++	drm_dp_send_up_ack_reply(mgr, mst_primary, up_req->msg.req_type,
+ 				 false);
+ 
+ 	if (up_req->msg.req_type == DP_CONNECTION_STATUS_NOTIFY) {
+@@ -4159,13 +4169,13 @@ static int drm_dp_mst_handle_up_req(struct drm_dp_mst_topology_mgr *mgr)
+ 			      conn_stat->peer_device_type);
+ 
+ 		mutex_lock(&mgr->probe_lock);
+-		handle_csn = mgr->mst_primary->link_address_sent;
++		handle_csn = mst_primary->link_address_sent;
+ 		mutex_unlock(&mgr->probe_lock);
+ 
+ 		if (!handle_csn) {
+ 			drm_dbg_kms(mgr->dev, "Got CSN before finish topology probing. Skip it.");
+ 			kfree(up_req);
+-			goto out;
++			goto out_put_primary;
+ 		}
+ 	} else if (up_req->msg.req_type == DP_RESOURCE_STATUS_NOTIFY) {
+ 		const struct drm_dp_resource_status_notify *res_stat =
+@@ -4182,7 +4192,9 @@ static int drm_dp_mst_handle_up_req(struct drm_dp_mst_topology_mgr *mgr)
+ 	mutex_unlock(&mgr->up_req_lock);
+ 	queue_work(system_long_wq, &mgr->up_req_work);
+ 
+-out:
++out_put_primary:
++	drm_dp_mst_topology_put_mstb(mst_primary);
++out_clear_reply:
+ 	memset(&mgr->up_req_recv, 0, sizeof(struct drm_dp_sideband_msg_rx));
+ 	return 0;
+ }
+-- 
+2.43.0
+
