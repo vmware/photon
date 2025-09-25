@@ -13,7 +13,8 @@ class ExpCleaner:
         exceptions_list = []
         license_expressions = {}
 
-        if docker_util := DockerUtil.detect() is not None:
+        docker_util = DockerUtil.detect()
+        if docker_util is not None:
             mount_list, cmd = docker_util.build_clean_exp_docker_cmd(
                 file=file, stdin=stdin
             )

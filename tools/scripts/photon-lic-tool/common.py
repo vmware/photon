@@ -474,6 +474,7 @@ def read_license_from_file(file_path=None):
                 f"{rpm_build_root}/SPECS/{os.path.basename(file_path)}",
             ],
             ignore_rc=True,
+            capture=True
         )
 
         # clean out rpm build root afterwards
