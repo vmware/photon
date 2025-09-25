@@ -70,6 +70,7 @@ class DockerUtil:
                     path=os.path.dirname(__file__),
                     rm=True,
                     buildargs=buildargs,
+                    network_mode="host",
                     dockerfile="Dockerfile",
                 )
                 for entry in logstream:
@@ -205,6 +206,7 @@ class DockerUtil:
         file_mnt_path = ""
         docker_mnt_cmd = ""
         tool_cmd = ["validate"]
+        docker_mnt = []
 
         # read from file
         if file and file.endswith(".spec"):
@@ -225,13 +227,13 @@ class DockerUtil:
                 err_exit("Failed to find parent SPECS dir for validator!")
 
             local_scan_path = os.path.dirname(local_scan_path)
-            docker_mnt = (local_scan_path, docker_spec_mnt, "ro")
+            docker_mnt.append((local_scan_path, docker_spec_mnt, "ro"))
             tool_cmd.extend(["-f", f"{docker_spec_mnt}/{relative_path}"])
         elif file:
             file_mnt_path = f"{docker_spec_mnt}/{os.path.basename(file)}"
             file = os.path.abspath(file)
 
-            docker_mnt = (file, file_mnt_path, "ro")
+            docker_mnt.append((file, file_mnt_path, "ro"))
             tool_cmd.extend(["-f", file_mnt_path])
         # read from stdin
         elif stdin:
@@ -239,7 +241,7 @@ class DockerUtil:
         else:
             err_exit("License expression must be provided!")
 
-        return ([docker_mnt], tool_cmd)
+        return (docker_mnt, tool_cmd)
 
     def build_clean_exp_docker_cmd(self, file=None, stdin=None):
         if not file and not stdin:
@@ -249,6 +251,7 @@ class DockerUtil:
         file_mnt_path = ""
         docker_mnt_cmd = ""
         tool_cmd = ["clean-exp"]
+        docker_mnt = []
 
         # read from file
         if file and file.endswith(".spec"):
@@ -269,14 +272,14 @@ class DockerUtil:
                 err_exit("Failed to find parent SPECS dir for validator!")
 
             local_scan_path = os.path.dirname(local_scan_path)
-            docker_mnt = (local_scan_path, docker_spec_mnt, "ro")
+            docker_mnt.append((local_scan_path, docker_spec_mnt, "ro"))
 
             tool_cmd.extend(["-f", f"{docker_spec_mnt}/{relative_path}"])
         elif file:
             file_mnt_path = f"{docker_spec_mnt}/{os.path.basename(file)}"
             file = os.path.abspath(file)
 
-            docker_mnt = (file, file_mnt_path, "ro")
+            docker_mnt.append((file, file_mnt_path, "ro"))
             tool_cmd.extend(["-f", file_mnt_path])
         # read from stdin
         elif stdin:
@@ -284,7 +287,7 @@ class DockerUtil:
         else:
             err_exit("License expression must be provided!")
 
-        return ([docker_mnt], tool_cmd)
+        return (docker_mnt, tool_cmd)
 
     # Run the command in a docker container
     def run_docker_cmd(self, cmd=None, mount_list=[], **kwargs):
@@ -300,10 +303,12 @@ class DockerUtil:
         if cmd[0] not in self._supported_cmds:
             err_exit(f"Command '{cmd[0]}' not compatible with docker, refusing to run")
         full_cmd = ["python3", f"{self._docker_tool_dir}/{common.tool_filename}"] + cmd
+
         mounts = {
             hostpath: {"bind": containerpath, "mode": mode} for
             (hostpath, containerpath, mode) in mount_list + [(script_dir, self._docker_tool_dir, "ro")]
         }
+
         docker_inst = None
         def handler(sig, frame):
             # Try to kill the docker instance.
