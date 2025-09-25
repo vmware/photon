@@ -1,0 +1,37 @@
+From 81d27991617dc15beb54791c3a0e2c459e434bf8 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Thu, 25 Sep 2025 02:28:08 -0500
+Subject: [PATCH] Disable building man pages
+
+---
+ Makefile.am  | 1 -
+ configure.ac | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index bdb8376..218f04b 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -2,7 +2,6 @@
+ 
+ SUBDIRS = \
+ 	include \
+-	man \
+ 	src \
+ 	test \
+ 	# EOL
+diff --git a/configure.ac b/configure.ac
+index 2a15d72..5cb16e9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -618,7 +618,6 @@ AC_SUBST([LIBBSD_LIBS])
+ AC_CONFIG_FILES([
+   Makefile
+   include/Makefile
+-  man/Makefile
+   src/Makefile
+   src/libbsd.pc
+   src/libbsd-ctor.pc
+-- 
+2.51.0
+

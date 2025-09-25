@@ -1,6 +1,6 @@
 Name:           libbsd
 Version:        0.12.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Library providing BSD-compatible functions for portability
 URL:            https://libbsd.freedesktop.org
 Group:          Development/Libraries
@@ -15,6 +15,8 @@ Source1: %{name}-cdefs.h
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: 0001-Disable-building-man-pages.patch
 
 BuildRequires: libmd-devel
 
@@ -36,15 +38,17 @@ Development files for the libbsd library.
 
 %prep
 %autosetup -p1
+# clean up man pages as we do not want to build them,
+# Also, to avoid unintended licenses from man pages
+rm -r man
 
 %build
+./autogen
 %configure
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-
-rm -rf %{buildroot}%{_mandir}
 
 # avoid file conflicts in multilib installations of -devel subpackage
 mv -f %{buildroot}%{_includedir}/bsd/sys/cdefs{,-%{__isa_bits}}.h
@@ -79,5 +83,7 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}-overlay.pc
 
 %changelog
+* Wed Sep 24 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.12.2-2
+- cleanup licenses
 * Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.12.2-1
 - Initial version. Needed by libretls.
