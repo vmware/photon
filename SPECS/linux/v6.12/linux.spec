@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        12%{?acvp_build:.acvp}%{?dist}
+Release:        13%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -496,10 +496,8 @@ manipulation of eBPF programs and maps.
 
 %if 0%{?canister_build}
 %package fips-canister
-Summary:       FIPS canister tarball
+Summary:       FIPS canister binary
 Group:         System Environment/Kernel
-Requires:      python3
-Requires:      %{name} = %{version}-%{release}
 %description fips-canister
 The kernel fips-canister
 %endif
@@ -735,16 +733,12 @@ popd
 
 %install
 %if 0%{?canister_build}
-install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
-pushd crypto/
-mkdir fips-canister-%{version}-%{release}
-cp fips_canister.o \
-   fips_canister-kallsyms \
-   .fips_canister.o.cmd \
-   fips-canister-%{version}-%{release}/
-tar -cvjf fips-canister-%{version}-%{release}.tar.bz2 fips-canister-%{version}-%{release}/
+pushd crypto
+install -vdm 755 %{buildroot}%{_libdir}/fips-canister-%{version}-%{release}/
+install -vm 644 -t %{buildroot}%{_libdir}/fips-canister-%{version}-%{release}/ \
+   fips_canister.o \
+   fips_canister-kallsyms
 popd
-cp crypto/fips-canister-%{version}-%{release}.tar.bz2 %{buildroot}%{_libdir}/fips-canister/
 %endif
 
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -943,10 +937,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %if 0%{?canister_build}
 %files fips-canister
 %defattr(-,root,root)
-%{_libdir}/fips-canister/*
+%{_libdir}/fips-canister-%{version}-%{release}/fips_canister.o
+%{_libdir}/fips-canister-%{version}-%{release}/fips_canister-kallsyms
 %endif
 
 %changelog
+* Fri Sep 26 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-13
+- fips-canister: prepare for RPM consumption instead of a tarball
 * Fri Sep 26 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-12
 - Canister: Perform partial relocation for local symbols
 * Mon Sep 22 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.41-11
