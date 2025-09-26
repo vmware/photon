@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.153
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -95,6 +95,9 @@ Source48: CVE-2023-39191.patches
 
 Source49: license.txt
 %include %{SOURCE49}
+
+Source100: Makefile.viomem
+Source101: viomem.c
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -520,6 +523,17 @@ sed -e "s,@@NAME@@,%{name},g" \
 
 bldroot="${PWD}"
 
+%ifarch x86_64
+# build viomem module
+mkdir ../viomem
+pushd ../viomem
+cp %{SOURCE100} Makefile
+cp %{SOURCE101} .
+cd ../viomem
+%make_build -C ${bldroot} M="${PWD}" V=1 modules
+popd
+%endif
+
 %if 0%{?fips}
 # compare struct definitions between fips canister and vmlinux
 # fails out if there is a mismatch, and the offending definition
@@ -557,6 +571,14 @@ install -vm 644 arch/%{archdir}/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
+
+bldroot="${PWD}"
+%ifarch x86_64
+# install viomem module
+pushd ../viomem
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+%endif
 
 %if 0%{?__debug_package}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
@@ -624,6 +646,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Sep 26 2025 Mounesh Badiger <mounesh.badiger@broadcom.com> 6.1.153-2
+- linux:Add viomem kernel module
 * Wed Sep 24 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.153-1
 - Update to version 6.1.153
 * Mon Sep 22 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-2
