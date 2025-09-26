@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.155
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -247,6 +247,10 @@ Patch164: 0001-drm-amd-display-Fix-vs-typos.patch
 # Fix CVE-2024-26944
 Patch165: 0001-btrfs-zoned-fix-use-after-free-in-do_zone_finish.patch
 
+# Fix CVE-2024-57795
+Patch166: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
+Patch167: 0001-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -408,7 +412,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M165
+%autopatch -p1 -m100 -M167
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -622,6 +626,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Oct 13 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.155-3
+- Fix CVE-2024-57795
 * Mon Oct 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.155-2
 - Fix CVE-2023-52653, CVE-2024-26661, CVE-2024-26662, CVE-2024-26944
 * Fri Oct 10 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.155-1
