@@ -162,7 +162,7 @@ class Scanner:
                 extra_repo = f"--repofrompath extra_repo{i},{url}"
                 install_cmd.extend(extra_repo.split())
 
-        result = common.run_cmd(install_cmd, ignore_rc=True)
+        result = common.run_cmd(install_cmd, ignore_rc=True, capture=True)
 
         if result.returncode != 0:
             err_msg = f"Failed to install package dependencies for {spec_path}\n"
@@ -282,6 +282,7 @@ class Scanner:
             result = common.run_cmd(
                 rpm_build_cmds,
                 ignore_rc=True,
+                capture=True,
             )
 
             if result.returncode == 0:
@@ -461,6 +462,12 @@ class Scanner:
 
             with open(config_yaml_path, "r") as config_yaml_f:
                 self._config_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
+
+            for shared_cfg in self._config_yaml['shared_sources']:
+                with open(f"{self._ph_root}/SPECS/{shared_cfg}") as config_yaml_f:
+                    shared_cfg_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
+                    addl_srcs = shared_cfg_yaml['sources']
+                    self._config_yaml['sources'].extend(addl_srcs)
 
             self._get_used_sources(path)
 
