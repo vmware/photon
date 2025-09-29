@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.155
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -312,6 +312,12 @@ Patch165: 0001-btrfs-zoned-fix-use-after-free-in-do_zone_finish.patch
 # Fix CVE-2024-57795
 Patch166: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
 Patch167: 0001-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
+
+# Fix CVE-2025-39705
+Patch168: 0001-drm-amd-display-fix-a-Null-pointer-dereference-vulne.patch
+
+# Fix CVE-2025-38705
+Patch169: 0001-drm-amd-pm-fix-null-pointer-access.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -648,7 +654,7 @@ The kernel fips-canister
 %autopatch -p1 -m64 -M64
 
 # CVE
-%autopatch -p1 -m100 -M167
+%autopatch -p1 -m100 -M169
 
 %ifarch aarch64
 # aarch64 patches
@@ -1072,6 +1078,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.155-4
+- Fixes CVE-2025-38705 and CVE-2025-39705
 * Mon Oct 13 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.155-3
 - Fix CVE-2024-57795
 * Mon Oct 13 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.155-2
