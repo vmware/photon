@@ -1,7 +1,7 @@
 From c514cb54f70f498a73cd04e8ac473335d5383dd9 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Mon, 11 Aug 2025 22:18:52 +0000
-Subject: [PATCH 12/15] Add shasums accelerators
+Subject: [PATCH] Add shasums accelerators
 
 Prepare glue C files to be included into the canister binary.
 Move to wrapper calls. Remove modules related stuff

@@ -1,7 +1,7 @@
 From d65caefcfd145be14b1c41f7defd4dabf74217ba Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 20 Nov 2019 10:52:57 +0530
-Subject: [PATCH] tcrypt: disable tests that are not enabled in photon
+Subject: [PATCH] tcrypt: align to LKCM
 
 1. Disable algorithmic tests which are fips_allowed and not supported in photon.
 2. Added tests for DRBG and ECDH algorithms.
@@ -13,6 +13,9 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 
 [Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch v6.12.y]
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+
+[Alexey: Rename and make it part of the canister_usage]
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
  crypto/tcrypt.c | 70 +++++++++++++++++++++++++++++++++++++------------
  1 file changed, 53 insertions(+), 17 deletions(-)

@@ -14,15 +14,15 @@ Subject: [PATCH] jitterentropy-kcapi: Support-for-sample-collection
 
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- jitterentropy-kcapi.c | 290 +++++++++++++++++++++++++++++++++++++++++-
- jitterentropy.c       |  65 +++++++++-
- jitterentropy.h       |   6 +
+ photon-jitterentropy-v6.12/jitterentropy-kcapi.c | 290 +++++++++++++++++++++++++++++++++++++++++-
+ photon-jitterentropy-v6.12/jitterentropy.c       |  65 +++++++++-
+ photon-jitterentropy-v6.12/jitterentropy.h       |   6 +
  3 files changed, 358 insertions(+), 3 deletions(-)
 
-diff --git a/jitterentropy-kcapi.c b/jitterentropy-kcapi.c
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
 index dceadb7..8cfc77e 100644
---- a/jitterentropy-kcapi.c
-+++ b/jitterentropy-kcapi.c
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
 @@ -44,6 +44,13 @@
  #include <linux/module.h>
  #include <linux/slab.h>
@@ -347,10 +347,10 @@ index dceadb7..8cfc77e 100644
  	/*
  	 * Inject the data from the previous loop into the pool. This data is
  	 * not considered to contain any entropy, but it stirs the pool a bit.
-diff --git a/jitterentropy.c b/jitterentropy.c
+diff --git a/crypto/photon-jitterentropy-v6.12/jitterentropy.c b/crypto/photon-jitterentropy-v6.12/jitterentropy.c
 index ddfe1ed..e30908f 100644
---- a/jitterentropy.c
-+++ b/jitterentropy.c
+--- a/crypto/photon-jitterentropy-v6.12/jitterentropy.c
++++ b/crypto/photon-jitterentropy-v6.12/jitterentropy.c
 @@ -562,7 +562,7 @@ static int jent_stuck(struct rand_data *ec, __u64 current_delta)
   *	1<<JENT_PERMANENT_FAILURE_SHIFT RCT permanent failure
   *	2<<JENT_PERMANENT_FAILURE_SHIFT APT permanent failure
@@ -430,10 +430,10 @@ index ddfe1ed..e30908f 100644
  static int jent_measure_jitter(struct rand_data *ec, __u64 *ret_current_delta)
  {
  	__u64 time = 0;
-diff --git a/jitterentropy.h b/jitterentropy.h
+diff --git a/crypto/photon-jitterentropy-v6.12/jitterentropy.h b/crypto/photon-jitterentropy-v6.12/jitterentropy.h
 index 95f4ce6..78fd109 100644
---- a/jitterentropy.h
-+++ b/jitterentropy.h
+--- a/crypto/photon-jitterentropy-v6.12/jitterentropy.h
++++ b/crypto/photon-jitterentropy-v6.12/jitterentropy.h
 @@ -37,3 +37,9 @@ static inline int jent_raw_hires_entropy_store(__u32 value) { return 0; }
  static inline void jent_testing_init(void) { }
  static inline void jent_testing_exit(void) { }

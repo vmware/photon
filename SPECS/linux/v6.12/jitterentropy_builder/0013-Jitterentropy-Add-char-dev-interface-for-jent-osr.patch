@@ -10,14 +10,14 @@ Subject: [PATCH] Jitterentropy: Add char dev interface for jent-osr
 
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- jitterentropy-kcapi.c | 213 +++++++++++++++++++++++++++++++++++++++++-
- jitterentropy.c       |   3 +-
+ photon-jitterentropy-v6.12/jitterentropy-kcapi.c | 213 +++++++++++++++++++++++++++++++++++++++++-
+ photon-jitterentropy-v6.12/jitterentropy.c       |   3 +-
  2 files changed, 214 insertions(+), 2 deletions(-)
 
-diff --git a/jitterentropy-kcapi.c b/jitterentropy-kcapi.c
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
 index 8cfc77e..b4f42b8 100644
---- a/jitterentropy-kcapi.c
-+++ b/jitterentropy-kcapi.c
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
 @@ -42,12 +42,16 @@
  #include <linux/fips.h>
  #include <linux/kernel.h>
@@ -275,10 +275,10 @@ index 8cfc77e..b4f42b8 100644
  }
  
  /* Must be initialized before tcrypt */
-diff --git a/jitterentropy.c b/jitterentropy.c
+diff --git a/crypto/photon-jitterentropy-v6.12/jitterentropy.c b/crypto/photon-jitterentropy-v6.12/jitterentropy.c
 index e30908f..41cd090 100644
---- a/jitterentropy.c
-+++ b/jitterentropy.c
+--- a/crypto/photon-jitterentropy-v6.12/jitterentropy.c
++++ b/crypto/photon-jitterentropy-v6.12/jitterentropy.c
 @@ -842,7 +842,7 @@ static int jent_measure_jitter(struct rand_data *ec, __u64 *ret_current_delta)
   */
  static void jent_gen_entropy(struct rand_data *ec)

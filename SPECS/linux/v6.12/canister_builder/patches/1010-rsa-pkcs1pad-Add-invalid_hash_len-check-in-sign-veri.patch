@@ -1,7 +1,7 @@
 From bfb7dfe83824672394fffe406df9febbe9745e5e Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 7 Apr 2025 08:02:02 +0000
-Subject: [PATCH 10/15] rsa-pkcs1pad: Add invalid_hash_len check in sign/verify
+Subject: [PATCH] rsa-pkcs1pad: Add invalid_hash_len check in sign/verify
 
 Upstream code after 6.13 added an additional check to compare
 last byte of hash_prefix/digest_info to slen/dlen appropriately
@@ -10,26 +10,9 @@ Port it to 6.12
 
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
- crypto/crypto_self_test.c |  4 ----
  crypto/rsa-pkcs1pad.c     | 35 ++++++++++++++++++++++++++++++++++-
- crypto/testmgr.c          |  7 -------
- 3 files changed, 34 insertions(+), 12 deletions(-)
+ 1 file changed, 23 insertions(+), 12 deletions(-)
 
-diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
-index 836808d7c..00333196b 100644
---- a/crypto/crypto_self_test.c
-+++ b/crypto/crypto_self_test.c
-@@ -68,10 +68,6 @@ static struct alg_self_test __initdata alg_self_test_tbl[]  =
- 		.driver_name = "hmac(sha3-512)",
- 		.alg_name = "hmac(sha3-512)",
- 	},
--	{
--		.driver_name = "pkcs1pad(rsa,sha1)",
--		.alg_name = "pkcs1pad(rsa,sha1)",
--	},
- 	{
- 		.driver_name = "pkcs1pad(rsa,sha224)",
- 		.alg_name = "pkcs1pad(rsa,sha224)",
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
 index aa5103bf1..e2226341b 100644
 --- a/crypto/rsa-pkcs1pad.c
@@ -110,24 +93,6 @@ index aa5103bf1..e2226341b 100644
  		return -EINVAL;
  
  	req_ctx->out_buf = fcw_kmalloc(ctx->key_size + digest_size, GFP_KERNEL);
-diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 1a3ec52c2..b1daf25c5 100644
---- a/crypto/testmgr.c
-+++ b/crypto/testmgr.c
-@@ -5176,13 +5176,6 @@ static const struct alg_test_desc alg_test_descs[] = {
- 		.suite = {
- 			.cipher = __VECS(fcrypt_pcbc_tv_template)
- 		}
--	}, {
--		.alg = "pkcs1pad(rsa,sha1)",
--		.test = alg_test_akcipher,
--		.fips_allowed = 1,
--		.suite = {
--			.akcipher = __VECS(pkcs1pad_rsa_sha1_tv_template)
--		}
- 	}, {
- 		.alg = "pkcs1pad(rsa,sha224)",
- 		.test = alg_test_akcipher,
 -- 
 2.50.1
 

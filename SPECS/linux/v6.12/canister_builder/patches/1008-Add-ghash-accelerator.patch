@@ -1,7 +1,7 @@
 From 3e672bd7d34400bad24deebf601ee3d67fad3e19 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Thu, 11 Sep 2025 17:26:16 +0000
-Subject: [PATCH 08/15] Add ghash accelerator
+Subject: [PATCH] Add ghash accelerator
 
 Prepare glue C files to be included into the canister binary. Move to
 wrapper calls. Remove modules related stuff and use fcw_ functions.

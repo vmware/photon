@@ -6,7 +6,7 @@
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
 
-# FIPS flags: fips, canister_build, canister_usage, acvp_build, kat_build.
+# FIPS flags: fips, canister_build, canister_usage, acvp_build.
 # "fips" - declaring whether or not to build FIPS compliant kernel with crypto
 # canister. When fips=0, it is a regular kernel build without the canister,
 # canister_* values are ignored in this case. When fips=1 there are 2 possible
@@ -17,12 +17,10 @@
 # In both cases when fips=1, we use out of tree jent tarball.
 #
 # acvp_build=1 defines a special build of the canister for FIPS certification.
-# It enforces fips=1, canister_build=1, kat_build=1.
+# It enforces fips=1, canister_build=1.
 #
-# canister_usage and kat_build are derived variables and can not be directly
-# set.
+# canister_usage is derived variable and can not be directly set.
 # canister_usage=!canister_build, iff fips=1
-# kat_build=1, iff acvp_build=1
 
 %ifarch x86_64
 %define arch x86_64
@@ -42,8 +40,6 @@
 %if 0%{?acvp_build}
 %global fips 1
 %global canister_build 1
-# Enable KAT functionality as part of ACVP build
-%global kat_build 1
 %endif
 
 # Set default FIPS flags
@@ -62,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        16%{?acvp_build:.acvp}%{?dist}
+Release:        17%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -85,19 +81,6 @@ Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
 
-%if 0%{?canister_usage}
-%define fips_canister_version 6.12.34-3%{?dist}
-Source16:       fips-canister-6.12.34-3%{?dist}.tar.bz2
-%endif
-
-%ifarch x86_64
-%if 0%{?fips}
-%define jent_name photon-jitterentropy-v6.12
-%define jent_rel_ver 3
-Source17:       %{jent_name}-%{jent_rel_ver}.tar.gz
-%endif
-%endif
-
 Source18:       spec_install_post.inc
 Source19:       %{name}-dracut-%{_arch}.conf
 Source20:       photon_sb2020.pem
@@ -105,44 +88,47 @@ Source20:       photon_sb2020.pem
 %ifarch x86_64
 # Secure Boot
 Source25:       linux-sbat.csv.in
-
-%if 0%{?fips}
-Source33: jitterentropy_canister_wrapper.c
-Source34: jitterentropy_canister_wrapper.h
-Source35: jitterentropy_canister_wrapper_asm.S
-
-# Common for canister build and usage
-Source36: fips_canister_wrapper.c
-Source37: fips_canister_wrapper.h
-Source38: fips_canister_wrapper_asm.S
-Source39: fips_canister_wrapper_common.h
-# fips_canister_wrapper_internal{.c,.h} is the latest released
-# wrapper files. These files may differ between 2 canister versions.
-# During canister binary update, rename
-# %%{fips_canister_version}-fips_canister_wrapper_internal{.c,.h}
-# files to fips_canister_wrapper_internal{.c,.h}
-Source40: fips_canister_wrapper_internal.h
-Source41: fips_canister_wrapper_internal.c
-%endif
-
-%if 0%{?canister_build}
-Source43: partial_reloc.c
-Source44: fips_integrity.c
-Source45: fips_integrity.h
-Source46: update_canister_hmac.sh
-Source47: canister_combine.lds
-Source48: gen_canister_relocs.c
-Source49: check_kernel_struct_in_canister.inc
-%endif
-%endif
-
-%if 0%{?acvp_build}
-Source53: config_x86_64_acvp
-Source54: check_for_acvp_config_applicability.inc
 %endif
 
 Source55: license.txt
 %include %{SOURCE55}
+
+%if 0%{?fips}
+%define jent_name photon-jitterentropy-v6.12
+%define jent_rel_ver 3
+Source10000:       %{jent_name}-%{jent_rel_ver}.tar.gz
+
+Source10001: jitterentropy_canister_wrapper.c
+Source10002: jitterentropy_canister_wrapper.h
+Source10003: jitterentropy_canister_wrapper_asm.S
+
+%if 0%{?canister_usage}
+%define fips_canister_version 6.12.34-3%{?dist}
+Source10100:       fips-canister-6.12.34-3%{?dist}.tar.bz2
+%endif
+
+Source10101: fips_canister_wrapper.c
+Source10102: fips_canister_wrapper.h
+Source10103: fips_canister_wrapper_asm.S
+Source10104: fips_canister_wrapper_common.h
+Source10105: fips_canister_wrapper_internal.h
+Source10106: fips_canister_wrapper_internal.c
+%endif
+
+%if 0%{?canister_build}
+Source11000: partial_reloc.c
+Source11001: fips_integrity.c
+Source11002: fips_integrity.h
+Source11003: update_canister_hmac.sh
+Source11004: canister_combine.lds
+Source11005: gen_canister_relocs.c
+Source11500: check_kernel_struct_in_canister.inc
+%endif
+
+%if 0%{?acvp_build}
+Source12000: config_x86_64_acvp
+Source12001: check_for_acvp_config_applicability.inc
+%endif
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -173,8 +159,6 @@ Patch14: 0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 0002-apparmor-af_unix-mediation.patch
 
 Patch16: Performance-over-security-model.patch
-# Disable md5 algorithm for sctp if fips is enabled.
-Patch18: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # VMware-specific patch to enable turbostat to work on ESXi
 Patch19: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
@@ -185,12 +169,13 @@ Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
-Patch23: 0001-aead_geniv_ctx-drop-lock-field.patch
-
 #VMCI/VSOCK
 Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
+
+# Crypto: zero initialize memory allocated via sock_kmalloc
+Patch27: 0001-crypto-zero-initialize-memory-allocated-via-sock_kma.patch
 
 %ifarch x86_64
 # VMW: [50..59]
@@ -266,34 +251,6 @@ Patch322: 0185-Introduce-page-touching-DMA-ops-binding.patch
 Patch323: 0444-drivers-base-memory-use-MHP_MEMMAP_ON_MEMORY-from-th.patch
 Patch324: 0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 
-%if 0%{?fips}
-Patch450: 0001-jitterentropy-Makefile-changes.patch
-%endif
-Patch451: 0001-New-memsize-options-for-jent.patch
-%endif
-
-# Crypto: [500..529]
-# Patch to invoke crypto self-tests and add missing test vectors to testmgr
-Patch500: 0002-FIPS-crypto-self-tests.patch
-# Patch to call drbg and dh crypto tests from tcrypt
-Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-#Patch502: 0001-Initialize-jitterentropy-before-ecdh.patch
-# Patch to remove urandom usage in rng module
-Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
-# Patch to remove urandom usage in drbg and ecc modules
-Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
-# Add non-approved prints for essIV and echainIV IV generation method
-Patch505: 0004-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
-# Introduce rsa-pkcs1pad_crypt.c to include encrypt and decrypt functions outside canister
-Patch506: 0001-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
-# Disable alloc_hook_tags if MEM_PROFILING is disabled
-Patch507: 0001-linux-canister-Eliminate-codetag-and-other-taggings-.patch
-# Add internal_iv field for aead_request
-Patch508: 0001-aead-add-internal_iv-field.patch
-# Crypto: zero initialize memory allocated via sock_kmalloc
-Patch509: 0001-crypto-zero-initialize-memory-allocated-via-sock_kma.patch
-
-%ifarch x86_64
 # SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
@@ -304,79 +261,86 @@ Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
-#Patch1401: 0001-efa-Modify-function-names-for-v6.12.x.patch
 
-# Patches for ena [1500..1409]
-#Patch1500: 0001-ena-Change-the-devlink_param_driverinit_value_get.patch
-#Patch1501: 0001-ena-Modify-function-names-for-v6.12.x.patch
-#Patch1502: 0002-ena-fix-rxfh-function-signatures.patch
-
+# Only LKCM/JENT related patches below
+# Jitterentropy support and FIPS compliance
+Patch10000: 0001-New-memsize-options-for-jent.patch
 %if 0%{?fips}
-# Below patches are common for fips and canister_build flags
-# 0001-FIPS-canister-binary-usage.patch is renamed as <ver-rel>-0001-FIPS-canister-binary-usage.patch
-# in both places until final canister binary is released
-Patch10000: 0001-FIPS-canister-binary-usage.patch
-Patch10001: 0002-FIPS-canister-binary-usage-algapi.c-honor-fcw_skip_tests.patch
-Patch10002: 0002-scripts-kallsyms-Extra-kallsyms-parsing.patch
-%endif
+Patch10001: 0001-jitterentropy-Makefile-changes.patch
+# Patch to remove urandom usage in rng module
+Patch10002: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch10003: 0001-disable-md5-and-sha1-algorithms-for-sctp-if-fips-is-enabled.patch
 
-%if 0%{?canister_usage}
-Patch10005: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
-%endif
-
-%if 0%{?canister_build}
-# Below patches are specific to canister_build flag
-Patch10010: 0001-FIPS-canister-creation.patch
-Patch10011: 0002-aesni_intel-Remove-static-call.patch
-Patch10012: 0003-Disable-retpoline_sites-and-return_sites-sections-in.patch
-Patch10013: 0004-Move-__bug_table-section-to-fips_canister_wrapper.patch
-Patch10014: 0005-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
-Patch10015: 0006-Move-kernel-structures-usage-from-canister-to-wrappe.patch
-Patch10016: 0007-ecc-Add-pairwise-consistency-test-for-every-generate.patch
-Patch10017: 0008-Add-ghash-accelerator.patch
-Patch10018: 0009-Handle-approved-and-non-approved-services.patch
-Patch10019: 0010-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
-Patch10020: 0011-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
-Patch10021: 0012-Add-shasums-accelerators.patch
-Patch10022: 0013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
-Patch10023: 0014-Add-lib-crypto-utils-to-the-canister.patch
-Patch10024: 0015-Move-crypto_inc-to-lib-crypto-utils.c.patch
-Patch10025: 0016-lib-cypto-mpi-Adding-MPI-API-into-canister.patch
-
-%if 0%{?kat_build}
-Patch10050: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
-%endif
-%endif
+# Below patches are common for canister_usage and canister_build flags
+Patch10101: 0001-FIPS-canister-binary-usage.patch
+Patch10102: 0002-algapi.c-honor-fcw_skip_tests.patch
+Patch10103: 0003-tcrypt-align-to-LKCM.patch
+Patch10104: 0004-scripts-kallsyms-Extra-kallsyms-parsing.patch
+# Add non-approved prints for essIV and echainIV IV generation method
+Patch10105: 0005-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
+# Introduce rsa-pkcs1pad_crypt.c to include encrypt and decrypt functions outside canister
+Patch10106: 0006-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
+# Add internal_iv field for aead_request
+Patch10107: 0007-aead-add-internal_iv-field.patch
+Patch10108: 0008-FIPS-Mark-structure-field-differences-between-kernel.patch
+Patch10109: 0009-aead_geniv_ctx-drop-lock-field.patch
+Patch10110: 0010-Move-crypto_inc-to-lib-crypto-utils.c.patch
 
 # FIPS canister plugins
-%if 0%{?fips}
-Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
-Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
-Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
-Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
-Patch10504: 0001-Canister-GCC-Plugins-Implement-type-check.patch
+Patch10200: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
+Patch10201: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
+Patch10202: 0003-Introduce-FIPS-canister-plugins.patch
+Patch10203: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+Patch10204: 0001-Canister-GCC-Plugins-Implement-type-check.patch
 %endif
 
+# Canister build patches
+%if 0%{?canister_build}
+# Below patches are specific to canister_build flag
+Patch11000: 1000-FIPS-canister-creation.patch
+Patch11001: 1001-aesni_intel-Remove-static-call.patch
+Patch11002: 1002-Disable-retpoline_sites-and-return_sites-sections-in.patch
+# Patch to remove urandom usage in drbg and ecc modules
+Patch11003: 1003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+Patch11004: 1004-Move-__bug_table-section-to-fips_canister_wrapper.patch
+Patch11005: 1005-crypto-Remove-EXPORT_SYMBOL-EXPORT_SYMBOL_GPL-from-c.patch
+Patch11006: 1006-Move-kernel-structures-usage-from-canister-to-wrappe.patch
+Patch11007: 1007-ecc-Add-pairwise-consistency-test-for-every-generate.patch
+Patch11008: 1008-Add-ghash-accelerator.patch
+Patch11009: 1009-Handle-approved-and-non-approved-services.patch
+Patch11010: 1010-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
+Patch11011: 1011-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
+Patch11012: 1012-Add-shasums-accelerators.patch
+Patch11013: 1013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
+Patch11014: 1014-lib-crypto-memneq-remove-module-h.patch
+# Patch to invoke crypto self-tests and add missing test vectors to testmgr
+Patch11015: 1015-FIPS-crypto-self-tests.patch
+# Disable alloc_hook_tags if MEM_PROFILING is disabled
+Patch11016: 1016-linux-canister-Eliminate-codetag-and-other-taggings-.patch
+Patch11017: 1017-lib-cypto-mpi-Adding-MPI-API-into-canister.patch
+%endif
+
+# ACVP and KAT special builds
 %if 0%{?acvp_build:1}
 #ACVP test harness patches.
-#Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-Patch10512:       0001-crypto-AF_ALG-add-sign-verify-API.patch
-Patch10513:       0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
-Patch10514:       0003-crypto-AF_ALG-add-asymmetric-cipher.patch
-Patch10515:       0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
-Patch10516:       0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
-Patch10517:       0006-crypto-AF_ALG-eliminate-code-duplication.patch
-Patch10518:       0007-crypto-AF_ALG-add-KPP-support.patch
-Patch10519:       0008-crypto-AF_ALG-add-ECC-support.patch
-Patch10520:       0009-DRBG-Fix-issues-with-DRBG.patch
-Patch10522:       0011-sock-Remove-sendpage-in-favour-of-sendmsg-MSG_SPLICE.patch
-Patch10523:       0012-jitterentropy-kcapi-Support-for-sample-collection.patch
-Patch10524:       0013-Jitterentropy-Add-char-dev-interface-for-jent-osr.patch
-Patch10525:       0014-jitterentropy-Add-prototype-for-sample-collection.patch
-%if 0%{?kat_build}
-Patch10526:       0015-crypto-api-return-status-prints-for-LKCM6-demo.patch
-%endif
-Patch10527:       0001-allow-external-IVs-for-ACVP.patch
+Patch12000:       0001-crypto-AF_ALG-add-sign-verify-API.patch
+Patch12001:       0002-crypto-AF_ALG-add-setpubkey-setsockopt-call.patch
+Patch12002:       0003-crypto-AF_ALG-add-asymmetric-cipher.patch
+Patch12003:       0004-crypto-AF_ALG-add-DH-keygen-ssgen-API.patch
+Patch12004:       0005-crypto-AF_ALG-add-DH-param-ECDH-curve-setsockopt.patch
+Patch12005:       0006-crypto-AF_ALG-eliminate-code-duplication.patch
+Patch12006:       0007-crypto-AF_ALG-add-KPP-support.patch
+Patch12007:       0008-crypto-AF_ALG-add-ECC-support.patch
+Patch12008:       0009-DRBG-Fix-issues-with-DRBG.patch
+Patch12009:       0011-sock-Remove-sendpage-in-favour-of-sendmsg-MSG_SPLICE.patch
+Patch12010:       0012-jitterentropy-kcapi-Support-for-sample-collection.patch
+Patch12011:       0013-Jitterentropy-Add-char-dev-interface-for-jent-osr.patch
+Patch12012:       0014-jitterentropy-Add-prototype-for-sample-collection.patch
+Patch12013:       0001-allow-external-IVs-for-ACVP.patch
+# KAT
+Patch12014:       0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
+Patch12015:       0015-crypto-api-return-status-prints-for-LKCM6-demo.patch
 %endif
 
 BuildRequires:  bc
@@ -513,18 +477,6 @@ The kernel fips-canister
 # Using autosetup is not feasible
 %setup -q -T -D -b 4 -n linux-%{version}
 
-%if 0%{?canister_usage}
-# Using autosetup is not feasible
-%setup -q -T -D -b 16 -n linux-%{version}
-%endif
-
-%ifarch x86_64
-%if 0%{?fips}
-# Using autosetup is not feasible
-%setup -q -T -D -b 17 -n linux-%{version}
-%endif
-%endif
-
 # common
 %autopatch -p1 -m0 -M49
 
@@ -555,89 +507,47 @@ The kernel fips-canister
 %ifarch x86_64
 # AWS x86
 %autopatch -p1 -m300 -M339
-%endif
-
-# jitterentropy
-%ifarch x86_64
-%if 0%{?fips}
-%autopatch -p1 -m450 -M450
-%endif
-%autopatch -p1 -m451 -M451
-%endif
-# crypto
-%autopatch -p1 -m500 -M509
-
-%ifarch x86_64
 # SEV on VMware
-%autopatch -p1 -m600 -M609
+%autopatch -p1 -m600 -M603
 %endif
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
-%autopatch -p1 -m1400 -M1409
+%autopatch -p1 -m1400 -M1400
 popd
 
-# Patches for ena driver
-#pushd ../amzn-drivers-ena_linux_%{ena_version}
-#%autopatch -p1 -m1500 -M1500
-#popd
-
+# Jitterentropy support and FIPS compliance
+%autopatch -p1 -m10000 -M10000
 %if 0%{?fips}
-%autopatch -p1 -m10000 -M10002
-%endif
 
-%if 0%{?canister_usage}
-%autopatch -p1 -m10005 -M10005
-%endif
-
-%if 0%{?canister_build}
-%autopatch -p1 -m10010 -M10025
-
-%if 0%{?kat_build}
-%autopatch -p1 -m10050 -M10050
-%endif
-%endif
-
-%if 0%{?fips}
-%autopatch -p1 -m10500 -M10504
-%endif
-
-%if 0%{?acvp_build:1}
-# ACVP test harness patches.
-# Need to be applied on top of FIPS canister usage patch to avoid HUNK failure
-%autopatch -p1 -m10512 -M10522
-pushd ../%{jent_name}
-%autopatch -p1 -m10523 -M10524
-popd
-%autopatch -p1 -m10525 -M10527
-%endif
-
-%ifarch x86_64
-%if 0%{?fips}
+# Using autosetup is not feasible
+%setup -q -T -D -b 10000 -n linux-%{version}
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
 mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
-cp %{SOURCE33} crypto/%{jent_name}/
-cp %{SOURCE34} crypto/%{jent_name}/
-cp %{SOURCE35} crypto/%{jent_name}/
-%endif
+cp %{SOURCE10001} crypto/%{jent_name}/
+cp %{SOURCE10002} crypto/%{jent_name}/
+cp %{SOURCE10003} crypto/%{jent_name}/
+
+install %{SOURCE10101} crypto/
+install %{SOURCE10102} crypto/
+install %{SOURCE10103} crypto/
+install %{SOURCE10104} crypto/
+install %{SOURCE10105} crypto/
+install %{SOURCE10106} crypto/
+
+%autopatch -p1 -m10001 -M10003
+%autopatch -p1 -m10101 -M10110
+# FIPS canister plugins
+%autopatch -p1 -m10200 -M10204
 %endif
 
+# Clean the build tree. It must be done before copying the canister.
 make %{?_smp_mflags} mrproper
-cp %{SOURCE1} .config
-
-cp %{SOURCE20} photon_sb2020.pem
-%ifarch x86_64
-%if 0%{?fips}
-install %{SOURCE36} crypto/
-install %{SOURCE37} crypto/
-install %{SOURCE38} crypto/
-install %{SOURCE39} crypto/
-install %{SOURCE40} crypto/
-install %{SOURCE41} crypto/
-%endif
 
 %if 0%{?canister_usage}
+# Using autosetup is not feasible
+%setup -q -T -D -b 10100 -n linux-%{version}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
    ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
    ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
@@ -645,26 +555,31 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
 %endif
 
 %if 0%{?canister_build}
-cp %{SOURCE43} crypto/
-cp %{SOURCE44} crypto/
-cp %{SOURCE45} crypto/
-install -m 755 %{SOURCE46} crypto/
-cp %{SOURCE47} crypto/
-cp %{SOURCE48} crypto/
+%autopatch -p1 -m11000 -M11017
+cp %{SOURCE11000} crypto/
+cp %{SOURCE11001} crypto/
+cp %{SOURCE11002} crypto/
+install -m 755 %{SOURCE11003} crypto/
+cp %{SOURCE11004} crypto/
+cp %{SOURCE11005} crypto/
+sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
+sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
 %endif
+
+%if 0%{?acvp_build:1}
+# ACVP test harness patches.
+%autopatch -p1 -m12000 -M12015
 %endif
+
+cp %{SOURCE1} .config
+
+cp %{SOURCE20} photon_sb2020.pem
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %if 0%{?canister_build}
-sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
-sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
 sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
 sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
-
-%if 0%{?kat_build}
-sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_TAMPER_TEST=y' .config
-%endif
 %endif
 
 %if 0%{?canister_usage}
@@ -679,8 +594,8 @@ sed -e "s,@@NAME@@,%{name},g" \
 %endif
 
 %if 0%{?acvp_build}
-cp %{SOURCE53} .config_acvp
-%include %{SOURCE54}
+cp %{SOURCE12000} .config_acvp
+%include %{SOURCE12001}
 %else
 %include %{SOURCE7}
 %endif
@@ -731,7 +646,7 @@ cd build
 popd
 
 %if 0%{?canister_build}
-%include %{SOURCE49}
+%include %{SOURCE11500}
 %endif
 
 %install
@@ -942,6 +857,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 30 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-17
+- Cleanup canister usage/build patch sets
 * Tue Sep 30 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-16
 - fips-canister: go back to tarball as the only way to preserve unstripped
   fips_canister.o

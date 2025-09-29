@@ -50,8 +50,8 @@ index 74a775556..5703628d5 100644
 +++ b/scripts/gcc-plugins/Makefile
 @@ -67,7 +67,7 @@ plugin-multi	:= $(filter-out $(plugin-single), $(GCC_PLUGIN))
  plugin-objs	:= $(sort $(foreach m, $(plugin-multi), $($(m:%.so=%-objs))))
- targets += $(plugin-single) $(plugin-multi) $(plugin-objs)
 
+ targets += $(plugin-single) $(plugin-multi) $(plugin-objs)
 -clean-files += *.so
 +clean-files += *.so *.db
 

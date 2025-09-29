@@ -1,7 +1,7 @@
 From b5bdd29596665e694b46071de3d9d6221dedc0df Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Tue, 16 Sep 2025 20:44:35 +0000
-Subject: [PATCH 15/15] Move crypto_inc to lib/crypto/utils.c
+Subject: [PATCH] Move crypto_inc to lib/crypto/utils.c
 
 crypto_inc is a utility function similar to crypto_xor.
 algapi.c is a wrong place for it.
@@ -11,8 +11,8 @@ Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
  crypto/algapi.c                | 31 -------------------------------
  include/crypto/algapi.h        |  2 --
  include/crypto/utils.h         |  2 ++
- lib/crypto/utils.c             | 30 ++++++++++++++++++++++++++++++
- 4 files changed, 32 insertions(+), 33 deletions(-)
+ lib/crypto/utils.c             | 35 ++++++++++++++++++++++++++++++++----
+ 4 files changed, 33 insertions(+), 37 deletions(-)
 
 diff --git a/crypto/algapi.c b/crypto/algapi.c
 index 685d1930d..d4fc7cc52 100644
@@ -86,18 +86,24 @@ diff --git a/lib/crypto/utils.c b/lib/crypto/utils.c
 index d579abf17..deea0ffb1 100644
 --- a/lib/crypto/utils.c
 +++ b/lib/crypto/utils.c
-@@ -8,6 +8,7 @@
+@@ -7,7 +7,8 @@
+ 
  #include <linux/unaligned.h>
  #include <crypto/utils.h>
- #include <linux/bitops.h>
+-#include <linux/module.h>
++#include <linux/bitops.h>
 +#include <linux/align.h>
  
  /*
   * XOR @len bytes from @src1 and @src2 together, writing the result to @dst
-@@ -84,3 +85,32 @@ void __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int len)
+@@ -83,7 +84,33 @@ void __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int len)
+ 	while (len--)
  		*dst++ = *src1++ ^ *src2++;
  }
+-EXPORT_SYMBOL_GPL(__crypto_xor);
  
+-MODULE_DESCRIPTION("Crypto library utility functions");
+-MODULE_LICENSE("GPL");
 +static inline void crypto_inc_byte(u8 *a, unsigned int size)
 +{
 +	u8 *b = (a + size);

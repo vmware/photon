@@ -94,15 +94,15 @@ diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
 index 318a8c2cf..4954615a5 100644
 --- a/scripts/Makefile.gcc-plugins
 +++ b/scripts/Makefile.gcc-plugins
-@@ -31,6 +31,8 @@ endif
- gcc-plugin-aflags-$(CONFIG_PAX_RAP)                    += -DRAP_PLUGIN
-
+@@ -42,6 +42,8 @@ endif
+ export DISABLE_ARM_SSP_PER_TASK_PLUGIN
+ 
  gcc-plugin-$(CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS) += match_canister_structs.so
 +gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS)	\
 +		+= -DMATCH_CANISTER_STRUCTS
  gcc-plugin-$(CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS) += pad_canister_structs.so
 
- gcc-plugin-$(CONFIG_GCC_PLUGIN_STACKLEAK)	+= stackleak_plugin.so
+ # All the plugin CFLAGS are collected here in case a build target needs to
 diff --git a/scripts/gcc-plugins/.gitignore b/scripts/gcc-plugins/.gitignore
 index 5cc385b9e..67e7cf01e 100644
 --- a/scripts/gcc-plugins/.gitignore

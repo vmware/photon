@@ -9,10 +9,10 @@ which come in a subsequent patch.
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  Makefile                     |  8 ++++++++
- scripts/Makefile.gcc-plugins |  4 ++++
+ scripts/Makefile.gcc-plugins |  3 ++++
  scripts/gcc-plugins/Kconfig  | 21 +++++++++++++++++++++
- scripts/gcc-plugins/Makefile | 29 ++++++++++++++++++++++++++++-
- 4 files changed, 61 insertions(+), 1 deletion(-)
+ scripts/gcc-plugins/Makefile | 27 +++++++++++++++++++++++++++-
+ 4 files changed, 59 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
 index 17a0807e3..91051d3a7 100644
@@ -37,20 +37,12 @@ diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
 index 7acd78f9d..318a8c2cf 100644
 --- a/scripts/Makefile.gcc-plugins
 +++ b/scripts/Makefile.gcc-plugins
-@@ -30,6 +30,9 @@ ifdef CONFIG_PAX_RAP
- endif
- gcc-plugin-aflags-$(CONFIG_PAX_RAP)                    += -DRAP_PLUGIN
- 
-+gcc-plugin-$(CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS) += match_canister_structs.so
-+gcc-plugin-$(CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS) += pad_canister_structs.so
-+
- gcc-plugin-$(CONFIG_GCC_PLUGIN_STACKLEAK)	+= stackleak_plugin.so
- gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_STACKLEAK)		\
- 		+= -DSTACKLEAK_PLUGIN
-@@ -50,6 +53,7 @@ ifdef CONFIG_GCC_PLUGIN_ARM_SSP_PER_TASK
+@@ -42,6 +42,9 @@ ifdef CONFIG_PAX_RAP
  endif
  export DISABLE_ARM_SSP_PER_TASK_PLUGIN
  
++gcc-plugin-$(CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS) += match_canister_structs.so
++gcc-plugin-$(CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS) += pad_canister_structs.so
 +
  # All the plugin CFLAGS are collected here in case a build target needs to
  # filter them out of the KBUILD_CFLAGS.
@@ -104,9 +96,9 @@ index 0d3c8bdec..74a775556 100644
  plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
  		  -include $(srctree)/include/linux/compiler-version.h \
  		  -DPLUGIN_VERSION=$(call stringify,$(KERNELVERSION)) \
-@@ -42,6 +50,18 @@ plugin_ldflags	= -shared
+@@ -42,6 +50,16 @@
  
- rap_plugin-objs := $(patsubst $(srctree)/$(src)/rap_plugin/%.c,rap_plugin/%.o,$(wildcard $(srctree)/$(src)/rap_plugin/*.c))
+ plugin_ldflags	= -shared
  
 +fips_canister_common-objs := $(patsubst $(srctree)/$(src)/fips_canister_plugins/%.c,fips_canister_plugins/%.o,$(wildcard $(srctree)/$(src)/fips_canister_plugins/*.c))
 +
@@ -115,15 +107,13 @@ index 0d3c8bdec..74a775556 100644
 +match_canister_structs-objs := fips_canister_plugins/match_canister_structs/match_canister_structs.o $(match_canister_structs-cobjs) $(fips_canister_common-objs)
 +HOSTLDLIBS_match_canister_structs = -ldwarves
 +
-+
 +pad_canister_structs-objs := $(patsubst $(srctree)/$(src)/fips_canister_plugins/pad_canister_structs/%.c,fips_canister_plugins/pad_canister_structs/%.o,$(wildcard $(srctree)/$(src)/fips_canister_plugins/pad_canister_structs/*.c))
 +pad_canister_structs-objs := $(pad_canister_structs-objs) $(fips_canister_common-objs)
-+
 +
  plugin-single	:= $(foreach m, $(GCC_PLUGIN), $(if $($(m:%.so=%-objs)),,$(m)))
  plugin-multi	:= $(filter-out $(plugin-single), $(GCC_PLUGIN))
  plugin-objs	:= $(sort $(foreach m, $(plugin-multi), $($(m:%.so=%-objs))))
-@@ -61,7 +81,7 @@ $(plugin-single): $(obj)/%.so: $(src)/%.c FORCE
+@@ -61,7 +79,7 @@ $(plugin-single): $(obj)/%.so: $(src)/%.c FORCE
  
  quiet_cmd_plugin_ld_so_o = HOSTLD  $@
        cmd_plugin_ld_so_o = $(HOSTCXX) $(plugin_ldflags) -o $@ \
@@ -132,7 +122,7 @@ index 0d3c8bdec..74a775556 100644
  
  $(plugin-multi): FORCE
  	$(call if_changed,plugin_ld_so_o)
-@@ -72,3 +92,10 @@ quiet_cmd_plugin_cxx_o_c = HOSTCXX $@
+@@ -72,3 +90,10 @@ quiet_cmd_plugin_cxx_o_c = HOSTCXX $@
  
  $(plugin-objs): $(obj)/%.o: $(src)/%.c FORCE
  	$(call if_changed_dep,plugin_cxx_o_c)

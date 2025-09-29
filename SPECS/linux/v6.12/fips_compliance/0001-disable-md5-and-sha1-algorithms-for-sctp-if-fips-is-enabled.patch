@@ -1,12 +1,15 @@
 From fd689eadb419d7fde009a6d3e4fe47136878d90d Mon Sep 17 00:00:00 2001
 From: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
 Date: Fri, 26 Nov 2021 23:25:57 +0000
-Subject: [PATCH] disable md5 algorithm for sctp if fips is enabled
+Subject: [PATCH] disable md5 and sha1 algorithms for sctp if fips is enabled
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+
+[Alexey: Disable sha1 also]
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
- net/sctp/protocol.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ net/sctp/protocol.c | 7 +++++++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
 index bcd3384..eb27841 100644
@@ -28,18 +31,14 @@ index bcd3384..eb27841 100644
  	/* Default sctp sockets to use md5 as their hmac alg */
  #if defined (CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5)
  	net->sctp.sctp_hmac_alg			= "md5";
-@@ -1320,6 +1322,15 @@ static int __net_init sctp_defaults_init(struct net *net)
+@@ -1320,6 +1322,11 @@ static int __net_init sctp_defaults_init(struct net *net)
  #else
  	net->sctp.sctp_hmac_alg			= NULL;
  #endif
 +	}
 +
 +	else {
-+#if defined (CONFIG_SCTP_DEFAULT_COOKIE_HMAC_SHA1)
-+	net->sctp.sctp_hmac_alg			= "sha1";
-+#else
 +	net->sctp.sctp_hmac_alg			= NULL;
-+#endif
 +	}
  
  	/* Max.Burst		    - 4 */

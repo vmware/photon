@@ -22,8 +22,8 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
  crypto/drbg.c | 95 ++++++++++++++++++++++++++++++++++++++-------------
- crypto/ecc.c  | 26 +++++++++++++-
- 2 files changed, 96 insertions(+), 25 deletions(-)
+ crypto/ecc.c  | 25 +++++++++++++-
+ 2 files changed, 95 insertions(+), 25 deletions(-)
 
 diff --git a/crypto/drbg.c b/crypto/drbg.c
 index 3addce90930c..1ff3052d4f42 100644
@@ -166,15 +166,7 @@ diff --git a/crypto/ecc.c b/crypto/ecc.c
 index 50ad2d4ed672..234eb2b89c6d 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
-@@ -35,6 +35,7 @@
- #include <crypto/internal/ecc.h>
- #include <linux/unaligned.h>
- #include <linux/ratelimit.h>
-+#include <linux/fips.h>
- 
- #include "ecc_curve_defs.h"
- 
-@@ -1659,6 +1660,26 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
+@@ -1659,6 +1659,26 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
  }
  EXPORT_SYMBOL(ecc_is_pubkey_valid_full);
  
@@ -201,7 +193,7 @@ index 50ad2d4ed672..234eb2b89c6d 100644
  int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
  			      const u64 *private_key, const u64 *public_key,
  			      u64 *secret)
-@@ -1676,7 +1697,10 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
+@@ -1676,7 +1696,10 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
  
  	nbytes = ndigits << ECC_DIGITS_TO_BYTES_SHIFT;
  

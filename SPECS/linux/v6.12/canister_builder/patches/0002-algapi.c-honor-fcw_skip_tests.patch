@@ -1,7 +1,7 @@
 From 9d3d9392a1b2b5b18b0d5712b54d8893ac01d064 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Date: Sun, 24 Aug 2025 18:28:03 +0000
-Subject: [PATCH 02/02] crypto/algapi.c: honor fcw_skip_tests()
+Subject: [PATCH] crypto/algapi.c: honor fcw_skip_tests()
 
 linux-esx does not need to run alg tests in non fips mode. Skip triggerring
 them from algapi layer.
