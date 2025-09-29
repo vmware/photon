@@ -1,7 +1,7 @@
 From 48fa306dec403ccce35a412b4bf038c803790ded Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
-Subject: [PATCH 01/15] FIPS canister creation
+Subject: [PATCH] FIPS canister creation
 
 Canister creation patch.
  - Makefile changes to generate canister binary (fips_canister.o)
@@ -866,7 +866,7 @@ index ad17655de..41bcf16b0 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -38,6 +38,7 @@
- #include <linux/fips.h>
+ #include <linux/ratelimit.h>
  
  #include "ecc_curve_defs.h"
 +#include "fips_canister_wrapper.h"

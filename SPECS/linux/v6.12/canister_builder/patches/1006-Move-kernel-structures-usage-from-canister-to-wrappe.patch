@@ -1,7 +1,7 @@
 From cffa5116180ce55c3c28e86d50d148f25c81d58b Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 28 Jul 2025 18:00:18 +0000
-Subject: [PATCH 06/15] Move kernel structures usage from canister to wrapper
+Subject: [PATCH] Move kernel structures usage from canister to wrapper
 
 - Module init and exit family of function calls moved to wrapper.
 - All MODULE_* macro usages have been removed as these macros add information
@@ -73,11 +73,10 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  crypto/cbc.c                        |  11 +-
  crypto/ccm.c                        |  15 +-
  crypto/cmac.c                       |  12 +-
- crypto/crypto_self_test.c           |   8 +-
  crypto/ctr.c                        |  13 +-
  crypto/cts.c                        |  11 +-
  crypto/drbg.c                       | 123 +++---
- crypto/ecc.c                        |  19 +-
+ crypto/ecc.c                        |  18 +-
  crypto/ecdh.c                       |  10 +-
  crypto/ecdsa.c                      |  20 +-
  crypto/gcm.c                        |  15 +-
@@ -92,7 +91,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  crypto/sha256_generic.c             |  15 +-
  crypto/sha3_generic.c               |  19 +-
  crypto/sha512_generic.c             |  15 +-
- crypto/testmgr.c                    | 657 ++++++++--------------------
+ crypto/testmgr.c                    | 655 ++++++++--------------------
  crypto/testmgr.h                    |  23 +-
  crypto/xts.c                        |  13 +-
  include/crypto/algapi.h             |   6 +
@@ -105,8 +104,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  include/linux/rtattr.h              |   6 +
  include/linux/spinlock.h            |  24 +-
  include/linux/spinlock_cond_guard.h |  20 +
- include/linux/swait.h               |   4 +
- 39 files changed, 432 insertions(+), 892 deletions(-)
+ 37 files changed, 425 insertions(+), 884 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
@@ -639,47 +637,6 @@ index f3410fe44..8df4433f8 100644
 -MODULE_DESCRIPTION("CMAC keyed hash algorithm");
 -MODULE_ALIAS_CRYPTO("cmac");
 -MODULE_IMPORT_NS(CRYPTO_INTERNAL);
-diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
-index efa26cccd..836808d7c 100644
---- a/crypto/crypto_self_test.c
-+++ b/crypto/crypto_self_test.c
-@@ -5,12 +5,11 @@
-  *
-  */
- 
--#include <linux/module.h>
- #include <linux/fips.h>
- #include <linux/init.h>
- #include <linux/err.h>
- #include <linux/crypto.h>
--MODULE_LICENSE("GPL");
-+#include "fips_canister_wrapper.h"
- 
- extern int alg_test(const char *driver, const char *alg, u32 type, u32 mask);
- 
-@@ -97,7 +96,7 @@ extern int FIPS_NOT_ALLOWED(char *);
- #define FIPS_NOT_ALLOWED(algname) 0
- #endif
- 
--static int __init crypto_self_test_init(void)
-+int __init crypto_self_test_init(void)
- {
- 	int err = -ENOMEM;
- 	int i = 0;
-@@ -110,7 +109,7 @@ static int __init crypto_self_test_init(void)
- 			continue;
- 		err = alg_test(alg_self_test_tbl[i].driver_name, alg_self_test_tbl[i].alg_name, 0, 0);
- 		if (err) {
--			printk(KERN_ERR "crypto_self_test failed for %s %s \n",
-+			fcw_printk(KERN_ERR "crypto_self_test failed for %s %s \n",
- 					 alg_self_test_tbl[i].driver_name,
- 					 alg_self_test_tbl[i].alg_name);
- 			goto error;
-@@ -120,4 +119,3 @@ static int __init crypto_self_test_init(void)
- error:
- 	return err;
- }
--module_init(crypto_self_test_init);
 diff --git a/crypto/ctr.c b/crypto/ctr.c
 index 978515f98..8981b8cc6 100644
 --- a/crypto/ctr.c
@@ -1118,7 +1075,7 @@ diff --git a/crypto/ecc.c b/crypto/ecc.c
 index bedcfb351..34ce48954 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
-@@ -25,17 +25,13 @@
+@@ -25,16 +25,13 @@
   */
  
  #include <crypto/ecc_curve.h>
@@ -1132,11 +1089,10 @@ index bedcfb351..34ce48954 100644
  #include <crypto/internal/ecc.h>
  #include <linux/unaligned.h>
 -#include <linux/ratelimit.h>
--#include <linux/fips.h>
  
  #include "ecc_curve_defs.h"
  #include "fips_canister_wrapper.h"
-@@ -947,6 +943,9 @@ static bool vli_mmod_fast(u64 *result, u64 *product,
+@@ -947,6 +944,9 @@ static bool vli_mmod_fast(u64 *result, u64 *product,
  	u64 tmp[2 * ECC_MAX_DIGITS];
  	const u64 *curve_prime = curve->p;
  	const unsigned int ndigits = curve->g.ndigits;
@@ -1146,7 +1102,7 @@ index bedcfb351..34ce48954 100644
  
  	/* All NIST curves have name prefix 'nist_' */
  	if (strncmp(curve->name, "nist_", 5) != 0) {
-@@ -979,7 +978,11 @@ static bool vli_mmod_fast(u64 *result, u64 *product,
+@@ -979,7 +979,11 @@ static bool vli_mmod_fast(u64 *result, u64 *product,
  		vli_mmod_fast_521(result, product, curve_prime, tmp);
  		break;
  	default:
@@ -3104,7 +3060,7 @@ index 2ea0140ce..3e30242bc 100644
  			       i, driver);
  			err = -EINVAL;
  			break;
-@@ -3969,11 +3664,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3969,10 +3664,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	/* Compute party A's public key */
  	err = crypto_wait_req(crypto_kpp_generate_public_key(req), &wait);
  	if (err) {
@@ -3113,12 +3069,11 @@ index 2ea0140ce..3e30242bc 100644
  		       alg, err);
  		goto free_output;
  	}
--	printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
 +	fcw_printk(KERN_INFO "alg: %s: Party A: generate public key test passed.", alg);
  
  	if (vec->genkey) {
  		/* Save party A's public key */
-@@ -3986,12 +3681,12 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -3986,11 +3682,12 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		/* Verify calculated public key */
  		if (memcmp(vec->expected_a_public, fcw_sg_virt(req->dst),
  			   vec->expected_a_public_size)) {
@@ -3128,12 +3083,11 @@ index 2ea0140ce..3e30242bc 100644
  			err = -EINVAL;
  			goto free_output;
  		}
--		printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
 +		fcw_printk(KERN_INFO "alg: %s: Party A: verify public key test passed.", alg);
  	}
  
  	/* Calculate shared secret key by using counter part (b) public key. */
-@@ -4009,7 +3704,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -4009,7 +3706,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  				 crypto_req_done, &wait);
  	err = crypto_wait_req(crypto_kpp_compute_shared_secret(req), &wait);
  	if (err) {
@@ -3142,7 +3096,7 @@ index 2ea0140ce..3e30242bc 100644
  		       alg, err);
  		goto free_all;
  	}
-@@ -4040,7 +3735,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -4040,7 +3737,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  		err = crypto_wait_req(crypto_kpp_compute_shared_secret(req),
  				      &wait);
  		if (err) {
@@ -3151,7 +3105,7 @@ index 2ea0140ce..3e30242bc 100644
  			       alg, err);
  			goto free_all;
  		}
-@@ -4056,7 +3751,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+@@ -4056,7 +3753,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
  	 */
  	if (memcmp(shared_secret, fcw_sg_virt(req->dst),
  		   vec->expected_ss_size)) {
@@ -3160,7 +3114,7 @@ index 2ea0140ce..3e30242bc 100644
  		       alg);
  		err = -EINVAL;
  	}
-@@ -4080,7 +3775,7 @@ static int test_kpp(struct crypto_kpp *tfm, const char *alg,
+@@ -4080,7 +3777,7 @@ static int test_kpp(struct crypto_kpp *tfm, const char *alg,
  	for (i = 0; i < tcount; i++) {
  		ret = do_test_kpp(tfm, vecs++, alg);
  		if (ret) {
@@ -3169,7 +3123,7 @@ index 2ea0140ce..3e30242bc 100644
  			       alg, i + 1, ret);
  			return ret;
  		}
-@@ -4098,7 +3793,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
+@@ -4098,7 +3795,7 @@ static int alg_test_kpp(const struct alg_test_desc *desc, const char *driver,
  	if (IS_ERR(tfm)) {
  		if (PTR_ERR(tfm) == -ENOENT)
  			return 0;
@@ -3178,7 +3132,7 @@ index 2ea0140ce..3e30242bc 100644
  		       driver, PTR_ERR(tfm));
  		return PTR_ERR(tfm);
  	}
-@@ -4213,19 +3908,19 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4213,19 +3910,19 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  			      /* Run asymmetric encrypt */
  			      crypto_akcipher_encrypt(req), &wait);
  	if (err) {
@@ -3201,7 +3155,7 @@ index 2ea0140ce..3e30242bc 100644
  			       op);
  			hexdump(outbuf_enc, c_size);
  			err = -EINVAL;
-@@ -4269,12 +3964,12 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4269,12 +3966,12 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  			      /* Run asymmetric decrypt */
  			      crypto_akcipher_decrypt(req), &wait);
  	if (err) {
@@ -3216,7 +3170,7 @@ index 2ea0140ce..3e30242bc 100644
  		       op, out_len);
  		err = -EINVAL;
  		goto free_all;
-@@ -4282,7 +3977,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+@@ -4282,7 +3979,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
  	/* verify that decrypted message is equal to the original msg */
  	if (memchr_inv(outbuf_dec, 0, out_len - m_size) ||
  	    memcmp(m, outbuf_dec + out_len - m_size, m_size)) {
@@ -3225,7 +3179,7 @@ index 2ea0140ce..3e30242bc 100644
  		hexdump(outbuf_dec, out_len);
  		err = -EINVAL;
  	}
-@@ -4311,7 +4006,7 @@ static int test_akcipher(struct crypto_akcipher *tfm, const char *alg,
+@@ -4311,7 +4008,7 @@ static int test_akcipher(struct crypto_akcipher *tfm, const char *alg,
  		if (!ret)
  			continue;
  
@@ -3234,7 +3188,7 @@ index 2ea0140ce..3e30242bc 100644
  		       i + 1, algo, ret);
  		return ret;
  	}
-@@ -4328,7 +4023,7 @@ static int alg_test_akcipher(const struct alg_test_desc *desc,
+@@ -4328,7 +4025,7 @@ static int alg_test_akcipher(const struct alg_test_desc *desc,
  	if (IS_ERR(tfm)) {
  		if (PTR_ERR(tfm) == -ENOENT)
  			return 0;
@@ -3684,22 +3638,6 @@ index 000000000..8be8fa949
 +
 +DEFINE_LOCK_GUARD_1_COND(spinlock_bh, _try,
 +				spin_trylock_bh(_T->lock))
-diff --git a/include/linux/swait.h b/include/linux/swait.h
-index d32441948..72da22755 100644
---- a/include/linux/swait.h
-+++ b/include/linux/swait.h
-@@ -41,7 +41,11 @@
- struct task_struct;
- 
- struct swait_queue_head {
-+#ifdef FIPS_CANISTER
-+	unsigned char 		lock[sizeof(raw_spinlock_t)];
-+#else
- 	raw_spinlock_t		lock;
-+#endif
- 	struct list_head	task_list;
- };
- 
 -- 
 2.40.4
 

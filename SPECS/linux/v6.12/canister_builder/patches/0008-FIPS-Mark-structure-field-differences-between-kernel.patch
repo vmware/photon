@@ -9,10 +9,13 @@ between structure fields. These will be allowed to pass the matching
 type check in the matching GCC plugin.
 
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+
+[Alexey: Make it compatible with canister_build]
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
  include/linux/plugin-attr.h | 9 +++++++++
- include/linux/swait.h       | 3 ++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ include/linux/swait.h       | 7 ++++++-
+ 2 files changed, 15 insertions(+), 1 deletions(-)
  create mode 100644 include/linux/plugin-attr.h
 
 diff --git a/include/linux/plugin-attr.h b/include/linux/plugin-attr.h
@@ -42,12 +45,16 @@ index d32441948..8e2d3010d 100644
 
  /*
   * Simple waitqueues are semantically very different to regular wait queues
-@@ -41,7 +42,7 @@
+@@ -41,7 +42,11 @@
  struct task_struct;
 
  struct swait_queue_head {
 -	raw_spinlock_t		lock;
++#ifdef FIPS_CANISTER
++	unsigned char		lock[sizeof(raw_spinlock_t)];
++#else
 +	raw_spinlock_t		lock CANISTER_MISMATCH("raw_spinlock_t", "unsigned char[4]");
++#endif
  	struct list_head	task_list;
  };
 

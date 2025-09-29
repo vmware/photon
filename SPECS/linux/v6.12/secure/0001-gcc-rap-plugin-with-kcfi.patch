@@ -59,7 +59,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  net/bridge/br_private.h                       |   3 +-
  net/netfilter/ipset/ip_set_core.c             |   1 -
  scripts/Makefile.gcc-plugins                  |  12 +
- scripts/gcc-plugins/Makefile                  |   8 +-
+ scripts/gcc-plugins/Makefile                  |   6 +
  scripts/gcc-plugins/rap_plugin/rap.h          |  38 ++
  .../gcc-plugins/rap_plugin/rap_fptr_pass.c    | 224 +++++++
  scripts/gcc-plugins/rap_plugin/rap_hash.c     | 396 +++++++++++++
@@ -67,7 +67,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
- 27 files changed, 1457 insertions(+), 26 deletions(-)
+ 27 files changed, 1456 insertions(+), 25 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -497,7 +497,7 @@ diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
 index 320afd3cf8e8..0d3c8bdeca84 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
-@@ -33,14 +33,20 @@ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
+@@ -33,6 +33,12 @@ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
  		  -fno-rtti -fno-exceptions -fasynchronous-unwind-tables \
  		  -ggdb -Wno-narrowing -Wno-unused-variable \
  		  -Wno-format-diag
@@ -505,20 +505,11 @@ index 320afd3cf8e8..0d3c8bdeca84 100644
 +plugin_cxxflags += -DCONFIG_FUNCTION_PADDING_BYTES='$(CONFIG_FUNCTION_PADDING_BYTES)'
 +endif
 +
++rap_plugin-objs := $(patsubst $(srctree)/$(src)/rap_plugin/%.c,rap_plugin/%.o,$(wildcard $(srctree)/$(src)/rap_plugin/*.c))
++
  
  plugin_ldflags	= -shared
  
-+rap_plugin-objs := $(patsubst $(srctree)/$(src)/rap_plugin/%.c,rap_plugin/%.o,$(wildcard $(srctree)/$(src)/rap_plugin/*.c))
-+
- plugin-single	:= $(foreach m, $(GCC_PLUGIN), $(if $($(m:%.so=%-objs)),,$(m)))
- plugin-multi	:= $(filter-out $(plugin-single), $(GCC_PLUGIN))
- plugin-objs	:= $(sort $(foreach m, $(plugin-multi), $($(m:%.so=%-objs))))
--
- targets += $(plugin-single) $(plugin-multi) $(plugin-objs)
-+
- clean-files += *.so
- 
- plugin-single	:= $(addprefix $(obj)/, $(plugin-single))
 diff --git a/scripts/gcc-plugins/rap_plugin/rap.h b/scripts/gcc-plugins/rap_plugin/rap.h
 new file mode 100644
 index 000000000000..0e2c26301e33

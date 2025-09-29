@@ -17,52 +17,14 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 [Removed rsa, cfb(aes) and added ecdsa-nist-p521 to tamper alg_list]
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- crypto/Kconfig              |  26 +++++++++
  crypto/Makefile             |   1 +
  crypto/crypto_tamper_test.c | 107 ++++++++++++++++++++++++++++++++++++
  crypto/ecc.c                |  16 +++++-
  crypto/testmgr.c            |  60 ++++++++++++++++++++
  init/main.c                 |   9 +++
- 6 files changed, 217 insertions(+), 2 deletions(-)
+ 5 files changed, 191 insertions(+), 2 deletions(-)
  create mode 100644 crypto/crypto_tamper_test.c
 
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 6737f013c..aec7ccaf3 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -253,6 +253,32 @@ config CRYPTO_SELF_TEST
- 	help
- 	  Crypto self test module for FIPS.
- 
-+config CRYPTO_TAMPER_TEST
-+	bool "Tamper KAT, PCT and Integrity Test module"
-+	select CRYPTO_MANAGER
-+	select CRYPTO_FIPS
-+	select CRYPTO_AES
-+	select CRYPTO_CBC
-+	select CRYPTO_CTR
-+	select CRYPTO_XTS
-+	select CRYPTO_HMAC
-+	select CRYPTO_SHA256
-+	select CRYPTO_SHA512
-+	select CRYPTO_RSA
-+	select CRYPTO_DRBG
-+	select CRYPTO_ECDH
-+	select CRYPTO_ECDSA
-+	select CRYPTO_GCM
-+	select CRYPTO_CCM
-+	select CRYPTO_CTS
-+	select CRYPTO_CMAC
-+	select CRYPTO_SHA256
-+	select CRYPTO_SHA512
-+	select CRYPTO_SHA3
-+	help
-+	  Tamper Known Answer Test, Pairwise Consistency
-+	  Test and Integrity Test for FIPS CMVP testing.
-+
- config CRYPTO_SIMD
- 	tristate
- 	select CRYPTO_CRYPTD
 diff --git a/crypto/Makefile b/crypto/Makefile
 index b64406750..0a36a28c8 100644
 --- a/crypto/Makefile

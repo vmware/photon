@@ -93,7 +93,7 @@ Patch14: 0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 0002-apparmor-af_unix-mediation.patch
 Patch17: Performance-over-security-model.patch
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch18: 0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch18: 0001-disable-md5-and-sha1-algorithms-for-sctp-if-fips-is-enabled.patch
 # Enable AUXILIARY BUS, to make building other out-of-tree intel NIC drivers easier
 Patch19: 0001-Enable-AUXILIARY_BUS-by-default.patch
 
@@ -108,7 +108,7 @@ Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
-Patch25: 0001-aead_geniv_ctx-drop-lock-field.patch
+Patch25: 0009-aead_geniv_ctx-drop-lock-field.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
