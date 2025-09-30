@@ -62,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        15%{?acvp_build:.acvp}%{?dist}
+Release:        16%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -499,7 +499,7 @@ manipulation of eBPF programs and maps.
 
 %if 0%{?canister_build}
 %package fips-canister
-Summary:       FIPS canister binary
+Summary:       FIPS canister tarball
 Group:         System Environment/Kernel
 %description fips-canister
 The kernel fips-canister
@@ -736,12 +736,10 @@ popd
 
 %install
 %if 0%{?canister_build}
-pushd crypto
-install -vdm 755 %{buildroot}%{_libdir}/fips-canister-%{version}-%{release}/
-install -vm 644 -t %{buildroot}%{_libdir}/fips-canister-%{version}-%{release}/ \
-   fips_canister.o \
-   fips_canister-kallsyms
-popd
+install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
+tar -cvjf %{buildroot}%{_libdir}/fips-canister/fips-canister-%{version}-%{release}.tar.bz2 \
+   crypto/fips_canister.o \
+   crypto/fips_canister-kallsyms
 %endif
 
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -940,11 +938,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %if 0%{?canister_build}
 %files fips-canister
 %defattr(-,root,root)
-%{_libdir}/fips-canister-%{version}-%{release}/fips_canister.o
-%{_libdir}/fips-canister-%{version}-%{release}/fips_canister-kallsyms
+%{_libdir}/fips-canister/*
 %endif
 
 %changelog
+* Tue Sep 30 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-16
+- fips-canister: go back to tarball as the only way to preserve unstripped
+  fips_canister.o
 * Mon Sep 29 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-15
 - Moving MPI library API inside canister
 * Mon Sep 29 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.41-14
