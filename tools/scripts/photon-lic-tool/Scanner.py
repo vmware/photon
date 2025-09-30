@@ -463,7 +463,7 @@ class Scanner:
             with open(config_yaml_path, "r") as config_yaml_f:
                 self._config_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
 
-            for shared_cfg in self._config_yaml['shared_sources']:
+            for shared_cfg in self._config_yaml.get('shared_sources', []):
                 with open(f"{self._ph_root}/SPECS/{shared_cfg}") as config_yaml_f:
                     shared_cfg_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
                     addl_srcs = shared_cfg_yaml['sources']
