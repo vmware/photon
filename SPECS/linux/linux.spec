@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.153
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -258,6 +258,10 @@ Patch143: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
 
 # Fix CVE-2024-56611
 Patch144: 0001-mm-mempolicy-fix-migrate_to_node-assuming-there-is-a.patch
+
+# Fix CVE-2024-38564
+Patch146: 0001-bpf-Add-attach_type-checks-under-bpf_prog_attach_che.patch
+Patch147: 0002-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
 
 # Fix CVE-2024-50018
 Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
@@ -1049,6 +1053,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Sep 29 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.153-2
+- Fix CVE-2024-38564
 * Wed Sep 24 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.153-1
 - Update to version 6.1.153
 * Mon Sep 22 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.148-3
