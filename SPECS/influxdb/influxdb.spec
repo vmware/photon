@@ -1,24 +1,28 @@
-%define network_required 1
-%define gopath_comp_influxdb github.com/influxdata/influxdb
+%define network_required    1
+%define gopath_comp_influxdb github.com/influxdata/%{name}
+%define commit_id       688e697c51fd5353725da078555adbeff0363d01
+%define main_branch     1.8
 
 Name:           influxdb
 Version:        1.8.10
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        InfluxDB is an open source time series database
 URL:            https://influxdata.com
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Group:          Applications/Database
+
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
 
 Source2:        %{name}.sysusers
 
 Source3: license.txt
 %include %{SOURCE3}
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Group:          Applications/Database
+
 BuildRequires:  go >= 1.13
 BuildRequires:  git
-BuildRequires:  systemd
 BuildRequires:  systemd-devel
+
 Requires:       systemd-rpm-macros
 Requires:       systemd
 Requires:       shadow
@@ -29,7 +33,7 @@ It's useful for recording metrics, events, and performing analytics.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -c -n %{name}-%{version}
+%setup -q -c
 
 mkdir -p "$(dirname src/%{gopath_comp_influxdb})"
 mv %{name}-%{version} src/%{gopath_comp_influxdb}
@@ -39,7 +43,8 @@ export GO111MODULE=auto
 export GOPATH="${PWD}"
 pushd src/%{gopath_comp_influxdb}
 go clean ./...
-go install ./...
+go install \
+  -ldflags="-X main.version=%{version} -X main.commit=%{commit_id} -X main.branch=%{main_branch}" ./...
 popd
 
 %check
@@ -51,21 +56,24 @@ popd
 
 %install
 export GOPATH="${PWD}"
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_sysconfdir}/influxdb
-mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system
-mkdir -p %{buildroot}%{_mandir}/man1/
-mkdir -p %{buildroot}%{_sharedstatedir}/influxdb
-mkdir -p %{buildroot}%{_localstatedir}/log/influxdb
-mkdir -m 755 -p %{buildroot}%{_libdir}/influxdb/scripts
-cp -r bin/influx* %{buildroot}%{_bindir}
+mkdir -p \
+  %{buildroot}%{_bindir} \
+  %{buildroot}%{_sysconfdir}/%{name} \
+  %{buildroot}%{_sysconfdir}/logrotate.d \
+  %{buildroot}%{_unitdir} \
+  %{buildroot}%{_mandir}/man1 \
+  %{buildroot}%{_sharedstatedir}/%{name} \
+  %{buildroot}%{_var}/log/%{name}
+
+mkdir -p -m 755 %{buildroot}%{_libdir}/%{name}/scripts
+
+cp -a bin/influx* %{buildroot}%{_bindir}
 pushd src/%{gopath_comp_influxdb}
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
-install -p -m 0755 scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
-cp etc/config.sample.toml %{buildroot}%{_sysconfdir}/influxdb/influxdb.conf
-cp scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/influxdb
-cp scripts/influxdb.service %{buildroot}%{_prefix}/lib/systemd/system
+install -p -m 0755 scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/%{name}/scripts/influxd-systemd-start.sh
+cp etc/config.sample.toml %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+cp scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+cp scripts/%{name}.service %{buildroot}%{_prefix}/lib/systemd/system
 cp man/influx.txt %{buildroot}%{_mandir}/man1/influx.1
 cp man/influx_inspect.txt %{buildroot}%{_mandir}/man1/influx_inspect.1
 cp man/influx_stress.txt %{buildroot}%{_mandir}/man1/influx_stress.1
@@ -86,23 +94,23 @@ rm -rf %{buildroot}/*
 %post
 chown -R %{name}:%{name} /var/lib/%{name}
 chown -R %{name}:%{name} /var/log/%{name}
-%systemd_post influxdb.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun influxdb.service
+%systemd_preun %{name}.service
 
 %postun
-%systemd_postun_with_restart influxdb.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root,755)
-%dir %config(noreplace) %{_sysconfdir}/influxdb
-%dir %{_sharedstatedir}/influxdb
-%dir %{_localstatedir}/log/influxdb
-%config(noreplace) %{_sysconfdir}/influxdb/influxdb.conf
-%config(noreplace) %{_sysconfdir}/logrotate.d/influxdb
-%{_libdir}/influxdb/scripts/influxd-systemd-start.sh
-%{_prefix}/lib/systemd/system/influxdb.service
+%dir %config(noreplace) %{_sysconfdir}/%{name}
+%dir %{_sharedstatedir}/%{name}
+%dir %{_var}/log/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
+%{_libdir}/%{name}/scripts/influxd-systemd-start.sh
+%{_prefix}/lib/systemd/system/%{name}.service
 %{_bindir}/influxd
 %{_bindir}/influx
 %{_bindir}/influx_inspect
@@ -112,6 +120,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Sep 30 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.8.10-17
+- Fix to show version,branch and commit details in influxd command
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.10-16
 - Renaming sysusers to conf to fix auto user creation
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.10-15
