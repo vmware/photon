@@ -210,6 +210,8 @@ class Scanner:
         archive_checksum = ""
         src_url = ""
         local_checksum = ""
+        pub_src_url = ""
+        rc = 0
 
         for source in self._config_yaml["sources"]:
             archive = source["archive"]
@@ -219,7 +221,7 @@ class Scanner:
                 continue
 
             archive_checksum = source["archive_sha512sum"]
-            src_url = f"{common.ph_pub_url}/photon_sources/1.0/{archive}"
+            pub_src_url = f"{common.ph_pub_url}/photon_sources/1.0/{archive}"
 
             if not common.is_extractable(archive):
                 pr_err(
@@ -234,19 +236,23 @@ class Scanner:
                 print(f"LOCAL: Found {archive} at {local_path}, copying...")
                 shutil.copy2(local_path, output_path)
             elif not os.path.exists(output_path):
-                rc = common.download_file(src_url, output_path, allow_failure=True)
-                if rc < 0 and alt_src_url:
-                    pr_err(
-                        f"Failed to download {src_url}, trying alternative"
-                    )
-                    src_url = f"{alt_src_url}/{archive}"
+                if alt_src_url:
+                    print(f"Trying to download from {alt_src_url} first...")
 
+                    src_url = f"{alt_src_url}/{archive}"
                     rc = common.download_file(src_url, output_path, allow_failure=True)
+
+                if rc < 0 or not alt_src_url:
+                    pr_err(
+                        f"Failed to download {src_url}, trying published..."
+                    )
+
+                    rc = common.download_file(pub_src_url, output_path, allow_failure=True)
 
                 # Finally, try downloading from the outside URL
                 if rc < 0 and "url" in source:
                     pr_err(
-                        f"Failed to download {src_url}, trying directly"
+                        f"Failed to download {pub_src_url}, trying directly from config.yaml URL"
                     )
                     src_url = source["url"]
                     rc = common.download_file(src_url, output_path, allow_failure=True)
