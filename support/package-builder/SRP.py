@@ -205,19 +205,29 @@ class SRP(object):
         name, version, _ = filename.split('-')
         return f"uid.obj.comp.file(org='upstream-services-gradle-virtual',name='{name}',version='{version}')"
 
-    def extractPathsFromObservations(self, observationFile) -> list[str]:
-        observations = json.load(observationFile)
+    def checkObservationIgnored(self, group):
+        for ign in constants.observationIgnHostPatterns:
+            if ign.fullmatch(group['host']) is not None:
+                return True
+        return False
+
+    def trimObservationsAndExtractPaths(self, observations) -> list[str]:
         additional_paths = []
         items = observations["items"]
         for item in items:
             if item['typename'] != 'local_observation.https':
                 continue
             groups = item['groups']
+            trimed_groups = []
             for group in groups:
+                if self.checkObservationIgnored(group):
+                    continue
+                trimed_groups.append(group)
                 if group['method'] != 'GET':
                     continue
                 paths = group['paths']
                 additional_paths.extend(paths)
+            item['groups'] = trimed_groups
         return additional_paths
 
     def addInputSource(self, file, checksum):
@@ -245,25 +255,23 @@ class SRP(object):
             except Exception as e:
                 self.logger.exception(e)
 
-    def addAdditionalDeps(self, observationsFile):
+    def addAdditionalDeps(self, additional_paths):
         if not self.srpcli:
             return
         try:
-            with open(observationsFile) as observationsfp:
-                additional_paths = self.extractPathsFromObservations(observationsfp)
-                for path in additional_paths:
-                    if path.startswith(GO_REMOTE_PREFIX):
-                        self.schematic["input_templates"]["go-comps"][self.goDepPathToUid(path)] = {
-                            "incorporated": True, "usages": ["functionality", "building"], "modified": False, "interaction_type": "static_linking"}
-                    elif path.startswith(MAVEN_REMOTE_PREFIX) and path.endswith(".jar"):
-                        self.schematic["input_templates"]["maven-comps"][self.mavenPathToUid(path)] = {
-                            "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
-                    elif path.startswith(GRADLE_PLUGINS_REMOTE_PREFIX) and path.endswith(".jar"):
-                        self.schematic["input_templates"]["gradle-comps"][self.gradlePathToUid(path)] = {
-                            "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
-                    elif path.startswith(GRADLE_SERVICES_VIRTUAL_PREFIX) and path.endswith(".zip"):
-                        self.schematic["input_templates"]["gradle-comps"][self.gradleDistPathToUid(path)] = {
-                            "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+            for path in additional_paths:
+                if path.startswith(GO_REMOTE_PREFIX):
+                    self.schematic["input_templates"]["go-comps"][self.goDepPathToUid(path)] = {
+                        "incorporated": True, "usages": ["functionality", "building"], "modified": False, "interaction_type": "static_linking"}
+                elif path.startswith(MAVEN_REMOTE_PREFIX) and path.endswith(".jar"):
+                    self.schematic["input_templates"]["maven-comps"][self.mavenPathToUid(path)] = {
+                        "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+                elif path.startswith(GRADLE_PLUGINS_REMOTE_PREFIX) and path.endswith(".jar"):
+                    self.schematic["input_templates"]["gradle-comps"][self.gradlePathToUid(path)] = {
+                        "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+                elif path.startswith(GRADLE_SERVICES_VIRTUAL_PREFIX) and path.endswith(".zip"):
+                    self.schematic["input_templates"]["gradle-comps"][self.gradleDistPathToUid(path)] = {
+                        "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
         except Exception as e:
             self.logger.exception(e)
 
@@ -325,24 +333,26 @@ class SRP(object):
             ["provenance", "action", "import-cmd", "--cmd", env_str + " ".join(cmd)]
         )
 
-    def addObservation(self, observation):
+    def addObservation(self, observationFile):
         if not self.srpcli:
-            if observation:
-                observation.close()
+            if observationFile:
+                observationFile.close()
             return
 
         network_required = SPECS.getData().isNetworkRequired(
             self.package, self.fullVersion
         )
-        if not observation:
+        if not observationFile:
             if network_required:
                 raise Exception("Observation file is required but not generated")
             return
 
-        with tempfile.NamedTemporaryFile() as temp:
-            shutil.copyfileobj(observation, temp)
+        observations = json.load(observationFile)
+        observation_paths = self.trimObservationsAndExtractPaths(observations)
+        self.addAdditionalDeps(observation_paths)
+        with tempfile.NamedTemporaryFile(mode='w+') as temp:
+            json.dump(observations, temp)
             temp.flush()
-            self.addAdditionalDeps(temp.name)
             self.srpcli_run(
                 [
                     "provenance",
@@ -354,7 +364,7 @@ class SRP(object):
                 ]
             )
 
-        observation.close()
+        observationFile.close()
 
     def finalize(self):
         if not self.srpcli:

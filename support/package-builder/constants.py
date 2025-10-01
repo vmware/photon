@@ -1,6 +1,7 @@
 #!/usr/bin/env/ python3
 
 import json
+import re
 import platform
 
 from copy import deepcopy
@@ -49,6 +50,7 @@ class constants(object):
     buildOptions = {}
     srpcli = None
     observerDockerImage = None
+    observationIgnHostPatterns = []
     isolatedDockerNetwork = None
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
@@ -406,3 +408,9 @@ class constants(object):
     def set_rebuild(val):
         if val:
             constants.rebuild = True
+
+    @staticmethod
+    def set_observer_rules(ruleset):
+        constants.observationIgnHostPatterns = [
+            re.compile(patt) for patt in ruleset.get("ignored-hosts", [])
+        ]

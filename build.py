@@ -1766,6 +1766,7 @@ def initialize_constants():
     constants.observerDockerImage = configdict.get(
         "observer-docker-image", None
     )
+    constants.set_observer_rules(configdict.get("observer-rules", {}))
     # Isolated/firewalled network for sandbox attach to.
     constants.isolatedDockerNetwork = configdict.get(
         "isolated-docker-network", None
