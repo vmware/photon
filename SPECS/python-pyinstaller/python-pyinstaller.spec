@@ -2,7 +2,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
 Version:        6.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
@@ -28,9 +28,9 @@ Requires:       python3-libs
 Requires:       zlib
 Requires:       python3-setuptools
 Requires:       python3-xml
-Requires:       python3-pyinstaller-hooks-contrib
+Requires:       python3-pyinstaller-hooks-contrib >= 2024.8
 Requires:       python3-altgraph
-Requires:       python3-packaging
+Requires:       python3-packaging >= 22.0
 
 %description
 PyInstaller bundles a Python application and all its dependencies into a single package. The user can run the packaged app without installing a Python interpreter or any modules.
@@ -73,6 +73,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Tue Sep 30 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.10.0-2
+-   Include dependent package version constraints
 *   Tue Sep 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.10.0-1
 -   Upgrade to fix CVE-2025-59042
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.7-1
