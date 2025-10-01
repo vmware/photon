@@ -1,15 +1,15 @@
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
 Version:        25.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://files.pythonhosted.org/packages/source/p/packaging/packaging-%{version}.tar.gz
-%define sha512  packaging=0672602d2e18c3aee71b3e567b0de572bc8613ee3d24a79a655ded23ac08ec4582193225bc0c0ea390ed81cf5efbb46e8afbe0798d14f2235f811f263c25728c
+Source0:        https://github.com/pypa/packaging/archive/refs/tags/packaging-%{version}.tar.gz
+%define sha512  packaging=fb8419f81f0f817440c0b297fc6e963832e219e7a324bf4e0321f1e131a4822f17a19f2eb033a8d4adb622ccb16db59776ec44906a0c0b34f2877b59b9558c18
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -56,6 +56,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 01 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.0-2
+-   Rebuild with source tarball from github instead of pypi
 *   Mon Sep 22 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.0-1
 -   Update to latest as runtime requirement for pyinstaller
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.4-4
