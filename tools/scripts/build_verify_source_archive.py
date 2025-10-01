@@ -52,9 +52,10 @@ class SourceSchematic(object):
         self.outputs[source_uid] = {
             "url_base": sources_url,
             "manifest": [
-                {"$(env:PHOTON_SOURCES_PATH)": {"include": [archive_name]}}
+                {
+                "$(env:PHOTON_SOURCES_PATH)": {"include": [archive_name], "manifest_root": "./"},
+                }
             ],
-            "manifest_root": "./",
             "merge_spdx_template": "spdx",
         }
 
