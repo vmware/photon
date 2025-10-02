@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -139,6 +139,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/*/*
 
 %changelog
+* Thu Oct 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-10
+- Fix used licenses
 * Tue Sep 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-9
 - Remove bash-completion related files
 - bash-completion is a new package now
