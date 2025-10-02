@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.155
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -248,6 +248,9 @@ Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 
 # Fix CVE-2024-46811
 Patch139: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
+
+# Fix CVE-2024-35949
+Patch140: 0001-btrfs-make-sure-that-WRITTEN-is-set-on-all-metadata-.patch
 
 # Fix CVE-2024-46834
 Patch141: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -1078,6 +1081,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-5
+- Fix CVE-2024-35949
 * Mon Oct 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.155-4
 - Fixes CVE-2025-38705 and CVE-2025-39705
 * Mon Oct 13 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.155-3

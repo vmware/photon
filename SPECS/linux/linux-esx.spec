@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.155
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -239,6 +239,9 @@ Patch141: 0001-mm-mempolicy-fix-migrate_to_node-assuming-there-is-a.patch
 # Fix CVE-2024-38564
 Patch143: 0001-bpf-Add-attach_type-checks-under-bpf_prog_attach_che.patch
 Patch144: 0002-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
+
+# Fix CVE-2024-35949
+Patch145: 0001-btrfs-make-sure-that-WRITTEN-is-set-on-all-metadata-.patch
 
 # Fix CVE-2024-50018
 Patch147: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
@@ -675,6 +678,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-5
+- Fix CVE-2024-35949
 * Mon Oct 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.155-4
 - Fixes CVE-2025-38705 and CVE-2025-39705
 * Mon Oct 13 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.155-3
