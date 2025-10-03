@@ -21,12 +21,11 @@ REPO_DIR = os.path.join(STAGE_DIR, "RPMS")
 
 ARCH_MAP = {"x86_64": "amd64", "aarch64": "arm64"}
 
-if THIS_ARCH == "x86_64":
-    POI_IMAGE = "projects.registry.vmware.com/photon/installer:ob-23999758"
-elif THIS_ARCH == "aarch64":
-    POI_IMAGE = "projects.registry.vmware.com/photon/installer-arm64:ob-22815437"
-else:
-    raise Exception(f"unknown arch {THIS_ARCH}")
+assert THIS_ARCH in ARCH_MAP, f"unknown arch {THIS_ARCH}"
+
+# override with env variable "POI_IMAGE",
+# or use `--docker-image` command line option
+POI_IMAGE = "photon/installer"
 
 
 class Poi(object):
@@ -89,7 +88,15 @@ class Poi(object):
         poi_cmd.extend(command)
 
         print(f"running {poi_cmd}")
-        out = subprocess.run(poi_cmd, check=True)
+        try:
+            subprocess.check_call(poi_cmd, text=True)
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 125:
+                print(f"docker run failed with exit code 125, likely because the image {self.poi_image} does not exist.")
+                print("Please see https://github.com/vmware/photon-os-installer/tree/master/docker for build instructions.")
+            else:
+                print(f"docker run with iamge {self.poi_image} failed with {e.returncode}")
+            raise
 
     #
     # copy config files from configs/{type} to stage dir
@@ -447,6 +454,9 @@ def main():
     repo_dir = None
     arch = THIS_ARCH
     sha = None
+
+    if 'POI_IMAGE' in os.environ:
+        poi_image = os.environ['POI_IMAGE']
 
     try:
         opts, args = getopt.getopt(
