@@ -7,7 +7,6 @@
             "crypted": false,
             "text": "changeme"
         },
-        "public_key": "",
         "linux_flavor": "linux-esx"
     },
     "image_type": "ova",
