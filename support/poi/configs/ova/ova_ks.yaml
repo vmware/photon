@@ -14,6 +14,4 @@ password:
   crypted: false
   text: changeme
 
-public_key: ""
-
 linux_flavor: linux-esx
