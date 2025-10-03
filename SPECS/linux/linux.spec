@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.244
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -440,6 +440,15 @@ Patch243:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
 Patch244: 0001-gpiolib-cdev-fix-uninitialised-kfifo.patch
 # Fix CVE-2024-35932
 Patch245: 0001-drm-vc4-don-t-check-if-plane-state-fb-state-fb.patch
+
+# Fix CVE-2024-38564
+Patch246: 0001-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
+
+# Fix CVE-2024-38556
+Patch247: 0001-net-mlx5-Add-a-timeout-to-acquire-the-command-queue-.patch
+
+# Fix CVE-2024-26792
+Patch248: 0001-btrfs-fix-double-free-of-anonymous-device-after-snap.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1126,6 +1135,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Oct 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.244-5
+- Fixes CVE-2024-38564, CVE-2024-26792, CVE-2024-38556
 * Wed Oct 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.244-4
 - Fix CVE-2025-38728, CVE-2022-49743, CVE-2023-52975
 - CVE-2022-49226, CVE-2022-48816 and CVE-2024-39490

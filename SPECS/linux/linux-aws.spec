@@ -19,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.244
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -370,6 +370,12 @@ Patch240:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
 Patch241: 0001-gpiolib-cdev-fix-uninitialised-kfifo.patch
 # Fix CVE-2024-35932
 Patch242: 0001-drm-vc4-don-t-check-if-plane-state-fb-state-fb.patch
+
+# Fix CVE-2024-38564
+Patch243: 0001-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
+
+# Fix CVE-2024-26792
+Patch244: 0001-btrfs-fix-double-free-of-anonymous-device-after-snap.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -724,6 +730,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Oct 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.244-5
+- Fixes CVE-2024-38564, CVE-2024-26792
 * Wed Oct 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.244-4
 - Fix CVE-2025-38728, CVE-2022-49743, CVE-2023-52975
 - CVE-2022-49226, CVE-2022-48816 and CVE-2024-39490

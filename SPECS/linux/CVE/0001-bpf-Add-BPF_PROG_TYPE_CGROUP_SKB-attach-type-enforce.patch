@@ -1,0 +1,66 @@
+From ea04577cc4f824bcf654c36dbee1db266c5ee1d2 Mon Sep 17 00:00:00 2001
+From: Stanislav Fomichev <sdf@google.com>
+Date: Fri, 26 Apr 2024 16:16:18 -0700
+Subject: [PATCH] bpf: Add BPF_PROG_TYPE_CGROUP_SKB attach type enforcement in
+ BPF_LINK_CREATE
+
+[ Upstream commit 543576ec15b17c0c93301ac8297333c7b6e84ac7 ]
+
+bpf_prog_attach uses attach_type_to_prog_type to enforce proper
+attach type for BPF_PROG_TYPE_CGROUP_SKB. link_create uses
+bpf_prog_get and relies on bpf_prog_attach_check_attach_type
+to properly verify prog_type <> attach_type association.
+
+Add missing attach_type enforcement for the link_create case.
+Otherwise, it's currently possible to attach cgroup_skb prog
+types to other cgroup hooks.
+
+Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+Link: https://lore.kernel.org/bpf/0000000000004792a90615a1dde0@google.com/
+Reported-by: syzbot+838346b979830606c854@syzkaller.appspotmail.com
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Acked-by: Eduard Zingerman <eddyz87@gmail.com>
+Link: https://lore.kernel.org/r/20240426231621.2716876-2-sdf@google.com
+Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Ported to v5.10. 3505cb9fa is not present, so add prototype
+  attach_type_to_prog_type() before bpf_prog_attach_check_attach_type() ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ kernel/bpf/syscall.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index dc3d9a111cf1..38fa1e752177 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2934,9 +2934,14 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+ 	return err;
+ }
+ 
++static enum bpf_prog_type
++attach_type_to_prog_type(enum bpf_attach_type attach_type);
++
+ static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
+ 					     enum bpf_attach_type attach_type)
+ {
++	enum bpf_prog_type ptype;
++
+ 	switch (prog->type) {
+ 	case BPF_PROG_TYPE_CGROUP_SOCK:
+ 	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
+@@ -2949,6 +2954,11 @@ static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
+ 			 * check permissions at attach time.
+ 			 */
+ 			return -EPERM;
++
++		ptype = attach_type_to_prog_type(attach_type);
++		if (prog->type != ptype)
++			return -EINVAL;
++
+ 		return prog->enforce_expected_attach_type &&
+ 			prog->expected_attach_type != attach_type ?
+ 			-EINVAL : 0;
+-- 
+2.40.4
+
