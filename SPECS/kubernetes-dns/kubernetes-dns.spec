@@ -2,16 +2,18 @@
 
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
-Version:        1.22.20
-Release:        13%{?dist}
+Version:        1.22.23
+Release:        1%{?dist}
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        https://github.com/kubernetes/dns/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 BuildRequires:  go
 BuildRequires:  ca-certificates
 
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+* Sun Oct 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.22.23-1
+- Upgrade to v1.22.23
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.20-13
 - Release bump for SRP compliance
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.20-12
