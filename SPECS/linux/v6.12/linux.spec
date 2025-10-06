@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        17%{?acvp_build:.acvp}%{?dist}
+Release:        18%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -857,6 +857,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 06 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-18
+- Canister: use __NO_FORTIFY and use memcpy as is
 * Tue Sep 30 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-17
 - Cleanup canister usage/build patch sets
 * Tue Sep 30 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-16

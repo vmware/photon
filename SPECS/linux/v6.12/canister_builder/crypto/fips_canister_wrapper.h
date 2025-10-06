@@ -60,7 +60,6 @@ extern void fcw_mutex_unlock(void *m);
 
 extern bool fcw_schedule_work(struct work_struct *work);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
-extern void *fcw_memcpy(void *dst, const void *src, size_t len);
 extern void fcw_bug(void);
 extern void fcw_bug_on(int cond);
 extern int fcw_warn_on(bool cond);
