@@ -7,7 +7,10 @@
             "crypted": false,
             "text": "changeme"
         },
-        "public_key": "",
+        "public_key": {
+            "key": "",
+            "reason": "testing"
+        },
         "linux_flavor": "linux-esx"
     },
     "image_type": "ova",
