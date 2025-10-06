@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
-Version:        10.1.43
-Release:        3%{?dist}
+Version:        10.1.46
+Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -152,6 +152,9 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Mon Oct 06 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.46-1
+- Version upgrade
+- Fixes CVE-2025-48989
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.1.43-3
 - Update Requires to jre >= 11.0
 * Tue Aug 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.43-2
