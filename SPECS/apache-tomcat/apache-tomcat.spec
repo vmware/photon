@@ -8,8 +8,8 @@
 
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.99
-Release:        3%{?dist}
+Version:        8.5.100
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -17,7 +17,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha512 %{name}=a8aabf6d12ef89d2b908f0739392e595b3d481ceca124580323e3f3d3c26f4a39c960dcc3686efb5219bf10a7b5b55fc8c9f742a87eb975e04ed40415cab2e51
+%define sha512 %{name}=ae03d6b99ba4d7b7718c0c9040db7cdd5db3e047efa3dc8ff145b3005733285b134462e0d47ef10730aba6d5ef9f7aa9d4fbd46f1dafe0ac622ac8fc2201aea2
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -29,7 +29,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}
 # 4. mv tomcat-build-libs base-for-%{name}-%{version}
 # 5. tar -cvzf base-for-%{name}-%{version}.tar.gz base-for-%{name}-%{version}
 Source1: base-for-%{name}-%{version}.tar.gz
-%define sha512 base=cc525280908115bc0f8494d49b4888d1b0ef10e7f17ff1d940d577123b393e3e403f85f60f554276945868dcb362fb5be01cab218a338e35fca61ca9c6eecefe
+%define sha512 base=38e269ed7f04c1611c0ca054ff86eca487ad765617c831204b7e18599e6fb0119f430866778fdb0c4d307987bc3eb9eec64e822464b88433e35ceb8e2eb38c83
 
 Patch0: apache-tomcat-use-jks-as-inmem-keystore.patch
 
@@ -132,6 +132,9 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Mon Aug 25 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.5.100-1
+- Version upgrade
+- Fixes multiple CVEs
 * Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.99-3
 - Add jdk21 to requires list
 * Fri Apr 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.5.99-2
