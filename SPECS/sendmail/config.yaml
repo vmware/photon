@@ -1,6 +1,6 @@
 sources:
-- archive: sendmail.8.18.0.2.tar.gz
-  archive_sha512sum: b2ee60595285bf79e5216fcc039c3b321f4719311f6ab3fbd6ad787254b17997639ca9f709036d6a5b552ffc573d22efbc392fafba5952bf77b8b9c1f55edc70
+- archive: sendmail.8.18.1.10.tar.gz
+  archive_sha512sum: eda3dbb9a689d1e550776c96591122c484036755ba53fdaf5623130144cbab315256c9bf491161090731a8f762184e69505c45009a333aabdf40567ea226273d
   skip_validation: true
   spdx:
     package:

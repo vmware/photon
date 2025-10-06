@@ -1,7 +1,7 @@
 Summary:        Daemon to ban hosts that cause multiple authentication errors
 Name:           fail2ban
 Version:        1.0.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Productivity/Networking/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -202,6 +202,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/jail.d/00-%{name}-systemd.conf
 
 %changelog
+* Mon Oct 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2-6
+- Version bump up to use sendmail v8.18.1.10
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2-5
 - Build without tcp_wrappers
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.2-4

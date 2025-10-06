@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
-Version:          8.18.0.2
-Release:          3%{?dist}
+Version:          8.18.1.10
+Release:          1%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -12,8 +12,6 @@ Source1: %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
-
-Patch0: fix-compatibility-with-openssl-3.0.patch
 
 BuildRequires: systemd-devel
 BuildRequires: openldap-devel
@@ -192,6 +190,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Fri Oct 03 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.18.1.10-1
+- Update to 8.18.1.10
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 8.18.0.2-3
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.0.2-2
