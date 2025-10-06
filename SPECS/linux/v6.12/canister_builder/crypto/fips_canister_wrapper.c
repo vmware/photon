@@ -80,7 +80,6 @@ static __ro_after_init bool alg_request_report = false;
 extern void fcw_sg_set_buf(struct scatterlist *sg, const void *buf, unsigned int buflen);
 extern int fcw_warn_on(bool cond);
 extern size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
-extern void *fcw_memcpy(void *dst, const void *src, size_t len);
 
 void *fcw_sg_page(struct scatterlist *sg);
 int fcw_signal_pending(void);
@@ -462,14 +461,10 @@ int fcw_is_warn_true(int cond)
 	int __ret_warn_on = !!(cond);
 	return unlikely(__ret_warn_on);
 }
+
 void fcw_warn(void)
 {
 	__WARN_FLAGS(BUGFLAG_NO_CUT_HERE | BUGFLAG_TAINT(TAINT_WARN));
-}
-
-void *fcw_memcpy(void *dst, const void *src, size_t len)
-{
-	return memcpy(dst, src, len);
 }
 
 size_t fcw_copy_from_iter(void *addr, size_t bytes, struct iov_iter *i)
@@ -600,7 +595,7 @@ static int build_test_sglist(struct test_sglist *tsgl,
 
 	sg_mark_end(&tsgl->sgl[tsgl->nents - 1]);
 	tsgl->sgl_ptr = tsgl->sgl;
-	fcw_memcpy(tsgl->sgl_saved, tsgl->sgl, tsgl->nents * sizeof(tsgl->sgl[0]));
+	memcpy(tsgl->sgl_saved, tsgl->sgl, tsgl->nents * sizeof(tsgl->sgl[0]));
 	return 0;
 }
 
@@ -658,9 +653,9 @@ int fcw_build_cipher_test_sglists(struct cipher_test_sglists *tsgls,
 		 * two scatterlists have identical entries, rather than
 		 * different entries that split up the same memory differently.
 		 */
-		fcw_memcpy(tsgls->dst.sgl, tsgls->src.sgl,
+		memcpy(tsgls->dst.sgl, tsgls->src.sgl,
 		       tsgls->src.nents * sizeof(tsgls->src.sgl[0]));
-		fcw_memcpy(tsgls->dst.sgl_saved, tsgls->src.sgl,
+		memcpy(tsgls->dst.sgl_saved, tsgls->src.sgl,
 		       tsgls->src.nents * sizeof(tsgls->src.sgl[0]));
 		tsgls->dst.sgl_ptr = tsgls->dst.sgl;
 		tsgls->dst.nents = tsgls->src.nents;

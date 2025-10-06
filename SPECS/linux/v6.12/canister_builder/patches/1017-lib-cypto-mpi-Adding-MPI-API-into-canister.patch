@@ -255,7 +255,7 @@ diff --git a/lib/crypto/mpi/mpi-internal.h b/lib/crypto/mpi/mpi-internal.h
 index 8a4f49e30..9fd82154b 100644
 --- a/lib/crypto/mpi/mpi-internal.h
 +++ b/lib/crypto/mpi/mpi-internal.h
-@@ -17,15 +17,21 @@
+@@ -17,15 +17,20 @@
  #ifndef G10_MPI_INTERNAL_H
  #define G10_MPI_INTERNAL_H
  
@@ -270,7 +270,6 @@ index 8a4f49e30..9fd82154b 100644
 -#define log_bug printk
 +extern int fcw_printk(const char *fmt, ...);
 +extern void fcw_bug_on(int cond);
-+extern void *fcw_memcpy(void *dst, const void *src, size_t len);
 +extern void *fcw_kmalloc(size_t size, gfp_t flags);
 +extern void *fcw_kcalloc(size_t n, size_t size, gfp_t flags);
 +extern void *fcw_kzalloc(size_t size, gfp_t flags);
@@ -377,14 +376,7 @@ index dde010308..1a7729430 100644
  
  static int count_lzeros(MPI a)
  {
-@@ -180,13 +178,12 @@ int mpi_read_buffer(MPI a, uint8_t *buf, unsigned buf_len, unsigned *nbytes,
- #else
- #error please implement for this limb size.
- #endif
--		memcpy(p, (u8 *)&alimb + lzeros, BYTES_PER_MPI_LIMB - lzeros);
-+		fcw_memcpy(p, (u8 *)&alimb + lzeros, BYTES_PER_MPI_LIMB - lzeros);
- 		p += BYTES_PER_MPI_LIMB - lzeros;
- 		lzeros = 0;
+@@ -180,7 +178,6 @@ int mpi_read_buffer(MPI a, uint8_t *buf, unsigned buf_len, unsigned *nbytes,
  	}
  	return 0;
  }
@@ -485,8 +477,7 @@ index 979ece5a8..58c8ab7fb 100644
 +		p = fcw_kcalloc(nlimbs, sizeof(mpi_limb_t), GFP_KERNEL);
  		if (!p)
  			return -ENOMEM;
--		memcpy(p, a->d, a->alloced * sizeof(mpi_limb_t));
-+		fcw_memcpy(p, a->d, a->alloced * sizeof(mpi_limb_t));
+ 		memcpy(p, a->d, a->alloced * sizeof(mpi_limb_t));
  		kfree_sensitive(a->d);
  		a->d = p;
  	} else {

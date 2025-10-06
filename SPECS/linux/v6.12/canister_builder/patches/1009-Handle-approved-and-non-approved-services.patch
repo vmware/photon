@@ -280,15 +280,16 @@ diff --git a/crypto/cbc.c b/crypto/cbc.c
 index 1300cf12d..20bc532e3 100644
 --- a/crypto/cbc.c
 +++ b/crypto/cbc.c
-@@ -10,6 +10,7 @@
+@@ -10,6 +10,8 @@
  #include <linux/init.h>
  #include <linux/kernel.h>
  #include <linux/log2.h>
 +#include <linux/fips.h>
- #include "fips_canister_wrapper.h"
++#include "fips_canister_wrapper.h"
 
  static int crypto_cbc_encrypt_segment(struct crypto_lskcipher *tfm,
-@@ -158,6 +159,9 @@ static int crypto_cbc_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 				      const u8 *src, u8 *dst, unsigned nbytes,
+@@ -157,6 +159,9 @@ static int crypto_cbc_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
  out_free_inst:
  		inst->free(inst);
@@ -635,15 +636,16 @@ diff --git a/crypto/ghash-generic.c b/crypto/ghash-generic.c
 index 050fa7d93..19d4b7803 100644
 --- a/crypto/ghash-generic.c
 +++ b/crypto/ghash-generic.c
-@@ -41,6 +41,7 @@
+@@ -41,6 +41,8 @@
  #include <linux/crypto.h>
  #include <linux/init.h>
  #include <linux/kernel.h>
 +#include <linux/fips.h>
- #include "fips_canister_wrapper.h"
++#include "fips_canister_wrapper.h"
 
  static int ghash_init(struct shash_desc *desc)
-@@ -167,7 +168,14 @@ static struct shash_alg ghash_alg = {
+ {
+@@ -167,7 +169,14 @@ static struct shash_alg ghash_alg = {
 
  int __init ghash_mod_init(void)
  {
@@ -722,15 +724,16 @@ diff --git a/crypto/seqiv.c b/crypto/seqiv.c
 index 6d83eda77..17a343724 100644
 --- a/crypto/seqiv.c
 +++ b/crypto/seqiv.c
-@@ -15,6 +15,7 @@
+@@ -15,6 +15,8 @@
  #include <linux/kernel.h>
  #include <linux/slab.h>
  #include <linux/string.h>
 +#include <linux/fips.h>
- #include "fips_canister_wrapper.h"
++#include "fips_canister_wrapper.h"
 
  static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
-@@ -98,6 +99,10 @@ static int seqiv_aead_encrypt(struct aead_request *req)
+ {
+@@ -98,6 +100,10 @@ static int seqiv_aead_encrypt(struct aead_request *req)
  	crypto_xor(info, ctx->salt, ivsize);
  	scatterwalk_map_and_copy(info, req->dst, req->assoclen, ivsize, 1);
 
@@ -741,14 +744,6 @@ index 6d83eda77..17a343724 100644
  	err = crypto_aead_encrypt(subreq);
  	if (unlikely(info != req->iv))
  		seqiv_aead_encrypt_complete2(req, err);
-@@ -131,6 +136,7 @@ static int seqiv_aead_decrypt(struct aead_request *req)
- 	return crypto_aead_decrypt(subreq);
- }
-
-+
- static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
- {
- 	struct aead_instance *inst;
 @@ -158,6 +164,9 @@ static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
  free_inst:
@@ -794,15 +789,16 @@ diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
 index 010611b57..fba5e790c 100644
 --- a/crypto/sha3_generic.c
 +++ b/crypto/sha3_generic.c
-@@ -13,6 +13,7 @@
+@@ -13,6 +13,8 @@
  #include <linux/types.h>
  #include <crypto/sha3.h>
  #include <linux/unaligned.h>
 +#include <linux/fips.h>
- #include "fips_canister_wrapper.h"
++#include "fips_canister_wrapper.h"
 
  /*
-@@ -278,7 +279,16 @@ static struct shash_alg algs[] = { {
+  * On some 32-bit architectures (h8300), GCC ends up using
+@@ -278,7 +280,16 @@ static struct shash_alg algs[] = { {
 
  int __init sha3_generic_mod_init(void)
  {

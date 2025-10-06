@@ -20,6 +20,13 @@ Canister creation patch.
  - Remove rsa-pkcs1pad encrypt/decrypt functions from canister
  - List canister objs in a file
  - Add MPI library API into canister
+ - Compile canister with __NO_FORTIFY to avoid __bug_table insertion by
+   string operations such as memcpy. __bug_table is a kernel specific
+   data structure and must be moved out of the canister. Wrapping functions
+   like memcpy moves __bug_table out of the canister, but it nullifies the
+   compile time fortification as parameters size becomes unknown for the
+   compiler, see fortify_memcpy_chk() comments. 
+
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
@@ -38,14 +45,12 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  crypto/ecdh.c                      |   5 +-
  crypto/ecdsa.c                     |   3 +-
  crypto/gcm.c                       |  11 +-
- crypto/ghash-generic.c             |   5 +-
  crypto/hmac.c                      |   3 +-
  crypto/rsa-pkcs1pad.c              | 168 ++---------------------------
- crypto/sha3_generic.c              |   5 +-
  crypto/testmgr.c                   | 108 ++++++++++---------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 19 files changed, 325 insertions(+), 288 deletions(-)
+ 17 files changed, 319 insertions(+), 284 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -509,25 +514,25 @@ index a5dc57339..3b7cd40e1 100644
 +	@$(foreach obj,$(canister),echo $(obj) >> objs;)
 +
 +define UPDATE_CFLAGS =
-+  CFLAGS_$1 += -DFIPS_CANISTER -mharden-sls=all
++  CFLAGS_$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
 +  CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(canister),$(eval $(call UPDATE_CFLAGS,$(obj))))
 +
 +define UPDATE_CFLAGS_LIB_CRYPTO_MPI =
-+  CFLAGS_lib-crypto-mpi-$1 += -DFIPS_CANISTER -mharden-sls=all
++  CFLAGS_lib-crypto-mpi-$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
 +  CFLAGS_REMOVE_lib-crypto-mpi-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(lib-crypto-mpi-y),$(eval $(call UPDATE_CFLAGS_LIB_CRYPTO_MPI,$(obj))))
 +
 +define UPDATE_CFLAGS_LIB_CRYPTO =
-+  CFLAGS_lib-crypto-$1 += -DFIPS_CANISTER -mharden-sls=all
++  CFLAGS_lib-crypto-$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
 +  CFLAGS_REMOVE_lib-crypto-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(lib-crypto-y),$(eval $(call UPDATE_CFLAGS_LIB_CRYPTO,$(obj))))
 +
 +define UPDATE_CFLAGS_X86 =
-+  CFLAGS_x86-$1 += -DFIPS_CANISTER -mharden-sls=all
++  CFLAGS_x86-$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
 +  CFLAGS_REMOVE_x86-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(x86-hwaccelerated-y),$(eval $(call UPDATE_CFLAGS_X86,$(obj))))
@@ -996,36 +1001,6 @@ index 84f7c23d1..bc8b75e36 100644
  	if (!gcm_zeroes)
  		return -ENOMEM;
  
-diff --git a/crypto/ghash-generic.c b/crypto/ghash-generic.c
-index c70d163c1..81ae2cc2c 100644
---- a/crypto/ghash-generic.c
-+++ b/crypto/ghash-generic.c
-@@ -42,6 +42,7 @@
- #include <linux/init.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include "fips_canister_wrapper.h"
- 
- static int ghash_init(struct shash_desc *desc)
- {
-@@ -65,7 +66,7 @@ static int ghash_setkey(struct crypto_shash *tfm,
- 		gf128mul_free_4k(ctx->gf128);
- 
- 	BUILD_BUG_ON(sizeof(k) != GHASH_BLOCK_SIZE);
--	memcpy(&k, key, GHASH_BLOCK_SIZE); /* avoid violating alignment rules */
-+	fcw_memcpy(&k, key, GHASH_BLOCK_SIZE); /* avoid violating alignment rules */
- 	ctx->gf128 = gf128mul_init_4k_lle(&k);
- 	memzero_explicit(&k, GHASH_BLOCK_SIZE);
- 
-@@ -135,7 +136,7 @@ static int ghash_final(struct shash_desc *desc, u8 *dst)
- 	u8 *buf = dctx->buffer;
- 
- 	ghash_flush(ctx, dctx);
--	memcpy(dst, buf, GHASH_BLOCK_SIZE);
-+	fcw_memcpy(dst, buf, GHASH_BLOCK_SIZE);
- 
- 	return 0;
- }
 diff --git a/crypto/hmac.c b/crypto/hmac.c
 index 7cec25ff9..54a5321ea 100644
 --- a/crypto/hmac.c
@@ -1299,36 +1274,6 @@ index cd501195f..bfde0f28c 100644
  	if (!inst)
  		return -ENOMEM;
  
-diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
-index b103642b5..0e36ce003 100644
---- a/crypto/sha3_generic.c
-+++ b/crypto/sha3_generic.c
-@@ -14,6 +14,7 @@
- #include <linux/types.h>
- #include <crypto/sha3.h>
- #include <linux/unaligned.h>
-+#include "fips_canister_wrapper.h"
- 
- /*
-  * On some 32-bit architectures (h8300), GCC ends up using
-@@ -185,7 +186,7 @@ int crypto_sha3_update(struct shash_desc *desc, const u8 *data,
- 	if ((sctx->partial + len) > (sctx->rsiz - 1)) {
- 		if (sctx->partial) {
- 			done = -sctx->partial;
--			memcpy(sctx->buf + sctx->partial, data,
-+			fcw_memcpy(sctx->buf + sctx->partial, data,
- 			       done + sctx->rsiz);
- 			src = sctx->buf;
- 		}
-@@ -203,7 +204,7 @@ int crypto_sha3_update(struct shash_desc *desc, const u8 *data,
- 
- 		sctx->partial = 0;
- 	}
--	memcpy(sctx->buf + sctx->partial, src, len - done);
-+	fcw_memcpy(sctx->buf + sctx->partial, src, len - done);
- 	sctx->partial += (len - done);
- 
- 	return 0;
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
 index 05da1bb75..435907aaa 100644
 --- a/crypto/testmgr.c

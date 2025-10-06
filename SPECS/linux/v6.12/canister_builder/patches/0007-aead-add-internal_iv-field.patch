@@ -79,15 +79,6 @@ diff --git a/include/crypto/aead.h b/include/crypto/aead.h
 index 0e8a41638..8c8021b86 100644
 --- a/include/crypto/aead.h
 +++ b/include/crypto/aead.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * AEAD: Authenticated Encryption with Associated Data
-- * 
-+ *
-  * Copyright (c) 2007-2015 Herbert Xu <herbert@gondor.apana.org.au>
-  */
- 
 @@ -85,6 +85,7 @@ struct scatterlist;
   *	@iv: Initialisation vector
   *	@src: Source data
@@ -118,15 +109,6 @@ diff --git a/include/crypto/internal/aead.h b/include/crypto/internal/aead.h
 index 28a95eb31..ddd99f92d 100644
 --- a/include/crypto/internal/aead.h
 +++ b/include/crypto/internal/aead.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-  * AEAD: Authenticated Encryption with Associated Data
-- * 
-+ *
-  * Copyright (c) 2007-2015 Herbert Xu <herbert@gondor.apana.org.au>
-  */
- 
 @@ -163,6 +163,9 @@ int crypto_register_aeads(struct aead_alg *algs, int count);
  void crypto_unregister_aeads(struct aead_alg *algs, int count);
  int aead_register_instance(struct crypto_template *tmpl,
