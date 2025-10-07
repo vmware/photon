@@ -19,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.244
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -348,6 +348,10 @@ Patch236:  0001-net-mlx5e-Fix-netif-state-handling.patch
 # Fix CVE-2024-57798
 Patch237:  0001-drm-dp_mst-Skip-CSN-if-topology-probing-is-not-done-.patch
 Patch238:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
+# Fix CVE-2024-36898
+Patch239: 0001-gpiolib-cdev-fix-uninitialised-kfifo.patch
+# Fix CVE-2024-35932
+Patch240: 0001-drm-vc4-don-t-check-if-plane-state-fb-state-fb.patch
 
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
@@ -702,6 +706,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.244-3
+- Fixes CVE-2024-36898, CVE-2024-35932
 * Wed Sep 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.244-2
 - Fixes CVE-2024-42321, Fix CVE-2024-57798 and CVE-2024-38608
 * Fri Sep 12 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.244-1

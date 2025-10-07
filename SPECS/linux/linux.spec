@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.244
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -416,6 +416,10 @@ Patch241:  0001-net-mlx5e-Fix-netif-state-handling.patch
 # Fix CVE-2024-57798
 Patch242:  0001-drm-dp_mst-Skip-CSN-if-topology-probing-is-not-done-.patch
 Patch243:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
+# Fix CVE-2024-36898
+Patch244: 0001-gpiolib-cdev-fix-uninitialised-kfifo.patch
+# Fix CVE-2024-35932
+Patch245: 0001-drm-vc4-don-t-check-if-plane-state-fb-state-fb.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1092,6 +1096,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Oct 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.244-3
+- Fixes CVE-2024-36898, CVE-2024-35932
 * Mon Sep 22 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.244-2
 - Fixes CVE-2024-42321, CVE-2024-57798 and CVE-2024-38608
 * Fri Sep 12 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.244-1

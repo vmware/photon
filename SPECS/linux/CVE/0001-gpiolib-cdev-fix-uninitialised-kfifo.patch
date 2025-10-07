@@ -1,0 +1,59 @@
+From 790155d4e055f48421e57e507e31115761f6a54d Mon Sep 17 00:00:00 2001
+From: Kent Gibson <warthog618@gmail.com>
+Date: Fri, 10 May 2024 14:53:42 +0800
+Subject: [PATCH] gpiolib: cdev: fix uninitialised kfifo
+
+commit ee0166b637a5e376118e9659e5b4148080f1d27e upstream.
+
+If a line is requested with debounce, and that results in debouncing
+in software, and the line is subsequently reconfigured to enable edge
+detection then the allocation of the kfifo to contain edge events is
+overlooked.  This results in events being written to and read from an
+uninitialised kfifo.  Read events are returned to userspace.
+
+Initialise the kfifo in the case where the software debounce is
+already active.
+
+Fixes: 65cff7046406 ("gpiolib: cdev: support setting debounce")
+Signed-off-by: Kent Gibson <warthog618@gmail.com>
+Link: https://lore.kernel.org/r/20240510065342.36191-1-warthog618@gmail.com
+Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+[Ankit: Ported patch for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/gpio/gpiolib-cdev.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/gpio/gpiolib-cdev.c b/drivers/gpio/gpiolib-cdev.c
+index 3b0292c244eb..1bfaa2b58189 100644
+--- a/drivers/gpio/gpiolib-cdev.c
++++ b/drivers/gpio/gpiolib-cdev.c
+@@ -823,6 +823,7 @@ static int edge_detector_update(struct line *line,
+ 				unsigned int line_idx,
+ 				u64 eflags, bool polarity_change)
+ {
++	int ret;
+ 	unsigned int debounce_period_us =
+ 		gpio_v2_line_config_debounce_period(lc, line_idx);
+ 
+@@ -834,6 +835,17 @@ static int edge_detector_update(struct line *line,
+ 	if (debounce_period_us && READ_ONCE(line->sw_debounced)) {
+ 		line->eflags = eflags;
+ 		WRITE_ONCE(line->desc->debounce_period_us, debounce_period_us);
++		/*
++		 * ensure event fifo is initialised if edge detection
++		 * is now enabled.
++		 */
++		if ((eflags & GPIO_V2_LINE_EDGE_FLAGS) && !kfifo_initialized(&line->req->events)) {
++			ret = kfifo_alloc(&line->req->events,
++					  line->req->event_buffer_size,
++					  GFP_KERNEL);
++			if (ret)
++				return ret;
++		}
+ 		return 0;
+ 	}
+ 
+-- 
+2.40.4
+
