@@ -1,13 +1,16 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
+%define sha512  gettext=f7e2968651879f8444d43a176a149db9f9411f4a03132a7f3b37c2ed97e3978ae6888169c995c1953cb78943b6e3573811abcbb8661b6631edbbe067b2699ddf
+
 Patch0:         libxml2-CVE-2016-3709.patch
 Patch1:         libxml2-CVE-2019-19956.patch
 Patch2:         libxml2-CVE-2021-3517.patch
@@ -21,8 +24,7 @@ Patch9:         libxml2-CVE-2024-56171.patch
 Patch10:        libxml2-CVE-2025-24928.patch
 Patch11:        libxml2-CVE-2025-27113.patch
 Patch12:        libxml2-CVE-2025-32415.patch
-
-%define sha512  gettext=f7e2968651879f8444d43a176a149db9f9411f4a03132a7f3b37c2ed97e3978ae6888169c995c1953cb78943b6e3573811abcbb8661b6631edbbe067b2699ddf
+Patch13:        libxml2-CVE-2025-7425.patch
 
 %description
 These allow programs to be compiled with NLS
@@ -38,17 +40,17 @@ messages in the user's native language.
 
 # Apply patches to gnulib-local/lib/libxml
 pushd gnulib-local/lib/libxml
-%autopatch -p1 -m0 -M12
+%autopatch -p1 -m0 -M13
 popd
 
 # Apply patches to gettext-tools/gnulib-lib/libxml
 pushd gettext-tools/gnulib-lib/libxml
-%autopatch -p1 -m0 -M12
+%autopatch -p1 -m0 -M13
 popd
 
 # Apply patches to libtextstyle/lib/libxml
 pushd libtextstyle/lib/libxml
-%autopatch -p1 -m0 -M12
+%autopatch -p1 -m0 -M13
 popd
 
 %build
@@ -86,6 +88,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Wed Oct 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.21-7
+- Fix CVE-2025-7425
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.21-6
 - Fix for CVE-2025-32415
 * Tue Mar 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.21-5
