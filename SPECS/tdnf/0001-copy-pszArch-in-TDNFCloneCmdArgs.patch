@@ -1,0 +1,32 @@
+From 580fc590bcf3d1a5e5a86d10d34c0850fc5b5aa6 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Tue, 7 Oct 2025 20:42:53 +0000
+Subject: [PATCH] copy pszArch in TDNFCloneCmdArgs()
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ client/init.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/client/init.c b/client/init.c
+index c6c6306..6677aff 100644
+--- a/client/init.c
++++ b/client/init.c
+@@ -120,6 +120,14 @@ TDNFCloneCmdArgs(
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
++    if(!IsNullOrEmptyString(pCmdArgsIn->pszArch))
++    {
++        dwError = TDNFAllocateString(
++                      pCmdArgsIn->pszArch,
++                      &pCmdArgs->pszArch);
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
+     if(!IsNullOrEmptyString(pCmdArgsIn->pszDownloadDir))
+     {
+         dwError = TDNFAllocateString(
+-- 
+2.43.0
+

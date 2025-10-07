@@ -9,7 +9,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -22,6 +22,7 @@ Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 Patch1: updateinfo.patch
+Patch2: 0001-copy-pszArch-in-TDNFCloneCmdArgs.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -294,6 +295,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Oct 07 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.13-3
+- fix forcearch option
 * Wed Sep 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.13-2
 - Remove updateinfo timer
 - MOTD has its own timer now
