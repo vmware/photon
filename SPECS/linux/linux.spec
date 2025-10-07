@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -1201,6 +1201,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Dec 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.246-12
+- Disable bluetooth and CAN bus support
 * Fri Nov 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.246-11
 - Fixes CVE-2025-38527
 * Wed Nov 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-10

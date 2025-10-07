@@ -1,7 +1,7 @@
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.71
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -20,6 +20,8 @@ Requires: dbus
 Requires: glib >= 2.68.4
 Requires: libical
 Requires: systemd
+
+BuildArch: aarch64
 
 %description
 Utilities for use in Bluetooth applications.
@@ -83,6 +85,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Oct 07 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.71-2
+- Build only for aarch64
 * Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 5.71-1
 - Version upgrade to v5.71 to fix following CVE's:
 - CVE-2023-44431, CVE-2023-51580, CVE-2023-51589,

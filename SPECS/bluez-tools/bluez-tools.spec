@@ -13,6 +13,8 @@ Source0: https://github.com/khvzak/bluez-tools.git/master/%{name}-%{version}.tar
 
 Patch0: bluez-tools-gcc-10.patch
 
+BuildArch:     aarch64
+
 BuildRequires: dbus-devel
 BuildRequires: dbus-glib-devel
 
