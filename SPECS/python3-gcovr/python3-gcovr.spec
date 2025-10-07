@@ -1,20 +1,26 @@
-Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
-Name:		gcovr
-Version:	4.2
-Release:	4%{?dist}
-License:	BSD Clause-3
-URL:		http://gcovr.com/
-Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
-%define sha1 gcovr=3094f90ed0ca30eb3aa0a9b1b236d9cff1279600
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+%define srcname gcovr
+
+Summary:    The gcovr command provides a utility for managing the use of the GNU gcov utility
+Name:       python3-gcovr
+Version:    4.2
+Release:    5%{?dist}
+License:    BSD Clause-3
+URL:        http://gcovr.com/
+Group:      Development/Tools
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    https://github.com/gcovr/gcovr/archive/%{srcname}-%{version}.tar.gz
+%define sha512 %{srcname}=bf9e22a58b8390eca391dc8f6ba58c4ca0765e66f18ac6f8d8f80609411df2bab74a846eb179a1aded81b7774fa8a8121bb2d586556aeaf43fd729205b0d0c72
+
+Buildarch:  noarch
+
+Provides: %{srcname} = %{version}-%{release}
+
 BuildRequires:  python3-devel
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:	python3-setuptools
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-%if %{with_check}
+%if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-pytest
@@ -22,21 +28,21 @@ BuildRequires:  python3-six
 BuildRequires:  python3-attrs
 BuildRequires:  python3-pip
 %endif
+
 Requires:       python3
-Requires:       python3-libs
-Buildarch:	noarch
+
 %description
 The gcovr command provides a utility for managing the use of the GNU gcov utility and generating summarized code coverage results. This command is inspired by the Python coverage.py package, which provides a similar utility in Python. Gcovr produces either compact human-readable summary reports, machine readable XML reports or a simple HTML summary.
 
 %prep
-%autosetup
+%autosetup -n %{srcname}-%{version} -p1
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}/%{_bindir}/gcovr  %{buildroot}/%{_bindir}/gcovr3
+%py3_install
+mv %{buildroot}%{_bindir}/gcovr %{buildroot}%{_bindir}/gcovr3
 
 %check
 pip3 install funcsigs pathlib2 pluggy utils atomicwrites more_itertools iniconfig
@@ -47,9 +53,11 @@ python3 setup.py test
 %defattr(-,root,root)
 %doc README.rst LICENSE.txt CHANGELOG.rst
 %{_bindir}/gcovr3
-%{python3_sitelib}*
+%{python3_sitelib}/*
 
 %changelog
+*   Tue Oct 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2-5
+-   Rename package to python3-gcovr
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-4
 -   Update release to compile with python 3.10
 *   Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-3
