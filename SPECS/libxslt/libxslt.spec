@@ -1,7 +1,7 @@
 Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.39
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -15,6 +15,7 @@ Source1: license.txt
 Patch0: patch-to-fix-samba-build.patch
 Patch1: CVE-2024-55549.patch
 Patch2: CVE-2025-24855.patch
+Patch3: CVE-2025-7424.patch
 
 Requires:       libxml2
 Requires:       libgcrypt
@@ -85,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Tue Oct 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.39-3
+- Fix CVE-2025-7424
 * Thu Mar 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.39-2
 - Fix CVE-2025-24855, CVE-2024-55549
 * Mon Jan 06 2025 Harinadh D <harinadh.dommaraju@broadcom.com> 1.1.39-1

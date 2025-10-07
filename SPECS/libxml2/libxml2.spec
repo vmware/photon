@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -13,6 +13,13 @@ Source1: license.txt
 %include %{SOURCE1}
 
 #Note: If you are fixing a CVE here, please check for the same in gettext libxml2
+Patch0: CVE-2025-32414.patch
+Patch1: CVE-2025-32415.patch
+Patch2: CVE-2025-49794-96.patch
+Patch3: CVE-2025-49795-1.patch
+Patch4: CVE-2025-49795-2.patch
+Patch5: CVE-2025-6021.patch
+Patch6: CVE-2025-7425.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -24,13 +31,6 @@ BuildRequires: ncurses-devel
 Requires: readline
 Requires: ncurses-libs
 Requires: zlib
-
-Patch0: CVE-2025-32414.patch
-Patch1: CVE-2025-32415.patch
-Patch2: CVE-2025-49794-96.patch
-Patch3: CVE-2025-49795-1.patch
-Patch4: CVE-2025-49795-2.patch
-Patch5: CVE-2025-6021.patch
 
 Provides:       pkgconfig(libxml-2.0)
 
@@ -101,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Oct 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.12.10-7
+- Fix CVE-2025-7425
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.12.10-6
 - Bump version as a part of ncurses upgrade
 * Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-5
