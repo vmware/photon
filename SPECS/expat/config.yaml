@@ -1,14 +1,14 @@
 sources:
-- archive: expat-2.7.1.tar.xz
+- archive: expat-2.7.3.tar.xz
   archive_type: upstream
-  archive_sha512sum: 4c9a6c1c1769d2c4404da083dd3013dbc73883da50e2b7353db2349a420e9b6d27cac7dbcb645991d6c7cdbf79bd88486fc1ac353084ce48e61081fb56e13d46
-  name: "expat-2.7.1"
-  version: 2.7.1
-  url: https://github.com/libexpat/libexpat/releases/download/R_2_7_1/expat-2.7.1.tar.xz
+  archive_sha512sum: d2e495a9a2b902d38d838ec514da67ff56b76cdefcf89d0c320e2f319a35e439bd697880334d0ee70ca79b4515ac94c0c9b9ff97f899bcaa89308f1c8efaee0d
+  name: "expat-2.7.3"
+  version: 2.7.3
+  url: https://github.com/libexpat/libexpat/releases/download/R_2_7_3/expat-2.7.3.tar.xz
   repo_url: https://github.com/libexpat/libexpat.git
-  commit_id: f9a3eeb3e09fbea04b1c451ffc422ab2f1e45744
+  commit_id: 4575e52f83e0d6d7bd24939eab8952bbc7bc358f
   skip_list: [AUTHORS, CMake.README, CMakeLists.txt, Changes, ConfigureChecks.cmake, Makefile.am, Makefile.in, acinclude.m4, aclocal.m4, buildconf.sh, cmake, configure, configure.ac, conftools, doc, examples, expat.pc.cmake, expat.pc.in, expat_config.h, expat_config.h.cmake, expat_config.h.in, fix-xmltest-log.sh, fuzz, lib, m4, run.sh.in, test-driver-wrapper.sh, tests, win32, xmlwf]
-  missing: [cmake, test-driver-wrapper.sh, expat_config.h.in, run.sh.in, xmlwf, fuzz, testdata, .ci.sh, AUTHORS, examples, SECURITY.md, expat, buildconf.sh, win32, .mailmap, Changes, expat.pc.cmake, configure.ac, Brewfile, m4, ConfigureChecks.cmake, configure, tests, expat_config.h.cmake, Makefile.in, .github, expat.pc.in, .gitignore, aclocal.m4, CMake.README, CMakeLists.txt, expat_config.h, fix-xmltest-log.sh, conftools, acinclude.m4, lib, Makefile.am, doc]
+  missing: [cmake, test-driver-wrapper.sh, expat_config.h.in, run.sh.in, xmlwf, fuzz, testdata, .ci.sh, AUTHORS, examples, SECURITY.md, expat, buildconf.sh, win32, .mailmap, Changes, expat.pc.cmake, configure.ac, Brewfile, m4, ConfigureChecks.cmake, configure, tests, expat_config.h.cmake, Makefile.in, .github, expat.pc.in, .gitignore, aclocal.m4, CMake.README, CMakeLists.txt, expat_config.h, fix-xmltest-log.sh, conftools, acinclude.m4, lib, Makefile.am, doc, .gitattributes]
   spdx:
     package:
       detailed_description: 'The Expat package contains a stream oriented C library
