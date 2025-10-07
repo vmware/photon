@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.245
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -606,6 +606,8 @@ Requires(preun): (coreutils or coreutils-selinux)
 Requires(post): (coreutils or coreutils-selinux)
 Requires(postun): (coreutils or coreutils-selinux)
 
+Obsoletes: linux-aws
+
 %description
 The Linux package contains the Linux kernel.
 %if 0%{?fips}
@@ -662,7 +664,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
-Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version})
+Requires:       (%{name} = %{version} or linux-esx = %{version})
 Requires:       audit elfutils-libelf binutils-libs
 Requires:       xz-libs slang
 Requires:       python3 traceevent-plugins
@@ -1145,6 +1147,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Oct 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.245-4
+- Deprecate linux-aws
 * Wed Oct 29 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-3
 - Fixes aarch64 build failure
 * Mon Oct 20 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.245-2
