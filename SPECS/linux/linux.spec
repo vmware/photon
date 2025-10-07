@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.153
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1053,6 +1053,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 07 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.153-3
+- Disable building of DRM nouveau driver
 * Mon Sep 29 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.153-2
 - Fix CVE-2024-38564
 * Wed Sep 24 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.153-1
