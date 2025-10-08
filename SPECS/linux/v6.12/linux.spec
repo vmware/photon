@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        21%{?acvp_build:.acvp}%{?dist}
+Release:        22%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -283,8 +283,6 @@ Patch10101: 0001-FIPS-canister-binary-usage.patch
 Patch10102: 0002-algapi.c-honor-fcw_skip_tests.patch
 Patch10103: 0003-tcrypt-align-to-LKCM.patch
 Patch10104: 0004-scripts-kallsyms-Extra-kallsyms-parsing.patch
-# Add non-approved prints for essIV and echainIV IV generation method
-Patch10105: 0005-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
 # Move rsa-pkcs1pad encrypt and decrypt functions outside canister
 Patch10106: 0006-crypto-Disable-rsa-pkcs1pad-encrypt-decrypt-in-FIPS-.patch
 # Add internal_iv field for aead_request
@@ -292,6 +290,7 @@ Patch10107: 0007-aead-add-internal_iv-field.patch
 Patch10108: 0008-FIPS-Mark-structure-field-differences-between-kernel.patch
 Patch10109: 0009-aead_geniv_ctx-drop-lock-field.patch
 Patch10110: 0010-Move-crypto_inc-to-lib-crypto-utils.c.patch
+Patch10111: 0001-crypto-Moving-rfc4543-out-of-canister-boundry.patch
 
 # FIPS canister plugins
 Patch10200: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
@@ -545,7 +544,7 @@ install %{SOURCE10105} crypto/
 install %{SOURCE10106} crypto/
 
 %autopatch -p1 -m10001 -M10003
-%autopatch -p1 -m10101 -M10110
+%autopatch -p1 -m10101 -M10111
 # FIPS canister plugins
 %autopatch -p1 -m10200 -M10204
 %endif
@@ -864,6 +863,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Oct 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-22
+- Moving rfc4543 of gcm out of canister boundry.
+- Removed all approved/non-approved log indicators.
 * Mon Oct 27 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-21
 - Consume a canister binary via RPM dependency
 * Fri Oct 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.41-20

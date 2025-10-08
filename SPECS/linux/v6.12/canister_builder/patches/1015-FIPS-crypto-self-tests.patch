@@ -1,4 +1,4 @@
-From 6269bb239fdd39d20f93841391199f6846e17e3b Mon Sep 17 00:00:00 2001
+From 840e16a33c53d92944f89924c85f7f3af090edfb Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Tue, 5 Jan 2021 10:45:39 +0000
 Subject: [PATCH] FIPS crypto self tests
@@ -30,18 +30,18 @@ Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- crypto/crypto_self_test.c |  221 +++++
+ crypto/crypto_self_test.c |  233 +++++
  crypto/testmgr.c          |   72 +-
  crypto/testmgr.h          | 1843 ++++++++++++++++++++++++++++++++++++-
- 3 files changed, 2119 insertions(+), 17 deletions(-)
+ 3 files changed, 2131 insertions(+), 17 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
 diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
 new file mode 100644
-index 000000000..881a0ff0e
+index 000000000..8119a1716
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
-@@ -0,0 +1,221 @@
+@@ -0,0 +1,233 @@
 +/*
 + * Self test for Crypto Algorithms
 + *
@@ -79,6 +79,18 @@ index 000000000..881a0ff0e
 +	{
 +		.driver_name = "ccm(aes)",
 +		.alg_name = "ccm(aes)",
++	},
++	{
++		.driver_name = "rfc4106(gcm(aes))",
++		.alg_name = "rfc4106(gcm(aes))",
++	},
++	{
++		.driver_name = "rfc4309(ccm(aes))",
++		.alg_name = "rfc4309(ccm(aes))",
++	},
++	{
++		.driver_name = "rfc3686(ctr(aes))",
++		.alg_name = "rfc3686(ctr(aes))",
 +	},
 +	{
 +		.driver_name = "ctr(aes)",

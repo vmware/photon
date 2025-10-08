@@ -1,4 +1,4 @@
-From bb5121922a3c830bf5afed7dc805866db7eb02a9 Mon Sep 17 00:00:00 2001
+From 2fb5f493da54d6b4ceeacc331f1b4a33cf0cb7c1 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 28 Jul 2025 18:00:18 +0000
 Subject: [PATCH] Move kernel structures usage from canister to wrapper
@@ -79,7 +79,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  crypto/ecc.c                        |  18 +-
  crypto/ecdh.c                       |  10 +-
  crypto/ecdsa.c                      |  20 +-
- crypto/gcm.c                        |  15 +-
+ crypto/gcm.c                        |  16 +-
  crypto/geniv.c                      |   7 +-
  crypto/ghash-generic.c              |  13 +-
  crypto/hmac.c                       |  11 +-
@@ -102,7 +102,7 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  include/linux/rtattr.h              |   6 +
  include/linux/spinlock.h            |  24 +-
  include/linux/spinlock_cond_guard.h |  20 +
- 35 files changed, 411 insertions(+), 879 deletions(-)
+ 35 files changed, 411 insertions(+), 880 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
@@ -1231,7 +1231,7 @@ index 81b246e39..e36438b2e 100644
 -MODULE_ALIAS_CRYPTO("ecdsa-nist-p521");
 -MODULE_ALIAS_CRYPTO("ecdsa-generic");
 diff --git a/crypto/gcm.c b/crypto/gcm.c
-index 84b6a9866..a8a0645ea 100644
+index 76800f939..7efe5edce 100644
 --- a/crypto/gcm.c
 +++ b/crypto/gcm.c
 @@ -16,7 +16,6 @@
@@ -1240,9 +1240,9 @@ index 84b6a9866..a8a0645ea 100644
  #include <linux/kernel.h>
 -#include <linux/module.h>
  #include <linux/slab.h>
+ #include <linux/fips.h>
  #include "fips_canister_wrapper.h"
- 
-@@ -1128,7 +1127,7 @@ static struct crypto_template crypto_gcm_tmpls[] = {
+@@ -1148,7 +1147,7 @@ static struct crypto_template crypto_gcm_tmpls[] = {
  	},
  };
  
@@ -1251,7 +1251,7 @@ index 84b6a9866..a8a0645ea 100644
  {
  	int err;
  
-@@ -1146,20 +1145,10 @@ static int __init crypto_gcm_module_init(void)
+@@ -1166,21 +1165,10 @@ static int __init crypto_gcm_module_init(void)
  	return err;
  }
  
@@ -1262,7 +1262,7 @@ index 84b6a9866..a8a0645ea 100644
  	crypto_unregister_templates(crypto_gcm_tmpls,
  				    ARRAY_SIZE(crypto_gcm_tmpls));
  }
- 
+-
 -subsys_initcall(crypto_gcm_module_init);
 -module_exit(crypto_gcm_module_exit);
 -
@@ -1271,8 +1271,9 @@ index 84b6a9866..a8a0645ea 100644
 -MODULE_AUTHOR("Mikko Herranen <mh1@iki.fi>");
 -MODULE_ALIAS_CRYPTO("gcm_base");
 -MODULE_ALIAS_CRYPTO("rfc4106");
--MODULE_ALIAS_CRYPTO("rfc4543");
 -MODULE_ALIAS_CRYPTO("gcm");
+-MODULE_ALIAS_CRYPTO("rfc4543");
+ #endif
 diff --git a/crypto/geniv.c b/crypto/geniv.c
 index 647453a4e..a3600e37f 100644
 --- a/crypto/geniv.c

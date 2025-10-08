@@ -1,4 +1,4 @@
-From 8bd737007c7931bbdb50c735cf21a7d456db77e0 Mon Sep 17 00:00:00 2001
+From c042efe461518b599cfb6038ff4b9fecafd9ab6a Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 20 Jun 2025 12:53:33 -0500
 Subject: [PATCH] FIPS canister binary usage
@@ -16,13 +16,13 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  arch/x86/crypto/Makefile    |  19 -----
- crypto/Makefile             | 140 ++++++++++++++++++++++++++++++------
- include/linux/scatterlist.h |   4 ++
+ crypto/Makefile             | 143 ++++++++++++++++++++++++++++++------
+ include/linux/scatterlist.h |   4 +
  init/main.c                 |   3 +
  lib/Makefile                |   1 -
  lib/crypto/Makefile         |  17 +----
- lib/crypto/mpi/Makefile     |  28 --------
- 7 files changed, 128 insertions(+), 84 deletions(-)
+ lib/crypto/mpi/Makefile     |  28 -------
+ 7 files changed, 131 insertions(+), 84 deletions(-)
  delete mode 100644 lib/crypto/mpi/Makefile
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
@@ -63,7 +63,7 @@ index 53b4a2778..1e4aa1356 100644
  polyval-clmulni-y := polyval-clmulni_asm.o polyval-clmulni_glue.o
  
 diff --git a/crypto/Makefile b/crypto/Makefile
-index af6614b46..d6073a685 100644
+index af6614b46..bd659c92d 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -17,7 +17,6 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -120,7 +120,7 @@ index af6614b46..d6073a685 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -87,19 +80,13 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
+@@ -87,19 +80,16 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
  obj-$(CONFIG_CRYPTO_ECB) += ecb.o
@@ -137,10 +137,13 @@ index af6614b46..d6073a685 100644
  obj-$(CONFIG_CRYPTO_NHPOLY1305) += nhpoly1305.o
 -obj-$(CONFIG_CRYPTO_GCM) += gcm.o
 -obj-$(CONFIG_CRYPTO_CCM) += ccm.o
++$(obj)/gcm_rfc4543.o: $(srctree)/crypto/gcm.c FORCE
++	$(call if_changed_rule,cc_o_c)
++obj-$(CONFIG_CRYPTO_GCM) += gcm_rfc4543.o
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -134,7 +121,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -134,7 +124,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -148,7 +151,7 @@ index af6614b46..d6073a685 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -165,10 +151,8 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -165,10 +154,8 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -159,7 +162,7 @@ index af6614b46..d6073a685 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -176,13 +160,11 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -176,13 +163,11 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
@@ -173,7 +176,7 @@ index af6614b46..d6073a685 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -206,3 +188,119 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -206,3 +191,119 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
