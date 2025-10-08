@@ -3,7 +3,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        13.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -14,6 +14,10 @@ Source0: http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 Source1: gdbinit
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: CVE-2023-39128.patch
+Patch1: CVE-2023-39129.patch
+Patch2: CVE-2023-39130.patch
 
 Requires: expat
 Requires: ncurses
@@ -179,6 +183,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
+* Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 13.2-6
+- Fix CVE-2023-39128, CVE-2023-39129 and CVE-2023-39130
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 13.2-5
 - Bump version as a part of ncurses upgrade
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 13.2-4
