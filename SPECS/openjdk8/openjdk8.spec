@@ -8,7 +8,7 @@
 Summary:    OpenJDK
 Name:       openjdk8
 Version:    1.8.0.462
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
 Group:      Development/Tools
@@ -98,12 +98,12 @@ popd
 
 chmod a+x ./configur*
 unset JAVA_HOME
+
 ./configur* \
     CUPS_NOT_NEEDED=yes \
     --with-target-bits=64 \
     --with-boot-jdk=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin \
     --disable-headful \
-    --with-cacerts-file=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin/jre/lib/security/cacerts \
     --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
     --with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse -fcommon" \
     --with-freetype-include=%{_includedir}/freetype2 \
@@ -281,6 +281,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+* Wed Oct 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.462-2
+- Build jdk8 with bundled cacerts
 * Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.462-1
 - Upgrade to v1.8.0.462
 * Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.442-1
