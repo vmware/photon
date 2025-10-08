@@ -1,4 +1,4 @@
-From 8708cafb6e7d243402d7a78fc4210f10339ce984 Mon Sep 17 00:00:00 2001
+From 858b180fe5e35f310dcf7f9bb137daada6483de1 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
 Subject: [PATCH] FIPS canister creation
@@ -27,6 +27,7 @@ Canister creation patch.
    compile time fortification as parameters size becomes unknown for the
    compiler, see fortify_memcpy_chk() comments.
  - Add asn1-decoder library API into canister
+ - Remove rfc4543 from canister
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
@@ -44,13 +45,13 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  crypto/ecc.c                       |   5 +-
  crypto/ecdh.c                      |   5 +-
  crypto/ecdsa.c                     |   3 +-
- crypto/gcm.c                       |  11 ++-
+ crypto/gcm.c                       |   9 +-
  crypto/hmac.c                      |   3 +-
  crypto/rsa-pkcs1pad.c              |  11 +--
  crypto/testmgr.c                   | 108 +++++++++++---------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 17 files changed, 324 insertions(+), 133 deletions(-)
+ 17 files changed, 323 insertions(+), 132 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -323,7 +324,7 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index d6073a685..4ac4a833e 100644
+index bd659c92d..c2fffa632 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -17,9 +17,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -375,7 +376,7 @@ index d6073a685..4ac4a833e 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -80,13 +90,19 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
+@@ -80,16 +90,22 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
  obj-$(CONFIG_CRYPTO_ECB) += ecb.o
@@ -391,11 +392,14 @@ index d6073a685..4ac4a833e 100644
  obj-$(CONFIG_CRYPTO_ADIANTUM) += adiantum.o
  obj-$(CONFIG_CRYPTO_NHPOLY1305) += nhpoly1305.o
 +canister += gcm.o
+ $(obj)/gcm_rfc4543.o: $(srctree)/crypto/gcm.c FORCE
+ 	$(call if_changed_rule,cc_o_c)
+ obj-$(CONFIG_CRYPTO_GCM) += gcm_rfc4543.o
 +canister += ccm.o
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -121,6 +137,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -124,6 +140,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -403,7 +407,7 @@ index d6073a685..4ac4a833e 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -153,6 +170,7 @@ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
+@@ -156,6 +173,7 @@ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
  obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
@@ -411,7 +415,7 @@ index d6073a685..4ac4a833e 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -160,11 +178,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -163,11 +181,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
@@ -426,7 +430,7 @@ index d6073a685..4ac4a833e 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -188,6 +209,139 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -191,6 +212,139 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -957,18 +961,18 @@ index 80ef16ae6..81b246e39 100644
  		return -ENOMEM;
  
 diff --git a/crypto/gcm.c b/crypto/gcm.c
-index 84f7c23d1..bc8b75e36 100644
+index 7dbfdb9da..a8909a721 100644
 --- a/crypto/gcm.c
 +++ b/crypto/gcm.c
-@@ -18,6 +18,7 @@
- #include <linux/kernel.h>
+@@ -19,6 +19,7 @@
  #include <linux/module.h>
  #include <linux/slab.h>
+ #include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
  
+ #ifdef FIPS_CANISTER
  struct gcm_instance_ctx {
- 	struct crypto_skcipher_spawn ctr;
-@@ -113,7 +114,7 @@ static int crypto_gcm_setkey(struct crypto_aead *aead, const u8 *key,
+@@ -126,7 +127,7 @@ static int crypto_gcm_setkey(struct crypto_aead *aead, const u8 *key,
  	if (err)
  		return err;
  
@@ -977,7 +981,7 @@ index 84f7c23d1..bc8b75e36 100644
  		       GFP_KERNEL);
  	if (!data)
  		return -ENOMEM;
-@@ -587,7 +588,7 @@ static int crypto_gcm_create_common(struct crypto_template *tmpl,
+@@ -600,7 +601,7 @@ static int crypto_gcm_create_common(struct crypto_template *tmpl,
  	if (err)
  		return err;
  
@@ -986,7 +990,7 @@ index 84f7c23d1..bc8b75e36 100644
  	if (!inst)
  		return -ENOMEM;
  	ctx = aead_instance_ctx(inst);
-@@ -833,7 +834,7 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
+@@ -846,7 +847,7 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
  	if (err)
  		return err;
  
@@ -995,16 +999,7 @@ index 84f7c23d1..bc8b75e36 100644
  	if (!inst)
  		return -ENOMEM;
  
-@@ -1048,7 +1049,7 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
- 	if (err)
- 		return err;
- 
--	inst = kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
-+	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
- 	if (!inst)
- 		return -ENOMEM;
- 
-@@ -1131,7 +1132,7 @@ static int __init crypto_gcm_module_init(void)
+@@ -1151,7 +1152,7 @@ static int __init crypto_gcm_module_init(void)
  {
  	int err;
  
