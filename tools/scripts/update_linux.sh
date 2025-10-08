@@ -24,3 +24,6 @@ done
 commit_id=$(git ls-remote --tags https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git v$version^{} | awk '{print $1}')
 sed -i '0,/^\([[:space:]]*\)'${config_tags[4]}': [0-9a-z]*$/ s//\1'${config_tags[4]}': '$commit_id'/' SPECS/linux/config.yaml
 sed -i '0,/^\([[:space:]]*\)'${config_tags[5]}': [0-9a-z]*$/ s//\1'${config_tags[5]}': '$sha512'/' SPECS/linux/config.yaml
+
+# update all file paths prefixed with the old linux version
+sed -i 's#linux-6.1.[0-9]*/#linux-'$version'/#g' SPECS/linux/config.yaml
