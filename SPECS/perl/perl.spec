@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.36.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -31,6 +31,7 @@ Patch2:         0001-Remove-libdb-support.patch
 Patch3:         CVE-2023-31486.patch
 Patch4:         CVE-2023-47100.patch
 Patch5:         CVE-2024-56406.patch
+Patch6:         CVE-2025-40909.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -57,7 +58,7 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %if 0%{?with_check}
 %autopatch -p1 -m0 -M1
 %endif
-%autopatch -p1 -m2 -M5
+%autopatch -p1 -m2 -M6
 
 %build
 export BUILD_ZLIB=False
@@ -109,6 +110,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Wed Oct 08 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.36.0-11
+- Fixed CVE-2025-40909
 * Thu Jul 31 2025 Dweep Advani <dweep.advani@broadcom.com> 5.36.0-10
 - Bump release to rescan licenses
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.36.0-9
