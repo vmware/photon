@@ -573,6 +573,9 @@ class SpecParser(object):
                 if self.conditionalCheckMacroEnabled:
                     pkg.checkbuildrequires.extend(dpkg)
                 else:
+                    # Exclude extrabuildrequires as their spec files may not present
+                    # and build will fail to construct a dependency graph.
+                    dpkg = list(set(dpkg) - set(pkg.extrabuildrequires))
                     pkg.buildrequires.extend(dpkg)
             if headerName == "buildprovides":
                 pkg.buildprovides.extend(dpkg)
@@ -607,6 +610,7 @@ class SpecParser(object):
         return True
 
     def _readExtraBuildRequires(self, line, pkg):
+        line = self._replaceMacros(line)
         data = line.strip()
         words = data.split(" ", 2)
         if len(words) != 3:

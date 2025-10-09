@@ -145,8 +145,11 @@ class SpecData(object):
         for pkg in self._getSpecObjField(
             package, version, field=lambda x: x.extraBuildRequires
         ):
-            # no version deps for publishrpms - use just name
-            packages.append(pkg.package)
+            if pkg.compare == "=" and pkg.version != "":
+                packages.append(pkg.package + "-" + pkg.version)
+            else:
+                # if no version deps for publishrpms - use just name
+                packages.append(pkg.package)
         return packages
 
     def getBuildRequiresNativeForPackage(self, package, version):

@@ -44,12 +44,15 @@ class ToolChainUtils(object):
 
     def _findPublishedRPM(self, package, rpmdirPath):
         listFoundRPMFiles = CommandUtils.findFile(f"{package}-*.rpm", rpmdirPath)
+        if listFoundRPMFiles == []:
+            # package string may include -version
+            listFoundRPMFiles = CommandUtils.findFile(f"{package}*.rpm", rpmdirPath)
         listFilterRPMFiles = []
         for f in listFoundRPMFiles:
             rpmFileName = os.path.basename(f)
             checkRPMName = rpmFileName.replace(package, "")
             rpmNameSplit = checkRPMName.split("-")
-            if len(rpmNameSplit) == 3:
+            if len(rpmNameSplit) == 3 or checkRPMName in [f".{constants.buildArch}.rpm", ".noarch.rpm"]:
                 listFilterRPMFiles.append(f)
         if len(listFilterRPMFiles) == 1:
             return listFilterRPMFiles[0]

@@ -7,6 +7,22 @@ class dependentPackageData(object):
         self.version = ""
         self.compare = ""
 
+    def __repr__(self):
+        return f"({self.package} {self.compare} {self.version})"
+
+    def __eq__(self, other):
+        """Define equality based on attribute values."""
+        if not isinstance(other, dependentPackageData):
+            return NotImplemented
+        return self.package == other.package and self.compare == other.compare and self.version == other.version
+
+    def __hash__(self):
+        """
+        Define a hash based on the same attributes used for equality.
+        A hash of a triple containing the attributes is a common and correct pattern.
+        """
+        return hash((self.package, self.compare, self.version))
+
 
 class Package(object):
     def __init__(self, buildarch, basePkg=None):

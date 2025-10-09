@@ -8,6 +8,7 @@ import glob
 import json
 import shutil
 import traceback
+import requests
 
 from contextlib import suppress
 from argparse import ArgumentParser
@@ -399,9 +400,11 @@ class Utilities:
             print(f"Downloading {f}")
             try:
                 downloader.downloadFile(src, dst)
-            except Exception:
+            except requests.exceptions.HTTPError:
                 self.logger.info("Not found")
                 notFound.append(f)
+            except Exception as e:
+                print(e)
         if notFound:
             self.logger.info("List of missing files: " + str(notFound))
 
