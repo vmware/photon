@@ -1265,12 +1265,18 @@ class BuildImage:
             "poi-image", None
         )
 
-        self.ova_cloud_images = ["ami", "gce", "azure", "ova"]
+        self.ova_images = ["ova_uefi", "ova"]
+        self.cloud_images = ["ami", "gce", "azure"]
+        self.aarch64_images = ["rpi", "ls1012afrwy"]
+        self.all_images = self.ova_images + self.cloud_images + self.aarch64_images
+
         self.photon_release_version = constants.releaseVersion
 
     def set_Iso_Parameters(self, imgName):
         self.generated_data_path = f"{Build_Config.stagePath}/common/data"
         self.src_iso_path = None
+        self.iso_path = None
+        self.debug_iso_path = None
         imgType = "photon"
 
         if imgName in ["minimal-iso", "rt-iso", "basic-iso"]:
@@ -1291,14 +1297,12 @@ class BuildImage:
             f"{constants.releaseVersion}-"
             f"{constants.buildNumber}.{constants.currentArch}.iso"
         )
-        self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
 
-        if "SKIP_DEBUG_ISO" in os.environ:
-            self.debug_iso_path = None
+        if int(os.environ.get("BUILD_DEBUG_ISO", 0)) == 1:
+            self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
 
         if imgName == "src-iso":
             self.src_iso_path = self.iso_path.rpartition(".")[0] + ".src.iso"
-            self.iso_path = None
             self.debug_iso_path = None
 
     def img_present(self, img):
@@ -1358,6 +1362,13 @@ class BuildImage:
 
     def build_iso(self):
         if self.img_present(self.img_name):
+            return
+
+        if self.img_name == "rt-iso":
+            print("Skip building rt-iso")
+            dummy_iso = f"{Build_Config.stagePath}/dummy-rt-iso-do-not-use.iso"
+            with open(dummy_iso, "a"):
+                pass
             return
 
         rpmBuildTarget = RpmBuildTarget()
@@ -1468,6 +1479,14 @@ class BuildImage:
         check_prerequesite["photon-docker-image"] = True
 
     def k8s_docker_images(self):
+        docker_path = f"{Build_Config.stagePath}/docker_images"
+        os.makedirs(docker_path, exist_ok=True)
+        touch_file = f"{docker_path}/build_skipped"
+        with open(touch_file, "a"):
+            pass
+        print("Skip building k8s_docker_images")
+        return 0
+
         if glob.glob(f"{Build_Config.stagePath}/docker_images/*.gz"):
             print(
                 f"k8s images are already present in {Build_Config.stagePath}/docker_images"
@@ -1475,11 +1494,6 @@ class BuildImage:
             return
 
         BuildImage.photon_docker_image()
-
-        if not os.path.isdir(
-            os.path.join(Build_Config.stagePath, "docker_images")
-        ):
-            os.mkdir(os.path.join(Build_Config.stagePath, "docker_images"))
 
         wkdir = f"{photonDir}/support/dockerfiles/k8s-docker-images"
 
@@ -1526,7 +1540,9 @@ class BuildImage:
         print("Successfully built all the k8s docker images")
 
     def all_images(self):
-        for img in self.ova_cloud_images:
+        # Build only ova deliverables
+        # add cloud and aarch64 images when needed
+        for img in self.ova_images:
             self.img_name = img
             self.build_image()
 
@@ -2107,7 +2123,7 @@ def main():
             ]:
                 buildImage.set_Iso_Parameters(targetName)
                 buildImage.build_iso()
-            elif targetName in buildImage.ova_cloud_images + ["rpi"]:
+            elif targetName in buildImage.all_images:
                 buildImage.build_image()
             else:
                 attr = getattr(buildImage, configdict["targetName"])
