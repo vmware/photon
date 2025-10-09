@@ -1066,32 +1066,36 @@ class BuildImage:
     def set_Iso_Parameters(self, imgName):
         self.generated_data_path = f"{Build_Config.stagePath}/common/data"
         self.src_iso_path = None
-        if imgName == "iso":
-            self.iso_path = f"{Build_Config.stagePath}/photon-{constants.releaseVersion}-{constants.buildNumber}.iso"
-            self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
-            if "SKIP_DEBUG_ISO" in os.environ:
-                self.debug_iso_path = None
+        self.debug_iso_path = None
+        self.iso_path = None
 
-        if imgName == "minimal-iso":
-            self.iso_path = f"{Build_Config.stagePath}/photon-minimal-{constants.releaseVersion}-{constants.buildNumber}.iso"
-            self.debug_iso_path = self.iso_path.rpartition(".")[0] + ".debug.iso"
-            if "SKIP_DEBUG_ISO" in os.environ:
-                self.debug_iso_path = None
-            self.package_list_file = (
-                f"{Build_Config.dataDir}/build_install_options_minimal.json"
-            )
-            self.pkg_to_be_copied_conf_file = (
-                f"{Build_Config.generatedDataPath}/build_install_options_minimal.json"
+        if imgName in ("iso", "minimal-iso"):
+            prefix = "photon" if imgName == "iso" else "photon-minimal"
+            self.iso_path = (
+                f"{Build_Config.stagePath}/"
+                f"{prefix}-{constants.releaseVersion}-{constants.buildNumber}.iso"
             )
 
-        else:
-            self.pkg_to_be_copied_conf_file = Build_Config.pkgToBeCopiedConfFile
-            self.package_list_file = Build_Config.packageListFile
+            if int(os.environ.get("BUILD_DEBUG_ISO", 0)) == 1:
+                base = self.iso_path.rpartition(".")[0]
+                self.debug_iso_path = f"{base}.debug.iso"
+
+            if imgName == "minimal-iso":
+                self.package_list_file = (
+                    f"{Build_Config.dataDir}/build_install_options_minimal.json"
+                )
+                self.pkg_to_be_copied_conf_file = (
+                    f"{Build_Config.generatedDataPath}/build_install_options_minimal.json"
+                )
+            else:
+                self.pkg_to_be_copied_conf_file = Build_Config.pkgToBeCopiedConfFile
+                self.package_list_file = Build_Config.packageListFile
 
         if imgName == "src-iso":
-            self.iso_path = None
-            self.debug_iso_path = None
-            self.src_iso_path = f"{Build_Config.stagePath}/photon-{constants.releaseVersion}-{constants.buildNumber}.src.iso"
+            self.src_iso_path = (
+                f"{Build_Config.stagePath}/"
+                f"{prefix}-{constants.releaseVersion}-{constants.buildNumber}.src.iso"
+            )
 
     def build_iso(self):
         rpmBuildTarget = RpmBuildTarget()
@@ -1108,6 +1112,7 @@ class BuildImage:
 
         if self.img_name != "minimal-iso":
             RpmBuildTarget.ostree_repo()
+
         self.generated_data_path = Build_Config.generatedDataPath
 
         print("Building Full ISO...")
@@ -1156,6 +1161,14 @@ class BuildImage:
         check_prerequesite["photon-docker-image"] = True
 
     def k8s_docker_images(self):
+        docker_path = f"{Build_Config.stagePath}/docker_images"
+        os.makedirs(docker_path, exist_ok=True)
+        touch_file = f"{docker_path}/build_skipped"
+        with open(touch_file, "a"):
+            pass
+        print("Skip building k8s_docker_images")
+        return 0
+
         BuildImage.photon_docker_image()
 
         if not os.path.isdir(os.path.join(Build_Config.stagePath, "docker_images")):
