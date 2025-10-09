@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.244
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.245
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=12c267442e93611c9249769ffe23fd2f1e7eb0f23b48fd16b0a83f3b83d8cb79cadca852eb51e92f943b89d759540df4e3d8d3861e0609202cec61b940c1bd38
+%define sha512 linux=9c42a7547467513806dd2b44e4efc24edc76e93b1c5bcb9efedd5695262275ad7e83c202481289bbf3aedf4978049cd6df04d6132014e53f9fc9afdb7a4b21ad
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -1135,6 +1135,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-1
+- Update to version 5.10.245
 * Wed Oct 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.244-5
 - Fixes CVE-2024-38564, CVE-2024-26792, CVE-2024-38556
 * Wed Oct 08 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.244-4
