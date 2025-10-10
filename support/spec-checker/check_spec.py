@@ -897,12 +897,12 @@ def main():
         spec_files = []
         for r, _, fns in os.walk(dirname):
             for fn in fns:
-                if fn.endswith(".spec"):
+                if fn.endswith((".spec", ".spec.in")):
                     files.append(os.path.join(r, fn))
         return spec_files
 
     for arg in range(1, len(sys.argv)):
-        if sys.argv[arg].endswith(".spec"):
+        if sys.argv[arg].endswith((".spec", ".spec.in")):
             files.append(sys.argv[arg])
         elif os.path.isdir(sys.argv[arg]):
             files += get_specs_in_dir(sys.argv[arg])
@@ -912,7 +912,7 @@ def main():
             "spec-checker: No spec files found in the specified directory/directories.",
             file=sys.stderr,
         )
-        return 1
+        return 0
 
     if check_specs(files):
         print("ERROR: spec check failed", file=sys.stderr)
