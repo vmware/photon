@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 
-import threading
 import copy
-import docker
-import json
+import os
+import sys
+import threading
 
+import docker
+import RepoUtil
+from CommandUtils import CommandUtils
+from constants import BuildMode, BuildStage, constants
 from Logger import Logger
-from constants import constants
-from PackageUtils import PackageUtils
-from ToolChainUtils import ToolChainUtils
-from Scheduler import Scheduler
-from ThreadPool import ThreadPool
-from SpecData import SPECS
-from Sandbox import Chroot
 from PackageBuildDataGenerator import PackageBuildDataGenerator
+from PackageUtils import PackageUtils
+from Scheduler import Scheduler
+from SpecData import SPECS
+from TDNFSandbox import TDNF
+from ThreadPool import ThreadPool
 
 
 class PackageManager(object):
@@ -31,73 +33,36 @@ class PackageManager(object):
         self.sortedPackageList = []
         self.listOfPackagesAlreadyBuilt = set()
         self.pkgBuildType = pkgBuildType
+        self.cmdUtils = CommandUtils()
         if self.pkgBuildType == "container":
             self.dockerClient = docker.from_env(version="auto")
 
-    def buildToolChain(self):
-        self.logger.info(
-            f"Step 1: Building the core toolchain packages for "
-            f"{constants.currentArch}"
-        )
-        self.logger.info(constants.listCoreToolChainPackages)
-        self.logger.info("")
-
-        pkgCount = 0
-        pkgUtils = PackageUtils(self.logName, self.logPath)
-        coreToolChainYetToBuild = []
-        doneList = []
-        for package in constants.listCoreToolChainPackages:
-            version = SPECS.getData().getHighestVersion(package)
-            rpmPkg = pkgUtils.findRPMFile(package, version)
-            self.sortedPackageList.append(f"{package}-{version}")
-            if rpmPkg is not None:
-                doneList.append(f"{package}-{version}")
-                continue
-            coreToolChainYetToBuild.append(package)
-
-        self.listOfPackagesAlreadyBuilt = set(doneList)
-        pkgCount = len(coreToolChainYetToBuild)
-        if coreToolChainYetToBuild:
-            self.logger.info("The following core toolchain packages need to be built: ")
-            self.logger.info(coreToolChainYetToBuild)
-        else:
-            self.logger.info("Core toolchain packages are already available")
-            self.logger.info("")
-            return pkgCount
-
-        Scheduler.coreToolChainBuild = True
-        self._buildPackages(1)
-        Scheduler.coreToolChainBuild = False
-        self.logger.debug("Successfully built core toolchain")
-        self.logger.info("-" * 45 + "\n")
-        return pkgCount
-
     def buildToolChainPackages(self, buildThreads):
-        pkgCount = self.buildToolChain()
-        # Stage 2 makes sence only for native tools
-        if not constants.crossCompiling:
-            if self.pkgBuildType == "container":
-                # Stage 1 build container
-                # TODO image name constants.buildContainerImageName
-                if pkgCount > 0 or not self.dockerClient.images.list(
-                    constants.buildContainerImage
-                ):
-                    self._createBuildContainer(True)
-            self.logger.info("Step 2: Building stage 2 of the toolchain...")
-            self.logger.info(constants.listToolChainPackages)
-            self.logger.info("")
-            self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
-            self.logger.info("The entire toolchain is now available")
-            self.logger.info(45 * "-")
-            self.logger.info("")
-        if self.pkgBuildType == "container":
-            """
-            Stage 2 build container
-
-            TODO: rebuild container only if anything in listToolChainPackages
-            was built
-            """
-            self._createBuildContainer(False)
+        if constants.toolchainBootstrap:
+            self.logger.info("Bootstraping toolchain...")
+            Scheduler.setBuildMode(BuildMode.BOOTSTRAP)
+        self.logger.info("Building toolchain...")
+        self.logger.info(constants.listToolChainPackages)
+        self.logger.info("\nPreparing toolchain build base image:")
+        Scheduler.setBuildStage(BuildStage.CORE_TOOLCHAIN)
+        self._createBuildImage(
+            targetName=constants.buildBase[BuildStage.CORE_TOOLCHAIN],
+            targetFile=constants.buildBaseImageTarball[BuildStage.CORE_TOOLCHAIN],
+        )
+        self._buildGivenPackages(constants.listCoreToolChainPackages, buildThreads)
+        Scheduler.setBuildStage(BuildStage.TOOLCHAIN)
+        self._createBuildImage(
+            targetName=constants.buildBase[BuildStage.TOOLCHAIN],
+            targetFile=constants.buildBaseImageTarball[BuildStage.TOOLCHAIN],
+        )
+        self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
+        self.logger.info("The entire toolchain is now available")
+        if constants.toolchainBootstrap:
+            self.logger.info("Bootstraping toolchain complete...")
+            sys.exit(0)
+        Scheduler.setBuildStage(BuildStage.PACKAGES)
+        self.logger.info(45 * "-")
+        self.logger.info("")
 
     def buildPackages(self, listPackages, buildThreads):
         rebuild = constants.rebuild
@@ -108,6 +73,10 @@ class PackageManager(object):
             self._buildTestPackages(buildThreads)
             constants.rpmCheck = True
             constants.addMacro("with_check", "1")
+            self._createBuildImage(
+                targetName=constants.buildBase[BuildStage.PACKAGES],
+                targetFile=constants.buildBaseImageTarball[BuildStage.PACKAGES],
+            )
             self._buildGivenPackages(listPackages, buildThreads, rebuild)
         else:
             self.buildToolChainPackages(buildThreads)
@@ -116,6 +85,10 @@ class PackageManager(object):
             )
             self.logger.info(listPackages)
             self.logger.info("")
+            self._createBuildImage(
+                targetName=constants.buildBase[BuildStage.PACKAGES],
+                targetFile=constants.buildBaseImageTarball[BuildStage.PACKAGES],
+            )
             self._buildGivenPackages(listPackages, buildThreads, rebuild)
         self.logger.info("Package build has been completed")
         self.logger.info("")
@@ -168,7 +141,9 @@ class PackageManager(object):
         self.listOfPackagesAlreadyBuilt = self._readAlreadyAvailablePackages()
 
         if rebuild:
-            self.listOfPackagesAlreadyBuilt = set(self.listOfPackagesAlreadyBuilt) - set(listPackages)
+            self.listOfPackagesAlreadyBuilt = set(
+                self.listOfPackagesAlreadyBuilt
+            ) - set(listPackages)
 
         if self.listOfPackagesAlreadyBuilt:
             self.logger.debug("List of already available packages:")
@@ -280,45 +255,137 @@ class PackageManager(object):
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
                 raise Exception("Unknown error")
 
-    def _createBuildContainer(self, usePublishedRPMs):
-        self.logger.debug("Generating photon build container..")
-        try:
-            # TODO image name constants.buildContainerImageName
-            self.dockerClient.images.remove(constants.buildContainerImage, force=True)
-        except Exception:
-            # TODO - better handling
-            self.logger.debug("Photon build container image not found.")
+    def _createImageTarball(
+        self,
+        targetName=None,
+        targetFile=None,
+        baseImage=None,
+        releaseVer=None,
+        packagesToInstall=None,
+        packagesToRemove=None,
+        packagesToExcludeForUpgrade=None,
+        preSteps=None,
+        postSteps=None,
+        overwrite=False,
+    ):
+        if targetName is None or targetFile is None:
+            raise Exception("Unable to create image.targetFile or targetName is empty")
 
-        # Create toolchain chroot and install toolchain RPMs
-        chroot = None
-        try:
-            # TODO: constants.tcrootname
-            chroot = Chroot("toolchain-chroot", self.logger)
-            chroot.create()
-            tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
-            tcUtils.installToolchainRPMS(chroot, usePublishedRPMS=usePublishedRPMs)
-        except Exception as e:
-            if chroot:
-                chroot.destroy()
-            raise e
-        self.logger.debug("createBuildContainer: " + chroot.getRootPath())
+        imageTarballPath = f"{constants.buildImagesPath}/{targetFile}"
 
-        # Create photon build container using toolchain chroot
-        importRes = self.dockerClient.api.import_image(src=chroot.archive(fmt="tar"))
-        tagHash = json.loads(importRes)["status"]
-        if not tagHash.startswith("sha256:"):
-            raise Exception(
-                f"docker: failed to import toolchain tarball: status={tagHash}"
-            )
-        tagHash = tagHash[7:]
-        # TODO: Container name, docker file name from constants.
-        self.dockerClient.images.build(
-            tag=constants.buildContainerImage,
-            path=".",
-            rm=True,
-            buildargs={"PHOTON_TCBASE": tagHash},
-            dockerfile="Dockerfile.photon_build_container",
+        if overwrite:
+            cmd = ["rm", "-f", imageTarballPath]
+            self.cmdUtils.runCmd(cmd)
+
+        if os.path.exists(imageTarballPath) and os.path.getsize(imageTarballPath) > 0:
+            self.logger.debug(f"photon build image {imageTarballPath} exists")
+            return
+        self.logger.debug(f"Generating build image.. {targetFile}")
+
+        targetPath = f"{constants.buildImagesPath}/{targetName}"
+        os.makedirs(targetPath, exist_ok=True)
+
+        if baseImage is not None:
+            cmd = [
+                "tar",
+                "--same-owner",
+                "-p-xf",
+                os.path.join(constants.buildImagesPath, baseImage),
+                "-C",
+                targetPath,
+            ]
+            self.cmdUtils.runCmd(cmd)
+
+        if preSteps is not None and type(preSteps) is list:
+            for step in preSteps:
+                self.logger.debug(
+                    f"Executing pre step {step} for base image: {targetName}"
+                )
+                self.cmdUtils.runCmd(step)
+
+        repoArgs = []
+
+        if releaseVer is not None:
+            repoArgs = [f"--releasever={releaseVer}"]
+        elif constants.toolchainBootstrap:
+            repoArgs = [f"--releasever={constants.releaseVersionToConsume}"]
+
+        repoArgs = repoArgs + RepoUtil.getRepoArgs(
+            Scheduler.buildStage, Scheduler.buildMode
         )
 
-        chroot.destroy()
-        self.logger.debug("Photon build container successfully created.")
+        exclusionArgs = None
+        if type(packagesToExcludeForUpgrade) is list:
+            exclusionArgs = ["--exclude"] + packagesToExcludeForUpgrade
+
+        subCmds: list = [["makecache"]]
+        if exclusionArgs is not None:
+            subCmds.append(["upgrade"] + exclusionArgs)
+        else:
+            subCmds.append(["upgrade"])
+
+        if packagesToRemove is not None and len(packagesToRemove) > 0:
+            subCmds.append(["remove"] + packagesToRemove)
+
+        if packagesToInstall is not None and len(packagesToInstall) > 0:
+            subCmds.append(["install"] + packagesToInstall)
+
+        tdnf = TDNF(installRoot=targetPath, repoArgs=repoArgs, logger=self.logger)
+        for cmd in subCmds:
+            self.logger.debug(f"Executing cmd for base image {targetName}: {cmd}")
+            try:
+                tdnf.run(
+                    subCmd=cmd,
+                    args=[],
+                    errMsg=f"Unable to call {cmd} in {targetPath}",
+                )
+            except Exception as e:
+                # make sure sandbox is cleared
+                tdnf.clean()
+                raise e
+
+        tdnf.clean()
+
+        # steps = [
+        #     f"groupadd --root {targetPath} photon".split(),
+        #     f"useradd --root {targetPath} -G photon -m {constants.photonBuilder}".split(),
+        # ]
+
+        # for step in steps:
+        #     self.cmdUtils.runCmd(step)
+
+        if postSteps is not None and type(postSteps) is list:
+            for step in postSteps:
+                self.logger.debug(
+                    f"Executing post step {step} for base image: {targetName}"
+                )
+                self.cmdUtils.runCmd(step)
+
+        self.logger.debug("Compressing photon build image..")
+        self.cmdUtils.runCmd(
+            args=["tar", "--same-owner", "-p", "-cf", imageTarballPath, "."],
+            cwd=targetPath,
+        )
+        self.cmdUtils.runCmd(["rm", "-rf", targetPath])
+
+    def _createBuildImage(self, targetName, targetFile):
+        releaseVer = constants.releaseVersion
+        if constants.toolchainBootstrap:
+            releaseVer = None
+        self._createImageTarball(
+            targetName=targetName,
+            targetFile=targetFile,
+            baseImage=None,
+            releaseVer=releaseVer,
+            packagesToInstall=[
+                "coreutils-selinux",
+                "shadow",
+                "rpm-build",
+                "build-essential",
+                "photon-release",
+            ],
+            packagesToRemove=None,
+            preSteps=None,
+            postSteps=None,
+            overwrite=False,
+        )

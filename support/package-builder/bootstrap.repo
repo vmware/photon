@@ -1,0 +1,6 @@
+[bootstrap]
+name=bootstrap
+baseurl=file:///bootstrap
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True

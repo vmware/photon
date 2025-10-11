@@ -2,13 +2,23 @@
 
 import os.path
 import shutil
-import tempfile
-import tarfile
 import subprocess
+import tarfile
+import tempfile
+from contextlib import ExitStack, suppress
 
-from contextlib import suppress, ExitStack
-from constants import constants
 from CommandUtils import CommandUtils
+from constants import SandboxType, constants
+
+SB_TYPES = {}
+
+
+def register(key):
+    def decorator(cls):
+        SB_TYPES[key] = cls
+        return cls
+
+    return decorator
 
 
 def sandbox_default_env():
@@ -22,20 +32,9 @@ def sandbox_default_env():
 
 
 def prepare_chroot_dirs(rootPath):
-    top_dirs = [
-        "dev",
-        "etc",
-        "proc",
-        "run",
-        "sys",
-        "tmp",
-        "publishrpms",
-        "publishxrpms",
-        "inputrpms",
-    ]
+    if constants.bootstrapRepoPath:
+        os.makedirs(os.path.join(rootPath, "/mnt/bootstrap"), exist_ok=True)
     extra_dirs = ["RPMS", "SRPMS", "SOURCES", "SPECS", "LOGS", "BUILD", "BUILDROOT"]
-    for d in top_dirs:
-        os.makedirs(os.path.join(rootPath, d), exist_ok=True)
     for d in extra_dirs:
         os.makedirs(os.path.join(rootPath + constants.topDirPath, d), exist_ok=True)
 
@@ -79,10 +78,19 @@ def tar_chroot(rootPath, fmt):
 
 
 class Sandbox(object):
-    def __init__(self, name, logger, cmdAudit=lambda cmd, env: None):
+    def __init__(
+        self,
+        name,
+        baseImagePath,
+        optionalMounts,
+        logger,
+        cmdAudit=lambda cmd, env: None,
+    ):
         self.name = name
-        self.logger = logger
         self.cmdAudit = cmdAudit
+        self.baseImagePath = baseImagePath
+        self.optionalMounts = optionalMounts
+        self.logger = logger
 
     def create(self):
         pass
@@ -114,10 +122,58 @@ class Sandbox(object):
         self.cmdAudit(cmd, env)
         return CommandUtils.runCmd(cmd, env=env, **kwargs)
 
+    def extract_sandbox_base(self, imagePath):
+        cmds = [
+            [
+                "mkdir",
+                "-p",
+                self.getRootPath(),
+            ],
+            ["tar", "--same-owner", "-p", "-xf", imagePath, "-C", self.getRootPath()],
+        ]
 
+        for cmd in cmds:
+            self._cmd(cmd)
+
+    def _adjust_permissions(self, dest):
+        # Fix permissions for non-root user
+        cmd = [
+            "find",
+            f"{self.getRootPath()}{dest}",
+            "-type",
+            "d",
+            "-exec",
+            "chmod",
+            "o+rx",
+            "{}",
+            ";",
+        ]
+        self._cmd(cmd, logfn=self.logger.debug)
+        cmd = [
+            "find",
+            f"{self.getRootPath()}{dest}",
+            "-type",
+            "f",
+            "-exec",
+            "chmod",
+            "o+r",
+            "{}",
+            ";",
+        ]
+        self._cmd(cmd, logfn=self.logger.debug)
+
+
+@register(SandboxType.CHROOT)
 class Chroot(Sandbox):
-    def __init__(self, name, logger, cmdAudit=lambda cmd, env: None):
-        Sandbox.__init__(self, name, logger, cmdAudit)
+    def __init__(
+        self,
+        name,
+        baseImagePath,
+        optionalMounts,
+        logger,
+        cmdAudit=lambda cmd, env: None,
+    ):
+        Sandbox.__init__(self, name, baseImagePath, optionalMounts, logger, cmdAudit)
         self.chrootPath = os.path.join(constants.buildRootPath, self.name)
         self.prepareBuildRootCmd = os.path.join(
             os.path.dirname(__file__), "prepare-build-root.sh"
@@ -131,56 +187,15 @@ class Chroot(Sandbox):
             if constants.resume_build:
                 return
             self.destroy()
-
-        prepare_chroot_dirs(self.chrootPath)
-
-        prepareCmds = [
-            [self.prepareBuildRootCmd, self.chrootPath],
-            [
-                "mount",
-                "--bind",
-                constants.rpmPath,
-                os.path.join(self.chrootPath + constants.topDirPath, "RPMS"),
-            ],
-            [
-                "mount",
-                "--bind",
-                constants.sourceRpmPath,
-                os.path.join(self.chrootPath + constants.topDirPath, "SRPMS"),
-            ],
-            [
-                "mount",
-                "-o",
-                "ro",
-                "--bind",
-                constants.prevPublishRPMRepo,
-                os.path.join(self.chrootPath, "publishrpms"),
-            ],
-            [
-                "mount",
-                "-o",
-                "ro",
-                "--bind",
-                constants.prevPublishXRPMRepo,
-                os.path.join(self.chrootPath, "publishxrpms"),
-            ],
-        ]
-        if constants.inputRPMSPath:
-            prepareCmds.append(
-                [
-                    "mount",
-                    "-o",
-                    "ro",
-                    "--bind",
-                    constants.inputRPMSPath,
-                    os.path.join(self.chrootPath, "inputrpms"),
-                ]
-            )
-
-        for cmd in prepareCmds:
-            self._cmd(cmd)
-
-        self.logger.debug(f"Successfully created chroot: {self.chrootPath}")
+        self.extract_sandbox_base(
+            self.baseImagePath
+            if self.baseImagePath
+            else os.path.join(constants.buildImagesPath, constants.baseImageTarball)
+        )
+        prepare_chroot_dirs(rootPath=self.chrootPath)
+        self._cmd([self.prepareBuildRootCmd, self.chrootPath])
+        self._prepare_mounts()
+        self.logger.info(f"Successfully created chroot: {self.chrootPath}")
 
     def destroy(self):
         self.logger.debug(f"Deleting chroot: {self.chrootPath}")
@@ -188,15 +203,24 @@ class Chroot(Sandbox):
         self._cmd(["rm", "--one-file-system", "-rf", self.chrootPath])
 
     def runCmd(
-        self, cmd, network_required=False, env={}, clean_env=True, shell=False, **kwargs
-    ):
+        self,
+        cmd,
+        sandbox_user=None,
+        network_required=False,
+        env={},
+        clean_env=True,
+        shell=False,
+        **kwargs,
+    ) -> tuple[str, str, int]:
         if shell:
             raise Exception("Chroot.runCmd() does not support shell=True")
         env = {**sandbox_default_env(), **env}
+        chroot_prefix = ["chroot"]
+        if sandbox_user:
+            chroot_prefix += ["--userspec", sandbox_user]
         self.logger.debug(f"Chroot.runCmd({cmd}, env={env})")
-        return self._cmd(
-            ["chroot", self.chrootPath] + cmd, clean_env=True, env=env, **kwargs
-        )
+        chroot_prefix += [self.chrootPath]
+        return self._cmd(chroot_prefix + cmd, clean_env=True, env=env, **kwargs)
 
     def archive(self, fmt="tar"):
         return tar_chroot(self.chrootPath, fmt)
@@ -217,8 +241,28 @@ class Chroot(Sandbox):
     def getRootPath(self):
         return self.chrootPath
 
+    def _prepare_mounts(self):
+        for bind in self.optionalMounts.get("binds", []):
+            self._mountOne(bind[0], f"{self.chrootPath}{bind[1]}", True)
+        for bind in self.optionalMounts.get("bindsrw", []):
+            self._mountOne(bind[0], f"{self.chrootPath}{bind[1]}", False)
+
+    def _mountOne(self, src, dest, readOnly=True):
+        os.makedirs(dest, exist_ok=True)
+        cmd = ["mount", "--bind"]
+        if readOnly:
+            cmd.append("--read-only")
+        cmd += [src, dest]
+        self._cmd(cmd)
+
     def _unmountAll(self):
-        dirsToTry = [
+        dirsToTry = []
+        # unmount any left over custom bind paths
+        for bind in self.optionalMounts.get("binds", []):
+            dirsToTry.append(self.chrootPath + bind[1])
+        for bind in self.optionalMounts.get("bindsrw", []):
+            dirsToTry.append(self.chrootPath + bind[1])
+        dirsToTry += [
             os.path.join(self.chrootPath, d)
             for d in [
                 "dev/pts",
@@ -227,9 +271,6 @@ class Chroot(Sandbox):
                 "run",
                 "sys",
                 "tmp",
-                "publishrpms",
-                "publishxrpms",
-                "inputrpms",
             ]
         ]
         dirsToTry += [
@@ -251,9 +292,17 @@ class Chroot(Sandbox):
                 self._cmd(["umount", "-R", "-l", d], ignore_rc=True)
 
 
+@register(SandboxType.SYSTEMD_NSPAWN)
 class SystemdNspawn(Sandbox):
-    def __init__(self, name, logger, cmdAudit=lambda cmd, env: None):
-        Sandbox.__init__(self, name, logger, cmdAudit)
+    def __init__(
+        self,
+        name,
+        baseImagePath,
+        optionalMounts,
+        logger,
+        cmdAudit=lambda cmd, env: None,
+    ):
+        Sandbox.__init__(self, name, baseImagePath, optionalMounts, logger, cmdAudit)
         self.nspawnRootPath = os.path.join(constants.buildRootPath, self.name)
         self.observationFile = None
 
@@ -262,7 +311,11 @@ class SystemdNspawn(Sandbox):
             if constants.resume_build:
                 return
             self.destroy()
-
+        self.extract_sandbox_base(
+            self.baseImagePath
+            if self.baseImagePath
+            else os.path.join(constants.buildImagesPath, constants.baseImageTarball)
+        )
         prepare_chroot_dirs(self.nspawnRootPath)
 
         self.logger.debug(f"Successfully created nspawn root: {self.nspawnRootPath}")
@@ -271,14 +324,34 @@ class SystemdNspawn(Sandbox):
         self.logger.debug(f"Deleting nspawn chroot: {self.nspawnRootPath}")
 
         container_name = os.path.basename(self.nspawnRootPath)
-        if container_name in subprocess.run(["machinectl", "list"], capture_output=True, text=True).stdout:
+        if (
+            container_name
+            in subprocess.run(
+                ["machinectl", "list"], capture_output=True, text=True
+            ).stdout
+        ):
             self.logger.debug(f"Removing nspawn container: {container_name} ...")
             self._cmd(f"machinectl terminate {container_name}".split(), ignore_rc=True)
 
         self._cmd(["rm", "--one-file-system", "-rf", self.nspawnRootPath])
 
+    def _prepare_mount_arguments(self) -> list[str]:
+        args = []
+        for bind in self.optionalMounts.get("binds", []):
+            args += ["--bind-ro", f"{bind[0]}:{bind[1]}"]
+        for bind in self.optionalMounts.get("binds", []):
+            args += ["--bind", f"{bind[0]}:{bind[1]}"]
+        return args
+
     def runCmd(
-        self, cmd, network_required=False, env={}, clean_env=True, shell=False, **kwargs
+        self,
+        cmd,
+        sandbox_user=None,
+        network_required=False,
+        env={},
+        clean_env=True,
+        shell=False,
+        **kwargs,
     ):
         if shell:
             raise Exception("SystemdNspawn.runCmd() does not support shell=True")
@@ -293,18 +366,12 @@ class SystemdNspawn(Sandbox):
             "--console=pipe",
             "--directory",
             self.nspawnRootPath,
-            "--bind",
-            f"{constants.rpmPath}:{constants.topDirPath}/RPMS",
-            "--bind",
-            f"{constants.sourceRpmPath}:{constants.topDirPath}/SRPMS",
-            "--bind-ro",
-            f"{constants.prevPublishRPMRepo}:/publishrpms",
-            "--bind-ro",
-            f"{constants.prevPublishXRPMRepo}:/publishxrpms",
         ]
 
-        if constants.inputRPMSPath:
-            nspawnCmd += ["--bind-ro", f"{constants.inputRPMSPath}:/inputrpms"]
+        nspawnCmd += self._prepare_mount_arguments()
+
+        if constants.bootstrapRepoPath:
+            nspawnCmd += ["--bind-ro", f"{constants.bootstrapRepoPath}:/bootstrap"]
 
         with ExitStack() as stack:
             # Processes in a sandbox may access external resources only through proxy.
@@ -356,43 +423,46 @@ class SystemdNspawn(Sandbox):
         return fp
 
 
+@register(SandboxType.CONTAINER)
 class Container(Sandbox):
-    def __init__(self, name, logger, cmdAudit=lambda cmd, env: None):
+    def __init__(
+        self,
+        name,
+        baseImagePath,
+        optionalMounts,
+        logger,
+        cmdAudit=lambda cmd, env: None,
+    ):
         import docker
 
-        Sandbox.__init__(self, name, logger, cmdAudit)
+        Sandbox.__init__(self, name, baseImagePath, optionalMounts, logger, cmdAudit)
         self.dockerClient = docker.from_env(version="auto")
         self.containerName = "photon-sandbox-" + self.name.replace("+", "p")
         self.container = None
 
     def create(self):
         mountVols = {
-            constants.prevPublishRPMRepo: {
-                "bind": "/publishrpms",
-                "mode": "ro",
-            },
-            constants.prevPublishXRPMRepo: {
-                "bind": "/publishxrpms",
-                "mode": "ro",
-            },
             constants.tmpDirPath: {"bind": "/tmp", "mode": "rw"},
-            constants.rpmPath: {
-                "bind": f"{constants.topDirPath}/RPMS",
-                "mode": "rw",
-            },
-            constants.sourceRpmPath: {
-                "bind": f"{constants.topDirPath}/SRPMS",
-                "mode": "rw",
-            },
             constants.dockerUnixSocket: {
                 "bind": constants.dockerUnixSocket,
                 "mode": "rw",
             },
         }
 
-        if constants.inputRPMSPath:
-            mountVols[constants.inputRPMSPath] = {
-                "bind": "/inputrpms",
+        for bind in self.optionalMounts.get("binds", []):
+            mountVols[bind[0]] = {
+                "bind": bind[1],
+                "mode": "ro",
+            }
+        for bind in self.optionalMounts.get("bindsrw", []):
+            mountVols[bind[0]] = {
+                "bind": bind[1],
+                "mode": "rw",
+            }
+
+        if constants.bootstrapRepoPath:
+            mountVols[constants.bootstrapRepoPath] = {
+                "bind": "/bootstrap",
                 "mode": "ro",
             }
 
@@ -409,7 +479,7 @@ class Container(Sandbox):
         #  privilegedDocker = True
 
         self.container = self.dockerClient.containers.run(
-            constants.buildContainerImage,
+            self.baseImagePath,
             entrypoint="/usr/bin/tail",
             detach=True,
             cap_add=cap_list,
@@ -422,12 +492,13 @@ class Container(Sandbox):
         )
 
         self.logger.debug(
-            f"Successfully created docker container: {self.container.short_id}"
+            f"Successfully created docker container: {self.container.short_id} {mountVols}"
         )
 
     def runCmd(
         self,
         cmd,
+        sandbox_user=None,
         logfile=None,
         logfn=None,
         capture=False,
@@ -449,13 +520,12 @@ class Container(Sandbox):
 
         env = {**sandbox_default_env(), **env}
         self.logger.debug(f"Container.runCmd({cmd}, env={env})")
-        containerCmd = ["/usr/bin/env", "-i"]
-        for k, v in env.items():
-            containerCmd.append(f"{k}={v}")
         # synthesize docker exec command
-        self.cmdAudit(["docker", "exec", self.containerName] + containerCmd, env)
+        self.cmdAudit(["docker", "exec", self.containerName] + cmd, env)
 
-        execInst = self.dockerClient.api.exec_create(self.container.id, containerCmd)
+        execInst = self.dockerClient.api.exec_create(
+            self.container.id, cmd=cmd, environment=env
+        )
         # Only demux stdout/stderr when logfile is not specified.
         output = self.dockerClient.api.exec_start(
             execInst["Id"], stream=logfile is not None, demux=logfile is None
@@ -463,15 +533,21 @@ class Container(Sandbox):
         if logfile:
             for chunk in output:
                 logfile.write(chunk)
-        elif logfn:
-            logfn(output.stdout.decode())
+            output = (None, None)
+        elif logfn and output[0]:
+            logfn(output[0].decode("utf-8"))
 
-        retval = self.dockerClient.api.exec_inspec(execInst["Id"])["ExitCode"]
+        retval = self.dockerClient.api.exec_inspect(execInst["Id"])["ExitCode"]
         if retval != 0 and not ignore_rc:
-            raise Exception(f"Container.runCmd(): {cmd} failed")
-        if logfile:
-            return "", "", retval
-        return output.stdout.decode(), output.stderr.decode(), retval
+            stdout = output[0].decode() if output[0] else ""
+            stderr = output[1].decode() if output[1] else ""
+            raise Exception(
+                f"Container.runCmd(): {cmd} failed {retval} {stdout} {stderr}"
+            )
+
+        stdout = output[0].decode() if output[0] else ""
+        stderr = output[1].decode() if output[1] else ""
+        return stdout, stderr, retval
 
     def archive(self, fmt="tar"):
         if fmt != "tar":
@@ -488,6 +564,7 @@ class Container(Sandbox):
         self.container = None
 
     def putFiles(self, files, dest):
+        self.logger.debug(f"{files} to {dest}")
         if not os.path.isabs(dest):
             raise Exception(f"{dest} is not an absolute path")
         if isinstance(files, str):
@@ -631,3 +708,13 @@ class Observer(object):
             )
         self.container.remove(force=True)
         self.container = None
+
+
+def init_sandbox(sandboxType, name, baseImagePath, optionalMounts, logger, cmdAudit):
+    return SB_TYPES[sandboxType](
+        name=name,
+        logger=logger,
+        cmdAudit=cmdAudit,
+        baseImagePath=baseImagePath,
+        optionalMounts=optionalMounts,
+    )

@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 
 import os
-import PullSources
 
+import PullSources
+import RepoUtil
 from CommandUtils import CommandUtils
-from Logger import Logger
 from constants import constants
-from SpecData import SPECS
+from Logger import Logger
 from SourceConfigData import SOURCES
+from SpecData import SPECS
+from TDNFSandbox import TDNF
 
 
 class PackageUtils(object):
-    def __init__(self, logName=None, logPath=None):
+    def __init__(self, buildStage, buildMode, logName=None, logPath=None):
+        self.buildStage = buildStage
+        self.buildMode = buildMode
         if logName is None:
             logName = "PackageUtils"
         if logPath is None:
@@ -21,8 +25,7 @@ class PackageUtils(object):
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.rpmBinary = "rpm"
-        self.installRPMPackageOptions = ["-Uv"]
-        self.nodepsRPMPackageOptions = ["--nodeps"]
+        self.installRPMPackageOptions = []
 
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOptions = ["--clean"]
@@ -37,84 +40,39 @@ class PackageUtils(object):
         self.queryRpmPackageOptions = ["-qa"]
         self.forceRpmPackageOptions = ["--force"]
         self.replaceRpmPackageOptions = ["--replacepkgs"]
-        self.rpmFilesToInstallInAOneShot = []
         self.packagesToInstallInAOneShot = []
-        self.noDepsRPMFilesToInstallInAOneShot = []
-        self.noDepsPackagesToInstallInAOneShot = []
         self.logfnvalue = None
 
-    def prepRPMforInstall(
-        self, package, version, noDeps=False, arch=constants.currentArch
-    ):
-        if (package in self.packagesToInstallInAOneShot or
-            package in self.noDepsPackagesToInstallInAOneShot):
-            return
-
-        rpmfile = self.findRPMFile(package, version, arch)
-        if rpmfile is None:
-            self.logger.error(f"No rpm file found for package: {package}")
-            raise Exception(f"ERROR: Missing rpm file: {package}")
-
-        rpmName = os.path.basename(rpmfile)
-        # TODO: path from constants
-        if "PUBLISHRPMS" in rpmfile:
-            rpmDestFile = "/publishrpms/"
-        elif "PUBLISHXRPMS" in rpmfile:
-            rpmDestFile = "/publishxrpms/"
-        elif constants.inputRPMSPath and constants.inputRPMSPath in rpmfile:
-            rpmDestFile = "/inputrpms/"
-        else:
-            rpmDestFile = os.path.join(
-                constants.topDirPath,
-                "RPMS",
-                arch if "noarch" not in rpmfile else "noarch",
-                rpmName,
-            )
-
-        if noDeps:
-            self.noDepsRPMFilesToInstallInAOneShot.append(rpmDestFile)
-            self.noDepsPackagesToInstallInAOneShot.append(package)
-        else:
-            self.rpmFilesToInstallInAOneShot.append(rpmDestFile)
-            self.packagesToInstallInAOneShot.append(package)
+    def prepRPMforInstall(self, package):
+        if package.startswith("coreutils") and "selinux" not in package:
+            package = "coreutils-selinux"
+        self.packagesToInstallInAOneShot.append(package)
 
     def installRPMSInOneShot(self, sandbox, arch):
-        rpmInstallcmd = [self.rpmBinary] + self.installRPMPackageOptions
-        if constants.crossCompiling and arch == constants.targetArch:
-            rpmInstallcmd += [
-                "--ignorearch",
-                "--noscripts",
-                "--root",
-                "/target-{constants.targetArch}",
-            ]
-
-        # TODO: Container sandbox might need  + self.forceRpmPackageOptions
-        if self.noDepsRPMFilesToInstallInAOneShot:
-            self.logger.debug(
-                f"Installing nodeps rpms: " f"{self.noDepsPackagesToInstallInAOneShot}"
-            )
-            cmd = (
-                rpmInstallcmd
-                + self.nodepsRPMPackageOptions
-                + self.noDepsRPMFilesToInstallInAOneShot
-            )
-            self.logger.debug(f"Command: {cmd}")
-            try:
-                sandbox.runCmd(cmd, logfn=self.logger.debug)
-            except Exception as e:
-                self.logger.error("Unable to install nodeps rpms")
-                self.logger.exception(e)
-                raise
-        if self.rpmFilesToInstallInAOneShot:
+        repoArgs = RepoUtil.getRepoArgs(self.buildStage, self.buildMode)
+        if len(self.packagesToInstallInAOneShot) != 0:
             self.logger.debug(f"Installing rpms: {self.packagesToInstallInAOneShot}")
-            cmd = rpmInstallcmd + self.rpmFilesToInstallInAOneShot
-            self.logger.debug(f"Command: {cmd}")
+            tdnf = TDNF(
+                installRoot=sandbox.getRootPath(), repoArgs=repoArgs, logger=self.logger
+            )
             try:
-                sandbox.runCmd(cmd, logfn=self.logger.debug)
-            except Exception as e:
-                self.logger.error("Unable to install rpms")
-                self.logger.exception(e)
-                raise
+                tdnf.run(
+                    subCmd=["makecache"],
+                    args=[],
+                    errMsg="Unable to refresh cache",
+                )
+                tdnf.run(
+                    subCmd=["upgrade"],
+                    args=self.installRPMPackageOptions,
+                    errMsg="Unable to upgrade rpms",
+                )
+                tdnf.run(
+                    subCmd=["install"] + self.packagesToInstallInAOneShot,
+                    args=self.installRPMPackageOptions,
+                    errMsg="Unable to install rpms",
+                )
+            finally:
+                tdnf.clean()
 
     def buildRPMSForGivenPackage(self, sandbox, package, version, destLogPath):
         self.logger.info(f"Building package: {package}-{version}")
@@ -234,11 +192,6 @@ class PackageUtils(object):
         if os.path.isfile(fullpath):
             return fullpath
 
-        if constants.inputRPMSPath is not None:
-            fullpath = os.path.join(constants.inputRPMSPath, buildarch, filename)
-        if os.path.isfile(fullpath):
-            return fullpath
-
         if throw:
             raise Exception(f"RPM {filename} not found")
         return None
@@ -268,8 +221,6 @@ class PackageUtils(object):
 
     def findInstalledRPMPackages(self, sandbox, arch):
         cmd = [self.rpmBinary] + self.queryRpmPackageOptions
-        if constants.crossCompiling and arch == constants.targetArch:
-            cmd += ["--root", f"/target-{constants.targetArch}"]
         out, _, _ = sandbox.runCmd(cmd, capture=True)
         return CommandUtils.splitlines(out)
 
@@ -277,11 +228,16 @@ class PackageUtils(object):
         if len(constants.signingOptsHost) != len(constants.signingMap):
             return None
 
-        cmd = [constants.signingOptsHost['script'],
-                "--file_type", "rpm",
-                "--config_file", constants.signingOptsHost['params'],
-                "--auth_file", constants.signingOptsHost['auth'],
-                "--artifact"]
+        cmd = [
+            constants.signingOptsHost["script"],
+            "--file_type",
+            "rpm",
+            "--config_file",
+            constants.signingOptsHost["params"],
+            "--auth_file",
+            constants.signingOptsHost["auth"],
+            "--artifact",
+        ]
         return cmd
 
     def signPackages(self, RpmsToSign, SRPM, cmd):
@@ -377,10 +333,14 @@ class PackageUtils(object):
 
         specDir = os.path.dirname(SPECS.getData().getSpecFile(package, version))
         if not os.path.isdir(specDir):
-            raise Exception(f"ERROR: {package}-{version}, '{specDir}' does not exist ...")
+            raise Exception(
+                f"ERROR: {package}-{version}, '{specDir}' does not exist ..."
+            )
 
         for source in listSourceFiles:
-            sourcePath = self._verifyShaAndGetSourcePath(specDir, source, package, version)
+            sourcePath = self._verifyShaAndGetSourcePath(
+                specDir, source, package, version
+            )
             files_to_copy.extend(sourcePath)
 
         sandbox.putFiles(files_to_copy, destDir)
@@ -435,15 +395,6 @@ class PackageUtils(object):
         for macro in macros:
             rpmBuildcmd += ["-D", macro]
 
-        if constants.crossCompiling:
-            rpmBuildcmd += [
-                "-D",
-                f"_build {constants.buildArch}-unknown-linux-gnu",
-                "-D",
-                f"_host {constants.targetArch}-unknown-linux-gnu",
-                f"--target={constants.targetArch}-unknown-linux-gnu",
-            ]
-
         rpmBuildcmd += [specFile]
 
         self.logger.debug(f"Building rpm....\n{rpmBuildcmd}")
@@ -492,5 +443,6 @@ class PackageUtils(object):
                 listRPMFiles.append(rpm)
             elif "/SRPMS/" in rpm:
                 listSRPMFiles.append(rpm)
-
+        self.logger.info("Updating repo")
+        RepoUtil.copyRPMsToRepo(sandbox.getRootPath(), listRPMFiles, listSRPMFiles)
         return listRPMFiles, listSRPMFiles

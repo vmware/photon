@@ -1,3 +1,4 @@
+UMASK := 0022
 SHELL := /bin/bash
 CONF := build-config.json
 
@@ -11,15 +12,15 @@ export FIRST_PASS_MARKER
 
 all:
 	@if [ -n "$(pkgs)" ]; then \
-		python3 build.py -c $(CONF) --pkgs "$(pkgs)"; \
+		umask $(UMASK) && python3 build.py -c $(CONF) --pkgs "$(pkgs)"; \
 	elif [ "$(BUILD_EXTRA_PKGS)" = "1" ]; then \
-		python3 build.py -c $(CONF) -t extra-packages; \
+		umask $(UMASK) && python3 build.py -c $(CONF) -t extra-packages; \
 	else \
-		python3 build.py -c $(CONF) -t packages; \
+		umask $(UMASK) && python3 build.py -c $(CONF) -t packages; \
 	fi
 
 %:
-	@python3 build.py -c $(CONF) -t "$@" && \
+	umask $(UMASK) && python3 build.py -c $(CONF) -t "$@" && \
 	if [[ "$@" != clean* ]]; then \
 		touch $(FIRST_PASS_MARKER); \
 	fi

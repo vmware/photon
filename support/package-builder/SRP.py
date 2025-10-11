@@ -18,7 +18,9 @@ from datetime import datetime, timezone
 GO_REMOTE_PREFIX = "/artifactory/proxy-golang-remote/"
 MAVEN_REMOTE_PREFIX = "/artifactory/maven/"
 GRADLE_PLUGINS_REMOTE_PREFIX = "/artifactory/plugins-gradle-org-m2/"
-GRADLE_SERVICES_VIRTUAL_PREFIX = "/artifactory/upstream-services-gradle-virtual/distributions/"
+GRADLE_SERVICES_VIRTUAL_PREFIX = (
+    "/artifactory/upstream-services-gradle-virtual/distributions/"
+)
 
 
 class SRP(object):
@@ -52,14 +54,20 @@ class SRP(object):
             "sources": {
                 "common_repo": {
                     "typename": "source_tree.git",
-                    "path": constants.gitSourcePaths.get('common', 'Unknown')
+                    "path": constants.gitSourcePaths.get("common", "Unknown"),
                 },
                 "release_repo": {
                     "typename": "source_tree.git",
-                    "path": constants.gitSourcePaths.get('release', 'Unknown')
-                }
+                    "path": constants.gitSourcePaths.get("release", "Unknown"),
+                },
             },
-            "input_templates": {"rpm-comps": {}, "source-comps": {}, "maven-comps": {}, "gradle-comps": {}, "go-comps": {}},
+            "input_templates": {
+                "rpm-comps": {},
+                "source-comps": {},
+                "maven-comps": {},
+                "gradle-comps": {},
+                "go-comps": {},
+            },
             "outputs": {},
         }
 
@@ -86,7 +94,13 @@ class SRP(object):
     def initialize(self):
         if not self.srpcli:
             return
-        self.srpcli_run(["provenance", "init", f"--revision={datetime.now(timezone.utc).isoformat(timespec='seconds')}"])
+        self.srpcli_run(
+            [
+                "provenance",
+                "init",
+                f"--revision={datetime.now(timezone.utc).isoformat(timespec='seconds')}",
+            ]
+        )
         self.srpcli_run(
             [
                 "provenance",
@@ -205,12 +219,12 @@ class SRP(object):
     def gradleDistPathToUid(self, path):
         filename = path.removeprefix(GRADLE_SERVICES_VIRTUAL_PREFIX)
         filename = filename.removesuffix(".zip")
-        name, version, _ = filename.split('-')
+        name, version, _ = filename.split("-")
         return f"uid.obj.comp.file(org='upstream-services-gradle-virtual',name='{name}',version='{version}')"
 
     def checkObservationIgnored(self, group):
         for ign in constants.observationIgnHostPatterns:
-            if ign.fullmatch(group['host']) is not None:
+            if ign.fullmatch(group["host"]) is not None:
                 return True
         return False
 
@@ -218,19 +232,19 @@ class SRP(object):
         additional_paths = []
         items = observations["items"]
         for item in items:
-            if item['typename'] != 'local_observation.https':
+            if item["typename"] != "local_observation.https":
                 continue
-            groups = item['groups']
+            groups = item["groups"]
             trimed_groups = []
             for group in groups:
                 if self.checkObservationIgnored(group):
                     continue
                 trimed_groups.append(group)
-                if group['method'] != 'GET':
+                if group["method"] != "GET":
                     continue
-                paths = group['paths']
+                paths = group["paths"]
                 additional_paths.extend(paths)
-            item['groups'] = trimed_groups
+            item["groups"] = trimed_groups
         return additional_paths
 
     def addInputSource(self, file, checksum):
@@ -240,9 +254,13 @@ class SRP(object):
         filename = os.path.basename(file)
         self.schematic["input_templates"]["source-comps"][
             f"uid.obj.comp.fileset(org='photon.source',name='{filename}',build_id='{checksum}')"
-        ] = {"incorporated": True, "is_components_source": True, "modified": True,
-             "interaction_type": "static_linking", "usages": ["functionality", "building",
-                                                              "testing"]}
+        ] = {
+            "incorporated": True,
+            "is_components_source": True,
+            "modified": True,
+            "interaction_type": "static_linking",
+            "usages": ["functionality", "building", "testing"],
+        }
 
     def addInputRPMS(self, files):
         if not self.srpcli:
@@ -253,8 +271,12 @@ class SRP(object):
             try:
                 self.schematic["input_templates"]["rpm-comps"][
                     self.rpmFileNameToUid(filename)
-                ] = {"incorporated": False, "usages": ["building"],
-                     "modified": False, "interaction_type": "dev_tools/excluded"}
+                ] = {
+                    "incorporated": False,
+                    "usages": ["building"],
+                    "modified": False,
+                    "interaction_type": "dev_tools/excluded",
+                }
             except Exception as e:
                 self.logger.exception(e)
 
@@ -267,13 +289,49 @@ class SRP(object):
                     uid = self.goDepPathToUid(path)
                     if not uid:
                         continue
-                    self.schematic["input_templates"]["go-comps"].setdefault(uid, {"incorporated": True, "usages": ["functionality", "building"], "modified": False, "interaction_type": "static_linking"})
+                    self.schematic["input_templates"]["go-comps"].setdefault(
+                        uid,
+                        {
+                            "incorporated": True,
+                            "usages": ["functionality", "building"],
+                            "modified": False,
+                            "interaction_type": "static_linking",
+                        },
+                    )
                 elif path.startswith(MAVEN_REMOTE_PREFIX) and path.endswith(".jar"):
-                    self.schematic["input_templates"]["maven-comps"].setdefault(self.mavenPathToUid(path), {"incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"})
-                elif path.startswith(GRADLE_PLUGINS_REMOTE_PREFIX) and path.endswith(".jar"):
-                    self.schematic["input_templates"]["gradle-comps"].setdefault(self.gradlePathToUid(path), {"incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"})
-                elif path.startswith(GRADLE_SERVICES_VIRTUAL_PREFIX) and path.endswith(".zip"):
-                    self.schematic["input_templates"]["gradle-comps"].setdefault(self.gradleDistPathToUid(path), {"incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"})
+                    self.schematic["input_templates"]["maven-comps"].setdefault(
+                        self.mavenPathToUid(path),
+                        {
+                            "incorporated": False,
+                            "usages": ["building"],
+                            "modified": False,
+                            "interaction_type": "dev_tools/excluded",
+                        },
+                    )
+                elif path.startswith(GRADLE_PLUGINS_REMOTE_PREFIX) and path.endswith(
+                    ".jar"
+                ):
+                    self.schematic["input_templates"]["gradle-comps"].setdefault(
+                        self.gradlePathToUid(path),
+                        {
+                            "incorporated": False,
+                            "usages": ["building"],
+                            "modified": False,
+                            "interaction_type": "dev_tools/excluded",
+                        },
+                    )
+                elif path.startswith(GRADLE_SERVICES_VIRTUAL_PREFIX) and path.endswith(
+                    ".zip"
+                ):
+                    self.schematic["input_templates"]["gradle-comps"].setdefault(
+                        self.gradleDistPathToUid(path),
+                        {
+                            "incorporated": False,
+                            "usages": ["building"],
+                            "modified": False,
+                            "interaction_type": "dev_tools/excluded",
+                        },
+                    )
         except Exception as e:
             self.logger.exception(e)
 
@@ -302,26 +360,34 @@ class SRP(object):
             spdx_info["package"]["detailed_description"] = description
 
             self.schematic["outputs"][self.rpmFileNameToUid(filename)] = {
-                "merge_input_templates": ["rpm-comps", "source-comps", "maven-comps", "gradle-comps", "go-comps"],
+                "merge_input_templates": [
+                    "rpm-comps",
+                    "source-comps",
+                    "maven-comps",
+                    "gradle-comps",
+                    "go-comps",
+                ],
                 "spdx_info": spdx_info,
                 "inputs": {
                     "$(sources:common_repo_uid)": {
                         "is_components_source": True,
                         "incorporated": True,
                         "usages": ["functionality", "building", "testing"],
-                        "modified": False, "interaction_type": "static_linking"
+                        "modified": False,
+                        "interaction_type": "static_linking",
                     },
                     "$(sources:release_repo_uid)": {
                         "is_components_source": True,
                         "incorporated": True,
                         "usages": ["functionality", "building", "testing"],
-                        "modified": False, "interaction_type": "static_linking"
-                    }
+                        "modified": False,
+                        "interaction_type": "static_linking",
+                    },
                 },
                 "product": {
                     "distribution_type": "external",
-                    "embedded_in_hardware": False
-                }
+                    "embedded_in_hardware": False,
+                },
             }
 
     def addCommand(self, cmd, env):
@@ -352,7 +418,7 @@ class SRP(object):
         observations = json.load(observationFile)
         observation_paths = self.trimObservationsAndExtractPaths(observations)
         self.addAdditionalDeps(observation_paths)
-        with tempfile.NamedTemporaryFile(mode='w+') as temp:
+        with tempfile.NamedTemporaryFile(mode="w+") as temp:
             json.dump(observations, temp)
             temp.flush()
             self.srpcli_run(

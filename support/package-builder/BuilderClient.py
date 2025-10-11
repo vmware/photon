@@ -2,11 +2,11 @@
 
 import os
 import sys
-import requests
 import time
 
-from PackageBuilder import PackageBuilder
+import requests
 from constants import constants
+from PackageBuilder import PackageBuilder
 
 
 class BuilderClient:
@@ -24,7 +24,7 @@ class BuilderClient:
             return None
 
         if response.status_code != 200:
-            print(f"No package to build\n" f"Response Status = {response.status_code}")
+            print(f"No package to build\nResponse Status = {response.status_code}")
             return None
 
         return response.text
@@ -41,9 +41,7 @@ class BuilderClient:
             return response.json()
 
         print(
-            f"Unable to get constants. response code = "
-            f"{response.status_code}\n"
-            f"exiting"
+            f"Unable to get constants. response code = {response.status_code}\nexiting"
         )
         sys.exit(1)
 
@@ -59,11 +57,9 @@ class BuilderClient:
         constants.setBuildNumber(constant_dict["buildNumber"])
         constants.setCommonBuildNumber(constant_dict["commonBuildNumber"])
         constants.setReleaseVersion(constant_dict["releaseVersion"])
-        constants.setPrevPublishRPMRepo(constant_dict["prevPublishRPMRepo"])
-        constants.setPrevPublishXRPMRepo(constant_dict["prevPublishXRPMRepo"])
+        constants.setReleaseVersionToConsume(constant_dict["releaseVersionToConsume"])
         constants.setBuildRootPath(constant_dict["buildRootPath"])
         constants.setPullSourcesURL(constant_dict["pullsourcesURL"])
-        constants.setInputRPMSPath(constant_dict["inputRPMSPath"])
         constants.setRPMCheck(constant_dict["rpmCheck"])
         constants.setRpmCheckStopOnError(constant_dict["rpmCheckStopOnError"])
 
@@ -137,7 +133,7 @@ class BuilderClient:
     def doBuild(self, package, doneList, mapPackageToCycle):
         SUCCESS = 0
         FAILED = -1
-        pkgBuilder = PackageBuilder(mapPackageToCycle, "chroot")
+        pkgBuilder = PackageBuilder(mapPackageToCycle, "chroot", None, None)
         status = SUCCESS
         try:
             pkgBuilder.build(package, doneList)

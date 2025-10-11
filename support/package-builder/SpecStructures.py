@@ -14,7 +14,11 @@ class dependentPackageData(object):
         """Define equality based on attribute values."""
         if not isinstance(other, dependentPackageData):
             return NotImplemented
-        return self.package == other.package and self.compare == other.compare and self.version == other.version
+        return (
+            self.package == other.package
+            and self.compare == other.compare
+            and self.version == other.version
+        )
 
     def __hash__(self):
         """

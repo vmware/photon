@@ -90,10 +90,6 @@ Build config file is a json format with possible parameters:
         values: ["w[1-22].zstdio", "gzip9"]
         Example: { "photon-build-param": { "compression-macro" : "w19.zstdio" } }
 
-"input-rpms-path":
-        Default: [src-root]/inputRPMS
-        Example: { "input-rpms-path": [input RPMS path] }
-
 "photon-path":
         Default: [takes the config path as cloned repo path]
         Example: { "photon-path": [cloned repo path containing SPECS dir] }
@@ -132,14 +128,6 @@ Build config file is a json format with possible parameters:
   "photon-sources-path":
         Default value: null
         Example: { "additional-path" : { "photon-sources-path" : null } }
-
-  "photon-publish-rpms-path":
-        Default value: null
-        Example: { "additional-path" : { "photon-publish-rpms-path" : null } }
-
-  "photon-publish-x-rpms-path":
-        Default value: null
-        Example: { "additional-path" : { "photon-publish-x-rpms-path" : null } }
 
   "pkg-black-list-file":
         Default value: null

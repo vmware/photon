@@ -14,6 +14,10 @@ class ThreadPool(object):
     statusEvent = None
 
     @staticmethod
+    def setLogger(logger):
+        ThreadPool.logger = logger
+
+    @staticmethod
     def clear():
         ThreadPool.mapWorkerThreads.clear()
         ThreadPool.activeWorkerThreads = []

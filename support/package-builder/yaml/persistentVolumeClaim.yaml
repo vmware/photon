@@ -57,34 +57,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: publishrpms
-spec:
-  accessModes:
-  - ReadWriteMany
-  resources:
-     requests:
-       storage: 1Gi
-  selector:
-    matchLabels:
-      storage-tier: publishrpms
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: publishxrpms
-spec:
-  accessModes:
-  - ReadWriteMany
-  resources:
-     requests:
-       storage: 1Gi
-  selector:
-    matchLabels:
-      storage-tier: publishxrpms
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
   name: logs
 spec:
   accessModes:

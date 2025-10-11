@@ -3,14 +3,15 @@
     "photon-build-type": "chroot",
     "photon-dist-tag": ".ph5",
     "photon-release-version": "5.0",
+    "photon-release-version-to-consume": "5.0",
     "threads": 4,
     "ossl-fips-in-make-check": true,
     "loglevel": "info",
     "full-package-list-file": "build_install_options_all.json",
     "pkg-build-options": "pkg_build_options.json",
     "photon-docker-image": "photon:5.0",
-    "ph-docker-img-url": "https://github.com/vmware/photon-docker-image/raw/ARCH/5.0-20250330/docker/photon-rootfs-5.0-afdc5be10.ARCH.tar.gz",
-    "ph-builder-tag": "photon_builder:5.0",
+    "package-repo-url": "https://packages.broadcom.com/photon/$releasever/photon_updates_$releasever_$basearch",
+    "ph-docker-img-url": "https://github.com/vmware/photon-docker-image/raw/ARCH/5.0-20251104/docker/photon-rootfs-5.0-73eb56338.ARCH.tar.gz",
     "build-src-rpm": true,
     "build-dbginfo-rpm": true,
     "build-dbginfo-rpm-list": [
@@ -23,9 +24,7 @@
     ],
     "target": "iso",
     "compression-macro": "w19.zstdio",
-    "pull-sources-config": "https://packages.vmware.com/photon/photon_sources/1.0",
-    "publishrpm-url": "https://packages.vmware.com/photon/photon_publish_rpms",
-    "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms",
+    "pull-sources-config": "https://packages.broadcom.com/photon/photon_sources/1.0",
     "copy-to-sandbox": {
       "adjust-gcc-specs": {
         "src": "tools/scripts/adjust-gcc-specs.sh",

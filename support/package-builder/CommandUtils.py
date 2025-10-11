@@ -23,9 +23,7 @@ def initLogger():
 
     logLevel = constants.logLevel
 
-    logger = Logger.getLogger(
-        "CommandUtils", logpath=logPath, loglevel=logLevel
-    )
+    logger = Logger.getLogger("CommandUtils", logpath=logPath, loglevel=logLevel)
 
 
 class CommandUtils:
@@ -88,9 +86,7 @@ class CommandUtils:
 
         if logfile is not None:
             if capture:
-                raise Exception(
-                    "Cannot specify both logfn/capture and logfile"
-                )
+                raise Exception("Cannot specify both logfn/capture and logfile")
             fp = logfile
 
         new_env = None

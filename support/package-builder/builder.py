@@ -12,6 +12,10 @@ from PackageInfo import PackageInfo
 
 
 class Builder:
+    def buildToolchain(buildThreads, pkgBuildType):
+        pkgManager = PackageManager(pkgBuildType=pkgBuildType)
+        pkgManager.buildToolChainPackages(buildThreads)
+
     def buildSpecifiedPackages(
         listPackages,
         buildThreads,

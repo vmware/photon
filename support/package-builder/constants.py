@@ -1,14 +1,37 @@
 #!/usr/bin/env/ python3
 
 import json
-import re
+import os
+import pathlib
 import platform
-
+import re
+import shlex
+import shutil
 from copy import deepcopy
-from Logger import Logger
+from enum import Enum
+
 from CommandUtils import CommandUtils as cmdUtils
+from Logger import Logger
 
 PH_COMMIT_URI_PREFIX = "https://github.com/vmware/photon/commit/"
+
+
+class SandboxType(str, Enum):
+    CHROOT = "chroot"
+    CONTAINER = "container"
+    SYSTEMD_NSPAWN = "systemd-nspawn"
+
+
+class BuildStage(str, Enum):
+    NONE = "none"
+    CORE_TOOLCHAIN = "core_toolchain"
+    TOOLCHAIN = "toolchain"
+    PACKAGES = "packages"
+
+
+class BuildMode(str, Enum):
+    BOOTSTRAP = "bootstrap"
+    STANDARD = "standard"
 
 
 class constants(object):
@@ -21,21 +44,17 @@ class constants(object):
     logLevel = "info"
     topDirPath = ""
     buildRootPath = "/mnt"
-    prevPublishRPMRepo = ""
-    prevPublishXRPMRepo = ""
-    publishrpmurl = ""
-    publishXrpmurl = ""
     pullsourcesURL = ""
     extrasourcesURLs = {}
+    buildBase = {}
+    buildBaseImageTarball = {}
     buildPatch = False
-    inputRPMSPath = ""
     rpmCheck = False
     startSchedulerServer = False
     sourceRpmPath = ""
     publishBuildDependencies = False
     packageWeightsPath = None
     dockerUnixSocket = "/var/run/docker.sock"
-    buildContainerImage = "photon_build_container:latest"
     userDefinedMacros = {}
     dist = None
     buildNumber = None
@@ -53,13 +72,10 @@ class constants(object):
     observationIgnHostPatterns = []
     isolatedDockerNetwork = None
     # will be extended later from listMakeCheckRPMPkgtoInstall
-    listMakeCheckRPMPkgWithVersionstoInstall = None
     buildArch = platform.machine()
     targetArch = platform.machine()
-    crossCompiling = False
     currentArch = buildArch
     hostRpmIsNotUsable = -1
-    phBuilderTag = ""
     photonDir = ""
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
@@ -75,18 +91,23 @@ class constants(object):
     signingMap = {
         "srp-signing-script": "script",
         "srp-signing-params": "params",
-        "srp-signing-auth": "auth"
+        "srp-signing-auth": "auth",
     }
     rebuild = False
-
-    # Update to below constants lists will be provided by release branch as pkgPreq data
-    noDepsPackageList = []
+    photonBuilder = "photon-builder"
+    toolchainBootstrap = False
+    bootstrapRepoPath = None
+    packageRepoURL = None
+    packageRepoPath = None
+    packageRepoSnapshotFilePath = None
+    sandboxType: SandboxType = SandboxType.CHROOT
+    testLogger = None
 
     # These packages will be built in first order as build-core-toolchain stage
     # Put only main pakage names here. Do not add subpackages such as libgcc
     listCoreToolChainPackages = []
 
-    # These packages will be built in a second stage to replace publish RPMS
+    # These packages will be built in a second stage to replace pre-released RPMS
     # Put only main pakage names here. Do not add subpackages such as libgcc
     listToolChainPackages = []
 
@@ -167,22 +188,6 @@ class constants(object):
         constants.logPath = logPath
 
     @staticmethod
-    def setPublishRpmURL(url):
-        constants.publishrpmurl = url
-
-    @staticmethod
-    def setPublishXRpmURL(url):
-        constants.publishXrpmurl = url
-
-    @staticmethod
-    def setPrevPublishRPMRepo(prevPublishRPMRepo):
-        constants.prevPublishRPMRepo = prevPublishRPMRepo
-
-    @staticmethod
-    def setPrevPublishXRPMRepo(prevPublishXRPMRepo):
-        constants.prevPublishXRPMRepo = prevPublishXRPMRepo
-
-    @staticmethod
     def setBuildRootPath(buildRootPath):
         constants.buildRootPath = buildRootPath
 
@@ -201,10 +206,6 @@ class constants(object):
         if packageName in constants.extrasourcesURLs:
             urls.extend(constants.extrasourcesURLs[packageName])
         return urls
-
-    @staticmethod
-    def setInputRPMSPath(inputRPMSPath):
-        constants.inputRPMSPath = inputRPMSPath
 
     @staticmethod
     def setRPMCheck(rpmCheck):
@@ -306,11 +307,12 @@ class constants(object):
         if constants.releasePkgPreqPath:
             with open(constants.releasePkgPreqPath, "r") as file:
                 pkgPreq = json.load(file)
-            constants.noDepsPackageList.extend(pkgPreq["noDepsPackageList"])
             constants.listCoreToolChainPackages.extend(
                 pkgPreq["listCoreToolChainPackages"]
             )
             constants.listToolChainPackages.extend(pkgPreq["listToolChainPackages"])
+            # Mandate coreutils-selinux in toolchain
+            constants.listToolChainPackages.append("coreutils-selinux")
             constants.listToolChainRPMsToInstall.extend(
                 pkgPreq["listToolChainRPMsToInstall"]
             )
@@ -419,3 +421,49 @@ class constants(object):
         constants.observationIgnHostPatterns = [
             re.compile(patt) for patt in ruleset.get("ignored-hosts", [])
         ]
+
+    @staticmethod
+    def setPackageRepoURL(url):
+        constants.packageRepoURL = url
+
+    @staticmethod
+    def setPackageRepoPath(path):
+        constants.packageRepoPath = path
+
+    @staticmethod
+    def setPackageRepoSnapshotFilePath(path):
+        constants.packageRepoSnapshotFilePath = path
+
+    @staticmethod
+    def setBootstrapPackageRepoPath(path):
+        constants.bootstrapRepoPath = path
+
+    @staticmethod
+    def setReleaseVersionToConsume(releaseVersionToConsume):
+        constants.releaseVersionToConsume = releaseVersionToConsume
+
+    @staticmethod
+    def enableToolchainBootstrap():
+        constants.toolchainBootstrap = True
+
+    @staticmethod
+    def setBaseImageTarballPath(baseImagePath):
+        constants.baseImagePath = baseImagePath
+        constants.baseImageTarball = pathlib.PurePath(baseImagePath).name
+
+    @staticmethod
+    def setBuildBase(stage, buildBase):
+        constants.buildBase[stage] = buildBase
+        constants.buildBaseImageTarball[stage] = f"{buildBase}.tar"
+
+    @staticmethod
+    def setBuildImagesPath(buildImagesPath):
+        constants.buildImagesPath = buildImagesPath
+
+    @staticmethod
+    def setTDNFBasePath(tdnfBasePath):
+        constants.tdnfBasePath = tdnfBasePath
+
+    @staticmethod
+    def setSandboxType(sandboxType: SandboxType):
+        constants.sandboxType = sandboxType

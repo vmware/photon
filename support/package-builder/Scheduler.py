@@ -2,18 +2,17 @@
 
 import json
 import threading
-
 from queue import PriorityQueue
-from ThreadPool import ThreadPool
-from constants import constants
+
+from constants import BuildMode, BuildStage, constants
 from Logger import Logger
 from SpecData import SPECS
 from StringUtils import StringUtils
+from ThreadPool import ThreadPool
 
 
 class DependencyGraphNode(object):
     def __init__(self, packageName, packageVersion, pkgWeight):
-
         self.packageName = packageName
         self.packageVersion = packageVersion
 
@@ -42,9 +41,7 @@ class DependencyGraphNode(object):
         self.accumInstallRequiresPkgNodes = set()
 
         self.childPkgNodes = set()  # Package nodes that I directly depend on.
-        self.allRequiredPackages = (
-            []
-        )  # Full packages list that I depend on to build myself.
+        self.allRequiredPackages = []  # Full packages list that I depend on to build myself.
         self.parentPkgNodes = set()  # Packages that depend on me.
 
         self.selfWeight = pkgWeight  # Own package weight.
@@ -68,9 +65,11 @@ class DependencyGraphNode(object):
         # Internal flag to check if the package is built
         self.built = 0
 
+    def __str__(self):
+        return f"{self.packageName}-{self.packageVersion}"
+
 
 class Scheduler(object):
-
     lock = threading.Lock()
     listOfAlreadyBuiltPackages = set()
     listOfPackagesToBuild = []
@@ -84,11 +83,20 @@ class Scheduler(object):
     event = None
     stopScheduling = False
     mapPackagesToGraphNodes = {}
-    coreToolChainBuild = False
+    buildStage = BuildStage.NONE
+    buildMode = BuildMode.STANDARD
 
     @staticmethod
     def setEvent(event):
         Scheduler.event = event
+
+    @staticmethod
+    def setBuildStage(buildStage):
+        Scheduler.buildStage = buildStage
+
+    @staticmethod
+    def setBuildMode(buildMode):
+        Scheduler.buildMode = buildMode
 
     @staticmethod
     def setLog(logName, logPath, logLevel):
@@ -173,7 +181,7 @@ class Scheduler(object):
     def getNextPackageToBuild():
         with Scheduler.lock:
             if Scheduler.stopScheduling:
-                return None
+                return None, Scheduler.buildStage, Scheduler.buildMode
 
             if not Scheduler.listOfPackagesToBuild:
                 if Scheduler.event is not None:
@@ -183,7 +191,7 @@ class Scheduler(object):
                 Scheduler._getListNextPackagesReadyToBuild()
 
             if Scheduler.listOfPackagesNextToBuild.empty():
-                return None
+                return None, Scheduler.buildStage, Scheduler.buildMode
 
             packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
@@ -198,7 +206,7 @@ class Scheduler(object):
             Scheduler.listOfPackagesCurrentlyBuilding.add(package)
             Scheduler.listOfPackagesToBuild.remove(package)
             Scheduler.printStatus()
-            return package
+            return package, Scheduler.buildStage, Scheduler.buildMode
 
     @staticmethod
     def printStatus():
@@ -272,28 +280,7 @@ class Scheduler(object):
             if package in Scheduler.listOfAlreadyBuiltPackages:
                 node.built = 1
 
-    def _createCoreToolChainGraphNodes():
-        """
-        GRAPH-BUILD STEP 1: Initialize graph nodes for each core tool
-        chain package.
-        """
-        Scheduler._createNodes()
-
-        """
-        GRAPH-BUILD STEP 2: Mark package dependencies in the graph.
-        The package dependency is linear like A - B - C - D in accordance to
-        packages in sortedlist
-        Unless package A is build none other packages B,C,D are build
-        """
-        for index, package in enumerate(Scheduler.sortedList):
-            pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-            for childPkg in Scheduler.sortedList[:index]:
-                childPkgNode = Scheduler.mapPackagesToGraphNodes[childPkg]
-                pkgNode.childPkgNodes.add(childPkgNode)
-                childPkgNode.parentPkgNodes.add(pkgNode)
-
     def _createGraphNodes():
-
         # GRAPH-BUILD STEP 1: Initialize graph nodes for each package.
         #
         # Create a graph with a node to represent every package and all
@@ -337,7 +324,6 @@ class Scheduler(object):
                 childPkgNode.parentPkgNodes.add(pkgNode)
 
     def _optimizeGraph():
-
         r"""
         GRAPH-BUILD STEP 3: Convert weak (install-requires) dependencies
                              into strong (aux-build-requires) dependencies.
@@ -464,16 +450,17 @@ class Scheduler(object):
 
             pkgNode.accumInstallRequiresPkgNodes.clear()
 
+        unvisited_nodes = set()
         # Clear out the visit counter for reuse.
         for package in Scheduler.sortedList:
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
             if pkgNode.numVisits == 0:
-                raise Exception(
-                    "aux-build-requires calculation never visited "
-                    f"package {pkgNode.packageName}"
-                )
+                unvisited_nodes.add(pkgNode)
             else:
                 pkgNode.numVisits = 0
+
+        for node in unvisited_nodes:
+            Scheduler.logger.debug(f"node {node.packageName} is not visited.")
 
         """
         GRAPH-BUILD STEP 4: Re-organize the dependencies in the graph
@@ -531,7 +518,6 @@ class Scheduler(object):
             )
 
     def _calculateCriticalChainWeights():
-
         r"""
         GRAPH-BUILD STEP 5: Calculate critical-chain-weight of packages.
 
@@ -647,12 +633,9 @@ class Scheduler(object):
                 pkgNode.numVisits = 0
 
     def _buildGraph():
-        if Scheduler.coreToolChainBuild:
-            Scheduler._createCoreToolChainGraphNodes()
-        else:
-            Scheduler._createGraphNodes()
-            Scheduler._optimizeGraph()
-            Scheduler._calculateAllRequiredPackagesPerNode()
+        Scheduler._createGraphNodes()
+        Scheduler._optimizeGraph()
+        Scheduler._calculateAllRequiredPackagesPerNode()
         Scheduler._calculateCriticalChainWeights()
 
     @staticmethod
@@ -718,7 +701,7 @@ class Scheduler(object):
             )
             return False
 
-        if Scheduler.coreToolChainBuild:
+        if Scheduler.buildStage == BuildStage.CORE_TOOLCHAIN:
             # For CoreToolchain list just use the graph
             for childPkgNode in pkgNode.childPkgNodes:
                 if childPkgNode.built == 0:

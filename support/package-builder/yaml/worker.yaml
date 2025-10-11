@@ -26,10 +26,6 @@ spec:
         volumeMounts:
         - name: rpms
           mountPath: /root/photon/stage/RPMS
-        - name: publishrpms
-          mountPath: /root/photon/stage/PUBLISHRPMS
-        - name: publishxrpms
-          mountPath: /root/photon/stage/PUBLISHXRPMS
         - name: specs
           mountPath: /root/photon/SPECS
         - name: logs
@@ -50,12 +46,6 @@ spec:
       - name: rpms
         persistentVolumeClaim:
           claimName: rpms
-      - name: publishrpms
-        persistentVolumeClaim:
-          claimName: publishrpms
-      - name: publishxrpms
-        persistentVolumeClaim:
-          claimName: publishxrpms
       - name: specs
         persistentVolumeClaim:
           claimName: specs

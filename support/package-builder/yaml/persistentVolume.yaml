@@ -69,40 +69,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: publishrpms
-  labels:
-    storage-tier: publishrpms
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy:
-    Retain
-  nfs:
-    path: /photon/stage/PUBLISHRPMS
-    server:
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: publishxrpms
-  labels:
-    storage-tier: publishxrpms
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy:
-    Retain
-  nfs:
-    path: /photon/stage/PUBLISHXRPMS
-    server:
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
   name: logs
   labels:
     storage-tier: logs

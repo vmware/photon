@@ -342,22 +342,22 @@ class SpecParser(object):
             dist = self.dist
 
         err = ValueError(
-                f"\nInvalid condition format: '{condition}' in {self.specfile}."
-                "Correct formats are:\n"
-                "1. Simple value: ph5\n"
-                "2. Negation: !ph5\n"
-                "3. List of values: (ph5, ph6)\n"
-                "4. Negation list: !(ph5, ph6)\n"
-                "5. All: all\n"
-                "6. None: none\n"
-                "Examples:\n"
-                "   %global build_for ph5\n"
-                "   %global build_for !ph5\n"
-                "   %define build_for (ph5, ph6)\n"
-                "   %global build_for !(ph4, ph6)\n"
-                "   %define build_for all\n"
-                "   %global build_for none"
-            )
+            f"\nInvalid condition format: '{condition}' in {self.specfile}."
+            "Correct formats are:\n"
+            "1. Simple value: ph5\n"
+            "2. Negation: !ph5\n"
+            "3. List of values: (ph5, ph6)\n"
+            "4. Negation list: !(ph5, ph6)\n"
+            "5. All: all\n"
+            "6. None: none\n"
+            "Examples:\n"
+            "   %global build_for ph5\n"
+            "   %global build_for !ph5\n"
+            "   %define build_for (ph5, ph6)\n"
+            "   %global build_for !(ph4, ph6)\n"
+            "   %define build_for all\n"
+            "   %global build_for none"
+        )
 
         if condition == "all":
             return False
@@ -791,6 +791,7 @@ class SpecParser(object):
 
         return specObj
 
+
 def main():
     usage = "Usage: %prog [options]"
     parser = ArgumentParser(usage)
@@ -804,7 +805,8 @@ def main():
     so = sp.createSpecObject()
     # Useful for standalone parser development and debugging.
     # Print whatever property you need.
-    print(*so.listSources, sep='\n')
+    print(*so.listSources, sep="\n")
+
 
 if __name__ == "__main__":
     main()

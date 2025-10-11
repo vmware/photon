@@ -10,7 +10,6 @@ fi
 
 # Clean up our build root first
 BUILDROOT=$1
-PARENT=/usr/src/photon
 
 (
   for mpoint in run sys proc; do
@@ -32,8 +31,6 @@ if [ ${EUID} -eq 0 ]; then
   [ -e ${BUILDROOT}/dev/null ] || mknod -m 666 ${BUILDROOT}/dev/null c 1 3
   [ -e ${BUILDROOT}/dev/random ] || mknod -m 444 ${BUILDROOT}/dev/random c 1 8
   [ -e ${BUILDROOT}/dev/urandom ] || mknod -m 444 ${BUILDROOT}/dev/urandom c 1 9
-
-  chown -R 0:0 ${BUILDROOT}/* || fail "${PRGNAME}: Changing ownership: ${BUILDROOT}: FAILURE"
 
   # Mount kernel filesystem
   if ! mountpoint -q ${BUILDROOT}/dev; then

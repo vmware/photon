@@ -14,6 +14,8 @@ SOURCES=$1
 shift
 RPMS=$1
 shift
+USER_SPEC=$1
+shift
 BUILDROOT=$1
 shift
 
@@ -22,7 +24,7 @@ if [ ${EUID} -eq 0 ] ; then
   CHROOT_CMD=chroot
 else
   #CHROOT_CMD="contain -b $SOURCES:usr/src/photon/SOURCES,$RPMS:usr/src/photon/RPMS -c"
-  CHROOT_CMD="$SRCPATH/../../tools/bin/contain -b $RPMS:usr/src/photon/RPMS,$RPMS/../SRPMS:usr/src/photon/SRPMS,$RPMS/../PUBLISHRPMS:publishrpms,$RPMS/../PUBLISHXRPMS:publishxrpms -c -n"
+  CHROOT_CMD="$SRCPATH/../../tools/bin/contain -b $RPMS:usr/src/photon/RPMS,$RPMS/../SRPMS:usr/src/photon/SRPMS -c -n"
 fi
 
 # Close all fds except stdin, stdout and stderr
@@ -30,9 +32,15 @@ for fd in $(ls /proc/$$/fd/); do
   [ $fd -gt 2 ] && exec {fd}<&-
 done
 
+if [ "$(id -u ${USER_SPEC})" != "0" ] ; then
+    export USERHOME="/home/${USER_SPEC}"
+else
+    export USERHOME="/root"
+fi
+
 $CHROOT_CMD "${BUILDROOT}" \
   /usr/bin/env -i \
-  HOME=/root \
+  HOME=$USERHOME \
   TERM="$TERM" \
   PS1='\u:\w\$ ' \
   PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \

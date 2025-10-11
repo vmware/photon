@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import threading
+
 import Scheduler
 import ThreadPool
-
 from PackageBuilder import PackageBuilder
 
 
@@ -20,11 +20,13 @@ class WorkerThread(threading.Thread):
         ThreadPool.ThreadPool.makeWorkerThreadActive(self.name)
         self.logger.debug(f"Thread {self.name} is starting now")
         while True:
-            pkg = Scheduler.Scheduler.getNextPackageToBuild()
+            pkg, buildStage, buildMode = Scheduler.Scheduler.getNextPackageToBuild()
             doneList = Scheduler.Scheduler.getDoneList()
             if pkg is None:
                 break
-            pkgBuilder = PackageBuilder(pkg, self.mapPackageToCycle, self.pkgBuildType)
+            pkgBuilder = PackageBuilder(
+                pkg, self.mapPackageToCycle, self.pkgBuildType, buildStage, buildMode
+            )
 
             try:
                 pkgBuilder.build(doneList)

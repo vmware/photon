@@ -210,8 +210,6 @@ class DistributedBuilder:
             "logs",
             "specs",
             "rpms",
-            "publishrpms",
-            "publishxrpms",
             "photon",
             "nfspod",
         ]
@@ -233,8 +231,6 @@ class DistributedBuilder:
             "logs",
             "specs",
             "rpms",
-            "publishrpms",
-            "publishxrpms",
             "photon",
             "nfspod",
         ]

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import flask
-
-from Scheduler import Scheduler
 from constants import constants
 from Logger import Logger
+from Scheduler import Scheduler
 
 SUCCESS = 200
 NO_CONTENT = 204
@@ -35,7 +34,7 @@ def buildCompleted():
 @app.route("/package/", methods=["GET"])
 def getNextPkgToBuild():
     logger.disabled = False
-    pkg = Scheduler.getNextPackageToBuild()
+    pkg, buildStage, buildMode = Scheduler.getNextPackageToBuild()
     if not pkg:
         """
         if no package is left to schedule and no package is currently
@@ -96,13 +95,10 @@ def getConstants():
     constant_dict["buildNumber"] = constants.buildNumber
     constant_dict["commonBuildNumber"] = constants.commonBuildNumber
     constant_dict["releaseVersion"] = constants.releaseVersion
-    constant_dict["prevPublishRPMRepo"] = constants.prevPublishRPMRepo
-    constant_dict["prevPublishXRPMRepo"] = constants.prevPublishXRPMRepo
     constant_dict["buildRootPath"] = constants.buildRootPath
     constant_dict["pullsourcesURL"] = constants.pullsourcesURL
     constant_dict["extrasourcesURLs"] = constants.extrasourcesURLs
     constant_dict["buildPatch"] = constants.buildPatch
-    constant_dict["inputRPMSPath"] = constants.inputRPMSPath
     constant_dict["rpmCheck"] = constants.rpmCheck
     constant_dict["rpmCheckStopOnError"] = constants.rpmCheckStopOnError
     constant_dict["publishBuildDependencies"] = constants.publishBuildDependencies
