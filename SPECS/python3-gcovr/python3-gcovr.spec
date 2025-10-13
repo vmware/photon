@@ -1,19 +1,24 @@
+%define srcname gcovr
+
 Summary:    The gcovr command provides a utility for managing the use of the GNU gcov utility
-Name:       gcovr
+Name:       python3-gcovr
 Version:    5.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://gcovr.com
 Vendor:     VMware, Inc.
 Group:      Development/Tools
 Distribution:   Photon
 
-Source0: https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
+Source0: https://github.com/gcovr/gcovr/archive/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+
+Provides: %{srcname} = %{version}-%{release}
+Obsoletes: %{srcname}
 
 %if 0%{?with_check}
 BuildRequires: openssl-devel
@@ -33,7 +38,7 @@ Buildarch: noarch
 The gcovr command provides a utility for managing the use of the GNU gcov utility and generating summarized code coverage results. This command is inspired by the Python coverage.py package, which provides a similar utility in Python. Gcovr produces either compact human-readable summary reports, machine readable XML reports or a simple HTML summary.
 
 %prep
-%autosetup -p1
+%autosetup -n %{srcname}-%{version} -p1
 
 %build
 %{py3_build}
@@ -56,6 +61,8 @@ python3 -m nox
 %{python3_sitelib}*
 
 %changelog
+* Tue Oct 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-4
+- Rename to python3-gcovr
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.2-3
 - Release bump for SRP compliance
 * Fri Aug 04 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.2-2
