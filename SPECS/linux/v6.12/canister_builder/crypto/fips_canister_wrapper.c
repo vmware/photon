@@ -64,6 +64,7 @@
 #include <linux/uio.h>
 #include <linux/scatterlist.h>
 #include <linux/mpi.h>
+#include <linux/asn1_decoder.h>
 #include <linux/highmem-internal.h>
 #include <crypto/scatterwalk.h>
 #include <crypto/sha3.h>
@@ -1001,4 +1002,5 @@ EXPORT_SYMBOL(gf128mul_init_4k_lle);
 EXPORT_SYMBOL(gf128mul_init_4k_bbe);
 EXPORT_SYMBOL(gf128mul_4k_lle);
 EXPORT_SYMBOL(gf128mul_4k_bbe);
+EXPORT_SYMBOL_GPL(asn1_ber_decoder);
 /* End of Exports */

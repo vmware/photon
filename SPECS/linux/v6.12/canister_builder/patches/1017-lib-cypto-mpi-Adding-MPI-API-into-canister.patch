@@ -1,4 +1,4 @@
-From d218c9070fb13dfadbb8ae8afadc6d8222d24835 Mon Sep 17 00:00:00 2001
+From cb30fc90e87b96118838d3d6141e396c02cb393c Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankit-aj.jain@broadcom.com>
 Date: Fri, 12 Sep 2025 09:39:02 +0000
 Subject: [PATCH] lib/cypto/mpi: Adding MPI API into canister
@@ -7,9 +7,13 @@ Subject: [PATCH] lib/cypto/mpi: Adding MPI API into canister
 as they are part of the crypto implementation
 - Removed module.h from lib/crypto/{sha256,aes}.c
 as it is already part of canister
+- Added lib/asn1-decoder API into canister
+- Converted pr_debug into no_printk
+  followup patch will fix it.
 
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
+ lib/asn1_decoder.c            | 32 +++++++++++++++-----------------
  lib/crypto/aes.c              |  5 -----
  lib/crypto/gf128mul.c         | 24 ++++++------------------
  lib/crypto/mpi/mpi-add.c      |  4 ----
@@ -23,8 +27,143 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  lib/crypto/mpi/mpih-mul.c     |  2 +-
  lib/crypto/mpi/mpiutil.c      | 17 ++++++-----------
  lib/crypto/sha256.c           |  4 ----
- 13 files changed, 31 insertions(+), 69 deletions(-)
+ 14 files changed, 46 insertions(+), 86 deletions(-)
 
+diff --git a/lib/asn1_decoder.c b/lib/asn1_decoder.c
+index 13da529e2..86876fdac 100644
+--- a/lib/asn1_decoder.c
++++ b/lib/asn1_decoder.c
+@@ -8,10 +8,11 @@
+ #include <linux/export.h>
+ #include <linux/kernel.h>
+ #include <linux/errno.h>
+-#include <linux/module.h>
+ #include <linux/asn1_decoder.h>
+ #include <linux/asn1_ber_bytecode.h>
+ 
++extern int fcw_printk(const char *fmt, ...);
++
+ static const unsigned char asn1_op_lengths[ASN1_OP__NR] = {
+ 	/*					OPC TAG JMP ACT */
+ 	[ASN1_OP_MATCH]				= 1 + 1,
+@@ -198,7 +199,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 		return -EMSGSIZE;
+ 
+ next_op:
+-	pr_debug("next_op: pc=\e[32m%zu\e[m/%zu dp=\e[33m%zu\e[m/%zu C=%d J=%d\n",
++	no_printk("next_op: pc=\e[32m%zu\e[m/%zu dp=\e[33m%zu\e[m/%zu C=%d J=%d\n",
+ 		 pc, machlen, dp, datalen, csp, jsp);
+ 	if (unlikely(pc >= machlen))
+ 		goto machine_overrun_error;
+@@ -231,7 +232,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 			goto long_tag_not_supported;
+ 
+ 		if (op & ASN1_OP_MATCH__ANY) {
+-			pr_debug("- any %02x\n", tag);
++			no_printk("- any %02x\n", tag);
+ 		} else {
+ 			/* Extract the tag from the machine
+ 			 * - Either CONS or PRIM are permitted in the data if
+@@ -244,7 +245,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 			/* Determine whether the tag matched */
+ 			tmp = optag ^ tag;
+ 			tmp &= ~(optag & ASN1_CONS_BIT);
+-			pr_debug("- match? %02x %02x %02x\n", tag, optag, tmp);
++			no_printk("- match? %02x %02x %02x\n", tag, optag, tmp);
+ 			if (tmp != 0) {
+ 				/* All odd-numbered tags are MATCH_OR_SKIP. */
+ 				if (op & ASN1_OP_MATCH__SKIP) {
+@@ -302,7 +303,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 			csp++;
+ 		}
+ 
+-		pr_debug("- TAG: %02x %zu%s\n",
++		no_printk("- TAG: %02x %zu%s\n",
+ 			 tag, len, flags & FLAG_CONS ? " CONS" : "");
+ 		tdp = dp;
+ 	}
+@@ -333,7 +334,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 				if (ret < 0)
+ 					goto error;
+ 			}
+-			pr_debug("- LEAF: %zu\n", len);
++			no_printk("- LEAF: %zu\n", len);
+ 		}
+ 
+ 		if (op & ASN1_OP_MATCH__ACT) {
+@@ -356,7 +357,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 	case ASN1_OP_MATCH_JUMP:
+ 	case ASN1_OP_MATCH_JUMP_OR_SKIP:
+ 	case ASN1_OP_COND_MATCH_JUMP_OR_SKIP:
+-		pr_debug("- MATCH_JUMP\n");
++		no_printk("- MATCH_JUMP\n");
+ 		if (unlikely(jsp == NR_JUMP_STACK))
+ 			goto jump_stack_overflow;
+ 		jump_stack[jsp++] = pc + asn1_op_lengths[op];
+@@ -371,7 +372,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 
+ 	case ASN1_OP_COMPLETE:
+ 		if (unlikely(jsp != 0 || csp != 0)) {
+-			pr_err("ASN.1 decoder error: Stacks not empty at completion (%u, %u)\n",
++			fcw_printk(KERN_ERR "ASN.1 decoder error: Stacks not empty at completion (%u, %u)\n",
+ 			       jsp, csp);
+ 			return -EBADMSG;
+ 		}
+@@ -396,7 +397,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 		hdr = cons_hdrlen_stack[csp];
+ 		len = datalen;
+ 		datalen = cons_datalen_stack[csp];
+-		pr_debug("- end cons t=%zu dp=%zu l=%zu/%zu\n",
++		no_printk("- end cons t=%zu dp=%zu l=%zu/%zu\n",
+ 			 tdp, dp, len, datalen);
+ 		if (datalen == 0) {
+ 			/* Indefinite length - check for the EOC. */
+@@ -408,7 +409,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 					dp--;
+ 					csp++;
+ 					pc = machine[pc + 1];
+-					pr_debug("- continue\n");
++					no_printk("- continue\n");
+ 					goto next_op;
+ 				}
+ 				goto missing_eoc;
+@@ -421,13 +422,13 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 				datalen = len;
+ 				csp++;
+ 				pc = machine[pc + 1];
+-				pr_debug("- continue\n");
++				no_printk("- continue\n");
+ 				goto next_op;
+ 			}
+ 			if (dp != len)
+ 				goto cons_length_error;
+ 			len -= tdp;
+-			pr_debug("- cons len l=%zu d=%zu\n", len, dp - tdp);
++			no_printk("- cons len l=%zu d=%zu\n", len, dp - tdp);
+ 		}
+ 
+ 		if (op & ASN1_OP_END__ACT) {
+@@ -469,7 +470,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ 	}
+ 
+ 	/* Shouldn't reach here */
+-	pr_err("ASN.1 decoder error: Found reserved opcode (%u) pc=%zu\n",
++	fcw_printk(KERN_ERR "ASN.1 decoder error: Found reserved opcode (%u) pc=%zu\n",
+ 	       op, pc);
+ 	return -EBADMSG;
+ 
+@@ -512,10 +513,7 @@ int asn1_ber_decoder(const struct asn1_decoder *decoder,
+ long_tag_not_supported:
+ 	errmsg = "Long tag not supported";
+ error:
+-	pr_debug("\nASN1: %s [m=%zu d=%zu ot=%02x t=%02x l=%zu]\n",
++	no_printk("\nASN1: %s [m=%zu d=%zu ot=%02x t=%02x l=%zu]\n",
+ 		 errmsg, pc, dp, optag, tag, len);
+ 	return -EBADMSG;
+ }
+-EXPORT_SYMBOL_GPL(asn1_ber_decoder);
+-
+-MODULE_LICENSE("GPL");
 diff --git a/lib/crypto/aes.c b/lib/crypto/aes.c
 index d6876f690..d8ed26ca6 100644
 --- a/lib/crypto/aes.c
