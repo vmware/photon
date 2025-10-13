@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.16
-Release:        3%{?dist}
+Version:        3.0.18
+Release:        1%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -191,6 +191,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Oct 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.18-1
+- Update to 3.0.18
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.16-3
 - Release bump for aarch64 SRP compliance
 * Thu Mar 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.16-2

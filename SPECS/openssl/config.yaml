@@ -1,12 +1,12 @@
 sources:
-- archive: openssl-3.0.16.tar.gz
+- archive: openssl-3.0.18.tar.gz
   archive_type: upstream
-  archive_sha512sum: 5eea2b0c60d870549fc2b8755f1220a57f870d95fbc8d5cc5abb9589f212d10945f355c3e88ff48540a7ee1c4db774b936023ca33d7c799ea82d91eef9c1c16d
-  version: 3.0.16
-  name: openssl-3.0.16
-  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.16/openssl-3.0.16.tar.gz
+  archive_sha512sum: 6bdd16f33b83ae2a12777230c4ff00d0595bbc00253ac8c3ac31e1375e818fc74d7f491bd2e507ff33cab9f0498cfb28fa8690f75a98663568d40901523cdf3c
+  version: 3.0.18
+  name: openssl-3.0.18
+  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.18/openssl-3.0.18.tar.gz
   repo_url: https://github.com/openssl/openssl
-  commit_id: fa1e5dfb142bb1c26c3c38a10aafa7a095df52e5
+  commit_id: c10e643222ce5a185f2980d7352d545afacb0fed
   missing:
   - .github
   - gost-engine
