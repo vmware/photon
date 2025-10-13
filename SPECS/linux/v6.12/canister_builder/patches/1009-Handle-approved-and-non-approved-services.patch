@@ -1,4 +1,4 @@
-From b24b1f3cd63a4a478d88c1f7ca4191ccbdabf96c Mon Sep 17 00:00:00 2001
+From 318e5b1771496ba756bb957cb283185a583fd68d Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 11 Jul 2025 04:20:16 -0500
 Subject: [PATCH] Handle approved and non-approved services
@@ -39,7 +39,7 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  arch/x86/crypto/aesni-intel_glue.c | 99 +++++++++++++++++++++++++++++-
  crypto/aes_generic.c               | 11 +++-
- crypto/cbc.c                       |  4 ++
+ crypto/cbc.c                       |  5 ++
  crypto/ccm.c                       | 10 +++
  crypto/cmac.c                      |  4 ++
  crypto/ctr.c                       |  7 +++
@@ -49,20 +49,20 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  crypto/ecdh.c                      | 11 ++++
  crypto/ecdsa.c                     | 16 +++++
  crypto/gcm.c                       | 40 ++++++++++++
- crypto/ghash-generic.c             | 10 ++-
+ crypto/ghash-generic.c             | 11 +++-
  crypto/hmac.c                      |  3 +
- crypto/rsa-pkcs1pad.c              |  7 ++-
+ crypto/rsa-pkcs1pad.c              |  4 ++
  crypto/rsa.c                       |  5 ++
  crypto/seqiv.c                     |  9 +++
  crypto/sha256_generic.c            | 13 +++-
- crypto/sha3_generic.c              | 12 +++-
- crypto/sha512_generic.c            | 12 +++-
+ crypto/sha3_generic.c              | 13 +++-
+ crypto/sha512_generic.c            | 13 +++-
  crypto/testmgr.c                   | 14 ++---
  crypto/xts.c                       |  9 ++-
- 22 files changed, 289 insertions(+), 22 deletions(-)
+ 22 files changed, 292 insertions(+), 20 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index a6b558304..5c3ea6f79 100644
+index e47e1d10a..e4fd5f019 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
 @@ -36,6 +36,7 @@
@@ -70,35 +70,35 @@ index a6b558304..5c3ea6f79 100644
  #include <linux/spinlock.h>
  #include <crypto/gf128mul.h>
 +#include <linux/fips.h>
-
+ 
  void fcw_kernel_fpu_begin(void);
  void fcw_kernel_fpu_end(void);
-@@ -57,6 +58,9 @@ extern bool fcw_boot_cpu_has(unsigned long bit);
+@@ -56,6 +57,9 @@ extern bool fcw_boot_cpu_has(unsigned long bit);
  extern bool fcw_x86_match_cpu_zmm_exclusion_list(void);
  extern bool fcw_x86_match_cpu_aesni_cpu_id(void);
-
+ 
 +int __init aesni_init(void);
 +void __exit aesni_exit(void);
 +
  #define AESNI_ALIGN	16
  #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
  #define AES_BLOCK_MASK	(~(AES_BLOCK_SIZE - 1))
-@@ -508,8 +512,10 @@ static int xts_setkey_aesni(struct crypto_skcipher *tfm, const u8 *key,
+@@ -507,8 +511,10 @@ static int xts_setkey_aesni(struct crypto_skcipher *tfm, const u8 *key,
  	int err;
-
+ 
  	err = xts_verify_key(tfm, key, keylen);
 -	if (err)
 +	if (err) {
 +		fcw_printk(KERN_ERR "XTS verify duplicate key test failed\n");
  		return err;
 +	}
-
+ 
  	keylen /= 2;
-
-@@ -1379,6 +1385,16 @@ gcm_crypt(struct aead_request *req, int flags)
+ 
+@@ -1378,6 +1384,16 @@ gcm_crypt(struct aead_request *req, int flags)
  		le_ctr[3] = get_unaligned_be32(req->iv + 0);
  	}
-
+ 
 +	if (fips_enabled && flags & FLAG_ENC) {
 +		if (!aead_request_is_internal_iv(req)) {
 +			fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
@@ -112,16 +112,16 @@ index a6b558304..5c3ea6f79 100644
  	/* Begin walking through the plaintext or ciphertext. */
  	if (flags & FLAG_ENC)
  		err = skcipher_walk_aead_encrypt(&walk, req, false);
-@@ -1556,7 +1572,7 @@ DEFINE_GCM_ALGS(vaes_avx10_512, FLAG_AVX10_512,
-
+@@ -1555,7 +1571,7 @@ DEFINE_GCM_ALGS(vaes_avx10_512, FLAG_AVX10_512,
+ 
  static int __init register_avx_algs(void)
  {
 -	int err;
 +	int err, i;
-
+ 
  	if (!fcw_boot_cpu_has(X86_FEATURE_AVX))
  		return 0;
-@@ -1569,6 +1585,23 @@ static int __init register_avx_algs(void)
+@@ -1568,6 +1584,23 @@ static int __init register_avx_algs(void)
  					 aes_gcm_simdalgs_aesni_avx);
  	if (err)
  		return err;
@@ -145,10 +145,10 @@ index a6b558304..5c3ea6f79 100644
  #if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
  	if (!fcw_boot_cpu_has(X86_FEATURE_AVX2) ||
  	    !fcw_boot_cpu_has(X86_FEATURE_VAES) ||
-@@ -1598,6 +1631,22 @@ static int __init register_avx_algs(void)
+@@ -1597,6 +1630,22 @@ static int __init register_avx_algs(void)
  	if (err)
  		return err;
-
+ 
 +	if (fips_enabled) {
 +		for ( i = 0; i < ARRAY_SIZE(aes_gcm_algs_vaes_avx10_256); i++) {
 +			if (strstr(aes_gcm_algs_vaes_avx10_256[i].base.cra_name, "rfc4106")) {
@@ -167,8 +167,8 @@ index a6b558304..5c3ea6f79 100644
 +
  	if (fcw_x86_match_cpu_zmm_exclusion_list()) {
  		int i;
-
-@@ -1615,6 +1664,23 @@ static int __init register_avx_algs(void)
+ 
+@@ -1614,6 +1663,23 @@ static int __init register_avx_algs(void)
  					 aes_gcm_simdalgs_vaes_avx10_512);
  	if (err)
  		return err;
@@ -192,19 +192,19 @@ index a6b558304..5c3ea6f79 100644
  #endif /* CONFIG_AS_VAES && CONFIG_AS_VPCLMULQDQ */
  	return 0;
  }
-@@ -1664,7 +1730,7 @@ static void unregister_avx_algs(void)
-
+@@ -1663,7 +1729,7 @@ static void unregister_avx_algs(void)
+ 
  int __init aesni_init(void)
  {
 -	int err;
 +	int err, i;
-
+ 
  	if (!fcw_x86_match_cpu_aesni_cpu_id())
  		return -ENODEV;
-@@ -1680,18 +1746,45 @@ int __init aesni_init(void)
+@@ -1679,18 +1745,45 @@ int __init aesni_init(void)
  	if (err)
  		return err;
-
+ 
 +	if (fips_enabled) {
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +			   aesni_cipher_alg.cra_driver_name, aesni_cipher_alg.cra_name);
@@ -215,7 +215,7 @@ index a6b558304..5c3ea6f79 100644
  					     aesni_simd_skciphers);
  	if (err)
  		goto unregister_cipher;
-
+ 
 +	if (fips_enabled) {
 +		for ( i = 0; i < ARRAY_SIZE(aesni_skciphers); i++) {
 +			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
@@ -228,7 +228,7 @@ index a6b558304..5c3ea6f79 100644
  					 aes_gcm_simdalgs_aesni);
  	if (err)
  		goto unregister_skciphers;
-
+ 
 +	if (fips_enabled) {
 +		for ( i = 0; i < ARRAY_SIZE(aes_gcm_algs_aesni); i++) {
 +			if (strstr(aes_gcm_algs_aesni[i].base.cra_name, "rfc4106")) {
@@ -244,7 +244,7 @@ index a6b558304..5c3ea6f79 100644
 +				   aes_gcm_algs_aesni[i].base.cra_driver_name, aes_gcm_algs_aesni[i].base.cra_name);
 +		}
 +	}
-
+ 
  #ifdef CONFIG_X86_64
  	if (fcw_boot_cpu_has(X86_FEATURE_AVX))
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
@@ -257,11 +257,11 @@ index d26cc2af0..2083ba027 100644
  #include <linux/unaligned.h>
 +#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
-
+ 
  static inline u8 byte(const u32 x, const unsigned n)
  {
 @@ -1297,7 +1299,14 @@ static struct crypto_alg aes_alg = {
-
+ 
  int __init aes_init(void)
  {
 -	return crypto_register_alg(&aes_alg);
@@ -274,10 +274,10 @@ index d26cc2af0..2083ba027 100644
 +	}
 +	return ret;
  }
-
+ 
  void __exit aes_fini(void)
 diff --git a/crypto/cbc.c b/crypto/cbc.c
-index 1300cf12d..20bc532e3 100644
+index 581990a12..b6c93d0a3 100644
 --- a/crypto/cbc.c
 +++ b/crypto/cbc.c
 @@ -10,6 +10,8 @@
@@ -286,7 +286,7 @@ index 1300cf12d..20bc532e3 100644
  #include <linux/log2.h>
 +#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
-
+ 
  static int crypto_cbc_encrypt_segment(struct crypto_lskcipher *tfm,
  				      const u8 *src, u8 *dst, unsigned nbytes,
 @@ -157,6 +159,9 @@ static int crypto_cbc_create(struct crypto_template *tmpl, struct rtattr **tb)
@@ -297,10 +297,10 @@ index 1300cf12d..20bc532e3 100644
 +			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +				   inst->alg.co.base.cra_driver_name, inst->alg.co.base.cra_name);
  	}
-
+ 
  	return err;
 diff --git a/crypto/ccm.c b/crypto/ccm.c
-index c40a37ada..d4ae67871 100644
+index 02275f9df..9affa2618 100644
 --- a/crypto/ccm.c
 +++ b/crypto/ccm.c
 @@ -14,6 +14,7 @@
@@ -309,7 +309,7 @@ index c40a37ada..d4ae67871 100644
  #include <linux/slab.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  struct ccm_instance_ctx {
 @@ -522,6 +523,9 @@ static int crypto_ccm_create_common(struct crypto_template *tmpl,
  	if (err) {
@@ -342,7 +342,7 @@ index c40a37ada..d4ae67871 100644
  	return err;
  }
 diff --git a/crypto/cmac.c b/crypto/cmac.c
-index 8df4433f8..090f51fdf 100644
+index 77e23c57a..458df872f 100644
 --- a/crypto/cmac.c
 +++ b/crypto/cmac.c
 @@ -15,6 +15,7 @@
@@ -351,7 +351,7 @@ index 8df4433f8..090f51fdf 100644
  #include <linux/kernel.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  /*
 @@ -287,6 +288,9 @@ static int cmac_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
@@ -364,7 +364,7 @@ index 8df4433f8..090f51fdf 100644
  	return err;
  }
 diff --git a/crypto/ctr.c b/crypto/ctr.c
-index 8981b8cc6..c1b3eee04 100644
+index 0d5b6c347..8b2bde2a9 100644
 --- a/crypto/ctr.c
 +++ b/crypto/ctr.c
 @@ -13,6 +13,7 @@
@@ -373,7 +373,7 @@ index 8981b8cc6..c1b3eee04 100644
  #include <linux/slab.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  struct crypto_rfc3686_ctx {
 @@ -161,6 +162,9 @@ static int crypto_ctr_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
@@ -383,7 +383,7 @@ index 8981b8cc6..c1b3eee04 100644
 +			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +				   inst->alg.base.cra_driver_name, inst->alg.base.cra_name);
  	}
-
+ 
  	return err;
 @@ -322,6 +326,9 @@ static int crypto_rfc3686_create(struct crypto_template *tmpl,
  	if (err) {
@@ -396,7 +396,7 @@ index 8981b8cc6..c1b3eee04 100644
  	return err;
  }
 diff --git a/crypto/cts.c b/crypto/cts.c
-index de750ff87..b084590d8 100644
+index d92cf1d51..11ff51887 100644
 --- a/crypto/cts.c
 +++ b/crypto/cts.c
 @@ -50,6 +50,7 @@
@@ -405,7 +405,7 @@ index de750ff87..b084590d8 100644
  #include <linux/compiler.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  struct crypto_cts_ctx {
 @@ -382,6 +383,9 @@ static int crypto_cts_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
@@ -418,7 +418,7 @@ index de750ff87..b084590d8 100644
  	return err;
  }
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index 96b645954..890f05050 100644
+index 1ed3e3873..5beb3aabd 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
 @@ -101,6 +101,7 @@
@@ -427,7 +427,7 @@ index 96b645954..890f05050 100644
  #include <linux/jiffies.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  /***************************************************************
 @@ -2196,7 +2197,14 @@ int __init drbg_init(void)
  		drbg_fill_array(&drbg_algs[i], &drbg_cores[j], 1);
@@ -443,10 +443,10 @@ index 96b645954..890f05050 100644
 +	}
 +	return ret;
  }
-
+ 
  void __exit drbg_exit(void)
 diff --git a/crypto/ecc.c b/crypto/ecc.c
-index f323e7a2b..ac966e156 100644
+index 774f7e816..4358c9b2a 100644
 --- a/crypto/ecc.c
 +++ b/crypto/ecc.c
 @@ -32,6 +32,7 @@
@@ -454,7 +454,7 @@ index f323e7a2b..ac966e156 100644
  #include <crypto/internal/ecc.h>
  #include <linux/unaligned.h>
 +#include <linux/fips.h>
-
+ 
  #include "ecc_curve_defs.h"
  #include "fips_canister_wrapper.h"
 diff --git a/crypto/ecdh.c b/crypto/ecdh.c
@@ -467,12 +467,12 @@ index 4e53880b1..8609b029b 100644
  #include <linux/scatterlist.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  struct ecdh_ctx {
 @@ -217,10 +218,20 @@ int __init ecdh_init(void)
  	if (ret)
  		goto nist_p256_error;
-
+ 
 +	if(fips_enabled) {
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +			   ecdh_nist_p256.base.cra_driver_name, ecdh_nist_p256.base.cra_name);
@@ -481,14 +481,14 @@ index 4e53880b1..8609b029b 100644
  	ret = crypto_register_kpp(&ecdh_nist_p384);
  	if (ret)
  		goto nist_p384_error;
-
+ 
 +	if (fips_enabled) {
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +			   ecdh_nist_p384.base.cra_driver_name, ecdh_nist_p384.base.cra_name);
 +	}
 +
  	return 0;
-
+ 
  nist_p384_error:
 diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
 index e36438b2e..ae3e0a689 100644
@@ -500,12 +500,12 @@ index e36438b2e..ae3e0a689 100644
  #include <linux/asn1_decoder.h>
 +#include <linux/fips.h>
  #include <linux/scatterlist.h>
-
+ 
  #include "ecdsasignature.asn1.h"
 @@ -349,14 +350,29 @@ int __init ecdsa_init(void)
  	if (ret)
  		goto nist_p256_error;
-
+ 
 +	if (fips_enabled) {
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +			   ecdsa_nist_p256.base.cra_driver_name, ecdsa_nist_p256.base.cra_name);
@@ -514,7 +514,7 @@ index e36438b2e..ae3e0a689 100644
  	ret = crypto_register_akcipher(&ecdsa_nist_p384);
  	if (ret)
  		goto nist_p384_error;
-
+ 
 +	if (fips_enabled) {
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +			   ecdsa_nist_p384.base.cra_driver_name, ecdsa_nist_p384.base.cra_name);
@@ -523,17 +523,17 @@ index e36438b2e..ae3e0a689 100644
  	ret = crypto_register_akcipher(&ecdsa_nist_p521);
  	if (ret)
  		goto nist_p521_error;
-
+ 
 +	if (fips_enabled) {
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +			   ecdsa_nist_p521.base.cra_driver_name, ecdsa_nist_p521.base.cra_name);
 +	}
 +
  	return 0;
-
+ 
  nist_p521_error:
 diff --git a/crypto/gcm.c b/crypto/gcm.c
-index 44a89c022..22ec7477d 100644
+index a8a0645ea..aa109ed12 100644
 --- a/crypto/gcm.c
 +++ b/crypto/gcm.c
 @@ -17,6 +17,7 @@
@@ -542,12 +542,12 @@ index 44a89c022..22ec7477d 100644
  #include <linux/slab.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  struct gcm_instance_ctx {
 @@ -452,6 +453,14 @@ static int crypto_gcm_encrypt(struct aead_request *req)
  	struct skcipher_request *skreq = &pctx->u.skreq;
  	u32 flags = aead_request_flags(req);
-
+ 
 +	if (fips_enabled && !aead_request_is_internal_iv(req)) {
 +		fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
 +				" approved in FIPS mode\n",
@@ -575,7 +575,7 @@ index 44a89c022..22ec7477d 100644
  }
 @@ -746,6 +762,7 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
  	}
-
+ 
  	aead_request_set_tfm(subreq, child);
 +
  	aead_request_set_callback(subreq, req->base.flags, req->base.complete,
@@ -584,16 +584,16 @@ index 44a89c022..22ec7477d 100644
 @@ -753,6 +770,8 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
  			       req->cryptlen, iv);
  	aead_request_set_ad(subreq, req->assoclen - 8);
-
+ 
 +	subreq->internal_iv = req->internal_iv;
 +
  	return subreq;
  }
-
+ 
 @@ -760,6 +779,14 @@ static int crypto_rfc4106_encrypt(struct aead_request *req)
  {
  	int err;
-
+ 
 +	if (fips_enabled && !aead_request_is_internal_iv(req)) {
 +		fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
 +				" approved in FIPS mode\n",
@@ -633,7 +633,7 @@ index 44a89c022..22ec7477d 100644
  	return err;
  }
 diff --git a/crypto/ghash-generic.c b/crypto/ghash-generic.c
-index 050fa7d93..19d4b7803 100644
+index 0a9180725..a6537576c 100644
 --- a/crypto/ghash-generic.c
 +++ b/crypto/ghash-generic.c
 @@ -41,6 +41,8 @@
@@ -642,11 +642,11 @@ index 050fa7d93..19d4b7803 100644
  #include <linux/kernel.h>
 +#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
-
+ 
  static int ghash_init(struct shash_desc *desc)
  {
-@@ -167,7 +169,14 @@ static struct shash_alg ghash_alg = {
-
+@@ -166,7 +168,14 @@ static struct shash_alg ghash_alg = {
+ 
  int __init ghash_mod_init(void)
  {
 -	return crypto_register_shash(&ghash_alg);
@@ -659,10 +659,10 @@ index 050fa7d93..19d4b7803 100644
 +	}
 +	return ret;
  }
-
+ 
  void __exit ghash_mod_exit(void)
 diff --git a/crypto/hmac.c b/crypto/hmac.c
-index 60540c928..430d334aa 100644
+index fa102cc79..7f14af42a 100644
 --- a/crypto/hmac.c
 +++ b/crypto/hmac.c
 @@ -239,6 +239,9 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
@@ -676,18 +676,10 @@ index 60540c928..430d334aa 100644
  	return err;
  }
 diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
-index 492cf3002..aa5103bf1 100644
+index cfea2d0b2..9cac0a06b 100644
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
-@@ -15,6 +15,7 @@
- #include <linux/kernel.h>
- #include <linux/random.h>
- #include <linux/scatterlist.h>
-+#include <linux/fips.h>
- #include "fips_canister_wrapper.h"
-
- /*
-@@ -554,6 +555,10 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -728,6 +728,10 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
  err_free_inst:
  		pkcs1pad_free(inst);
@@ -698,20 +690,14 @@ index 492cf3002..aa5103bf1 100644
  	}
  	return err;
  }
-@@ -563,5 +568,3 @@ struct crypto_template rsa_pkcs1pad_tmpl = {
- 	.create = pkcs1pad_create,
- 	.module = THIS_MODULE,
- };
--
--MODULE_ALIAS_CRYPTO("pkcs1pad");
 diff --git a/crypto/rsa.c b/crypto/rsa.c
-index 93cba5859..96db023fd 100644
+index deed6da40..2452c4c28 100644
 --- a/crypto/rsa.c
 +++ b/crypto/rsa.c
-@@ -406,6 +406,11 @@ int __init rsa_init(void)
+@@ -410,6 +410,11 @@ int __init rsa_init(void)
  	if (err)
  		return err;
-
+ 
 +	if (fips_enabled) {
 +		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
 +			   rsa.base.cra_driver_name, rsa.base.cra_name);
@@ -721,7 +707,7 @@ index 93cba5859..96db023fd 100644
  	if (err) {
  		crypto_unregister_akcipher(&rsa);
 diff --git a/crypto/seqiv.c b/crypto/seqiv.c
-index 6d83eda77..17a343724 100644
+index 1e721a6fa..322d7e430 100644
 --- a/crypto/seqiv.c
 +++ b/crypto/seqiv.c
 @@ -15,6 +15,8 @@
@@ -730,13 +716,13 @@ index 6d83eda77..17a343724 100644
  #include <linux/string.h>
 +#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
-
+ 
  static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
  {
-@@ -98,6 +100,10 @@ static int seqiv_aead_encrypt(struct aead_request *req)
+@@ -97,6 +99,10 @@ static int seqiv_aead_encrypt(struct aead_request *req)
  	crypto_xor(info, ctx->salt, ivsize);
  	scatterwalk_map_and_copy(info, req->dst, req->assoclen, ivsize, 1);
-
+ 
 +	err = aead_request_mark_internal_iv(subreq);
 +	if(err)
 +		return err;
@@ -744,7 +730,7 @@ index 6d83eda77..17a343724 100644
  	err = crypto_aead_encrypt(subreq);
  	if (unlikely(info != req->iv))
  		seqiv_aead_encrypt_complete2(req, err);
-@@ -158,6 +164,9 @@ static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
+@@ -157,6 +163,9 @@ static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
  free_inst:
  		inst->free(inst);
@@ -764,11 +750,11 @@ index 9bc82ab39..bb8859607 100644
  #include <linux/unaligned.h>
 +#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
-
+ 
  const u8 sha224_zero_message_hash[SHA224_DIGEST_SIZE] = {
  	0xd1, 0x4a, 0x02, 0x8c, 0x2a, 0x3a, 0x2b, 0xc9, 0x47,
 @@ -85,7 +87,16 @@ static struct shash_alg sha256_algs[2] = { {
-
+ 
  int __init sha256_generic_mod_init(void)
  {
 -	return crypto_register_shashes(sha256_algs, ARRAY_SIZE(sha256_algs));
@@ -783,10 +769,10 @@ index 9bc82ab39..bb8859607 100644
 +	}
 +	return ret;
  }
-
+ 
  void __exit sha256_generic_mod_fini(void)
 diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
-index 010611b57..fba5e790c 100644
+index 7aa5becfc..892d30e26 100644
 --- a/crypto/sha3_generic.c
 +++ b/crypto/sha3_generic.c
 @@ -13,6 +13,8 @@
@@ -795,11 +781,11 @@ index 010611b57..fba5e790c 100644
  #include <linux/unaligned.h>
 +#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
-
+ 
  /*
   * On some 32-bit architectures (h8300), GCC ends up using
-@@ -278,7 +280,16 @@ static struct shash_alg algs[] = { {
-
+@@ -277,7 +279,16 @@ static struct shash_alg algs[] = { {
+ 
  int __init sha3_generic_mod_init(void)
  {
 -	return crypto_register_shashes(algs, ARRAY_SIZE(algs));
@@ -814,10 +800,10 @@ index 010611b57..fba5e790c 100644
 +	}
 +	return ret;
  }
-
+ 
  void __exit sha3_generic_mod_fini(void)
 diff --git a/crypto/sha512_generic.c b/crypto/sha512_generic.c
-index c4e3c6c2d..83e5bb8b6 100644
+index 5c108024b..b2fe0ec50 100644
 --- a/crypto/sha512_generic.c
 +++ b/crypto/sha512_generic.c
 @@ -16,6 +16,8 @@
@@ -826,11 +812,11 @@ index c4e3c6c2d..83e5bb8b6 100644
  #include <linux/unaligned.h>
 +#include <linux/fips.h>
 +#include "fips_canister_wrapper.h"
-
+ 
  const u8 sha384_zero_message_hash[SHA384_DIGEST_SIZE] = {
  	0x38, 0xb0, 0x60, 0xa7, 0x51, 0xac, 0x96, 0x38,
-@@ -203,7 +205,16 @@ static struct shash_alg sha512_algs[2] = { {
-
+@@ -202,7 +204,16 @@ static struct shash_alg sha512_algs[2] = { {
+ 
  int __init sha512_generic_mod_init(void)
  {
 -	return crypto_register_shashes(sha512_algs, ARRAY_SIZE(sha512_algs));
@@ -845,16 +831,16 @@ index c4e3c6c2d..83e5bb8b6 100644
 +	}
 +	return ret;
  }
-
+ 
  void __exit sha512_generic_mod_fini(void)
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 3e30242bc..444ac9558 100644
+index 3e3cc4d55..da8a543cf 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -2425,9 +2425,11 @@ static int alg_test_aead(const struct alg_test_desc *desc, const char *driver,
  		goto out;
  	}
-
+ 
 -	err = test_aead(ENCRYPT, suite, req, tsgls);
 -	if (err)
 -		goto out;
@@ -863,7 +849,7 @@ index 3e30242bc..444ac9558 100644
 +		if (err)
 +			goto out;
 +	}
-
+ 
  	err = test_aead(DECRYPT, suite, req, tsgls);
  	if (err)
 @@ -4110,7 +4112,6 @@ static const struct alg_test_desc alg_test_descs[] = {
@@ -898,7 +884,7 @@ index 3e30242bc..444ac9558 100644
  	}, {
  		.alg = "blake2b-160",
  		.test = alg_test_hash,
-@@ -5244,7 +5242,6 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5197,7 +5195,6 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		.alg = "rfc3686(ctr(aes))",
  		.test = alg_test_skcipher,
@@ -906,7 +892,7 @@ index 3e30242bc..444ac9558 100644
  		.suite = {
  			.cipher = __VECS(aes_ctr_rfc3686_tv_template)
  		}
-@@ -5270,7 +5267,6 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5223,7 +5220,6 @@ static const struct alg_test_desc alg_test_descs[] = {
  		.alg = "rfc4309(ccm(aes))",
  		.generic_driver = "rfc4309(ccm_base(ctr(aes-generic),cbcmac(aes-generic)))",
  		.test = alg_test_aead,
@@ -924,11 +910,11 @@ index 3f255ec8f..d559bef87 100644
  #include <crypto/gf128mul.h>
 +#include <linux/fips.h>
  #include "fips_canister_wrapper.h"
-
+ 
  struct xts_tfm_ctx {
 @@ -47,9 +48,10 @@ static int xts_setkey(struct crypto_skcipher *parent, const u8 *key,
  	int err;
-
+ 
  	err = xts_verify_key(parent, key, keylen);
 -	if (err)
 +	if (err) {
@@ -937,7 +923,7 @@ index 3f255ec8f..d559bef87 100644
 -
 +	}
  	keylen /= 2;
-
+ 
  	/* we need two cipher instances: one to compute the initial 'tweak'
 @@ -446,6 +448,9 @@ static int xts_create(struct crypto_template *tmpl, struct rtattr **tb)
  	if (err) {
@@ -949,6 +935,6 @@ index 3f255ec8f..d559bef87 100644
  	}
  	return err;
  }
---
+-- 
 2.40.4
 

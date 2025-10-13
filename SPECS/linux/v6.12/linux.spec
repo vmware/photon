@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        18%{?acvp_build:.acvp}%{?dist}
+Release:        19%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -279,8 +279,8 @@ Patch10103: 0003-tcrypt-align-to-LKCM.patch
 Patch10104: 0004-scripts-kallsyms-Extra-kallsyms-parsing.patch
 # Add non-approved prints for essIV and echainIV IV generation method
 Patch10105: 0005-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
-# Introduce rsa-pkcs1pad_crypt.c to include encrypt and decrypt functions outside canister
-Patch10106: 0006-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
+# Move rsa-pkcs1pad encrypt and decrypt functions outside canister
+Patch10106: 0006-crypto-Disable-rsa-pkcs1pad-encrypt-decrypt-in-FIPS-.patch
 # Add internal_iv field for aead_request
 Patch10107: 0007-aead-add-internal_iv-field.patch
 Patch10108: 0008-FIPS-Mark-structure-field-differences-between-kernel.patch
@@ -857,6 +857,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-19
+- Moving asn1-decoder API into canister boundry.
+- Restore rsa-pkcs1pad encrypt/decrypt in rsa-pkcs1pad.c, disallow in fips mode
+- Make sha1 combinations as fips_allowed=0 for self-test
 * Mon Oct 06 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-18
 - Canister: use __NO_FORTIFY and use memcpy as is
 * Tue Sep 30 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-17
