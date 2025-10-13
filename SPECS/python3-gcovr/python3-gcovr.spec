@@ -3,7 +3,7 @@
 Summary:    The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:       python3-gcovr
 Version:    4.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    BSD Clause-3
 URL:        http://gcovr.com/
 Group:      Development/Tools
@@ -16,6 +16,7 @@ Source0:    https://github.com/gcovr/gcovr/archive/%{srcname}-%{version}.tar.gz
 Buildarch:  noarch
 
 Provides: %{srcname} = %{version}-%{release}
+Obsoletes: %{srcname}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -56,6 +57,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Oct 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2-6
+-   Obsolete gcov3
 *   Tue Oct 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2-5
 -   Rename package to python3-gcovr
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-4
