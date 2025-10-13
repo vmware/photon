@@ -244,7 +244,7 @@ def check_for_bogus_date(line, cur_date, err_dict):
 
 
 # No empty lines allowed in changelog
-# Changelog lines should start with '*', '-', ' ' or '\t'
+# Changelog lines should start with '*', '-' or ' '
 # '-' & ' ' should not be present before '*'
 # Successive lines starting with '*' not allowed
 def check_changelog(spec, err_dict):
@@ -281,7 +281,7 @@ def check_changelog(spec, err_dict):
                 err_dict.update_err_dict(sec, err_msg)
                 ret = True
             continue
-        elif line.startswith((" ", "\t")) and asterisk and hyphen:
+        elif line.startswith(" ") and asterisk and hyphen:
             continue
         else:
             err_msg = f"invalid entry in changelog at: {line}"
@@ -522,16 +522,8 @@ def get_source_patches_from_all_specs(spec_fn, dirname):
             if fn != spec_fn:
                 os.remove(fn)
 
-            for item in tmp.sources:
-                s = replace_macros(item, tmp)
-                if isinstance(s, str):
-                    sources.append(s)
-                elif isinstance(s, list):
-                    sources.extend(s)
-
-            for item in tmp.patches:
-                s = replace_macros(item, tmp)
-                patches.append(s)
+            sources.extend(tmp.sources)
+            patches.extend(tmp.patches)
 
     return sources, patches, other_files
 
@@ -559,6 +551,8 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     sources, patches, other_files = get_source_patches_from_all_specs(
         spec_fn, dirname
     )
+
+    ret = check_spec_cfg_yml(sources, dirname, err_dict)
 
     source_patch_list = sources + patches
 
@@ -609,12 +603,10 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     return ret
 
 
-def check_spec_cfg_yml(spec_fn, specDir, err_dict, specTopDir):
+def check_spec_cfg_yml(srcs, specDir, err_dict):
     checker = SourceArchiveChecker()
     checker.scanDirectory(specDir)
     archiveMap = checker.getArchiveMap()
-
-    srcs, _, _ = get_source_patches_from_all_specs(spec_fn, specDir)
 
     def get_non_local_files(rootDir, fList):
         foundFiles = []
@@ -803,8 +795,8 @@ def create_altered_spec(spec_fn):
 
 
 def getSpecObj(spec_fn):
-    spec = Spec.from_file(spec_fn)
-    spec.macros["dist"] = distTag
+    macros = {"dist": ".ph5"}
+    spec = Spec.from_file(spec_fn, macros)
     return spec
 
 
@@ -866,7 +858,6 @@ def check_specs(files_list):
                 check_make_smp_flags(lines_dict, err_dict),
                 check_for_unused_files(altered_spec, err_dict, currSpecDir),
                 check_proper_spdx_license(spec, err_dict),
-                check_spec_cfg_yml(altered_spec, currSpecDir, err_dict, specTopDir),
             ]
         ):
             err = True
