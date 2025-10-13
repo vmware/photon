@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.16
-Release:        2%{?dist}
+Version:        3.0.18
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5eea2b0c60d870549fc2b8755f1220a57f870d95fbc8d5cc5abb9589f212d10945f355c3e88ff48540a7ee1c4db774b936023ca33d7c799ea82d91eef9c1c16d
+%define sha512 %{name}=6bdd16f33b83ae2a12777230c4ff00d0595bbc00253ac8c3ac31e1375e818fc74d7f491bd2e507ff33cab9f0498cfb28fa8690f75a98663568d40901523cdf3c
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -169,6 +169,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Oct 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.18-1
+- Update to 3.0.18
 * Thu Mar 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.16-2
 - Add fips mode compatibility macro
 * Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.16-1
