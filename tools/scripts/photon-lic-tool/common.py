@@ -260,7 +260,7 @@ def cleanup_license_expression(ignore_list=None, exception_list=None, license_ex
     parsed_exp = license_tree.render_exp_tree(lic_tree)
 
     # remove duplicates - this returns a set
-    top_lvl_exps = extract_top_level_expressions(parsed_exp)
+    top_lvl_exps = license_tree.get_top_lvl_ands(lic_tree)
     top_lvl_exps.sort()
     parsed_exp = " AND ".join(top_lvl_exps)
 
@@ -270,68 +270,6 @@ def cleanup_license_expression(ignore_list=None, exception_list=None, license_ex
         return licensing.parse(parsed_exp).render()
 
     return parsed_exp
-
-
-# to get the top level license expressions, we can't
-# simply split with "AND". We need to split on all AND/OR,
-# but keep all parantheses together
-def extract_top_level_expressions(spdx_exp=None):
-    if not spdx_exp:
-        return []
-
-    # this should not have duplicates.
-    # not using a set because want to preserve order
-    expressions = []
-    i = 0
-    start_pos = 0
-    end_pos = 0
-    paran_str = ""
-    uniq_ors = []
-    while i < len(spdx_exp):
-        # get everything inside the parantheses
-        if spdx_exp[i] == "(":
-            start_pos = i
-            open_paran = 1
-            i += 1
-            while open_paran > 0 and i < len(spdx_exp):
-                if spdx_exp[i] == "(":
-                    open_paran += 1
-                elif spdx_exp[i] == ")":
-                    open_paran -= 1
-                i += 1
-
-            end_pos = i
-
-            paran_str = spdx_exp[start_pos:end_pos]
-            if paran_str not in expressions:
-                expressions.append(paran_str)
-            spdx_exp = spdx_exp[:start_pos] + " " * len(paran_str) + spdx_exp[end_pos:]
-        i += 1
-
-    # Handle top level OR - whole expression should be concatenated
-    # and put inside parantheses. Any OR left over will be a top level OR
-    if "OR" in spdx_exp:
-        ors = spdx_exp.split("OR")
-        ors = [x.strip() for x in ors]
-        for x in ors:
-            if x in uniq_ors:
-                continue
-
-            uniq_ors.append(x)
-
-        exp = f"({' OR '.join(uniq_ors)})"
-        return [exp]
-    else:
-        # get the rest of the licenses without the parantheses
-        # All "OR" expressions should already be in parantheses
-        for exp in spdx_exp.split("AND"):
-            exp = strip_license_id(exp)
-            if not exp or exp.isspace() or exp in expressions:
-                continue
-
-            expressions.append(exp)
-
-    return expressions
 
 
 # From extractcode (universal extractor), get the list of all recognizable

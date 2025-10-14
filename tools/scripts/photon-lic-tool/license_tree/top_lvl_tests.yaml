@@ -1,0 +1,141 @@
+# Test cases for extracting top level expressions
+# INPUT EXP : EXPECTED OUTPUT (list of top level expressions)
+0:
+    input:
+    expected: []
+1:
+    input: A
+    expected: ['A']
+2:
+    input: A AND B
+    expected: ['A', 'B']
+3:
+    input: (A AND B)
+    expected: ['A', 'B']
+4:
+    input: A AND B AND C
+    expected: ['A', 'B', 'C']
+5:
+    input: ((A AND B) AND C)
+    expected: ['A', 'B', 'C']
+6:
+    input: A OR B
+    expected: ['(A OR B)']
+7:
+    input: (A OR B)
+    expected: ['(A OR B)']
+8:
+    # Note: This is parsed as A AND (B OR C) due to operator precedence
+    input: A AND B OR C
+    expected: ['A', '(B OR C)']
+9:
+    input: (A AND B) OR C
+    expected: ['((A AND B) OR C)']
+10:
+    input: (A OR B) AND C
+    expected: ['(A OR B)', 'C']
+11:
+    input: A AND (B OR C)
+    expected: ['A', '(B OR C)']
+12:
+    input: (A OR B) AND (C OR D)
+    expected: ['(A OR B)', '(C OR D)']
+13:
+    input: A AND B AND (C OR D)
+    expected: ['A', 'B', '(C OR D)']
+14:
+    input: A AND B WITH TEST_EXC AND C
+    expected: ['A', 'B WITH TEST_EXC', 'C']
+15:
+    input: (A AND B) OR (C AND D)
+    expected: ['((A AND B) OR (C AND D))']
+16:
+    input: GPL-2.0-or-later AND BSD-3-Clause AND MIT
+    expected: ['GPL-2.0-or-later', 'BSD-3-Clause', 'MIT']
+17:
+    input: (Apache-2.0 OR LGPL-2.1-or-later) AND GPL-2.0-or-later
+    expected: ['(Apache-2.0 OR LGPL-2.1-or-later)', 'GPL-2.0-or-later']
+18:
+    input: GPL-3.0-or-later WITH Bison-exception-2.2 AND MIT AND Apache-2.0
+    expected: ['GPL-3.0-or-later WITH Bison-exception-2.2', 'MIT', 'Apache-2.0']
+19:
+    input: (MIT OR BSD-3-Clause OR GPL-1.0-or-later) AND Apache-2.0
+    expected: ['(MIT OR BSD-3-Clause OR GPL-1.0-or-later)', 'Apache-2.0']
+20:
+    input: GPL-2.0-only WITH Universal-FOSS-exception-1.0 AND Apache-2.0 AND (MIT OR BSD-3-Clause)
+    expected: ['GPL-2.0-only WITH Universal-FOSS-exception-1.0', 'Apache-2.0', '(MIT OR BSD-3-Clause)']
+21:
+    # Nested ANDs
+    input: A AND (B AND C)
+    expected: ['A', 'B', 'C']
+22:
+    # Nested ORs with AND
+    input: (A OR (B OR C)) AND D
+    expected: ['(A OR B OR C)', 'D']
+23:
+    # Complex expression from bash license
+    input: FSFUL AND GPL-2.0-or-later AND (GPL-3.0-or-later WITH Texinfo-exception) AND GPL-3.0-or-later
+    expected: ['FSFUL', 'GPL-2.0-or-later', 'GPL-3.0-or-later WITH Texinfo-exception', 'GPL-3.0-or-later']
+24:
+    # Complex OR at top level - flattened by render_exp_tree
+    input: ((A AND B) OR (C AND D)) OR (E AND F)
+    expected: ['((A AND B) OR (C AND D) OR (E AND F))']
+25:
+    input: A OR B OR (C AND D)
+    expected: ['(A OR B OR (C AND D))']
+26:
+    # Deep nesting with multiple levels
+    input: ((A AND B) AND (C AND D)) AND E
+    expected: ['A', 'B', 'C', 'D', 'E']
+27:
+    # OR with nested AND expressions
+    input: (A AND B) OR (C AND D) OR (E AND F)
+    expected: ['((A AND B) OR (C AND D) OR (E AND F))']
+28:
+    # Mixed nesting - AND at top, ORs inside
+    input: (A OR B) AND (C OR D) AND (E OR F)
+    expected: ['(A OR B)', '(C OR D)', '(E OR F)']
+29:
+    # Single element in parentheses
+    input: (A) AND B
+    expected: ['A', 'B']
+30:
+    # Complex real-world case with exceptions
+    input: (GPL-2.0-only WITH Universal-FOSS-exception-1.0) AND (Apache-2.0 OR MIT) AND BSD-3-Clause
+    expected: ['GPL-2.0-only WITH Universal-FOSS-exception-1.0', '(Apache-2.0 OR MIT)', 'BSD-3-Clause']
+31:
+    # Deeply nested ORs within AND
+    input: A AND ((B OR C) OR D) AND E
+    expected: ['A', '(B OR C OR D)', 'E']
+32:
+    # Multiple licenses with same operator
+    input: A AND B AND C AND D AND E
+    expected: ['A', 'B', 'C', 'D', 'E']
+33:
+    # OR with single element should still be OR
+    input: (A) OR B
+    expected: ['(A OR B)']
+34:
+    # Three-way OR with nested ANDs
+    input: (A AND B) OR (C AND D) OR E
+    expected: ['((A AND B) OR (C AND D) OR E)']
+35:
+    # Edge case: alternating operators with parentheses
+    input: ((A OR B) AND C) OR D
+    expected: ['(((A OR B) AND C) OR D)']
+36:
+    # AND with exception on left, OR on right
+    input: GPL-3.0-or-later WITH Bison-exception-2.2 AND (Apache-2.0 OR MIT)
+    expected: ['GPL-3.0-or-later WITH Bison-exception-2.2', '(Apache-2.0 OR MIT)']
+37:
+    # Complex nesting with all operators
+    input: (A AND B WITH TEST_EXC) AND (C OR D) AND E
+    expected: ['A', 'B WITH TEST_EXC', '(C OR D)', 'E']
+38:
+    # OR at top with deeply nested ANDs
+    input: ((A AND B AND C) OR (D AND E AND F))
+    expected: ['((A AND B AND C) OR (D AND E AND F))']
+39:
+    # Multiple ORs separated by AND
+    input: (A OR B) AND C AND (D OR E) AND F
+    expected: ['(A OR B)', 'C', '(D OR E)', 'F']

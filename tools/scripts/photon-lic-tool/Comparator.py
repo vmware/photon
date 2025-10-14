@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+import license_tree
 
 from common import (
     read_license_from_file,
-    extract_top_level_expressions,
     err_exit,
     cleanup_license_expression,
 )
@@ -47,10 +47,12 @@ class Comparator:
             license_exp=exp_b, exception_list=[], ignore_list=[]
         )
 
-        for lic in extract_top_level_expressions(exp_a):
+        lic_tree = license_tree.create_exp_tree(exp_a, exception_list=[], ignore_list=[])
+        for lic in license_tree.get_top_lvl_ands(lic_tree):
             set_a.add(lic)
 
-        for lic in extract_top_level_expressions(exp_b):
+        lic_tree = license_tree.create_exp_tree(exp_b, exception_list=[], ignore_list=[])
+        for lic in license_tree.get_top_lvl_ands(lic_tree):
             set_b.add(lic)
 
         diff_a = set_a.difference(set_b)

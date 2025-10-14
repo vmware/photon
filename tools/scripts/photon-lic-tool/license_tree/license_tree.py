@@ -182,6 +182,29 @@ def render_exp_tree(exp_tree=None, parent_value="", string=""):
 
     return f"{string} {sub_str}".strip()
 
+# Get the top level expressions which are glued by ANDs
+def get_top_lvl_ands(exp_tree=None, exps=None):
+    if exp_tree is None:
+        return []
+
+    # Initialize exps on first call (avoid mutable default argument bug)
+    if exps is None:
+        exps = []
+
+    if exp_tree.value == "AND":
+        get_top_lvl_ands(exp_tree.left, exps)
+        get_top_lvl_ands(exp_tree.right, exps)
+    elif exp_tree.value == "OR":
+        or_str = render_exp_tree(exp_tree)
+        or_list = or_str.split("OR")
+        or_list = [x.strip() for x in or_list]
+        or_list.sort()
+        or_str = " OR ".join(or_list)
+        exps.append(f"({or_str})")
+    else:
+        exps.append(exp_tree.value)
+
+    return exps
 
 # Tests the expression tree API, validates that reading/rendering
 # is accurate.
@@ -213,5 +236,39 @@ def __test_exp_tree__(input_yaml=None, exception_list=[], ignore_list=[]):
             )
 
         #    print(f"Result tree:\n{result_node}")
+
+        i += 1
+
+
+# Tests the get_top_lvl_ands function, validates that top level expressions
+# are correctly extracted from license expressions.
+#
+# input_yaml=<path to yaml holding test cases>
+def __test_top_lvl_ands__(input_yaml=None, exception_list=[], ignore_list=[]):
+    test_exps = None
+    with open(input_yaml, "r") as input_y:
+        test_exps = yaml.safe_load(input_y)
+
+    i = 0
+    for tst_case in test_exps:
+        exp_tree = create_exp_tree(
+            test_exps[tst_case]["input"],
+            exception_list,
+            ignore_list
+        )
+        result = get_top_lvl_ands(exp_tree)
+        expected = test_exps[tst_case]["expected"]
+
+        # Sort both lists for comparison (order may vary due to tree traversal)
+        result_sorted = sorted(result) if result else []
+        expected_sorted = sorted(expected) if expected else []
+
+        if result_sorted == expected_sorted:
+            print(f"Sucessfully passed test case {i}")
+        else:
+            print(
+                f"Test {i} failed!\n\tResult: {result}\n"
+                + f"\tExpected Result: {test_exps[tst_case]['expected']}"
+            )
 
         i += 1

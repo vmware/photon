@@ -57,9 +57,20 @@ exception_list = get_exceptions_list()
 # add our custom test exception
 exception_list.append("TEST_EXC")
 
-# run test
+print("Running expression tree test...\n")
+
+# run expression tree test
 license_tree.__test_exp_tree__(
     input_yaml="exp_tree_tests.yaml",
+    exception_list=exception_list,
+    ignore_list=ignore_list,
+)
+
+print("\nRunning top level expressions extraction test...\n")
+
+# run top level expressions extraction test
+license_tree.__test_top_lvl_ands__(
+    input_yaml="top_lvl_tests.yaml",
     exception_list=exception_list,
     ignore_list=ignore_list,
 )

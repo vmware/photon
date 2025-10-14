@@ -10,11 +10,11 @@ import yaml
 import shutil
 import redis
 import errno
+import license_tree
 
 from common import (
     strip_license_id,
     cleanup_license_expression,
-    extract_top_level_expressions,
     pr_err,
 )
 
@@ -181,7 +181,10 @@ class CacheUtil:
                 else:
                     after_cleaning = cached_cleaned_results[before_cleaning]
 
-                for lic in extract_top_level_expressions(after_cleaning):
+                lic_tree = license_tree.create_exp_tree(
+                    after_cleaning, exception_list=exceptions_list, ignore_list=[]
+                )
+                for lic in license_tree.get_top_lvl_ands(lic_tree):
                     if lic:
                         file_detections.add(strip_license_id(lic))
 

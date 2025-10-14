@@ -4,7 +4,7 @@
 # Includes ability to scan SRPMS, archives, normal files, and even to
 # build source trees from spec files under SPECS/<pkg>/<pkg>.spec
 import common
-
+import license_tree
 import yaml
 import os
 import multiprocessing
@@ -76,7 +76,8 @@ class Scanner:
             # It should be handled in the same way - keep the OR together.
             # For expressions such as ((A AND B) AND C) AND D, these will be
             # flattened by the license_tree API in cleanup_license_expression().
-            spdx_exps = common.extract_top_level_expressions(spdx_exp)
+            lic_tree = license_tree.create_exp_tree(spdx_exp, exception_list=[], ignore_list=[])
+            spdx_exps = license_tree.get_top_lvl_ands(lic_tree)
             for exp in spdx_exps:
                 exp = common.strip_license_id(exp)
                 exp = common.cleanup_license_expression(
@@ -560,7 +561,8 @@ class Scanner:
                 "please review and update the checksum/spdx expression accordingly"
             )
 
-        spdx_exp.extend(common.extract_top_level_expressions(reviewed_spdx_exp))
+        lic_tree = license_tree.create_exp_tree(reviewed_spdx_exp, exception_list=[], ignore_list=[])
+        spdx_exp.extend(license_tree.get_top_lvl_ands(lic_tree))
 
         os.remove(path)
 
