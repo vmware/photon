@@ -415,6 +415,8 @@ class Poi(object):
                 "--initrd-pkgs-list-file",
                 "packages_installer_initrd.json",
                 "--repo-paths=/repo",
+                "--config",
+                f"{type}-iso.yaml",
                 "--name",
                 iso_file,
             ],
