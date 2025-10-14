@@ -1,6 +1,6 @@
 Name:          erlang
 Summary:       erlang
-Version:       26.2.5.11
+Version:       27.3.4.3
 Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
@@ -11,8 +11,6 @@ Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: 0001-erlang-fix-vernemq-build-fail.patch
 
 Requires: ncurses-libs
 
@@ -49,6 +47,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Mon Oct 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 27.3.4.3-1
+- Update to 27.3.4.3
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 26.2.5.11-1
 - Update to 26.2.5.11
 * Thu Apr 10 2025 Tapas Kundu <tapas.kundu@broadcom.com> 26.2.5.10-1

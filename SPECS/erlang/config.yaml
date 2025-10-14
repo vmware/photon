@@ -1,12 +1,12 @@
 sources:
-- archive: OTP-26.2.5.11.tar.gz
-  archive_sha512sum: 9cc04a9f807b4c0dd36bca93d52ab5ec7f022925b18dbaf3d5ce7184c20ad29c9e538caa622e65402c7e3a0c103a5d7ec025ec67853fee33fc6418ffefe9ddd6
+- archive: OTP-27.3.4.3.tar.gz
+  archive_sha512sum: 3292e7d386b80693debd99d89bf7daa491b69f471514518b08b18d7fc9846986eb5f0bf8d182b842ae65035a294c12e873431241252f59e243d06bd06579e3a4
   archive_type: upstream
-  name: otp-OTP-26.2.5.11
-  version: 26.2.5.11
-  url: https://github.com/erlang/otp/archive/refs/tags/OTP-26.2.5.11.tar.gz
+  name: otp-OTP-27.3.4.3
+  version: 27.3.4.3
+  url: https://github.com/erlang/otp/archive/refs/tags/OTP-27.3.4.3.tar.gz
   repo_url: https://github.com/erlang/otp
-  commit_id: 9f6c4eb54823324d1e6f8cb95c15feb09f09044e
+  commit_id: 940ec0f6f0370ecf5cd93cae31fd91f4651ddca6
   skip_list:
   - .gitattributes
   - .gitignore
@@ -15,21 +15,19 @@ sources:
       detailed_description: 'Erlang is a general-purpose programming language and
         runtime environment. Erlang has built-in support for concurrency, distribution
         and fault tolerance. Erlang is used in several large telecommunication systems
-        from Ericsson. '
+        from Ericsson.'
       home_page: https://www.erlang.org
-      license_concluded: (Apache-2.0 OR BSL-1.0) AND (Apache-2.0 OR LGPL-2.1-or-later)
-        AND (MIT OR GPL-2.0-only) AND X11 AND BSL-1.0 AND Zlib AND GPL-1.0-or-later
-        AND Unlicense AND LGPL-2.1-or-later AND MIT AND GPL-3.0-or-later AND SSLeay-standalone
-        AND CC0-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND OpenSSL-standalone
-        AND BSD-3-Clause AND LGPL-2.0-or-later WITH WxWindows-exception-3.1 AND FSFUL
-        AND MPL-1.0 AND OpenSSL AND TCL AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception
-        AND Apache-2.0
-      license_declared: (Apache-2.0 OR BSL-1.0) AND (Apache-2.0 OR LGPL-2.1-or-later)
-        AND (MIT OR GPL-2.0-only) AND X11 AND BSL-1.0 AND Zlib AND GPL-1.0-or-later
-        AND Unlicense AND LGPL-2.1-or-later AND MIT AND GPL-3.0-or-later AND SSLeay-standalone
-        AND CC0-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND OpenSSL-standalone
-        AND BSD-3-Clause AND LGPL-2.0-or-later WITH WxWindows-exception-3.1 AND FSFUL
-        AND MPL-1.0 AND OpenSSL AND TCL AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception
-        AND Apache-2.0
+      license_concluded: (MIT OR GPL-2.0-only) AND (Apache-2.0 OR LGPL-2.1-or-later)
+        AND (Apache-2.0 OR BSL-1.0) AND MIT AND TCL AND CC0-1.0 AND BSL-1.0 AND BSD-3-Clause
+        AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Apache-2.0
+        WITH LLVM-exception AND OpenSSL AND LGPL-2.1-or-later AND FSFUL AND LGPL-2.0-or-later
+        WITH WxWindows-exception-3.1 AND Apache-2.0 AND MPL-1.0 AND X11 AND BSD-2-Clause
+        AND GPL-1.0-or-later AND Unlicense
+      license_declared: (MIT OR GPL-2.0-only) AND (Apache-2.0 OR LGPL-2.1-or-later)
+        AND (Apache-2.0 OR BSL-1.0) AND MIT AND TCL AND CC0-1.0 AND BSL-1.0 AND BSD-3-Clause
+        AND Zlib AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Apache-2.0
+        WITH LLVM-exception AND OpenSSL AND LGPL-2.1-or-later AND FSFUL AND LGPL-2.0-or-later
+        WITH WxWindows-exception-3.1 AND Apache-2.0 AND MPL-1.0 AND X11 AND BSD-2-Clause
+        AND GPL-1.0-or-later AND Unlicense
       short_summary: erlang
       supplier: 'Organization: Broadcom, Inc.'

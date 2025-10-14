@@ -1,5 +1,5 @@
-%define erlang_minver       26.2.5
-%define erlang_maxver       27.0
+%define erlang_minver       26.2
+%define erlang_maxver       28.0
 %define _rabbitmq_user      rabbitmq
 %define _rabbitmq_group     rabbitmq
 %define _rabbit_libdir      %{_libdir}/rabbitmq
@@ -19,7 +19,7 @@
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       4.0.1
+Version:       4.0.4
 Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
@@ -156,6 +156,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Mon Jun 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.0.4-1
+- Version upgrade
 * Wed Jun 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.0.1-1
 - Version upgrade
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.13.3-4
