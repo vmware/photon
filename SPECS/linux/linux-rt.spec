@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.157
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -264,6 +264,17 @@ Patch168: 0001-drm-amd-display-fix-a-Null-pointer-dereference-vulne.patch
 # Fix CVE-2025-38705
 Patch169: 0001-drm-amd-pm-fix-null-pointer-access.patch
 
+# Fix CVE-2024-49968
+Patch170: 0001-ext4-filesystems-without-casefold-feature-cannot-be-.patch
+Patch171: 0002-ext4-fix-error-message-when-rejecting-the-default-ha.patch
+
+# Fix CVE-2024-49922
+Patch172: 0001-drm-amd-display-Check-null-pointers-before-using-the.patch
+
+# Fix CVE-2024-49988
+Patch173: 0001-ksmbd-add-refcnt-to-ksmbd_conn-struct.patch
+Patch174: 0002-ksmbd-fix-use-after-free-in-SMB-request-handling.patch
+
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
@@ -425,7 +436,7 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M169
+%autopatch -p1 -m100 -M174
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -639,6 +650,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Oct 30 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.157-3
+- Fixes CVE-2024-49968, CVE-2024-49922 and CVE-2024-49988.
 * Wed Oct 22 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.157-2
 - Fix CVE-2024-41045
 * Mon Oct 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.157-1
