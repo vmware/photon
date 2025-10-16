@@ -26,8 +26,10 @@ _macro_pattern = re.compile(r"%{(\S+?)\}")
 _DEFAULT_ARCHES = ["x86_64", "aarch64"]
 
 
-def replace_macros(string, spec, arch=None):
+def replace_macros(string, spec, arch=None, visited=None):
     assert isinstance(spec, Spec)
+    if visited is None:
+        visited = set()
 
     def _is_conditional(macro):
         return macro.startswith("?") or macro.startswith("!")
@@ -51,9 +53,26 @@ def replace_macros(string, spec, arch=None):
                     and arch in spec.macros_by_arch
                     and macro_key in spec.macros_by_arch[arch]
                 ):
-                    return spec.macros_by_arch[arch][macro_key]
+                    if macro_key in visited:
+                        return default_value
+                    visited.add(macro_key)
+                    result = replace_macros(
+                        spec.macros_by_arch[arch][macro_key],
+                        spec,
+                        arch,
+                        visited.copy(),
+                    )
+                    visited.remove(macro_key)
+                    return result
                 if macro_key in spec.macros:
-                    return spec.macros[macro_key]
+                    if macro_key in visited:
+                        return default_value
+                    visited.add(macro_key)
+                    result = replace_macros(
+                        spec.macros[macro_key], spec, arch, visited.copy()
+                    )
+                    visited.remove(macro_key)
+                    return result
                 if (
                     hasattr(spec, macro_key)
                     and getattr(spec, macro_key) is not None
@@ -77,9 +96,26 @@ def replace_macros(string, spec, arch=None):
             and arch in spec.macros_by_arch
             and macro_name in spec.macros_by_arch[arch]
         ):
-            return spec.macros_by_arch[arch][macro_name]
+            if macro_name in visited:
+                return ""
+            visited.add(macro_name)
+            result = replace_macros(
+                spec.macros_by_arch[arch][macro_name],
+                spec,
+                arch,
+                visited.copy(),
+            )
+            visited.remove(macro_name)
+            return result
         if macro_name in spec.macros:
-            return spec.macros[macro_name]
+            if macro_name in visited:
+                return ""
+            visited.add(macro_name)
+            result = replace_macros(
+                spec.macros[macro_name], spec, arch, visited.copy()
+            )
+            visited.remove(macro_name)
+            return result
         if macro_name == "_arch" and arch:
             return arch
         if hasattr(spec, macro_name) and getattr(spec, macro_name) is not None:
