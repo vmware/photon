@@ -1,7 +1,7 @@
 Summary:       advanced key-value store
 Name:          redis
-Version:       7.2.6
-Release:       5%{?dist}
+Version:       7.2.11
+Release:       1%{?dist}
 URL:           http://redis.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -15,8 +15,6 @@ Source2: license.txt
 %include %{SOURCE2}
 
 Patch0: %{name}-conf.patch
-Patch1: CVE-2024-46981.patch
-Patch2: CVE-2025-27151.patch
 
 BuildRequires: build-essential
 BuildRequires: systemd-devel
@@ -93,6 +91,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu Oct 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 7.2.11-1
+- Fixes CVE-2025-49844,CVE-2025-2715,CVE-2024-469811
 * Mon Aug 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.6-5
 - Fix CVE-2025-27151
 * Fri May 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.6-4

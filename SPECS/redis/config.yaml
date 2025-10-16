@@ -1,20 +1,29 @@
 sources:
-- archive: redis-7.2.6.tar.gz
-  archive_sha512sum: 
-    4635a3c5b23f3985ae7dbec9655eacedfdb16356014b30f864232467094f85fbc1c6af35837b05040f6d2a3b5fd1413c8716b541c8b2c4b24d8d4fbdc7884136
-  skip_validation: true
+- archive: redis-7.2.11.tar.gz
+  archive_type: upstream
+  archive_sha512sum: c2d11100f1bad761218b6dfff1022634828ffe0ac31d2e93682bf6efa47d5b534a1d0c03bc81e257d02029a0b9d78921e74754423ca8b7bb7abce869a41aaf2f
+  name: redis-7.2.11
+  url: https://github.com/redis/redis/archive/refs/tags/7.2.11.tar.gz
+  repo_url: https://github.com/redis/redis.git
+  commit_id: d4c381df7a729c06a5207c4f18d804febe956dc4
+  license_manual_review:
+  - file_paths:
+    - redis-7.2.11/tests/unit/cluster/hostnames.tcl
+    sha256sum: f0bca5f7ce5a5ebc19228ed3055a628191f5e31efd46f4ab717369b9ce53de58
+    spdx_exp: ''
+    #test file not shipped
+  - file_paths:
+    - redis-7.2.11/tests/unit/cluster/sharded-pubsub.tcl
+    sha256sum: d4717f03c7e1b2b8b28fe64797e60db813c8019cd4681b7e0956f5f00b2e0843
+    spdx_exp: ''
+    #test file not shipped
+  skip_list: []
+  missing: []
   spdx:
     package:
-      detailed_description: 'Redis is an in-memory data structure store, used as database,
-        cache and message broker. '
+      detailed_description: 'Redis is an in-memory data structure store, used as database, cache and message broker. '
       home_page: http://redis.io
-      license_concluded: (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR 
-        GPL-2.0-or-later) AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND 
-        CC0-1.0 AND FSFAP AND FSFUL AND GPL-3.0-or-later WITH 
-        Autoconf-exception-generic-3.0 AND ISC AND MIT AND NTP AND Zlib
-      license_declared: (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR 
-        GPL-2.0-or-later) AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND 
-        CC0-1.0 AND FSFAP AND FSFUL AND GPL-3.0-or-later WITH 
-        Autoconf-exception-generic-3.0 AND ISC AND MIT AND NTP AND Zlib
+      license_concluded: (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR GPL-2.0-or-later) AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND FSFAP AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND MIT AND NTP AND SSPL-1.0 AND Zlib
+      license_declared: (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR GPL-2.0-or-later) AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND FSFAP AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND MIT AND NTP AND SSPL-1.0 AND Zlib
       short_summary: advanced key-value store
       supplier: 'Organization: Broadcom, Inc.'
