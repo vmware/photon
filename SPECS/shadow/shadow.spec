@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -21,14 +21,16 @@ Source9: system-auth
 Source10: system-password
 Source11: system-session
 Source12: useradd
-Source13: license.txt
-%include %{SOURCE13}
+Source13: tmout.sh
+Source14: license.txt
+%include %{SOURCE14}
 
 Patch0: 0001-remove-group-from-deliverables.patch
 Patch1: 0002-login.defs-config-changes.patch
 Patch2: CVE-2023-29383.patch
 Patch3: CVE-2023-29383.1.patch
 Patch4: CVE-2023-4641.patch
+Patch5: 0003-shadow-set-login.defs-hardening-rules.patch
 
 BuildRequires: cracklib-devel
 BuildRequires: Linux-PAM-devel
@@ -97,6 +99,8 @@ cp %{SOURCE12} %{buildroot}%{_sysconfdir}/default
 
 cp etc/{limits,login.access} %{buildroot}%{_sysconfdir}
 
+install -vdm 755 %{buildroot}%{_sysconfdir}/profile.d
+
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/pam.d/
@@ -108,19 +112,25 @@ install -vm644 %{SOURCE8} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE9} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE11} %{buildroot}%{_sysconfdir}/pam.d/
+install -Dm644 %{SOURCE13} %{buildroot}%{_sysconfdir}/profile.d/tmout.sh
+
+pushd %{buildroot}%{_sysconfdir}/pam.d
+sed -e "s/chpasswd/newusers/" chpasswd > newusers
 
 for PROGRAM in chfn chgpasswd chsh groupadd groupdel \
-               groupmems groupmod newusers useradd userdel usermod; do
-  install -v -m644 %{buildroot}%{_sysconfdir}/pam.d/chage %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
-  sed -i "s/chage/$PROGRAM/" %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
+               groupmems groupmod useradd userdel usermod; do
+  sed -e "s/chage/${PROGRAM}/" chage > ${PROGRAM}
 done
+popd
 
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
 
+%if 0%{?with_check}
 %check
 %make_build check
+%endif
 
 %post
 /sbin/ldconfig
@@ -139,28 +149,13 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/login.access
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/default/useradd
 %config(noreplace) %{_sysconfdir}/limits
+%{_sysconfdir}/profile.d/tmout.sh
 %{_bindir}/*
 %{_sbindir}/*
 %exclude %{_bindir}/su
 %exclude %{_bindir}/login
 %exclude %{_bindir}/passwd
-%exclude %{_datadir}/locale/cs
-%exclude %{_datadir}/locale/da
-%exclude %{_datadir}/locale/de
-%exclude %{_datadir}/locale/fi
-%exclude %{_datadir}/locale/fr
-%exclude %{_datadir}/locale/hu
-%exclude %{_datadir}/locale/id
-%exclude %{_datadir}/locale/it
-%exclude %{_datadir}/locale/ja
-%exclude %{_datadir}/locale/ko
-%exclude %{_datadir}/locale/pl
-%exclude %{_datadir}/locale/pt_BR
-%exclude %{_datadir}/locale/ru
-%exclude %{_datadir}/locale/sv
-%exclude %{_datadir}/locale/tr
-%exclude %{_datadir}/locale/zh_CN
-%exclude %{_datadir}/locale/zh_TW
+%exclude %{_datadir}/locale/*
 %config(noreplace) %{_sysconfdir}/pam.d/*
 
 %files libs
@@ -183,6 +178,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-10
+- Load hardening rules in login.defs by default, add tmout.sh
+- Fix newusers pam config
+- Harden the pam settings by default
+- Use yescrypt as default password encryption backend
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-9
 - Release bump for SRP compliance
 * Sun Dec 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-8

@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -11,9 +11,10 @@ Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{
 
 Source1: pamtmp.conf
 Source2: default-faillock.conf
+Source3: default-pwhistory.conf
 
-Source3: license.txt
-%include %{SOURCE3}
+Source4: license.txt
+%include %{SOURCE4}
 
 Patch0: 0001-faillock-add-support-to-print-login-failures.patch
 Patch1: 0002-Linux-PAM-protect-dir.patch
@@ -39,6 +40,7 @@ enable the local system administrator to choose how applications authenticate us
 Summary:        Additional language files for Linux-PAM
 Group:          System Environment/Base
 Requires:       %{name} = %{version}-%{release}
+
 %description    lang
 These are the additional language files of Linux-PAM.
 
@@ -89,9 +91,11 @@ ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_acct.so
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_passwd.so
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_session.so
 
-cp %{SOURCE2} %{buildroot}%{_sysconfdir}/security/faillock.conf
+install -vDm 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/security/faillock.conf
+install -vDm 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/security/pwhistory.conf
+touch %{buildroot}%{_sysconfdir}/security/opasswd
 
-install -d -m 755 %{buildroot}/run/faillock
+install -d -m 755 %{buildroot}%{_var}/log/faillock
 install -m644 -D %{SOURCE1} %{buildroot}%{_tmpfilesdir}/pam.conf
 
 %{find_lang} %{name}
@@ -107,7 +111,7 @@ account  required       pam_deny.so
 password required       pam_deny.so
 session  required       pam_deny.so
 EOF
-make %{?_smp_mflags} check
+%make_build check
 %endif
 
 %post -p /sbin/ldconfig
@@ -129,7 +133,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_tmpfilesdir}/pam.conf
 %{_unitdir}/pam_namespace.service
-%dir /run/faillock
+%dir %{_var}/log/faillock
+%ghost %dir %{_rundir}/faillock
+%attr(600,root,root) %{_sysconfdir}/security/opasswd
+%ghost %{_sysconfdir}/security/opasswd.old
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -143,6 +150,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-8
+- Harden pwquality, pwhistory, faillock by default
 * Thu Mar 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-7
 - failock: open tally file in O_CLOEXEC mode
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.5.3-6

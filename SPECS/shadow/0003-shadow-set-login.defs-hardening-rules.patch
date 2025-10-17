@@ -1,0 +1,52 @@
+From 55802119d3b82e3dbb06c20607598c7ded610909 Mon Sep 17 00:00:00 2001
+From: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+Date: Mon, 28 Jul 2025 06:33:10 +0000
+Subject: [PATCH] shadow: set login.defs hardening rules
+
+---
+ etc/login.defs | 8 +++++-----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/etc/login.defs b/etc/login.defs
+index fa537dbc..ac9652b0 100644
+--- a/etc/login.defs
++++ b/etc/login.defs
+@@ -9,7 +9,7 @@
+ # Note: When PAM is used, some modules may enforce a minimum delay (e.g.
+ #       pam_unix(8) enforces a 2s delay)
+ #
+-# FAIL_DELAY		3
++FAIL_DELAY		4
+ 
+ #
+ # Enable logging and display of /var/log/faillog login(1) failure info.
+@@ -199,7 +199,7 @@ KILLCHAR	025
+ # 022 is the default value, but 027, or even 077, could be considered
+ # for increased privacy. There is no One True Answer here: each sysadmin
+ # must make up their mind.
+-UMASK		022
++UMASK		077
+ 
+ # HOME_MODE is used by useradd(8) and newusers(8) to set the mode for new
+ # home directories.
+@@ -215,7 +215,7 @@ UMASK		022
+ #	PASS_WARN_AGE	Number of days warning given before a password expires.
+ #
+ PASS_MAX_DAYS    90
+-PASS_MIN_DAYS	0
++PASS_MIN_DAYS	1
+ # PASS_MIN_LEN	5
+ PASS_WARN_AGE	7
+ 
+@@ -445,7 +445,7 @@ USERGROUPS_ENAB no
+ # This option is overridden with the -M or -m flags on the useradd(8)
+ # command-line.
+ #
+-#CREATE_HOME     yes
++CREATE_HOME     yes
+ 
+ #
+ # Force use shadow, even if shadow passwd & shadow group files are
+-- 
+2.39.4
+

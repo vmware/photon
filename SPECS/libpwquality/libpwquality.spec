@@ -1,16 +1,18 @@
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/libpwquality/libpwquality/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
+Source0: https://github.com/libpwquality/libpwquality/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
 
-Source1: license.txt
-%include %{SOURCE1}
+Source1: default-pwquality.conf
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  cracklib-devel
 BuildRequires:  Linux-PAM-devel
@@ -29,6 +31,7 @@ with good pronounceability.
 %package        devel
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -42,18 +45,22 @@ pwquality Python module that provides Python bindings
 for the libpwquality library.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
     --with-securedir=%{_libdir}/security \
     --with-pythonsitedir=%{python3_sitearch} \
-    --with-python-binary=%{__python3} \
+    --with-python-binary=%{python3} \
     --disable-static
-make %{?_smp_mflags}
+
+%make_build
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
+
+install -vDm 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/security/pwquality.conf
+
 find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
     -name '*__pycache__' -delete
 
@@ -68,8 +75,6 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %config(noreplace) %{_sysconfdir}/security/pwquality.conf
 %{_libdir}/*.so.*
 %{_libdir}/security/pam_pwquality.so
-%exclude %{_libdir}/libpwquality.la
-%exclude %{_libdir}/security/pam_pwquality.la
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
@@ -88,6 +93,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitearch}/pwquality-*.egg/*
 
 %changelog
+* Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-6
+- Harden pwquality by default
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.4-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-4
