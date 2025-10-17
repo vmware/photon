@@ -18,9 +18,9 @@ index 6824482..48bb569 100644
  from functools import lru_cache
 -from hashlib import md5
 +from hashlib import sha512
+ from typing import Dict
  
  from zope.interface import Interface, implementer
- 
 @@ -519,12 +519,12 @@ class Certificate(CertBase):
          """
          return self.original.get_serial_number()

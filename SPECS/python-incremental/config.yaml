@@ -1,6 +1,6 @@
 sources:
-- archive: incremental-21.3.0.tar.gz
-  archive_sha512sum: b8b50151cd2467e552d9268decadbb839b047cf58a450b72e0437ffc5f9af7d78c20a24193c0668cf48dd6264b852d9cee68e59529018e0ca07825e0c185d1e8
+- archive: incremental-24.7.2.tar.gz
+  archive_sha512sum: d738d32392ff3a3fa15b880598a74c8fe61383ab2ca167612ffdad464edda9d08fbfabfdf5c4939731c4d0489a76ba72a483fe3813351610b3618fbcc9539d82
   skip_validation: true
   spdx:
     package:

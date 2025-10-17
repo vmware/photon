@@ -1,7 +1,7 @@
 Summary:        Python NTP library
 Name:           python3-ntplib
 Version:        0.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,7 +12,6 @@ Source0:        ntplib-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -45,6 +44,8 @@ It also provides utility functions to translate NTP fields values to text (mode,
 %{python3_sitelib}/*
 
 %changelog
+* Fri Oct 17 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.0-4
+- Bump up as part of python3-incremental upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.0-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.0-2

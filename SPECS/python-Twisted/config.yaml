@@ -1,6 +1,6 @@
 sources:
-- archive: Twisted-22.10.0.tar.gz
-  archive_sha512sum: 36adac424f6776c7db870d2291713da41054e974dfac0dbc1cbd55f76915a92073bcb25d4593b82e229d154d5297c67e7ba82d808921d206c97c8024bd5431a8
+- archive: Twisted-24.7.0.tar.gz
+  archive_sha512sum: cd5a993c8f1dfdc82597bdc095e07c1016a2a86d1ce5b011b27f9f760db428fcba4579dda5733244979827f9c772c2480d1d419d2d24ae7af8697e2b8e852f62
   skip_validation: true
   spdx:
     package:

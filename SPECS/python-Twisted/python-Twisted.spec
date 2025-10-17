@@ -3,8 +3,8 @@
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
-Version:        22.10.0
-Release:        4%{?dist}
+Version:        24.7.0
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,14 +15,17 @@ Source0: https://pypi.python.org/packages/source/T/Twisted/%{srcname}-%{version}
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: no_packet.patch
-Patch1: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
+Patch0: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
 
 BuildRequires: python3-devel
+BuildRequires: python3-wheel
+BuildRequires: python3-pip
+BuildRequires: python3-hatchling
+BuildRequires: python3-pathspec
+BuildRequires: python3-pluggy
+BuildRequires: python3-hatch-fancy-pypi-readme
 BuildRequires: python3-incremental
-BuildRequires: python3-zope.interface
-BuildRequires: python3-setuptools
-BuildRequires: python3-xml
+BuildRequires: python3-packaging
 
 %if 0%{?with_check}
 BuildRequires: net-tools
@@ -31,13 +34,12 @@ BuildRequires: shadow
 BuildRequires: curl-devel
 BuildRequires: python3-pip
 BuildRequires: python3-constantly
-
 %endif
 
 Requires: python3
 Requires: python3-zope.interface
 Requires: python3-netaddr
-Requires: python3-incremental
+Requires: python3-incremental >= 24.7.0
 Requires: python3-constantly
 Requires: python3-hyperlink
 Requires: python3-attrs
@@ -51,13 +53,13 @@ license. Twisted runs on Python 2 and an ever growing subset also works with Pyt
 many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n twisted-%{version}
 
 %build
-%{py3_build}
+%{pyproject_wheel}
 
 %install
-%{py3_install}
+%{pyproject_install}
 
 for fn in twistd trial tkconch pyhtmlizer twist conch ckeygen cftp; do
   ln -sv ${fn} %{buildroot}%{_bindir}/${fn}3
@@ -88,6 +90,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Mon Oct 13 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.0-1
+- Upgrade to 24.7.0, fixes CVE-2024-41671
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-4
 - Release bump for SRP compliance
 * Mon May 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 22.10.0-3

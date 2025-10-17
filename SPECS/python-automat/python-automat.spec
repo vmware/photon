@@ -3,7 +3,7 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        22.10.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -69,6 +69,8 @@ ln -sv automat-visualize3 %{buildroot}%{_bindir}/automat-visualize
 %{_bindir}/automat-visualize*
 
 %changelog
+* Fri Oct 17 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-4
+- Bump up as part of python3-twisted upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-3
 - Release bump for SRP compliance
 * Tue Jun 04 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-2
