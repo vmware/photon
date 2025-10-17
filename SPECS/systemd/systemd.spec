@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -37,6 +37,7 @@ Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
 Patch6: do-not-allocate-1m-on-stack.patch
 Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
 Patch8: sd-netlink-make-default-timeout-configurable.patch
+Patch9: harden-tmpfs-mount-options.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -51,11 +52,10 @@ Requires:       %{name}-rpm-macros = %{version}-%{release}
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libacl
 Requires:       libcap
-Requires:       libgcrypt
 Requires:       libmicrohttpd
 Requires:       libseccomp
 Requires:       libselinux
-Requires:       lz4
+
 Requires:       pcre
 Requires:       xz
 Requires:       libgpg-error
@@ -121,9 +121,11 @@ resolution.
 %package libs
 Summary:        systemd libraries
 Provides:       nss-myhostname = 0.4
-Requires(post): (coreutils or coreutils-selinux or toybox)
+Requires(post): (coreutils or coreutils-selinux)
 Requires(post): sed
 Requires(post): grep
+Requires: libgcrypt
+Requires: lz4
 
 %description libs
 Libraries for systemd and udev.
@@ -346,11 +348,15 @@ install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/fileattrs/ %{SOURCE12}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE13}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE14}
 
-rm -rf %{buildroot}%{_datadir}/zsh
+rm -r %{buildroot}%{_datadir}/zsh
 
 %find_lang %{name} ../%{name}.lang
 
 %post
+if command -v sysctl &> /dev/null; then
+  sysctl --system > /dev/null
+fi
+
 %{name}-machine-id-setup &>/dev/null || :
 
 systemctl daemon-reexec &>/dev/null || {
@@ -392,16 +398,20 @@ udevadm hwdb --update &>/dev/null || :
 %dir %{_sysconfdir}/modules-load.d
 %dir %{_sysconfdir}/binfmt.d
 %{_sysconfdir}/X11/xinit/xinitrc.d/50-%{name}-user.sh
-%{_sysconfdir}/sysctl.d/50-security-hardening.conf
 %{_sysconfdir}/xdg/%{name}
 %{_sysconfdir}/rc.d/init.d/README
+%config(noreplace) %{_sysconfdir}/sysctl.d/50-security-hardening.conf
+%config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
 %config(noreplace) %{_sysconfdir}/%{name}/system.conf
 %config(noreplace) %{_sysconfdir}/%{name}/user.conf
 %config(noreplace) %{_sysconfdir}/%{name}/logind.conf
 %config(noreplace) %{_sysconfdir}/%{name}/journald.conf
 %config(noreplace) %{_sysconfdir}/%{name}/resolved.conf
+%config(noreplace) %{_sysconfdir}/%{name}/coredump.conf
+%config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/%{name}/networkd.conf
-%{_sysusersdir}/*.conf
+%config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
+%config(noreplace) %{_sysusersdir}/*.conf
 %ifarch x86_64
 %config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
 %endif
@@ -530,11 +540,10 @@ udevadm hwdb --update &>/dev/null || :
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %dir %{_sysconfdir}/kernel
 %dir %{_sysconfdir}/modules-load.d
-%config(noreplace) %{_sysconfdir}/%{name}/coredump.conf
-%config(noreplace) %{_sysconfdir}/%{name}/pstore.conf
-%config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
-%config(noreplace) %{_sysconfdir}/%{name}/timesyncd.conf
-%config(noreplace) %{_sysconfdir}/udev/udev.conf
+%{_sysconfdir}/%{name}/pstore.conf
+%{_sysconfdir}/%{name}/sleep.conf
+%{_sysconfdir}/%{name}/timesyncd.conf
+%{_sysconfdir}/udev/udev.conf
 %{_tmpfilesdir}/%{name}-pstore.conf
 %{_bindir}/kernel-install
 %{_bindir}/%{name}-hwdb
@@ -605,13 +614,13 @@ udevadm hwdb --update &>/dev/null || :
 %{_systemd_util_dir}/%{name}-vconsole-setup
 %{_systemd_util_dir}/%{name}-volatile-root
 %dir %{_libdir}/udev
-%dir %{_libdir}/udev/hwdb.d
-%dir %{_libdir}/udev/rules.d
 %{_libdir}/udev/ata_id
 %{_libdir}/udev/cdrom_id
 %{_libdir}/udev/fido_id
+%dir %{_libdir}/udev/hwdb.d
 %{_libdir}/udev/hwdb.d/*
 %{_libdir}/udev/mtd_probe
+%dir %{_libdir}/udev/rules.d
 %{_libdir}/udev/rules.d/*
 %{_libdir}/udev/scsi_id
 %{_datadir}/bash-completion/completions/kernel-install
@@ -638,8 +647,10 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 %{_bindir}/%{name}-nspawn
 %{_bindir}/machinectl
-%{_systemd_util_dir}/%{name}-machined
-%{_unitdir}/%{name}-machined.service
+# Below two files are packaged with systemd main package
+# And without it etc/systemd/system won't get created by systemd
+#%%{_systemd_util_dir}/%{name}-machined
+#%%{_unitdir}/%{name}-machined.service
 %{_unitdir}/%{name}-nspawn@.service
 %{_unitdir}/dbus-org.freedesktop.machine1.service
 %{_unitdir}/var-lib-machines.mount
@@ -674,6 +685,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-15
+- Update sysctl hardening entries
 * Thu Sep 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-14
 - Backport sd-netlink: make the default timeout configurable
 - Remove dangling symlink creation under /var/log
