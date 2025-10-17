@@ -8,13 +8,12 @@
 
 %define debug_package %{nil}
 %define __strip /bin/true
-%define contrib_ver 0.7.0
-%define isolcpu_ver c15e3e1a3a
+%define k8s_ver 1.34
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.27.16
-Release:        5%{?dist}
+Version:        1.34.1
+Release:        1%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -22,22 +21,21 @@ Distribution:   Photon
 
 Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
 
-Source1: https://github.com/%{name}/contrib/archive/contrib-%{contrib_ver}.tar.gz
-
-Source2:        kubelet.service
 Source3:        10-kubeadm.conf
 Source4:        %{name}.sysusers
+Source5:        apiserver
+Source7:        controller-manager
+Source8:        kubelet
+Source9:        proxy
+Source10:       scheduler
+Source12:       kubelet.service
+Source13:       kube-apiserver.service
+Source14:       kube-proxy.service
+Source15:       kube-scheduler.service
+Source16:       kube-controller-manager.service
 
-# Sources for isolcpu device plugin
-# Source tarball of https://opendev.org/starlingx/integ/src/commit/c15e3e1a3af2c797caa1bc408315beb0101ae623/kubernetes/plugins/isolcpus-device-plugin/files
-Source5:        isolcpu-plugin-%{isolcpu_ver}.tar.bz2
-
-Source6: license.txt
-%include %{SOURCE6}
-
-Patch0:         0001-kubelet-cpumanager-introduce-concept-of-isolated-CPU.patch
-Patch1:         0001-Use-vmware.com-isolcpu-property-name.patch
-Patch2:         CVE-2024-10220.patch
+Source17: license.txt
+%include %{SOURCE17}
 
 BuildRequires:  go
 BuildRequires:  rsync
@@ -46,16 +44,14 @@ BuildRequires:  systemd-devel
 
 Requires:       cni
 Requires:       ebtables
-Requires:       etcd >= 3.5.7
+Requires:       etcd >= 3.6.4
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
-Requires(pre):  systemd-rpm-macros
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       socat
 Requires:       util-linux
-Requires:       cri-tools
 Requires:       conntrack-tools
+Requires:       kubernetes-kubelet = %{version}-%{release}
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -63,9 +59,20 @@ Kubernetes is an open source implementation of container cluster management.
 %package        kubeadm
 Summary:        kubeadm deployment tool
 Group:          Development/Tools
-Requires:       %{name} = %{version}-%{release}
+Requires:       kubernetes-kubelet = %{version}-%{release}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a %{name} cluster.
+
+%package        kubelet
+Summary:        Primary node agent
+Group:          Development/Tools
+Requires(pre):  systemd-rpm-macros
+Requires(pre):  shadow
+Requires:       cri-tools >= %{k8s_ver}
+Conflicts:      kubernetes < 1.34.1
+
+%description    kubelet
+The kubelet is the primary "node agent" that runs on each node.
 
 %package        pause
 Summary:        pause binary
@@ -73,30 +80,12 @@ Group:          Development/Tools
 %description    pause
 A pod setup process that holds a pod's namespace.
 
-%package        isolcpu-plugin
-Summary:        isolcpu plugin service
-Group:          Development/Tools
-# Relaxed dependency on kubelet
-Requires:       %{name} >= 1.27.3
-%description    isolcpu-plugin
-A kubelet device plugin for isolcpu resource.
-
 %prep
-%autosetup -b0 -b5 -N
-%patch -p1 0
-%patch -p1 2
-cd ../isolcpu-plugin-%{isolcpu_ver}
-%patch -p1 1
-
-cd ..
-tar xf %{SOURCE1} --no-same-owner
-sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-%{contrib_ver}/init/systemd/environ/apiserver
-sed -i '/KUBE_ALLOW_PRIV/d' contrib-%{contrib_ver}/init/systemd/kubelet.service
+%autosetup -p1
 
 # Remove files to handle unintended inclusions
 # README.md & LICENSE.docs of vendor projects mentions license of content not code.
-find contrib-%{contrib_ver} -name "LICENSE.docs" -print -delete
-find %{name}-%{version}/vendor/github.com/opencontainers \( -name "LICENSE.docs" -o -name "README.md" \) -print -delete
+find vendor/github.com/opencontainers \( -name "LICENSE.docs" -o -name "README.md" \) -print -delete
 
 %build
 export FORCE_HOST_GO=y
@@ -115,11 +104,6 @@ gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
 strip bin/pause-%{archname}
 popd
 
-# Build static isolcpu_plugin binary
-pushd ../isolcpu-plugin-%{isolcpu_ver}
-CGO_ENABLED=0 go build -mod=vendor
-popd
-
 %install
 install -vdm644 %{buildroot}%{_sysconfdir}/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
@@ -135,7 +119,7 @@ install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
 # kubeadm install
 install -vdm644 %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
-install -p -m 755 -t %{buildroot}%{_sysconfdir}/systemd/system %{SOURCE2}
+install -p -m 755 -t %{buildroot}%{_sysconfdir}/systemd/system %{SOURCE12}
 install -p -m 644 -t %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d %{SOURCE3}
 sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d/10-kubeadm.conf
 
@@ -143,18 +127,20 @@ cd ..
 # install config files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
 install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/manifests
-install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-%{contrib_ver}/init/systemd/environ/*
-cat << EOF >> %{buildroot}%{_sysconfdir}/%{name}/kubeconfig
-apiVersion: v1
-clusters:
-- cluster:
-    server: http://127.0.0.1:8080
-EOF
-sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="--kubeconfig=%{_sysconfdir}/%{name}/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
+
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE5}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE7}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE8}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE9}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE10}
 
 # install service files
 install -d -m 0755 %{buildroot}%{_unitdir}
-install -m 0644 -t %{buildroot}%{_unitdir} contrib-%{contrib_ver}/init/systemd/*.service
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE12}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE13}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE14}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE15}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE16}
 
 # install the place the kubelet defaults to put volumes
 install -dm755 %{buildroot}%{_sharedstatedir}/kubelet
@@ -167,11 +153,6 @@ cat << EOF >> %{buildroot}%{_tmpfilesdir}/%{name}.conf
 d %{_var}/run/%{name} 0755 kube kube -
 EOF
 
-pushd isolcpu-plugin-%{isolcpu_ver}
-install -p -m 755 -t %{buildroot}%{_bindir} isolcpu_plugin
-install -m 0644 -t %{buildroot}%{_unitdir} isolcpu_plugin.service
-popd
-
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
@@ -180,13 +161,13 @@ make %{?_smp_mflags} check
 %clean
 rm -rf %{buildroot}/*
 
-%pre
+%pre kubelet
 if [ $1 -eq 1 ]; then
     # Initial installation.
     %sysusers_create_compat %{SOURCE4}
 fi
 
-%post
+%post kubelet
 homeDir="%{_sharedstatedir}/kubelet"
 chown -R kube:kube $homeDir
 chown -R kube:kube %{_var}/run/%{name}
@@ -207,19 +188,9 @@ systemctl daemon-reload
 systemctl stop kubelet
 systemctl enable kubelet
 
-%post isolcpu-plugin
-touch /etc/kubernetes/respect_isolcpus
-systemctl daemon-reload
-systemctl enable isolcpu_plugin
-
 %preun kubeadm
 if [ $1 -eq 0 ]; then
     systemctl stop kubelet
-fi
-
-%preun isolcpu-plugin
-if [ $1 -eq 0 ]; then
-    systemctl stop isolcpu_plugin
 fi
 
 %postun
@@ -233,38 +204,34 @@ if [ $1 -eq 0 ]; then
     systemctl daemon-reload
 fi
 
-%postun isolcpu-plugin
-if [ $1 -eq 0 ]; then
-    rm -f /etc/kubernetes/respect_isolcpus
-    systemctl daemon-reload
-fi
-
 %files
 %defattr(-,root,root)
 %{_bindir}/cloud-controller-manager
 %{_bindir}/kube-apiserver
 %{_bindir}/kube-controller-manager
-%{_bindir}/kubelet
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
 %{_unitdir}/kube-apiserver.service
-%{_unitdir}/kubelet.service
 %{_unitdir}/kube-scheduler.service
 %{_unitdir}/kube-controller-manager.service
 %{_unitdir}/kube-proxy.service
 %{_tmpfilesdir}/%{name}.conf
 %dir %{_sysconfdir}/%{name}
-%dir %{_sharedstatedir}/kubelet
-%dir %{_var}/run/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/config
 %config(noreplace) %{_sysconfdir}/%{name}/apiserver
 %config(noreplace) %{_sysconfdir}/%{name}/controller-manager
 %config(noreplace) %{_sysconfdir}/%{name}/proxy
-%config(noreplace) %{_sysconfdir}/%{name}/kubelet
-%config(noreplace) %{_sysconfdir}/%{name}/kubeconfig
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 %{_sysusersdir}/%{name}.conf
+
+%files kubelet
+%defattr(-,root,root)
+%{_bindir}/kubelet
+%{_unitdir}/kubelet.service
+%dir %{_var}/run/%{name}
+%dir %{_sharedstatedir}/kubelet
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/kubelet
 
 %files kubeadm
 %defattr(-,root,root)
@@ -276,12 +243,9 @@ fi
 %defattr(-,root,root)
 %{_bindir}/pause-%{archname}
 
-%files isolcpu-plugin
-%defattr(-,root,root)
-%{_bindir}/isolcpu_plugin
-%{_unitdir}/isolcpu_plugin.service
-
 %changelog
+* Tue Oct 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.34.1-1
+- Update to version 1.34.1
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.16-5
 - Change kube user's home dir
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-4

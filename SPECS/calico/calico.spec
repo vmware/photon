@@ -1,16 +1,14 @@
 %define network_required 1
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.26.4
-Release:        9%{?dist}
+Version:        3.31.0
+Release:        1%{?dist}
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch1:         0001-CVE-2024-33522.patch
-Patch2:         0002-CVE-2024-33522.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -140,6 +138,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Wed Oct 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.31.0-1
+- Update calico to 3.31.0
 * Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.26.4-9
 - Bump version as a part of go upgrade
 * Mon Feb 24 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.26.4-8

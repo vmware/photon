@@ -1,8 +1,8 @@
 %define network_required 1
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.5.12
-Release:        10%{?dist}
+Version:        3.6.5
+Release:        1%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -29,8 +29,7 @@ A highly-available key value store for shared configuration and service discover
 %autosetup -p1
 
 %build
-go mod vendor
-./build
+make %{?_smp_mflags} build
 
 %install
 install -vdm755 %{buildroot}%{_bindir}
@@ -87,6 +86,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Fri Oct 10 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.6.5-1
+- Upgrade to 3.6.5
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-10
 - Bump version as a part of go upgrade
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-9

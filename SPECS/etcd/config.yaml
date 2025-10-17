@@ -1,7 +1,15 @@
 sources:
-- archive: etcd-3.5.12.tar.gz
-  archive_sha512sum: 6fc8bd64ad63cff71c7645253273418fb3fa262c2da1742dc345576caa733af7cd75acad2f57610c5883e6bf16cffd36bc5a0c89cbbb0793c00c2a4db1c6d14b
-  skip_validation: true
+- archive: etcd-3.6.5.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 23cd10e6e33dac8384683106857a8db62a5ad4c2a4a649d2d45f5661beb0706d6988962bb133e2df0a31f01ec282dff5b621d7c1af03cd7b86f96920b1ee2510
+  skip_validation: false
+  version: 3.6.5
+  name: etcd-3.6.5
+  url: https://github.com/etcd-io/etcd/archive/refs/tags/v3.6.5.tar.gz
+  repo_url: https://github.com/etcd-io/etcd
+  commit_id: a0614505aff9b8ff469e9c59c2d979a5936d13f4
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'A highly-available key value store for shared configuration

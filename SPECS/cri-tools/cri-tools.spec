@@ -2,7 +2,7 @@
 
 Summary:        CRI tools
 Name:           cri-tools
-Version:        1.33.0
+Version:        1.34.0
 Release:        1%{?dist}
 URL:            https://github.com/kubernetes-incubator/cri-tools
 Group:          Development/Tools
@@ -49,6 +49,8 @@ make test-e2e %{?_smp_mflags}
 %exclude %{_bindir}/critest
 
 %changelog
+* Fri Oct 10 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.34.0-1
+- Upgrade to v1.34.0
 * Thu Oct 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.33.0-1
 - Upgrade to v1.33.0
 * Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.0-17

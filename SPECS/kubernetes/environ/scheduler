@@ -1,0 +1,8 @@
+###
+# kubernetes scheduler config
+
+# kube-scheduler kubeconfig path
+KUBE_SCHEDULER_KUBECONFIG=""
+
+# Addional args
+KUBE_SCHEDULER_ARGS="--v=2"

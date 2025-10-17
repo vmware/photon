@@ -1,8 +1,8 @@
 %define network_required 1
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
-Version:        0.6.12
-Release:        15%{?dist}
+Version:        0.13.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/aquasecurity/%{name}
@@ -43,6 +43,8 @@ make tests %{?_smp_mflags}
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Oct 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.13.0-1
+- Update to 0.13.0
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.6.12-15
 - Bump version as a part of go upgrade
 * Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.6.12-14

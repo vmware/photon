@@ -1,0 +1,14 @@
+###
+# kubernetes proxy config
+
+# Kube proxy kubeconfig
+KUBE_PROXY_KUBECONFIG=""
+
+# Kube proxy mode
+KUBE_PROXY_MODE=""
+
+# Cluster CIDR
+KUBE_CLUSTER_CIDR=""
+
+#Additional args
+KUBE_PROXY_ARGS=""

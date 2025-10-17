@@ -1,0 +1,16 @@
+[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/proxy
+ExecStart=/usr/bin/kube-proxy \
+          $KUBE_PROXY_KUBECONFIG \
+          $KUBE_PROXY_MODE \
+          $KUBE_CLUSTER_CIDR \
+          $KUBE_PROXY_ARGS
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
