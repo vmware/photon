@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
 Version:        2.4.11
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -18,6 +18,7 @@ BuildRequires:  automake
 BuildRequires:  dbus-devel
 BuildRequires:  pkg-config
 BuildRequires:  Linux-PAM-devel
+BuildRequires:  shadow
 BuildRequires:  krb5-devel
 BuildRequires:  libusb-devel
 BuildRequires:  openssl-devel
@@ -27,6 +28,8 @@ Requires:       dbus
 Requires:       gnutls
 Requires:       krb5
 Requires:       zlib
+Requires:       Linux-PAM
+Requires:       shadow
 
 %description
 The Common Unix Printing System (CUPS) is a print spooler and associated utilities.
@@ -68,6 +71,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/cups/cups-files.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/cups/cupsd.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/cups/snmp.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/pam.d/cups
 %config %{_sysconfdir}/cups/cupsd.conf.default
 %config %{_sysconfdir}/cups/cups-files.conf.default
 %config %{_sysconfdir}/cups/snmp.conf.default
@@ -94,6 +98,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Sun Oct 19 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.11-4
+- Fix build requires and packaging for a future package-builder change
+- When shadow is present in build env, pam.d/cups is also packaged
 * Thu Sep 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 2.4.11-3
 - fix CVE-2025-58060
 * Tue Jul 01 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.11-2

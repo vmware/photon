@@ -1,7 +1,7 @@
 Summary:      Library to control and monitor control groups
 Name:         libcgroup
 Version:      3.0.0
-Release:      2%{?dist}
+Release:      3%{?dist}
 Group:        Development/Libraries
 Distribution: Photon
 Vendor:       VMware, Inc.
@@ -20,7 +20,7 @@ Patch0:       photon-config.patch
 Patch1: libcgroup-tests-unbundle-gtest.patch
 %endif
 
-BuildRequires: byacc
+BuildRequires: bison
 BuildRequires: flex
 BuildRequires: Linux-PAM-devel
 BuildRequires: systemd-devel
@@ -145,6 +145,9 @@ make %{?_smp_mflags} -C tests/gunit check
 %{_libdir}/*.a
 
 %changelog
+* Sun Oct 19 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.0-3
+- Fix build requires for a future package-builder change
+- Use bison instead of byacc
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.0-2
 - Release bump for SRP compliance
 * Tue Sep 13 2022 Roye Eshed <eshedr@vmware.com> 3.0.0-1
