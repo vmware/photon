@@ -1,31 +1,35 @@
 Name:          nvme-cli
 Summary:       NVM-Express user space tooling for Linux
 Version:       2.3
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/linux-nvme/nvme-cli
-Source0:       %{name}-%{version}.tar.gz
+
+Source0: https://github.com/linux-nvme/nvme-cli/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-change-install-location-to-usr.patch
+
 BuildRequires: meson
 BuildRequires: cmake
 BuildRequires: libnvme-devel
 BuildRequires: json-c-devel
 BuildRequires: pkg-config
+BuildRequires: systemd-rpm-macros
+
 Requires: zlib
 Requires: json-c
 Requires: libnvme
-
-Patch0: 0001-change-install-location-to-usr.patch
 
 %description
 NVM-Express user space tooling for Linux
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %meson
@@ -33,7 +37,7 @@ NVM-Express user space tooling for Linux
 
 %install
 %meson_install
-rm -rf %{buildroot}%{_datadir}/zsh/*
+rm -r %{buildroot}%{_datadir}/zsh
 
 %if 0%{?with_check}
 %check
@@ -51,6 +55,8 @@ rm -rf %{buildroot}%{_datadir}/zsh/*
 %{_datadir}/bash-completion/completions/nvme
 
 %changelog
+*  Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3-5
+-  Add systemd-rpm-macros to build requires
 *  Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.3-4
 -  Bump version as a part of meson upgrade
 *  Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3-3

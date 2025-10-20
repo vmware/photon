@@ -1,7 +1,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -19,11 +19,19 @@ BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
 
 Requires:       expat
-Requires:       systemd
+Requires:       systemd-libs
 Requires:       xz
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 The dbus package contains dbus.
+
+%package        libs
+Summary:        Libraries for accessing D-BUS
+Conflicts:      %{name} < 1.15.4-8
+
+%description    libs
+This package contains lowlevel libraries for accessing D-BUS.
 
 %package        devel
 Summary:        Header and development files
@@ -46,23 +54,20 @@ simple interprocess messaging system (systemd --user integration)
 
 %build
 %configure \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --docdir=%{_docdir}/%{name}-%{version} \
     --enable-libaudit=no \
     --enable-selinux=no \
-    --with-console-auth-dir=/run/console \
-    --enable-user-session
+    --with-console-auth-dir=%{_rundir}/console \
+    --enable-user-session \
+    --disable-static
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm755 %{buildroot}%{_lib}
 
-rm -f %{buildroot}%{_libdir}/*.la
-
-mkdir -p %{buildroot}%{_userunitdir}
-
-rm -f %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket
+rm %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket \
+   %{buildroot}%{_libdir}/*.la
 
 %if 0%{?with_check}
 %check
@@ -73,12 +78,15 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_sysconfdir}/%{name}-1
 %{_bindir}/*
-%{_libdir}/libdbus-1.so.*
 %{_tmpfilesdir}/%{name}.conf
 %{_unitdir}/*
 %exclude %{_sysusersdir}
 %{_libexecdir}/*
 %{_datadir}/%{name}-1
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/libdbus-1.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -89,7 +97,6 @@ make %{?_smp_mflags} check
 %dir %{_libdir}/%{name}-1.0
 %{_libdir}/%{name}-1.0/include/
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.a
 %{_libdir}/*.so
 
 %files user-session
@@ -98,6 +105,8 @@ make %{?_smp_mflags} check
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8
+- Introduce libs subpackage
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.15.4-7
 - Version bump for expat upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.15.4-6

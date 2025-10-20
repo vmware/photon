@@ -1,7 +1,7 @@
 Summary:       Team driver
 Name:          libteam
 Version:       1.31
-Release:       5%{?dist}
+Release:       6%{?dist}
 URL:           http://www.libteam.org
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
@@ -15,6 +15,10 @@ Source1: license.txt
 BuildRequires: libnl-devel
 BuildRequires: libdaemon-devel
 BuildRequires: jansson-devel
+BuildRequires: systemd-rpm-macros
+
+Requires: libnl
+Requires: libdaemon
 
 %description
 The libteam package contains the user-space components of the Team driver.
@@ -47,57 +51,83 @@ developing applications that use teamd and libteamdctl
 %autosetup -p1
 
 %build
-%configure
+%configure \
+  --disable-static
+
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
-install -D -m 0644 teamd/redhat/systemd/teamd@.service  %{buildroot}%{_unitdir}/teamd@.service
-install -p -m 755 utils/bond2team %{buildroot}%{_bindir}/bond2team
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/network-scripts
-install -p -m 755 teamd/redhat/initscripts_systemd/network-scripts/ifup-Team %{buildroot}%{_sysconfdir}/sysconfig/network-scripts
-install -p -m 755 teamd/redhat/initscripts_systemd/network-scripts/ifdown-Team %{buildroot}%{_sysconfdir}/sysconfig/network-scripts
-install -p -m 755 teamd/redhat/initscripts_systemd/network-scripts/ifup-TeamPort %{buildroot}%{_sysconfdir}/sysconfig/network-scripts
-install -p -m 755 teamd/redhat/initscripts_systemd/network-scripts/ifdown-TeamPort %{buildroot}%{_sysconfdir}/sysconfig/network-scripts
-mkdir -p %{buildroot}%{_datadir}/teamd/example_configs/
-install -p -m 644 teamd/example_configs/* %{buildroot}%{_datadir}/teamd/example_configs/
 
-%preun
-%systemd_preun teamd@.service
+install -D -m 0644 teamd/redhat/systemd/teamd@.service \
+    %{buildroot}%{_unitdir}/teamd@.service
+
+install -D -m 0755 utils/bond2team \
+    %{buildroot}%{_bindir}/bond2team
+
+pushd teamd/redhat/initscripts_systemd/network-scripts
+install -D -m 0755 \
+    ifup-Team \
+    ifdown-Team \
+    ifup-TeamPort \
+    ifdown-TeamPort \
+    -t %{buildroot}%{_sysconfdir}/sysconfig/network-scripts/
+popd
+
+install -D -m 0644 teamd/example_configs/* \
+    -t %{buildroot}%{_datadir}/teamd/example_configs/
+
+install -Dm 644 teamd/dbus/teamd.conf \
+    %{buildroot}%{_sysconfdir}/dbus-1/system.d/teamd.conf
+
+%post
+/sbin/ldconfig
 
 %postun
-%systemd_postun teamd@.service
+/sbin/ldconfig
 
-%ldconfig_scriptlets
+%preun -n teamd
+/sbin/ldconfig
+%systemd_preun teamd@.service
+
+%post -n teamd
+/sbin/ldconfig
+
+%postun -n teamd
+/sbin/ldconfig
+%systemd_postun teamd@.service
 
 %files
 %defattr(-,root,root)
-%{_libdir}/libteam.so.*
+%{_libdir}/%{name}.so.*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/team.h
-%{_libdir}/libteam.a
-%{_libdir}/libteam.so
-%{_libdir}/pkgconfig/libteam.pc
+%{_libdir}/%{name}.so
+%{_libdir}/pkgconfig/%{name}.pc
 
 %files -n teamd
+%defattr(-,root,root)
 %{_libdir}/libteamdctl.so.*
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_sysconfdir}/*
-%{_unitdir}/teamd@.service
+%config(noreplace) %attr(644,root,root) %{_unitdir}/teamd@.service
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/dbus-1/system.d/teamd.conf
 
 %files -n teamd-devel
+%defattr(-,root,root)
 %{_includedir}/teamdctl.h
-%{_libdir}/libteamdctl.a
 %{_libdir}/libteamdctl.so
 %{_libdir}/pkgconfig/libteamdctl.pc
 %{_datadir}/teamd/*
 
 %changelog
+* Sat Nov 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.31-6
+- Add systemd-rpm-macros to build requires
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.31-5
 - Bump up to build with latest jansson
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.31-4
