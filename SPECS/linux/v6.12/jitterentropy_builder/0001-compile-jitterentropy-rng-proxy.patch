@@ -1,0 +1,28 @@
+From 4247b0e778ad00ad51b625740810c0f635c61852 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 17 Oct 2025 16:40:33 +0000
+Subject: [PATCH 1/2] compile jitterentropy rng proxy
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ crypto/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/crypto/Makefile b/crypto/Makefile
+index 3b7cd40e1..3acd6666b 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -6,8 +6,9 @@
+ obj-$(CONFIG_CRYPTO) += crypto.o
+ crypto-y := api.o cipher.o compress.o
+ 
+-obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o photon-jitterentropy-v6.12/
++obj-$(CONFIG_CRYPTO_JITTERENTROPY) += jitterentropy_rng.o jitterentropy_rng_proxy.o photon-jitterentropy-v6.12/
+ jitterentropy_rng-y := photon-jitterentropy-v6.12/jitterentropy_canister_wrapper_asm.o photon-jitterentropy-v6.12/jitterentropy_canister_wrapper.o jitterentropy-kcapi.o
++jitterentropy_rng_proxy-y := jitterentropy_rng_proxy.o
+ 
+ obj-$(CONFIG_CRYPTO_ENGINE) += crypto_engine.o
+ obj-$(CONFIG_CRYPTO_FIPS) += fips.o
+-- 
+2.40.4
+
