@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.57
-Release:        2%{?acvp_build:.acvp}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -113,6 +113,8 @@ Source10102: fips_canister_wrapper.h
 Source10104: fips_canister_wrapper_common.h
 Source10105: fips_canister_wrapper_internal.h
 Source10106: fips_canister_wrapper_internal.c
+
+Source10300: jitterentropy_rng_proxy.c
 %endif
 
 %if 0%{?canister_build}
@@ -303,6 +305,10 @@ Patch10201: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
 Patch10202: 0003-Introduce-FIPS-canister-plugins.patch
 Patch10203: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
 Patch10204: 0001-Canister-GCC-Plugins-Implement-type-check.patch
+
+# Compile and inject jitterentropy rng proxy
+Patch10300: 0001-compile-jitterentropy-rng-proxy.patch
+Patch10301: 0001-change-jitterentropy_rng-driver-name.patch
 %endif
 
 # Canister build patches
@@ -546,11 +552,14 @@ install %{SOURCE10102} crypto/
 install %{SOURCE10104} crypto/
 install %{SOURCE10105} crypto/
 install %{SOURCE10106} crypto/
+install %{SOURCE10300} crypto/
 
 %autopatch -p1 -m10001 -M10003
 %autopatch -p1 -m10101 -M10116
 # FIPS canister plugins
 %autopatch -p1 -m10200 -M10204
+# Jitterentropy proxy
+%autopatch -p1 -m10300 -M10301
 %endif
 
 # Clean the build tree. It must be done before copying the canister.
@@ -867,6 +876,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Nov 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.57-3
+- Add jitterentropy_rng_proxy
 * Thu Nov 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-2
 - Make lib/digsig to use lib SHA1 instead of crypto shash API
 * Tue Nov 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.57-1
