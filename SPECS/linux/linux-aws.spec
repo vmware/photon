@@ -19,7 +19,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.245
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -377,6 +377,15 @@ Patch243: 0001-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
 # Fix CVE-2024-26792
 Patch244: 0001-btrfs-fix-double-free-of-anonymous-device-after-snap.patch
 
+# Fix CVE-2024-57876
+Patch245: 0001-drm-dp_mst-Fix-resetting-msg-rx-state-after-topology.patch
+
+# Fix CVE-2024-56551
+Patch246: 0001-drm-amdgpu-fix-usage-slab-after-free.patch
+
+# Fix CVE-2024-53168
+Patch247: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
 #Amazon AWS
 Patch301: 0002-bump-the-default-TTL-to-255.patch
 Patch302: 0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
@@ -730,6 +739,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 20 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.245-2
+- Fixes CVE-2024-57876, CVE-2024-56551 and CVE-2024-53168
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-1
 - Update to version 5.10.245
 * Wed Oct 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.244-5

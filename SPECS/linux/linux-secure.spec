@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.245
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -388,6 +388,15 @@ Patch243: 0001-btrfs-fix-double-free-of-anonymous-device-after-snap.patch
 # Fix CVE-2024-38556
 Patch244: 0001-net-mlx5-Add-a-timeout-to-acquire-the-command-queue-.patch
 
+# Fix CVE-2024-57876
+Patch245: 0001-drm-dp_mst-Fix-resetting-msg-rx-state-after-topology.patch
+
+# Fix CVE-2024-56551
+Patch246: 0001-drm-amdgpu-fix-usage-slab-after-free.patch
+
+# Fix CVE-2024-53168
+Patch247: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -671,6 +680,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 20 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.245-2
+- Fixes CVE-2024-57876, CVE-2024-56551 and CVE-2024-53168
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-1
 - Update to version 5.10.245
 * Wed Oct 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.244-5

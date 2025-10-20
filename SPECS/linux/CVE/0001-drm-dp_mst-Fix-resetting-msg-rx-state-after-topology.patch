@@ -1,0 +1,114 @@
+From 8113a66c07fe7628f0457a4ac8c9f572a060c1fb Mon Sep 17 00:00:00 2001
+From: Imre Deak <imre.deak@intel.com>
+Date: Fri, 3 Oct 2025 18:20:27 +0530
+Subject: [PATCH] drm/dp_mst: Fix resetting msg rx state after topology removal
+
+commit a6fa67d26de385c3c7a23c1e109a0e23bfda4ec7 upstream.
+
+If the MST topology is removed during the reception of an MST down reply
+or MST up request sideband message, the
+drm_dp_mst_topology_mgr::up_req_recv/down_rep_recv states could be reset
+from one thread via drm_dp_mst_topology_mgr_set_mst(false), racing with
+the reading/parsing of the message from another thread via
+drm_dp_mst_handle_down_rep() or drm_dp_mst_handle_up_req(). The race is
+possible since the reader/parser doesn't hold any lock while accessing
+the reception state. This in turn can lead to a memory corruption in the
+reader/parser as described by commit bd2fccac61b4 ("drm/dp_mst: Fix MST
+sideband message body length check").
+
+Fix the above by resetting the message reception state if needed before
+reading/parsing a message. Another solution would be to hold the
+drm_dp_mst_topology_mgr::lock for the whole duration of the message
+reception/parsing in drm_dp_mst_handle_down_rep() and
+drm_dp_mst_handle_up_req(), however this would require a bigger change.
+Since the fix is also needed for stable, opting for the simpler solution
+in this patch.
+
+Cc: Lyude Paul <lyude@redhat.com>
+Cc: <stable@vger.kernel.org>
+Fixes: 1d082618bbf3 ("drm/display/dp_mst: Fix down/up message handling after sink disconnect")
+Closes: https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/13056
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Imre Deak <imre.deak@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20241203160223.2926014-2-imre.deak@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ drivers/gpu/drm/drm_dp_mst_topology.c | 21 +++++++++++++++++++--
+ include/drm/drm_dp_mst_helper.h       |  7 +++++++
+ 2 files changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_dp_mst_topology.c b/drivers/gpu/drm/drm_dp_mst_topology.c
+index 702ab6148425..b897bcb71b5a 100644
+--- a/drivers/gpu/drm/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/drm_dp_mst_topology.c
+@@ -3773,8 +3773,7 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
+ 		mgr->vcpi_mask = 0;
+ 		mgr->payload_id_table_cleared = false;
+ 
+-		memset(&mgr->down_rep_recv, 0, sizeof(mgr->down_rep_recv));
+-		memset(&mgr->up_req_recv, 0, sizeof(mgr->up_req_recv));
++		mgr->reset_rx_state = true;
+ 	}
+ 
+ out_unlock:
+@@ -3904,6 +3903,11 @@ int drm_dp_mst_topology_mgr_resume(struct drm_dp_mst_topology_mgr *mgr,
+ }
+ EXPORT_SYMBOL(drm_dp_mst_topology_mgr_resume);
+ 
++static void reset_msg_rx_state(struct drm_dp_sideband_msg_rx *msg)
++{
++	memset(msg, 0, sizeof(*msg));
++}
++
+ static bool
+ drm_dp_get_one_sb_msg(struct drm_dp_mst_topology_mgr *mgr, bool up,
+ 		      struct drm_dp_mst_branch **mstb)
+@@ -4176,6 +4180,17 @@ static int drm_dp_mst_handle_up_req(struct drm_dp_mst_topology_mgr *mgr)
+ 	return 0;
+ }
+ 
++static void update_msg_rx_state(struct drm_dp_mst_topology_mgr *mgr)
++{
++	mutex_lock(&mgr->lock);
++	if (mgr->reset_rx_state) {
++		mgr->reset_rx_state = false;
++		reset_msg_rx_state(&mgr->down_rep_recv);
++		reset_msg_rx_state(&mgr->up_req_recv);
++	}
++	mutex_unlock(&mgr->lock);
++}
++
+ /**
+  * drm_dp_mst_hpd_irq() - MST hotplug IRQ notify
+  * @mgr: manager to notify irq for.
+@@ -4199,6 +4214,8 @@ int drm_dp_mst_hpd_irq(struct drm_dp_mst_topology_mgr *mgr, u8 *esi, bool *handl
+ 		*handled = true;
+ 	}
+ 
++	update_msg_rx_state(mgr);
++
+ 	if (esi[1] & DP_DOWN_REP_MSG_RDY) {
+ 		ret = drm_dp_mst_handle_down_rep(mgr);
+ 		*handled = true;
+diff --git a/include/drm/drm_dp_mst_helper.h b/include/drm/drm_dp_mst_helper.h
+index 9c14d181397c..f7f14b514157 100644
+--- a/include/drm/drm_dp_mst_helper.h
++++ b/include/drm/drm_dp_mst_helper.h
+@@ -642,6 +642,13 @@ struct drm_dp_mst_topology_mgr {
+ 	 */
+ 	bool payload_id_table_cleared : 1;
+ 
++	/**
++	 * @reset_rx_state: The down request's reply and up request message
++	 * receiver state must be reset, after the topology manager got
++	 * removed. Protected by @lock.
++	 */
++	bool reset_rx_state : 1;
++
+ 	/**
+ 	 * @mst_primary: Pointer to the primary/first branch device.
+ 	 */
+-- 
+2.43.0
+

@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.245
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -428,6 +428,15 @@ Patch242: 0001-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
 # Fix CVE-2024-26792
 Patch243: 0001-btrfs-fix-double-free-of-anonymous-device-after-snap.patch
 
+# Fix CVE-2024-57876
+Patch244: 0001-drm-dp_mst-Fix-resetting-msg-rx-state-after-topology.patch
+
+# Fix CVE-2024-56551
+Patch245: 0001-drm-amdgpu-fix-usage-slab-after-free.patch
+
+# Fix CVE-2024-53168
+Patch246: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -816,6 +825,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 20 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.245-2
+- Fixes CVE-2024-57876, CVE-2024-56551 and CVE-2024-53168
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-1
 - Update to version 5.10.245
 * Wed Oct 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.244-5

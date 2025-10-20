@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.245
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -449,6 +449,15 @@ Patch247: 0001-net-mlx5-Add-a-timeout-to-acquire-the-command-queue-.patch
 
 # Fix CVE-2024-26792
 Patch248: 0001-btrfs-fix-double-free-of-anonymous-device-after-snap.patch
+
+# Fix CVE-2024-57876
+Patch249: 0001-drm-dp_mst-Fix-resetting-msg-rx-state-after-topology.patch
+
+# Fix CVE-2024-56551
+Patch250: 0001-drm-amdgpu-fix-usage-slab-after-free.patch
+
+# Fix CVE-2024-53168
+Patch251: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1135,6 +1144,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Oct 20 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.245-2
+- Fixes CVE-2024-57876, CVE-2024-56551 and CVE-2024-53168
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-1
 - Update to version 5.10.245
 * Wed Oct 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.244-5
