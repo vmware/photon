@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
-Version:          3.9.3
-Release:          2%{?dist}
+Version:          3.9.4
+Release:          1%{?dist}
 URL:              http://zookeeper.apache.org/
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -90,6 +90,8 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_prefix}/*
 
 %changelog
+* Tue Oct 21 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.4-1
+- Update to 3.9.4
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.3-2
 - Update Requires to jre >= 11.0
 * Mon May 26 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.3-1
