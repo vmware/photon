@@ -24,6 +24,7 @@
             "publishrpm-url": "https://packages.vmware.com/photon/photon_publish_rpms",
             "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms"
     },
+    "photon-branch": "4.0",
     "photon-path" : "",
     "stage-path" : "" ,
     "spec-path" : ""
