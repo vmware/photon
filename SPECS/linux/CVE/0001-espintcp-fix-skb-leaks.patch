@@ -1,0 +1,77 @@
+From b80ea4514d47eee9a79610f4e6a8bf53f5e543f7 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Wed, 15 Oct 2025 06:32:07 +0000
+Subject: [PATCH] espintcp: fix skb leaks
+
+From: Sabrina Dubroca <sd@queasysnail.net>
+
+[ Upstream commit 63c1f19a3be3169e51a5812d22a6d0c879414076 ]
+
+A few error paths are missing a kfree_skb.
+
+Fixes: e27cca96cd68 ("xfrm: add espintcp (RFC 8229)")
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Ajay: Modified to apply on v6.1 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+---
+ net/ipv4/esp4.c     | 4 +++-
+ net/ipv6/esp6.c     | 4 +++-
+ net/xfrm/espintcp.c | 5 +++--
+ 3 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 8f5417ff3..a40f78a64 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -152,8 +152,10 @@ static int esp_output_tcp_finish(struct xfrm_state *x, struct sk_buff *skb)
+ 
+ 	sk = esp_find_tcp_sk(x);
+ 	err = PTR_ERR_OR_ZERO(sk);
+-	if (err)
++	if (err) {
++		kfree_skb(skb);
+ 		goto out;
++	}
+ 
+ 	bh_lock_sock(sk);
+ 	if (sock_owned_by_user(sk))
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 085a83b80..48963fc90 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -169,8 +169,10 @@ static int esp_output_tcp_finish(struct xfrm_state *x, struct sk_buff *skb)
+ 
+ 	sk = esp6_find_tcp_sk(x);
+ 	err = PTR_ERR_OR_ZERO(sk);
+-	if (err)
++	if (err) {
++		kfree_skb(skb);
+ 		goto out;
++	}
+ 
+ 	bh_lock_sock(sk);
+ 	if (sock_owned_by_user(sk))
+diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
+index d6fece1ed..b0dd4ae7b 100644
+--- a/net/xfrm/espintcp.c
++++ b/net/xfrm/espintcp.c
+@@ -168,9 +168,10 @@ int espintcp_queue_out(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct espintcp_ctx *ctx = espintcp_getctx(sk);
+ 
+-	if (skb_queue_len(&ctx->out_queue) >= READ_ONCE(netdev_max_backlog))
++	if (skb_queue_len(&ctx->out_queue) >= READ_ONCE(netdev_max_backlog)) {
++		kfree_skb(skb);
+ 		return -ENOBUFS;
+-
++	}
+ 	__skb_queue_tail(&ctx->out_queue, skb);
+ 
+ 	return 0;
+-- 
+2.40.4
+

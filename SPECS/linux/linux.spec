@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.157
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -341,6 +341,24 @@ Patch172: 0001-drm-amd-display-Check-null-pointers-before-using-the.patch
 # Fix CVE-2024-49988
 Patch173: 0001-ksmbd-add-refcnt-to-ksmbd_conn-struct.patch
 Patch174: 0002-ksmbd-fix-use-after-free-in-SMB-request-handling.patch
+
+# Fix CVE-2025-38073
+Patch175: 0001-block-fix-race-between-set_blocksize-and-read-paths.patch
+
+# Fix CVE-2025-38057
+Patch176: 0001-espintcp-fix-skb-leaks.patch
+
+# Fix CVE-2025-38039
+Patch177: 0001-net-mlx5e-Avoid-WARN_ON-when-configuring-MQPRIO-with.patch
+
+# Fix CVE-2025-38022
+Patch178: 0001-RDMA-core-Fix-KASAN-slab-use-after-free-Read-in-ib_r.patch
+
+# Fix CVE-2025-38064
+Patch179: 0001-virtio-break-and-reset-virtio-devices-on-device_shut.patch
+
+# Fix CVE-2025-38045
+Patch180: 0001-wifi-iwlwifi-fix-debug-actions-order.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -677,7 +695,7 @@ The kernel fips-canister
 %autopatch -p1 -m64 -M64
 
 # CVE
-%autopatch -p1 -m100 -M174
+%autopatch -p1 -m100 -M199
 
 %ifarch aarch64
 # aarch64 patches
@@ -1101,6 +1119,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-4
+- Fix CVE-2025-38057, CVE-2025-38073, CVE-2025-38039,
+- CVE-2025-38045, CVE-2025-38064, CVE-2025-38022
 * Thu Oct 30 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.157-3
 - Fixes CVE-2024-49968, CVE-2024-49922 and CVE-2024-49988.
 * Wed Oct 22 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.157-2
