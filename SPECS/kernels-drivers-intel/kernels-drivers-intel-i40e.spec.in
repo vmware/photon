@@ -1,0 +1,135 @@
+%global build_for %{BUILD_FOR}
+%global security_hardening  none
+%define src_ver             %{PKG_VERSION}
+%define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define uname_r             %{kernel_ver}%{KERNEL_FLAVOUR}
+%define kern_pkg_name       linux%{KERNEL_FLAVOUR}
+%define _modulesdir         /lib/modules/%{uname_r}
+%define conflicts_ver       6.1.70-2%{?dist}
+
+Summary:        Intel i40e driver v%{PKG_VERSION}
+Name:           linux%{KERNEL_FLAVOUR}-drivers-intel-i40e
+Version:        %{PKG_VERSION}
+URL:            https://sourceforge.net/projects/e1000
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{src_ver}/i40e-%{src_ver}.tar.gz
+
+%if "%{src_ver}" == "2.25.7"
+Release:        6%{?kernelsubrelease}%{?dist}
+
+Patch0:         i40e-v2.25.7-Add-support-for-gettimex64-interface.patch
+%endif
+
+%if "%{src_ver}" == "2.23.17"
+Release:        8%{?kernelsubrelease}%{?dist}
+
+Patch0:         i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
+Patch1:         i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+%endif
+
+%if "%{src_ver}" == "2.22.18"
+Release:        8%{?kernelsubrelease}%{?dist}
+
+Patch0:         i40e-v2.22.18-linux-rt-i40e-Fix-build-errors-on-kernel-6.1.y.patch
+Patch1:         i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
+Patch2:         i40e-v2.22.18-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
+%endif
+
+Source1: spec_install_post.inc
+
+Source2: license_i40e.txt
+%include %{SOURCE2}
+
+BuildArch:      x86_64
+
+BuildRequires:  which
+BuildRequires:  kmod-devel
+BuildRequires:  util-linux
+BuildRequires:  %{kern_pkg_name}-devel = %{kernel_ver}
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  python3-requests
+%endif
+
+Requires:       kmod
+Requires:       %{kern_pkg_name} =  %{kernel_ver}
+
+Conflicts:      %{kern_pkg_name} < %{conflicts_ver}
+
+%description
+This Linux package contains the Intel i40e v%{src_ver} driver.
+
+%package docs
+Summary:        Kernel docs
+Group:          System Environment/Kernel
+Conflicts:      %{kern_pkg_name}-docs < %{conflicts_ver}
+
+%description docs
+This Linux package contains the Linux kernel doc files including files that
+were left unpackaged from %{kern_pkg_name} in the %{_mandir}.
+
+%prep
+%autosetup -p1 -n i40e-%{src_ver}
+
+%build
+make -C src KSRC=%{_modulesdir}/build %{?_smp_mflags}
+
+%install
+make -C src KSRC=%{_modulesdir}/build INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra/i40e-%{src_ver} MANDIR=%{_mandir} \
+    modules_install mandocs_install %{?_smp_mflags}
+
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
+%include %{SOURCE1}
+
+%post
+/sbin/depmod -a %{uname_r}
+
+%files
+%defattr(-,root,root)
+%dir %{_modulesdir}/extra/i40e-%{src_ver}
+%{_modulesdir}/extra/i40e-%{src_ver}/i40e.ko.xz
+
+%files docs
+%defattr(-,root,root)
+%{_mandir}/*
+
+%changelog
+%if "%{src_ver}" == "2.25.7"
+* Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-6
+- Release bump
+* Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-5
+- Adding signing to the module
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-4
+- Bump-up to build with kmod-34.1
+* Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> %{PKG_VERSION}-3
+- Release bump for SRP compliance
+* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-2
+- Package debug info in seperate pkg
+* Tue May 14 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> %{PKG_VERSION}-1
+- Initial addition of i40e v2.25.7
+%endif
+
+%if "%{src_ver}" != "2.25.7"
+* Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-8
+- Release bump
+* Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-7
+- Adding signing to the module
+* Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-6
+- Bump-up to build with kmod-34.1
+* Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> %{PKG_VERSION}-5
+- Release bump for SRP compliance
+* Wed Jun 05 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-4
+- Package debug info in seperate pkg
+* Tue Apr 02 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-3
+- Fix subrelease naming convention
+* Thu Feb 22 2024 Ankit Jain <ankit-ja.jain@broadcom.com> %{PKG_VERSION}-2
+- Adding generic template for i40e driver
+* Thu Jan 04 2024 Roye Eshed <roye.eshed@broadcom.com> %{PKG_VERSION}-1
+- Package Intel driver i40e v%{PKG_VERSION} for linux-rt.
+%endif
