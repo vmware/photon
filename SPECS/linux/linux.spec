@@ -46,8 +46,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.155
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.157
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1082,6 +1082,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.157-1
+- Update to version 6.1.157
 * Mon Oct 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-6
 - Inject photon KM certificate to trusted keyring
 * Mon Oct 13 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-5
