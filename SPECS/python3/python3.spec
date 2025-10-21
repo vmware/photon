@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -24,6 +24,7 @@ Source2: setuptools-pip-wheels%{?dist}-2.0.tar.xz
 Patch0:         cgi3.patch
 Patch4:         use-HMAC-SHA256-in-FIPS-mode.patch
 Patch6:         ensurepip-upgrade-bundled-pip-and-setuptools.patch
+Patch7:         CVE-2025-8194.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -299,6 +300,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Oct 21 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-2
+- Fix CVE-2025-8194
 * Fri Jun 27 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-1
 - Update to 3.10.18, Fixes multiple CVEs
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.10.11-13
