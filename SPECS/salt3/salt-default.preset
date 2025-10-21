@@ -1,4 +1,0 @@
-disable salt-api.service
-disable salt-minion.service
-disable salt-master.service
-disable salt-syndic.service
