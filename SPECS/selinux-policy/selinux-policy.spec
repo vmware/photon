@@ -3,11 +3,13 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch:      noarch
 
 Source0: https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -58,8 +60,7 @@ Patch33: 0034-fix-local_login_t-denial.patch
 Patch34: 0035-allow-alg_socket-for-sshd.patch
 Patch35: 0036-authlogin.te-fix-pwhistory-denial.patch
 Patch36: 0037-systemd-init_t-denial.patch
-
-BuildArch:      noarch
+Patch37: 0038-Add-motd-rules-to-fix-denials.patch
 
 BuildRequires: checkpolicy
 BuildRequires: python3-devel
@@ -137,6 +138,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Wed Oct 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-11
+- Fix motd denials
 * Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-10
 - Fix few systemd-resolved policies
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-9
