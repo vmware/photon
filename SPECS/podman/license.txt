@@ -1,1 +1,1 @@
-License: (BSD-3-Clause OR OpenSSL) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-3.0 AND GPL-1.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND LGPL-2.1-or-later AND MIT AND MPL-2.0 AND MS-RL AND Unlicense AND blessing
+License: (BSD-3-Clause OR OpenSSL) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-3.0 AND FSFAP AND GPL-1.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND LGPL-2.1-or-later AND MIT AND MPL-2.0 AND MS-RL AND OFL-1.1 AND Unlicense AND blessing

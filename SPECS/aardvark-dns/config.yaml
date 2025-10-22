@@ -1,0 +1,33 @@
+sources:
+- archive: aardvark-dns-2.0.0.tar.gz
+  archive_sha512sum: 85dff6ad092dee1216f84400c0f20a7f5fad507b0b275dad3d6f1fbe78c4b131b6f614c222aab8a5c6f13d4b73d9d43845411d86aa2c9af9f8c8821c4a4060ed
+  archive_type: upstream
+  version: 2.0.0
+  name: aardvark-dns-2.0.0
+  url: https://github.com/containers/aardvark-dns/archive/refs/tags/v2.0.0.tar.gz
+  repo_url: https://github.com/containers/aardvark-dns
+  commit_id: d98c5990d9bfe25ba8e85cb4202c3272a6e4a5d7
+  skip_list: []
+  missing: []
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'Aardvark-dns is an authoritative dns server for A/AAAA
+        container records. It can forward other requests to configured resolvers.'
+      home_page: https://github.com/containers/aardvark-dns
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Authoritative dns server for A/AAAA container records
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: aardvark-dns-registry-2.0.0-1.ph5.tar.gz
+  archive_sha512sum: 4c431d46003ed428c54b0a37561839e1074c302a9c9156729133cf01e1a03bd07b6e05d3a16d0d4e9affd55626acc81d9936d2ce27d7912aba86d1d71f5d8a20
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Contains vendor rust file sources which were needed to
+        do offline build'
+      home_page: https://github.com/vmware/photon
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Contains vendor rust file sources
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,32 @@
+sources:
+- archive: netavark-2.0.0.tar.gz
+  archive_sha512sum: b2b04a3784bea78a18d7277f93aff3ec8296c6f8b7e97a72e8871e89f9628a739fecaae0db44f379f932c1223a19e6907a7fe53ba5143f7f7742606590613f8c
+  archive_type: upstream
+  version: 2.0.0
+  name: netavark-2.0.0
+  url: https://github.com/containers/netavark/archive/refs/tags/v2.0.0.tar.gz
+  repo_url: https://github.com/containers/netavark
+  commit_id: dd456fba828316d602f9ea8a6f1ac9b9a8441b4c
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'Netavark is a rust based network stack for containers.
+        It is being designed to work with Podman but is also applicable for other
+        OCI container management applications.'
+      home_page: https://github.com/containers/netavark
+      license_concluded: Apache-2.0 AND BSD-3-Clause
+      license_declared: Apache-2.0 AND BSD-3-Clause
+      short_summary: Container network stack
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: netavark-registry-2.0.0-1.ph5.tar.gz
+  archive_sha512sum: d10a3aa64dcf8043353b85796e075cdb31fe787685e56495fbe91c3eea0c64589d6b6eace079fafe9b639bc504337ae582604809f00891ba688a91c6e6b12c7c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Contains vendor rust file sources which were needed to
+        do offline build'
+      home_page: https://github.com/vmware/photon
+      license_concluded: Apache-2.0 AND BSD-3-Clause
+      license_declared: Apache-2.0 AND BSD-3-Clause
+      short_summary: Contains vendor rust file sources
+      supplier: 'Organization: Broadcom, Inc.'

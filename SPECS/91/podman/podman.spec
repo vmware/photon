@@ -1,11 +1,12 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
-%global gvisorvers 0.8.9
+%global dnsnamevers 1.3.1
+%global gvisorvers 0.7.3
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
-Version:        5.8.5
-Release:        1%{?dist}
+Version:        4.5.1
+Release:        15%{?dist}
 URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
@@ -13,7 +14,7 @@ Distribution:   Photon
 
 Source0: https://github.com/containers/podman/archive/refs/tags/%{name}-%{version}.tar.gz
 
-Source1: 50-podman-network.conf
+Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsnamevers}.tar.gz
 
 Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-%{gvisorvers}.tar.gz
 
@@ -30,6 +31,7 @@ BuildRequires:  systemd-devel
 BuildRequires:  containers-common
 BuildRequires:  go-md2man
 BuildRequires:  go
+BuildRequires:  git
 BuildRequires:  libassuan-devel
 BuildRequires:  gpgme-devel
 BuildRequires:  btrfs-progs-devel
@@ -41,14 +43,12 @@ Provides:       pkgconfig(devmapper)
 
 Requires:       libassuan
 Requires:       gpgme
+Requires:       cni
 Requires:       conmon
 Requires:       containers-common
 Requires:       iptables
 Requires:       shadow
 Requires:       slirp4netns
-Requires:       netavark
-
-Obsoletes:      podman-plugins < 5.8.5-1
 
 %description
 %{name} is a daemonless, open source, Linux native tool designed to make it easy to find, run, build,
@@ -69,6 +69,15 @@ Summary: (Experimental) Remote client for managing %{name} containers
 Remote client to connect with a %{name} client for managing %{name} containers. This experimental
 remote client is under heavy development. Please do not run %{name}-remote in production.
 
+%package plugins
+Summary: Plugins for %{name}
+Requires: dnsmasq
+Recommends: %{name}-gvproxy = %{version}-%{release}
+
+%description plugins
+This plugin sets up the use of dnsmasq on a given CNI network so that Pods can resolve each other by name.
+Each CNI network will have its own dnsmasq instance.
+
 %package gvproxy
 Summary: Go replacement for libslirp and VPNKit
 
@@ -76,19 +85,12 @@ Summary: Go replacement for libslirp and VPNKit
 A replacement for libslirp and VPNKit, written in pure Go. It is based on the network stack of gVisor.
 Compared to libslirp, gvisor-tap-vsock brings a configurable DNS server and dynamic port forwarding.
 
-%package docs
-Summary:    %{name} docs
-Group:      Documentation
-Requires:   %{name} = %{version}-%{release}
-
-%description docs
-Contains man pages for %{name}
-
 %prep
-%autosetup -p1 -n %{name}-%{version}
-rm -v vendor/github.com/opencontainers/go-digest/LICENSE.docs \
+%autosetup -Sgit -n %{name}-%{version}
+rm -f vendor/github.com/opencontainers/go-digest/LICENSE.docs \
       vendor/github.com/opencontainers/go-digest/README.md \
       vendor/github.com/opencontainers/go-digest/CONTRIBUTING.md
+tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner \
   --exclude=vendor/github.com/opencontainers/go-digest/LICENSE.docs \
   --exclude=vendor/github.com/opencontainers/go-digest/README.md \
@@ -98,6 +100,11 @@ tar xf %{SOURCE2} --no-same-owner \
 #build podman
 export BUILDTAGS="seccomp exclude_graphdriver_devicemapper $(hack/btrfs_installed_tag.sh) $(hack/btrfs_tag.sh) $(hack/libdm_tag.sh) $(hack/selinux_tag.sh) $(hack/systemd_tag.sh) $(hack/libsubid_tag.sh)"
 %make_build
+
+#build plugin
+pushd dnsname-%{dnsnamevers}
+%make_build
+popd
 
 #build gvproxy
 pushd gvisor-tap-vsock-%{gvisorvers}
@@ -110,19 +117,21 @@ export PREFIX=%{_prefix}
 
 %make_install %{?_smp_mflags} LIBEXECDIR=%{_libexecdir} \
      install.bin install.man install.systemd install.completions \
-     install.remote
-
-install -dp %{buildroot}%{_sysconfdir}/containers/containers.conf.d
-install -Dp -m0644 %{SOURCE1} -t %{buildroot}%{_sysconfdir}/containers/containers.conf.d
+     install.remote install.modules-load
 
 install -d -p %{buildroot}%{_datadir}/%{name}/test/system
 cp -pav test/system %{buildroot}%{_datadir}/%{name}/test/
 
-# Man pages go to the docs subpackage, excluding podman-remote's own man page
-rm -f podman-docs.file-list
+# Exclude podman-remote man pages from main package
+rm -f podman.file-list
 for file in $(find %{buildroot}%{_mandir}/man[15] -type f | sed "s,%{buildroot},," | grep -v -e remote); do
-  echo "$file*" >> podman-docs.file-list
+  echo "$file*" >> podman.file-list
 done
+
+#install plugin
+pushd dnsname-%{dnsnamevers}
+%make_install %{?_smp_mflags}
+popd
 
 #install gvproxy
 pushd gvisor-tap-vsock-%{gvisorvers}
@@ -130,15 +139,14 @@ install -dp %{buildroot}%{_libexecdir}/%{name}
 install -p -m0755 bin/gvproxy %{buildroot}%{_libexecdir}/%{name}
 popd
 
-rm -rv %{buildroot}%{_datadir}/zsh \
+rm -rf %{buildroot}%{_datadir}/zsh \
        %{buildroot}%{_datadir}/fish
 
-%files
+%files -f %{name}.file-list
 %defattr(-,root,root)
 %license LICENSE
 %doc README.md CONTRIBUTING.md install.md transfer.md
 %{_bindir}/%{name}
-%{_bindir}/podmansh
 %dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/rootlessport
 %{_libexecdir}/%{name}/quadlet
@@ -148,12 +156,7 @@ rm -rv %{buildroot}%{_datadir}/zsh \
 %{_tmpfilesdir}/%{name}.conf
 %{_systemdgeneratordir}/%{name}-system-generator
 %{_systemdusergeneratordir}/%{name}-user-generator
-%dir %{_sysconfdir}/containers/containers.conf.d
-%config(noreplace) %{_sysconfdir}/containers/containers.conf.d/50-podman-network.conf
-
-%files docs -f %{name}-docs.file-list
-%defattr(-,root,root)
-%{_mandir}/man7/%{name}-*.gz
+%{_modulesloaddir}/%{name}-iptables.conf
 
 %files remote
 %defattr(-,root,root)
@@ -167,13 +170,18 @@ rm -rv %{buildroot}%{_datadir}/zsh \
 %license LICENSE
 %{_datadir}/%{name}/test
 
+%files plugins
+%defattr(-,root,root)
+%license dnsname-%{dnsnamevers}/LICENSE
+%doc dnsname-%{dnsnamevers}/{README.md,README_PODMAN.md}
+%dir %{_libexecdir}/cni
+%{_libexecdir}/cni/dnsname
+
 %files gvproxy
 %defattr(-,root,root)
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
-* Tue Aug 11 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 5.8.5-1
-- Upgrade to v5.8.5, split man pages into a podman-docs subpackage
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.1-15
 - Extended to build for subrelease 91 and above
 * Thu Mar 12 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 4.5.1-14
