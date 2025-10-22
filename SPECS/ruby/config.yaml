@@ -1,9 +1,9 @@
 sources:
-- archive: ruby-3.4.3.tar.gz
-  archive_sha512sum: 7019889939713c3e649003fed4d973dced36239fc354cfdee2d01dbdeb7e8512881a31b00efc3d5017f08cd492aed7914d15927bc8d076c0cae7534273e471e9
+- archive: ruby-3.4.7.tar.gz
+  archive_sha512sum: 7c9b807aa794a19377b0048da0e94869bf57905cf68d4f30b959aefb9f67834a51e06a23c9eee858e7f90938dbc38a5072bc946df502a6bcf86bf198ae061e22
   license_manual_review:
   - file_paths:
-    - ruby-3.4.3/lib/rubygems/util/licenses.rb
+    - ruby-3.4.7/lib/rubygems/util/licenses.rb
     sha256sum: 853af9a10748ef12fe3dcc3a6f3c74d0fdc5f328de0f865f0664ab9294a999d2
     spdx_exp: 2-clause BSDL
   skip_validation: true

@@ -1,6 +1,6 @@
 Summary:        Ruby
 Name:           ruby
-Version:        3.4.3
+Version:        3.4.7
 Release:        1%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -108,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Oct 22 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.4.7-1
+- Upgrade to ruby 3.4.7, Fixes CVE-2025-43857
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.3-1
 - Upgrade to ruby 3.4.3
 * Mon Sep 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.4-12
