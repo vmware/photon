@@ -10,7 +10,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.34.1
-Release:        8%{?kernelsubrelease}%{?dist}
+Release:        9%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -156,6 +156,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Wed Oct 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.34.1-9
+- Bump-up to sign the module with new cert photon_km_2025
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.34.1-8
 - Bump version as a part of ncurses upgrade
 * Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-7
