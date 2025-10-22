@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.157
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -226,6 +226,9 @@ Patch134: 0001-drm-amd-display-Check-link_index-before-accessing-dc.patch
 
 # Fix CVE-2024-46811
 Patch136: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
+
+# Fix CVE-2024-41045
+Patch137: 0001-bpf-Defer-work-in-bpf_timer_cancel_and_free.patch
 
 # Fix CVE-2024-46834
 Patch138: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
@@ -681,6 +684,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Oct 22 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.157-2
+- Fix CVE-2024-41045
 * Mon Oct 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.157-1
 - Update to version 6.1.157
 * Mon Oct 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.155-6
