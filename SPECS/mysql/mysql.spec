@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.41
-Release:        2%{?dist}
+Version:        8.0.44
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=e5bb314082be6bf037808ea7a2130c8e2b44491a6c54bc3f611d823be5285021d05093afca71c3d33da6dece2bac3a8e24da5198080060407d8c4dbfeeea8a99
+%define sha512 %{name}-boost=f6881d6f88a4060796e1eac47c1ffe3ea005c27f1b0509fd97774ba5b1e7bf86d0f8c4e13126750f0cc3dd86af92c26459ae8fecf9e8f0f058dab43e93bb3b42
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -179,6 +179,8 @@ getent passwd 'mysql' >/dev/null || \
 %defattr(-,root,root)
 
 %changelog
+* Thu Oct 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.44-1
+- Upgrade to v8.0.44, fixes a bunch of CVEs
 * Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.41-2
 - Fix user creation, don't conflict with polkitd uid
 * Tue Feb 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.41-1
