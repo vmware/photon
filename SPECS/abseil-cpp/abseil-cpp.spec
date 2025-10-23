@@ -1,7 +1,7 @@
 Summary:        C++ Common Libraries
 Name:           abseil-cpp
 Version:        20230125.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,6 +11,8 @@ Source0: https://github.com/abseil/abseil-cpp/archive/%{version}/%{name}-%{versi
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2025-0838.patch
 
 BuildRequires: ninja-build
 BuildRequires: build-essential
@@ -76,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/absl_*.pc
 
 %changelog
+* Thu Oct 23 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 20230125.3-3
+- Fixes CVE-2025-0838
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 20230125.3-2
 - Release bump for SRP compliance
 * Wed Jun 07 2023 Shreenidhi Shedi <sshedi@vmware.com> 20230125.3-1
