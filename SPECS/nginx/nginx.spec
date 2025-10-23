@@ -7,7 +7,7 @@ Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
 Version:        1.26.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -126,7 +126,8 @@ sh ./configure \
     --with-http_realip_module \
     --with-http_dav_module=dynamic \
     --with-stream=dynamic \
-    --with-stream_ssl_preread_module=dynamic
+    --with-stream_ssl_preread_module=dynamic \
+    --with-stream_ssl_module
 
 %make_build
 
@@ -203,6 +204,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Wed Oct 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.3-2
+- Enable stream ssl module
 * Thu Jun 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.3-1
 - Upgrade to v1.26.3
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.2-5
