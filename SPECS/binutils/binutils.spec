@@ -1,56 +1,26 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
+Source0: http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
-Patch1:         binutils-do-not-link-with-static-libstdc++.patch
-Patch2:         binutils-special-sections-in-groups.patch
-Patch3:         binutils-fix-testsuite-failures.patch
-Patch4:         binutils-gold-mismatched-section-flags.patch
-Patch5:         binutils-gold-warn-unsupported.patch
-Patch6:         binutils-testsuite-fixes.patch
-Patch7:         binutils-autoconf-version.patch
-Patch8:         binutils-libtool-no-rpath.patch
-Patch9:         binutils-package-metadata.patch
-Patch10:        binutils-gas-dwarf-skip-empty-functions.patch
-Patch11:        binutils-CVE-38128-dwarf-abbrev-parsing.patch
-Patch12:        binutils-CVE-2022-38533.patch
-Patch13:        binutils-CVE-2023-1972.patch
-Patch14:        binutils-CVE-2022-4285.patch
-Patch15:        binutils-CVE-2023-1579.patch
-Patch16:        binutils-CVE-2022-47695.patch
-Patch17:        binutils-CVE-2022-45703.patch
-Patch18:        binutils-CVE-2022-44840.patch
-Patch19:        binutils-CVE-2022-47696.patch
-Patch20:        binutils-CVE-2022-47673.patch
-Patch21:        binutils-CVE-2023-25585.patch
-Patch22:        binutils-CVE-2022-48064.patch
-Patch23:        binutils-CVE-2022-48065.patch
-Patch24:        binutils-CVE-2022-48063.patch
-Patch25:        binutils-CVE-2025-0840.patch
-Patch26:        CVE-2025-1182.patch
-Patch27:        CVE-2025-5244.patch
-Patch28:        CVE-2025-5245-1.patch
-Patch29:        CVE-2025-5245-2.patch
-Patch30:        CVE-2025-7545.patch
-Patch31:        CVE-2025-7546.patch
-
-Requires:       %{name}-libs = %{version}-%{release}
+Source2: %{name}.patches
+%include %{SOURCE2}
 
 %if 0%{?with_check}
-BuildRequires:  dejagnu
-BuildRequires:  bc
+BuildRequires: dejagnu
+BuildRequires: bc
 %endif
+
+Requires: %{name}-libs = %{version}-%{release}
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -58,7 +28,7 @@ and other tools for handling object files.
 
 %package    libs
 Summary:    Shared library files for binutils
-Obsoletes:  binutils <= 2.32-1
+Obsoletes:  %{name} <= 2.32-1
 
 %description    libs
 It contains the binutils shared libraries that applications can link
@@ -66,7 +36,7 @@ to at runtime.
 
 %package    devel
 Summary:    Header and development files for binutils
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 
 %description    devel
 It contains the libraries and header files to create applications
@@ -77,33 +47,39 @@ for handling compiled objects.
 
 %build
 sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in
+
 %configure \
-            --enable-gold       \
-            --enable-ld=default \
-            --enable-plugins    \
-            --enable-shared     \
-            --enable-targets=x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu \
-            --disable-werror    \
-            --with-system-zlib  \
-            --enable-install-libiberty \
-            --enable-deterministic-archives \
-            --enable-relro \
-            --enable-threads \
-            --with-pic \
-            --enable-gprofng=no \
-            --disable-silent-rules
-make %{?_smp_mflags} tooldir=%{_prefix}
+  --enable-gold       \
+  --enable-ld=default \
+  --enable-plugins    \
+  --enable-shared     \
+  --enable-targets=x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu \
+  --disable-werror    \
+  --with-system-zlib  \
+  --enable-install-libiberty \
+  --enable-deterministic-archives \
+  --enable-relro \
+  --enable-threads \
+  --with-pic \
+  --enable-gprofng=no \
+  --disable-silent-rules
+
+%make_build tooldir=%{_prefix}
+
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} tooldir=%{_prefix} install
+%make_install %{?_smp_mflags} tooldir=%{_prefix}
+
 find %{buildroot} -name '*.la' -delete
-# Don't remove libiberity.a
-rm -rf %{buildroot}/%{_infodir}
+rm -r %{buildroot}%{_infodir}
+
 %find_lang %{name} --all-name
 
+%if 0%{?with_check}
 %check
 # Disable gcc hardening as it will affect some tests.
-rm `dirname $(gcc --print-libgcc-file-name)`/../specs
-make %{?_smp_mflags} -k check > tests.sum 2>&1
+rm $(dirname $(gcc --print-libgcc-file-name))/../specs
+%make_build -k check &> tests.sum
+%endif
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -175,6 +151,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Thu Oct 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-13
+- CVE fixes
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-12
 - CVE fixes
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.39-11
