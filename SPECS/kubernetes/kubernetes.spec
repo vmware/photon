@@ -14,7 +14,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.16
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -187,8 +187,19 @@ if [ $1 -eq 1 ]; then
 fi
 
 %post
-chown -R kube:kube %{_sharedstatedir}/kubelet
+homeDir="%{_sharedstatedir}/kubelet"
+chown -R kube:kube $homeDir
 chown -R kube:kube %{_var}/run/%{name}
+
+# on upgrade, adjust sshd home directory if needed
+if [ $1 -eq 2 ]; then
+  current_home=$(getent passwd kube | cut -d: -f6)
+  if [ -n "$current_home" ] && [ "$current_home" != "$homeDir" ]; then
+    echo "Migrating home for kube: $current_home -> $homeDir"
+    usermod -d "$homeDir" -m kube 2>/dev/null || usermod -d "$homeDir" kube
+  fi
+fi
+
 systemctl daemon-reload
 
 %post kubeadm
@@ -271,6 +282,8 @@ fi
 %{_unitdir}/isolcpu_plugin.service
 
 %changelog
+* Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.16-5
+- Change kube user's home dir
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-4
 - Bump version as a part of go upgrade
 * Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-3
