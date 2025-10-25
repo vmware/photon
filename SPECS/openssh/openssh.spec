@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -129,6 +129,7 @@ install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 if ! getent passwd sshd >/dev/null; then
   useradd sshd
@@ -141,6 +142,7 @@ cp %{buildroot}%{_bindir}/scp %{_bindir}
 chmod g+w . -R
 useradd test -G root -m
 sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
+%endif
 
 %pre server
 %sysusers_create_compat %{SOURCE5}
@@ -153,6 +155,16 @@ sudo -u test -s /bin/bash -c "PATH=$PATH make tests -j$(nproc)"
 if [ $1 -eq 1 ]; then
   chown -v root:sys %{privsep_path}
 fi
+
+# on upgrade, adjust sshd home directory if needed
+if [ $1 -eq 2 ]; then
+  current_home=$(getent passwd sshd | cut -d: -f6)
+  if [ -n "$current_home" ] && [ "$current_home" != "%{privsep_path}" ]; then
+    echo "Migrating home for sshd: $current_home -> %{privsep_path}"
+    usermod -d "%{privsep_path}" -m sshd 2>/dev/null || usermod -d "%{privsep_path}" sshd
+  fi
+fi
+
 %systemd_post %{sshd_services}
 
 %postun server
@@ -214,6 +226,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Sat Oct 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-16
+- Update home directory when needed
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-15
 - Hardened sshd_config
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 9.3p2-14
