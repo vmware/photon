@@ -20,11 +20,13 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       4.0.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/rabbitmq/rabbitmq-server
+
+BuildArch:     noarch
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
@@ -32,9 +34,10 @@ Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{versio
 Source1: %{name}.tmpfiles
 Source2: %{name}.logrotate
 Source3: %{name}.service
+Source4: %{name}.sysusers
 
-Source4: license.txt
-%include %{SOURCE4}
+Source5: license.txt
+%include %{SOURCE5}
 
 BuildRequires: erlang >= %{erlang_minver}, erlang < %{erlang_maxver}
 BuildRequires: rsync
@@ -53,8 +56,8 @@ Requires:      erlang-sd_notify
 Requires:      socat
 Requires:      systemd
 Requires:      /bin/sed
+Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
-BuildArch:     noarch
 
 %description
 rabbitmq messaging server
@@ -98,23 +101,17 @@ install -p -D -m 0644 ./deps/rabbit/docs/rabbitmq.conf.example \
             %{buildroot}%{_sysconfdir}/rabbitmq/rabbitmq.conf
 
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.sysusers
 
+%if 0%{?with_check}
 %check
 %make_build tests
+%endif
 
 %pre
-[ -L /var/log/rabbitmq ] && rm -f /var/log/rabbitmq
+[ -L %{_var}/log/rabbitmq ] && rm -f %{_var}/log/rabbitmq
 
-# create rabbitmq group
-if ! getent group %{_rabbitmq_group} > /dev/null; then
-  groupadd -r %{_rabbitmq_group}
-fi
-
-# create rabbitmq user
-if ! getent passwd %{_rabbitmq_user} > /dev/null; then
-  useradd -r -g %{_rabbitmq_group} -d %{_sharedstatedir}/rabbitmq -s /sbin/nologin \
-      %{_rabbitmq_user} -c "RabbitMQ messaging server"
-fi
+%sysusers_create_compat %{SOURCE4}
 
 %post
 /sbin/ldconfig
@@ -150,12 +147,15 @@ rm -rf %{buildroot}
 %attr(2755,-,%{_rabbitmq_group}) %dir %{_sysconfdir}/rabbitmq
 %config(noreplace) %{_sysconfdir}/logrotate.d/rabbitmq-server
 %config(noreplace) %attr(0644,%{_rabbitmq_user},%{_rabbitmq_group}) %{_sysconfdir}/rabbitmq/rabbitmq.conf
+%{_sysusersdir}/%{name}.sysusers
 %{_unitdir}/*
 %{_tmpfilesdir}/*
 %{_rabbit_libdir}/*
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Sat Oct 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-2
+- Use systusers for user creation
 * Mon Jun 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.0.4-1
 - Version upgrade
 * Wed Jun 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.0.1-1
