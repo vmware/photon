@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.41
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -38,16 +38,6 @@ Source2:        initramfs.trigger
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
 
-%if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
-
-%define fips_canister_version 5.0.0-6.1.75-2%{?dist}-secure
-Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define jent_name photon-jitterentropy-v6.12
-%define jent_rel_ver 3
-Source17: %{jent_name}-%{jent_rel_ver}.tar.gz
-%endif
-
 Source19:       spec_install_post.inc
 
 Source20:       %{name}-dracut.conf
@@ -57,21 +47,28 @@ Source20:       %{name}-dracut.conf
 Source25:       linux-sbat.csv.in
 %endif
 
-%if 0%{?fips}
-Source33: jitterentropy_canister_wrapper.c
-Source34: jitterentropy_canister_wrapper.h
-Source35: jitterentropy_canister_wrapper_asm.S
-
-Source36: fips_canister_wrapper.c
-Source37: fips_canister_wrapper.h
-Source38: fips_canister_wrapper_asm.S
-Source39: fips_canister_wrapper_common.h
-Source40: fips_canister_wrapper_internal.h
-Source41: fips_canister_wrapper_internal.c
-%endif
-
 Source42: license-esx.txt
 %include %{SOURCE42}
+
+%if 0%{?fips}
+%define jent_name photon-jitterentropy-v6.12
+%define jent_rel_ver 3
+Source10000:       %{jent_name}-%{jent_rel_ver}.tar.gz
+
+Source10001: jitterentropy_canister_wrapper.c
+Source10002: jitterentropy_canister_wrapper.h
+Source10003: jitterentropy_canister_wrapper_asm.S
+
+%define fips_canister_version 6.12.41-15.ph5
+BuildRequires:       linux-fips-canister = %{fips_canister_version}
+
+Source10101: fips_canister_wrapper.c
+Source10102: fips_canister_wrapper.h
+Source10103: fips_canister_wrapper_asm.S
+Source10104: fips_canister_wrapper_common.h
+Source10105: fips_canister_wrapper_internal.h
+Source10106: fips_canister_wrapper_internal.c
+%endif
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -92,8 +89,6 @@ Patch13: 0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 Patch14: 0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 0002-apparmor-af_unix-mediation.patch
 Patch17: Performance-over-security-model.patch
-# Disable md5 algorithm for sctp if fips is enabled.
-Patch18: 0001-disable-md5-and-sha1-algorithms-for-sctp-if-fips-is-enabled.patch
 # Enable AUXILIARY BUS, to make building other out-of-tree intel NIC drivers easier
 Patch19: 0001-Enable-AUXILIARY_BUS-by-default.patch
 
@@ -107,8 +102,6 @@ Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 
 #VMCI/VSOCK
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
-
-Patch25: 0009-aead_geniv_ctx-drop-lock-field.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -187,35 +180,6 @@ Patch206: 0005-vmw_balloon-add-arm64-support.patch
 Patch207: 0001-vmw_vmci-arm64-support-memory-ordering.patch
 %endif
 
-# 9p: [300..350]
-
-%if 0%{?fips}
-# Crypto: [500..529]
-# Patch to invoke crypto self-tests and add missing test vectors to testmgr
-Patch500: 0002-FIPS-crypto-self-tests.patch
-# Patch to call drbg and dh crypto tests from tcrypt
-Patch501: tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-# Patch to remove urandom usage in rng module
-Patch503: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
-# Patch to remove urandom usage in drbg and ecc modules
-Patch504: 0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
-
-# FIPS canister usage patch
-Patch508: 0001-FIPS-canister-binary-usage.patch
-Patch509: 0001-scripts-kallsyms-Extra-kallsyms-parsing.patch
-Patch510: 0001-crypto-Export-symbol-crypto_shash_alg_has_setkey.patch
-Patch511: 0001-FIPS-Mark-structure-field-differences-between-kernel.patch
-# TODO: enable it on the next canister tarball bump up
-#Patch512: 0002-FIPS-canister-binary-usage-algapi.c-honor-fcw_skip_tests.patch
-
-Patch512: 0001-jent-makefile-changes-esx.patch
-Patch513: 0001-New-memsize-options-for-jent.patch
-Patch514: 0001-crypto-Tentative-sha3_generic-as-arch-initcall.patch
-# Crypto: zero initialize memory allocated via sock_kmalloc
-Patch515: 0001-crypto-zero-initialize-memory-allocated-via-sock_kma.patch
-Patch516: 0001-jitterentropy-Defer-jent_mod_init-in-non-fips-boot.patch
-%endif
-
 %ifarch x86_64
 # SEV on VMware: [600..609]
 Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -225,13 +189,38 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
 
-# FIPS canister plugins
+# Only LKCM/JENT related patches below
+# Jitterentropy support and FIPS compliance
+Patch10000: 0001-New-memsize-options-for-jent.patch
 %if 0%{?fips}
-Patch10500: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
-Patch10501: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
-Patch10502: 0003-Introduce-FIPS-canister-plugins.patch
-Patch10503: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
-Patch10504: 0001-Canister-GCC-Plugins-Implement-type-check.patch
+Patch10001: 0001-jitterentropy-Makefile-changes.patch
+# Patch to remove urandom usage in rng module
+Patch10002: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch10003: 0001-disable-md5-and-sha1-algorithms-for-sctp-if-fips-is-enabled.patch
+Patch10050: 0001-jitterentropy-Defer-jent_mod_init-in-non-fips-boot.patch
+
+# Below patches are common for canister_usage and canister_build flags
+Patch10101: 0001-FIPS-canister-binary-usage.patch
+Patch10102: 0002-algapi.c-honor-fcw_skip_tests.patch
+Patch10103: 0003-tcrypt-align-to-LKCM.patch
+Patch10104: 0004-scripts-kallsyms-Extra-kallsyms-parsing.patch
+# Add non-approved prints for essIV and echainIV IV generation method
+Patch10105: 0005-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
+# Introduce rsa-pkcs1pad_crypt.c to include encrypt and decrypt functions outside canister
+Patch10106: 0006-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
+# Add internal_iv field for aead_request
+Patch10107: 0007-aead-add-internal_iv-field.patch
+Patch10108: 0008-FIPS-Mark-structure-field-differences-between-kernel.patch
+Patch10109: 0009-aead_geniv_ctx-drop-lock-field.patch
+Patch10110: 0010-Move-crypto_inc-to-lib-crypto-utils.c.patch
+
+# FIPS canister plugins
+Patch10200: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
+Patch10201: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
+Patch10202: 0003-Introduce-FIPS-canister-plugins.patch
+Patch10203: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
+Patch10204: 0001-Canister-GCC-Plugins-Implement-type-check.patch
 %endif
 
 BuildRequires: bc
@@ -247,6 +236,8 @@ BuildRequires: procps-ng-devel
 BuildRequires: lz4
 BuildRequires: elfutils-libelf-devel
 BuildRequires: bison
+BuildRequires: elfutils-devel
+BuildRequires: dwarves-devel
 BuildRequires: libtraceevent-devel
 BuildRequires: clang-devel
 BuildRequires: readline-devel
@@ -301,13 +292,6 @@ The Linux package contains the Linux kernel doc files
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
 
-%if 0%{?fips}
-# Using autosetup is not feasible
-%setup -q -T -D -b 16 -n linux-%{version}
-# Using autosetup is not feasible
-%setup -q -T -D -b 17 -n linux-%{version}
-%endif
-
 # common
 %autopatch -p1 -m0 -M49
 
@@ -348,17 +332,31 @@ popd
 %autopatch -p1 -m600 -M609
 %endif
 
+# Jitterentropy support and FIPS compliance
+%autopatch -p1 -m10000 -M10000
 %if 0%{?fips}
-%autopatch -p1 -m10500 -M10504
-%endif
 
-%if 0%{?fips}
+# Using autosetup is not feasible
+%setup -q -T -D -b 10000 -n linux-%{version}
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
 mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
-cp %{SOURCE33} crypto/%{jent_name}/
-cp %{SOURCE34} crypto/%{jent_name}/
-cp %{SOURCE35} crypto/%{jent_name}/
+cp %{SOURCE10001} crypto/%{jent_name}/
+cp %{SOURCE10002} crypto/%{jent_name}/
+cp %{SOURCE10003} crypto/%{jent_name}/
+
+install %{SOURCE10101} crypto/
+install %{SOURCE10102} crypto/
+install %{SOURCE10103} crypto/
+install %{SOURCE10104} crypto/
+install %{SOURCE10105} crypto/
+install %{SOURCE10106} crypto/
+
+%autopatch -p1 -m10001 -M10003
+%autopatch -p1 -m10050 -M10050
+%autopatch -p1 -m10101 -M10110
+# FIPS canister plugins
+%autopatch -p1 -m10200 -M10204
 %endif
 
 make %{?_smp_mflags} mrproper
@@ -366,25 +364,21 @@ cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
 %if 0%{?fips}
-cp %{SOURCE36} crypto/
-cp %{SOURCE37} crypto/
-cp %{SOURCE38} crypto/
-cp %{SOURCE39} crypto/
-cp %{SOURCE40} crypto/
-cp %{SOURCE41} crypto/
-cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
-   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
-   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
-   crypto/
+tar -xvf /usr/lib/fips-canister/fips-canister-%{fips_canister_version}.tar.bz2
+# fips_canister.o is mentioned in obj-y. So, Makefile.modpost expects
+# corresponding .cmd file. Empty content is ok, since we are not going
+# to rebuild it.
+touch crypto/.fips_canister.o.cmd
 
 sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
 %else
 # Clean up .config of FIPS related configs
-sed -i "/CONFIG_CRYPTO_SELF_TEST=y/d" .config
+sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
+sed -i "/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/d" .config
+
 sed -i "s/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_2 is not set/CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_2=y/" .config
-sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_8 is not set/d" .config
-sed -i "/CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32=y/d" .config
-sed -i "/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_64 is not set/d" .config
+sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32=y/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32 is not set/" .config
+
 sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKS=128/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKS=64/" .config
 sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKSIZE=256/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKSIZE=32/" .config
 %endif
@@ -402,10 +396,6 @@ sed -e "s,@@NAME@@,%{name},g" \
 
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
-
-%if 0%{?fips}
-%include %{SOURCE9}
-%endif
 
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
@@ -499,6 +489,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Oct 10 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-8
+- Consume a canister binary via RPM dependency
 * Fri Oct 03 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.41-7
 - Enable CONFIG_X86_SGX
 * Mon Sep 29 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-6
