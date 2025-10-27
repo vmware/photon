@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        20%{?acvp_build:.acvp}%{?dist}
+Release:        21%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -103,8 +103,9 @@ Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
 %if 0%{?canister_usage}
-%define fips_canister_version 6.12.34-3%{?dist}
-Source10100:       fips-canister-6.12.34-3%{?dist}.tar.bz2
+%define fips_canister_version 6.12.41-18.ph5
+%define ExtraBuildRequires linux-fips-canister = %{fips_canister_version}
+BuildRequires:       linux-fips-canister = %{fips_canister_version}
 %endif
 
 Source10101: fips_canister_wrapper.c
@@ -553,12 +554,11 @@ install %{SOURCE10106} crypto/
 make %{?_smp_mflags} mrproper
 
 %if 0%{?canister_usage}
-# Using autosetup is not feasible
-%setup -q -T -D -b 10100 -n linux-%{version}
-cp ../fips-canister-%{fips_canister_version}/fips_canister.o \
-   ../fips-canister-%{fips_canister_version}/.fips_canister.o.cmd \
-   ../fips-canister-%{fips_canister_version}/fips_canister-kallsyms \
-   crypto/
+tar -xvf /usr/lib/fips-canister/fips-canister-%{fips_canister_version}.tar.bz2
+# fips_canister.o is mentioned in obj-y. So, Makefile.modpost expects
+# corresponding .cmd file. Empty content is ok, since we are not going
+# to rebuild it.
+touch crypto/.fips_canister.o.cmd
 %endif
 
 %if 0%{?canister_build}
@@ -864,6 +864,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 27 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-21
+- Consume a canister binary via RPM dependency
 * Fri Oct 24 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.41-20
 - perf: add patch to collect off-cpu sample
 * Mon Oct 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-19
