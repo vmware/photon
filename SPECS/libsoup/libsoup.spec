@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.6.5
-Release:         2%{?dist}
+Release:         3%{?dist}
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
@@ -15,7 +15,13 @@ Source1: license.txt
 Patch0: CVE-2025-32908-1.patch
 Patch1: CVE-2025-32908-2.patch
 Patch2: CVE-2025-32914.patch
-Patch3: CVE-2025-4948.patch
+Patch3: CVE-2025-4945.patch
+Patch4: CVE-2025-4948.patch
+Patch5: CVE-2025-4969.patch
+Patch6: CVE-2025-4476.patch
+Patch7: CVE-2025-11021-1.patch
+Patch8: CVE-2025-11021-2.patch
+Patch9: CVE-2025-12105.patch
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -101,6 +107,9 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Mon Oct 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.5-3
+- Fix CVE-2025-4945, CVE-2025-4969 ,CVE-2025-4476,
+- CVE-2025-11021, CVE-2025-12105
 * Thu Sep 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.5-2
 - Fix CVE-2025-4948
 * Tue May 06 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.5-1
