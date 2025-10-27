@@ -8,11 +8,12 @@
 %define debug_package %{nil}
 %define __strip /bin/true
 %define contrib_ver 0.7.0
+%define homeDir     %{_sharedstatedir}/kubelet
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -143,13 +144,23 @@ rm -rf %{buildroot}/*
 if [ $1 -eq 1 ]; then
   # Initial installation.
   getent group kube >/dev/null || groupadd -r kube
-  getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
+  getent passwd kube >/dev/null || useradd -r -g kube -d %{homeDir} -s /sbin/nologin \
             -c "Kubernetes user" kube
 fi
 
 %post
-chown -R kube:kube %{_sharedstatedir}/kubelet
+chown -R kube:kube %{homeDir}
 chown -R kube:kube %{_var}/run/%{name}
+
+# on upgrade, adjust sshd home directory if needed
+if [ $1 -eq 2 ]; then
+  current_home=$(getent passwd kube | cut -d: -f6)
+  if [ -n "$current_home" ] && [ "$current_home" != "%{homeDir}" ]; then
+    echo "Migrating home for kube: $current_home -> %{homeDir}"
+    usermod -d "%{homeDir}" -m kube 2>/dev/null || usermod -d "%{homeDir}" kube
+  fi
+fi
+
 systemctl daemon-reload
 
 %post kubeadm
@@ -207,6 +218,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.16-2
+- Change kube user's home dir
 * Tue Feb 25 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-1
 - Update to 1.27.16, Fixes CVE-2024-5321,fix CVE-2024-10220
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-4
