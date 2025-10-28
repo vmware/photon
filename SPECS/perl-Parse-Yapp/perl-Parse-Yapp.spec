@@ -50,7 +50,7 @@ make test %{?_smp_mflags}
 %{_mandir}/man3/*.3*
 
 %changelog
-* Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 1.21-5
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.21-5
 - Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.21-4
 - Release bump for SRP compliance

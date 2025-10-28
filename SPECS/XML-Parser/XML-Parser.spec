@@ -54,7 +54,7 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
-* Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 2.47-1
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 2.47-1
 - Upgrade to 2.47
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.46-6
 - Version bump for expat upgrade

@@ -132,7 +132,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
-* Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 5.9.3-4
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 5.9.3-4
 - Release bump for perl 5.40.2
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.9.3-3
 - Release bump for SRP compliance

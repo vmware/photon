@@ -1,7 +1,7 @@
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
 Version:        42.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
 Vendor:         VMware, Inc.
@@ -520,7 +520,9 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
-*  Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.net> 42.0-4
+* Wed Oct 29 2025 Dweep Advani <dweep.advani@broadcom.com> 42.0-5
+- Fixed the changelog entry for 42.0-4 which containted non-breaking space
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 42.0-4
 - Release bump for perl 5.40.2
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 42.0-3
 - Release bump for SRP compliance
