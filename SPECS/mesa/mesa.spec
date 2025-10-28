@@ -1,7 +1,7 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        25.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -41,6 +41,9 @@ BuildRequires:  spirv-llvm-translator-devel
 BuildRequires:  clang-devel
 BuildRequires:  libunwind-devel
 BuildRequires:  lm-sensors-devel
+%ifarch aarch64
+BuildRequires:  python3-pycparser
+%endif
 
 Requires:       libllvm
 Requires:       expat-libs
@@ -173,6 +176,14 @@ rm -rf %{buildroot}/*
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
 %endif
+%ifarch aarch64
+%{_libdir}/libvulkan_freedreno.so
+%{_libdir}/libvulkan_intel.so
+%{_libdir}/libvulkan_panfrost.so
+%{_datadir}/vulkan/icd.d/freedreno_icd.aarch64.json
+%{_datadir}/vulkan/icd.d/intel_icd.aarch64.json
+%{_datadir}/vulkan/icd.d/panfrost_icd.aarch64.json
+%endif
 
 %files libgbm
 %defattr(-,root,root)
@@ -212,6 +223,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libgallium-*.so
 
 %changelog
+* Thu Oct 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 25.1.4-2
+- Remove Tegra driver from Gallium driver auto list as it depends on Nouveau
+- which is already disabled due to Rust and Bindgen dependencies.
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 25.1.4-1
 - Upgrade mesa to 25.1.4 version to support the VK_KHR_sampler_ycbcr_conversion extension
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 23.3.6-1

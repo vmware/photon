@@ -1,16 +1,16 @@
-From 4732d38cd23c0121213202377afe32b5463fbc4d Mon Sep 17 00:00:00 2001
+From 110a460336cf7ee95ad7e800227c71e61c0f60cb Mon Sep 17 00:00:00 2001
 From: Shivani Agarwal <shivani.agarwal@broadcom.com>
 Date: Wed, 25 Jun 2025 03:48:23 +0000
 Subject: [PATCH] Remove Nouveau from vulkan-drivers and gallium-drivers auto
  list
 
-Removed Nouveau due to rust and bindgen dependency
+Removed Tegra and Nouveau due to rust and bindgen dependency
 ---
- meson.build | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ meson.build | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/meson.build b/meson.build
-index 58194e7..1ec491a 100644
+index 58194e7..ec96314 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -138,22 +138,22 @@ if gallium_drivers.contains('auto')
@@ -24,8 +24,9 @@ index 58194e7..1ec491a 100644
      elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
        gallium_drivers = [
 -        'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
+-        'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
 +        'v3d', 'vc4', 'freedreno', 'etnaviv', 'svga',
-         'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
++        'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
          'zink'
        ]
      elif ['mips', 'mips64', 'ppc', 'ppc64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())

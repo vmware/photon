@@ -1,7 +1,7 @@
 Summary:        SPIR-V LLVM Translator
 Name:           spirv-llvm-translator
 Version:        18.1.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,8 +20,6 @@ BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools-devel
 
 Requires:       spirv-tools
-
-BuildArch:      x86_64
 
 %description
 SPIRV-LLVM-Translator provides a tool and libraries for translating between LLVM IR and SPIR-V, enabling OpenCL and Vulkan toolchains.
@@ -77,5 +75,7 @@ This package contains command-line tools for SPIRV-LLVM-Translator, such as llvm
 %{_libdir}/pkgconfig/LLVMSPIRVLib.pc
 
 %changelog
-* Thu Jun 26 2025 Shivani Agarwal <shivania2@vmware.com> 18.1.13-1
+* Tue Oct 28 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.13-2
+- Fix aarch64 build issue
+* Thu Jun 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.13-1
 - initial version required for libclc
