@@ -17,6 +17,12 @@ Distribution:   Photon
 
 Source0: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{src_ver}/i40e-%{src_ver}.tar.gz
 
+%if "%{src_ver}" == "2.28.10"
+Release:        1%{?kernelsubrelease}%{?dist}
+
+Patch0:         i40e-v2.25.7-Add-support-for-gettimex64-interface.patch
+%endif
+
 %if "%{src_ver}" == "2.25.7"
 Release:        7%{?kernelsubrelease}%{?dist}
 
@@ -77,7 +83,11 @@ This Linux package contains the Linux kernel doc files including files that
 were left unpackaged from %{kern_pkg_name} in the %{_mandir}.
 
 %prep
+%if "%{src_ver}" == "2.28.10"
+%autosetup -p1 -n ethernet-linux-i40e-%{src_ver}
+%else
 %autosetup -p1 -n i40e-%{src_ver}
+%endif
 
 %build
 make -C src KSRC=%{_modulesdir}/build %{?_smp_mflags}
@@ -103,6 +113,11 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %{_mandir}/*
 
 %changelog
+%if "%{src_ver}" == "2.28.10"
+* Wed Oct 08 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-1
+- Initial addition of i40e v2.28.10
+%endif
+
 %if "%{src_ver}" == "2.25.7"
 * Mon Nov 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> %{PKG_VERSION}-7
 - Fix CVE-2025-39901
