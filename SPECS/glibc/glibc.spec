@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        19%{?dist}
+Release:        20%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -36,6 +36,7 @@ Patch505: 0005-support-Pick-group-in-support_capture_subprogram_sel.patch
 
 # CVE-2025-8058
 Patch506: 0001-posix-Fix-double-free-after-allocation-failure-in-re.patch
+Patch507: CVE-2025-0395.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -368,6 +369,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Oct 29 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-20
+- Fix CVE-2025-0395
 * Wed Aug 20 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-19
 - Fix CVE-2025-8058
 * Tue Jun 24 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-18
