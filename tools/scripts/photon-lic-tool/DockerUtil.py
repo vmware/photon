@@ -107,6 +107,7 @@ class DockerUtil:
         alt_src_url=None,
         extra_repo_urls=None,
         config_yaml=None,
+        timeout=None
     ):
         tool_cmd = []
         docker_scan_mnt = f"{common.ph_scan_tool_dir}/scan-mnt"
@@ -195,6 +196,9 @@ class DockerUtil:
             tool_cmd.append(
                 f"--config_yaml={docker_cfg_yaml_mnt}/{os.path.basename(config_yaml)}"
             )
+
+        if timeout:
+            tool_cmd.append(f"--scancode_timeout={timeout}")
 
         return (mount_list, tool_cmd)
 

@@ -75,7 +75,6 @@ no_trimming = False
 
 # List of files to skip during scanning, as they will fail the scanner
 known_failures = []
-
 """ ################################################################### """
 
 _real_print = builtins.print
@@ -118,7 +117,7 @@ def err_exit(msg=None):
     pr_err(f'Error: {msg}')
     sys.exit(1)
 
-def run_cmd(cmd, ignore_rc=False, quiet=False, capture=False, shell=False):
+def run_cmd(cmd, ignore_rc=False, quiet=False, capture=False, shell=False, timeout=None):
     if isinstance(cmd, str) and not shell:
         cmd = cmd.split()
 
@@ -129,12 +128,26 @@ def run_cmd(cmd, ignore_rc=False, quiet=False, capture=False, shell=False):
         else:
             print(cmd)
 
-    if capture:
-        result = subprocess.run(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell
-        )
-    else:
-        result = subprocess.run(cmd, shell=shell)
+    try:
+        if capture:
+            result = subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                shell=shell,
+                timeout=timeout
+            )
+        else:
+            result = subprocess.run(cmd, shell=shell, timeout=timeout)
+    except subprocess.TimeoutExpired as e:
+        print(f"Timeout expired ({timeout}s) while running command '{cmd}'");
+        # Create same object for callers to handle stdout/stderr/returncode values
+        result = subprocess.CompletedProcess(
+                    args=cmd,
+                    returncode=1,
+                    stdout=e.stdout,
+                    stderr=e.stderr
+                )
 
     if not ignore_rc and result.returncode != 0:
         print(f"Error while running command '{cmd}':\n")

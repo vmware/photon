@@ -36,6 +36,11 @@ from common import err_exit, pr_err, SignalContext
 
 def scan(args):
     scanner = Scanner()
+
+    timeout = args.scancode_timeout
+    if args.scancode_timeout:
+        timeout = int(timeout)
+
     if not args.config_yaml:
         scanner.scan(
             build_spec=args.build_spec,
@@ -46,6 +51,7 @@ def scan(args):
             path=args.path,
             alt_src_url=args.alt_src_url,
             extra_repo_urls=args.extra_repo_urls,
+            timeout=timeout
         )
     else:
         scanner.scan_config_yaml(
@@ -58,6 +64,7 @@ def scan(args):
             alt_src_url=args.alt_src_url,
             extra_repo_urls=args.extra_repo_urls,
             config_yaml=args.config_yaml,
+            timeout=timeout
         )
 
 
@@ -239,6 +246,13 @@ def parse_input():
                     {
                         "action": "store",
                         "help": "Path to output newly scanned config.yaml",
+                    },
+                ),
+                (
+                    "--scancode_timeout",
+                    {
+                        "action": "store",
+                        "help": "Timeout value in seconds for running the scan via scancode",
                     },
                 ),
             ],

@@ -668,11 +668,12 @@ class Scanner:
         path=None,
         score=90,
         yaml_out=None,
-        cpus=1,
+        cpus=0,
         docker=False,
         alt_src_url=None,
         extra_repo_urls=None,
         config_yaml=None,
+        timeout=None
     ):
         from Comparator import Comparator
 
@@ -698,6 +699,7 @@ class Scanner:
                 alt_src_url=alt_src_url,
                 extra_repo_urls=extra_repo_urls,
                 config_yaml=config_yaml,
+                timeout=timeout
             )
             docker_util.run_docker_cmd(cmd=cmd, mount_list=mnt_list)
             if yaml_out:
@@ -758,6 +760,7 @@ class Scanner:
                 docker=False,
                 alt_src_url=alt_src_url,
                 extra_repo_urls=extra_repo_urls,
+                timeout=timeout
             )
 
             # Only update if different, not just different order
@@ -828,6 +831,53 @@ class Scanner:
 
             err_exit()
 
+    def __find_available_memory(self):
+        with open("/proc/meminfo", "r") as meminfo_f:
+            for line in meminfo_f:
+                if "MemAvailable" in line:
+                    return int(line.split()[1]) * 1024
+
+        err_exit("Failed to read available memory from /proc/meminfo for thread count calculation, \
+                    please specify --cpus to avoid this check")
+
+    # Attempt to limit threads to a manageable level, and avoid OOM issues
+    def _determine_thread_count(self, num_cpus=1, scan_dir=""):
+        if not scan_dir:
+            err_exit("Must pass scan dir to _determine_thread_count()")
+
+        # Find the biggest files in the scan dir
+        file_sizes = []
+        for root, _, files in os.walk(scan_dir):
+            for file in files:
+                file_sizes.append(os.path.getsize(os.path.join(root,file)))
+
+        file_sizes.sort(reverse=True)
+
+        available_memory = self.__find_available_memory()
+
+        # Use only 3/4 of the available memory
+        available_memory *= 0.75
+
+        # Assume overhead of roughly 1200 MB for one file + scancode
+        total_mem_usage = 1258291200 #1200 MB
+        # Thread overhead seems to be about 1000MB per additional thread
+        thread_overhead = 1048576000 #1000 MB
+
+        if available_memory < total_mem_usage + file_sizes[0]:
+            err_exit("Available memory is not sufficient, risking OOM error. Free memory and try again later")
+
+        i = 0
+        total = total_mem_usage
+        while total < available_memory and i < len(file_sizes):
+            # Assume entire file is loaded into memory, plus thread overhead
+            total += file_sizes[i] + thread_overhead
+            i+=1
+
+        if i <= num_cpus:
+            return i
+
+        return num_cpus
+
 
     # Main scanning function
     def scan(
@@ -836,10 +886,11 @@ class Scanner:
         path=None,
         score=90,
         yaml_out=None,
-        cpus=1,
+        cpus=0,
         docker=False,
         alt_src_url=None,
         extra_repo_urls=None,
+        timeout=None
     ):
         yaml_tmp_path = f"{common.ph_scan_dir}/scan-results.yaml"
         cwd = os.getcwd()
@@ -874,6 +925,7 @@ class Scanner:
                 cpus=cpus,
                 alt_src_url=alt_src_url,
                 extra_repo_urls=extra_repo_urls,
+                timeout=timeout
             )
             docker_util.run_docker_cmd(cmd=cmd, mount_list=mnt_list)
             if yaml_out:
@@ -915,9 +967,6 @@ class Scanner:
             else:
                 common.pr_err(f"Warning: Failed to find archive {bsname} in config.yaml!")
 
-        if not cpus:
-            cpus = multiprocessing.cpu_count()
-
         if not score:
             score = 90
 
@@ -953,6 +1002,11 @@ class Scanner:
 
         self._check_for_unencodeable(scan_dir)
 
+        if not cpus:
+            cpus = multiprocessing.cpu_count()
+            cpus = self._determine_thread_count(cpus, scan_dir)
+            print(f"Calculated max safe usage of {cpus} simultaneous threads")
+
         # run the scan
         scan_cmd = [
             "scancode",
@@ -964,14 +1018,13 @@ class Scanner:
             str(score),
             "--yaml",
             yaml_tmp_path,
-            "--timeout",
-            str(10000),
             scan_dir,
         ]
 
         result = common.run_cmd(
             scan_cmd,
-            ignore_rc=True
+            ignore_rc=True,
+            timeout=timeout
         )
 
         if result.returncode != 0:
