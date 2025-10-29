@@ -1,0 +1,13 @@
+diff --git a/erlang.mk b/erlang.mk
+index 49c4519..0d7f926 100644
+--- a/erlang.mk
++++ b/erlang.mk
+@@ -3462,7 +3462,7 @@ ESCRIPT_SHEBANG ?= /usr/bin/env escript
+ ESCRIPT_COMMENT ?= This is an -*- erlang -*- file
+ ESCRIPT_EMU_ARGS ?= -escript main $(ESCRIPT_NAME)
+ 
+-ESCRIPT_ZIP ?= 7z a -tzip -mx=9 -mtc=off $(if $(filter-out 0,$(V)),,> /dev/null)
++ESCRIPT_ZIP ?= zip -r9 $(if $(filter-out 0,$(V)),,> /dev/null)
+ ESCRIPT_ZIP_FILE ?= $(ERLANG_MK_TMP)/escript.zip
+ 
+ # Core targets.

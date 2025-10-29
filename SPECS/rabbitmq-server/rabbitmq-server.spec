@@ -15,12 +15,12 @@
 # 3.8.x --> 3.9.x (recommended & probably okay)
 # Enable all feauture flags before upgrade from 3.11.x to 3.12.4
 # Enable all feauture flags before upgrade from 3.13.x to 4.0.1
-# 3.11.0 --> 3.11.18 --> 3.12.4 --> 3.13.3 --> 4.0.1
+# 3.11.0 --> 3.11.18 --> 3.12.4 --> 3.13.3 --> 4.0.x --> 4.1.x
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       4.0.4
-Release:       2%{?dist}
+Version:       4.1.4
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -38,6 +38,8 @@ Source4: %{name}.sysusers
 
 Source5: license.txt
 %include %{SOURCE5}
+
+Patch0: fix-build-error.patch
 
 BuildRequires: erlang >= %{erlang_minver}, erlang < %{erlang_maxver}
 BuildRequires: rsync
@@ -154,6 +156,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Wed Oct 29 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.4-1
+- Version upgrade
 * Sat Oct 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.0.4-2
 - Use systusers for user creation
 * Mon Jun 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.0.4-1
