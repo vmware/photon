@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.245
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -419,13 +419,14 @@ Patch232:   0001-net-asix-add-proper-error-handling-of-usb-read-error.patch
 # Fix CVE-2024-40999
 %ifarch aarch64
 Patch233: 0001-net-ena-Add-validation-for-completion-descriptors-co.patch
+Patch234: 0001-net-ena-add-device-distinct-log-prefix-to-files.patch
 %endif
 
 # CVE-2022-48816
-Patch234: 0001-SUNRPC-lock-against-sock-changing-during-sysfs-read.patch
+Patch235: 0001-SUNRPC-lock-against-sock-changing-during-sysfs-read.patch
 
 # Fix CVE-2025-38728
-Patch235: 0001-smb3-fix-for-slab-out-of-bounds-on-mount-to-ksmbd.patch
+Patch236: 0001-smb3-fix-for-slab-out-of-bounds-on-mount-to-ksmbd.patch
 
 # Fix CVE-2024-42321
 Patch240:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
@@ -1144,6 +1145,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Oct 29 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-3
+- Fixes aarch64 build failure
 * Mon Oct 20 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.245-2
 - Fixes CVE-2024-57876, CVE-2024-56551 and CVE-2024-53168
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-1
