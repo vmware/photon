@@ -1,0 +1,46 @@
+From 298b6017b4febe6c817c0d805cc1616681f26bc4 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivani.agarwal@broadcom.com>
+Date: Thu, 30 Oct 2025 07:53:27 +0000
+Subject: [PATCH] Modify code to upgrade rexml-3.4.0 to rexml-3.4.4
+
+---
+ .../{rexml-3.4.0.gemspec => rexml-3.4.4.gemspec}              | 4 ++--
+ gems/bundled_gems                                             | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+ rename .bundle/specifications/{rexml-3.4.0.gemspec => rexml-3.4.4.gemspec} (98%)
+
+diff --git a/.bundle/specifications/rexml-3.4.0.gemspec b/.bundle/specifications/rexml-3.4.4.gemspec
+similarity index 98%
+rename from .bundle/specifications/rexml-3.4.0.gemspec
+rename to .bundle/specifications/rexml-3.4.4.gemspec
+index d55ae16..02f79cc 100644
+--- a/.bundle/specifications/rexml-3.4.0.gemspec
++++ b/.bundle/specifications/rexml-3.4.4.gemspec
+@@ -1,9 +1,9 @@
+ # -*- encoding: utf-8 -*-
+-# stub: rexml 3.4.0 ruby lib
++# stub: rexml 3.4.4 ruby lib
+ 
+ Gem::Specification.new do |s|
+   s.name = "rexml".freeze
+-  s.version = "3.4.0"
++  s.version = "3.4.4"
+ 
+   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
+   s.metadata = { "changelog_uri" => "https://github.com/ruby/rexml/releases/tag/v3.4.0" } if s.respond_to? :metadata=
+diff --git a/gems/bundled_gems b/gems/bundled_gems
+index 487e332..b8fde18 100644
+--- a/gems/bundled_gems
++++ b/gems/bundled_gems
+@@ -10,7 +10,7 @@ minitest            5.25.4  https://github.com/minitest/minitest
+ power_assert        2.0.5   https://github.com/ruby/power_assert
+ rake                13.2.1  https://github.com/ruby/rake
+ test-unit           3.6.7   https://github.com/test-unit/test-unit
+-rexml               3.4.0   https://github.com/ruby/rexml
++rexml               3.4.4   https://github.com/ruby/rexml
+ rss                 0.3.1   https://github.com/ruby/rss
+ net-ftp             0.3.8   https://github.com/ruby/net-ftp
+ net-imap            0.5.8   https://github.com/ruby/net-imap
+-- 
+2.40.4
+
