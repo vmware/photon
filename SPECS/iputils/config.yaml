@@ -1,7 +1,15 @@
 sources:
-- archive: iputils-s20221126.tar.gz
-  archive_sha512sum: 7fdfd76e6f2977039bc0930a1a5451f17319bf17beefc429751d99ffe143a83344d5b4cdbf008627bd70caafeadaf906a8b7c00393fa819e50d6c02b512c367f
-  skip_validation: true
+- archive: iputils-20250605.tar.gz
+  archive_sha512sum: 4bfe4be14f49169e02fbfdfa7f864d4cea78755e718d85c3d2adeed200f3673fa9a0e740b38ca8df1bf17bc023f33a670e385802a9b5889e3979afdb141b817e
+  skip_validation: false
+  archive_type: upstream
+  name: iputils-20250605
+  version: 20250605
+  url: https://github.com/iputils/iputils/archive/refs/tags/20250605.tar.gz
+  repo_url: https://github.com/iputils/iputils
+  commit_id: 6e1cb146547eb6fbb127ffc8397a9241be0d33c2
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The Iputils package contains programs for basic networking. '
