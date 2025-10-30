@@ -1,10 +1,10 @@
-%global VER 7.1.1
-%global Patchlevel 38
+%global VER 7.1.2
+%global Patchlevel 8
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.1.38
-Release:        2%{?dist}
+Version:        7.1.2.8
+Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -104,18 +104,18 @@ however.
 %autosetup -p1 -n %{name}-%{VER}-%{Patchlevel}
 
 %build
-%configure
+%configure --disable-static
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
-rm -f %{buildroot}%{_libdir}/*.a
-
+%if 0%{?wirh_check}
 %check
 export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %make_build check
 rm PerlMagick/demo/Generic.ttf
+%endif
 
 %post libs -p /sbin/ldconfig
 
@@ -173,6 +173,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Thu Oct 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.2.8-1
+- Upgrade to 7.1.2.8, includes CVE fixes
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 7.1.1.38-2
 - Release bump for SRP compliance
 * Mon Sep 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.1.38-1

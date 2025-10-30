@@ -1,15 +1,19 @@
 sources:
-    - archive: ImageMagick-7.1.1-38.tar.xz
-      archive_sha512sum: 636e2061c11c012e2607a53a893eb227569f3a4e04e331499722f2c84dc0db3eedae63525bd530972a639e3a262ab4f61383a21ca8603f8f81e5629a29f54b89
-      skip_validation: true
-      spdx:
-          package:
-              detailed_description:
-                  software suite, used for editing and manipulating digital
-                  images
-              home_page: https://imagemagick.org/
-              license_concluded: GPL-2.0-or-later AND ImageMagick AND FSFAP-no-warranty-disclaimer AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-macro AND MIT AND IJG AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-3.0-only AND FSFAP AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Libpng AND FSFULLR AND BSD-2-Clause
-              license_declared: GPL-2.0-or-later AND ImageMagick AND FSFAP-no-warranty-disclaimer AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-macro AND MIT AND IJG AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-only AND FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-3.0-only AND FSFAP AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Libpng AND FSFULLR AND BSD-2-Clause
-              originator: "Organization: ImageMagick Studio LLC."
-              short_summary: software suite, used for editing and manipulating digital images
-              supplier: "Organization: Broadcom, Inc."
+  - archive: ImageMagick-7.1.2-8.tar.xz
+    archive_sha512sum: 28894523bfd32b9ad27331e8b99b7c3c9779b5f041dd7947ea1a6e4bb808027fd84dca3f493be91c1c4801571799efcd8b1393a0b8a401add2c37b26f4a30625
+    archive_type: upstream
+    name: ImageMagick-7.1.2-8
+    version: 7.1.2-8
+    url: https://imagemagick.org/archive/releases/ImageMagick-7.1.2-8.tar.xz
+    repo_url: https://github.com/ImageMagick/ImageMagick
+    commit_id: a3b13d143fd7dea44cd71d31aa02f411b597688f
+    skip_list: [conjure.1, convert.1, compare.1, ImageMagick.1, stream.1, import.1, configure, magick.1, configure.xml.in, montage.1, composite.1, mogrify.1, ImageMagick.spec.in, version.h.in, magick-script.1, animate.1, display.1, identify.1]
+    missing: [Make.com, Magick.xs, api_examples, oss-fuzz, vms.h, .editorconfig, .github, ax_append_flag.m4, dmr.h, type-urw-base35-type1.xml, ax_lang_compiler_ms.m4, config.h_vms, typemap, tests, Translation.md, cxx_have_std_libs.m4, imagemagick.desktop, magick-baseconfig.h, AppRun, .gitignore, version.h_vms, version.h, .auto-changelog, xwdfile.h_vms, quantum.xs, icon.png, Makefile.PL, .devcontainer, Magick.pm, vms.c, check.sh, coder.xml]
+    spdx:
+      package:
+        detailed_description: 'ImageMagick is a free, open-source software suite for creating, editing, converting, and displaying images.'
+        short_summary: 'ImageMagick is a free, open-source software suite for creating, editing, converting, and displaying images.'
+        home_page: https://imagemagick.org/
+        license_concluded: BSD-2-Clause AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND IJG AND ImageMagick AND LGPL-3.0-only AND Libpng AND MIT AND X11
+        license_declared: BSD-2-Clause AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND IJG AND ImageMagick AND LGPL-3.0-only AND Libpng AND MIT AND X11
+        supplier: "Organization: Broadcom, Inc."
