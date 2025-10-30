@@ -1,9 +1,9 @@
-%global VER 7.1.1
-%global Patchlevel 38
+%global VER 7.1.2
+%global Patchlevel 8
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.1.38
+Version:        7.1.2.8
 Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
@@ -13,7 +13,7 @@ License:        ImageMagick
 Url:            http://www.imagemagick.org
 
 Source0: https://imagemagick.org/archive/releases/%{name}-%{VER}-%{Patchlevel}.tar.xz
-%define sha512 %{name}=636e2061c11c012e2607a53a893eb227569f3a4e04e331499722f2c84dc0db3eedae63525bd530972a639e3a262ab4f61383a21ca8603f8f81e5629a29f54b89
+%define sha512 %{name}=28894523bfd32b9ad27331e8b99b7c3c9779b5f041dd7947ea1a6e4bb808027fd84dca3f493be91c1c4801571799efcd8b1393a0b8a401add2c37b26f4a30625
 
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
@@ -103,20 +103,21 @@ however.
 %autosetup -p1 -n %{name}-%{VER}-%{Patchlevel}
 
 %build
-%configure
+%configure --disable-static
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
-rm -f %{buildroot}%{_libdir}/*.a
-
+%if 0%{?with_check}
 %check
-export LD_LIBRARY_PATH=%{buildroot}/%{_libdir}
+export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %make_build check
 rm PerlMagick/demo/Generic.ttf
+%endif
 
 %post libs -p /sbin/ldconfig
+
 %postun libs -p /sbin/ldconfig
 
 %files
@@ -127,12 +128,12 @@ rm PerlMagick/demo/Generic.ttf
 
 %files doc
 %defattr(-,root,root)
-%doc %{_datadir}/doc/%{name}-%{major_version}/*
+%doc %{_docdir}/%{name}-%{major_version}/*
 
 %files libs
 %defattr(-,root,root)
-%{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so.10*
-%{_libdir}/libMagickWand-%{major_version}.Q16HDRI.so.10*
+%{_libdir}/libMagickCore-%{major_version}.Q16HDRI.so.*
+%{_libdir}/libMagickWand-%{major_version}.Q16HDRI.so.*
 %{_libdir}/%{name}-%{VER}
 %{_datadir}/%{name}-%{major_version}
 %dir %{_sysconfdir}/%{name}-%{major_version}
@@ -168,9 +169,11 @@ rm PerlMagick/demo/Generic.ttf
 
 %files c++
 %defattr(-,root,root)
-%{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
+%{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Thu Oct 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.2.8-1
+- Upgrade to 7.1.2.8, includes CVE fixes
 * Mon Sep 16 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.1.38-1
 - Upgrade to v7.1.1.38, fixes CVE-2024-41817
 * Tue Dec 05 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.1.1.11-4
