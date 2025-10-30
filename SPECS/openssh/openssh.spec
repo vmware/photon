@@ -6,7 +6,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        17%{?dist}
+Release:        18%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -41,6 +41,10 @@ Patch4: CVE-2023-51384.patch
 Patch5: 0003-disable-async-signal-unsafe-code.patch
 Patch6: CVE-2025-26465.patch
 Patch7: CVE-2025-32728.patch
+Patch8: CVE-2025-61984-prep.patch
+Patch9: CVE-2025-61984.patch
+Patch10: CVE-2025-61985-prep.patch
+Patch11: CVE-2025-61985.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -235,6 +239,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-18
+- Fix CVE-2025-61984, CVE-2025-61985
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-17
 - Revert STIG hardening changes
 * Sat Oct 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-16
