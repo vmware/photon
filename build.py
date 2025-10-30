@@ -15,13 +15,11 @@ from argparse import ArgumentParser
 from pathlib import PurePath, Path
 from urllib.parse import urlparse
 
+photonDir = os.path.dirname(os.path.realpath(__file__))
+
 # photon imports
-sys.path.append(
-    f"{os.path.dirname(os.path.realpath(__file__))}/support/package-builder"
-)
-sys.path.append(
-    f"{os.path.dirname(os.path.realpath(__file__))}/support/spec-checker",
-)
+sys.path.append(f"{photonDir}/support/package-builder")
+sys.path.append(f"{photonDir}/support/spec-checker")
 
 import GenerateOSSFiles
 import PullSources as downloader
@@ -111,7 +109,6 @@ phPath = ""
 runCmd = CommandUtils.runCmd
 
 curDir = os.getcwd()
-photonDir = os.path.dirname(os.path.realpath(__file__))
 releaseDir = ""
 
 
@@ -1367,13 +1364,6 @@ class BuildImage:
         if self.img_present(self.img_name):
             return
 
-        if self.img_name == "rt-iso":
-            print("Skip building rt-iso")
-            dummy_iso = f"{Build_Config.stagePath}/dummy-rt-iso-do-not-use.iso"
-            with open(dummy_iso, "a"):
-                pass
-            return
-
         rpmBuildTarget = RpmBuildTarget()
         BuildEnvironmentSetup.photon_stage()
         if self.img_name == "iso":
@@ -1484,12 +1474,6 @@ class BuildImage:
     def k8s_docker_images(self):
         docker_path = f"{Build_Config.stagePath}/docker_images"
         os.makedirs(docker_path, exist_ok=True)
-        touch_file = f"{docker_path}/build_skipped"
-        with open(touch_file, "a"):
-            pass
-        print("Skip building k8s_docker_images")
-        return 0
-
         if glob.glob(f"{Build_Config.stagePath}/docker_images/*.gz"):
             print(
                 f"k8s images are already present in {Build_Config.stagePath}/docker_images"
