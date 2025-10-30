@@ -158,7 +158,7 @@ class SRP(object):
         elif a == "src":
             reponame = f"{reponame}_srpms"
 
-        repo = f"https://packages-prod.broadcom.com/photon/{branch}/{reponame}_{branch}_{constants.targetArch}"
+        repo = f"https://packages.broadcom.com/photon/{branch}/{reponame}_{branch}_{constants.targetArch}"
         return f"uid.obj.comp.package.rpm(name='{n}',version='{v}',release='{r}.{t}',arch='{a}',original_repository='{repo}')"
 
     def goDepPathToUid(self, path):
