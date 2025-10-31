@@ -3,7 +3,7 @@
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet
 Version:        0.17
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            http://rpm5.org/files/popt
 Group:          Applications/Internet
@@ -13,6 +13,8 @@ Distribution:   Photon
 Source0:        http://ftp.linux.org.uk/pub/linux/Networking/netkit/%{name}-%{version}.tar.gz
 %define sha512  netkit-telnet=e2cfabed12326af5e288def1821353eacffb4586008263dcd1bed1a9dd9d8548e51e68d7ede58ea75927783ba534ea8807ec722271843a77146f064f3d826dd3
 Patch0:         CVE-2022-39028.patch
+Patch1:         CVE-2020-10188.patch
+Patch2:         CVE-2004-0911.patch
 
 BuildRequires:  ncurses-devel
 
@@ -69,6 +71,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/in.telnetd.8.gz
 
 %changelog
+* Mon Nov 03 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.17-5
+- Fix CVE-2004-0911 and CVE-2020-10188
 * Tue Oct 03 2023 Shivani Agarwal <shivania2@vmware.com> 0.17-4
 - Fix CVE-2022-39028
 * Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 0.17-3
