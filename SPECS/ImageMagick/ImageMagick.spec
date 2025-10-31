@@ -110,7 +110,7 @@ however.
 %install
 %make_install %{?_smp_mflags}
 
-%if 0%{?wirh_check}
+%if 0%{?with_check}
 %check
 export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %make_build check
