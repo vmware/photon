@@ -1,7 +1,7 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
 Version:        34.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -17,11 +17,22 @@ BuildRequires:  zlib-devel
 BuildRequires:  openssl-devel
 BuildRequires:  gtk-doc
 
-Requires: xz-libs
-Requires: zlib
+Requires: kmod-binary = %{version}-%{release}
 
 %description
 The Kmod package contains libraries and utilities for loading kernel modules
+
+%package        binary
+Summary:        kmod binary only
+Conflicts:      %{name} < 34.1-3
+
+Requires:       xz-libs
+Requires:       zlib
+Requires:       openssl-libs
+Requires:       glibc-libs
+
+%description    binary
+Contains only %{_bindir}/kmod
 
 %package        devel
 Summary:        Header and development files for kmod
@@ -52,6 +63,7 @@ autoreconf -vfi
 
 %files
 %defattr(-,root,root)
+%exclude %{_bindir}/kmod
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/*.so.*
@@ -62,6 +74,10 @@ autoreconf -vfi
 %exclude %{_datadir}/fish
 %exclude %{_datadir}/zsh
 
+%files binary
+%defattr(-,root,root)
+%{_bindir}/kmod
+
 %files devel
 %defattr(-,root,root)
 %{_datadir}/pkgconfig/%{name}.pc
@@ -70,6 +86,8 @@ autoreconf -vfi
 %{_libdir}/*.so
 
 %changelog
+* Thu Oct 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 34.1-3
+- Split kmod binary into minimal package
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 34.1-2
 - Release bump for aarch64 SRP compliance
 * Mon Mar 10 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 34.1-1
