@@ -3,7 +3,7 @@
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet
 Version:        0.17
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://rpm5.org/files/popt
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -15,6 +15,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:         CVE-2022-39028.patch
+Patch1:         CVE-2020-10188.patch
+Patch2:         CVE-2004-0911.patch
 
 BuildRequires: ncurses-devel
 
@@ -71,6 +73,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/in.telnetd.8.gz
 
 %changelog
+* Fri Oct 31 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.17-8
+- Fix CVE-2004-0911 and CVE-2020-10188
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17-7
 - Bump version as a part of ncurses upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.17-6
