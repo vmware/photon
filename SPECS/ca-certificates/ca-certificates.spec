@@ -5,7 +5,7 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
 Version:        20250612
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -23,7 +23,9 @@ Source5: make-cert.sh
 
 Requires: openssl-libs
 Requires: %{name}-pki = %{version}-%{release}
-Requires(posttrans): /usr/bin/ln
+
+# Keep toybox here, else coreutils gets added to docker image
+Requires(posttrans): (coreutils or coreutils-selinux or toybox)
 
 BuildRequires: openssl
 
@@ -95,6 +97,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Thu Apr 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250612-2
+- Fix requires
 * Tue Jun 17 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 20250612-1
 - Version upgrade
 * Thu Nov 21 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-6

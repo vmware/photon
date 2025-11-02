@@ -4,7 +4,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -26,6 +26,11 @@ BuildRequires:  attr-devel
 
 Requires:       gmp
 Requires:       %{name}-minimal = %{version}-%{release}
+Provides: /usr/bin/chown
+Provides: /usr/bin/cp
+Provides: /usr/bin/ln
+Provides: /usr/bin/mv
+Provides: /usr/bin/rm
 
 Provides:       sh-utils
 
@@ -112,6 +117,8 @@ touch %{coreutils_present}
 %defattr(-,root,root)
 
 %changelog
+* Thu Apr 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-9
+- Add provides entries
 * Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-8
 - Introduce minimal sub package
 * Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-7

@@ -16,7 +16,6 @@ Patch0: diagnose-negative-repeat-value-in-pcre2test-subj-line.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  libtool
 BuildRequires:  make
 BuildRequires:  readline-devel

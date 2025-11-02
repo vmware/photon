@@ -1,7 +1,7 @@
 Summary:    Program shows full path of (shell) commands
 Name:       which
 Version:    2.21
-Release:    8%{?dist}
+Release:    9%{?dist}
 URL:        http://savannah.gnu.org/projects/which
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -11,6 +11,8 @@ Source0: http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Provides:       /usr/bin/which
 
 Conflicts:      toybox < 0.8.2-2
 
@@ -34,6 +36,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/man1/*
 
 %changelog
+* Sun Nov 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.21-9
+- Add provides entries
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.21-8
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.21-7

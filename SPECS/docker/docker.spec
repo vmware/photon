@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        29.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -66,7 +66,7 @@ Requires:       device-mapper-libs
 Requires:       systemd
 Requires:       containerd
 # 20.10 uses containerd v2 shim by default
-Requires:       /usr/bin/containerd-shim-runc-v2
+Requires:       containerd-extras
 Requires:       iptables
 Requires(pre):  shadow
 
@@ -297,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Sat Apr 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.2.1-3
+- Fix requires
 * Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.2.1-2
 - Version bump for removing lzo support in docker
 * Tue Feb 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.2.1-1

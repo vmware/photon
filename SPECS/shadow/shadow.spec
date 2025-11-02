@@ -3,7 +3,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -73,6 +73,11 @@ Requires: libpwquality
 Requires: openssl
 Requires: %{name}-libs = %{version}-%{release}
 Requires: %{name}-tools = %{version}-%{release}
+
+Provides: /usr/sbin/useradd
+Provides: /usr/sbin/userdel
+Provides: /usr/sbin/groupadd
+Provides: /usr/sbin/groupdel
 
 %description
 The Shadow package contains programs for handling passwords in a secure way.
@@ -216,6 +221,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Dec 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-14
+- Add provides entries
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-13
 - Cosmetic changes in pam files
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-12
