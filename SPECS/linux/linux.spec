@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -452,6 +452,15 @@ Patch250: 0001-drm-amdgpu-fix-usage-slab-after-free.patch
 
 # Fix CVE-2024-53168
 Patch251: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
+
+# Fix CVE-2023-53597
+Patch252: 0001-cifs-fix-mid-leak-during-reconnection-after-timeout-.patch
+
+# Fix CVE-2025-39990
+Patch253: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
+
+# Fix CVE-2022-49635
+Patch254: 0001-drm-i915-selftests-fix-subtraction-overflow-bug.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1140,6 +1149,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Nov 03 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-2
+- Fixes CVE-2023-53597, CVE-2025-39990 and CVE-2022-49635
 * Fri Oct 31 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-1
 - Update to version 5.10.246
 * Thu Oct 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.245-4

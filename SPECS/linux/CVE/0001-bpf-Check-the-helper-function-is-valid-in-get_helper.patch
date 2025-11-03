@@ -1,0 +1,49 @@
+From 7c0d7e9b046872e9a4249bdcc90674810bb27965 Mon Sep 17 00:00:00 2001
+From: Jiri Olsa <olsajiri@gmail.com>
+Date: Wed, 29 Oct 2025 15:42:12 +0530
+Subject: [PATCH] bpf: Check the helper function is valid in get_helper_proto
+
+[ Upstream commit e4414b01c1cd9887bbde92f946c1ba94e40d6d64 ]
+
+kernel test robot reported verifier bug [1] where the helper func
+pointer could be NULL due to disabled config option.
+
+As Alexei suggested we could check on that in get_helper_proto
+directly. Marking tail_call helper func with BPF_PTR_POISON,
+because it is unused by design.
+
+  [1] https://lore.kernel.org/oe-lkp/202507160818.68358831-lkp@intel.com
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Reported-by: syzbot+a9ed3d9132939852d0df@syzkaller.appspotmail.com
+Suggested-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Paul Chaignon <paul.chaignon@gmail.com>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20250814200655.945632-1-jolsa@kernel.org
+Closes: https://lore.kernel.org/oe-lkp/202507160818.68358831-lkp@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Guru: Check if func is not NULL inside get_helper_proto itself.
+ poison is not essential part of the CVE fix]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ kernel/bpf/verifier.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 75251870430e..adf7dd20e335 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5596,7 +5596,7 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+ 
+ 	if (env->ops->get_func_proto)
+ 		fn = env->ops->get_func_proto(func_id, env->prog);
+-	if (!fn) {
++	if (!(fn && fn->func)) {
+ 		verbose(env, "unknown func %s#%d\n", func_id_name(func_id),
+ 			func_id);
+ 		return -EINVAL;
+-- 
+2.43.0
+

@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.246
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -430,6 +430,15 @@ Patch245: 0001-drm-amdgpu-fix-usage-slab-after-free.patch
 # Fix CVE-2024-53168
 Patch246: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
 
+# Fix CVE-2023-53597
+Patch247: 0001-cifs-fix-mid-leak-during-reconnection-after-timeout-.patch
+
+# Fix CVE-2025-39990
+Patch248: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
+
+# Fix CVE-2022-49635
+Patch249: 0001-drm-i915-selftests-fix-subtraction-overflow-bug.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -818,6 +827,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 03 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-2
+- Fixes CVE-2023-53597, CVE-2025-39990 and CVE-2022-49635
 * Fri Oct 31 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-1
 - Update to version 5.10.246
 * Mon Oct 20 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.245-2

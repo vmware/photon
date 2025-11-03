@@ -1,0 +1,104 @@
+From 16150dc3412d0853f071a73205dd1cca02dabcd3 Mon Sep 17 00:00:00 2001
+From: Shyam Prasad N <nspmangalore@gmail.com>
+Date: Thu, 23 Oct 2025 16:26:33 +0530
+Subject: [PATCH] cifs: fix mid leak during reconnection after timeout
+ threshold
+
+commit 69cba9d3c1284e0838ae408830a02c4a063104bc upstream.
+
+When the number of responses with status of STATUS_IO_TIMEOUT
+exceeds a specified threshold (NUM_STATUS_IO_TIMEOUT), we reconnect
+the connection. But we do not return the mid, or the credits
+returned for the mid, or reduce the number of in-flight requests.
+
+This bug could result in the server->in_flight count to go bad,
+and also cause a leak in the mids.
+
+This change moves the check to a few lines below where the
+response is decrypted, even of the response is read from the
+transform header. This way, the code for returning the mids
+can be reused.
+
+Also, the cifs_reconnect was reconnecting just the transport
+connection before. In case of multi-channel, this may not be
+what we want to do after several timeouts. Changed that to
+reconnect the session and the tree too.
+
+Also renamed NUM_STATUS_IO_TIMEOUT to a more appropriate name
+MAX_STATUS_IO_TIMEOUT.
+
+Fixes: 8e670f77c4a5 ("Handle STATUS_IO_TIMEOUT gracefully")
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Harshit: Backport to 5.15.y]
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/cifs/connect.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 5fc418f9210a..ada0f9d9e565 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -71,7 +71,7 @@ extern bool disable_legacy_dialects;
+ #define TLINK_IDLE_EXPIRE	(600 * HZ)
+ 
+ /* Drop the connection to not overload the server */
+-#define NUM_STATUS_IO_TIMEOUT   5
++#define MAX_STATUS_IO_TIMEOUT   5
+ 
+ enum {
+ 	/* Mount options that take no arguments */
+@@ -1077,6 +1077,7 @@ cifs_demultiplex_thread(void *p)
+ 	struct mid_q_entry *mids[MAX_COMPOUND];
+ 	char *bufs[MAX_COMPOUND];
+ 	unsigned int noreclaim_flag, num_io_timeout = 0;
++	bool pending_reconnect = false;
+ 
+ 	noreclaim_flag = memalloc_noreclaim_save();
+ 	cifs_dbg(FYI, "Demultiplex PID: %d\n", task_pid_nr(current));
+@@ -1116,6 +1117,8 @@ cifs_demultiplex_thread(void *p)
+ 		cifs_dbg(FYI, "RFC1002 header 0x%x\n", pdu_length);
+ 		if (!is_smb_response(server, buf[0]))
+ 			continue;
++
++		pending_reconnect = false;
+ next_pdu:
+ 		server->pdu_size = pdu_length;
+ 
+@@ -1175,10 +1178,13 @@ cifs_demultiplex_thread(void *p)
+ 		if (server->ops->is_status_io_timeout &&
+ 		    server->ops->is_status_io_timeout(buf)) {
+ 			num_io_timeout++;
+-			if (num_io_timeout > NUM_STATUS_IO_TIMEOUT) {
+-				cifs_reconnect(server);
++			if (num_io_timeout > MAX_STATUS_IO_TIMEOUT) {
++				cifs_server_dbg(VFS,
++						"Number of request timeouts exceeded %d. Reconnecting",
++						MAX_STATUS_IO_TIMEOUT);
++
++				pending_reconnect = true;
+ 				num_io_timeout = 0;
+-				continue;
+ 			}
+ 		}
+ 
+@@ -1221,6 +1227,11 @@ cifs_demultiplex_thread(void *p)
+ 			buf = server->smallbuf;
+ 			goto next_pdu;
+ 		}
++
++		/* do this reconnect at the very end after processing all MIDs */
++		if (pending_reconnect)
++			cifs_reconnect(server);
++
+ 	} /* end while !EXITING */
+ 
+ 	/* buffer usually freed in free_mid - need to free it here on exit */
+-- 
+2.43.0
+
