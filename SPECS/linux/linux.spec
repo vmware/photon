@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.245
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.246
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=9c42a7547467513806dd2b44e4efc24edc76e93b1c5bcb9efedd5695262275ad7e83c202481289bbf3aedf4978049cd6df04d6132014e53f9fc9afdb7a4b21ad
+%define sha512 linux=8b99d93386ba69a8fb83b9675e6e6a8e1f01637d333ae431ce03435cc4b25b65016b34df9e8721aecfd2ad0fd652087dd370fc816ab7f1d9879fa314214398d3
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -306,9 +306,6 @@ Patch177: 0001-drm-amd-display-added-NULL-check-at-start-of-dc_vali.patch
 # Fix CVE-2024-46816
 Patch178: 0001-drm-amd-display-handle-invalid-connector-indices.patch
 
-# Fix CVE-2024-50143
-Patch180: 0001-udf-fix-uninit-value-use-in-udf_get_fileshortad.patch
-
 # Fix CVE-2024-50014
 Patch183: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
 
@@ -367,10 +364,6 @@ Patch207: 0001-wifi-iwlwifi-mvm-Fix-a-memory-corruption-issue.patch
 
 # Fix CVE-2024-49991
 Patch208: 0002-drm-amdkfd-amdkfd_free_gtt_mem-clear-the-correct-poi.patch
-
-# Fix CVE-2024-50067
-Patch209: 0003-uprobes-encapsulate-preparation-of-uprobe-args-buffe.patch
-Patch210: 0004-uprobe-avoid-out-of-bounds-memory-access-of-fetching.patch
 
 # Fix CVE-2023-52621
 Patch211: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
@@ -1147,6 +1140,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Oct 31 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-1
+- Update to version 5.10.246
 * Thu Oct 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.245-4
 - Deprecate linux-aws
 * Wed Oct 29 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.245-3
