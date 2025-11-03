@@ -167,6 +167,9 @@ class SRP(object):
         # uid.obj.comp.package.go(name='sigs.k8s.io/yaml',version='v1.3.0')
         path = unquote(path).replace("!", "")
         path = path.removeprefix(GO_REMOTE_PREFIX)
+        # Handle urls that list or query latest versions
+        if path.endswith("list") or "@latest" in path:
+            return None
         name, version = path.split("@v")
         name = name.removesuffix("/")
         version = version.removeprefix("/")
@@ -261,17 +264,16 @@ class SRP(object):
         try:
             for path in additional_paths:
                 if path.startswith(GO_REMOTE_PREFIX):
-                    self.schematic["input_templates"]["go-comps"][self.goDepPathToUid(path)] = {
-                        "incorporated": True, "usages": ["functionality", "building"], "modified": False, "interaction_type": "static_linking"}
+                    uid = self.goDepPathToUid(path)
+                    if not uid:
+                        continue
+                    self.schematic["input_templates"]["go-comps"].setdefault(uid, {"incorporated": True, "usages": ["functionality", "building"], "modified": False, "interaction_type": "static_linking"})
                 elif path.startswith(MAVEN_REMOTE_PREFIX) and path.endswith(".jar"):
-                    self.schematic["input_templates"]["maven-comps"][self.mavenPathToUid(path)] = {
-                        "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+                    self.schematic["input_templates"]["maven-comps"].setdefault(self.mavenPathToUid(path), {"incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"})
                 elif path.startswith(GRADLE_PLUGINS_REMOTE_PREFIX) and path.endswith(".jar"):
-                    self.schematic["input_templates"]["gradle-comps"][self.gradlePathToUid(path)] = {
-                        "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+                    self.schematic["input_templates"]["gradle-comps"].setdefault(self.gradlePathToUid(path), {"incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"})
                 elif path.startswith(GRADLE_SERVICES_VIRTUAL_PREFIX) and path.endswith(".zip"):
-                    self.schematic["input_templates"]["gradle-comps"][self.gradleDistPathToUid(path)] = {
-                        "incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"}
+                    self.schematic["input_templates"]["gradle-comps"].setdefault(self.gradleDistPathToUid(path), {"incorporated": False, "usages": ["building"], "modified": False, "interaction_type": "dev_tools/excluded"})
         except Exception as e:
             self.logger.exception(e)
 
