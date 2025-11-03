@@ -3,7 +3,7 @@
 %define network_required 1
 Name:           kapacitor
 Version:        1.7.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
@@ -118,6 +118,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Mon Nov 03 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.7-2
+- Version bump to fix go input dep on influxdata/pkg-config
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.7-1
 - Upgrade to 1.7.7
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-15
