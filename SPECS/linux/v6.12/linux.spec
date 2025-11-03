@@ -70,7 +70,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -96,6 +96,7 @@ Source7:        check_for_config_applicability.inc
 Source18:       spec_install_post.inc
 Source19:       %{name}-dracut-%{_arch}.conf
 Source20:       photon_sb2020.pem
+Source21:       photon_km_2025.pem
 
 %ifarch x86_64
 # Secure Boot
@@ -403,7 +404,6 @@ BuildRequires:  libcap-devel
 %if "%{?signing_script}" != ""
 %define network_required 1
 BuildRequires:  ca-certificates-pki
-BuildRequires:  sbsigntools
 BuildRequires:  python3-requests
 %endif
 %endif
@@ -610,7 +610,7 @@ sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \
 
 cp %{SOURCE1} .config
 
-cp %{SOURCE20} photon_sb2020.pem
+cat %{SOURCE20} %{SOURCE21} > photon-cert-bundle.pem
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
@@ -894,6 +894,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Dec 12 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12.60-5
+- Inject photon KM certificate to trusted keyring
 * Fri Dec 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-4
 - Consuming canister.
 * Thu Dec 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-3
