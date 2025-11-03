@@ -4,7 +4,7 @@
 
 Name:           docker-compose
 Version:        2.33.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -15,6 +15,8 @@ Source0:        https://github.com/docker/compose/archive/refs/tags/v%{version}.
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2025-62725.patch
 
 BuildRequires:  go
 BuildRequires:  ca-certificates
@@ -57,6 +59,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Wed Nov 05 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.33.1-3
+- Fix CVE-2025-62725
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.33.1-2
 - Bump version as a part of go upgrade
 * Tue Mar 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.33.1-1
