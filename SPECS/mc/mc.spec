@@ -1,7 +1,7 @@
 Summary:       File manager
 Name:          mc
-Version:       4.8.25
-Release:       3%{?dist}
+Version:       4.8.33
+Release:       1%{?dist}
 License:       GPLv3+
 URL:           https://www.midnight-commander.org
 Group:         Applications/System
@@ -9,9 +9,7 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0:       http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
-%define sha512 mc=51913fd41df18b49498b97ad8e13aa4365cec24ab24169b1abe93209263e4cfea4b52e0faccaf934182c84e8eb5dc49336c885358b4b66c48d38900f890fde5e
-
-Patch0:        disable-extfs-test.patch
+%define sha512 mc=3eb857af2fa689e9458aeef6d3b236fb92684e05c0e3e78e7e5a5fa5dba6431cae39bec51bc84598b0bb60579cb0a0679dcdc6e9f7d88ca85dc37ace251c8632
 
 Requires:      glib >= 2.68.4
 Requires:      pcre
@@ -29,10 +27,10 @@ MC (Midnight Commander) is a text-mode full-screen file manager and visual shell
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 
 %check
 %if 0%{?with_check}
@@ -43,12 +41,14 @@ make %{?_smp_mflags} -k check
 %defattr(-,root,root)
 %{_sysconfdir}/*
 %{_bindir}/*
-%exclude %dir %{_libdir}
 %{_libexecdir}/*
 %{_datadir}/*
 %exclude %dir %{_usrsrc}
+%exclude %dir %{_libdir}
 
 %changelog
+* Mon Nov 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.8.33-1
+- Upgrade to 4.8.33
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.8.25-3
 - Bump version as part of glib upgrade
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.8.25-2
