@@ -3,8 +3,8 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 Summary:       Git extension for versioning large files
 Name:          git-lfs
-Version:       3.2.0
-Release:       16%{?dist}
+Version:       3.7.1
+Release:       1%{?dist}
 URL:           https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Source0:       https://github.com/git-lfs/git-lfs/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -15,12 +15,9 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildRequires: go
 BuildRequires: which
-BuildRequires: rubygem-ronn
 BuildRequires: tar
 BuildRequires: git
 Requires:      git
-
-Patch0: CVE-2024-53263.patch
 
 %description
 Git LFS is a command line extension and specification for managing large files with Git
@@ -31,15 +28,10 @@ Git LFS is a command line extension and specification for managing large files w
 %build
 make %{?_smp_mflags}
 export PATH=$PATH:%{gemdir}/bin
-make man %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
 install -D bin/git-lfs %{buildroot}%{_bindir}/git-lfs
-mkdir -p %{buildroot}%{_mandir}/man1
-mkdir -p %{buildroot}%{_mandir}/man5
-install -D man/man1/* %{buildroot}%{_mandir}/man1
-install -D man/man5/* %{buildroot}%{_mandir}/man5
 
 %post
 git lfs install --system
@@ -54,10 +46,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc LICENSE.md README.md
 %{_bindir}/git-lfs
-%{_mandir}/man1/*
-%{_mandir}/man5/*
 
 %changelog
+* Mon Nov 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-1
+- Upgrade to 3.7.1
+- Fix CVE-2025-26625
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-16
 - Bump version as a part of go upgrade
 * Mon Jan 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-15
