@@ -73,3 +73,6 @@
 -w /etc/shadow -p wa -k shadow
 -w /etc/group -p wa -k group
 -w /etc/gshadow -p wa -k gshadow
+
+# PHTN-50-000266 audit account changes
+-w /etc/security/opasswd -p wa -k opasswd

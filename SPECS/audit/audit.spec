@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        25%{?dist}
+Release:        26%{?dist}
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
@@ -30,7 +30,6 @@ BuildRequires: libcap-ng-devel
 BuildRequires: swig
 BuildRequires: e2fsprogs-devel
 BuildRequires: python3-devel
-BuildRequires: python3-libs
 BuildRequires: systemd-devel
 
 %if 0%{?with_golang}
@@ -72,7 +71,6 @@ cp %{_includedir}/linux/%{name}.h lib/
 
 %build
 %configure \
-    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --exec_prefix=%{_usr} \
     --with-python3=yes \
     --enable-gssapi-krb5=yes \
@@ -170,6 +168,8 @@ systemctl daemon-reload
 %{python3_sitelib}/*
 
 %changelog
+* Tue Nov 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-26
+- Add opasswd file audit rule to default.rules
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-25
 - Load haredening rules by default
 * Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.9-24
