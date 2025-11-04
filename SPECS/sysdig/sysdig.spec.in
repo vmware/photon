@@ -10,7 +10,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.34.1
-Release:        9%{?kernelsubrelease}%{?dist}
+Release:        10%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -32,6 +32,8 @@ Source5: license.txt
 Patch0: get-googletest-sources-from-photonstage.patch
 Patch1: falcosecurity-libs-nodownload.patch
 Patch2: bashcomp-location.patch
+# Fix for scap module
+Patch3: 0001-sysdig-Fix-signature-of-probe-as-per-upstream-kernel.patch
 
 BuildArch: x86_64
 
@@ -82,7 +84,9 @@ Sysdig is scriptable in Lua and includes a command line interface and a powerful
 that runs in your terminal
 
 %prep
-%autosetup -a0 -a1 -p1
+# Using autosetup is not feasible
+%setup -q -a1
+%autopatch -p1 -m0 -M2
 mkdir -p %{_arch}-vmware-linux
 tar xf %{SOURCE2} --strip-components=1 -C %{_arch}-vmware-linux
 
@@ -121,6 +125,10 @@ export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
     -DBUILD_SHARED_LIBS:BOOL=OFF \
     -DCMAKE_BUILD_TYPE=Release
 
+# Fix for scap module
+pushd %{_arch}-vmware-linux
+%autopatch -p1 -m3 -M3
+popd
 export KERNELDIR="%{_modulesdir}/build"
 %{cmake_build}
 
@@ -156,6 +164,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Tue Nov 04 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.34.1-10
+- Fix hash mismatch issue with gcc rap pax plugin.
 * Wed Oct 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.34.1-9
 - Bump-up to sign the module with new cert photon_km_2025
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.34.1-8

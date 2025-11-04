@@ -1,0 +1,51 @@
+From 5f103fd420ee582cbb75f0d984071583cf31c58f Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Tue, 4 Nov 2025 17:00:55 +0000
+Subject: [PATCH] sysdig: Fix signature of probe as per upstream kernel
+
+[why]
+- signature for probe for sched_switch as per [1]
+ has total 5 args
+- But, sysdig scap module has only 4 args as per [2]
+- This causes difference in signature of both probes for sched_switch
+ and thus gcc-rap-plugin[3] generates different hashes for both
+ and this causes kernel panic due to RAP PAX KCFI.
+
+[Fix]
+- Match the signature of probe function from scap (sched_switch_probe)
+ as upstream kernel's probe for sched_switch(probe_sched_switch)
+
+[1]: https://github.com/gregkh/linux/blob/v6.1.158/kernel/trace/trace_sched_switch.c#L24
+[2]: https://github.com/falcosecurity/libs/blob/0.13.4/driver/main.c#L2389
+[3]: https://github.com/vmware/photon/blob/5.0/SPECS/linux/secure/gcc-rap-plugin-with-kcfi.patch
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ driver/src/main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/driver/src/main.c b/driver/src/main.c
+index 4cea5b0..15573e5 100644
+--- a/driver/src/main.c
++++ b/driver/src/main.c
+@@ -184,7 +184,7 @@ TRACEPOINT_PROBE(sched_switch_probe, struct rq *rq, struct task_struct *prev, st
+ #elif (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))
+ TRACEPOINT_PROBE(sched_switch_probe, struct task_struct *prev, struct task_struct *next);
+ #else
+-TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next);
++TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next, unsigned int prev_state);
+ #endif /* (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)) */
+ #endif /* CAPTURE_CONTEXT_SWITCHES */
+ 
+@@ -2386,7 +2386,7 @@ TRACEPOINT_PROBE(sched_switch_probe, struct rq *rq, struct task_struct *prev, st
+ #elif (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))
+ TRACEPOINT_PROBE(sched_switch_probe, struct task_struct *prev, struct task_struct *next)
+ #else
+-TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next)
++TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next, unsigned int prev_state)
+ #endif
+ {
+ 	struct event_data_t event_data;
+-- 
+2.40.4
+
