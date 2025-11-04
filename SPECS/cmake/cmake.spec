@@ -3,7 +3,7 @@
 Summary:      Cross-platform make system
 Name:         cmake
 Version:      3.25.2
-Release:      9%{?dist}
+Release:      10%{?dist}
 URL:          http://www.cmake.org
 Group:        Development/Tools
 Vendor:       VMware, Inc.
@@ -77,6 +77,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.25.2-10
+- Bump version as a part of libarchive upgrade
 * Mon Oct 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.25.2-9
 - Avoid using undocumented type for CURLOPT_NETRC values
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.25.2-8

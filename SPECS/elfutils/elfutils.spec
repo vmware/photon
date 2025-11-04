@@ -4,7 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.189
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Vendor:         VMware, Inc.
@@ -206,6 +206,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.189-7
+- Bump version as a part of libarchive upgrade
 * Wed Mar 5 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.189-6
 - fixes for CVE-2025-1352, CVE-2025-1365, CVE-2025-1372, CVE-2025-1376, CVE-2025-1377
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-5

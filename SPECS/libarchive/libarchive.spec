@@ -1,7 +1,7 @@
 Summary:        Multi-format archive and compression library
 Name:           libarchive
-Version:        3.7.1
-Release:        7%{?dist}
+Version:        3.8.2
+Release:        1%{?dist}
 URL:            http://www.libarchive.org
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
@@ -11,12 +11,6 @@ Source0:        http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: CVE-2024-26256.patch
-Patch1: CVE-2024-48957.patch
-Patch2: CVE-2024-48958.patch
-Patch3: CVE-2025-1632-and-CVE-2025-25724.patch
-Patch4: CVE-2025-5914.patch
 
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
@@ -70,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.8.2-1
+- Version upgrade, Fixes multiple CVEs
 * Mon Jun 30 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.1-7
 - Fix CVE-2025-5914
 * Wed Mar 12 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.7.1-6
