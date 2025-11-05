@@ -41,3 +41,5 @@ Patch39: CVE-2025-1176.patch
 Patch40: CVE-2025-1178.patch
 Patch41: CVE-2025-1181-pre.patch
 Patch42: CVE-2025-1181.patch
+Patch43: CVE-2025-11839.patch
+Patch44: CVE-2025-11840.patch
