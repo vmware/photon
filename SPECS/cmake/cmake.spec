@@ -3,7 +3,7 @@
 Summary:    Cmake
 Name:       cmake
 Version:    3.18.3
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    BSD and LGPLv2+
 URL:        http://www.cmake.org
 Group:      Development/Tools
@@ -17,6 +17,8 @@ Source1:    macros.%{name}
 
 Patch0:         find-python-3.10-1.patch
 Patch1:         find-python-3.10-2.patch
+Patch2:         0001-cmCurl-Avoid-using-undocumented-type-for-CURLOPT_NETRC-values.patch
+Patch3:         0002-Avoid-using-undocumented-type-for-CURLOPT_PROXYTYPE-values.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  xz-devel
@@ -28,7 +30,7 @@ BuildRequires:  bzip2-devel
 BuildRequires:  libgcrypt-devel
 
 Requires:       libgcrypt
-Requires:       curl-libs
+Requires:       curl-libs >= 8.16.0
 Requires:       ncurses
 Requires:       expat
 Requires:       zlib
@@ -77,6 +79,8 @@ make %{?_smp_mflags} test
 %{_rpmmacrodir}/macros.%{name}
 
 %changelog
+* Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.18.3-10
+- Avoid using undocumented type for CURLOPT_NETRC values
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.18.3-9
 - Version bump for expat upgrade
 * Thu Feb 29 2024 Anmol Jain <anmol.jain@broadcom.com> 3.18.3-8

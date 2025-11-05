@@ -1,0 +1,26 @@
+From 10a08d92e56b0d842e24f34a090389daf4f494fb Mon Sep 17 00:00:00 2001
+From: Sam James <sam@gentoo.org>
+Date: Tue, 15 Jul 2025 10:21:39 +0100
+Subject: [PATCH] dev-perl/WWW-Curl: fix build w/ newer curl
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bug: https://github.com/szbalint/WWW--Curl/issues/29
+Closes: https://bugs.gentoo.org/953406
+Thanks-to: Mihai Donțu
+Signed-off-by: Sam James <sam@gentoo.org>
+
+diff --git a/Makefile.PL b/Makefile.PL
+index 311b03a..3d5d318 100644
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -127,7 +127,7 @@ if (!defined($curl_h)) {
+     close H;
+
+     for my $e (sort @syms) {
+-       if($e =~ /(OBSOLETE|^CURL_DEPRECATED\z|^CURL_EXTERN|^CURL_IGNORE_DEPRECATION\z|^CURL_STRICTER\z|^CURL_WIN32\z|^CURLOPT\z|^CURLOPTDEPRECATED\z|_LAST\z|_LASTENTRY\z)/) {
++       if($e =~ /(OBSOLETE|^CURL_HAS_DECLSPEC_ATTRIBUTE|^CURL_DEPRECATED\z|^CURL_EXTERN|^CURL_IGNORE_DEPRECATION\z|^CURL_STRICTER\z|^CURL_WIN32\z|^CURLOPT\z|^CURLOPTDEPRECATED\z|_LAST\z|_LASTENTRY\z)/) {
+           next;
+        }
+        my ($group) = $e =~ m/^([^_]+_)/;
