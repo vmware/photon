@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.35
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -11,42 +11,8 @@ Distribution:   Photon
 Source0: http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha512 %{name}=9f222e4ab6720036402d03904fb11b73ab87714b85cd84997f7d357f405c7e10581d70202f9165a1ee0c70538632db27ecc9dfe627dddb1e6bc7edb1537cf786
 
-Patch1:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
-Patch2:         binutils-CVE-2019-1010204.patch
-Patch3:         binutils-CVE-2021-3487.patch
-Patch4:         binutils-CVE-2021-20294.patch
-Patch5:         binutils-CVE-2021-45078.patch
-Patch6:         binutils-CVE-2022-38533.patch
-Patch7:         binutils-bug-26520.patch
-Patch8:         binutils-CVE-2022-4285.patch
-Patch9:         binutils-CVE-2023-1972.patch
-Patch10:        binutils-CVE-2023-25584.patch
-Patch11:        binutils-CVE-2023-25585.patch
-Patch12:        binutils-CVE-2023-25588.patch
-Patch13:        binutils-CVE-2021-20197-1.patch
-Patch14:        binutils-CVE-2021-20197-2.patch
-Patch15:        binutils-CVE-2021-20197-3.patch
-Patch16:        binutils-CVE-2021-20197-4.patch
-Patch17:        binutils-CVE-2020-35448.patch
-Patch18:        binutils-CVE-2021-3549.patch
-Patch19:        binutils-CVE-2022-47695.patch
-Patch20:        binutils-CVE-2021-46174.patch
-Patch21:        binutils-CVE-2022-44840.patch
-Patch22:        binutils-CVE-2022-48064.patch
-Patch23:        binutils-CVE-2022-48063.patch
-Patch24:        binutils-CVE-2022-47008.patch
-Patch25:        binutils-CVE-2022-47007.patch
-Patch26:        binutils-CVE-2022-47011.patch
-Patch27:        binutils-CVE-2022-47010.patch
-Patch28:        binutils-CVE-2022-48065.patch
-Patch29:        binutils-CVE-2022-35205.patch
-Patch30:        binutils-CVE-2025-0840.patch
-Patch31:        CVE-2025-1182.patch
-Patch32:        CVE-2025-5244.patch
-Patch33:        CVE-2025-5245-1.patch
-Patch34:        CVE-2025-5245-2.patch
-Patch35:        CVE-2025-7545.patch
-Patch36:        CVE-2025-7546.patch
+Source1: %{name}.patches
+%include %{SOURCE1}
 
 Requires:       %{name}-libs = %{version}-%{release}
 
@@ -178,6 +144,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Wed Nov 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.35-17
+- Fix CVE-2025-11839, CVE-2025-11840
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.35-16
 - CVE fixes
 * Mon Mar 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.35-15
