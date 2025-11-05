@@ -1,7 +1,7 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.120
-Release:       8%{?dist}
+Release:       9%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
@@ -13,6 +13,7 @@ Source0: https://gitlab.freedesktop.org/polkit/polkit/-/archive/%{version}/%{nam
 
 Patch0: CVE-2021-4034.patch
 Patch1: CVE-2021-4115.patch
+Patch2: polkit-CVE-2025-7519.patch
 
 BuildRequires: autoconf
 BuildRequires: expat-devel
@@ -110,6 +111,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Nov 05 2025 Dweep Advani <dweep.advani@broadcom.com> 0.120-9
+- Fixed CVE-2025-7519
 * Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.120-8
 - Fix user creation
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.120-7
