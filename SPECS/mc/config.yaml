@@ -1,32 +1,29 @@
 sources:
-- archive: mc-4.8.28.tar.xz
-  archive_sha512sum: ca3b3a57281e9387cb52bf1fcfc3f39a4d5f438aafc256dc492c192678824f67c983a852c759664efc5bc6d0de471c9b3929834f8301f6302ca1ebeee513fdfd
+- archive: mc-4.8.33.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 3eb857af2fa689e9458aeef6d3b236fb92684e05c0e3e78e7e5a5fa5dba6431cae39bec51bc84598b0bb60579cb0a0679dcdc6e9f7d88ca85dc37ace251c8632
+  repo_url: https://github.com/MidnightCommander/mc
+  url: http://ftp.midnight-commander.org/mc-4.8.33.tar.xz
+  commit_id: e7e21869da5a2651ebccce5274e47fb3e607eba6
+  skip_validation: false
+  name: mc-4.8.33
+  version: 4.8.33
   license_manual_review:
   - file_paths:
-    - mc-4.8.28/lib/strutil/strverscmp.c
-    sha256sum: cc753333a1f5160732de0fc2b693176967c89667e6f051f9732f31252d251c14
+    - mc-4.8.33/lib/strutil/strverscmp.c
+    sha256sum: 07d08de8acd3bfbe6bba384c7e9fc52f95c12d76fb91354c8a86fbe5b6dd22e2
     spdx_exp: GPL-3.0-or-later AND LGPL-2.1-or-later
   - file_paths:
-    - mc-4.8.28/doc/hlp/es/xnc.hlp
+    - mc-4.8.33/doc/hlp/es/xnc.hlp
     sha256sum: 25e1258a9d497b7e393d7e53a79950aea15e480b79bfe524aa37dbc873d89e26
     spdx_exp: GPL-3.0-or-later
-  skip_validation: true
+  missing: [.gitattributes, ca.gmo, sr.gmo, fa.gmo, configure, macro.2.sh, ga.gmo, pt_BR.gmo, zh_CN.gmo, pl.gmo, listmode.h, te.gmo, viewer, kk.gmo, config, NEWS.4.7, README.uzip, ar.gmo, nl.gmo, mc-version.h, remove-potcdate.sin, mc.macros, gl.gmo, filehighlight.txt, RELEASE_PROCEDURE, ta.gmo, nb.gmo, eo.gmo, hr.gmo, mc.keymap, .github, be.gmo, .gitignore, m4, Makefile.in, event-ru.txt, en@quot.header, bg.gmo, ABOUT-NLS, lt.gmo, ia.gmo, event.txt, fr_CA.gmo, he.gmo, en_GB.gmo, id.gmo, README, de.gmo, ko.gmo, zh_TW.gmo, it.gmo, af.gmo, stamp-po, Rules-quot, Makefile.in.in, az.gmo, ja.gmo, tr.gmo, lv.gmo, de_CH.gmo, config.h.in, hu.gmo, wa.gmo, cs.gmo, insert-header.sin, eu.gmo, uk.gmo, Rules-pot-defaults, ro.gmo, sl.gmo, da.gmo, fr.gmo, POTFILES.in, et.gmo, uz.gmo, NEWS.OLD, el.gmo, fi.gmo, nl_BE.gmo, maint, aclocal.m4, ka.gmo, sv.gmo, README.it, vi.gmo, br.gmo, quot.sed, autogen.sh, szl.gmo, boldquot.sed, pt.gmo, listmode.c, mn.gmo, ie.gmo, README.txt, en@boldquot.header, ru.gmo, sk.gmo, es.gmo, kw.gmo]
+  skip_list: [fr.po, ia.po, sk.po, uz.po, szl.po, sv.po, sl.po, af.po, ru.po, bg.po, id.po, lt.po, el.po, lv.po, da.po, de.po, fr_CA.po, nl.po, et.po, eo.po, az.po, mc.pot, kk.po, sr.po, cs.po, br.po, ar.po, eu.po, be.po, ga.po, ro.po, fa.po, pt.po, ca.po, he.po, it.po, nb.po, de_CH.po, nl_BE.po, hu.po, ka.po, vi.po, te.po, gl.po, kw.po, mn.po, ja.po, zh_TW.po, hr.po, uk.po, en_GB.po, pt_BR.po, wa.po, es.po, ko.po, pl.po, tr.po, zh_CN.po, ie.po, fi.po, ta.po]
   spdx:
     package:
-      detailed_description: 'MC (Midnight Commander) is a text-mode full-screen file
-        manager and visual shell. '
+      detailed_description: 'MC (Midnight Commander) is a text-mode full-screen file manager and visual shell. '
       home_page: https://www.midnight-commander.org
-      license_concluded: AGPL-3.0-or-later AND Apache-2.0 AND BSD-3-Clause AND FSFAP
-        AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Libtool-exception
-        AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND X11
-      license_declared: AGPL-3.0-or-later AND Apache-2.0 AND BSD-3-Clause AND FSFAP
-        AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Libtool-exception
-        AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND X11
+      license_concluded: AGPL-3.0-or-later AND Apache-2.0 AND BSD-3-Clause AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND MIT-CMU AND X11
+      license_declared: AGPL-3.0-or-later AND Apache-2.0 AND BSD-3-Clause AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND MIT-CMU AND X11
       short_summary: File manager
       supplier: 'Organization: Broadcom, Inc.'

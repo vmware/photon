@@ -1,7 +1,7 @@
 Summary:        File manager
 Name:           mc
-Version:        4.8.28
-Release:        4%{?dist}
+Version:        4.8.33
+Release:        1%{?dist}
 URL:            https://www.midnight-commander.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ make %{?_smp_mflags} -k check
 %exclude %dir %{_libdir}
 
 %changelog
+* Mon Nov 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.8.33-1
+- Upgrade to 4.8.33
 * Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> 4.8.28-4
 - Override false positive copyleft license AGPL-3.0-or-later
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.8.28-3
