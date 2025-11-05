@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:       Tracks system calls that are made by a running process
 Name:          strace
-Version:       6.18
-Release:       1%{?dist}
+Version:       6.1
+Release:       4.1%{?dist}
 URL:           https://strace.io/
 Group:         Development/Debuggers
 Vendor:        VMware, Inc.
@@ -13,8 +13,6 @@ Source0:       https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires: gcc gzip libacl-devel libaio-devel
-
-Requires:      %{name}-bin = %{version}-%{release}
 
 %description
 strace is a diagnostic, debugging and instructional userspace utility for Linux. It is
@@ -29,17 +27,6 @@ Requires:      %{name} = %{version}-%{release}
 %description   graph
 The strace graph is perl script, It displays a graph of invoked subprocesses, and is
 useful for finding out what complex commands do
-
-%package       bin
-Summary:       Subset of %{name} containing only the binary
-Conflicts:     %{name} < 6.18-1
-Requires:      elfutils
-Requires:      zlib
-Requires:      zstd-libs
-Requires:      bzip2-libs
-
-%description   bin
-%{summary}
 
 %prep
 %autosetup -p1
@@ -66,19 +53,16 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%{_bindir}/strace
 %{_bindir}/strace-log-merge
 %{_mandir}/man1/*
 
 %files graph
 %{_bindir}/strace-graph
 
-%files bin
-%defattr(-,root,root)
-%{_bindir}/strace
-
 %changelog
-* Tue Feb 10 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.18-1
-- Update to v6.18 and split into subpackage
+* Tue Feb 10 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1-4.1
+- Release bump for 6.1-4.1 version
 * Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 6.1-4
 - Bump for building with updated libaio
 * Thu Jan 09 2025 Tapas Kundu <tapas.kundu@broadcom.com> 6.1-3
