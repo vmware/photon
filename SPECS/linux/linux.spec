@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.158
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -367,6 +367,9 @@ Patch182: 0002-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 # Fix CVE-2025-22121
 Patch183: 0001-ext4-introduce-ITAIL-helper.patch
 Patch184: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
+
+# Fix CVE-2025-39990
+Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -1127,6 +1130,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-3
+- Fix CVE-2025-39990
 * Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-2
 - Fix CVE-2025-22121
 * Tue Nov 11 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.158-1
