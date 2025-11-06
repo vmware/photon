@@ -1,7 +1,10 @@
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        4.2
-Release:        3%{?dist}
+Release:        2.1%{?dist}
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
@@ -23,20 +26,12 @@ Requires:       systemd
 Requires:       ethtool
 Requires:       glibc
 Requires:       tzdata >= 2022g-2
-Requires:       linuxptp-minimal = %{version}-%{release}
 
 %description
 This software is an implementation of the Precision Time Protocol (PTP)
 according to IEEE standard 1588 for Linux. The dual design goals are to provide
 a robust implementation of the standard and to use the most relevant and modern
 Application Programming Interfaces (API) offered by the Linux kernel.
-
-%package        minimal
-Summary:        contains basic binaries of linuxptp
-Conflicts:      %{name} < 4.2-3
-
-%description    minimal
-Contains phc2sys, phc_ctl, pmc, ptp4l
 
 %prep
 %autosetup -n %{name}-%{version} -p1
@@ -96,6 +91,10 @@ rm -rf %{buildroot}
 %{_presetdir}/50-ts2phc.preset
 %{_sbindir}/hwstamp_ctl
 %{_sbindir}/nsm
+%{_sbindir}/phc2sys
+%{_sbindir}/phc_ctl
+%{_sbindir}/pmc
+%{_sbindir}/ptp4l
 %{_sbindir}/timemaster
 %{_sbindir}/ts2phc
 %{_sbindir}/tz2alt
@@ -109,17 +108,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/ts2phc.8.gz
 %{_mandir}/man8/tz2alt.8.gz
 
-%files minimal
-%defattr(-,root,root)
-%{_sbindir}/phc2sys
-%{_sbindir}/phc_ctl
-%{_sbindir}/pmc
-%{_sbindir}/ptp4l
-
 %changelog
-*   Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 4.2-3
--   Split linuxptp binary into minimal package with:
--   phc2sys, phc_ctl, pmc, ptp4l
+*   Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 4.2-2.1
+-   Bump after moving to SPECS/91
 *   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 4.2-2
 -   Release bump for SRP compliance
 *   Thu Mar 21 2024 Roye Eshed <roye.eshed@broadcom.com> 4.2-1

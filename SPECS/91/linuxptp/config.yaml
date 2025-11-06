@@ -1,0 +1,16 @@
+sources:
+- archive: linuxptp-4.2.tgz
+  archive_sha512sum: 479e512efd0573602379a9e1d8ef5c0ec9e033944cee5aed11c68cea5e8a3f7d4b6f2d11f6d6d4718282010da52c2c8629d675d9b388cc0c3d574845a913cdbb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This software is an implementation of the Precision Time
+        Protocol (PTP) according to IEEE standard 1588 for Linux. The dual design
+        goals are to provide a robust implementation of the standard and to use the
+        most relevant and modern Application Programming Interfaces (API) offered
+        by the Linux kernel. '
+      home_page: http://linuxptp.sourceforge.net/
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: The Linux PTP Project
+      supplier: 'Organization: Broadcom, Inc.'
