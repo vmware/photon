@@ -1,7 +1,15 @@
 sources:
-- archive: ctags-6.0.20230212.0.tar.gz
-  archive_sha512sum: 976aaf8c87ab35019ea621ed67781f652ac43250a042708a80e063faa827fa9ecf69ad751a28a09ecb56a9f767a3c79d3a91fbb6cf9625daf3426f8c7f4eb871
-  skip_validation: true
+- archive: ctags-p6.2.20251102.0.tar.gz
+  archive_sha512sum: b3d670e1a9b4535ad17e4fc002e80132dbf02c4cb8de56e60259831cb765b1a0537f51b4c9a8c29c20f1f71de6b714dd4522dd8109048a8fdffed627eaca5a89
+  skip_validation: false
+  archive_type: upstream
+  name: ctags-p6.2.20251102.0
+  version: p6.2.20251102.0
+  url: https://github.com/universal-ctags/ctags/archive/refs/tags/p6.2.20251102.0.tar.gz
+  repo_url: https://github.com/universal-ctags/ctags
+  commit_id: dbf052f1012c7bd9e623106339c3bd285aae998a
+  skip_list: []
+  missing: ['NEWS.rst', 'makefiles', '.dir-locals.el', 'appveyor.yml', '.gitattributes', 'man', 'mk_mvc.mak', 'autogen.sh', 'peg', 'win32', 'COPYING', 'optlib', '.indent.pro', 'dsl', '.editorconfig', 'old-docs', '.ctags.d', 'circle.yml', 'm4', 'README.md', 'configure.ac', 'Makefile.am', '.uncrustify.cfg', 'gnulib', 'libreadtags', 'extra-cmds', 'main', '.gdbinit', 'Tmain', 'parsers', '.github', 'mk_mingw.mak', 'docs', 'source.mak', 'Units', 'misc', '.gitignore', '.readthedocs.yaml']
   spdx:
     package:
       detailed_description: 'Universal Ctags (abbreviated as u-ctags) is a maintained

@@ -1,11 +1,11 @@
-%define upstreamversion 20230212.0
+%define upstreamversion 20251102.0
 
 Summary:        A C programming language indexing and/or cross-reference tool
 Name:           ctags
-Version:        6.0
-Release:        4%{?dist}
+Version:        6.2
+Release:        1%{?dist}
 URL:            https://ctags.io/
-Source0:         https://github.com/universal-ctags/ctags/archive/%{name}-%{version}.%{upstreamversion}.tar.gz
+Source0:        https://github.com/universal-ctags/ctags/archive/%{name}-p%{version}.%{upstreamversion}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -31,6 +31,9 @@ tools to locate the indexed items.
 
 %prep
 %autosetup -p1 -n %{name}-p%{version}.%{upstreamversion}
+%if 0%{?with_check} == 0
+rm -r Units/parser-typescript.r/ts-class-member-init.d/
+%endif
 
 %build
 ./autogen.sh
@@ -56,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Nov 06 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.2-1
+- Upgrade to 6.2 version
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.0-4
 - Bump up to build with latest jansson
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0-3
