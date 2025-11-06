@@ -1,0 +1,115 @@
+From 52fb916001d9f0e7a77ae44e37c6872230aaf3db Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@redhat.com>
+Date: Thu, 10 Apr 2025 10:57:20 -0500
+Subject: [PATCH 1/2] gstring: carefully handle gssize parameters
+
+Wherever we use gssize to allow passing -1, we need to ensure we don't
+overflow the value by assigning a gsize to it without checking if the
+size exceeds the maximum gssize. The safest way to do this is to just
+use normal gsize everywhere instead and use gssize only for the
+parameter.
+
+Our computers don't have enough RAM to write tests for this. I tried
+forcing string->len to high values for test purposes, but this isn't
+valid and will just cause out of bounds reads/writes due to
+string->allocated_len being unexpectedly small, so I don't think we can
+test this easily.
+---
+ glib/gstring.c | 36 +++++++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 13 deletions(-)
+
+diff --git a/glib/gstring.c b/glib/gstring.c
+index 6abb70b..1a79759 100644
+--- a/glib/gstring.c
++++ b/glib/gstring.c
+@@ -426,8 +426,9 @@ g_string_insert_len (GString     *string,
+     return string;
+ 
+   if (len < 0)
+-    len = strlen (val);
+-  len_unsigned = len;
++    len_unsigned = strlen (val);
++  else
++    len_unsigned = len;
+ 
+   if (pos < 0)
+     pos_unsigned = string->len;
+@@ -725,10 +726,12 @@ g_string_insert_c (GString *string,
+   g_string_maybe_expand (string, 1);
+ 
+   if (pos < 0)
+-    pos = string->len;
++    pos_unsigned = string->len;
+   else
+-    g_return_val_if_fail ((gsize) pos <= string->len, string);
+-  pos_unsigned = pos;
++    {
++      pos_unsigned = pos;
++      g_return_val_if_fail (pos_unsigned <= string->len, string);
++    }
+ 
+   /* If not just an append, move the old stuff */
+   if (pos_unsigned < string->len)
+@@ -761,6 +764,7 @@ g_string_insert_unichar (GString  *string,
+                          gssize    pos,
+                          gunichar  wc)
+ {
++  gsize pos_unsigned;
+   gint charlen, first, i;
+   gchar *dest;
+ 
+@@ -802,15 +806,18 @@ g_string_insert_unichar (GString  *string,
+   g_string_maybe_expand (string, charlen);
+ 
+   if (pos < 0)
+-    pos = string->len;
++    pos_unsigned = string->len;
+   else
+-    g_return_val_if_fail ((gsize) pos <= string->len, string);
++    {
++      pos_unsigned = pos;
++      g_return_val_if_fail (pos_unsigned <= string->len, string);
++    }
+ 
+   /* If not just an append, move the old stuff */
+-  if ((gsize) pos < string->len)
+-    memmove (string->str + pos + charlen, string->str + pos, string->len - pos);
++  if (pos_unsigned < string->len)
++    memmove (string->str + pos_unsigned + charlen, string->str + pos_unsigned, string->len - pos_unsigned);
+ 
+-  dest = string->str + pos;
++  dest = string->str + pos_unsigned;
+   /* Code copied from g_unichar_to_utf() */
+   for (i = charlen - 1; i > 0; --i)
+     {
+@@ -868,6 +875,7 @@ g_string_overwrite_len (GString     *string,
+                         const gchar *val,
+                         gssize       len)
+ {
++  gssize len_unsigned;
+   gsize end;
+ 
+   g_return_val_if_fail (string != NULL, NULL);
+@@ -879,14 +887,16 @@ g_string_overwrite_len (GString     *string,
+   g_return_val_if_fail (pos <= string->len, string);
+ 
+   if (len < 0)
+-    len = strlen (val);
++    len_unsigned = strlen (val);
++  else
++    len_unsigned = len;
+ 
+-  end = pos + len;
++  end = pos + len_unsigned;
+ 
+   if (end > string->len)
+     g_string_maybe_expand (string, end - string->len);
+ 
+-  memcpy (string->str + pos, val, len);
++  memcpy (string->str + pos, val, len_unsigned);
+ 
+   if (end > string->len)
+     {
+-- 
+2.51.1
+

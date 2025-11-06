@@ -1,0 +1,25 @@
+From cb15c9a69c8b7ed52b691a934a9c2293e883d0b9 Mon Sep 17 00:00:00 2001
+From: Peter Bloomfield <peterbloomfield@bellsouth.net>
+Date: Fri, 11 Apr 2025 05:52:33 +0000
+Subject: [PATCH 2/2] gstring: Make len_unsigned unsigned
+
+---
+ glib/gstring.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/glib/gstring.c b/glib/gstring.c
+index 1a79759..4cba302 100644
+--- a/glib/gstring.c
++++ b/glib/gstring.c
+@@ -875,7 +875,7 @@ g_string_overwrite_len (GString     *string,
+                         const gchar *val,
+                         gssize       len)
+ {
+-  gssize len_unsigned;
++  gsize len_unsigned;
+   gsize end;
+ 
+   g_return_val_if_fail (string != NULL, NULL);
+-- 
+2.51.1
+
