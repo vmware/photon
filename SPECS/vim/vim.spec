@@ -3,15 +3,14 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.1.1473
-Release:        3%{?dist}
+Version:        9.1.1898
+Release:        1%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-Patch0:         vim-CVE-2025-9390.patch
 
 Source1: vimrc
 
@@ -182,6 +181,9 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Fri Nov 07 2025 Mukul Sikka <mukul.sikka@broadcom.com> 9.1.1898-1
+- Update to v9.1.1898
+- Fix CVE-2025-9389
 * Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 9.1.1473-3
 - Bump version as a part of ncurses upgrade
 * Mon Sep 01 2025 Dweep Advani <dweep.advani@broadcom.com> 9.1.1473-2
