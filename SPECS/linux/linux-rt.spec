@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.157
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -292,6 +292,10 @@ Patch179: 0001-virtio-break-and-reset-virtio-devices-on-device_shut.patch
 
 # Fix CVE-2025-38045
 Patch180: 0001-wifi-iwlwifi-fix-debug-actions-order.patch
+
+# Fix CVE-2025-22022
+Patch181: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
+Patch182: 0002-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -668,6 +672,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Nov 07 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-5
+- Fix CVE-2025-22022
 * Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-4
 - Fix CVE-2025-38057, CVE-2025-38073, CVE-2025-38039,
 - CVE-2025-38045, CVE-2025-38064, CVE-2025-38022

@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.157
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -359,6 +359,10 @@ Patch179: 0001-virtio-break-and-reset-virtio-devices-on-device_shut.patch
 
 # Fix CVE-2025-38045
 Patch180: 0001-wifi-iwlwifi-fix-debug-actions-order.patch
+
+# Fix CVE-2025-22022
+Patch181: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
+Patch182: 0002-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -1119,6 +1123,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Nov 07 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-5
+- Fix CVE-2025-22022
 * Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-4
 - Fix CVE-2025-38057, CVE-2025-38073, CVE-2025-38039,
 - CVE-2025-38045, CVE-2025-38064, CVE-2025-38022
