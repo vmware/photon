@@ -57,8 +57,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.41
-Release:        24%{?acvp_build:.acvp}%{?dist}
+Version:        6.12.57
+Release:        1%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -194,7 +194,6 @@ Patch62: 0002-objtool-Return-error-in-case-of-failures.patch
 Patch63: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
 # vmxnet3
-Patch64: 0001-vmxnet3_unregister_xdp_rxq_info_in_the_reset_path.patch
 Patch65: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
 
 # Backward compatibility
@@ -861,6 +860,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.57-1
+- Update to version 6.12.57
 * Tue Nov 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-24
 - Removed '__SCT__cond_resched' symbol from canister
 * Thu Nov 06 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-23

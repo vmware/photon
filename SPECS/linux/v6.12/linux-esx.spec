@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.41
-Release:        9%{?dist}
+Version:        6.12.57
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -142,7 +142,6 @@ Patch71: 0009-esx-vmxnet3-software-timestamping.patch
 %endif
 
 # vmxnet3
-Patch72: 0001-vmxnet3_unregister_xdp_rxq_info_in_the_reset_path.patch
 Patch73: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
 
 # initialize MMCONFIG
@@ -487,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 07 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.57-1
+- Update to version 6.12.57
 * Thu Nov 06 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-9
 - Introduce new printk wrapper for FIPS canister.
 * Fri Oct 10 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.41-8
