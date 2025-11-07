@@ -1,7 +1,7 @@
-From a3ffd1cbd87f218c44e91c85ede157dd6374a9b0 Mon Sep 17 00:00:00 2001
+From c80b10a57e1d7aafee74e2291d6cc8e94f6122a7 Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
 Date: Mon, 25 Jan 2021 10:53:06 +0530
-Subject: [PATCH 1/7] crypto: AF_ALG -- add sign/verify API
+Subject: [PATCH] crypto: AF_ALG -- add sign/verify API
 
 Add the flags for handling signature generation and signature
 verification.
@@ -19,12 +19,12 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  crypto/af_alg.c             | 10 +++++-----
  crypto/algif_aead.c         | 30 ++++++++++++++++++++----------
  crypto/algif_skcipher.c     | 25 +++++++++++++++++--------
- include/crypto/if_alg.h     |  4 ++--
+ include/crypto/if_alg.h     |  6 +++---
  include/uapi/linux/if_alg.h |  2 ++
- 5 files changed, 46 insertions(+), 25 deletions(-)
+ 5 files changed, 47 insertions(+), 26 deletions(-)
 
 diff --git a/crypto/af_alg.c b/crypto/af_alg.c
-index 0da7c1ac7..b9626a502 100644
+index 6c271e55f44d..c80502df3fbb 100644
 --- a/crypto/af_alg.c
 +++ b/crypto/af_alg.c
 @@ -944,7 +944,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
@@ -51,7 +51,7 @@ index 0da7c1ac7..b9626a502 100644
  			break;
  		default:
  			return -EINVAL;
-@@ -983,7 +983,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
+@@ -989,7 +989,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
  	ctx->init = true;
  
  	if (init) {
@@ -61,7 +61,7 @@ index 0da7c1ac7..b9626a502 100644
  			memcpy(ctx->iv, con.iv->iv, ivsize);
  
 diff --git a/crypto/algif_aead.c b/crypto/algif_aead.c
-index 7d58cbbce..b79e93e2b 100644
+index 7d58cbbce4af..b79e93e2b2ea 100644
 --- a/crypto/algif_aead.c
 +++ b/crypto/algif_aead.c
 @@ -55,7 +55,7 @@ static inline bool aead_sufficient_data(struct sock *sk)
@@ -151,7 +151,7 @@ index 7d58cbbce..b79e93e2b 100644
  
  	ask->private = ctx;
 diff --git a/crypto/algif_skcipher.c b/crypto/algif_skcipher.c
-index 125d395c5..a3a196dff 100644
+index 125d395c5e00..a3a196dff94c 100644
 --- a/crypto/algif_skcipher.c
 +++ b/crypto/algif_skcipher.c
 @@ -93,6 +93,19 @@ static void algif_skcipher_done(void *data, int err)
@@ -208,29 +208,36 @@ index 125d395c5..a3a196dff 100644
  
  	ask->private = ctx;
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index f7b3b93f3..37751e554 100644
+index e8e091633c06..7bc23a3376a3 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
-@@ -133,7 +133,7 @@ struct af_alg_async_req {
+@@ -137,10 +137,10 @@ struct af_alg_async_req {
   * @more:		More data to be expected from user space?
   * @merge:		Shall new data from user space be merged into existing
   *			SG?
 - * @enc:		Cryptographic operation to be performed when
-+ * @op:			Cryptographic operation to be performed when
-  *			recvmsg is invoked.
+- *			recvmsg is invoked.
+  * @write:		True if we are in the middle of a write.
   * @init:		True if metadata has been sent.
++ * @op:			Cryptographic operation to be performed when
++ *			recvmsg is invoked.
   * @len:		Length of memory allocated for this data structure.
-@@ -153,7 +153,7 @@ struct af_alg_ctx {
+  * @inflight:		Non-zero when AIO requests are in flight.
+  */
+@@ -158,10 +158,10 @@ struct af_alg_ctx {
  
- 	bool more;
- 	bool merge;
--	bool enc;
+ 	bool		more:1,
+ 			merge:1,
+-			enc:1,
+ 			write:1,
+ 			init:1;
+ 
 +	int op;
- 	bool init;
- 
  	unsigned int len;
+ 
+ 	unsigned int inflight;
 diff --git a/include/uapi/linux/if_alg.h b/include/uapi/linux/if_alg.h
-index 0824fbc02..3a3b08f75 100644
+index 0824fbc026a1..3a3b08f7500b 100644
 --- a/include/uapi/linux/if_alg.h
 +++ b/include/uapi/linux/if_alg.h
 @@ -57,5 +57,7 @@ struct af_alg_iv {

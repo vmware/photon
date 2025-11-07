@@ -1,4 +1,4 @@
-From 2430ca8bd62684286a3055ebd835234e5fac250d Mon Sep 17 00:00:00 2001
+From 7324cee04e5eaf50907a8545754144091fda2e3c Mon Sep 17 00:00:00 2001
 From: "kernel-team@fedoraproject.org" <kernel-team@fedoraproject.org>
 Date: Fri, 10 Feb 2012 14:56:13 -0500
 Subject: [PATCH] scsi: sd_revalidate_disk prevent NULL ptr deref
@@ -25,22 +25,22 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 9db86943d04c..61386183764f 100644
+index 3745cf856..4e0a96cac 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
-@@ -3699,9 +3699,9 @@ static void sd_read_block_zero(struct scsi_disk *sdkp)
+@@ -3693,9 +3693,9 @@ static void sd_read_block_zero(struct scsi_disk *sdkp)
  static int sd_revalidate_disk(struct gendisk *disk)
  {
  	struct scsi_disk *sdkp = scsi_disk(disk);
 -	struct scsi_device *sdp = sdkp->device;
 -	sector_t old_capacity = sdkp->capacity;
- 	struct queue_limits lim;
+ 	struct queue_limits *lim = NULL;
 +	struct scsi_device *sdp;
 +	sector_t old_capacity;
- 	unsigned char *buffer;
+ 	unsigned char *buffer = NULL;
  	unsigned int dev_max;
- 	int err;
-@@ -3709,6 +3709,11 @@ static int sd_revalidate_disk(struct gendisk *disk)
+ 	int err = 0;
+@@ -3703,6 +3703,11 @@ static int sd_revalidate_disk(struct gendisk *disk)
  	SCSI_LOG_HLQUEUE(3, sd_printk(KERN_INFO, sdkp,
  				      "sd_revalidate_disk\n"));
  
