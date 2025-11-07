@@ -66,13 +66,11 @@ extern int fcw_warn_on(bool cond);
 extern int fcw_warn_on_once(int cond);
 extern void fcw_warn(void);
 extern int fcw_is_warn_true(int cond);
-extern int fcw_warn_printk(const char *fmt, ...);
 extern void fcw_sg_assign_page(struct scatterlist *sg, struct page *page);
 extern void fcw_sg_set_buf(struct scatterlist *sg, const void *buf,
 			      unsigned int buflen);
 extern void *fcw_sg_virt(struct scatterlist *sg);
 extern void *fcw_scatterwalk_map(struct scatter_walk *walk);
-extern int fcw_printk(const char *fmt, ...);
 
 extern bool fcw_ratelimit(void *rs, const char *name);
 extern void *fcw_init_ratelimit_state(void *rs);
@@ -95,6 +93,9 @@ extern bool fcw_need_resched(void);
 extern void *fcw_kmap_local_page(void *page);
 extern void fcw_kunmap_local(const void *addr);
 extern int fcw_skip_tests(void);
+
+extern int fcw_printk(const char *format, ...);
+extern int fcw_warn_printk(const char *fmt, ...);
 
 int __init rsa_init(void);
 void __exit rsa_exit(void);

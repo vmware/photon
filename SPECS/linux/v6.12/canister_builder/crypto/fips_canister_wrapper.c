@@ -144,6 +144,10 @@ void *fcw_scatterwalk_map(struct scatter_walk *walk);
 bool fcw_ghash_do_async(struct cryptd_ahash *tfm);
 int fcw_fips_not_allowed_alg(char *name);
 int fcw_skip_tests(void);
+
+int fcw_printk(const char *format, ...);
+int fcw_warn_printk(const char *fmt, ...);
+
 bool fcw_need_resched(void);
 void fcw_scatterwalk_pagedone(struct scatter_walk *walk, int out,
 				     unsigned int more);
@@ -873,6 +877,48 @@ int fcw_fips_not_allowed_alg(char *name)
 int fcw_skip_tests(void)
 {
 	return !fips_enabled;
+}
+
+int fcw_printk(const char *format, ...)
+{
+	va_list args;
+	struct va_format vaf;
+
+	/*
+	 * printk is a macro which accepts variable arguments. It
+	 * validates the LOGLEVEL of a message during compile time
+	 * itself.
+	 * Hence, if a wrapper is defined for printk, the format and
+	 * variable arguments have to be populated as va_format structure
+	 * and passed to printk as variable argument. If the format message
+	 * is passed directly, then the LOG_LEVEL check will not be applied
+	 * and all messages will be printed on console.
+	 */
+	va_start(args, format);
+	vaf.fmt = format;
+	vaf.va = &args;
+
+	_printk("%pV", &vaf);
+
+	va_end(args);
+
+	return 0;
+}
+
+int fcw_warn_printk(const char *fmt, ...)
+{
+	va_list args;
+	struct va_format vaf;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	__warn_printk("%pV", &vaf);
+
+	va_end(args);
+
+	return 0;
 }
 
 static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
