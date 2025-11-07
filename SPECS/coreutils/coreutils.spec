@@ -4,7 +4,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -25,6 +25,7 @@ Patch1: CVE-2025-5278.patch
 BuildRequires:  attr-devel
 
 Requires:       gmp
+Requires:       %{name}-minimal = %{version}-%{release}
 
 Provides:       sh-utils
 
@@ -33,6 +34,13 @@ Conflicts:      toybox < 0.8.2-2
 %description
 The Coreutils package contains utilities for showing and setting
 the basic system
+
+%package minimal
+Summary:    minimal subset of coreutils
+Conflicts:  %{name} < 9.1-8
+
+%description minimal
+%{summary}
 
 %package lang
 Summary:    Additional language files for coreutils
@@ -93,12 +101,19 @@ touch %{coreutils_present}
 %{_libexecdir}/*
 %{_bindir}/*
 %{_sbindir}/*
+%exclude %{_sbindir}/chroot
 %{_mandir}/*/*
+
+%files minimal
+%defattr(-,root,root)
+%{_sbindir}/chroot
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-8
+- Introduce minimal sub package
 * Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-7
 - Fix CVE-2025-5278
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-6

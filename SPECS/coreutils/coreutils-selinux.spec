@@ -6,7 +6,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -28,6 +28,7 @@ BuildRequires: libselinux-devel
 BuildRequires: attr-devel
 
 Requires: gmp
+Requires: %{name}-minimal = %{version}-%{release}
 
 Provides: sh-utils = %{version}-%{release}
 Provides: %{srcname} = %{version}-%{release}
@@ -36,6 +37,13 @@ Obsoletes: %{srcname}
 
 %description
 SELinux enabled coreutils package.
+
+%package minimal
+Summary:    minimal subset of coreutils
+Conflicts:  %{name} < 9.1-11
+
+%description minimal
+%{summary}
 
 %package lang
 Summary:    Additional language files for coreutils
@@ -102,12 +110,19 @@ touch %{coreutils_selinux_present}
 %{_libexecdir}/*
 %{_bindir}/*
 %{_sbindir}/*
+%exclude %{_sbindir}/chroot
 %{_mandir}/*/*
+
+%files minimal
+%defattr(-,root,root)
+%{_sbindir}/chroot
 
 %files lang -f %{srcname}.lang
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-11
+- Introduce minimal sub package
 * Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-10
 - Fix CVE-2025-5278
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.1-9

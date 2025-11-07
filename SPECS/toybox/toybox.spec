@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -175,8 +175,19 @@ mktoy %{_bindir}/cat \
     %{_bindir}/wc \
     %{_bindir}/who \
     %{_bindir}/whoami \
-    %{_bindir}/yes \
-    %{_sbindir}/chroot
+    %{_bindir}/yes
+
+%triggerpostun -- coreutils-minimal
+[ $2 -eq 0 ] || exit 0
+[ -f %{coreutils_selinux_present} ] && exit 0
+%{_mktoy_}
+mktoy %{_sbindir}/chroot
+
+%triggerpostun -- coreutils-selinux-minimal
+[ $2 -eq 0 ] || exit 0
+[ -f %{coreutils_present} ] && exit 0
+%{_mktoy_}
+mktoy %{_sbindir}/chroot
 
 %triggerpostun -- coreutils-selinux
 [ $2 -eq 0 ] || exit 0
@@ -257,8 +268,7 @@ mktoy %{_bindir}/cat \
     %{_bindir}/wc \
     %{_bindir}/who \
     %{_bindir}/whoami \
-    %{_bindir}/yes \
-    %{_sbindir}/chroot
+    %{_bindir}/yes
 
 %triggerpostun -- cpio
 [ $2 -eq 0 ] || exit 0
@@ -716,6 +726,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.9-7
+- Handle coreutils-minimal uninstall case
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.8.9-6
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Oliver Kurth <okurth@vmware.com> 0.8.9-5
