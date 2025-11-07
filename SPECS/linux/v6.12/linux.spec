@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        22%{?acvp_build:.acvp}%{?dist}
+Release:        23%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -110,7 +110,6 @@ BuildRequires:       linux-fips-canister = %{fips_canister_version}
 
 Source10101: fips_canister_wrapper.c
 Source10102: fips_canister_wrapper.h
-Source10103: fips_canister_wrapper_asm.S
 Source10104: fips_canister_wrapper_common.h
 Source10105: fips_canister_wrapper_internal.h
 Source10106: fips_canister_wrapper_internal.c
@@ -538,7 +537,6 @@ cp %{SOURCE10003} crypto/%{jent_name}/
 
 install %{SOURCE10101} crypto/
 install %{SOURCE10102} crypto/
-install %{SOURCE10103} crypto/
 install %{SOURCE10104} crypto/
 install %{SOURCE10105} crypto/
 install %{SOURCE10106} crypto/
@@ -863,6 +861,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 06 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-23
+- Introduce new printk wrapper for FIPS canister.
 * Thu Oct 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-22
 - Moving rfc4543 of gcm out of canister boundry.
 - Removed all approved/non-approved log indicators.

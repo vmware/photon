@@ -180,7 +180,7 @@ index af6614b46..bd659c92d 100644
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
-+obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_asm.o fips_canister_wrapper.o fips_canister.o
++obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper.o fips_canister.o
 +obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper_internal.o
 +
 +ifdef CONFIG_CRYPTO_FIPS
