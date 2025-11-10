@@ -1,0 +1,49 @@
+From 1a2d8b2e9b4acbe2a7ea9a1c389712f94c14a0f3 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Fri, 7 Nov 2025 10:30:28 +0000
+Subject: [PATCH] crypto/sha1_generic: Renaming sha1_final
+
+- Renaming to crypto_sha1_final to prevent conflict
+ with sha1 lib's sha1_final [1]
+
+[1]: https://github.com/torvalds/linux/commit/90860aef630c5c9e58d05044f2866fcbfa7aa4d9
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ crypto/sha1_generic.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/sha1_generic.c b/crypto/sha1_generic.c
+index 24ab7da36..2a0da71bb 100644
+--- a/crypto/sha1_generic.c
++++ b/crypto/sha1_generic.c
+@@ -47,7 +47,7 @@ int crypto_sha1_update(struct shash_desc *desc, const u8 *data,
+ }
+ EXPORT_SYMBOL(crypto_sha1_update);
+ 
+-static int sha1_final(struct shash_desc *desc, u8 *out)
++static int crypto_sha1_final(struct shash_desc *desc, u8 *out)
+ {
+ 	sha1_base_do_finalize(desc, sha1_generic_block_fn);
+ 	return sha1_base_finish(desc, out);
+@@ -57,7 +57,7 @@ int crypto_sha1_finup(struct shash_desc *desc, const u8 *data,
+ 		      unsigned int len, u8 *out)
+ {
+ 	sha1_base_do_update(desc, data, len, sha1_generic_block_fn);
+-	return sha1_final(desc, out);
++	return crypto_sha1_final(desc, out);
+ }
+ EXPORT_SYMBOL(crypto_sha1_finup);
+ 
+@@ -65,7 +65,7 @@ static struct shash_alg alg = {
+ 	.digestsize	=	SHA1_DIGEST_SIZE,
+ 	.init		=	sha1_base_init,
+ 	.update		=	crypto_sha1_update,
+-	.final		=	sha1_final,
++	.final		=	crypto_sha1_final,
+ 	.finup		=	crypto_sha1_finup,
+ 	.descsize	=	sizeof(struct sha1_state),
+ 	.base		=	{
+-- 
+2.40.4
+

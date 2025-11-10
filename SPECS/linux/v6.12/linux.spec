@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.57
-Release:        1%{?acvp_build:.acvp}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -289,6 +289,13 @@ Patch10108: 0008-FIPS-Mark-structure-field-differences-between-kernel.patch
 Patch10109: 0009-aead_geniv_ctx-drop-lock-field.patch
 Patch10110: 0010-Move-crypto_inc-to-lib-crypto-utils.c.patch
 Patch10111: 0001-crypto-Moving-rfc4543-out-of-canister-boundry.patch
+# Make lib/digsig to use lib SHA1 instead of crypto shash API
+# [10112..10116]
+Patch10112: 0001-crypto-x86-sha1-Rename-conflicting-symbol.patch
+Patch10113: 0002-lib-crypto-sha1-Rename-sha1_init-to-sha1_init_raw.patch
+Patch10114: 0003-lib-crypto-sha1-Add-SHA-1-library-functions.patch
+Patch10115: 0001-lib-digsig-Use-SHA-1-library-instead-of-crypto_shash.patch
+Patch10116: 0001-crypto-sha1_generic-Renaming-sha1_final.patch
 
 # FIPS canister plugins
 Patch10200: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
@@ -541,7 +548,7 @@ install %{SOURCE10105} crypto/
 install %{SOURCE10106} crypto/
 
 %autopatch -p1 -m10001 -M10003
-%autopatch -p1 -m10101 -M10111
+%autopatch -p1 -m10101 -M10116
 # FIPS canister plugins
 %autopatch -p1 -m10200 -M10204
 %endif
@@ -860,6 +867,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Nov 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-2
+- Make lib/digsig to use lib SHA1 instead of crypto shash API
 * Tue Nov 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.57-1
 - Update to version 6.12.57
 * Tue Nov 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-24
