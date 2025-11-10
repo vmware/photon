@@ -1,0 +1,68 @@
+From 56c927d4cfd4685afcee8076cefabc626a8a08fb Mon Sep 17 00:00:00 2001
+From: Eugene Korenevsky <ekorenevsky@aliyun.com>
+Date: Mon, 13 Oct 2025 21:39:30 +0300
+Subject: [PATCH] cifs: parse_dfs_referrals: prevent oob on malformed input
+
+commit 6447b0e355562a1ff748c4a2ffb89aae7e84d2c9 upstream.
+
+Malicious SMB server can send invalid reply to FSCTL_DFS_GET_REFERRALS
+
+- reply smaller than sizeof(struct get_dfs_referral_rsp)
+- reply with number of referrals smaller than NumberOfReferrals in the
+header
+
+Processing of such replies will cause oob.
+
+Return -EINVAL error on such replies to prevent oob-s.
+
+Signed-off-by: Eugene Korenevsky <ekorenevsky@aliyun.com>
+Cc: stable@vger.kernel.org
+Suggested-by: Nathan Chancellor <nathan@kernel.org>
+Acked-by: Paulo Alcantara (Red Hat) <pc@manguebit.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Backported this fix to v5.10.x]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ fs/cifs/misc.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/fs/cifs/misc.c b/fs/cifs/misc.c
+index 54c443686dab..e4f7b9147418 100644
+--- a/fs/cifs/misc.c
++++ b/fs/cifs/misc.c
+@@ -700,6 +700,14 @@ parse_dfs_referrals(struct get_dfs_referral_rsp *rsp, u32 rsp_size,
+ 	char *data_end;
+ 	struct dfs_referral_level_3 *ref;
+ 
++	if (rsp_size < sizeof(*rsp)) {
++		cifs_dbg(VFS | ONCE,
++			"%s: header is malformed (size is %u, must be %zu)\n",
++			__func__, rsp_size, sizeof(*rsp));
++		rc = -EINVAL;
++		goto parse_DFS_referrals_exit;
++	}
++
+ 	*num_of_nodes = le16_to_cpu(rsp->NumberOfReferrals);
+ 
+ 	if (*num_of_nodes < 1) {
+@@ -709,6 +717,15 @@ parse_dfs_referrals(struct get_dfs_referral_rsp *rsp, u32 rsp_size,
+ 		goto parse_DFS_referrals_exit;
+ 	}
+ 
++	if (sizeof(*rsp) + *num_of_nodes * sizeof(REFERRAL3) > rsp_size) {
++		cifs_dbg(VFS | ONCE,
++			"%s: malformed buffer (size is %u, must be at least %zu)\n",
++			__func__, rsp_size,
++			sizeof(*rsp) + *num_of_nodes * sizeof(REFERRAL3));
++		rc = -EINVAL;
++		goto parse_DFS_referrals_exit;
++	}
++
+ 	ref = (struct dfs_referral_level_3 *) &(rsp->referrals);
+ 	if (ref->VersionNumber != cpu_to_le16(3)) {
+ 		cifs_dbg(VFS, "Referrals of V%d version are not supported, should be V3\n",
+-- 
+2.35.6
+

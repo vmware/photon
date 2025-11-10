@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.246
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -439,6 +439,9 @@ Patch248: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
 # Fix CVE-2022-49635
 Patch249: 0001-drm-i915-selftests-fix-subtraction-overflow-bug.patch
 
+# Fix CVE-2025-40099
+Patch250: 0001-cifs-parse_dfs_referrals-prevent-oob-on-malformed-in.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -827,6 +830,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.246-3
+- Fix for CVE-2025-40099.
 * Mon Nov 03 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-2
 - Fixes CVE-2023-53597, CVE-2025-39990 and CVE-2022-49635
 * Fri Oct 31 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-1

@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -461,6 +461,9 @@ Patch253: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
 
 # Fix CVE-2022-49635
 Patch254: 0001-drm-i915-selftests-fix-subtraction-overflow-bug.patch
+
+# Fix CVE-2025-40099
+Patch255: 0001-cifs-parse_dfs_referrals-prevent-oob-on-malformed-in.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1149,6 +1152,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Nov 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.246-3
+- Fix for CVE-2025-40099.
 * Mon Nov 03 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-2
 - Fixes CVE-2023-53597, CVE-2025-39990 and CVE-2022-49635
 * Fri Oct 31 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-1
