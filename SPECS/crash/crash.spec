@@ -1,9 +1,9 @@
 %define GCORE_VERSION   1.6.3
-%define GDB_VERSION     10.2
+%define GDB_VERSION     16.2
 
 Name:          crash
-Version:       8.0.2
-Release:       7%{?dist}
+Version:       9.0.0
+Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -22,6 +22,8 @@ Source3: license.txt
 %ifarch aarch64
 Patch0: gcore_defs.patch
 %endif
+
+Patch1: 0001-gcore_update_set_context_with_upstream_counterpart.patch
 
 BuildRequires: binutils
 BuildRequires: glibc-devel
@@ -52,11 +54,13 @@ This package contains libraries and header files need for development.
 %setup -q -n %{name}-%{version}
 # Using autosetup is not feasible
 %setup -q -a 1
-%ifarch aarch64
+
 pushd crash-gcore-command-%{GCORE_VERSION}
-%patch -p1 0
-popd
+%ifarch aarch64
+%patch0 -p1
 %endif
+%patch1 -p1
+popd
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
@@ -104,6 +108,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/crash/*.h
 
 %changelog
+* Fri Nov 07 2025 Ajay Kaher <ajay.kaher@broadcom.com> 9.0.0-1
+- Version update
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.0.2-7
 - Bump version as a part of ncurses upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 8.0.2-6

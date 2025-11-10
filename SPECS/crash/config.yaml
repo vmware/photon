@@ -1,6 +1,6 @@
 sources:
-- archive: crash-8.0.2.tar.gz
-  archive_sha512sum: 9ff24d1206e9376e83690f76c817a48a68ff6adce677fad70335a73550a59c9af6e4753c1199f22eafa60c137156313244bbf98ed01bc2b066f41d324738ef6b
+- archive: crash-9.0.0.tar.gz
+  archive_sha512sum: 1093bc1f980e6df24e9d254ee86c4164a2283f82d3dff5a8feecb08caccec1639896712bb73e781fed7e21ab7f81e344a4d76566bfbe6615f3484816e3163306
   skip_validation: true
   spdx:
     package:
@@ -31,8 +31,8 @@ sources:
         for user-mode process that is contained within crash kernel dump, designed
         to behave as kernel's ELF core dumper.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: gdb-10.2.tar.gz
-  archive_sha512sum: aa89caf47c1c84366020377d47e7c51ddbc48e5b7686f244e38797c8eb88411cf57fcdc37eb669961efb41ceeac4181747f429625fd1acce7712cb9a1fea9c41
+- archive: gdb-16.2.tar.gz
+  archive_sha512sum: c44a6cf6cdd6e92f1f4dda7d888ce3e7fdde65ca8736092e2b0a4c369ea09b499824a1d078f668f276fa6d00d311e9ec485231cb7b841479a4fabbfd65778084
   skip_validation: true
   spdx:
     package:
