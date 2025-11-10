@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.157
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -594,7 +594,6 @@ sed -e "s,@@NAME@@,%{name},g" \
 
 bldroot="${PWD}"
 
-%ifarch x86_64
 # build viomem module
 mkdir ../viomem
 pushd ../viomem
@@ -603,7 +602,6 @@ cp %{SOURCE101} .
 cd ../viomem
 %make_build -C ${bldroot} M="${PWD}" V=1 modules
 popd
-%endif
 
 %if 0%{?fips}
 # compare struct definitions between fips canister and vmlinux
@@ -644,12 +642,10 @@ install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 
 bldroot="${PWD}"
-%ifarch x86_64
 # install viomem module
 pushd ../viomem
 %make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
-%endif
 
 %if 0%{?__debug_package}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
@@ -717,6 +713,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 10 2025 Junlong Gao <junlong.gao@broadcom.com> 6.1.157-6
+- linux:Enable viomem kernel module for aarch64 build
 * Fri Nov 07 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-5
 - Fix CVE-2025-22022
 * Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-4
