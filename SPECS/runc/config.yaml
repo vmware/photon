@@ -1,7 +1,14 @@
 sources:
-- archive: runc-1.1.14.tar.gz
-  archive_sha512sum: bdefbf34cf57485c6b961babc8294d0e6b2e003eb836b8e99c49ef4d00acf11f30a46ad0bcd399ee9346610419591daf1eecb3b6b127962357d629bf5f252e22
-  skip_validation: true
+- archive: runc-1.2.8.tar.gz
+  archive_sha512sum: 8d29a2ca179320f9a01c37383506f10aea1764e18b3321c507787556e3a531e23221f8369696d8caaf30124a523a68d0ad3609bae5ab06aa6c519e644d54d4ef
+  archive_type: upstream
+  name: runc-1.2.8
+  version: 1.2.8
+  url: https://github.com/opencontainers/runc/archive/refs/tags/v1.2.8.tar.gz
+  repo_url: https://github.com/opencontainers/runc
+  commit_id: eeb7e6024f9ee43876301b1d23c353384fa6dcdd
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'runC is a CLI tool for spawning and running containers
