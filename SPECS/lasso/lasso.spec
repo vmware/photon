@@ -1,12 +1,12 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
-Version:        2.8.0
-Release:        5%{?dist}
+Version:        2.9.0
+Release:        1%{?dist}
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://lasso.entrouvert.org/
-Source0:        http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
+Source0:        https://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -70,6 +70,8 @@ find %{buildroot} -name '*.a' -delete
 %{_defaultdocdir}/%{name}
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.9.0-1
+- Version upgrade to 2.9.0
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.8.0-5
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-4
