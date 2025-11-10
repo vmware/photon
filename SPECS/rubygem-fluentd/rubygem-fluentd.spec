@@ -4,7 +4,7 @@
 
 Name: rubygem-fluentd
 Version:        1.15.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -59,6 +59,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Nov 10 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.3-2
+-   Version bump for rubygem-yajl-upgrade
 *   Wed Apr 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.15.3-1
 -   upgrade to fix CVE-2022-39379
 *   Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.15.2-1
