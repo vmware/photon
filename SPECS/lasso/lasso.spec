@@ -1,14 +1,14 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
-Version:        2.8.0
-Release:        2%{?dist}
+Version:        2.9.0
+Release:        1%{?dist}
 License:        GPLv2+
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://lasso.entrouvert.org/
 Source0:        http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
-%define sha512 lasso=d1b26608ea7cd08e4e2c40cec0ddc41e3235fd5c2cee64d989ae752bbbc276fe056455e3943a778abcc7f8e8596c85beada75df4290579e6af15e82d0e2fb5ca
+%define sha512 lasso=e195502ce41612c6b46280653b393220736bb629d41f81d6b399b21c6e08b22cdbb56430c152870dfba161b2dd00f08c30069507fdc38ed94846e84a11fdf4f3
 BuildRequires: libxml2-devel
 BuildRequires: glib-devel >= 2.68.4
 BuildRequires: openssl-devel
@@ -71,6 +71,8 @@ find %{buildroot} -name '*.a' -delete
 %{_defaultdocdir}/%{name}
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.9.0-1
+- Version upgrade to 2.9.0
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.8.0-2
 - Bump version as part of glib upgrade
 * Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.0-1
