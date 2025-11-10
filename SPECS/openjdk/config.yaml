@@ -1,11 +1,11 @@
 sources:
-- archive: jdk-11.0.28-ga.tar.gz
-  archive_sha512sum: 01d166fa8a4914c402a340409096530ab6313f5850d13b866ba354e02343a8b567bccee563b1d8b9b4ac5101f16d31c73a6549e21a96dd306da4b644d4609f89
+- archive: jdk-11.0.29-ga.tar.gz
+  archive_sha512sum: 85cdccee7e359e6b51aee7ebb23bff75c26dd2fa6054a853b23b3bfa3b13bcad3c195fea91ffe5d4078c05ebb7fd9db6cf276451f2029073108f406ca362f611
   skip_validation: true
   spdx:
     package:
       detailed_description: 'The OpenJDK package installs java class library and javac
-        java compiler. '
+        java compiler.'
       home_page: https://github.com/openjdk/jdk11u
       license_concluded: (FTL OR GPL-2.0-only) AND (MIT OR GPL-1.0-or-later) AND (BSD-3-Clause
         OR Apache-2.0) AND (MIT OR GPL-3.0-only) AND (CDDL-1.0 OR GPL-2.0-only WITH
@@ -29,13 +29,14 @@ sources:
         AND LGPL-2.1-only AND IJG
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
-- archive: jdk-17.0.16-ga.tar.gz
-  archive_sha512sum: df6cf32fa5884a004c1edc8de6fac9210efb740dd962860d415e97cfd3d2a232f19210c3d7fc21d1248e3424a160ca9e087db92c509eb79e815aeec0a40f212c
+
+- archive: jdk-17.0.17-ga.tar.gz
+  archive_sha512sum: ddb409fe2c8714af081e1174df2b1febcb05097dd83eed60abe9cdaf6b9cfb9a960626480ff4f8719e8890480274ca5ce2abb449317aeb617d9bfe964b33ad29
   skip_validation: true
   spdx:
     package:
       detailed_description: 'The OpenJDK package installs java class library and javac
-        java compiler. '
+        java compiler.'
       home_page: https://github.com/openjdk/jdk17u
       license_concluded: (MIT OR GPL-1.0-or-later) AND (FTL OR GPL-2.0-only) AND (CDDL-1.0
         OR GPL-2.0-only WITH Classpath-exception-2.0) AND (BSD-3-Clause OR Apache-2.0)
@@ -55,13 +56,14 @@ sources:
         AND FTL AND Unicode-TOU AND Libpng AND MIT AND HPND-export2-US
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
-- archive: jdk-21.0.8-ga.tar.gz
-  archive_sha512sum: be96bfa216efedd0cb094c8b4a2307f84ff6fa8a3a2c30f2f6610023e24979eee7be6b96305d893eb7cf19ed3750167a76436201cfdbc623713236c852eea917
+
+- archive: jdk-21.0.9-ga.tar.gz
+  archive_sha512sum: f209839c830e5db7080613b5d5e7c33ccd6a55cb72a2e6237bb26646569691a34a7b93349c9fa219a3496e111e156c2d24abda3b389056b16625668e8756aed0
   skip_validation: true
   spdx:
     package:
       detailed_description: 'The OpenJDK package installs java class library and javac
-        java compiler. '
+        java compiler.'
       home_page: https://github.com/openjdk/jdk21u
       license_concluded: (FTL OR GPL-2.0-only) AND (BSD-3-Clause OR Apache-2.0) AND
         (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-1.0-or-later)
