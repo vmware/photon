@@ -3,6 +3,11 @@ FROM photon:5.0
 ARG BASE_URL
 ENV URL=${BASE_URL}
 
+# Set LANG to ensure extractcode behaves consistently
+# Otherwise, file paths with tricky/unencodeable characters
+# may turn out differently depending on encoding
+ENV LANG="en_US.UTF-8"
+
 RUN REPO_FILE=/etc/yum.repos.d/photon-updates.repo && \
     if [ -n "$URL" ]; then \
         sed -i "s|^baseurl=.*|baseurl=${URL}|" "$REPO_FILE"; \

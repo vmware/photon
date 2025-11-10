@@ -594,7 +594,7 @@ class Scanner:
                             )
                         )
                 else:
-                    common.pr_err(f"ERROR: '{path}' NOT FOUND at '{full_path}' ...")
+                    common.pr_err(f"ERROR: '{os.path.basename(path)}' NOT FOUND at '{full_path}' ...")
                     missing_files.append(path)
 
         if missing_files:
@@ -724,11 +724,13 @@ class Scanner:
         if not os.path.exists(common.ph_srcs_dir):
             os.makedirs(common.ph_srcs_dir)
 
+        self._set_spec_vars(path)
+
         # download all srcs in the config yaml
         self._download_srcs(
             common.ph_srcs_dir,
             alt_src_url=alt_src_url,
-            photon_root=self._find_ph_root(path),
+            photon_root=self._ph_root,
         )
 
         # scan each source and update the license expression
@@ -784,6 +786,41 @@ class Scanner:
 
         if(yaml_out_dir):
             print(f"yaml output for each source located under {yaml_out_dir}")
+
+    def __replace_unencodeable(self, string):
+        chars = []
+        for s in string:
+            try:
+                chars.append(s.encode('utf-8').decode())
+            except UnicodeEncodeError:
+                chars.append("<bad char>")
+        return "".join(chars)
+
+
+    # For each file in the scan dir, check if the file path
+    # contains some unencodable characters for 'utf-8'.
+    # Scancode will fail to cache the resources for such files,
+    # because the caching does a md5 hash of the file path, which
+    # requires the whole string to be utf-8 encoded first
+    def _check_for_unencodeable(self, scan_dir):
+        bad_files = []
+        for root, _, files in os.walk(scan_dir):
+            for f in files:
+                try:
+                    p = os.path.join(root, f)
+                    p.encode('utf-8')
+                except UnicodeEncodeError as e:
+                    bad_files.append(self.__replace_unencodeable(os.path.join(root, f)))
+
+        if bad_files:
+            pr_err("Scancode may fail with the following utf-8 unencodeable paths")
+            pr_err("Note: bad chars replaced with <bad char> for printing.")
+            pr_err("Please add these files to manual review section, if using config.yaml")
+            for f in bad_files:
+                pr_err(f"\t-{f}")
+
+            err_exit()
+
 
     # Main scanning function
     def scan(
@@ -856,20 +893,20 @@ class Scanner:
 
         # If config.yaml is present and the path points to an archive
         # find the archive in the config.yaml and parse any manual review
-        # if self._config_yaml and common.is_extractable(path):
-        #    archive = {}
-        #    bsname = os.path.basename(path)
-        #    for i, source in enumerate(self._config_yaml['sources']):
-        #        if source['archive'] == bsname:
-        #            archive = source
-        #            break
-        #
-        #    if archive:
-        #        cached_spdx_ids.update(
-        #            self.__parse_manual_review(scan_dir, archive['license_manual_review'])
-        #        )
-        #    else:
-        #        common.pr_err(f"Warning: Failed to find archive {bsname} in config.yaml!")
+        if self._config_yaml and common.is_extractable(path):
+            archive = {}
+            bsname = os.path.basename(path)
+            for i, source in enumerate(self._config_yaml['sources']):
+                if source['archive'] == bsname:
+                    archive = source
+                    break
+
+            if archive and 'license_manual_review' in archive:
+                cached_spdx_ids.update(
+                    self.__parse_manual_review(scan_dir, archive['license_manual_review'])
+                )
+            else:
+                common.pr_err(f"Warning: Failed to find archive {bsname} in config.yaml!")
 
         if not cpus:
             cpus = multiprocessing.cpu_count()
@@ -907,35 +944,44 @@ class Scanner:
         if cache_util:
             scan_dir = cache_util.populate_scan_dir(scan_dir)
 
+        self._check_for_unencodeable(scan_dir)
+
         # run the scan
+        scan_cmd = [
+            "scancode",
+            "-v",
+            "--license",
+            "-n",
+            str(cpus),
+            "--license-score",
+            str(score),
+            "--yaml",
+            yaml_tmp_path,
+            "--timeout",
+            str(10000),
+            scan_dir,
+        ]
+
         result = common.run_cmd(
-            [
-                "scancode",
-                "-v",
-                "--license",
-                "-n",
-                str(cpus),
-                "--license-score",
-                str(score),
-                "--yaml",
-                yaml_tmp_path,
-                "--timeout",
-                str(10000),
-                scan_dir,
-            ]
+            scan_cmd,
+            ignore_rc=True
         )
 
         if result.returncode != 0:
             pr_err("ERROR: scancode failed during scanning process :(")
+            pr_err(f"Failed cmd: '{scan_cmd}'")
+
             if not common.no_trimming:
                 lic_db.restore_lic_db()
 
-            self._export_yaml(
-                user_yaml_path=yaml_out,
-                cache_util=cache_util,
-                cwd=cwd,
-                sc_yaml_out_path=yaml_tmp_path,
-            )
+            if os.path.exists(yaml_tmp_path):
+                self._export_yaml(
+                    user_yaml_path=yaml_out,
+                    cache_util=cache_util,
+                    cwd=cwd,
+                    sc_yaml_out_path=yaml_tmp_path,
+                )
+
             err_exit()
 
         if not common.no_trimming:

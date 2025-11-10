@@ -17,6 +17,11 @@ class Comparator:
         diff_a = set()
         diff_b = set()
 
+        if not exp_a:
+            exp_a = ""
+        if not exp_b:
+            exp_b = ""
+
         if os.path.isfile(exp_a):
             # We expect to find only one license here,
             # different from other callers. In the case of spec files,
