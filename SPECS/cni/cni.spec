@@ -1,7 +1,7 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
 Version:        1.1.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containernetworking/plugins
 Group:          Development/Tools
@@ -43,6 +43,8 @@ rm -rf %{buildroot}/*
 %{_default_cni_plugins_dir}/*
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-13
+- Bump up as part of go upgrade
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-12
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-11

@@ -3,7 +3,7 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
 Version:        2.3.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Group:          Development/Tools
@@ -57,6 +57,8 @@ install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
 %{_datadir}/%{name}/docker/nginx.*
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.0-17
+- Bump up as part of go upgrade
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.0-16
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.0-15

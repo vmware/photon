@@ -17,7 +17,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -357,6 +357,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Wed Feb 11 2026 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-8
+- Bump up as part of go upgrade
 * Wed Jan 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-7
 - Fixes CVE-2023-44487 in grpc
 * Tue Jan 06 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 24.0.9-6

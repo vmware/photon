@@ -1,5 +1,6 @@
-%global goroot          /usr/lib/golang
+%global goroot          %{_libdir}/golang
 %global gopath          %{_datadir}/gocode
+
 %ifarch aarch64
 %global gohostarch      arm64
 %else
@@ -13,7 +14,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.21.13
+Version:        1.22.12
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -21,16 +22,18 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  %{name}=f316984154ead8256d9ec0613e3cfef5699553387d87c24bb2a96265f986bf4450838e6451841def3713d65ebaa9bf55e36ff39c5690d79522e1c1ba7655be2f
+%ifarch aarch64
+Source0: https://go.dev/dl/%{name}%{version}.linux-arm64.tar.gz
+%define sha512  %{name}=fcb3d6550bd2e133f25556791a6d89ff3a04014f28e3e6e4ee39e723fcfbf1e42ac5ed70a7fa4d9564e8e2b92f21548d0eab2dacfbafe2e6d75a834994538667
+%endif
+
+%ifarch x86_64
+Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
+%define sha512  %{name}=fea45cd805377021ac8b5ce8e55f091cdfd3d58ab923968d027801cc49ed02f639e5428cdb78ce0bcff04a30edf67083404c4a96b5edb43644948dfbb8083341
+%endif
 
 Requires:       glibc
 Requires:       gcc
-
-Patch1: CVE-2024-34156.patch
-Patch2: CVE-2024-34158.patch
-
-%define ExtraBuildRequires go
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
@@ -38,14 +41,19 @@ Go is an open source programming language that makes it easy to build simple, re
 %prep
 %autosetup -p1 -n %{name}
 
+mkdir -p %{goroot}
+test -e bin/go && mv bin %{goroot} || :
+
 %build
 export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOROOT_BOOTSTRAP=%{goroot}
-
 export GOROOT="`pwd`"
 export GOPATH=%{gopath}
 export GOROOT_FINAL=%{_bindir}/go
+
+cp -a api doc lib pkg src misc VERSION go.env $GOROOT_BOOTSTRAP
+
 rm -f  %{gopath}/src/runtime/*.c
 pushd src
 ./make.bash --no-clean
@@ -54,7 +62,8 @@ popd
 %install
 rm -rf %{buildroot}
 
-mkdir -p %{buildroot}%{_bindir} %{buildroot}%{goroot}
+mkdir -p %{buildroot}%{_bindir} \
+        %{buildroot}%{goroot}
 
 cp -R api bin doc lib pkg src misc VERSION go.env %{buildroot}%{goroot}
 
@@ -120,6 +129,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.12-1
+- Upgrade to 1.22.12
 * Thu Sep 19 2024 Mukul Sikka <msikka@vmware.com> 1.21.13-1
 - Upgrade to 1.21.13
 - Fix CVE-2024-34156 and CVE-2024-34158

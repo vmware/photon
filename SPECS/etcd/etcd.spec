@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.12
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -85,6 +85,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-6
+- Bump up as part of go upgrade
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-5
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.5.12-4

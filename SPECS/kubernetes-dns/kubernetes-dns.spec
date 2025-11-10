@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.22.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Group:          Development/Tools
@@ -76,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.23-2
+- Bump up as part of go upgrade
 * Sun Oct 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.22.23-1
 - Upgrade to v1.22.23
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.20-8

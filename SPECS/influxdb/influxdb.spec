@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.8.2
-Release:        26%{?dist}
+Release:        27%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -35,7 +35,7 @@ mkdir -p ${GOPATH}/src/github.com/influxdata/influxdb
 cp -r * ${GOPATH}/src/github.com/influxdata/influxdb/.
 pushd ${GOPATH}/src/github.com/influxdata/influxdb/
 go clean ./...
-go install ./...
+go install -ldflags "-X main.version=%{version}" ./...
 
 %check
 go test -run=TestDatabase . -v
@@ -108,6 +108,8 @@ fi
 %{_mandir}/man1/*
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.2-27
+- Bump up as part of go upgrade
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.2-26
 - Bump version as a part of go upgrade
 * Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.2-25

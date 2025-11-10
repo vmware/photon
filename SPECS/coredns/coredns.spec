@@ -3,7 +3,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -39,6 +39,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-10
+- Bump up as part of go upgrade
 * Tue Sep 16 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-9
 - Fix CVE-2025-58063
 * Thu Jun 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-8

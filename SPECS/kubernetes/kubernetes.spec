@@ -13,7 +13,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -218,6 +218,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-3
+- Bump up as part of go upgrade
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.16-2
 - Change kube user's home dir
 * Tue Feb 25 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-1
