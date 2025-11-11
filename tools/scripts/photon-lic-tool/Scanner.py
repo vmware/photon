@@ -578,6 +578,9 @@ class Scanner:
                 common.err_exit("ERROR: file_paths is empty ...")
 
             # check the path relative to each subdirectory under BUILD/
+            # these are all different paths to the same file, and can be different if scanning
+            # config.yaml vs --build_spec. So if we find at least one, it's ok for now.
+            found_files = False
             for path in filePaths:
                 print(
                     f"Searching for manual review file: '{path}' under '{scan_dir}' ..."
@@ -585,6 +588,7 @@ class Scanner:
                 full_path = f"{scan_dir}/{path}"
                 if os.path.exists(full_path):
                     print(f"'{path}' found at '{full_path}' ...")
+                    found_files = True
                     if not missing_files:
                         spdx_exp.extend(
                             self.__parse_found_manual_review_file(
@@ -595,7 +599,10 @@ class Scanner:
                         )
                 else:
                     common.pr_err(f"ERROR: '{os.path.basename(path)}' NOT FOUND at '{full_path}' ...")
-                    missing_files.append(path)
+
+            if not found_files:
+                pr_err(f"ERROR: Failed to find any of the manual review files: {filePaths}")
+                missing_files.extend(filePaths)
 
         if missing_files:
             pr_err("\nERROR: Invalid manual review entries found in config.yaml ...")
