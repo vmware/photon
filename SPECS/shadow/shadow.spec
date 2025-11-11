@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -178,6 +178,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-11
+- pam_faillock should be before pam_unix
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-10
 - Load hardening rules in login.defs by default, add tmout.sh
 - Fix newusers pam config
