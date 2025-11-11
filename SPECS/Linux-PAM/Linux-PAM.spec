@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -18,6 +18,7 @@ Patch0: 0001-faillock-add-support-to-print-login-failures.patch
 Patch1: 0002-Linux-PAM-protect-dir.patch
 Patch2: 0003-pam_pwhistory-fix-passing-NULL-filename-argument-to-.patch
 Patch3: 0004-faillock-open-tally-file-in-O_CLOEXEC-mode.patch
+Patch4: 0005-CVE-2024-10963.patch
 
 BuildRequires: libselinux-devel
 BuildRequires: gdbm-devel
@@ -140,6 +141,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-5
+- Fix CVE-2024-10963
 * Thu Mar 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-4
 - faillock: open tally file in O_CLOEXEC mode
 * Mon Jun 03 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-3
