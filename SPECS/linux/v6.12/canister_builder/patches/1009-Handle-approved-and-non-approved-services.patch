@@ -1,4 +1,4 @@
-From a62c59692d431ba6ddf4bc59f7a584a0c5decec1 Mon Sep 17 00:00:00 2001
+From a3ef2e1284f656c62ba14c589464855430e2fed6 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 11 Jul 2025 04:20:16 -0500
 Subject: [PATCH] Handle approved and non-approved services
@@ -17,23 +17,23 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 [Ankit: Removed all approved/non-approved log indicators]
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c | 99 +++++++++++++++++++++++++++++-
+ arch/x86/crypto/aesni-intel_glue.c | 21 +++++++++++++++++++--
  crypto/aes_generic.c               |  1 +
  crypto/cbc.c                       |  1 +
  crypto/drbg.c                      |  1 +
  crypto/ecc.c                       |  1 +
- crypto/gcm.c                       | 19 ++++++
+ crypto/gcm.c                       | 19 +++++++++++++++++++
  crypto/ghash-generic.c             |  1 +
- crypto/seqiv.c                     |  5 ++
+ crypto/seqiv.c                     |  5 +++++
  crypto/sha256_generic.c            |  1 +
  crypto/sha3_generic.c              |  1 +
  crypto/sha512_generic.c            |  1 +
- crypto/testmgr.c                   | 12 ++--
- crypto/xts.c                       |  5 +-
- 13 files changed, 136 insertions(+), 12 deletions(-)
+ crypto/testmgr.c                   | 12 +++++-------
+ crypto/xts.c                       |  5 +++--
+ 13 files changed, 59 insertions(+), 11 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index e47e1d10a..e4fd5f019 100644
+index e47e1d10a..cbed67a0d 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
 @@ -36,6 +36,7 @@
@@ -83,141 +83,30 @@ index e47e1d10a..e4fd5f019 100644
  	/* Begin walking through the plaintext or ciphertext. */
  	if (flags & FLAG_ENC)
  		err = skcipher_walk_aead_encrypt(&walk, req, false);
-@@ -1555,7 +1571,7 @@ DEFINE_GCM_ALGS(vaes_avx10_512, FLAG_AVX10_512,
- 
- static int __init register_avx_algs(void)
- {
--	int err;
-+	int err, i;
- 
- 	if (!fcw_boot_cpu_has(X86_FEATURE_AVX))
- 		return 0;
-@@ -1568,6 +1584,23 @@ static int __init register_avx_algs(void)
+@@ -1568,6 +1584,7 @@ static int __init register_avx_algs(void)
  					 aes_gcm_simdalgs_aesni_avx);
  	if (err)
  		return err;
 +
-+	if (fips_enabled) {
-+		for ( i = 0; i < ARRAY_SIZE(aes_gcm_algs_aesni_avx); i++) {
-+			if (strstr(aes_gcm_algs_aesni_avx[i].base.cra_name, "rfc4106")) {
-+				fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption and decryption "
-+					   " with internal IV is registered as an approved service\n",
-+					   aes_gcm_algs_aesni_avx[i].base.cra_driver_name, aes_gcm_algs_aesni_avx[i].base.cra_name);
-+			}
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) decryption with external IV "
-+				   "is registered as an approved service\n",
-+				   aes_gcm_algs_aesni_avx[i].base.cra_driver_name, aes_gcm_algs_aesni_avx[i].base.cra_name);
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption with external IV "
-+				   "is registered as a non-approved service\n",
-+				   aes_gcm_algs_aesni_avx[i].base.cra_driver_name, aes_gcm_algs_aesni_avx[i].base.cra_name);
-+		}
-+	}
-+
  #if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
  	if (!fcw_boot_cpu_has(X86_FEATURE_AVX2) ||
  	    !fcw_boot_cpu_has(X86_FEATURE_VAES) ||
-@@ -1597,6 +1630,22 @@ static int __init register_avx_algs(void)
- 	if (err)
- 		return err;
- 
-+	if (fips_enabled) {
-+		for ( i = 0; i < ARRAY_SIZE(aes_gcm_algs_vaes_avx10_256); i++) {
-+			if (strstr(aes_gcm_algs_vaes_avx10_256[i].base.cra_name, "rfc4106")) {
-+				fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption and decryption "
-+					   " with internal IV is registered as an approved service\n",
-+					   aes_gcm_algs_vaes_avx10_256[i].base.cra_driver_name, aes_gcm_algs_vaes_avx10_256[i].base.cra_name);
-+			}
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) decryption with external IV "
-+				   "is registered as an approved service\n",
-+				   aes_gcm_algs_vaes_avx10_256[i].base.cra_driver_name, aes_gcm_algs_vaes_avx10_256[i].base.cra_name);
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption with external IV "
-+				   "is registered as a non-approved service\n",
-+				   aes_gcm_algs_vaes_avx10_256[i].base.cra_driver_name, aes_gcm_algs_vaes_avx10_256[i].base.cra_name);
-+		}
-+	}
-+
- 	if (fcw_x86_match_cpu_zmm_exclusion_list()) {
- 		int i;
- 
-@@ -1614,6 +1663,23 @@ static int __init register_avx_algs(void)
+@@ -1614,6 +1631,7 @@ static int __init register_avx_algs(void)
  					 aes_gcm_simdalgs_vaes_avx10_512);
  	if (err)
  		return err;
 +
-+	if (fips_enabled) {
-+		for ( i = 0; i < ARRAY_SIZE(aes_gcm_algs_vaes_avx10_512); i++) {
-+			if (strstr(aes_gcm_algs_vaes_avx10_512[i].base.cra_name, "rfc4106")) {
-+				fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption and decryption "
-+					   " with internal IV is registered as an approved service\n",
-+					   aes_gcm_algs_vaes_avx10_512[i].base.cra_driver_name, aes_gcm_algs_vaes_avx10_512[i].base.cra_name);
-+			}
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) decryption with external IV "
-+				   "is registered as an approved service\n",
-+				   aes_gcm_algs_vaes_avx10_512[i].base.cra_driver_name, aes_gcm_algs_vaes_avx10_512[i].base.cra_name);
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption with external IV "
-+				   "is registered as a non-approved service\n",
-+				   aes_gcm_algs_vaes_avx10_512[i].base.cra_driver_name, aes_gcm_algs_vaes_avx10_512[i].base.cra_name);
-+		}
-+	}
-+
  #endif /* CONFIG_AS_VAES && CONFIG_AS_VPCLMULQDQ */
  	return 0;
  }
-@@ -1663,7 +1729,7 @@ static void unregister_avx_algs(void)
- 
- int __init aesni_init(void)
- {
--	int err;
-+	int err, i;
- 
- 	if (!fcw_x86_match_cpu_aesni_cpu_id())
- 		return -ENODEV;
-@@ -1679,18 +1745,45 @@ int __init aesni_init(void)
- 	if (err)
- 		return err;
- 
-+	if (fips_enabled) {
-+		fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
-+			   aesni_cipher_alg.cra_driver_name, aesni_cipher_alg.cra_name);
-+	}
-+
- 	err = simd_register_skciphers_compat(aesni_skciphers,
- 					     ARRAY_SIZE(aesni_skciphers),
- 					     aesni_simd_skciphers);
- 	if (err)
- 		goto unregister_cipher;
- 
-+	if (fips_enabled) {
-+		for ( i = 0; i < ARRAY_SIZE(aesni_skciphers); i++) {
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) is registered as an approved service\n",
-+				   aesni_skciphers[i].base.cra_driver_name, aesni_skciphers[i].base.cra_name);
-+		}
-+	}
-+
- 	err = simd_register_aeads_compat(aes_gcm_algs_aesni,
- 					 ARRAY_SIZE(aes_gcm_algs_aesni),
- 					 aes_gcm_simdalgs_aesni);
+@@ -1691,7 +1709,6 @@ int __init aesni_init(void)
  	if (err)
  		goto unregister_skciphers;
  
-+	if (fips_enabled) {
-+		for ( i = 0; i < ARRAY_SIZE(aes_gcm_algs_aesni); i++) {
-+			if (strstr(aes_gcm_algs_aesni[i].base.cra_name, "rfc4106")) {
-+				fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption and decryption "
-+					   " with internal IV is registered as an approved service\n",
-+					   aes_gcm_algs_aesni[i].base.cra_driver_name, aes_gcm_algs_aesni[i].base.cra_name);
-+			}
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) decryption with external IV "
-+				   "is registered as an approved service\n",
-+				   aes_gcm_algs_aesni[i].base.cra_driver_name, aes_gcm_algs_aesni[i].base.cra_name);
-+			fcw_printk(KERN_NOTICE pr_fmt() "alg: %s (%s) encryption with external IV "
-+				   "is registered as a non-approved service\n",
-+				   aes_gcm_algs_aesni[i].base.cra_driver_name, aes_gcm_algs_aesni[i].base.cra_name);
-+		}
-+	}
- 
+-
  #ifdef CONFIG_X86_64
  	if (fcw_boot_cpu_has(X86_FEATURE_AVX))
+ 		err = simd_register_skciphers_compat(&aesni_xctr, 1,
 diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
 index d26cc2af0..1834d7ef2 100644
 --- a/crypto/aes_generic.c
@@ -267,10 +156,10 @@ index 774f7e816..4358c9b2a 100644
  #include "ecc_curve_defs.h"
  #include "fips_canister_wrapper.h"
 diff --git a/crypto/gcm.c b/crypto/gcm.c
-index 80aff438a..473275049 100644
+index 7efe5edce..a45dba8aa 100644
 --- a/crypto/gcm.c
 +++ b/crypto/gcm.c
-@@ -461,6 +461,14 @@ static int crypto_gcm_encrypt(struct aead_request *req)
+@@ -465,6 +465,14 @@ static int crypto_gcm_encrypt(struct aead_request *req)
  	struct skcipher_request *skreq = &pctx->u.skreq;
  	u32 flags = aead_request_flags(req);
  
@@ -285,7 +174,7 @@ index 80aff438a..473275049 100644
  	crypto_gcm_init_common(req);
  	crypto_gcm_init_crypt(req, req->cryptlen);
  	skcipher_request_set_callback(skreq, flags, gcm_encrypt_done, req);
-@@ -755,6 +763,7 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
+@@ -759,6 +767,7 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
  	}
  
  	aead_request_set_tfm(subreq, child);
@@ -293,7 +182,7 @@ index 80aff438a..473275049 100644
  	aead_request_set_callback(subreq, req->base.flags, req->base.complete,
  				  req->base.data);
  	aead_request_set_crypt(subreq, rctx->src,
-@@ -762,6 +771,8 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
+@@ -766,6 +775,8 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
  			       req->cryptlen, iv);
  	aead_request_set_ad(subreq, req->assoclen - 8);
  
@@ -302,7 +191,7 @@ index 80aff438a..473275049 100644
  	return subreq;
  }
  
-@@ -769,6 +780,14 @@ static int crypto_rfc4106_encrypt(struct aead_request *req)
+@@ -773,6 +784,14 @@ static int crypto_rfc4106_encrypt(struct aead_request *req)
  {
  	int err;
  

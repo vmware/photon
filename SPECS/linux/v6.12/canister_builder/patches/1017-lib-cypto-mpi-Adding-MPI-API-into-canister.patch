@@ -1,4 +1,4 @@
-From cb30fc90e87b96118838d3d6141e396c02cb393c Mon Sep 17 00:00:00 2001
+From 39f6d34cb2e88eb7ba2fb2c1eee502ea7894f2bb Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankit-aj.jain@broadcom.com>
 Date: Fri, 12 Sep 2025 09:39:02 +0000
 Subject: [PATCH] lib/cypto/mpi: Adding MPI API into canister
@@ -9,7 +9,7 @@ as they are part of the crypto implementation
 as it is already part of canister
 - Added lib/asn1-decoder API into canister
 - Converted pr_debug into no_printk
-  followup patch will fix it.
+  as debug prints are not allowed in canister
 
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
@@ -21,13 +21,13 @@ Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
  lib/crypto/mpi/mpi-cmp.c      |  2 --
  lib/crypto/mpi/mpi-internal.h | 12 +++++++++---
  lib/crypto/mpi/mpi-mul.c      |  2 --
- lib/crypto/mpi/mpi-pow.c      |  5 ++---
+ lib/crypto/mpi/mpi-pow.c      |  7 +++----
  lib/crypto/mpi/mpi-sub-ui.c   |  1 -
- lib/crypto/mpi/mpicoder.c     | 19 +++++++------------
+ lib/crypto/mpi/mpicoder.c     | 17 ++++++-----------
  lib/crypto/mpi/mpih-mul.c     |  2 +-
- lib/crypto/mpi/mpiutil.c      | 17 ++++++-----------
+ lib/crypto/mpi/mpiutil.c      | 15 +++++----------
  lib/crypto/sha256.c           |  4 ----
- 14 files changed, 46 insertions(+), 86 deletions(-)
+ 14 files changed, 45 insertions(+), 85 deletions(-)
 
 diff --git a/lib/asn1_decoder.c b/lib/asn1_decoder.c
 index 13da529e2..86876fdac 100644
@@ -391,10 +391,10 @@ index ceaebe181..5c5630c80 100644
  }
 -EXPORT_SYMBOL_GPL(mpi_cmp);
 diff --git a/lib/crypto/mpi/mpi-internal.h b/lib/crypto/mpi/mpi-internal.h
-index 8a4f49e30..9fd82154b 100644
+index 8a4f49e30..e5add485a 100644
 --- a/lib/crypto/mpi/mpi-internal.h
 +++ b/lib/crypto/mpi/mpi-internal.h
-@@ -17,15 +17,20 @@
+@@ -17,15 +17,21 @@
  #ifndef G10_MPI_INTERNAL_H
  #define G10_MPI_INTERNAL_H
  
@@ -412,6 +412,7 @@ index 8a4f49e30..9fd82154b 100644
 +extern void *fcw_kmalloc(size_t size, gfp_t flags);
 +extern void *fcw_kcalloc(size_t n, size_t size, gfp_t flags);
 +extern void *fcw_kzalloc(size_t size, gfp_t flags);
++extern int fcw_cond_resched(void);
 +
 +#define log_debug fcw_printk
 +#define log_bug fcw_printk
@@ -435,7 +436,7 @@ index 7e6ff1ce3..5343983c5 100644
  }
 -EXPORT_SYMBOL_GPL(mpi_mulm);
 diff --git a/lib/crypto/mpi/mpi-pow.c b/lib/crypto/mpi/mpi-pow.c
-index 67fbd4c25..72f907ea4 100644
+index 67fbd4c25..ccdb42b84 100644
 --- a/lib/crypto/mpi/mpi-pow.c
 +++ b/lib/crypto/mpi/mpi-pow.c
 @@ -118,7 +118,7 @@ int mpi_powm(MPI res, MPI base, MPI exp, MPI mod)
@@ -456,6 +457,15 @@ index 67fbd4c25..72f907ea4 100644
  			mp = mp_marker = mpi_alloc_limb_space(msize);
  			if (!mp)
  				goto enomem;
+@@ -237,7 +237,7 @@ int mpi_powm(MPI res, MPI base, MPI exp, MPI mod)
+ 				}
+ 				e <<= 1;
+ 				c--;
+-				cond_resched();
++				fcw_cond_resched();
+ 			}
+ 
+ 			i--;
 @@ -306,4 +306,3 @@ int mpi_powm(MPI res, MPI base, MPI exp, MPI mod)
  		mpi_free_limb_space(tspace);
  	return rc;
@@ -471,7 +481,7 @@ index b41b082b5..48f4d33df 100644
  }
 -EXPORT_SYMBOL_GPL(mpi_sub_ui);
 diff --git a/lib/crypto/mpi/mpicoder.c b/lib/crypto/mpi/mpicoder.c
-index dde010308..1a7729430 100644
+index dde010308..17b9f04c1 100644
 --- a/lib/crypto/mpi/mpicoder.c
 +++ b/lib/crypto/mpi/mpicoder.c
 @@ -47,7 +47,7 @@ MPI mpi_read_raw_data(const void *xbuffer, size_t nbytes)
@@ -515,7 +525,7 @@ index dde010308..1a7729430 100644
  
  static int count_lzeros(MPI a)
  {
-@@ -180,7 +178,6 @@ int mpi_read_buffer(MPI a, uint8_t *buf, unsigned buf_len, unsigned *nbytes,
+@@ -186,7 +184,6 @@ int mpi_read_buffer(MPI a, uint8_t *buf, unsigned buf_len, unsigned *nbytes,
  	}
  	return 0;
  }
@@ -579,7 +589,7 @@ index a93647564..c805ffb16 100644
  					return -ENOMEM;
  			}
 diff --git a/lib/crypto/mpi/mpiutil.c b/lib/crypto/mpi/mpiutil.c
-index 979ece5a8..58c8ab7fb 100644
+index 979ece5a8..b8f2e9ee8 100644
 --- a/lib/crypto/mpi/mpiutil.c
 +++ b/lib/crypto/mpi/mpiutil.c
 @@ -31,7 +31,7 @@ MPI mpi_alloc(unsigned nlimbs)
