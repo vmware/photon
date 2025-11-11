@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -21,6 +21,7 @@ Patch1: 0002-Linux-PAM-protect-dir.patch
 Patch2: 0003-pam_pwhistory-fix-passing-NULL-filename-argument-to-.patch
 Patch3: 0004-fix-build-if-crypt_r_isnt-available.patch
 Patch4: 0005-faillock-open-tally-file-in-O_CLOEXEC-mode.patch
+Patch5: 0006-CVE-2024-10963.patch
 
 BuildRequires:  libselinux-devel
 BuildRequires:  gdbm-devel
@@ -150,6 +151,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-9
+- Fix CVE-2024-10963
 * Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-8
 - Harden pwquality, pwhistory, faillock by default
 * Thu Mar 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-7
