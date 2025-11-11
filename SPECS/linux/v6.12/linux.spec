@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.41
-Release:        23%{?acvp_build:.acvp}%{?dist}
+Release:        24%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -861,6 +861,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-24
+- Removed '__SCT__cond_resched' symbol from canister
 * Thu Nov 06 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.41-23
 - Introduce new printk wrapper for FIPS canister.
 * Thu Oct 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.41-22
