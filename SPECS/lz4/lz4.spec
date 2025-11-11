@@ -1,7 +1,7 @@
 Summary:        Extremely fast compression.
 Name:           lz4
-Version:        1.9.2
-Release:        2%{?dist}
+Version:        1.10.0
+Release:        1%{?dist}
 License:        BSD 2-Clause and GPLv2
 URL:            http://lz4.github.io/lz4
 Group:          Applications
@@ -9,9 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/lz4/lz4/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ae714c61ec8e33ed91359b63f2896cfa102d66b730dce112b74696ec5850e59d88bd5527173e01e354a70fbe8f036557a47c767ee0766bc5f9c257978116c3c1
+%define sha512 %{name}=8c4ceb217e6dc8e7e0beba99adc736aca8963867bcf9f970d621978ba11ce92855912f8b66138037a1d2ae171e8e17beb7be99281fea840106aa60373c455b28
 
-Patch0: CVE-2021-3520.patch
+Patch0: CVE-2025-62813.patch
 
 %description
 LZ4 is lossless compression algorithm, providing compression speed
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Fri Nov 7 2025 Michelle Wang <michellew@vmware.com> 1.10.0-1
+- Upgrade to 1.10.0 and Add Patch CVE-2025-62813
 * Mon Jun 14 2021 Michelle Wang <michellew@vmware.com> 1.9.2-2
 - Add Patch CVE-2021-3520
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.2-1
