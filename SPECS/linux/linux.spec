@@ -46,8 +46,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.157
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.158
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1123,6 +1123,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 11 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.158-1
+- Update to version 6.1.158
 * Fri Nov 07 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-5
 - Fix CVE-2025-22022
 * Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-4

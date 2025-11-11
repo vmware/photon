@@ -65,5 +65,5 @@ Patch363: 0063-Linux-6.1.114-rt44-REBASE.patch
 Patch364: 0064-Linux-6.1.120-rt46-REBASE.patch
 Patch365: 0065-net-fix-mis-merge-from-stable-in-drivers-net-vrf.c.patch
 Patch366: 0066-Linux-6.1.134-rt51-REBASE.patch
-Patch367: 0067-Linux-6.1.151-rt54-REBASE.patch
+Patch367: 0067-Linux-6.1.158-rt58-REBASE.patch
 

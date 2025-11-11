@@ -1,26 +1,26 @@
 shared_sources:
 - stalld/config.yaml
 sources:
-- archive: linux-6.1.157.tar.xz
+- archive: linux-6.1.158.tar.xz
   archive_type: upstream
-  version: 6.1.157
-  name: linux-6.1.157
-  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.157.tar.xz
+  version: 6.1.158
+  name: linux-6.1.158
+  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.158.tar.xz
   repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-  commit_id: 8e6e2188d949ddc4d8f613fd115ac7177f7e3b2b
+  commit_id: f6e38ae624cf7eb96fb444a8ca2d07caa8d9c8fe
   skip_list: []
   missing: []
-  archive_sha512sum: a03af7fd27d2034076f7c127137cc322bc86601b55a820294fbabb51c271d2225732505e6fda8b39fd37b315d6e66148d757bbb42bc892dd34c7f97040f6b5dd
+  archive_sha512sum: ee28ab2c9e1d5c922e403e0df4a6012fd2a5f1bfda1560ec8d58368c91f7f095a4f95ce8c6676a3beac8fdec6a272a8a77d4d14f9c7ca2950745fdd36d073b78
   skip_validation: false
   license_manual_review:
   # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
   - file_paths:
-    - linux-6.1.157/drivers/pci/controller/pci-mvebu.c
+    - linux-6.1.158/drivers/pci/controller/pci-mvebu.c
     sha256sum: f2ed59ce938e92a0dff71c849860cafb5a5d2a78b34e5c0aa974288d98cccfcc
     spdx_exp: GPL-2.0-only
   # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
   - file_paths:
-    - linux-6.1.157/Documentation/process/kernel-docs.rst
+    - linux-6.1.158/Documentation/process/kernel-docs.rst
     sha256sum: 6e641499dcde7927e30dcdea64a6be9f53234d7036f4069ec47bdf5490005166
     spdx_exp: ''
   spdx:

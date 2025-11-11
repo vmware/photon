@@ -1,0 +1,20 @@
+From 31097f0a78c041826ac0c4076edf5bb7656bfc19 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Mon, 10 Nov 2025 17:04:52 -0600
+Subject: [PATCH 67/67] Linux 6.1.158-rt58 REBASE
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 75493460c41f..f9df2cf089cf 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt51
++-rt58
+-- 
+2.51.1
+
