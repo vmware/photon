@@ -1,0 +1,55 @@
+From 7304e43fb7cefdb5ec7d1b0504512c34f94af5ce Mon Sep 17 00:00:00 2001
+From: Jiangshan Yi <yijiangshan@kylinos.cn>
+Date: Thu, 14 Jul 2022 09:54:41 +0800
+Subject: [PATCH 2/3] lib/lzo/lzo1x_compress.c: replace ternary operator with
+ min() and min_t()
+
+[Upstream commit a10c9ede9913fd54be61bbb01884e647e83dfcae]
+
+Fix the following coccicheck warning:
+
+lib/lzo/lzo1x_compress.c:54: WARNING opportunity for min().
+lib/lzo/lzo1x_compress.c:329: WARNING opportunity for min().
+
+min() and min_t() macro is defined in include/linux/minmax.h.  It avoids
+multiple evaluations of the arguments when non-constant and performs
+strict type-checking.
+
+Link: https://lkml.kernel.org/r/20220714015441.1313036-1-13667453960@163.com
+Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
+Tested-by: Dave Rodgman <dave.rodgman@arm.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ lib/lzo/lzo1x_compress.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/lib/lzo/lzo1x_compress.c b/lib/lzo/lzo1x_compress.c
+index 76758e929..9d31e7126 100644
+--- a/lib/lzo/lzo1x_compress.c
++++ b/lib/lzo/lzo1x_compress.c
+@@ -50,9 +50,7 @@ lzo1x_1_do_compress(const unsigned char *in, size_t in_len,
+ 
+ 		if (dv == 0 && bitstream_version) {
+ 			const unsigned char *ir = ip + 4;
+-			const unsigned char *limit = ip_end
+-				< (ip + MAX_ZERO_RUN_LENGTH + 1)
+-				? ip_end : ip + MAX_ZERO_RUN_LENGTH + 1;
++			const unsigned char *limit = min(ip_end, ip + MAX_ZERO_RUN_LENGTH + 1);
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && \
+ 	defined(LZO_FAST_64BIT_MEMORY_ACCESS)
+ 			u64 dv64;
+@@ -326,7 +324,7 @@ static int lzogeneric1x_1_compress(const unsigned char *in, size_t in_len,
+ 	data_start = op;
+ 
+ 	while (l > 20) {
+-		size_t ll = l <= (m4_max_offset + 1) ? l : (m4_max_offset + 1);
++		size_t ll = min_t(size_t, l, m4_max_offset + 1);
+ 		uintptr_t ll_end = (uintptr_t) ip + ll;
+ 		if ((ll_end + ((t + ll) >> 5)) <= ll_end)
+ 			break;
+-- 
+2.40.4
+

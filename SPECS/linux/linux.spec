@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -464,6 +464,14 @@ Patch254: 0001-drm-i915-selftests-fix-subtraction-overflow-bug.patch
 
 # Fix CVE-2025-40099
 Patch255: 0001-cifs-parse_dfs_referrals-prevent-oob-on-malformed-in.patch
+# Fix CVE-2022-50406
+Patch256: 0001-iomap-iomap-fix-memory-corruption-when-recording-err.patch
+# Fix CVE-2025-39838
+Patch257: 0001-cifs-prevent-NULL-pointer-dereference-in-UTF16-conve.patch
+# Fix CVE-2025-38068
+Patch258: 0001-lib-lzo-lzo1x_compress.c-make-lzogeneric1x_1_compres.patch
+Patch259: 0002-lib-lzo-lzo1x_compress.c-replace-ternary-operator-wi.patch
+Patch260: 0003-crypto-lzo-Fix-compression-buffer-overrun.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1152,6 +1160,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-4
+- Fixes CVE-2022-50406, CVE-2025-39838, CVE-2025-38068
 * Tue Nov 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.246-3
 - Fix for CVE-2025-40099.
 * Mon Nov 03 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-2

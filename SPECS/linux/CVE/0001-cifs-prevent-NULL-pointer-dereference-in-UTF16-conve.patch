@@ -1,0 +1,43 @@
+From 08621ad61e2d8f73357a40d8869f2175141e2ae7 Mon Sep 17 00:00:00 2001
+From: Makar Semyonov <m.semenov@tssltd.ru>
+Date: Thu, 4 Sep 2025 15:28:41 +0300
+Subject: [PATCH] cifs: prevent NULL pointer dereference in UTF16 conversion
+
+[Upstream commit 70bccd9855dae56942f2b18a08ba137bb54093a0]
+
+There can be a NULL pointer dereference bug here. NULL is passed to
+__cifs_sfu_make_node without checks, which passes it unchecked to
+cifs_strndup_to_utf16, which in turn passes it to
+cifs_local_to_utf16_bytes where '*from' is dereferenced, causing a crash.
+
+This patch adds a check for NULL 'src' in cifs_strndup_to_utf16 and
+returns NULL early to prevent dereferencing NULL pointer.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE
+
+Signed-off-by: Makar Semyonov <m.semenov@tssltd.ru>
+Cc: stable@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ fs/cifs/cifs_unicode.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/fs/cifs/cifs_unicode.c b/fs/cifs/cifs_unicode.c
+index 171ad8b42..3a3f2838f 100644
+--- a/fs/cifs/cifs_unicode.c
++++ b/fs/cifs/cifs_unicode.c
+@@ -620,6 +620,9 @@ cifs_strndup_to_utf16(const char *src, const int maxlen, int *utf16_len,
+ 	int len;
+ 	__le16 *dst;
+ 
++	if (!src)
++		return NULL;
++
+ 	len = cifs_local_to_utf16_bytes(src, maxlen, cp);
+ 	len += 2; /* NULL */
+ 	dst = kmalloc(len, GFP_KERNEL);
+-- 
+2.40.4
+

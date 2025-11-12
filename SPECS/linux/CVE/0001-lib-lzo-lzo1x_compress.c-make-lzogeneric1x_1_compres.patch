@@ -1,0 +1,39 @@
+From 3d06b1178fe6f9793245197cc3b3b6d2d813b6ac Mon Sep 17 00:00:00 2001
+From: Jason Yan <yanaijie@huawei.com>
+Date: Tue, 15 Dec 2020 20:47:13 -0800
+Subject: [PATCH 1/3] lib/lzo/lzo1x_compress.c: make lzogeneric1x_1_compress()
+ static
+
+[Upstream commit 33fb626be08f3877b92e3c1782eac1a9a1575ea5]
+
+Fix the following sparse warning:
+
+  lib/lzo/lzo1x_compress.c:304:5: warning: symbol 'lzogeneric1x_1_compress' was not declared. Should it be static?
+
+Link: https://lkml.kernel.org/r/20201020031415.136874-1-yanaijie@huawei.com
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
+Cc: Dave Rodgman <dave.rodgman@arm.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ lib/lzo/lzo1x_compress.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/lzo/lzo1x_compress.c b/lib/lzo/lzo1x_compress.c
+index 8ad5ba2b8..76758e929 100644
+--- a/lib/lzo/lzo1x_compress.c
++++ b/lib/lzo/lzo1x_compress.c
+@@ -301,7 +301,7 @@ lzo1x_1_do_compress(const unsigned char *in, size_t in_len,
+ 	return in_end - (ii - ti);
+ }
+ 
+-int lzogeneric1x_1_compress(const unsigned char *in, size_t in_len,
++static int lzogeneric1x_1_compress(const unsigned char *in, size_t in_len,
+ 		     unsigned char *out, size_t *out_len,
+ 		     void *wrkmem, const unsigned char bitstream_version)
+ {
+-- 
+2.40.4
+
