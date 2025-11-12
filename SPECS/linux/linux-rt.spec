@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.158
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -296,6 +296,10 @@ Patch180: 0001-wifi-iwlwifi-fix-debug-actions-order.patch
 # Fix CVE-2025-22022
 Patch181: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
 Patch182: 0002-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
+
+# Fix CVE-2025-22121
+Patch183: 0001-ext4-introduce-ITAIL-helper.patch
+Patch184: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -672,6 +676,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-2
+- Fix CVE-2025-22121
 * Tue Nov 11 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.158-1
 - Update to version 6.1.158
 * Fri Nov 07 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.157-5
