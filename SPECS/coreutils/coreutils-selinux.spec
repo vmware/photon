@@ -6,7 +6,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        9.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ SELinux enabled coreutils package.
 %package minimal
 Summary:    minimal subset of coreutils
 Conflicts:  %{name} < 9.1-11
+Provides:   %{srcname}-minimal = %{version}-%{release}
+Obsoletes:  %{srcname}-minimal
 
 %description minimal
 %{summary}
@@ -121,6 +123,8 @@ touch %{coreutils_selinux_present}
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-12
+- Handle conflict with coreutils-minimal
 * Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-11
 - Introduce minimal sub package
 * Mon Jun 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-10
