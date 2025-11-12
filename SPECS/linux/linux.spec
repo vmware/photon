@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -472,6 +472,14 @@ Patch257: 0001-cifs-prevent-NULL-pointer-dereference-in-UTF16-conve.patch
 Patch258: 0001-lib-lzo-lzo1x_compress.c-make-lzogeneric1x_1_compres.patch
 Patch259: 0002-lib-lzo-lzo1x_compress.c-replace-ternary-operator-wi.patch
 Patch260: 0003-crypto-lzo-Fix-compression-buffer-overrun.patch
+
+# Fix CVE-2025-22121
+Patch261: 0001-ext4-introduce-ITAIL-helper.patch
+Patch262: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
+
+# Fix CVE-2025-22022
+Patch263: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
+Patch264: 0001-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1160,6 +1168,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-5
+- Fix CVE-2025-22121 and CVE-2025-22022
 * Wed Nov 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-4
 - Fixes CVE-2022-50406, CVE-2025-39838, CVE-2025-38068
 * Tue Nov 11 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.246-3
