@@ -1,0 +1,18 @@
+sources:
+- archive: wal2json-2.6.tar.gz
+  skip_validation: false
+  archive_sha512sum: 73c89b1251696fad269019050e1cd479ee114e671714a4aecae12f862fc339b1d30faa44a298da64f972ca028687e0d9e7baaec64b35117bb13702afa8f00ca3
+  name: wal2json-wal2json_2_6
+  version: 2.6
+  archive_type: upstream
+  url: https://github.com/eulerto/wal2json/archive/refs/tags/wal2json_2_6.tar.gz
+  repo_url: https://github.com/eulerto/wal2json
+  commit_id: 75629c2e1e81a12350cc9d63782fc53252185d8d
+  spdx:
+    package:
+      detailed_description: wal2json is an output plugin for logical decoding. It means that the plugin have access to tuples produced by INSERT and UPDATE.
+      home_page: https://github.com/eulerto/wal2json
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: JSON output plugin for changeset extraction
+      supplier: 'Organization: Broadcom, Inc.'
