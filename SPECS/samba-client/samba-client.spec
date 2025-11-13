@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -18,7 +18,8 @@ Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
 
 Source1: smb.conf.vendor
 
-Patch0: CVE-2025-10230.patch
+Patch0: CVE-2025-9640.patch
+Patch1: CVE-2025-10230.patch
 
 BuildRequires: libtirpc-devel
 BuildRequires: rpcsvc-proto-devel
@@ -584,6 +585,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Wed Nov 12 2025 Michelle Wang <michelle.wang@broadcom.com> 4.19.3-3
+- Fix CVE-2025-9640
 * Tue Oct 21 2025 Michelle Wang <michelle.wang@broadcom.com> 4.19.3-2
 - Fix CVE-2025-10230
 * Fri May 16 2025 Michelle Wang <michelle.wang@broadcom.com> 4.19.3-1
