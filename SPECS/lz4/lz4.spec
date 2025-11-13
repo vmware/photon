@@ -1,7 +1,7 @@
 Summary:        Extremely fast compression.
 Name:           lz4
-Version:        1.9.4
-Release:        3%{?dist}
+Version:        1.10.0
+Release:        1%{?dist}
 URL:            http://lz4.github.io/lz4
 Group:          Applications
 Vendor:         VMware, Inc.
@@ -11,6 +11,8 @@ Source0: https://github.com/lz4/lz4/archive/v%{version}/%{name}-%{version}.tar.g
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2025-62813.patch
 
 %description
 LZ4 is lossless compression algorithm, providing compression speed
@@ -55,6 +57,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Fri Nov 7 2025 Michelle Wang <michellew@vmware.com> 1.10.0-1
+- Upgrade to 1.10.0 and Add Patch CVE-2025-62813
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.9.4-3
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.4-2
