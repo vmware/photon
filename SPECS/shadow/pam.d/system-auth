@@ -1,12 +1,5 @@
 # Begin /etc/pam.d/system-auth
 
-# Do not modify this file unless you are absolutely sure
-# * THE ORDER OF ENTRIES ARE IMPORTANT, DO NOT CHANGE IT *
-
-auth required     pam_faillock.so   preauth
-auth sufficient   pam_unix.so
-auth required     pam_faillock.so   authfail
-auth optional     pam_faildelay.so  delay=4000000
-auth required     pam_deny.so
+auth      required    pam_unix.so
 
 # End /etc/pam.d/system-auth

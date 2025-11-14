@@ -1,7 +1,9 @@
+%define STIG_HARDEN 0
+
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -10,8 +12,15 @@ Distribution:   Photon
 Source0: https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
 Source1: pamtmp.conf
+
+%if 0%{?STIG_HARDEN} == 0
 Source2: default-faillock.conf
-Source3: default-pwhistory.conf
+%endif
+
+%if 0%{?STIG_HARDEN}
+Source2: default-faillock.stig.conf
+Source3: default-pwhistory.stig.conf
+%endif
 
 Source4: license.txt
 %include %{SOURCE4}
@@ -93,7 +102,11 @@ ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_passwd.so
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_session.so
 
 install -vDm 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/security/faillock.conf
+
+%if 0%{?STIG_HARDEN}
 install -vDm 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/security/pwhistory.conf
+%endif
+
 touch %{buildroot}%{_sysconfdir}/security/opasswd
 
 install -d -m 755 %{buildroot}%{_var}/log/faillock
@@ -151,6 +164,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-10
+- Revert STIG hardening changes
 * Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-9
 - Fix CVE-2024-10963
 * Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-8

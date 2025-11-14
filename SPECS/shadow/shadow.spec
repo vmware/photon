@@ -1,7 +1,9 @@
+%define STIG_HARDEN 0
+
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,28 +11,57 @@ Distribution:   Photon
 
 Source0: https://github.com/shadow-maint/shadow/releases/download/%{version}/%{name}-%{version}.tar.xz
 
-Source1: chage
-Source2: chpasswd
-Source3: login
-Source4: other
-Source5: passwd
-Source6: sshd
-Source7: su
-Source8: system-account
-Source9: system-auth
-Source10: system-password
-Source11: system-session
+%if 0%{?STIG_HARDEN}
+Source1: pam.d/chage.stig
+Source2: pam.d/chpasswd.stig
+Source3: pam.d/login.stig
+Source4: pam.d/other.stig
+Source5: pam.d/passwd.stig
+Source6: pam.d/sshd.stig
+Source7: pam.d/su.stig
+Source8: pam.d/system-account.stig
+Source9: pam.d/system-auth.stig
+Source10: pam.d/system-password.stig
+Source11: pam.d/system-session.stig
 Source12: useradd
-Source13: tmout.sh
+Source13: tmout.sh.stig
+%endif
+
+%if 0%{?STIG_HARDEN} == 0
+Source1: pam.d/chage
+Source2: pam.d/chpasswd
+Source3: pam.d/login
+Source4: pam.d/other
+Source5: pam.d/passwd
+Source6: pam.d/sshd
+Source7: pam.d/su
+Source8: pam.d/system-account
+Source9: pam.d/system-auth
+Source10: pam.d/system-password
+Source11: pam.d/system-session
+Source12: pam.d/useradd
+%endif
+
 Source14: license.txt
 %include %{SOURCE14}
 
 Patch0: 0001-remove-group-from-deliverables.patch
+
+%if 0%{?STIG_HARDEN}
+Patch1: 0002-login.defs-config-changes.stig.patch
+%endif
+
+%if 0%{?STIG_HARDEN} == 0
 Patch1: 0002-login.defs-config-changes.patch
+%endif
+
 Patch2: CVE-2023-29383.patch
 Patch3: CVE-2023-29383.1.patch
 Patch4: CVE-2023-4641.patch
+
+%if 0%{?STIG_HARDEN}
 Patch5: 0003-shadow-set-login.defs-hardening-rules.patch
+%endif
 
 BuildRequires: cracklib-devel
 BuildRequires: Linux-PAM-devel
@@ -112,7 +143,10 @@ install -vm644 %{SOURCE8} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE9} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/pam.d/
 install -vm644 %{SOURCE11} %{buildroot}%{_sysconfdir}/pam.d/
+
+%if 0%{?STIG_HARDEN}
 install -Dm644 %{SOURCE13} %{buildroot}%{_sysconfdir}/profile.d/tmout.sh
+%endif
 
 pushd %{buildroot}%{_sysconfdir}/pam.d
 sed -e "s/chpasswd/newusers/" chpasswd > newusers
@@ -149,7 +183,11 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/login.access
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/default/useradd
 %config(noreplace) %{_sysconfdir}/limits
+
+%if 0%{?STIG_HARDEN}
 %{_sysconfdir}/profile.d/tmout.sh
+%endif
+
 %{_bindir}/*
 %{_sbindir}/*
 %exclude %{_bindir}/su
@@ -178,6 +216,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-12
+- Revert STIG hardening changes
 * Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-11
 - pam_faillock should be before pam_unix
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-10

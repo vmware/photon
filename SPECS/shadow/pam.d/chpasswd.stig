@@ -1,4 +1,4 @@
-#Begin /etc/pam.d/chage
+#Begin /etc/pam.d/chpasswd
 
 # always allow root
 auth      sufficient  pam_rootok.so
@@ -10,4 +10,4 @@ session   include     system-session
 
 password  include     system-password
 
-# End /etc/pam.d/chage
+# End /etc/pam.d/chpasswd

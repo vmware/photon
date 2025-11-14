@@ -1,7 +1,9 @@
+%define STIG_HARDEN 0
+
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -9,7 +11,9 @@ Distribution:   Photon
 
 Source0: https://github.com/libpwquality/libpwquality/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
 
+%if 0%{?STIG_HARDEN}
 Source1: default-pwquality.conf
+%endif
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -59,7 +63,9 @@ for the libpwquality library.
 %install
 %make_install %{?_smp_mflags}
 
+%if 0%{?STIG_HARDEN}
 install -vDm 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/security/pwquality.conf
+%endif
 
 find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
     -name '*__pycache__' -delete
@@ -93,6 +99,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitearch}/pwquality-*.egg/*
 
 %changelog
+* Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-7
+- Revert STIG hardening changes
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-6
 - Harden pwquality by default
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.4-5

@@ -1,4 +1,4 @@
-# Begin /etc/pam.d/chage
+#Begin /etc/pam.d/chage
 
 # always allow root
 auth      sufficient  pam_rootok.so
