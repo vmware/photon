@@ -86,11 +86,11 @@ populate_kvers() {
       fi
 
       # Get the build_for value
-      build_for_value="$(grep -E '^\s*%global\s+build_for' "$sp" | sed -E 's/^\s*%global\s+build_for\s+//; s/^\s*|\s*$//g; s/!\s*\(\s*/!(/; s/\s*\),/),/g; s/\s*,\s*/,/g')"
+      build_for_value="$(grep -E '^\s*%global\s+build_if' "$sp" | sed -E 's/^\s*%global\s+build_if\s+//; s/^\s*|\s*$//g; s/!\s*\(\s*/!(/; s/\s*\),/),/g; s/\s*,\s*/,/g')"
 
       # Check if build_for_value is empty and append accordingly
       if [[ -z "$build_for_value" ]]; then
-          build_for[$x]+="all "  # Append "all" to the array
+          build_for[$x]+="1 "  # Append "all" to the array
       else
           build_for[$x]+="$build_for_value "  # Append the found value
       fi

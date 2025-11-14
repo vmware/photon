@@ -1,4 +1,4 @@
-%define build_for !ph5
+%global build_if %{photon_subrelease} >= 100
 
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld

@@ -1425,6 +1425,9 @@ def initialize_constants():
     constants.setReleaseVersion(
         configdict["photon-build-param"]["photon-release-version"]
     )
+    constants.setSubreleaseVersion(
+        configdict["photon-build-param"]["photon-subrelease"]
+    )
     constants.setPhotonBranch(configdict["photon-branch"])
 
     constants.setReleaseVersionToConsume(
@@ -1797,6 +1800,12 @@ def main():
 
     # Apply release specific configs on top of common
     configdict = merge_dicts(configdict, releasedict)
+
+    # PHOTON_SUBRELEASE env variable should overwrite build options config file
+    subrelease = os.environ.get("PHOTON_SUBRELEASE", configdict["photon-build-param"].get("photon-subrelease", ""))
+    if subrelease == "":
+        raise Exception("photon-subrelease is empty")
+    configdict["photon-build-param"]["photon-subrelease"] = subrelease
 
     if not configdict.get("photon-path", ""):
         configdict["photon-path"] = os.path.dirname(cfgPath)

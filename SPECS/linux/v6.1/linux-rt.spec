@@ -1,4 +1,4 @@
-%global build_for !ph5
+%global build_if 0
 %global security_hardening none
 
 # SBAT generation of "linux.photon" component

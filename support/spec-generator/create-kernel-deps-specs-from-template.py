@@ -63,12 +63,12 @@ class KernelSpecProcessor:
                                           spec_content, re.MULTILINE).group(1)
                 release_match = re.search(r"^Release:\s*(\S+)",
                                           spec_content, re.MULTILINE).group(1)
-                build_for_match = re.search(r"^\s*%(?:global|define)\s+build_for\s+(.*)", spec_content, re.MULTILINE)
+                build_for_match = re.search(r"^\s*%(?:global|define)\s+build_if\s+(.*)", spec_content, re.MULTILINE)
 
                 if build_for_match:
                     build_for_value = build_for_match.group(1).strip()
                 else:
-                    build_for_value = "all"
+                    build_for_value = "1"
 
                 self.kvers[linux_flavour].append(version_match)
                 self.krels[linux_flavour].append(release_match)

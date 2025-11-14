@@ -23,9 +23,9 @@ class SpecParser(object):
             self.position = -1
             self.endposition = -1
 
-    def __init__(self, specfile, arch, dist):
+    def __init__(self, specfile, arch):
         self.arch = arch
-        self.dist = dist
+        self.subrelease = constants.subreleaseVersion
         self.cleanMacro = None
         self.prepMacro = None
         self.buildMacro = None
@@ -53,10 +53,6 @@ class SpecParser(object):
 
         with open(file) as specFile:
             lines = specFile.read().splitlines()
-
-        if self._shouldSpecBeSkipped(lines):
-            self.skipSpec = True
-            return
 
         i = 0
         totalLines = len(lines)
@@ -140,6 +136,10 @@ class SpecParser(object):
                 self._readSecurityHardening(line)
             elif self._isNetworkRequired(line):
                 self._readNetworkRequired(line)
+            elif self._isBuildIf(line):
+                self.skipSpec = not self._parseBuildIf(line)
+                if self.skipSpec:
+                    return
             elif self._isExtraBuildRequires(line):
                 self._readExtraBuildRequires(line, self.packages[self.currentPkg])
             elif self._isBuildRequiresNative(line):
@@ -315,75 +315,13 @@ class SpecParser(object):
             or self._isConditionalMacroEnd(line)
         )
 
-    def _shouldSpecBeSkipped(self, lines):
-        pattern = re.compile(r"%(?:global|define)\s+build_for\s+(.+)")
-
-        for line in lines:
-            # expect build_for macro to be at top of spec
-            if line.startswith("Name:"):
-                break
-            if not line.startswith(("%global", "%define")):
-                continue
-            match = pattern.search(line)
-            if match:
-                values = match.group(1).strip()
-                return self._parseBuildForValues(values)
-
-        return False
-
-    def _parseBuildForValues(self, condition):
-        dist = None
-
-        # Resolve conflict in dist check between Photon 5.0 and 6.0.
-        # For Photon 6.0, explicitly set distribution to 'ph6',
-        # otherwise use the default distribution value 'ph5'.
-        if constants.photonBranch == "6.0":
-            dist = "ph6"
-        else:
-            dist = self.dist
-
-        err = ValueError(
-            f"\nInvalid condition format: '{condition}' in {self.specfile}."
-            "Correct formats are:\n"
-            "1. Simple value: ph5\n"
-            "2. Negation: !ph5\n"
-            "3. List of values: (ph5, ph6)\n"
-            "4. Negation list: !(ph5, ph6)\n"
-            "5. All: all\n"
-            "6. None: none\n"
-            "Examples:\n"
-            "   %global build_for ph5\n"
-            "   %global build_for !ph5\n"
-            "   %define build_for (ph5, ph6)\n"
-            "   %global build_for !(ph4, ph6)\n"
-            "   %define build_for all\n"
-            "   %global build_for none"
-        )
-
-        if condition == "all":
-            return False
-        if condition == "none":
-            return True
-
-        # Handle negation cases (starting with '!')
-        if condition.startswith("!"):
-            sub_condition = condition[1:].strip()
-            return not self._parseBuildForValues(sub_condition)
-
-        # Handle lists within parentheses
-        if condition.startswith("(") and condition.endswith(")"):
-            options = condition[1:-1].strip()
-            # Handle the case where nested parentheses or negation inside parentheses
-            if "!" in options or "(" in options or ")" in options:
-                raise err
-            options_list = [opt.strip() for opt in options.split(",")]
-            return dist not in options_list
-
-        # Handle the case where it's neither a list nor a simple value
-        if "," in condition or "(" in condition or ")" in condition:
-            raise err
-
-        return dist != condition
+    def _parseBuildIf(self, line):
+        pattern = re.compile(r"%global\s+build_if\s+(.+)")
+        match = pattern.search(line)
+        if not match:
+            raise ValueError(f"{self.specfile}: Invalid build_if line: {line}")
+        condition = match.group(1).strip()
+        return self._isConditionTrue(condition, self.specfile, True)
 
     def _isConditionalArch(self, line):
         if re.search("^%ifarch", line):
@@ -438,6 +376,11 @@ class SpecParser(object):
 
     def _isNetworkRequired(self, line):
         if re.search("^%define network_required", line, flags=re.IGNORECASE):
+            return True
+        return False
+
+    def _isBuildIf(self, line):
+        if re.search("^%global *build_if", line):
             return True
         return False
 
@@ -651,13 +594,15 @@ class SpecParser(object):
     def _isIfCondition(self, line):
         return line.startswith("%if ")
 
-    def _isConditionTrue(self, line, spec_fn):
+    def _isConditionTrue(self, line, spec_fn, full_condition=False):
         words = line.strip().split()
-        if len(words) < 2:
-            raise Exception(f"Bad if condition {line} in {spec_fn}")
+        if len(words) == 1:
+                cond = self._replaceMacros(words[0])
+                return eval(f"({cond}) != 0")
 
         cond = ""
-        for w in words[1:]:
+        start_word = 0 if full_condition else 1
+        for w in words[start_word:]:
             if w in {"==", ">", ">=", "<", "<=", "!=", "||", "&&"}:
                 if w == "||":
                     cond = f"{cond} or "
@@ -671,7 +616,8 @@ class SpecParser(object):
                     val = "0"
                 cond = f"{cond} {val}"
 
-        cond = f"({cond}) != 0"
+        if not full_condition:
+            cond = f"({cond}) != 0"
         return eval(cond)
 
     def _isConditionalMacroStart(self, line):
@@ -802,11 +748,16 @@ def main():
     parser = ArgumentParser(usage)
     parser.add_argument(dest="spec_file", default=None)
     parser.add_argument("-a", "--arch", dest="arch", default="x86_64")
-    parser.add_argument("-d", "--dist", dest="dist", default=".ph5")
+    parser.add_argument("-s", "--subrelease", dest="subrelease", default="91")
 
     options = parser.parse_args()
+    constants.addMacro("photon_subrelease", options.subrelease)
+    constants.setSubreleaseVersion(options.subrelease)
 
-    sp = SpecParser(options.spec_file, options.arch, options.dist)
+    sp = SpecParser(options.spec_file, options.arch)
+    if sp.skipSpec:
+        print(f"Skipping spec file: {options.spec_file}")
+        return
     so = sp.createSpecObject()
     # Useful for standalone parser development and debugging.
     # Print whatever property you need.

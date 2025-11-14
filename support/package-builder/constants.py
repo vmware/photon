@@ -60,6 +60,7 @@ class constants(object):
     buildNumber = None
     commonBuildNumber = None
     releaseVersion = None
+    subreleaseVersion = None
     photonBranch = None
     katBuild = False
     canisterBuild = False
@@ -244,6 +245,10 @@ class constants(object):
         constants.releaseVersion = releaseVersion
 
     @staticmethod
+    def setSubreleaseVersion(subreleaseVersion):
+        constants.subreleaseVersion = subreleaseVersion
+
+    @staticmethod
     def setPhotonBranch(photonBranch):
         constants.photonBranch = photonBranch
 
@@ -294,6 +299,11 @@ class constants(object):
         # adding releasenumber rpm macro
         if constants.releaseVersion is not None:
             constants.addMacro("photon_release_version", constants.releaseVersion)
+
+        # adding releasenumber rpm macro
+        if constants.subreleaseVersion is None:
+            raise Exception(f"Photon subrelease version must be set")
+        constants.addMacro("photon_subrelease", constants.subreleaseVersion)
 
         if constants.katBuild:
             constants.addMacro("kat_build", "1")
