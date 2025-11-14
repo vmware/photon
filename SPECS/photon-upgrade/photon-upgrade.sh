@@ -261,6 +261,21 @@ function find_installed_replaced_packages() {
       unset missing_exp_pkgs_arr[$i]
   done
 
+  if [ "$FROM_VERSION" = "$TO_VERSION" ]; then
+    # The OS is being updated and not upgraded. Sometimes, user may choose to
+    # still continue using the older package and do not want to replace it with
+    # newer alternate, for example, user may want to continue using fakeroot-ng
+    # instead of newer fakeroot by not providing it in the target repo being
+    # used for update. We do not fail the update and contiue it but we inform
+    # the user that older package, in this example, fakeroot-ng, is being kept
+    local p
+    for p in ${missing_exp_pkgs_arr[@]}; do
+      echo "$p is being retained during update."
+      unset replaced_pkgs_map[$p]
+    done
+    return 0
+  fi
+
   if [ ${#missing_exp_pkgs_arr[@]} -gt 0 ]; then
     errstr="ERROR: Following installed packages do not have their corresponding replacing packages available in the target repo.\n"
     for p in ${missing_exp_pkgs_arr[@]}; do
@@ -722,6 +737,44 @@ function verify_version_and_upgrade() {
   esac
 }
 
+# Usage: update_os
+# Updates the installed packages to to the latest available version in the repo
+# while also taking care of any deprecated and replaced or renamed packages
+function update_os() {
+
+  source "${PHOTON_UPGRADE_UTILS_DIR}/ph5-to-ph6-upgrade.sh" "${PHOTON_UPGRADE_UTILS_DIR}"
+  write_to_syslog "Starting update of packages with command line: $CMDLINE"
+  TO_VERSION="$FROM_VERSION"
+  rebuilddb
+  backup_rpms_list_n_db $RPMDB_PATH
+  tdnf_makecache $FROM_VERSION
+  find_installed_deprecated_packages
+  find_installed_replaced_packages
+  extra_erased_pkgs_arr+=(
+    $(
+      find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
+                                 ${!replaced_pkgs_map[@]}
+    )
+  )
+  remove_debuginfo_packages
+  backup_configs $TMP_BACKUP_LOC \
+                  ${!replaced_pkgs_map[@]} \
+                  ${extra_erased_pkgs_arr[@]}
+  remove_unsupported_packages
+  pre_upgrade_rm_pkgs
+  remove_replaced_packages
+  rebuilddb
+  tdnf_makecache
+  distro_upgrade $FROM_VERSION
+  rebuilddb
+  install_other_packages
+  if [ -n "$INSTALL_ALL" ]; then
+    install_all_from_repo
+  fi
+  post_upgrade_rm_pkgs
+  rebuilddb
+}
+
 CMD_ARGS=$(
   getopt --long \
   'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os' \
@@ -830,17 +883,6 @@ if [ "$UPGRADE_OS" = "y" ]; then
 elif [ "$UPDATE_PKGS" = 'y' ]; then
   # The script is run without --upgrade-os option.
   # Upgrading all installed RPMs to latest versions.
-  write_to_syslog "Starting update of packages with command line: $CMDLINE"
-  backup_rpms_list_n_db $RPMDB_PATH
-  remove_debuginfo_packages
-  pre_upgrade_rm_pkgs
-  tdnf_makecache
-  rebuilddb
-  distro_upgrade $FROM_VERSION
-  rebuilddb
-  if [ -n "$INSTALL_ALL" ]; then
-    install_all_from_repo
-  fi
-  post_upgrade_rm_pkgs
+  update_os
 fi
 cleanup_and_exit 0

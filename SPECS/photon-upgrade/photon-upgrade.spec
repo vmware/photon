@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Fri Nov 14 2025 Dweep Advani <dweep.advani@broadcom.com> 1.0-6
+- Deprecated and replaced packages update
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-5
 - Release bump for SRP compliance
 * Tue Oct 22 2024 Dweep Advani <dweep.advani@broadcom.com> 1.0-4
