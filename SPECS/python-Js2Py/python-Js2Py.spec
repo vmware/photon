@@ -3,7 +3,7 @@
 Summary:        Pure Python JavaScript Translator/Interpreter.
 Name:           python3-Js2Py
 Version:        0.74
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +15,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: 0001-Use-fips-compatible-algorithm.patch
+Patch1: CVE-2024-28397.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -57,6 +58,8 @@ Everything is done in 100% pure Python so it's extremely easy to install and use
 %{python3_sitelib}/*
 
 %changelog
+* Fri Nov 14 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.74-3
+- Fix CVE-2024-28397
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.74-2
 - Release bump for SRP compliance
 * Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.74-1
