@@ -21,7 +21,14 @@
 # In both cases when fips=1, we use out of tree jent tarball.
 #
 # acvp_build=1 defines a special build of the canister for FIPS certification.
-# It enforces fips=1, canister_build=1.
+# It enforces fips=1 and works with canister_build(dev) or canister_usage (prod)
+#
+# kat_build=1 defines a non-production canister build used for CMVP_DEMO during FIPS certification.
+# It includes additional debug prints in the cryptographic algorithm paths to display API flow
+# and return statuses during ACVP testing.
+# It also intentionally tampers the self-tests to simulate the broken KAT scenario required
+# during the FIPS certification process.
+# It enforces acvp_build=1 and canister_build=1.
 #
 # canister_usage is derived variable and can not be directly set.
 # canister_usage=!canister_build, iff fips=1
@@ -41,9 +48,13 @@
 %global fips 0
 %endif
 
+%if 0%{?kat_build}
+%global acvp_build 1
+%global canister_build 1
+%endif
+
 %if 0%{?acvp_build}
 %global fips 1
-%global canister_build 1
 %endif
 
 # Set default FIPS flags
@@ -62,7 +73,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.57
-Release:        5%{?acvp_build:.acvp}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -341,7 +352,7 @@ Patch11016: 1016-linux-canister-Eliminate-codetag-and-other-taggings-.patch
 Patch11017: 1017-lib-cypto-mpi-Adding-MPI-API-into-canister.patch
 %endif
 
-# ACVP and KAT special builds
+# ACVP special builds
 %if 0%{?acvp_build:1}
 #ACVP test harness patches.
 Patch12000:       0001-crypto-AF_ALG-add-sign-verify-API.patch
@@ -357,10 +368,12 @@ Patch12009:       0011-sock-Remove-sendpage-in-favour-of-sendmsg-MSG_SPLICE.patc
 Patch12010:       0012-jitterentropy-kcapi-Support-for-sample-collection.patch
 Patch12011:       0013-Jitterentropy-Add-char-dev-interface-for-jent-osr.patch
 Patch12012:       0014-jitterentropy-Add-prototype-for-sample-collection.patch
-Patch12013:       0001-allow-external-IVs-for-ACVP.patch
-# KAT
-Patch12014:       0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
-Patch12015:       0015-crypto-api-return-status-prints-for-LKCM6-demo.patch
+%endif
+
+# KAT special builds
+%if 0%{?kat_build}
+Patch12013:       0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
+Patch12014:       0015-crypto-api-return-status-prints-for-LKCM6-demo.patch
 %endif
 
 BuildRequires:  bc
@@ -591,7 +604,11 @@ sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \
 
 %if 0%{?acvp_build:1}
 # ACVP test harness patches.
-%autopatch -p1 -m12000 -M12015
+%autopatch -p1 -m12000 -M12012
+%endif
+
+%if 0%{?kat_build:1}
+%autopatch -p1 -m12013 -M12014
 %endif
 
 cp %{SOURCE1} .config
@@ -880,6 +897,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.57-6
+- Add kat_build flag for CMVP demo, Remove patch for allow external IVs for ACVP
 * Tue Nov 25 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.57-5
 - Keep .BTF section in kernel modules
 * Mon Nov 24 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-4
