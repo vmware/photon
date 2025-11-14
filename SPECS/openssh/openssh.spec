@@ -1,10 +1,12 @@
+%define STIG_HARDEN 0
+
 %define privsep_path %{_datadir}/empty.sshd
 %global sshd_services sshd.service sshd-keygen.service
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -24,7 +26,14 @@ Source5: %{name}.sysusers
 Source6: license.txt
 %include %{SOURCE6}
 
+%if 0%{?STIG_HARDEN}
 Patch0: 0001-hardened-sshd-config.patch
+%endif
+
+%if 0%{?STIG_HARDEN} == 0
+patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
+%endif
+
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch2: CVE-2023-51385.patch
 Patch3: openssh-CVE-2023-48795.patch
@@ -226,6 +235,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-17
+- Revert STIG hardening changes
 * Sat Oct 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-16
 - Update home directory when needed
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-15
