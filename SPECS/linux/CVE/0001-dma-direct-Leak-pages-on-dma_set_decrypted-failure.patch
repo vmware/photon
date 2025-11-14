@@ -1,0 +1,80 @@
+From df7f51730546ffd7838302ad7348196988f8cd73 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Thu, 13 Nov 2025 16:40:28 +0530
+Subject: [PATCH] dma-direct: Leak pages on dma_set_decrypted() failure
+
+[ Upstream commit b9fa16949d18e06bdf728a560f5c8af56d2bdcaf ]
+
+On TDX it is possible for the untrusted host to cause
+set_memory_encrypted() or set_memory_decrypted() to fail such that an
+error is returned and the resulting memory is shared. Callers need to
+take care to handle these errors to avoid returning decrypted (shared)
+memory to the page allocator, which could lead to functional or security
+issues.
+
+DMA could free decrypted/shared pages if dma_set_decrypted() fails. This
+should be a rare case. Just leak the pages in this case instead of
+freeing them.
+
+Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Guru: Patch is ported to the 5.10.y branch. The out_leak_pages
+ label is retained in dma_direct_alloc_pages, and one more
+ out_free_pages error path in dma_direct_alloc is converted
+ to jump to out_leak_pages.]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ kernel/dma/direct.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 2922250f93b4..2092930428ef 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -190,7 +190,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 			err = set_memory_decrypted((unsigned long)ret,
+ 						   PFN_UP(size));
+ 			if (err)
+-				goto out_free_pages;
++				goto out_leak_pages;
+ 		}
+ 		memset(ret, 0, size);
+ 		goto done;
+@@ -212,7 +212,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		err = set_memory_decrypted((unsigned long)ret,
+ 					   PFN_UP(size));
+ 		if (err)
+-			goto out_free_pages;
++			goto out_leak_pages;
+ 	}
+ 
+ 	memset(ret, 0, size);
+@@ -239,6 +239,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ out_free_pages:
+ 	dma_free_contiguous(dev, page, size);
+ 	return NULL;
++out_leak_pages:
++	return NULL;
+ }
+ 
+ void dma_direct_free(struct device *dev, size_t size,
+@@ -301,13 +303,14 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	ret = page_address(page);
+ 	if (force_dma_unencrypted(dev)) {
+ 		if (set_memory_decrypted((unsigned long)ret, PFN_UP(size)))
+-			goto out_free_pages;
++			goto out_leak_pages;
+ 	}
+ 	memset(ret, 0, size);
+ 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
+ 	return page;
+ out_free_pages:
+ 	dma_free_contiguous(dev, page, size);
++out_leak_pages:
+ 	return NULL;
+ }
+ 
+-- 
+2.43.0
+

@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -480,6 +480,12 @@ Patch262: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 # Fix CVE-2025-22022
 Patch263: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
 Patch264: 0001-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
+
+# Fix CVE-2025-21887
+Patch265: 0001-ovl-fix-UAF-in-ovl_dentry_update_reval-by-moving-dpu.patch
+
+# Fix CVE-2024-35939
+Patch266: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1168,6 +1174,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Nov 14 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-6
+- Fixes CVE-2025-21887 and CVE-2024-35939
 * Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-5
 - Fix CVE-2025-22121 and CVE-2025-22022
 * Wed Nov 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-4

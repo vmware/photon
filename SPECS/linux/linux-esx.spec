@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.246
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -458,6 +458,12 @@ Patch257: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 Patch258: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
 Patch259: 0001-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 
+# Fix CVE-2025-21887
+Patch260: 0001-ovl-fix-UAF-in-ovl_dentry_update_reval-by-moving-dpu.patch
+
+# Fix CVE-2024-35939
+Patch261: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -846,6 +852,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 14 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-6
+- Fixes CVE-2025-21887 and CVE-2024-35939
 * Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-5
 - Fix CVE-2025-22121 and CVE-2025-22022
 * Wed Nov 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-4
