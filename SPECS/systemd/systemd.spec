@@ -1,9 +1,11 @@
+%define STIG_HARDEN 0
+
 %global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,7 +14,15 @@ Distribution:   Photon
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
 
 Source1:        99-vmware-hotplug.rules
+
+%if 0%{?STIG_HARDEN}
+Source2:        50-security-hardening.stig.conf
+%endif
+
+%if 0%{?STIG_HARDEN} == 0
 Source2:        50-security-hardening.conf
+%endif
+
 Source3:        %{name}.cfg
 Source4:        99-dhcp-en.network
 %ifarch x86_64
@@ -353,10 +363,6 @@ rm -r %{buildroot}%{_datadir}/zsh
 %find_lang %{name} ../%{name}.lang
 
 %post
-if command -v sysctl &> /dev/null; then
-  sysctl --system > /dev/null
-fi
-
 %{name}-machine-id-setup &>/dev/null || :
 
 systemctl daemon-reexec &>/dev/null || {
@@ -685,6 +691,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-16
+- Revert STIG hardening changes
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-15
 - Update sysctl hardening entries
 * Thu Sep 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-14
