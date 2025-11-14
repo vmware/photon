@@ -1,13 +1,19 @@
+%define bootstrap           1
 %global security_hardening  none
 %define jdk_major_version   21
 %define _use_internal_dependency_generator 0
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 %define jdkInstallDir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 
+%if 0%{?bootstrap} == 1
+%define bootstrapTarName 21.0.2
+%define bootstrapDirName jdk-%{bootstrapTarName}
+%endif
+
 Summary:    OpenJDK
 Name:       openjdk21
 Version:    21.0.9
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -15,8 +21,18 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 
-Source1: license-openjdk21.txt
-%include %{SOURCE1}
+%if 0%{?bootstrap} == 1
+%ifarch x86_64
+Source1: https://download.java.net/java/GA/jdk21.0.2/13/GPL/openjdk-%{bootstrapTarName}_linux-x64_bin.tar.gz
+%endif
+
+%ifarch aarch64
+Source1: https://download.java.net/java/GA/jdk21.0.2/13/GPL/openjdk-%{bootstrapTarName}_linux-aarch64_bin.tar.gz
+%endif
+%endif
+
+Source2: license-openjdk21.txt
+%include %{SOURCE2}
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -25,21 +41,22 @@ BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
 BuildRequires: chkconfig
-BuildRequires: freetype2
 BuildRequires: fontconfig-devel
 BuildRequires: freetype2-devel
 BuildRequires: glib-devel
-BuildRequires: harfbuzz-devel
 BuildRequires: elfutils-libelf-devel
-BuildRequires: icu icu-devel
-BuildRequires: cups cups-devel
-BuildRequires: libXtst libXtst-devel libXi libXi-devel
-BuildRequires: alsa-lib alsa-lib-devel util-macros
-BuildRequires: xcb-proto libXdmcp libXdmcp-devel libXau-devel
-BuildRequires: xtrans libxcb-devel proto libxcb libXau
-BuildRequires: libX11 libX11-devel libXext libXext-devel
-BuildRequires: libXt libXt-devel libXrender libXrender-devel
-BuildRequires: libXrandr libXrandr-devel
+BuildRequires: alsa-lib-devel
+BuildRequires: libXrender-devel
+BuildRequires: libxcb-devel
+BuildRequires: libXrandr-devel
+BuildRequires: libXtst-devel
+BuildRequires: libX11-devel
+BuildRequires: libXt-devel
+BuildRequires: cups-devel
+
+%if 0%{?bootstrap} == 0
+BuildRequires: openjdk21
+%endif
 
 Requires: chkconfig
 Requires(postun): chkconfig
@@ -47,8 +64,6 @@ Requires(postun): chkconfig
 Requires: %{name}-jre = %{version}-%{release}
 
 AutoReqProv: no
-
-%define ExtraBuildRequires openjdk21, openjdk21-jre
 
 %description
 OpenJDK package installs javac and JDK tools.
@@ -87,13 +102,18 @@ This package provides the runtime library class sources.
 
 %prep
 %autosetup -p1 -n jdk21u-jdk-%{version}-ga
+%if 0%{?bootstrap} == 1
+tar xf %{SOURCE1} -C %{_var}/opt
+%endif
 
 %build
-chmod a+x ./configur*
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
-sh ./configur* \
+sh ./configure \
+%if 0%{?bootstrap} == 1
+    --with-boot-jdk=%{_var}/opt/%{bootstrapDirName} \
+%endif
     --with-target-bits=64 \
     --enable-headless-only \
     --with-extra-cxxflags="-Wno-error -fno-delete-null-pointer-checks -fno-lifetime-dse" \
@@ -234,6 +254,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-2
+- Bootstrap using upstream jdk binaries
 * Mon Nov 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-1
 - Version upgrade to address CVEs
 * Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.8-1

@@ -4,8 +4,7 @@ sources:
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'The OpenJDK package installs java class library and javac
-        java compiler.'
+      detailed_description: 'The OpenJDK package installs java class library and javac java compiler.'
       home_page: https://github.com/openjdk/jdk11u
       license_concluded: (FTL OR GPL-2.0-only) AND (MIT OR GPL-1.0-or-later) AND (BSD-3-Clause
         OR Apache-2.0) AND (MIT OR GPL-3.0-only) AND (CDDL-1.0 OR GPL-2.0-only WITH
@@ -30,13 +29,36 @@ sources:
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
 
+- archive: openjdk-11.0.2_linux-x64_bin.tar.gz
+  archive_sha512sum: 507d02b0032b25f60d1070c46c447108e40e5c0ab7b429aaf0eedbfa44fce3b96cf73ee2ddef1ad70cf7f238e0b4abbb08bedb84363b15091d1f20b9f9883890
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK11 Bootstrap SDK source'
+      home_page: https://jdk.java.net/archive/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.28_6.tar.gz
+  archive_sha512sum: c96db4235fabe4dab43f455512121ed7e27311d8bc2528a9540d4174a03194b0e6d3dc4cb8d87174cf0444607d2424538899ea64cd7daf4c7a94cd6971110511
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK11 Bootstrap SDK source'
+      home_page: https://github.com/adoptium/temurin11-binaries/releases/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+
 - archive: jdk-17.0.17-ga.tar.gz
   archive_sha512sum: ddb409fe2c8714af081e1174df2b1febcb05097dd83eed60abe9cdaf6b9cfb9a960626480ff4f8719e8890480274ca5ce2abb449317aeb617d9bfe964b33ad29
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'The OpenJDK package installs java class library and javac
-        java compiler.'
+      detailed_description: 'The OpenJDK package installs java class library and javac java compiler.'
       home_page: https://github.com/openjdk/jdk17u
       license_concluded: (MIT OR GPL-1.0-or-later) AND (FTL OR GPL-2.0-only) AND (CDDL-1.0
         OR GPL-2.0-only WITH Classpath-exception-2.0) AND (BSD-3-Clause OR Apache-2.0)
@@ -57,13 +79,36 @@ sources:
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
 
+- archive: openjdk-17.0.2_linux-x64_bin.tar.gz
+  archive_sha512sum: 0bf168239a9a1738ad6368b8f931d072aeb122863ec39ea86dc0449837f06953ce18be87bab7e20fd2585299a680ea844ec419fa235da87dfdd7e37b73740a57
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK17 Bootstrap SDK source'
+      home_page: https://jdk.java.net/archive/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: openjdk-17.0.2_linux-aarch64_bin.tar.gz
+  archive_sha512sum: f281caeaed66a98b29ad23484503a006efa5c34edad9997d071c4379896d192f46cdc9b89afbe25a7a9b9e5f9b4a08449c83989ab159ad5297bf4c8cf7eda129
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK17 Bootstrap SDK source'
+      home_page: https://jdk.java.net/archive/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+
 - archive: jdk-21.0.9-ga.tar.gz
   archive_sha512sum: f209839c830e5db7080613b5d5e7c33ccd6a55cb72a2e6237bb26646569691a34a7b93349c9fa219a3496e111e156c2d24abda3b389056b16625668e8756aed0
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'The OpenJDK package installs java class library and javac
-        java compiler.'
+      detailed_description: 'The OpenJDK package installs java class library and javac java compiler.'
       home_page: https://github.com/openjdk/jdk21u
       license_concluded: (FTL OR GPL-2.0-only) AND (BSD-3-Clause OR Apache-2.0) AND
         (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-1.0-or-later)
@@ -83,5 +128,29 @@ sources:
         AND Unicode-DFS-2016 AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only
         AND FTL AND NAIST-2003 AND Unicode-3.0 AND SunPro AND ISC AND SMLNJ AND W3C
         AND MIT AND SAX-PD AND Zlib AND softSurfer
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: openjdk-21.0.2_linux-x64_bin.tar.gz
+  archive_sha512sum: 23400d335b681126d7acf1624749e18ab800fb9115d8fd8903f451502316a69a534e5fa8fd44da4a0439706ec41d994f896ff939f433107e6b8cd818e6a18c1f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK21 Bootstrap SDK source'
+      home_page: https://jdk.java.net/archive/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: openjdk-21.0.2_linux-aarch64_bin.tar.gz
+  archive_sha512sum: 3bd210bfb8f11c5a489b3f19462a6b799a7a21688a78e4052e5c73b30faaec0023ca9499965db5db10688d348161d5d2b4f6fbd259915d345d2ea7a95ff14f28
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK21 Bootstrap SDK source'
+      home_page: https://jdk.java.net/archive/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'

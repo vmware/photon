@@ -442,6 +442,8 @@ class BuildEnvironmentSetup:
         check_prerequesite["publish-rpms"] = True
 
     def publish_x_rpms():
+        os.makedirs(constants.prevPublishXRPMRepo, exist_ok=True)
+        return
         if check_prerequesite["publish-x-rpms"]:
             return
 
@@ -478,6 +480,8 @@ class BuildEnvironmentSetup:
         check_prerequesite["publish-rpms-cached"] = True
 
     def publish_x_rpms_cached():
+        os.makedirs(constants.prevPublishXRPMRepo, exist_ok=True)
+        return
         if check_prerequesite["publish-x-rpms-cached"]:
             return
 
