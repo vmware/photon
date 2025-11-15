@@ -18,7 +18,8 @@ class PackageInfo(object):
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
-        self.pkgList = {}
+        self.pkgInfo = {}
+        self.pkgList = []
 
     def loadPackagesData(self):
         listPackages = SPECS.getData().getListPackages()
@@ -30,6 +31,7 @@ class PackageInfo(object):
                 debugrpmFile = pkgUtils.findDebugRPMFile(package, version)
                 listRPMPackages = SPECS.getData().getRPMPackages(package, version)
                 for rpmPkg in listRPMPackages:
+                    self.pkgList.append(f"{rpmPkg}={version}")
                     rpmFile = pkgUtils.findRPMFile(rpmPkg, version)
                     if rpmFile is not None:
                         listPkgAttributes = {
@@ -37,17 +39,26 @@ class PackageInfo(object):
                             "rpm": rpmFile,
                             "debugrpm": debugrpmFile,
                         }
-                        self.pkgList[f"{rpmPkg}-{version}"] = listPkgAttributes
+                        self.pkgInfo[f"{rpmPkg}-{version}"] = listPkgAttributes
                         self.logger.debug(
                             f"Added {rpmPkg}-{version} to package info json"
                         )
                     else:
                         self.logger.debug(f"Missing rpm file for package: {rpmPkg}")
 
-    def writePkgListToFile(self, fileName):
-        self.logger.debug("Writing package list to the json file")
+    def writePkgInfoToFile(self, fileName):
+        self.logger.debug("Writing package info to the json file")
         dirPath = os.path.dirname(fileName)
         if dirPath and not os.path.isdir(dirPath):
             os.mkdir(dirPath)
         with open(fileName, "w+") as pkgInfoFile:
-            json.dump(self.pkgList, pkgInfoFile, indent=4)
+            json.dump(self.pkgInfo, pkgInfoFile, indent=4)
+
+    def writePkgListToFile(self, fileName):
+        self.logger.debug("Writing package list to the snapshot file")
+        dirPath = os.path.dirname(fileName)
+        if dirPath and not os.path.isdir(dirPath):
+            os.mkdir(dirPath)
+        with open(fileName, "w+") as pkgListFile:
+            for item in self.pkgList:
+                pkgListFile.write(item + '\n')

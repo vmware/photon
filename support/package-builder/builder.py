@@ -32,11 +32,20 @@ class Builder:
 
         if pkgInfoJsonFile:
             # Generating package info file which is required by installer
-            if logger:
-                logger.debug(f"Writing Package info to the file: {pkgInfoJsonFile}")
+            # and package list file (snapshot) for tdnf
             pkgInfo = PackageInfo()
             pkgInfo.loadPackagesData()
-            pkgInfo.writePkgListToFile(pkgInfoJsonFile)
+
+            if logger:
+                logger.debug(f"Writing Package info to the file: {pkgInfoJsonFile}")
+            pkgInfo.writePkgInfoToFile(pkgInfoJsonFile)
+
+            # Use the same filename but replace extension to .list
+            filename, _ = os.path.splitext(pkgInfoJsonFile)
+            pkgListFile = filename + ".list"
+            if logger:
+                logger.debug(f"Writing Package list to the file: {pkgListFile}")
+            pkgInfo.writePkgListToFile(pkgListFile)
 
     def buildPackagesInJson(
         pkgJsonInput, buildThreads, pkgBuildType, pkgInfoJsonFile, logger
