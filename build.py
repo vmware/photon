@@ -1569,16 +1569,7 @@ def initialize_constants():
     constants.addGitSourcePath("common", photonDir)
     constants.addGitSourcePath("release", str(releaseDir))
 
-    Build_Config.setStagePath(
-        os.path.join(
-            str(
-                Path(
-                    configdict["release-branch-path"],
-                    configdict.get("stage-path", ""),
-                ).resolve()
-            )
-        )
-    )
+    Build_Config.setStagePath(configdict.get("stage-path"))
     # set SPECS paths
     constants.addSpecPath(
         os.path.join(
@@ -1680,9 +1671,7 @@ def initialize_constants():
         os.path.join(Build_Config.stagePath, "common/data")
     )
     Build_Config.setReleaseDataDir(
-        os.path.join(
-            str(Path(configdict["release-branch-path"]).resolve()), "data"
-        )
+        os.path.join(configdict["release-branch-path"], "data")
     )
     constants.setTopDirPath("/usr/src/photon")
     Build_Config.setCommonDir(os.path.join(photonDir, "common"))
@@ -1921,12 +1910,6 @@ def merge_dicts(dict1, dict2):
             and isinstance(merged_dict[key], dict)
         ):
             merged_dict[key] = merge_dicts(merged_dict[key], value)
-        elif key in merged_dict:
-            raise Exception(
-                "ERROR: "
-                + key
-                + " is present in both configs.\nIt can only be present in one."
-            )
         else:
             merged_dict[key] = value
     return merged_dict
@@ -1984,33 +1967,32 @@ def main():
     global phPath
     global releaseDir
 
+    cfgPath = os.path.abspath(cfgPath)
     with open(cfgPath) as jsonData:
         configdict = json.load(jsonData)
 
-    cfgPath = os.path.abspath(cfgPath)
+    # Use env variable over the condif value
+    releaseDir = os.environ.get("RELEASE_BRANCH_PATH", configdict.get("release-branch-path", ""))
+    if releaseDir == "":
+        raise Exception("release-branch-path is empty")
 
-    if os.environ.get("RELEASE_BRANCH_PATH", ""):
-        configdict["release-branch-path"] = os.environ["RELEASE_BRANCH_PATH"]
-
-    releaseDir = Path(
-        configdict["photon-path"], configdict.get("release-branch-path", "")
-    ).resolve()
-
-    if not configdict.get("release-branch-path", ""):
-        raise Exception("build-config.json: release-branch-path is empty")
+    # Convert it to absolute path and save in configdict
+    releaseDir = os.path.abspath(releaseDir)
+    configdict["release-branch-path"] = releaseDir
 
     releaseCfgPath = f"{releaseDir}/{build_cfg}"
     with open(releaseCfgPath) as jsonData:
         releasedict = json.load(jsonData)
-    configdict['photon-branch'] = releasedict['photon-branch']
 
-    # configdict = merge_dicts(releasedict, configdict)
+    # Apply release specific configs on top of common
+    configdict = merge_dicts(configdict, releasedict)
 
-    if os.environ.get("STAGE_PATH", ""):
-        configdict["stage-path"] = os.environ["STAGE_PATH"]
-        configdict["stage-path"] = Path(
-            configdict["photon-path"], configdict.get("stage-path", "")
-        ).resolve()
+    if not configdict.get("photon-path", ""):
+        configdict["photon-path"] = os.path.dirname(cfgPath)
+
+    configdict["stage-path"] = os.path.abspath(
+        os.environ.get("STAGE_PATH",os.path.join(releaseDir, configdict["stage-path"]))
+    )
 
     set_default_value_of_config()
 
@@ -2024,9 +2006,6 @@ def main():
     os.environ["PHOTON_COMMON_BUILD_NUM"] = configdict["photon-build-param"][
         "input-photon-common-build-number"
     ]
-
-    if not configdict.get("photon-path", ""):
-        configdict["photon-path"] = os.path.dirname(cfgPath)
 
     ph_build_param = configdict["photon-build-param"]
     process_env_build_params(ph_build_param)
