@@ -1,7 +1,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.75.2
-Release:      11%{?dist}
+Release:      12%{?dist}
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -12,6 +12,7 @@ Source0:  https://gitlab.gnome.org/GNOME/glib/-/releases/{version}/glib-%{versio
 Source1: license.txt
 %include %{SOURCE1}
 
+BuildRequires:  cmake
 BuildRequires:  pcre-devel
 BuildRequires:  libffi-devel
 BuildRequires:  pkg-config
@@ -25,6 +26,7 @@ BuildRequires:  meson
 BuildRequires:  ninja-build
 BuildRequires:  libselinux-devel
 BuildRequires:  gtk-doc
+BuildRequires:  zlib-devel
 
 Requires: elfutils-libelf
 Requires: pcre-libs
@@ -109,6 +111,7 @@ CONFIGURE_OPTS=(
     -Dgtk_doc=false
     -Dtests=false
     -Dinstalled_tests=false
+    -Ddefault_library=both
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -132,6 +135,7 @@ CONFIGURE_OPTS=(
 %defattr(-, root, root)
 %{_bindir}/*
 %{_libdir}/*.so
+%{_libdir}/*.a
 %{_libdir}/pkgconfig/*
 %{_libdir}/glib-*/*
 %{_includedir}/*
@@ -147,6 +151,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Thu Dec 11 2025 Oliver Kurth <oliver.kurth@broadcom.com> 2.75.2-12
+- add static library to -devel package
 * Tue Dec 02 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-11
 - Fix CVE-2025-13601
 * Thu Nov 06 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-10

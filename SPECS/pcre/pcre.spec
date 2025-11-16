@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.45
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -15,6 +15,7 @@ Source1: license.txt
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
 BuildRequires:  glibc
+BuildRequires:  zlib-devel
 
 Requires:       libgcc
 Requires:       readline
@@ -54,8 +55,7 @@ This package contains minimal set of shared pcre libraries.
             --enable-pcregrep-libz \
             --enable-pcregrep-libbz2 \
             --enable-pcretest-libreadline \
-            --with-match-limit-recursion=16000 \
-            --disable-static
+            --with-match-limit-recursion=16000
 
 %make_build
 
@@ -89,6 +89,7 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/*.so
+%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 
@@ -97,6 +98,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+* Tue Nov 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 8.45-8
+- add static library to -devel package
 * Thu Jul 03 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.45-7
 - Fix interaction_type, incorporated incompatibility
 * Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.45-6

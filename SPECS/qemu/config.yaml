@@ -55,6 +55,14 @@ sources:
     - qemu-7.2.0/meson/docs/markdown/legal.md
     sha256sum: 78b49c95035c716b9c7fe979a6a2f4910c4cb23dbb96cc7773761591d03e6681
     spdx_exp: ''
+  - file_paths:
+    - qemu-7.2.0/roms/u-boot/arch/arm/mach-mvebu/serdes/axp/board_env_spec.h
+    sha256sum: 2f6b5fd264ce7985027860137b52a526c23dbb6c613d044c6699a6c104b18be0
+    spdx_exp: GPL-2.0-or-later
+  - file_paths:
+    - qemu-7.2.0/target/i386/hvf/x86_task.h
+    sha256sum: 9b6fcfc9465f113864a6149220b341d9b4844cdd05fe5ca53f54d6d31e8b9833
+    spdx_exp: GPL-2.0-or-later
   spdx:
     package:
       detailed_description: 'Qemu-img is the tool used to create, manage, convert

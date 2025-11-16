@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        9%{?dist}
+Release:        10%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -63,7 +63,7 @@ This package contains minimal set of shared pcre libraries.
     --enable-pcregrep-libbz2 \
     --enable-pcretest-libreadline \
     --enable-shared \
-    --disable-static \
+    --enable-static \
     --enable-jit
 
 %make_build
@@ -94,12 +94,15 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_bindir}/pcre2test
 %{_libdir}/*.so
+%{_libdir}/*.a
 
 %files libs
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 
 %changelog
+* Tue Nov 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 10.40-10
+- add static library to -devel package
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.40-9
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.40-8

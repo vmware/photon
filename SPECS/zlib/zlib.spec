@@ -1,7 +1,7 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.2.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.zlib.net
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -40,8 +40,7 @@ if [ %{_host} != %{_build} ]; then
 fi
 
 sh ./configure \
-    --prefix=%{_prefix} \
-    --shared
+    --prefix=%{_prefix}
 
 %make_build
 
@@ -70,6 +69,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+* Tue Nov 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 1.2.13-5
+- add static library to -devel package
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.13-4
 - Release bump for SRP compliance
 * Tue Sep 24 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.13-3
