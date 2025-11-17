@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.158
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -424,6 +424,12 @@ Patch323: 6.0-0444-drivers-base-memory-use-MHP_MEMMAP_ON_MEMORY-from-th.patch
 Patch324: 6.0-0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 %endif
 
+# SCHED: [401..404]
+Patch401: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
+Patch402: 0002-sched-fair-Small-cleanup-to-sched_balance_newidle.patch
+Patch403: 0003-sched-fair-Small-cleanup-to-update_newidle_cost.patch
+Patch404: 0004-sched-fair-Proportional-newidle-balance.patch
+
 # Crypto: [500..529]
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
 Patch500: 0002-FIPS-crypto-self-tests.patch
@@ -719,6 +725,9 @@ The kernel fips-canister
 # AWS x86
 %autopatch -p1 -m300 -M339
 %endif
+
+# sched
+%autopatch -p1 -m401 -M404
 
 # crypto
 %autopatch -p1 -m500 -M504
@@ -1130,6 +1139,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 17 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.158-4
+- Fix newidle balance regression
 * Thu Nov 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-3
 - Fix CVE-2025-39990
 * Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-2

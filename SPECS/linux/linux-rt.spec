@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.158
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -304,7 +304,13 @@ Patch184: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 # Fix CVE-2025-39990
 Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
 
-# Real-Time kernel (PREEMPT_RT patches)
+# SCHED: [201..204]
+Patch201: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
+Patch202: 0002-sched-fair-Small-cleanup-to-sched_balance_newidle.patch
+Patch203: 0003-sched-fair-Small-cleanup-to-update_newidle_cost.patch
+Patch204: 0004-sched-fair-Proportional-newidle-balance.patch
+
+# Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
 %include %{SOURCE6}
 
@@ -466,6 +472,9 @@ stalld to use eBPF based backend.
 
 # CVE
 %autopatch -p1 -m100 -M199
+
+# sched
+%autopatch -p1 -m201 -M204
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -679,6 +688,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Nov 17 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.158-4
+- Fix newidle balance regression
 * Thu Nov 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-3
 - Fix CVE-2025-39990
 * Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-2

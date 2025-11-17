@@ -1,0 +1,76 @@
+From bc260324c04af84f6a4c8c5f1566362d4bb59d02 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 7 Nov 2025 17:06:46 +0100
+Subject: [PATCH 1/4] sched/fair: Revert max_newidle_lb_cost bump
+
+commit d206fbad9328ddb68ebabd7cf7413392acd38081 upstream.
+
+Many people reported regressions on their database workloads due to:
+
+  155213a2aed4 ("sched/fair: Bump sd->max_newidle_lb_cost when newidle balance fails")
+
+For instance Adam Li reported a 6% regression on SpecJBB.
+
+Conversely this will regress schbench again; on my machine from 2.22
+Mrps/s down to 2.04 Mrps/s.
+
+Reported-by: Joseph Salisbury <joseph.salisbury@oracle.com>
+Reported-by: Adam Li <adamli@os.amperecomputing.com>
+Reported-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Reported-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Chris Mason <clm@meta.com>
+Link: https://lkml.kernel.org/r/20250626144017.1510594-2-clm@fb.com
+Link: https://lkml.kernel.org/r/006c9df2-b691-47f1-82e6-e233c3f91faf@oracle.com
+Link: https://patch.msgid.link/20251107161739.406147760@infradead.org
+[ Ajay: Modified to apply on v6.1 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ kernel/sched/fair.c | 19 +++----------------
+ 1 file changed, 3 insertions(+), 16 deletions(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index b6795bf15..f5a041bc3 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -10941,14 +10941,8 @@ static inline bool update_newidle_cost(struct sched_domain *sd, u64 cost)
+ 		/*
+ 		 * Track max cost of a domain to make sure to not delay the
+ 		 * next wakeup on the CPU.
+-		 *
+-		 * sched_balance_newidle() bumps the cost whenever newidle
+-		 * balance fails, and we don't want things to grow out of
+-		 * control.  Use the sysctl_sched_migration_cost as the upper
+-		 * limit, plus a litle extra to avoid off by ones.
+ 		 */
+-		sd->max_newidle_lb_cost =
+-			min(cost, sysctl_sched_migration_cost + 200);
++		sd->max_newidle_lb_cost = cost;
+ 		sd->last_decay_max_lb_cost = jiffies;
+ 	} else if (time_after(jiffies, sd->last_decay_max_lb_cost + HZ)) {
+ 		/*
+@@ -11630,17 +11624,10 @@ static int sched_balance_newidle(struct rq *this_rq, struct rq_flags *rf)
+ 
+ 			t1 = sched_clock_cpu(this_cpu);
+ 			domain_cost = t1 - t0;
++			update_newidle_cost(sd, domain_cost);
++
+ 			curr_cost += domain_cost;
+ 			t0 = t1;
+-
+-			/*
+-			 * Failing newidle means it is not effective;
+-			 * bump the cost so we end up doing less of it.
+-			 */
+-			if (!pulled_task)
+-				domain_cost = (3 * sd->max_newidle_lb_cost) / 2;
+-
+-			update_newidle_cost(sd, domain_cost);
+ 		}
+ 
+ 		/*
+-- 
+2.40.4
+
