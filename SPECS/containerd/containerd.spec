@@ -4,8 +4,8 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        2.1.3
-Release:        2%{?dist}
+Version:        2.1.5
+Release:        1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -141,6 +141,9 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Mon Nov 17 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.5-1
+- Upgrade to v2.1.5
+- Fix CVE-2024-25621, CVE-2025-64329
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.3-2
 - Bump up version as a part of runc upgrade
 * Thu Oct 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.3-1

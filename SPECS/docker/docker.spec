@@ -12,7 +12,7 @@
 Summary:        Docker
 Name:           docker
 Version:        28.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -298,6 +298,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Mon Nov 17 2025 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-3
+- Bump up version as a part of containerd upgrade
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-2
 - Bump up version as a part of runc upgrade
 * Tue Oct 14 2025 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-1
