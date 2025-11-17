@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.22
+Version:        13.23
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=0f578526aad852285de001369dd1c8308f03479c8f4f6c1a1d066b6b77103e340df95b9ab41df3f959c4e17d4fb0c0441b02a04d3e6c01cfcd40a2632c3ac7eb
+%define sha512 %{srcname}=9589fe26d874eb91244b7325d997d5e54e93d61a13f63b7e9ef247c0ca6c8ade420487303295010b0c45d7775b64da076a2af14bdcb7a03702d06b5edf159c39
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -304,6 +304,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.23-1
+- Upgrade to v13.23
 * Tue Aug 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.22-1
 - Upgrade to v13.22
 * Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.21-2

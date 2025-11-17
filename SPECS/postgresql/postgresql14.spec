@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.19
+Version:        14.20
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=8f7f49c439b954fc1091c32d857d16e25db0b6f3687d44a6a2360a6c72002545eb2f9d09f2b460aeed3371aeabbe7abf599d92ff60baa2d1e4882a106ad14139
+%define sha512 %{srcname}=336685365802fd554f42cfb942f9a9bf834eae15d223cc5f500aeba96229529a407a1e87665cf80d95e41bf98f080624ceaa62968171dbdffd25063d83184dea
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -321,6 +321,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.20-1
+- Upgrade to v14.20
 * Tue Aug 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.19-1
 - Upgrade to v14.19
 * Mon Aug 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.18-2
