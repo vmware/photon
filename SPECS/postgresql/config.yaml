@@ -10,199 +10,94 @@ sources:
   missing: []
   spdx:
     package:
-      detailed_description: PostgreSQL is an object-relational database management
-        system.
+      detailed_description: PostgreSQL is an object-relational database management system.
       home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND FSFUL AND MIT AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND PostgreSQL AND Spencer-99 AND BSD-2-Clause AND GPL-1.0-or-later
-        AND Martin-Birgmeier AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-macro
-        AND X11 AND TCL AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND BSD-3-Clause
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND FSFUL AND MIT AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND PostgreSQL AND Spencer-99 AND BSD-2-Clause AND GPL-1.0-or-later
-        AND Martin-Birgmeier AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-macro
-        AND X11 AND TCL AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND BSD-3-Clause
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND MIT AND GPL-3.0-or-later WITH Bison-exception-2.2 AND PostgreSQL AND Spencer-99 AND BSD-2-Clause AND GPL-1.0-or-later AND Martin-Birgmeier AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-macro AND X11 AND TCL AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND MIT AND GPL-3.0-or-later WITH Bison-exception-2.2 AND PostgreSQL AND Spencer-99 AND BSD-2-Clause AND GPL-1.0-or-later AND Martin-Birgmeier AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-macro AND X11 AND TCL AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
-- archive: postgresql-13.22.tar.bz2
+- archive: postgresql-13.23.tar.bz2
   skip_validation: true
-  archive_sha512sum: 0f578526aad852285de001369dd1c8308f03479c8f4f6c1a1d066b6b77103e340df95b9ab41df3f959c4e17d4fb0c0441b02a04d3e6c01cfcd40a2632c3ac7eb
-  name: postgresql-13.22
-  version: 13.22
-  url: http://ftp.postgresql.org/pub/source/v13.22/postgresql-13.22.tar.bz2
+  archive_sha512sum: 9589fe26d874eb91244b7325d997d5e54e93d61a13f63b7e9ef247c0ca6c8ade420487303295010b0c45d7775b64da076a2af14bdcb7a03702d06b5edf159c39
+  name: postgresql-13.23
+  version: '13.23'
+  url: http://ftp.postgresql.org/pub/source/v13.23/postgresql-13.23.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: af2dbe860b638dbd45604270d103e0a59dc0a372
+  commit_id: 89df812eb890814b105d871185935b580478e660
   missing: []
   spdx:
     package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management
-        system (DBMS). The base postgresql package contains the client programs that
-        you'll need to access a PostgreSQL DBMS server. These client programs can
-        be located on the same machine as the PostgreSQL server, or on a remote machine
-        that accesses a PostgreSQL server over a network connection. The PostgreSQL
-        server can be found in the postgresql13-server sub-package.  If you want to
-        manipulate a PostgreSQL database on a local or remote PostgreSQL server, you
-        need this package. You also need to install this package if you're installing
-        the postgresql13-server package.
+      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql13-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql13-server package.
       home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND MIT AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause AND GPL-1.0-or-later
-        AND BSL-1.0 AND Spencer-99 AND Martin-Birgmeier AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND Apache-2.0 WITH LLVM-exception AND X11
-        AND PostgreSQL AND TCL AND BSD-2-Clause-Views AND NCSA AND BSD-2-Clause AND
-        Apache-2.0 AND FSFUL AND ISC
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND MIT AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause AND GPL-1.0-or-later
-        AND BSL-1.0 AND Spencer-99 AND Martin-Birgmeier AND GPL-3.0-or-later WITH
-        Bison-exception-2.2 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND Apache-2.0 WITH LLVM-exception AND X11
-        AND PostgreSQL AND TCL AND BSD-2-Clause-Views AND NCSA AND BSD-2-Clause AND
-        Apache-2.0 AND FSFUL AND ISC
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause AND GPL-1.0-or-later AND BSL-1.0 AND Spencer-99 AND Martin-Birgmeier AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Apache-2.0 WITH LLVM-exception AND X11 AND PostgreSQL AND TCL AND BSD-2-Clause-Views AND NCSA AND BSD-2-Clause AND Apache-2.0 AND FSFUL AND ISC
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND MIT AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause AND GPL-1.0-or-later AND BSL-1.0 AND Spencer-99 AND Martin-Birgmeier AND GPL-3.0-or-later WITH Bison-exception-2.2 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Apache-2.0 WITH LLVM-exception AND X11 AND PostgreSQL AND TCL AND BSD-2-Clause-Views AND NCSA AND BSD-2-Clause AND Apache-2.0 AND FSFUL AND ISC
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
-- archive: postgresql-14.19.tar.bz2
+- archive: postgresql-14.20.tar.bz2
   skip_validation: true
-  archive_sha512sum: 8f7f49c439b954fc1091c32d857d16e25db0b6f3687d44a6a2360a6c72002545eb2f9d09f2b460aeed3371aeabbe7abf599d92ff60baa2d1e4882a106ad14139
-  name: postgresql-14.19
-  version: 14.19
-  url: http://ftp.postgresql.org/pub/source/v14.19/postgresql-14.19.tar.bz2
+  archive_sha512sum: 336685365802fd554f42cfb942f9a9bf834eae15d223cc5f500aeba96229529a407a1e87665cf80d95e41bf98f080624ceaa62968171dbdffd25063d83184dea
+  name: postgresql-14.20
+  version: '14.20'
+  url: http://ftp.postgresql.org/pub/source/v14.20/postgresql-14.20.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 4e9da016ade3e75400f6fdc22ed1fed7fdd32f7a
+  commit_id: 9ad034be354da9af1cea76836a9e576c110d1ff3
   missing: []
   spdx:
     package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management
-        system (DBMS). The base postgresql package contains the client programs that
-        you'll need to access a PostgreSQL DBMS server. These client programs can
-        be located on the same machine as the PostgreSQL server, or on a remote machine
-        that accesses a PostgreSQL server over a network connection. The PostgreSQL
-        server can be found in the postgresql-server sub-package.  If you want to
-        manipulate a PostgreSQL database on a local or remote PostgreSQL server, you
-        need this package. You also need to install this package if you're installing
-        the postgresql-server package.
+      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
       home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSL-1.0 AND Spencer-99
-        AND Martin-Birgmeier AND GPL-1.0-or-later AND BSD-2-Clause AND Apache-2.0
-        WITH LLVM-exception AND Apache-2.0 AND BSD-3-Clause AND PostgreSQL AND TCL
-        AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND X11 AND MIT AND NCSA AND BSD-2-Clause-Views
-        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
-        WITH Bison-exception-2.2
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSL-1.0 AND Spencer-99
-        AND Martin-Birgmeier AND GPL-1.0-or-later AND BSD-2-Clause AND Apache-2.0
-        WITH LLVM-exception AND Apache-2.0 AND BSD-3-Clause AND PostgreSQL AND TCL
-        AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later
-        WITH Autoconf-exception-generic AND X11 AND MIT AND NCSA AND BSD-2-Clause-Views
-        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later
-        WITH Bison-exception-2.2
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSL-1.0 AND Spencer-99 AND Martin-Birgmeier AND GPL-1.0-or-later AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception AND Apache-2.0 AND BSD-3-Clause AND PostgreSQL AND TCL AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND MIT AND NCSA AND BSD-2-Clause-Views AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSL-1.0 AND Spencer-99 AND Martin-Birgmeier AND GPL-1.0-or-later AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception AND Apache-2.0 AND BSD-3-Clause AND PostgreSQL AND TCL AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND MIT AND NCSA AND BSD-2-Clause-Views AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
-- archive: postgresql-15.14.tar.bz2
+- archive: postgresql-15.15.tar.bz2
   skip_validation: true
-  archive_sha512sum: 6bef254af257eb79a6b4ec1fd09a996351848561a493e529b7e44b053b368753d56cd76de74b07fff6d637606773963e83e4c3bb321682774b12d24dfa1ca8f4
-  name: postgresql-15.14
-  version: 15.14
-  url: http://ftp.postgresql.org/pub/source/v15.14/postgresql-15.14.tar.bz2
+  archive_sha512sum: efd5dcdb6e45bc13cd4b1b73f4de19fc3ae2bac96e85086cacd649bfbf50969429c40193e86717380759c6995204c18e14ac5352565d5ae85df61c0a127a1562
+  name: postgresql-15.15
+  version: '15.15'
+  url: http://ftp.postgresql.org/pub/source/v15.15/postgresql-15.15.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 0ab43b548237b3791261480d6a023f6b95b53942
+  commit_id: 32f38816779420502d4a311835d5fe939e9548a0
   missing: []
   spdx:
     package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management
-        system (DBMS). The base postgresql package contains the client programs that
-        you'll need to access a PostgreSQL DBMS server. These client programs can
-        be located on the same machine as the PostgreSQL server, or on a remote machine
-        that accesses a PostgreSQL server over a network connection. The PostgreSQL
-        server can be found in the postgresql-server sub-package.  If you want to
-        manipulate a PostgreSQL database on a local or remote PostgreSQL server, you
-        need this package. You also need to install this package if you're installing
-        the postgresql-server package.
+      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
       home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSD-3-Clause
-        AND NCSA AND Spencer-99 AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2
-        AND MIT AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND PostgreSQL AND TCL AND BSL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND GPL-1.0-or-later AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND BSD-2-Clause-Views AND X11 AND Apache-2.0 WITH LLVM-exception
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSD-3-Clause AND
-        NCSA AND Spencer-99 AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2
-        AND MIT AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND PostgreSQL AND TCL AND BSL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND GPL-1.0-or-later AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND BSD-2-Clause-Views AND X11 AND Apache-2.0 WITH LLVM-exception
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSD-3-Clause AND NCSA AND Spencer-99 AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2 AND MIT AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND PostgreSQL AND TCL AND BSL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-1.0-or-later AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-2-Clause-Views AND X11 AND Apache-2.0 WITH LLVM-exception
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSD-3-Clause AND NCSA AND Spencer-99 AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2 AND MIT AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND PostgreSQL AND TCL AND BSL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-1.0-or-later AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-2-Clause-Views AND X11 AND Apache-2.0 WITH LLVM-exception
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
-- archive: postgresql-16.10.tar.bz2
+- archive: postgresql-16.11.tar.bz2
   skip_validation: true
-  archive_sha512sum: b6de80d522f863b0d9dd8c2bf4f71bea309bd07586859e309a9821e7f6fd5839557dc396351e7b61aebf492bf8c8a053a324f059a1dee621ac1a6d5e8eccea22
-  name: postgresql-16.10
-  version: 16.10
-  url: http://ftp.postgresql.org/pub/source/v16.10/postgresql-16.10.tar.bz2
+  archive_sha512sum: f11f8f3e5855cfce27108a1bd2122c5a7a1ff37c6d9366d7a96a041aab67a4e4a31e54f0757b6b97c72d841acdcaa97d3eaa765213d4899b2cf7047c549012b8
+  name: postgresql-16.11
+  version: '16.11'
+  url: http://ftp.postgresql.org/pub/source/v16.11/postgresql-16.11.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: c13dd7d50f21268dc64b4b3edbce31993985ab12
+  commit_id: d61dd817be70749d14e982a369e97fdda9d5cba6
   missing: []
   spdx:
     package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management
-        system (DBMS). The base postgresql package contains the client programs that
-        you'll need to access a PostgreSQL DBMS server. These client programs can
-        be located on the same machine as the PostgreSQL server, or on a remote machine
-        that accesses a PostgreSQL server over a network connection. The PostgreSQL
-        server can be found in the postgresql-server sub-package.  If you want to
-        manipulate a PostgreSQL database on a local or remote PostgreSQL server, you
-        need this package. You also need to install this package if you're installing
-        the postgresql-server package.
+      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
       home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
-        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
-        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
-        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
-        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
-- archive: postgresql-17.6.tar.bz2
+- archive: postgresql-17.7.tar.bz2
   skip_validation: true
-  archive_sha512sum: d377ed208b3fd1bf9611f148f4286e8c655374218cc3b12cd766917063001750f7dede140065874b7c8bdc2f2b3ecaf15c18cc6cd341929b2c3a574a7797a67e
-  name: postgresql-17.6
-  version: 17.6
-  url: http://ftp.postgresql.org/pub/source/v17.6/postgresql-17.6.tar.bz2
+  archive_sha512sum: 99042ce4a5932ded4bc01d30ab59de9b8626de3e3805822cacbdd6b6c5337f1576b30a2a1041cd5a4d366d8cc404268bbf362f6e5b033f0779ca50d10bc7c272
+  name: postgresql-17.7
+  version: '17.7'
+  url: http://ftp.postgresql.org/pub/source/v17.7/postgresql-17.7.tar.bz2
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 7885b94dd81b98bbab9ed878680d156df7bf857f
+  commit_id: fbb530a3dff569222bea7098ad4de3d8bde97740
   missing: []
   spdx:
     package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management
-        system (DBMS). The base postgresql package contains the client programs that
-        you'll need to access a PostgreSQL DBMS server. These client programs can
-        be located on the same machine as the PostgreSQL server, or on a remote machine
-        that accesses a PostgreSQL server over a network connection. The PostgreSQL
-        server can be found in the postgresql-server sub-package.  If you want to
-        manipulate a PostgreSQL database on a local or remote PostgreSQL server, you
-        need this package. You also need to install this package if you're installing
-        the postgresql-server package.
+      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
       home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
-        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
-        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH
-        LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
-        ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0
-        AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT
-        AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'

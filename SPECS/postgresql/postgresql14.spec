@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.19
-Release:        3%{?dist}
+Version:        14.20
+Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -741,6 +741,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.20-1
+- Upgrade to v14.20
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 14.19-3
 - Rebuild with shared llvm libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 14.19-2
