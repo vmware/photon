@@ -1,12 +1,12 @@
 sources:
-- archive: frr-10.2.1.tar.gz
+- archive: frr-10.5.0.tar.gz
   archive_type: upstream
-  archive_sha512sum: 8544280a0c536e8688cbf2811d96cdc2fa3413f662013bb1b58cb02d4d56a08d98e870b39e477f6b0294e6aceb5dcc99c5facdeee165ce7597c2150ebb79101e
-  name: frr-frr-10.2.1
-  version: 10.2.1
-  url: https://github.com/FRRouting/frr/archive/refs/tags/frr-10.2.1.tar.gz
+  archive_sha512sum: b44367c966e7f8337056b269dab301c91db99f954c47b48997443570b210870f87113ca04e84de4483c9a79845d0b8dec1a311b0d22696f542301084bdadc2e8
+  name: frr-frr-10.5.0
+  version: 10.5.0
+  url: https://github.com/FRRouting/frr/archive/refs/tags/frr-10.5.0.tar.gz
   repo_url: https://github.com/FRRouting/frr
-  commit_id: 5f0beaa0fdd00b7a60c1765067d1b6fa65ce96c0
+  commit_id: c41ba202c3f821a43091781181c73772501034ae
   skip_list:
   - RCS
   - CVS
