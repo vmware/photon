@@ -3,7 +3,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -216,6 +216,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-13
+- Cosmetic changes in pam files
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-12
 - Revert STIG hardening changes
 * Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-11

@@ -1,4 +1,4 @@
-#Begin /etc/pam.d/chpasswd
+# Begin /etc/pam.d/chpasswd
 
 # always allow root
 auth      sufficient  pam_rootok.so
