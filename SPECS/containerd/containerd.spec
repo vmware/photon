@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.8
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -26,6 +26,7 @@ Patch1: build-bin-gen-manpages-instead-of-using-go-run.patch
 Patch2: CVE-2022-23471.patch
 Patch3: CVE-2023-25153.patch
 Patch4: CVE-2023-25173.patch
+Patch5: containerd-CVE-2024-40635.patch
 
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
@@ -138,6 +139,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Mon Nov 17 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.6.8-17
+- Fixes CVE-2024-40635
 * Mon Oct 21 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.8-16
 - Bump version as a part of go upgrade
 * Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.6.8-15
