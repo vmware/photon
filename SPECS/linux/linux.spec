@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -489,6 +489,9 @@ Patch266: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
 # Fix CVE-2023-53401
 Patch268: 0001-mm-kmem-fix-a-NULL-pointer-dereference-in-obj_stock_.patch
 Patch269: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
+# Fix CVE-2022-49935
+Patch270: 0001-dma-buf-dma-resv-check-if-the-new-fence-is-really-la.patch
+Patch271: 0002-dma-buf-fix-check-in-dma_resv_add_fence.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1180,6 +1183,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-9
+- Fixes CVE-2022-49935
 * Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-8
 - Fixes CVE-2023-53401
 * Mon Nov 17 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-7

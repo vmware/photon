@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.246
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -426,6 +426,9 @@ Patch262: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
 # Fix CVE-2023-53401
 Patch263: 0001-mm-kmem-fix-a-NULL-pointer-dereference-in-obj_stock_.patch
 Patch264: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
+# Fix CVE-2022-49935
+Patch265: 0001-dma-buf-dma-resv-check-if-the-new-fence-is-really-la.patch
+Patch266: 0002-dma-buf-fix-check-in-dma_resv_add_fence.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -710,6 +713,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-8
+- Fixes CVE-2022-49935
 * Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-7
 - Fixes CVE-2023-53401
 * Fri Nov 14 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-6

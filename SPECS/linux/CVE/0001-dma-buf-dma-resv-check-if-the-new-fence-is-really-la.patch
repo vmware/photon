@@ -1,0 +1,48 @@
+From cf921bcc753774879a2f9764d6f291201ae0e994 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Christian=20K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>
+Date: Wed, 10 Aug 2022 19:26:17 +0200
+Subject: [PATCH 1/2] dma-buf/dma-resv: check if the new fence is really later
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[Upstream commit a3f7c10a269d5b77dd5822ade822643ced3057f0]
+
+Previously when we added a fence to a dma_resv object we always
+assumed the the newer than all the existing fences.
+
+With Jason's work to add an UAPI to explicit export/import that's not
+necessary the case any more. So without this check we would allow
+userspace to force the kernel into an use after free error.
+
+Since the change is very small and defensive it's probably a good
+idea to backport this to stable kernels as well just in case others
+are using the dma_resv object in the same way.
+
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Jason Ekstrand <jason.ekstrand@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220810172617.140047-1-christian.koenig@amd.com
+Cc: stable@vger.kernel.org # v5.19+
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/dma-buf/dma-resv.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/dma-buf/dma-resv.c b/drivers/dma-buf/dma-resv.c
+index 72e87380b..cafa72b97 100644
+--- a/drivers/dma-buf/dma-resv.c
++++ b/drivers/dma-buf/dma-resv.c
+@@ -279,7 +279,8 @@ void dma_resv_add_shared_fence(struct dma_resv *obj, struct dma_fence *fence)
+ 
+ 		old = rcu_dereference_protected(fobj->shared[i],
+ 						dma_resv_held(obj));
+-		if (old->context == fence->context ||
++		if ((old->context == fence->context &&
++		    dma_fence_is_later(fence, old)) ||
+ 		    dma_fence_is_signaled(old))
+ 			goto replace;
+ 	}
+-- 
+2.40.4
+

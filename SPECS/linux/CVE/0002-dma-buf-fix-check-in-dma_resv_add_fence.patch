@@ -1,0 +1,67 @@
+From d61e1dd422cd6e2ae2073d1fb24f4ebbdfc7f2d4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Date: Tue, 14 Nov 2023 13:37:09 +0100
+Subject: [PATCH 2/2] dma-buf: fix check in dma_resv_add_fence
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[Upstream commit 95ba893c9f4feb836ddce627efd0bb6af6667031]
+
+It's valid to add the same fence multiple times to a dma-resv object and
+we shouldn't need one extra slot for each.
+
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Fixes: a3f7c10a269d5 ("dma-buf/dma-resv: check if the new fence is really later")
+Cc: stable@vger.kernel.org # v5.19+
+Link: https://patchwork.freedesktop.org/patch/msgid/20231115093035.1889-1-christian.koenig@amd.com
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/dma-buf/dma-resv.c |  2 +-
+ include/linux/dma-fence.h  | 15 +++++++++++++++
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/dma-buf/dma-resv.c b/drivers/dma-buf/dma-resv.c
+index cafa72b97..16eb0b389 100644
+--- a/drivers/dma-buf/dma-resv.c
++++ b/drivers/dma-buf/dma-resv.c
+@@ -280,7 +280,7 @@ void dma_resv_add_shared_fence(struct dma_resv *obj, struct dma_fence *fence)
+ 		old = rcu_dereference_protected(fobj->shared[i],
+ 						dma_resv_held(obj));
+ 		if ((old->context == fence->context &&
+-		    dma_fence_is_later(fence, old)) ||
++		    dma_fence_is_later_or_same(fence, old)) ||
+ 		    dma_fence_is_signaled(old))
+ 			goto replace;
+ 	}
+diff --git a/include/linux/dma-fence.h b/include/linux/dma-fence.h
+index 09e23adb3..362e75b3c 100644
+--- a/include/linux/dma-fence.h
++++ b/include/linux/dma-fence.h
+@@ -478,6 +478,21 @@ static inline bool dma_fence_is_later(struct dma_fence *f1,
+ 	return __dma_fence_is_later(f1->seqno, f2->seqno, f1->ops);
+ }
+ 
++/**
++ * dma_fence_is_later_or_same - return true if f1 is later or same as f2
++ * @f1: the first fence from the same context
++ * @f2: the second fence from the same context
++ *
++ * Returns true if f1 is chronologically later than f2 or the same fence. Both
++ * fences must be from the same context, since a seqno is not re-used across
++ * contexts.
++ */
++static inline bool dma_fence_is_later_or_same(struct dma_fence *f1,
++					      struct dma_fence *f2)
++{
++	return f1 == f2 || dma_fence_is_later(f1, f2);
++}
++
+ /**
+  * dma_fence_later - return the chronologically later fence
+  * @f1:	the first fence from the same context
+-- 
+2.40.4
+
