@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -495,6 +495,9 @@ Patch303: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
 Patch304: 0001-Add-rpi-poe-fan-driver.patch
+
+# Fix CVE-2022-49711
+Patch267: 0001-bus-fsl-mc-bus-fix-KASAN-use-after-free-in-fsl_mc_bu.patch
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -1174,6 +1177,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Nov 17 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-7
+- Fix for CVE-2022-49711
 * Fri Nov 14 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-6
 - Fixes CVE-2025-21887 and CVE-2024-35939
 * Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-5
