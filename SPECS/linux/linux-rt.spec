@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.158
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -303,6 +303,9 @@ Patch184: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 
 # Fix CVE-2025-39990
 Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
+
+# Fix CVE-2025-40110
+Patch186: 0001-drm-vmwgfx-Fix-a-null-ptr-access-in-the-cursor-snoop.patch
 
 # SCHED: [201..204]
 Patch201: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -688,6 +691,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Nov 18 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-5
+- Fix CVE-2025-40110
 * Mon Nov 17 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.158-4
 - Fix newidle balance regression
 * Thu Nov 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-3
