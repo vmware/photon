@@ -2,8 +2,8 @@
 
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
-Version:         1.16.3
-Release:         4%{?dist}
+Version:         1.17.3
+Release:         1%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org
 Vendor:          VMware, Inc.
@@ -11,7 +11,7 @@ Distribution:    Photon
 Group:           Development/Languages
 
 Source0: https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha512 %{name}=1511fb78bdcc50850cbf91007ed11c6a89e947d0a743c1e9ed30e1c93c1b47b5377fced17eeb66ac511d4f151d2e00ef2ecc6fb425d0d4afe2451be41a6ba6ee
+%define sha512 %{name}=084514d1362b52e85c0b4d92b8d18c6d2e9fddb4e4eaf4467f8b1c0985f9ceca1b74a0478581d91164935ae0f49610771860c674e080137e52aadc65b666911b
 
 BuildRequires:   git
 BuildRequires:   sed
@@ -56,6 +56,8 @@ export LANG="en_US.UTF-8"
 %{_datadir}/%{name}
 
 %changelog
+* Tue Nov 18 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.17.3-1
+- Update to 1.17.3
 * Tue Oct 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.3-4
 - Bump version as a part of erlang upgrade
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.16.3-3

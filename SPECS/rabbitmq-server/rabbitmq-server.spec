@@ -1,5 +1,5 @@
 %define erlang_minver       26.2.5
-%define erlang_maxver       27.0
+%define erlang_maxver       28.0
 %define _rabbitmq_user      rabbitmq
 %define _rabbitmq_group     rabbitmq
 %define _rabbit_libdir      %{_libdir}/rabbitmq
@@ -14,21 +14,23 @@
 # 3.8.x --> 3.11.x (not recommended)
 # 3.8.x --> 3.9.x (recommended & probably okay)
 # Enable all feauture flags before upgrade from 3.11.x to 3.12.4
-# 3.11.0 --> 3.11.18 --> 3.12.4
+# 3.11.0 --> 3.11.18 --> 3.12.4-->3.13.3-->4.1.4
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.13.3
-Release:       4%{?dist}
+Version:       4.1.4
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
-License:       MPLv1.1
+License:       MPLv2.0
 URL:           https://github.com/rabbitmq/rabbitmq-server
 
 # use only .xz bundle from release page of github
 Source0: https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha512 rabbitmq=3d06926e4068ef8d0a832e6d32267a6fc3d098a59583266e5c419e421cdf3c5dd60b77859778232289b80e1e3ff3e35ce9959ea53fefa269d7b1afe5f686c068
+%define sha512 rabbitmq=31ed45d4a9604e280f3d06123f72d1471916a26d2b7972e7971924d87015ea3bd894505edd016ed508c316cc7a13322fc78b847e486ddb4788830b3b3b328e3a
+
+Patch0: fix-build-error.patch
 
 Source1: %{name}.tmpfiles
 Source2: %{name}.logrotate
@@ -153,6 +155,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Tue Nov 18 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.4-1
+- Version upgrade
 * Tue Oct 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.13.3-4
 - Bump version as a part of erlang upgrade
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.13.3-3

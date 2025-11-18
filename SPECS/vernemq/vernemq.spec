@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
-Version:          2.0.1
-Release:          5%{?dist}
+Version:          2.1.0
+Release:          1%{?dist}
 License:          Apache License, Version 2.0
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
@@ -9,7 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=e4f1cd4c74d2cb67ab1524a76bdc6071e7b1e38ede574bc11e5ffe861bff99321647be0730f5f17d724dd792aa0fb86d0e9a92417f45bc43fef1461f1f64ae52
+%define sha512 %{name}=219ec809d4360e101dd64818e0932700c7700a4a0cec90671f69042b33010f6949574d90a130c27631e12d5133820c50d0e5b80652a6d66a42f186e55f9512f4
 
 # Building this tarball is not a straight forward process
 #
@@ -36,7 +36,7 @@ Source0: https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
 #
 # XZ_OPT=-9 tar cJf vernemq_vendor-version>.tar.xz
 Source1: %{name}_vendor-%{version}.tar.xz
-%define sha512 %{name}_vendor=f0a57b95ad487544717004c0af449d9fd589be37d9a66e03c6e51bdc7ff5e444a224c6a88c219a08fcd6f08c6bfa4c60ae8d6e8e8733a1d6d54b83608bc73b26
+%define sha512 %{name}_vendor=dbe64a919eea5152b09e34348306f9d8f9480887facaa68abc748cee95562aee9273112ff275755f2f2425e1573aafd1692cc6cbe3f3cb68823dfda8d12e742b
 
 Source2: vars.config
 Source3: %{name}.service
@@ -47,13 +47,14 @@ Patch0: 0001-local_version.patch
 # hence vernemq is restricted to x86_64
 BuildArch:        x86_64
 
-BuildRequires:    erlang
+BuildRequires:    erlang >= 27.3.4
 BuildRequires:    which
 BuildRequires:    make
 BuildRequires:    libstdc++-devel
 BuildRequires:    snappy-devel
 BuildRequires:    systemd-devel
 
+Requires:         erlang >= 27.3.4
 Requires:         snappy
 Requires:         libstdc++
 Requires:         systemd
@@ -72,14 +73,9 @@ A high-performance, distributed MQTT message broker.
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 mv ../%{name}_vendor-%{version}/_checkouts _checkouts
 
-mkdir -p _build/default
-mv ../%{name}_vendor-%{version}/plugins _build/default/
-
 cp %{SOURCE2} ./vars.config
 
 find . \( -name "*.so" -or -name "*.so.*" -or -name "*.o" -or -name "*.a" -or -name "*.beam" \) -delete
-
-cp -a _build/default/plugins/* _checkouts/
 
 # make doesn't support _smp_mflags
 REBAR_OFFLINE=1 make rel
@@ -92,11 +88,25 @@ install -vpm 0644 -t %{buildroot}%{_sysconfdir}/%{name} _build/default/rel/%{nam
 install -vpm 0644 -t %{buildroot}%{_sysconfdir}/%{name} _build/default/rel/%{name}/etc/vmq.acl
 install -vdm 0755 %{buildroot}%{_libdir}/%{name}
 
+erts_dir="$(find %{_libdir}/erlang/ -maxdepth 1 -type d -name erts-*)"
+[ -z "${erts_dir}" ] && exit 1
+erts_dir="$(basename ${erts_dir})"
+
+ln -sv %{_libdir}/erlang/${erts_dir}/bin/* \
+          _build/default/rel/%{name}/${erts_dir}/bin/
+
 cp -a _build/default/rel/%{name}/bin \
       _build/default/rel/%{name}/lib \
-      _build/default/rel/%{name}/erts-* \
+      _build/default/rel/%{name}//${erts_dir} \
       _build/default/rel/%{name}/releases \
       %{buildroot}%{_libdir}/%{name}
+
+install -vdm 0755 %{buildroot}%{_libdir}/erlang/lib
+pushd %{buildroot}%{_usr}
+for i in bridge commons server; do
+  ln -srv lib/vernemq/lib/vmq_${i}-0.0.0 lib/erlang/lib/
+done
+popd
 
 install -vdm 0755 %{buildroot}%{_datadir}
 cp -a _build/default/rel/%{name}/share %{buildroot}%{_datadir}/%{name}
@@ -149,12 +159,15 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/*
 %{_sbindir}/*
 %attr(0755,%{name},%{name}) %{_libdir}/%{name}
+%attr(0755,%{name},%{name}) %{_libdir}/erlang/lib/*
 %attr(0755,%{name},%{name}) %{_datadir}/%{name}
 %{_unitdir}/%{name}.service
 %{_presetdir}/50-%{name}.preset
 %{_tmpfilesdir}/%{name}.conf
 
 %changelog
+* Tue Nov 18 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.1.0-1
+- Update to 2.1.0
 * Tue Oct 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.1-5
 - Bump version as a part of erlang upgrade
 * Tue Apr 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.1-4
