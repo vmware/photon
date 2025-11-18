@@ -1,0 +1,141 @@
+From 792b3dd56c9dd62f00f102855c6dc4c787bf1692 Mon Sep 17 00:00:00 2001
+From: Roman Gushchin <roman.gushchin@linux.dev>
+Date: Tue, 2 May 2023 09:08:38 -0700
+Subject: [PATCH 1/2] mm: kmem: fix a NULL pointer dereference in
+ obj_stock_flush_required()
+
+[Upstream commit 3b8abb3239530c423c0b97e42af7f7e856e1ee96]
+
+KCSAN found an issue in obj_stock_flush_required():
+stock->cached_objcg can be reset between the check and dereference:
+
+==================================================================
+BUG: KCSAN: data-race in drain_all_stock / drain_obj_stock
+
+write to 0xffff888237c2a2f8 of 8 bytes by task 19625 on cpu 0:
+ drain_obj_stock+0x408/0x4e0 mm/memcontrol.c:3306
+ refill_obj_stock+0x9c/0x1e0 mm/memcontrol.c:3340
+ obj_cgroup_uncharge+0xe/0x10 mm/memcontrol.c:3408
+ memcg_slab_free_hook mm/slab.h:587 [inline]
+ __cache_free mm/slab.c:3373 [inline]
+ __do_kmem_cache_free mm/slab.c:3577 [inline]
+ kmem_cache_free+0x105/0x280 mm/slab.c:3602
+ __d_free fs/dcache.c:298 [inline]
+ dentry_free fs/dcache.c:375 [inline]
+ __dentry_kill+0x422/0x4a0 fs/dcache.c:621
+ dentry_kill+0x8d/0x1e0
+ dput+0x118/0x1f0 fs/dcache.c:913
+ __fput+0x3bf/0x570 fs/file_table.c:329
+ ____fput+0x15/0x20 fs/file_table.c:349
+ task_work_run+0x123/0x160 kernel/task_work.c:179
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop+0xcf/0xe0 kernel/entry/common.c:171
+ exit_to_user_mode_prepare+0x6a/0xa0 kernel/entry/common.c:203
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+ syscall_exit_to_user_mode+0x26/0x140 kernel/entry/common.c:296
+ do_syscall_64+0x4d/0xc0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+read to 0xffff888237c2a2f8 of 8 bytes by task 19632 on cpu 1:
+ obj_stock_flush_required mm/memcontrol.c:3319 [inline]
+ drain_all_stock+0x174/0x2a0 mm/memcontrol.c:2361
+ try_charge_memcg+0x6d0/0xd10 mm/memcontrol.c:2703
+ try_charge mm/memcontrol.c:2837 [inline]
+ mem_cgroup_charge_skmem+0x51/0x140 mm/memcontrol.c:7290
+ sock_reserve_memory+0xb1/0x390 net/core/sock.c:1025
+ sk_setsockopt+0x800/0x1e70 net/core/sock.c:1525
+ udp_lib_setsockopt+0x99/0x6c0 net/ipv4/udp.c:2692
+ udp_setsockopt+0x73/0xa0 net/ipv4/udp.c:2817
+ sock_common_setsockopt+0x61/0x70 net/core/sock.c:3668
+ __sys_setsockopt+0x1c3/0x230 net/socket.c:2271
+ __do_sys_setsockopt net/socket.c:2282 [inline]
+ __se_sys_setsockopt net/socket.c:2279 [inline]
+ __x64_sys_setsockopt+0x66/0x80 net/socket.c:2279
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+value changed: 0xffff8881382d52c0 -> 0xffff888138893740
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 19632 Comm: syz-executor.0 Not tainted 6.3.0-rc2-syzkaller-00387-g534293368afa #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
+
+Fix it by using READ_ONCE()/WRITE_ONCE() for all accesses to
+stock->cached_objcg.
+
+Link: https://lkml.kernel.org/r/20230502160839.361544-1-roman.gushchin@linux.dev
+Fixes: bf4f059954dc ("mm: memcg/slab: obj_cgroup API")
+Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+Reported-by: syzbot+774c29891415ab0fd29d@syzkaller.appspotmail.com
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+  Link: https://lore.kernel.org/linux-mm/CACT4Y+ZfucZhM60YPphWiCLJr6+SGFhT+jjm8k1P-a_8Kkxsjg@mail.gmail.com/T/#t
+Reviewed-by: Yosry Ahmed <yosryahmed@google.com>
+Acked-by: Shakeel Butt <shakeelb@google.com>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ mm/memcontrol.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 142b4d5e0..d453198c0 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -3141,7 +3141,7 @@ static bool consume_obj_stock(struct obj_cgroup *objcg, unsigned int nr_bytes)
+ 	local_irq_save(flags);
+ 
+ 	stock = this_cpu_ptr(&memcg_stock);
+-	if (objcg == stock->cached_objcg && stock->nr_bytes >= nr_bytes) {
++	if (objcg == READ_ONCE(stock->cached_objcg) && stock->nr_bytes >= nr_bytes) {
+ 		stock->nr_bytes -= nr_bytes;
+ 		ret = true;
+ 	}
+@@ -3153,7 +3153,7 @@ static bool consume_obj_stock(struct obj_cgroup *objcg, unsigned int nr_bytes)
+ 
+ static void drain_obj_stock(struct memcg_stock_pcp *stock)
+ {
+-	struct obj_cgroup *old = stock->cached_objcg;
++	struct obj_cgroup *old = READ_ONCE(stock->cached_objcg);
+ 
+ 	if (!old)
+ 		return;
+@@ -3191,16 +3191,17 @@ static void drain_obj_stock(struct memcg_stock_pcp *stock)
+ 	}
+ 
+ 	obj_cgroup_put(old);
+-	stock->cached_objcg = NULL;
++	WRITE_ONCE(stock->cached_objcg, NULL);
+ }
+ 
+ static bool obj_stock_flush_required(struct memcg_stock_pcp *stock,
+ 				     struct mem_cgroup *root_memcg)
+ {
++	struct obj_cgroup *objcg = READ_ONCE(stock->cached_objcg);
+ 	struct mem_cgroup *memcg;
+ 
+-	if (stock->cached_objcg) {
+-		memcg = obj_cgroup_memcg(stock->cached_objcg);
++	if (objcg) {
++		memcg = obj_cgroup_memcg(objcg);
+ 		if (memcg && mem_cgroup_is_descendant(memcg, root_memcg))
+ 			return true;
+ 	}
+@@ -3216,10 +3217,10 @@ static void refill_obj_stock(struct obj_cgroup *objcg, unsigned int nr_bytes)
+ 	local_irq_save(flags);
+ 
+ 	stock = this_cpu_ptr(&memcg_stock);
+-	if (stock->cached_objcg != objcg) { /* reset if necessary */
++	if (READ_ONCE(stock->cached_objcg) != objcg) { /* reset if necessary */
+ 		drain_obj_stock(stock);
+ 		obj_cgroup_get(objcg);
+-		stock->cached_objcg = objcg;
++		WRITE_ONCE(stock->cached_objcg, objcg);
+ 		stock->nr_bytes = atomic_xchg(&objcg->nr_charged_bytes, 0);
+ 	}
+ 	stock->nr_bytes += nr_bytes;
+-- 
+2.40.4
+

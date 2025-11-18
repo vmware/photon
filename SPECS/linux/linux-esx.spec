@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.246
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -463,6 +463,9 @@ Patch260: 0001-ovl-fix-UAF-in-ovl_dentry_update_reval-by-moving-dpu.patch
 
 # Fix CVE-2024-35939
 Patch261: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
+# Fix CVE-2023-53401
+Patch262: 0001-mm-kmem-fix-a-NULL-pointer-dereference-in-obj_stock_.patch
+Patch263: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
 
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -852,6 +855,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-7
+- Fixes CVE-2023-53401
 * Fri Nov 14 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.246-6
 - Fixes CVE-2025-21887 and CVE-2024-35939
 * Wed Nov 12 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-5

@@ -1,0 +1,84 @@
+From 74b6fe110efa604a1c2774cbdb2f59a85d0d6d17 Mon Sep 17 00:00:00 2001
+From: Roman Gushchin <roman.gushchin@linux.dev>
+Date: Tue, 2 May 2023 09:08:39 -0700
+Subject: [PATCH 2/2] mm: memcg: use READ_ONCE()/WRITE_ONCE() to access
+ stock->cached
+
+[Upstream commit f785a8f21a9cc46fced9f53c51a6f2dc647ed484]
+
+A memcg pointer in the percpu stock can be accessed by drain_all_stock()
+from another cpu in a lockless way.  In theory it might lead to an issue,
+similar to the one which has been discovered with stock->cached_objcg,
+where the pointer was zeroed between the check for being NULL and
+dereferencing.  In this case the issue is unlikely a real problem, but to
+make it bulletproof and similar to stock->cached_objcg, let's annotate all
+accesses to stock->cached with READ_ONCE()/WTRITE_ONCE().
+
+Link: https://lkml.kernel.org/r/20230502160839.361544-2-roman.gushchin@linux.dev
+Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+Acked-by: Shakeel Butt <shakeelb@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Yosry Ahmed <yosryahmed@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+[Ankit: Backported v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ mm/memcontrol.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index d453198c0..e13819e6c 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -2257,7 +2257,7 @@ static bool consume_stock(struct mem_cgroup *memcg, unsigned int nr_pages)
+ 	local_irq_save(flags);
+ 
+ 	stock = this_cpu_ptr(&memcg_stock);
+-	if (memcg == stock->cached && stock->nr_pages >= nr_pages) {
++	if (memcg == READ_ONCE(stock->cached) && stock->nr_pages >= nr_pages) {
+ 		stock->nr_pages -= nr_pages;
+ 		ret = true;
+ 	}
+@@ -2272,7 +2272,7 @@ static bool consume_stock(struct mem_cgroup *memcg, unsigned int nr_pages)
+  */
+ static void drain_stock(struct memcg_stock_pcp *stock)
+ {
+-	struct mem_cgroup *old = stock->cached;
++	struct mem_cgroup *old = READ_ONCE(stock->cached);
+ 
+ 	if (!old)
+ 		return;
+@@ -2285,7 +2285,7 @@ static void drain_stock(struct memcg_stock_pcp *stock)
+ 	}
+ 
+ 	css_put(&old->css);
+-	stock->cached = NULL;
++	WRITE_ONCE(stock->cached, NULL);
+ }
+ 
+ static void drain_local_stock(struct work_struct *dummy)
+@@ -2319,10 +2319,10 @@ static void refill_stock(struct mem_cgroup *memcg, unsigned int nr_pages)
+ 	local_irq_save(flags);
+ 
+ 	stock = this_cpu_ptr(&memcg_stock);
+-	if (stock->cached != memcg) { /* reset if necessary */
++	if (READ_ONCE(stock->cached) != memcg) { /* reset if necessary */
+ 		drain_stock(stock);
+ 		css_get(&memcg->css);
+-		stock->cached = memcg;
++		WRITE_ONCE(stock->cached, memcg);
+ 	}
+ 	stock->nr_pages += nr_pages;
+ 
+@@ -2356,7 +2356,7 @@ static void drain_all_stock(struct mem_cgroup *root_memcg)
+ 		bool flush = false;
+ 
+ 		rcu_read_lock();
+-		memcg = stock->cached;
++		memcg = READ_ONCE(stock->cached);
+ 		if (memcg && stock->nr_pages &&
+ 		    mem_cgroup_is_descendant(memcg, root_memcg))
+ 			flush = true;
+-- 
+2.40.4
+
