@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -492,6 +492,21 @@ Patch269: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
 # Fix CVE-2022-49935
 Patch270: 0001-dma-buf-dma-resv-check-if-the-new-fence-is-really-la.patch
 Patch271: 0002-dma-buf-fix-check-in-dma_resv_add_fence.patch
+
+# Fix CVE-2022-49961
+Patch272:   0001-bpf-Do-mark_chain_precision-for-ARG_CONST_ALLOC_SIZE.patch
+
+# Fix CVE-2025-40110
+Patch273:   0001-drm-vmwgfx-Fix-a-null-ptr-access-in-the-cursor-snoop.patch
+
+# Fix CVE-2025-38022
+Patch274:   0001-RDMA-core-Fix-KASAN-slab-use-after-free-Read-in-ib_r.patch
+
+# Fix CVE-2025-38119
+Patch275:   0001-scsi-core-ufs-Fix-a-hang-in-the-error-handler.patch
+
+# Fix CVE-2025-37830
+Patch276:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1183,6 +1198,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-10
+- Fix CVE-2022-49961, CVE-2025-40110, CVE-2025-38022, CVE-2025-38119
+- CVE-2025-37830
 * Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-9
 - Fixes CVE-2022-49935
 * Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-8

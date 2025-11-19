@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.246
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -470,6 +470,21 @@ Patch263: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
 Patch264: 0001-dma-buf-dma-resv-check-if-the-new-fence-is-really-la.patch
 Patch265: 0002-dma-buf-fix-check-in-dma_resv_add_fence.patch
 
+# Fix CVE-2022-49961
+Patch266:   0001-bpf-Do-mark_chain_precision-for-ARG_CONST_ALLOC_SIZE.patch
+
+# Fix CVE-2025-40110
+Patch267:   0001-drm-vmwgfx-Fix-a-null-ptr-access-in-the-cursor-snoop.patch
+
+# Fix CVE-2025-38022
+Patch268:   0001-RDMA-core-Fix-KASAN-slab-use-after-free-Read-in-ib_r.patch
+
+# Fix CVE-2025-38119
+Patch269:   0001-scsi-core-ufs-Fix-a-hang-in-the-error-handler.patch
+
+# Fix CVE-2025-37830
+Patch270:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -858,6 +873,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-9
+- Fix CVE-2022-49961, CVE-2025-40110, CVE-2025-38022, CVE-2025-38119
+- CVE-2025-37830
 * Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-8
 - Fixes CVE-2022-49935
 * Tue Nov 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.246-7
