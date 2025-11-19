@@ -7,7 +7,7 @@ Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        23.3.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -21,6 +21,7 @@ Patch0: dummy-certifi.patch
 Patch1: fix-for-requests-CVE-2024-35195.patch
 Patch2: fix-for-requests-CVE-2024-35195-2.patch
 Patch3: CVE-2024-47081.patch
+Patch4: fix-for-urllib3-CVE-2025-50181.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -89,6 +90,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed Nov 19 2025 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.2-5
+- Fix CVE-2025-50181 in _vendors/urllib3
 * Mon Nov 17 2025 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.2-4
 - Fix CVE-2024-47081 in _vendors/requests
 * Mon Feb 10 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.3.2-3
