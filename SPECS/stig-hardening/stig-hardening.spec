@@ -2,11 +2,13 @@ Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch: noarch
 
 #Remove these files from gitrepo while preparing tar ball
 #.ansible-lint .gitignore .yamllint .gitattributes .gitlab-ci.yml vars-cap.yml
@@ -16,7 +18,7 @@ Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-ph5-%{ver
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildArch: noarch
+Patch0: fix-some-value-checks.patch
 
 Requires: ansible >= 2.14.2
 Requires: ansible-community-general
@@ -31,13 +33,15 @@ VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 
 %install
 install -d %{buildroot}%{_datadir}/ansible/
-cp -rp %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{name}
+cp -a %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{name}
 
 %files
 %defattr(-,root,root,-)
 %{_datadir}/ansible/
 
 %changelog
+* Tue Nov 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-3
+- Fix some validations
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.1-2
 - Release bump for SRP compliance
 * Fri Aug 16 2024 Shivani Agarwal <shivani.agarwal@vmware.com> 2.1-1

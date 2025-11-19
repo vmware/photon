@@ -1,0 +1,268 @@
+From 75337dc372790de5a9af3339a05bdc8d08dd02f8 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 18 Nov 2025 19:22:39 +0530
+Subject: [PATCH] Fix some value checks
+
+Values of minlen, ucredit, ocredit, lcredit, dcredit were being reset
+even when there was a better value than recommended was used.
+
+Same with deny, fail_interval, maxdays
+
+Fix the audit control, run only when needed.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ tasks/photon.yml           | 126 ++++++++++++++++++++++++++++++-------
+ templates/audit.STIG.rules |   3 +
+ 2 files changed, 106 insertions(+), 23 deletions(-)
+
+diff --git a/tasks/photon.yml b/tasks/photon.yml
+index 367f1ca..3191d19 100644
+--- a/tasks/photon.yml
++++ b/tasks/photon.yml
+@@ -138,15 +138,22 @@
+   tags: [PHTN-50-000003, PHTN-50-000019, PHTN-50-000031, PHTN-50-000076, PHTN-50-000078, PHTN-50-000107, PHTN-50-000173, PHTN-50-000175, PHTN-50-000204, auditd]
+   when: run_auditd_rules | bool
+   block:
+-    - name: PHTN-50-000003 - Check to see if auditd is installed
++    - name: PHTN-50-000003 - check if auditd is installed and get version.
+       ansible.builtin.shell: |
+         set -o pipefail
+-        rpm -qa | grep ^audit-
+-      register: auditdinstalled
+-      failed_when: auditdinstalled.rc == 2
++        tdnf list installed audit --disablerepo=* | awk '{print $2}'
++      register: auditdversion
++      failed_when: auditdversion.rc == 2
+       changed_when: false
+ 
+-    - name: PHTN-50-000003 - Copy auditd rules template
++    - name: PHTN-50-000003 - Check if auditd version is greater than or equal to 3.0.9-25.
++      ansible.builtin.debug:
++        msg: "Auditd version is greater than or equal to 3.0.9-25, using the built-in default.rules file"
++      when:
++        - auditdversion.stdout != ""
++        - auditdversion.stdout is version('3.0.9-25.ph5', '>=')
++
++    - name: PHTN-50-000003 - Copy audit template file to {{ var_auditd_rule_file }} if auditd version is less than 3.0.9-25.
+       ansible.builtin.template:
+         src: audit.STIG.rules
+         dest: '{{ var_auditd_rule_file }}'
+@@ -157,26 +164,45 @@
+       notify:
+         - '{{ role_name }} : reload auditd'
+       when:
+-        - auditdinstalled.stdout != ""
++        - auditdversion.stdout != ""
++        - auditdversion.stdout is version('3.0.9-25.ph5', '<')
+ 
+ ###################################################################################################################################
+ - name: PHTN-50-000004 - Configure faillock.conf deny and fail_interval
+   tags: [PHTN-50-000004, pam_faillock]
+   when: run_pam_faillock_deny_interval | bool
+   block:
+-    - name: PHTN-50-000004 - Configure faillock.conf deny
++    - name: PHTN-50-000004 - Check current value of deny in {{ var_pam_faillock_conf_file }}.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^deny\s*=\s*\K.*' {{ var_pam_faillock_conf_file }}
++      register: denyvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000004 - Configure deny setting in {{ var_pam_faillock_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_faillock_conf_file }}'
+         state: present
+-        regexp: '^#?\s*deny.*$'
++        regexp: '^\s*#?\s*deny\s*=\s*.*$'
+         line: deny = {{ var_pam_faillock_deny }}
++      when: denyvalue.stdout | int < 1 or denyvalue.stdout | int > 3
+ 
+-    - name: PHTN-50-000004 - Configure faillock.conf fail_interval
++    - name: PHTN-50-000004 - Check current value of fail_interval in {{ var_pam_faillock_conf_file }}.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^fail_interval\s*=\s*\K.*' {{ var_pam_faillock_conf_file }}
++      register: failintervalvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000004 - Configure fail_interval in {{ var_pam_faillock_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_faillock_conf_file }}'
+         state: present
+-        regexp: '^#?\s*fail_interval.*$'
++        regexp: '^\s*#?\s*fail_interval\s*=\s*.*$'
+         line: fail_interval = {{ var_pam_faillock_fail_interval }}
++      when: failintervalvalue.stdout | int < 900
+ 
+ ###################################################################################################################################
+ - name: PHTN-50-000005 - Configure sshd banner and /etc/issue
+@@ -436,12 +462,21 @@
+     - run_pam_pwquality_ucredit | bool
+     - var_pam_use_pwquality_conf | bool
+   block:
+-    - name: PHTN-50-000035 - Configure pwquality.conf ucredit
++    - name: PHTN-50-000035 - Check current value of ucredit in pam_pwquality module.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^ucredit\s*=\s*\K.*' {{ var_pam_pwquality_conf_file }}
++      register: ucreditvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000035 - Configure pam_pwquality ucredit in {{ var_pam_pwquality_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_pwquality_conf_file }}'
+         state: present
+-        regexp: '^#?\s*ucredit\s'
++        regexp: '^\s*#?\s*ucredit\s*=\s*.*$'
+         line: ucredit = {{ var_pam_pwquality_ucredit }}
++      when: ucreditvalue.stdout | int >= 0
+ 
+ - name: PHTN-50-000035 - Configure ucredit in system-password
+   tags: [PHTN-50-000035, pam_pwquality]
+@@ -465,12 +500,21 @@
+     - run_pam_pwquality_lcredit | bool
+     - var_pam_use_pwquality_conf | bool
+   block:
+-    - name: PHTN-50-000036 - Configure pwquality.conf lcredit
++    - name: PHTN-50-000036 - Check current value of lcredit in pam_pwquality module.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^lcredit\s*=\s*\K.*' {{ var_pam_pwquality_conf_file }}
++      register: lcreditvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000036 - Configure pam_pwquality lcredit in {{ var_pam_pwquality_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_pwquality_conf_file }}'
+         state: present
+-        regexp: '^#?\s*lcredit\s'
++        regexp: '^\s*#?\s*lcredit\s*=\s*.*$'
+         line: lcredit = {{ var_pam_pwquality_lcredit }}
++      when: lcreditvalue.stdout | int >= 0
+ 
+ - name: PHTN-50-000036 - Configure lcredit in system-password
+   tags: [PHTN-50-000036, pam_pwquality]
+@@ -494,12 +538,21 @@
+     - run_pam_pwquality_dcredit | bool
+     - var_pam_use_pwquality_conf | bool
+   block:
+-    - name: PHTN-50-000037 - Configure pwquality.conf dcredit
++    - name: PHTN-50-000037 - Check current value of dcredit in pam_pwquality module.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^dcredit\s*=\s*\K.*' {{ var_pam_pwquality_conf_file }}
++      register: dcreditvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000037 - Configure pam_pwquality dcredit in {{ var_pam_pwquality_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_pwquality_conf_file }}'
+         state: present
+-        regexp: '^#?\s*dcredit\s'
++        regexp: '^\s*#?\s*dcredit\s*=\s*.*$'
+         line: dcredit = {{ var_pam_pwquality_dcredit }}
++      when: dcreditvalue.stdout | int >= 0
+ 
+ - name: PHTN-50-000037 - Configure dcredit in system-password
+   tags: [PHTN-50-000037, pam_pwquality]
+@@ -601,12 +654,21 @@
+   tags: [PHTN-50-000042]
+   when: run_login_defs_pass_max_days | bool
+   block:
+-    - name: PHTN-50-000042 - Configure login.defs PASS_MAX_DAYS
++    - name: PHTN-50-000042 - Check current value of PASS_MAX_DAYS in {{ var_login_defs_file }}.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^PASS_MAX_DAYS\s*\K.*' {{ var_login_defs_file }}
++      register: passmaxvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000042 - Configure PASS_MAX_DAYS in {{ var_login_defs_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_login_defs_file }}'
+         state: present
+-        regexp: '^#?\s*PASS_MAX_DAYS\s'
++        regexp: '^\s*#?\s*PASS_MAX_DAYS\s*.*$'
+         line: PASS_MAX_DAYS {{ var_login_defs_pass_max_days }}
++      when: passmaxvalue.stdout | int <1 or passmaxvalue.stdout | int > 90
+ 
+ ###################################################################################################################################
+ - name: PHTN-50-000044 - Configure pwquality.conf minlen
+@@ -615,12 +677,21 @@
+     - run_pam_pwquality_minlen | bool
+     - var_pam_use_pwquality_conf | bool
+   block:
+-    - name: PHTN-50-000044 - Configure pwquality.conf minlen
++    - name: PHTN-50-000044 - Check current value of minlen in pam_pwquality module.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^minlen\s*=\s*\K.*' {{ var_pam_pwquality_conf_file }}
++      register: minlenvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000044 - Configure pam_pwquality minlen in {{ var_pam_pwquality_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_pwquality_conf_file }}'
+         state: present
+-        regexp: '^#?\s*minlen\s'
++        regexp: '^\s*#?\s*minlen\s*=\s*.*$'
+         line: minlen = {{ var_pam_pwquality_minlen }}
++      when: minlenvalue.stdout | int < var_pam_pwquality_minlen
+ 
+ - name: PHTN-50-000044 - Configure minlen in system-password
+   tags: [PHTN-50-000044, pam_pwquality]
+@@ -874,12 +945,21 @@
+     - run_pam_pwquality_ocredit | bool
+     - var_pam_use_pwquality_conf | bool
+   block:
+-    - name: PHTN-50-000086 - Configure pwquality.conf ocredit
++    - name: PHTN-50-000086 - Check current value of ocredit in pam_pwquality module.
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -oP '^ocredit\s*=\s*\K.*' {{ var_pam_pwquality_conf_file }}
++      register: ocreditvalue
++      failed_when: false
++      changed_when: false
++
++    - name: 'PHTN-50-000086 - Configure pam_pwquality ocredit in {{ var_pam_pwquality_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_pwquality_conf_file }}'
+         state: present
+-        regexp: '^#?\s*ocredit\s'
++        regexp: '^\s*#?\s*ocredit\s*=\s*.*$'
+         line: ocredit = {{ var_pam_pwquality_ocredit }}
++      when: ocreditvalue.stdout | int >= 0
+ 
+ - name: PHTN-50-000086 - Configure ocredit in system-password
+   tags: [PHTN-50-000086, pam_pwquality]
+@@ -945,7 +1025,7 @@
+   tags: [PHTN-50-000108, pam_faillock]
+   when: run_pam_faillock_unlock_time | bool
+   block:
+-    - name: PHTN-50-000108 - Configure faillock.conf unlock_time
++    - name: 'PHTN-50-000108 - Configure pam_faillock unlock_time in {{ var_pam_faillock_conf_file }}.'
+       ansible.builtin.lineinfile:
+         path: '{{ var_pam_faillock_conf_file }}'
+         state: present
+diff --git a/templates/audit.STIG.rules b/templates/audit.STIG.rules
+index 53051a0..22a6ab9 100644
+--- a/templates/audit.STIG.rules
++++ b/templates/audit.STIG.rules
+@@ -73,3 +73,6 @@
+ -w /etc/shadow -p wa -k shadow
+ -w /etc/group -p wa -k group
+ -w /etc/gshadow -p wa -k gshadow
++
++# PHTN-50-000266 audit account changes
++-w /etc/security/opasswd -p wa -k opasswd
+-- 
+2.51.1
+
