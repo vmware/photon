@@ -7,7 +7,7 @@ Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        24.3.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,6 +23,7 @@ Source2: %{srcname}.conf
 Patch0: dummy-certifi.patch
 Patch1: exclude-None-versioned-packages.patch
 Patch2: CVE-2024-47081.patch
+Patch3: CVE-2025-50181.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -85,6 +86,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed Nov 19 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.3.1-5
+- Fix CVE-2025-50181
 * Wed Nov 19 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.3.1-4
 - Fix CVE-2024-47081
 * Tue Feb 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.3.1-3
