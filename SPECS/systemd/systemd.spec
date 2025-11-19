@@ -5,7 +5,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -47,7 +47,10 @@ Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
 Patch6: do-not-allocate-1m-on-stack.patch
 Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
 Patch8: sd-netlink-make-default-timeout-configurable.patch
+
+%if 0%{?STIG_HARDEN}
 Patch9: harden-tmpfs-mount-options.patch
+%endif
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -691,6 +694,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Nov 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17
+- Revert tmpfs hardening fix
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-16
 - Revert STIG hardening changes
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-15
