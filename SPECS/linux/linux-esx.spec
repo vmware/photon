@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.158
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -247,6 +247,9 @@ Patch144: 0002-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
 # Fix CVE-2024-35949
 Patch145: 0001-btrfs-make-sure-that-WRITTEN-is-set-on-all-metadata-.patch
 
+# Fix CVE-2025-38636
+Patch146: 0001-rv-Use-strings-in-da-monitors-tracepoints.patch
+
 # Fix CVE-2024-50018
 Patch147: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 
@@ -359,6 +362,13 @@ Patch190: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
 # Fix CVE-2025-2312
 Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
 
+#Fix CVE-2025-38201
+Patch192: 0001-netfilter-nft_set_pipapo-do-not-rely-on-ZERO_SIZE_PT.patch
+Patch193: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
+
+# Fix CVE-2025-38361
+Patch194: 0001-drm-amd-display-Check-dce_hwseq-before-dereferencing.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -372,6 +382,9 @@ Patch207: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 
 # Fix CVE-2024-53068
 Patch211: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
+
+# Fix CVE-2025-38081
+Patch212: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 %endif
 
 # 9p: [300..350]
@@ -745,6 +758,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.158-8
+- Fix CVE-2025-38081, CVE-2025-38201, CVE-2025-38361, CVE-2025-38636
 * Wed Nov 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-7
 - Fix CVE-2025-2312
 * Wed Nov 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-6

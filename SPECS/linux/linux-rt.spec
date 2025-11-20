@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.158
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -208,6 +208,9 @@ Patch144: 0001-mm-mempolicy-fix-migrate_to_node-assuming-there-is-a.patch
 Patch146: 0001-bpf-Add-attach_type-checks-under-bpf_prog_attach_che.patch
 Patch147: 0002-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
 
+# Fix CVE-2025-38636
+Patch148: 0001-rv-Use-strings-in-da-monitors-tracepoints.patch
+
 # Fix CVE-2024-50018
 Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 
@@ -319,6 +322,13 @@ Patch190: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
 
 # Fix CVE-2025-2312
 Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
+
+# Fix CVE-2025-38201
+Patch192: 0001-netfilter-nft_set_pipapo-do-not-rely-on-ZERO_SIZE_PT.patch
+Patch193: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
+
+# Fix CVE-2025-38361
+Patch194: 0001-drm-amd-display-Check-dce_hwseq-before-dereferencing.patch
 
 # SCHED: [201..204]
 Patch201: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -704,6 +714,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.158-8
+- Fix CVE-2025-38201, CVE-2025-38361, CVE-2025-38636
 * Wed Nov 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-7
 - Fix CVE-2025-2312
 * Wed Nov 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-6

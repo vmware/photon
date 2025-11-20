@@ -1,0 +1,56 @@
+From 07ace0bbe03b3d8e85869af1dec5e4087b1d57b8 Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Tue, 13 Feb 2024 16:23:38 +0100
+Subject: [PATCH] netfilter: nft_set_pipapo: do not rely on ZERO_SIZE_PTR
+
+pipapo relies on kmalloc(0) returning ZERO_SIZE_PTR (i.e., not NULL
+but pointer is invalid).
+
+Rework this to not call slab allocator when we'd request a 0-byte
+allocation.
+
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Mukul Sikka <mukul.sikka@broadcom.com>
+---
+ net/netfilter/nft_set_pipapo.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
+index 8336f2052..75e9371df 100644
+--- a/net/netfilter/nft_set_pipapo.c
++++ b/net/netfilter/nft_set_pipapo.c
+@@ -525,6 +525,8 @@ static struct nft_pipapo_elem *pipapo_get(const struct net *net,
+ 	int i;
+ 
+ 	m = priv->clone;
++	if (m->bsize_max == 0)
++		return ret;
+ 
+ 	res_map = kmalloc_array(m->bsize_max, sizeof(*res_map), GFP_ATOMIC);
+ 	if (!res_map) {
+@@ -1360,11 +1362,17 @@ static struct nft_pipapo_match *pipapo_clone(struct nft_pipapo_match *old)
+ 		       src->bsize * sizeof(*dst->lt) *
+ 		       src->groups * NFT_PIPAPO_BUCKETS(src->bb));
+ 
+-		dst->mt = kvmalloc(src->rules * sizeof(*src->mt), GFP_KERNEL);
+-		if (!dst->mt)
+-			goto out_mt;
++		if (src->rules > 0) {
++			dst->mt = kvmalloc_array(src->rules, sizeof(*src->mt),
++						 GFP_KERNEL);
++			if (!dst->mt)
++				goto out_mt;
++
++			memcpy(dst->mt, src->mt, src->rules * sizeof(*src->mt));
++		} else {
++			dst->mt = NULL;
++		}
+ 
+-		memcpy(dst->mt, src->mt, src->rules * sizeof(*src->mt));
+ 		src++;
+ 		dst++;
+ 	}
+-- 
+2.43.7
+
