@@ -2,7 +2,7 @@
 
 Summary:        Internet Routing Protocol
 Name:           frr
-Version:        10.2.1
+Version:        10.5.0
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://frrouting.org
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/FRRouting/frr/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=8544280a0c536e8688cbf2811d96cdc2fa3413f662013bb1b58cb02d4d56a08d98e870b39e477f6b0294e6aceb5dcc99c5facdeee165ce7597c2150ebb79101e
+%define sha512 %{name}=b44367c966e7f8337056b269dab301c91db99f954c47b48997443570b210870f87113ca04e84de4483c9a79845d0b8dec1a311b0d22696f542301084bdadc2e8
 
 Source1: %{name}-tmpfiles.conf
 Source2: %{name}-sysusers.conf
@@ -209,6 +209,7 @@ fi
 %config(noreplace) %{_sysconfdir}/pam.d/%{name}
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so.*
+%{_libdir}/%{name}/pkgconfig/%{name}.pc
 %dir %{_libdir}/%{name}/modules
 %{_libdir}/%{name}/modules/*
 %{_unitdir}/%{name}.service
@@ -225,6 +226,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Thu Nov 20 2025 HarinadhD <harinadh.dommaraju@broadcom.com> 10.5.0-1
+- Version upgraded to 10.5.0
 * Mon Mar 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 10.2.1-1
 - Version upgrade to fix CVE-2024-44070 and CVE-2024-34088
 * Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 9.1-1
