@@ -1,0 +1,117 @@
+From 660b8e719920df9d7ab6ef036a3f9e2c99ebf092 Mon Sep 17 00:00:00 2001
+From: Liam Howlett <liam.howlett@oracle.com>
+Date: Mon, 28 Jun 2021 19:38:50 -0700
+Subject: [PATCH] mm: add vma_lookup(), update find_vma_intersection() comments
+
+[ Upstream commit ce6d42f2e4a2d98898419743b037a95661e3ac9d ]
+
+Patch series "mm: Add vma_lookup()", v2.
+
+Many places in the kernel use find_vma() to get a vma and then check the
+start address of the vma to ensure the next vma was not returned.
+
+Other places use the find_vma_intersection() call with add, addr + 1 as
+the range; looking for just the vma at a specific address.
+
+The third use of find_vma() is by developers who do not know that the
+function starts searching at the provided address upwards for the next
+vma.  This results in a bug that is often overlooked for a long time.
+
+Adding the new vma_lookup() function will allow for cleaner code by
+removing the find_vma() calls which check limits, making
+find_vma_intersection() calls of a single address to be shorter, and
+potentially reduce the incorrect uses of find_vma().
+
+This patch (of 22):
+
+Many places in the kernel use find_vma() to get a vma and then check the
+start address of the vma to ensure the next vma was not returned.
+
+Other places use the find_vma_intersection() call with add, addr + 1 as
+the range; looking for just the vma at a specific address.
+
+The third use of find_vma() is by developers who do not know that the
+function starts searching at the provided address upwards for the next
+vma.  This results in a bug that is often overlooked for a long time.
+
+Adding the new vma_lookup() function will allow for cleaner code by
+removing the find_vma() calls which check limits, making
+find_vma_intersection() calls of a single address to be shorter, and
+potentially reduce the incorrect uses of find_vma().
+
+Also change find_vma_intersection() comments and declaration to be of the
+correct length and add kernel documentation style comment.
+
+Link: https://lkml.kernel.org/r/20210521174745.2219620-1-Liam.Howlett@Oracle.com
+Link: https://lkml.kernel.org/r/20210521174745.2219620-2-Liam.Howlett@Oracle.com
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Reviewed-by: Laurent Dufour <ldufour@linux.ibm.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Acked-by: Davidlohr Bueso <dbueso@suse.de>
+Cc: David Miller <davem@davemloft.net>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ include/linux/mm.h | 36 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 32 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 4787d39bbad4..7d991c8ea977 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2683,17 +2683,45 @@ extern struct vm_area_struct * find_vma(struct mm_struct * mm, unsigned long add
+ extern struct vm_area_struct * find_vma_prev(struct mm_struct * mm, unsigned long addr,
+ 					     struct vm_area_struct **pprev);
+ 
+-/* Look up the first VMA which intersects the interval start_addr..end_addr-1,
+-   NULL if none.  Assume start_addr < end_addr. */
+-static inline struct vm_area_struct * find_vma_intersection(struct mm_struct * mm, unsigned long start_addr, unsigned long end_addr)
++/**
++ * find_vma_intersection() - Look up the first VMA which intersects the interval
++ * @mm: The process address space.
++ * @start_addr: The inclusive start user address.
++ * @end_addr: The exclusive end user address.
++ *
++ * Returns: The first VMA within the provided range, %NULL otherwise.  Assumes
++ * start_addr < end_addr.
++ */
++static inline
++struct vm_area_struct *find_vma_intersection(struct mm_struct *mm,
++					     unsigned long start_addr,
++					     unsigned long end_addr)
+ {
+-	struct vm_area_struct * vma = find_vma(mm,start_addr);
++	struct vm_area_struct *vma = find_vma(mm, start_addr);
+ 
+ 	if (vma && end_addr <= vma->vm_start)
+ 		vma = NULL;
+ 	return vma;
+ }
+ 
++/**
++ * vma_lookup() - Find a VMA at a specific address
++ * @mm: The process address space.
++ * @addr: The user address.
++ *
++ * Return: The vm_area_struct at the given address, %NULL otherwise.
++ */
++static inline
++struct vm_area_struct *vma_lookup(struct mm_struct *mm, unsigned long addr)
++{
++	struct vm_area_struct *vma = find_vma(mm, addr);
++
++	if (vma && addr < vma->vm_start)
++		vma = NULL;
++
++	return vma;
++}
++
+ static inline unsigned long vm_start_gap(struct vm_area_struct *vma)
+ {
+ 	unsigned long vm_start = vma->vm_start;
+-- 
+2.40.4
+

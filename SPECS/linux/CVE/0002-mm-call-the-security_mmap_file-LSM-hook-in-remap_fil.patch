@@ -1,0 +1,85 @@
+From ebc5478d98cbcd7b0d145ca1d2071aaaa32d4c33 Mon Sep 17 00:00:00 2001
+From: Shu Han <ebpqwerty472123@gmail.com>
+Date: Tue, 17 Sep 2024 17:41:04 +0800
+Subject: [PATCH 2/3] mm: call the security_mmap_file() LSM hook in
+ remap_file_pages()
+
+commit ea7e2d5e49c05e5db1922387b09ca74aa40f46e2 upstream.
+
+The remap_file_pages syscall handler calls do_mmap() directly, which
+doesn't contain the LSM security check. And if the process has called
+personality(READ_IMPLIES_EXEC) before and remap_file_pages() is called for
+RW pages, this will actually result in remapping the pages to RWX,
+bypassing a W^X policy enforced by SELinux.
+
+So we should check prot by security_mmap_file LSM hook in the
+remap_file_pages syscall handler before do_mmap() is called. Otherwise, it
+potentially permits an attacker to bypass a W^X policy enforced by
+SELinux.
+
+The bypass is similar to CVE-2016-10044, which bypass the same thing via
+AIO and can be found in [1].
+
+The PoC:
+
+$ cat > test.c
+
+int main(void) {
+	size_t pagesz = sysconf(_SC_PAGE_SIZE);
+	int mfd = syscall(SYS_memfd_create, "test", 0);
+	const char *buf = mmap(NULL, 4 * pagesz, PROT_READ | PROT_WRITE,
+		MAP_SHARED, mfd, 0);
+	unsigned int old = syscall(SYS_personality, 0xffffffff);
+	syscall(SYS_personality, READ_IMPLIES_EXEC | old);
+	syscall(SYS_remap_file_pages, buf, pagesz, 0, 2, 0);
+	syscall(SYS_personality, old);
+	// show the RWX page exists even if W^X policy is enforced
+	int fd = open("/proc/self/maps", O_RDONLY);
+	unsigned char buf2[1024];
+	while (1) {
+		int ret = read(fd, buf2, 1024);
+		if (ret <= 0) break;
+		write(1, buf2, ret);
+	}
+	close(fd);
+}
+
+$ gcc test.c -o test
+$ ./test | grep rwx
+7f1836c34000-7f1836c35000 rwxs 00002000 00:01 2050 /memfd:test (deleted)
+
+Link: https://project-zero.issues.chromium.org/issues/42452389 [1]
+Cc: stable@vger.kernel.org
+Signed-off-by: Shu Han <ebpqwerty472123@gmail.com>
+Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
+[PM: subject line tweaks]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+[ Resolve merge conflict in mm/mmap.c. ]
+Signed-off-by: Bin Lan <bin.lan.cn@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Applied patch to v5.10 by Gerrit Photon ]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ mm/mmap.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 1e9302936..4023d3513 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -3074,8 +3074,12 @@ SYSCALL_DEFINE5(remap_file_pages, unsigned long, start, unsigned long, size,
+ 		flags |= MAP_LOCKED;
+ 
+ 	file = get_file(vma->vm_file);
++	ret = security_mmap_file(vma->vm_file, prot, flags);
++	if (ret)
++		goto out_fput;
+ 	ret = do_mmap(vma->vm_file, start, size,
+ 			prot, flags, pgoff, &populate, NULL);
++out_fput:
+ 	fput(file);
+ out:
+ 	mmap_write_unlock(mm);
+-- 
+2.40.4
+

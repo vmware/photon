@@ -1,0 +1,169 @@
+From 2e179ef8c3b80efd5ce6e4aeb5d9db64b442d585 Mon Sep 17 00:00:00 2001
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Date: Fri, 18 Oct 2024 18:14:15 +0200
+Subject: [PATCH 3/3] mm: split critical region in remap_file_pages() and
+ invoke LSMs in between
+
+commit 58a039e679fe72bd0efa8b2abe669a7914bb4429 upstream.
+
+Commit ea7e2d5e49c0 ("mm: call the security_mmap_file() LSM hook in
+remap_file_pages()") fixed a security issue, it added an LSM check when
+trying to remap file pages, so that LSMs have the opportunity to evaluate
+such action like for other memory operations such as mmap() and
+mprotect().
+
+However, that commit called security_mmap_file() inside the mmap_lock
+lock, while the other calls do it before taking the lock, after commit
+8b3ec6814c83 ("take security_mmap_file() outside of ->mmap_sem").
+
+This caused lock inversion issue with IMA which was taking the mmap_lock
+and i_mutex lock in the opposite way when the remap_file_pages() system
+call was called.
+
+Solve the issue by splitting the critical region in remap_file_pages() in
+two regions: the first takes a read lock of mmap_lock, retrieves the VMA
+and the file descriptor associated, and calculates the 'prot' and 'flags'
+variables; the second takes a write lock on mmap_lock, checks that the VMA
+flags and the VMA file descriptor are the same as the ones obtained in the
+first critical region (otherwise the system call fails), and calls
+do_mmap().
+
+In between, after releasing the read lock and before taking the write
+lock, call security_mmap_file(), and solve the lock inversion issue.
+
+Link: https://lkml.kernel.org/r/20241018161415.3845146-1-roberto.sassu@huaweicloud.com
+Fixes: ea7e2d5e49c0 ("mm: call the security_mmap_file() LSM hook in remap_file_pages()")
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Reported-by: syzbot+1cd571a672400ef3a930@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/linux-security-module/66f7b10e.050a0220.46d20.0036.GAE@google.com/
+Tested-by: Roberto Sassu <roberto.sassu@huawei.com>
+Reviewed-by: Roberto Sassu <roberto.sassu@huawei.com>
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Reviewed-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Tested-by: syzbot+1cd571a672400ef3a930@syzkaller.appspotmail.com
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Dmitry Kasatkin <dmitry.kasatkin@gmail.com>
+Cc: Eric Snowberg <eric.snowberg@oracle.com>
+Cc: James Morris <jmorris@namei.org>
+Cc: Mimi Zohar <zohar@linux.ibm.com>
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Cc: Shu Han <ebpqwerty472123@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Jianqi Ren <jianqi.ren.cn@windriver.com>
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ mm/mmap.c | 69 +++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 52 insertions(+), 17 deletions(-)
+
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 4023d3513..0d6cb95c8 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -3015,6 +3015,7 @@ SYSCALL_DEFINE5(remap_file_pages, unsigned long, start, unsigned long, size,
+ 	unsigned long populate = 0;
+ 	unsigned long ret = -EINVAL;
+ 	struct file *file;
++	vm_flags_t vm_flags;
+ 
+ 	pr_warn_once("%s (%d) uses deprecated remap_file_pages() syscall. See Documentation/vm/remap_file_pages.rst.\n",
+ 		     current->comm, current->pid);
+@@ -3031,12 +3032,60 @@ SYSCALL_DEFINE5(remap_file_pages, unsigned long, start, unsigned long, size,
+ 	if (pgoff + (size >> PAGE_SHIFT) < pgoff)
+ 		return ret;
+ 
+-	if (mmap_write_lock_killable(mm))
++	if (mmap_read_lock_killable(mm))
+ 		return -EINTR;
+ 
++	/*
++	 * Look up VMA under read lock first so we can perform the security
++	 * without holding locks (which can be problematic). We reacquire a
++	 * write lock later and check nothing changed underneath us.
++	 */
++	vma = vma_lookup(mm, start);
++
++	if (!vma || !(vma->vm_flags & VM_SHARED)) {
++		mmap_read_unlock(mm);
++		return -EINVAL;
++	}
++
++	prot |= vma->vm_flags & VM_READ ? PROT_READ : 0;
++	prot |= vma->vm_flags & VM_WRITE ? PROT_WRITE : 0;
++	prot |= vma->vm_flags & VM_EXEC ? PROT_EXEC : 0;
++
++	flags &= MAP_NONBLOCK;
++	flags |= MAP_SHARED | MAP_FIXED | MAP_POPULATE;
++	if (vma->vm_flags & VM_LOCKED)
++		flags |= MAP_LOCKED;
++
++	/* Save vm_flags used to calculate prot and flags, and recheck later. */
++	vm_flags = vma->vm_flags;
++	file = get_file(vma->vm_file);
++
++	mmap_read_unlock(mm);
++
++	/* Call outside mmap_lock to be consistent with other callers. */
++	ret = security_mmap_file(file, prot, flags);
++	if (ret) {
++		fput(file);
++		return ret;
++	}
++
++	ret = -EINVAL;
++
++	/* OK security check passed, take write lock + let it rip. */
++	if (mmap_write_lock_killable(mm)) {
++		fput(file);
++		return -EINTR;
++	}
++
+ 	vma = find_vma(mm, start);
+ 
+-	if (!vma || !(vma->vm_flags & VM_SHARED))
++	if (!vma)
++		goto out;
++
++	/* Make sure things didn't change under us. */
++	if (vma->vm_flags != vm_flags)
++		goto out;
++	if (vma->vm_file != file)
+ 		goto out;
+ 
+ 	if (start < vma->vm_start)
+@@ -3064,25 +3113,11 @@ SYSCALL_DEFINE5(remap_file_pages, unsigned long, start, unsigned long, size,
+ 			goto out;
+ 	}
+ 
+-	prot |= vma->vm_flags & VM_READ ? PROT_READ : 0;
+-	prot |= vma->vm_flags & VM_WRITE ? PROT_WRITE : 0;
+-	prot |= vma->vm_flags & VM_EXEC ? PROT_EXEC : 0;
+-
+-	flags &= MAP_NONBLOCK;
+-	flags |= MAP_SHARED | MAP_FIXED | MAP_POPULATE;
+-	if (vma->vm_flags & VM_LOCKED)
+-		flags |= MAP_LOCKED;
+-
+-	file = get_file(vma->vm_file);
+-	ret = security_mmap_file(vma->vm_file, prot, flags);
+-	if (ret)
+-		goto out_fput;
+ 	ret = do_mmap(vma->vm_file, start, size,
+ 			prot, flags, pgoff, &populate, NULL);
+-out_fput:
+-	fput(file);
+ out:
+ 	mmap_write_unlock(mm);
++	fput(file);
+ 	if (populate)
+ 		mm_populate(ret, populate);
+ 	if (!IS_ERR_VALUE(ret))
+-- 
+2.40.4
+

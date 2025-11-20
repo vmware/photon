@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.251
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -529,6 +529,12 @@ Patch308: 0003-ceph-fix-potential-use-after-free-bug-when-trimming-.patch
 Patch309: 0001-vsock-virtio-fix-potential-underflow-in-virtio_trans.patch
 # CVE-2026-23086
 Patch310: 0002-vsock-virtio-cap-TX-credit-to-local-buffer-size.patch
+# CVE-2024-47745
+Patch311: 0001-i915_vma-Rename-vma_lookup-to-i915_vma_lookup.patch
+Patch312: 0001-mm-add-vma_lookup-update-find_vma_intersection-comme.patch
+Patch313: 0001-mm-mmap.c-don-t-unlock-VMAs-in-remap_file_pages.patch
+Patch314: 0002-mm-call-the-security_mmap_file-LSM-hook-in-remap_fil.patch
+Patch315: 0003-mm-split-critical-region-in-remap_file_pages-and-inv.patch
 
 #Patches for ptp_vmw
 Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -917,6 +923,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 03 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 5.10.251-3
+- Security fixes: CVE-2024-47745
 * Sat Feb 28 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.251-2
 - Fix CVE-2026-23069, CVE-2026-23086
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-1

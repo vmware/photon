@@ -1,0 +1,44 @@
+From 547be6a479fd19fe1071d2cf76ed574fbff13481 Mon Sep 17 00:00:00 2001
+From: Liam Howlett <liam.howlett@oracle.com>
+Date: Tue, 23 Mar 2021 13:42:21 +0000
+Subject: [PATCH] i915_vma: Rename vma_lookup to i915_vma_lookup
+
+[ Upstream commit 547be6a479fd19fe1071d2cf76ed574fbff13481 ]
+
+Use i915 prefix to avoid name collision with future vma_lookup() in mm.
+
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210323134208.3077275-1-Liam.Howlett@Oracle.com
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/gpu/drm/i915/i915_vma.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
+index caa9b041616b..ee0028c697f6 100644
+--- a/drivers/gpu/drm/i915/i915_vma.c
++++ b/drivers/gpu/drm/i915/i915_vma.c
+@@ -230,7 +230,7 @@ vma_create(struct drm_i915_gem_object *obj,
+ }
+ 
+ static struct i915_vma *
+-vma_lookup(struct drm_i915_gem_object *obj,
++i915_vma_lookup(struct drm_i915_gem_object *obj,
+ 	   struct i915_address_space *vm,
+ 	   const struct i915_ggtt_view *view)
+ {
+@@ -278,7 +278,7 @@ i915_vma_instance(struct drm_i915_gem_object *obj,
+ 	GEM_BUG_ON(!atomic_read(&vm->open));
+ 
+ 	spin_lock(&obj->vma.lock);
+-	vma = vma_lookup(obj, vm, view);
++	vma = i915_vma_lookup(obj, vm, view);
+ 	spin_unlock(&obj->vma.lock);
+ 
+ 	/* vma_create() will resolve the race if another creates the vma */
+-- 
+2.40.4
+

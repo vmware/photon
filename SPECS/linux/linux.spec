@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.251
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -560,18 +560,16 @@ Patch309: 0001-bpf-cpumap-Make-sure-kthread-is-running-before-map-u.patch
 Patch310: 0001-ceph-drop-private-list-from-remove_session_caps_cb.patch
 Patch311: 0002-ceph-fix-auth-cap-handling-logic-in-remove_session_c.patch
 Patch312: 0003-ceph-fix-potential-use-after-free-bug-when-trimming-.patch
-
-%ifarch aarch64
-# CVE-2026-23221
-Patch313: CVE/0001-bus-fsl-mc-Replace-snprintf-and-sprintf-with-sysfs_e.patch
-Patch314: CVE/0002-fsl-mc-Use-driver_set_override-instead-of-open-codin.patch
-Patch315: CVE/0003-bus-fsl-mc-fix-use-after-free-in-driver_override_sho.patch
-%endif
-
+# CVE-2024-47745
+Patch313: 0001-i915_vma-Rename-vma_lookup-to-i915_vma_lookup.patch
+Patch314: 0001-mm-add-vma_lookup-update-find_vma_intersection-comme.patch
+Patch315: 0001-mm-mmap.c-don-t-unlock-VMAs-in-remap_file_pages.patch
+Patch316: 0002-mm-call-the-security_mmap_file-LSM-hook-in-remap_fil.patch
+Patch317: 0003-mm-split-critical-region-in-remap_file_pages-and-inv.patch
 # CVE-2026-23069
-Patch316: 0001-vsock-virtio-fix-potential-underflow-in-virtio_trans.patch
+Patch318: 0001-vsock-virtio-fix-potential-underflow-in-virtio_trans.patch
 # CVE-2026-23086
-Patch317: 0002-vsock-virtio-cap-TX-credit-to-local-buffer-size.patch
+Patch319: 0002-vsock-virtio-cap-TX-credit-to-local-buffer-size.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -581,6 +579,10 @@ Patch353: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
 Patch354: 0001-Add-rpi-poe-fan-driver.patch
+# CVE-2026-23221
+Patch355: 0001-bus-fsl-mc-Replace-snprintf-and-sprintf-with-sysfs_e.patch
+Patch356: 0002-fsl-mc-Use-driver_set_override-instead-of-open-codin.patch
+Patch357: 0003-bus-fsl-mc-fix-use-after-free-in-driver_override_sho.patch
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -1260,6 +1262,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Mar 03 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 5.10.251-4
+- Security fixes: CVE-2024-47745
 * Sat Feb 28 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.251-3
 - Fix CVE-2026-23069, CVE-2026-23086
 * Thu Feb 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-2
