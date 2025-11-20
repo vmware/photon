@@ -1,0 +1,66 @@
+From 58be488b8d4cd5183cc189db38fca975569d33b8 Mon Sep 17 00:00:00 2001
+From: Kuniyuki Iwashima <kuniyu@google.com>
+Date: Tue, 16 Sep 2025 21:47:23 +0000
+Subject: [PATCH 2/2] tls: Use __sk_dst_get() and dst_dev_rcu() in
+ get_netdev_for_sock().
+
+[ Upstream commit c65f27b9c3be2269918e1cbad6d8884741f835c5 ]
+
+get_netdev_for_sock() is called during setsockopt(),
+so not under RCU.
+
+Using sk_dst_get(sk)->dev could trigger UAF.
+
+Let's use __sk_dst_get() and dst_dev_rcu().
+
+Note that the only ->ndo_sk_get_lower_dev() user is
+bond_sk_get_lower_dev(), which uses RCU.
+
+Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
+Link: https://patch.msgid.link/20250916214758.650211-6-kuniyu@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+<Keerthana: Backported the patch to v6.1.y>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ net/tls/tls_device.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 184982788473..ce0a5fae621a 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -125,17 +125,19 @@ static void tls_device_queue_ctx_destruction(struct tls_context *ctx)
+ /* We assume that the socket is already connected */
+ static struct net_device *get_netdev_for_sock(struct sock *sk)
+ {
+-	struct dst_entry *dst = sk_dst_get(sk);
+-	struct net_device *netdev = NULL;
++	struct net_device *dev, *lowest_dev = NULL;
++	struct dst_entry *dst;
+ 
+-	if (likely(dst)) {
+-		netdev = netdev_sk_get_lowest_dev(dst->dev, sk);
+-		dev_hold(netdev);
++	rcu_read_lock();
++	dst = __sk_dst_get(sk);
++	dev = dst ? dst_dev_rcu(dst) : NULL;
++	if (likely(dev)) {
++		lowest_dev = netdev_sk_get_lowest_dev(dev, sk);
++		dev_hold(lowest_dev);
+ 	}
++	rcu_read_unlock();
+ 
+-	dst_release(dst);
+-
+-	return netdev;
++	return lowest_dev;
+ }
+ 
+ static void destroy_record(struct tls_record_info *record)
+-- 
+2.43.7
+

@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.158
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -306,6 +306,16 @@ Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
 
 # Fix CVE-2025-40110
 Patch186: 0001-drm-vmwgfx-Fix-a-null-ptr-access-in-the-cursor-snoop.patch
+
+# Fix CVE-2025-37750
+Patch187: 0001-smb-client-fix-UAF-in-decryption-with-multichannel.patch
+
+# Fix CVE-2025-40149
+Patch188: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
+Patch189: 0002-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
+
+# Fix CVE-2025-38556
+Patch190: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
 
 # SCHED: [201..204]
 Patch201: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -691,6 +701,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Nov 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-6
+- Fixes CVE-2025-37750, CVE-2025-40149 and CVE-2025-38556
 * Tue Nov 18 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-5
 - Fix CVE-2025-40110
 * Mon Nov 17 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.158-4
