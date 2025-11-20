@@ -827,14 +827,14 @@ def check_specs(files_list):
 
         print(f"Checking spec file: {spec_fn}")
 
+        if not os.path.isfile(spec_fn):
+            print(f"{spec_fn} has been deleted in this changeset")
+            continue
+
         specTopDir = spec_fn.split("SPECS/", 1)[0] + "SPECS"
         specTopDir = os.path.realpath(specTopDir)
         if specTopDir not in specPaths:
             specPaths.append(specTopDir)
-
-        if not os.path.isfile(spec_fn):
-            print(f"{spec_fn} has been deleted in this changeset")
-            continue
 
         err_dict = ErrorDict(spec_fn)
 
