@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -507,6 +507,9 @@ Patch275:   0001-scsi-core-ufs-Fix-a-hang-in-the-error-handler.patch
 
 # Fix CVE-2025-37830
 Patch276:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
+
+# Fix CVE-2025-38527
+Patch279: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1198,6 +1201,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Nov 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.246-11
+- Fixes CVE-2025-38527
 * Wed Nov 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-10
 - Fix CVE-2022-49961, CVE-2025-40110, CVE-2025-38022, CVE-2025-38119
 - CVE-2025-37830

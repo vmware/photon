@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.246
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -485,6 +485,9 @@ Patch269:   0001-scsi-core-ufs-Fix-a-hang-in-the-error-handler.patch
 # Fix CVE-2025-37830
 Patch270:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
 
+# Fix CVE-2025-38527
+Patch273: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -873,6 +876,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.246-10
+- Fixes CVE-2025-38527
 * Wed Nov 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-9
 - Fix CVE-2022-49961, CVE-2025-40110, CVE-2025-38022, CVE-2025-38119
 - CVE-2025-37830
