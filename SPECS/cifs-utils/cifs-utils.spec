@@ -1,7 +1,7 @@
 Summary:        cifs client utils
 Name:           cifs-utils
-Version:        7.0
-Release:        3%{?dist}
+Version:        7.4
+Release:        1%{?dist}
 URL:            http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:          Applications/Nfs-utils-client
 Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{version}.tar.bz2
@@ -29,6 +29,7 @@ Provides header files needed for Cifs-Utils development.
 %autosetup
 
 %build
+autoreconf -fiv
 %configure \
     ROOTSBINDIR=/usr/sbin \
     --disable-pam \
@@ -52,6 +53,8 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
+* Wed Nov 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 7.4-1
+- Verion upgrade to fix CVE-2025-2312
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 7.0-3
 - Update due to libtalloc bump up to 2.4.1 required by samba-client 4.19.3
 - samba-client bump up to 4.19.3 for CVE-2023-5568 and CVE-2018-14628

@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.158
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -383,6 +383,9 @@ Patch189: 0002-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
 
 # Fix CVE-2025-38556
 Patch190: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
+
+# Fix CVE-2025-2312
+Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -1152,6 +1155,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Nov 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-7
+- Fix CVE-2025-2312
 * Wed Nov 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-6
 - Fixes CVE-2025-37750, CVE-2025-40149 and CVE-2025-38556
 * Tue Nov 18 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.158-5

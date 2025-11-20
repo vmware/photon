@@ -1,7 +1,15 @@
 sources:
-- archive: cifs-utils-7.0.tar.bz2
-  archive_sha512sum: 4c57741af0c4567a78f352c73caca998881666a5ed36536275cfa775efd66ff1a44ebe539a8ed96c409c5b08a1378266964ce667a27e9fc7f2d43999c63dd0eb
-  skip_validation: true
+- archive: cifs-utils-7.4.tar.bz2
+  archive_sha512sum: 36fb64ed531e983752be243be488392ba52c3797ac638147a75998b8965448009e95d7ccda187c7d50d753b0ddb87a464a83044064b099d49fffe03a0b6ba739
+  skip_validation: false
+  archive_type: upstream
+  name: cifs-utils-7.4
+  version: 7.4
+  url: https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-7.4.tar.bz2
+  repo_url: https://git.samba.org/cifs-utils.git
+  commit_id: f54e674a82fc00e574e1ebbc77ba5841d8342b6d
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__']
+  missing: ['cifs.upcall.rst.in', 'cldap_ping.h', 'asn1.h', 'resolve_host.c', 'NEWS', 'resolve_host.h', 'COPYING', 'cifscreds.c', 'contrib', 'bash-completion', 'configure.ac', 'data_blob.h', 'spnego.h', 'getcifsacl.rst.in', 'util.h', 'mount.cifs.rst', 'idmap_plugin.h', 'config.h.in', 'setcifsacl.c', 'smb2-quota.rst', 'autom4te.cache', 'mount.cifs.c', 'pam_cifscreds.rst', 'asn1.c', 'smbinfo', 'cifskey.c', 'doc', 'aclocal', 'cifskey.h', 'aclocal.m4', 'cifs.idmap.c', 'AUTHORS', 'mtab.c', 'idmapwb.c', 'util.c', 'smbinfo.rst', 'cifs.upcall.c', 'data_blob.c', 'INSTALL', 'cifs.idmap.rst.in', 'Makefile.am', 'cifs_spnego.h', 'cifsacl.h', 'spnego.c', 'configure', 'idmapwb.rst.in', 'smb2-secdesc', 'pam_cifscreds.c', 'Makefile.in', 'checkopts', 'mount.h', 'ChangeLog', 'cifsidmap.h', 'getcifsacl.c', 'setcifsacl.rst.in', 'cifscreds.rst', 'idmap_plugin.c', 'README', 'cldap_ping.c', 'smb2-quota', 'missing', 'depcomp', 'mount.cifs.8', 'cifs.upcall.8', 'replace.h', 'install-sh']
   spdx:
     package:
       detailed_description: 'Cifs-utils, a package of utilities for doing and managing
