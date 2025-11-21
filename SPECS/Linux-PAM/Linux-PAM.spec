@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -15,10 +15,14 @@ Source1: pamtmp.conf
 Source2: default-faillock.conf
 
 Patch0: 0001-faillock-add-support-to-print-login-failures.patch
+# CVE-2024-22365
 Patch1: 0002-Linux-PAM-protect-dir.patch
 Patch2: 0003-pam_pwhistory-fix-passing-NULL-filename-argument-to-.patch
 Patch3: 0004-faillock-open-tally-file-in-O_CLOEXEC-mode.patch
 Patch4: 0005-CVE-2024-10963.patch
+Patch5: 0006-CVE-2024-10041.patch
+Patch6: 0007-CVE-2025-6020-prep.patch
+Patch7: 0008-CVE-2025-6020.patch
 
 BuildRequires: libselinux-devel
 BuildRequires: gdbm-devel
@@ -141,6 +145,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Fri Nov 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-6
+- Fix CVE-2025-6020
 * Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-5
 - Fix CVE-2024-10963
 * Thu Mar 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-4
