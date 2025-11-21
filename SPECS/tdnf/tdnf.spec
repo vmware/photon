@@ -8,8 +8,8 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.13
-Release:        3%{?dist}
+Version:        3.5.14
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -22,7 +22,8 @@ Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 Patch1: updateinfo.patch
-Patch2: 0001-copy-pszArch-in-TDNFCloneCmdArgs.patch
+Patch2: updateinfo2.patch
+Patch3: 0001-copy-pszArch-in-TDNFCloneCmdArgs.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -295,6 +296,9 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Nov 21 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.14-1
+- update to 3.5.14
+- snapshot URL
 * Tue Oct 07 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.13-3
 - fix forcearch option
 * Wed Sep 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.13-2
