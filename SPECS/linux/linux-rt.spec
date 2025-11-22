@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.159
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -434,7 +434,6 @@ BuildRequires:  clang-devel
 %if "%{?signing_script}" != ""
 %define network_required 1
 BuildRequires:  ca-certificates-pki
-BuildRequires:  sbsigntools
 BuildRequires:  python3-requests
 %endif
 
@@ -727,6 +726,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Dec 10 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.159-2
+- Fix SBAT validation order
 * Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-1
 - Update to version 6.1.159
 * Sun Dec 07 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.158-12

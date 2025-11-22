@@ -493,7 +493,6 @@ BuildRequires: dwarves-devel
 %ifarch x86_64
 %define network_required 1
 BuildRequires:  ca-certificates-pki
-BuildRequires:  sbsigntools
 BuildRequires:  python3-requests
 %endif
 %endif
