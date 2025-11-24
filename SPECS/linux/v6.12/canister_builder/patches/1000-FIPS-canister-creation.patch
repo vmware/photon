@@ -1,4 +1,4 @@
-From 858b180fe5e35f310dcf7f9bb137daada6483de1 Mon Sep 17 00:00:00 2001
+From cffe72cc862566a60ddca9cafc888ecdb86e6f98 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
 Subject: [PATCH] FIPS canister creation
@@ -26,7 +26,6 @@ Canister creation patch.
    like memcpy moves __bug_table out of the canister, but it nullifies the
    compile time fortification as parameters size becomes unknown for the
    compiler, see fortify_memcpy_chk() comments.
- - Add asn1-decoder library API into canister
  - Remove rfc4543 from canister
 
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
@@ -34,8 +33,8 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c |  77 ++++++++-------
- crypto/Makefile                    | 154 +++++++++++++++++++++++++++++
+ arch/x86/crypto/aesni-intel_glue.c |  77 ++++++++--------
+ crypto/Makefile                    | 143 +++++++++++++++++++++++++++++
  crypto/algboss.c                   |   8 +-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
@@ -48,10 +47,10 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  crypto/gcm.c                       |   9 +-
  crypto/hmac.c                      |   3 +-
  crypto/rsa-pkcs1pad.c              |  11 +--
- crypto/testmgr.c                   | 108 +++++++++++---------
+ crypto/testmgr.c                   | 108 ++++++++++++----------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 17 files changed, 323 insertions(+), 132 deletions(-)
+ 17 files changed, 312 insertions(+), 132 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -324,10 +323,10 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index bd659c92d..c2fffa632 100644
+index ab9645853..6e81f830d 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -17,9 +17,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
+@@ -18,9 +18,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
  obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
  
  obj-$(CONFIG_CRYPTO_AEAD2) += aead.o
@@ -339,7 +338,7 @@ index bd659c92d..c2fffa632 100644
  
  obj-$(CONFIG_CRYPTO_SKCIPHER2) += crypto_skcipher.o
  ifeq ($(CONFIG_BPF_SYSCALL),y)
-@@ -49,6 +51,7 @@ rsa_generic-y += rsaprivkey.asn1.o
+@@ -50,6 +52,7 @@ rsa_generic-y += rsaprivkey.asn1.o
  rsa_generic-y += rsa.o
  rsa_generic-y += rsa_helper.o
  rsa_generic-y += rsa-pkcs1pad.o
@@ -347,7 +346,7 @@ index bd659c92d..c2fffa632 100644
  $(obj)/rsa-pkcs1pad_crypt.o: $(srctree)/crypto/rsa-pkcs1pad.c FORCE
  	$(call if_changed_rule,cc_o_c)
  obj-$(CONFIG_CRYPTO_RSA) += rsa-pkcs1pad_crypt.o
-@@ -57,14 +60,18 @@ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature
+@@ -58,14 +61,18 @@ $(obj)/ecdsasignature.asn1.o: $(obj)/ecdsasignature.asn1.c $(obj)/ecdsasignature
  $(obj)/ecdsa.o: $(obj)/ecdsasignature.asn1.h
  ecdsa_generic-y += ecdsa.o
  ecdsa_generic-y += ecdsasignature.asn1.o
@@ -366,7 +365,7 @@ index bd659c92d..c2fffa632 100644
  obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
  obj-$(CONFIG_CRYPTO_XCBC) += xcbc.o
  obj-$(CONFIG_CRYPTO_NULL2) += crypto_null.o
-@@ -72,6 +79,9 @@ obj-$(CONFIG_CRYPTO_MD4) += md4.o
+@@ -73,6 +80,9 @@ obj-$(CONFIG_CRYPTO_MD4) += md4.o
  obj-$(CONFIG_CRYPTO_MD5) += md5.o
  obj-$(CONFIG_CRYPTO_RMD160) += rmd160.o
  obj-$(CONFIG_CRYPTO_SHA1) += sha1_generic.o
@@ -376,7 +375,7 @@ index bd659c92d..c2fffa632 100644
  obj-$(CONFIG_CRYPTO_SM3) += sm3.o
  obj-$(CONFIG_CRYPTO_SM3_GENERIC) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -80,16 +90,22 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
+@@ -81,16 +91,22 @@ CFLAGS_wp512.o := $(call cc-option,-fno-schedule-insns)  # https://gcc.gnu.org/b
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  CFLAGS_blake2b_generic.o := -Wframe-larger-than=4096 #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105930
  obj-$(CONFIG_CRYPTO_ECB) += ecb.o
@@ -399,7 +398,7 @@ index bd659c92d..c2fffa632 100644
  obj-$(CONFIG_CRYPTO_CHACHA20POLY1305) += chacha20poly1305.o
  obj-$(CONFIG_CRYPTO_AEGIS128) += aegis128.o
  aegis128-y := aegis128-core.o
-@@ -124,6 +140,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -125,6 +141,7 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -407,7 +406,7 @@ index bd659c92d..c2fffa632 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4.o
  obj-$(CONFIG_CRYPTO_SM4_GENERIC) += sm4_generic.o
-@@ -156,6 +173,7 @@ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
+@@ -157,6 +174,7 @@ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
  obj-$(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE) += jitterentropy-testing.o
  obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
@@ -415,7 +414,7 @@ index bd659c92d..c2fffa632 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -163,11 +181,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -164,11 +182,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
@@ -430,7 +429,7 @@ index bd659c92d..c2fffa632 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -191,6 +212,139 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -192,6 +213,128 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -474,10 +473,6 @@ index bd659c92d..c2fffa632 100644
 +$(obj)/x86-%.o: $(srctree)/arch/x86/crypto/%.S FORCE
 +	$(call if_changed_rule,as_o_S)
 +
-+lib-asn1-y := asn1_decoder.o
-+$(obj)/lib-asn1-%.o: $(srctree)/lib/%.c FORCE
-+	$(call if_changed_rule,cc_o_c)
-+
 +lib-crypto-mpi-y := \
 +	generic_mpih-lshift.o           \
 +	generic_mpih-mul1.o             \
@@ -512,13 +507,12 @@ index bd659c92d..c2fffa632 100644
 +
 +extra-y += $(canister)
 +
-+canister-objs := $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-asn1-,$(lib-asn1-y)) $(addprefix crypto/lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
++canister-objs := $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
 +
 +$(obj)/canister.o: $(obj)/partial_reloc $(canister-objs)
 +	$(Q)$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $(canister-objs) -o $@
 +	$(call cmd,pr)
 +	@$(foreach obj,$(x86-hwaccelerated-y),echo x86-$(obj) > objs;)
-+	@$(foreach obj,$(lib-asn1-y),echo lib-asn1-$(obj) >> objs;)
 +	@$(foreach obj,$(lib-crypto-mpi-y),echo lib-crypto-mpi-$(obj) >> objs;)
 +	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
 +	@$(foreach obj,$(canister),echo $(obj) >> objs;)
@@ -528,12 +522,6 @@ index bd659c92d..c2fffa632 100644
 +  CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(canister),$(eval $(call UPDATE_CFLAGS,$(obj))))
-+
-+define UPDATE_CFLAGS_LIB_ASN1 =
-+  CFLAGS_lib-asn1-$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
-+  CFLAGS_REMOVE_lib-asn1-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
-+endef
-+$(foreach obj,$(lib-asn1-y),$(eval $(call UPDATE_CFLAGS_LIB_ASN1,$(obj))))
 +
 +define UPDATE_CFLAGS_LIB_CRYPTO_MPI =
 +  CFLAGS_lib-crypto-mpi-$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
@@ -558,7 +546,7 @@ index bd659c92d..c2fffa632 100644
 +clean-files += canister_relocs.c
 +clean-files += fips_canister-kallsyms
 +# Make savecmd_ happy for proper incremental build
-+targets += canister_relocs.o $(addprefix x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-asn1-,$(lib-asn1-y)) $(addprefix lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix lib-crypto-,$(lib-crypto-y))
++targets += canister_relocs.o $(addprefix x86-,$(x86-hwaccelerated-y)) $(addprefix lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix lib-crypto-,$(lib-crypto-y))
 +$(obj)/canister_markers.lds: $(src)/canister_relocs.c
 +
 +clean-files += canister_markers.lds

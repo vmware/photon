@@ -1,4 +1,4 @@
-From c042efe461518b599cfb6038ff4b9fecafd9ab6a Mon Sep 17 00:00:00 2001
+From b3ce15223739dda8900b0a148d8130ad5a292421 Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Fri, 20 Jun 2025 12:53:33 -0500
 Subject: [PATCH] FIPS canister binary usage
@@ -16,13 +16,12 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  arch/x86/crypto/Makefile    |  19 -----
- crypto/Makefile             | 143 ++++++++++++++++++++++++++++++------
- include/linux/scatterlist.h |   4 +
+ crypto/Makefile             | 140 ++++++++++++++++++++++++++++++------
+ include/linux/scatterlist.h |   4 ++
  init/main.c                 |   3 +
- lib/Makefile                |   1 -
  lib/crypto/Makefile         |  17 +----
- lib/crypto/mpi/Makefile     |  28 -------
- 7 files changed, 131 insertions(+), 84 deletions(-)
+ lib/crypto/mpi/Makefile     |  28 --------
+ 6 files changed, 128 insertions(+), 83 deletions(-)
  delete mode 100644 lib/crypto/mpi/Makefile
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
@@ -63,7 +62,7 @@ index 53b4a2778..1e4aa1356 100644
  polyval-clmulni-y := polyval-clmulni_asm.o polyval-clmulni_glue.o
  
 diff --git a/crypto/Makefile b/crypto/Makefile
-index af6614b46..bd659c92d 100644
+index af6614b46..9da583192 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -17,7 +17,6 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -176,7 +175,7 @@ index af6614b46..bd659c92d 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -206,3 +191,119 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -206,3 +191,116 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -292,9 +291,6 @@ index af6614b46..bd659c92d 100644
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_LIB_GF128MUL)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_LIB_GF128MUL=y)
 +endif
-+ifneq ($(subst Y,y,$(CONFIG_ASN1)),y)
-+  $(error FIPS canister requires CONFIG_ASN1=y)
-+endif
 +endif
 diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
 index 1bad36e3e..82caa9c39 100644
@@ -313,10 +309,10 @@ index 1bad36e3e..82caa9c39 100644
  	size_t			length;		/* length of the mapped area */
  	size_t			consumed;	/* number of consumed bytes */
 diff --git a/init/main.c b/init/main.c
-index c4778edae..6c2afc299 100644
+index 821df1f05..a21314038 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -843,6 +843,8 @@ static int __init early_randomize_kstack_offset(char *buf)
+@@ -855,6 +855,8 @@ static int __init early_randomize_kstack_offset(char *buf)
  early_param("randomize_kstack_offset", early_randomize_kstack_offset);
  #endif
  
@@ -325,7 +321,7 @@ index c4778edae..6c2afc299 100644
  static void __init print_unknown_bootoptions(void)
  {
  	char *unknown_options;
-@@ -953,6 +955,7 @@ void start_kernel(void)
+@@ -965,6 +967,7 @@ void start_kernel(void)
  	/* Architectural and non-timekeeping rng init, before allocator init */
  	random_init_early(command_line);
  
@@ -333,20 +329,8 @@ index c4778edae..6c2afc299 100644
  	/*
  	 * These use large bootmem allocations and must precede
  	 * initalization of page allocator
-diff --git a/lib/Makefile b/lib/Makefile
-index fc878e716..5aa079c49 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -298,7 +298,6 @@ obj-$(CONFIG_INTERVAL_TREE_TEST) += interval_tree_test.o
- 
- obj-$(CONFIG_PERCPU_TEST) += percpu_test.o
- 
--obj-$(CONFIG_ASN1) += asn1_decoder.o
- obj-$(CONFIG_ASN1_ENCODER) += asn1_encoder.o
- 
- obj-$(CONFIG_FONT_SUPPORT) += fonts/
 diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index 969baab8c..83c600776 100644
+index 7ccc18acc..051ccd3ca 100644
 --- a/lib/crypto/Makefile
 +++ b/lib/crypto/Makefile
 @@ -1,15 +1,9 @@
@@ -374,7 +358,7 @@ index 969baab8c..83c600776 100644
  # blake2s is used by the /dev/random driver which is always builtin
  obj-y						+= libblake2s.o
  libblake2s-y					:= blake2s.o
-@@ -45,16 +37,11 @@ libpoly1305-y					:= poly1305-donna32.o
+@@ -49,16 +41,11 @@ libpoly1305-y					:= poly1305-donna32.o
  libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
  libpoly1305-y					+= poly1305.o
  

@@ -58,7 +58,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.57
-Release:        3%{?acvp_build:.acvp}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -876,6 +876,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 24 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-4
+- Revert: canister: adding asn1_decoder library
 * Fri Nov 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.57-3
 - Add jitterentropy_rng_proxy
 * Thu Nov 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-2
