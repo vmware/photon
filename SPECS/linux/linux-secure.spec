@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.246
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -448,6 +448,20 @@ Patch271:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
 # Fix CVE-2025-38527
 Patch274: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
 
+#Fix CVE-2022-49168
+Patch275: 0001-btrfs-do-not-clean-up-repair-bio-if-submit-fails.patch
+
+#Fix CVE-2022-49465
+Patch276: 0001-blk-throttle-Set-BIO_THROTTLED-when-bio-has-been-thr.patch
+
+# Fix CVE-2025-40149
+Patch277: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
+Patch278: 0002-net-netdevice-Add-operation-ndo_sk_get_lower_dev.patch
+Patch279: 0003-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
+
+# Fix CVE-2025-40135
+Patch280: 0001-ipv6-use-RCU-in-ip6_xmit.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -731,6 +745,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-11
+- Fixes CVE-2022-49168, CVE-2022-49465, CVE-2025-40149, CVE-2025-40135
 * Fri Nov 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.246-10
 - Fixes CVE-2025-38527
 * Wed Nov 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-9

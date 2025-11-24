@@ -1,0 +1,61 @@
+From 8cbc3001a3264d998d6b6db3e23f935c158abd4d Mon Sep 17 00:00:00 2001
+From: Josef Bacik <josef@toxicpanda.com>
+Date: Fri, 18 Feb 2022 10:03:29 -0500
+Subject: [PATCH] btrfs: do not clean up repair bio if submit fails
+
+[ Upstream commit 8cbc3001a3264d998d6b6db3e23f935c158abd4d ]
+
+The submit helper will always run bio_endio() on the bio if it fails to
+submit, so cleaning up the bio just leads to a variety of use-after-free
+and NULL pointer dereference bugs because we race with the endio
+function that is cleaning up the bio.  Instead just return BLK_STS_OK as
+the repair function has to continue to process the rest of the pages,
+and the endio for the repair bio will do the appropriate cleanup for the
+page that it was given.
+
+Reviewed-by: Boris Burkov <boris@bur.io>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+<Keerthana: Backported the patch to kernel v5.10.y>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ fs/btrfs/extent_io.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 489d370ddd60..3d0b854e0c19 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -2655,7 +2655,6 @@ blk_status_t btrfs_submit_read_repair(struct inode *inode,
+ 	bool need_validation;
+ 	struct bio *repair_bio;
+ 	struct btrfs_io_bio *repair_io_bio;
+-	blk_status_t status;
+ 
+ 	btrfs_debug(fs_info,
+ 		   "repair read error: read error at %llu", start);
+@@ -2699,13 +2698,13 @@ blk_status_t btrfs_submit_read_repair(struct inode *inode,
+ "repair read error: submitting new read to mirror %d, in_validation=%d",
+ 		    failrec->this_mirror, failrec->in_validation);
+ 
+-	status = submit_bio_hook(inode, repair_bio, failrec->this_mirror,
+-				 failrec->bio_flags);
+-	if (status) {
+-		free_io_failure(failure_tree, tree, failrec);
+-		bio_put(repair_bio);
+-	}
+-	return status;
++	/*
++	 * At this point we have a bio, so any errors from submit_bio_hook()
++	 * will be handled by the endio on the repair_bio, so we can't return an
++	 * error here.
++	 */
++	submit_bio_hook(inode, repair_bio, failrec->this_mirror, failrec->bio_flags);
++	return BLK_STS_OK;
+ }
+ 
+ /* lots and lots of room for performance fixes in the end_bio funcs */
+-- 
+2.43.7
+

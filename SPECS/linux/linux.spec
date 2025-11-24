@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.246
-Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -510,6 +510,20 @@ Patch276:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
 
 # Fix CVE-2025-38527
 Patch279: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
+
+#Fix CVE-2022-49168
+Patch280: 0001-btrfs-do-not-clean-up-repair-bio-if-submit-fails.patch
+
+#Fix CVE-2022-49465
+Patch281: 0001-blk-throttle-Set-BIO_THROTTLED-when-bio-has-been-thr.patch
+
+# Fix CVE-2025-40149
+Patch282: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
+Patch283: 0002-net-netdevice-Add-operation-ndo_sk_get_lower_dev.patch
+Patch284: 0003-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
+
+# Fix CVE-2025-40135
+Patch285: 0001-ipv6-use-RCU-in-ip6_xmit.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1201,6 +1215,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Dec 05 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-13
+- Fixes CVE-2022-49168, CVE-2022-49465, CVE-2025-40149, CVE-2025-40135
 * Wed Dec 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.246-12
 - Disable bluetooth and CAN bus support
 * Fri Nov 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.246-11

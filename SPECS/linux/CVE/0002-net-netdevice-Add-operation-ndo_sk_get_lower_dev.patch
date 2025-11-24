@@ -1,0 +1,91 @@
+From f14eaeb10587dd92cc437a35476b023840090b8b Mon Sep 17 00:00:00 2001
+From: Tariq Toukan <tariqt@nvidia.com>
+Date: Sun, 17 Jan 2021 16:59:42 +0200
+Subject: [PATCH 2/3] net: netdevice: Add operation ndo_sk_get_lower_dev
+
+[ Upstream commit 719a402cf60311b1cdff3f6320abaecdcc5e46b7]
+
+ndo_sk_get_lower_dev returns the lower netdev that corresponds to
+a given socket.
+Additionally, we implement a helper netdev_sk_get_lowest_dev() to get
+the lowest one in chain.
+
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Boris Pismenny <borisp@nvidia.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+<Keerthana: Backported the patch to v5.10.y>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ include/linux/netdevice.h |  4 ++++
+ net/core/dev.c            | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index d3a3e77a18df..c9f2a88a6c83 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1435,6 +1435,8 @@ struct net_device_ops {
+ 	struct net_device*	(*ndo_get_xmit_slave)(struct net_device *dev,
+ 						      struct sk_buff *skb,
+ 						      bool all_slaves);
++	struct net_device*	(*ndo_sk_get_lower_dev)(struct net_device *dev,
++							struct sock *sk);
+ 	netdev_features_t	(*ndo_fix_features)(struct net_device *dev,
+ 						    netdev_features_t features);
+ 	int			(*ndo_set_features)(struct net_device *dev,
+@@ -2914,6 +2916,8 @@ int init_dummy_netdev(struct net_device *dev);
+ struct net_device *netdev_get_xmit_slave(struct net_device *dev,
+ 					 struct sk_buff *skb,
+ 					 bool all_slaves);
++struct net_device *netdev_sk_get_lowest_dev(struct net_device *dev,
++					    struct sock *sk);
+ struct net_device *dev_get_by_index(struct net *net, int ifindex);
+ struct net_device *__dev_get_by_index(struct net *net, int ifindex);
+ struct net_device *dev_get_by_index_rcu(struct net *net, int ifindex);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index c0dc524548ee..ad2be47b48a9 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8169,6 +8169,39 @@ struct net_device *netdev_get_xmit_slave(struct net_device *dev,
+ }
+ EXPORT_SYMBOL(netdev_get_xmit_slave);
+ 
++static struct net_device *netdev_sk_get_lower_dev(struct net_device *dev,
++						  struct sock *sk)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++
++	if (!ops->ndo_sk_get_lower_dev)
++		return NULL;
++	return ops->ndo_sk_get_lower_dev(dev, sk);
++}
++
++/**
++ * netdev_sk_get_lowest_dev - Get the lowest device in chain given device and socket
++ * @dev: device
++ * @sk: the socket
++ *
++ * %NULL is returned if no lower device is found.
++ */
++
++struct net_device *netdev_sk_get_lowest_dev(struct net_device *dev,
++					    struct sock *sk)
++{
++	struct net_device *lower;
++
++	lower = netdev_sk_get_lower_dev(dev, sk);
++	while (lower) {
++		dev = lower;
++		lower = netdev_sk_get_lower_dev(dev, sk);
++	}
++
++	return dev;
++}
++EXPORT_SYMBOL(netdev_sk_get_lowest_dev);
++
+ static void netdev_adjacent_add_links(struct net_device *dev)
+ {
+ 	struct netdev_adjacent *iter;
+-- 
+2.43.7
+

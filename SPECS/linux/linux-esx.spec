@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.246
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -488,6 +488,20 @@ Patch270:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
 # Fix CVE-2025-38527
 Patch273: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
 
+#Fix CVE-2022-49168
+Patch274: 0001-btrfs-do-not-clean-up-repair-bio-if-submit-fails.patch
+
+#Fix CVE-2022-49465
+Patch275: 0001-blk-throttle-Set-BIO_THROTTLED-when-bio-has-been-thr.patch
+
+# Fix CVE-2025-40149
+Patch276: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
+Patch277: 0002-net-netdevice-Add-operation-ndo_sk_get_lower_dev.patch
+Patch278: 0003-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
+
+# Fix CVE-2025-40135
+Patch279: 0001-ipv6-use-RCU-in-ip6_xmit.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -876,6 +890,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-11
+- Fixes CVE-2022-49168, CVE-2022-49465, CVE-2025-40149, CVE-2025-40135
 * Fri Nov 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.246-10
 - Fixes CVE-2025-38527
 * Wed Nov 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.246-9

@@ -1,0 +1,111 @@
+From a68194eb0be2dcd3be2bd868925348b86546c025 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu, 28 Aug 2025 19:58:18 +0000
+Subject: [PATCH] ipv6: use RCU in ip6_xmit()
+
+[ Upstream commit 9085e56501d93af9f2d7bd16f7fcfacdde47b99c ]
+
+Use RCU in ip6_xmit() in order to use dst_dev_rcu() to prevent
+possible UAF.
+
+Fixes: 4a6ce2b6f2ec ("net: introduce a new function dst_dev_put()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://patch.msgid.link/20250828195823.3958522-4-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+<Keerthana: Backported the patch to v5.10.y>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ net/ipv6/ip6_output.c | 35 +++++++++++++++++++++--------------
+ 1 file changed, 21 insertions(+), 14 deletions(-)
+
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 426330b8d..3411da42a 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -255,33 +255,34 @@ bool ip6_autoflowlabel(struct net *net, const struct ipv6_pinfo *np)
+ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
+ 	     __u32 mark, struct ipv6_txoptions *opt, int tclass, u32 priority)
+ {
+-	struct net *net = sock_net(sk);
+ 	const struct ipv6_pinfo *np = inet6_sk(sk);
+ 	struct in6_addr *first_hop = &fl6->daddr;
+ 	struct dst_entry *dst = skb_dst(skb);
+-	struct net_device *dev = dst->dev;
+ 	struct inet6_dev *idev = ip6_dst_idev(dst);
++	struct net *net = sock_net(sk);
+ 	unsigned int head_room;
++	struct net_device *dev;
+ 	struct ipv6hdr *hdr;
+ 	u8  proto = fl6->flowi6_proto;
+ 	int seg_len = skb->len;
+-	int hlimit = -1;
++	int ret, hlimit = -1;
+ 	u32 mtu;
+ 
++	rcu_read_lock();
++
++	dev = dst_dev_rcu(dst);
+ 	head_room = sizeof(struct ipv6hdr) + LL_RESERVED_SPACE(dev);
+ 	if (opt)
+ 		head_room += opt->opt_nflen + opt->opt_flen;
+ 
+ 	if (unlikely(head_room > skb_headroom(skb))) {
+-		/* Make sure idev stays alive */
+-		rcu_read_lock();
++		/* idev stays alive while we hold rcu_read_lock(). */
+ 		skb = skb_expand_head(skb, head_room);
+ 		if (!skb) {
+ 			IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTDISCARDS);
+-			rcu_read_unlock();
+-			return -ENOBUFS;
++			ret = -ENOBUFS;
++			goto unlock;
+ 		}
+-		rcu_read_unlock();
+ 	}
+ 
+ 	if (opt) {
+@@ -329,17 +330,21 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
+ 		 * skb to its handler for processing
+ 		 */
+ 		skb = l3mdev_ip6_out((struct sock *)sk, skb);
+-		if (unlikely(!skb))
+-			return 0;
++		if (unlikely(!skb)) {
++			ret = 0;
++			goto unlock;
++		}
+ 
+ 		/* hooks should never assume socket lock is held.
+ 		 * we promote our socket to non const
+ 		 */
+-		return NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT,
+-			       net, (struct sock *)sk, skb, NULL, dev,
+-			       dst_output);
++		ret = NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT,
++			      net, (struct sock *)sk, skb, NULL, dev,
++			      dst_output);
++		goto unlock;
+ 	}
+ 
++	ret = -EMSGSIZE;
+ 	skb->dev = dev;
+ 	/* ipv6_local_error() does not require socket lock,
+ 	 * we promote our socket to non const
+@@ -348,7 +353,9 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
+ 
+ 	IP6_INC_STATS(net, idev, IPSTATS_MIB_FRAGFAILS);
+ 	kfree_skb(skb);
+-	return -EMSGSIZE;
++unlock:
++	rcu_read_unlock();
++	return ret;
+ }
+ EXPORT_SYMBOL(ip6_xmit);
+ 
+-- 
+2.40.4
+
