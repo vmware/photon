@@ -6,6 +6,10 @@
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
 
+# __debug_install_post extracts debug-info from modules. We need to
+# specify option for any customizations.
+%define _find_debuginfo_opts --keep-section '.BTF'
+
 # FIPS flags: fips, canister_build, canister_usage, acvp_build.
 # "fips" - declaring whether or not to build FIPS compliant kernel with crypto
 # canister. When fips=0, it is a regular kernel build without the canister,
@@ -58,7 +62,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.57
-Release:        4%{?acvp_build:.acvp}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -876,6 +880,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 25 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.57-5
+- Keep .BTF section in kernel modules
 * Mon Nov 24 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-4
 - Revert: canister: adding asn1_decoder library
 * Fri Nov 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.57-3
