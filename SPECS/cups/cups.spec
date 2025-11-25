@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
-Version:        2.4.11
-Release:        4%{?dist}
+Version:        2.4.14
+Release:        1%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,11 @@ Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{versio
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch1:  0001-cups_Authentication_bypass_with_AuthType_Negotiate.patch
+# Fix CVE-2025-61915
+Patch1:  0001-Fix-various-issues-in-cupsd.patch
+
+# Fix CVE-2025-58436
+Patch2: 0001-Fix-unresponsive-cupsd-process-caused-by-a-slow-client.patch
 
 BuildRequires:  automake
 BuildRequires:  dbus-devel
@@ -98,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Tue Nov 25 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.14-1
+- Update to 2.4.14 and fix CVE-2025-61915 and CVE-2025-58436
 * Sun Oct 19 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.11-4
 - Fix build requires and packaging for a future package-builder change
 - When shadow is present in build env, pam.d/cups is also packaged

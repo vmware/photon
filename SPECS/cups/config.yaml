@@ -1,21 +1,27 @@
 sources:
-- archive: cups-2.4.11-source.tar.gz
-  archive_sha512sum: 5868f069cb5eaa5c74e703ed7773914376fb819ebabd7881df8726092eab390c8a1db75c4d08377a836a87807765ad2c16a15b406ab0580fdda2b176e2da3162
+- archive: cups-2.4.14-source.tar.gz
+  repo_url: https://github.com/OpenPrinting/cups.git
+  commit_id: 2190813d4e78690806f4033c1f120f8e01e69e07
+  archive_type: upstream
+  name: cups-2.4.14
+  version: '2.4.14'
+  url: https://github.com/OpenPrinting/cups/releases/download/v2.4.14/cups-2.4.14-source.tar.gz
+  archive_sha512sum: c6d46b737e2fdf37a429947bc5cc3d752785187aa339bd6de94733576aead29929ae510f960c9842cb7ddc86697d7841e5aa6b9d9c9dece907a2b8f468d038a0
   license_manual_review:
   - file_paths:
-    - cups-2.4.11/doc/help/spec-ppd.html
+    - cups-2.4.14/doc/help/spec-ppd.html
     sha256sum: df1c0a31a9ff839e87e625c5bd52f21cb6538a89ae5edb4be5395607f6fd5f40
     spdx_exp: Apache-2.0
   - file_paths:
-    - cups-2.4.11/doc/help/ppd-compiler.html
+    - cups-2.4.14/doc/help/ppd-compiler.html
     sha256sum: bb490c1203d8ce17dfb9fe34aef6d4812d0761cb282e9de5dcdeae5cf6ce8c31
     spdx_exp: Apache-2.0
   - file_paths:
-    - cups-2.4.11/filter/ppd-compiler.shtml
+    - cups-2.4.14/filter/ppd-compiler.shtml
     sha256sum: cdcf87cf6abc9586982a2dd59946da7d2b6617a3c595d7d7bddbf7f6624a3b4b
     spdx_exp: ''
   - file_paths:
-    - cups-2.4.11/filter/spec-ppd.shtml
+    - cups-2.4.14/filter/spec-ppd.shtml
     sha256sum: e5947e4454682f216b6a34458fa93bd56b84534d004cd7b84adfae2626b13da4
     spdx_exp: ''
   skip_validation: true
