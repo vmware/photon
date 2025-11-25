@@ -1,7 +1,7 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
-Version:        2.4.11
-Release:        2%{?dist}
+Version:        2.4.14
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
@@ -9,10 +9,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{version}/cups-%{version}-source.tar.gz
-%define sha512  %{name}=5868f069cb5eaa5c74e703ed7773914376fb819ebabd7881df8726092eab390c8a1db75c4d08377a836a87807765ad2c16a15b406ab0580fdda2b176e2da3162
+%define sha512  %{name}=c6d46b737e2fdf37a429947bc5cc3d752785187aa339bd6de94733576aead29929ae510f960c9842cb7ddc86697d7841e5aa6b9d9c9dece907a2b8f468d038a0
 
-# fix CVE-2025-58060
-Patch1:  0001-cups_Authentication_bypass_with_AuthType_Negotiate.patch
+# Fix CVE-2025-61915
+Patch1:  0001-Fix-various-issues-in-cupsd.patch
+
+# Fix CVE-2025-58436
+Patch2: 0001-Fix-unresponsive-cupsd-process-caused-by-a-slow-client.patch
 
 BuildRequires:  automake
 BuildRequires:  dbus-devel
@@ -95,6 +98,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Tue Nov 25 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.14-1
+- Update to 2.4.14 and fix CVE-2025-61915 and CVE-2025-58436
 * Thu Sep 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 2.4.11-2
 - fix CVE-2025-58060
 * Tue Dec 10 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.11-1
