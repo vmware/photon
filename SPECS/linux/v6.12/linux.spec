@@ -73,7 +73,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.57
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -897,6 +897,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Dec 01 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.57-7
+- Add VAES based alsos to canister approved list.
 * Tue Nov 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.57-6
 - Add kat_build flag for CMVP demo, Remove patch for allow external IVs for ACVP
 * Tue Nov 25 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.57-5

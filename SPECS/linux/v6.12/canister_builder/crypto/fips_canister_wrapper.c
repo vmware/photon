@@ -711,6 +711,13 @@ bool fcw_ghash_do_async(struct cryptd_ahash *tfm)
 	    (in_atomic() && cryptd_ahash_queued(tfm)));
 }
 
+/*
+ * The max name length in the below canister_algs list is around 67 chars.
+ * Set the MAX_ALG_NAME_LEN to 128 which can be used in strncmp to
+ * prevent buffer over-read.
+ */
+#define MAX_ALG_NAME_LEN 128
+
 static char *canister_algs[] = {
 	"rsa-generic",
 	"sha256-generic",
@@ -792,6 +799,11 @@ static char *canister_algs[] = {
 	"cryptd(__xts-aes-aesni)",
 	"xts-aes-aesni",
 	"xts-aes-aesni-avx",
+#if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
+	"xts-aes-vaes-avx2",
+	"xts-aes-vaes-avx10_256",
+	"xts-aes-vaes-avx10_512",
+#endif
 	"ccm_base(ctr(aes-generic),cbcmac(aes-generic))",
 	"ccm_base(ctr-aes-aesni,cbcmac(aes-aesni))",
 	"rfc4309(ccm_base(ctr(aes-generic),cbcmac(aes-generic)))",
@@ -837,6 +849,10 @@ static char *canister_algs[] = {
 	"generic-gcm-aesni",
 	"generic-gcm-aesni-avx",
 	"__generic-gcm-aesni",
+#if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
+	"generic-gcm-vaes-avx10_256",
+	"generic-gcm-vaes-avx10_512",
+#endif
 	"cryptd(__generic-gcm-aesni)",
 	"rfc4106(gcm_base(ctr(aes-generic),ghash-generic))",
 	"rfc4106(gcm_base(ctr(aes-generic),ghash-clmulni))",
@@ -844,6 +860,10 @@ static char *canister_algs[] = {
 	"rfc4106-gcm-aesni",
 	"rfc4106-gcm-aesni-avx",
 	"__rfc4106-gcm-aesni",
+#if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
+	"rfc4106-gcm-vaes-avx10_256",
+	"rfc4106-gcm-vaes-avx10_512",
+#endif
 	"cryptd(__rfc4106-gcm-aesni)",
 	// no certification require
 	"cipher_null-generic",
@@ -862,10 +882,15 @@ static char *canister_algs[] = {
 
 int fcw_fips_not_allowed_alg(char *name)
 {
+	if (!name) {
+		fcw_printk(KERN_WARNING" name not set in %s\n", __FUNCTION__);
+		return 0;
+	}
 	if (fips_enabled == 1) {
-		int i;
+		int i, len = strnlen(name, MAX_ALG_NAME_LEN);
+
 		for (i = 0; i < sizeof(canister_algs)/sizeof(canister_algs[0]); i++) {
-			if (strcmp(name, canister_algs[i]) == 0)
+			if (strncmp(name, canister_algs[i], len) == 0)
 				return 0;
 		}
 		return 1;
