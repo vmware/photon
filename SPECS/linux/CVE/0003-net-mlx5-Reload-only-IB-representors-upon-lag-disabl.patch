@@ -71,9 +71,12 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 [Guru: Backported to 6.1.y version]
 Signed-off-by: Guruswamy Basavaiah<guruswamy.basavaiah@broadcom.com>
+[Alexey: Added missing chunk from the upstream commit for eswitch_offload.c
+ with mlx5_eswitch_reload_ib_reps() function definition]
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 ---
  .../net/ethernet/mellanox/mlx5/core/eswitch.h |  4 +--
- .../mellanox/mlx5/core/eswitch_offloads.c     | 26 ++++++++++++-------
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 28 +++++++++++++--------
  .../net/ethernet/mellanox/mlx5/core/lag/lag.c | 12 ++++-----
  3 files changed, 25 insertions(+), 17 deletions(-)
 
@@ -139,6 +142,15 @@ index 433cdd0a2cf3..1179c625f85d 100644
  
  	return 0;
  
+@@ -3102,7 +3110,7 @@ static void esw_destroy_offloads_acl_tables(struct mlx5_eswitch *esw)
+ 	esw_vport_destroy_offloads_acl_tables(esw, vport);
+ }
+ 
+-int mlx5_eswitch_reload_reps(struct mlx5_eswitch *esw)
++int mlx5_eswitch_reload_ib_reps(struct mlx5_eswitch *esw)
+ {
+ 	struct mlx5_eswitch_rep *rep;
+ 	unsigned long i;
 @@ -3115,13 +3123,13 @@ int mlx5_eswitch_reload_reps(struct mlx5_eswitch *esw)
  	if (atomic_read(&rep->rep_data[REP_ETH].state) != REP_LOADED)
  		return 0;

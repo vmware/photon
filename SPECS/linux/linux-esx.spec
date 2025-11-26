@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.158
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -760,6 +760,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 01 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.158-10
+- .config: enable mlx5 device driver (=m) for Driver VM
+- Regression fix for CVE-2024-38557 fix
+- .config: disable questionable ethernet devices support (cleanup)
 * Fri Nov 28 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-9
 - Fixes CVE-2025-38704
 * Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.158-8
