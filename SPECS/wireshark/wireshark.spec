@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
 Version:        4.2.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: 0001-Remove-SpeexDSP-library-dependencies-from-photon-wir.patch
+Patch1: CVE-2025-13499.patch
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -100,6 +101,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.12-3
+- Fix CVE-2025-13499
 * Tue Jul 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.12-2
 - Handle unintended copyrights inclusions
 * Mon Jun 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.12-1
