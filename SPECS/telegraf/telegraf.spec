@@ -7,7 +7,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.34.4
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -89,7 +89,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 %{_unitdir}/%{name}.service
 %{_presetdir}/99-%{name}.preset
-%attr(0644,%{name},%{name}) %{_sysconfdir}/logrotate.d/%{name}
+%attr(0644,root,root) %{_sysconfdir}/logrotate.d/%{name}
 %attr(0644,%{name},%{name}) %{_sysconfdir}/default/%{name}
 %attr(0644,%{name},%{name}) %{_sysusersdir}/%{name}.conf
 %attr(0755,-,-) %{_libdir}/%{name}/scripts/init.sh
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Nov 26 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34.4-3
+- Fix permission issue on logrotate file
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.34.4-2
 - Bump version as a part of go upgrade
 * Wed Jun 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.4-1
