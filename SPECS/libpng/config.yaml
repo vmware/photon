@@ -1,7 +1,15 @@
 sources:
-- archive: libpng-1.6.38.tar.xz
-  archive_sha512sum: 4e450636062fcc75ecc65715e0b23ddc1097b73b4c95ffd31bef627144c576f58660b2130105f5f5781212cf54f00c7b6dd3facefd7e9de70c76b981d499f81e
-  skip_validation: true
+- archive: libpng-1.6.51.tar.gz
+  archive_type: upstream
+  version: 1.6.51
+  name: libpng-1.6.51
+  url: https://github.com/pnggroup/libpng/archive/refs/tags/v1.6.51.tar.gz
+  repo_url: https://github.com/pnggroup/libpng
+  commit_id: 49363adcfaf098748d7a4c8c624ad8c45a8c3a86
+  skip_list: []
+  missing: []
+  archive_sha512sum: 3b9b320b306388d0394404dbd6a978ba115743d913b4dd8d382b7ecf1f4e1979439e9829187058f52553f0aac0f73b274091a354c00286cdc699373b5c727fde
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'The libpng package contains libraries used by other programs

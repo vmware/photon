@@ -1,7 +1,7 @@
 Summary:        toolkit for image loading and pixel buffer manipulation.
 Name:           gdk-pixbuf
 Version:        2.42.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.gt.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
+* Thu Nov 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.42.0-10
+- Release bump due to libpng update
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.42.0-9
 - Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.42.0-8
