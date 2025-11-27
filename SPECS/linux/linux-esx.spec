@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.158
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -373,6 +373,9 @@ Patch195: 0001-rcu-nocb-Fix-possible-invalid-rdp-s-nocb_cb_kthread-.patch
 # Fix CVE-2025-39744
 Patch196: 0001-rcu-Fix-rcu_read_unlock-deadloop-due-to-IRQ-work.patch
 Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
+
+# Fix CVE-2025-38129
+Patch198: 0001-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -763,6 +766,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 02 2025 Bo Gan <bo.gan@broadcom.com> 6.1.158-12
+- Fix CVE-2025-38129
 * Mon Dec 01 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-11
 - Fixes CVE-2025-39744
 * Mon Dec 01 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.158-10
