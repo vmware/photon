@@ -6,7 +6,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        18%{?dist}
+Release:        19%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -239,6 +239,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Fri Nov 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-19
+- Fix User arg parsing issue which was introduced by CVE-2025-61984-prep.patch
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-18
 - Fix CVE-2025-61984, CVE-2025-61985
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-17
