@@ -1,15 +1,15 @@
 Summary:    contains libraries for reading and writing PNG files.
 Name:       libpng
-Version:    1.6.37
-Release:    2%{?dist}
+Version:    1.6.51
+Release:    1%{?dist}
 License:    libpng
 URL:        http://www.libpng.org/
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: http://downloads.sourceforge.net/libpng/%{name}-%{version}.tar.xz
-%define sha512  %{name}=59e8c1059013497ae616a14c3abbe239322d3873c6ded0912403fc62fb260561768230b6ab997e2cccc3b868c09f539fd13635616b9fa0dd6279a3f63ec7e074
+Source0: https://github.com/pnggroup/libpng/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=3b9b320b306388d0394404dbd6a978ba115743d913b4dd8d382b7ecf1f4e1979439e9829187058f52553f0aac0f73b274091a354c00286cdc699373b5c727fde
 
 Provides:   pkgconfig(libpng)
 Provides:   pkgconfig(libpng16)
@@ -60,6 +60,9 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+* Fri Nov 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.51-1
+- Update to version 1.6.51
+- Fix CVE-2025-64506, CVE-2025-65018, CVE-2025-64505, CVE-2025-64720
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.37-2
 - Remove .la files
 * Thu Mar 05 2020 Ashwin H <ashwinh@vmware.com> 1.6.37-1

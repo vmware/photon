@@ -1,7 +1,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.41.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://pango.org
 Group:          System Environment/Libraries
@@ -81,6 +81,8 @@ make %{?_smp_mflags} check
 %{_datadir}/man/*
 
 %changelog
+* Fri Nov 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.41.1-6
+- Release bump due to libpng update
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.41.1-5
 - Bump version as part of glib upgrade
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 1.41.1-4

@@ -1,7 +1,7 @@
 Summary:        Round Robin Database Tool to store and display time-series data
 Name:           rrdtool
 Version:        1.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://oss.oetiker.ch/rrdtool
 Group:          System Environment/Libraries
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri Nov 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.0-2
+- Release bump due to libpng update
 * Tue Jan 09 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0-1
 - Upgrade to v1.8.0
 * Sat Oct 07 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.7.2-3
