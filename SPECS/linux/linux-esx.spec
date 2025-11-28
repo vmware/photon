@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.158
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -368,6 +368,8 @@ Patch193: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
 
 # Fix CVE-2025-38361
 Patch194: 0001-drm-amd-display-Check-dce_hwseq-before-dereferencing.patch
+# fix CVE-2025-38704
+Patch195: 0001-rcu-nocb-Fix-possible-invalid-rdp-s-nocb_cb_kthread-.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -758,6 +760,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 28 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-9
+- Fixes CVE-2025-38704
 * Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.158-8
 - Fix CVE-2025-38081, CVE-2025-38201, CVE-2025-38361, CVE-2025-38636
 * Wed Nov 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.158-7
