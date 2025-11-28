@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -220,6 +220,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Fri Nov 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-12
+- Fix User arg parsing issue which was introduced by CVE-2025-61984-prep.patch
 * Fri Oct 31 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-11
 - Fix CVE-2025-61984, CVE-2025-61985
 * Tue Apr 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.9p1-10
