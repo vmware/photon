@@ -44,7 +44,7 @@ menuentry "Photon" {
         initrd "/boot/"$photon_initrd
     fi
 }
-# End /boot/grub2/grub.cfg
+End /boot/grub2/grub.cfg
 ```
 
 Edit out `net.ifnames=0`, but make no other changes to the file, and then save it. 
