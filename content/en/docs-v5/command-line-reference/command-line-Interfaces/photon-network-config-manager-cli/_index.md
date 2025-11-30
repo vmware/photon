@@ -11,7 +11,7 @@ You can use `network-config-manager` (`nmctl`) to configure and introspect the s
 The following example shows the system status:
 
 ```
-❯ nmctl
+nmctl
          System Name: zeus
               Kernel: Linux (5.10.152-3.ph4)
      systemd version: v252-1
@@ -40,7 +40,7 @@ The following example shows the system status:
 The following example shows the network status:
 
 ```
-❯ nmctl status eth0
+nmctl status eth0
            Alternative names: eno1 enp11s0 ens192
                        Flags: UP BROADCAST RUNNING MULTICAST LOWERUP
                         Type: ether
@@ -117,24 +117,24 @@ The following example shows how to create VLAN via `nmctl`
 The following command creates `.netdev` and `.network` and assigns them to the underlying device. It sets all these file permissions to `systemd-network` automatically.
 
 ```
-❯ nmctl create-vlan [VLAN name] dev [MASTER DEVICE] id [ID INTEGER] proto [PROTOCOL {802.1q|802.1ad}] Creates vlan netdev and network file
+nmctl create-vlan [VLAN name] dev [MASTER DEVICE] id [ID INTEGER] proto [PROTOCOL {802.1q|802.1ad}] Creates vlan netdev and network file
 
-❯ sudo nmctl create-vlan vlan-95 dev eth0 id 19
+sudo nmctl create-vlan vlan-95 dev eth0 id 19
 ```
 
 
 The following example shows how to create VXLAN via `nmctl`:
 
 ```
-❯ sudo nmctl create-vxlan vxlan-98 vni 32 local 192.168.1.2 remote 192.168.1.3 port 7777 independent yes
+sudo nmctl create-vxlan vxlan-98 vni 32 local 192.168.1.2 remote 192.168.1.3 port 7777 independent yes
 ```
 
 
 The following example shows how to create virtual routing and forwarding (VRF):
 
 ```
-❯ sudo nmctl create-vrf test-vrf table 555                                                                                               
-❯ ip -d link show test-vrf
+sudo nmctl create-vrf test-vrf table 555                                                                                               
+ip -d link show test-vrf
 4: test-vrf: <NOARP,MASTER,UP,LOWER_UP> mtu 65575 qdisc noqueue state UP mode DEFAULT group default qlen 1000
     link/ether 86:ad:9b:50:83:1f brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 1280 maxmtu 65575 
     vrf table 555 addrgenmode none numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535  
@@ -143,8 +143,8 @@ The following example shows how to create virtual routing and forwarding (VRF):
 The following example shows how to remove a virtual netdev:
 
 ```
-❯ sudo nmctl remove-netdev vlan-95                                                                                         
-❯ ip -d link show vlan-95 
+sudo nmctl remove-netdev vlan-95                                                                                         
+ip -d link show vlan-95 
 Device "vlan-95" does not exist.
 ```
 ***Note:*** `nmctl` not only removes the `.netdev` and `.network` files but also removes the virtual netdev.
