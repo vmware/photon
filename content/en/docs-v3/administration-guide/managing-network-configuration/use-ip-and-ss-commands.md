@@ -1,13 +1,13 @@
 ---
-title:  Use `ip` and `ss` Commands
+title:  Use `ip ` and ` ss ` Commands
 weight: 3
 ---
 
-Use the `ip` and `ss` commands to view a list of network interfaces and information for IP addresses.
+Use the ` ip ` and ` ss ` commands to view a list of network interfaces and information for IP addresses.
 
-Although the `ifconfig` command and the `netstat` command work on Photon OS, VMware recommends that you use the `ip` or `ss` commands. The `ipconfig` and `netstat` commands are deprecated. 
+Although the ` ifconfig ` command and the ` netstat ` command work on Photon OS, VMware recommends that you use the ` ip ` or ` ss ` commands. The ` ipconfig ` and ` netstat ` commands are deprecated. 
 
-For example, to display a list of network interfaces, run the `ss` command instead of `netstat`. To display information for IP addresses, run the `ip addr` command instead of `ifconfig -a`. 
+For example, to display a list of network interfaces, run the ` ss ` command instead of ` netstat `. To display information for IP addresses, run the ` ip addr ` command instead of ` ifconfig -a `. 
 
 Examples are as follows:
 
@@ -20,7 +20,7 @@ Examples are as follows:
 	ip -s neigh					arp -v
 	ip link set eth0 mtu 9000	ifconfig eth0 mtu 9000
 
-Using the `ip route` version of a command instead of the net-tools version often provides more complete and accurate information on Photon OS. Examples are as follows: 
+Using the ` ip route` version of a command instead of the net-tools version often provides more complete and accurate information on Photon OS. Examples are as follows: 
 
 	ip neigh
 	198.51.100.2 dev eth0 lladdr 00:50:56:e2:02:0f STALE
