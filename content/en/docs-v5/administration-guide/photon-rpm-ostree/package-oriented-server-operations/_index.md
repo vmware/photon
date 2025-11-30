@@ -90,7 +90,7 @@ Going back to our JSON file, **repos** is a multi-value setting that tells RPM-O
 root [ /srv/rpm-ostree ]# cat /etc/yum.repos.d/photon.repo 
 [photon]
 name=VMware Photon Linux 5.0(x86_64)
-baseurl=https://packages.vmware.com/photon/5.0/photon_release_$releasever_$basearch
+baseurl=https://packages-prod.broadcom.com/photon/5.0/photon_release_$releasever_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -99,7 +99,7 @@ skip_if_unavailable=True
 
 In this case, `rpm-ostree` is instructed to download its packages in RPM format from the VMware Photon Packages URL, which is the location of an online RPMS repo maintained by the VMware Photon OS team. To ensure those packages can be validated as being genuine and signed by VMware, the signature is checked against the official VMware public key.
 
-So what's in an RPMS repository? If we point the browser to [packages.vmware.com/photon/photon_publish_rpms/](https://packages.vmware.com/photon/photon_publish_rpms/), we can see there are three top directories:
+So what's in an RPMS repository? If we point the browser to [packages.VMware.com/photon/photon_publish_rpms/](https://packages-prod.broadcom.com/photon/photon_publish_rpms/), we can see there are three top directories:
 * noarch - where all packages that don't depend on the architecture reside. Those may contain scripts, platform neutral source files, configuration.
 * x86_64 - platform dependent packages for Intel 32 and 64 bits CPUs.
 * repodata - internal repo management data, like a catalog of all packages, and for every package its name, id, version, architecture and full path file/directory list. There is also a compressed XML file containing the history of changelogs extracted from github, as packages in RPM format were built by Photon OS team members from sources.
@@ -350,7 +350,7 @@ Added:
 
 RPM-OSTree makes it very easy to create and update new branches, by composing using json config files that include the Refspec as the new branch name, the list of packages and the other settings we are now familiar with.  Photon OS RPM-OSTRee Server installer adds two extra files photon-minimal.json and photon-full.json in addition to photon-base.json, that correspond almost identically to the minimal and full profiles installed via tdnf. It also makes 'photon-base' a smaller set of starter branch.  
 
-Of course, you can create your own config files for your branches with desired lists of packages. You may compose on top of the existing tree, or you can [start fresh your own OSTRee repo](./administration-guide/photon-rpm-ostree/file-oriented-server-operations/#starting-a-fresh-ostree-repo), using your own customized versioning.
+Of course, you can create your own config files for your branches with desired lists of packages. You may compose on top of the existing tree, or you can [start fresh your own OSTRee repo](../file-oriented-server-operations/#starting-a-fresh-ostree-repo), using your own customized versioning.
 
 
 **Note**: The outputs listed above are only for reference. The version numbers in the outputs might vary from the actual outputs.    
