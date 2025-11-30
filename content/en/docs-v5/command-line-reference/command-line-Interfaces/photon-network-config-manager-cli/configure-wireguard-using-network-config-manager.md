@@ -10,19 +10,19 @@ To generate the required configuration, you need to install WireGuard tools. You
 To install the WireGuard tools using `tdnf`, run the following command:
 
 ```
-❯ sudo tdnf install wireguard-tools -y
+sudo tdnf install wireguard-tools -y
 ```
 
 To configure WireGuard VPN, you need to create a pair of keys on both the sites between which you want to establish the VPN connection. Each site needs the public key of the other site.	To create the pair of keys, use the following command:
 
 ```
-❯ wg genkey | tee wg-private.key | wg pubkey > wg-public.key
+wg genkey | tee wg-private.key | wg pubkey > wg-public.key
 ```
 
 You also need to change the permission of the files to make them readable for `systemd-network` users as shown in the following example:
 
 ```
-❯ chown root:systemd-network wg-privatge.key wg-public.key
+chown root:systemd-network wg-privatge.key wg-public.key
 ```
 
 The following examples show the configurations of the two sites:
@@ -30,7 +30,7 @@ The following examples show the configurations of the two sites:
 #### Site 1
 
 ```
-❯ nmctl
+nmctl
          System Name: photon
               Kernel: Linux (5.10.152-6.ph4)
      systemd version: v247.11-4.ph4
@@ -51,14 +51,14 @@ The following examples show the configurations of the two sites:
 
 
 
-❯ cat wg-public.key 
+cat wg-public.key 
 d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA=y
 ```
  
 #### Site 2
 
 ```
-❯ nmctl        
+nmctl        
          System Name: Zeus
               Kernel: Linux (6.1.10-8.ph5)
      systemd version: v253-1
@@ -79,21 +79,21 @@ d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA=y
                  DNS: 125.99.61.254 116.72.253.254
 
 
-➜ cat wg-public.key lhR9C3iZGKC+CIibXsOxDql8m7YulZA5I2tqgU2PnhM=y
+cat wg-public.key lhR9C3iZGKC+CIibXsOxDql8m7YulZA5I2tqgU2PnhM=y
 ```
 
 To generate the WireGuard configuration using `nmctl` for Site 1, use the following command:
 
 ```
-➜ nmctl create-wg wg99 private-key-file /etc/systemd/network/wg-private.key listen-port 34966 public-key lhR9C3iZGKC+CIibXsOxDql8m7YulZA5I2tqgU2PnhM= endpoint 192.168.1.11:34966 allowed-ips 10.0.0.2/32
+nmctl create-wg wg99 private-key-file /etc/systemd/network/wg-private.key listen-port 34966 public-key lhR9C3iZGKC+CIibXsOxDql8m7YulZA5I2tqgU2PnhM= endpoint 192.168.1.11:34966 allowed-ips 10.0.0.2/32
 
-➜ nmctl add-addr dev wg99 a 10.0.0.1/24
+nmctl add-addr dev wg99 a 10.0.0.1/24
 ```
 
 The following configuration is generated for `systemd-networkd`:
 
 ```
-❯ cat 10-wg99.netdev
+cat 10-wg99.netdev
 
 [NetDev]
 Name=wg99
@@ -106,12 +106,12 @@ ListenPort=34966
 
 
 [WireGuardPeer]
-# Public key of Site #2
+Public key of Site #2
 PublicKey=lhR9C3iZGKC+CIibXsOxDql8m7YulZA5I2tqgU2PnhM=
 Endpoint=192.168.1.11:34966
 AllowedIPs=10.0.0.2/32
 
-❯ cat 10-wg99.network
+cat 10-wg99.network
 [Match]
 Name=wg99
 
@@ -119,7 +119,7 @@ Name=wg99
 [Address]
 Address=10.0.0.1/24
 
-➜  ~ nmctl status wg99
+~ nmctl status wg99
     Flags: UP RUNNING NOARP LOWERUP 
                         Kind: wireguard
                         Type: wireguard
@@ -145,7 +145,7 @@ IPv6 Address Generation Mode: eui64
 The following output is generated for WireGuard:
 
 ```
-➜  wg
+wg
 
 interface: wg99
   public key: lhR9C3iZGKC+CIibXsOxDql8m7YulZA5I2tqgU2PnhM=
@@ -162,15 +162,15 @@ peer: d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA=
 To generate the WireGuard configuration using `nmctl` for Site 2, use the following command: 
 
 ```
-➜ nmctl create-wg wg99 private-key-file /etc/systemd/network/wg-private.key listen-port 34966 public-key d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA= endpoint 192.168.1.7:34966 allowed-ips 10.0.0.1/32
+nmctl create-wg wg99 private-key-file /etc/systemd/network/wg-private.key listen-port 34966 public-key d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA= endpoint 192.168.1.7:34966 allowed-ips 10.0.0.1/32
 
-➜ nmctl add-addr dev wg99 a 10.0.0.2/242
+nmctl add-addr dev wg99 a 10.0.0.2/242
 ```
 
 The following configuration is generated for `systemd-networkd`:
 
 ```
-➜ cat 10-wg99.netdev 
+cat 10-wg99.netdev 
                  
 [NetDev]
 Name=wg99
@@ -183,13 +183,13 @@ ListenPort=34966
 
 
 [WireGuardPeer]
-# Public key of Site #1
+Public key of Site #1
 PublicKey=d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA=
 Endpoint=192.168.1.7:34966
 AllowedIPs=10.0.0.1/32
 
 
-➜ network cat 10-wg99.network
+network cat 10-wg99.network
 [Match]
 Name=wg99
 
@@ -198,7 +198,7 @@ Name=wg99
 Address=10.0.0.2/24
 
 
-❯ nmctl status wg99
+nmctl status wg99
                        Flags: UP RUNNING NOARP LOWERUP 
                         Kind: wireguard
                         Type: wireguard
@@ -221,7 +221,7 @@ IPv6 Address Generation Mode: eui64
                      Address: 10.0.0.2/24
                                                 
 
-➜ wg
+wg
 
 interface: wg9
   public key: lhR9C3iZGKC+CIibXsOxDql8m7YulZA5I2tqgU2PnhM=
@@ -239,7 +239,7 @@ peer: d0AR4V68TJPA65ddKADmyTBbEgPTo75Xq/EVE1nsVFA=
 To verify the connectivity of Site 1, use the following command to ping and confirm the connectivity:
 
 ```
-❯ ip a show wg99
+ip a show wg99
 ```
 
 Response:
@@ -250,7 +250,7 @@ UNKNOWN group default qlen 1000link/none
     inet 10.0.0.1/24 brd 10.0.0.255 scope global wg99
        valid_lft forever preferred_lft forever
 
-❯ ping 10.0.0.2
+ping 10.0.0.2
 
 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=4.90 ms
@@ -261,7 +261,7 @@ PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 To verify the connectivity of Site 2, use the following command to ping and confirm the connectivity:
 
 ```
-➜  ip a show wg
+ip a show wg
 ```
 
 Response:
@@ -269,7 +269,7 @@ Response:
 ```
 209: wg99: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1420 qdisc noqueue state UNKNOWN group default qlen 1000 link/none     inet 10.0.0.2/24 scope global wg99       valid_lft forever preferred_lft forever
 
-➜  ping 10.0.0.1
+ping 10.0.0.1
 
 PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
 64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=1.92 ms99

@@ -3,7 +3,7 @@ title: Downloading Photon OS
 weight: 1
 ---
 
-You download Photon OS from [https://github.com/vmware/photon/wiki/Downloading-Photon-OS](https://github.com/vmware/photon/wiki/Downloading-Photon-OS)
+You download Photon OS from [https://github.com/VMware/photon/wiki/downloading-photon-os-OS](https://github.com/VMware/photon/wiki/downloading-photon-os-OS)
 
 Photon OS is available in the following pre-packaged, binary formats.
 
