@@ -33,7 +33,7 @@ Perform the following steps to set up Photon OS on EC2
 
     To import your public key pair file, but not your private key pair file, connect to the EC2 console at https://console.aws.amazon.com/ec2/ and select the region for the key pair. A key pair works only in one region, and the instance of Photon OS that will be uploaded later must be in the same region as the key pair. Select `key pairs` under `Network & Security`, and then import the public key pair file that you generated earlier. 
     
-    For more information, see [Importing Your Own Key Pair to Amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#how-to-generate-your-own-key-and-import-it-to-aws).
+    For more information, see [Importing Your Own Key Pair to Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#how-to-generate-your-own-key-and-import-it-to-aws).
 
 1. Generate a certificate.
 
@@ -49,11 +49,11 @@ Perform the following steps to set up Photon OS on EC2
     	
         openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outform PEM -out certificate.pem
 
-    For more information, see the Create a Private Key and the Create the User Signing Certificate sections of [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
+    For more information, see the Create a Private Key and the Create the User Signing Certificate sections of [Setting Up the AMI Tools](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
     
 1. Upload to AWS the certificate value from the `certificate.pem` file that you created in the previous command. Go to the Identity and Access Management console at https://console.aws.amazon.com/iam/, navigate to the name of your user, open the `Security Credentials` section, click `Manage Signing Certificates`, and then click `Upload Signing Certificate`. Open `certificate.pem` in a text editor, copy and paste the contents of the file into the `Certificate Body` field, and then click `Upload Signing Certificate`.
     
-    For more information, see the Upload the User Signing Certificate section of [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
+    For more information, see the Upload the User Signing Certificate section of [Setting Up the AMI Tools](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
 
 1. Create a security group.
 
@@ -68,7 +68,7 @@ Perform the following steps to set up Photon OS on EC2
 
     Make a note of the `GroupId` that is returned by EC2 as you will need it again later.
 
-    By using `0.0.0.0/0` for SSH ingress on Port 22, you open the port to all IP addresses--which is not a security best practice but a convenience for the examples in this article. For a production instance or other instances that are anything more than temporary machines, you must authorize only a specific IP address or range of addresses. For more information, see [Authorizing Inbound Traffic for Linux Instances](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html).
+    By using `0.0.0.0/0` for SSH ingress on Port 22, you open the port to all IP addresses--which is not a security best practice but a convenience for the examples in this article. For a production instance or other instances that are anything more than temporary machines, you must authorize only a specific IP address or range of addresses. For more information, see [Authorizing Inbound Traffic for Linux Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html).
     
     Repeat the command to allow incoming traffic on Port 80 and on Port 443: 
     
@@ -141,12 +141,12 @@ Perform the following steps to set up Photon OS on EC2
     	   primary-group: cloud-admins
     	   groups: cloud-users
     	   lock-passwd: false
-    	   passwd: vmware
+    	   passwd: VMware
     	- name: photonuser
     	   gecos: photon test user
     	   primary-group: cloud-users
     	   groups: users
-    	   passwd: vmware
+    	   passwd: VMware
     	packages:
     	- vim
 
@@ -162,4 +162,4 @@ Perform the following steps to set up Photon OS on EC2
     
     Optionally, check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.log` to see how EC2 handles the settings in the cloud-init data file. 
     
-    For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
+    For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
