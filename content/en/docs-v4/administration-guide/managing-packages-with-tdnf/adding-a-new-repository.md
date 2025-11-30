@@ -18,9 +18,9 @@ On Photon OS, the existing repositories appear in the `/etc/yum.repos.d` directo
 To view the format and information that a new repository configuration file should contain, see one of the `.repo` files. The following is an example:
 
 
-	baseurl=https://https://packages.vmware.com/photon/
+	baseurl=https://https://packages-prod.broadcom.com/photon/
     metalink=http://example.com/*username*/metalink/metalink
-	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+	gpgkey=file:///etc/pki/rpm-gpg/VMware-RPM-GPG-KEY
 	gpgcheck=1
 	enabled=1
 	skip_if_unavailable=True
@@ -64,7 +64,7 @@ The repository settings details are as follows:
     
        <resources maxconnections="1">
     
-    <url protocol="http" type="http" location="IN" preference=“100”>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
+    <url protocol="http" type="http" location="IN" preference=“100”>https://packages-prod.broadcom.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
      
        </resources>
     
