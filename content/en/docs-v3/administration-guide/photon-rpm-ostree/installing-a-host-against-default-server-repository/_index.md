@@ -15,7 +15,7 @@ This is also the fastest way to install a host, as we've included in the ISO/cdr
 
 ## Installing the ISO
 
-User will first download [Photon OS ISO file](https://github.com/vmware/photon/wiki/Downloading-Photon-OS) that contains the installer, which is able to deploy any of the supported Photon installation profiles.
+User will first download [Photon OS ISO file](https://github.com/vmware/photon/wiki/downloading-photon-os-OS) that contains the installer, which is able to deploy any of the supported Photon installation profiles.
 
 There are some steps common to all Photon installation profiles, starting with adding a VM in VMware Fusion, Workstation or ESXi, selecting the OS family, then customizing for disk size, CPU, memory size, network interface etc. (or leaving the defaults) and selecting the ISO image as cdrom. The installer will launch, that will go through disk partitioning and accepting the license agreement screens, followed by selecting an installation profile.
 These steps are described at the page linked below, so I won't repeat them, just that instead of setting up a Photon Minimal profile, we will install a Photon OSTree host:   
@@ -33,7 +33,7 @@ Then, select "Default OSTree Server" and continue.
 
 ![PhotonHostDefaultFinish](../../../images/photon-os-finish.png)
 
-When installation is over, the VM will reboot and will show in grub VMWare Photon/Linux 3.0_minimal (ostree), which will reassure that it's booting from an OSTree image!  
+When installation is over, the VM will reboot and will show in grub VMware Photon/Linux 3.0_minimal (ostree), which will reassure that it's booting from an OSTree image!  
 
 ![PhotonHostFirstRebootGrub](../../../images/rpmostree-grub.png)  
 
