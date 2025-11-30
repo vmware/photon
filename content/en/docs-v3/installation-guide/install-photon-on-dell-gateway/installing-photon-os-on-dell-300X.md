@@ -21,7 +21,7 @@ You can install Photon OS 3.0 on Dell Gateway 300X. You can download Photon OS a
     
     For example, run the following command on macOS:
 
-    `hdiutil mount photon-3.0-ec12f2c.iso` 
+    `hdiutil mount photon-3.0-ec12f2c.iso ` 
 
     Use a similar command in other operating systems.
 
@@ -36,24 +36,24 @@ mkdir -p /tmp/photonUsb
 
     where, `/Volumes/PHOTON_<timestamp>` is the directory where the ISO is mounted with the command in the step above.
 
-1. Edit the `grub.cfg` file to use the kickstart config file:
+1. Edit the ` grub.cfg ` file to use the kickstart config file:
     
-    `cd /tmp/photonUsb`
+    ` cd /tmp/photonUsb `
 
-    Add the below parameters to the linux cmd line in `boot/grub2/grub.cfg`
+    Add the below parameters to the linux cmd line in ` boot/grub2/grub.cfg `
    
     ```
     linux /isolinux/vmlinuz root=/dev/ram0 loglevel=3 photon.media=UUID=$photondisk ks=cdrom:/isolinux/sample_ks.cfg console=ttyS0,115200n8
     ```
 
-1. Edit the `isolinux/sample_ks.cfg`  as follows:
+1. Edit the ` isolinux/sample_ks.cfg `  as follows:
 
     - Change `"disk": "/dev/sda”,` to **`"disk": "/dev/mmcblk0",`**
     - Change `"echo \"Hello World\" > /etc/postinstall"` to **`"sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config"`**
     
-1. Format the pen drive with FAT-32 and copy all the contents of `/tmp/photonUsb` to the pen drive. 
+1. Format the pen drive with FAT-32 and copy all the contents of `/tmp/photonUsb ` to the pen drive. 
 
-1. Create a `UsbInvocationScript.txt` file in the root of the pen drive with below content:
+1. Create a ` UsbInvocationScript.txt ` file in the root of the pen drive with below content:
 
     ```
 usb_disable_secure_boot noreset;
@@ -66,7 +66,7 @@ usb_one_time_boot usb nolog;
 
 1. After the installation is complete, insert a network cable into the ethernet port and find the IP address corresponding to the MAC address of the Dell Gateway 3000X ethernet port through the DHCP Server or a network analyzer. The MAC address is available on the Dell Gateway 3000X.
 
-1. You can then use `ssh` to access the gateway with the above IP address.
+1. You can then use ` ssh` to access the gateway with the above IP address.
 
 
 
