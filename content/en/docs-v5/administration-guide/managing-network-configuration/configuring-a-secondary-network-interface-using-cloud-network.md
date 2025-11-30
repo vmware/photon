@@ -75,7 +75,7 @@ The following example shows a sample configuration of the key values in the `clo
 
 
 ```
-> cat /etc/cloud-network/cloud-network.toml
+cat /etc/cloud-network/cloud-network.toml
 [System]
 RefreshTimer="300s"
 LogLevel="info"
