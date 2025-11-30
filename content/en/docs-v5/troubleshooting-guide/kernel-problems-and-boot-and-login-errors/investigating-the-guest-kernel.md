@@ -3,7 +3,7 @@ title:  Investigating the Guest Kernel
 weight: 5
 ---
 
-If a VM running Photon OS and an application or virtual appliance is behaving preventing you from logging in to the machine, you can troubleshoot by extracting the kernel logs from the guest's memory and analyzing them with `gdb`. 
+If a VM running Photon OS and an application or virtual appliance is behaving preventing you from logging in to the machine, you can troubleshoot by extracting the kernel logs from the guest's memory and analyzing them with `gdb `. 
 
 This advanced troubleshooting method works when you are running Photon OS as the operating system for an application or appliance on VMware Workstation, Fusion, or ESXi. The procedure in this section assumes that the virtual machine running Photon OS is functioning normally. 
 
@@ -20,7 +20,7 @@ You can use other hosts, hypervisors, and operating systems--but you will have t
 Verify that you have the following resources: 
 
 * Root access to a Linux machine other than the one you are troubleshooting. It can be another Photon OS machine, Ubuntu, or another Linux variant. 
-* The `vmss2core` utility from VMware. It is installed by default in VMware Workstation and some other VMware products. If your system doesn't already contain it, you can download it for free from https://labs.vmware.com/flings/vmss2core.
+* The ` vmss2core ` utility from VMware. It is installed by default in VMware Workstation and some other VMware products. If your system doesn't already contain it, you can download it for free from https://labs.vmware.com/flings/vmss2core.
 * A local copy of the Photon OS ISO of the exact same version and release number as the Photon OS machine that you are troubleshooting. 
 
 ## Procedure Overview
@@ -28,8 +28,8 @@ Verify that you have the following resources:
 The process to apply this troubleshooting method is as follows:
 
 - On a local computer, you open a file on the Photon OS ISO that contains Linux debugging information. Then you suspend the troublesome Photon OS VM and extract the kernel memory logs from the VMware hypervisor running Photon OS.
-- Next, you use the vmss2core tool to convert the memory logs into core dump files. The vmss2core utility converts VMware checkpoint state files into formats that third-party debugging tools understand. It can handle both suspend (.vmss) and snapshot (.vmsn) checkpoint state files (hereafter referred to as a _vmss file_) as well as monolithic and non-monolithic (separate .vmem file) encapsulation of checkpoint state data. See [Debugging Virtual Machines with the Checkpoint to Core Tool](http://www.vmware.com/pdf/snapshot2core_technote.pdf).
-- Finally, you prepare to run the gdb tool by using the debug info file from the ISO to create a `.gdbinit` file, which you can then analyze with the gdb shell on your local Linux machine.
+- Next, you use the vmss2core tool to convert the memory logs into core dump files. The vmss2core utility converts VMware checkpoint state files into formats that third-party debugging tools understand. It can handle both suspend (.vmss) and snapshot (.vmsn) checkpoint state files (hereafter referred to as a _vmss file_) as well as monolithic and non-monolithic (separate .vmem file) encapsulation of checkpoint state data. See [Debugging Virtual Machines with the Checkpoint to Core Tool](https://www.vmware.com/pdf/snapshot2core_technote.pdf).
+- Finally, you prepare to run the gdb tool by using the debug info file from the ISO to create a `.gdbinit ` file, which you can then analyze with the gdb shell on your local Linux machine.
 
 All three components must be in the same directory on a Linux machine.  
 
@@ -43,7 +43,7 @@ All three components must be in the same directory on a Linux machine.
 
 	   /RPMS/x86_64/linux-debuginfo-4.4.8-6.ph1.x86_64.rpm
 
-1. On a Linux machine, run the following `rpm2cpio` command to convert the RPM file to a cpio file and to extract the contents of the RPM to the current directory:
+1. On a Linux machine, run the following ` rpm2cpio ` command to convert the RPM file to a cpio file and to extract the contents of the RPM to the current directory:
 	
     ```
     rpm2cpio /mnt/cdrom/RPMS/x86_64/linux-debuginfo-4.4.8-6.ph1.x86_64.rpm | cpio -idmv
@@ -68,7 +68,7 @@ All three components must be in the same directory on a Linux machine.
     mv gdbmacros-for-linux.txt .gdbinit
     ```
 
-1. Switch to your host machine so you can get the kernel memory files from the VM. Suspend the troublesome VM and locate the `.vmss` and `.vmem` files in the virtual machine's directory on the host. 
+1. Switch to your host machine so you can get the kernel memory files from the VM. Suspend the troublesome VM and locate the `.vmss ` and `.vmem ` files in the virtual machine's directory on the host. 
 
     Example:
 	
@@ -87,22 +87,22 @@ All three components must be in the same directory on a Linux machine.
     	...
     ```
 
-1. Now that you have located the `.vmss` and `.vmem` files, convert them to one or more core dump files by using the vmss2core tool that comes with Workstation. Here is an example of how to run the command. Be careful with your pathing, escaping, file names, and so forth--all of which might be different from this example on your Windows machine.
+1. Now that you have located the `.vmss ` and `.vmem ` files, convert them to one or more core dump files by using the vmss2core tool that comes with Workstation. Here is an example of how to run the command. Be careful with your pathing, escaping, file names, and so forth--all of which might be different from this example on your Windows machine.
 
     ```
     
     	C:\Users\shoenisch\Documents\Virtual Machines\VMware Photon 64-bit (7)>C:\"Program Files (x86)\VMware\VMware Workstation"\vmss2core.exe "VMware Photon 64-bit (7)-f6b070cd.vmss" "VMware Photon 64-bit (7)-f6b070cd.vmem"
     
-    The result of this command is one or more files with a `.core` extension plus a digit. Truncated example: 
+    The result of this command is one or more files with a `.core ` extension plus a digit. Truncated example: 
     
     	C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit (7)>dir
     	 Directory of C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit(7)
     	09/20/2016  12:22 PM       729,706,496 vmss.core0
     ```
 
-1. Copy the `.core` file or files to the your current directory on the Linux machine where you so that you can analyze it with gdb.
+1. Copy the `.core ` file or files to the your current directory on the Linux machine where you so that you can analyze it with gdb.
 
-    Run the following `gdb` command to enter the gdb shell attached to the memory core dump file. You might have to change the name of the `vmss.core` file in the example to match your `.core` file:
+    Run the following ` gdb ` command to enter the gdb shell attached to the memory core dump file. You might have to change the name of the ` vmss.core ` file in the example to match your `.core ` file:
 
 	
 ```
@@ -122,7 +122,7 @@ gdb vmlinux-4.4.8.debug vmss.core0
 	Reading symbols from vmlinux-4.4.8.debug...done.
 	warning: core file may not match specified executable file.
 	[New LWP 12345]
-	Core was generated by `GuestVM'.
+	Core was generated by ` GuestVM'.
 	Program terminated with signal SIGSEGV, Segmentation fault.
 	#0  0xffffffff813df39a in insb (count=0, addr=0xffffc90000144000, port=<optimized out>)
 	    at arch/x86/include/asm/io.h:316
@@ -132,5 +132,5 @@ gdb vmlinux-4.4.8.debug vmss.core0
 
 **Result** 
 
-In the results above, the _(gdb)_ of the last line is the prompt of the gdb shell. You can now analyze the core dump by using commands like `bt`, to perform a backtrace, and `dmesg`, to view the Photon OS kernel log and see Photon OS kernel error messages.
+In the results above, the _(gdb)_ of the last line is the prompt of the gdb shell. You can now analyze the core dump by using commands like ` bt `, to perform a backtrace, and ` dmesg`, to view the Photon OS kernel log and see Photon OS kernel error messages.
 
