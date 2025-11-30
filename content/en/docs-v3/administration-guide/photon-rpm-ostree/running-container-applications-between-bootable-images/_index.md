@@ -24,25 +24,25 @@ Wants=network-online.target
 
 [Service]
 Type=notify
-# the default is not to use systemd for cgroups because the delegate issues still
-# exists and systemd currently does not support the cgroup feature set required
-# for containers run by docker
+the default is not to use systemd for cgroups because the delegate issues still
+exists and systemd currently does not support the cgroup feature set required
+for containers run by docker
 ExecStart=/usr/bin/dockerd
 ExecReload=/bin/kill -s HUP $MAINPID
-# Having non-zero Limit*s causes performance problems due to accounting overhead
-# in the kernel. We recommend using cgroups to do container-local accounting.
+Having non-zero Limit*s causes performance problems due to accounting overhead
+in the kernel. We recommend using cgroups to do container-local accounting.
 LimitNOFILE=infinity
 LimitNPROC=infinity
 LimitCORE=infinity
-# Uncomment TasksMax if your systemd version supports it.
-# Only systemd 226 and above support this version.
+Uncomment TasksMax if your systemd version supports it.
+Only systemd 226 and above support this version.
 #TasksMax=infinity
 TimeoutStartSec=0
-# set delegate yes so that systemd does not reset the cgroups of docker containers
+set delegate yes so that systemd does not reset the cgroups of docker containers
 Delegate=yes
-# kill only the docker process, not all processes in the cgroup
+kill only the docker process, not all processes in the cgroup
 KillMode=process
-# restart the docker process if it exits prematurely
+restart the docker process if it exits prematurely
 Restart=on-failure
 StartLimitBurst=3
 StartLimitInterval=60s
@@ -132,7 +132,7 @@ library/ubuntu:latest: The image you are pulling has been verified. Important: i
 Digest: sha256:fde8a8814702c18bb1f39b3bd91a2f82a8e428b1b4e39d1963c5d14418da8fba
 Status: Downloaded newer image for ubuntu:latest
 
-root@7029a64e7aa3:/# cat /etc/os-release
+cat /etc/os-release
 NAME="Ubuntu"
 VERSION="18.04.3 LTS (Bionic Beaver)"
 ID=ubuntu
@@ -151,14 +151,14 @@ Now let's write a file into Ubuntu home directory
 
 ```
 echo "Ubuntu file" >> /home/myfile
-root@7029a64e7aa3:/home# cat /home/myfile
+cat /home/myfile
 Ubuntu file
 ```
 
 We'll exit back to the Photon prompt and if it's stopped, we will re-start it.
 
 ```
-root@7029a64e7aa3:/# exit
+exit
 exit
 
 root@sample-host-def [ ~ ]# docker ps -a
@@ -203,10 +203,10 @@ It is, so let's start it, attach and verify that our file is persisted, then add
 
 ```
 root@photon-host-cus1 [ ~ ]# docker start -i  7029a64e7aa3
-root@7029a64e7aa3:/# cat /home/myfile
+cat /home/myfile
 Ubuntu file
-root@7029a64e7aa3:/# echo "booted into existing image" >> /home/myfile
-root@7029a64e7aa3:/# exit
+echo "booted into existing image" >> /home/myfile
+exit
 exit
 ```
 
@@ -264,8 +264,8 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 root@photon-host-cus1 [ ~ ]# docker start 57dcac5d0490
 
-root@57dcac5d0490:/# cat /home/myfile
+cat /home/myfile
 Ubuntu file
 booted into existing image
-root@57dcac5d0490:/# echo "booted into new image" >> /home/myfile
+echo "booted into new image" >> /home/myfile
 ```
