@@ -24,7 +24,7 @@ Deployments:
 1. Run the following command:
 
 ```
-$ systemctl restart rpm-ostreed
+systemctl restart rpm-ostreed
 ```
 
 1. To enable automatic background updates, edit the `/etc/rpm-ostreed.conf`, and include the below lines in the `Daemon` section:

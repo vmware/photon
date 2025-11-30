@@ -24,7 +24,7 @@ To ensure connectivity with the future working node, kube-worker, modify the fil
 
 ```
 cat /etc/hosts
-# Begin /etc/hosts (network card version)
+Begin /etc/hosts (network card version)
 10.197.103.246 kube-master
 10.197.103.232 kube-worker
   
@@ -32,7 +32,7 @@ cat /etc/hosts
 127.0.0.1   localhost.localdomain
 127.0.0.1   localhost
 127.0.0.1   photon-machine
-# End /etc/hosts (network card version)
+End /etc/hosts (network card version)
 ```
 
 ## System Tuning
@@ -44,20 +44,20 @@ Save the updated set of rules so that they become available the next time you re
 
 	Firewall settings
 ```
-# ping
+ping
 iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
   
-# kubernetes
+kubernetes
 iptables -A INPUT -p tcp -m tcp --dport 10250:10252 -j ACCEPT
   
-# workloads
+workloads
 iptables -A INPUT -p tcp -m tcp --dport 30000:32767 -j ACCEPT
   
-# calico
+calico
 iptables -A INPUT -p tcp -m tcp --dport 179 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 4789 -j ACCEPT
   
-# save rules
+save rules
 iptables-save > /etc/systemd/scripts/ip4save
 ```    
 
@@ -66,7 +66,7 @@ iptables-save > /etc/systemd/scripts/ip4save
 You need to enable IPv4 IP forwarding and `iptables` filtering on the bridge devices. Create the file `/etc/sysctl.d/kubernetes.conf` as follows: 
 
 ```
-# Load br_netfilter module to facilitate traffic between pods
+Load br_netfilter module to facilitate traffic between pods
 modprobe br_netfilter
  
  
@@ -124,9 +124,9 @@ cat /etc/containerd/config.toml
 version = 2
  
 #[grpc]
-#  address = "/run/containerd/containerd.sock"
-#  uid = 0
-#  gid = 0
+address = "/run/containerd/containerd.sock"
+uid = 0
+gid = 0
  
 [plugins."io.containerd.grpc.v1.cri"]
 enable_selinux = true
@@ -138,10 +138,10 @@ enable_selinux = true
             SystemdCgroup = true
  
 #[debug]
-#  address = "/run/containerd/debug.sock"
-#  uid = 0
-#  gid = 0
-#  level = "info"
+address = "/run/containerd/debug.sock"
+uid = 0
+gid = 0
+level = "info"
 ```
 
 Use the following command to check if containerd is running with `systemd cgroup`:

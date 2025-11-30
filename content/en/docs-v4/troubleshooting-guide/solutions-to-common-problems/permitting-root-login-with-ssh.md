@@ -13,15 +13,15 @@ Example:
 vim /etc/ssh/sshd_config
 ```
 ```ini
-# override default of no subsystems
+override default of no subsystems
 Subsystem       sftp    /usr/libexec/sftp-server
 
-# Example of overriding settings on a per-user basis
+Example of overriding settings on a per-user basis
 #Match User anoncvs
-#       X11Forwarding no
-#       AllowTcpForwarding no
-#       PermitTTY no
-#       ForceCommand cvs server
+X11Forwarding no
+AllowTcpForwarding no
+PermitTTY no
+ForceCommand cvs server
 PermitRootLogin yes
 UsePAM yes
 ```
@@ -35,5 +35,5 @@ systemctl restart sshd
 You can then connect to the Photon OS machine with the root account over SSH:
 
 ```console
-user@ubuntu:~$ ssh root@10.0.0.131
+ssh root@10.0.0.131
 ```

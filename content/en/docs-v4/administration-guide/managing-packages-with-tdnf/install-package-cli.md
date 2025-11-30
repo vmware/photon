@@ -13,7 +13,7 @@ For example:
 
 
 
-        tdnf install https://packages.vmware.com/photon/4.0/photon_release_4.0_x86_64/x86_64/open-vm-tools-11.2.5-1.ph4.x86_64.rpm
+        tdnf install https://packages-prod.broadcom.com/photon/4.0/photon_release_4.0_x86_64/x86_64/open-vm-tools-11.2.5-1.ph4.x86_64.rpm
     
         open-vm-tools-11.2.5-1.ph4.x86_64.rpm 763014   100%
         

@@ -20,14 +20,14 @@ Photon OS provides a Python API for the Network Configuration Manager.
 To set up and run the latest version of the Network Manager API for Python:
 
 ```console
-# tdnf install pmd pmd-python3
-# systemctl start pmd
+tdnf install pmd pmd-python3
+systemctl start pmd
 ```
 
 ## Initialization Steps
 
 ```python
-# python3
+python3
 >>> import pmd
 >>> net = pmd.server().net
 ```
@@ -44,7 +44,7 @@ Get help for a specific command.
 ```python
 >>> help(net.add_ntp_servers)
 -in function add_ntp_servers:
-add_ntp_servers(...) method of  [server.net](http://server.net/) instance
+add_ntp_servers(...) method of  [server.net](https://server.net/) instance
     net.add_ntp_servers(ntpservers = ["20.20.20.20", "25.30.40.70"])
     adds ntp servers. returns success: 0, failure: exception.
 (END)
@@ -72,7 +72,7 @@ net.get_system_network_info()
 
 >>> print ( system_network_info)
 
-[{DUID: 00:02:11:22:33:44:55:66:77:20, DNS Mode: (null), DNS ServerList: ['10.10.100.100', '20.20.200.10'], DNS domain list: [' [abcd.com](http://abcd.com)'], NTP ServerList: (null)}]
+[{DUID: 00:02:11:22:33:44:55:66:77:20, DNS Mode: (null), DNS ServerList: ['10.10.100.100', '20.20.200.10'], DNS domain list: [' [abcd.com](https://abcd.com)'], NTP ServerList: (null)}]
 ```
 
 ### get_err_info

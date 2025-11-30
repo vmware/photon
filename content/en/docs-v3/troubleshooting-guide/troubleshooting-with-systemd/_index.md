@@ -3,7 +3,7 @@ title:  Systemd
 weight: 5
 ---
 
-Photon OS manages services with `systemd` and `systemctl`, its command-line utility for inspecting and controlling the system. It does not use the deprecated commands of `init.d`. 
+Photon OS manages services with `systemd ` and ` systemctl `, its command-line utility for inspecting and controlling the system. It does not use the deprecated commands of ` init.d`. 
 
 Basic system administration commands on Photon OS differ from those on operating systems that use SysVinit. Since Photon OS uses systemd instead of SysVinit, you must use systemd commands to manage services. 
 

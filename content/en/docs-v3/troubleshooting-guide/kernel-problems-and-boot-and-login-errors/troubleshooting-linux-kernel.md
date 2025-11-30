@@ -16,14 +16,14 @@ The following list contains the different Linux kernel flavours available:
 
 To see the version of kernel installed, run the following command:
 ```
-# rpm -qa | grep -e "^linux\(\|-esx\|-secure\|rt\|aws\)-[[:digit:]]"
+rpm -qa | grep -e "^linux\(\|-esx\|-secure\|rt\|aws\)-[[:digit:]]"
 linux-4.9.111-1.ph2.x86_64
 linux-esx-4.9.111-1.ph2.x86_64
 ```
 
 To see the version of the Kernel that is running currently, run the following command:
 ```
-# uname -r
+uname -r
 4.9.107-1.ph2-esx
 ```
 From the output, you can see that the kernel running currently doesn't match the installer. This happens when linux-* rpms were updated but was not restarted. Restart is required.
@@ -32,7 +32,7 @@ From the output, you can see that the kernel running currently doesn't match the
 
 To find the configurations of the installed Kernel, check the **/boot** directory by running the following command:
 ```
-# ls /boot/config-*
+ls /boot/config-*
 config-4.9.111-1.ph2 config-4.9.111-1.ph2-esx
 ```
 To get a copy of the kernel configuration (Not all flavours support this feature), run the `zcat /proc/config.gz` command.
@@ -41,15 +41,15 @@ To get a copy of the kernel configuration (Not all flavours support this feature
 Several kernel flavors can be installed on the system, but only one is used during boot.
 **/boot/photon.cfg** symlink points to the kernel which is used for boot.
 ```
-# ls -l /boot/photon.cfg
+ls -l /boot/photon.cfg
 lrwxrwxrwx 1 root root 23 Jun 12  2018 /boot/photon.cfg -> linux-4.9.111-1.ph2.cfg
 ```
 
 Its contents can be checked by running the following command:
 ```
-# cat /boot/photon.cfg
+cat /boot/photon.cfg
 
-# GRUB Environment Block
+GRUB Environment Block
 
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
 
@@ -66,7 +66,7 @@ Where:
 
 Parameters of the kernel loading currently can be found by running the `/proc/cmdline` command:
 ```
-# cat /proc/cmdline
+cat /proc/cmdline
 
 BOOT_IMAGE=/boot/vmlinuz-4.9.107-1.ph2-esx root=PARTUUID=29194d05-4a6e-4e0c-b1f4-5020e5e8472c net.ifnames=0 init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
 ```

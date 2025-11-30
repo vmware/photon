@@ -20,7 +20,7 @@ To generate the output in a staging directory, run the following command:
 The following are the contents of the `hello-world-user1.spec` file:
 
 ```
-% Summary:      Hello World User Package
+Summary:      Hello World User Package
 Name:           hello-world-user1
 Version:        1.0
 Release:        1%{?dist}

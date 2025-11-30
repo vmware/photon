@@ -31,7 +31,7 @@ The default value for `disable_vmware_customization` is set to `true` in the **/
 ###VMwareGuestInfo
 VMwareGuestInfo data source is configured by setting `guestinfo` properties on a VM. This can be set by performing one of the following:
 
-- Using the vmware-rpctool provided by open-vmtools.
+- Using the VMware-rpctool provided by open-vmtools.
 - Modifying the **vmx** file to set the guestinfo properties.
 
 ##Debugging Cloud-init Failures
@@ -42,7 +42,7 @@ Cloud-init has four services which are started in the following sequence:
 1. cloud-config - This service runs the cloud_config_modules in **/etc/cloud/cloud.cfg** file. Use `$ systemctl status cloud-config` command to check its status.
 1. cloud-final - This service runs any script that a user is accustomed to running after logging into a system (For example: package installations, configs, user-scripts) and runs cloud_final_modules in **/etc/cloud/cloud.cfg** file. Use `$ systemctl status cloud-final` command to check its status.
 
-Cloud-init logs are available in the **/var/log/cloud-init.log** file. Logs for GuestOS customization using DataSourceOVF are available in the **/var/log/vmware-imc/toolsDeployPkg.log** and **/var/log/cloud-init.log** files.
+Cloud-init logs are available in the **/var/log/cloud-init.log** file. Logs for GuestOS customization using DataSourceOVF are available in the **/var/log/VMware-imc/toolsDeployPkg.log** and **/var/log/cloud-init.log** files.
 
 To analyze the cloud-init boot time performance, run the following commands:
 
@@ -82,5 +82,5 @@ For more information about cloud-init CLI, see
 **Note**:Include the cloud-init log tarball and the vmtoolsd logs when you raise an issue.
 
 1. Collect cloud-init log tarball by running the `cloud-init collect-logs` command.
-1. Collect the vmtoolsd logs from **/var/log/vmware-imc/toolsDeployPkg.log** file.
+1. Collect the vmtoolsd logs from **/var/log/VMware-imc/toolsDeployPkg.log** file.
 1. Attach the collected logs to the issue ticket.

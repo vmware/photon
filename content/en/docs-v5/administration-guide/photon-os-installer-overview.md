@@ -51,19 +51,19 @@ The Photon OS installer has the following dependencies:
 To build the Photon OS Installer executable on Photon OS, run the following commands:
 
 ```
-➜  ~ tdnf install -y python3 python3-setuptools python3-pyinstaller
-➜  ~ git clone https://github.com/vmware/photon-os-installer.git
-➜  ~ cd photon-os-installer
-➜  ~ pyinstaller --onefile photon-installer.spec
+~ tdnf install -y python3 python3-setuptools python3-pyinstaller
+~ git clone https://github.com/vmware/photon-os-installer.git
+~ cd photon-os-installer
+~ pyinstaller --onefile photon-installer.spec
 ```   
 
 To build the Photon Installer executable on other distros, run the following commands:
 
 ```
-➜  ~ pip3 install setuptools pyinstaller
-➜  ~ git clone https://github.com/vmware/photon-os-installer.git
-➜  ~ cd photon-os-installer
-➜  ~ pyinstaller --onefile photon-installer.spec
+~ pip3 install setuptools pyinstaller
+~ git clone https://github.com/vmware/photon-os-installer.git
+~ cd photon-os-installer
+~ pyinstaller --onefile photon-installer.spec
 ```   
 You can find the generated executable in the dist directory created.
 
@@ -85,10 +85,10 @@ rpi3	|	|	|
 To build Photon Cloud images using Photon OS Installer, run the following commands:
 
 ```
-➜  ~ pip3 install git+https://github.com/vmware/photon-os-installer.git
-➜  ~ git clone https://github.com/vmware/photon.git
-➜  ~ cd photon
-➜  ~ make image IMG_NAME=ami
+~ pip3 install git+https://github.com/vmware/photon-os-installer.git
+~ git clone https://github.com/vmware/photon.git
+~ cd photon
+~ make image IMG_NAME=ami
 ```   
 
 
