@@ -19,7 +19,7 @@ Perform the following steps to configure static or dynamic IP addressing in Phot
 1. To find the name of the active network interfaces that you want to configure, execute the following command:
 
 ```
-❯ ip a   
+ip a   
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -135,7 +135,7 @@ After configuring the IP address, you need to apply the new configuration. Execu
 To verify that the configurations are successfully applied, execute the following command and verify the IP address:
 
 ```
-❯ nmctl status eth0
+nmctl status eth0
                        Flags: UP BROADCAST RUNNING NOARP LOWERUP 
                         Kind: dummy
                         Type: ether
@@ -166,6 +166,6 @@ IPv6 Address Generation Mode: eui64
 To see the routes, execute the following command:
 
 ```
-❯ ip r show dev eth0
+ip r show dev eth0
 172.16.0.0/24 via 192.168.1.100 proto static 
 ```   
