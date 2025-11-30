@@ -1,0 +1,28 @@
+From 500bcbc042ea84216dd0fa0d54aef3dbee5f93bb Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 28 Nov 2025 00:01:35 +0530
+Subject: [PATCH] Add TRIGGERED_BY_MOTD_SERVICE environment variable
+
+Downstream scripts can use this variable as a key to do something
+specific when the script is invoked by service.
+
+For instance, tdnf repodata refreshing should happen only when invoked
+by timer (in /etc/motdgen.d/02-tdnf-updateinfo.sh)
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ services/motdgen.service | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/services/motdgen.service b/services/motdgen.service
+index 6489a4c..969dd7e 100644
+--- a/services/motdgen.service
++++ b/services/motdgen.service
+@@ -2,6 +2,7 @@
+ Description=Message of the Day
+ 
+ [Service]
++Environment=TRIGGERED_BY_MOTD_SERVICE=1
+ ExecStart=/usr/bin/motdgen
+ Type=oneshot
+ RemainAfterExit=yes

@@ -3,7 +3,7 @@
 Summary:        Message of the Day
 Name:           motd
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github-vcf.devops.broadcom.net/vcf/photon-motdgen
 Group:          Applications/Daemons
 Vendor:         VMware, Inc.
@@ -17,6 +17,8 @@ Source1: %{name}.conf
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: trigger-by-env.patch
 
 BuildRequires: make
 BuildRequires: coreutils
@@ -71,6 +73,8 @@ rm -rf %{_rundir}/motdgen
 %{_tmpfilesdir}/motd.conf
 
 %changelog
+* Sun Nov 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-2
+- Add TRIGGERED_BY_MOTD_SERVICE env variable support
 * Wed Sep 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-1
 - Upgrade to v1.0
 - Switch to photon-motdgen
