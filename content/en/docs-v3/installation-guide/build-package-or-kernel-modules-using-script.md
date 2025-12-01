@@ -3,15 +3,15 @@ title:  Building Package or Kernel Modules Using a Script
 weight: 4
 ---
 
-You can use a script to build a single Photon OS package without rebuilding all Photon OS packages. You just need a `.spec` specification file and sources. You place the sources and the specification files in the same folder and run the `build_spec.sh` script. The script performs the following steps:
+You can use a script to build a single Photon OS package without rebuilding all Photon OS packages. You just need a `.spec ` specification file and sources. You place the sources and the specification files in the same folder and run the ` build_spec.sh ` script. The script performs the following steps:
 
 - Creates sandbox using docker.
-- Installs build tools and `.spec` build requirements from the Photon OS repository.
-- Runs `rpmbuild`.
+- Installs build tools and `.spec ` build requirements from the Photon OS repository.
+- Runs ` rpmbuild `.
 
 **Result:** You have a native Photon OS RPM package.
 
-The `build-spec.sh` script is located in the `photon/tools/scripts/` folder.
+The ` build-spec.sh ` script is located in the ` photon/tools/scripts/` folder.
 
 - [Prerequisties](#prerequisites)
 - [Procedure](#procedure)
@@ -20,30 +20,30 @@ The `build-spec.sh` script is located in the `photon/tools/scripts/` folder.
 
 ## Prerequisites
 
-Before you run the `build-spec.sh` script, perform the following steps:
+Before you run the ` build-spec.sh ` script, perform the following steps:
 
 - Ensure you have any Linux OS with docker daemon running.
-- Place the source and RPM `.spec` files in the same folder, that is, `$WORKDIR`.
+- Place the source and RPM `.spec ` files in the same folder, that is, `$WORKDIR `.
 
 ## Procedure
 
-Run the script. Provide the RPM `.spec` file name, including absolute or relative path, as argument:
+Run the script. Provide the RPM `.spec ` file name, including absolute or relative path, as argument:
 
 ```
 ./photon/tools/scripts/build_spec.sh <$WORKDIR/rpm_spec_file.spec>
 ```
 
-The RPMs and full build logs are generated in the `$WORKDIR/stage` folder.
+The RPMs and full build logs are generated in the `$WORKDIR/stage ` folder.
 
 ## Example
 
-The following example runs the script with `simple-module.spec` as argument, where `simple-module.spec` is the specification file:
+The following example runs the script with ` simple-module.spec ` as argument, where ` simple-module.spec ` is the specification file:
 
 ```
 ./photon/tools/scripts/build_spec.sh ~/photon/tools/examples/build_spec/simple-module.spec
 ```
 
-The following are the contents of the `simple-module.spec` file:
+The following are the contents of the ` simple-module.spec ` file:
 
 ```
 Summary:        Simple Linux module
@@ -66,10 +66,10 @@ Example of building linux module for Photon OS
 %setup -q -n module_example
 
 %build
-make -C `echo /usr/src/linux-headers-4.18.9*` M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
+make -C ` echo /usr/src/linux-headers-4.18.9*` M=` pwd ` VERBOSE=1 modules %{?_smp_mflags}
 
 %install
-make -C `echo /usr/src/linux-headers-4.18.9*` M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+make -C ` echo /usr/src/linux-headers-4.18.9*` M=` pwd ` INSTALL_MOD_PATH=%{buildroot} modules_install
 # fix permissins to generate non empty debuginfo
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 

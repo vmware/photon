@@ -7,20 +7,20 @@ This example shows how to build a package that provides a hello world binary. To
 
 You can find the source file at the following location:  
 
-```
+```console
 https://github.com/vmware/photon/tree/<BRANCH>/tools/examples/build_spec/user_package_example/hello-world-user1.tar.gz
 ```
 
 To generate the output in a staging directory, run the following command:
 
-```
+```console
 ./photon/tools/scripts/build_spec.sh ./photon/tools/examples/build_spec/user_package_example/hello-world-user1.spec $STAGEDIR
 ```
 
 The following are the contents of the `hello-world-user1.spec` file:
 
-```
-% Summary:      Hello World User Package
+```console
+Summary:      Hello World User Package
 Name:           hello-world-user1
 Version:        1.0
 Release:        1%{?dist}
@@ -53,7 +53,7 @@ make %{?_smp_mflags} install DESTDIR=%{buildroot}
 
 The following logs indicate the steps that the script performs internally:
 
-```
+```console
 0. Build Script Version: 1.1
 1. Create sandbox
         Use local build template image OK
@@ -82,13 +82,13 @@ You can verify the generated output with the following commands:
 
 - Command to install the RPM:
 
-```
+```console
 rpm -ivh $STAGEDIR/RPMS/x86_64/hello-world-user-1.0-1.ph5.x86_64.rpm
 ```
 
 - Command to verify the installed user package (execute the installed binary of the user package):
 
-```
+```console
 root@photon-aab77099dca0root [ ~ ]# /usr/bin/hello-world-user
      Hello World
 ```

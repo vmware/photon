@@ -37,7 +37,7 @@ View processes and their RT scheduling policies and priorities:
     679    FIFO     50        0     1647541           1                irq/58-eth0-rxt
 
 
-The following tasks are performed by using the `tuna` command:
+The following tasks are performed by using the `tuna ` command:
 
 - Isolate a set of CPUs
 
@@ -70,7 +70,7 @@ The taskset command can be used to get/set CPU affinity of tasks:
 
 ## chrt
 
-The `chrt` command can be used to get or set the real-time scheduling policies and priorities of processes:
+The ` chrt ` command can be used to get or set the real-time scheduling policies and priorities of processes:
 
 - Modify the scheduling policy and priority of a running task
  
@@ -85,14 +85,14 @@ The `chrt` command can be used to get or set the real-time scheduling policies a
 
 ## ps
 
-The `ps` command can be used to list processes with their scheduling policies and priorities:
+The ` ps ` command can be used to list processes with their scheduling policies and priorities:
 
 
     $ ps -eo cmd,pid,cpu,pri,cls
 
 
-     `CMD `                                              ` PID  CPU   PRI    CLS`
+     ` CMD `                                              ` PID  CPU   PRI    CLS `
 
-    `/lib/systemd/systemd --swit `                       ` 1     -    19    TS`
+    `/lib/systemd/systemd --swit `                       ` 1     -    19    TS `
 
     `[kthreadd]`                                         ` 2     -    19    TS`

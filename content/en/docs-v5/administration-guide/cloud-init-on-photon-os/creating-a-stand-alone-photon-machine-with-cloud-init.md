@@ -8,14 +8,14 @@ Cloud-init can customize a Photon OS virtual machine by using the `nocloud` data
 **Procedure**
 
 
-1. Create the metadata file with the following lines in the [YAML](http://www.yaml.org/start.html) format and name it `meta-data`:
+1. Create the metadata file with the following lines in the [YAML](https://www.yaml.org/start.html) format and name it `meta-data`:
           
     ```yaml
     instance-id: iid-local01
        local-hostname: cloudimg
     ```
 
-1. Create the user data file with the following lines in [YAML](http://www.yaml.org/start.html) and name it `user-data`: 
+1. Create the user data file with the following lines in [YAML](https://www.yaml.org/start.html) and name it `user-data`: 
 
       ```yaml
         #cloud-config
@@ -33,7 +33,7 @@ Cloud-init can customize a Photon OS virtual machine by using the `nocloud` data
     The ISO now appears in the current directory: 
 
     ```console
-    steve@ubuntu:~$ ls
+    ls
     meta-data seed.iso user-data
     ```
 

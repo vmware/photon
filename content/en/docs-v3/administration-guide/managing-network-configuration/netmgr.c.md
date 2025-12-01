@@ -31,7 +31,7 @@ Use the Network Configuration Manager C API to simplify common network configura
 
 Header files for all the C APIs are defined in the following location:
 
-[https://github.com/](https://github.com/vmware/pmd/tree/master/include) [vmware](https://github.com/vmware/pmd/tree/master/include) [/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
+[https://github.com/](https://github.com/vmware/pmd/tree/master/include) [VMware](https://github.com/vmware/pmd/tree/master/include) [/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
 
 To install the Network Configuration Manager header file, run the following command:
 

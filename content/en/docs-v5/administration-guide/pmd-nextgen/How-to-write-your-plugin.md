@@ -51,7 +51,7 @@ System status:
 	Operating System Home URL: https://vmware.github.io/photon/
 	          Systemd Version: v247.10-3.ph4
 	             Architecture: x86-64
-	           Virtualization: vmware
+	           Virtualization: VMware
 	            Network State: routable (carrier)
 	     Network Online State: online
 	                      DNS: 172.16.130.2

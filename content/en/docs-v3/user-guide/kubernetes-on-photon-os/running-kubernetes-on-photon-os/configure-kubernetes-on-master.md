@@ -7,7 +7,7 @@ Perform the following steps to configure Kubernetes services on the master:
 
 1. Edit `/etc/kubernetes/apiserver` to appear as such.  The `service_cluster_ip_range` IP addresses must be an unused block of addresses, not used anywhere else.  They do not need to be routed or assigned to anything.
 
-    ```
+    ```console
     # The address on the local server to listen to.
     KUBE_API_ADDRESS="--address=0.0.0.0"
     
@@ -23,7 +23,7 @@ Perform the following steps to configure Kubernetes services on the master:
 
 1. Start the appropriate services on master:
 
-    ```
+    ```python
     for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
     	systemctl restart $SERVICES
     	systemctl enable $SERVICES
@@ -50,9 +50,9 @@ Perform the following steps to configure Kubernetes services on the master:
 1. Create a node object internally in your Kubernetes cluster by running the following command:
     
     ```console
-    $ kubectl create -f ./node.json
+    kubectl create -f ./node.json
     
-    $ kubectl get nodes
+    kubectl get nodes
     NAME                LABELS              STATUS
     photon-node         name=photon-node-label     Unknown
     ```

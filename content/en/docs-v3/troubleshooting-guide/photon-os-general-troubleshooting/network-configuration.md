@@ -113,7 +113,7 @@ These files are used to set network configuration variables for servers and cont
 |`Name=`  | Matches device names. For example: `en*`. By using `!` prefix the list can be inverted. | Device names separated by a white space, logical negation (!). |
 |`MACAddress=`  |	Matches MAC addresses. For example: `MACAddress=01:23:45:67:89:ab 00-11-22-33-44-55 AABB.CCDD.EEFF`  | MAC addresses with full colon-, hyphen- or dot-delimited hexadecimal separated by a white space. |
 | `Host=` | Matches the host name or the machine ID of the host. | Hostname string or Machine ID |
-| `Virtualization=` |Checks whether the system is running in a virtual environment. `Virtualization=false` will only match your host machine, while `Virtualization=true` matches containers or VMs. It is also possible to check for a specific virtualization type or implementation.  |boolean, logical negation (!), type (vm, container), implementation (qemu, kvm, zvm, vmware, microsoft, oracle, xen, bochs, uml, bhyve, qnx, openvz, lxc, lxc-libvirt, systemd-nspawn, docker, podman, rkt, wsl, acrn)  |
+| `Virtualization=` |Checks whether the system is running in a virtual environment. `Virtualization=false` will only match your host machine, while `Virtualization=true` matches containers or VMs. It is also possible to check for a specific virtualization type or implementation.  |boolean, logical negation (!), type (vm, container), implementation (qemu, kvm, zvm, VMware, microsoft, oracle, xen, bochs, uml, bhyve, qnx, openvz, lxc, lxc-libvirt, systemd-nspawn, docker, podman, rkt, wsl, acrn)  |
 
 ###`[Link]`
 

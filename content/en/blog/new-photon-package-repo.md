@@ -6,7 +6,7 @@ author: "Kishan Malur"
 
 ## Important Package Repo Information
 
-Photon OS currently hosts the required packages and other artifacts using public servers on Bintray. As such, when a user issues any tdnf commands, Photon OS looks for the package updates in the Bintray repository.  Going forward, we will be transitioning away from this service to one that is hosted at [packages.vmware.com/photon](https://packages.vmware.com/photon). 
+Photon OS currently hosts the required packages and other artifacts using public servers on Bintray. As such, when a user issues any tdnf commands, Photon OS looks for the package updates in the Bintray repository.  Going forward, we will be transitioning away from this service to one that is hosted at [packages.vmware.com/photon](https://packages-prod.broadcom.com/photon). 
 
 Over the last few weeks the team has been busy getting things ready, and the new repository is already populated with all the packages and artifacts and is ready to take over to continue serving packages and updates. Many VMware appliances have already migrated to the new package repository.
 

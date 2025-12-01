@@ -18,8 +18,8 @@ Perform the following steps to configure static or dynamic IP addressing in Phot
 
 1. To find the name of the active network interfaces that you want to configure, execute the following command:
 
-```
-❯ ip a   
+```console
+ip a   
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -40,26 +40,26 @@ Note the name of the interface that you want to configure using network-config-m
 
 2. To find the network-configuration-manager default configuration file, execute the following command:
 
-	```
-	❯ ls /etc/network-config-manager/yaml
+	```console
+	ls /etc/network-config-manager/yaml
 	```   
 
 3. To view the content of the network-config-manager network configuration file, execute the following command:
 
-	```
-	❯ cat /etc/network-config-manager/yaml/*.yaml
+	```console
+	cat /etc/network-config-manager/yaml/*.yaml
 	```   
 
 4. Open the configuration file in an editor.   
 	For example, if you use vim editor, execute the following command to open the configuration file in an editor:
 	
-	```
-	❯ sudo vim /etc/network-config-manager/yaml/99-dhcp.yaml
+	```console
+	sudo vim /etc/network-config-manager/yaml/99-dhcp.yaml
 	```   
 
 5. Use the following syntax to update the configuration file as per your networking needs:
 
-	```
+	```console
 	network:
     Version: 2
     Renderer: networkd
@@ -98,7 +98,7 @@ To manually configure an IP address, use the previously mentioned file syntax in
 
 The following is a sample configuration for the static IP addressing:
 
-```
+```console
 network:
     ethernets:
         eth0:
@@ -118,7 +118,7 @@ To get the IP address from the DHCP server, use the previously mentioned file sy
 
 The following is a sample configuration for the dynamic IP addressing:
 
-```
+```console
 network:
   version: 2
   renderer: networkd
@@ -134,8 +134,8 @@ After configuring the IP address, you need to apply the new configuration. Execu
 
 To verify that the configurations are successfully applied, execute the following command and verify the IP address:
 
-```
-❯ nmctl status eth0
+```console
+nmctl status eth0
                        Flags: UP BROADCAST RUNNING NOARP LOWERUP 
                         Kind: dummy
                         Type: ether
@@ -165,7 +165,7 @@ IPv6 Address Generation Mode: eui64
 
 To see the routes, execute the following command:
 
-```
-❯ ip r show dev eth0
+```console
+ip r show dev eth0
 172.16.0.0/24 via 192.168.1.100 proto static 
 ```   

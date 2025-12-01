@@ -35,5 +35,5 @@ systemctl restart sshd
 You can then connect to the Photon OS machine with the root account over SSH:
 
 ```console
-user@ubuntu:~$ ssh root@10.0.0.131
+ssh root@10.0.0.131
 ```

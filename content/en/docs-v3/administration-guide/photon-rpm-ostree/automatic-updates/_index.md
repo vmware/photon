@@ -7,7 +7,7 @@ Automatic updates are disabled by default.
 
 To verify this, run the status command.
 
-```
+```console
 root@photon-host-def [ ~ ]# rpm-ostree status
 State: idle
 AutomaticUpdates: disabled
@@ -23,13 +23,13 @@ Deployments:
 
 1. Run the following command:
 
-```
-$ systemctl restart rpm-ostreed
+```console
+systemctl restart rpm-ostreed
 ```
 
 1. To enable automatic background updates, edit the `/etc/rpm-ostreed.conf`, and include the below lines in the `Daemon` section:
 
-    ```
+    ```console
     [Daemon]
     AutomaticUpdatePolicy=stage
     #IdleExitTimeout=60
@@ -37,16 +37,16 @@ $ systemctl restart rpm-ostreed
 
 1. Run the following commands:
 
-    ```
-    $ systemctl reload rpm-ostreed
-    $ systemctl enable rpm-ostree-automatic.timer --now  
-    $ systemctl restart rpm-ostree-automatic
+    ```console
+    systemctl reload rpm-ostreed
+    systemctl enable rpm-ostree-automatic.timer --now  
+    systemctl restart rpm-ostree-automatic
     ```
 
 1. Verify that the automatic update feature has been enabled:
 
-    ```
-    $ rpm-ostree status -v 
+    ```console
+    rpm-ostree status -v 
           State: idle
 
           AutomaticUpdates: stage; rpm-ostreed-automatic.timer: last run 16min ago
