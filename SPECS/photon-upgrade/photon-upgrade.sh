@@ -461,7 +461,7 @@ function remove_residual_pkgs() {
 
 # If user specifies --install-all and --repos then install all packages
 # from the provided repos which are not installed
-function install_all_from_repo() {
+install_all_from_repo() {
   local available_pkgs_for_install="$(
       ${RPM} -q $(${TDNF} $REPOS_OPT repoquery --available) 2>&1 | \
         ${SED} -nE 's#^package ([^ ]+\.ph[0-9]+\.[^ ]+) is not installed#\1#p'
@@ -720,7 +720,9 @@ function do_ph4_to_ph4_update() {
   rebuilddb
   install_pkgs ${removed_pkgs_list[@]} ${old_new_pkg_map[@]}
   if [ -n "$INSTALL_ALL" ]; then
-    install_all_from_repo
+    if ! install_all_from_repo; then
+      abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
+    fi
   fi
   post_upgrade_rm_pkgs
   restore_configs $TMP_BACKUP_LOC
@@ -838,7 +840,9 @@ function verify_version_and_upgrade() {
       fix_post_upgrade_config
       remove_residual_pkgs
       if [ -n "$INSTALL_ALL" ]; then
-        install_all_from_repo
+        if ! install_all_from_repo; then
+          abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
+        fi
       fi
       restore_configs $TMP_BACKUP_LOC
       reset_enabled_disabled_services
