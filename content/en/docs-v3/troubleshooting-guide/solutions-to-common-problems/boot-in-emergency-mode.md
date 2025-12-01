@@ -1,3 +1,4 @@
+```
 ---
 title:  Boot in Emergency Mode
 weight: 1
@@ -22,5 +23,4 @@ Perform the following steps to boot in Emergency Mode:
     To make modifications, run the following command to remount with write access:
     
     `mount -o remount,rw /`
-
- 
+```
