@@ -29,7 +29,7 @@ Before you use Photon OS within VMware vSphere, perform the following prerequisi
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS ISO or OVA file downloaded from [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/).</td>
+	<td>Photon OS ISO or OVA file downloaded from [https://packages-prod.broadcom.com/photon/](https://packages-prod.broadcom.com/photon/).</td>
 	</tr>
 	</tbody>
 	</table>
@@ -45,8 +45,8 @@ Before you use Photon OS within VMware vSphere, perform the following prerequisi
     
 1. Download Photon OS. Go to the following URL and download the latest release of Photon OS:
 
-    [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
+    [https://packages-prod.broadcom.com/photon/](https://packages-prod.broadcom.com/photon/)
     
-    For instructions, see [https://github.com/vmware/photon/wiki/Downloading-Photon-OS](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
+    For instructions, see [https://github.com/vmware/photon/wiki/downloading-photon-os-OS](https://github.com/vmware/photon/wiki/downloading-photon-os-OS).
     
     **Note:** For ISO installation, you must upload to a datashare that is attached to the ESXi host, or mount the file share where the ISO resides as a data store.

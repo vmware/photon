@@ -20,7 +20,7 @@ To view the format and information that a new repository configuration file shou
 ```
 [photon-release]
 name=VMware Photon Linux $releasever ($basearch)
-baseurl=https://packages.vmware.com/photon/$releasever/photon_release_$releasever_$basearch
+baseurl=https://packages-prod.broadcom.com/photon/$releasever/photon_release_$releasever_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -45,7 +45,7 @@ The repository settings details are as follows:
 - The `baseurl` is a URL for the repository's repodata directory. For a repository on a local server that can be accessed directly or mounted as a file system, the base URL can be a file referenced by `file://`. Example:  
 
 	`baseurl=file:///server/repo/`   <p>
-You can also use the following protocols: `http:`  `https:` `ftp:` `ftps:` `file:`
+You can also use the following protocols: `http:``https:` `ftp:``ftps:` `file:`
 You can add multiple URLs separated by commas. If download fails for one URL, the next URL is used. 
 The URL can contain the variables `$releasever` and `$basearch`, which refers to the current release of the distribution (for example, 5.0) and the architecture (for example, x86_64 or aarch64). 
 
@@ -75,7 +75,7 @@ The URL can contain the variables `$releasever` and `$basearch`, which refers to
     
        <resources maxconnections="1">
     
-    <url protocol="http" type="http" location="IN" preference=“100”>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
+    <url protocol="http" type="http" location="IN" preference=“100”>https://packages-prod.broadcom.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
      
        </resources>
     
@@ -119,9 +119,9 @@ The URL can contain the variables `$releasever` and `$basearch`, which refers to
 
 - The `timeout` setting specifies the number of seconds that a download is allowed to take or `0` for no limit. Note that this is an absolute value and may interrupt large file downloads.
 
-- The `minrate` setting specifies the limit below which if the download rate falls, `tdnf` aborts the download. The default value is `0 `(`no limit`).
+- The `minrate` setting specifies the limit below which if the download rate falls, `tdnf` aborts the download. The default value is `0`(`no limit`).
 
-- The `maxrate` setting specifies the maximum download rate (throttle). The default value is `0 `(`no limit`).
+- The `maxrate` setting specifies the maximum download rate (throttle). The default value is `0`(`no limit`).
 
 - You can use the skip metadata download settings to skip the download of metadata files for repositories with a lot of packages. When you skip the download of the metadata files, it improves the download time of the packages and the processing time of refreshing the cache.
 

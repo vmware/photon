@@ -23,7 +23,7 @@ Upgrade process uses `pmd-cli` that is supported from both Lightwave and Photon 
 		`# pmd-cli --server-name <machine-IP-address> --user root pkg list updates`
 	3. Verify the currently installed version of a package, for example `sed`.
 
-		`# `# pmd-cli --server-name <machine-IP-address> --user root pkg installed sed`
+		`#`# pmd-cli --server-name <machine-IP-address> --user root pkg installed sed `
 		The installed version number shows as earlier than the one listed under the available updates.
 
 

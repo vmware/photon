@@ -62,7 +62,7 @@ The taskset command can be used to get/set CPU affinity of tasks:
     `$ taskset -c p <cpulist> <pid>`
 
 - View the CPU affinity settings of a running task
-     ` $ taskset -c -p <pid>`
+     `$ taskset -c -p <pid>`
     
 
   
@@ -74,12 +74,12 @@ The `chrt` command can be used to get or set the real-time scheduling policies a
 
 - Modify the scheduling policy and priority of a running task
  
- ` $ chrt -f -p <priority> <pid>`  (sets the task with pid <pid> to SCHED_FIFO policy with priority <priority>)
+ `$ chrt -f -p <priority> <pid>`  (sets the task with pid <pid> to SCHED_FIFO policy with priority <priority>)
 
 
 - View the current scheduling policy and priority of a running task
 
-   ` $ chrt -p <pid>`
+   `$ chrt -p <pid>`
 
 
 
@@ -91,8 +91,8 @@ The `ps` command can be used to list processes with their scheduling policies an
     $ ps -eo cmd,pid,cpu,pri,cls
 
 
-     `CMD `                                              ` PID  CPU   PRI    CLS`
+     `CMD`                                              `PID  CPU   PRI    CLS`
 
-    `/lib/systemd/systemd --swit `                       ` 1     -    19    TS`
+    `/lib/systemd/systemd --swit `` 1     -    19    TS `
 
-    `[kthreadd]`                                         ` 2     -    19    TS`
+    `[kthreadd]`` 2     -    19    TS`
