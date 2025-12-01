@@ -488,7 +488,7 @@ ks=https://<server>/<config_file_path> insecure_installation=1
 
 Here's an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from VMware at the following URL: 
 
-[https://packages.vmware.com/photon](https://packages.vmware.com/photon)
+[https://packages-prod.broadcom.com/photon](https://packages-prod.broadcom.com/photon)
 
 Once you have the ISO, mount it. 
 

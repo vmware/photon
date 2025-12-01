@@ -18,9 +18,9 @@ On Photon OS, the existing repositories appear in the `/etc/yum.repos.d` directo
 To view the format and information that a new repository configuration file should contain, see one of the `.repo` files. The following is an example:
 
 
-	baseurl=https://https://packages.vmware.com/photon/
+	baseurl=https://https://packages-prod.broadcom.com/photon/
     metalink=http://example.com/*username*/metalink/metalink
-	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+	gpgkey=file:///etc/pki/rpm-gpg/VMware-RPM-GPG-KEY
 	gpgcheck=1
 	enabled=1
 	skip_if_unavailable=True
@@ -64,7 +64,7 @@ The repository settings details are as follows:
     
        <resources maxconnections="1">
     
-    <url protocol="http" type="http" location="IN" preference=“100”>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
+    <url protocol="http" type="http" location="IN" preference=“100”>https://packages-prod.broadcom.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
      
        </resources>
     
@@ -105,9 +105,9 @@ The repository settings details are as follows:
 
 - The `timeout` setting specifies the number of seconds that a download is allowed to take or `0` for no limit. Note that this is an absolute value and may interrupt large file downloads.
 
-- The `minrate` setting specifies the limit below which if the download rate falls, `tdnf` will abort the download. The default value is `0 `(`no limit`).
+- The `minrate` setting specifies the limit below which if the download rate falls, `tdnf` will abort the download. The default value is `0`(`no limit`).
 
-- The `maxrate` setting specifies the maximum download rate (throttle). The default value is `0 `(`no limit`).
+- The `maxrate` setting specifies the maximum download rate (throttle). The default value is `0`(`no limit`).
 
 - You can use the skip metadata download settings to skip the download of metadata files for repositories with a lot of packages. When you skip the download of the metadata files, it improves the download time of the packages and the processing time of refreshing the cache.
 
