@@ -10,8 +10,8 @@ You can use `network-config-manager` (`nmctl`) to configure and introspect the s
 
 The following example shows the system status:
 
-```
-❯ nmctl
+```console
+nmctl
          System Name: zeus
               Kernel: Linux (5.10.152-3.ph4)
      systemd version: v252-1
@@ -39,8 +39,8 @@ The following example shows the system status:
 
 The following example shows the network status:
 
-```
-❯ nmctl status eth0
+```console
+nmctl status eth0
            Alternative names: eno1 enp11s0 ens192
                        Flags: UP BROADCAST RUNNING MULTICAST LOWERUP
                         Type: ether
@@ -78,37 +78,37 @@ IPv6 Address Generation Mode: eui64
 To add DNS, use the following command:
 
 
-```
+```console
 nmctl add-dns dev eth0 dns 192.168.1.45 192.168.1.46
 ```
 
 To set mtu, use the following command:
 
-```
+```console
 nmctl set-mtu dev eth0 mtu 1400
 ```
 
 To set mac, use the following command:
 
-```
+```console
 nmctl set-mac dev eth0 mac 00:0c:29:3a:bc:11
 ```
 
 To set link options, use the following command:
 
-```
+```console
 nmctl set-link-option dev eth0 arp yes mc yes amc no pcs no
 ```
 
 To add a static address, use the following command:
 
-```
+```console
 nmctl add-addr dev eth0 a 192.168.1.45/24
 ```
 
 To add a default gateway, use the following command:
 
-```
+```console
 nmctl add-default-gw dev eth0 gw 192.168.1.1 onlink  yes
 ```
 
@@ -116,25 +116,25 @@ nmctl add-default-gw dev eth0 gw 192.168.1.1 onlink  yes
 The following example shows how to create VLAN via `nmctl`
 The following command creates `.netdev` and `.network` and assigns them to the underlying device. It sets all these file permissions to `systemd-network` automatically.
 
-```
-❯ nmctl create-vlan [VLAN name] dev [MASTER DEVICE] id [ID INTEGER] proto [PROTOCOL {802.1q|802.1ad}] Creates vlan netdev and network file
+```console
+nmctl create-vlan [VLAN name] dev [MASTER DEVICE] id [ID INTEGER] proto [PROTOCOL {802.1q|802.1ad}] Creates vlan netdev and network file
 
-❯ sudo nmctl create-vlan vlan-95 dev eth0 id 19
+sudo nmctl create-vlan vlan-95 dev eth0 id 19
 ```
 
 
 The following example shows how to create VXLAN via `nmctl`:
 
-```
-❯ sudo nmctl create-vxlan vxlan-98 vni 32 local 192.168.1.2 remote 192.168.1.3 port 7777 independent yes
+```console
+sudo nmctl create-vxlan vxlan-98 vni 32 local 192.168.1.2 remote 192.168.1.3 port 7777 independent yes
 ```
 
 
 The following example shows how to create virtual routing and forwarding (VRF):
 
-```
-❯ sudo nmctl create-vrf test-vrf table 555                                                                                               
-❯ ip -d link show test-vrf
+```console
+sudo nmctl create-vrf test-vrf table 555                                                                                               
+ip -d link show test-vrf
 4: test-vrf: <NOARP,MASTER,UP,LOWER_UP> mtu 65575 qdisc noqueue state UP mode DEFAULT group default qlen 1000
     link/ether 86:ad:9b:50:83:1f brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 1280 maxmtu 65575 
     vrf table 555 addrgenmode none numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535  
@@ -142,9 +142,9 @@ The following example shows how to create virtual routing and forwarding (VRF):
 
 The following example shows how to remove a virtual netdev:
 
-```
-❯ sudo nmctl remove-netdev vlan-95                                                                                         
-❯ ip -d link show vlan-95 
+```console
+sudo nmctl remove-netdev vlan-95                                                                                         
+ip -d link show vlan-95 
 Device "vlan-95" does not exist.
 ```
 ***Note:*** `nmctl` not only removes the `.netdev` and `.network` files but also removes the virtual netdev.

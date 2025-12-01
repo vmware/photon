@@ -9,7 +9,7 @@ We are going to do this twice: first, to verify an existing bootable image insta
 ## Downloading a docker container appliance
 
 Photon OS comes with docker package installed and configured, but we expect that the docker daemon is inactive (not started). Configuration file /usr/lib/systemd/system/docker.service is read-only (remember /usr is bound as read-only). 
-```
+```console
 root@sample-host-def [ ~ ]# systemctl status docker
 * docker.service - Docker Daemon
    Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled)
@@ -24,25 +24,25 @@ Wants=network-online.target
 
 [Service]
 Type=notify
-# the default is not to use systemd for cgroups because the delegate issues still
-# exists and systemd currently does not support the cgroup feature set required
-# for containers run by docker
+the default is not to use systemd for cgroups because the delegate issues still
+exists and systemd currently does not support the cgroup feature set required
+for containers run by docker
 ExecStart=/usr/bin/dockerd
 ExecReload=/bin/kill -s HUP $MAINPID
-# Having non-zero Limit*s causes performance problems due to accounting overhead
-# in the kernel. We recommend using cgroups to do container-local accounting.
+Having non-zero Limit*s causes performance problems due to accounting overhead
+in the kernel. We recommend using cgroups to do container-local accounting.
 LimitNOFILE=infinity
 LimitNPROC=infinity
 LimitCORE=infinity
-# Uncomment TasksMax if your systemd version supports it.
-# Only systemd 226 and above support this version.
+Uncomment TasksMax if your systemd version supports it.
+Only systemd 226 and above support this version.
 #TasksMax=infinity
 TimeoutStartSec=0
-# set delegate yes so that systemd does not reset the cgroups of docker containers
+set delegate yes so that systemd does not reset the cgroups of docker containers
 Delegate=yes
-# kill only the docker process, not all processes in the cgroup
+kill only the docker process, not all processes in the cgroup
 KillMode=process
-# restart the docker process if it exits prematurely
+restart the docker process if it exits prematurely
 Restart=on-failure
 StartLimitBurst=3
 StartLimitInterval=60s
@@ -53,7 +53,7 @@ WantedBy=multi-user.target
 
 Now let's enable docker daemon to start at boot time - this will create a symbolic link into writable folder /etc/systemd/system/multi-user.target.wants to its systemd configuration, as with all other systemd controlled services. 
 
-```
+```console
 root@sample-host-def [ ~ ]# systemctl enable docker
 Created symlink /etc/systemd/system/multi-user.target.wants/docker.service -> /lib/systemd/system/docker.service.
 
@@ -72,7 +72,7 @@ To verify that the symbolic link points to a file in a read-only directory, try 
 
 Finally, let's start the daemon, check again that is active.
 
-```
+```console
 root@sample-host-def [ ~ ]# systemctl start docker
 
 root@sample-host-def [ ~ ]# systemctl status -l docker
@@ -103,7 +103,7 @@ Sep 10 10:54:32 photon-76718dd2fa33 systemd[1]: Started Docker Application Conta
 
 We'll ask docker to run Ubuntu Linux in a container. Since it's not present locally, it's going to be downloaded first from the official docker repository https://hub.docker.com/_/ubuntu/.
 
-```
+```console
 root@sample-host-def [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE            COMMAND      CREATED           STATUS              PORTS       NAMES
 
@@ -120,7 +120,7 @@ Status: Downloaded newer image for ubuntu:latest
 
 When downloading is complete, it comes to Ubuntu root prompt with assigned host name 7029a64e7aa3, that is actually the Container ID. Let's verify it's indeed the expected OS.
 
-```
+```console
 root@sample-host-def [ ~ ]# docker run -it ubuntu
 Unable to find image 'ubuntu:latest' locally
 latest: Pulling from library/ubuntu
@@ -132,7 +132,7 @@ library/ubuntu:latest: The image you are pulling has been verified. Important: i
 Digest: sha256:fde8a8814702c18bb1f39b3bd91a2f82a8e428b1b4e39d1963c5d14418da8fba
 Status: Downloaded newer image for ubuntu:latest
 
-root@7029a64e7aa3:/# cat /etc/os-release
+cat /etc/os-release
 NAME="Ubuntu"
 VERSION="18.04.3 LTS (Bionic Beaver)"
 ID=ubuntu
@@ -149,16 +149,16 @@ root@7029a64e7aa3:/#
 ```
 Now let's write a file into Ubuntu home directory
 
-```
+```console
 echo "Ubuntu file" >> /home/myfile
-root@7029a64e7aa3:/home# cat /home/myfile
+cat /home/myfile
 Ubuntu file
 ```
 
 We'll exit back to the Photon prompt and if it's stopped, we will re-start it.
 
-```
-root@7029a64e7aa3:/# exit
+```console
+exit
 exit
 
 root@sample-host-def [ ~ ]# docker ps -a
@@ -177,7 +177,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 Now let's reboot the machine and select the other image. First, we'll verify that the docker daemon is automaically started.
 
-```
+```console
 root@photon-host-cus1 [ ~ ]# systemctl status docker
 * docker.service - Docker Application Container Engine
    Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: disabled)
@@ -193,7 +193,7 @@ root@photon-host-cus1 [ ~ ]# systemctl status docker
 
 Next, is the Ubuntu OS container still there?
 
-```
+```console
 root@photon-host-cus1 [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                       PORTS               NAMES
 7029a64e7aa3        ubuntu              "/bin/bash"         9 minutes ago       Up 2 minutes                                     gifted_dijkstra
@@ -201,12 +201,12 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 It is, so let's start it, attach and verify that our file is persisted, then add another line to it and save, exit.
 
-```
+```console
 root@photon-host-cus1 [ ~ ]# docker start -i  7029a64e7aa3
-root@7029a64e7aa3:/# cat /home/myfile
+cat /home/myfile
 Ubuntu file
-root@7029a64e7aa3:/# echo "booted into existing image" >> /home/myfile
-root@7029a64e7aa3:/# exit
+echo "booted into existing image" >> /home/myfile
+exit
 exit
 ```
 
@@ -214,7 +214,7 @@ exit
 
 Let's upgrade and replace the .0 image by a .3 build that contains git and also perl_YAML (because it is a dependency of git).
 
-```
+```console
 root@photon-host-cus1 [ ~ ]# rpm-ostree status
   TIMESTAMP (UTC)         VERSION               ID             OSNAME     REFSPEC
 * 2015-09-04 00:36:37     3.0_tp2_minimal.2     092e21d292     photon     photon:photon/tp2/x86_64/minimal
@@ -240,7 +240,7 @@ root@photon-host-cus1 [ ~ ]# rpm-ostree status
 
 After reboot from 3.0_tp2_minimal.3 build, let's check that the 3-way /etc merge succeeded as expected. The docker.service slink is still there, and docker demon restarted at boot.
 
-```
+```console
 root@photon-host-cus1 [ ~ ]# ls -l /etc/systemd/system/multi-user.target.wants/docker.service
 lrwxrwxrwx 1 root root 38 Sep  6 12:50 /etc/systemd/system/multi-user.target.wants/docker.service -> /usr/lib/systemd/system/docker.service
 
@@ -256,7 +256,7 @@ root@photon-host-cus1 [ ~ ]# systemctl status docker
 
 Let's revisit the Ubuntu container. Is the container still there? is myfile persisted?
 
-```
+```console
 root@photon-host-cus1 [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                    PORTS               NAMES
 7029a64e7aa3        ubuntu              "/bin/bash"         5 days ago          Exited (0) 5 days ago                         gifted_dijkstra
@@ -264,8 +264,8 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 root@photon-host-cus1 [ ~ ]# docker start 57dcac5d0490
 
-root@57dcac5d0490:/# cat /home/myfile
+cat /home/myfile
 Ubuntu file
 booted into existing image
-root@57dcac5d0490:/# echo "booted into new image" >> /home/myfile
+echo "booted into new image" >> /home/myfile
 ```

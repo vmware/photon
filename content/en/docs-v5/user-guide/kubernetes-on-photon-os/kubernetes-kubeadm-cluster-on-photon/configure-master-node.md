@@ -12,15 +12,15 @@ This section describes how to configure a master node with the following details
 
 Change the host name on the VM using the following command:
 
-```
+```console
 hostnamectl set-hostname kube-master
 ```   
 
 To ensure connectivity with the future working node, kube-worker, modify the file `/etc/hosts` as follows:
 
-```
+```console
 cat /etc/hosts
-# Begin /etc/hosts (network card version)
+Begin /etc/hosts (network card version)
 10.197.103.246 kube-master
 10.197.103.232 kube-worker
   
@@ -28,7 +28,7 @@ cat /etc/hosts
 127.0.0.1   localhost.localdomain
 127.0.0.1   localhost
 127.0.0.1   photon-machine
-# End /etc/hosts (network card version)
+End /etc/hosts (network card version)
 ```   
 
 ## System Tuning
@@ -39,25 +39,25 @@ Run the following `iptables` commands to open the required ports for Kubernetes 
 
 Save the updated set of rules so that they become available the next time you reboot the VM.
 
-```
+```console
 Firewall Settings
 ```
-```
-# ping
+```console
+ping
 iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
   
-# etcd
+etcd
 iptables -A INPUT -p tcp -m tcp --dport 2379:2380 -j ACCEPT
   
-# kubernetes
+kubernetes
 iptables -A INPUT -p tcp -m tcp --dport 6443 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 10250:10252 -j ACCEPT
   
-# calico
+calico
 iptables -A INPUT -p tcp -m tcp --dport 179 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 4789 -j ACCEPT
   
-# save rules
+save rules
 iptables-save > /etc/systemd/scripts/ip4save
 ```   
 
@@ -65,8 +65,8 @@ iptables-save > /etc/systemd/scripts/ip4save
 
 You need to enable IPv4 IP forwarding and iptables filtering on the bridge devices. Create the file `/etc/sysctl.d/kubernetes.conf` as follows: 
 
-```
-# Load br_netfilter module to facilitate traffic between pods
+```console
+Load br_netfilter module to facilitate traffic between pods
 modprobe br_netfilter
  
  
@@ -79,7 +79,7 @@ net/bridge/bridge-nf-call-arptables = 1
 
 Apply the new `sysctl` setttings as follows:
 
-```
+```console
 sysctl --system
 ...
  
@@ -95,7 +95,7 @@ sysctl --system
 
 Use the following command to install `crictl` and use containerd as runtime endpoint:
 
-```
+```console
 #install crictl
 tdnf install -y cri-tools
  
@@ -113,7 +113,7 @@ Use `systemd` as cgroup for containerd as shown in the followng command:
 
 
 	Configuration File
-```
+```python
 cat /etc/containerd/config.toml
 #disabled_plugins = ["cri"]
  
@@ -124,9 +124,9 @@ cat /etc/containerd/config.toml
 version = 2
  
 #[grpc]
-#  address = "/run/containerd/containerd.sock"
-#  uid = 0
-#  gid = 0
+address = "/run/containerd/containerd.sock"
+uid = 0
+gid = 0
  
 [plugins."io.containerd.grpc.v1.cri"]
 enable_selinux = true
@@ -138,16 +138,16 @@ enable_selinux = true
             SystemdCgroup = true
  
 #[debug]
-#  address = "/run/containerd/debug.sock"
-#  uid = 0
-#  gid = 0
-#  level = "info"
+address = "/run/containerd/debug.sock"
+uid = 0
+gid = 0
+level = "info"
 ```
 
 Use the following command to check if containerd is running with `systemd cgroup`:
 
 	Restart containerd service
-```
+```console
 systemctl daemon-reload
 systemctl restart containerd
 systemctl enable containerd.service
@@ -165,13 +165,13 @@ Install kubernetes-kubeadm and other packages on the master node, and then use K
 
 Run the following commands to install `kubeadm`, `kubectl`, `kubelet`, and `apparmor-parser`:
 
-```
+```console
 tdnf install -y kubernetes-kubeadm apparmor-parser
 systemctl enable --now kubelet
 ```
 Pull the Kubernetes images using the following commands:
 
-```
+```console
 kubeadm config images pull
 ```
 
@@ -180,7 +180,7 @@ kubeadm config images pull
 Use the following commands to run Kubeadm and initialize the system:
 
 	kubeadm init
-```
+```console
 #For Flannel/Canal
 kubeadm init --pod-network-cidr=10.244.0.0/16
  
@@ -228,7 +228,7 @@ Also, untaint the control plane VM to schedule pods on the master VM.
 
 Use the following command to export the Kubernetes configuration and untaint the control plane VM: 
 
-```
+```console
 export KUBECONFIG=/etc/kubernetes/admin.conf
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 ```
@@ -237,19 +237,19 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 Install the Canal network plugin using the following command:
 
-```
+```console
 #canal
 curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/canal.yaml -o canal.yaml
  
-# Alternatively if using flannel
+Alternatively if using flannel
 curl https://raw.githubusercontent.com/flannel-io/flannel/v0.21.4/Documentation/kube-flannel.yml -o flannel.yaml
-# Alternatively if using calico
+Alternatively if using calico
 curl  https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml -o calico.yaml
 ```   
 
 Get cni images for the network policy to work:
 
-```
+```console
 tdnf install -y docker
 systemctl restart docker
 docker login -u $username
@@ -265,13 +265,13 @@ docker pull calico/kube-controllers:v3.25.0
 
 Use the following command to apply the network policy:
 
-```
+```console
 #Apply network plugin configuration
 kubectl apply -f canal.yaml
 ```   
 The Kubernetes master node should be up and running now. Try the following commands to verify the state of the cluster:
 
-```
+```console
 kubectl cluster-info
 Kubernetes control plane is running at https://10.197.103.246:6443
 CoreDNS is running at https://10.197.103.246:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy

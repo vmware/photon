@@ -10,7 +10,7 @@ The  `photon-upgrade` package provides a seamless upgrade for Photon OS. To use 
 
 1.  Install the `photon-upgrade` package on the Photon OS 4.0 system.
 2. Run the following script:
-	```
+	```console
 	/bin/photon-upgrade.sh
 	```   
 3. Follow the interactions with that script. 
@@ -27,13 +27,13 @@ For each Photon OS 4.0 VM that you want to upgrade, complete the following steps
 2.	Stop any services (for example, docker) that are currently running in the VM.
 3.	Install photon-upgrade package
     
-    ```
+    ```console
     # tdnf -y install photon-upgrade
     ```
 
 4.	Run the upgrade script
     
-    ```
+    ```console
     # photon-upgrade.sh --upgrade-os
     ```
 

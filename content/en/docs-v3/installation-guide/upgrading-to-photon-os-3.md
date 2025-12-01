@@ -15,13 +15,13 @@ For each Photon OS 2.0 VM that you want to upgrade, complete the following steps
 2.	Stop any services (for example, docker) that are currently running in the VM.
 3.	Install photon-upgrade package
     
-    ```
+    ```console
     # tdnf -y install photon-upgrade
     ```
 
 4.	Run the upgrade script
     
-    ```
+    ```console
     # photon-upgrade.sh
     ```
 

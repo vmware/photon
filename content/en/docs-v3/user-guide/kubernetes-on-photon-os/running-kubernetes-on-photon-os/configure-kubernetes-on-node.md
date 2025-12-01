@@ -7,7 +7,7 @@ Perform the following steps to configure the kubelet on the node:
 
 1. Edit /etc/kubernetes/kubelet to appear like this:
 
-    ```
+    ```console
     ###
     # Kubernetes kubelet (node) config
     
@@ -30,7 +30,7 @@ Perform the following steps to configure the kubelet on the node:
      clusters:
      - cluster:
          server: http://photon-master:8080
-     ```
+     ```console
 
 
 1. Start the appropriate services on the node (photon-node):
@@ -41,7 +41,7 @@ Perform the following steps to configure the kubelet on the node:
         systemctl enable $SERVICES
         systemctl status $SERVICES 
     done
-    ```
+    ```console
 
 1. Check to make sure that the cluster can now see the photon-node on photon-master and that its status changes to _Ready_.
 
@@ -49,7 +49,7 @@ Perform the following steps to configure the kubelet on the node:
    kubectl get nodes
    NAME                LABELS              STATUS
    photon-node          name=photon-node-label     Ready
-   ```
+   ```console
    
    If the node status is `NotReady`, verify that the firewall rules are permissive for Kubernetes.  
    
@@ -61,7 +61,7 @@ Perform the following steps to configure the kubelet on the node:
 
 ## Result
 
-You should have a functional cluster. You can now launch a test pod. For an introduction to working with Kubernetes, see [Kubernetes documentation](http://kubernetes.io/docs/home/).
+You should have a functional cluster. You can now launch a test pod. For an introduction to working with Kubernetes, see [Kubernetes documentation](https://kubernetes.io/docs/home/).
 
 
 

@@ -23,20 +23,20 @@ Perform the following steps to turn on predictable network interface names:
 
 1. Make a backup copy of the following file in case you need to restore it later:
     
-    ```
+    ```console
     cp /boot/grub/grub.cfg /boot/grub/grub.cfg.original
     ``` 
 
 2. To turn on predictable network interface names, edit `/boot/grub/grub.cfg` to remove the following string: 
 
     
-    ```
+    ```console
     net.ifnames=0Item
     ```
     The string appears near the bottom of the file in the `menuentry` section:
 
     
-    ```
+    ```console
     menuentry "Photon" {
        linux "/boot/"$photon_linux root=$rootpartition net.ifnames=0 $photon_cmdline
        if [ "$photon_initrd" ]; then
@@ -51,7 +51,7 @@ Perform the following steps to turn on predictable network interface names:
 1. Specify the types of policies that you want to use for predictable interface names by modifying the `NamePolicy` option in `/lib/systemd/network/99-default.link`. The file contents are as follows: 
 
     
-    ```
+    ```console
     cat /lib/systemd/network/99-default.link
     [Link]
     NamePolicy=kernel database
@@ -63,7 +63,7 @@ To use the `ens` or `enx` option, the `slot` policy or the `mac` policy can be a
 
 For example: 
     
-```
+```console
 /lib/systemd/network/99-default.link
     [Link]
     NamePolicy=slot mac kernel database

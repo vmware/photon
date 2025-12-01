@@ -6,7 +6,7 @@ weight: 2
 [TDNF](https://github.com/vmware/tdnf) is the default package manager for Photon OS. The standard syntax for `tdnf` commands is the same as that for DNF and YUM. TDNF reads YUM repositories from **/etc/yum.repos.d/**.
 
 To find the main configuration file and see its contents, run the following command:
-```
+```console
 cat /etc/tdnf/tdnf.conf
 [main]
 gpgcheck=1
@@ -17,7 +17,7 @@ cachedir=/var/cache/tdnf
 ```
 
 Repositories have a **.repo** file extension, The following repositories are available in **/etc/yum.repos.d/** :
-```
+```console
 ls /etc/yum.repos.d/
 photon-extras.repo
 photon-iso.repo
@@ -26,7 +26,7 @@ photon.repo
 ```
 
 Use the `tdnf repolist` command to list the repositories. Tdnf filters the results by their status **enabled**, **disabled**, and **all**. Running the `tdnf repolist` command without arguments displays the enabled repositories.
-```
+```console
 #tdnf repolist
 
 repo id repo name status
@@ -44,8 +44,8 @@ The following repositories are important for Photon:
 - photon : This repo generally contains the RPM versions packaged with the released ISO.
 
 To check the local cache data from the repository, run the following command:
-```
-# ls -l /var/cache/tdnf/photon
+```console
+ls -l /var/cache/tdnf/photon
 total 12
 -r--r----- 1 root root 0 Apr 3 22:34 lastrefresh
 drwxr-x--- 2 root root 4096 Apr 3 22:34 repodata
@@ -67,7 +67,7 @@ The `tdnf` command can be used in the following ways:
 `#tdnf makecache` : This command updates the cached binary metadata for all known repositories.
 
 `tdnf clean all` : This command cleans up temporary files, data, and metadata. It takes the argument `all`.
-```
+```console
 #tdnf list systemd
 
 Refreshing metadata for: 'VMware Photon Linux 3.0(x86_64)'
@@ -99,7 +99,7 @@ root@photon-4a0e7f2307d4 [ /WS/photon-dev/photon ]#
 Here, `@System` indicates that the particular RPM is installed in the VM.
 
 To upgrade/downgrade RPMs run the following commands:
-```
+```console
 #tdnf upgrade <pkg-name>
 
 #tdnf downgrade <pkg-name>
