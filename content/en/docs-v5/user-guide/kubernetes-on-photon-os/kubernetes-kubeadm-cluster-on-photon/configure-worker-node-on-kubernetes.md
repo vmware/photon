@@ -16,15 +16,15 @@ Install the worker VM using the same Photon OS image.
 
 Change the hostname on the VM using the following command:
 
-```
+```console
 hostnamectl set-hostname kube-worker
 ```   
 
 To ensure connectivity with the future working node, kube-worker, modify the file `/etc/hosts` as follows: 
 
-```
+```console
 cat /etc/hosts
-# Begin /etc/hosts (network card version)
+Begin /etc/hosts (network card version)
 10.197.103.246 kube-master
 10.197.103.232 kube-worker
   
@@ -32,7 +32,7 @@ cat /etc/hosts
 127.0.0.1   localhost.localdomain
 127.0.0.1   localhost
 127.0.0.1   photon-machine
-# End /etc/hosts (network card version)
+End /etc/hosts (network card version)
 ```
 
 ## System Tuning
@@ -43,21 +43,21 @@ Run the following `iptables` commands to open the required ports for Kubernetes 
 Save the updated set of rules so that they become available the next time you reboot the VM.
 
 	Firewall settings
-```
-# ping
+```console
+ping
 iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
   
-# kubernetes
+kubernetes
 iptables -A INPUT -p tcp -m tcp --dport 10250:10252 -j ACCEPT
   
-# workloads
+workloads
 iptables -A INPUT -p tcp -m tcp --dport 30000:32767 -j ACCEPT
   
-# calico
+calico
 iptables -A INPUT -p tcp -m tcp --dport 179 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 4789 -j ACCEPT
   
-# save rules
+save rules
 iptables-save > /etc/systemd/scripts/ip4save
 ```    
 
@@ -65,8 +65,8 @@ iptables-save > /etc/systemd/scripts/ip4save
 
 You need to enable IPv4 IP forwarding and `iptables` filtering on the bridge devices. Create the file `/etc/sysctl.d/kubernetes.conf` as follows: 
 
-```
-# Load br_netfilter module to facilitate traffic between pods
+```console
+Load br_netfilter module to facilitate traffic between pods
 modprobe br_netfilter
  
  
@@ -79,7 +79,7 @@ net/bridge/bridge-nf-call-arptables = 1
 
 Apply the new `sysctl` settings as follows:
 
-```
+```console
 sysctl --system
 ...
  
@@ -95,7 +95,7 @@ sysctl --system
 
 Use the following command to install `crictl` and use containerd as the runtime endpoint:
 
-```
+```console
 #install crictl
 tdnf install -y cri-tools
  
@@ -113,7 +113,7 @@ Use `systemd` as cgroup for containerd as shown in the following command:
 
 
 	Configuration File
-```
+```python
 cat /etc/containerd/config.toml
 #disabled_plugins = ["cri"]
  
@@ -124,9 +124,9 @@ cat /etc/containerd/config.toml
 version = 2
  
 #[grpc]
-#  address = "/run/containerd/containerd.sock"
-#  uid = 0
-#  gid = 0
+address = "/run/containerd/containerd.sock"
+uid = 0
+gid = 0
  
 [plugins."io.containerd.grpc.v1.cri"]
 enable_selinux = true
@@ -138,16 +138,16 @@ enable_selinux = true
             SystemdCgroup = true
  
 #[debug]
-#  address = "/run/containerd/debug.sock"
-#  uid = 0
-#  gid = 0
-#  level = "info"
+address = "/run/containerd/debug.sock"
+uid = 0
+gid = 0
+level = "info"
 ```
 
 Use the following command to check if containerd is running with `systemd cgroup`:
 
 	Restart containerd service
-```
+```console
 systemctl daemon-reload
 systemctl restart containerd
 systemctl enable containerd.service
@@ -166,13 +166,13 @@ Install kubernetes-kubeadm and other packages on the worker node, and then use K
 
 Run the following commands to install `kubeadm`, `kubectl`, `kubelet`, and `apparmor-parser`:
 
-```
+```console
 tdnf install -y kubernetes-kubeadm apparmor-parser
 systemctl enable --now kubelet
 ```
 Pull the Kubernetes images using the following commands:
 
-```
+```console
 kubeadm config images pull
 ```
 
@@ -180,20 +180,20 @@ kubeadm config images pull
 
 Use Kubeadm to join the cluster with the token you got after running the `kubeadm init` command on the master node. Use the following command to join the cluster:
 
-```
+```console
 Join the master
 ```   
-```
+```console
 kubeadm join 10.197.103.246:6443 --token eaq5cl.gqnzgmqj779xtym7 \
     --discovery-token-ca-cert-hash sha256:90b9da1b34de007c583aec6ca65f78664f35b3ff03ceffb293d6ec9332142d05
 ```   
 Use the following command to get cni images for network policy pods to work:
 
-```
+```console
 Pull required docker images
 ```   
 
-```
+```console
 tdnf install -y docker
 systemctl restart docker
 docker login -u $username
@@ -208,7 +208,7 @@ docker pull calico/kube-controllers:v3.25.0
 
 The Kubernetes worker node should be up and running now. Run the following command from  the kube-master node to verify the state of the cluster:
 
-```
+```console
 kubectl get nodes
 NAME          STATUS   ROLES           AGE     VERSION
 kube-master   Ready    control-plane   21m     v1.26.1

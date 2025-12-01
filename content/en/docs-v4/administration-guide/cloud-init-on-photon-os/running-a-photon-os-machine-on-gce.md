@@ -11,11 +11,11 @@ The example in this section shows how to create a Photon OS instance on Google C
 
 ### Prerequisites 
 
-- You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download Photon OS for GCE from [https://packages.vmware.com/photon/4.0/GA/gce/](https://packages.vmware.com/photon/4.0/GA/gce/).
+- You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download Photon OS for GCE from [https://packages-prod.broadcom.com/photon/4.0/GA/gce/](https://packages-prod.broadcom.com/photon/4.0/GA/gce/).
 
     The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json): 
 	
-    ```
+    ```console
     sudo, tar, which, google-daemon, google-startup-scripts, kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
     ```
 

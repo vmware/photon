@@ -74,8 +74,8 @@ A whitespace-separated list of interfaces matching the device name. Specifies th
 The following example shows a sample configuration of the key values in the `cloud-network.toml` file:
 
 
-```
-> cat /etc/cloud-network/cloud-network.toml
+```console
+cat /etc/cloud-network/cloud-network.toml
 [System]
 RefreshTimer="300s"
 LogLevel="info"

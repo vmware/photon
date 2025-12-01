@@ -16,7 +16,7 @@ To use the A/B partition system, ensure the following prerequisites:
 
 	The following example shows how to create a shadow partition mounted at `/`:
 
-	```
+	```console
 	{
 	  "partitions": [
 	                  {
@@ -41,7 +41,7 @@ To use the A/B partition system, ensure the following prerequisites:
 
 	The following template shows how a configuration file looks like:
 	
-	```
+	```console
 	# either UEFI, BIOS, or BOTH
 	# BOOT_TYPE=<boot type>
 	 

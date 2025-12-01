@@ -11,8 +11,8 @@ The installation log files and the cloud-init log files reside in `/var/log`. If
 Journalctl is a utility to query and display logs from journald and systemd’s logging service. Since journald stores log data in a binary format instead of a plain text format, `journalctl` is the standard way of reading log messages processed by journald.
 
 Journald is a service provided by systemd. To see the staus of the daemon, run the following commands:
-```
-# systemctl status systemd-journald
+```console
+systemctl status systemd-journald
 ● systemd-journald.service - Journal Service
 Loaded: loaded (/lib/systemd/system/systemd-journald.service; static; vendor preset: enabled)
 Active: active (running) since Tue 2020-04-07 14:33:41 CST; 2 days ago
@@ -60,12 +60,12 @@ To see Journal logs by their priority, run the following command:
 - `journalctl -p "emerg".."crit` : This command displays logs **emerg** to **critical**. For example: core dumps.
 
 Journalctl can print log messages to the console as they are added, like the Linux `tail` command. Add the `-f` switch to follow a specific service or daemon.
-```
+```console
 journalctl -u unit.service -f
 ```
 
 To list the boots of the system, run the following command:
-```
+```console
 journalctl --list-boots
 ```
 
@@ -77,21 +77,21 @@ You can maintain the journalctl logs manually, by running the following `vacuum`
 You can configure Journald using the conf file located at **/etc/systemd/journald.conf**. Run the following command to configure the file:
 
 ```console
-# cat /etc/systemd/journald.conf
+cat /etc/systemd/journald.conf
 ```
 ```ini
-# This file is part of systemd.
+This file is part of systemd.
 #
-# systemd is free software; you can redistribute it and/or modify it
-# under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation; either version 2.1 of the License, or
-# (at your option) any later version.
+systemd is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
 #
-# Entries in this file show the compile time defaults.
-# You can change settings by editing this file.
-# Defaults can be restored by simply deleting this file.
+Entries in this file show the compile time defaults.
+You can change settings by editing this file.
+Defaults can be restored by simply deleting this file.
 #
-# See journald.conf(5) for details.
+See journald.conf(5) for details.
 
 [Journal]
 #Storage=auto

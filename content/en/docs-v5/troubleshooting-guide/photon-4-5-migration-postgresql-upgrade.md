@@ -27,25 +27,25 @@ Perform the following steps to keep using a lower version of PostgreSQL when you
 In this case, we need to install postgresql v13 in Photon  OS 5.0 manually, and then migrate DB to PostgreSQL v14 or PostgreSQL v15 or keep using PostgreSQL v13.
 
 To keep using PostgreSQL v13 in Photon OS 5.0, execute the following command:
-```
-$ sudo tdnf install -y postgresql13
+```console
+sudo tdnf install -y postgresql13
 ```   
 Set PATH & LD_LIBRARY_PATH to the right locations to keep using PostgreSQL v13.
 
-```
-$ export PATH=/usr/pgsql/13/bin:$PATH
+```console
+export PATH=/usr/pgsql/13/bin:$PATH
 ```   
-```
-$ export LD_LIBRARY_PATH=/usr/pgsql/13/lib:$LD_LIBRARY_PATH
+```console
+export LD_LIBRARY_PATH=/usr/pgsql/13/lib:$LD_LIBRARY_PATH
 ```   
 
 To migrate to PostgreSQL v14 or PostgreSQL v15, execute the following commands:
 
-```
-$ initdb -D <pgsql14/pgsql15-data-dir>
+```console
+initdb -D <pgsql14/pgsql15-data-dir>
 ```    
-```
-$ pg_upgrade --old-datadir <pgsql13-data-dir> --new-datadir <pgsql14/pgsql15-data-dir> --old-bindir /usr/pgsql/13/bin/ --new-bindir /usr/bin
+```console
+pg_upgrade --old-datadir <pgsql13-data-dir> --new-datadir <pgsql14/pgsql15-data-dir> --old-bindir /usr/pgsql/13/bin/ --new-bindir /usr/bin
 ```    
 
 **PostgreSQL (v14 in Photon 4.0) → PostgreSQL (v14/v15 in Photon 5.0)**
@@ -54,26 +54,26 @@ In this case, we need to install PostgreSQL v13 in Photon 5.0 manually, and then
 
 To keep using PostgreSQL v14 in Photon 5.0, execute the following command:
 
-```
-$ sudo tdnf install -y postgresql14
+```console
+sudo tdnf install -y postgresql14
 ```    
 Set PATH & LD_LIBRARY_PATH to right locations to keep using PostgreSQL v14.
 
-```
-$ export PATH=/usr/pgsql/14/bin:$PATH
+```console
+export PATH=/usr/pgsql/14/bin:$PATH
 ```   
-```
-$ export LD_LIBRARY_PATH=/usr/pgsql/14/lib:$LD_LIBRARY_PATH
+```console
+export LD_LIBRARY_PATH=/usr/pgsql/14/lib:$LD_LIBRARY_PATH
 ```   
 
 
 To migrate to PostgreSQL v14 or PostgreSQL v15, execute the following commands:
 
-```
-$ initdb -D <pgsql15-data-dir>
+```console
+initdb -D <pgsql15-data-dir>
 ```    
-```
-$ pg_upgrade --old-datadir <pgsql14-data-dir> --new-datadir <pgsql15-data-dir> --old-bindir /usr/pgsql/14/bin/ --new-bindir /usr/bin
+```console
+pg_upgrade --old-datadir <pgsql14-data-dir> --new-datadir <pgsql15-data-dir> --old-bindir /usr/pgsql/14/bin/ --new-bindir /usr/bin
 ```   
 
 **Note**: If you chose the `pg_upgrade` method, you can remove the older version of PostgreSQL once DB is migrated.
