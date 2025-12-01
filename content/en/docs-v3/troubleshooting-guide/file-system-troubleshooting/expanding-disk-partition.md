@@ -5,7 +5,7 @@ weight: 3
 
 If you require more space, you can expand the last partition of your disk after resizing the disk. 
 
-The commands in this section assume `sda` as disk device.
+The commands in this section assume `sda ` as disk device.
 
 1. After the disk is resized in the virtual machine, use the following command to enable the system to recognize the new disk ending boundary without rebooting:
     
@@ -13,10 +13,10 @@ The commands in this section assume `sda` as disk device.
     echo 1 > /sys/class/block/sda/device/rescan
     ```
 
-1. Install the `parted` package to resize the disk partition by running the following command to install it:
+1. Install the ` parted ` package to resize the disk partition by running the following command to install it:
       
    ```
-    `tdnf install parted`.
+    ` tdnf install parted `.
    
    	# parted /dev/sda
    	GNU Parted 3.2
@@ -35,7 +35,7 @@ The commands in this section assume `sda` as disk device.
    	the current setting? 
    	Fix/Ignore?
    
-   Press `f` to fix the GPT layout.
+   Press ` f ` to fix the GPT layout.
    
    	Model: VMware Virtual disk (scsi)
    	Disk /dev/sda: 34.4GB

@@ -18,7 +18,7 @@ You can also browse it using the copenapi_cli tool that comes with the pmd packa
 copenapi_cli --apispec /etc/pmd/restapispec.json
 ```
 
-For more information about the copenapi_cli tool, refer to [github.com/vmware/copenapi](https://github.com/vmware/copenapi).
+For more information about the copenapi_cli tool, refer to [github.com/VMware/copenapi](https://github.com/vmware/copenapi).
 
 ## PMD Python API
 
@@ -46,7 +46,7 @@ To show help text for individual interfaces:
 >>> help(pmd.server().firewall)
 >>> help(pmd.server().user)
 ```
-For details about the network commands, see also the [Network Configuration Manager - Python API](./administration-guide/netmgr.python/).
+For details about the network commands, see also the [Network Configuration Manager - Python API](/docs-v4/administration-guide/managing-network-configuration/network-configuration-manager-python-api/).
 
 ## PMD C API
 
@@ -54,4 +54,4 @@ PMD C APIs are defined in the header files (`pmd_fwmgmt.h`, `pmd_netmgr.h`, `pmd
 
 - [https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
 
-For details about the network commands, see also the [Network Configuration Manager - C API](./administration-guide/managing-network-configuration/netmgr.c/).
+For details about the network commands, see also the [Network Configuration Manager - C API](/docs-v4/administration-guide/managing-network-configuration/network-configuration-manager-c-api/).

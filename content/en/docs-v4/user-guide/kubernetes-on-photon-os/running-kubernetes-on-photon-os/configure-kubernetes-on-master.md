@@ -50,9 +50,9 @@ Perform the following steps to configure Kubernetes services on the master:
 1. Create a node object internally in your Kubernetes cluster by running the following command:
     
     ```console
-    $ kubectl create -f ./node.json
+    kubectl create -f ./node.json
     
-    $ kubectl get nodes
+    kubectl get nodes
     NAME                LABELS              STATUS
     photon-node         name=photon-node-label     Unknown
     ```

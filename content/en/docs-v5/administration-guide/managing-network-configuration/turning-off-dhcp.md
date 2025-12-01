@@ -41,7 +41,7 @@ networkctl status <interface_name>/<index_number>
 (`eth0 `is an example)
 
 ```console
-❯ networkctl status eth0
+networkctl status eth0
 ● 2: eth0
                      Link File: /usr/lib/systemd/network/99-default.link
                   Network File: /etc/systemd/network/50-dhcp-en.network

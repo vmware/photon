@@ -17,12 +17,12 @@ To eliminate the manual effort of running Docker, you can add `docker run` and i
 	   primary-group: cloud-admins
 	   groups: cloud-users
 	   lock-passwd: false
-	   passwd: vmware
+	   passwd: VMware
 	- name: photonuser
 	   gecos: photon test user
 	   primary-group: cloud-users
 	   groups: users
-	   passwd: vmware
+	   passwd: VMware
 	packages:
 	- vim
 	runcmd:

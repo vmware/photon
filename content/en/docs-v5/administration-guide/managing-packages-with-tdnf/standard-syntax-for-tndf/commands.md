@@ -115,7 +115,7 @@ If the database is already initialized, the commands have no effect unless an ap
 
 The following example shows the use of the command:
 
-```
+```console
 # tdnf history
 ID   cmd line                                 date/time             +added / -removed
    1 (set)                                    Thu May 05 2022 19:14 +152 / -0
@@ -131,7 +131,7 @@ You can specify the following options for this sub-command:
 
 The following example shows how to use the options:
 
-```
+```console
 # tdnf history --info --from 2 --to 3
 ID   cmd line                                 date/time             +added / -removed
    2 -y install less                          Thu May 05 2022 19:14 +1 / -0
@@ -144,7 +144,7 @@ added: libtirpc-1.2.6-2.ph4.aarch64, lsof-4.91-1.ph4.aarch64
 **history rollback --to trans_id**: This command allows you to revert to a previous state. You must specify the  ID of the desired state with the `--to` parameter. 
 
 Example:
-```
+```console
 # tdnf history rollback --to 49
 
 Upgrading:
@@ -180,7 +180,7 @@ Complete!
 Example:
 
 The following example shows how the `tdnf` fails with an error message for the unavilable packages:
-```
+```console
 # tdnf history rollback --to 1
 The following packages could not be resolved:
 
@@ -196,7 +196,7 @@ Error(1011) : No matching packages
 
 The following example shows how you can enable the repository to resolve the issue:
 
-```
+```console
 tdnf --enablerepo=photon history rollback --to 1
 
 Downgrading:
@@ -220,7 +220,7 @@ Is this ok [y/N]:
 `Transactions outside tdnf`: `tdnf` keeps track of the  transactions it performs. However, other tools such as `rpm` can also add or remove packages. While performing the next transaction, if `tdnf` detects transactions performed by other tools, it records such transactions as pseudo transactions. 
 
 Example:
-```
+```console
 # tdnf history --info --from 49 --to 49
 ID   cmd line                                 date/time.            +added / -removed
   49 (unknown)                                Thu May 05 2022 23:38 +1 / -0
@@ -299,21 +299,21 @@ To list enabled repositories, run the following command:
 
 Example:
 
-```
-$ tdnf repoquery vim 
+```console
+tdnf repoquery vim 
 vim-8.2.4925-1.ph4.aarch64
 vim-8.2.1361-1.ph4.aarch64
 
-$ tdnf repoquery vim*
+tdnf repoquery vim*
 vim-8.2.4925-1.ph4.aarch64
 vim-8.2.1361-1.ph4.aarch64
 vim-extra-8.2.4925-1.ph4.aarch64
 vim-extra-8.2.1361-1.ph4.aarch64
 
-$ tdnf repoquery --installed vim
+tdnf repoquery --installed vim
 vim-8.2.4925-1.ph4.aarch64
 
-$ tdnf repoquery --requires vim
+tdnf repoquery --requires vim
 ld-linux-aarch64.so.1()(64bit)
 ld-linux-aarch64.so.1(GLIBC_2.17)(64bit)
 libc.so.6(GLIBC_2.17)(64bit)

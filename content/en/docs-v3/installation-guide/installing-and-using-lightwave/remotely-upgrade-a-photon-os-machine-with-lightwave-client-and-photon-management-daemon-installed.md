@@ -3,9 +3,9 @@ title:  Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Ph
 weight: 4
 ---
 
-After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the `root` user credentials.
+After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the `root ` user credentials.
 
-Upgrade process uses `pmd-cli` that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon CLI installed.
+Upgrade process uses ` pmd-cli ` that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon CLI installed.
 
 ## Prerequisites
 
@@ -20,19 +20,19 @@ Upgrade process uses `pmd-cli` that is supported from both Lightwave and Photon 
 2. Identify packages that can be upgraded on the client machine.
 	2. List the available updates for the machine.
 		
-		`# pmd-cli --server-name <machine-IP-address> --user root pkg list updates`
-	3. Verify the currently installed version of a package, for example `sed`.
+		`# pmd-cli --server-name <machine-IP-address> --user root pkg list updates `
+	3. Verify the currently installed version of a package, for example ` sed `.
 
-		`# `# pmd-cli --server-name <machine-IP-address> --user root pkg installed sed`
+		`# `# pmd-cli --server-name <machine-IP-address> --user root pkg installed sed `
 		The installed version number shows as earlier than the one listed under the available updates.
 
 
-4. Initiate the upgrade, in this example of the `sed` package, enter password, and wait for the command to complete.
+4. Initiate the upgrade, in this example of the ` sed ` package, enter password, and wait for the command to complete.
  
-	`# pmd-cli --server-name <machine-IP-address> --user root pkg update sed`
+	`# pmd-cli --server-name <machine-IP-address> --user root pkg update sed `
 
 5. (Optional) Verify that the client machine package was upgraded successfully.
 	1. Log in to the machine that was upgraded over SSH.
-	2. List the installed version of the `sed` package.
+	2. List the installed version of the ` sed ` package.
 		
 		`# pmd-cli --server-name <machine-IP-address> --user root pkg installed sed`

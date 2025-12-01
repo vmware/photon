@@ -24,7 +24,7 @@ There are two similar ways in which you can replicate the Photon OS kernel logs 
 
 - The second uses an abstraction instead of a hard-coded address so that the same VProbes script can be used for any VM on an ESXi host that you have enabled for VProbe and copied its kernel symbol table (kallsyms) to ESXi.
 
-For more information on VMware VProbes, see [VProbes: Deep Observability Into the ESXi Hypervisor](https://labs.vmware.com/vmtj/vprobes-deep-observability-into-the-esxi-hypervisor) and the [VProbes Programming Reference](http://www.vmware.com/pdf/ws7_f3_vprobes_reference.pdf).
+For more information on VMware VProbes, see [VProbes: Deep Observability Into the ESXi Hypervisor](https://labs.vmware.com/vmtj/vprobes-deep-observability-into-the-esxi-hypervisor) and the [VProbes Programming Reference](https://www.vmware.com/pdf/ws7_f3_vprobes_reference.pdf).
 
 ## Using VProbes Script with a Hard-Coded Address
 
@@ -32,26 +32,26 @@ Perform the following steps to set a VProbe for an individual VM:
 
 1. Power off the VM so that you can turn on the VProbe facility. 
 
-    Edit the `.vmx` configuration file for the VM. The file resides in the directory that contains the VM in the ESXi data store. Add the following line of code to the `.vmx` file and then power the VM on:
+    Edit the `.vmx ` configuration file for the VM. The file resides in the directory that contains the VM in the ESXi data store. Add the following line of code to the `.vmx ` file and then power the VM on:
     
     	vprobe.enable = "TRUE"
     
-    When you edit the `.vmx` file to add the above line of code, you must first turn off the VM--otherwise, your changes will not persist. 
+    When you edit the `.vmx ` file to add the above line of code, you must first turn off the VM--otherwise, your changes will not persist. 
 
-1. Obtain the kernel `log_store` function address by connecting to the VM with SSH and running the following commands as root. 
+1. Obtain the kernel ` log_store ` function address by connecting to the VM with SSH and running the following commands as root. 
 
-    Photon OS uses the `kptr_restrict` setting to place restrictions on the kernel addresses exposed through `/proc` and other interfaces. This setting hides exposed kernel pointers to prevent attackers from exploiting kernel write vulnerabilities. When you are done using VProbes, you should return `kptr_restrict` to the original setting of `2` by rebooting.)
+    Photon OS uses the ` kptr_restrict ` setting to place restrictions on the kernel addresses exposed through `/proc ` and other interfaces. This setting hides exposed kernel pointers to prevent attackers from exploiting kernel write vulnerabilities. When you are done using VProbes, you should return ` kptr_restrict ` to the original setting of `2` by rebooting.)
     
     	echo 0 > /proc/sys/kernel/kptr_restrict
     	grep log_store /proc/kallsyms
     
-    The output of the `grep` command will look similar to the following string. The first set of characters (without the `t`) is the log_store function address:
+    The output of the ` grep ` command will look similar to the following string. The first set of characters (without the ` t `) is the log_store function address:
     
     	ffffffff810bb680 t log_store
 
 1. Connect to the ESXi host with SSH so that you can create a VProbes script. 
 
-    Below is the template for the script. `log_store` in the first line is a placeholder for the VM's log_store function address:
+    Below is the template for the script. ` log_store ` in the first line is a placeholder for the VM's log_store function address:
     	
     ```
     GUEST:ENTER:log_store {
@@ -61,9 +61,9 @@ Perform the following steps to set a VProbe for an individual VM:
             }
     ```
 
-    On the ESXi host, create a new file, add the template to it, and then change `log_store` to the function address that was the output from the grep command on the VM. 
+    On the ESXi host, create a new file, add the template to it, and then change ` log_store ` to the function address that was the output from the grep command on the VM. 
 
-1. Add a `0x` prefix to the function address. In this example, the modified template looks like this:
+1. Add a `0x ` prefix to the function address. In this example, the modified template looks like this:
 	
     ```
     GUEST:ENTER:0xffffffff810bb680 {
@@ -73,19 +73,19 @@ Perform the following steps to set a VProbe for an individual VM:
         }
     ```
 
-1. Save your VProbes script as `console.emt` in the `/tmp` directory. (The file extension for VProbe scripts is `.emt`.)
+1. Save your VProbes script as ` console.emt ` in the `/tmp ` directory. (The file extension for VProbe scripts is `.emt `.)
 
     While still connected to the ESXi host with SSH, run the following command to obtain the ID of the virtual machine that you want to troubleshoot: 
     
-    `vim-cmd vmsvc/getallvms`
+    ` vim-cmd vmsvc/getallvms `
     
     This command lists all the VMs running on the ESXi host. Find the VM you want to troubleshoot in the list and make a note of its ID. 
 
 1. Run the following command to print all the kernel messages from Photon OS in your SSH console; replace `<VM ID>` with the ID of your VM:
 
-	`vprobe -m <VM ID> /tmp/console.emt`
+	` vprobe -m <VM ID> /tmp/console.emt `
 
-    When you're done, type `Ctrl-C` to stop the loop. 
+    When you're done, type ` Ctrl-C ` to stop the loop. 
 
 ## A Reusable VProbe Script Using the kallsyms File
 
@@ -93,13 +93,13 @@ Perform the following steps to create one VProbe script and use for all the VMs 
 
 1. Power off the VM and turn on the VProbe facility on each VM that you want to be able to analyze. 
 
-    Add `vprobe.enable = "TRUE"` to the VM's `.vmx` configuration file. See the instructions above.
+    Add ` vprobe.enable = "TRUE"` to the VM's `.vmx ` configuration file. See the instructions above.
 
 1. Power on the VM, connect to it with SSH, and run the following command as root:
 	
-	   `echo 0 > /proc/sys/kernel/kptr_restrict`
+	   ` echo 0 > /proc/sys/kernel/kptr_restrict `
 
-1. Connect to the ESXi host with SSH to create the following VProbes script and save it as `/tmp/console.emt`:
+1. Connect to the ESXi host with SSH to create the following VProbes script and save it as `/tmp/console.emt `:
 
     ```
     GUEST:ENTER:log_store {
@@ -109,20 +109,20 @@ Perform the following steps to create one VProbe script and use for all the VMs 
         }
     ```
 
-1. From the ESXi host, run the following command to copy the VM's `kallysms` file to the `tmp` directory on the ESXi host:
+1. From the ESXi host, run the following command to copy the VM's ` kallysms ` file to the ` tmp ` directory on the ESXi host:
 
-	   `scp root@<vm ip address>:/proc/kallsyms /tmp`
+	   ` scp root@<vm ip address>:/proc/kallsyms /tmp `
 
     While still connected to the ESXi host with SSH, run the following command to obtain the ID of the virtual machine that you want to troubleshoot: 
     
-    	`vim-cmd vmsvc/getallvms`
+    	` vim-cmd vmsvc/getallvms `
     
     This command lists all the VMs running on the ESXi host. Find the VM you want to troubleshoot in the list and make a note of its ID. 
 
 1. Run the following command to print all the kernel messages from Photon OS in your SSH console.
 
-    Replace `<VM ID>` with the ID of your VM. When you're done, type `Ctrl-C` to stop the loop.
+    Replace `<VM ID>` with the ID of your VM. When you're done, type ` Ctrl-C ` to stop the loop.
 
-	`vprobe -m <VM ID> -k /tmp/kallysyms /tmp/console.emt`
+	` vprobe -m <VM ID> -k /tmp/kallysyms /tmp/console.emt `
 
-    You can use a directory other than `tmp` if you want.
+    You can use a directory other than ` tmp` if you want.

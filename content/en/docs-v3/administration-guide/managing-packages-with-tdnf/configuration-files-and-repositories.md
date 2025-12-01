@@ -38,9 +38,9 @@ The `photon-iso.repo`, however, does not appear in the list of repositories beca
 
 	cat /etc/yum.repos.d/photon-iso.repo
 	[photon-iso]
-	name=VMWare Photon Linux 2.0(x86_64)
+	name=VMware Photon Linux 2.0(x86_64)
 	baseurl=file:///mnt/cdrom/RPMS
-	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+	gpgkey=file:///etc/pki/rpm-gpg/VMware-RPM-GPG-KEY
 	gpgcheck=1
 	enabled=0
 	skip_if_unavailable=True

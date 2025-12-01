@@ -11,7 +11,7 @@ To set up a PXE server, you will need to have the following:
 
 * A DHCP server to allow hosts to get an IP address.
 * A TFTP server, which is a file transfer protocol similar to FTP with no authentication.
-* Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official [VMware Photon Packages](https://packages.vmware.com/photon/) repo. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.
+* Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official [VMware Photon Packages](https://packages-prod.broadcom.com/photon/) repo. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.
 
 The instructions to set up the servers assume you have an Ubuntu 14.04 machine with a static IP address of `172.16.78.134`.
 
@@ -59,7 +59,7 @@ The instructions to set up the servers assume you have an Ubuntu 14.04 machine w
 
 ## Optional: HTTP server setup
 
-This step is only needed if you are planning to serve the ks (kickstart) config file through this server; refer to [Kickstart support](../working-with-kickstart/) for details.
+This step is only needed if you are planning to serve the ks (kickstart) config file through this server; refer to [Kickstart support](../kickstart-support-in-photon-os/) for details.
 
 * Serving your local yum repo.
 
@@ -81,7 +81,7 @@ Copy the RPMS repo:
 ```
 cp -r /mnt/photon-iso/RPMS /var/www/html/
 ```
-To support ks, you can copy the sample config file from the iso and edit it; refer to [Kickstart support](../working-with-kickstart/) for details.
+To support ks, you can copy the sample config file from the iso and edit it; refer to [Kickstart support](../kickstart-support-in-photon-os/) for details.
 
 ```
 cp /mnt/photon-iso/isolinux/sample_ks.cfg /var/www/html/my_ks.cfg
@@ -118,4 +118,4 @@ sed -i "s/append/append repo=http:\/\/172.16.78.134\/RPMS/g" menu.cfg
 popd
 ```
 
-* Optionally, you can add your ks config file; see [Kickstart support](../working-with-kickstart/) for details.
+* Optionally, you can add your ks config file; see [Kickstart support](../kickstart-support-in-photon-os/) for details.

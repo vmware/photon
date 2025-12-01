@@ -127,7 +127,7 @@ Example:
 	   "success":true,
 	   "message":{
 	      "property":"Virtualization",
-	      "value":"vmware"
+	      "value":"VMware"
 	   },
 	   "errors":""
 	}
