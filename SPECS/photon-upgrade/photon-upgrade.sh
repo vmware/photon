@@ -461,7 +461,7 @@ function remove_residual_pkgs() {
 
 # If user specifies --install-all and --repos then install all packages
 # from the provided repos which are not installed
-function install_all_from_repo() {
+install_all_from_repo() {
   local available_pkgs_for_install="$(
       ${RPM} -q $(${TDNF} $REPOS_OPT repoquery --available) 2>&1 | \
         ${SED} -nE 's#^package ([^ ]+\.ph[0-9]+\.[^ ]+) is not installed#\1#p'
@@ -648,7 +648,7 @@ function is_repo_config_valid_for_release() {
   return 0
 }
 
-function verify_version_and_upgrade() {
+verify_version_and_upgrade() {
   local yn=''
   local rc=0
 
@@ -724,13 +724,22 @@ function verify_version_and_upgrade() {
       rebuilddb
       fix_post_upgrade_config
       remove_residual_pkgs
+
+      local install_all_rc=0
       if [ -n "$INSTALL_ALL" ]; then
         install_all_from_repo
+        install_all_rc=$?
       fi
+
       restore_configs $TMP_BACKUP_LOC
       reset_enabled_disabled_services
       post_upgrade_rm_pkgs
       rebuilddb
+
+      if [ $install_all_rc -ne 0 ]; then
+        abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
+      fi
+
       ask_for_reboot
       ;;
     *) cleanup_and_exit 0;;
@@ -768,11 +777,18 @@ function update_os() {
   distro_upgrade $FROM_VERSION
   rebuilddb
   install_other_packages
+
+  local install_all_rc=0
   if [ -n "$INSTALL_ALL" ]; then
     install_all_from_repo
+    install_all_rc=$?
   fi
   post_upgrade_rm_pkgs
   rebuilddb
+
+  if [ $install_all_rc -ne 0 ]; then
+    abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
+  fi
 }
 
 CMD_ARGS=$(
