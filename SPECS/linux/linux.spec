@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.158
-Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -398,6 +398,9 @@ Patch193: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
 Patch194: 0001-drm-amd-display-Check-dce_hwseq-before-dereferencing.patch
 # fix CVE-2025-38704
 Patch195: 0001-rcu-nocb-Fix-possible-invalid-rdp-s-nocb_cb_kthread-.patch
+# Fix CVE-2025-39744
+Patch196: 0001-rcu-Fix-rcu_read_unlock-deadloop-due-to-IRQ-work.patch
+Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -1170,6 +1173,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Dec 01 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-11
+- Fixes CVE-2025-39744
 * Mon Dec 01 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.158-10
 - Regression fix for CVE-2024-38557 fix
 * Fri Nov 28 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-9

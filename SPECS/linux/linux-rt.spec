@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.158
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -331,6 +331,9 @@ Patch193: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
 Patch194: 0001-drm-amd-display-Check-dce_hwseq-before-dereferencing.patch
 # fix CVE-2025-38704
 Patch195: 0001-rcu-nocb-Fix-possible-invalid-rdp-s-nocb_cb_kthread-.patch
+# Fix CVE-2025-39744
+Patch196: 0001-rcu-Fix-rcu_read_unlock-deadloop-due-to-IRQ-work.patch
+Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
 
 # SCHED: [201..204]
 Patch201: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -716,6 +719,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Dec 01 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-10
+- Fixes CVE-2025-39744
 * Fri Nov 28 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-9
 - Fixes CVE-2025-38704
 * Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.158-8
