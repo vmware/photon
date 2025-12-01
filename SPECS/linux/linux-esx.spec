@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.247
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -499,6 +499,20 @@ Patch278: 0003-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
 # Fix CVE-2025-40135
 Patch279: 0001-ipv6-use-RCU-in-ip6_xmit.patch
 
+# Fix CVE-2025-39797
+Patch280: 0001-xfrm-Duplicate-SPI-Handling.patch
+Patch281: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
+
+# CVE-2022-48744
+Patch282: 0001-net-mlx5e-Avoid-field-overflowing-memcpy.patch
+
+# CVE-2025-39810
+Patch283: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
+Patch284: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
+
+# CVE-2023-53282
+Patch285: 0001-scsi-lpfc-Fix-use-after-free-KFENCE-violation-during.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -887,6 +901,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-2
+- Fix CVE-2025-39797
+- CVE-2022-48744
+- CVE-2025-39810
+- CVE-2023-53282
 * Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-1
 - Update to version 5.10.247
 * Mon Nov 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-11

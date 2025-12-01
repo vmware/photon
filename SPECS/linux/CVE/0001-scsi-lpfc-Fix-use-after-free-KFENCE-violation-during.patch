@@ -1,0 +1,97 @@
+From 72e612695ceb63e76c3b664af4d3946d106fd6c0 Mon Sep 17 00:00:00 2001
+From: Justin Tee <justin.tee@broadcom.com>
+Date: Mon, 9 Jan 2023 15:33:13 -0800
+Subject: [PATCH] scsi: lpfc: Fix use-after-free KFENCE violation during sysfs
+ firmware write
+
+[ Upstream commit 21681b81b9ae548c5dae7ae00d931197a27f480c ]
+
+During the sysfs firmware write process, a use-after-free read warning is
+logged from the lpfc_wr_object() routine:
+
+  BUG: KFENCE: use-after-free read in lpfc_wr_object+0x235/0x310 [lpfc]
+  Use-after-free read at 0x0000000000cf164d (in kfence-#111):
+  lpfc_wr_object+0x235/0x310 [lpfc]
+  lpfc_write_firmware.cold+0x206/0x30d [lpfc]
+  lpfc_sli4_request_firmware_update+0xa6/0x100 [lpfc]
+  lpfc_request_firmware_upgrade_store+0x66/0xb0 [lpfc]
+  kernfs_fop_write_iter+0x121/0x1b0
+  new_sync_write+0x11c/0x1b0
+  vfs_write+0x1ef/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x59/0x90
+  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+The driver accessed wr_object pointer data, which was initialized into
+mailbox payload memory, after the mailbox object was released back to the
+mailbox pool.
+
+Fix by moving the mailbox free calls to the end of the routine ensuring
+that we don't reference internal mailbox memory after release.
+
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Applied to v5.10 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/scsi/lpfc/lpfc_sli.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 49931577da38..f0b4943fa0bc 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -19782,6 +19782,7 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
+ 	struct lpfc_mbx_wr_object *wr_object;
+ 	LPFC_MBOXQ_t *mbox;
+ 	int rc = 0, i = 0;
++	int mbox_status = 0;
+ 	uint32_t shdr_status, shdr_add_status, shdr_change_status, shdr_csf;
+ 	uint32_t mbox_tmo;
+ 	struct lpfc_dmabuf *dmabuf;
+@@ -19826,11 +19827,15 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
+ 	wr_object->u.request.bde_count = i;
+ 	bf_set(lpfc_wr_object_write_length, &wr_object->u.request, written);
+ 	if (!phba->sli4_hba.intr_enable)
+-		rc = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
++		mbox_status = lpfc_sli_issue_mbox(phba, mbox, MBX_POLL);
+ 	else {
+ 		mbox_tmo = lpfc_mbox_tmo_val(phba, mbox);
+-		rc = lpfc_sli_issue_mbox_wait(phba, mbox, mbox_tmo);
++		mbox_status = lpfc_sli_issue_mbox_wait(phba, mbox, mbox_tmo);
+ 	}
++
++	/* The mbox status needs to be maintained to detect MBOX_TIMEOUT. */
++	rc = mbox_status;
++
+ 	/* The IOCTL status is embedded in the mailbox subheader. */
+ 	shdr_status = bf_get(lpfc_mbox_hdr_status,
+ 			     &wr_object->header.cfg_shdr.response);
+@@ -19875,10 +19880,6 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
+ 			break;
+ 		}
+ 	}
+-	if (!phba->sli4_hba.intr_enable)
+-		mempool_free(mbox, phba->mbox_mem_pool);
+-	else if (rc != MBX_TIMEOUT)
+-		mempool_free(mbox, phba->mbox_mem_pool);
+ 	if (shdr_status || shdr_add_status || rc) {
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+ 				"3025 Write Object mailbox failed with "
+@@ -19888,6 +19889,12 @@ lpfc_wr_object(struct lpfc_hba *phba, struct list_head *dmabuf_list,
+ 		*offset = shdr_add_status;
+ 	} else
+ 		*offset += wr_object->u.response.actual_write_length;
++
++	if (!phba->sli4_hba.intr_enable)
++		mempool_free(mbox, phba->mbox_mem_pool);
++	else if (mbox_status != MBX_TIMEOUT)
++		mempool_free(mbox, phba->mbox_mem_pool);
++
+ 	return rc;
+ }
+ 
+-- 
+2.40.4
+
