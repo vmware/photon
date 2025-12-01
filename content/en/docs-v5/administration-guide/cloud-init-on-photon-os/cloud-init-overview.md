@@ -39,10 +39,10 @@ However, for testing, the following methods provide ways to do ```cloud-init``` 
 Using a Seed ISO
 ----------------
 This will be using the ```nocloud``` data source. In order to initialize the system in this way, an ISO file needs to be created with a meta-data file and an user-data file as shown below:
-```
-$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } > meta-data
-$ printf "#cloud-config\nhostname: testhost\n" > user-data
-$ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
+```console
+{ echo instance-id: iid-local01; echo local-hostname: cloudimg; } > meta-data
+printf "#cloud-config\nhostname: testhost\n" > user-data
+genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
 ```
 
 Attach the `seed.iso` generated above to your machine and reboot for the init to take effect.
@@ -51,18 +51,18 @@ In this case, the hostname is set to ```testhost```.
 Using a Seed Disk File
 ----------------
 To init using local disk files, do the following:
-```
+```console
 mkdir /var/lib/cloud/seed/nocloud
 cd /var/lib/cloud/seed/nocloud
-$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } > meta-data
-$ printf "#cloud-config\nhostname: testhost\n" > user-data
+{ echo instance-id: iid-local01; echo local-hostname: cloudimg; } > meta-data
+printf "#cloud-config\nhostname: testhost\n" > user-data
 ```
 Reboot the machine and the hostname will be set to `testhost`.
 
 Frequencies
 -----------
 Cloud-init modules have predetermined frequencies. Based on the frequency setting, multiple runs will yield different results. For the scripts to always run, remove the `instances` directory before rebooting.
-```
+```console
 rm -rf /var/lib/cloud/instances
 ```
 
