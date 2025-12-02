@@ -2,6 +2,7 @@
 
 import os
 import re
+import operator
 
 from StringUtils import StringUtils
 from constants import constants
@@ -77,8 +78,8 @@ class SpecParser(object):
 
         while i < totalLines:
             line = lines[i].strip()
-            if self._isConditionalArch(line):
-                if self.arch != self._readConditionalArch(line):
+            if cond := self._isConditionalArch(line):
+                if not cond(self.arch, self._readConditionalArch(line)):
                     skip_conditional_body()
                 else:
                     inMacro += 1
@@ -385,7 +386,11 @@ class SpecParser(object):
         return dist != condition
 
     def _isConditionalArch(self, line):
-        return re.search("^%ifarch", line)
+        if re.search("^%ifarch", line):
+            return operator.eq
+        elif re.search("^%ifnarch", line):
+            return operator.ne
+        return None
 
     def _isSpecMacro(self, line):
         return line.startswith(
