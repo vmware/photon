@@ -72,8 +72,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.57
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.60
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -292,6 +292,8 @@ Patch10001: 0001-jitterentropy-Makefile-changes.patch
 Patch10002: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch10003: 0001-disable-md5-and-sha1-algorithms-for-sctp-if-fips-is-enabled.patch
+# Mark ECB as Internal algorithm if fips is enabled.
+Patch10004: 0001-crypto-ecb-Set-ecb-alg-flag-as-Internal.patch
 
 # Below patches are common for canister_usage and canister_build flags
 Patch10101: 0001-FIPS-canister-binary-usage.patch
@@ -569,7 +571,7 @@ install %{SOURCE10105} crypto/
 install %{SOURCE10106} crypto/
 install %{SOURCE10300} crypto/
 
-%autopatch -p1 -m10001 -M10003
+%autopatch -p1 -m10001 -M10004
 %autopatch -p1 -m10101 -M10116
 # FIPS canister plugins
 %autopatch -p1 -m10200 -M10204
@@ -895,6 +897,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Dec 04 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-1
+- Update to version 6.12.60.
 * Wed Dec 03 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-9
 - canister: Move out lib/crypto/{mpi/memneq/utils/gf128mul} of boundry
 * Mon Dec 01 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.57-8
