@@ -1,7 +1,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.75.2
-Release:      10%{?dist}
+Release:      11%{?dist}
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -69,6 +69,8 @@ Patch21: 0002-gstring-Make-len_unsigned-unsigned.patch
 
 # CVE-2025-7039
 Patch22: 0001-gfileutils-fix-computation-of-temporary-file-name.patch
+
+Patch23: CVE-2025-13601.patch
 
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C,
@@ -145,6 +147,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Tue Dec 02 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-11
+- Fix CVE-2025-13601
 * Thu Nov 06 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-10
 - Fix CVE-2025-4373
 * Tue Aug 05 2025 Dweep Advani <dweep.advani@broadcom.com> 2.75.2-9
