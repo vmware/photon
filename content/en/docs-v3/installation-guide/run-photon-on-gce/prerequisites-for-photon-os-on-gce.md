@@ -38,14 +38,13 @@ Perform the following tasks to make Photon OS work on GCE:
  
  For more information see [Importing Boot Disk Images to Compute Engine](https://cloud.google.com/compute/docs/tutorials/building-images).
 
-For information about upgrading the Photon OS Linux kernel see [Upgrading the Kernel Version Requires Grub Changes for AWS and GCE Images](Upgrading-the-Kernel-Version-Requires-Grub-Changes-for-AWS-and-GCE-Images.md)
 
 ## Photon OS Image
 
 VMware recommends that administrators use the Photon OS image for Google Compute Engine (GCE) to create Photon OS instances on GCE. Photon OS bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. You can download the Photon OS image for GCE from the following URL: 
-[https://packages.vmware.com/photon](https://packages.vmware.com/photon)
+[https://packages-prod.broadcom.com/photon](https://packages.vmware.com/photon)
 
-For instructions, see [Downloading Photon OS](../downloading-photon.md).
+For instructions, see [Downloading Photon OS](../downloading-photon).
 
 Optionally you can customize Photon OS to work with GCE. 
 
@@ -90,7 +89,7 @@ Perform the following tasks:
           cd /lib/systemd/system/multi-user.target.wants/
           
           # Create links in multi-user.target to auto-start these scripts and services.
-          for i in ../google*; do  ln -s $i `basename $i`; done
+          for i in ../google*; do  ln -s $i ` basename $i `; done
           
           cd /tmp/; wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz
           tar -xf google-cloud-sdk.tar.gz

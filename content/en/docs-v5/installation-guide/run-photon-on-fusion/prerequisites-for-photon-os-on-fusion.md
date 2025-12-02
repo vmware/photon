@@ -29,7 +29,7 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS ISO or OVA file downloaded from [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/).</td>
+	<td>Photon OS ISO or OVA file downloaded from [https://packages-prod.broadcom.com/photon/](https://packages.vmware.com/photon/).</td>
 	</tr>
 	</tbody>
 	</table>
@@ -39,7 +39,7 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 	**Note:** The setup instructions in this guide use VMware Fusion Professional version 8.5.8, as per the following screenshot.
 
 
-	![Fusion version](../../images/fs-version.png)
+	![Fusion version](../images/fs-version.png)
 
 
 2. Decide whether to use the OVA or ISO distribution to set up Photon OS.
@@ -51,6 +51,6 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
     
 1. Download Photon OS. Go to the following URL and download the latest release of Photon OS:
 
-    [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
+    [https://packages-prod.broadcom.com/photon/](https://packages.vmware.com/photon/)
     
     For instructions, see [Downloading Photon OS](../../downloading-photon/).
