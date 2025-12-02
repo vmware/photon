@@ -719,13 +719,19 @@ function do_ph4_to_ph4_update() {
   distro_upgrade $FROM_VERSION
   rebuilddb
   install_pkgs ${removed_pkgs_list[@]} ${old_new_pkg_map[@]}
+
+  local install_all_rc=0
   if [ -n "$INSTALL_ALL" ]; then
-    if ! install_all_from_repo; then
-      abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
-    fi
+    install_all_from_repo
+    install_all_rc=$?
   fi
+
   post_upgrade_rm_pkgs
   restore_configs $TMP_BACKUP_LOC
+
+  if [ $install_all_rc -ne 0 ]; then
+    abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
+  fi
 }
 
 
@@ -839,15 +845,21 @@ function verify_version_and_upgrade() {
       rebuilddb
       fix_post_upgrade_config
       remove_residual_pkgs
+
+      local install_all_rc=0
       if [ -n "$INSTALL_ALL" ]; then
-        if ! install_all_from_repo; then
-          abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
-        fi
+        install_all_from_repo
+        install_all_rc=$?
       fi
       restore_configs $TMP_BACKUP_LOC
       reset_enabled_disabled_services
       post_upgrade_rm_pkgs
       rebuilddb
+
+      if [ $install_all_rc -ne 0 ]; then
+        abort $ERETRY_EAGAIN "ERROR: install_all_from_repo failed"
+      fi
+
       ask_for_reboot
       ;;
     *) cleanup_and_exit 0;;
