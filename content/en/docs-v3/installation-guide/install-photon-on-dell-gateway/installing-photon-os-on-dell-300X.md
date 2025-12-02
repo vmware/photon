@@ -48,8 +48,8 @@ mkdir -p /tmp/photonUsb
 
 1. Edit the `isolinux/sample_ks.cfg`  as follows:
 
-    - Change `"disk": "/dev/sda”,` to **`"disk": "/dev/mmcblk0",`**
-    - Change `"echo \"Hello World\" > /etc/postinstall"` to **`"sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config"`**
+    - Change `"disk": "/dev/sda”,`to **`"disk": "/dev/mmcblk0",`**
+    - Change `"echo \"Hello World\" > /etc/postinstall"`to **`"sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config"`**
     
 1. Format the pen drive with FAT-32 and copy all the contents of `/tmp/photonUsb` to the pen drive. 
 
