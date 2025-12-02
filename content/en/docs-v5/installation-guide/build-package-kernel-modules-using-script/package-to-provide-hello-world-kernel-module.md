@@ -3,7 +3,7 @@ title:  Hello World Kernel Module
 weight: 1
 ---
 
-This example shows how to build a package that provides a hello world kernel module. To build the package, you need to run the script with `hello-world.spec` as an argument, where `hello-world.spec` is the RPM specification file.
+This example shows how to build a package that provides a hello world kernel module. To build the package, you need to run the script with `hello-world.spec ` as an argument, where ` hello-world.spec ` is the RPM specification file.
 
 You can find the source file at the following location:  
 
@@ -14,7 +14,7 @@ To generate the output in the spec-file folder, run the following command:
 
 	./photon/tools/scripts/build_spec.sh ./photon/tools/examples/build_spec/kernel_module_example/hello-world.spec
 
-The following are the contents of the `hello-world.spec` file:
+The following are the contents of the ` hello-world.spec ` file:
 
 ```
 %define linux_esx_ver 6.1.10
@@ -39,10 +39,10 @@ Example of building linux module for Photon OS
 %autosetup -n hello-world
 
 %build
-make -C `echo /usr/src/linux-headers-%{linux_esx_ver}*` M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
+make -C ` echo /usr/src/linux-headers-%{linux_esx_ver}*` M=` pwd ` VERBOSE=1 modules %{?_smp_mflags}
 
 %install
-make -C `echo /usr/src/linux-headers-%{linux_esx_ver}*` M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
+make -C ` echo /usr/src/linux-headers-%{linux_esx_ver}*` M=` pwd ` INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 # fix permissins to generate non empty debuginfo
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 

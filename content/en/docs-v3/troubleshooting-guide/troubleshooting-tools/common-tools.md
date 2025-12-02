@@ -27,13 +27,13 @@ The following are some tools that you can use to troubleshoot:
 
 ## top
 
-The `top` tool monitors system resources, workloads, and performance. It can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM. 
+The ` top ` tool monitors system resources, workloads, and performance. It can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM. 
 
-To view a textual display of resource consumption, run the `top` command: 
+To view a textual display of resource consumption, run the ` top ` command: 
 
 	top
 
-Use can use 'top' to kill a runaway or stalled process by typing `k` followed by its process ID (PID). 
+Use can use 'top' to kill a runaway or stalled process by typing ` k ` followed by its process ID (PID). 
 
 ![Top on Photon OS](images/top-in-photon-os.png)
 
@@ -43,29 +43,29 @@ To troubleshoot an unknown issue, run Top in the background in batch mode to wri
 
 	top d 120 b >> top120second.output
 
-For a list of options that filter top output and other information, see the man page for `top`.
+For a list of options that filter top output and other information, see the man page for ` top `.
 
 ## ps
 
-The `ps` tool shows the processes running on the machine. The `ps` tool derives flexibility and power from its options, all of which are covered in the tool's Photon OS man page:
+The ` ps ` tool shows the processes running on the machine. The ` ps ` tool derives flexibility and power from its options, all of which are covered in the tool's Photon OS man page:
 
 	man ps
 
-You can use the following options of `ps` for troubleshooting: 
+You can use the following options of ` ps ` for troubleshooting: 
 
 - Show processes by user:
     
-    `ps aux`
+    ` ps aux `
 
 - Show processes and child processes by user:
     
-    `ps auxf`
+    ` ps auxf `
     
-- Show processes containing the string `ssh`:
-    `ps aux | grep ssh`
+- Show processes containing the string ` ssh `:
+    ` ps aux | grep ssh `
     
 - Show processes and the command and options with which they were started:
-    `ps auxww`
+    ` ps auxww `
 
 Example abridged output: 
 
@@ -75,28 +75,28 @@ Example abridged output:
 
 ## netstat
 
-The `netstat` command can identify bottlenecks causing  performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples: 
+The ` netstat ` command can identify bottlenecks causing  performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples: 
 
 	netstat --statistics
 	netstat --listening
 
 ## find
 
-Use the `find` command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day: 
+Use the ` find ` command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day: 
 
 		find / -mtime -1 
 
-See the `find` [manual](https://www.gnu.org/software/findutils/manual/find.html). Take note of the security considerations listed in the `find` manual if you are using `find` to troubleshoot an appliance running on Photon OS. 
+See the ` find ` [manual](https://www.gnu.org/software/findutils/manual/find.html). Take note of the security considerations listed in the ` find ` manual if you are using ` find ` to troubleshoot an appliance running on Photon OS. 
 
 ## locate
 
-The `locate` command is a fast way to find files and directories you onlay have a keyword. This command is similar to `find` and part of the same `findutils` package preinstalled on the full version of Photon OS by default. It finds file names in the file names database. 
+The ` locate ` command is a fast way to find files and directories you onlay have a keyword. This command is similar to ` find ` and part of the same ` findutils ` package preinstalled on the full version of Photon OS by default. It finds file names in the file names database. 
 
-Before you can use `locate` accurately, update its database: 
+Before you can use ` locate ` accurately, update its database: 
 
 	updatedb
 
-Then run `locate` to quickly find a file, such as any file name containing `.network`, which can be helpful to see all the system's `.network` configuration files. The following is an abridged example: 
+Then run ` locate ` to quickly find a file, such as any file name containing `.network `, which can be helpful to see all the system's `.network ` configuration files. The following is an abridged example: 
 
 	locate .network
 	/etc/dbus-1/system.d/org.freedesktop.network1.conf
@@ -108,7 +108,7 @@ Then run `locate` to quickly find a file, such as any file name containing `.net
 	/usr/lib/systemd/system/org.freedesktop.network1.busnname
 	/usr/share/dbus-1/system-services/org.freedesktop.network1.service
 
-The `locate` command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples: 
+The ` locate ` command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples: 
 
 	locate strace
 	/usr/bin/strace
@@ -119,37 +119,37 @@ The `locate` command is also a quick way to see whether a troubleshooting tool i
 
 	locate traceroute
 
-In this example, the `strace` tool is installed but `traceroute` is not. 
+In this example, the ` strace ` tool is installed but ` traceroute ` is not. 
 
-You can install `traceroute` from the Photon OS repository: 
+You can install ` traceroute ` from the Photon OS repository: 
 
 	tdnf install traceroute
 
 ## df
 
-The `df` command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step: 
+The ` df ` command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step: 
 
 	df -h
 
-The `-h` option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:
+The `-h ` option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:
 
 	df -i
 
 ## md5sum 
 
-The `md5sum` tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question. 
+The ` md5sum ` tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question. 
 
-`md5sum` can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the Bintray download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.
+` md5sum ` can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the Bintray download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.
 
 ## sha256sum
 
-The `sha256sum` tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes `shasum`, `sha1sum`, `sha384sum`, and `sha512sum`. See the man pages for  `md3sum`, `sha256sum`, and the other SHA utilities. 
+The ` sha256sum ` tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes ` shasum `, ` sha1sum `, ` sha384sum `, and ` sha512sum `. See the man pages for  ` md3sum `, ` sha256sum `, and the other SHA utilities. 
 
 ## strace
 
-The `strace` utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. `strace` can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash. 
+The ` strace ` utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. ` strace ` can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash. 
 
-By tracing system calls, `strace` can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance. 
+By tracing system calls, ` strace ` can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance. 
 
 For troubleshooting a problem that gives off few or no clues, the following command displays every system call: 
 
@@ -159,19 +159,19 @@ With strace commands, you can route the output to a file to make it easier to an
 
 	strace -o output.txt ls -al
 
-`strace` can reveal the files that an application tries to open with the `-eopen` option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see "No such file or directory" in the results of `strace -eopen`, something might be wrong: 
+` strace ` can reveal the files that an application tries to open with the `-eopen ` option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see "No such file or directory" in the results of ` strace -eopen `, something might be wrong: 
 
 	strace -eopen sshd
 	open("/usr/lib/x86_64/libpam.so.0", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
 	open("/usr/lib/libpam.so.0", O_RDONLY|O_CLOEXEC) = 3
 
-The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say "permission denied" for one of the files, check the permissions of the file with `ls -l` or `stat`.   
+The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say "permission denied" for one of the files, check the permissions of the file with ` ls -l ` or ` stat `.   
 
-When troubleshooting with `strace`, you can include the process ID in its commands. Here's an example of how to find a process ID: 
+When troubleshooting with ` strace `, you can include the process ID in its commands. Here's an example of how to find a process ID: 
 
 	ps -ef | grep apache
 
-You can then use `strace` to examine the file a process is working with: 
+You can then use ` strace ` to examine the file a process is working with: 
 
 	strace -e trace=file -p 1719
 
@@ -179,34 +179,34 @@ A similar command can trace network traffic:
 
 	strace -p 812 -e trace=network
 
-If an application is crashing, use `strace` to trace the application and then analyze what happens right before the application crashes.
+If an application is crashing, use ` strace ` to trace the application and then analyze what happens right before the application crashes.
 
-You can also trace the child processes that an application spawns with the fork system call, and you can do so with `systemctl` commands that start a process to identify why an application crashes immediately or fails to start: 
+You can also trace the child processes that an application spawns with the fork system call, and you can do so with ` systemctl ` commands that start a process to identify why an application crashes immediately or fails to start: 
 
 	strace -f -o output.txt systemctl start httpd
 
-Example: If `journalctl` is showing that networkd is failing, you can run strace to troubleshoot: 
+Example: If ` journalctl ` is showing that networkd is failing, you can run strace to troubleshoot: 
 
 	strace -o output.txt systemctl restart systemd-networkd
 
-Then `grep` inside the results for something, such as _exit_ or _error_: 
+Then ` grep ` inside the results for something, such as _exit_ or _error_: 
 
 	grep exit output.txt
 
-If the results indicate `systemd-resolved` is going wrong, you can then strace it: 
+If the results indicate ` systemd-resolved ` is going wrong, you can then strace it: 
 
 	strace -f -o output.txt systemctl restart systemd-resolved
 
 ## file
 
-The `file` command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example: 
+The ` file ` command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example: 
 
 	file /usr/sbin/sshd
 	/usr/sbin/sshd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, stripped
 
 ## stat
 
-The `stat` command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:  
+The ` stat ` command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:  
 
 	stat /dev/sda1
 	File: '/dev/sda1'
@@ -218,7 +218,7 @@ The `stat` command can help troubleshoot problems with files or the file system 
 	Change: 2016-09-02 12:23:52.879999981 +0000
 	Birth: -
 
-On Photon OS, `stat` is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example: 
+On Photon OS, ` stat ` is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example: 
 
 	chmod 777 tester.md
 	stat tester.md
@@ -229,7 +229,7 @@ On Photon OS, `stat` is handy to show permissions for a file or directory in bot
 
 ## watch
 
-The `watch` utility runs a command at regular intervals so you can observe how its output changes over time. `watch` can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples: 
+The ` watch ` utility runs a command at regular intervals so you can observe how its output changes over time. ` watch ` can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples: 
 
 	watch -n0 --differences ss
 	watch -n1 --differences ip route
@@ -242,7 +242,7 @@ The following is an example with a screenshot of the output. This command monito
 
 ## vmstat and fdisk
 
-The `vmstat` tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.  
+The ` vmstat ` tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.  
 
 Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro without a heavy load looks like this: 
 
@@ -251,13 +251,13 @@ Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro w
 	 r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
 	 0  0      0   5980  72084 172488    0    0    27    44  106  294  1  0 98  1  0
 
-These codes are explained in the `vmstat` man page. 
+These codes are explained in the ` vmstat ` man page. 
 
-    - If `r`, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.
-    - If `cs`, the number of context switches per second, is really high, there may be too many jobs running on the machine.
-    - If `in`, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.
+    - If ` r `, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.
+    - If ` cs `, the number of context switches per second, is really high, there may be too many jobs running on the machine.
+    - If ` in `, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.
 
-You can investigate disk IO further by using vmstat's `-d` option to report disk statistics. The following is an abridged example on a machine with little load: 
+You can investigate disk IO further by using vmstat's `-d ` option to report disk statistics. The following is an abridged example on a machine with little load: 
 
 	vmstat -d
 	disk- ------------reads------------ ------------writes----------- -----IO------
@@ -269,7 +269,7 @@ You can investigate disk IO further by using vmstat's `-d` option to report disk
 	sr0        0      0       0       0      0      0       0       0      0      0
 	sda    22744    676  470604   12908  72888  24949  805224  127692      0    130
 
-The `-D` option summarizes disk statistics:
+The `-D ` option summarizes disk statistics:
 
 	vmstat -D
 	           26 disks
@@ -285,7 +285,7 @@ The `-D` option summarizes disk statistics:
 	            0 inprogress IO
 	          130 milli spent IO
 
-You can also get statistics about a partition. First, run the `fdisk -l` command to list the machine's devices. Then run `vmstat -p` with the name of a device to view its stats: 
+You can also get statistics about a partition. First, run the ` fdisk -l ` command to list the machine's devices. Then run ` vmstat -p ` with the name of a device to view its stats: 
 
 
 	fdisk -l
@@ -302,13 +302,13 @@ You can also get statistics about a partition. First, run the `fdisk -l` command
 	sda1          reads   read sectors  writes    requested writes
 	               22579     473306      78510     866088
 
-See the `vmstat` man page for more options. 
+See the ` vmstat ` man page for more options. 
 
 ## lsof
 
-The `lsof` command lists open files. The tool's definition of an open file  includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run `lsof` as root to see how the system is using them and to see how an application works. 
+The ` lsof ` command lists open files. The tool's definition of an open file  includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run ` lsof ` as root to see how the system is using them and to see how an application works. 
 
-If you cannot unmount a disk because it is in use, you can run `lsof` to identify the files on the disk that are being used. 
+If you cannot unmount a disk because it is in use, you can run ` lsof ` to identify the files on the disk that are being used. 
 
 The following is an example that shows the processes that are using the root directory: 
 
@@ -321,11 +321,11 @@ The following is an example that shows the processes that are using the root dir
 	bash      1395 root  cwd    DIR    8,1     4096 262159 /root
 	lsof      1730 root  cwd    DIR    8,1     4096 262159 /root
 
-You can do the same with an application or virtual appliance by running `lsof` with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:  
+You can do the same with an application or virtual appliance by running ` lsof ` with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:  
 
 	lsof -u apache
 
-Running the command with the `-i` option lists all the open network and Internet files, which can help troubleshoot network problems: 
+Running the command with the `-i ` option lists all the open network and Internet files, which can help troubleshoot network problems: 
 
 	lsof -i
 
@@ -364,7 +364,7 @@ You can also inspect the files opened by a process ID. The following example que
 
 ## fuser
 
-The `fuser` command identifies the process IDs of processes using files or sockets. The term _process_ is, in this case, synonymous with _user_. To identify the process ID of a process using a socket, run `fuser` with its namespace option and specify `tcp` or `udp` and the name of the process or port. Examples: 
+The ` fuser ` command identifies the process IDs of processes using files or sockets. The term _process_ is, in this case, synonymous with _user_. To identify the process ID of a process using a socket, run ` fuser ` with its namespace option and specify ` tcp ` or ` udp ` and the name of the process or port. Examples: 
 
 	fuser -n tcp ssh
 	ssh/tcp:               940  1308
@@ -376,7 +376,7 @@ The `fuser` command identifies the process IDs of processes using files or socke
 
 ## ldd
 
-By revealing the shared libraries that a program depends on, `ldd` can help troubleshoot an application that is missing a library or finding the wrong one.
+By revealing the shared libraries that a program depends on, ` ldd ` can help troubleshoot an application that is missing a library or finding the wrong one.
 
 For example, if you get a "file not found" output, check the path to the library.  
 
@@ -385,13 +385,13 @@ For example, if you get a "file not found" output, check the path to the library
     libpam.so.0 => (file not found)
     libcrypto.so.1.0.0 => /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
 
-You can also use the `objdump` command to show dependencies for a program's object files; example:
+You can also use the ` objdump ` command to show dependencies for a program's object files; example:
 
 	objdump -p /usr/sbin/sshd | grep NEEDED
 
 ## gdb
 
-The `gdb` tool is the GNU debugger. It lets you see inside a program while it executes or when it crashes so that you can catch errors as they occur. The `gdb` tool is typically used to debug programs written in C and C++. On Photon OS, `gdb` can help you determine why an application crashed. See the man page for `gdb` for instructions on how to run it. 
+The ` gdb ` tool is the GNU debugger. It lets you see inside a program while it executes or when it crashes so that you can catch errors as they occur. The ` gdb ` tool is typically used to debug programs written in C and C++. On Photon OS, ` gdb ` can help you determine why an application crashed. See the man page for ` gdb ` for instructions on how to run it. 
 
-For an extensive example on how to use `gdb` to troubleshoot Photon OS running on a VM when you cannot login to Photon OS, see the section on troubleshooting boot and logon problems. 
+For an extensive example on how to use ` gdb` to troubleshoot Photon OS running on a VM when you cannot login to Photon OS, see the section on troubleshooting boot and logon problems. 
 
