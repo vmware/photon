@@ -1,7 +1,7 @@
 Summary:       Low-level libraries useful for providing data structure handling for C.
 Name:          glib
 Version:       2.68.4
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       LGPLv2+
 URL:           https://developer.gnome.org/glib/
 Group:         Applications/System
@@ -64,6 +64,7 @@ Patch150: CVE-2025-7039.patch
 
 Patch151: CVE-2025-4373-1.patch
 Patch152: CVE-2025-4373-2.patch
+Patch153: CVE-2025-13601.patch
 
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C,
@@ -149,6 +150,8 @@ The glib-doc package includes documentation for the GLib library.
 %doc %{_datadir}/gtk-doc/html/*
 
 %changelog
+* Tue Dec 02 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.68.4-6
+- Fix CVE-2025-13601
 * Tue Oct 07 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.68.4-5
 - Fix CVE-2025-7039, CVE-2025-4373
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.68.4-4
