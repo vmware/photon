@@ -139,6 +139,7 @@ void *fcw_sg_virt(struct scatterlist *sg);
 void *fcw_scatterwalk_map(struct scatter_walk *walk);
 bool fcw_ghash_do_async(struct cryptd_ahash *tfm);
 int fcw_fips_not_allowed_alg(char *name);
+int fcw_disabled_due_to_fips(char *name);
 int fcw_skip_tests(void);
 
 int fcw_printk(const char *format, ...);
@@ -703,13 +704,6 @@ bool fcw_ghash_do_async(struct cryptd_ahash *tfm)
 	    (in_atomic() && cryptd_ahash_queued(tfm)));
 }
 
-/*
- * The max name length in the below canister_algs list is around 67 chars.
- * Set the MAX_ALG_NAME_LEN to 128 which can be used in strncmp to
- * prevent buffer over-read.
- */
-#define MAX_ALG_NAME_LEN 128
-
 static char *canister_algs[] = {
 	"rsa-generic",
 	"sha256-generic",
@@ -827,9 +821,6 @@ static char *canister_algs[] = {
 	"seqiv(rfc4106(gcm_base(ctr(aes-generic),ghash-generic)))",
 	"seqiv(rfc4106(gcm_base(ctr(aes-generic),ghash-clmulni)))",
 	"seqiv(rfc4106(gcm_base(ctr(aes-generic),__ghash-pclmulqdqni)))",
-	"ghash-generic",
-	"ghash-clmulni",
-	"__ghash-pclmulqdqni",
 	"cts(cbc(aes-generic))",
 	"cts(cbc(aes-generic))",
 	"cts(cbc(ecb(aes-generic)))",
@@ -859,8 +850,6 @@ static char *canister_algs[] = {
 	"cryptd(__rfc4106-gcm-aesni)",
 	// no certification require
 	"cipher_null-generic",
-	"compress_null-generic",
-	"digest_null-generic",
 	"crc32c-generic",
 	"crct10dif-generic",
 	"crc32c-intel",
@@ -868,18 +857,47 @@ static char *canister_algs[] = {
 	"deflate-scomp",
 	"deflate-generic",
 	"zlib-deflate-scomp",
-	"__xctr-aes-aesni",
+};
+
+static char *fips_disabled_algs[] = {
 	"xctr-aes-aesni",
+	"__xctr-aes-aesni",
+	"compress_null-generic",
+	"digest_null-generic",
+	"cbcmac(aes-generic)",
+	"cbcmac(aes-aesni)",
+	"ecdsa-nist-p192-generic",
+	"ecdh-nist-p192-generic",
+	"ghash-clmulni",
+	"ghash-generic",
+	"__ghash-pclmulqdqni",
+	"des-generic",
+	"des3_ede-generic",
+	"dh-generic",
+	"lzo-rle-scomp",
+	"lzo-rle-generic",
+	"lzo-scomp",
+	"lzo-generic",
+	"md5-generic",
+	/*
+	 * Special case for ECB. Eventhough ECB has fips_allowed flag enabled
+	 * in testmgr, ECB algo is outside of the canister and it is marked as
+	 * CRYPTO_ALG_FIPS_INTERNAL. Hence include ecb in the disabled_algs
+	 */
+	"ecb-cipher_null",
+	"ecb-aes-aesni",
+	"ecb(aes-generic)",
 };
 
 int fcw_fips_not_allowed_alg(char *name)
 {
-	if (!name) {
-		fcw_printk(KERN_WARNING" name not set in %s\n", __FUNCTION__);
-		return 0;
-	}
 	if (fips_enabled == 1) {
-		int i, len = strnlen(name, MAX_ALG_NAME_LEN);
+	/*
+	 * The max name length in the canister_algs list should always be
+	 * less than CRYPTO_MAX_ALG_NAME. Hence limit the comparison length to
+	 * CRYPTO_MAX_ALG_NAME prevent buffer over-read.
+	 */
+		int i, len = strnlen(name, CRYPTO_MAX_ALG_NAME);
 
 		for (i = 0; i < sizeof(canister_algs)/sizeof(canister_algs[0]); i++) {
 			if (strncmp(name, canister_algs[i], len) == 0)
@@ -888,6 +906,28 @@ int fcw_fips_not_allowed_alg(char *name)
 		return 1;
 	}
 	return 0;
+}
+
+int fcw_disabled_due_to_fips(char *name)
+{
+	if (fips_enabled == 1) {
+		/*
+		 * If cra_drv_name is not present in canister_algs list, then
+		 * check if it is present in fips_disabled_algs list. This
+		 * fips_disabled_algs list has been populated after confirming
+		 * that the flag fips_allowed is not set in testmgr.c. Return
+		 * true if present so that testmgr can print the log that
+		 * the algorithm is disabled due to fips.
+		 */
+		int i, len = strnlen(name, CRYPTO_MAX_ALG_NAME);
+		for (i = 0; i < sizeof(fips_disabled_algs)/
+				sizeof(fips_disabled_algs[0]); i++) {
+			if (strncmp(name, fips_disabled_algs[i], len) == 0)
+				return 1;
+		}
+		return 0;
+	}
+	return 1;
 }
 
 int fcw_skip_tests(void)
@@ -942,14 +982,20 @@ static int crypto_msg_notify(struct notifier_block *this, unsigned long msg,
 {
 	struct crypto_alg *alg = (struct crypto_alg *)data;
 
+	if (unlikely(!alg || !alg->cra_driver_name || !alg->cra_name)) {
+		fcw_printk(KERN_WARNING" name not set in %s\n", __FUNCTION__);
+		return NOTIFY_DONE;
+	}
 	if (msg == CRYPTO_MSG_ALG_REQUEST && alg_request_report) {
 		pr_notice("alg request: %s (%s) by %s(%d)",
 			   alg->cra_driver_name, alg->cra_name,
 			   current->comm, current->pid);
 	}
 	if (msg == CRYPTO_MSG_ALG_REGISTER) {
-		if (fcw_fips_not_allowed_alg(alg->cra_driver_name)) {
-			pr_notice("alg: %s (%s) not certified", alg->cra_driver_name, alg->cra_name);
+		if (fcw_fips_not_allowed_alg(alg->cra_driver_name) &&
+			!fcw_disabled_due_to_fips(alg->cra_driver_name)) {
+			pr_notice("alg: %s (%s) not certified",
+					alg->cra_driver_name, alg->cra_name);
 		}
 	}
 	return NOTIFY_DONE;

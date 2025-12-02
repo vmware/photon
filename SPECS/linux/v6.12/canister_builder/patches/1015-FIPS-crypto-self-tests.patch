@@ -1,4 +1,4 @@
-From 840e16a33c53d92944f89924c85f7f3af090edfb Mon Sep 17 00:00:00 2001
+From d64b1cd7b8c953c652d443b85c4e811a111fa969 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Tue, 5 Jan 2021 10:45:39 +0000
 Subject: [PATCH] FIPS crypto self tests
@@ -30,18 +30,18 @@ Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- crypto/crypto_self_test.c |  233 +++++
+ crypto/crypto_self_test.c |  229 +++++
  crypto/testmgr.c          |   72 +-
  crypto/testmgr.h          | 1843 ++++++++++++++++++++++++++++++++++++-
- 3 files changed, 2131 insertions(+), 17 deletions(-)
+ 3 files changed, 2127 insertions(+), 17 deletions(-)
  create mode 100644 crypto/crypto_self_test.c
 
 diff --git a/crypto/crypto_self_test.c b/crypto/crypto_self_test.c
 new file mode 100644
-index 000000000..8119a1716
+index 000000000000..18955b9855ed
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
-@@ -0,0 +1,233 @@
+@@ -0,0 +1,229 @@
 +/*
 + * Self test for Crypto Algorithms
 + *
@@ -99,10 +99,6 @@ index 000000000..8119a1716
 +	{
 +		.driver_name = "cmac(aes)",
 +		.alg_name = "cmac(aes)",
-+	},
-+	{
-+		.driver_name = "ecb(aes)",
-+		.alg_name = "ecb(aes)",
 +	},
 +	{
 +		.driver_name = "rsa",
@@ -276,7 +272,7 @@ index 000000000..8119a1716
 +	return err;
 +}
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index da8a543cf..cd0b6c263 100644
+index c0234893e3ed..809ebd48538e 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -4083,7 +4083,7 @@ static const struct alg_test_desc alg_test_descs[] = {
@@ -436,7 +432,7 @@ index da8a543cf..cd0b6c263 100644
  	}, {
  		.alg = "poly1305",
  		.test = alg_test_hash,
-@@ -5270,7 +5310,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+@@ -5272,7 +5312,7 @@ static const struct alg_test_desc alg_test_descs[] = {
  	}, {
  		.alg = "sha1",
  		.test = alg_test_hash,
@@ -446,7 +442,7 @@ index da8a543cf..cd0b6c263 100644
  			.hash = __VECS(sha1_tv_template)
  		}
 diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index 505227ef8..34ee73c9c 100644
+index 505227ef8924..34ee73c9ce23 100644
 --- a/crypto/testmgr.h
 +++ b/crypto/testmgr.h
 @@ -1353,6 +1353,254 @@ static const struct akcipher_testvec ecrdsa_tv_template[] = {
@@ -2356,5 +2352,5 @@ index 505227ef8..34ee73c9c 100644
  
  /*
 -- 
-2.40.4
+2.35.6
 
