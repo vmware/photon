@@ -9,9 +9,8 @@
 use_ozone = true
 ozone_auto_platforms = false
 ozone_platform = "headless"
-ozone_platform_headless = true
 angle_enable_vulkan = true
-angle_enable_swiftshader = true
+angle_enable_swiftshader = false
 # Embed resource.pak into binary to simplify deployment.
 headless_use_embedded_resources = true
 # Disable headless commands support.
@@ -28,8 +27,7 @@ icu_use_data_file = false
 # Use embedded data instead external files for headless in order
 # to simplify deployment.
 v8_use_external_startup_data = false
-enable_nacl = false
-use_goma=false
+#use_goma=false
 enable_print_preview = false
 enable_remoting = false
 use_alsa = false
@@ -52,3 +50,61 @@ is_official_build=true
 symbol_level=0
 blink_symbol_level=0
 chrome_pgo_phase=0
+
+is_component_build = false
+dcheck_always_on = false
+v8_enable_system_instrumentation=false
+clang_use_chrome_plugins = false  # disable chromium plugin, not needed
+
+# Headless mode
+use_aura = true
+use_gtk = false
+use_glib = false
+ozone_platform_headless = true
+ozone_auto_platforms = false
+ozone_platform_x11 = false
+ozone_platform_wayland = false
+ozone_platform_drm = false
+
+# Disable GPU/ANGLE (software only)
+angle_enable_vulkan = true
+
+# Keep only V8 & PDF printing
+enable_pdf = true
+
+# Disable extras
+enable_widevine = false
+enable_remoting = false
+enable_reporting = false
+enable_mdns = false
+enable_ipc_fuzzer = false
+
+# Disable tests
+rtc_include_tests = false
+dcheck_always_on = false
+
+build_dawn_tests=false
+enable_perfetto_unittests=false
+disable_fieldtrial_testing_config=true
+
+v8_enable_fuzztest = false
+v8_enable_test_features = false
+angle_build_tests = false
+build_angle_perftests = false
+dawn_tests_use_angle = false
+enable_nocompile_tests = false
+enable_rust = true
+enable_screen_ai_browsertests = false
+gtest_enable_absl_printers = false
+register_fuzztests_in_test_suites = false
+rtc_build_dcsctp = false
+skia_enable_skshaper_tests = false
+tint_build_unittests = false
+use_base_test_suite = false
+use_fuzztest_wrapper = false
+pdf_is_standalone = true
+pdf_is_complete_lib = true
+rtc_enable_sctp = false
+
+use_libfuzzer=false
+register_fuzztests_in_test_suites=false

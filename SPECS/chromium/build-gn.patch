@@ -1,0 +1,97 @@
+--- src/BUILD.gn	2025-12-01 00:26:08.528365511 +0530
++++ src/BUILD.gn	2025-12-01 00:11:24.020320990 +0530
+@@ -1155,7 +1155,6 @@ if (use_blink && !is_cronet_build) {
+         "//chrome",
+         "//chrome/test/chromedriver:chromedriver_server",
+         "//third_party/blink/tools:wpt_tests_isolate",
+-        "//third_party/blink/web_tests:wpt_tests",
+       ]
+     }
+
+@@ -1171,7 +1170,6 @@ if (use_blink && !is_cronet_build) {
+         "//chrome/test/chromedriver:chromedriver_server",
+         "//headless:headless_shell",
+         "//third_party/blink/tools:wpt_tests_isolate",
+-        "//third_party/blink/web_tests:wpt_tests",
+       ]
+       if (is_mac || is_linux) {
+         data_deps += [ "//third_party/hyphenation-patterns:bundle_hyphen_data" ]
+@@ -1266,9 +1264,6 @@ if (use_blink && !is_cronet_build) {
+       "//testing/scripts/run_isolated_script_test.py",
+       "//testing/xvfb.py",
+       "//third_party/blink/tools/",
+-      "//third_party/blink/web_tests/external/wpt/.config.json",
+-      "//third_party/blink/web_tests/resources/",
+-      "//third_party/blink/web_tests/TestLists/",
+       "//third_party/pywebsocket3/src/mod_pywebsocket/",
+       "//third_party/test_fonts/test_fonts/",
+       "//third_party/wpt_tools/",
+@@ -1358,7 +1353,6 @@ if (use_blink && !is_cronet_build) {
+
+     data_deps = [
+       ":blink_web_tests_support_data",
+-      "//third_party/blink/web_tests",
+     ]
+     data = [ "//third_party/blink/perf_tests/" ]
+   }
+@@ -1369,7 +1363,6 @@ if (use_blink && !is_cronet_build) {
+   # this target.
+   group("blink_web_tests_expectations") {
+     testonly = true
+-    data_deps = [ "//third_party/blink/web_tests:expectations" ]
+   }
+
+   # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
+@@ -1393,7 +1386,6 @@ if (use_blink && !is_cronet_build) {
+
+     data_deps = [
+       ":blink_web_tests_support_data",
+-      "//third_party/blink/web_tests:wpt_tests",
+     ]
+     data = [ "//third_party/blink/perf_tests/" ]
+   }
+@@ -1418,7 +1410,6 @@ if (use_blink && !is_cronet_build) {
+
+     data_deps = [
+       ":blink_web_tests_support_data",
+-      "//third_party/blink/web_tests:webgpu_web_tests",
+       "//third_party/webgpu-cts",
+     ]
+     data = [ "//third_party/webgpu-cts/scripts/" ]
+@@ -1469,35 +1460,7 @@ if (use_blink && !is_cronet_build) {
+       "//testing/flake_suppressor_common/",
+       "//third_party/blink/renderer/bindings/scripts/",
+       "//third_party/blink/renderer/build/scripts/",
+-      "//third_party/blink/tools/",
+-      "//third_party/blink/web_tests/ASANExpectations",
+-      "//third_party/blink/web_tests/CfTTestExpectations",
+-      "//third_party/blink/web_tests/FlagExpectations/",
+-      "//third_party/blink/web_tests/LeakExpectations",
+-      "//third_party/blink/web_tests/MSANExpectations",
+-      "//third_party/blink/web_tests/NeverFixTests",
+-      "//third_party/blink/web_tests/SlowTests",
+-      "//third_party/blink/web_tests/StaleTestExpectations",
+-      "//third_party/blink/web_tests/TestExpectations",
+-      "//third_party/blink/web_tests/VirtualTestSuites",
+-      "//third_party/blink/web_tests/W3CImportExpectations",
+-      "//third_party/blink/web_tests/paint/invalidation/repaint-overlay/",
+-      "//third_party/catapult/common/py_utils/",
+-      "//third_party/catapult/devil/",
+-      "//third_party/catapult/dependency_manager/",
+-      "//third_party/catapult/third_party/typ/",
+-      "//third_party/depot_tools/pylint-2.7",
+-      "//third_party/depot_tools/pylint_main.py",
+-      "//third_party/depot_tools/pylintrc-2.7",
+-      "//third_party/ply/",
+-      "//third_party/pyjson5/",
+-      "//third_party/wpt_tools/",
+-      "//tools/idl_parser/",
+-    ]
+-
+-    if (is_ios) {
+-      data += [ "//third_party/blink/web_tests/IOSTestExpectations" ]
+-    }
++      "//third_party/blink/tools/"]
+
+     data_deps = [ "//ui/base:goldctl" ]
+   }

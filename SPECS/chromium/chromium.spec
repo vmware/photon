@@ -1,12 +1,13 @@
 %global debug_package       %{nil}
 %define chromium_path       %{_libdir}/%{name}-browser
 %define builddir            out/headless
+%define _jobs               %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        138.0.7204.145
+Version:        142.0.7444.175
 Release:        1%{?dist}
 License:        BSD 3
 URL:            https://chromium.googlesource.com/chromium/src
@@ -15,13 +16,16 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # generated using tools/scripts/fetch-chromium-source.sh
-Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=c9d9eb2bf7003110934bec29d4106bbdcc0d0b87afc6afcdd91e149893afd982e93e56312849a1eda2a98b14646a57c3b3c42a313ca76cbe87781b698f5bf480
+Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.xz
+%define sha512 %{name}=72ea2e40a09520a5972cc7cf4dce2fd07dd2477a9bb5b7336cac75e07b7ee6214af1b92394d686389cb4b23e7265e130a48e30d63deac2fc044bde918f29f3aa
 
-Source1: depot_tools-abc5109.tar.xz
-%define sha512 depot_tools=5841286adf6e610d3b7d7888f096c728f6535e1fba4163661d0a1cf5fbaec037f643bab6490b832eacd41dfadf4dd2e27a4b7afb3c166679e94fd2439846b480
+Source1: depot_tools-8efa575.tar.xz
+%define sha512 depot_tools=b7790b3ce36dc98f056ed1e22f2ab4c8de6b33ec07db1da03fce1edc1c682aeec7840987bee4f680f815df17520d9ae2e28baa76de49672b46af89103573ca16
 
 Source2: headless.gn
+
+Patch0: swiftshader-buildgn.patch
+Patch1: build-gn.patch
 
 BuildRequires: git
 BuildRequires: nss-devel
@@ -32,6 +36,7 @@ BuildRequires: nspr-devel
 BuildRequires: ninja-build
 BuildRequires: gperf
 BuildRequires: python3
+BuildRequires: python3-PyYAML
 
 # TODO: need to revisit for aarch64
 BuildArch: x86_64
@@ -48,16 +53,6 @@ Chromium is an open-source browser project that aims to build a safer, faster, a
 %autosetup -a0 -a1 -p1 -n src
 
 %build
-pushd %{_builddir}/src/build/linux/debian_bullseye_amd64-sysroot%{_libdir}/pkgconfig
-
-cp glib-2.0.pc \
-   dbus-1.pc \
-   nss.pc \
-   nspr.pc \
-   %{_libdir}/pkgconfig
-
-popd
-
 mkdir -p %{builddir}
 cp %{SOURCE2} %{builddir}/args.gn
 
@@ -66,11 +61,17 @@ echo "${py_path}" > depot_tools/python3_bin_reldir.txt
 
 %{_builddir}/src/depot_tools/gn gen %{builddir}
 
-ninja -C %{builddir} headless_shell -j $(nproc)
+# sometimes build breaks with OOM
+for i in 1 2 3; do
+  if ninja -C %{builddir} headless_shell -j %{_jobs}; then
+    break
+  fi
+  echo "Warning: chromium build failed, retry ($i)" >&2
+done
 
 %install
 mkdir -p %{buildroot}%{chromium_path}
-cp -pr %{builddir}/headless_lib_data.pak \
+cp -a  %{builddir}/headless_lib_data.pak \
        %{builddir}/headless_lib_strings.pak \
        %{builddir}/headless_shell \
        %{builddir}/libvk_swiftshader.so* \
@@ -87,6 +88,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Mon Dec 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 142.0.7444.175-1
+- Upgrade to v142.0.7444.175
 * Fri Jul 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 138.0.7204.145-1
 - Upgrade to v138.0.7204.145
 * Wed Jan 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 131.0.6778.268-1
