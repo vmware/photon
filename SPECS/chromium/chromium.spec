@@ -1,12 +1,13 @@
 %global debug_package       %{nil}
 %define chromium_path       %{_libdir}/%{name}-browser
 %define builddir            out/headless
+%define _jobs               %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        140.0.7339.127
+Version:        142.0.7444.175
 Release:        1%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
@@ -17,7 +18,7 @@ Distribution:   Photon
 # Contact Shreenidhi Shedi for cleanup related info.
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.xz
 
-Source1: depot_tools-6c58dbd.tar.xz
+Source1: depot_tools-8efa575.tar.xz
 
 Source2: headless.gn
 
@@ -25,6 +26,7 @@ Source3: license.txt
 %include %{SOURCE3}
 
 Patch0: swiftshader-buildgn.patch
+Patch1: build-gn.patch
 
 BuildRequires: git
 BuildRequires: nss-devel
@@ -60,11 +62,17 @@ echo "${py_path}" > depot_tools/python3_bin_reldir.txt
 
 %{_builddir}/src/depot_tools/gn gen %{builddir}
 
-ninja -C %{builddir} headless_shell -j $(nproc)
+# sometimes build breaks with OOM
+for i in 1 2 3; do
+  if ninja -C %{builddir} headless_shell -j %{_jobs}; then
+    break
+  fi
+  echo "Warning: chromium build failed, retry ($i)" >&2
+done
 
 %install
 mkdir -p %{buildroot}%{chromium_path}
-cp -pr %{builddir}/headless_lib_data.pak \
+cp -a  %{builddir}/headless_lib_data.pak \
        %{builddir}/headless_lib_strings.pak \
        %{builddir}/headless_shell \
        %{builddir}/libvk_swiftshader.so* \
@@ -81,6 +89,8 @@ cp -pr %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Mon Dec 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 142.0.7444.175-1
+- Upgrade to v142.0.7444.175
 * Tue Sep 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 140.0.7339.127-1
 - Upgrade to v140.0.7339.127
 * Fri Jul 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 138.0.7204.145-1
