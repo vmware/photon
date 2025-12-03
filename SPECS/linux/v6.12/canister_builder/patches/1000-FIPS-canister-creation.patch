@@ -1,4 +1,4 @@
-From cffe72cc862566a60ddca9cafc888ecdb86e6f98 Mon Sep 17 00:00:00 2001
+From 843fa3ae62dcd5cd49726177197c4dadb8a170bb Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 Date: Mon, 23 Jun 2025 03:09:01 -0500
 Subject: [PATCH] FIPS canister creation
@@ -19,7 +19,6 @@ Canister creation patch.
  - Do not check indirect call destination signatures from canister
  - Remove rsa-pkcs1pad encrypt/decrypt functions from canister
  - List canister objs in a file
- - Add MPI library API into canister
  - Compile canister with __NO_FORTIFY to avoid __bug_table insertion by
    string operations such as memcpy. __bug_table is a kernel specific
    data structure and must be moved out of the canister. Wrapping functions
@@ -33,24 +32,24 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
- arch/x86/crypto/aesni-intel_glue.c |  77 ++++++++--------
- crypto/Makefile                    | 143 +++++++++++++++++++++++++++++
- crypto/algboss.c                   |   8 +-
+ arch/x86/crypto/aesni-intel_glue.c |  77 ++++++++++----------
+ crypto/Makefile                    | 112 +++++++++++++++++++++++++++++
+ crypto/algboss.c                   |   8 ++-
  crypto/ccm.c                       |   7 +-
  crypto/cmac.c                      |   3 +-
  crypto/ctr.c                       |   3 +-
  crypto/cts.c                       |   3 +-
- crypto/drbg.c                      |  50 ++++++----
+ crypto/drbg.c                      |  50 ++++++++-----
  crypto/ecc.c                       |   5 +-
  crypto/ecdh.c                      |   5 +-
  crypto/ecdsa.c                     |   3 +-
- crypto/gcm.c                       |   9 +-
+ crypto/gcm.c                       |   9 +--
  crypto/hmac.c                      |   3 +-
- crypto/rsa-pkcs1pad.c              |  11 +--
- crypto/testmgr.c                   | 108 ++++++++++++----------
+ crypto/rsa-pkcs1pad.c              |  11 ++-
+ crypto/testmgr.c                   | 108 +++++++++++++++-------------
  crypto/xts.c                       |   3 +-
  include/crypto/drbg.h              |   3 +-
- 17 files changed, 312 insertions(+), 132 deletions(-)
+ 17 files changed, 281 insertions(+), 132 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
 index b0dd83555..55ed01a67 100644
@@ -323,7 +322,7 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index ab9645853..6e81f830d 100644
+index 768f24db5..b4cb9f756 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -18,9 +18,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -429,7 +428,7 @@ index ab9645853..6e81f830d 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -192,6 +213,128 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -192,6 +213,97 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
@@ -473,31 +472,7 @@ index ab9645853..6e81f830d 100644
 +$(obj)/x86-%.o: $(srctree)/arch/x86/crypto/%.S FORCE
 +	$(call if_changed_rule,as_o_S)
 +
-+lib-crypto-mpi-y := \
-+	generic_mpih-lshift.o           \
-+	generic_mpih-mul1.o             \
-+	generic_mpih-mul2.o             \
-+	generic_mpih-mul3.o             \
-+	generic_mpih-rshift.o           \
-+	generic_mpih-sub1.o             \
-+	generic_mpih-add1.o             \
-+	mpicoder.o                      \
-+	mpi-add.o                       \
-+	mpi-bit.o                       \
-+	mpi-cmp.o                       \
-+	mpi-sub-ui.o                    \
-+	mpi-div.o                       \
-+	mpi-mod.o                       \
-+	mpi-mul.o                       \
-+	mpih-cmp.o                      \
-+	mpih-div.o                      \
-+	mpih-mul.o                      \
-+	mpi-pow.o                       \
-+	mpiutil.o
-+$(obj)/lib-crypto-mpi-%.o: $(srctree)/lib/crypto/mpi/%.c FORCE
-+	$(call if_changed_rule,cc_o_c)
-+
-+lib-crypto-y := aes.o sha256.o memneq.o utils.o gf128mul.o
++lib-crypto-y := aes.o sha256.o
 +$(obj)/lib-crypto-%.o: $(srctree)/lib/crypto/%.c FORCE
 +	$(call if_changed_rule,cc_o_c)
 +
@@ -507,13 +482,12 @@ index ab9645853..6e81f830d 100644
 +
 +extra-y += $(canister)
 +
-+canister-objs := $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
++canister-objs := $(addprefix crypto/x86-,$(x86-hwaccelerated-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix $(obj)/,$(canister))
 +
 +$(obj)/canister.o: $(obj)/partial_reloc $(canister-objs)
 +	$(Q)$(LD) -z noexecstack -T $(obj)/canister_combine.lds -r $(canister-objs) -o $@
 +	$(call cmd,pr)
 +	@$(foreach obj,$(x86-hwaccelerated-y),echo x86-$(obj) > objs;)
-+	@$(foreach obj,$(lib-crypto-mpi-y),echo lib-crypto-mpi-$(obj) >> objs;)
 +	@$(foreach obj,$(lib-crypto-y),echo lib-crypto-$(obj) >> objs;)
 +	@$(foreach obj,$(canister),echo $(obj) >> objs;)
 +
@@ -522,12 +496,6 @@ index ab9645853..6e81f830d 100644
 +  CFLAGS_REMOVE_$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
 +endef
 +$(foreach obj,$(canister),$(eval $(call UPDATE_CFLAGS,$(obj))))
-+
-+define UPDATE_CFLAGS_LIB_CRYPTO_MPI =
-+  CFLAGS_lib-crypto-mpi-$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
-+  CFLAGS_REMOVE_lib-crypto-mpi-$1 += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call $(RETPOLINE_CFLAGS) $(RETHUNK_CFLAGS)
-+endef
-+$(foreach obj,$(lib-crypto-mpi-y),$(eval $(call UPDATE_CFLAGS_LIB_CRYPTO_MPI,$(obj))))
 +
 +define UPDATE_CFLAGS_LIB_CRYPTO =
 +  CFLAGS_lib-crypto-$1 += -DFIPS_CANISTER -mharden-sls=all -D__NO_FORTIFY
@@ -546,7 +514,7 @@ index ab9645853..6e81f830d 100644
 +clean-files += canister_relocs.c
 +clean-files += fips_canister-kallsyms
 +# Make savecmd_ happy for proper incremental build
-+targets += canister_relocs.o $(addprefix x86-,$(x86-hwaccelerated-y)) $(addprefix lib-crypto-mpi-,$(lib-crypto-mpi-y)) $(addprefix lib-crypto-,$(lib-crypto-y))
++targets += canister_relocs.o $(addprefix x86-,$(x86-hwaccelerated-y)) $(addprefix lib-crypto-,$(lib-crypto-y))
 +$(obj)/canister_markers.lds: $(src)/canister_relocs.c
 +
 +clean-files += canister_markers.lds
