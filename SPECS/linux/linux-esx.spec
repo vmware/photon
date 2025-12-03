@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.158
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -766,6 +766,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 05 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.158-13
+- .config: enable mlx5 infiniband (=m) for Driver VM
 * Tue Dec 02 2025 Bo Gan <bo.gan@broadcom.com> 6.1.158-12
 - Fix CVE-2025-38129
 * Mon Dec 01 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-11
