@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -22,9 +22,11 @@ Source3: license.txt
 %include %{SOURCE3}
 
 BuildRequires:  openssl-devel
+BuildRequires:  libxcrypt-devel
 BuildRequires:  zlib-devel
 
 Requires:       openssl-libs
+Requires:       libxcrypt
 Requires:       zlib
 
 Provides:       /bin/grep
@@ -726,6 +728,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Tue Dec 02 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.8.9-8
+- Add missing requires of libxcrypt
 * Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.9-7
 - Handle coreutils-minimal uninstall case
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.8.9-6
