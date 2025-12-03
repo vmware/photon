@@ -63,14 +63,12 @@
 #include "internal.h"
 #include <linux/uio.h>
 #include <linux/scatterlist.h>
-#include <linux/mpi.h>
 #include <linux/highmem-internal.h>
 #include <crypto/scatterwalk.h>
 #include <crypto/sha3.h>
 #include <crypto/cryptd.h>
 #include <asm/simd.h>
 #include <crypto/internal/simd.h>
-#include <crypto/gf128mul.h>
 #include <crypto/internal/geniv.h>
 #include <asm/cpu_device_id.h>
 #include "fips_canister_wrapper_common.h"
@@ -86,7 +84,6 @@ int fcw_signal_pending(void);
 void *fcw_kthread_run(int (*threadfn)(void *data), void *data, const char namefmt[]);
 int fcw_cond_resched(void);
 void *fcw_kmalloc(size_t size, gfp_t flags);
-void *fcw_kcalloc(size_t n, size_t size, gfp_t flags);
 void *fcw_kzalloc(size_t size, gfp_t flags);
 bool fcw_boot_cpu_has(unsigned long bit);
 bool fcw_x86_match_cpu_zmm_exclusion_list(void);
@@ -187,11 +184,6 @@ int fcw_cond_resched(void)
 void *fcw_kmalloc(size_t size, gfp_t flags)
 {
 	return kmalloc(size, flags);
-}
-
-void *fcw_kcalloc(size_t n, size_t size, gfp_t flags)
-{
-	return kcalloc(n, size, flags);
 }
 
 void *fcw_kzalloc(size_t size, gfp_t flags)
@@ -1044,38 +1036,4 @@ EXPORT_SYMBOL(crypto_sha3_final);
 EXPORT_SYMBOL_GPL(aead_geniv_alloc);
 EXPORT_SYMBOL_GPL(aead_init_geniv);
 EXPORT_SYMBOL_GPL(aead_exit_geniv);
-EXPORT_SYMBOL_GPL(__crypto_xor);
-EXPORT_SYMBOL_GPL(crypto_inc);
-EXPORT_SYMBOL(__crypto_memneq);
-EXPORT_SYMBOL_GPL(mpi_cmp_ui);
-EXPORT_SYMBOL_GPL(mpi_cmp);
-EXPORT_SYMBOL_GPL(mpi_get_nbits);
-EXPORT_SYMBOL_GPL(mpi_test_bit);
-EXPORT_SYMBOL_GPL(mpi_rshift);
-EXPORT_SYMBOL_GPL(mpi_alloc);
-EXPORT_SYMBOL_GPL(mpi_free);
-EXPORT_SYMBOL_GPL(mpi_sub_ui);
-EXPORT_SYMBOL_GPL(mpi_mulm);
-EXPORT_SYMBOL_GPL(mpi_mul);
-EXPORT_SYMBOL_GPL(mpi_read_raw_data);
-EXPORT_SYMBOL_GPL(mpi_read_from_buffer);
-EXPORT_SYMBOL_GPL(mpi_read_buffer);
-EXPORT_SYMBOL_GPL(mpi_get_buffer);
-EXPORT_SYMBOL_GPL(mpi_write_to_sgl);
-EXPORT_SYMBOL_GPL(mpi_read_raw_from_sgl);
-EXPORT_SYMBOL_GPL(mpi_powm);
-EXPORT_SYMBOL_GPL(mpi_add);
-EXPORT_SYMBOL_GPL(mpi_addm);
-EXPORT_SYMBOL_GPL(mpi_sub);
-EXPORT_SYMBOL_GPL(mpi_subm);
-EXPORT_SYMBOL(gf128mul_x8_ble);
-EXPORT_SYMBOL(gf128mul_lle);
-EXPORT_SYMBOL(gf128mul_bbe);
-EXPORT_SYMBOL(gf128mul_init_64k_bbe);
-EXPORT_SYMBOL(gf128mul_free_64k);
-EXPORT_SYMBOL(gf128mul_64k_bbe);
-EXPORT_SYMBOL(gf128mul_init_4k_lle);
-EXPORT_SYMBOL(gf128mul_init_4k_bbe);
-EXPORT_SYMBOL(gf128mul_4k_lle);
-EXPORT_SYMBOL(gf128mul_4k_bbe);
 /* End of Exports */

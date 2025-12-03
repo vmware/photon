@@ -73,7 +73,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.57
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -344,12 +344,10 @@ Patch11010: 1010-rsa-pkcs1pad-Add-invalid_hash_len-check-in-sign-veri.patch
 Patch11011: 1011-sha1-Do-not-register-sha1-to-crypto-backend-when-fip.patch
 Patch11012: 1012-Add-shasums-accelerators.patch
 Patch11013: 1013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
-Patch11014: 1014-lib-crypto-memneq-remove-module-h.patch
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
 Patch11015: 1015-FIPS-crypto-self-tests.patch
 # Disable alloc_hook_tags if MEM_PROFILING is disabled
 Patch11016: 1016-linux-canister-Eliminate-codetag-and-other-taggings-.patch
-Patch11017: 1017-lib-cypto-mpi-Adding-MPI-API-into-canister.patch
 %endif
 
 # ACVP special builds
@@ -591,7 +589,7 @@ touch crypto/.fips_canister.o.cmd
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m11000 -M11017
+%autopatch -p1 -m11000 -M11016
 cp %{SOURCE11000} crypto/
 cp %{SOURCE11001} crypto/
 cp %{SOURCE11002} crypto/
@@ -897,6 +895,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Dec 03 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.57-9
+- canister: Move out lib/crypto/{mpi/memneq/utils/gf128mul} of boundry
 * Mon Dec 01 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.57-8
 - Enable CONFIG_GVE for gVNIC support
 * Mon Dec 01 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.57-7
