@@ -757,19 +757,16 @@ function update_os() {
   rebuilddb
   backup_rpms_list_n_db $RPMDB_PATH
   tdnf_makecache $FROM_VERSION
-  find_installed_deprecated_packages
   find_installed_replaced_packages
   extra_erased_pkgs_arr+=(
     $(
-      find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
-                                 ${!replaced_pkgs_map[@]}
+      find_extra_erased_pkgs ${!replaced_pkgs_map[@]}
     )
   )
   remove_debuginfo_packages
   backup_configs $TMP_BACKUP_LOC \
                   ${!replaced_pkgs_map[@]} \
                   ${extra_erased_pkgs_arr[@]}
-  remove_unsupported_packages
   pre_upgrade_rm_pkgs
   remove_replaced_packages
   rebuilddb
