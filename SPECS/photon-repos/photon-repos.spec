@@ -1,7 +1,7 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -67,6 +67,8 @@ rm -rf %{buildroot}
 %config(noreplace) /etc/yum.repos.d/photon-release.repo
 
 %changelog
+*   Wed Dec 03 2025 Bo Gan <bo.gan@broadcom.com> 4.0-5
+-   Patch old broadcom URLs to new ones
 *   Wed Jul 23 2025 Bo Gan <bo.gan@broadcom.com> 4.0-4
 -   Update baseurl and logic to patch existing (noreplace) files
 *   Tue Mar 1 2022 Oliver Kurth <okurth@vmware.com> 4.0-3
