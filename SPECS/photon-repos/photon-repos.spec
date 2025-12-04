@@ -1,7 +1,7 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Source1:        VMWARE-RPM-GPG-KEY
@@ -74,6 +74,8 @@ rm -rf %{buildroot}
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Wed Dec 03 2025 Bo Gan <bo.gan@broadcom.com> 5.0-7
+-   Patch old broadcom URLs to new ones
 *   Wed Jul 23 2025 Bo Gan <bo.gan@broadcom.com> 5.0-6
 -   Update baseurl and logic to patch existing (noreplace) files
 *   Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5
