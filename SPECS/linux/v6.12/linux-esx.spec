@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -495,6 +495,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Dec 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-2
+- Enable CONFIG_ARM64_ERRATUM_3194386
 * Thu Dec 04 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-1
 - Update to version 6.12.60
 * Fri Nov 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.57-2
