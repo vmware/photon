@@ -2,12 +2,12 @@
 %define debug_package       %{nil}
 %define branch              %{version}-%{release}
 %define tag                 %{version}
-%define commit              e7ce1e1e74
+%define commit              467473bdb7
 
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
-Version:          1.34.4
-Release:          4%{?dist}
+Version:          1.36.4
+Release:          1%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -100,6 +100,9 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Dec 05 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.36.4-1
+- Update to 1.36.4
+- Update jose2go from 1.6.0 to 1.7.0 to address CVE-2025-63811
 * Thu Nov 27 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.34.4-4
 - Fix permission issue on /etc/default/telegraf
 * Wed Nov 26 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34.4-3
