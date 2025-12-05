@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.247
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -474,6 +474,12 @@ Patch285: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
 # CVE-2023-53282
 Patch286: 0001-scsi-lpfc-Fix-use-after-free-KFENCE-violation-during.patch
 
+# CVE-2025-38129
+Patch287: 0001-page_pool-fix-inconsistency-for-page_pool_ring_-un-l.patch
+Patch288: 0002-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
+# CVE-2025-38584
+Patch289: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -758,6 +764,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-4
+- CVE-2025-38129
+- CVE-2025-38584
 * Tue Dec 09 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-3
 - Inject photon KM certificate to trusted keyring
 * Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-2
