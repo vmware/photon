@@ -1,6 +1,6 @@
 Summary:    contains libraries for reading and writing PNG files.
 Name:       libpng
-Version:    1.6.51
+Version:    1.6.53
 Release:    1%{?dist}
 URL:        http://www.libpng.org/
 Group:      System Environment/Libraries
@@ -62,6 +62,9 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+* Mon Dec 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.53-1
+- Update to version 1.6.53
+- Fix CVE-2025-66293
 * Thu Nov 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.51-1
 - Update to version 1.6.51
 - Fix CVE-2025-64506, CVE-2025-65018, CVE-2025-64505, CVE-2025-64720
