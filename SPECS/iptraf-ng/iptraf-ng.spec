@@ -1,11 +1,11 @@
 Summary:       IPTraf-ng is a console-based network statistics utility
 Name:          iptraf-ng
-Version:       1.2.1
+Version:       1.2.2
 Release:       1%{?dist}
 License:       GPLv2
 URL:           https://github.com/iptraf-ng/iptraf-ng
 Source:        https://github.com/iptraf-ng/iptraf-ng/archive/%{name}-v%{version}.tar.gz
-%define sha1 iptraf-ng=fc72d2ec4c659d5355cdf1dd9371e64c34749cf1
+%define sha512 iptraf-ng=275a345ffd3ab9578c4d159c3a8667326224b4a58b2e7787c4db518b81973d87c04b4b6c5275a721858d01a9b44a0200f8defc06c6f88655aa38d4fa6146ea1d
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -27,7 +27,7 @@ displays information about IP traffic. It returns information such as:
 - LAN station statistics
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
@@ -45,5 +45,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/iptraf-ng.8.gz
 
 %changelog
+* Mon Dec 08 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.2.2-1
+- Upgrade version
 * Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.2.1-1
 - Initial build; first version.
