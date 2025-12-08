@@ -29,8 +29,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.158
-Release:        14%{?dist}
+Version:        6.1.159
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -317,12 +317,6 @@ Patch172: 0001-drm-amd-display-Check-null-pointers-before-using-the.patch
 Patch173: 0001-ksmbd-add-refcnt-to-ksmbd_conn-struct.patch
 Patch174: 0002-ksmbd-fix-use-after-free-in-SMB-request-handling.patch
 
-# Fix CVE-2025-38073
-Patch175: 0001-block-fix-race-between-set_blocksize-and-read-paths.patch
-
-# Fix CVE-2025-38057
-Patch176: 0001-espintcp-fix-skb-leaks.patch
-
 # Fix CVE-2025-38039
 Patch177: 0001-net-mlx5e-Avoid-WARN_ON-when-configuring-MQPRIO-with.patch
 
@@ -355,9 +349,6 @@ Patch187: 0001-smb-client-fix-UAF-in-decryption-with-multichannel.patch
 # Fix CVE-2025-40149
 Patch188: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
 Patch189: 0002-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
-
-# Fix CVE-2025-38556
-Patch190: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
 
 # Fix CVE-2025-2312
 Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
@@ -780,6 +771,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-1
+- Update to version 6.1.159
 * Sun Dec 07 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.158-14
 - Fix CVE-2025-38248, CVE-2025-38584, CVE-2025-38616, CVE-2025-39797
 * Fri Dec 05 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.158-13
