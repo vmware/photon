@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.246
-Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.247
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8b99d93386ba69a8fb83b9675e6e6a8e1f01637d333ae431ce03435cc4b25b65016b34df9e8721aecfd2ad0fd652087dd370fc816ab7f1d9879fa314214398d3
+%define sha512 linux=1e5e564cc0b612b087b3e00fc62d0983d11db55063108163b7f5f9cd86eba832b387380c08ab1852413f157b96d3c13335e54e96ed49ac6b64fecfd9bb3852dc
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -480,9 +480,6 @@ Patch262: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 # Fix CVE-2025-22022
 Patch263: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
 Patch264: 0001-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
-
-# Fix CVE-2025-21887
-Patch265: 0001-ovl-fix-UAF-in-ovl_dentry_update_reval-by-moving-dpu.patch
 
 # Fix CVE-2024-35939
 Patch266: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
@@ -1215,6 +1212,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-1
+- Update to version 5.10.247
 * Fri Dec 05 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-13
 - Fixes CVE-2022-49168, CVE-2022-49465, CVE-2025-40149, CVE-2025-40135
 * Wed Dec 03 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.246-12

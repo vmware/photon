@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.246
-Release:        11%{?kat_build:.kat}%{?dist}
+Version:        5.10.247
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -25,7 +25,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=8b99d93386ba69a8fb83b9675e6e6a8e1f01637d333ae431ce03435cc4b25b65016b34df9e8721aecfd2ad0fd652087dd370fc816ab7f1d9879fa314214398d3
+%define sha512 linux=1e5e564cc0b612b087b3e00fc62d0983d11db55063108163b7f5f9cd86eba832b387380c08ab1852413f157b96d3c13335e54e96ed49ac6b64fecfd9bb3852dc
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -458,9 +458,6 @@ Patch257: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 Patch258: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
 Patch259: 0001-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 
-# Fix CVE-2025-21887
-Patch260: 0001-ovl-fix-UAF-in-ovl_dentry_update_reval-by-moving-dpu.patch
-
 # Fix CVE-2024-35939
 Patch261: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
 # Fix CVE-2023-53401
@@ -890,6 +887,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-1
+- Update to version 5.10.247
 * Mon Nov 24 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.246-11
 - Fixes CVE-2022-49168, CVE-2022-49465, CVE-2025-40149, CVE-2025-40135
 * Fri Nov 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.246-10
