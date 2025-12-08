@@ -1,7 +1,7 @@
 Summary:       IPTraf-ng is a console-based network statistics utility
 Name:          iptraf-ng
-Version:       1.2.1
-Release:       4%{?dist}
+Version:       1.2.2
+Release:       1%{?dist}
 URL:           https://github.com/iptraf-ng/iptraf-ng
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -49,6 +49,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/iptraf-ng.8.gz
 
 %changelog
+* Mon Dec 08 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.2.2-1
+- Upgrade version
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.2.1-4
 - Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.2.1-3
