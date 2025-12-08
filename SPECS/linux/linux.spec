@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.158
-Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -405,33 +405,47 @@ Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
 # Fix CVE-2025-38129
 Patch198: 0001-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
 
+# Fix CVE-2025-38248
+Patch199: 0001-bridge-mcast-fix-use-after-free-during-router-port-configuration.patch
+# Fix CVE-2025-39797
+Patch200: 0001-xfrm-Duplicate-SPI-Handling.patch
+Patch201: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
+# Fix CVE-2025-38616
+Patch202: 0001-tls-handle-data-disappearing-from-under-the-TLS-ULP.patch
+# Fix CVE-2025-38584
+Patch203: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
+
+# Fix CVE-2025-39810
+Patch204: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
+Patch205: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
+
 %ifarch aarch64
-# aarch specific patches [200..219]
+# aarch specific patches [250..269]
 # Rpi of_configfs patches
-Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
-Patch202: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
+Patch250: 0001-OF-DT-Overlay-configfs-interface.patch
+Patch251: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch252: 0003-of-overlay-Correct-symbol-path-fixups.patch
 # arm64 hypervisor detection and kmsg dumper
-Patch205: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch206: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
-Patch207: 6.0-0003-arm64-VMware-hypervisor-detection.patch
-Patch208: 6.0-0004-arm64-kmsg-dumper-for-VMware-hypervisor.patch
-Patch209: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
-Patch210: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
-Patch211: 6.0-0005-vmw_balloon-add-arm64-support.patch
-Patch212: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+Patch253: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch254: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
+Patch255: 6.0-0003-arm64-VMware-hypervisor-detection.patch
+Patch256: 6.0-0004-arm64-kmsg-dumper-for-VMware-hypervisor.patch
+Patch257: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
+Patch258: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
+Patch259: 6.0-0005-vmw_balloon-add-arm64-support.patch
+Patch260: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 
 # Fix CVE-2024-53068
-Patch213: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
+Patch261: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
 
 # Fix CVE-2025-38081
-Patch214: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
+Patch262: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 %endif
 
 # perf: off-cpu sample
-Patch221: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
-Patch222: 0002-perf-record-add-options-to-off-cpu.patch
-Patch223: 0003-perf-display-off-cpu-samples.patch
+Patch271: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
+Patch272: 0002-perf-record-add-options-to-off-cpu.patch
+Patch273: 0003-perf-display-off-cpu-samples.patch
 
 %ifarch x86_64
 # AWS: [300..339]
@@ -749,14 +763,14 @@ The kernel fips-canister
 %autopatch -p1 -m64 -M64
 
 # CVE
-%autopatch -p1 -m100 -M199
+%autopatch -p1 -m100 -M249
 
 %ifarch aarch64
 # aarch64 patches
-%autopatch -p1 -m200 -M219
+%autopatch -p1 -m250 -M269
 %endif
 
-%autopatch -p1 -m221 -M223
+%autopatch -p1 -m271 -M273
 
 %ifarch x86_64
 # AWS x86
@@ -1176,6 +1190,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sun Dec 07 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.158-13
+- Fix CVE-2025-38248, CVE-2025-38584, CVE-2025-38616, CVE-2025-39797
+- Fix CVE-2025-39810
 * Tue Dec 02 2025 Bo Gan <bo.gan@broadcom.com> 6.1.158-12
 - Fix CVE-2025-38129
 * Mon Dec 01 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-11

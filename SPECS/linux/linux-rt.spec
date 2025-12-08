@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.158
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -338,11 +338,25 @@ Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
 # Fix CVE-2025-38129
 Patch198: 0001-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
 
-# SCHED: [201..204]
-Patch201: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
-Patch202: 0002-sched-fair-Small-cleanup-to-sched_balance_newidle.patch
-Patch203: 0003-sched-fair-Small-cleanup-to-update_newidle_cost.patch
-Patch204: 0004-sched-fair-Proportional-newidle-balance.patch
+# Fix CVE-2025-38248
+Patch199: 0001-bridge-mcast-fix-use-after-free-during-router-port-configuration.patch
+# Fix CVE-2025-39797
+Patch200: 0001-xfrm-Duplicate-SPI-Handling.patch
+Patch201: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
+# Fix CVE-2025-38616
+Patch202: 0001-tls-handle-data-disappearing-from-under-the-TLS-ULP.patch
+# Fix CVE-2025-38584
+Patch203: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
+
+# Fix CVE-2025-39810
+Patch204: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
+Patch205: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
+
+# SCHED: [251..254]
+Patch251: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
+Patch252: 0002-sched-fair-Small-cleanup-to-sched_balance_newidle.patch
+Patch253: 0003-sched-fair-Small-cleanup-to-update_newidle_cost.patch
+Patch254: 0004-sched-fair-Proportional-newidle-balance.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -505,10 +519,10 @@ stalld to use eBPF based backend.
 %endif
 
 # CVE
-%autopatch -p1 -m100 -M199
+%autopatch -p1 -m100 -M249
 
 # sched
-%autopatch -p1 -m201 -M204
+%autopatch -p1 -m251 -M254
 
 # RT
 %autopatch -p1 -m301 -M718
@@ -722,6 +736,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Sun Dec 07 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.158-12
+- Fix CVE-2025-38248, CVE-2025-38584, CVE-2025-38616, CVE-2025-39797
+- Fix CVE-2025-39810
 * Tue Dec 02 2025 Bo Gan <bo.gan@broadcom.com> 6.1.158-11
 - Fix CVE-2025-38129
 * Mon Dec 01 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.158-10

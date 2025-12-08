@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.158
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -377,22 +377,36 @@ Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
 # Fix CVE-2025-38129
 Patch198: 0001-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
 
-# aarch64 [200..219]
+# Fix CVE-2025-38248
+Patch199: 0001-bridge-mcast-fix-use-after-free-during-router-port-configuration.patch
+# Fix CVE-2025-39797
+Patch200: 0001-xfrm-Duplicate-SPI-Handling.patch
+Patch201: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
+# Fix CVE-2025-38616
+Patch202: 0001-tls-handle-data-disappearing-from-under-the-TLS-ULP.patch
+# Fix CVE-2025-38584
+Patch203: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
+
+# Fix CVE-2025-39810
+Patch204: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
+Patch205: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
+
+# aarch64 [250..269]
 %ifarch aarch64
-Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch201: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
-Patch202: 6.0-0003-arm64-VMware-hypervisor-detection.patch
-Patch203: 6.0-0004-arm64-kmsg-dumper-for-VMware-hypervisor.patch
-Patch204: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
-Patch205: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
-Patch206: 6.0-0005-vmw_balloon-add-arm64-support.patch
-Patch207: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
+Patch250: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch251: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
+Patch252: 6.0-0003-arm64-VMware-hypervisor-detection.patch
+Patch253: 6.0-0004-arm64-kmsg-dumper-for-VMware-hypervisor.patch
+Patch254: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
+Patch255: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
+Patch256: 6.0-0005-vmw_balloon-add-arm64-support.patch
+Patch257: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 
 # Fix CVE-2024-53068
-Patch211: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
+Patch261: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
 
 # Fix CVE-2025-38081
-Patch212: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
+Patch262: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 %endif
 
 # 9p: [300..350]
@@ -556,11 +570,11 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M85
 
 # CVE
-%autopatch -p1 -m100 -M199
+%autopatch -p1 -m100 -M249
 
 %ifarch aarch64
 # aarch64 patches
-%autopatch -p1 -m200 -M219
+%autopatch -p1 -m250 -M269
 %endif
 
 # 9P
@@ -766,6 +780,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sun Dec 07 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.158-14
+- Fix CVE-2025-38248, CVE-2025-38584, CVE-2025-38616, CVE-2025-39797
 * Fri Dec 05 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.158-13
 - .config: enable mlx5 infiniband (=m) for Driver VM
 * Tue Dec 02 2025 Bo Gan <bo.gan@broadcom.com> 6.1.158-12
