@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.159
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -310,6 +310,8 @@ Patch187: 0001-smb-client-fix-UAF-in-decryption-with-multichannel.patch
 # Fix CVE-2025-40149
 Patch188: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
 Patch189: 0002-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
+# Fix CVE-2025-40135
+Patch190: 0001-ipv6-use-RCU-in-ip6_xmit.patch
 
 # Fix CVE-2025-2312
 Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
@@ -726,6 +728,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Dec 15 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-3
+- Fix CVE-2025-40135
 * Wed Dec 10 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.159-2
 - Fix SBAT validation order
 * Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-1
