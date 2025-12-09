@@ -10,7 +10,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 %endif
 
 %ifarch aarch64
@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -59,7 +59,8 @@ Source10001: jitterentropy_canister_wrapper.c
 Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
-%define fips_canister_version 6.12.41-15.ph5
+%define fips_canister_version 6.12.60-3.ph5
+%define ExtraBuildRequires linux-fips-canister = %{fips_canister_version}
 BuildRequires:       linux-fips-canister = %{fips_canister_version}
 
 Source10101: fips_canister_wrapper.c
@@ -199,6 +200,8 @@ Patch10001: 0001-jitterentropy-Makefile-changes.patch
 Patch10002: 0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch10003: 0001-disable-md5-and-sha1-algorithms-for-sctp-if-fips-is-enabled.patch
+# Mark ECB as Internal algorithm if fips is enabled.
+Patch10004: 0001-crypto-ecb-Set-ecb-alg-flag-as-Internal.patch
 Patch10050: 0001-jitterentropy-Defer-jent_mod_init-in-non-fips-boot.patch
 
 # Below patches are common for canister_usage and canister_build flags
@@ -206,15 +209,21 @@ Patch10101: 0001-FIPS-canister-binary-usage.patch
 Patch10102: 0002-algapi.c-honor-fcw_skip_tests.patch
 Patch10103: 0003-tcrypt-align-to-LKCM.patch
 Patch10104: 0004-scripts-kallsyms-Extra-kallsyms-parsing.patch
-# Add non-approved prints for essIV and echainIV IV generation method
-Patch10105: 0005-Add-non-approved-prints-for-essIV-and-echainIV-IV-ge.patch
-# Introduce rsa-pkcs1pad_crypt.c to include encrypt and decrypt functions outside canister
-Patch10106: 0006-crypto-Introduce-rsa-pkcs1pad_crypt-to-host-encrypt-.patch
+# Move rsa-pkcs1pad encrypt and decrypt functions outside canister
+Patch10106: 0006-crypto-Disable-rsa-pkcs1pad-encrypt-decrypt-in-FIPS-.patch
 # Add internal_iv field for aead_request
 Patch10107: 0007-aead-add-internal_iv-field.patch
 Patch10108: 0008-FIPS-Mark-structure-field-differences-between-kernel.patch
 Patch10109: 0009-aead_geniv_ctx-drop-lock-field.patch
 Patch10110: 0010-Move-crypto_inc-to-lib-crypto-utils.c.patch
+Patch10111: 0001-crypto-Moving-rfc4543-out-of-canister-boundry.patch
+# Make lib/digsig to use lib SHA1 instead of crypto shash API
+# [10112..10116]
+Patch10112: 0001-crypto-x86-sha1-Rename-conflicting-symbol.patch
+Patch10113: 0002-lib-crypto-sha1-Rename-sha1_init-to-sha1_init_raw.patch
+Patch10114: 0003-lib-crypto-sha1-Add-SHA-1-library-functions.patch
+Patch10115: 0001-lib-digsig-Use-SHA-1-library-instead-of-crypto_shash.patch
+Patch10116: 0001-crypto-sha1_generic-Renaming-sha1_final.patch
 
 # FIPS canister plugins
 Patch10200: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
@@ -324,14 +333,6 @@ The Linux package contains the Linux kernel doc files
 # 9P
 %autopatch -p1 -m300 -M309
 
-%if 0%{?fips}
-# crypto
-%autopatch -p1 -m500 -M515
-pushd ../%{jent_name}
-%autopatch -p1 -m516 -M516
-popd
-%endif
-
 %ifarch x86_64
 # SEV on VMware
 %autopatch -p1 -m600 -M609
@@ -345,6 +346,9 @@ popd
 %setup -q -T -D -b 10000 -n linux-%{version}
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
+pushd crypto/%{jent_name}
+%autopatch -p1 -m10050 -M10050
+popd
 mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
 cp %{SOURCE10001} crypto/%{jent_name}/
 cp %{SOURCE10002} crypto/%{jent_name}/
@@ -357,9 +361,8 @@ install %{SOURCE10105} crypto/
 install %{SOURCE10106} crypto/
 install %{SOURCE10300} crypto/
 
-%autopatch -p1 -m10001 -M10003
-%autopatch -p1 -m10050 -M10050
-%autopatch -p1 -m10101 -M10110
+%autopatch -p1 -m10001 -M10004
+%autopatch -p1 -m10101 -M10116
 # FIPS canister plugins
 %autopatch -p1 -m10200 -M10204
 # Jitterentropy proxy
@@ -496,6 +499,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 08 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-4
+- Consuming canister.
 * Fri Dec 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-3
 - newca: avoid modifications of initrd pages.
 * Thu Dec 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-2
