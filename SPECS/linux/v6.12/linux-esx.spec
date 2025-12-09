@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -100,9 +100,10 @@ Patch21: 0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 #initrd newca
 Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
+Patch24: 0001-NEWCA-make-initrd-pages-immutable.patch
 
 #VMCI/VSOCK
-Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
+Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -495,6 +496,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-3
+- newca: avoid modifications of initrd pages.
 * Thu Dec 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-2
 - Enable CONFIG_ARM64_ERRATUM_3194386
 * Thu Dec 04 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-1
