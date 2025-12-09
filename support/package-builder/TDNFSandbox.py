@@ -20,6 +20,14 @@ gpgcheck=0
 skip_if_unavailable=True
 """
 
+local_repo_template = """
+[local]
+name = local
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+"""
+
 LOCAL_REPO = "local.repo"
 BOOTSTRAP_REPO = "bootstrap.repo"
 
@@ -44,8 +52,9 @@ class TDNF:
         packageRoot = os.path.basename(installRoot)
         assert constants.sandboxType is not None
         self.sandboxName = f"tdnf-{packageRoot}"
-        self.repoPath = f"{constants.tdnfBasePath}/local-{packageRoot}"
-        binds = [[self.repoPath, "/local"]]
+        sandboxRepoSuffix = f"tdnf-repos/local-{packageRoot}"
+        self.repoPath = f"{constants.rpmPath}/{sandboxRepoSuffix}"
+        binds = [[constants.rpmPath, "/local"]]
         bindsrw = [[self.installRoot, "/installRoot"]]
         RepoUtil.snapshotLocalRepo(self.repoPath, self.logger.debug)
         if constants.packageRepoPath:
@@ -62,13 +71,22 @@ class TDNF:
             cmdAudit=self.cmdlog,
         )
         self.sandbox.create()
-        self.sandbox.putFiles(
-            [str(os.path.join(os.path.dirname(__file__), LOCAL_REPO))],
-            "/etc/yum.repos.d",
-        )
         if constants.bootstrapRepoPath:
             self.sandbox.putFiles(
                 [str(os.path.join(os.path.dirname(__file__), BOOTSTRAP_REPO))],
+                "/etc/yum.repos.d",
+            )
+        with tempfile.NamedTemporaryFile(
+            mode="w", delete=False, prefix="local", suffix=".repo"
+        ) as temp_file:
+            # Write the string constant to the temporary file
+            temp_file.write(local_repo_template)
+            temp_file.write("\n")
+            temp_file.write(f"baseurl = file:///local/{sandboxRepoSuffix}")
+            temp_file.flush()
+            temp_file_path = temp_file.name
+            self.sandbox.putFiles(
+                [temp_file_path],
                 "/etc/yum.repos.d",
             )
 

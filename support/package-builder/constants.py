@@ -461,9 +461,5 @@ class constants(object):
         constants.buildImagesPath = buildImagesPath
 
     @staticmethod
-    def setTDNFBasePath(tdnfBasePath):
-        constants.tdnfBasePath = tdnfBasePath
-
-    @staticmethod
     def setSandboxType(sandboxType: SandboxType):
         constants.sandboxType = sandboxType

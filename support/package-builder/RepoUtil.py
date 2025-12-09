@@ -14,15 +14,34 @@ cmdUtils = CommandUtils()
 
 @staticmethod
 def snapshotLocalRepo(repoPath, logfn):
+    cmdUtils.runCmd(["rm", "-rf", repoPath], ignore_rc=True)
+
     cmds = [
-        ["rm", "-rf", repoPath],
-        ["mkdir", "-p", repoPath],
-        ["cp", "-al", f"{constants.rpmPath}/noarch", f"{repoPath}/noarch"],
+        ["mkdir", "-p", f"{repoPath}/noarch"],
+        ["mkdir", "-p", f"{repoPath}/{constants.buildArch}"],
         [
-            "cp",
-            "-al",
+            "find",
+            f"{constants.rpmPath}/noarch",
+            "-type",
+            "f",
+            "-exec",
+            "ln",
+            "-snr",
+            "{}",
+            f"{repoPath}/noarch/",
+            ";",
+        ],
+        [
+            "find",
             f"{constants.rpmPath}/{constants.buildArch}",
-            f"{repoPath}/{constants.buildArch}",
+            "-type",
+            "f",
+            "-exec",
+            "ln",
+            "-snr",
+            "{}",
+            f"{repoPath}/{constants.buildArch}/",
+            ";",
         ],
         ["createrepo", "--general-compress-type=gz", repoPath],
     ]

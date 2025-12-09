@@ -8,9 +8,9 @@ import shutil
 import sys
 import traceback
 from argparse import ArgumentParser
+from contextlib import suppress
 from pathlib import Path, PurePath
 from urllib.parse import urlparse
-from contextlib import suppress
 
 import docker
 import requests
@@ -479,16 +479,14 @@ class CleanUp:
         CleanUp.clean_chroot()
         print("Deleting Photon ISO...")
         runCmd("rm -f photon-*.iso", shell=True, cwd=Build_Config.stagePath)
+        print("Deleting build layer images...")
+        shutil.rmtree(constants.buildImagesPath, ignore_errors=True)
         print("Deleting stage dir...")
         shutil.rmtree(Build_Config.stagePath, ignore_errors=True)
         print("Deleting chroot path...")
         shutil.rmtree(constants.buildRootPath, ignore_errors=True)
         print("Deleting tools/bin...")
         shutil.rmtree("tools/bin", ignore_errors=True)
-        print("Deleting tdnf base dir ...")
-        shutil.rmtree(constants.tdnfBasePath, ignore_errors=True)
-        print("Deleting build layer images...")
-        shutil.rmtree(constants.buildImagesPath, ignore_errors=True)
 
     def clean_install():
         print("Cleaning installer working directory...")
@@ -684,6 +682,7 @@ class RpmBuildTarget:
                 createrepo_cmd,
                 "--general-compress-type=gz",
                 "--update",
+                "-S",
                 constants.rpmPath,
             ]
         )
@@ -1441,8 +1440,6 @@ def initialize_constants():
         )
     )
 
-    constants.setBuildImagesPath(f"{constants.stagePath}/images")
-    constants.setTDNFBasePath(f"{constants.stagePath}/tdnfbase")
     constants.setBuildBase(BuildStage.CORE_TOOLCHAIN, "base-core-toolchain")
     constants.setBuildBase(BuildStage.TOOLCHAIN, "base-toolchain")
     constants.setBuildBase(BuildStage.PACKAGES, "base-packages")
@@ -1499,6 +1496,7 @@ def initialize_constants():
     )
     constants.setStagePath(Build_Config.stagePath)
     constants.setRpmPath(os.path.join(Build_Config.stagePath, "RPMS"))
+    constants.setBuildImagesPath(f"{constants.stagePath}/images")
     Build_Config.setRpmNoArchPath()
     Build_Config.setRpmArchPath()
     constants.setSourceRpmPath(os.path.join(Build_Config.stagePath, "SRPMS"))
@@ -1777,7 +1775,9 @@ def main():
         configdict = json.load(jsonData)
 
     # Use env variable over the condif value
-    releaseDir = os.environ.get("RELEASE_BRANCH_PATH", configdict.get("release-branch-path", ""))
+    releaseDir = os.environ.get(
+        "RELEASE_BRANCH_PATH", configdict.get("release-branch-path", "")
+    )
     if releaseDir == "":
         raise Exception("release-branch-path is empty")
 
@@ -1796,7 +1796,7 @@ def main():
         configdict["photon-path"] = os.path.dirname(cfgPath)
 
     configdict["stage-path"] = os.path.abspath(
-        os.environ.get("STAGE_PATH",os.path.join(releaseDir, configdict["stage-path"]))
+        os.environ.get("STAGE_PATH", os.path.join(releaseDir, configdict["stage-path"]))
     )
 
     set_default_value_of_config()
