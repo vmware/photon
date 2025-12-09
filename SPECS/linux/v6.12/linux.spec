@@ -37,9 +37,6 @@
 %define arch x86_64
 %define archdir x86
 %global fips 1
-# Enable canister_build while developing it.
-# Remove the line below once canister development done
-%global canister_build 1
 %endif
 
 %ifarch aarch64
@@ -73,7 +70,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -118,7 +115,7 @@ Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
 %if 0%{?canister_usage}
-%define fips_canister_version 6.12.41-18.ph5
+%define fips_canister_version 6.12.60-3.ph5
 %define ExtraBuildRequires linux-fips-canister = %{fips_canister_version}
 BuildRequires:       linux-fips-canister = %{fips_canister_version}
 %endif
@@ -897,6 +894,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Dec 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-4
+- Consuming canister.
 * Thu Dec 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-3
 - Remove module.h and other related metadata from aes/sha256.c
 * Thu Dec 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-2
