@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.247
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -68,6 +68,7 @@ Source24:       %{name}-dracut.conf
 # Secure Boot
 Source26:       linux-sbat.csv.in
 %endif
+Source27:       photon_km_2025.pem
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -722,6 +723,7 @@ popd
 
 %make_build mrproper
 cp %{SOURCE1} .config
+cp %{SOURCE27} photon-cert-bundle.pem
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
@@ -901,6 +903,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 09 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-3
+- Inject photon KM certificate to trusted keyring
 * Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-2
 - Fix CVE-2025-39797
 - CVE-2022-48744

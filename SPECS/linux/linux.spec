@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.247
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -92,6 +92,7 @@ Source23:       %{name}-dracut-%{_arch}.conf
 # Secure Boot
 Source25:       linux-sbat.csv.in
 %endif
+Source26:       photon_km_2025.pem
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -874,6 +875,7 @@ popd
 
 %make_build mrproper
 cp %{SOURCE1} .config
+cp %{SOURCE26} photon-cert-bundle.pem
 %if 0%{?acvp_build:1} && 0%{?fips}
 #ACVP test harness changes in kernel configs.
 sed -i 's/# CONFIG_CRYPTO_USER is not set/CONFIG_CRYPTO_USER=y/' .config
@@ -1226,6 +1228,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Dec 09 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-3
+- Inject photon KM certificate to trusted keyring
 * Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-2
 - Fix CVE-2025-39797
 - CVE-2022-48744
