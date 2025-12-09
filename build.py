@@ -10,6 +10,7 @@ import traceback
 from argparse import ArgumentParser
 from pathlib import Path, PurePath
 from urllib.parse import urlparse
+from contextlib import suppress
 
 import docker
 import requests
@@ -1645,7 +1646,7 @@ def process_env_build_params(ph_build_param):
         "PACKAGE_REPO_URL": "package-repo-url",
         "PACKAGE_REPO_PATH": "package-repo-path",
         "PACKAGE_REPO_SNAPSHOT_FILE_PATH": "package-repo-snapshot-file-path",
-        "BOOTSTREAP_REPO_PATH": "bootstrap-repo-path",
+        "BOOTSTRAP_REPO_PATH": "bootstrap-repo-path",
     }
 
     os.environ["PHOTON_RELEASE_VER"] = ph_build_param["photon-release-version"]
