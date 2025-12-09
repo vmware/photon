@@ -175,7 +175,7 @@ class PackageBuilder(object):
         rpmfile = os.path.basename(rpmfile)
         releaseindex = rpmfile.rfind("-")
         if releaseindex == -1:
-            self.logger.error("Invalid rpm file:" + rpmfile)
+            self.logger.error(f"Invalid rpm file: {rpmfile}")
             return None
         pkg = rpmfile[0:releaseindex]
         return pkg
@@ -191,7 +191,7 @@ class PackageBuilder(object):
         return listInstalledPackages, listInstalledRPMs
 
     def _checkIfPackageIsAlreadyBuilt(self, package, version, doneList):
-        basePkg = SPECS.getData().getSpecName(package) + "-" + version
+        basePkg = SPECS.getData().getSpecName(package) + f"-{version}"
         return basePkg in doneList
 
     def _findBuildTimeRequiredPackages(self, arch):

@@ -6,6 +6,7 @@ import platform
 import re
 from copy import deepcopy
 from enum import Enum
+from collections import defaultdict
 
 from Logger import Logger
 
@@ -84,6 +85,8 @@ class constants(object):
     packageRepoSnapshotURL = None
     sandboxType: SandboxType = SandboxType.CHROOT
     testLogger = None
+    providedBy = defaultdict(list)
+    providedByUserOverride = {}
 
     # These packages will be built in first order as build-core-toolchain stage
     # Put only main pakage names here. Do not add subpackages such as libgcc
@@ -98,14 +101,6 @@ class constants(object):
     # and stage2 published rpms will/might be used after stage2 only local
     # RPMS will be used
     listToolChainRPMsToInstall = []
-
-    """
-    .spec file might contain lines such as
-    Requires(post):/sbin/useradd
-    Build system should interpret it as
-    Requires: shadow
-    """
-    providedBy = {}
 
     @staticmethod
     def addSpecPath(specPath):
@@ -286,7 +281,7 @@ class constants(object):
             constants.listToolChainRPMsToInstall.extend(
                 pkgPreq["listToolChainRPMsToInstall"]
             )
-            constants.providedBy = pkgPreq["providedBy"]
+            constants.providedByUserOverride = pkgPreq["providedBy"]
 
         from signing import addSigningMacros
 

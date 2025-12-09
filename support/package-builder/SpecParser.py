@@ -415,30 +415,14 @@ class SpecParser(object):
             i = 0
             while i < totalContents:
                 dpkg = dependentPackageData()
-                compare = None
-                packageName = listContents[i]
-                provider = constants.providedBy.get(listContents[i], None)
-                if listContents[i].startswith("/"):
-                    if not provider:
-                        raise Exception(
-                            f"Error in {self.specfile}\n"
-                            f"What package does provide {listContents[i]} ? "
-                            "Please modify providedBy in constants.py"
-                        )
-                    packageName = provider
-                    i += 1
-                elif provider:
-                    packageName = provider
-                    i += 2
-                if i + 2 < len(listContents):
-                    if listContents[i + 1] in (">=", "<=", "=", "<", ">"):
-                        compare = listContents[i + 1]
-
-                dpkg.package = packageName
-                if compare:
-                    dpkg.compare = compare
-                    dpkg.version = listContents[i + 2]
-                    i += 3
+                dpkg.package = listContents[i]
+                if i + 2 < totalContents:
+                    if listContents[i + 1] in {">=", "<=", "=", "<", ">", "=="}:
+                        dpkg.compare = listContents[i + 1]
+                        dpkg.version = listContents[i + 2]
+                        i += 3
+                    else:
+                        i += 1
                 else:
                     i += 1
                 listdependentpkgs.append(dpkg)
@@ -457,6 +441,7 @@ class SpecParser(object):
             pkg.name = headerContent
             if pkg == self.packages["default"]:
                 self.defs["name"] = pkg.name
+
             return True
         if headerName == "group":
             pkg.group = headerContent
@@ -494,19 +479,33 @@ class SpecParser(object):
         if "patch" in headerName:
             pkg.patches.append(headerContent)
             return True
+        if headerName == "provides":
+            if pkg.name == "toybox":
+                return True
+            if headerContent.startswith("/"):
+                # Pseudo-package, no version or comparison needed
+                capability = dependentPackageData()
+                capability.package = headerContent
+            else:
+                capability = self._readDependentPackageData(headerContent)
+                if len(capability) > 1:
+                    raise Exception(
+                        f"ERROR: Multiple capabilities listed in one Provides: line for {pkg.name}:"
+                        + f" {headerContent}. Capabilities: {capability}"
+                    )
+                capability = capability[0]
+            constants.providedBy[capability].append(pkg.name)
+            return True
         if headerName in {
             "buildrequires",
             "requires",
-            "provides"
         } or headerName.startswith("requires"):
             dpkg = self._readDependentPackageData(headerContent)
             if not dpkg:
                 return False
             if headerName.startswith("requires"):
                 pkg.requires.extend(dpkg)
-            elif headerName == "provides":
-                pkg.provides.extend(dpkg)
-            elif headerName == "buildrequires":
+            else:
                 if self.conditionalCheckMacroEnabled:
                     pkg.checkbuildrequires.extend(dpkg)
                 else:
@@ -514,7 +513,9 @@ class SpecParser(object):
                     # and build will fail to construct a dependency graph.
                     dpkg = list(set(dpkg) - set(pkg.extrabuildrequires))
                     pkg.buildrequires.extend(dpkg)
+
             return True
+
         return False
 
     def _readSecurityHardening(self, line):
@@ -755,6 +756,7 @@ if __name__ == "__main__":
     print(f"arch: {parser.arch}")
     print(f"specfile: {parser.specfile}")
     """
+
     def print_macro(name, macro):
         print(f"\n{name}:")
         if macro is None:
@@ -773,6 +775,7 @@ if __name__ == "__main__":
     print_macro("changelogMacro", parser.changelogMacro)
     print_macro("checkMacro", parser.checkMacro)
     """
+
     print(f"packages: {parser.packages}")
     for pkgname, pkg in parser.packages.items():
         print(f"Package '{pkgname}':")
@@ -836,3 +839,4 @@ if __name__ == "__main__":
     print_requires("Install Requires", specObj.installRequires)
     print_requires("Check Build Requires", specObj.checkBuildRequires)
     print_requires("Extra Build Requires", specObj.extraBuildRequires)
+    print_requires("Build Requires Native", specObj.buildRequiresNative)
