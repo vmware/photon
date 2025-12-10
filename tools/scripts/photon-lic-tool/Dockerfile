@@ -28,16 +28,16 @@ RUN tdnf install --nogpgcheck -y --refresh \
     && rm -r /var/cache/tdnf
 
 RUN pip3 install \
-    scancode-toolkit==32.2.1 \
-    requests==2.32.3 \
-    charset-normalizer==3.4.2 \
-    lxml==5.4.0 \
-    markupsafe==3.0.2 \
-    pyyaml==6.0.2 \
-    redis==6.0.0 \
-    argparse==1.4.0 \
-    click==8.1.8 \
-    ruamel.yaml==0.18.10 \
+    scancode-toolkit==32.4.1 \
+    requests==2.32.5 \
+    charset-normalizer==3.4.4 \
+    lxml==6.0.2 \
+    markupsafe==3.0.3 \
+    pyyaml==6.0.3 \
+    redis==7.1.0 \
+    argparse==1.4.0\
+    click==8.3.1 \
+    ruamel.yaml==0.18.16 \
    && pip3 cache purge
 
 ENV LIC_TOOL_DIR=/root/photon-lic-tool

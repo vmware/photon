@@ -54,7 +54,7 @@ rpm_build_root = f"{rpm_install_root}/usr/src/photon"
 config_path = f"{tool_dir_path}/photon-lic-tool.yaml"
 cached_yaml_fn = "cached.yaml"
 
-sc_toolkit_cicd_ver = "32.2.1"
+sc_toolkit_cicd_ver = "32.4.1"
 
 spdx_data_base_url = "https://raw.githubusercontent.com/spdx/license-list-data/"
 spdx_license_list_ext = "refs/heads/main/json/licenses.json"
