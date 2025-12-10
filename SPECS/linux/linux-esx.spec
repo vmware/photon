@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.159
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -383,6 +383,11 @@ Patch203: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 # Fix CVE-2025-39810
 Patch204: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
 Patch205: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
+# CVE-2024-53177
+Patch206: 0001-smb-client-prevent-new-fids-from-being-removed-by-la.patch
+Patch207: 0002-smb-client-fix-use-after-free-in-smb2_query_info_com.patch
+Patch208: 0003-smb-Don-t-leak-cfid-when-reconnect-races-with-open_c.patch
+Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -772,6 +777,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Dec 10 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-3
+- CVE-2024-53177
 * Tue Dec 09 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-2
 - Fix CVE-2025-40135
 * Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-1

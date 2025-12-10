@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.159
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -344,6 +344,11 @@ Patch203: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 # Fix CVE-2025-39810
 Patch204: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
 Patch205: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
+# CVE-2024-53177
+Patch206: 0001-smb-client-prevent-new-fids-from-being-removed-by-la.patch
+Patch207: 0002-smb-client-fix-use-after-free-in-smb2_query_info_com.patch
+Patch208: 0003-smb-Don-t-leak-cfid-when-reconnect-races-with-open_c.patch
+Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
 
 # SCHED: [251..254]
 Patch251: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -728,6 +733,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Dec 17 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-4
+- CVE-2024-53177
 * Mon Dec 15 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-3
 - Fix CVE-2025-40135
 * Wed Dec 10 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.1.159-2
