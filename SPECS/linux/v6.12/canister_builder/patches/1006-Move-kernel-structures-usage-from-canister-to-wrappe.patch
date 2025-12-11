@@ -1,4 +1,4 @@
-From 2fb5f493da54d6b4ceeacc331f1b4a33cf0cb7c1 Mon Sep 17 00:00:00 2001
+From 22a18b63e63cf400d48ddc031fb80d32a096a3b1 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 28 Jul 2025 18:00:18 +0000
 Subject: [PATCH] Move kernel structures usage from canister to wrapper
@@ -102,12 +102,14 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  include/linux/rtattr.h              |   6 +
  include/linux/spinlock.h            |  24 +-
  include/linux/spinlock_cond_guard.h |  20 +
- 35 files changed, 411 insertions(+), 880 deletions(-)
+ lib/crypto/aes.c                    |   5 -
+ lib/crypto/sha256.c                 |   4 -
+ 37 files changed, 411 insertions(+), 889 deletions(-)
  create mode 100644 include/linux/rtattr.h
  create mode 100644 include/linux/spinlock_cond_guard.h
 
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index 61bdd1d0c..e47e1d10a 100644
+index 4f6fe4cdc..917154be8 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
 @@ -19,7 +19,6 @@
@@ -3379,7 +3381,7 @@ index f3e132d6f..1e56fdf24 100644
  #include <linux/slab.h>
  #include <crypto/internal/rng.h>
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index f7b3b93f3..c694dea3b 100644
+index 107b797c3..e8e091633 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
 @@ -51,7 +51,11 @@ struct af_alg_type {
@@ -3564,6 +3566,45 @@ index 000000000..8be8fa949
 +
 +DEFINE_LOCK_GUARD_1_COND(spinlock_bh, _try,
 +				spin_trylock_bh(_T->lock))
+diff --git a/lib/crypto/aes.c b/lib/crypto/aes.c
+index d6876f690..d8ed26ca6 100644
+--- a/lib/crypto/aes.c
++++ b/lib/crypto/aes.c
+@@ -5,7 +5,6 @@
+ 
+ #include <crypto/aes.h>
+ #include <linux/crypto.h>
+-#include <linux/module.h>
+ #include <linux/unaligned.h>
+ 
+ /*
+@@ -344,7 +343,3 @@ void aes_decrypt(const struct crypto_aes_ctx *ctx, u8 *out, const u8 *in)
+ 	put_unaligned_le32(inv_subshift(st1, 2) ^ rkp[6], out + 8);
+ 	put_unaligned_le32(inv_subshift(st1, 3) ^ rkp[7], out + 12);
+ }
+-
+-MODULE_DESCRIPTION("Generic AES library");
+-MODULE_AUTHOR("Ard Biesheuvel <ard.biesheuvel@linaro.org>");
+-MODULE_LICENSE("GPL v2");
+diff --git a/lib/crypto/sha256.c b/lib/crypto/sha256.c
+index e7c449c6b..f5a6ed249 100644
+--- a/lib/crypto/sha256.c
++++ b/lib/crypto/sha256.c
+@@ -14,7 +14,6 @@
+ #include <linux/unaligned.h>
+ #include <crypto/sha256_base.h>
+ #include <linux/kernel.h>
+-#include <linux/module.h>
+ #include <linux/string.h>
+ 
+ static const u32 SHA256_K[] = {
+@@ -160,6 +159,3 @@ void sha256(const u8 *data, unsigned int len, u8 *out)
+ 	sha256_update(&sctx, data, len);
+ 	sha256_final(&sctx, out);
+ }
+-
+-MODULE_DESCRIPTION("SHA-256 Algorithm");
+-MODULE_LICENSE("GPL");
 -- 
 2.40.4
 

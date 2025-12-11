@@ -23,7 +23,7 @@
 #endif
 
 #define FIPS_CANISTER_VERSION "6.12"
-#define FIPS_KERNEL_VERSION "6.12.41-4.ph5"
+#define FIPS_KERNEL_VERSION "6.12.60-3.ph5"
 
 #define RUNTIME_HMAC_SIZE	32
 
