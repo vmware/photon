@@ -1434,11 +1434,18 @@ def initialize_constants():
     if configdict.get("photon-build-param", {}).get("toolchain-bootstrap", False):
         constants.enableToolchainBootstrap()
 
-    constants.setBaseImageTarballPath(
-        configdict["photon-build-param"]["ph-docker-img-url"].replace(
-            "ARCH", constants.currentArch
-        )
+    # Choose the arch specific rootfs
+    base_image_url = (
+        configdict.get("photon-build-param", {})
+        .get("photon-docker-image-urls", {})
+        .get(constants.currentArch, None)
     )
+    # Override with env variable if provided
+    base_image_url = os.environ.get("PH_DOCKER_IMAGE_URL", base_image_url)
+    if not base_image_url:
+        raise Exception("photon-docker-image-urls is empty")
+
+    constants.setBaseImageTarballPath(base_image_url)
 
     constants.setBuildBase(BuildStage.CORE_TOOLCHAIN, "base-core-toolchain")
     constants.setBuildBase(BuildStage.TOOLCHAIN, "base-toolchain")
@@ -1632,7 +1639,6 @@ def process_env_build_params(ph_build_param):
         "CANISTER_BUILD": "canister-build",
         "ACVP_BUILD": "acvp-build",
         "BUILDDEPS": "publish-build-dependencies",
-        "PH_DOCKER_IMAGE_URL": "ph-docker-img-url",
         "BUILD_SRC_RPM": "build-src-rpm",
         "BUILD_DBGINFO_RPM": "build-dbginfo-rpm",
         "RPMCHECK": "rpm-check-flag",

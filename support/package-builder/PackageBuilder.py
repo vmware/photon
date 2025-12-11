@@ -3,7 +3,7 @@
 import os
 
 from CommandUtils import CommandUtils
-from constants import constants
+from constants import BuildStage, constants
 from Logger import Logger
 from PackageUtils import PackageUtils
 from Sandbox import init_sandbox
@@ -172,7 +172,11 @@ class PackageBuilder(object):
             )
             for pkg in listDependentPackages:
                 pkgName, pkgVer = StringUtils.splitPackageNameAndVersion(pkg)
-                pkgUtils.prepRPMforInstall(f"{pkgName}-{pkgVer}")
+                pkgUtils.prepRPMforInstall(
+                    pkgName
+                    if self.buildStage is BuildStage.CORE_TOOLCHAIN
+                    else f"{pkgName}-{pkgVer}"
+                )
             for pkg in listTestPackages:
                 flag = False
                 pkgName, pkgVer = StringUtils.splitPackageNameAndVersion(pkg)
@@ -184,7 +188,11 @@ class PackageBuilder(object):
                         flag = True
                         break
                 if not flag:
-                    pkgUtils.prepRPMforInstall(f"{pkgName}-{pkgVer}")
+                    pkgUtils.prepRPMforInstall(
+                        pkgName
+                        if self.buildStage is BuildStage.CORE_TOOLCHAIN
+                        else f"{pkgName}-{pkgVer}"
+                    )
             pkgUtils.installRPMSInOneShot(self.sandbox, arch)
             self.logger.debug(f"Finished installing the build dependencies for {arch}")
 
