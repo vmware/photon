@@ -73,7 +73,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -897,6 +897,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Dec 11 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-3
+- Remove module.h and other related metadata from aes/sha256.c
 * Thu Dec 04 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-2
 - Enable CONFIG_ARM64_ERRATUM_3194386
 * Thu Dec 04 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-1
