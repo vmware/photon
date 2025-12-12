@@ -1,11 +1,13 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch:      noarch
 
 Source0:        photon-upgrade.sh
 Source1:        constants.sh
@@ -17,7 +19,7 @@ Source5:        ph5-to-ph6-deprecated-pkgs.txt
 Source6: license.txt
 %include %{SOURCE6}
 
-BuildArch:      noarch
+Source7:       %{name}-completion.sh
 
 Requires:       rpm
 Requires:       tdnf
@@ -44,6 +46,7 @@ install -m440 %{SOURCE2} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE3} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE4} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE5} %{buildroot}%{_libdir}/%{name}
+install -D -m 644 %{SOURCE7} %{buildroot}%{_datadir}/bash-completion/completions/%{name}
 
 %clean
 rm -rf %{buildroot}
@@ -52,8 +55,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_libdir}/*
+%{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Fri Dec 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-9
+- Add bash completion script
 * Thu Dec 04 2025 Dweep Advani <dweep.advani@broadcom.com> 1.0-8
 - Avoid removing deprecated packages during update of OS to avoid any side effects
 * Mon Dec 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-7
