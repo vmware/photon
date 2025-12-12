@@ -13,6 +13,11 @@ class PatchApplicationError(Exception):
     pass
 
 
+class PatchConflictError(PatchApplicationError):
+    """Exception raised when a patch conflict occurs and manual resolution is needed"""
+    pass
+
+
 class ValidationError(Exception):
     """Exception raised for input validation errors"""
     pass

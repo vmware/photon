@@ -97,7 +97,7 @@ spec2git/
 ./spec2git.py linux.spec --stop-before-patch Patch512
 
 # Resume from a specific patch
-./spec2git.py linux.spec --start-from-patch 56 --output-dir /tmp/linux-git
+./spec2git.py linux.spec --resume --output-dir /tmp/linux-git
 
 # Force using tarball source (ignore config.yaml git info)
 ./spec2git.py linux.spec --use-tarball
@@ -138,7 +138,7 @@ spec2git/
 - `--output-dir`, `-o`: Output directory for git repository
 - `--define`, `-D`: Define macro (format: `name=value` or `name`)
 - `--stop-before-patch`: Stop before applying specified patch
-- `--start-from-patch`: Resume from specified patch
+- `--resume`: Resume execution from saved state (use after resolving conflicts or stopping)
 - `--use-tarball`: Force using tarball instead of git repository
 - `--force`, `-f`: Force overwrite existing output directory
 - `--use-git-apply`: Use `git apply` instead of `patch` command
@@ -318,7 +318,37 @@ git log
 
 # Continue with remaining patches
 cd ..
-./spec2git.py package.spec --start-from-patch 11 --output-dir package-version-git
+./spec2git.py package.spec --resume --output-dir package-version-git
+```
+
+### Conflict Resolution
+
+If a patch fails to apply, `spec2git` will stop and leave the repository in a state where you can resolve conflicts.
+
+```bash
+# 1. Run spec2git and encounter a conflict
+./spec2git.py package.spec
+
+# Output will indicate:
+# Patch X failed to apply.
+# Repository is in a state with conflict markers.
+# ACTION REQUIRED: ...
+
+# 2. Go to the git repository
+cd package-git
+
+# 3. Resolve conflicts in the affected files
+
+# 4. Stage the resolved files
+git add <files>
+
+# 5. Commit the changes (using the saved metadata)
+# The error message will provide the exact command, e.g.:
+git commit -F .git/spec2git_commit_msg --author="..." --date="..."
+
+# 6. Resume spec2git
+cd ..
+./spec2git.py package.spec --resume
 ```
 
 ## Performance

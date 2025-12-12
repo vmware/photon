@@ -12,8 +12,7 @@ from .exceptions import ValidationError
 
 def validate_spec2git_inputs(spec_file: str, output_dir: Optional[str],
                              macros: Optional[Dict[str, str]],
-                             stop_before_patch: Optional[str],
-                             start_from_patch: Optional[str]) -> None:
+                             stop_before_patch: Optional[str]) -> None:
     """
     Validate input parameters for Spec2Git
 
@@ -22,8 +21,6 @@ def validate_spec2git_inputs(spec_file: str, output_dir: Optional[str],
         output_dir: Output directory path
         macros: Macro definitions
         stop_before_patch: Patch to stop before
-        start_from_patch: Patch to start from
-
     Raises:
         ValidationError: If any input is invalid
     """
@@ -64,8 +61,7 @@ def validate_spec2git_inputs(spec_file: str, output_dir: Optional[str],
 
     # Validate patch numbers if provided
     for param_name, param_value in [
-        ('stop_before_patch', stop_before_patch),
-        ('start_from_patch', start_from_patch)
+        ('stop_before_patch', stop_before_patch)
     ]:
         if param_value is not None:
             if not isinstance(param_value, str):
@@ -126,4 +122,3 @@ def validate_git2spec_inputs(spec_file: str, git_repo_dir: str,
 
         if len(changelog_msg) > 1000:
             raise ValidationError("changelog_msg is too long (max 1000 characters)")
-

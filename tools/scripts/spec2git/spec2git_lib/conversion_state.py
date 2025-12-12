@@ -50,10 +50,11 @@ class ConversionState:
     force: bool = False
     verbose: bool = False
     use_git_apply: bool = False
+    cmd_str: str = ""
 
     # Patch control
     stop_before_patch: Optional[str] = None
-    start_from_patch: Optional[str] = None
+    resume: bool = False
 
     # Special handling
     source0_git_info: Optional[Dict[str, str]] = None

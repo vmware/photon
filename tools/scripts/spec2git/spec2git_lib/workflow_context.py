@@ -68,7 +68,8 @@ class WorkflowContext:
                 spec_dir=self.state.spec_dir,
                 patches=self.state.patches,
                 logger=self.logger,
-                verbose=self.state.verbose
+                verbose=self.state.verbose,
+                state=self.state
             )
         return self._patch_handler
 
@@ -88,7 +89,7 @@ class WorkflowContext:
                 logger=self.logger,
                 verbose=self.state.verbose,
                 stop_before_patch=self.state.stop_before_patch,
-                start_from_patch=self.state.start_from_patch,
+                resume=self.state.resume,
             )
         return self._prep_executor
 
@@ -129,6 +130,7 @@ class WorkflowContext:
         state = ConversionState.create(
             spec_file=spec_file,
             output_dir=output_dir,
+            build_dir=output_dir,
             config=config,
             verbose=verbose,
             **kwargs

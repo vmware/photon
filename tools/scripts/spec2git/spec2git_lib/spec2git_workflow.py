@@ -14,7 +14,7 @@ from typing import Optional, Dict
 from spec2git_lib.base_workflow import BaseWorkflow
 from spec2git_lib.result_types import ConversionResult
 from spec2git_lib.conversion_state import ConversionState
-from common.exceptions import SpecParseError, ValidationError
+from common.exceptions import SpecParseError, ValidationError, PatchConflictError
 from spec2git_lib.prep_executor import PrepExecutor
 
 
@@ -49,13 +49,20 @@ class Spec2GitWorkflow(BaseWorkflow):
             # Store temp directory path for cleanup
             temp_dir_to_cleanup = self.context.spec_parser.prep_section_temp_dir
 
-            # Phase 2: Prepare output directory (handles multi-source BUILD dir)
-            self._log_step("Phase 2", f"Setting up {self.context.state.output_dir}")
-            self._prepare_output_directory()
+            # These parts should already be set up
+            if not self.context.state.resume:
+                # Phase 2: Prepare output directory (handles multi-source BUILD dir)
+                self._log_step("Phase 2", f"Setting up {self.context.state.output_dir}")
+                self._prepare_output_directory()
 
-            # Phase 3: Locate/download sources and patches (but don't extract yet)
-            self._log_step("Phase 3", f"Locate {len(self.context.state.sources)} sources")
-            self._download_sources()
+                # Phase 3: Locate/download sources and patches (but don't extract yet)
+                self._log_step("Phase 3", f"Locate {len(self.context.state.sources)} sources")
+                self._download_sources()
+            else:
+                # When resuming, output_dir IS the build dir, but state might not be updated yet
+                # because we skipped _prepare_output_directory
+                if self.context.state.output_dir:
+                    self.context.state = self.context.state.with_updates(build_dir=self.context.state.output_dir)
 
             # Phase 4: Execute prep section
             # This will handle extraction, git initialization, and patch application inline
@@ -66,6 +73,12 @@ class Spec2GitWorkflow(BaseWorkflow):
                 success=True,
                 patches_applied=patches_applied,
                 sources_downloaded=len(self.context.state.downloaded_sources),
+            )
+
+        except PatchConflictError:
+            return ConversionResult(
+                success=False,
+                error="Patch conflict detected - stopped for manual resolution",
             )
 
         except Exception as e:
@@ -168,15 +181,23 @@ class Spec2GitWorkflow(BaseWorkflow):
         output_dir = self.context.state.output_dir
 
         if output_dir.exists():
-            if not self.context.state.force:
-                raise ValidationError(
-                    f"Output directory already exists: {output_dir}\n"
-                    f"Use --force to overwrite"
-                )
-            self.logger.warning(f"Removing existing directory: {output_dir}")
-            shutil.rmtree(output_dir)
+            # If resuming, do not wipe directory
+            if self.context.state.resume:
+                self.logger.info(f"Resuming build in existing directory: {output_dir}")
+            else:
+                if not self.context.state.force:
+                    raise ValidationError(
+                        f"Output directory already exists: {output_dir}\n"
+                        f"Use --force to overwrite"
+                    )
+                self.logger.warning(f"Removing existing directory: {output_dir}")
+                shutil.rmtree(output_dir)
+                output_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            if self.context.state.resume:
+                raise Exception("Resuming is not supported when output directory does not exist")
 
-        output_dir.mkdir(parents=True, exist_ok=True)
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         # Output dir IS the build dir - no separate BUILD subdirectory
         self.context.state = self.context.state.with_updates(build_dir=output_dir)
@@ -245,7 +266,8 @@ class Spec2GitWorkflow(BaseWorkflow):
             spec_dir=state.spec_dir,
             patches=state.patches,
             logger=self.logger,
-            verbose=state.verbose
+            verbose=state.verbose,
+            state=state
         )
 
         prep_executor = PrepExecutor(
@@ -259,7 +281,7 @@ class Spec2GitWorkflow(BaseWorkflow):
             logger=self.logger,
             verbose=state.verbose,
             stop_before_patch=state.stop_before_patch,
-            start_from_patch=state.start_from_patch,
+            resume=state.resume,
         )
 
         # Get path information from spec parser if available

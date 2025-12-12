@@ -75,8 +75,8 @@ GIT TO SPEC Examples:
                        help='[spec2git] Define macro (format: name=value or name)')
     parser.add_argument('--stop-before-patch',
                        help='[spec2git] Stop before applying patch (e.g., "Patch512" or "512")')
-    parser.add_argument('--start-from-patch',
-                       help='[spec2git] Resume from patch (e.g., "Patch512" or "512")')
+    parser.add_argument('--resume', action='store_true',
+                       help='[spec2git] Resume execution from saved state (use after resolving conflicts, or after --stop-before-patch)')
     parser.add_argument('--use-tarball', action='store_true',
                        help='[spec2git] Force using tarball instead of git repository')
     parser.add_argument('--force', '-f', action='store_true',
@@ -134,12 +134,13 @@ GIT TO SPEC Examples:
                 output_dir=args.output_dir,
                 macros=macros,
                 stop_before_patch=args.stop_before_patch,
-                start_from_patch=args.start_from_patch,
+                resume=args.resume,
                 verbose=args.verbose,
                 use_tarball=args.use_tarball,
                 force=args.force,
                 target_arch=args.arch,
-                use_git_apply=args.use_git_apply
+                use_git_apply=args.use_git_apply,
+                cmd_str=' '.join(sys.argv[0:]),
             )
             success = converter.run()
 

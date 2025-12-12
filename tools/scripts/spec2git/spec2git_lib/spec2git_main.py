@@ -29,12 +29,13 @@ class Spec2Git:
     def __init__(self, spec_file: str, output_dir: Optional[str] = None,
                  macros: Optional[Dict[str, str]] = None,
                  stop_before_patch: Optional[str] = None,
-                 start_from_patch: Optional[str] = None,
+                 resume: bool = False,
                  verbose: bool = False,
                  use_tarball: bool = False,
                  force: bool = False,
                  target_arch: Optional[str] = None,
-                 use_git_apply: bool = False):
+                 use_git_apply: bool = False,
+                 cmd_str: str = ""):
         """
         Initialize Spec2Git converter
 
@@ -43,19 +44,19 @@ class Spec2Git:
             output_dir: Output directory for git repo (default: PACKAGE-VERSION-git/)
             macros: Dictionary of macro definitions to override
             stop_before_patch: Stop before applying this patch (e.g., "Patch512" or "512")
-            start_from_patch: Start from this patch (e.g., "Patch512" or "512")
+            resume: Resume execution from saved state
             verbose: Enable verbose logging
             use_tarball: Force using tarball instead of git from config.yaml
             force: Force overwrite existing output directory
             target_arch: Target architecture (e.g., x86_64, aarch64)
             use_git_apply: Use 'git apply' instead of 'patch' command
-
+            cmd_str: Command string used to invoke spec2git
         Raises:
             ValidationError: If inputs are invalid
         """
         # Validate inputs
         validate_spec2git_inputs(spec_file, output_dir, macros,
-                                stop_before_patch, start_from_patch)
+                                stop_before_patch)
 
         # Setup logging
         self.logger = self._setup_logging(verbose)
@@ -65,18 +66,17 @@ class Spec2Git:
         self.output_dir = Path(output_dir) if output_dir else None
         self.macros = macros or {}
         self.stop_before_patch = stop_before_patch
-        self.start_from_patch = start_from_patch
+        self.resume = resume
         self.verbose = verbose
         self.use_tarball = use_tarball
         self.force = force
         self.target_arch = target_arch
         self.use_git_apply = use_git_apply
+        self.cmd_str = cmd_str
 
         # Normalize patch parameters
         if self.stop_before_patch and not self.stop_before_patch.startswith('Patch'):
             self.stop_before_patch = f"Patch{self.stop_before_patch}"
-        if self.start_from_patch and not self.start_from_patch.startswith('Patch'):
-            self.start_from_patch = f"Patch{self.start_from_patch}"
 
     def run(self) -> bool:
         """
@@ -92,12 +92,13 @@ class Spec2Git:
                 output_dir=self.output_dir,
                 macros=self.macros,
                 stop_before_patch=self.stop_before_patch,
-                start_from_patch=self.start_from_patch,
+                resume=self.resume,
                 verbose=self.verbose,
                 use_tarball=self.use_tarball,
                 force=self.force,
                 target_arch=self.target_arch,
                 use_git_apply=self.use_git_apply,
+                cmd_str=self.cmd_str,
             )
 
             # Create and execute workflow

@@ -11,7 +11,8 @@ from pathlib import Path
 from typing import Optional, Tuple, List
 import logging
 
-from common.exceptions import PatchApplicationError, SpecParseError
+from common.exceptions import PatchApplicationError, SpecParseError, PatchConflictError
+from spec2git_lib.conversion_state import ConversionState
 
 # Constants
 DEFAULT_STRIP_LEVEL = 1
@@ -24,7 +25,8 @@ class PatchHandler:
 
     def __init__(self, spec_dir: Path,
                  patches: Optional[dict] = None,
-                 logger: Optional[logging.Logger] = None, verbose: bool = False):
+                 logger: Optional[logging.Logger] = None, verbose: bool = False,
+                 state: Optional[ConversionState] = None):
         """
         Initialize patch handler
 
@@ -33,11 +35,13 @@ class PatchHandler:
             patches: Dictionary mapping patch basenames to patch numbers {basename: patch_num}
             logger: Optional logger instance
             verbose: Enable verbose output
+            state: Optional ConversionState object
         """
         self.spec_dir = spec_dir
         self.patches = patches or {}
         self.logger = logger or logging.getLogger(__name__)
         self.verbose = verbose
+        self.state = state
 
     def find_patch_file(self, patch_name: str) -> Path:
         """Find the patch file in the spec directory or subdirectories"""
@@ -95,11 +99,11 @@ class PatchHandler:
                 timeout=60
             )
 
-            if result.returncode != 0:
+            if not result.returncode == 0:
                 # Fallback to patch command
                 self.logger.debug(f"git apply failed, trying patch command: {result.stderr}")
                 result = subprocess.run(
-                    ['patch', f'-p{strip_level}', '-f', '--no-backup-if-mismatch'],
+                    ['patch', f'-p{strip_level}', '--merge', '-f', '--no-backup-if-mismatch'],
                     input=patch_content,
                     capture_output=True,
                     text=True,
@@ -107,17 +111,46 @@ class PatchHandler:
                     timeout=60
                 )
 
-                if result.returncode != 0:
-                    raise PatchApplicationError(
-                        f"Failed to apply patch {patch_path.name}\n"
-                        f"Stdout: {result.stdout}\n"
-                        f"Stderr: {result.stderr}"
-                    )
+                if not result.returncode == 0:
+                    # Extract metadata for the manual commit
+                    commit_msg, author, date = self.extract_patch_metadata(patch_path, patch_num)
 
+                    # Save commit message to a file for easy use
+                    msg_file = patch_cwd / ".git" / "spec2git_commit_msg"
+                    try:
+                        with open(msg_file, 'w') as f:
+                            f.write(commit_msg)
+                    except Exception:
+                        self.logger.warning(f"Could not save commit message to {msg_file}")
+
+                    # construct commit command for user
+                    commit_cmd_str = f"git commit -F .git/{msg_file.name}"
+                    if author:
+                        commit_cmd_str += f" --author='{author}'"
+                    if date:
+                        commit_cmd_str += f" --date='{date}'"
+
+                    cmd_str = self.state.cmd_str if self.state else "<previous command>"
+
+                    raise PatchConflictError(
+                        f"Patch {patch_path.name} failed to apply (conflicts detected).\n"
+                        f"Repository is in a state with conflict markers (<<<<<<<).\n"
+                        f"Commit message saved to: {msg_file}\n\n"
+                        f"ACTION REQUIRED:\n"
+                        f"1. pushd {patch_cwd}\n"
+                        f"2. Resolve conflicts in the affected files (`git status` to see conflicts)\n"
+                        f"3. Stage changes: 'git add <files>'\n"
+                        f"4. Commit: '{commit_cmd_str}'\n"
+                        f"5. popd\n"
+                        f"6. Resume spec2git with `--resume`:\n`{cmd_str} --resume`"
+                    )
         except subprocess.TimeoutExpired:
             raise PatchApplicationError(f"Patch application timed out for {patch_path.name}")
+        except PatchConflictError as e:
+            self.logger.error(f"{e}")
+            raise
         except Exception as e:
-            raise PatchApplicationError(f"Error applying patch {patch_path.name}: {e}")
+            raise PatchApplicationError(f"Failed to apply patch {patch_path.name}: {e}")
 
         # Stage all changes including new files
         # Patches can add new files, so we need 'git add -A' not just 'git add -u'
@@ -379,6 +412,7 @@ class PatchHandler:
                 f"Git command timed out after {timeout}s: {' '.join(cmd)}\n"
                 f"Working directory: {cwd}"
             )
+
 
 
 

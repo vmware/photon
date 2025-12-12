@@ -553,7 +553,6 @@ class ConversionState:
 
 **Control Flow:**
 - `stop_before_patch`: Stop before this patch
-- `start_from_patch`: Resume from this patch
 
 **Prep Section:**
 - `prep_section`: String - %prep section content
@@ -611,47 +610,20 @@ Stop conversion before applying a specific patch:
 - Conversion stops gracefully after executing pending shell commands
 - Logs: "Stopping before patch X (PatchY) as requested"
 
-#### Start From Patch
+#### Resume Execution
 
-Skip earlier patches and start from a specific patch:
+Resume execution from a saved state (e.g., after conflict resolution or `--stop-before-patch`):
 
 ```bash
-# Start from Patch56 (skips 0-55)
-./spec2git.py package.spec --start-from-patch 56
-./spec2git.py package.spec --start-from-patch Patch56
-
-# Resume after failure at Patch100
-./spec2git.py package.spec --start-from-patch 100
+# Resume from where it stopped
+./spec2git.py package.spec --resume --output-dir /tmp/package-git
 ```
 
 **Behavior:**
-- Patches with numbers < start_from are skipped
-- Patches with numbers >= start_from are applied
-- Source extraction and git init still happen normally
-- Logs: "Skipping patch X (PatchY) - before start_from_patch (PatchZ)"
-
-#### Combined Usage
-
-Apply only patches in a specific range:
-
-```bash
-# Apply only patches 10-50 (inclusive of 10, exclusive of 51)
-./spec2git.py package.spec \
-  --start-from-patch 10 \
-  --stop-before-patch 51
-
-# Apply only Patch512
-./spec2git.py linux.spec \
-  --start-from-patch 512 \
-  --stop-before-patch 513
-```
-
-**Behavior:**
-- Both checks are applied in sequence:
-  1. First check: Is patch < start_from? → Skip
-  2. Second check: Is patch >= stop_before? → Stop
-- Useful for bisecting problematic patch ranges
-- Can pinpoint exact patches causing issues
+- Loads state from `.spec2git_state.json` in the output directory
+- Restores directory stack (`pushd`/`popd` state)
+- Skips initialization (source download, git init) if resuming
+- Continues execution from the next line in `%prep` section
 
 #### Implementation Details
 
@@ -660,26 +632,32 @@ Apply only patches in a specific range:
 class PrepExecutor:
     def __init__(self, ...,
                  stop_before_patch: Optional[str] = None,
-                 start_from_patch: Optional[str] = None):
+                 resume: bool = False):
         self.stop_before_patch = stop_before_patch
-        self.start_from_patch = start_from_patch
+        self.resume = resume
 
     def execute_prep_section(self, ...):
-        for patch in patches:
-            # Check start_from
-            if self.start_from_patch:
-                if patch_num < start_num:
-                    log("Skipping...")
-                    continue
+        # If resuming, load state and skip to saved line index
+        if self.resume:
+            state = PrepState.load(...)
+            current_line_index = state.next_line_index
+            # Restore directory stack...
 
-            # Check stop_before
-            if self.stop_before_patch:
-                if patch_num >= stop_num:
+        for line in lines[current_line_index:]:
+            # ... process line ...
+
+            if is_patch(line):
+                # Check stop_before
+                if self.stop_before_patch and patch_num >= stop_num:
                     log("Stopping before...")
+                    # Save state
+                    state.save(...)
                     return
 
-            # Apply patch
-            apply_patch(patch)
+                # Apply patch
+                apply_patch(patch)
+                # Save state
+                state.save(...)
 ```
 
 **Patch Number Formats:**
@@ -690,18 +668,14 @@ class PrepExecutor:
 
 **Edge Cases:**
 - Empty patch list: No error, conversion succeeds
-- start_from > max_patch: No patches applied (success)
 - stop_before = 0: No patches applied (success)
-- start_from >= stop_before: No patches applied (success)
 - Invalid formats validated by `validation.py`
 
 #### Testing
 
-The `test_patch_control.py` test suite covers:
-1. **test_stop_before_patch_by_number**: Basic stop functionality
-2. **test_stop_before_patch_with_patch_prefix**: "Patch512" format
-3. **test_start_from_patch_skips_earlier**: Basic start functionality
-4. **test_start_and_stop_combined**: Range processing
+The test suite covers:
+1. **test_stop_before_patch**: Basic stop functionality
+2. **test_patch_handler**: Patch application and conflict handling
 
 All tests verify:
 - Correct patches applied/skipped
@@ -1065,18 +1039,17 @@ Exception
 - `stop_before_patch`: Stop before applying specified patch
   - Example: `--stop-before-patch 512` or `--stop-before-patch Patch512`
   - Useful for debugging or partial conversions
-- `start_from_patch`: Skip patches before specified number
-  - Example: `--start-from-patch 56` or `--start-from-patch Patch56`
-  - Useful for resuming failed conversions
-- Both options can be combined to apply a specific range of patches
-  - Example: `--start-from-patch 10 --stop-before-patch 51` applies patches 10-50
+- `resume`: Resume execution from saved state
+  - Example: `--resume`
+  - Useful for resuming after conflict resolution or stopping
+  - Uses `.spec2git_state.json` to restore context (CWD, directory stack, line number)
 
 **Implementation Details:**
 - Patch numbers are extracted from command lines as they're detected
-- `start_from_patch` check occurs first (skips and continues)
 - `stop_before_patch` check occurs second (stops execution completely)
-- Proper logging: "Skipping..." for start_from, "Stopping before..." for stop_before
+- Proper logging: "Stopping before..." for stop_before
 - Pending shell commands are executed before stopping
+- State is saved to JSON file on stop or conflict
 
 **Security:**
 - Command whitelist
@@ -1381,12 +1354,15 @@ python3 -m pytest -v tests/
 
 ## Changelog
 
-**v3.1 (Current)**
-- Implemented patch control features (--stop-before-patch, --start-from-patch)
-- Added test_patch_control.py test suite (4 tests)
+**v3.2 (Current)**
+- Implemented robust resume mechanism (`--resume`) with persistent state
+- Added handling for directory stack (`pushd`/`popd`) across resumes
+- Improved patch conflict handling with `patch --merge` fallback
+- Removed `--start-from-patch` in favor of `--resume`
+
+**v3.1**
+- Implemented patch control features (`--stop-before-patch`)
 - Enhanced PrepExecutor with patch range control
-- Updated documentation with comprehensive patch control guide
-- Total test count: 79 tests (all passing)
 
 **v3.0**
 - Workflow-based architecture

@@ -10,10 +10,47 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import logging
 
-from common.exceptions import PrepExecutionError, PatchApplicationError, SpecParseError
+from common.exceptions import PrepExecutionError, PatchApplicationError, SpecParseError, PatchConflictError
 from common.config import get_config
 
+# Constants
 DEFAULT_STRIP_LEVEL = 1
+
+import json
+from dataclasses import dataclass, asdict, field
+import os
+
+@dataclass
+class PrepState:
+    """State of prep execution for resumption"""
+    next_line_index: int
+    directory_stack: List[str] = field(default_factory=list)
+    git_roots: List[str] = field(default_factory=list)
+
+    @property
+    def current_cwd(self) -> Optional[str]:
+        """Get current working directory from top of stack"""
+        if self.directory_stack:
+            return self.directory_stack[0] # dirs -p puts current dir at top
+        return None
+
+    def save(self, path: Path):
+        # Don't serialize the property
+        data = asdict(self)
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=2)
+
+    @classmethod
+    def load(cls, path: Path) -> Optional['PrepState']:
+        if not path.exists():
+            return None
+        try:
+            with open(path, 'r') as f:
+                data = json.load(f)
+            return cls(**data)
+        except Exception:
+            return None
+
 
 
 class PrepExecutor:
@@ -25,7 +62,7 @@ class PrepExecutor:
                  patch_handler, source_handler,
                  logger: Optional[logging.Logger] = None, verbose: bool = False,
                  stop_before_patch: Optional[str] = None,
-                 start_from_patch: Optional[str] = None):
+                 resume: bool = False):
         """
         Initialize prep executor
 
@@ -40,7 +77,7 @@ class PrepExecutor:
             logger: Optional logger instance
             verbose: Enable verbose output
             stop_before_patch: Stop before applying this patch (e.g., "Patch512")
-            start_from_patch: Start from this patch (e.g., "Patch56")
+            resume: Resume from saved state file
         """
         self.output_dir = output_dir
         self.patches = patches
@@ -52,7 +89,9 @@ class PrepExecutor:
         self.logger = logger or logging.getLogger(__name__)
         self.verbose = verbose
         self.stop_before_patch = stop_before_patch
-        self.start_from_patch = start_from_patch
+        self.resume = resume
+        self.persistent_state_file = output_dir / ".spec2git_state.json"
+        self.git_roots = set()
 
     def execute_prep_section(self, prep_section: str, source0_git_info: Optional[Dict] = None,
                             rpmspec_build_dir: Optional[str] = None,
@@ -85,16 +124,34 @@ class PrepExecutor:
 
         self.logger.info("Executing %prep section")
 
-        # Create temporary file for shell state persistence
-        state_file = Path(tempfile.mktemp(suffix='.sh', prefix='spec2git_state_'))
         total_patches_applied = 0
         current_command_block = []
-        source0_extracted = False
 
         try:
-            # Walk through prep section line by line, buffering lines to detect patch commands
+            # Check for resumption state
+            resuming_state = None
+            if self.resume:
+                resuming_state = PrepState.load(self.persistent_state_file)
+                if resuming_state:
+                    self.logger.info(f"Resuming from saved state (Line {resuming_state.next_line_index})")
+                    if resuming_state.git_roots:
+                        self.git_roots.update(resuming_state.git_roots)
+                else:
+                    raise PrepExecutionError("Resume requested but no state file found.")
+
             lines = prep_section.split('\n')
             i = 0
+
+            # If resuming from state, restore context
+            if resuming_state:
+                i = resuming_state.next_line_index
+
+                # Restore working directory
+                if resuming_state.current_cwd:
+                    cwd_path = Path(resuming_state.current_cwd)
+                    if not cwd_path.exists():
+                        raise PrepExecutionError(f"Working directory not found: {cwd_path}")
+
 
             while i < len(lines):
                 line = lines[i]
@@ -106,7 +163,7 @@ class PrepExecutor:
                     continue
 
                 # Check if we should replace Source0 extraction with git clone
-                if source0_git_info and 0 in self.sources:
+                if source0_git_info and 0 in self.sources and not resuming_state:
                     source0_name = source0_git_info.get('filename', '')
                     # Only check if current line or recent block mentions the source
                     if source0_name and (source0_name in line or (current_command_block and source0_name in '\n'.join(current_command_block[-5:]))):
@@ -129,7 +186,7 @@ class PrepExecutor:
                                 f"cd ../"
                             ]
 
-                            self._execute_shell_block(git_clone_commands, state_file)
+                            self._execute_shell_block(git_clone_commands)
 
                             # Clear the command block since we replaced it
                             current_command_block = []
@@ -146,34 +203,57 @@ class PrepExecutor:
                 if patch_info:
                     patch_num, patch_name, lines_consumed = patch_info
 
-                    # Check if we should skip this patch due to start_from_patch
-                    if self.start_from_patch:
-                        # Extract patch number from start_from_patch (e.g., "Patch56" -> 56)
-                        start_num = int(self.start_from_patch.replace('Patch', ''))
-                        if patch_num < start_num:
-                            self.logger.info(f"Skipping {patch_name} (Patch{patch_num}) - before start_from_patch (Patch{start_num})")
-                            i += lines_consumed
-                            continue
-
                     # Check if we should stop before this patch
                     if self.stop_before_patch:
                         # Extract patch number from stop_before_patch (e.g., "Patch512" -> 512)
                         stop_num = int(self.stop_before_patch.replace('Patch', ''))
                         if patch_num >= stop_num:
                             self.logger.info(f"Stopping before {patch_name} (Patch{patch_num}) as requested")
-                            # Execute any pending commands before stopping
+
+                            # Execute pending commands before stopping
                             if current_command_block:
-                                self._execute_shell_block(current_command_block, state_file)
+                                self._execute_shell_block(current_command_block)
+
+                            # Save state before stopping
+                            working_dir = self._get_current_working_directory_from_state()
+                            # Ensure we have a valid stack if it's empty
+                            stack = self._get_directory_stack_from_state()
+                            if not stack and working_dir:
+                                stack = [str(working_dir)]
+
+                            state = PrepState(
+                                next_line_index=i, # Stop at current line so we resume processing it
+                                directory_stack=stack,
+                                git_roots=list(self.git_roots)
+                            )
+                            state.save(self.persistent_state_file)
+                            self.logger.info(f"State saved to {self.persistent_state_file}")
+
                             return total_patches_applied
 
                     # Execute any pending commands first
                     if current_command_block:
-                        self._execute_shell_block(current_command_block, state_file)
+                        self._execute_shell_block(current_command_block)
                         current_command_block = []
 
                     # Always get the current working directory from state before applying patch
                     # This ensures we apply patches in the correct directory after cd/pushd/popd
-                    working_dir = self._get_current_working_directory_from_state(state_file)
+                    working_dir = self._get_current_working_directory_from_state()
+
+                    # Ensure we have a valid stack if it's empty
+                    stack = self._get_directory_stack_from_state()
+                    if not stack and working_dir:
+                        stack = [str(working_dir)]
+
+                    # Save state after each patch application
+                    # If it fails in a shell block, we need to start from scratch, so don't bother
+                    # saving the state
+                    state = PrepState(
+                        next_line_index=i + lines_consumed, # Resume AFTER this patch
+                        directory_stack=stack,
+                        git_roots=list(self.git_roots)
+                    )
+                    state.save(self.persistent_state_file)
 
                     if working_dir and working_dir.exists() and working_dir.is_dir():
                         #TODO: Only initialize git for SOURCE0... It's ok for now
@@ -186,12 +266,8 @@ class PrepExecutor:
                     patch_path = self.patch_handler.find_patch_file(patch_name)
 
                     # Apply the patch (logs patch application internally)
-                    try:
-                        self.patch_handler.apply_patch(patch_path, DEFAULT_STRIP_LEVEL, patch_num, working_dir)
-                        total_patches_applied += 1
-                    except PatchApplicationError as e:
-                        self.logger.error(f"Failed to apply patch {patch_name}: {e}")
-                        raise
+                    self.patch_handler.apply_patch(patch_path, DEFAULT_STRIP_LEVEL, patch_num, working_dir)
+                    total_patches_applied += 1
 
                     # Skip the lines that were part of the patch command
                     i += lines_consumed
@@ -202,19 +278,21 @@ class PrepExecutor:
 
             # Execute any remaining commands
             if current_command_block:
-                self._execute_shell_block(current_command_block, state_file)
+                self._execute_shell_block(current_command_block)
+
+            # Create final commit for any remaining changes in git repos
+            self._create_final_commits()
+
+            # Cleanup state file on successful completion
+            if self.persistent_state_file.exists():
+                self.persistent_state_file.unlink()
 
             return total_patches_applied
 
         finally:
-            # Clean up state file
-            try:
-                if state_file.exists():
-                    state_file.unlink()
-            except Exception as e:
-                self.logger.debug(f"Could not remove state file: {e}")
+            pass
 
-    def _execute_shell_block(self, commands: List[str], state_file: Optional[Path] = None) -> None:
+    def _execute_shell_block(self, commands: List[str]) -> None:
         """
         Execute a block of shell commands
 
@@ -233,7 +311,7 @@ class PrepExecutor:
         if self.verbose:
             self.logger.debug(
                 f"Current working directory: \
-                {self._get_current_working_directory_from_state(state_file)}"
+                {self._get_current_working_directory_from_state()}"
             )
             self.logger.debug(f"Full command list:")
             for cmd in commands:
@@ -245,11 +323,30 @@ class PrepExecutor:
         with open(template_path, 'r') as f:
             script_content = f.read()
 
-        # Replace placeholders
-        state_file_str = str(state_file) if state_file else ""
-        script_content = script_content.replace('__STATE_FILE_PLACEHOLDER__', state_file_str)
+        # Restore directory stack if available, otherwise just use current_cwd
+        current_stack = self._get_directory_stack_from_state()
+        current_cwd = self._get_current_working_directory_from_state()
 
-        # Add RPM environment variables that rpmspec expects
+        if current_stack:
+            # Reconstruct stack
+            # Stack from dirs -p is: top (current), next, ..., bottom
+            # To restore: cd bottom, pushd next-to-bottom, ..., pushd top
+            bottom = current_stack[-1]
+            setup_cmds = [f"pushd '{bottom}' > /dev/null"]
+
+            # Iterate from second-to-last up to first (stack[0])
+            if len(current_stack) > 1:
+                for path in reversed(current_stack[:-1]):
+                    setup_cmds.append(f"pushd '{path}' > /dev/null")
+
+            # Prepend setup commands
+            commands[0:0] = setup_cmds
+        elif current_cwd:
+            commands.insert(0, f"cd '{current_cwd}'")
+
+        # Capture stack at end of execution
+        tmp_stack_f = "/tmp/spec2git_stack.txt"
+        commands.append(f'dirs -p -l &> {tmp_stack_f}')
         rpm_env_vars = self._get_rpm_environment_variables()
         script_content = script_content.replace('__RPM_ENV_VARS_PLACEHOLDER__', rpm_env_vars)
 
@@ -275,12 +372,22 @@ class PrepExecutor:
             )
 
             if result.returncode != 0:
+                # Need to start from scratch, resumption is not valid in this case
+                if os.path.exists(self.persistent_state_file):
+                    os.remove(self.persistent_state_file)
+                    self.logger.info(f"State file removed, resume is no longer valid after shell block execution failure")
                 raise PrepExecutionError(
                     f"Prep shell block execution failed (exit code {result.returncode}):\n"
                     f"First command: {commands[0][:100]}...\n"
                     f"STDERR:\n{result.stderr}\n"
                     f"STDOUT:\n{result.stdout}\n"
                 )
+
+            with open(tmp_stack_f, 'r') as f:
+                    # dirs -p output one per line
+                    new_stack = [l.strip() for l in f.readlines() if l.strip()]
+
+            self._update_persistent_state(new_stack)
 
         except subprocess.TimeoutExpired:
             raise PrepExecutionError(f"Command execution timed out")
@@ -293,6 +400,8 @@ class PrepExecutor:
             try:
                 if script_path and script_path.exists():
                     script_path.unlink()
+                if tmp_stack_f and Path(tmp_stack_f).exists():
+                    Path(tmp_stack_f).unlink()
             except:
                 pass
 
@@ -322,24 +431,82 @@ class PrepExecutor:
 
         return '\n'.join(rpm_vars)
 
-    def _get_current_working_directory_from_state(self, state_file: Path) -> Optional[Path]:
-        """Extract current directory from state file"""
-        if not state_file or not state_file.exists():
-            return None
-
-        try:
-            with open(state_file, 'r') as f:
-                content = f.read()
-                # Look for cd command at end of file
-                for line in content.split('\n'):
-                    if line.startswith('cd '):
-                        # Extract directory from cd command
-                        dir_str = line[3:].strip().strip('"\'')
-                        return Path(dir_str)
-        except Exception as e:
-            self.logger.debug(f"Could not get working directory from state: {e}")
-
+    def _get_current_working_directory_from_state(self) -> Optional[Path]:
+        """Extract current directory from persistent state file"""
+        state = PrepState.load(self.persistent_state_file)
+        if state and state.current_cwd:
+            return Path(state.current_cwd)
         return None
+
+    def _get_directory_stack_from_state(self) -> List[str]:
+        """Extract directory stack from persistent state file"""
+        state = PrepState.load(self.persistent_state_file)
+        if state and state.directory_stack:
+            return state.directory_stack
+        return []
+
+
+    def _update_persistent_state(self, new_stack: List[str] = None):
+        """Update CWD and stack in the persistent state"""
+        state = PrepState.load(self.persistent_state_file)
+        if not state:
+            # If no state exists yet, create one with default values
+            state = PrepState(next_line_index=0)
+
+        if new_stack:
+            state.directory_stack = new_stack
+
+        # Ensure git_roots are preserved/updated
+        if hasattr(self, 'git_roots') and self.git_roots:
+             state = PrepState(
+                 next_line_index=state.next_line_index,
+                 directory_stack=state.directory_stack,
+                 git_roots=list(self.git_roots)
+             )
+
+        state.save(self.persistent_state_file)
+
+    def _create_final_commits(self):
+        """Check known git repositories for uncommitted changes and commit them"""
+        if not self.git_roots:
+            return
+
+        self.logger.info("Checking for uncommitted changes in git repositories...")
+
+        for repo_path_str in self.git_roots:
+            repo_path = Path(repo_path_str)
+            if not repo_path.exists():
+                continue
+
+            try:
+                # Check for changes
+                status = subprocess.run(
+                    ['git', 'status', '--porcelain'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True,
+                    check=False
+                )
+
+                if status.stdout.strip():
+                    self.logger.info(f"Creating final commit in {repo_path}")
+                    # Add all changes
+                    subprocess.run(
+                        ['git', 'add', '-A'],
+                        cwd=repo_path,
+                        check=True,
+                        capture_output=True
+                    )
+
+                    # Commit
+                    subprocess.run([
+                        'git',
+                        '-c', 'user.name=Photon Patcher',
+                        '-c', 'user.email=spec2git@photon.local',
+                        'commit', '-m', 'Final prep section changes'
+                    ], cwd=repo_path, check=True, capture_output=True)
+            except Exception as e:
+                self.logger.warning(f"Failed to create final commit in {repo_path}: {e}")
 
     def _initialize_git_repo(self, git_repo_path: Path) -> None:
         """Initialize git repository in the extracted source directory"""
@@ -347,6 +514,7 @@ class PrepExecutor:
             return
 
         self.logger.info("Initializing git repository...")
+        self.git_roots.add(str(git_repo_path.absolute()))
 
         # Check if we already have a git repository (from cloning a git source)
         if (git_repo_path / '.git').exists():
