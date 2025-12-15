@@ -16,12 +16,12 @@ On Photon OS, the existing repositories appear in the `/etc/yum.repos.d` directo
 	photon-updates.repo
 	photon.repo 
 
-To view the the format and information that a new repository configuration file should contain, see one of the `.repo` files. The following is an example:
+To view the format and information that a new repository configuration file should contain, see one of the `.repo` files. The following is an example:
 
 	cat /etc/yum.repos.d/lightwave.repo
 	[lightwave]
 	name=VMware Lightwave 1.0(x86_64)
-	baseurl=https://packages.vmware.com/photon/1.0/lightwave
+	baseurl=https://packages.broadcom.com/photon/1.0/lightwave
 	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 	gpgcheck=1
 	enabled=1

@@ -25,7 +25,7 @@ The following repositories appear in /etc/yum.repos.d/ with `.repo` file extensi
 	photon.repo 
 
 
-You can list the the repositories by using the `tdnf repolist` command. Tdnf filters the results with `enabled`, `disabled`, and `all`. Running the command without specifying an argument returns the enabled repositories:  
+You can list the repositories by using the `tdnf repolist` command. Tdnf filters the results with `enabled`, `disabled`, and `all`. Running the command without specifying an argument returns the enabled repositories:  
 
 	tdnf repolist
 	repo id             repo name                               status
@@ -38,7 +38,7 @@ The `photon-iso.repo`, however, does not appear in the list of repositories beca
 
 	cat /etc/yum.repos.d/photon-iso.repo
 	[photon-iso]
-	name=VMWare Photon Linux 2.0(x86_64)
+	name=VMware Photon Linux 2.0(x86_64)
 	baseurl=file:///mnt/cdrom/RPMS
 	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 	gpgcheck=1

@@ -30,7 +30,7 @@ After you have downloaded the Photon OS OVA image (OVA with Hardware Version 15)
 
 1. Configure VM Settings
 
-    After the OVA is imported, Fusion displays a confirmation that the import has completed and a summary of the settings for your Photon OS VM. The following screen shot is an example (your settings may vary).
+    After the OVA is imported, Fusion displays a confirmation that the import has completed and a summary of the settings for your Photon OS VM. The following screenshot is an example (your settings may vary).
     
     ![VM settings](../../images/fs-ova-finish.png)
     

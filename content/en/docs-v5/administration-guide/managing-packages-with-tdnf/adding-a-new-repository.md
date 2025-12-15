@@ -75,7 +75,7 @@ The URL can contain the variables `$releasever` and `$basearch`, which refers to
     
        <resources maxconnections="1">
     
-    <url protocol="http" type="http" location="IN" preference=“100”>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
+    <url protocol="http" type="http" location="IN" preference=“100”>https://packages.broadcom.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
      
        </resources>
     

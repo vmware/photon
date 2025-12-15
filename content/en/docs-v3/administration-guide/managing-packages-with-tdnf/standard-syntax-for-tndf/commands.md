@@ -144,7 +144,7 @@ To list enabled repositories, run the following command:
 
 	Total installed size: 210.15 M
 
-**remove**: This command removes a package. When removing a package, tdnf by default also removes dependencies that are no longer used if they were was installed by tdnf as a dependency without being explicitly requested by a user. You can modify the dependency removal by changing the `clean_requirements_on_remove` option in /etc/tdnf/tdnf.conf to `false`. 
+**remove**: This command removes a package. When removing a package, tdnf by default also removes dependencies that are no longer used if they were installed by tdnf as a dependency without being explicitly requested by a user. You can modify the dependency removal by changing the `clean_requirements_on_remove` option in /etc/tdnf/tdnf.conf to `false`. 
 
 	tdnf remove packagename
 

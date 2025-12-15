@@ -3,7 +3,7 @@ title: Build Prerequisites
 weight: 2
 ---
 
-Before you build the ISO, verify that you have the performed the following tasks:
+Before you build the ISO, verify that you have performed the following tasks:
 
 * Installed a build operating system running the 64-bit version of Ubuntu 14.04 or later version.
 

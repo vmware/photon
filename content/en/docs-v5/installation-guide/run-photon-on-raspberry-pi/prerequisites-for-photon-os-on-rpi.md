@@ -29,7 +29,7 @@ Before you use Photon OS within RPi, perform the following prerequisite tasks:
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS RPi image downloaded from <a href="https://packages.vmware.com/photon/">URL</a> <br> 
+	<td>Photon OS RPi image downloaded from <a href="https://packages.broadcom.com/photon/">URL</a> <br> 
 <p><b>Note</b>: Photon OS RPi image is available only from Photon 3.0 onwards.</td>
 	</tr>
 	</tbody>
@@ -41,6 +41,6 @@ Before you use Photon OS within RPi, perform the following prerequisite tasks:
     
     **Note**: You cannot use the Photon ISO to install on RPi. 
     
-    Go to the following URL and download the latest release of Photon OS image for RPi: [https://packages.vmware.com/photon/5.0/GA/rpi/rpi.tar.xz](https://packages.vmware.com/photon/5.0/GA/rpi/rpi.tar.xz). 
+    Go to the following URL and download the latest release of Photon OS image for RPi: [https://packages.broadcom.com/photon/5.0/GA/rpi/rpi.tar.xz](https://packages.broadcom.com/photon/5.0/GA/rpi/rpi.tar.xz). 
     
     For instructions, see [Downloading Photon OS](../../downloading-photon/).

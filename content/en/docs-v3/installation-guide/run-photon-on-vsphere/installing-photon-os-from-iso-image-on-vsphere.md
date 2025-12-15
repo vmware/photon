@@ -191,7 +191,7 @@ After you download the Photon OS ISO image into a folder of your choice, complet
     
     ![Password confirmation](../../images/vs-iso-root-password-confirm.png)
     
-    **Note:** If you have trouble with unintentional repeated characters in the Remote Console, follow VMware KB 196 ( [http://kb.vmware.com/kb/196](http://kb.vmware.com/kb/196)) for a setting to apply to the virtual machine.
+    **Note:** If you have trouble with unintentional repeated characters in the Remote Console, follow VMware KB 196 ( [http://kb.vmware.com/kb/196](https://kb.vmware.com/kb/196)) for a setting to apply to the virtual machine.
     
     Press the `Enter` key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.
 

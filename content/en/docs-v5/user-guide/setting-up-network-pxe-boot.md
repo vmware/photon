@@ -11,7 +11,7 @@ To set up a PXE server, you will need to have the following:
 
 * A DHCP server to allow hosts to get an IP address.
 * A TFTP server, which is a file transfer protocol similar to FTP with no authentication.
-* Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official [VMware Photon Packages](https://packages.vmware.com/photon/) repo. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.
+* Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official [Broadcom Photon OS packages](https://packages.broadcom.com/photon/) repo. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.
 
 The instructions to set up the servers assume you have an Ubuntu 14.04 machine with a static IP address of `172.16.78.134`.
 

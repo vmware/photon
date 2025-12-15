@@ -5,7 +5,7 @@ weight: 2
 
 Using the OVA is the easiest way to create a Photon OS VM on VMware Workstation. 
 
-After you have downloaded the the OVA file (OVA with Hardware Version 11), perform the following steps:
+After you have downloaded the OVA file (OVA with Hardware Version 11), perform the following steps:
 
 1. Start the Import Process
 
@@ -42,7 +42,7 @@ After you have downloaded the the OVA file (OVA with Hardware Version 11), perfo
 
     Under Guest operating system, select **Linux**.
     
-    For Version, click the list and select **VMWare Photon 64-bit**.
+    For Version, click the list and select **VMware Photon 64-bit**.
     
     ![Version](../../images/ws-ova-os.png)
     

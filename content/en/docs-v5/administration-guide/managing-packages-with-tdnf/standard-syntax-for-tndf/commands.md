@@ -350,7 +350,7 @@ You can use the following options with the command:
 
 `--delete`: Use this option to remove old packages that are not part of the repository any more.
 
-`--download-metadata`: Use this option to download the metadata. After you download the the metadata, you can use the directory as a repository.
+`--download-metadata`: Use this option to download the metadata. After you download the metadata, you can use the directory as a repository.
 
 `--gpgcheck`: Use this option to check the gpg signature. If invalid, the package is deleted.
 
@@ -369,7 +369,7 @@ You can use the following options with the command:
 `--newest-only`: Use this option to download only the latest versions of the repository.
 
 
-**remove**: This command removes a package. When removing a package, tdnf by default also removes dependencies that are no longer used if they were was installed by tdnf as a dependency without being explicitly requested by a user. You can modify the dependency removal by changing the `clean_requirements_on_remove` option in /etc/tdnf/tdnf.conf to `false`. 
+**remove**: This command removes a package. When removing a package, tdnf by default also removes dependencies that are no longer used if they were installed by tdnf as a dependency without being explicitly requested by a user. You can modify the dependency removal by changing the `clean_requirements_on_remove` option in /etc/tdnf/tdnf.conf to `false`. 
 
 	tdnf remove packagename
 

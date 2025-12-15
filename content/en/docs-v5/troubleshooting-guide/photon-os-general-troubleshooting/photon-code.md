@@ -38,13 +38,13 @@ gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
 ```
 
 ## Check if an image has vulnerabilities
-Use the security scanners to find security issues. Alternatively The `tdnf updateinfo info` command displays all the applicable security updates the host needs.
+Use the security scanners to find security issues. Alternatively the `tdnf updateinfo info` command displays all the applicable security updates the host needs.
 
 ## Check if a CVE is Fixed
 The Photon team fixes vulnerabilities and publishes advisories to [https://github.com/vmware/photon/wiki/Security-Advisories](https://github.com/vmware/photon/wiki/Security-Advisories).
 
 ## To Check if Security Updates are Available
-Use the `tdnf updateinfo info`, `tdnf update --security` or `tdnf update ---sec-severity <level>` commands to check if security updates are available. For example:
+Use the `tdnf updateinfo info`, `tdnf update --security` or `tdnf update --sec-severity <level>` commands to check if security updates are available. For example:
 
 
 Check if there are any security updates
@@ -54,7 +54,7 @@ root@photon [ ~ ]# tdnf updateinfo
 70 Security notice(s)
 ```
 
-Check if there are security updates for libssh2. note this is relative to what is installed in local
+Check if there are security updates for libssh2. Note this is relative to what is installed in local
 
 ```console
 root@photon[ ~ ]# tdnf updateinfo list libssh2

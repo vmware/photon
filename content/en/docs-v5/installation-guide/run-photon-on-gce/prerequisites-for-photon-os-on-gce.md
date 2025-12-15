@@ -36,14 +36,13 @@ Perform the following tasks to make Photon OS work on GCE:
  1. Set MTU to 1460. SSH will not work without it.
  1. Create `/etc/ssh/sshd_not_to_be_run` with just the contents “GOOGLE\n”.
  
- For more information see [Importing Boot Disk Images to Compute Engine](https://cloud.google.com/compute./tutorials/building-images).
+ For more information see [Importing Boot Disk Images to Compute Engine](https://cloud.google.com/compute/docs/tutorials/building-images).
 
-For information about upgrading the Photon OS Linux kernel see [Upgrading the Kernel Version Requires Grub Changes for AWS and GCE Images](Upgrading-the-Kernel-Version-Requires-Grub-Changes-for-AWS-and-GCE-Images.md)
 
 ## Photon OS Image
 
 VMware recommends that administrators use the Photon OS image for Google Compute Engine (GCE) to create Photon OS instances on GCE. Photon OS bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. You can download the Photon OS image for GCE from the following URL: 
-[https://packages.vmware.com/photon/5.0/GA/gce/](https://packages.vmware.com/photon/5.0/GA/gce/)
+[https://packages.broadcom.com/photon/5.0/GA/gce/](https://packages.broadcom.com/photon/5.0/GA/gce/)
 
 For instructions, see [Downloading Photon OS](../../downloading-photon).
 
@@ -157,7 +156,7 @@ Perform the following tasks:
     echo "exit 0" >> /etc/rc.local
     printf "GOOGLE\n" > /etc/ssh/sshd_not_to_be_run
     
-    # Edit sshd_config and ssh_config as per instructions on [this link](https://cloud.google.com/compute./tutorials/building-images).
+    # Edit sshd_config and ssh_config as per instructions on [this link](https://cloud.google.com/compute/docs/tutorials/building-images).
     ```
       
 1.  Change MTU to 1460 for network interface.
@@ -185,7 +184,7 @@ Perform the following tasks:
 
 1. Pack and upload to GCE.
 
-    Shut down the Photon VM and copy its disk to THE `tmp` folder.       
+    Shut down the Photon VM and copy its disk to the `tmp` folder.       
              
     ```console
     # You will need to install Google Cloud SDK on host machine to upload the image and play with GCE.
