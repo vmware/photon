@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.247
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -524,6 +524,9 @@ Patch288: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 Patch289: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
 # CVE-2025-38201
 Patch290: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
+# CVE-2022-49622
+Patch291: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
+Patch292: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
 
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -914,6 +917,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.247-6
+- Fix CVE-2022-49622
 * Mon Dec 15 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-5
 - Fixes CVE-2025-38201, CVE-2025-38556
 * Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-4

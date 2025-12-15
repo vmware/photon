@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.247
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -547,6 +547,9 @@ Patch294: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 Patch295: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
 # CVE-2025-38201
 Patch296: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
+# CVE-2022-49622
+Patch297: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
+Patch298: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1239,6 +1242,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Dec 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.247-6
+- Fix CVE-2022-49622
 * Mon Dec 15 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-5
 - Fixes CVE-2025-38201, CVE-2025-38556
 * Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-4
