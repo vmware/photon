@@ -1,9 +1,9 @@
 %global VER 7.1.2
-%global Patchlevel 8
+%global Patchlevel 11
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.2.8
+Version:        7.1.2.11
 Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.imagemagick.org
 
-Source0:        https://imagemagick.org/archive/releases/%{name}-%{VER}-%{Patchlevel}.tar.xz
+Source0:        https://github.com/ImageMagick/ImageMagick/archive/refs/tags/%{name}-%{VER}-%{Patchlevel}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -173,6 +173,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Mon Dec 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.2.11-1
+- Upgrade to 7.1.2.11, includes CVE fixes
 * Thu Oct 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.2.8-1
 - Upgrade to 7.1.2.8, includes CVE fixes
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 7.1.1.38-2

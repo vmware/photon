@@ -1,14 +1,19 @@
 sources:
-  - archive: ImageMagick-7.1.2-8.tar.xz
-    archive_sha512sum: 28894523bfd32b9ad27331e8b99b7c3c9779b5f041dd7947ea1a6e4bb808027fd84dca3f493be91c1c4801571799efcd8b1393a0b8a401add2c37b26f4a30625
+  - archive: ImageMagick-7.1.2-11.tar.gz
+    archive_sha512sum: 940c483cd5c069e8c81e7a373ef694c3050b946294caeaf0b751d9f77f541b07107cc4b0b9ac1f189e08ee92c5d66b640ae2b83a66e5e2f12c523e48845c4432
     archive_type: upstream
-    name: ImageMagick-7.1.2-8
-    version: 7.1.2-8
-    url: https://imagemagick.org/archive/releases/ImageMagick-7.1.2-8.tar.xz
+    name: ImageMagick-7.1.2-11
+    version: 7.1.2-11
+    url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-11.tar.gz
     repo_url: https://github.com/ImageMagick/ImageMagick
-    commit_id: a3b13d143fd7dea44cd71d31aa02f411b597688f
-    skip_list: [conjure.1, convert.1, compare.1, ImageMagick.1, stream.1, import.1, configure, magick.1, configure.xml.in, montage.1, composite.1, mogrify.1, ImageMagick.spec.in, version.h.in, magick-script.1, animate.1, display.1, identify.1]
-    missing: [Make.com, Magick.xs, api_examples, oss-fuzz, vms.h, .editorconfig, .github, ax_append_flag.m4, dmr.h, type-urw-base35-type1.xml, ax_lang_compiler_ms.m4, config.h_vms, typemap, tests, Translation.md, cxx_have_std_libs.m4, imagemagick.desktop, magick-baseconfig.h, AppRun, .gitignore, version.h_vms, version.h, .auto-changelog, xwdfile.h_vms, quantum.xs, icon.png, Makefile.PL, .devcontainer, Magick.pm, vms.c, check.sh, coder.xml]
+    commit_id: 578d60d1bf77be54b16ef2673d507932885570dd
+    skip_list: []
+    missing: []
+    license_manual_review:
+    - file_paths:
+      - ImageMagick-7.1.2-11/MagickCore/nt-base.c
+      sha256sum: e93d5807292733ad0edd1659425608f36a5b5121a1023ae38eeecebadbed7ab2
+      spdx_exp: ""
     spdx:
       package:
         detailed_description: 'ImageMagick is a free, open-source software suite for creating, editing, converting, and displaying images.'
