@@ -28,7 +28,7 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS ISO or OVA file downloaded from VMware (<a href="https://packages.vmware.com/photon/4.0/GA/">https://packages.vmware.com/photon/4.0/GA/</a>).</td>
+	<td>Photon OS ISO or OVA file downloaded from VMware (<a href="https://packages.broadcom.com/photon/4.0/GA/">https://packages.broadcom.com/photon/4.0/GA/</a>).</td>
 	</tr>
 	</tbody>
 	</table>
@@ -51,6 +51,6 @@ To get Photon OS up and running quickly, use the OVA.
     
 1. Download Photon OS. Go to the following URL and download the latest release of Photon OS:
 
-    [https://packages.vmware.com/photon/4.0/GA/](https://packages.vmware.com/photon/4.0/GA/)
+    [https://packages.broadcom.com/photon/4.0/GA/](https://packages.broadcom.com/photon/4.0/GA/)
     
     For instructions, see [Downloading Photon OS](../../downloading-photon/).

@@ -49,13 +49,13 @@ You can perform the following tasks with the respective commands for them:
 	```   
 4. Use the following command to log in as the user you created: 
 	```
-	`ssh test_user@localhost`
+	ssh test_user@localhost
 	```   
 
 5. Run the following command: 
 
 	```
-	dockerd-rootless-setuptool.sh --help`
+	dockerd-rootless-setuptool.sh --help
 	```   
 	The above command shows something like the following output:
 
@@ -80,7 +80,7 @@ You can perform the following tasks with the respective commands for them:
 
 6. Run the following command, and then check and fix the errors and warnings, if any:
 	```
-	dockerd-rootless-setuptool.sh`
+	dockerd-rootless-setuptool.sh
 	```   
 	Run the following commands:
 

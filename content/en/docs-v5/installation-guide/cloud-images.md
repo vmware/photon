@@ -4,7 +4,7 @@ weight: 13
 ---
 
 
-The [Vmware Photon Packages website](https://packages.vmware.com/photon/) contains the following cloud-ready images of Photon OS: 
+The [Broadcom Photon OS download webpage](https://github.com/vmware/photon/wiki/Downloading-Photon-OS) contains the following cloud-ready images of Photon OS: 
 
 1. GCE - Google Compute Engine
 
@@ -12,7 +12,7 @@ The [Vmware Photon Packages website](https://packages.vmware.com/photon/) contai
 
 1. OVA
 
-Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image, you can just go to the [VMware Packages](https://packages.vmware.com/photon/) repo and download the image for the platform that you are working on. 
+Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image, you can just go to the [Broadcom Photon OS packages](https://packages.broadcom.com/photon/) repo and download the image for the platform that you are working on. 
 
 If, however, you want to build your _own_ cloud image, perhaps because you seek to customize the code, see the next section on how to build cloud images.
 
@@ -38,7 +38,7 @@ If you want, you can build all the cloud images by running the following command
 
 <!-- ###How to build Photon bosh-stemcell
 
-Please follow the link to [build](https://github.com/cloudfoundry/bosh/blob/develop/bosh-stemcell/README.md) Photon bosh-stemcell
+Please follow the link to [build](https://github.com/cloudfoundry/bosh-linux-stemcell-builder) Photon bosh-stemcell
 -->
 
 ## How to create running instances in the cloud
@@ -71,7 +71,7 @@ For more information, see [Running a Photon OS Machine on GCE](../run-photon-on-
 
 ### AWS EC2
 
-Install the [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html#install-bundle-other-os) and [EC2 CLI](http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html) tools. 
+Install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html#install-bundle-other-os) and [EC2 CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) tools. 
 
 ####Bundle the image
 
@@ -109,7 +109,7 @@ The OVA image uses an optimized version of the 4.4.8 Linux kernel. Two ova files
 
 #### OVA Prerequisites
 
-[VDDK 6.0](https://developercenter.vmware.com/web/sdk/60/vddk)
+[VDDK 6.0](https://developer.broadcom.com/sdks/vmware-virtual-disk-development-kit-vddk/6.7)
 
 To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the *current session*.  (tested on Ubuntu 1404 & 1604)  If you wish to make this permanent and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.
 
@@ -120,7 +120,7 @@ To utilize the VDDK libraries the following procedure may be used, this extracts
     rm /usr/lib/vmware/libstdc++.so.6
     export LD_LIBRARY_PATH=/usr/lib/vmware
 
-[OVFTOOL](https://my.vmware.com/group/vmware/details?downloadGroup=OVFTOOL410&productId=491)
+[OVFTOOL](https://developer.broadcom.com/tools/open-virtualization-format-ovf-tool/latest)
 
 OVF Tool should be downloaded and installed on the host.
 

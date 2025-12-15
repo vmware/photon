@@ -11,7 +11,7 @@ Connect to the Photon instance by using SSH and to launch a web server by runnin
     
     	ssh -i ~/.ssh/mykeypair root@<public-ip-address-of-instance>
     
-    For complete instructions, see [Connecting to Your Linux Instance Using SSH](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html). 
+    For complete instructions, see [Connecting to Your Linux Instance Using SSH](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html). 
 
 1. Run Docker
 
@@ -35,7 +35,7 @@ Connect to the Photon instance by using SSH and to launch a web server by runnin
 
 1. Test the web server
 
-    On your local workstation, open a web browser and go to the the public address of the Photon OS instance running Docker. The following screen should appear, showing that the web server is active:
+    On your local workstation, open a web browser and go to the public address of the Photon OS instance running Docker. The following screen should appear, showing that the web server is active:
     
     ![Nginx](./installation-guide/images/Nginx.jpg)
     

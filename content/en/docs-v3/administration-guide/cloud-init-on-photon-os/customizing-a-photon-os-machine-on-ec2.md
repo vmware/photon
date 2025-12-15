@@ -3,7 +3,7 @@ title:  Customizing a Photon OS Machine on EC2
 weight: 5
 ---
 
-You can upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using `cloud-init` with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on Packages URL at the location `https://packages.vmware.com/photon/`.
+You can upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using `cloud-init` with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on Packages URL at the location `https://packages.broadcom.com/photon/`.
 
 The `cloud-init` service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, `cloud-init` sets the `.ssh/authorized_keys` file to let you log in with a private key from another computer, that is, a computer besides the workstation that you are already using to connect with the Amazon cloud. 
 
@@ -15,7 +15,7 @@ The cloud-config user-data file that appears in the following example contains a
 
 - To work with EC2, obtain Amazon accounts for both AWS and EC2 with valid payment information. If you execute the below examples, you will be charged by Amazon. You must replace the `<placeholders>` for access keys and other account information in the examples with your account information. 
 - Install and set up the Amazon AWS CLI and the EC2 CLI tools, including `ec2-ami-tools`. 
-    For more information, see [Installing the AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/installing.html), [Setting Up the Amazon EC2 Command Line Interface Tools on Linux](http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html) and [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html). 
+    For more information, see [Installing the AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html), [Installing the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and [Setting Up the AMI Tools](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html). 
 - Create  SSH keys and an RSA user signing certificate and its corresponding private RSA key file.  
 
 ### Procedure 
@@ -91,7 +91,7 @@ The following are the contents of the `user-data.txt` file that `cloud-init` app
 
 You can view the cloud-init output log file on EC2 at `/var/log/cloud-init-output.log`. 
 
-For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
+For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
 
 For more information on how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine, see [Running Photon OS on Amazon Elastic Cloud Compute](../../../installation-guide/run-photon-aws-ec2/).
 

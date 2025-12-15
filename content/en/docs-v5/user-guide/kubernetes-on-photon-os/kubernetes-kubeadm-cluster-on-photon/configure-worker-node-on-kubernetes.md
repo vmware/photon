@@ -206,7 +206,7 @@ docker pull calico/kube-controllers:v3.25.0
 
 ### Cluster Test
 
-The Kubernetes worker node should be up and running now. Run the following command from  the kube-master node to verify the state of the cluster:
+The Kubernetes worker node should be up and running now. Run the following command from the kube-master node to verify the state of the cluster:
 
 ```
 kubectl get nodes

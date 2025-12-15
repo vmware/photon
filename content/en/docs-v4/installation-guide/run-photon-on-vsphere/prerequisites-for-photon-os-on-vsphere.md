@@ -25,11 +25,11 @@ Before you use Photon OS within VMware vSphere, perform the following prerequisi
 	</tr>
 	<tr>
 	<td>Storage</td>
-	<td><b>Minimal Photon install</b>: ESXi host with at least 512MB of free space (minimum); <b>Full Photon install</b>: ESXi host with at least 4GB of free space (minimum); 16GB is recommended; 16GB recommended.</td>
+	<td><b>Minimal Photon install</b>: ESXi host with at least 512MB of free space (minimum); <b>Full Photon install</b>: ESXi host with at least 4GB of free space (minimum); 16GB is recommended.</td>
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS ISO or OVA file downloaded from [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/).</td>
+	<td>Photon OS ISO or OVA file downloaded from [https://packages.broadcom.com/photon/](https://packages.broadcom.com/photon/).</td>
 	</tr>
 	</tbody>
 	</table>
@@ -45,8 +45,8 @@ Before you use Photon OS within VMware vSphere, perform the following prerequisi
     
 1. Download Photon OS. Go to the following URL and download the latest release of Photon OS:
 
-    [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
+    [https://packages.broadcom.com/photon/](https://packages.broadcom.com/photon/)
     
-    For instructions, see [https://github.com/vmware/photon/wiki/Downloading-Photon-OS](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
+    For instructions, see [https://github.com/vmware/photon/wiki/downloading-photon-os](https://github.com/vmware/photon/wiki/downloading-photon-os).
     
     **Note:** For ISO installation, you must upload to a datashare that is attached to the ESXi host, or mount the file share where the ISO resides as a data store.

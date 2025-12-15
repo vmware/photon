@@ -3,7 +3,7 @@ title:  Building a Package from a Source RPM
 weight: 5
 ---
 
-This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the VMWare Packages repository: [packages.vmware.com/photon](https://packages.vmware.com/photon)
+This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the [Broadcom Photon OS packages repository](https://packages.broadcom.com/photon)
 
 ## Prerequisites
 

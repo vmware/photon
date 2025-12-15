@@ -3,7 +3,7 @@ title:  Kernel Overview
 weight: 1
 ---
 
-You can use `dmesg` command to troubleshooting kernel errors. The `dmesg` command prints messages from the kernel ring buffer. 
+You can use `dmesg` command to troubleshoot kernel errors. The `dmesg` command prints messages from the kernel ring buffer. 
 
 The following command, for example, presents kernel messages in a human-readable format: 
 

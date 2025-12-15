@@ -38,7 +38,7 @@ After you have downloaded the Photon RPi image with the file extension `*.raw.xz
 
 After you flash Photon OS successfully onto the RPi SD card, eject the card from your host computer and plug it back into the RPi board.
 	    
-When you power on Raspberry Pi , it boots with Photon OS.
+When you power on Raspberry Pi, it boots with Photon OS.
 	    
 After the splash screen, Photon OS prompts you to log in.
 

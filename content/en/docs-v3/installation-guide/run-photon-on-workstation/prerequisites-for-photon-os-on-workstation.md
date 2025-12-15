@@ -27,7 +27,7 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS ISO or OVA file downloaded from Packages URL (<a href="https://packages.vmware.com/photon/">https://packages.vmware.com/photon/</a>).</td>
+	<td>Photon OS ISO or OVA file downloaded from Packages URL (<a href="https://packages.broadcom.com/photon/">https://packages.broadcom.com/photon/</a>).</td>
 	</tr>
 	</tbody>
 	</table>
@@ -47,6 +47,6 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
     
 1. Download Photon OS. Go to the following Packages URL and download the latest release of Photon OS:
 
-    [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
+    [https://packages.broadcom.com/photon/](https://packages.broadcom.com/photon/)
     
     For instructions, see [Downloading Photon OS](../../downloading-photon/).

@@ -77,7 +77,7 @@ net.bridge.bridge-nf-call-iptables = 1
 net/bridge/bridge-nf-call-arptables = 1
 ```   
 
-Apply the new `sysctl` setttings as follows:
+Apply the new `sysctl` settings as follows:
 
 ```
 sysctl --system
@@ -109,7 +109,7 @@ pull-image-on-create: false
 disable-pull-on-run: false
 ```
 
-Use `systemd` as cgroup for containerd as shown in the followng command:
+Use `systemd` as cgroup for containerd as shown in the following command:
 
 
 	Configuration File

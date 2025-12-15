@@ -44,7 +44,7 @@ Name        : gpg-pubkey
     Build Host  : localhost
     Relocations : (not relocatable)
     Packager    : VMware, Inc. -- Linux Packaging Key -- <linux-packages@vmware.com>
-    Summary     : gpg(VMware, Inc. -- Linux Packaging Key -- <linux-packages@vmware.                        com>)
+    Summary     : gpg(VMware, Inc. -- Linux Packaging Key -- <linux-packages@vmware.com>)
     Description :
     -----BEGIN PGP PUBLIC KEY BLOCK-----
     Version: rpm-4.11.2 (NSS-3)
