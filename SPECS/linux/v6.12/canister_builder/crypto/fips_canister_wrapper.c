@@ -813,7 +813,7 @@ static char *canister_algs[] = {
 	"ecdsa-nist-p521-generic",
 	"ecdh-nist-p384-generic",
 	"ecdh-nist-p256-generic",
-	"jitterentropy_rng",
+	"jitterentropy_rng-generic",
 	"cts-cbc-aes-aesni",
 	"__cts-cbc-aes-aesni",
 	"cryptd(__cts-cbc-aes-aesni)",
@@ -887,6 +887,10 @@ static char *fips_disabled_algs[] = {
 	"ecb-cipher_null",
 	"ecb-aes-aesni",
 	"ecb(aes-generic)",
+	/* Special case for jitterentropy_rng-proxy. It is registered as a separate driver,
+	 * though the main driver name is jitterentropy_rng-generic
+	 */
+	"jitterentropy_rng-proxy",
 };
 
 int fcw_fips_not_allowed_alg(char *name)
