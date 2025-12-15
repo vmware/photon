@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -905,6 +905,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jan 07 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-11
+- Update jitterentropy driver names in canister_algs list
 * Sat Jan 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-10
 - Introduce /sys/kernel/vmgenid
 * Fri Jan 02 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-9
