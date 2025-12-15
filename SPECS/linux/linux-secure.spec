@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.247
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -480,6 +480,11 @@ Patch288: 0002-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
 # CVE-2025-38584
 Patch289: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 
+# CVE-2025-38556
+Patch290: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
+# CVE-2025-38201
+Patch291: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -764,6 +769,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 15 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-5
+- Fixes CVE-2025-38201, CVE-2025-38556
 * Tue Dec 09 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.247-4
 - CVE-2025-38129
 - CVE-2025-38584
