@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.37.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -15,6 +15,8 @@ Patch0: CVE-2024-28085-pre1.patch
 Patch1: CVE-2024-28085-pre2.patch
 Patch2: CVE-2024-28085-pre3.patch
 Patch3: CVE-2024-28085.patch
+Patch4: CVE-2025-14104-1.patch
+Patch5: CVE-2025-14104-2.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -115,6 +117,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Mon Dec 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.37.4-3
+- Fix CVE-2025-14104
 * Fri Mar 22 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.37.4-2
 - Fix CVE-2024-28085
 * Mon Mar 21 2022 Ankit Jain <ankitja@vmware.com> 2.37.4-1
