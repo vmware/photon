@@ -50,7 +50,7 @@ class DockerUtil:
             return True
         buildargs = {}
         if "BASE_URL" in os.environ:
-            buildargs.update({"URL": os.environ["BASE_URL"]})
+            buildargs.update({"BASE_URL": os.environ["BASE_URL"]})
         try:
             with open(self._docker_lock_fn, 'x'):
                 pass
@@ -72,6 +72,7 @@ class DockerUtil:
                     buildargs=buildargs,
                     network_mode="host",
                     dockerfile="Dockerfile",
+                    nocache=True,
                 )
                 for entry in logstream:
                     resp = json.loads(entry.decode())
@@ -90,8 +91,16 @@ class DockerUtil:
         return True
 
     def clean_docker_image(self):
-        with suppress(Exception):
-            self.client.images.remove(self._docker_img_name, force=True)
+        img = self._docker_img_name
+        try:
+            self.client.images.get(img)
+        except docker.errors.ImageNotFound:
+            print(f"{img} does not exist, nothing to remove")
+            return
+
+        print(f"Removing: {img} container image ...")
+        self.client.images.remove(img, force=True)
+        print(f"{img} is removed, verify using 'docker images'")
 
     # Build docker scan command
     def build_scan_docker_cmd(
