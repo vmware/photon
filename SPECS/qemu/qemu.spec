@@ -1,9 +1,17 @@
 %global debug_package %{nil}
 
+%ifarch x86_64
+%global targetArch aarch64
+%endif
+
+%ifarch aarch64
+%global targetArch x86_64
+%endif
+
 Summary:        QEMU utilities and emulators
 Name:           qemu
 Version:        7.2.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -12,46 +20,40 @@ Distribution:   Photon
 Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
 Source1:        license.txt
 %include %{SOURCE1}
-Source2:        qemu-aarch64-static.conf
-Source3:        qemu-x86_64-static.conf
+
+Source2:        qemu-%{targetArch}-static.conf
 
 BuildRequires:  python3-devel
 BuildRequires:  glib-devel
 BuildRequires:  pixman-devel
 BuildRequires:  ninja-build
+BuildRequires:  ninja-build
+BuildRequires:  zstd-devel
+BuildRequires:  zlib-devel
+BuildRequires:  libselinux-devel
 
 Requires:       %{name}-img = %{version}-%{release}
-%ifarch x86_64
-Requires:       %{name}-user-static-aarch64 = %{version}-%{release}
-%endif
-%ifarch aarch64
-Requires:       %{name}-user-static-x86_64 = %{version}-%{release}
-%endif
+Requires:       %{name}-user-static-%{targetArch} = %{version}-%{release}
 
 %description
 QEMU utilities and emulators
 
 %package img
-Summary: QEMU disk image utility
+Summary:        QEMU disk image utility
+Requires:       libselinux
+Requires:       zstd-libs
+Requires:       zlib
 
 %description img
 Qemu-img is the tool used to create, manage, convert, shrink etc. the disk images of virtual machines.
 
-%ifarch x86_64
-%package user-static-aarch64
-Summary: Statically linked user mode emulation for aarch64
+%package user-static-%{targetArch}
+Summary:            Statically linked user mode emulation for %{targetArch}
+Requires(post):     systemd
+Requires(postun):   systemd
 
-%description user-static-aarch64
-Statically linked user mode emulation for aarch64
-%endif
-
-%ifarch aarch64
-%package user-static-x86_64
-Summary: Statically linked user mode emulation for x86_64
-
-%description user-static-x86_64
-Statically linked user mode emulation for x86_64
-%endif
+%description user-static-%{targetArch}
+Statically linked user mode emulation for %{targetArch}
 
 %prep
 %autosetup -p1 %{version}
@@ -147,16 +149,14 @@ rm roms/u-boot/tools/logos/u-boot_logo.svg
         --audio-drv-list= \\\
         --without-default-devices
 
-# Do not build QEMU's ivshmem
-sed -i 's#ivshmem=yes#ivshmem=no#g' configure
-mkdir build && pushd build
+mkdir -p build && pushd build
 # Disabling everything except tools
 sh ../configure \
         --prefix="%{_prefix}" \
         --libdir="%{_libdir}" \
         --datadir="%{_datadir}" \
         --sysconfdir="%{_sysconfdir}" \
-        --localstatedir="%{_localstatedir}" \
+        --localstatedir="%{_var}" \
         --libexecdir="%{_libexecdir}" \
         %{disable_all} \
         --disable-system \
@@ -168,22 +168,17 @@ sh ../configure \
 
 popd
 
-mkdir build-user-static && pushd build-user-static
+mkdir -p build-user-static && pushd build-user-static
 
 sh ../configure \
         --prefix="%{_prefix}" \
         --libdir="%{_libdir}" \
         --datadir="%{_datadir}" \
         --sysconfdir="%{_sysconfdir}" \
-        --localstatedir="%{_localstatedir}" \
+        --localstatedir="%{_var}" \
         --libexecdir="%{_libexecdir}" \
         %{disable_all} \
-%ifarch x86_64
-        --target-list=aarch64-linux-user \
-%endif
-%ifarch aarch64
-        --target-list=x86_64-linux-user \
-%endif
+        --target-list=%{targetArch}-linux-user \
         --enable-attr \
         --enable-linux-user \
         --enable-tcg \
@@ -201,27 +196,12 @@ popd
 pushd build-user-static
 %make_install
 
-%ifarch x86_64
-mv %{buildroot}%{_bindir}/qemu-aarch64 %{buildroot}%{_bindir}/qemu-aarch64-static
-%endif
-
-%ifarch aarch64
-mv %{buildroot}%{_bindir}/qemu-x86_64 %{buildroot}%{_bindir}/qemu-x86_64-static
-%endif
+mv %{buildroot}%{_bindir}/qemu-%{targetArch} %{buildroot}%{_bindir}/qemu-%{targetArch}-static
 
 %global binfmt_dir %{buildroot}%{_libdir}/binfmt.d
 mkdir -p %{binfmt_dir}
 
 cp %{SOURCE2} %{binfmt_dir}
-cp %{SOURCE3} %{binfmt_dir}
-
-%ifarch aarch64
-rm %{binfmt_dir}/qemu-aarch64-static.conf
-%endif
-
-%ifarch x86_64
-rm %{binfmt_dir}/qemu-x86_64-static.conf
-%endif
 
 popd
 
@@ -231,28 +211,19 @@ find %{buildroot} \( -name '*.png' \
                      -name '*.svg' \
                      -name 'qemu.desktop' \) \
                      -delete
-rm -rf %{buildroot}%{_datadir}/qemu/keymaps
+
+rm -r %{buildroot}%{_datadir}/qemu/keymaps
 
 %if 0%{?with_check}
 %check
 make %{?_smp_mflags} check
 %endif
 
-%ifarch x86_64
-%post user-static-aarch64
+%post user-static-%{targetArch}
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 
-%postun user-static-aarch64
+%postun user-static-%{targetArch}
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
-%endif
-
-%ifarch aarch64
-%post user-static-x86_64
-/bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
-
-%postun user-static-x86_64
-/bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
-%endif
 
 %files
 %defattr(-,root,root)
@@ -268,21 +239,15 @@ make %{?_smp_mflags} check
 %{_datadir}/qemu
 %{_libexecdir}/qemu-bridge-helper
 
-%ifarch x86_64
-%files user-static-aarch64
+%files user-static-%{targetArch}
 %defattr(-,root,root)
 %{_bindir}/qemu-aarch64-static
-%{_libdir}/binfmt.d/qemu-aarch64-static.conf
-%endif
-
-%ifarch aarch64
-%files user-static-x86_64
-%defattr(-,root,root)
-%{_bindir}/qemu-x86_64-static
-%{_libdir}/binfmt.d/qemu-x86_64-static.conf
-%endif
+%{_libdir}/binfmt.d/qemu-%{targetArch}-static.conf
 
 %changelog
+* Tue Dec 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.0-6
+- Fix BuildRequires and Requires
+- Use targetArch macro remove duplicate instructions
 * Fri Nov 21 2025 Oliver Kurth <oliver.kurth@broadcom.com> 7.2.0-5
 - add qemu-user-static-* packages
 * Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 7.2.0-4
