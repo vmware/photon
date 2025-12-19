@@ -5,6 +5,13 @@
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
 
+# Do not add unique suffix to *.ko.debug files
+# If _unique_debug_names defined, then __debug_install_post expands
+# *.ko to *.ko-<version>-<release>.<arch>.debug.
+# Undefining this option keeps filenames simple: *.ko.debug.
+# This is what crash utility is looking for.
+%undefine _unique_debug_names
+
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -22,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -501,6 +508,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Dec 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-6
+- Disable unique naming for *.ko.debug to make crash utility happy
 * Fri Dec 12 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12.60-5
 - Inject photon KM certificate to trusted keyring
 * Mon Dec 08 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-4
