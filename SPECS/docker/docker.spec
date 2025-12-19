@@ -9,11 +9,12 @@
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
 %define gopath_comp_libnetwork github.com/docker/libnetwork
+%define gopath_comp_containerd github.com/containerd/containerd
 
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -39,6 +40,7 @@ Source99:       default-disable.preset
 Patch0:        tini-disable-git.patch
 Patch1:        CVE-2024-41110-1.patch
 Patch2:        CVE-2024-41110-2.patch
+Patch3:        dockerd-containerd-CVE-2024-40635.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -138,6 +140,9 @@ popd
 pushd src/%{gopath_comp_engine} #moby source directory
 %patch1 -p1
 %patch2 -p1
+popd
+pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_containerd} #containerd source directory
+%patch3 -p1
 popd
 
 %build
@@ -332,6 +337,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri Dec 19 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 24.0.9-4
+- Fixes CVE-2024-40635 containerd component in docker vendor source
 * Tue Aug 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.0.9-3
 - Fixes CVE-2024-41110
 * Thu Jul 24 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-2
