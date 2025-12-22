@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.247
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -487,6 +487,8 @@ Patch291: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
 # CVE-2022-49622
 Patch292: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
 Patch293: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
+# CVE-2023-52735
+Patch294: 0001-bpf-sockmap-Don-t-let-sock_map_-close-destroy-unhash.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -772,6 +774,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-7
+- Fixes CVE-2023-52735
 * Tue Dec 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.247-6
 - Fix CVE-2022-49622
 * Mon Dec 15 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-5
