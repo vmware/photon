@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -901,6 +901,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Dec 22 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12.60-7
+- Fix SBAT validation order
 * Fri Dec 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-6
 - Disable unique naming for *.ko.debug to make crash utility happy
 * Fri Dec 12 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12.60-5
