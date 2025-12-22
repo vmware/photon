@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -91,7 +91,13 @@ mktoy() { \
 %triggerpostun -- dos2unix
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
-mktoy %{_bindir}/dos2unix %{_bindir}/unix2dos
+mktoy %{_bindir}/dos2unix \
+      %{_bindir}/unix2dos
+
+%triggerpostun -- bindutils
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy %{_bindir}/host
 
 %triggerpostun -- bzip2
 [ $2 -eq 0 ] || exit 0
@@ -336,10 +342,17 @@ mktoy %{_sbindir}/httpd
 %{_mktoy_}
 mktoy %{_sbindir}/iotop
 
+%triggerpostun -- iproute2
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy %{_sbindir}/ip
+
 %triggerpostun -- iputils
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
-mktoy %{_bindir}/ping %{_bindir}/ping6
+mktoy %{_bindir}/arping \
+      %{_bindir}/ping \
+      %{_sbindir}/ping6
 
 %triggerpostun -- kbd
 [ $2 -eq 0 ] || exit 0
@@ -362,9 +375,11 @@ mktoy %{_bindir}/netcat %{_bindir}/nc
 %triggerpostun -- net-tools
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
-mktoy %{_bindir}/hostname \
+mktoy %{_bindir}/arp \
+      %{_bindir}/hostname \
       %{_bindir}/netstat \
-      %{_bindir}/ifconfig
+      %{_bindir}/ifconfig \
+      %{_sbindir}/iptunnel
 
 %triggerpostun -- parted
 [ $2 -eq 0 ] || exit 0
@@ -418,6 +433,12 @@ mktoy %{_bindir}/login \
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
 mktoy %{_bindir}/tar
+
+%triggerpostun -- traceroute
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy %{_bindir}/traceroute \
+      %{_bindir}/traceroute6
 
 %triggerpostun -- usbutils
 [ $2 -eq 0 ] || exit 0
@@ -473,6 +494,13 @@ mktoy %{_bindir}/which
 %defattr(-,root,root)
 %{_bindir}/%{name}
 %{_bindir}/%{name}-toys
+
+# bash
+%ghost %{_bindir}/bash
+%ghost %{_bindir}/sh
+
+# bindutils
+%ghost %{_bindir}/host
 
 # bzip2
 %ghost %{_bindir}/bunzip2
@@ -593,10 +621,14 @@ mktoy %{_bindir}/which
 # httpd
 %ghost %{_sbindir}/httpd
 
+# iproute2
+%ghost %{_sbindir}/ip
+
 # iotop
 %ghost %{_sbindir}/iotop
 
 # iputils
+%ghost %{_sbindir}/arping
 %ghost %{_bindir}/ping
 %ghost %{_bindir}/ping6
 
@@ -614,9 +646,11 @@ mktoy %{_bindir}/which
 %ghost %{_bindir}/nc
 
 # net-tools
+%ghost %{_bindir}/arp
 %ghost %{_bindir}/hostname
 %ghost %{_bindir}/netstat
 %ghost %{_bindir}/ifconfig
+%ghost %{_sbindir}/iptunnel
 
 # parted
 %ghost %{_sbindir}/partprobe
@@ -654,6 +688,10 @@ mktoy %{_bindir}/which
 
 # tar
 %ghost %{_bindir}/tar
+
+# traceroute
+%ghost %{_bindir}/traceroute
+%ghost %{_bindir}/traceroute6
 
 # usbutils
 %ghost %{_bindir}/lsusb
@@ -700,6 +738,7 @@ mktoy %{_bindir}/which
 %ghost %{_bindir}/unix2dos
 
 # Non conflicting toybox toys
+%{_sbindir}/dhcp
 %{_bindir}/fstype
 %{_bindir}/fsync
 %{_bindir}/help
@@ -722,12 +761,19 @@ mktoy %{_bindir}/which
 %{_bindir}/tunctl
 %{_bindir}/uudecode
 %{_bindir}/uuencode
+%{_sbindir}/ipaddr
+%{_sbindir}/iplink
+%{_sbindir}/iproute
+%{_sbindir}/iprule
+%{_bindir}/toysh
 
 %files docs
 %defattr(-,root,root)
 %doc README LICENSE
 
 %changelog
+* Mon Dec 22 2025 Oliver Kurth <okurth@vmware.com> 0.8.9-9
+- enable arp, arping, dhcp, ip, traceroute
 * Tue Dec 02 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.8.9-8
 - Add missing requires of libxcrypt
 * Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.9-7
