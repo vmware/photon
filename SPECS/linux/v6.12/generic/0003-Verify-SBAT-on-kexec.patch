@@ -3,24 +3,28 @@ From: Kuntal Nayak <kuntal.nayak@broadcom.com>
 Date: Sat, 1 Mar 2025 00:28:52 +0000
 Subject: [PATCH 3/3] Verify SBAT on kexec
 
-To extend Secure Boot trusted chain to next executed kernel.
-Introduce a logic to verify .sbat section of new bzImage against
-SBAT entries from EFI variable used by shim.
+Extend Secure Boot trust-chain to newly loaded kernels.
 
-[ KN: Simplify SBAT verification. Only call routine when UEFI
-secure boot is enabled. Get SBAT data from MOK tables if
-cannot fetch from EFI. ]
+Add SBAT validation logic to verify the .sbat section of new
+bzImage against SBAT entries from EFI variables. Fall back to
+MOK tables for SbatLevel metadata if unavailable from EFI
+system. This verification only runs when Secure Boot is enabled.
 
-Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Verify kernel signature before SBAT validation to ensure
+integrity of the kernel image. Signature verification must precede
+SBAT checks because pefile_parse_binary() exits early without
+certificate data, preventing SBAT validation from running.
+
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
 ---
  crypto/asymmetric_keys/verify_pefile.c |  24 +++
  include/linux/verification.h           |  11 ++
- kernel/kexec_file.c                    |   8 +
+ kernel/kexec_file.c                    |   7 +
  security/Kconfig                       |  12 ++
  security/Makefile                      |   1 +
  security/sbat.c                        | 233 +++++++++++++++++++++++++
- 6 files changed, 289 insertions(+)
+ 6 files changed, 288 insertions(+)
  create mode 100644 security/sbat.c
 
 diff --git a/crypto/asymmetric_keys/verify_pefile.c b/crypto/asymmetric_keys/verify_pefile.c
@@ -78,7 +82,7 @@ index cb2d47f28..dfebedf56 100644
  
  #endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
 diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-index 3eedb8c22..8394b6bf0 100644
+index 3eedb8c22..1ad76d14b 100644
 --- a/kernel/kexec_file.c
 +++ b/kernel/kexec_file.c
 @@ -27,6 +27,8 @@
@@ -90,24 +94,23 @@ index 3eedb8c22..8394b6bf0 100644
  #include "kexec_internal.h"
  
  #ifdef CONFIG_KEXEC_SIG
-@@ -133,6 +135,12 @@ int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len)
- {
- 	int ret;
- 
-+	if (secureboot_enabled()) {
-+		ret = verify_pefile_sbat(kernel, kernel_len);
-+		if (ret)
-+			return ret;
-+	}
+@@ -141,6 +143,11 @@ int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len)
+ 					      VERIFY_USE_PLATFORM_KEYRING,
+ 					      VERIFYING_KEXEC_PE_SIGNATURE);
+ 	}
++	if (ret < 0)
++		return ret;
 +
- 	ret = verify_pefile_signature(kernel, kernel_len,
- 				      VERIFY_USE_SECONDARY_KEYRING,
- 				      VERIFYING_KEXEC_PE_SIGNATURE);
++	if (secureboot_enabled())
++		ret = verify_pefile_sbat(kernel, kernel_len);
+ 	return ret;
+ }
+ #endif
 diff --git a/security/Kconfig b/security/Kconfig
-index 318d41cc1..433de6f87 100644
+index 83eba935f..d7c228b95 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
-@@ -235,6 +235,18 @@ config SECURITY_SBAT
+@@ -264,6 +264,18 @@ config SECURITY_SBAT
  	  See <https://github.com/rhboot/shim/blob/main/SBAT.md> for more information
  	  about SBAT.
  
@@ -378,5 +381,5 @@ index 000000000..a180f02a8
 +	return ret;
 +}
 -- 
-2.39.4
+2.43.7
 
