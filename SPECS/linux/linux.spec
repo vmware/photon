@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.159
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -419,6 +419,8 @@ Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
 # CVE-2025-40362
 Patch210: 0001-ceph-pass-the-mdsc-to-several-helpers.patch
 Patch211: 0002-ceph-fix-multifs-mds-auth-caps-issue.patch
+# CVE-2025-39905
+Patch212: 0001-net-phylink-add-lock-for-serializing-concurrent-pl-p.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1190,6 +1192,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Dec 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-6
+- Fixes CVE-2025-39905
 * Tue Dec 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-5
 - Fixes CVE-2025-40362
 * Wed Dec 17 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-4
