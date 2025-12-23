@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.159
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -349,6 +349,9 @@ Patch206: 0001-smb-client-prevent-new-fids-from-being-removed-by-la.patch
 Patch207: 0002-smb-client-fix-use-after-free-in-smb2_query_info_com.patch
 Patch208: 0003-smb-Don-t-leak-cfid-when-reconnect-races-with-open_c.patch
 Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
+# CVE-2025-40362
+Patch210: 0001-ceph-pass-the-mdsc-to-several-helpers.patch
+Patch211: 0002-ceph-fix-multifs-mds-auth-caps-issue.patch
 
 # SCHED: [251..254]
 Patch251: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -733,6 +736,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Dec 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-5
+- Fixes CVE-2025-40362
 * Wed Dec 17 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-4
 - CVE-2024-53177
 * Mon Dec 15 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-3
