@@ -11,7 +11,7 @@
 Summary:        QEMU utilities and emulators
 Name:           qemu
 Version:        7.2.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -241,10 +241,12 @@ make %{?_smp_mflags} check
 
 %files user-static-%{targetArch}
 %defattr(-,root,root)
-%{_bindir}/qemu-aarch64-static
+%{_bindir}/qemu-%{targetArch}-static
 %{_libdir}/binfmt.d/qemu-%{targetArch}-static.conf
 
 %changelog
+* Tue Dec 23 2025 Oliver Kurth <oliver.kurth@broadcom.com> 7.2.0-7
+- fix aarch64 build
 * Tue Dec 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.0-6
 - Fix BuildRequires and Requires
 - Use targetArch macro remove duplicate instructions
