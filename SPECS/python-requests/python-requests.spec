@@ -12,7 +12,8 @@ Source0: http://pypi.python.org/packages/source/r/requests/requests-%{version}.t
 Source1: license.txt
 %include %{SOURCE1}
 
-# CVE fix here should have corresponding fix in python3-pip requests module
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
+
 Patch1: CVE-2023-32681.patch
 Patch2: CVE-2024-35195.patch
 Patch3: CVE-2024-35195-2.patch

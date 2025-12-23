@@ -13,6 +13,8 @@ Source0:        https://files.pythonhosted.org/packages/ca/e3/78443d739d7efeea86
 Source1: license.txt
 %include %{SOURCE1}
 
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml

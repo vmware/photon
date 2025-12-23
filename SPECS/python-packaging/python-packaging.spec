@@ -10,9 +10,10 @@ Source0:        https://github.com/pypa/packaging/archive/refs/tags/packaging-%{
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires:  python3
+
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-pip
 BuildRequires:  python3-flit-core
 %if 0%{?with_check}

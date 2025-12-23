@@ -12,11 +12,10 @@ Source0: https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
 Patch0: CVE-2025-50181.patch
 Patch1: CVE-2025-66418.patch
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -25,7 +24,6 @@ BuildRequires:  curl-devel
 BuildRequires:  python3-pip
 
 Requires:       python3
-Requires:       python3-libs
 
 BuildArch:      noarch
 

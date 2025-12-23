@@ -6,13 +6,16 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/sarugaku/resolvelib
+
+BuildArch:      noarch
+
 Source0:        https://github.com/sarugaku/resolvelib/archive/refs/tags/resolvelib-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildArch:      noarch
 
-BuildRequires:  python3
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 

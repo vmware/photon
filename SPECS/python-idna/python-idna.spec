@@ -8,13 +8,16 @@ Url:            https://pypi.python.org/pypi/idna
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        %{srcname}-%{version}.tar.gz
-Patch0:         CVE-2024-3651.patch
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildArch:      noarch
+
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
+Patch0:         CVE-2024-3651.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs

@@ -16,6 +16,8 @@ Source1: license.txt
 
 BuildArch:      noarch
 
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-wheel
 BuildRequires:  python3-pip
