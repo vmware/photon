@@ -1,12 +1,12 @@
 sources:
-- archive: docker-compose-2.33.1.tar.gz
+- archive: docker-compose-2.40.3.tar.gz
   archive_type: upstream
-  archive_sha512sum: 704e73a3952c086e83c42cb96c658fc65386822e294629794e4e4442c35a9c28dfb77c8e7637b84ebb42b00c98b9829e13b4cb5988afe9e98926ea6403b6d7ce
-  version: 2.33.1
-  name: compose-2.33.1
-  url: https://github.com/docker/compose/archive/refs/tags/v2.33.1.tar.gz
+  archive_sha512sum: aea731cae9e230b5bdf9ad576cf6b04e6edf3233ca8e309b16dbf5a2469aa80ed3082790750d84a6dae981d581e6148e7fba49ddf8d30d7b3c6efcf90576fbe1
+  version: 2.40.3
+  name: compose-2.40.3
+  url: https://github.com/docker/compose/archive/refs/tags/v2.40.3.tar.gz
   repo_url: https://github.com/docker/compose
-  commit_id: da2eff4ba7d95ddae71d6b70323dbe739bbd130b
+  commit_id: 49b1c1e932aecd3a4843b392162d4bd56021935e
   skip_list: []
   missing: []
   spdx:

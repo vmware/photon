@@ -3,8 +3,8 @@
 %define plugins_dir     %{_libexecdir}/docker/cli-plugins
 
 Name:           docker-compose
-Version:        2.33.1
-Release:        3%{?dist}
+Version:        2.40.3
+Release:        1%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -15,8 +15,6 @@ Source0:        https://github.com/docker/compose/archive/refs/tags/v%{version}.
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: CVE-2025-62725.patch
 
 BuildRequires:  go
 BuildRequires:  ca-certificates
@@ -41,7 +39,7 @@ install -D -p -m 0755 ./bin/build/%{name} %{buildroot}%{_bindir}/%{name}
 mkdir -p %{buildroot}%{plugins_dir}
 ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{plugins_dir}/
 
-for f in LICENSE MAINTAINERS NOTICE README.md; do
+for f in LICENSE NOTICE README.md; do
     install -D -p -m 0644 "$f" "%{name}-docs/$f"
 done
 
@@ -59,6 +57,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Wed Dec 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.40.3-1
+- Fix second level CVE-2025-22869
 * Wed Nov 05 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.33.1-3
 - Fix CVE-2025-62725
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.33.1-2
