@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        20%{?dist}
+Release:        21%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -294,7 +294,16 @@ fi
 %config %{_sysconfdir}/locale-gen.conf
 %{_sbindir}/ldconfig
 %{_sbindir}/locale-gen.sh
-%{_bindir}/*
+%{_bindir}/gencat
+%{_bindir}/getconf
+%{_bindir}/getent
+%{_bindir}/ld.so
+%{_bindir}/ldd
+%{_bindir}/locale
+%{_bindir}/localedef
+%{_bindir}/makedb
+%{_bindir}/tzselect
+%{_bindir}/zdump
 %{_libexecdir}/*
 %{_datadir}/i18n/charmaps/UTF-8.gz
 %{_datadir}/i18n/charmaps/ISO-8859-1.gz
@@ -306,13 +315,6 @@ fi
 %{_datadir}/i18n/locales/translit_*
 %{_datadir}/locale/locale.alias
 %exclude %{_sharedstatedir}/nss_db/Makefile
-%exclude %{_bindir}/iconv
-%exclude %{_bindir}/mtrace
-%exclude %{_bindir}/pcprofiledump
-%exclude %{_bindir}/pldd
-%exclude %{_bindir}/sotruss
-%exclude %{_bindir}/sprof
-%exclude %{_bindir}/xtrace
 
 %files libs
 %defattr(-,root,root)
@@ -334,7 +336,6 @@ fi
 %{_bindir}/sotruss
 %{_bindir}/sprof
 %{_bindir}/xtrace
-%{_bindir}/zdump
 %{_sbindir}/zic
 %{_sbindir}/sln
 %{_libdir}/audit/*
@@ -369,6 +370,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Sat Dec 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-21
+- Remove zdump from glibc-tools, it is already packaged with glibc
 * Wed Oct 29 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-20
 - Fix CVE-2025-0395
 * Wed Aug 20 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-19
