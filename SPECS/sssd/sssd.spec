@@ -11,7 +11,7 @@
 
 # directory variables
 %global servicename sssd
-%global sssdstatedir %{_localstatedir}/lib/sss
+%global sssdstatedir %{_sharedstatedir}/sss
 %global dbpath %{sssdstatedir}/db
 %global keytabdir %{sssdstatedir}/keytabs
 %global pipepath %{sssdstatedir}/pipes
@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -471,7 +471,7 @@ autoreconf -ivf
     --with-gpo-cache-path=%{gpocachepath} \
     --with-init-dir=%{_initrddir} \
     --with-initscript=systemd \
-    --with-krb5-rcache-dir=%{_localstatedir}/cache/krb5rcache \
+    --with-krb5-rcache-dir=%{_var}/cache/krb5rcache \
     --with-mcache-path=%{mcpath} \
     --with-pid-path=%{_rundir} \
     --with-pipe-path=%{pipepath} \
@@ -481,6 +481,9 @@ autoreconf -ivf
     --with-test-dir=/dev/shm \
     --without-oidc-child
 
+# to fix intermittent build failure
+%make_build || \
+%make_build || \
 %make_build
 
 %install
@@ -490,37 +493,36 @@ autoreconf -ivf
 %find_lang %{name}
 
 # Copy default logrotate file
-mkdir -p %{buildroot}/%{_sysconfdir}/logrotate.d
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m644 src/examples/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/sssd
 
 # Make sure SSSD is able to run on read-only root
-mkdir -p %{buildroot}/%{_sysconfdir}/rwtab.d
+mkdir -p %{buildroot}%{_sysconfdir}/rwtab.d
 install -m644 src/examples/rwtab %{buildroot}%{_sysconfdir}/rwtab.d/sssd
 
 # Kerberos KCM credential cache by default
 mkdir -p %{buildroot}/%{_sysconfdir}/krb5.conf.d
-cp %{buildroot}/%{_datadir}/sssd-kcm/kcm_default_ccache \
-   %{buildroot}/%{_sysconfdir}/krb5.conf.d/kcm_default_ccache
+cp %{buildroot}%{_datadir}/sssd-kcm/kcm_default_ccache \
+   %{buildroot}%{_sysconfdir}/krb5.conf.d/kcm_default_ccache
 
 # Enable krb5 idp plugins by default (when sssd-idp package is installed)
-cp %{buildroot}/%{_datadir}/sssd/krb5-snippets/sssd_enable_idp \
-   %{buildroot}/%{_sysconfdir}/krb5.conf.d/sssd_enable_idp
+cp %{buildroot}%{_datadir}/sssd/krb5-snippets/sssd_enable_idp \
+   %{buildroot}%{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 # krb5 configuration snippet
-cp %{buildroot}/%{_datadir}/sssd/krb5-snippets/enable_sssd_conf_dir \
-   %{buildroot}/%{_sysconfdir}/krb5.conf.d/enable_sssd_conf_dir
+cp %{buildroot}%{_datadir}/sssd/krb5-snippets/enable_sssd_conf_dir \
+   %{buildroot}%{_sysconfdir}/krb5.conf.d/enable_sssd_conf_dir
 
 # Create directory for cifs-idmap alternative
 # Otherwise this directory could not be owned by sssd-client
-mkdir -p %{buildroot}/%{_sysconfdir}/cifs-utils
+mkdir -p %{buildroot}%{_sysconfdir}/cifs-utils
 
 # Suppress developer-only documentation
 rm -Rf %{buildroot}%{_docdir}/%{name}
 
 # Older versions of rpmbuild can only handle one -f option
 # So we need to append to the sssd*.lang file
-for file in $(find %{buildroot}/%{python3_sitelib} -maxdepth 1 -name "*.egg-info" 2> /dev/null)
-do
+for file in $(find %{buildroot}%{python3_sitelib} -maxdepth 1 -name "*.egg-info" 2> /dev/null); do
     echo %{python3_sitelib}/$(basename $file) >> python3_sssdconfig.lang
 done
 
@@ -531,10 +533,9 @@ for subpackage in sssd_ldap sssd_krb5 sssd_ipa sssd_ad sssd_proxy sssd_tools \
     touch $subpackage.lang
 done
 
-for man in `find %{buildroot}/%{_mandir}/??/man?/ -type f | sed -e "s#%{buildroot}/%{_mandir}/##"`
-do
-    lang=`echo $man | cut -c 1-2`
-    case `basename $man` in
+for man in $(find %{buildroot}%{_mandir}/??/man?/ -type f | sed -e "s#%{buildroot}%{_mandir}/##"); do
+    lang=$(echo $man | cut -c 1-2)
+    case $(basename $man) in
         sss_cache*)
             echo \%lang\(${lang}\) \%{_mandir}/${man}\* >> sssd.lang
             ;;
@@ -591,17 +592,19 @@ done
 
 # Print these to the rpmbuild log
 echo "sssd.lang:"
+sort -u sssd.lang -o sssd.lang
 cat sssd.lang
 
 echo "python3_sssdconfig.lang:"
+sort -u python3_sssdconfig.lang -o python3_sssdconfig.lang
 cat python3_sssdconfig.lang
 
 for subpackage in sssd_ldap sssd_krb5 sssd_ipa sssd_ad sssd_proxy sssd_tools \
                   sssd_client sssd_dbus sssd_nfs_idmap sssd_winbind_idmap \
-                  libsss_certmap sssd_kcm
-do
-    echo "$subpackage.lang:"
-    cat $subpackage.lang
+                  libsss_certmap sssd_kcm; do
+  sort -u $subpackage.lang -o $subpackage.lang
+  echo "$subpackage.lang:"
+  cat $subpackage.lang
 done
 
 # copy in default sssd.conf
@@ -650,15 +653,53 @@ systemctl start sssd-kcm.socket
 %systemd_postun_with_restart sssd-kcm.service
 
 %post client
-/usr/sbin/alternatives --install /etc/cifs-utils/idmap-plugin cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so 20
+/sbin/ldconfig
+%{_sbindir}/alternatives --install /etc/cifs-utils/idmap-plugin cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so 20
 
 %preun client
 if [ $1 -eq 0 ] ; then
-        /usr/sbin/alternatives --remove cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so
+  %{_sbindir}/alternatives --remove cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so
 fi
+/sbin/ldconfig
 
 %posttrans common
 %systemd_postun_with_restart sssd.service
+
+%post -n libsss_simpleifp
+/sbin/ldconfig
+
+%postun -n libsss_simpleifp
+/sbin/ldconfig
+
+%post -n libsss_sudo
+/sbin/ldconfig
+
+%postun -n libsss_sudo
+/sbin/ldconfig
+
+%post -n libsss_idmap
+/sbin/ldconfig
+
+%postun -n libsss_idmap
+/sbin/ldconfig
+
+%post -n libipa_hbac
+/sbin/ldconfig
+
+%postun -n libipa_hbac
+/sbin/ldconfig
+
+%post -n libsss_nss_idmap
+/sbin/ldconfig
+
+%postun -n libsss_nss_idmap
+/sbin/ldconfig
+
+%post -n libsss_certmap
+/sbin/ldconfig
+
+%postun -n libsss_certmap
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -721,7 +762,7 @@ fi
 %{_libexecdir}/%{servicename}/sss_signal
 
 %dir %{sssdstatedir}
-%dir %{_localstatedir}/cache/krb5rcache
+%dir %{_var}/cache/krb5rcache
 %attr(700,%{sssd_user},%{sssd_user}) %dir %{dbpath}
 %attr(775,%{sssd_user},%{sssd_user}) %dir %{mcpath}
 %attr(700,root,root) %dir %{secdbpath}
@@ -990,6 +1031,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-17
+- Add scriptlets in post for few sub packages
 * Tue Dec 30 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.8.2-16
 - Fix CVE-2025-11561
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.8.2-15
