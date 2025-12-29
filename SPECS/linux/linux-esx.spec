@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.159
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -388,6 +388,9 @@ Patch206: 0001-smb-client-prevent-new-fids-from-being-removed-by-la.patch
 Patch207: 0002-smb-client-fix-use-after-free-in-smb2_query_info_com.patch
 Patch208: 0003-smb-Don-t-leak-cfid-when-reconnect-races-with-open_c.patch
 Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
+
+# CVE-2024-53095
+Patch210: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -777,6 +780,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Dec 29 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.159-4
+- Fix CVE-2024-53095
 * Wed Dec 10 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-3
 - CVE-2024-53177
 * Tue Dec 09 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-2

@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.159
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -354,6 +354,9 @@ Patch210: 0001-ceph-pass-the-mdsc-to-several-helpers.patch
 Patch211: 0002-ceph-fix-multifs-mds-auth-caps-issue.patch
 # CVE-2025-39905
 Patch212: 0001-net-phylink-add-lock-for-serializing-concurrent-pl-p.patch
+
+# CVE-2024-53095
+Patch213: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
 
 # SCHED: [251..254]
 Patch251: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -738,6 +741,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Dec 29 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.159-7
+- Fix CVE-2024-53095
 * Tue Dec 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-6
 - Fixes CVE-2025-39905
 * Tue Dec 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-5
