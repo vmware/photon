@@ -10,11 +10,12 @@
 %define gopath_comp_cli github.com/docker/cli
 %define gopath_comp_libnetwork github.com/docker/libnetwork
 %define gopath_comp_containerd github.com/containerd/containerd
+%define gopath_comp_crypto golang.org/x/crypto
 
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -41,6 +42,8 @@ Patch0:        tini-disable-git.patch
 Patch1:        CVE-2024-41110-1.patch
 Patch2:        CVE-2024-41110-2.patch
 Patch3:        dockerd-containerd-CVE-2024-40635.patch
+Patch4:        dockerd-crypto-ssh-CVE-2024-45337.patch
+Patch5:        dockerd-crypto-ssh-CVE-2025-22869.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -143,6 +146,10 @@ pushd src/%{gopath_comp_engine} #moby source directory
 popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_containerd} #containerd source directory
 %patch3 -p1
+popd
+pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_crypto} #crypto source directory
+%patch4 -p1
+%patch5 -p1
 popd
 
 %build
@@ -337,6 +344,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Dec 30 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 24.0.9-5
+- Fixes CVE-2024-45337,CVE-2025-22869 in crypto ssh module
 * Fri Dec 19 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 24.0.9-4
 - Fixes CVE-2024-40635 containerd component in docker vendor source
 * Tue Aug 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.0.9-3
