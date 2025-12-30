@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.247
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -252,6 +252,9 @@ Patch141: 0001-Bluetooth-RFCOMM-avoid-leaving-dangling-sk-pointer-i.patch
 Patch146: 0001-tls-rx-simplify-async-wait.patch
 Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
 Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+
+# Fix CVE-2022-49444
+Patch150: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
 
 # Fix CVE-2024-26583
 Patch151: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
@@ -919,6 +922,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Dec 30 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-8
+- Fix CVE-2022-49444
 * Mon Dec 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-7
 - Fixes CVE-2023-52735
 * Tue Dec 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.247-6

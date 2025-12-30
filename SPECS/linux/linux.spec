@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.247
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -258,6 +258,9 @@ Patch148: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
 # Fix CVE-2024-26589
 Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
+
+# Fix CVE-2022-49444
+Patch150: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
 
 # Fix CVE-2024-41071
 Patch155: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
@@ -1244,6 +1247,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Dec 30 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-8
+- Fix CVE-2022-49444
 * Mon Dec 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-7
 - Fixes CVE-2023-52735
 * Tue Dec 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.10.247-6

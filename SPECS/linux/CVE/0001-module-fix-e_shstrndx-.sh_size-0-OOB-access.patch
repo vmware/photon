@@ -1,0 +1,47 @@
+From 6fed460b56b95192fd3c2df0c3e3dc8d5be1b4de Mon Sep 17 00:00:00 2001
+From: Kuntal Nayak <kuntal.nayak@broadcom.com>
+Date: Tue, 30 Dec 2025 20:53:47 +0000
+Subject: [PATCH] module: fix [e_shstrndx].sh_size=0 OOB access
+
+[ Upstream commit 391e982bfa632b8315235d8be9c0a81374c6a19c ]
+
+It is trivial to craft a module to trigger OOB access in this line:
+
+	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+
+BUG: unable to handle page fault for address: ffffc90000aa0fff
+PGD 100000067 P4D 100000067 PUD 100066067 PMD 10436f067 PTE 0
+Oops: 0000 [#1] PREEMPT SMP PTI
+CPU: 7 PID: 1215 Comm: insmod Not tainted 5.18.0-rc5-00007-g9bf578647087-dirty #10
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
+RIP: 0010:load_module+0x19b/0x2391
+
+Fixes: ec2a29593c83 ("module: harden ELF info handling")
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+[rebased patch onto modules-next]
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ KN: Backport for LTS v5.10 ]
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ kernel/module.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/module.c b/kernel/module.c
+index 2c6cad99f..06ec54901 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3041,6 +3041,10 @@ static int elf_validity_check(struct load_info *info)
+ 	 * strings in the section safe.
+ 	 */
+ 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
++	if (strhdr->sh_size == 0) {
++		pr_err("empty section name table\n");
++		return -ENOEXEC;
++	}
+ 	if (info->secstrings[strhdr->sh_size - 1] != '\0')
+ 		return -ENOEXEC;
+ 
+-- 
+2.43.7
+
