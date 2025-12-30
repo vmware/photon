@@ -1,7 +1,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.2.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.keepalived.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -101,6 +101,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+* Fri Jan 02 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.7-5
+- Bump up as part of net-snmp update
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.7-4
 - Release bump for SRP compliance
 * Fri Aug 09 2024 Ankit Jain <sshedi@vmware.com> 2.2.7-3

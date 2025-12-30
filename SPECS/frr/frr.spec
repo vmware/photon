@@ -3,7 +3,7 @@
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        10.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -219,6 +219,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Fri Jan 02 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 10.5.0-2
+- Bump up as part of net-snmp update
 * Wed Nov 05 2025 HarinadhD <harinadh.dommaraju@broadcom.com> 10.5.0-1
 - Version upgraded to 10.5.0
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 10.2.1-2

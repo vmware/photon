@@ -1,7 +1,15 @@
 sources:
-- archive: net-snmp-5.9.3.tar.gz
-  archive_sha512sum: a476df4967029a2eb03d27b0e250170785d0a8c143d49b900ee958c3cbdfaccd415b70af40f6fbed9cb8819d522c35a6073a431091d908ccc7c018fa0aaa2abc
-  skip_validation: true
+- archive: net-snmp-5.9.5.2.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 0a62a1d263437409cf50e20da7f82132cc3df9a7ecf9e1d57ac00285199617b168636e4a042cd564fcb1b8417883e618238ca252066b9e6e77c4c9030026ff30
+  skip_validation: false
+  version: "5.9.5.2"
+  name: net-snmp-5.9.5.2
+  url: https://github.com/net-snmp/net-snmp/archive/refs/tags/v5.9.5.2.tar.gz
+  repo_url: https://github.com/net-snmp/net-snmp
+  commit_id: 319bbd0bb36547992c0e1302fef278c6f49d0c80
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Net-SNMP is a suite of applications used to implement
