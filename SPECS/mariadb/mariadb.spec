@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.11.14
+Version:          10.11.15
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=24276e8b0f7ad555bf8faab8e5e065cbaeeb5d92b66964e470f41ac00db29a148e36b0f9f8078392a5fdae4cc3e77df28d0a570ef3735a73f4837ded3a50e476
+%define sha512 %{name}=98d1e54954b69cf87a96be7d76f80333f27832a29279e6b0a9615b830e171713222abcb9ec9b9a545c0fc4a0f9f8e3d4774babcabf534a6fa3cb3dfdaed0dedc
 
 Source1: %{name}.preset
 
@@ -440,6 +440,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/errmsg-utf8.txt
 
 %changelog
+* Tue Dec 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.15-1
+- Upgrade to v10.11.15
 * Mon Sep 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.14-1
 - Upgrade to v10.11.14, newer LTS release
 * Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.9.4-4
