@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -39,6 +39,7 @@ Source2: license.txt
 
 Patch0: 0001-replace-python-with-python3-in-sss_obfuscate.patch
 Patch1: CVE-2023-3758.patch
+Patch2: CVE-2025-11561.patch
 
 Requires: sssd-ad = %{version}-%{release}
 Requires: sssd-common = %{version}-%{release}
@@ -606,8 +607,6 @@ done
 # copy in default sssd.conf
 install -D %{SOURCE1} %{buildroot}%{_sysconfdir}/sssd/sssd.conf
 
-libtool --finish %{buildroot}%{_libdir}/sssd
-
 %post
 /sbin/ldconfig
 
@@ -991,6 +990,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Tue Dec 30 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.8.2-16
+- Fix CVE-2025-11561
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.8.2-15
 - Bump up to build with latest jansson
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-14
