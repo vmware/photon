@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.159
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -391,6 +391,9 @@ Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
 
 # CVE-2024-53095
 Patch210: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
+
+# CVE-2025-68724
+Patch211: 0001-crypto-asymmetric_keys-prevent-overflow-in-asymmetri.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -780,6 +783,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Dec 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.159-5
+- Fix CVE-2025-68724
 * Mon Dec 29 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.159-4
 - Fix CVE-2024-53095
 * Wed Dec 10 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.159-3
