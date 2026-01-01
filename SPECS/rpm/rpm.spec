@@ -3,7 +3,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    7%{?dist}
+Release:    8%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -26,7 +26,8 @@ Patch2: 0003-If-rpm-is-not-triggered-from-tty-rpm-transactions-wo.patch
 Patch3: 0004-Migrate-rpmdb-to-usr-lib-sysimage-rpm.patch
 Patch4: 0005-Fix-a-race-condition-in-brp-strip.patch
 Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
-Patch6: build-support-findreq-findprov-in-Requires-Provides-.patch
+Patch6: 0007-build-support-findreq-findprov-in-Requires-Provides-.patch
+Patch7: 0008-fix-division-by-zero-in-elfdeps-RhBug-2299414.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -330,6 +331,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Thu Jan 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8
+- Fix division by zero in elfdeps
 * Tue Nov 25 2025 Bo Gan <bo.gan@broadcom.com> 4.18.2-7
 - Support Requires(findreq) and Provides(findprov) use cases
 * Mon Apr 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-6
