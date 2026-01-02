@@ -47,7 +47,7 @@ mkdir -p $TMPDIR
 env EXTRA_BAZEL_ARGS="--tool_java_runtime_version=local_jdk" ./compile.sh
 
 pushd output
-./bazel
+./bazel --batch
 popd
 
 %install

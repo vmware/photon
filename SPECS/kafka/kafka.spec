@@ -67,7 +67,7 @@ if [ -n "${GRADLE_PROXY_URL}" ]; then
   sed -i "s|\(distributionUrl=\).*/\(gradle-.*.zip\)|\1${GRADLE_DISTRIBUTION_URL}/\2|" "$PROP_FILE"
 fi
 
-./gradlew compileJava compileScala releaseTargz
+./gradlew --no-daemon compileJava compileScala releaseTargz
 
 %install
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
