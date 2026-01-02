@@ -47,7 +47,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.159
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -427,6 +427,8 @@ Patch213: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
 
 # CVE-2025-68724
 Patch214: 0001-crypto-asymmetric_keys-prevent-overflow-in-asymmetri.patch
+# CVE-2025-68188
+Patch215: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1198,6 +1200,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jan 02 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-9
+- Fixes CVE-2025-68188
 * Wed Dec 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.159-8
 - Fix CVE-2025-68724
 * Mon Dec 29 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.159-7
