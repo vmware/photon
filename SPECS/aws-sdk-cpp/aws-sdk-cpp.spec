@@ -3,8 +3,8 @@
 Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
-Version:        1.11.117
-Release:        3%{?dist}
+Version:        1.11.712
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/aws/aws-sdk-cpp
@@ -13,10 +13,11 @@ URL:            https://github.com/aws/aws-sdk-cpp
 # Download the tag from github, extract it
 # Then run `prefetch_crt_dependency.sh` script to get all dependencies
 # Example:
-# wget https://github.com/aws/aws-sdk-cpp/archive/refs/tags/1.10.20.tar.gz
-# tar xf 1.10.20.tar.gz
-# cd aws-sdk-cpp-1.10.20 && ./prefetch_crt_dependency.sh && cd -
-# tar -I 'gzip -9' -cpf aws-sdk-cpp-1.10.20.tar.gz aws-sdk-cpp-1.10.20
+# v=1.11.712
+# wget https://github.com/aws/aws-sdk-cpp/archive/refs/tags/$v.tar.gz
+# tar xf $v.tar.gz
+# cd aws-sdk-cpp-$v && ./prefetch_crt_dependency.sh && cd -
+# tar -I 'gzip -9' -cpf aws-sdk-cpp-$v.tar.gz aws-sdk-cpp-$v
 Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
@@ -34,6 +35,7 @@ BuildRequires: cmake
 BuildRequires: curl-devel
 BuildRequires: openssl-devel
 BuildRequires: zlib-devel
+BuildRequires: git
 
 %description
 The AWS SDK for C++ provides a modern C++ (version C++ 11 or later) interface for Amazon Web Services (AWS).
@@ -203,22 +205,15 @@ rm -rf %{buildroot}/*
 %{_includedir}/aws/testing/*
 %{_includedir}/s2n.h
 %{_includedir}/s2n/*
-%{_libdir}/aws-c-auth/cmake/*
-%{_libdir}/aws-c-cal/cmake/*
-%{_libdir}/aws-c-common/cmake/*
-%{_libdir}/aws-c-compression/cmake/*
-%{_libdir}/aws-c-event-stream/cmake/*
-%{_libdir}/aws-c-http/cmake/*
-%{_libdir}/aws-c-io/cmake/*
-%{_libdir}/aws-c-mqtt/cmake/*
-%{_libdir}/aws-c-s3/cmake/*
-%{_libdir}/aws-c-sdkutils/cmake/*
-%{_libdir}/aws-checksums/cmake/*
-%{_libdir}/aws-crt-cpp/cmake/*
 %{_libdir}/s2n/cmake/*
-%exclude %{_libdir}/*.a
+%{_libdir}/libaws-*.so
+%{_libdir}/libaws-*.so.*
+%{_libdir}/libs2n.so
+%{_libdir}/libs2n.so.*
 
 %changelog
+* Mon Jan 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.712-1
+- Upgraade to v1.11.712, fixes CVE-2025-14760
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.11.117-3
 - Release bump for SRP compliance
 * Sat Aug 26 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.11.117-2

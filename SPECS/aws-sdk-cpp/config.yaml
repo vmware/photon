@@ -1,11 +1,19 @@
 sources:
-- archive: aws-sdk-cpp-1.11.117.tar.gz
-  archive_sha512sum: c398d2e5176d7369ea571aaa58ac240876929d5f97226de17282baeaadc0d7e20a3f2e8d4d348fbd3eaa365e09ad55631c0f6bb0d52b8a38c3ac935def5165c6
+- archive: aws-sdk-cpp-1.11.712.tar.gz
+  # This is custom built tarball, hence skip validation
+  # The other values are for completeness
   skip_validation: true
+  archive_sha512sum: e84a29224582b40c81607dad9541196be93f8d1c5ecf97da6ac00a6758fd9f92aa63922def76540b6016911716c0248b49ba2179b07d0774719227d3dcac8f16
+  name: aws-sdk-cpp-1.11.712
+  version: 1.11.712
+  url: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/1.11.712.tar.gz
+  repo_url: https://github.com/aws/aws-sdk-cpp
+  commit_id: 4aca5630ba6e49869a0f173f9439ae73722d4558
+  skip_list: []
+  missing: [crt, codebuild, update-version.sh, .clang-tidy, tmp, .gitmodules, clang-tidy, .github, tests, .gitattributes, source, CODE_OF_CONDUCT.md, docsrc, CONTRIBUTING.md, make-docs.py, format-check.py, .clang-format, include, CMakeLists.txt, builder.json, VERSION, bin, LICENSE, cmake, .gitignore, NOTICE, .builder, README.md]
   spdx:
     package:
-      detailed_description: 'The AWS SDK for C++ provides a modern C++ (version C++
-        11 or later) interface for Amazon Web Services (AWS). '
+      detailed_description: 'The AWS SDK for C++ provides a modern C++ (version C++11 or later) interface for Amazon Web Services (AWS).'
       home_page: https://github.com/aws/aws-sdk-cpp
       license_concluded: Nokia AND MIT-0 AND APSL-2.0 AND JSON AND Apache-2.0 AND
         ISC AND OpenSSL-standalone AND SSLeay-standalone AND BSD-3-Clause AND (Apache-2.0
