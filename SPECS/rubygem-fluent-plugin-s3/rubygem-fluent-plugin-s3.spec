@@ -4,7 +4,7 @@
 
 Name: rubygem-fluent-plugin-s3
 Version:        1.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Amazon S3 output plugin for Fluentd event collector.
 Group:          Development/Languages
 License:        Apache 2.0
@@ -48,6 +48,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Mon Jan 05 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.2-2
+-   Bump release due to rubygem-aws-sdk-s3 upgrade
 *   Tue Jan 09 2024 Shivani Agarwal <shivania2@vmware.com> 1.7.2-1
 -   Fix Requires and upgrade version
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
