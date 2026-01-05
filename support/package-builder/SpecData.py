@@ -277,6 +277,9 @@ class SpecData(object):
     def getPackages(self, package, version):
         return self._getSpecObjField(package, version, field=lambda x: x.listPackages)
 
+    def getEpoch(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x: x.epoch)
+
     def getPackagesForPkg(self, pkg):
         pkgs = []
         package, version = StringUtils.splitPackageNameAndVersion(pkg)

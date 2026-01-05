@@ -30,8 +30,10 @@ class PackageInfo(object):
                 srpmFile = pkgUtils.findSourceRPMFile(package, version)
                 debugrpmFile = pkgUtils.findDebugRPMFile(package, version)
                 listRPMPackages = SPECS.getData().getRPMPackages(package, version)
+                epochNum = SPECS.getData().getEpoch(package, version)
+                epoch = f"{epochNum}:" if epochNum else ""
                 for rpmPkg in listRPMPackages:
-                    self.pkgList.append(f"{rpmPkg}={version}")
+                    self.pkgList.append(f"{rpmPkg}={epoch}{version}")
                     rpmFile = pkgUtils.findRPMFile(rpmPkg, version)
                     if rpmFile is not None:
                         listPkgAttributes = {
