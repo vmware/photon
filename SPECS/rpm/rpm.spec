@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        21%{?dist}
+Release:        22%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -37,6 +37,7 @@ Patch10: 0011-Fix-setup-and-patch-not-getting-expanded-in-rpmspec-.patch
 Patch11: 0012-Move-patch-uncompress-logic-from-spec-parse-to-build.patch
 Patch12: 0013-Unbreak-checking-of-installed-rich-dependencies.patch
 Patch13: 0014-fix-no-patch-number-issue.patch
+Patch14: 0015-fix-division-by-zero-in-elfdeps-RhBug-2299414.patch
 
 Requires: bash
 Requires: zstd-libs
@@ -356,6 +357,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Jan 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.16.1.3-22
+- Fix division by zero in elfdeps
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.16.1.3-21
 - Fix no patch number issue
 * Mon Apr 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.16.1.3-20
