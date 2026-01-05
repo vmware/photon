@@ -4,7 +4,7 @@
 
 Name: rubygem-aws-sdk-kms
 Version:        1.100.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Official AWS Ruby gem for AWS Key Management Service (KMS).
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ This gem is part of the AWS SDK for Ruby.
 %{gemdir}
 
 %changelog
+* Mon Jan 05 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.100.0-2
+- Bump release due to rubygem-aws-sdk-core upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.100.0-1
 - Upgrade to 1.100.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.59.0-3

@@ -1,12 +1,12 @@
 sources:
-- archive: aws-sdk-s3-1.185.0.gem
-  archive_sha512sum: f5adf048971e42e987c6d9ef38e4ec703510c62640cde62871544e226a1db238d6fbf58ebc411d236f5f7c07297a3b727f5126e6f129de13c9170d0d1bad8ca8
+- archive: aws-sdk-s3-1.209.0.gem
+  archive_sha512sum: 3de2b949f162a8b44403261bc9bd10b2c5cc47e1c0970d1b152f5580720c9d3ea012bc911d6566442d8cc40e70cea679673c75e27cfdac6b314eeb168c996a05
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Official AWS Ruby gem for Amazon Simple Storage Service
         (Amazon S3). This gem is part of the AWS SDK for Ruby. '
-      home_page: https://rubygems.org/gems/aws-sdk-s3/versions/1.185.0
+      home_page: https://rubygems.org/gems/aws-sdk-s3/versions/1.209.0
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Official AWS Ruby gem for Amazon Simple Storage Service (Amazon
