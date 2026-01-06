@@ -1,7 +1,7 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    28
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git
 Group:      System Environment/Development
@@ -14,10 +14,10 @@ Source0: https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{versio
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
 
 BuildRequires: asciidoc3
-BuildRequires: git
 BuildRequires: python3
 BuildRequires: python3-xml
 BuildRequires: docbook-xsl
+BuildRequires: docbook-xml
 BuildRequires: libxml2-devel
 BuildRequires: libxslt-devel
 
@@ -56,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 28-3
+-   Add docbook-xml to build requires
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 28-2
 -   Bump up to compile with python 3.10
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 28-1
