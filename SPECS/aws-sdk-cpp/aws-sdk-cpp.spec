@@ -3,29 +3,38 @@
 Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
-Version:        1.4.33
-Release:        5%{?dist}
+Version:        1.11.712
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
 Url:            https://github.com/aws/aws-sdk-cpp
 
+# Steps to create source tarball
+# Download the tag from github, extract it
+# Then run `prefetch_crt_dependency.sh` script to get all dependencies
+# Example:
+# v=1.11.712
+# wget https://github.com/aws/aws-sdk-cpp/archive/refs/tags/$v.tar.gz
+# tar xf $v.tar.gz
+# cd aws-sdk-cpp-$v && ./prefetch_crt_dependency.sh && cd -
+# tar -I 'gzip -9' -cpf aws-sdk-cpp-$v.tar.gz aws-sdk-cpp-$v
 Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=ebe8e402107b7b70a9b397c94ad981ff02d97e10e6fd8337f19b732185ecbb79e132eecd513300ce733a765fd780dd765c1d2b34479e5e1d891fa771722bad81
+%define sha512 %{name}=e84a29224582b40c81607dad9541196be93f8d1c5ecf97da6ac00a6758fd9f92aa63922def76540b6016911716c0248b49ba2179b07d0774719227d3dcac8f16
 
-Patch0:         aws-sdk-cpp-Build-foxes-for-GCC9.patch
+Requires: openssl-devel
+Requires: curl-devel
+Requires: zlib-devel
+Requires: aws-sdk-core = %{version}-%{release}
+Requires: aws-sdk-kinesis = %{version}-%{release}
+Requires: aws-sdk-s3 = %{version}-%{release}
+Requires: aws-crt-cpp = %{version}-%{release}
 
-Requires:       openssl-devel
-Requires:       curl-devel
-Requires:       zlib-devel
-Requires:       aws-sdk-core = %{version}-%{release}
-Requires:       aws-sdk-kinesis = %{version}-%{release}
-Requires:       aws-sdk-s3 = %{version}-%{release}
-
-BuildRequires:  cmake
-BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
+BuildRequires: cmake
+BuildRequires: curl-devel
+BuildRequires: openssl-devel
+BuildRequires: zlib-devel
+BuildRequires: git
 
 %description
 The AWS SDK for C++ provides a modern C++ (version C++ 11 or later) interface for Amazon Web Services (AWS).
@@ -34,6 +43,7 @@ The AWS SDK for C++ provides a modern C++ (version C++ 11 or later) interface fo
 Summary:        aws sdk core
 Group:          Development/Libraries
 Requires:       aws-core-libs = %{version}-%{release}
+Requires:       aws-crt-cpp = %{version}-%{release}
 
 %description -n aws-sdk-core
 aws sdk cpp core
@@ -53,6 +63,7 @@ Summary:        aws sdk kinesis
 Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-kinesis-libs = %{version}-%{release}
+Requires:       aws-crt-cpp = %{version}-%{release}
 
 %description -n aws-sdk-kinesis
 aws sdk cpp for kinesis
@@ -70,6 +81,7 @@ Summary:        aws sdk s3
 Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-s3-libs = %{version}-%{release}
+Requires:       aws-crt-cpp = %{version}-%{release}
 
 %description -n aws-sdk-s3
 aws sdk cpp for s3
@@ -82,26 +94,54 @@ Requires:       aws-core-libs = %{version}-%{release}
 %description -n aws-s3-libs
 aws s3 libs
 
+%package -n     aws-crt-cpp
+Summary:        aws crt cpp
+Group:          Development/Libraries
+
+%description -n aws-crt-cpp
+C++ wrapper around the aws-c-* libraries.
+Provides Cross-Platform Transport Protocols and SSL/TLS implementations for C++.
+
 %prep
 %autosetup -p1
 
 %build
-%cmake \
+# TODO: try to remove -Wno-stringop-truncation flag in future version upgrades
+export CXXFLAGS="%{optflags} -Wno-stringop-truncation"
+%{cmake} \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir}
 
 cd %{__cmake_builddir}
-for component in "core" "kinesis" "s3"; do
-  pushd aws-cpp-sdk-$component
-  make %{?_smp_mflags}
+
+pushd ./src/aws-cpp-sdk-core
+%make_build
+popd
+
+pushd ./crt/aws-crt-cpp/
+%make_build
+popd
+
+for component in "kinesis" "s3"; do
+  pushd ./generated/src/aws-cpp-sdk-${component}
+  %make_build
   popd
 done
 
 %install
 cd %{__cmake_builddir}
-for component in "core" "kinesis" "s3"; do
-  pushd aws-cpp-sdk-$component
-  make DESTDIR=%{buildroot} install %{?_smp_mflags}
+
+pushd ./src/aws-cpp-sdk-core
+%make_install %{?_smp_mflags}
+popd
+
+pushd ./crt/aws-crt-cpp/
+%make_install %{?_smp_mflags}
+popd
+
+for component in  "kinesis" "s3"; do
+  pushd ./generated/src/aws-cpp-sdk-${component}
+  %make_install %{?_smp_mflags}
   popd
 done
 
@@ -118,19 +158,11 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,0755)
-%exclude %{_includedir}/aws/core
-%exclude %{_includedir}/aws/kinesis
-%exclude %{_includedir}/aws/s3
-%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-core.pc
-%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-kinesis.pc
-%exclude %{_libdir}/pkgconfig/aws-cpp-sdk-s3.pc
-%exclude %{_libdir}/libaws-cpp-sdk-core.so
-%exclude %{_libdir}/libaws-cpp-sdk-kinesis.so
-%exclude %{_libdir}/libaws-cpp-sdk-s3.so
 
 %files -n aws-sdk-core
 %defattr(-,root,root,0755)
 %{_includedir}/aws/core/*
+%{_includedir}/smithy/*
 %{_libdir}/pkgconfig/aws-cpp-sdk-core.pc
 
 %files -n aws-core-libs
@@ -155,7 +187,32 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root,0755)
 %{_libdir}/libaws-cpp-sdk-s3.so
 
+%files -n aws-crt-cpp
+%defattr(-,root,root,0755)
+%{_includedir}/aws/auth/*
+%{_includedir}/aws/cal/*
+%{_includedir}/aws/checksums/*
+%{_includedir}/aws/common/*
+%{_includedir}/aws/compression/*
+%{_includedir}/aws/crt/*
+%{_includedir}/aws/event-stream/*
+%{_includedir}/aws/http/*
+%{_includedir}/aws/io/*
+%{_includedir}/aws/iot/*
+%{_includedir}/aws/mqtt/*
+%{_includedir}/aws/sdkutils/*
+%{_includedir}/aws/testing/*
+%{_includedir}/s2n.h
+%{_includedir}/s2n/*
+%{_libdir}/s2n/cmake/*
+%{_libdir}/libaws-*.so
+%{_libdir}/libaws-*.so.*
+%{_libdir}/libs2n.so
+%{_libdir}/libs2n.so.*
+
 %changelog
+* Mon Jan 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.712-1
+- Upgraade to v1.11.712, fixes CVE-2025-14760
 * Thu Sep 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.4.33-5
 - Use cmake macros
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-4
