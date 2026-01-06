@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -25,6 +25,7 @@ Patch0: cgi3.patch
 Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
 Patch2: ensurepip-upgrade-bundled-pip-and-setuptools.patch
 Patch3: CVE-2025-8194.patch
+Patch4: CVE-2025-13836.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -304,6 +305,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Jan 06 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-4
+- Fix CVE-2025-13836
 * Tue Oct 21 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-3
 - Fix CVE-2025-8194
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.11.13-2
