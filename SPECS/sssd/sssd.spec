@@ -11,7 +11,7 @@
 
 # directory variables
 %global servicename sssd
-%global sssdstatedir %{_localstatedir}/lib/sss
+%global sssdstatedir %{_sharedstatedir}/sss
 %global dbpath %{sssdstatedir}/db
 %global keytabdir %{sssdstatedir}/keytabs
 %global pipepath %{sssdstatedir}/pipes
@@ -24,20 +24,19 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:    https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{version}.tar.gz
+Source0: https://github.com/SSSD/sssd/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha512 sssd=10b7a641823aefb43e30bff9e5f309a1f48446ffff421a06f86496db24ba1fbd384733b5690864507ef9b2f04c91e563fe9820536031f83f1bd6e93edfedee55
 
-Source1:    sssd.conf
+Source1: sssd.conf
 
 Patch0: 0001-replace-python-with-python3-in-sss_obfuscate.patch
-# Fix CVE-2023-3758
 Patch1: CVE-2023-3758.patch
 Patch2: CVE-2025-11561.patch
 
@@ -114,6 +113,7 @@ BuildRequires: pcre2-devel
 BuildRequires: p11-kit-devel
 BuildRequires: util-linux-devel
 BuildRequires: libsemanage-devel
+BuildRequires: nghttp2-devel
 BuildRequires: libnfsidmap-devel
 
 %description
@@ -128,7 +128,6 @@ the existing back ends.
 
 %package common
 Summary: Common files for the SSSD
-License: GPLv3+
 # Requires
 Requires: samba-client
 Requires: sssd-client = %{version}-%{release}
@@ -150,7 +149,6 @@ subpackages such as sssd-ldap.
 
 %package client
 Summary: SSSD Client libraries for NSS and PAM
-License: LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
 Requires: e2fsprogs-libs
@@ -164,7 +162,6 @@ service.
 
 %package -n libsss_sudo
 Summary: A library to allow communication between SUDO and SSSD
-License: LGPLv3+
 Conflicts: sssd-common < %{version}-%{release}
 
 %description -n libsss_sudo
@@ -172,7 +169,6 @@ A utility library to allow communication between SUDO and SSSD
 
 %package -n libsss_autofs
 Summary: A library to allow communication between Autofs and SSSD
-License: LGPLv3+
 Conflicts: sssd-common < %{version}-%{release}
 
 %description -n libsss_autofs
@@ -180,7 +176,6 @@ A utility library to allow communication between Autofs and SSSD
 
 %package tools
 Summary: Userspace tools for use with the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 # required by sss_obfuscate
 Requires: python3-sss = %{version}-%{release}
@@ -200,7 +195,6 @@ Provides several administrative tools:
 
 %package -n python3-sssdconfig
 Summary: SSSD and IPA configuration file manipulation classes and functions
-License: GPLv3+
 BuildArch: noarch
 Requires: python3
 
@@ -209,7 +203,6 @@ Provides python3 files for manipulation SSSD and IPA configuration files.
 
 %package -n python3-sss
 Summary: Python3 bindings for sssd
-License: LGPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: python3
 Requires: libunistring
@@ -224,7 +217,6 @@ Provides python3 bindings:
 
 %package -n python3-sss-murmur
 Summary: Python3 bindings for murmur hash function
-License: LGPLv3+
 Requires: python3
 
 %description -n python3-sss-murmur
@@ -232,7 +224,6 @@ Provides python3 module for calculating the murmur hash version 3
 
 %package ldap
 Summary: The LDAP back end of the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
@@ -244,7 +235,6 @@ from and authenticate against an LDAP server.
 
 %package krb5-common
 Summary: SSSD helpers needed for Kerberos and GSSAPI authentication
-License: GPLv3+
 # cyrus-sasl should contain gssapi
 Requires: cyrus-sasl
 Requires: sssd-common = %{version}-%{release}
@@ -255,7 +245,6 @@ Kerberos user or host authentication.
 
 %package krb5
 Summary: The Kerberos authentication back end for the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
 
@@ -265,7 +254,6 @@ against a Kerberos server.
 
 %package common-pac
 Summary: Common files needed for supporting PAC processing
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
 
@@ -275,7 +263,6 @@ for handling Kerberos PACs.
 
 %package ipa
 Summary: The IPA back end of the SSSD
-License: GPLv3+
 Requires: samba-client-libs
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
@@ -290,7 +277,6 @@ from and authenticate against an IPA server.
 
 %package ad
 Summary: The AD back end of the SSSD
-License: GPLv3+
 Requires: samba-client-libs
 Requires: sssd-common = %{version}-%{release}
 Requires: sssd-krb5-common = %{version}-%{release}
@@ -315,7 +301,6 @@ identity data from and authenticate against an Active Directory server.
 
 %package proxy
 Summary: The proxy back end of the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 
 %description proxy
@@ -324,14 +309,12 @@ PAM modules to leverage SSSD caching.
 
 %package -n libsss_idmap
 Summary: FreeIPA Idmap library
-License: LGPLv3+
 
 %description -n libsss_idmap
 Utility library to convert SIDs to Unix uids and gids
 
 %package -n libsss_idmap-devel
 Summary: FreeIPA Idmap library
-License: LGPLv3+
 Requires: libsss_idmap = %{version}-%{release}
 
 %description -n libsss_idmap-devel
@@ -339,14 +322,12 @@ Utility library to SIDs to Unix uids and gids
 
 %package -n libipa_hbac
 Summary: FreeIPA HBAC Evaluator library
-License: LGPLv3+
 
 %description -n libipa_hbac
 Utility library to validate FreeIPA HBAC rules for authorization requests
 
 %package -n libipa_hbac-devel
 Summary: FreeIPA HBAC Evaluator library
-License: LGPLv3+
 Requires: libipa_hbac = %{version}-%{release}
 
 %description -n libipa_hbac-devel
@@ -354,7 +335,6 @@ Utility library to validate FreeIPA HBAC rules for authorization requests
 
 %package -n python3-libipa_hbac
 Summary: Python3 bindings for the FreeIPA HBAC Evaluator library
-License: LGPLv3+
 Requires: libipa_hbac = %{version}-%{release}
 Requires: python3
 
@@ -364,14 +344,12 @@ used by Python applications.
 
 %package -n libsss_nss_idmap
 Summary: Library for SID and certificate based lookups
-License: LGPLv3+
 
 %description -n libsss_nss_idmap
 Utility library for SID and certificate based lookups
 
 %package -n libsss_nss_idmap-devel
 Summary: Library for SID and certificate based lookups
-License: LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 
 %description -n libsss_nss_idmap-devel
@@ -379,7 +357,6 @@ Utility library for SID and certificate based lookups
 
 %package -n python3-libsss_nss_idmap
 Summary: Python3 bindings for libsss_nss_idmap
-License: LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 Requires: python3
 
@@ -389,7 +366,6 @@ be used by Python applications.
 
 %package dbus
 Summary: The D-Bus responder of the SSSD
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 %{?systemd_requires}
 
@@ -400,7 +376,6 @@ the information from the SSSD to be transmitted over the system bus.
 %package polkit-rules
 Summary: Rules for polkit integration for SSSD
 Group: Applications/System
-License: GPLv3+
 Requires: polkit >= 0.106
 Requires: sssd-common = %{version}-%{release}
 
@@ -410,7 +385,6 @@ for smartcard support.
 
 %package -n libsss_simpleifp
 Summary: The SSSD D-Bus responder helper library
-License: GPLv3+
 Requires: sssd-dbus = %{version}-%{release}
 Requires: libcap
 
@@ -419,7 +393,6 @@ Provides library that simplifies D-Bus API for the SSSD InfoPipe responder.
 
 %package -n libsss_simpleifp-devel
 Summary: The SSSD D-Bus responder helper library
-License: GPLv3+
 Requires: dbus-devel
 Requires: libsss_simpleifp = %{version}-%{release}
 
@@ -428,7 +401,6 @@ Provides library that simplifies D-Bus API for the SSSD InfoPipe responder.
 
 %package winbind_idmap
 Summary: SSSD's idmap_sss Backend for Winbind
-License: GPLv3+ and LGPLv3+
 Requires: libsss_nss_idmap = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
 Conflicts: sssd-common < %{version}-%{release}
@@ -439,7 +411,6 @@ and SIDs.
 
 %package nfs_idmap
 Summary: SSSD plug-in for NFSv4 rpc.idmapd
-License: GPLv3+
 Requires: libnfsidmap
 Conflicts: sssd-common < %{version}-%{release}
 
@@ -450,7 +421,6 @@ UIDs/GIDs to names and vice versa. It can be also used for mapping principal
 
 %package -n libsss_certmap
 Summary: SSSD Certificate Mapping Library
-License: LGPLv3+
 Conflicts: sssd-common < %{version}-%{release}
 
 %description -n libsss_certmap
@@ -458,7 +428,6 @@ Library to map certificates to users based on rules
 
 %package -n libsss_certmap-devel
 Summary: SSSD Certificate Mapping Library
-License: LGPLv3+
 Requires: libsss_certmap = %{version}-%{release}
 
 %description -n libsss_certmap-devel
@@ -466,7 +435,6 @@ Library to map certificates to users based on rules
 
 %package kcm
 Summary: An implementation of a Kerberos KCM server
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 %{?systemd_requires}
 
@@ -476,7 +444,6 @@ use the KCM: Kerberos credentials cache.
 
 %package idp
 Summary: Kerberos plugins and OIDC helper for external identity providers.
-License: GPLv3+
 Requires: sssd-common = %{version}-%{release}
 
 %description idp
@@ -503,7 +470,7 @@ autoreconf -ivf
     --with-gpo-cache-path=%{gpocachepath} \
     --with-init-dir=%{_initrddir} \
     --with-initscript=systemd \
-    --with-krb5-rcache-dir=%{_localstatedir}/cache/krb5rcache \
+    --with-krb5-rcache-dir=%{_var}/cache/krb5rcache \
     --with-mcache-path=%{mcpath} \
     --with-pid-path=%{_rundir} \
     --with-pipe-path=%{pipepath} \
@@ -513,6 +480,9 @@ autoreconf -ivf
     --with-test-dir=/dev/shm \
     --without-oidc-child
 
+# to fix intermittent build failure
+%make_build || \
+%make_build || \
 %make_build
 
 %install
@@ -522,37 +492,36 @@ autoreconf -ivf
 %find_lang %{name}
 
 # Copy default logrotate file
-mkdir -p %{buildroot}/%{_sysconfdir}/logrotate.d
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m644 src/examples/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/sssd
 
 # Make sure SSSD is able to run on read-only root
-mkdir -p %{buildroot}/%{_sysconfdir}/rwtab.d
+mkdir -p %{buildroot}%{_sysconfdir}/rwtab.d
 install -m644 src/examples/rwtab %{buildroot}%{_sysconfdir}/rwtab.d/sssd
 
 # Kerberos KCM credential cache by default
 mkdir -p %{buildroot}/%{_sysconfdir}/krb5.conf.d
-cp %{buildroot}/%{_datadir}/sssd-kcm/kcm_default_ccache \
-   %{buildroot}/%{_sysconfdir}/krb5.conf.d/kcm_default_ccache
+cp %{buildroot}%{_datadir}/sssd-kcm/kcm_default_ccache \
+   %{buildroot}%{_sysconfdir}/krb5.conf.d/kcm_default_ccache
 
 # Enable krb5 idp plugins by default (when sssd-idp package is installed)
-cp %{buildroot}/%{_datadir}/sssd/krb5-snippets/sssd_enable_idp \
-   %{buildroot}/%{_sysconfdir}/krb5.conf.d/sssd_enable_idp
+cp %{buildroot}%{_datadir}/sssd/krb5-snippets/sssd_enable_idp \
+   %{buildroot}%{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 # krb5 configuration snippet
-cp %{buildroot}/%{_datadir}/sssd/krb5-snippets/enable_sssd_conf_dir \
-   %{buildroot}/%{_sysconfdir}/krb5.conf.d/enable_sssd_conf_dir
+cp %{buildroot}%{_datadir}/sssd/krb5-snippets/enable_sssd_conf_dir \
+   %{buildroot}%{_sysconfdir}/krb5.conf.d/enable_sssd_conf_dir
 
 # Create directory for cifs-idmap alternative
 # Otherwise this directory could not be owned by sssd-client
-mkdir -p %{buildroot}/%{_sysconfdir}/cifs-utils
+mkdir -p %{buildroot}%{_sysconfdir}/cifs-utils
 
 # Suppress developer-only documentation
 rm -Rf %{buildroot}%{_docdir}/%{name}
 
 # Older versions of rpmbuild can only handle one -f option
 # So we need to append to the sssd*.lang file
-for file in $(find %{buildroot}/%{python3_sitelib} -maxdepth 1 -name "*.egg-info" 2> /dev/null)
-do
+for file in $(find %{buildroot}%{python3_sitelib} -maxdepth 1 -name "*.egg-info" 2> /dev/null); do
     echo %{python3_sitelib}/$(basename $file) >> python3_sssdconfig.lang
 done
 
@@ -563,10 +532,9 @@ for subpackage in sssd_ldap sssd_krb5 sssd_ipa sssd_ad sssd_proxy sssd_tools \
     touch $subpackage.lang
 done
 
-for man in `find %{buildroot}/%{_mandir}/??/man?/ -type f | sed -e "s#%{buildroot}/%{_mandir}/##"`
-do
-    lang=`echo $man | cut -c 1-2`
-    case `basename $man` in
+for man in $(find %{buildroot}%{_mandir}/??/man?/ -type f | sed -e "s#%{buildroot}%{_mandir}/##"); do
+    lang=$(echo $man | cut -c 1-2)
+    case $(basename $man) in
         sss_cache*)
             echo \%lang\(${lang}\) \%{_mandir}/${man}\* >> sssd.lang
             ;;
@@ -623,17 +591,19 @@ done
 
 # Print these to the rpmbuild log
 echo "sssd.lang:"
+sort -u sssd.lang -o sssd.lang
 cat sssd.lang
 
 echo "python3_sssdconfig.lang:"
 cat python3_sssdconfig.lang
+sort -u python3_sssdconfig.lang -o python3_sssdconfig.lang
 
 for subpackage in sssd_ldap sssd_krb5 sssd_ipa sssd_ad sssd_proxy sssd_tools \
                   sssd_client sssd_dbus sssd_nfs_idmap sssd_winbind_idmap \
-                  libsss_certmap sssd_kcm
-do
-    echo "$subpackage.lang:"
-    cat $subpackage.lang
+                  libsss_certmap sssd_kcm; do
+  sort -u $subpackage.lang -o $subpackage.lang
+  echo "$subpackage.lang:"
+  cat $subpackage.lang
 done
 
 # copy in default sssd.conf
@@ -682,15 +652,53 @@ systemctl start sssd-kcm.socket
 %systemd_postun_with_restart sssd-kcm.service
 
 %post client
-/usr/sbin/alternatives --install /etc/cifs-utils/idmap-plugin cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so 20
+/sbin/ldconfig
+%{_sbindir}/alternatives --install /etc/cifs-utils/idmap-plugin cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so 20
 
 %preun client
 if [ $1 -eq 0 ] ; then
-        /usr/sbin/alternatives --remove cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so
+  %{_sbindir}/alternatives --remove cifs-idmap-plugin %{_libdir}/cifs-utils/cifs_idmap_sss.so
 fi
+/sbin/ldconfig
 
 %posttrans common
 %systemd_postun_with_restart sssd.service
+
+%post -n libsss_simpleifp
+/sbin/ldconfig
+
+%postun -n libsss_simpleifp
+/sbin/ldconfig
+
+%post -n libsss_sudo
+/sbin/ldconfig
+
+%postun -n libsss_sudo
+/sbin/ldconfig
+
+%post -n libsss_idmap
+/sbin/ldconfig
+
+%postun -n libsss_idmap
+/sbin/ldconfig
+
+%post -n libipa_hbac
+/sbin/ldconfig
+
+%postun -n libipa_hbac
+/sbin/ldconfig
+
+%post -n libsss_nss_idmap
+/sbin/ldconfig
+
+%postun -n libsss_nss_idmap
+/sbin/ldconfig
+
+%post -n libsss_certmap
+/sbin/ldconfig
+
+%postun -n libsss_certmap
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -753,7 +761,7 @@ fi
 %{_libexecdir}/%{servicename}/sss_signal
 
 %dir %{sssdstatedir}
-%dir %{_localstatedir}/cache/krb5rcache
+%dir %{_var}/cache/krb5rcache
 %attr(700,%{sssd_user},%{sssd_user}) %dir %{dbpath}
 %attr(775,%{sssd_user},%{sssd_user}) %dir %{mcpath}
 %attr(700,root,root) %dir %{secdbpath}
@@ -923,8 +931,8 @@ fi
 
 %files -n python3-sssdconfig
 %defattr(-,root,root)
-%{python3_sitearch}/SSSDConfig-%{version}-py3.10.egg-info
 %dir %{python3_sitelib}/SSSDConfig
+%{python3_sitearch}/SSSDConfig-%{version}-py3.10.egg-info
 %{python3_sitelib}/SSSDConfig/*.py*
 %dir %{python3_sitelib}/SSSDConfig/__pycache__
 %{python3_sitelib}/SSSDConfig/__pycache__/*.py*
@@ -1022,6 +1030,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-16
+- Add scriptlets in post for few sub packages
 * Tue Jan 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.8.2-15
 - Fix CVE-2025-11561
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-14
