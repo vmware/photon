@@ -1,14 +1,18 @@
 Summary:        Disassembly framework
 Name:           capstone
 Version:        4.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/aquynh/capstone
 Source0:        https://github.com/aquynh/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=c0dfa4f6236a4505916ce67d63b856bf806b0d83
+%define sha512    %{name}=7f93534517307b737422a8825b66b2a1f3e1cca2049465d60ab12595940154aaf843ba40ed348fce58de58b990c19a0caef289060eb72898cb008a88c470970e
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Patch0:         CVE-2025-67873.patch
+Patch1:         CVE-2025-68114.patch
+
 %description
 Capstone is a disassembly framework with the target of becoming the ultimate disasm engine for binary analysis and reversing in the security community.
 
@@ -20,7 +24,7 @@ The package contains libraries and header files for
 developing applications that use capstone.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 CAPSTONE_ARCHS="x86_64 aarch64" ./make.sh
@@ -48,8 +52,9 @@ make %{?_smp_mflags} test_basic test_detail test_iter test_skipdata test_arm64 t
 %{_libdir}/pkgconfig/capstone.pc
 
 %changelog
+* Mon Jan 05 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.0.2-2
+- Fix for CVE-2025-68114 and CVE-2025-67873
 * Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
 - Automatic Version Bump
 * Tue Nov 19 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0.1-1
 - Initial build. First version
-
