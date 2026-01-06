@@ -1,7 +1,7 @@
 Summary:       Modular initramfs image creation utility
 Name:          mkinitcpio
 Version:       34
-Release:       3%{?dist}
+Release:       4%{?dist}
 URL:           https://projects.archlinux.org/mkinitcpio.git/
 Group:         System Environment/Development
 Vendor:        VMware, Inc.
@@ -15,10 +15,10 @@ Source1: license.txt
 Patch0:        mkinitcpio-shutdown-ramfs.service.patch
 
 BuildRequires: asciidoc3
-BuildRequires: git
 BuildRequires: python3-devel
 BuildRequires: python3-xml
 BuildRequires: docbook-xsl
+BuildRequires: docbook-xml
 BuildRequires: libxml2-devel
 BuildRequires: libxslt-devel
 
@@ -31,11 +31,9 @@ Multi-format archive and compression library
 %autosetup -p0
 
 %build
-for i in "hooks/*" ; do
+for i in "hooks/*" init shutdown; do
   sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" $i
 done
-sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" init
-sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" shutdown
 sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 
 %make_build
@@ -54,6 +52,8 @@ sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 %{_datadir}/*
 
 %changelog
+* Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 34-4
+- Add dockbook-xml to build requires
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 34-3
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 34-2
