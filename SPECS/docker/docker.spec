@@ -11,11 +11,13 @@
 %define gopath_comp_libnetwork github.com/docker/libnetwork
 %define gopath_comp_containerd github.com/containerd/containerd
 %define gopath_comp_crypto golang.org/x/crypto
+%define gopath_comp_protobuf google.golang.org/protobuf
+%define gopath_comp_golangjwt github.com/golang-jwt/jwt/v4
 
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -44,6 +46,8 @@ Patch2:        CVE-2024-41110-2.patch
 Patch3:        dockerd-containerd-CVE-2024-40635.patch
 Patch4:        dockerd-crypto-ssh-CVE-2024-45337.patch
 Patch5:        dockerd-crypto-ssh-CVE-2025-22869.patch
+Patch6:        dockerd-golang-protobuf-CVE-2024-24786.patch
+Patch7:        dockerd-golang-jwt-CVE-2025-30204.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -150,6 +154,12 @@ popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_crypto} #crypto source directory
 %patch4 -p1
 %patch5 -p1
+popd
+pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_protobuf} #protobuf source directory
+%patch6 -p1
+popd
+pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_golangjwt} #golang-jwt source directory
+%patch7 -p1
 popd
 
 %build
@@ -344,6 +354,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Jan 06 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 24.0.9-6
+- Fixes CVE-2025-30204 in golang-jwt and CVE-2024-24786 in protobuf
 * Tue Dec 30 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 24.0.9-5
 - Fixes CVE-2024-45337,CVE-2025-22869 in crypto ssh module
 * Fri Dec 19 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 24.0.9-4
