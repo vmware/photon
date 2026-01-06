@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -508,6 +508,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jan 06 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-7
+- Enable CONFIG_MTD
 * Fri Dec 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-6
 - Disable unique naming for *.ko.debug to make crash utility happy
 * Fri Dec 12 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.12.60-5
