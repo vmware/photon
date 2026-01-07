@@ -6,11 +6,12 @@
 %define RUNC_BRANCH  v%{RUNC_VERSION}
 
 %define gopath_comp  github.com/opencontainers/runc
+%define gopath_comp_logrus github.com/sirupsen/logrus
 
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.1.14
-Release:             2%{?dist}
+Release:             3%{?dist}
 License:             GNU LGPL v2.1
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
@@ -19,6 +20,9 @@ Distribution:        Photon
 
 Source0: https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
 %define sha512 %{name}=bdefbf34cf57485c6b961babc8294d0e6b2e003eb836b8e99c49ef4d00acf11f30a46ad0bcd399ee9346610419591daf1eecb3b6b127962357d629bf5f252e22
+
+Patch0: CVE-2025-65637-1.patch
+Patch1: CVE-2025-65637-2.patch
 
 BuildRequires: go
 BuildRequires: which
@@ -39,9 +43,15 @@ Requires:            %{name} = %{version}-%{release}
 Documentation for runc
 
 %prep
-%autosetup -p1 -c
+# Using autosetup is not feasible
+%setup -q -c -n %{name}-%{version}
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{version} src/%{gopath_comp}
+
+pushd src/%{gopath_comp}/vendor/%{gopath_comp_logrus}
+%patch0 -p1
+%patch1 -p1
+popd
 
 %build
 export GOPATH="$PWD"
@@ -69,6 +79,8 @@ cd src/%{gopath_comp}
 %{_mandir}/man8/*
 
 %changelog
+* Wed Jan 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.14-3
+- Fix CVE-2025-65637 logrus vendor package
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.14-2
 - Bump version as a part of go upgrade
 * Tue Sep 10 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.1.14-1
