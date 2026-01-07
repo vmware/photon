@@ -35,7 +35,7 @@ tool_dir_path = os.path.abspath(os.path.dirname(__file__))
 # Default value, will also be overwritten in photon-lic-tool.py
 tool_filename = "photon-lic-tool.py"
 
-ph_pub_url = "https://packages-prod.broadcom.com/photon"
+ph_pub_url = "https://packages.broadcom.com/photon"
 
 if os.geteuid() == 0:
     site_pkg_dir = site.getsitepackages()[0]

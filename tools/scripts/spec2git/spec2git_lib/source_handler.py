@@ -65,7 +65,7 @@ class SourceHandler:
             # Try to download from Broadcom Photon sources repository
             self.logger.info(f"Source {filename} not found locally, trying Broadcom Photon sources \
                                 repository...")
-            photon_sources_url = f"https://packages-prod.broadcom.com/photon/photon_sources/1.0/{filename}"
+            photon_sources_url = f"https://packages.broadcom.com/photon/photon_sources/1.0/{filename}"
             try:
                 return self._download_from_url(photon_sources_url, filename,
                                                expected_checksum=expected_checksum)
