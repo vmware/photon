@@ -1,6 +1,6 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.16.0
+Version:        8.18.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=8262c3dc113cfd5744ef1b82dbccaa69448a9395ad5c094c22df5cf537a047a927d3332db2cb3be12a31a68a60d8d0fa8485b916e975eda36a4ebd860da4f621
+%define sha512 %{name}=50c7a7b0528e0019697b0c59b3e56abb2578c71d77e4c085b56797276094b5611718c0a9cb2b14db7f8ab502fcf8f42a364297a3387fae3870a4d281484ba21c
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -107,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Wed Jan 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.18.0-1
+- Upgrade to 8.18.0
 * Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.16.0-1
 - Upgrade to 8.16.0
 - Fix CVE-2025-9086, CVE-2025-10148
