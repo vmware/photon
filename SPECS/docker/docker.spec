@@ -17,7 +17,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -48,6 +48,7 @@ Patch4:        dockerd-crypto-ssh-CVE-2024-45337.patch
 Patch5:        dockerd-crypto-ssh-CVE-2025-22869.patch
 Patch6:        dockerd-golang-protobuf-CVE-2024-24786.patch
 Patch7:        dockerd-golang-jwt-CVE-2025-30204.patch
+Patch8:        dockerd-grpc-CVE-2023-44487.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -161,6 +162,8 @@ popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_golangjwt} #golang-jwt source directory
 %patch7 -p1
 popd
+
+%patch8 -p1
 
 %build
 export GOPATH="$(pwd)"
@@ -354,6 +357,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Wed Jan 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-7
+- Fixes CVE-2023-44487 in grpc
 * Tue Jan 06 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 24.0.9-6
 - Fixes CVE-2025-30204 in golang-jwt and CVE-2024-24786 in protobuf
 * Tue Dec 30 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 24.0.9-5
