@@ -1,6 +1,6 @@
 Name:           tuned
 Version:        2.21.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
@@ -108,6 +108,10 @@ make test %{?_smp_mflags}
 %systemd_post tuned.service
 
 %preun
+if [ $1 -eq 0 ]; then
+    # Turn off the profile to trigger the bootloader cleanup logic
+    tuned-adm off || :
+fi
 %systemd_preun tuned.service
 
 %postun
@@ -161,6 +165,8 @@ make test %{?_smp_mflags}
 %{_datadir}/doc
 
 %changelog
+* Wed Jan 07 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.21.0-5
+- Fixed tuned bootloader plugin
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.21.0-4
 - Fix conflicts on doc sub package
 * Thu Jul 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.21.0-3

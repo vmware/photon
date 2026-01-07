@@ -1,24 +1,34 @@
-From 223cc69c24da094b01e3b371ea67a994db3f05ae Mon Sep 17 00:00:00 2001
+From 7e25d6380c0a9659c5556fb3f997b9a63a85f630 Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Thu, 24 Sep 2020 16:45:22 -0700
 Subject: [PATCH] bootloader plugin support for photon
 
+[Ankit]:
+- load tuned.cfg when /boot partition is present.
+- Determine the mountpoint and decide the boot prefix accordingly
+- "tuned-adm off" should remove the profile and trigger the cleanup
+ but cleanup was not happening properly for custom entries, thus
+ added more crude logic for cleanup.
+- Added "tuned-adm off" for uninstall of tuned usecase to trigger
+ the cleanup.
+
 Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
  Makefile                           |  1 +
  tuned.cfg                          |  3 +++
  tuned/consts.py                    |  3 ++-
- tuned/plugins/plugin_bootloader.py | 11 +++++++++--
+ tuned/plugins/plugin_bootloader.py | 26 ++++++++++++++++++++++----
  tuned/utils/commands.py            | 15 +++++++++++++++
- 5 files changed, 30 insertions(+), 3 deletions(-)
+ 5 files changed, 43 insertions(+), 5 deletions(-)
  create mode 100644 tuned.cfg
 
 diff --git a/Makefile b/Makefile
-index 9ee7bcc..3a51c8c 100644
+index ecf2d21..d98b892 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -165,6 +165,7 @@ install: install-dirs
+@@ -166,6 +166,7 @@ install: install-dirs
  	echo -n > $(DESTDIR)$(SYSCONFDIR)/tuned/post_loaded_profile
  	install -Dpm 0644 bootcmdline $(DESTDIR)$(SYSCONFDIR)/tuned/bootcmdline
  	install -Dpm 0644 modules.conf $(DESTDIR)$(SYSCONFDIR)/modprobe.d/tuned.conf
@@ -36,10 +46,10 @@ index 0000000..5ea7c08
 +tuned_params=
 +tuned_initrd=
 diff --git a/tuned/consts.py b/tuned/consts.py
-index f7a082e..18ddb2e 100644
+index b7fb215..359c5a1 100644
 --- a/tuned/consts.py
 +++ b/tuned/consts.py
-@@ -24,7 +24,7 @@ ERROR_THRESHOLD = 3
+@@ -26,7 +26,7 @@ ERROR_THRESHOLD = 3
  
  # bootloader plugin configuration
  BOOT_DIR = "/boot"
@@ -48,7 +58,7 @@ index f7a082e..18ddb2e 100644
  GRUB2_CFG_DIR = "/etc/grub.d"
  GRUB2_TUNED_TEMPLATE_NAME = "00_tuned"
  GRUB2_TUNED_TEMPLATE_PATH = GRUB2_CFG_DIR + "/" + GRUB2_TUNED_TEMPLATE_NAME
-@@ -41,6 +41,7 @@ PETITBOOT_DETECT_DIR = "/sys/firmware/opal"
+@@ -44,6 +44,7 @@ PETITBOOT_DETECT_DIR = "/sys/firmware/opal"
  MACHINE_ID_FILE = "/etc/machine-id"
  KERNEL_UPDATE_HOOK_FILE = "/usr/lib/kernel/install.d/92-tuned.install"
  BLS_ENTRIES_PATH = "/boot/loader/entries"
@@ -57,10 +67,10 @@ index f7a082e..18ddb2e 100644
  # scheduler plugin configuration
  # how many times retry to move tasks to parent cgroup on cgroup cleanup
 diff --git a/tuned/plugins/plugin_bootloader.py b/tuned/plugins/plugin_bootloader.py
-index 416df7d..c73c827 100644
+index c03dbaf..a8d9d44 100644
 --- a/tuned/plugins/plugin_bootloader.py
 +++ b/tuned/plugins/plugin_bootloader.py
-@@ -20,8 +20,8 @@ class BootloaderPlugin(base.Plugin):
+@@ -188,8 +188,8 @@ class BootloaderPlugin(base.Plugin):
  	"""
  
  	def __init__(self, *args, **kwargs):
@@ -71,7 +81,7 @@ index 416df7d..c73c827 100644
  		super(BootloaderPlugin, self).__init__(*args, **kwargs)
  		self._cmd = commands()
  
-@@ -98,11 +98,15 @@ class BootloaderPlugin(base.Plugin):
+@@ -364,16 +364,26 @@ class BootloaderPlugin(base.Plugin):
  		return re.search(r"^\s*GRUB_ENABLE_BLSCFG\s*=\s*\"?\s*[tT][rR][uU][eE]\s*\"?\s*$", grub2_default_env,
  			flags = re.MULTILINE) is not None
  
@@ -87,7 +97,19 @@ index 416df7d..c73c827 100644
  		if not self._grub2_cfg_file_names:
  			log.info("cannot find grub.cfg to patch")
  			return
-@@ -124,6 +128,7 @@ class BootloaderPlugin(base.Plugin):
+ 		for f in self._grub2_cfg_file_names:
+-			self._cmd.add_modify_option_in_file(f, {"set\s+" + consts.GRUB2_TUNED_VAR : "", "set\s+" + consts.GRUB2_TUNED_INITRD_VAR : ""}, add = False)
++			grub2_cfg = self._cmd.read_file(f)
++			if not grub2_cfg:
++				continue
++			grub2_cfg_new = self._grub2_cfg_unpatch(grub2_cfg)
++			if grub2_cfg != grub2_cfg_new:
++				self._cmd.write_to_file(f, grub2_cfg_new)
++
+ 		if self._initrd_dst_img_val is not None:
+ 			log.info("removing initrd image '%s'" % self._initrd_dst_img_val)
+ 			self._cmd.unlink(self._initrd_dst_img_val)
+@@ -407,17 +417,24 @@ class BootloaderPlugin(base.Plugin):
  		grub2_cfg = re.sub(r" *\$" + consts.GRUB2_TUNED_VAR, "", cfg, flags = re.MULTILINE)
  		cfg = re.sub(r"^\s*set\s+" + consts.GRUB2_TUNED_INITRD_VAR + "\s*=.*\n", "", grub2_cfg, flags = re.MULTILINE)
  		grub2_cfg = re.sub(r" *\$" + consts.GRUB2_TUNED_INITRD_VAR, "", cfg, flags = re.MULTILINE)
@@ -95,15 +117,25 @@ index 416df7d..c73c827 100644
  		cfg = re.sub(consts.GRUB2_TEMPLATE_HEADER_BEGIN + r"\n", "", grub2_cfg, flags = re.MULTILINE)
  		return re.sub(consts.GRUB2_TEMPLATE_HEADER_END + r"\n+", "", cfg, flags = re.MULTILINE)
  
-@@ -135,6 +140,7 @@ class BootloaderPlugin(base.Plugin):
+ 	def _grub2_cfg_patch_initial(self, grub2_cfg, d):
+ 		log.debug("initial patching of grub.cfg")
++		boot_prefix = consts.BOOT_DIR
++		# If /boot is a mount point, GRUB root is at /boot, so paths start with /
++		if os.path.ismount(consts.BOOT_DIR):
++			boot_prefix = ""
+ 		s = r"\1\n\n" + consts.GRUB2_TEMPLATE_HEADER_BEGIN + "\n"
+ 		for opt in d:
+ 			s += r"set " + self._cmd.escape(opt) + "=\"" + self._cmd.escape(d[opt]) + "\"\n"
  		s += consts.GRUB2_TEMPLATE_HEADER_END + r"\n"
  		grub2_cfg = re.sub(r"^(\s*###\s+END\s+[^#]+/00_header\s+### *)\n", s, grub2_cfg, flags = re.MULTILINE)
- 
-+		grub2_cfg = re.sub(r"(load_env -f /boot/photon.cfg)" , r"\1\nload_env -f /boot/tuned.cfg", grub2_cfg)
+-
++		pattern = r"(load_env -f " + boot_prefix + r"/photon.cfg)"
++		replacement = r"\1\nload_env -f " + boot_prefix + r"/tuned.cfg"
++		grub2_cfg = re.sub(pattern, replacement, grub2_cfg)
  		d2 = {"linux" : consts.GRUB2_TUNED_VAR, "initrd" : consts.GRUB2_TUNED_INITRD_VAR}
  		for i in d2:
  			# add TuneD parameters to all kernels
-@@ -217,6 +223,7 @@ class BootloaderPlugin(base.Plugin):
+@@ -510,6 +527,7 @@ class BootloaderPlugin(base.Plugin):
  
  	def _grub2_update(self):
  		self._grub2_cfg_patch({consts.GRUB2_TUNED_VAR : self._cmdline_val, consts.GRUB2_TUNED_INITRD_VAR : self._initrd_val})
@@ -112,10 +144,10 @@ index 416df7d..c73c827 100644
  
  	def _has_bls(self):
 diff --git a/tuned/utils/commands.py b/tuned/utils/commands.py
-index df695a7..ce34997 100644
+index 625c99f..1a72716 100644
 --- a/tuned/utils/commands.py
 +++ b/tuned/utils/commands.py
-@@ -206,6 +206,21 @@ class commands:
+@@ -207,6 +207,21 @@ class commands:
  		data = self.read_file(f)
  		return hashlib.sha256(str(data).encode("utf-8")).hexdigest()
  
@@ -138,5 +170,5 @@ index df695a7..ce34997 100644
  	def get_machine_id(self, no_error = True):
  		return self.read_file(consts.MACHINE_ID_FILE, no_error).strip()
 -- 
-2.23.1
+2.40.4
 
