@@ -1,6 +1,6 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.16.0
+Version:        8.18.0
 Release:        1%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Wed Jan 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.18.0-1
+- Upgrade to 8.18
 * Thu Sep 18 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.16.0-1
 - Upgrade to 8.16
 - Fix CVE-2025-9086, CVE-2025-10148

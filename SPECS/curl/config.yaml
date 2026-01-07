@@ -1,14 +1,14 @@
 sources:
-- archive: curl-8.16.0.tar.xz
+- archive: curl-8.18.0.tar.xz
   archive_type: upstream
-  archive_sha512sum: 8262c3dc113cfd5744ef1b82dbccaa69448a9395ad5c094c22df5cf537a047a927d3332db2cb3be12a31a68a60d8d0fa8485b916e975eda36a4ebd860da4f621
-  name: curl-8.16.0
-  version: 8.16.0
-  url: https://curl.se/download/curl-8.16.0.tar.xz
+  archive_sha512sum: 50c7a7b0528e0019697b0c59b3e56abb2578c71d77e4c085b56797276094b5611718c0a9cb2b14db7f8ab502fcf8f42a364297a3387fae3870a4d281484ba21c
+  name: curl-8.18.0
+  version: 8.18.0
+  url: https://curl.se/download/curl-8.18.0.tar.xz
   repo_url: https://github.com/curl/curl
-  commit_id: 11b991232fbcaa88e2b1faecac224416b0001e35
+  commit_id: 2eebc58c4b8d68c98c8344381a9f6df4cca838fd
   skip_list: [tool_version.h, curlver.h]
-  missing: [.dir-locals.el, cijobs.pl, renovate.json, THANKS-filter, adddocsref.pl, tool_hugehelp.c, SECURITY.md, compile, delta, .circleci, lt~obsolete.m4, buildconf, config.sub, aclocal.m4, libtool.m4, singleuse.pl, libtests.c, .gitignore, contributors.sh, .gitattributes, REUSE.toml, GIT-INFO.md, configure, config.guess, missing, appveyor.yml, .mailmap, depcomp, .git-blame-ignore-revs, installcheck.sh, RELEASE-TOOLS.md, contrithanks.sh, LICENSES, servers.c, ltmain.sh, release-notes.pl, README.md, ltoptions.m4, ltsugar.m4, Windows, tunits.c, Makefile.in, ltversion.m4, units.c, appveyor.sh, install-sh, curl_config.h.in, .github, libcurl-symbols.md, ciconfig.pl]
+  missing: [.dir-locals.el, cijobs.pl, renovate.json, THANKS-filter, adddocsref.pl, tool_hugehelp.c, SECURITY.md, compile, delta, .circleci, lt~obsolete.m4, buildconf, config.sub, aclocal.m4, libtool.m4, singleuse.pl, libtests.c, .gitignore, contributors.sh, .gitattributes, REUSE.toml, GIT-INFO.md, configure, config.guess, missing, appveyor.yml, .mailmap, depcomp, .git-blame-ignore-revs, installcheck.sh, RELEASE-TOOLS.md, contrithanks.sh, LICENSES, servers.c, ltmain.sh, release-notes.pl, README.md, ltoptions.m4, ltsugar.m4, Windows, tunits.c, Makefile.in, ltversion.m4, units.c, appveyor.sh, install-sh, curl_config.h.in, .github, libcurl-symbols.md, ciconfig.pl, CI.md]
   spdx:
     package:
       detailed_description: 'The cURL package contains an utility and a library used for transferring files with URL syntax to any of the following protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, DICT, LDAP, LDAPS and FILE. Its ability to both download and upload files can be incorporated into other programs to support functions like streaming media. '
