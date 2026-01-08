@@ -20,9 +20,9 @@
             "target" : "iso",
             "compression-macro" : "w19.zstdio",
 
-            "pull-sources-config": "https://packages.vmware.com/photon/photon_sources/1.0",
-            "publishrpm-url": "https://packages.vmware.com/photon/photon_publish_rpms",
-            "publishXrpm-url": "https://packages.vmware.com/photon/photon_publish_x_rpms"
+            "pull-sources-config": "https://packages.broadcom.com/photon/photon_sources/1.0",
+            "publishrpm-url": "https://packages.broadcom.com/photon/photon_publish_rpms",
+            "publishXrpm-url": "https://packages.broadcom.com/photon/photon_publish_x_rpms"
     },
     "photon-branch": "4.0",
     "photon-path" : "",
