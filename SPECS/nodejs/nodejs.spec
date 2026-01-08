@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        22.17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,11 +14,23 @@ Source1: license.txt
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
+BuildRequires:  zstd-devel
 BuildRequires:  python3-devel
 BuildRequires:  which
+BuildRequires:  openssl-devel
+BuildRequires:  nghttp2-devel
+BuildRequires:  ninja-build
+BuildRequires:  python3-jinja2
+BuildRequires:  python3-markupsafe
 
 Requires:       python3
 Requires:       (coreutils or coreutils-selinux)
+Requires:       nghttp2
+Requires:       openssl
+Requires:       libstdc++
+Requires:       libgcc
+Requires:       zlib
+Requires:       zstd
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -35,29 +47,44 @@ for developing applications that use nodejs.
 %prep
 %autosetup -p1 -n node-v%{version}
 
+rm -r deps/zlib \
+      deps/zstd \
+      deps/nghttp2
+
+rm -r deps/v8/third_party/glibc \
+       deps/v8/third_party/jsoncpp \
+       deps/v8/third_party/re2 \
+       deps/v8/third_party/jinja2 \
+       deps/v8/third_party/markupsafe
+
 %build
 %{python3} configure.py \
-         --enable-lto \
-         --prefix=%{_prefix} \
-         --libdir=%{_libdir}
+  --ninja \
+  --enable-lto \
+  --prefix=%{_prefix} \
+  --libdir=%{_libdir} \
+  --shared-nghttp2 \
+  --shared-openssl \
+  --shared-zlib \
+  --shared-zstd \
+  --with-intl=small-icu \
+  --openssl-use-def-ca-store
 
-%make_build
+# Do not use all cores to prevent resource exhaustion
+build_jobs="$(( ($(nproc)+1) / 2 ))"
+ninja -v -j${build_jobs} -C out/Release
 
 %install
 %make_install %{?_smp_mflags}
-rm -fr %{buildroot}%{_libdir}/dtrace/
-install -m 755 -d %{buildroot}%{_libdir}/node_modules/
-install -m 755 -d %{buildroot}%{_datadir}/%{name}
 
-# Remove junk files from node_modules/ - we should probably take care of
-# this in the installer.
+# Remove unneeded files from node_modules
 for FILE in .gitmodules .gitignore .npmignore .travis.yml \*.py[co]; do
   find %{buildroot}%{_libdir}/node_modules/ -name "$FILE" -delete
 done
 
 %if 0%{?with_check}
 %check
-make %{?_smp_mflags} cctest
+%make_build cctest
 %endif
 
 %post -p /sbin/ldconfig
@@ -76,6 +103,9 @@ make %{?_smp_mflags} cctest
 %{_docdir}/node/gdbinit
 
 %changelog
+* Thu Jan 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 22.17.1-3
+- Use ninja for building
+- Use system provided packages for building
 * Tue Aug 05 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 22.17.1-2
 - Cleanup licenses
 * Tue Jul 22 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.17.1-1
