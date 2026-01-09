@@ -8,7 +8,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.5.15
+Version:        3.5.16
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -293,6 +293,9 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Jan 09 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.16-1
+- update to 3.5.16
+- nocligpgcheck option and bug fix
 * Mon Jan 05 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.15-1
 - update to 3.5.15
 * Thu Dec 18 2025 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.14-2
