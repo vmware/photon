@@ -23,7 +23,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.159
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -362,6 +362,11 @@ Patch213: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
 Patch214: 0001-crypto-asymmetric_keys-prevent-overflow-in-asymmetri.patch
 # CVE-2025-68188
 Patch215: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
+
+# CVE-2025-68379
+Patch216: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
+# CVE-2025-68372
+Patch217: 0001-nbd-defer-config-put-in-recv_work.patch
 
 # SCHED: [251..254]
 Patch251: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
@@ -746,6 +751,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-10
+- Fix CVE-2025-68379, CVE-2025-68372
 * Fri Jan 02 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-9
 - Fixes CVE-2025-68188
 * Wed Dec 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.159-8

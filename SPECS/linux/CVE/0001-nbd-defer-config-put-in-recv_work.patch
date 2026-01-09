@@ -1,0 +1,100 @@
+From 6b69593f72e1bfba6ca47ca8d9b619341fded7d6 Mon Sep 17 00:00:00 2001
+From: Zheng Qixing <zhengqixing@huawei.com>
+Date: Sat, 8 Nov 2025 15:02:02 +0800
+Subject: [PATCH] nbd: defer config put in recv_work
+
+[ Upstream commit 9517b82d8d422d426a988b213fdd45c6b417b86d ]
+
+There is one uaf issue in recv_work when running NBD_CLEAR_SOCK and
+NBD_CMD_RECONFIGURE:
+  nbd_genl_connect     // conf_ref=2 (connect and recv_work A)
+  nbd_open	       // conf_ref=3
+  recv_work A done     // conf_ref=2
+  NBD_CLEAR_SOCK       // conf_ref=1
+  nbd_genl_reconfigure // conf_ref=2 (trigger recv_work B)
+  close nbd	       // conf_ref=1
+  recv_work B
+    config_put         // conf_ref=0
+    atomic_dec(&config->recv_threads); -> UAF
+
+Or only running NBD_CLEAR_SOCK:
+  nbd_genl_connect   // conf_ref=2
+  nbd_open 	     // conf_ref=3
+  NBD_CLEAR_SOCK     // conf_ref=2
+  close nbd
+    nbd_release
+      config_put     // conf_ref=1
+  recv_work
+    config_put 	     // conf_ref=0
+    atomic_dec(&config->recv_threads); -> UAF
+
+Commit 87aac3a80af5 ("nbd: call nbd_config_put() before notifying the
+waiter") moved nbd_config_put() to run before waking up the waiter in
+recv_work, in order to ensure that nbd_start_device_ioctl() would not
+be woken up while nbd->task_recv was still uncleared.
+
+However, in nbd_start_device_ioctl(), after being woken up it explicitly
+calls flush_workqueue() to make sure all current works are finished.
+Therefore, there is no need to move the config put ahead of the wakeup.
+
+Move nbd_config_put() to the end of recv_work, so that the reference is
+held for the whole lifetime of the worker thread. This makes sure the
+config cannot be freed while recv_work is still running, even if clear
++ reconfigure interleave.
+
+In addition, we don't need to worry about recv_work dropping the last
+nbd_put (which causes deadlock):
+
+path A (netlink with NBD_CFLAG_DESTROY_ON_DISCONNECT):
+  connect  // nbd_refs=1 (trigger recv_work)
+  open nbd // nbd_refs=2
+  NBD_CLEAR_SOCK
+  close nbd
+    nbd_release
+      nbd_disconnect_and_put
+        flush_workqueue // recv_work done
+      nbd_config_put
+        nbd_put // nbd_refs=1
+      nbd_put // nbd_refs=0
+        queue_work
+
+path B (netlink without NBD_CFLAG_DESTROY_ON_DISCONNECT):
+  connect  // nbd_refs=2 (trigger recv_work)
+  open nbd // nbd_refs=3
+  NBD_CLEAR_SOCK // conf_refs=2
+  close nbd
+    nbd_release
+      nbd_config_put // conf_refs=1
+      nbd_put // nbd_refs=2
+  recv_work done // conf_refs=0, nbd_refs=1
+  rmmod // nbd_refs=0
+
+Reported-by: syzbot+56fbf4c7ddf65e95c7cc@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/all/6907edce.a70a0220.37351b.0014.GAE@google.com/T/
+Fixes: 87aac3a80af5 ("nbd: make the config put is called before the notifying the waiter")
+Depends-on: e2daec488c57 ("nbd: Fix hungtask when nbd_config_put")
+Signed-off-by: Zheng Qixing <zhengqixing@huawei.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/block/nbd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index deb298371a6a..e6b756c475cd 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -963,9 +963,9 @@ static void recv_work(struct work_struct *work)
+ 	nbd_mark_nsock_dead(nbd, nsock, 1);
+ 	mutex_unlock(&nsock->tx_lock);
+ 
+-	nbd_config_put(nbd);
+ 	atomic_dec(&config->recv_threads);
+ 	wake_up(&config->recv_wq);
++	nbd_config_put(nbd);
+ 	kfree(args);
+ }
+ 
+-- 
+2.43.7
+

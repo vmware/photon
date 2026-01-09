@@ -30,7 +30,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.159
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -396,6 +396,11 @@ Patch210: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
 Patch211: 0001-crypto-asymmetric_keys-prevent-overflow-in-asymmetri.patch
 # CVE-2025-68188
 Patch212: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
+
+# CVE-2025-68379
+Patch213: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
+# CVE-2025-68372
+Patch214: 0001-nbd-defer-config-put-in-recv_work.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -785,6 +790,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-7
+- Fix CVE-2025-68379, CVE-2025-68372
 * Fri Jan 02 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-6
 - Fixes CVE-2025-68188
 * Wed Dec 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.159-5
