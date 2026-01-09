@@ -101,10 +101,9 @@ Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
  scripts/gcc-plugins/rap_plugin/rap_hash.c     | 396 +++++++++++++
  scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 553 ++++++++++++++++++
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
- scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
  security/apparmor/net.c                       |   2 +-
- 62 files changed, 1888 insertions(+), 188 deletions(-)
+ 61 files changed, 1888 insertions(+), 182 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -3612,26 +3611,6 @@ index 000000000..65bc1cdea
 +	b = v0 ^ v1 ^ v2 ^ v3;
 +	U64TO8_LE(out, b);
 +}
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 686eed37f..2833ece61 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1879,15 +1879,9 @@ static void check_exports(struct module *mod)
- 		const char *basename;
- 		exp = find_symbol(s->name);
- 		if (!exp) {
--			if (!s->weak && nr_unresolved++ < MAX_UNRESOLVED_REPORTS)
--				modpost_log(warn_unresolved ? LOG_WARN : LOG_ERROR,
--					    "\"%s\" [%s.ko] undefined!\n",
--					    s->name, mod->name);
- 			continue;
- 		}
- 		if (exp->module == mod) {
--			error("\"%s\" [%s.ko] was exported without definition\n",
--			      s->name, mod->name);
- 			continue;
- 		}
- 
 diff --git a/security/Kconfig b/security/Kconfig
 index e6db09a77..148706453 100644
 --- a/security/Kconfig

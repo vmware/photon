@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.161
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1184,6 +1184,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 03 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.1.161-5
+- modpost: restore "undefined symbols" warning/errors back
 * Fri Jan 30 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-4
 - Fix for CVE-2023-53510
 * Fri Jan 30 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.161-3
