@@ -1,3 +1,10 @@
+# This is an aarch64 only package.
+# One of the options to force that is to set "BuildArch: aarch64".
+# But it will change the RPM name to have .aarch64 suffix.
+# Using new build_if macro allows it to be built only for aarch64
+# and to continue having .noarch suffix.
+%global build_if "%{_arch}" == "aarch64"
+
 %global debug_package %{nil}
 %global __os_install_post %{nil}
 %define _binaries_in_noarch_packages_terminate_build   0
