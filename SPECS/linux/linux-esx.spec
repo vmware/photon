@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.247
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -535,6 +535,15 @@ Patch293: 0001-bpf-sockmap-Don-t-let-sock_map_-close-destroy-unhash.patch
 # CVE-2025-68188
 Patch294: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
+# CVE-2023-53111
+Patch295: 0001-loop-Fix-use-after-free-issues.patch
+# CVE-2025-68379
+Patch296: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
+# CVE-2025-68372
+Patch297: 0001-nbd-defer-config-put-in-recv_work.patch
+# CVE-2025-68190
+Patch298: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
+
 #Patches for ptp_vmw
 Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -924,6 +933,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-10
+- Fix CVE-2023-53111, CVE-2025-68379, CVE-2025-68372, CVE-2025-68190
 * Fri Jan 09 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-9
 - Fixes CVE-2025-68188
 * Tue Dec 30 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-8

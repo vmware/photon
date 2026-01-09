@@ -1,0 +1,65 @@
+From 407badf73ec9fb0d5744bf2ca1745c1818aa222f Mon Sep 17 00:00:00 2001
+From: Bart Van Assche <bvanassche@acm.org>
+Date: Tue, 14 Mar 2023 11:21:54 -0700
+Subject: [PATCH] loop: Fix use-after-free issues
+
+[ Upstream commit 9b0cb770f5d7b1ff40bea7ca385438ee94570eec ]
+
+do_req_filebacked() calls blk_mq_complete_request() synchronously or
+asynchronously when using asynchronous I/O unless memory allocation fails.
+Hence, modify loop_handle_cmd() such that it does not dereference 'cmd' nor
+'rq' after do_req_filebacked() finished unless we are sure that the request
+has not yet been completed. This patch fixes the following kernel crash:
+
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000054
+Call trace:
+ css_put.42938+0x1c/0x1ac
+ loop_process_work+0xc8c/0xfd4
+ loop_rootcg_workfn+0x24/0x34
+ process_one_work+0x244/0x558
+ worker_thread+0x400/0x8fc
+ kthread+0x16c/0x1e0
+ ret_from_fork+0x10/0x20
+
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Ming Lei <ming.lei@redhat.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Dan Schatzberg <schatzberg.dan@gmail.com>
+Fixes: c74d40e8b5e2 ("loop: charge i/o to mem and blk cg")
+Fixes: bc07c10a3603 ("block: loop: support DIO & AIO")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20230314182155.80625-1-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Keerthana: Fix only cmd_aio usage and leave blkcg_css, memcg_css as it is unavailable in 5.10.y ]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ drivers/block/loop.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index b30f4d525bc8..f094cda4840d 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -2032,6 +2032,7 @@ static void loop_handle_cmd(struct loop_cmd *cmd)
+ 	const bool write = op_is_write(req_op(rq));
+ 	struct loop_device *lo = rq->q->queuedata;
+ 	int ret = 0;
++	const bool use_aio = cmd->use_aio;
+ 
+ 	if (write && (lo->lo_flags & LO_FLAGS_READ_ONLY)) {
+ 		ret = -EIO;
+@@ -2041,7 +2042,7 @@ static void loop_handle_cmd(struct loop_cmd *cmd)
+ 	ret = do_req_filebacked(lo, rq);
+  failed:
+ 	/* complete non-aio request */
+-	if (!cmd->use_aio || ret) {
++	if (!use_aio || ret) {
+ 		if (ret == -EOPNOTSUPP)
+ 			cmd->ret = ret;
+ 		else
+-- 
+2.43.7
+

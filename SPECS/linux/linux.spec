@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.247
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -425,6 +425,10 @@ Patch235: 0001-SUNRPC-lock-against-sock-changing-during-sysfs-read.patch
 # Fix CVE-2025-38728
 Patch236: 0001-smb3-fix-for-slab-out-of-bounds-on-mount-to-ksmbd.patch
 
+# CVE-2025-68372
+Patch237: 0001-nbd-defer-config-put-in-recv_work.patch
+# CVE-2025-68190
+Patch238: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # Fix CVE-2024-42321
 Patch240:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
 
@@ -485,8 +489,13 @@ Patch262: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 Patch263: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
 Patch264: 0001-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 
+# CVE-2023-53111
+Patch265: 0001-loop-Fix-use-after-free-issues.patch
+# CVE-2025-68379
+Patch266: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
+
 # Fix CVE-2024-35939
-Patch266: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
+Patch267: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
 # Fix CVE-2023-53401
 Patch268: 0001-mm-kmem-fix-a-NULL-pointer-dereference-in-obj_stock_.patch
 Patch269: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
@@ -568,16 +577,16 @@ Patch303: 0003-of-overlay-Correct-symbol-path-fixups.patch
 Patch304: 0001-Add-rpi-poe-fan-driver.patch
 
 # Fix CVE-2022-49711
-Patch267: 0001-bus-fsl-mc-bus-fix-KASAN-use-after-free-in-fsl_mc_bu.patch
+Patch305: 0001-bus-fsl-mc-bus-fix-KASAN-use-after-free-in-fsl_mc_bu.patch
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
-Patch305: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+Patch306: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
-Patch306: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+Patch307: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # Enable CONFIG_DEBUG_INFO_BTF=y
-Patch307: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+Patch308: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -834,12 +843,12 @@ manipulation of eBPF programs and maps.
 %ifarch aarch64
 # Rpi of_configfs patches
 # Rpi fan driver
-%autopatch -p1 -m301 -M304
+%autopatch -p1 -m301 -M305
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
-%autopatch -p1 -m305 -M306
-%autopatch -p1 -m307 -M307
+%autopatch -p1 -m306 -M307
+%autopatch -p1 -m308 -M308
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -1249,6 +1258,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-10
+- Fix CVE-2023-53111, CVE-2025-68379, CVE-2025-68372, CVE-2025-68190
 * Fri Jan 09 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-9
 - Fixes CVE-2025-68188
 * Tue Dec 30 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-8
