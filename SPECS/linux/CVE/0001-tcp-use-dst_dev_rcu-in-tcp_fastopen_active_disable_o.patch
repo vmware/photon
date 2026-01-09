@@ -1,0 +1,52 @@
+From cf4b7fd6a003b75eea2faaf1f3ab89fdbc5b470a Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu, 28 Aug 2025 19:58:22 +0000
+Subject: [PATCH] tcp: use dst_dev_rcu() in
+ tcp_fastopen_active_disable_ofo_check()
+
+[ Upstream commit b62a59c18b692f892dcb8109c1c2e653b2abc95c ]
+
+Use RCU to avoid a pair of atomic operations and a potential
+UAF on dst_dev()->flags.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://patch.msgid.link/20250828195823.3958522-8-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Ankit: Backported for v5.10]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/ipv4/tcp_fastopen.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index cbce1306b..0f049ab39 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -558,6 +558,7 @@ bool tcp_fastopen_active_should_disable(struct sock *sk)
+ void tcp_fastopen_active_disable_ofo_check(struct sock *sk)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	struct net_device *dev;
+ 	struct dst_entry *dst;
+ 	struct sk_buff *skb;
+ 
+@@ -574,10 +575,12 @@ void tcp_fastopen_active_disable_ofo_check(struct sock *sk)
+ 		}
+ 	} else if (tp->syn_fastopen_ch &&
+ 		   atomic_read(&sock_net(sk)->ipv4.tfo_active_disable_times)) {
+-		dst = sk_dst_get(sk);
+-		if (!(dst && dst->dev && (dst->dev->flags & IFF_LOOPBACK)))
++		rcu_read_lock();
++		dst = __sk_dst_get(sk);
++		dev = dst ? dst_dev_rcu(dst) : NULL;
++		if (!(dev && (dev->flags & IFF_LOOPBACK)))
+ 			atomic_set(&sock_net(sk)->ipv4.tfo_active_disable_times, 0);
+-		dst_release(dst);
++		rcu_read_unlock();
+ 	}
+ }
+ 
+-- 
+2.40.4
+

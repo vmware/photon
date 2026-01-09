@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.247
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -492,6 +492,8 @@ Patch292: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
 Patch293: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
 # CVE-2023-52735
 Patch294: 0001-bpf-sockmap-Don-t-let-sock_map_-close-destroy-unhash.patch
+# CVE-2025-68188
+Patch295: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -777,6 +779,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 09 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-9
+- Fixes CVE-2025-68188
 * Tue Dec 30 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-8
 - Fix CVE-2022-49444
 * Mon Dec 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-7

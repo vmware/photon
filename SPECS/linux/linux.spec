@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.247
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -555,6 +555,8 @@ Patch297: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
 Patch298: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
 # CVE-2023-52735
 Patch299: 0001-bpf-sockmap-Don-t-let-sock_map_-close-destroy-unhash.patch
+# CVE-2025-68188
+Patch300: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1247,6 +1249,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Jan 09 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-9
+- Fixes CVE-2025-68188
 * Tue Dec 30 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.10.247-8
 - Fix CVE-2022-49444
 * Mon Dec 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-7
