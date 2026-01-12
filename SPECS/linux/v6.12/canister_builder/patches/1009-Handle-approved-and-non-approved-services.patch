@@ -230,7 +230,7 @@ index 1e721a6fa..6274a0ab7 100644
  
  static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
  {
-@@ -97,6 +98,10 @@ static int seqiv_aead_encrypt(struct aead_request *req)
+@@ -100,6 +100,10 @@
  	crypto_xor(info, ctx->salt, ivsize);
  	scatterwalk_map_and_copy(info, req->dst, req->assoclen, ivsize, 1);
  
@@ -239,7 +239,7 @@ index 1e721a6fa..6274a0ab7 100644
 +		return err;
 +
  	err = crypto_aead_encrypt(subreq);
- 	if (unlikely(info != req->iv))
+ 	if (unlikely(unaligned_info))
  		seqiv_aead_encrypt_complete2(req, err);
 diff --git a/crypto/sha256_generic.c b/crypto/sha256_generic.c
 index 9bc82ab39..cbc3cc424 100644

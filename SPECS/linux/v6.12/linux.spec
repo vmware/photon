@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -228,6 +228,7 @@ Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+Patch102: 0001-crypto-seqiv-Do-not-use-req-iv-after-crypto_aead_enc.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -905,6 +906,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jan 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-12
+- canister_build: Fix UAF (req->iv) in seqiv
 * Wed Jan 07 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-11
 - Update jitterentropy driver names in canister_algs list
 * Sat Jan 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-10
