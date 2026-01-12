@@ -70,7 +70,7 @@ def scan(args):
 
 def validate(args):
     validator = Validator()
-    validator.validate(file=args.f, stdin=args.i)
+    validator.validate(file=args.f, stdin=args.i, srp_policy_controls=args.srp_policy_controls)
 
 
 def lic_db(args):
@@ -130,6 +130,7 @@ def parse_config(config_path=None):
     try:
         common.ignore_list = config_yaml["license_ignore_list"]
         common.disallowed_licenses = config_yaml["disallowed_licenses"]
+        common.srp_approved_licenses = config_yaml["srp_approved_licenses"]
         common.redis_host = config_yaml["redis_host"]
         common.redis_port = config_yaml["redis_port"]
         common.redis_ttl = config_yaml["redis_ttl"]
@@ -166,6 +167,13 @@ def parse_input():
                         "help": "Read SPDX expression directly from stdin",
                     },
                 ),
+                (
+                    "--srp_policy_controls",
+                    {
+                        "action": "store",
+                        "help": "Path to SRP Policy Controls repo"
+                    }
+                )
             ],
         },
         "scan": {

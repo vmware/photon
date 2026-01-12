@@ -211,11 +211,12 @@ class DockerUtil:
 
         return (mount_list, tool_cmd)
 
-    def build_validate_docker_cmd(self, file=None, stdin=None):
+    def build_validate_docker_cmd(self, file=None, stdin=None, srp_policy_controls=None):
         if not file and not stdin:
             err_exit("Must pass in expression to validate cmd")
 
         docker_spec_mnt = f"{common.ph_scan_tool_dir}/spec-mnt"
+        docker_srp_policy_controls_mnt = f"{common.ph_scan_tool_dir}/srp-policy-controls"
         file_mnt_path = ""
         docker_mnt_cmd = ""
         tool_cmd = ["validate"]
@@ -253,6 +254,15 @@ class DockerUtil:
             tool_cmd.extend(["-i", stdin])
         else:
             err_exit("License expression must be provided!")
+
+        if srp_policy_controls:
+            tool_cmd.extend(
+                [
+                    "--srp_policy_controls",
+                    f"{docker_srp_policy_controls_mnt}"
+                ]
+            )
+            docker_mnt.append((srp_policy_controls, docker_srp_policy_controls_mnt, "ro"))
 
         return (docker_mnt, tool_cmd)
 
