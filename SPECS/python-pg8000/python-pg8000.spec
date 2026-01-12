@@ -2,7 +2,7 @@
 %define srcname pg8000
 
 Name:           python3-pg8000
-Version:        1.31.2
+Version:        1.31.5
 Release:        1%{?dist}
 Summary:        A Pure-Python PostgreSQL Driver
 URL:            http://pgaudit.org
@@ -14,6 +14,8 @@ Source0: https://files.pythonhosted.org/packages/0f/d7/0554640cbe3e193184796bedb
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-classifiers-make-less-specific.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-wheel
@@ -49,5 +51,7 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jan 12 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.31.5-1
+- Update to 1.31.5, Fixes CVE-2025-61385
 * Fri Aug 29 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.31.2-1
 - Initial build

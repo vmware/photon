@@ -1,0 +1,42 @@
+From c5c020d94cde53636911f69d246a295b1892282c Mon Sep 17 00:00:00 2001
+From: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+Date: Mon, 12 Jan 2026 08:45:15 +0000
+Subject: [PATCH] classifiers: make less specific
+
+Old version of python-hatchling does not have
+updated classifiers list for newer python versions.
+
+As per packaging.python.org:
+
+ Although the list of classifiers is often used to declare
+ what Python versions a project supports, this information
+ is only used for searching and browsing projects on PyPI,
+ not for installing projects.
+
+I.e, this is not important for our build process.
+
+Signed-off-by: Prashant S Chauhan <prashant.singh-chauhan@broadcom.com>
+
+---
+ pyproject.toml | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 3715c10..ec666c3 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -19,11 +19,6 @@ classifiers = [
+     "License :: OSI Approved :: BSD License",
+     "Programming Language :: Python",
+     "Programming Language :: Python :: 3",
+-    "Programming Language :: Python :: 3.9",
+-    "Programming Language :: Python :: 3.10",
+-    "Programming Language :: Python :: 3.11",
+-    "Programming Language :: Python :: 3.12",
+-    "Programming Language :: Python :: 3.13",
+     "Programming Language :: Python :: Implementation",
+     "Programming Language :: Python :: Implementation :: CPython",
+     "Programming Language :: Python :: Implementation :: PyPy",
+-- 
+2.43.7
+

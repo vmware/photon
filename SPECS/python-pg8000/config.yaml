@@ -1,12 +1,12 @@
 sources:
-- archive: pg8000-1.31.2.tar.gz
-  archive_sha512sum: cdcd7d614e428a6c0b55d580f4174ab00e5d5faa6efa9288d6f39a203250d51cb920dd662dd1f62b090e965e4c673e4fdd85850f05c50058522cb64c97304575
+- archive: pg8000-1.31.5.tar.gz
+  archive_sha512sum: ab15d9c0eadb44748d72869904151ac0e8dddca785494cd0d2f8ba51f0fbe3a84a903028f53f97f64f574e4d4c616e89a5e4bd005a44d42537ecddb354c90136
   archive_type: upstream
-  version: 1.31.2
-  name: pg8000-1.31.2
-  url: https://files.pythonhosted.org/packages/0f/d7/0554640cbe3e193184796bedb6de23f797c03958425176faf0e694c06eb0/pg8000-1.31.2.tar.gz
+  version: 1.31.5
+  name: pg8000-1.31.5
+  url: https://files.pythonhosted.org/packages/c8/9a/077ab21e700051e03d8c5232b6bcb9a1a4d4b6242c9a0226df2cfa306414/pg8000-1.31.5.tar.gz
   repo_url: https://codeberg.org/tlocke/pg8000.git
-  commit_id: 9945228f2cec51727f83058229f59fa7397b4d64
+  commit_id: c178a65641f3b23c4d722aeafdbd304ae0a0b4f1
   skip_list: []
   missing: ['PKG-INFO']
   skip_validation: false
