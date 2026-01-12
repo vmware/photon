@@ -1,6 +1,6 @@
 Name:           gpsd
 Version:        3.25
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -43,6 +43,8 @@ Requires: glibc
 %ifarch aarch64
 Requires: bluez
 %endif
+
+Patch0: CVE-2025-67269.patch
 
 %description
 gpsd is a service daemon that mediates access to a GPS sensor
@@ -238,6 +240,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Mon Jan 12 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.25-4
+- Fix CVE-2025-67269
 * Mon Dec 08 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.25-3
 - Disable bluez support
 * Tue Apr 02 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 3.25-2
