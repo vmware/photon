@@ -1,7 +1,7 @@
 Summary:        ASN.1 library
 Name:           libtasn1
 Version:        4.19.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/libtasn1/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -14,6 +14,7 @@ Source1: license.txt
 
 Patch0: CVE-2024-12133.patch
 Patch1: CVE-2024-12133_2.patch
+Patch2: 0001-Fix-for-CVE-2025-13151-Buffer-overflow.patch
 
 %description
 Libtasn1 library provides Abstract Syntax Notation One (ASN.1, as specified by
@@ -63,6 +64,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jan 12 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.0-5
+- Fix for CVE-2025-13151
 * Wed Feb 12 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.0-4
 - Fix for CVE-2024-12133
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.19.0-3
