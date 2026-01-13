@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -67,7 +67,7 @@ Source10001: jitterentropy_canister_wrapper.c
 Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
-%define fips_canister_version 6.12.60-3.ph5
+%define fips_canister_version 6.12.60-13.ph5
 %define ExtraBuildRequires linux-fips-canister = %{fips_canister_version}
 BuildRequires:       linux-fips-canister = %{fips_canister_version}
 
@@ -182,6 +182,7 @@ Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+Patch102: 0001-crypto-seqiv-Do-not-use-req-iv-after-crypto_aead_enc.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -513,6 +514,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jan 22 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-9
+- Update canister version to 6.12.60-13
+- Add patch to address UAF (req->iv) in seqiv.c
 * Wed Jan 14 2026 Satish Ramachandran <satish.ramachandran@broadcom.com> 6.12.60-8
 - Add SBX DTLS kernel driver patch
 * Tue Jan 06 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-7
