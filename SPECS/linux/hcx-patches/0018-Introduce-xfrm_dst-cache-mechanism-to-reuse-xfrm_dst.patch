@@ -529,7 +529,7 @@ index 2f4cf976b..79f6e574b 100644
  
 +extern int netdev_xfrm_cache;
 +
- int xfrm_state_flush(struct net *net, u8 proto, bool task_valid, bool sync)
+ int xfrm_state_flush(struct net *net, u8 proto, bool task_valid)
  {
  	int i, err = 0, cnt = 0;
 @@ -816,9 +818,11 @@ int xfrm_state_flush(struct net *net, u8 proto, bool task_valid, bool sync)

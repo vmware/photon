@@ -3,6 +3,9 @@
 %global security_hardening none
 %global __cmake_in_source_build 0
 
+# Skip this spec if subrelease is 92 or more
+%global build_if %{photon_subrelease} <= 91
+
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
 
@@ -29,8 +32,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.159
-Release:        7%{?dist}
+Version:        6.1.160
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -234,9 +237,6 @@ Patch137: 0001-bpf-Defer-work-in-bpf_timer_cancel_and_free.patch
 Patch138: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
 Patch139: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
 
-# Fix CVE-2024-46786
-Patch140: 0001-fscache-delete-fscache_cookie_lru_timer-when-fscache.patch
-
 # Fix CVE-2024-56611
 Patch141: 0001-mm-mempolicy-fix-migrate_to_node-assuming-there-is-a.patch
 
@@ -306,10 +306,6 @@ Patch168: 0001-drm-amd-display-fix-a-Null-pointer-dereference-vulne.patch
 # Fix CVE-2025-38705
 Patch169: 0001-drm-amd-pm-fix-null-pointer-access.patch
 
-# Fix CVE-2024-49968
-Patch170: 0001-ext4-filesystems-without-casefold-feature-cannot-be-.patch
-Patch171: 0002-ext4-fix-error-message-when-rejecting-the-default-ha.patch
-
 # Fix CVE-2024-49922
 Patch172: 0001-drm-amd-display-Check-null-pointers-before-using-the.patch
 
@@ -320,18 +316,11 @@ Patch174: 0002-ksmbd-fix-use-after-free-in-SMB-request-handling.patch
 # Fix CVE-2025-38039
 Patch177: 0001-net-mlx5e-Avoid-WARN_ON-when-configuring-MQPRIO-with.patch
 
-# Fix CVE-2025-38022
-Patch178: 0001-RDMA-core-Fix-KASAN-slab-use-after-free-Read-in-ib_r.patch
-
 # Fix CVE-2025-38064
 Patch179: 0001-virtio-break-and-reset-virtio-devices-on-device_shut.patch
 
 # Fix CVE-2025-38045
 Patch180: 0001-wifi-iwlwifi-fix-debug-actions-order.patch
-
-# Fix CVE-2025-22022
-Patch181: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
-Patch182: 0002-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
 
 # Fix CVE-2025-22121
 Patch183: 0001-ext4-introduce-ITAIL-helper.patch
@@ -339,9 +328,6 @@ Patch184: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
 
 # Fix CVE-2025-39990
 Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
-
-# Fix CVE-2025-40110
-Patch186: 0001-drm-vmwgfx-Fix-a-null-ptr-access-in-the-cursor-snoop.patch
 
 # Fix CVE-2025-37750
 Patch187: 0001-smb-client-fix-UAF-in-decryption-with-multichannel.patch
@@ -367,9 +353,6 @@ Patch195: 0001-rcu-nocb-Fix-possible-invalid-rdp-s-nocb_cb_kthread-.patch
 Patch196: 0001-rcu-Fix-rcu_read_unlock-deadloop-due-to-IRQ-work.patch
 Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
 
-# Fix CVE-2025-38129
-Patch198: 0001-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
-
 # Fix CVE-2025-38248
 Patch199: 0001-bridge-mcast-fix-use-after-free-during-router-port-configuration.patch
 # Fix CVE-2025-39797
@@ -392,15 +375,11 @@ Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
 # CVE-2024-53095
 Patch210: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
 
-# CVE-2025-68724
-Patch211: 0001-crypto-asymmetric_keys-prevent-overflow-in-asymmetri.patch
 # CVE-2025-68188
 Patch212: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
 # CVE-2025-68379
 Patch213: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
-# CVE-2025-68372
-Patch214: 0001-nbd-defer-config-put-in-recv_work.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -431,12 +410,6 @@ Patch306: 0007-Don-t-use-writeback-fid-for-cache-when-enabled-for-V.patch
 Patch307: 0008-fscache-Only-fetch-attr-from-inode-cache-when-cache-.patch
 Patch308: 0009-9p-fscache-Make-dcache-work-with-case-insensitive-vo.patch
 Patch309: 0010-9p-fscache-Ensure-consistent-blksize-is-returned-fro.patch
-
-# SCHED: [401..404]
-Patch401: 0001-sched-fair-Revert-max_newidle_lb_cost-bump.patch
-Patch402: 0002-sched-fair-Small-cleanup-to-sched_balance_newidle.patch
-Patch403: 0003-sched-fair-Small-cleanup-to-update_newidle_cost.patch
-Patch404: 0004-sched-fair-Proportional-newidle-balance.patch
 
 # Crypto: [500..529]
 # Patch to invoke crypto self-tests and add missing test vectors to testmgr
@@ -589,9 +562,6 @@ The Linux package contains the Linux kernel doc files
 
 # 9P
 %autopatch -p1 -m300 -M309
-
-# sched
-%autopatch -p1 -m401 -M404
 
 # crypto
 %autopatch -p1 -m500 -M504
@@ -790,6 +760,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jan 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.160-1
+- Update to version 6.1.160
 * Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-7
 - Fix CVE-2025-68379, CVE-2025-68372
 * Fri Jan 02 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.159-6
