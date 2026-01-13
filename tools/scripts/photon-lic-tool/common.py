@@ -274,7 +274,7 @@ def cleanup_license_expression(ignore_list=None, exception_list=None, license_ex
 
     # remove duplicates - this returns a set
     top_lvl_exps = license_tree.get_top_lvl_ands(lic_tree)
-    top_lvl_exps.sort()
+    top_lvl_exps = sorted(top_lvl_exps)
     parsed_exp = " AND ".join(top_lvl_exps)
 
     # do some cleanup for us

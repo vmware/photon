@@ -189,7 +189,7 @@ def get_top_lvl_ands(exp_tree=None, exps=None):
 
     # Initialize exps on first call (avoid mutable default argument bug)
     if exps is None:
-        exps = []
+        exps = set()
 
     if exp_tree.value == "AND":
         get_top_lvl_ands(exp_tree.left, exps)
@@ -200,9 +200,9 @@ def get_top_lvl_ands(exp_tree=None, exps=None):
         or_list = [x.strip() for x in or_list]
         or_list.sort()
         or_str = " OR ".join(or_list)
-        exps.append(f"({or_str})")
+        exps.add(f"({or_str})")
     else:
-        exps.append(exp_tree.value)
+        exps.add(exp_tree.value)
 
     return exps
 
