@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -168,6 +168,11 @@ Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 
 # SBX driver
 Patch85: 0001-Adding-SBX-kernel-driver.patch
+
+%ifarch x86_64
+#SBX DTLS driver
+Patch86: 0001-linux-esx-Add-SBX-DTLS-kernel-module.patch
+%endif
 
 # Backward compatibility
 %if "%{dist}" == ".ph5"
@@ -508,6 +513,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jan 14 2026 Satish Ramachandran <satish.ramachandran@broadcom.com> 6.12.60-8
+- Add SBX DTLS kernel driver patch
 * Tue Jan 06 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-7
 - Enable CONFIG_MTD
 * Fri Dec 19 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-6
