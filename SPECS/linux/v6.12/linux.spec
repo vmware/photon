@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        19%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        20%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -290,6 +290,27 @@ Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
 # TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
+
+#HCX-Patches
+Patch701: 0001-Active-probing-of-dst-mac-of-unknown-unicast.patch
+Patch702: 0002-Skip-IP_ECN_decapsulate-for-gretap-devices.patch
+Patch703: 0003-Handle-ipsec-in-ipip-more-correctly.patch
+Patch704: 0004-De-cap-fou-traffic-into-correct-tunnel-device-s.patch
+Patch705: 0005-Add-unknown-fou-tracking-to-kernel.patch
+Patch706: 0006-Add-initial-support-for-vxlan-trunk-to-cgw-kernel-wi.patch
+Patch707: 0007-Changes-for-bridge-vlan-arp-filtering-to-work-right.patch
+Patch708: 0008-Add-support-for-mac-flapping-and-long-mac-flapping-p.patch
+Patch709: 0009-vmxnet3-Avoid-fragmentation-by-giving-each-vmxnet3-d.patch
+Patch710: 0010-RPS-flow-balance.patch
+Patch711: 0011-add-mss-clamp-support-to-gretap-baseimage.patch
+Patch712: 0012-set-max_mtu-as-IP_MAX_MTU-for-type-vxlantrunk.patch
+Patch713: 0013-set-max_mtu-as-IP_MAX_MTU-for-vlan_trunk.patch
+Patch714: 0014-iptunnel-mark-xfrm-multi-parts.patch
+Patch715: 0015-disable-pskb_inet_may_pull-in-tunnel.patch
+Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
+Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
+Patch718: 0018-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
+Patch719: 0019-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -559,6 +580,8 @@ The kernel fips-canister
 # SEV on VMware
 %autopatch -p1 -m600 -M603
 %endif
+
+%autopatch -p1 -m701 -M720
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -929,6 +952,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-20
+- HCX patches ported to 6.12 kernel
 * Fri Feb 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-19
 - Update canister version to 6.12.60-18
 * Thu Feb 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-18
