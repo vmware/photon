@@ -1860,6 +1860,7 @@ CONFIG_VMWARE_VMCI=y
 # CONFIG_KEBA_CP500 is not set
 CONFIG_VMWARE_EXTCFG=y
 CONFIG_SBX=m
+CONFIG_SBX_DTLS=m
 # end of Misc devices
 
 # SCSI device support
