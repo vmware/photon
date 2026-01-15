@@ -1,0 +1,39 @@
+From ebff6232e683d0de020498b864b318854e748292 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Wed, 7 Jan 2026 17:33:43 +0530
+Subject: [PATCH 17/19] rps_cpus: skip receive packets queuing to only
+ housekeeping CPUs
+
+Revert the logic of restricting receive packets queueing to only
+housekeeping CPUs as HCX wants to set rps_cpus to isolated CPUs.
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/core/net-sysfs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 95706853140e..90c909bc56fd 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -37,6 +37,7 @@ static const char fmt_dec[] = "%d\n";
+ static const char fmt_uint[] = "%u\n";
+ static const char fmt_ulong[] = "%lu\n";
+ static const char fmt_u64[] = "%llu\n";
++extern int netdev_custom_steer;
+ 
+ /* Caller holds RTNL or RCU */
+ static inline int dev_isalive(const struct net_device *dev)
+@@ -898,7 +899,7 @@ static int netdev_rx_queue_set_rps_mask(struct netdev_rx_queue *queue,
+ 
+ int rps_cpumask_housekeeping(struct cpumask *mask)
+ {
+-	if (!cpumask_empty(mask)) {
++	if (netdev_custom_steer == 0 && !cpumask_empty(mask)) {
+ 		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_WQ));
+ 		if (cpumask_empty(mask))
+-- 
+2.43.0
+

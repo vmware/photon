@@ -1,0 +1,87 @@
+From 49bc6d4d0c8ff8b62c0772828b5a92f827f53f19 Mon Sep 17 00:00:00 2001
+From: Jonathan Shao <sjonathan@vmware.com>
+Date: Wed, 15 Jun 2022 18:02:38 -0700
+Subject: [PATCH 15/19] disable pskb_inet_may_pull in tunnel
+
+pskb_inet_may_pull is not needed for HCX in tunnel code paths
+
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ net/ipv4/ip_gre.c    | 16 ++++++++++++++--
+ net/ipv4/ip_tunnel.c |  4 ++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 65bb3e41bb1f..017206296736 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -108,7 +108,9 @@
+ #include <linux/sysctl.h>
+ static struct ctl_table_header *gre_sysctl_header;
+ int gre_mss_clamp __read_mostly = 0;
++int gre_skb_dont_pull __read_mostly = 0;
+ EXPORT_SYMBOL(gre_mss_clamp);
++EXPORT_SYMBOL(gre_skb_dont_pull);
+ static int gre_tap_mss_clamp(struct sk_buff *skb, int max_mss);
+ static struct ctl_table gre_sysctl_table[] = {
+ 	{
+@@ -118,6 +120,13 @@ static struct ctl_table gre_sysctl_table[] = {
+ 		.mode           = 0644,
+ 		.proc_handler   = proc_dointvec,
+ 	},
++	{
++		.procname       = "gre_skb_dont_pull",
++		.data           = &gre_skb_dont_pull,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = proc_dointvec,
++	},
+ };
+ static int gre_sysctl_init(void)
+ {
+@@ -130,6 +139,7 @@ static int gre_sysctl_init(void)
+ }
+ #else
+ #define gre_mss_clamp 0
++#define gre_skb_dont_pull
+ #endif
+ 
+ static bool log_ecn_error = true;
+@@ -740,8 +750,10 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
+ 	bool truncate = false;
+ 	__be16 proto;
+ 
+-	if (!pskb_inet_may_pull(skb))
+-		goto free_skb;
++	if (unlikely(!gre_skb_dont_pull)) {
++		if (!pskb_inet_may_pull(skb))
++			goto free_skb;
++	}
+ 
+ 	if (tunnel->collect_md) {
+ 		erspan_fb_xmit(skb, dev);
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 85959118d9d3..3f2297cba1cc 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -844,7 +844,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 			rt = dst_cache_get_ip4(&tun_info->dst_cache,
+ 					       &fl4.saddr);
+ 	} else {
+-		if(ipip_dst_cache_use_mark) {
++		if(likely(ipip_dst_cache_use_mark)) {
+ 			rt = connected ?
+ 				dst_cache_get_ip4_use_mark(&tunnel->dst_cache, &fl4.saddr,
+ 					skb->mark) : NULL;
+@@ -865,7 +865,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 			dst_cache_set_ip4(&tun_info->dst_cache, &rt->dst,
+ 					  fl4.saddr);
+ 		else if (!md && connected) {
+-			if(ipip_dst_cache_use_mark) {
++			if(likely(ipip_dst_cache_use_mark)) {
+ 				dst_cache_set_ip4_use_mark(&tunnel->dst_cache,
+ 					  &rt->dst, fl4.saddr, fl4.flowi4_mark);
+ 			} else {
+-- 
+2.43.0
+

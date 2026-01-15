@@ -1,0 +1,32 @@
+From 88c2fe349ba38350e8373c379676598ffc75336f Mon Sep 17 00:00:00 2001
+From: Harinadh D <hdommaraju@vmware.com>
+Date: Tue, 19 Apr 2022 07:30:43 +0000
+Subject: [PATCH 13/19] set max_mtu as IP_MAX_MTU for vlan_trunk
+
+Unable to set MTU value more than 1500 for newly created link type vlan trunk.
+In ether_setup, dev->max_mtu was assigned with ETH_DATA_LEN which is 1500.
+
+Updating max_mtu as IP_MAX_MTU(65535).
+
+Reviewed-by: srinidhi rao  <srinidhir@vmware.com>
+Signed-off-by: Harinadh D <hdommaraju@vmware.com>
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ net/ipv4/vxlan_trunk.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/ipv4/vxlan_trunk.c b/net/ipv4/vxlan_trunk.c
+index cd5d4424bf33..a4051d13da74 100644
+--- a/net/ipv4/vxlan_trunk.c
++++ b/net/ipv4/vxlan_trunk.c
+@@ -1207,6 +1207,7 @@ static void vxlan_trunk_setup(struct net_device *dev)
+ static void vlan_trunk_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
++	dev->max_mtu        = IP_MAX_MTU;
+ 	dev->tx_queue_len	= 0;
+ 	dev->netdev_ops		= &vlan_trunk_netdev_ops;
+ 	dev->priv_flags	|= IFF_LIVE_ADDR_CHANGE;
+-- 
+2.43.0
+
