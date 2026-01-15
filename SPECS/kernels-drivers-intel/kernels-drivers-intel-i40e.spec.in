@@ -24,22 +24,14 @@ Patch0:         i40e-v2.25.7-Add-support-for-gettimex64-interface.patch
 %endif
 
 %if "%{src_ver}" == "2.25.7"
-Release:        7%{?kernelsubrelease}%{?dist}
+Release:        8%{?kernelsubrelease}%{?dist}
 
 Patch0:         i40e-v2.25.7-Add-support-for-gettimex64-interface.patch
 Patch1:         i40e-v2.25.7-remove-read-access-to-debugfs-files.patch
 %endif
 
-%if "%{src_ver}" == "2.23.17"
-Release:        9%{?kernelsubrelease}%{?dist}
-
-Patch0:         i40e-v2.23.17-Add-support-for-gettimex64-interface.patch
-Patch1:         i40e-v2.23.17-i40e-Make-i40e-driver-honor-default-and-user-defined.patch
-Patch2:         i40e-v2.23.17-remove-read-access-to-debugfs-files.patch
-%endif
-
 %if "%{src_ver}" == "2.22.18"
-Release:        9%{?kernelsubrelease}%{?dist}
+Release:        10%{?kernelsubrelease}%{?dist}
 
 Patch0:         i40e-v2.22.18-linux-rt-i40e-Fix-build-errors-on-kernel-6.1.y.patch
 Patch1:         i40e-v2.22.18-Add-support-for-gettimex64-interface.patch
@@ -119,6 +111,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %endif
 
 %if "%{src_ver}" == "2.25.7"
+* Thu Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-8
+- Release bump
 * Mon Nov 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> %{PKG_VERSION}-7
 - Fix CVE-2025-39901
 * Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-6
@@ -136,6 +130,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %endif
 
 %if "%{src_ver}" != "2.25.7"
+* Thu Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-10
+- Release bump
 * Mon Nov 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> %{PKG_VERSION}-9
 - Fix CVE-2025-39901
 * Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-8
