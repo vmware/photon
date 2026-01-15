@@ -1,0 +1,96 @@
+From 57f5fbae9f1024aba17ff75e00433324115c548a Mon Sep 17 00:00:00 2001
+From: ziming zhang <ezrakiez@gmail.com>
+Date: Mon, 17 Nov 2025 18:07:41 +0800
+Subject: [PATCH] libceph: replace BUG_ON with bounds check for map->max_osd
+
+commit ec3797f043756a94ea2d0f106022e14ac4946c02 upstream.
+
+OSD indexes come from untrusted network packets. Boundary checks are
+added to validate these against map->max_osd.
+
+[ idryomov: drop BUG_ON in ceph_get_primary_affinity(), minor cosmetic
+  edits ]
+
+Cc: stable@vger.kernel.org
+Signed-off-by: ziming zhang <ezrakiez@gmail.com>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Mukul Sikka: backported to 5.10.y]
+Signed-off-by: Mukul Sikka <mukul.sikka@broadcom.com>
+---
+ net/ceph/osdmap.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/net/ceph/osdmap.c b/net/ceph/osdmap.c
+index 2950988738614..d245fa508e1cc 100644
+--- a/net/ceph/osdmap.c
++++ b/net/ceph/osdmap.c
+@@ -1489,8 +1489,6 @@ static int decode_new_primary_temp(void **p, void *end,
+ 
+ u32 ceph_get_primary_affinity(struct ceph_osdmap *map, int osd)
+ {
+-	BUG_ON(osd >= map->max_osd);
+-
+ 	if (!map->osd_primary_affinity)
+ 		return CEPH_OSD_DEFAULT_PRIMARY_AFFINITY;
+ 
+@@ -1499,8 +1497,6 @@ u32 ceph_get_primary_affinity(struct ceph_osdmap *map, int osd)
+ 
+ static int set_primary_affinity(struct ceph_osdmap *map, int osd, u32 aff)
+ {
+-	BUG_ON(osd >= map->max_osd);
+-
+ 	if (!map->osd_primary_affinity) {
+ 		int i;
+ 
+@@ -1562,6 +1558,8 @@ static int decode_new_primary_affinity(void **p, void *end,
+ 
+ 		ceph_decode_32_safe(p, end, osd, e_inval);
+ 		ceph_decode_32_safe(p, end, aff, e_inval);
++		if (osd >= map->max_osd)
++			goto e_inval;
+ 
+ 		ret = set_primary_affinity(map, osd, aff);
+ 		if (ret)
+@@ -1850,7 +1848,9 @@ static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
+ 		ceph_decode_need(p, end, 2*sizeof(u32), e_inval);
+ 		osd = ceph_decode_32(p);
+ 		w = ceph_decode_32(p);
+-		BUG_ON(osd >= map->max_osd);
++		if (osd >= map->max_osd)
++			goto e_inval;
++
+ 		pr_info("osd%d weight 0x%x %s\n", osd, w,
+ 		     w == CEPH_OSD_IN ? "(in)" :
+ 		     (w == CEPH_OSD_OUT ? "(out)" : ""));
+@@ -1877,13 +1877,15 @@ static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
+ 		int ret;
+ 
+ 		osd = ceph_decode_32(p);
++		if (osd >= map->max_osd)
++			goto e_inval;
++
+ 		if (struct_v >= 5)
+ 			xorstate = ceph_decode_32(p);
+ 		else
+ 			xorstate = ceph_decode_8(p);
+ 		if (xorstate == 0)
+ 			xorstate = CEPH_OSD_UP;
+-		BUG_ON(osd >= map->max_osd);
+ 		if ((map->osd_state[osd] & CEPH_OSD_UP) &&
+ 		    (xorstate & CEPH_OSD_UP))
+ 			pr_info("osd%d down\n", osd);
+@@ -1909,7 +1911,9 @@ static int decode_new_up_state_weight(void **p, void *end, u8 struct_v,
+ 		struct ceph_entity_addr addr;
+ 
+ 		osd = ceph_decode_32(p);
+-		BUG_ON(osd >= map->max_osd);
++		if (osd >= map->max_osd)
++			goto e_inval;
++
+ 		if (ceph_decode_entity_addr(p, end, &addr))
+ 			goto e_inval;
+ 		pr_info("osd%d up\n", osd);
+-- 
+2.43.0

@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.247
-Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -567,26 +567,29 @@ Patch299: 0001-bpf-sockmap-Don-t-let-sock_map_-close-destroy-unhash.patch
 # CVE-2025-68188
 Patch300: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
+# CVE-2025-68283
+Patch301: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
+
 %ifarch aarch64
 # Rpi of_configfs patches
-Patch301: 0001-OF-DT-Overlay-configfs-interface.patch
-Patch302: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch303: 0003-of-overlay-Correct-symbol-path-fixups.patch
+Patch351: 0001-OF-DT-Overlay-configfs-interface.patch
+Patch352: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch353: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
-Patch304: 0001-Add-rpi-poe-fan-driver.patch
+Patch354: 0001-Add-rpi-poe-fan-driver.patch
 
 # Fix CVE-2022-49711
-Patch305: 0001-bus-fsl-mc-bus-fix-KASAN-use-after-free-in-fsl_mc_bu.patch
+Patch355: 0001-bus-fsl-mc-bus-fix-KASAN-use-after-free-in-fsl_mc_bu.patch
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
-Patch306: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+Patch371: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
-Patch307: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+Patch372: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # Enable CONFIG_DEBUG_INFO_BTF=y
-Patch308: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
+Patch373: 0001-tools-resolve_btfids-Warn-when-having-multiple-IDs-f.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -838,17 +841,16 @@ manipulation of eBPF programs and maps.
 %autopatch -p1 -m81 -M82
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M300
+%autopatch -p1 -m100 -M350
 
 %ifarch aarch64
 # Rpi of_configfs patches
 # Rpi fan driver
-%autopatch -p1 -m301 -M305
+%autopatch -p1 -m351 -M370
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
-%autopatch -p1 -m306 -M307
-%autopatch -p1 -m308 -M308
+%autopatch -p1 -m371 -M373
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -1258,6 +1260,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Jan 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.247-11
+- Fixes CVE-2025-68283
 * Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-10
 - Fix CVE-2023-53111, CVE-2025-68379, CVE-2025-68372, CVE-2025-68190
 * Fri Jan 09 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-9

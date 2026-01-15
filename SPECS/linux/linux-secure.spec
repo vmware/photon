@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.247
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -503,6 +503,8 @@ Patch297: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
 Patch298: 0001-nbd-defer-config-put-in-recv_work.patch
 # CVE-2025-68190
 Patch299: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
+# CVE-2025-68283
+Patch300: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -788,6 +790,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jan 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.247-11
+- Fixes CVE-2025-68283
 * Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-10
 - Fix CVE-2023-53111, CVE-2025-68379, CVE-2025-68372, CVE-2025-68190
 * Fri Jan 09 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.247-9
