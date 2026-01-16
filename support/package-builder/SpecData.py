@@ -26,7 +26,11 @@ class SpecData(object):
         # map spec file name to SpecObject
         self.mapSpecFileNameToSpecObj = {}
 
+        self.skippedSpecs = set()
+
         self._readSpecs(specFilesPaths)
+
+        self.generateSpecPkgsMap()
 
     # Read all .spec files from the given folder including subfolders,
     # creates corresponding SpecObjects and put them in internal mappings.
@@ -34,6 +38,7 @@ class SpecData(object):
         for specFile in self._getListSpecFiles(specFilesPaths):
             spec = SpecParser(specFile, self.arch)
             if spec.skipSpec:
+                self.skippedSpecs.add(os.path.basename(specFile))
                 continue
 
             # skip the specfile if buildarch differs
@@ -61,6 +66,30 @@ class SpecData(object):
                 self.mapSpecObjects[key] = sorted(
                     value, key=lambda x: self.compareVersions(x), reverse=True
                 )
+
+    def generateSpecPkgsMap(self):
+        lines = []
+        append = lines.append
+        skipped = self.skippedSpecs
+
+        pkgMap = self.mapSpecObjects
+        outFile = f"{constants.stagePath}/pkg_info.pkg_map.txt"
+
+        for specObjs in pkgMap.values():
+            for specObj in specObjs:
+                specFn = os.path.basename(specObj.specFile)
+                skipped.discard(specFn)
+                append(f"{specFn}:{','.join(specObj.listPackages)}\n")
+
+        for specFn in skipped:
+            append(f"{specFn}:skipped\n")
+
+        lines.sort(key=str.lower)
+
+        with open(outFile, "w", encoding="utf-8") as f:
+            f.writelines(lines)
+
+        self.logger.info(f"Spec to packages map written to: {outFile}")
 
     def _getListSpecFiles(self, paths):
         listSpecFiles = []
