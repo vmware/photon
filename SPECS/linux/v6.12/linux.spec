@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        21%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        22%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -500,6 +500,7 @@ The Linux package contains the Linux kernel sound support
 Summary:        Kernel docs
 Group:          System Environment/Kernel
 Requires:       python3
+Requires:       %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
 
@@ -962,6 +963,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Feb 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-22
+- Disable Bluetooth and CAN support
+- Fix requires on doc sub package
 * Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-21
 - Port ARM patches to v6.12 and include new patch for reporting guest crashes
 - the VMware hypervisor
