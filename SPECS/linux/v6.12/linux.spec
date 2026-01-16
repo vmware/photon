@@ -44,6 +44,10 @@
 %define arch x86_64
 %define archdir x86
 %global fips 1
+# Set canister_build to 1 to officially build and ship
+# linux-fips-canister RPM.
+# Remove the line below once canister development done.
+%global canister_build 1
 %endif
 
 %ifarch aarch64
@@ -77,7 +81,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        12%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        13%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -906,6 +910,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jan 15 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.60-13
+- .config: added security hardened changes.
+- canister_build: official build of the canister to include previous fix.
 * Mon Jan 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-12
 - canister_build: Fix UAF (req->iv) in seqiv
 * Wed Jan 07 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-11
