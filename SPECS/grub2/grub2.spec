@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.12
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -26,6 +26,10 @@ Source4: %{name}.patches
 
 # grub patches
 %include %{SOURCE4}
+
+# CVE fixes
+Patch2000: 0001-gettext-gettext-Unregister-gettext-command-on-module.patch
+Patch2001: 0002-normal-main-Unregister-commands-on-module-unload.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -267,6 +271,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Sun Jan 18 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12-2
+- CVE-2025-61662, CVE-2025-61663, CVE-2025-61664
 * Wed Oct 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12-1
 - Update to grub 2.12
 - Sync fedora patches
