@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    15%{?dist}
+Release:    16%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -212,6 +212,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Mon Jan 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.06-16
+- CVE-2025-61662, CVE-2025-61663, CVE-2025-61664
 * Fri Sep 05 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.06-15
 - Bump-up release to get signed grub binary.
 * Thu Aug 14 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.06-14

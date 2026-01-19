@@ -91,3 +91,7 @@ Patch1680: 0070-kern-misc-Add-sanity-check-after-grub_strtoul-call.patch
 Patch1681: 0071-loader-i386-linux-Cast-left-shift-to-grub_uint32_t.patch
 Patch1682: 0072-loader-i386-bsd-Use-safe-math-to-avoid-underflow.patch
 Patch1683: 0073-fs-ext2-Rework-out-of-bounds-read-for-inline-and-ext.patch
+
+# CVE-2025-61662, CVE-2025-61663, CVE-2025-61664
+Patch2000: 0001-gettext-gettext-Unregister-gettext-command-on-module.patch
+Patch2001: 0002-normal-main-Unregister-commands-on-module-unload.patch
