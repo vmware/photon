@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.160
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -346,6 +346,10 @@ Patch215: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
 # CVE-2025-68379
 Patch216: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
+# CVE-2025-40328
+Patch217: 0001-smb-client-fix-potential-UAF-in-smb2_close_cached_fi.patch
+# CVE-2025-68219
+Patch218: 0001-cifs-fix-memory-leak-in-smb3_fs_context_parse_param-.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -721,6 +725,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Jan 19 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.160-2
+- Fixes CVE-2025-68219 and CVE-2025-40328
 * Tue Jan 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.160-1
 - Update to version 6.1.160
 * Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.159-10
