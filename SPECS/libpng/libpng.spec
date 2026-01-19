@@ -1,6 +1,6 @@
 Summary:    contains libraries for reading and writing PNG files.
 Name:       libpng
-Version:    1.6.51
+Version:    1.6.53
 Release:    1%{?dist}
 License:    libpng
 URL:        http://www.libpng.org/
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pnggroup/libpng/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=3b9b320b306388d0394404dbd6a978ba115743d913b4dd8d382b7ecf1f4e1979439e9829187058f52553f0aac0f73b274091a354c00286cdc699373b5c727fde
+%define sha512  %{name}=e854589401043c5f24e0365a578ccda8fde47766fa5990c7355581e4f0dc67bfefd7f1272fc25c269968135826cf583b1a10d01667af97e2ec4410cfaf2a700c
 
 Provides:   pkgconfig(libpng)
 Provides:   pkgconfig(libpng16)
@@ -60,6 +60,9 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+* Mon Jan 19 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.53-1
+- Update to version 1.6.53
+- Fix CVE-2025-66293
 * Fri Nov 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.51-1
 - Update to version 1.6.51
 - Fix CVE-2025-64506, CVE-2025-65018, CVE-2025-64505, CVE-2025-64720
