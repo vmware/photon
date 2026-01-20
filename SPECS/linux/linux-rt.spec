@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.160
-Release:        3%{?dist}
+Version:        6.1.161
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -283,19 +283,12 @@ Patch179: 0001-virtio-break-and-reset-virtio-devices-on-device_shut.patch
 # Fix CVE-2025-38045
 Patch180: 0001-wifi-iwlwifi-fix-debug-actions-order.patch
 
-# Fix CVE-2025-22121
-Patch183: 0001-ext4-introduce-ITAIL-helper.patch
-Patch184: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
-
 # Fix CVE-2025-39990
 Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
 
 # Fix CVE-2025-37750
 Patch187: 0001-smb-client-fix-UAF-in-decryption-with-multichannel.patch
 
-# Fix CVE-2025-40149
-Patch188: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
-Patch189: 0002-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
 # Fix CVE-2025-40135
 Patch190: 0001-ipv6-use-RCU-in-ip6_xmit.patch
 
@@ -727,6 +720,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Jan 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.161-1
+- Update to version 6.1.161
 * Tue Jan 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.160-3
 - Fixes CVE-2025-38718
 * Mon Jan 19 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.160-2
