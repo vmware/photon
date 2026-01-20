@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.160
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -417,6 +417,8 @@ Patch216: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
 Patch217: 0001-smb-client-fix-potential-UAF-in-smb2_close_cached_fi.patch
 # CVE-2025-68219
 Patch218: 0001-cifs-fix-memory-leak-in-smb3_fs_context_parse_param-.patch
+# CVE-2025-38718
+Patch219: 0001-sctp-linearize-cloned-gso-packets-in-sctp_rcv.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1179,6 +1181,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jan 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.160-3
+- Fixes CVE-2025-38718
 * Mon Jan 19 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.160-2
 - Fixes CVE-2025-68219 and CVE-2025-40328
 * Tue Jan 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.160-1
