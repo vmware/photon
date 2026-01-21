@@ -1,6 +1,6 @@
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
-Version:       0.3.12
+Version:       0.3.13
 Release:       1%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -75,6 +75,9 @@ fi
 %dir %{_sharedstatedir}/ovfenv
 
 %changelog
+* Wed Jan 21 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.13-1
+- update to 0.3.13
+- signing feature and other enhancements
 * Mon Aug 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.12-1
 - update to 0.3.12
 - multi-threaded compression
