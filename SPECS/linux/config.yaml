@@ -1,5 +1,5 @@
 shared_sources:
-- stalld/config.yaml
+- 91/stalld/config.yaml
 sources:
 - archive: linux-6.1.161.tar.xz
   archive_type: upstream
