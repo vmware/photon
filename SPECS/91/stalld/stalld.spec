@@ -1,3 +1,6 @@
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.19.1
