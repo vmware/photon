@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -23,6 +23,14 @@ Source5: dsapub_noparam.der
 Patch0: openssl-cnf.patch
 Patch1: add-FIPS_mode-compatibility-macro.patch
 Patch2: CVE-2023-50782.patch
+
+Patch0011: 0001-Correct-handling-of-AEAD-encrypted-CMS-with-inadmiss.patch
+Patch0012: 0002-Fix-heap-buffer-overflow-in-BIO_f_linebuffer.patch
+Patch0013: 0003-Fix-OCB-AES-NI-HW-stream-path-unauthenticated-unencr.patch
+Patch0014: 0004-Check-return-code-of-UTF8_putc.patch
+Patch0015: 0005-Verify-ASN1-object-s-types-before-attempting-to-acce.patch
+Patch0016: 0006-Add-NULL-check-to-PKCS12_item_decrypt_d2i_ex.patch
+Patch0017: 0007-Ensure-ASN1-types-are-checked-before-use.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -169,6 +177,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Jan 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-2
+- Multiple CVE fixes
 * Tue Oct 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.18-1
 - Update to 3.0.18
 * Thu Mar 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.16-2
