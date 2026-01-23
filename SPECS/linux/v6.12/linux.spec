@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        14%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        15%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -906,6 +906,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Feb 02 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-15
+- Enable CONFIG_TDX_GUEST_DRIVER required for CoCo.
 * Thu Jan 22 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-14
 - Update canister version to 6.12.60-13
 * Thu Jan 15 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.60-13
