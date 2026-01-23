@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -22,6 +22,14 @@ Source6: license.txt
 Patch0: openssl-cnf.patch
 Patch1: add-FIPS_mode-compatibility-macro.patch
 Patch2: CVE-2023-50782.patch
+
+Patch0011: 0001-Correct-handling-of-AEAD-encrypted-CMS-with-inadmiss.patch
+Patch0012: 0002-Fix-heap-buffer-overflow-in-BIO_f_linebuffer.patch
+Patch0013: 0003-Fix-OCB-AES-NI-HW-stream-path-unauthenticated-unencr.patch
+Patch0014: 0004-Check-return-code-of-UTF8_putc.patch
+Patch0015: 0005-Verify-ASN1-object-s-types-before-attempting-to-acce.patch
+Patch0016: 0006-Add-NULL-check-to-PKCS12_item_decrypt_d2i_ex.patch
+Patch0017: 0007-Ensure-ASN1-types-are-checked-before-use.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -191,6 +199,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Jan 20 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-2
+- Multiple CVE fixes
+- CVE-2025-15467, CVE-2025-68160, CVE-2025-69418
+- CVE-2025-69419, CVE-2025-69420, CVE-2025-69421
+- CVE-2026-22795, CVE-2026-22796
 * Mon Oct 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.18-1
 - Update to 3.0.18
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.16-3
