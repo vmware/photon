@@ -75,7 +75,8 @@ class CommandUtils:
             logger.debug(f"Running {args}")
         else:
             initLogger()
-            print(f"Running {args}", file=sys.stderr)
+            if not sys.stdout.isatty():
+                print(f"Running {args}", file=sys.stderr)
 
         fp = None
         if logfn is not None:

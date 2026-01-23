@@ -12,26 +12,28 @@ echo "Using options: $@"
 
 SPECFILE="$(dirname $(gcc --print-libgcc-file-name))/../specs"
 
-# Enable/disable triggers
-case $1 in
-none)
-  rm -f $SPECFILE
-  exit 0
-  ;;
-nofortify)
-  USE_FORTIFY_SOURCE=0
-  ;;
-nopie)
-  USE_PIE=0
-  ;;
-nonow)
-  USE_ZNOW=0
-  ;;
-*)
-  echo "Unknown option $1" >&2
-  exit 1
-  ;;
-esac
+if [ -n "$1" ]; then
+  # Enable/disable triggers
+  case $1 in
+    none)
+      rm -f $SPECFILE
+      exit 0
+      ;;
+    nofortify)
+      USE_FORTIFY_SOURCE=0
+      ;;
+    nopie)
+      USE_PIE=0
+      ;;
+    nonow)
+      USE_ZNOW=0
+      ;;
+    *)
+      echo "Unknown option $1" >&2
+      exit 1
+      ;;
+  esac
+fi
 
 # Populate gcc spec variables in according to enabled triggers
 CC1_EXTRA=""

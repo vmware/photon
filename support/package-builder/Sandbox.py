@@ -27,6 +27,7 @@ def sandbox_default_env():
         "TERM": "linux",
         "PATH": "/bin:/usr/bin:/sbin:/usr/sbin",
         "SHELL": "/bin/bash",
+        "LC_ALL": "en_US.UTF-8",
         **constants.SandboxEnv,
     }
 

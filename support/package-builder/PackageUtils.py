@@ -259,7 +259,7 @@ class PackageUtils(object):
             return
         opt = SPECS.getData().getSecurityHardeningOption(package, version)
         if not opt:
-            return
+            opt = ""
         cmd = [constants.adjustGCCSpecScript, opt]
         try:
             sandbox.runCmd(cmd, logfn=self.logger.debug)
