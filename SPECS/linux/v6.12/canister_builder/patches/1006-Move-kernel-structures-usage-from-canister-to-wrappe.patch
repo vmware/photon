@@ -1,4 +1,4 @@
-From 22a18b63e63cf400d48ddc031fb80d32a096a3b1 Mon Sep 17 00:00:00 2001
+From 353b8c298b2a05568d8c08f1d964ef7dc82d8f34 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Mon, 28 Jul 2025 18:00:18 +0000
 Subject: [PATCH] Move kernel structures usage from canister to wrapper
@@ -710,7 +710,7 @@ index 7df35e8c7..d92cf1d51 100644
 -MODULE_DESCRIPTION("CTS-CBC CipherText Stealing for CBC");
 -MODULE_ALIAS_CRYPTO("cts");
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index acbd96b33..1ed3e3873 100644
+index 37ee5181d..50c7afdd1 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
 @@ -287,12 +287,6 @@ static inline void drbg_cpu_to_be32(__u32 val, unsigned char *buf)
@@ -964,8 +964,8 @@ index acbd96b33..1ed3e3873 100644
 +		fcw_printk(KERN_INFO pr_fmt() "DRBG: Continuing without Jitter RNG\n");
  	}
  
- 	return 0;
-@@ -1609,8 +1619,10 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
+ 	drbg->jent->base.external = drbg->external;
+@@ -1611,8 +1621,10 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
  	int ret;
  	bool reseed = true;
  
@@ -977,7 +977,7 @@ index acbd96b33..1ed3e3873 100644
  	fcw_mutex_lock(drbg->drbg_mutex);
  
  	/* 9.1 step 1 is implicit with the selected DRBG type */
-@@ -1715,7 +1727,7 @@ static int drbg_init_hash_kernel(struct drbg_state *drbg)
+@@ -1717,7 +1729,7 @@ static int drbg_init_hash_kernel(struct drbg_state *drbg)
  
  	tfm = crypto_alloc_shash(drbg->core->backend_cra_name, 0, 0);
  	if (IS_ERR(tfm)) {
@@ -986,7 +986,7 @@ index acbd96b33..1ed3e3873 100644
  				drbg->core->backend_cra_name);
  		return PTR_ERR(tfm);
  	}
-@@ -1798,7 +1810,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
+@@ -1800,7 +1812,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
  
  	tfm = crypto_alloc_cipher(drbg->core->backend_cra_name, 0, 0);
  	if (IS_ERR(tfm)) {
@@ -995,7 +995,7 @@ index acbd96b33..1ed3e3873 100644
  				drbg->core->backend_cra_name);
  		return PTR_ERR(tfm);
  	}
-@@ -1812,7 +1824,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
+@@ -1814,7 +1826,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
  	}
  	sk_tfm = crypto_alloc_skcipher(ctr_name, 0, 0);
  	if (IS_ERR(sk_tfm)) {
@@ -1004,7 +1004,7 @@ index acbd96b33..1ed3e3873 100644
  				ctr_name);
  		drbg_fini_sym_kernel(drbg);
  		return PTR_ERR(sk_tfm);
-@@ -1822,7 +1834,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
+@@ -1824,7 +1836,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
  
  	req = fcw_skcipher_request_alloc(sk_tfm, GFP_KERNEL);
  	if (!req) {
@@ -1013,7 +1013,7 @@ index acbd96b33..1ed3e3873 100644
  		drbg_fini_sym_kernel(drbg);
  		return -ENOMEM;
  	}
-@@ -2100,8 +2112,10 @@ static inline int __init drbg_healthcheck_sanity(void)
+@@ -2107,8 +2119,10 @@ static inline int __init drbg_healthcheck_sanity(void)
  	/* all tests passed */
  	rc = 0;
  
@@ -1025,7 +1025,7 @@ index acbd96b33..1ed3e3873 100644
  
  	kfree(drbg->drbg_mutex);
  	kfree(drbg);
-@@ -2152,7 +2166,7 @@ static inline void __init drbg_fill_array(struct rng_alg *alg,
+@@ -2159,7 +2173,7 @@ static inline void __init drbg_fill_array(struct rng_alg *alg,
  	alg->seedsize		= 0;
  }
  
@@ -1034,7 +1034,7 @@ index acbd96b33..1ed3e3873 100644
  {
  	unsigned int i = 0; /* pointer to drbg_algs */
  	unsigned int j = 0; /* pointer to drbg_cores */
-@@ -2163,7 +2177,7 @@ static int __init drbg_init(void)
+@@ -2170,7 +2184,7 @@ static int __init drbg_init(void)
  		return ret;
  
  	if (ARRAY_SIZE(drbg_cores) * 2 > ARRAY_SIZE(drbg_algs)) {
@@ -1043,7 +1043,7 @@ index acbd96b33..1ed3e3873 100644
  			"(slots needed: %zu, slots available: %zu)\n",
  			ARRAY_SIZE(drbg_cores) * 2, ARRAY_SIZE(drbg_algs));
  		return -EFAULT;
-@@ -2185,13 +2199,11 @@ static int __init drbg_init(void)
+@@ -2192,13 +2206,11 @@ static int __init drbg_init(void)
  	return crypto_register_rngs(drbg_algs, (ARRAY_SIZE(drbg_cores) * 2));
  }
  
@@ -1058,7 +1058,7 @@ index acbd96b33..1ed3e3873 100644
  #ifndef CRYPTO_DRBG_HASH_STRING
  #define CRYPTO_DRBG_HASH_STRING ""
  #endif
-@@ -2201,12 +2213,3 @@ module_exit(drbg_exit);
+@@ -2208,12 +2220,3 @@ module_exit(drbg_exit);
  #ifndef CRYPTO_DRBG_CTR_STRING
  #define CRYPTO_DRBG_CTR_STRING ""
  #endif
@@ -1471,7 +1471,7 @@ index 9deb71e13..3210b0a14 100644
  		}
  	}
 diff --git a/crypto/seqiv.c b/crypto/seqiv.c
-index 17e11d51d..1e721a6fa 100644
+index 04928df00..d211c594a 100644
 --- a/crypto/seqiv.c
 +++ b/crypto/seqiv.c
 @@ -12,9 +12,7 @@
@@ -1484,7 +1484,7 @@ index 17e11d51d..1e721a6fa 100644
  #include <linux/slab.h>
  #include <linux/string.h>
  
-@@ -169,19 +167,13 @@ static struct crypto_template seqiv_tmpl = {
+@@ -171,19 +169,13 @@ static struct crypto_template seqiv_tmpl = {
  	.module = THIS_MODULE,
  };
  
@@ -3369,7 +3369,7 @@ index b25f9901c..aee693fc3 100644
  	int (*create)(struct crypto_template *tmpl, struct rtattr **tb);
  
 diff --git a/include/crypto/drbg.h b/include/crypto/drbg.h
-index f3e132d6f..1e56fdf24 100644
+index 1aede865d..98d9bc16f 100644
 --- a/include/crypto/drbg.h
 +++ b/include/crypto/drbg.h
 @@ -44,7 +44,6 @@
@@ -3425,7 +3425,7 @@ index 679916a84..4a6001df3 100644
  
  #include <linux/unaligned.h>
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-index 1aa9f67fe..3e880ca16 100644
+index 4e0ac13c7..fa6d7d42e 100644
 --- a/include/linux/crypto.h
 +++ b/include/linux/crypto.h
 @@ -355,7 +355,11 @@ struct crypto_alg {
@@ -3606,5 +3606,5 @@ index e7c449c6b..f5a6ed249 100644
 -MODULE_DESCRIPTION("SHA-256 Algorithm");
 -MODULE_LICENSE("GPL");
 -- 
-2.40.4
+2.43.7
 

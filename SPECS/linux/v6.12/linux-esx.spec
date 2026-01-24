@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -238,6 +238,8 @@ Patch10113: 0002-lib-crypto-sha1-Rename-sha1_init-to-sha1_init_raw.patch
 Patch10114: 0003-lib-crypto-sha1-Add-SHA-1-library-functions.patch
 Patch10115: 0001-lib-digsig-Use-SHA-1-library-instead-of-crypto_shash.patch
 Patch10116: 0001-crypto-sha1_generic-Renaming-sha1_final.patch
+# Track internal/external jitterentropy rng requests
+Patch10117: 0001-crypto-track-external-requests-to-jitterentropy_rng.patch
 
 # FIPS canister plugins
 Patch10200: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
@@ -375,7 +377,7 @@ install %{SOURCE10106} crypto/
 install %{SOURCE10300} crypto/
 
 %autopatch -p1 -m10001 -M10004
-%autopatch -p1 -m10101 -M10116
+%autopatch -p1 -m10101 -M10117
 # FIPS canister plugins
 %autopatch -p1 -m10200 -M10204
 # Jitterentropy proxy
@@ -514,6 +516,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 03 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-12
+- Track internal/external requests to jitterentropy
 * Mon Feb 02 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-11
 - Enable CONFIG_TDX_GUEST_DRIVER required for CoCo.
 * Tue Jan 27 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.60-10
