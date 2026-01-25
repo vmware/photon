@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.161
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -345,6 +345,8 @@ Patch217: 0001-smb-client-fix-potential-UAF-in-smb2_close_cached_fi.patch
 Patch218: 0001-cifs-fix-memory-leak-in-smb3_fs_context_parse_param-.patch
 # CVE-2025-38718
 Patch219: 0001-sctp-linearize-cloned-gso-packets-in-sctp_rcv.patch
+# CVE-2025-71068
+Patch220: 0001-svcrdma-bound-check-rq_pages-index-in-inline-path.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -720,6 +722,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Sun Jan 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.161-2
+- CVE-2025-71068
 * Tue Jan 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.161-1
 - Update to version 6.1.161
 * Tue Jan 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.160-3
