@@ -1,13 +1,13 @@
-# Build this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} >= 92
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
 
 %global collection_namespace community
 %global collection_name general
 
 Summary:        Modules and plugins supported by Ansible community
 Name:           ansible-community-general
-Version:        12.2.0
-Release:        1%{?dist}
+Version:        10.7.0
+Release:        1.1%{?dist}
 URL:            https://github.com/ansible-collections/community.general
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -49,8 +49,8 @@ rm -vr %{buildroot}%{ansible_collection_files}/%{collection_name}/tests
 %{ansible_collection_files}
 
 %changelog
-* Wed Jan 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 12.2.0-1
-- Update to 12.2.0
+* Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 10.7.0-1.1
+- Bump after moving to SPECS/91
 * Wed Jun 04 2025 Tapas Kundu <tapas.kundu@broadcom.com> 10.7.0-1
 - Update to 10.7.0
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 6.3.0-3

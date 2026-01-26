@@ -1,15 +1,7 @@
 sources:
-- archive: ansible-community-general-12.2.0.tar.gz
-  archive_sha512sum: 1da485331b081e2a312e8d8ddc1a366b43d62cf83a0d5ce5710d4abe13892094efc0cddc07c8a27b1737654b9375b1317df2ee486b5ea6cdf4291752585f7acc
-  skip_validation: false
-  archive_type: upstream
-  name: community.general-12.2.0
-  version: 12.2.0
-  url: https://github.com/ansible-collections/community.general/archive/refs/tags/12.2.0.tar.gz
-  repo_url: https://github.com/ansible-collections/community.general
-  commit_id: 8919a545d303cd5def92f85b3cc4829f422e446b
-  skip_list: []
-  missing: []
+- archive: ansible-community-general-10.7.0.tar.gz
+  archive_sha512sum: 0205c73758e8f483560e731127f80b4061218e01da03ba21cbc5457b1249a67a1e075a85e711189a84efe475a15aacf1d736eef567aa10650aa6cc9b211e8aff
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'This repository contains the community.general Ansible

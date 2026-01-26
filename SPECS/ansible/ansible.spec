@@ -1,9 +1,10 @@
+# Build this spec if subrelease is 92 or more
 %global build_if %{photon_subrelease} >= 92
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.18.6
-Release:        2%{?dist}
+Version:        2.20.1
+Release:        1%{?dist}
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -77,6 +78,8 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.20.1-1
+- Update to 2.20.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.18.6-2
 - Bump version as a part of python3.14 upgrade
 * Thu May 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.18.6-1

@@ -1,13 +1,13 @@
-# Build this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} >= 92
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
 
 %global collection_namespace ansible
 %global collection_name posix
 
 Summary:        Ansible Collection targeting POSIX and POSIX-ish platforms
 Name:           ansible-posix
-Version:        2.1.0
-Release:        1%{?dist}
+Version:        2.0.0
+Release:        1.1%{?dist}
 URL:            https://github.com/ansible-collections/ansible.posix
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -52,8 +52,8 @@ export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 %{ansible_collection_files}
 
 %changelog
-* Wed Jan 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.0-1
-- Update to 2.1.0
+* Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.0-1.1
+- Bump after moving to SPECS/91
 * Wed Jun 04 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.0-1
 - Update to 2.0.0
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.5.1-3

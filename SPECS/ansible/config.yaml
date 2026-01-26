@@ -1,7 +1,15 @@
 sources:
-- archive: ansible-2.18.6.tar.gz
-  archive_sha512sum: 1b23cd170ecaf79ce0b7e5260e743912d1a9e7a6ab185527dd65dcb16a2788add2054c8b6ec1a6197190c9910f81d6287493ae17860898de9a70251dff1a77a0
-  skip_validation: true
+- archive: ansible-2.20.1.tar.gz
+  archive_sha512sum: fa0a4836e3548cd4e432e87b241beb6fb556765699c25b1f3b1c47111a1c44d5ba3244aeb8793408e72ab63564d6e848148becbfb550bd965e466752d7f78229
+  skip_validation: false
+  archive_type: upstream
+  name: ansible-2.20.1
+  version: 2.20.1
+  url: https://github.com/ansible/ansible/archive/refs/tags/v2.20.1.tar.gz
+  repo_url: https://github.com/ansible/ansible
+  commit_id: 55ee8acd65cd94a110ce5eb5a3668c320b26f7d8
+  skip_list: []
+  missing: ['.github']
   spdx:
     package:
       detailed_description: 'Ansible is a radically simple IT automation system. It
