@@ -1,0 +1,64 @@
+From 8f56711162441dad9238fedcb7b56df511b21491 Mon Sep 17 00:00:00 2001
+From: Sabrina Dubroca <sd@queasysnail.net>
+Date: Mon, 26 Jan 2026 11:32:19 -0800
+Subject: [PATCH] tls: separate no-async decryption request handling from async
+
+[ Upstream commit 41532b785e9d79636b3815a64ddf6a096647d011 ]
+
+If we're not doing async, the handling is much simpler. There's no
+reference counting, we just need to wait for the completion to wake us
+up and return its result.
+
+We should preferably also use a separate crypto_wait. I'm not seeing a
+UAF as I did in the past, I think aec7961916f3 ("tls: fix race between
+async notify and socket close") took care of it.
+
+This will make the next fix easier.
+
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Link: https://lore.kernel.org/r/47bde5f649707610eaef9f0d679519966fc31061.1709132643.git.sd@queasysnail.net
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Stable-dep-of: 13114dc55430 ("tls: fix use-after-free on failed backlog decryption")
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Backported to v5.10 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/tls/tls_sw.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 7446c5fc3..b469de1d2 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -273,9 +273,15 @@ static int tls_do_decryption(struct sock *sk,
+ 		BUILD_BUG_ON_INVALID(atomic_read(&ctx->decrypt_pending) < 1);
+ 		atomic_inc(&ctx->decrypt_pending);
+ 	} else {
++		DECLARE_CRYPTO_WAIT(wait);
++
+ 		aead_request_set_callback(aead_req,
+ 					  CRYPTO_TFM_REQ_MAY_BACKLOG,
+-					  crypto_req_done, &ctx->async_wait);
++					  crypto_req_done, &wait);
++		ret = crypto_aead_decrypt(aead_req);
++		if (ret == -EINPROGRESS || ret == -EBUSY)
++			ret = crypto_wait_req(ret, &wait);
++		return ret;
+ 	}
+ 
+ 	ret = crypto_aead_decrypt(aead_req);
+@@ -284,10 +290,7 @@ static int tls_do_decryption(struct sock *sk,
+ 		ret = ret ?: -EINPROGRESS;
+ 	}
+ 	if (ret == -EINPROGRESS) {
+-		if (async)
+-			return ret;
+-
+-		ret = crypto_wait_req(ret, &ctx->async_wait);
++		return 0;
+ 	}
+ 
+ 	if (async)
+-- 
+2.43.7
+

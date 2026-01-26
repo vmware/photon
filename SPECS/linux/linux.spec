@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.248
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -175,7 +175,7 @@ Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 Patch60: 0002-Add-.sbat-section.patch
 %endif
 
-# CVE: [100..300]
+# CVE: [100..350]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -187,6 +187,9 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix CVE-2025-38685
+Patch105: 0001-fbdev-Fix-vmalloc-out-of-bounds-write-in-fast_imageb.patch
 
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
@@ -222,6 +225,9 @@ Patch124: 0001-io_uring-prevent-opcode-speculation.patch
 
 # Fix CVE-2024-35937
 Patch125: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
+
+# Fix CVE-2025-38512
+Patch126: 0001-wifi-prevent-A-MSDU-attacks-in-mesh-networks.patch
 
 # Fix CVE-2024-26718
 Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
@@ -261,6 +267,9 @@ Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 # Fix CVE-2022-49444
 Patch150: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
+
+# Fix CVE-2024-58240
+Patch151: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
 
 # Fix CVE-2024-41071
 Patch155: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
@@ -799,7 +808,7 @@ manipulation of eBPF programs and maps.
 # LTP
 %autopatch -p1 -m81 -M82
 
-# CVE: [100..300]
+# CVE: [100..350]
 %autopatch -p1 -m100 -M350
 
 %ifarch aarch64
@@ -1219,6 +1228,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Feb 06 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.248-2
+- Fix CVE-2025-38685, CVE-2025-38512, CVE-2024-58240
 * Tue Feb 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.248-1
 - Update to version 5.10.248
 * Thu Jan 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.10.247-12

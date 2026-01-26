@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.248
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -138,7 +138,7 @@ Patch92: 0002-Added-PAX_RANDKSTACK.patch
 Patch93: 0003-Added-rap_plugin.patch
 Patch94: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
-# CVE: [100..300]
+# CVE: [100..350]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
@@ -150,6 +150,9 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix CVE-2025-38685
+Patch105: 0001-fbdev-Fix-vmalloc-out-of-bounds-write-in-fast_imageb.patch
 
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
@@ -467,6 +470,9 @@ Patch299: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # CVE-2025-68283
 Patch300: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
 
+# Fix CVE-2024-58240
+Patch301: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -594,8 +600,8 @@ The Linux package contains the Linux kernel doc files
 #Secure
 %autopatch -p1 -m90 -M94
 
-# CVE: [100..300]
-%autopatch -p1 -m100 -M300
+# CVE: [100..350]
+%autopatch -p1 -m100 -M350
 
 # crypto
 %autopatch -p1 -m500 -M507
@@ -732,6 +738,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 06 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.248-2
+- Fix CVE-2025-38685, CVE-2024-58240
 * Tue Feb 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.248-1
 - Update to version 5.10.248
 * Thu Jan 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.10.247-12
