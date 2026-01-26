@@ -1,6 +1,6 @@
 Summary:    contains libraries for reading and writing PNG files.
 Name:       libpng
-Version:    1.6.53
+Version:    1.6.55
 Release:    1%{?dist}
 URL:        http://www.libpng.org/
 Group:      System Environment/Libraries
@@ -9,7 +9,7 @@ Distribution:   Photon
 
 Source0:    https://github.com/pnggroup/libpng/archive/refs/tags/%{name}-%{version}.tar.gz
 
-Source1: license.txt
+Source1:    license.txt
 %include %{SOURCE1}
 
 Provides:   pkgconfig(libpng)
@@ -62,6 +62,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+* Fri Feb 13 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.55-1
+- Upgrade to v1.6.55, addresses several CVEs
 * Mon Dec 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.53-1
 - Update to version 1.6.53
 - Fix CVE-2025-66293
