@@ -3,13 +3,15 @@
 set -ex
 
 echoerr() {
-  echo -e "$*" 1>&2
+  echo -e "$*" >&2
 }
 
-echo "PHOTON_RELEASE_VERSION=${PHOTON_RELEASE_VERSION}"
+PH_REL_VER="${PHOTON_RELEASE_VERSION}"
+echo "PHOTON_RELEASE_VERSION=${PH_REL_VER}"
+
 arch="$(uname -m)"
 SYSROOT=/sysroot
-ROOTFS_TAR_FILENAME="/photon/stage/photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.${arch}.tar.gz"
+ROOTFS_TAR_FILENAME="/photon/stage/photon-rootfs-$PH_REL_VER-$PHOTON_BUILD_NUMBER.${arch}.tar.gz"
 STAGE_DIR="/photon/stage"
 
 mkdir -p $SYSROOT
@@ -17,19 +19,17 @@ rm -rf /etc/yum.repos.d/*
 
 cat > /etc/yum.repos.d/photon-local.repo <<- EOF
 [photon-local]
-name=VMware Photon Linux ${PHOTON_RELEASE_VERSION}($arch)
+name=VMware Photon Linux ${PH_REL_VER}($arch)
 baseurl=file://${STAGE_DIR}/RPMS
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0
 enabled=1
-skip_if_unavailable=True
 EOF
 
-tdnf install -y --setopt=tsflags=nodocs rpm tar gzip grep coreutils
+tdnf install -y --setopt=tsflags=nodocs rpm tar gzip grep coreutils bc
 
 rpm --root $SYSROOT/ --initdb
 
-tdnf --releasever ${PHOTON_RELEASE_VERSION} \
+tdnf --releasever ${PH_REL_VER} \
      --installroot ${SYSROOT}/ \
      --rpmverbosity error \
      --setopt=tsflags=nodocs \
@@ -40,6 +40,13 @@ actual_pkg_list=($(tdnf --installroot $SYSROOT/ \
                         --disablerepo=* -q \
                         list installed 2>/dev/null | cut -d'.' -f1))
 
+isRpmV6=0
+rpmVer=$(rpm --root "${SYSROOT}" -q --qf '%{version}\n' rpm-libs)
+if [ "${rpmVer%%.*}" -eq 6 ]; then
+  echo "rpm-libs is 6.x"
+  isRpmV6=1
+fi
+
 expected_pkg_list=(
   bash bzip2-libs ca-certificates ca-certificates-pki curl curl-libs
   e2fsprogs-libs elfutils-libelf expat-libs filesystem glibc glibc-libs
@@ -47,6 +54,10 @@ expected_pkg_list=(
   nss-libs openssl-libs photon-release photon-repos popt readline rpm-libs
   sqlite-libs tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
 )
+
+if [ ${isRpmV6} -ne 0 ]; then
+  expected_pkg_list+=(libgomp libstdc++ rpm-sequoia)
+fi
 
 actual_pkg_count=${#actual_pkg_list[@]}
 expected_pkg_count=${#expected_pkg_list[@]}
@@ -74,7 +85,12 @@ popd
 tar -I 'gzip -9' -C $SYSROOT -cpf $ROOTFS_TAR_FILENAME .
 
 # expected size plus 2% wiggle room
-max_size=17313736
+if [ ${isRpmV6} -ne 0 ]; then
+  size="18.5"
+else
+  size="16.6"
+fi
+max_size=$(printf "%.0f\n" "$(echo "${size} * 1024 * 1024" | bc -l)")
 
 actual_size=$(wc -c ${ROOTFS_TAR_FILENAME} | cut -d' ' -f1)
 if (( ${actual_size} > ${max_size} )); then
