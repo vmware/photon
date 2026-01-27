@@ -1,7 +1,7 @@
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
 Version:        1.26.19
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
@@ -13,6 +13,10 @@ Source0: https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
 
 Patch0: CVE-2025-50181.patch
 Patch1: CVE-2025-66418.patch
+Patch2: CVE-2025-66471-1.patch
+Patch3: CVE-2025-66471-2.patch
+Patch4: CVE-2026-21441-1.patch
+Patch5: CVE-2026-21441-2.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -72,6 +76,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jan 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-4
+- Fix CVE-2025-66471, CVE-2026-21441
 * Tue Dec 23 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-3
 - Fix CVE-2025-66418
 * Wed Nov 19 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.19-2
