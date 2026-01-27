@@ -2,7 +2,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.90
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -13,6 +13,7 @@ Source0:        https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
 %define sha512  %{name}=e169de1892f935e219b0f49d90107f95cba42b40bca20bd3c973313c2cd4df58b929af6628cd988419051d81c3b4ccf8e9f816274df7d0840e79f5bf49602442
 
 Patch0:         enable_dnssec.patch
+Patch1:         0001-Fix-bounds-checking-in-check_ia.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  systemd-rpm-macros
@@ -98,6 +99,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Tue Jan 27 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.90-2
+- Add patch to fix OOB issue CVE-2025-54318
 * Tue Feb 20 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 2.90-1
 - Update to v2.90 to fix CVE-2023-50868, CVE-2023-50387
 * Mon Apr 03 2023 Anmol Jain <anmolja@vmware.com> 2.85-4
