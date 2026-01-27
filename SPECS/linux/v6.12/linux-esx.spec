@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -514,6 +514,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jan 27 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.60-10
+- enable infiniband, mlx5 support
+- match config-esx_x86_64 from 6.1 spec
 * Thu Jan 22 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-9
 - Update canister version to 6.12.60-13
 - Add patch to address UAF (req->iv) in seqiv.c
