@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.161
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -414,6 +414,12 @@ Patch218: 0001-cifs-fix-memory-leak-in-smb3_fs_context_parse_param-.patch
 Patch219: 0001-sctp-linearize-cloned-gso-packets-in-sctp_rcv.patch
 # CVE-2025-71068
 Patch220: 0001-svcrdma-bound-check-rq_pages-index-in-inline-path.patch
+# CVE-2026-23011
+Patch221: 0001-ipv4-ip_gre-make-ipgre_header-robust.patch
+# CVE-2026-23010
+Patch222: 0001-ipv6-Fix-use-after-free-in-inet6_addr_del.patch
+# CVE-2026-23001
+Patch223: 0001-macvlan-fix-possible-UAF-in-macvlan_forward_source.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1176,6 +1182,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jan 30 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.161-3
+- Security fixes: CVE-2026-23001, CVE-2026-23010, CVE-2026-23011
 * Sun Jan 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.161-2
 - CVE-2025-71068
 * Tue Jan 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.161-1
