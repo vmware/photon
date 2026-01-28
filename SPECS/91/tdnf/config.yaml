@@ -1,12 +1,12 @@
 sources:
-- archive: tdnf-3.6.3.tar.gz
+- archive: tdnf-3.5.16.tar.gz
   archive_type: upstream
-  archive_sha512sum: 9c4b84477936485808af0f5ed28d5a9be63a16a7e187dfde19ed4f75990865707afaa08a0a23134c015414b0d5c8f05c7df5e0c8d8f7330d659c29f49834edcd
-  version: 3.6.3
-  name: tdnf-3.6.3
-  url: https://github.com/vmware/tdnf/archive/refs/tags/v3.6.3.tar.gz
+  archive_sha512sum: c47b7fc0fd73f60ea8eba7ff2b4b751bf269231eaf90e117acbf155a443ac43cd60b849cde829b9bd623d1294e77d3b5aca07d6b41cb68bdf1944b1cc1467a90
+  version: 3.5.16
+  name: tdnf-3.5.16
+  url: https://github.com/vmware/tdnf/archive/refs/tags/v3.5.16.tar.gz
   repo_url: https://github.com/vmware/tdnf.git
-  commit_id: 499cf91e15a7342ecea1f98e38b27bb046bc998e
+  commit_id: 3040f9c67069652fb83719134c569c5a86b77721
   spdx:
     package:
       detailed_description: tdnf - tiny dandified yum
