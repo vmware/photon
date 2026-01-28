@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -19,6 +19,8 @@ Source5:        squid.logrotate
 
 Patch0: CVE-2024-25111.patch
 Patch1: CVE-2024-37894.patch
+Patch2: CVE-2025-62168.patch
+patch3: CVE-2025-59362.patch
 
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  autoconf
@@ -226,6 +228,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Wed Jan 28 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.6-7
+- Fix CVE-2025-62168,CVE-2025-59362
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.6-6
 - Version bump for expat upgrade
 * Mon Dec 09 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 6.6-5
