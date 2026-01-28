@@ -8,7 +8,6 @@ from DockerUtil import DockerUtil
 from common import (
     get_official_spdx_list,
     get_exceptions_list,
-    get_srp_approved_licenses,
     err_exit,
     pr_err,
     read_license_from_file,
