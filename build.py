@@ -87,6 +87,7 @@ targetDict = {
     ],
     "utilities": [
         "generate-dep-lists",
+        "generate-pkg-info",
         "pkgtree",
         "imgtree",
         "who-needs",
@@ -316,6 +317,18 @@ class Utilities:
                         os.path.basename(json_file),
                     ),
                 )
+
+    """
+    Generate a pkg info (json and snapshot files) based on the spec data and without building RPMs
+    """
+    def generate_pkg_info(self):
+        # Generate .spec out of .spec.in
+        RpmBuildTarget()
+        # Create pkg info
+        Builder.generatePkgInfo(
+            Build_Config.pkgInfoFile,
+            self.logger,
+        )
 
     def pkgtree(self):
         self.input_type = "pkg"
