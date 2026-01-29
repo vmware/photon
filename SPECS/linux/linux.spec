@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.161
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -420,6 +420,8 @@ Patch221: 0001-ipv4-ip_gre-make-ipgre_header-robust.patch
 Patch222: 0001-ipv6-Fix-use-after-free-in-inet6_addr_del.patch
 # CVE-2026-23001
 Patch223: 0001-macvlan-fix-possible-UAF-in-macvlan_forward_source.patch
+# CVE-2023-53510
+Patch224: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1182,6 +1184,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jan 30 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-4
+- Fix for CVE-2023-53510
 * Fri Jan 30 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.161-3
 - Security fixes: CVE-2026-23001, CVE-2026-23010, CVE-2026-23011
 * Sun Jan 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.161-2
