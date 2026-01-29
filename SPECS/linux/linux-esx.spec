@@ -13,19 +13,21 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.248
-Release:        1%{?kat_build:.kat}%{?dist}
+Version:        5.10.247
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
+BuildArch:     x86_64
+
 %define uname_r %{version}-%{release}-esx
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=db06b9889a5ac645652b2f277692622d2afc97d3d74de8595c059b232b169846ad8b642923ebd40ee8e8599faa3e7e4bc0834d31072d0c685a54c85100441cf2
+%define sha512 linux=1e5e564cc0b612b087b3e00fc62d0983d11db55063108163b7f5f9cd86eba832b387380c08ab1852413f157b96d3c13335e54e96ed49ac6b64fecfd9bb3852dc
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -390,6 +392,12 @@ Patch229:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
 # Fix CVE-2024-57982
 Patch230:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
 
+# Fix CVE-2022-49743
+Patch231:   0001-ovl-Use-buf-flexible-array-for-memcpy-destination.patch
+
+# Fix CVE-2023-52975
+Patch232:   0001-scsi-iscsi_tcp-Fix-UAF-during-logout-when-accessing-.patch
+
 # Fix CVE-2022-49226
 Patch233:   0001-net-asix-add-proper-error-handling-of-usb-read-error.patch
 
@@ -448,6 +456,14 @@ Patch253: 0001-lib-lzo-lzo1x_compress.c-make-lzogeneric1x_1_compres.patch
 Patch254: 0002-lib-lzo-lzo1x_compress.c-replace-ternary-operator-wi.patch
 Patch255: 0003-crypto-lzo-Fix-compression-buffer-overrun.patch
 
+# Fix CVE-2025-22121
+Patch256: 0001-ext4-introduce-ITAIL-helper.patch
+Patch257: 0001-ext4-fix-out-of-bound-read-in-ext4_xattr_inode_dec_r.patch
+
+# Fix CVE-2025-22022
+Patch258: 0001-usb-xhci-move-link-chain-bit-quirk-checks-into-one-h.patch
+Patch259: 0001-usb-xhci-Apply-the-link-chain-quirk-on-NEC-isoc-endp.patch
+
 # Fix CVE-2024-35939
 Patch261: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
 # Fix CVE-2023-53401
@@ -460,8 +476,26 @@ Patch265: 0002-dma-buf-fix-check-in-dma_resv_add_fence.patch
 # Fix CVE-2022-49961
 Patch266:   0001-bpf-Do-mark_chain_precision-for-ARG_CONST_ALLOC_SIZE.patch
 
+# Fix CVE-2025-40110
+Patch267:   0001-drm-vmwgfx-Fix-a-null-ptr-access-in-the-cursor-snoop.patch
+
+# Fix CVE-2025-38022
+Patch268:   0001-RDMA-core-Fix-KASAN-slab-use-after-free-Read-in-ib_r.patch
+
+# Fix CVE-2025-38119
+Patch269:   0001-scsi-core-ufs-Fix-a-hang-in-the-error-handler.patch
+
+# Fix CVE-2025-37830
+Patch270:   0001-cpufreq-scmi-Fix-null-ptr-deref-in-scmi_cpufreq_get_.patch
+
 # Fix CVE-2025-38527
 Patch273: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
+
+#Fix CVE-2022-49168
+Patch274: 0001-btrfs-do-not-clean-up-repair-bio-if-submit-fails.patch
+
+#Fix CVE-2022-49465
+Patch275: 0001-blk-throttle-Set-BIO_THROTTLED-when-bio-has-been-thr.patch
 
 # Fix CVE-2025-40149
 Patch276: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
@@ -474,6 +508,9 @@ Patch279: 0001-ipv6-use-RCU-in-ip6_xmit.patch
 # Fix CVE-2025-39797
 Patch280: 0001-xfrm-Duplicate-SPI-Handling.patch
 Patch281: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
+
+# CVE-2022-48744
+Patch282: 0001-net-mlx5e-Avoid-field-overflowing-memcpy.patch
 
 # CVE-2025-39810
 Patch283: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
@@ -488,11 +525,15 @@ Patch287: 0002-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
 # CVE-2025-38584
 Patch288: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 
+# CVE-2025-38556
+Patch289: 0001-HID-core-Harden-s32ton-against-conversion-to-0-bits.patch
 # CVE-2025-38201
 Patch290: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
 # CVE-2022-49622
 Patch291: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
 Patch292: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
+# CVE-2023-52735
+Patch293: 0001-bpf-sockmap-Don-t-let-sock_map_-close-destroy-unhash.patch
 # CVE-2025-68188
 Patch294: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
@@ -500,6 +541,8 @@ Patch294: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 Patch295: 0001-loop-Fix-use-after-free-issues.patch
 # CVE-2025-68379
 Patch296: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
+# CVE-2025-68372
+Patch297: 0001-nbd-defer-config-put-in-recv_work.patch
 # CVE-2025-68190
 Patch298: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # CVE-2025-68283
@@ -588,7 +631,13 @@ Patch1542:       0012-check-exclusive-vectors-when-freeing-interrupt1.patch
 Patch1543:       0013-release-notification-bitmap-inn-error-path.patch
 Patch1544:       0014-add-support-for-arm64.patch
 
-BuildArch:     x86_64
+# Fix for framebuffer regression in v5.10.247
+# With v5.10.248 these patches can be removed
+# The issue was introduced by:
+# https://github.com/gregkh/linux/commit/0998a6cb232674408a03e8561dc15aa266b2f53b
+Patch1600:       0001-Fonts-Add-charcount-field-to-font_desc.patch
+Patch1601:       0002-console-Delete-unused-con_font_copy-callback-impleme.patch
+Patch1602:       0003-fbcon-Avoid-using-FNTCHARCNT-and-hard-coded-built-in.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -711,6 +760,9 @@ popd
 
 # vmci
 %autopatch -p1 -m1521 -M1544
+
+# framebuffer regresion
+%autopatch -p1 -m1600 -M1602
 
 %make_build mrproper
 cp %{SOURCE1} .config
@@ -894,8 +946,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
-* Tue Jan 20 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.248-1
-- Update to version 5.10.248
+* Thu Jan 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.10.247-12
+- Fix framebuffer regression
 * Thu Jan 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.10.247-11
 - Fixes CVE-2025-68283
 * Fri Jan 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.247-10
