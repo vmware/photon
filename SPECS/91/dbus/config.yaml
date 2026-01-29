@@ -1,14 +1,7 @@
 sources:
-- archive: dbus-1.16.2.tar.xz
-  archive_sha512sum: 5c26f52d85984bb9ae1dde8d7e73921eacbdf020a61ff15f00a4c240cb38a121553ee04bd66e62b28425ff9bc50f4f5e15135166573ac0888332a01a0db1faa2
-  archive_type: upstream
-  name: dbus-1.16.2
-  version: 1.16.2
-  url: https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz
-  repo_url: https://gitlab.freedesktop.org/dbus/dbus
-  commit_id: 958bf9db2100553bcd2fe2a854e1ebb42e886054
-  skip_list: []
-  missing: []
+- archive: dbus-1.15.4.tar.xz
+  archive_sha512sum: 53a5b7161940c5d4432b902c3c0ac1f1965978e3791a640d1a71f2d819474b727497f7a13c95d7c5850baef659062f1434296a3f5e56701383cc573dfbf187ee
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'The dbus package contains dbus. '

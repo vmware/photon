@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        The Common UNIX Printing System
 Name:           cups
 Version:        2.4.14
-Release:        2%{?dist}
+Release:        1.1%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -83,18 +83,17 @@ rm -rf %{buildroot}/*
 %config %{_sysconfdir}/cups/snmp.conf.default
 %dir %attr(755,root,root) %{_sysconfdir}/cups/ppd
 %dir %attr(700,root,root) %{_sysconfdir}/cups/ssl
+%config %{_sysconfdir}/rc.d/
 %config %{_sysconfdir}/dbus-1/system.d/cups.conf
+
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/libcups*.so.*
 %dir %{_libdir}/cups
 %{_libdir}/cups/*
-%{_unitdir}/*.service
-%{_unitdir}/*.socket
-%{_unitdir}/*.slice
-%{_unitdir}/%{name}.path
+
 %doc %{_mandir}/*
-%doc %{_docdir}/cups
+%doc %{_defaultdocdir}/cups
 %{_datadir}/cups/
 %{_datadir}/locale/
 
@@ -105,8 +104,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
-* Thu Jan 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.14-2
-- Fix build with newer dbus
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.14-1.1
+- Bump after moving to SPECS/91
 * Tue Nov 25 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.14-1
 - Update to 2.4.14 and fix CVE-2025-61915 and CVE-2025-58436
 * Sun Oct 19 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.11-4

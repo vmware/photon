@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        DBus message bus
 Name:           dbus
-Version:        1.16.2
-Release:        1%{?dist}
+Version:        1.15.4
+Release:        8.1%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -14,17 +14,15 @@ Source0: http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
-Source2: %{name}.sysusers
+Patch0: CVE-2023-34969.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
-BuildRequires:  meson
 
 Requires:       expat
 Requires:       systemd-libs
 Requires:       xz
-Requires:       systemd-rpm-macros
 Requires:       %{name}-libs = %{version}-%{release}
 
 %description
@@ -57,53 +55,26 @@ simple interprocess messaging system (systemd --user integration)
 %autosetup -p1
 
 %build
-CONFIG_OPTIONS=(
-  -Ddoxygen_docs=disabled
-  -Dducktype_docs=disabled
-  -Dxml_docs=disabled
-  -Dqt_help=disabled
-  -Dlibaudit=disabled
-  -Dapparmor=disabled
-  -Dkqueue=disabled
-  -Dlaunchd=disabled
-  -Dx11_autolaunch=disabled
-  -Dselinux=disabled
-  -Dsystem_socket=%{_rundir}/%{name}/system_bus_socket
-  -Ddbus_user=%{name}
-  -Duser_session=true
-  --libexecdir=%{_libexecdir}/%{name}-1
-)
+%configure \
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --enable-libaudit=no \
+    --enable-selinux=no \
+    --with-console-auth-dir=%{_rundir}/console \
+    --enable-user-session \
+    --disable-static
 
-%{meson} "${CONFIG_OPTIONS[@]}"
-
-%{meson_build}
+%make_build
 
 %install
-%{meson_install}
+%make_install %{?_smp_mflags}
 
-rm %{buildroot}%{_userunitdir}/sockets.target.wants/%{name}.socket
-
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
+rm %{buildroot}%{_userunitdir}/sockets.target.wants/dbus.socket \
+   %{buildroot}%{_libdir}/*.la
 
 %if 0%{?with_check}
 %check
-%meson_test
+make %{?_smp_mflags} check
 %endif
-
-%pre
-%sysusers_create_compat %{SOURCE2}
-
-%post
-%systemd_post %{name}.socket
-%systemd_post %{name}.service
-
-%preun
-%systemd_preun %{name}.socket
-%systemd_postun %{name}.service
-
-%postun
-%systemd_postun %{name}.socket
-%systemd_postun %{name}.service
 
 %files
 %defattr(-,root,root)
@@ -111,9 +82,9 @@ install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_bindir}/*
 %{_tmpfilesdir}/%{name}.conf
 %{_unitdir}/*
+%exclude %{_sysusersdir}
 %{_libexecdir}/*
 %{_datadir}/%{name}-1
-%{_sysusersdir}/%{name}.conf
 
 %files libs
 %defattr(-,root,root)
@@ -136,8 +107,8 @@ install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_userunitdir}/%{name}.socket
 
 %changelog
-* Thu Jan 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.2-1
-- Upgrade to v1.16.2
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8.1
+- Bump after moving to SPECS/91
 * Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8
 - Introduce libs subpackage
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.15.4-7
