@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.161
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -389,6 +389,9 @@ Patch219: 0001-ipv6-Fix-use-after-free-in-inet6_addr_del.patch
 Patch220: 0001-macvlan-fix-possible-UAF-in-macvlan_forward_source.patch
 # CVE-2023-53510
 Patch221: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
+
+# Fix CVE-2025-68353
+Patch222: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -769,6 +772,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 30 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.161-5
+- Fix CVE-2025-68353
 * Fri Jan 30 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-4
 - Fix for CVE-2023-53510
 * Fri Jan 30 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.161-3
