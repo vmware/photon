@@ -1,20 +1,17 @@
 Summary:        ALSA library
 Name:           alsa-lib
 Version:        1.2.3.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        ftp://ftp.alsa-project.org/pub/lib/%{name}-%{version}.tar.bz2
-%define sha1    alsa-lib=2dfe24ae4872c0a390791a515d50de4047eff02b
+Source0: https://www.alsa-project.org/files/pub/lib/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=1fbc6360fda841bd9ca488739bdc9f4142c1b4a07ff767f48f1e160e3d4dff914aed422c97088e238b5e77d7e30aa79ff72569c3348a4cf4a412e1e4bce0bf2a
 
-BuildRequires:	python3-devel
-BuildRequires:  python3-libs
-
-Requires:       python3
+Patch0: CVE-2026-25068.patch
 
 %description
 The ALSA Library package contains the ALSA library used by programs
@@ -31,17 +28,22 @@ It contains the libraries and header files to create applications
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-rm -fv %{buildroot}%{_libdir}/*.la
+%make_install %{?_smp_mflags}
+rm %{buildroot}%{_libdir}/*.la
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/libasound*.so*
-%{_libdir}/libatopology*.so*
+%{_libdir}/*.so.*
 %{_libdir}/pkgconfig/*
 %exclude %dir %{_libdir}/debug
 %{_datadir}/*
@@ -49,8 +51,11 @@ rm -fv %{buildroot}%{_libdir}/*.la
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
+%{_libdir}/*.so
 
 %changelog
+* Mon Feb 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3.2-4
+- Fix CVE-2026-25068
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3.2-3
 - Exclude debug symbols properly
 * Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 1.2.3.2-2
