@@ -1,7 +1,7 @@
 Summary:        ALSA library
 Name:           alsa-lib
 Version:        1.2.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -11,6 +11,8 @@ Source0:        https://www.alsa-project.org/files/pub/lib/%{name}-%{version}.ta
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-25068.patch
 
 %description
 The ALSA Library package contains the ALSA library used by programs
@@ -34,6 +36,12 @@ It contains the libraries and header files to create applications
 %make_install %{?_smp_mflags}
 rm %{buildroot}%{_libdir}/*.la
 
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -48,6 +56,8 @@ rm %{buildroot}%{_libdir}/*.la
 %{_libdir}/*.so
 
 %changelog
+* Mon Feb 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.8-4
+- Fix CVE-2026-25068
 * Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.8-3
 - Remove python3 from requires
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.2.8-2
