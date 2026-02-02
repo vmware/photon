@@ -67,10 +67,12 @@ class Spec2GitWorkflow(BaseWorkflow):
             # Phase 4: Execute prep section
             # This will handle extraction, git initialization, and patch application inline
             self._log_step("Phase 4", "Execute %prep section (extraction, git init, patches)")
-            patches_applied = self._execute_prep_section()
+            patches_applied, git_roots = self._execute_prep_section()
 
             return ConversionResult(
                 success=True,
+                git_roots=git_roots,
+                output_dir=self.context.state.output_dir,
                 patches_applied=patches_applied,
                 sources_downloaded=len(self.context.state.downloaded_sources),
             )
@@ -113,15 +115,16 @@ class Spec2GitWorkflow(BaseWorkflow):
 
         # Determine output directory if not specified (need this before parsing for rpmspec)
         output_dir = self.context.state.output_dir
+
+        # Need to do initial parse to get name and version for default output_dir
+        parser.parse(additional_macros=self.context.state.macros, build_dir=None)
         if not output_dir:
-            # Need to do initial parse to get name and version for default output_dir
-            parser.parse(additional_macros=self.context.state.macros, build_dir=None)
             output_dir = Path.cwd() / f"{parser.name}-{parser.version}-git"
-            # Now re-parse with the correct build_dir
-            parser.parse(additional_macros=self.context.state.macros, build_dir=output_dir)
         else:
-            # Parse once with the provided output_dir as build_dir
-            parser.parse(additional_macros=self.context.state.macros, build_dir=output_dir)
+            output_dir = output_dir / f"{parser.name}-{parser.version}-git"
+
+        # Now re-parse with the correct build_dir
+        parser.parse(additional_macros=self.context.state.macros, build_dir=output_dir)
 
         # Update context with parsed data
         self._update_context(
@@ -190,9 +193,10 @@ class Spec2GitWorkflow(BaseWorkflow):
                         f"Output directory already exists: {output_dir}\n"
                         f"Use --force to overwrite"
                     )
-                self.logger.warning(f"Removing existing directory: {output_dir}")
-                shutil.rmtree(output_dir)
-                output_dir.mkdir(parents=True, exist_ok=True)
+                self.logger.warning(
+                    f"Overwriting existing directory: {output_dir}\n"
+                    "There may be conflicts, please manually cleanup if you want to start from a clean state."
+                )
         else:
             if self.context.state.resume:
                 raise Exception("Resuming is not supported when output directory does not exist")
@@ -291,7 +295,7 @@ class Spec2GitWorkflow(BaseWorkflow):
         prep_sources_dir = getattr(parser, 'prep_section_sources_dir', None)
 
         # Execute prep section - this will handle extraction, git init, and patches
-        patches_applied = prep_executor.execute_prep_section(
+        patches_applied, git_roots = prep_executor.execute_prep_section(
             prep_section,
             self.context.state.source0_git_info,
             rpmspec_build_dir=prep_build_dir,
@@ -299,7 +303,7 @@ class Spec2GitWorkflow(BaseWorkflow):
             rpmspec_temp_dir=prep_temp_dir
         )
 
-        return patches_applied
+        return patches_applied, git_roots
 
     def _finalize_repository(self):
         """Finalize the git repository"""

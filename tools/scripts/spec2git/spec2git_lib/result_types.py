@@ -105,6 +105,8 @@ class ConversionResult:
     sources_downloaded: int = 0
     error: Optional[str] = None
     warnings: List[str] = None
+    output_dir: Optional[Path] = None
+    git_roots: Optional[set[str]] = None
 
     def __post_init__(self):
         if self.warnings is None:

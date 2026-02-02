@@ -7,6 +7,7 @@ Streamlined entry point that delegates to workflow.
 import logging
 from pathlib import Path
 from typing import Dict, Optional
+import os
 
 from common.validation import validate_spec2git_inputs
 from spec2git_lib.workflow_context import WorkflowContext
@@ -107,7 +108,9 @@ class Spec2Git:
 
             if result.success:
                 self.logger.info("✓ Conversion completed successfully!")
-                self.logger.info(f"  Git repository: {result.git_repo_path}")
+                if result.git_roots:
+                    for git_root in result.git_roots:
+                        self.logger.info(f"  Git repository: {git_root}")
                 self.logger.info(f"  Patches applied: {result.patches_applied}")
                 self.logger.info(f"  Sources downloaded: {result.sources_downloaded}")
                 return True

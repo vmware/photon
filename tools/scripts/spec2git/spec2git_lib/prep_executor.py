@@ -92,6 +92,7 @@ class PrepExecutor:
         self.resume = resume
         self.persistent_state_file = output_dir / ".spec2git_state.json"
         self.git_roots = set()
+        self.root_dirs = set()
 
     def execute_prep_section(self, prep_section: str, source0_git_info: Optional[Dict] = None,
                             rpmspec_build_dir: Optional[str] = None,
@@ -141,6 +142,8 @@ class PrepExecutor:
 
             lines = prep_section.split('\n')
             i = 0
+
+            self._find_root_dirs(lines)
 
             # If resuming from state, restore context
             if resuming_state:
@@ -193,6 +196,8 @@ class PrepExecutor:
 
                             # Mark that we've replaced Source0 - don't detect it again
                             source0_git_info = None
+
+                            self.git_roots.add(f"{self.output_dir}/{clone_dir_name}")
 
                             i += 1
                             continue
@@ -287,10 +292,17 @@ class PrepExecutor:
             if self.persistent_state_file.exists():
                 self.persistent_state_file.unlink()
 
-            return total_patches_applied
+            return total_patches_applied, self.git_roots
 
         finally:
             pass
+
+    def _find_root_dirs(self, lines: List[str]):
+        for line in lines:
+            if line.startswith('cd ') or line.startswith('pushd '):
+                dir = line.split(' ')[1]
+                dir = dir.strip("'").strip()
+                self.root_dirs.add(dir)
 
     def _execute_shell_block(self, commands: List[str]) -> None:
         """
@@ -368,6 +380,7 @@ class PrepExecutor:
             result = subprocess.run(
                 ['/bin/bash', str(script_path)],
                 capture_output=True,
+                cwd=self.output_dir,
                 text=True,
             )
 
@@ -466,10 +479,32 @@ class PrepExecutor:
 
         state.save(self.persistent_state_file)
 
+    def _is_child_of_git_repo(self, dirpath: Path) -> bool:
+        paths = dirpath.parents
+        for path in paths:
+            if os.path.exists(os.path.join(path, '.git')):
+                return True
+        return False
+
+    def _init_all_git_repos(self):
+        # For all the touched directories, initialize them as git repos
+        # Unless the child of a git repo already
+        for dirpath, dirnames, filenames in os.walk(self.output_dir):
+            for dirname in dirnames:
+                if not dirname in self.root_dirs:
+                    continue
+                if os.path.exists(os.path.join(dirpath, dirname, '.git')):
+                    continue
+                if self._is_child_of_git_repo(Path(dirpath, dirname)):
+                    continue
+                self._initialize_git_repo(Path(dirpath, dirname))
+
     def _create_final_commits(self):
         """Check known git repositories for uncommitted changes and commit them"""
         if not self.git_roots:
-            return
+            self.logger.info("No git repositories found after prep section execution - no patches applied?")
+
+        self._init_all_git_repos()
 
         self.logger.info("Checking for uncommitted changes in git repositories...")
 
@@ -518,8 +553,8 @@ class PrepExecutor:
 
         # Check if we already have a git repository (from cloning a git source)
         if (git_repo_path / '.git').exists():
-            self.logger.info("Git repository already exists (cloned from source)")
-            self.logger.info("Preserving original git history")
+            self.logger.info("Git repository already exists")
+            self.logger.info("Preserving original git history, do nothing")
             return
 
         # Initialize git repo
