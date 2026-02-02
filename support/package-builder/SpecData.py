@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 
 from Logger import Logger
 from constants import constants
@@ -435,3 +436,31 @@ class SPECS(object):
             self.specData[constants.targetArch] = SpecData(
                 constants.targetArch, constants.logPath, constants.specPaths
             )
+
+        kernelversionrelease = SPECS.getData().getHighestVersion("linux")
+        kernelversion, kernelrelease = kernelversionrelease.split("-", 1)
+
+        # adding kernelversion rpm macro
+        constants.addMacro("KERNEL_VERSION", kernelversion)
+
+        # adding kernelrelease rpm macro
+        kernelrelease_comp = kernelrelease.split('.')
+        if re.fullmatch(r'rc\d+', kernelrelease_comp[0]):
+            kernelrelease_comp.pop(0)
+        constants.addMacro("KERNEL_RELEASE", kernelrelease)
+
+        # adding kernelsubrelease rpm macro
+        a, b, c = kernelversion.split(".")
+        kernelsubrelease = ('%02d%02d%03d%03d' % (int(a),
+                                                  int(b), int(c),
+                                                  int(kernelrelease_comp[0])))
+
+        if kernelsubrelease:
+            kernelsubrelease = "." + kernelsubrelease
+            constants.addMacro("kernelsubrelease", kernelsubrelease)
+
+        # Full parsing
+        self.specData[constants.buildArch] = SpecData(
+            constants.buildArch, constants.logPath, constants.specPaths
+        )
+
