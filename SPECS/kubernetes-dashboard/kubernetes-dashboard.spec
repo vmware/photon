@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
@@ -70,6 +70,8 @@ popd
 /opt/k8dashboard/public/*
 
 %changelog
+* Mon Feb 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-18
+- Bump version as a part of nodejs upgrade
 * Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7.0-17
 - Add jdk21 to requires list
 * Mon Jun 23 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-16
