@@ -20,32 +20,29 @@ Subject: [PATCH] sysdig: Fix signature of probe as per upstream kernel
 [3]: https://github.com/vmware/photon/blob/5.0/SPECS/linux/secure/gcc-rap-plugin-with-kcfi.patch
 
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
-Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
- driver/src/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ driver/src/main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/driver/src/main.c b/driver/src/main.c
-index 93e33f5..66501cd 100644
+index 4cea5b0..15573e5 100644
 --- a/driver/src/main.c
 +++ b/driver/src/main.c
-@@ -179,7 +179,8 @@ TRACEPOINT_PROBE(sched_switch_probe, struct task_struct *prev, struct task_struc
- TRACEPOINT_PROBE(sched_switch_probe,
-                  bool preempt,
-                  struct task_struct *prev,
--                 struct task_struct *next);
-+                 struct task_struct *next,
-+                 unsigned int prev_state);
+@@ -184,7 +184,7 @@ TRACEPOINT_PROBE(sched_switch_probe, struct rq *rq, struct task_struct *prev, st
+ #elif (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))
+ TRACEPOINT_PROBE(sched_switch_probe, struct task_struct *prev, struct task_struct *next);
+ #else
+-TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next);
++TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next, unsigned int prev_state);
  #endif /* (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)) */
  #endif /* CAPTURE_CONTEXT_SWITCHES */
  
-@@ -2377,7 +2378,8 @@ TRACEPOINT_PROBE(sched_switch_probe, struct task_struct *prev, struct task_struc
- TRACEPOINT_PROBE(sched_switch_probe,
-                  bool preempt,
-                  struct task_struct *prev,
--                 struct task_struct *next)
-+                 struct task_struct *next,
-+                 unsigned int prev_state)
+@@ -2386,7 +2386,7 @@ TRACEPOINT_PROBE(sched_switch_probe, struct rq *rq, struct task_struct *prev, st
+ #elif (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))
+ TRACEPOINT_PROBE(sched_switch_probe, struct task_struct *prev, struct task_struct *next)
+ #else
+-TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next)
++TRACEPOINT_PROBE(sched_switch_probe, bool preempt, struct task_struct *prev, struct task_struct *next, unsigned int prev_state)
  #endif
  {
  	struct event_data_t event_data;

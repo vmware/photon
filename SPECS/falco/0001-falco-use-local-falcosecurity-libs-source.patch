@@ -1,0 +1,25 @@
+From 7978574ec80dbe9b7c0ec479e6eeb70f9d062728 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 2 Feb 2026 13:56:53 +0000
+Subject: [PATCH] falco: use local falcosecurity libs source
+
+---
+ cmake/modules/falcosecurity-libs.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cmake/modules/falcosecurity-libs.cmake b/cmake/modules/falcosecurity-libs.cmake
+index 14703eb..bf51eb6 100644
+--- a/cmake/modules/falcosecurity-libs.cmake
++++ b/cmake/modules/falcosecurity-libs.cmake
+@@ -27,7 +27,7 @@ set(USE_BUNDLED_DRIVER
+ )
+ 
+ if(FALCOSECURITY_LIBS_SOURCE_DIR)
+-	set(FALCOSECURITY_LIBS_VERSION "0.0.0-local")
++	set(FALCOSECURITY_LIBS_VERSION "0.19.0")
+ 	message(STATUS "Using local version of falcosecurity/libs: '${FALCOSECURITY_LIBS_SOURCE_DIR}'")
+ else()
+ 	# FALCOSECURITY_LIBS_REPO accepts a repository name (<org name>/<repo name>) alternative to the
+-- 
+2.40.4
+

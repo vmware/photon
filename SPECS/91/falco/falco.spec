@@ -1,6 +1,4 @@
-%global build_if            %{BUILD_FOR}
-# Next line should be removed adter subreleases support in common package builder
-%global build_for           %{BUILD_FOR}
+%global build_if %{photon_subrelease} <= 91
 %define network_required    1
 %global security_hardening  none
 %define uname_r             %{KERNEL_VERSION}-%{KERNEL_RELEASE}
@@ -13,13 +11,25 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.36.2
-Release:        18%{?kernelsubrelease}%{?dist}
+Release:        18.1%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
+
+# Steps to create falco-dependencies.tar.gz:
+# 1. Build this package WITH network (e.g. in a sandbox that allows fetch).
+# 2. Let the build run through prep and build so CMake downloads all deps
+#    (falcosecurity-libs and any fetched artifacts) into the build tree under
+#    x86_64-vmware-linux (e.g. x86_64-vmware-linux/falcosecurity-libs-repo/...).
+# 3. Stop the build just before install (do not run install).
+# 4. From the build directory, create the tarball with one top-level component
+#    so that extraction with --strip-components=1 -C x86_64-vmware-linux works:
+#      tar -czvf falco-dependencies.tar.gz -C . x86_64-vmware-linux
+# 5. Place the resulting tarball in the package sources; it will be used in %prep
+#    to populate x86_64-vmware-linux so the real build can run offline.
 
 Source1: %{name}-%{version}-dependencies.tar.gz
 
@@ -151,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/falcosecurity/*
 
 %changelog
+* Thu Feb 05 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.36.2-18.1
+- Bump after moving to SPECS/91
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.36.2-18
 - Bump version as a part of go upgrade
 * Thu Oct 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-17

@@ -1,0 +1,29 @@
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Tue, 28 Apr 2026 06:30:00 +0000
+Subject: [PATCH] falco.yaml: default engine.kind to kmod
+
+Photon's falco package is built with -DBUILD_LIBSCAP_MODERN_BPF=OFF and
+-DBUILD_BPF=OFF, shipping only the kmod driver (falco.ko). Upstream
+falco.yaml defaults engine.kind to modern_ebpf, which causes falco to
+fail at startup with:
+
+    Error: MODERN_BPF engine is not supported in this build
+
+Default the shipped config to the kmod driver we actually build and
+install, so falco starts out-of-the-box on Photon.
+---
+ falco.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/falco.yaml b/falco.yaml
+--- a/falco.yaml
++++ b/falco.yaml
+@@ -400,7 +400,7 @@
+ # buffers (higher `cpus_for_each_buffer`) can lower the memory footprint.
+ #
+ engine:
+-  kind: modern_ebpf
++  kind: kmod
+   kmod:
+     buf_size_preset: 4
+     drop_failed_exit: false

@@ -1,18 +1,20 @@
-%global build_if  %{BUILD_FOR}
-# Next line should be removed adter subreleases support in common package builder
-%global build_for %{BUILD_FOR}
+%global build_if  %{photon_subrelease} >= 92
 %global security_hardening      none
 %define uname_r                 %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define _modulesdir             /lib/modules/%{uname_r}
 
 # check the release bundle & use the right version, example:
 # https://github.com/draios/sysdig/blob/0.30.2/cmake/modules/falcosecurity-libs.cmake#L35
-%define falcosecurity_libs_ver  0.13.4
+%define falcosecurity_libs_ver  0.19.0
+%define nlohman_json_ver  3.3.0
+%define uthash_ver  1.9.8
+%define tbb_ver  2022.0.0
+%define valijson_ver  1.0.2
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.34.1
-Release:        12%{?kernelsubrelease}%{?dist}
+Version:        0.39.0
+Release:        1%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -22,25 +24,39 @@ Source0: https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 
 Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-%{falcosecurity_libs_ver}.tar.gz
 
-Source2: %{name}-%{version}-dependencies.tar.gz
+Source2: https://github.com/nlohmann/json/archive/nlohman-json-%{nlohman_json_ver}.tar.gz
 
-Source3: uthash.h
+Source3: https://github.com/troydhanson/uthash/archive/refs/tags/uthash-%{uthash_ver}.tar.gz
 
-Source4: spec_install_post.inc
+Source4: https://github.com/oneapi-src/oneTBB/archive/refs/tags/tbb-%{tbb_ver}.tar.gz
 
-Source5: license.txt
-%include %{SOURCE5}
+Source5: https://github.com/tristanpenman/valijson/archive/refs/tags/valijson-%{valijson_ver}.tar.gz
+
+Source6: license.txt
+%include %{SOURCE6}
+
+Source7: spec_install_post.inc
 
 Patch0: get-googletest-sources-from-photonstage.patch
 Patch1: falcosecurity-libs-nodownload.patch
 Patch2: bashcomp-location.patch
+Patch3: 0001-sysdig-Modify-path-for-local-falco-lib.patch
+Patch4: 0001-sysdig-deps-Set-Lohman-src-to-local.patch
+Patch5: 0001-falcolib-Add-prototype-for-nsec_to_clock.patch
+
+Patch6: 0001-Set-local-path-for-troy.patch
+Patch7: 0002-Modify-local-path.patch
+Patch8: 0003-oneAPI-Threading-Building-Block.patch
+Patch9: 0004-Local-path-for-Validation-libJSON.patch
+
 # Fix for scap module
-Patch3: 0001-sysdig-Fix-signature-of-probe-as-per-upstream-kernel.patch
+Patch10: 0001-sysdig-Fix-signature-of-probe-as-per-upstream-kernel.patch
 
 BuildArch: x86_64
 
 BuildRequires: cmake
 BuildRequires: linux-devel = %{uname_r}
+BuildRequires: clang-devel
 BuildRequires: openssl-devel
 BuildRequires: curl-devel
 BuildRequires: zlib-devel
@@ -57,6 +73,13 @@ BuildRequires: re2-devel
 BuildRequires: tinydir-devel
 BuildRequires: elfutils-devel
 BuildRequires: abseil-cpp-devel
+BuildRequires: docker
+BuildRequires: lua-devel
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
+BuildRequires: yaml-cpp-devel
+BuildRequires: re2-devel
+
 # Requirements for signing artifacts
 %if "%{?signing_script}" != ""
 %define network_required 1
@@ -76,7 +99,12 @@ Requires: protobuf
 Requires: jsoncpp
 Requires: re2
 Requires: elfutils-libelf
+Requires: docker-engine
 Requires: abseil-cpp
+Requires: lua
+Requires: zlib
+Requires: ncurses
+Requires: yaml-cpp
 
 %description
 Sysdig is open source, system-level exploration, capture system state and activity from a running Linux instance.
@@ -86,13 +114,17 @@ that runs in your terminal
 
 %prep
 # Using autosetup is not feasible
-%setup -q -a1
-%autopatch -p1 -m0 -M2
-mkdir -p %{_arch}-vmware-linux
-tar xf %{SOURCE2} --strip-components=1 -C %{_arch}-vmware-linux
+%autosetup -a0 -a1 -N
+pushd %{_builddir}/%{name}-%{version}
+%autopatch -p1 -m0 -M4
+popd
 
+pushd %{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}
+%autopatch -p1 -m5 -M9
+popd
+
+touch %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5}
 %build
-cp %{SOURCE3} libs-%{falcosecurity_libs_ver}/userspace/libscap/
 export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
 
 %{cmake} \
@@ -105,12 +137,19 @@ export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
     -DUSE_BUNDLED_GRPC=OFF \
     -DUSE_BUNDLED_JQ=OFF \
     -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_LUAJIT=OFF \
     -DUSE_BUNDLED_NJSON=OFF \
     -DUSE_BUNDLED_NCURSES=OFF \
+    -DUSE_BUNDLED_YAMLCPP=OFF \
+    -DUSE_BUNDLED_RE2=OFF \
     -DUSE_BUNDLED_LIBELF=OFF \
     -DLIBELF_LIB=%{_libdir}/libelf.so \
+    -DNJSON_SRC=%{_builddir}/%{name}-%{version}/json-%{nlohman_json_ver} \
     -DBUILD_DRIVER=ON \
+    -DDRIVER_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver \
+    -DBUILD_BPF=OFF \
     -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSCAP_MODERN_BPF=OFF \
     -DBUILD_LIBSINSP_EXAMPLES=OFF \
     -DFALCOSECURITY_LIBS_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver} \
     -DFALCOSECURITY_LIBS_VERSION=%{falcosecurity_libs_ver} \
@@ -127,10 +166,11 @@ export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
     -DCMAKE_BUILD_TYPE=Release
 
 # Fix for scap module
-pushd %{_arch}-vmware-linux
-%autopatch -p1 -m3 -M3
+pushd %{__cmake_builddir}
+%autopatch -p1 -m10 -M10
 popd
 export KERNELDIR="%{_modulesdir}/build"
+
 %{cmake_build}
 
 %install
@@ -143,7 +183,7 @@ rm -rf %{buildroot}%{_datadir}/zsh/ \
 mkdir -p %{buildroot}%{_modulesdir}/extra
 mv %{__cmake_builddir}/driver/scap.ko %{buildroot}%{_modulesdir}/extra
 find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
-%include %{SOURCE4}
+%include %{SOURCE7}
 
 %clean
 rm -rf %{buildroot}/*
@@ -165,6 +205,9 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Mon May 04 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.39.0-1
+- Forward porting for linux v6.12
+- Srinidhi: Upgrade to version 0.39.0
 * Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.34.1-12
 - Remove deprecated net-tools from BuildRequires
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.34.1-11

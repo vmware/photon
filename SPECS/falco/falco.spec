@@ -1,0 +1,341 @@
+%global build_if  %{photon_subrelease} >= 92
+%define network_required    1
+%global security_hardening  none
+%define uname_r             %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define _modulesdir         /lib/modules/%{uname_r}
+%define uthash_path         %{falcosecurity_libs}/userspace/libscap
+%define falcosecurity_libs_prefix_src %{__cmake_builddir}/falcosecurity-libs-repo/falcosecurity-libs-prefix/src
+%define falcosecurity_libs  %{falcosecurity_libs_prefix_src}/falcosecurity-libs
+%define falcosecurity_src   %{falcosecurity_libs_prefix_src}/0.13.4.tar.gz
+
+# check the release bundle & use the right version, example:
+# https://https://github.com/falcosecurity/falco/archive/refs/tags/0.39.2/cmake/modules/falcosecurity-libs.cmake
+%define falcosecurity_libs_ver  0.19.0
+%define nlohman_json_ver  3.3.0
+%define tbb_ver  2022.0.0
+%define valijson_ver  1.0.2
+%define cpp_httplib_ver  0.15.3
+%define cxxopts_ver  3.0.0
+%define falcoctl_ver  0.10.1
+%define falco_rules_ver  3.2.0
+
+Summary:        The Behavioral Activity Monitor With Container Support
+Name:           falco
+Version:        0.39.2
+Release:        1%{?kernelsubrelease}%{?dist}
+URL:            https://falco.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
+
+Source1: https://github.com/falcosecurity/libs/archive/falconsecurity-libs-%{falcosecurity_libs_ver}.tar.gz
+
+Source2: https://github.com/nlohmann/json/archive/nlohman-json-%{nlohman_json_ver}.tar.gz
+
+Source3: https://github.com/oneapi-src/oneTBB/archive/refs/tags/tbb-%{tbb_ver}.tar.gz
+
+Source4: https://github.com/tristanpenman/valijson/archive/refs/tags/valijson-%{valijson_ver}.tar.gz
+
+Source5: https://github.com/yhirose/cpp-httplib/archive/refs/tags/cpp-httplib-%{cpp_httplib_ver}.tar.gz
+
+Source6: https://github.com/jarro2783/cxxopts/archive/refs/tags/cxxopts-%{cxxopts_ver}.tar.gz
+
+Source7: https://github.com/falcosecurity/falcoctl/archive/refs/tags/falcoctl-%{falcoctl_ver}.tar.gz
+
+Source8: https://github.com/falcosecurity/rules/archive/refs/tags/falco-rules-%{falco_rules_ver}.tar.gz
+
+#Refer below file in github to know where to fetch uthash.h for respective version
+#https://github.com/falcosecurity/libs/blob/3eef3f356e0f6ff2bfcbd9304784c46fdec7729c/cmake/modules/uthash.cmake#L17
+#https://raw.githubusercontent.com/troydhanson/uthash/v1.9.8/src/uthash.h
+Source9: uthash.h
+
+Source10: spec_install_post.inc
+
+Source11: license.txt
+%include %{SOURCE11}
+
+Patch1: 0001-Set-local-path-njson.patch
+Patch2: 0002-Set-local-path-cpp-httplib.patch
+Patch3: 0003-Set-local-path-cxxopts.patch
+Patch4: 0004-Set-local-path-rules.patch
+Patch5: 0005-Set-local-path-falcoctl.patch
+Patch6: 0001-falco-use-local-falcosecurity-libs-source.patch
+
+Patch7: 0006-oneAPI-Threading-Building-Block.patch
+Patch8: 0007-Local-path-for-Validation-libJSON.patch
+
+Patch9: 0009-Default-engine-kind-to-kmod.patch
+
+BuildArch: x86_64
+
+BuildRequires: cmake
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: zlib-devel
+BuildRequires: ncurses-devel
+BuildRequires: linux-devel = %{uname_r}
+BuildRequires: elfutils-devel
+BuildRequires: jq-devel
+BuildRequires: jsoncpp-devel
+BuildRequires: lua-devel
+BuildRequires: jsoncpp-devel
+BuildRequires: libyaml-devel
+BuildRequires: linux-api-headers
+BuildRequires: grpc-devel
+BuildRequires: c-ares-devel
+BuildRequires: protobuf-devel
+BuildRequires: go
+BuildRequires: re2-devel
+BuildRequires: yaml-cpp-devel
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  python3-requests
+%endif
+
+Requires: linux = %{uname_r}
+Requires: zlib
+Requires: ncurses
+Requires: openssl
+Requires: curl
+Requires: libyaml
+Requires: lua
+Requires: sysdig
+Requires: dkms
+Requires: jsoncpp
+Requires: grpc
+Requires: jq
+Requires: protobuf
+Requires: c-ares
+Requires: re2
+Requires: yaml-cpp
+
+%description
+Sysdig %{name} is an open source, behavioral activity monitor designed to detect anomalous activity in your applications.
+Falco lets you continuously monitor and detect container, application, host, and network activity; all in one place, from one source of data, with one set of customizable rules.
+
+%package    devel
+Summary:    falco
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+
+%description devel
+Development files for %{name}
+
+%prep
+%autosetup -a0 -a1 -N
+
+pushd %{_builddir}/%{name}-%{version}
+%autopatch -p1 -m1 -M6
+%autopatch -p1 -m9 -M9
+popd
+
+pushd %{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}
+%autopatch -p1 -m7 -M8
+popd
+
+touch %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} %{SOURCE7} %{SOURCE8}
+
+%build
+export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
+
+%{cmake} \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DUSE_BUNDLED_DEPS:BOOL=OFF \
+    -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
+    -DUSE_BUNDLED_JQ:BOOL=OFF \
+    -DUSE_BUNDLED_YAMLCPP:BOOL=OFF \
+    -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_RE2=OFF \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
+    -DUSE_BUNDLED_LIBELF=OFF \
+    -DLIBELF_LIB=%{_libdir}/libelf.so \
+    -DCMAKE_INSTALL_LIBDIR=%{_lib} \
+    -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
+    -DUSE_BUNDLED_UTHASH=OFF \
+    -DUTHASH_INCLUDE="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/userspace/libscap" \
+    -DBUILD_DRIVER:BOOL=ON \
+    -DDRIVER_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver" \
+    -DFALCOSECURITY_LIBS_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}" \
+    -DBUILD_BPF=OFF \
+    -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_CXXOPTS=TRUE \
+    -DUSE_BUNDLED_NLOHMANN_JSON=TRUE \
+    -DUSE_BUNDLED_CPPHTTPLIB=TRUE \
+    -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSCAP_MODERN_BPF=OFF \
+    -DBUILD_LIBSINSP_EXAMPLES=OFF  \
+    -DUSE_BUNDLED_RE2=OFF \
+    -DBUILD_TESTING=OFF
+
+cp %{SOURCE9} libs-%{falcosecurity_libs_ver}/userspace/libscap/
+cp %{SOURCE9} %{__cmake_builddir}/libscap/
+export KERNELDIR="%{_modulesdir}/build"
+%{cmake_build}
+cp %{__cmake_builddir}/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/rules/falco_rules.yaml %{__cmake_builddir}/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/
+cp -r %{__cmake_builddir}/scripts/falcoctl/ %{__cmake_builddir}/falcoctl-prefix/src/falcoctl/
+
+pushd %{__cmake_builddir}/falcoctl-prefix/src/falcoctl
+GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o falcoctl.bin .
+popd
+
+%install
+export KERNELDIR="%{_modulesdir}/build"
+%{cmake_install}
+mkdir -p %{buildroot}%{_modulesdir}/extra
+install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
+
+# Replace the bogus %{_bindir}/falcoctl directory left behind by cmake's
+# install rule with the falcoctl Go binary we built in %build.
+rm -r %{buildroot}%{_bindir}/falcoctl
+install -vm 755 %{__cmake_builddir}/falcoctl-prefix/src/falcoctl/falcoctl.bin \
+                %{buildroot}%{_bindir}/falcoctl
+
+%include %{SOURCE10}
+
+%clean
+rm -rf %{buildroot}/*
+
+%post
+/sbin/depmod -a
+
+%postun
+/sbin/depmod -a
+
+%files
+%defattr(-,root,root)
+%{_bindir}/*
+%exclude %{_usrsrc}/debug
+%exclude %{_libdir}/*.a
+%{_usrsrc}/%{name}*
+%{_sysconfdir}/%{name}
+%{_datadir}/%{name}
+%{_modulesdir}/extra/%{name}.ko.xz
+%{_sysconfdir}/falcoctl/falcoctl.yaml
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/pkgconfig/*.pc
+%{_libdir}/falcosecurity/*
+%{_includedir}/falcosecurity/*
+%{_libdir}/cmake/
+%{_includedir}/nlohmann/json.hpp
+%{_includedir}/httplib.h
+
+%changelog
+* Thu Jan 29 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.39.2-1
+- Forward porting for linux v6.12
+- Srinidhi Rao: Upgrade to version 0.39.2
+* Thu Oct 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-17
+- Bump version as a part of go upgrade
+* Wed Oct 22 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.36.2-16
+- Bump-up to sign the module with new cert photon_km_2025
+* Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.36.2-15
+- Bump version as a part of ncurses upgrade
+* Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-14
+- Bump version as a part of jq upgrade
+* Mon Jun 30 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.36.2-13
+- Adding signing to falco module
+* Wed Jun 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.36.2-12
+- Use system provided yamlcpp, re2
+* Tue May 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.36.2-11
+- Use local falcosecurility libs source and uthash.h
+* Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-10
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-9
+- Bump version as a part of go upgrade
+* Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-8
+- Add changes to build offline
+* Fri Aug 16 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-7
+- Bump version as a part of grpc upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.36.2-6
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 0.36.2-5
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 0.36.2-4
+- Bump version as a part of go upgrade
+* Tue Jan 09 2024 Ankit Jain <ankitja@vmware.com> 0.36.2-3
+- compress .ko and exclude debug from main package
+* Thu Dec 14 2023 Piyush Gupta <gpiyush@vmware.com> 0.36.2-2
+- Bump up version to compile with new go
+* Thu Nov 30 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.36.2-1
+- Upgrade to v0.36.2
+* Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-12
+- Bump version as a part of protobuf upgrade
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-11
+- Bump up version to compile with new go
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-10
+- Bump up version to compile with new go
+* Wed Aug 23 2023 Mukul Sikka <msikka@vmware.com> 0.32.2-9
+- Bump version as a part of grpc upgrade
+* Mon Jul 31 2023 Mukul Sikka <msikka@vmware.com> 0.32.2-8
+- Bump version as a part of grpc upgrade
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 0.32.2-7
+- Bump up version to compile with new go
+* Wed Jul 05 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 0.32.2-6
+- Build Go plugins locally, instead of consuming precompiled binary
+* Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-5
+- Bump version as a part of lua upgrade
+* Sat Jun 17 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-4
+- Bump version as a part of protobuf upgrade
+* Thu Jun 01 2023 Nitesh Kumar <kunitesh@vmware.com> 0.32.2-3
+- Bump version as a part of ncurses upgrade to v6.4
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.32.2-2
+- Bump version as a part of zlib upgrade
+* Thu Sep 15 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 0.32.2-1
+- Upgrade to v0.32.2
+* Fri Jun 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.32.0-1
+- Upgrade to v0.32.0
+- Introduce devel sub package
+* Tue Nov 23 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.30.0-1
+- Update to version 0.30.0.
+- Add missing runtime dependency on linux.
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.25.0-5
+- compile with openssl 3.0.0
+* Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.25.0-4
+- Patched for CVE-2021-33505.
+* Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 0.25.0-3
+- Version bump up to build with latest protobuf
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.25.0-2
+- openssl 1.1.1
+* Wed Sep 16 2020 Bo Gan <ganb@vmware.com> 0.25.0-1
+- Updated to 0.25.0
+* Mon Sep 14 2020 Ankit Jain <ankitja@vmware.com> 0.15.1-2
+- Fix build failure with grpc in patch
+* Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.15.1-1
+- Updated to fix CVE-2019-8339
+* Wed Dec 12 2018 Sujay G <gsujay@vmware.com> 0.12.1-4
+- Disabled bundled JQ, openssl and instead use Photon maintained packages.
+* Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 0.12.1-3
+- Adding BuildArch
+* Wed Oct 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.12.1-2
+- Add depmod for falco-probe.ko and removed patch from new falco-probe-loader
+* Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.12.1-1
+- Update falco and sysdig versions to fix build error with linux 4.18
+* Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
+- Version update to build against linux-4.14.y kernel
+* Thu Aug 24 2017 Rui Gu <ruig@vmware.com> 0.6.0-3
+- Disable check section (Bug 1900272).
+* Thu May 11 2017 Chang Lee <changlee@vmware.com> 0.6.0-2
+- Add falco-probe.ko and change falco-probe.ko path in falco-probe-loader
+* Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 0.6.0-1
+- Update to version 0.6.0
+* Wed Jan 11 2017 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-7
+- Fix building for linux-4.9.2
+* Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.2.0-6
+- BuildRequires curl-devel
+* Thu Dec 15 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-5
+- Fix building for linux-4.9
+* Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-4
+- Expand uname -r to have release number
+- Exclude /usr/src
+* Fri Sep  2 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-3
+- Use KERNEL_VERSION macro
+* Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.2.0-2
+- Removed packaging of debug files
+* Tue Jun 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.2.0-1
+- Initial build. First version

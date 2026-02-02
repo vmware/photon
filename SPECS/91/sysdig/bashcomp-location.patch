@@ -1,0 +1,13 @@
+diff --git a/scripts/CMakeLists.txt b/scripts/CMakeLists.txt
+index 74bf591..f866384 100644
+--- a/scripts/CMakeLists.txt
++++ b/scripts/CMakeLists.txt
+@@ -25,7 +25,7 @@ configure_file(rpm/preuninstall.in rpm/preuninstall)
+ configure_file(scap-driver-loader.in scap-driver-loader @ONLY)
+ 
+ install(FILES completions/bash/sysdig
+-	DESTINATION "${DIR_ETC}/bash_completion.d" COMPONENT "${SYSDIG_COMPONENT_NAME}")
++	DESTINATION "share/bash-completion/completions/" COMPONENT "${SYSDIG_COMPONENT_NAME}")
+ 
+ install(FILES completions/zsh/_sysdig
+ 	DESTINATION share/zsh/vendor-completions COMPONENT "${SYSDIG_COMPONENT_NAME}")
