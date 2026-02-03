@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -54,6 +54,9 @@ Source21:       photon_km_2025.pem
 # Secure Boot
 Source25:       linux-sbat.csv.in
 %endif
+
+Source30: Makefile.viomem
+Source31: viomem.c
 
 Source42: license-esx.txt
 %include %{SOURCE42}
@@ -359,6 +362,14 @@ The Linux package contains the Linux kernel doc files
 
 # Using autosetup is not feasible
 %setup -q -T -D -b 10000 -n linux-%{version}
+
+# prep for viomem out-of-tree module
+mkdir ../viomem
+pushd ../viomem
+cp %{SOURCE30} Makefile
+cp %{SOURCE31} .
+popd
+
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
 pushd crypto/%{jent_name}
@@ -424,6 +435,12 @@ sed -e "s,@@NAME@@,%{name},g" \
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
     KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
+# build viomem module
+bldroot="${PWD}"
+pushd ../viomem
+%make_build -C ${bldroot} M="${PWD}" V=1 modules
+popd
+
 %install
 install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
@@ -448,6 +465,12 @@ install -vm 644 arch/%{archdir}/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
+
+# install viomem module
+bldroot="${PWD}"
+pushd ../viomem
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra modules_install
+popd
 
 %if 0%{?__debug_package}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
@@ -516,6 +539,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-13
+- Add viomem kernel module
 * Tue Feb 03 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-12
 - Track internal/external requests to jitterentropy
 * Mon Feb 02 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-11
