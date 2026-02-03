@@ -1,18 +1,18 @@
 sources:
-  - archive: ImageMagick-7.1.2-12.tar.gz
-    archive_sha512sum: 6a1de1e41ccddaee3832876b406ffc444c4cadfe79124879f85e9ac0eae4edf956111d08f9004548b1c0b2f19117fa6fa4bceae82248826a11919e195df939e5
+  - archive: ImageMagick-7.1.2-13.tar.gz
+    archive_sha512sum: fe0ee9d89bc8be98e12a03304ed0853f12af744dffd236e8dc5c7fd8c7d0d4b1e8874a8d0609de9f0ea3f554859dd7497b51c26f4f34fdbb9811d54691d61074
     archive_type: upstream
-    name: ImageMagick-7.1.2-12
-    version: 7.1.2-12
-    url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-12.tar.gz
+    name: ImageMagick-7.1.2-13
+    version: 7.1.2-13
+    url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-13.tar.gz
     repo_url: https://github.com/ImageMagick/ImageMagick
-    commit_id: bdd4fa561d7bf4c6afd40ee9c89e9f9e82b6e88b
+    commit_id: dd991e286b96918917a3392d6dc3ffc0e6907a4e
     skip_list: []
     missing: []
     license_manual_review:
     - file_paths:
-      - ImageMagick-7.1.2-12/MagickCore/nt-base.c
-      sha256sum: e93d5807292733ad0edd1659425608f36a5b5121a1023ae38eeecebadbed7ab2
+      - ImageMagick-7.1.2-13/MagickCore/nt-base.c
+      sha256sum: 3a8fb4c66aae73f742ffa91232713fee2beda7f0acfdd6a351445bb121f884c5
       spdx_exp: ""
     spdx:
       package:

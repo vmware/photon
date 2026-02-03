@@ -1,9 +1,9 @@
 %global VER 7.1.2
-%global Patchlevel 12
+%global Patchlevel 13
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.2.12
+Version:        7.1.2.13
 Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
@@ -173,6 +173,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Tue Feb 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 7.1.2.13-1
+- Upgrade to 7.1.2.13, includes CVE fixes
 * Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.2.12-1
 - Upgrade to 7.1.2.12, includes CVE fixes
 * Mon Dec 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.2.11-1
