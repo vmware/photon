@@ -81,7 +81,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        16%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        17%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -113,6 +113,9 @@ Source21:       photon_km_2025.pem
 # Secure Boot
 Source25:       linux-sbat.csv.in
 %endif
+
+Source30: Makefile.viomem
+Source31: viomem.c
 
 Source55: license.txt
 %include %{SOURCE55}
@@ -572,6 +575,14 @@ popd
 
 # Using autosetup is not feasible
 %setup -q -T -D -b 10000 -n linux-%{version}
+
+# prep for viomem out-of-tree module
+mkdir ../viomem
+pushd ../viomem
+cp %{SOURCE30} Makefile
+cp %{SOURCE31} .
+popd
+
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
 mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
@@ -700,6 +711,11 @@ cd build
 %cmake_build
 popd
 
+# build viomem module
+pushd ../viomem
+%make_build -C ${bldroot} M="${PWD}" V=1 modules
+popd
+
 %if 0%{?canister_build}
 %include %{SOURCE11500}
 %endif
@@ -729,6 +745,11 @@ popd
 bldroot="${PWD}"
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
 make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+
+# install viomem module
+pushd ../viomem
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra modules_install
 popd
 
 %ifarch x86_64
@@ -912,6 +933,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-17
+- Add viomem kernel module
 * Tue Feb 03 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-16
 - Track internal/external requests to jitterentropy
 * Mon Feb 02 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.60-15
