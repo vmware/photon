@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.161
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -392,6 +392,10 @@ Patch221: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
 
 # Fix CVE-2025-68353
 Patch222: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
+# CVE-2023-54271
+Patch223: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
+# CVE-2026-22999
+Patch224: 0001-net-sched-sch_qfq-do-not-free-existing-class-in-qfq_.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -772,6 +776,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 06 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-6
+- Fix for CVE-2023-54271 and CVE-2026-22999
 * Fri Jan 30 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.161-5
 - Fix CVE-2025-68353
 * Fri Jan 30 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-4
