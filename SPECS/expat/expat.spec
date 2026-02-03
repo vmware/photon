@@ -1,6 +1,6 @@
 Summary:        An XML parser library
 Name:           expat
-Version:        2.7.3
+Version:        2.7.4
 Release:        1%{?dist}
 URL:            http://expat.sourceforge.net/
 Group:          System Environment/GeneralLibraries
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man1/xmlwf.1.gz
 
 %changelog
+* Tue Feb 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.7.4-1
+- Version upgrade to fix CVE-2026-24515
 * Tue Oct 07 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.7.3-1
 - Version upgrade to fix CVE-2025-59375
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.7.1-2
