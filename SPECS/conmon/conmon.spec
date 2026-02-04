@@ -1,7 +1,7 @@
 Summary:        A container monitor utility
 Name:           conmon
 Version:        2.1.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/containers/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        conmon-%{version}.tar.gz
 
@@ -45,6 +45,8 @@ make %{?_smp_mflags} PREFIX=%{buildroot}%{_prefix} -C docs install
 %{_mandir}/man8/%{name}.8.gz
 
 %changelog
+* Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.7-7
+- Bump version as a part of go upgrade
 * Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.7-6
 - Bump version as a part of go upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.1.7-5

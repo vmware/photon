@@ -13,7 +13,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.24.5
+Version:        1.24.13
 Release:        1%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -30,6 +30,7 @@ Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
 Requires: glibc
 Requires: gcc
 
@@ -117,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.13-1
+- Upgrade to v 1.24.13, fixes several CVEs
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.5-1
 - Upgrade to v1.24.5
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.21.13-2

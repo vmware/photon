@@ -1,32 +1,36 @@
 %define libflux_version 0.194.5
 %define libflux_vendor kapacitor-libflux-vendor-%{libflux_version}.tar.gz
 %define network_required 1
+
 Name:           kapacitor
 Version:        1.7.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Group:          System/Monitoring
+
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
 Source1:        %{libflux_vendor}
 Source2:        %{name}.sysusers
 
 Source3: license.txt
 %include %{SOURCE3}
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Group:          System/Monitoring
-BuildRequires:  go
-BuildRequires:  systemd
-BuildRequires:  systemd-devel
-BuildRequires:  rust
-Requires:       systemd
-Requires:       systemd-rpm-macros
 
 Patch0:         fix-build-1.patch
 Patch1:         flux-0.194.5-go1.23.patch
 Patch2:         flux-0.194.5-rust1.87-1.patch
 Patch3:         flux-0.194.5-rust1.87-2.patch
 Patch4:         flux-0.194.5-proc-macro2.patch
+
+BuildRequires:  go
+BuildRequires:  systemd
+BuildRequires:  systemd-devel
+BuildRequires:  rust
+
+Requires:       systemd
+Requires:       systemd-rpm-macros
 
 %description
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
@@ -118,6 +122,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.7-4
+- Bump version as a part of go upgrade
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.7-3
 - Update URL to packages.broadcom.com
 * Mon Nov 03 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.7-2

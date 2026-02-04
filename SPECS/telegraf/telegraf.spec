@@ -7,7 +7,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.36.4
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.36.4-2
+- Bump version as a part of go upgrade
 * Fri Dec 05 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.36.4-1
 - Update to 1.36.4
 - Update jose2go from 1.6.0 to 1.7.0 to address CVE-2025-63811

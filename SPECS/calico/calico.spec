@@ -2,7 +2,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.31.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -138,6 +138,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+* Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.31.0-2
+- Bump version as a part of go upgrade
 * Wed Oct 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.31.0-1
 - Update calico to 3.31.0
 * Tue Jun 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.26.4-9

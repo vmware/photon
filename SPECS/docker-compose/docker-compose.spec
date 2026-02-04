@@ -4,7 +4,7 @@
 
 Name:           docker-compose
 Version:        2.40.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.40.3-2
+- Bump version as a part of go upgrade
 * Wed Dec 24 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.40.3-1
 - Fix second level CVE-2025-22869
 * Wed Nov 05 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.33.1-3
