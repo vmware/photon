@@ -1,7 +1,14 @@
 sources:
-- archive: gdb-13.2.tar.xz
-  archive_sha512sum: 8185d3e11ab60dafff5860a5016577bfe7dd7547ef01ebc867bc247603d82b74ff74c4f29492c7d2aee57076f52be33e289f4c6b414a4b870d4b3004909f4c34
-  skip_validation: true
+- archive: gdb-17.1.tar.xz
+  archive_type: upstream
+  archive_sha512sum: f1a6751e439a2128fecf3eae8b57c1608a0dc7cfe79b4356a937874e5a42bb2df0aba36eb6a9452c41966908b9a59076c7cad9720f684688ab956b65080f1d7c
+  name: gdb-17.1
+  version: 17.1
+  url: https://sourceware.org/pub/gdb/releases/gdb-17.1.tar.xz
+  repo_url: https://sourceware.org/git/binutils-gdb.git
+  commit_id: 631a49c452a4a456dd9889d172541ea789f8bcae
+  skip_list: ['djunpack.bat', 'configure.ac']
+  missing: ['*.gmo', '*.texi', '*.info', 'gdb.info-*', '*-exp.c', ada-lex.c, cp-name-parser.c, setup.com, binutils, elfcpp, gas, ld, gold, gprofng, gprof, gdb.pot, gdb.1, gcore.1, gdbserver.1, gdbinit.5, gdb-add-index.1, gstack.1, gcore.in, gdb-add-index.in, version.subst, libctf-nobfd.ver, gstdint.h, sha256.sum, makefile.vms, COPYING.LIBGLOSS, COPYING.NEWLIB, .pre-commit-config.yaml, .gitattributes, .gitignore, .editorconfig, .gdbinit, .cvsignore]
   spdx:
     package:
       detailed_description: 'GDB, the GNU Project debugger, allows you to see what

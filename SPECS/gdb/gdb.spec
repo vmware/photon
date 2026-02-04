@@ -4,8 +4,8 @@
 
 Summary:        C debugger
 Name:           gdb
-Version:        13.2
-Release:        7%{?dist}
+Version:        17.1
+Release:        1%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -16,12 +16,6 @@ Source0: http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 Source1: gdbinit
 Source2: license.txt
 %include %{SOURCE2}
-
-Patch0: CVE-2023-39128.patch
-Patch1: CVE-2023-39129.patch
-Patch2: CVE-2023-39130.patch
-Patch3: compile-with-py314-1.patch
-Patch4: compile-with-py314-2.patch
 
 Requires: expat
 Requires: ncurses
@@ -187,6 +181,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
+* Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 17.1-1
+- Update to GDB 17.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 13.2-7
 - Add patch to compile with python3.14
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 13.2-6
