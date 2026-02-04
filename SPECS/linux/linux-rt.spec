@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.161
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -355,13 +355,16 @@ Patch222: 0001-ipv6-Fix-use-after-free-in-inet6_addr_del.patch
 Patch223: 0001-macvlan-fix-possible-UAF-in-macvlan_forward_source.patch
 # CVE-2023-53510
 Patch224: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
-
 # Fix CVE-2025-68353
 Patch225: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 # CVE-2023-54271
 Patch226: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
 # CVE-2026-22999
 Patch227: 0001-net-sched-sch_qfq-do-not-free-existing-class-in-qfq_.patch
+# Fix CVE-2025-68190
+Patch229: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
+# Fix CVE-2024-25742 and CVE-2024-25743
+Patch230: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -737,6 +740,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Sat Feb 07 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.161-7
+- Fixes CVE-2025-68190, CVE-2024-25742 and CVE-2024-25743
 * Fri Feb 06 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-6
 - Fix for CVE-2023-54271 and CVE-2026-22999
 * Fri Jan 30 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.161-5

@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.161
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -389,13 +389,16 @@ Patch219: 0001-ipv6-Fix-use-after-free-in-inet6_addr_del.patch
 Patch220: 0001-macvlan-fix-possible-UAF-in-macvlan_forward_source.patch
 # CVE-2023-53510
 Patch221: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
-
 # Fix CVE-2025-68353
 Patch222: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 # CVE-2023-54271
 Patch223: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
 # CVE-2026-22999
 Patch224: 0001-net-sched-sch_qfq-do-not-free-existing-class-in-qfq_.patch
+# Fix CVE-2025-68190
+Patch226: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
+# Fix CVE-2024-25742 and CVE-2024-25743
+Patch227: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -776,6 +779,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Feb 07 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.161-7
+- Fixes CVE-2025-68190, CVE-2024-25742 and CVE-2024-25743
 * Fri Feb 06 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-6
 - Fix for CVE-2023-54271 and CVE-2026-22999
 * Fri Jan 30 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.161-5
