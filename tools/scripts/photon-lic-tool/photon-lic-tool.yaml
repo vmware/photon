@@ -79,7 +79,7 @@ redis_ttl: 31536000
 # Basically a default value for the --no_trim option.
 # Useful if license DB is pre-trimmed once, and no trimming is needed
 # for many subsequent scans
-no_trimming: "False"
+no_trimming: "True"
 
 # Known license list from Broadcom SRP Policy Controls
 # This may be out of date, please update if needed.

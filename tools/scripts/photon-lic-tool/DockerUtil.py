@@ -11,7 +11,7 @@ from common import err_exit, script_dir, SignalContext
 
 
 class DockerUtil:
-    _supported_cmds = ["scan", "validate", "clean-exp"]
+    _supported_cmds = ["scan", "validate", "clean-exp", "analyze"]
     # Docker specific constants
     _docker_img_name = "photon-license-scanner"
     # Location of the photon-lic-tool directory within the docker container
@@ -46,7 +46,6 @@ class DockerUtil:
 
     def ensure_docker_image(self):
         if imgs := self.docker_img_exists():
-            print(f"Docker image has already been built: {imgs[0]}")
             return True
         buildargs = {}
         if "BASE_URL" in os.environ:
@@ -60,8 +59,10 @@ class DockerUtil:
             return
         except Exception as e:
             err_exit(f"Failed to create lock file: {e}")
+
         def handler(sig, frame):
             raise Exception("Interrupted")
+
         id = None
         with SignalContext(handler):
             try:
@@ -218,7 +219,6 @@ class DockerUtil:
         docker_spec_mnt = f"{common.ph_scan_tool_dir}/spec-mnt"
         docker_srp_policy_controls_mnt = f"{common.ph_scan_tool_dir}/srp-policy-controls"
         file_mnt_path = ""
-        docker_mnt_cmd = ""
         tool_cmd = ["validate"]
         docker_mnt = []
 
@@ -272,7 +272,6 @@ class DockerUtil:
 
         docker_spec_mnt = f"{common.ph_scan_tool_dir}/spec-mnt"
         file_mnt_path = ""
-        docker_mnt_cmd = ""
         tool_cmd = ["clean-exp"]
         docker_mnt = []
 
@@ -312,6 +311,67 @@ class DockerUtil:
 
         return (docker_mnt, tool_cmd)
 
+    def build_analyze_docker_cmd(self, yaml_path=None, license_filter=None, source_path=None,
+                                 context_lines=None, no_diff=None):
+        tool_cmd = ["analyze"]
+        docker_mnt = []
+        docker_prescan_yaml_mnt = f"{common.ph_scan_tool_dir}/prescan-yaml-mnt"
+        docker_source_path_mnt = f"{common.ph_scan_tool_dir}/source-path-mnt"
+        src = ""
+        target = ""
+
+        if yaml_path:
+            docker_mnt.append(
+                (yaml_path, f"{docker_prescan_yaml_mnt}/{os.path.basename(yaml_path)}", "ro")
+            )
+            tool_cmd.extend(["--yaml", f"{docker_prescan_yaml_mnt}/{os.path.basename(yaml_path)}"])
+
+        if license_filter:
+            tool_cmd.extend(["--license-filter", license_filter])
+
+        if not source_path:
+            err_exit("Source path must be provided!")
+
+        # scan dir needs to be the full photon repo
+        if source_path.endswith(".spec"):
+            local_scan_path = os.path.abspath(source_path)
+
+            if "SPECS" not in local_scan_path:
+                err_exit("Spec file must be located inside the photon repo!")
+
+            relative_path = os.path.basename(local_scan_path)
+            while local_scan_path and os.path.basename(local_scan_path) != "SPECS":
+                local_scan_path = os.path.dirname(local_scan_path)
+                relative_path = f"{os.path.basename(local_scan_path)}/{relative_path}"
+
+            if not local_scan_path:
+                err_exit(
+                    "Failed to find parent SPECS dir for spec file!"
+                )
+
+            local_scan_path = os.path.dirname(local_scan_path)
+
+            src = local_scan_path
+            target = f"{docker_source_path_mnt}"
+            tool_cmd.extend(["--path", f"{target}/{relative_path}"])
+        else:
+            local_scan_path = source_path
+            relative_path = os.path.basename(local_scan_path)
+
+            src = os.path.abspath(local_scan_path)
+            target = f"{docker_source_path_mnt}/{relative_path}"
+            tool_cmd.extend(["--path", target])
+
+        docker_mnt.append((src, target, "ro"))
+
+        if context_lines:
+            tool_cmd.extend(["--context-lines", str(context_lines)])
+
+        if no_diff:
+            tool_cmd.extend(["--no-diff"])
+
+        return (docker_mnt, tool_cmd)
+
     # Run the command in a docker container
     def run_docker_cmd(self, cmd=None, mount_list=[], **kwargs):
         while True:
@@ -325,19 +385,25 @@ class DockerUtil:
 
         if cmd[0] not in self._supported_cmds:
             err_exit(f"Command '{cmd[0]}' not compatible with docker, refusing to run")
-        full_cmd = ["python3", f"{self._docker_tool_dir}/{common.tool_filename}"] + cmd
+
+        full_cmd = ["python3", "-u", f"{self._docker_tool_dir}/{common.tool_filename}"] + cmd
+        if common.wrap_output:
+            full_cmd.insert(3, f"--wrap-output={common.wrap_output}")
 
         mounts = {
             hostpath: {"bind": containerpath, "mode": mode} for
-            (hostpath, containerpath, mode) in mount_list + [(script_dir, self._docker_tool_dir, "ro")]
+            (hostpath, containerpath, mode) in
+            mount_list + [(script_dir, self._docker_tool_dir, "ro")]
         }
 
         docker_inst = None
+
         def handler(sig, frame):
             # Try to kill the docker instance.
             with suppress(Exception):
                 docker_inst.kill()
             raise Exception("Interrupted")
+
         with SignalContext(handler):
             try:
                 docker_inst = self.client.containers.run(
@@ -348,6 +414,7 @@ class DockerUtil:
                     network_mode="host",
                     volumes=mounts,
                     command=full_cmd,
+                    tty=sys.stdout.isatty(),
                     **kwargs,
                 )
                 logs = docker_inst.logs(stream=True, follow=True)

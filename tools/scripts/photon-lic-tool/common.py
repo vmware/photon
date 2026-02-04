@@ -13,6 +13,7 @@ import yaml
 import requests
 import builtins
 import traceback
+import re
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -59,6 +60,8 @@ sc_toolkit_cicd_ver = "32.4.1"
 spdx_data_base_url = "https://raw.githubusercontent.com/spdx/license-list-data/"
 spdx_license_list_ext = "refs/heads/main/json/licenses.json"
 spdx_exceptions_list_ext = "refs/heads/main/json/exceptions.json"
+
+default_lic_score = 90
 """ ################################################################# """
 
 """ ################ Globals from config yaml ####################### """
@@ -78,6 +81,7 @@ known_failures = []
 """ ################################################################### """
 
 _real_print = builtins.print
+wrap_output = None  # Default to no wrapping
 
 
 class SignalContext:
@@ -98,16 +102,30 @@ def safe_print(*args, columnLimit=True, **kwargs):
     if not columnLimit:
         _real_print(*args, **kwargs)
         return
-    MAX_COLS = 80
+
     text = " ".join(str(arg) for arg in args)
-    start = 0
-    line_len = len(text)
-    while start < line_len:
-        _real_print(text[start : start + MAX_COLS], **kwargs)
-        start += MAX_COLS
+    for line in text.split('\n'):
+        line_len = len(line)
+        if line_len <= columnLimit:
+            _real_print(line, **kwargs)
+            continue
+
+        start = 0
+        while start < line_len:
+            split_pt = start + columnLimit
+            # Find the color codes, and make sure we don't split in the middle of a color code
+            ansi_codes = re.finditer(r'\033\[[0-9;]*m', line[start:start + columnLimit])
+            for ansi_code in ansi_codes:
+                if split_pt > ansi_code.start() and split_pt < ansi_code.end():
+                    split_pt = ansi_code.end()
+                    break
+            _real_print(line[start:split_pt], end='\n', **kwargs)
+
+            start = split_pt
 
 
-builtins.print = safe_print
+def emit_spdx(spdx_exp="None"):
+    safe_print(f"SPDX Expression: {spdx_exp}", columnLimit=wrap_output if wrap_output else 150)
 
 
 def err_exit(msg=None):
@@ -116,6 +134,7 @@ def err_exit(msg=None):
         traceback.print_tb(tb, file=sys.stderr)
     pr_err(f'Error: {msg}')
     sys.exit(1)
+
 
 def run_cmd(cmd, ignore_rc=False, quiet=False, capture=False, shell=False, timeout=None):
     if isinstance(cmd, str) and not shell:
@@ -140,7 +159,7 @@ def run_cmd(cmd, ignore_rc=False, quiet=False, capture=False, shell=False, timeo
         else:
             result = subprocess.run(cmd, shell=shell, timeout=timeout)
     except subprocess.TimeoutExpired as e:
-        print(f"Timeout expired ({timeout}s) while running command '{cmd}'");
+        print(f"Timeout expired ({timeout}s) while running command '{cmd}'")
         # Create same object for callers to handle stdout/stderr/returncode values
         result = subprocess.CompletedProcess(
                     args=cmd,

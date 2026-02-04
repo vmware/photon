@@ -13,14 +13,15 @@ import re
 import hashlib
 import json
 import errno
+import tempfile
 
 from DockerUtil import DockerUtil
 
-from common import(
+from common import (
     err_exit,
-    pr_err,
-    safe_print
+    pr_err
 )
+
 
 class Scanner:
     _extra_repo_urls = None
@@ -151,7 +152,7 @@ class Scanner:
         # Create the populated spec file
         result = common.run_cmd(
             [
-                f"rpmspec",
+                "rpmspec",
                 "-P",
                 spec_path,
                 "-D",
@@ -170,13 +171,13 @@ class Scanner:
 
         with open(spec_path, "r") as spec_f:
             for line in spec_f:
-                match = re.match("BuildRequires:\s+(.*)", line, flags=re.IGNORECASE)
+                match = re.match(r"BuildRequires:\s+(.*)", line, flags=re.IGNORECASE)
                 if match:
                     build_req = match.group(1).replace(" ", "")
                     build_reqs.append(build_req)
                     continue
 
-                match = re.match("%define\s+ExtraBuildRequires\s+(.*)", line, flags=re.IGNORECASE)
+                match = re.match(r"%define\s+ExtraBuildRequires\s+(.*)", line, flags=re.IGNORECASE)
                 if match:
                     for extra_build_req in match.group(1).split(','):
                         extra_build_req = extra_build_req.replace(" ", "")
@@ -437,7 +438,6 @@ class Scanner:
 
         return f"{common.rpm_build_root}/BUILD"
 
-
     def _get_used_sources(self, path):
         cmd = []
 
@@ -469,12 +469,17 @@ class Scanner:
                 src = os.path.basename(src)
                 self._used_sources.append(src)
 
-
     def _setup_scan_dir(self, path="", build_spec=False, alt_src_url=None):
         scan_dir = ""
 
         if not path:
             err_exit("No path given to Scanner._setup_scan_dir()")
+
+        # clean out the dir if anything there before
+        if os.path.exists(common.ph_scan_dir):
+            shutil.rmtree(common.ph_scan_dir)
+
+        os.makedirs(common.ph_scan_dir)
 
         if path.endswith(".src.rpm"):
             scan_dir = self._extract_src_rpm(path)
@@ -569,7 +574,7 @@ class Scanner:
             archive_name = archive["archive"]
             if self._used_sources and archive_name not in self._used_sources:
                 print(
-                    f"\nSkipping '{archive_name}' from manual review, because it is unused in spec ...\n"
+                    f"\nSkipping '{archive_name}' from manual review because it is unused in spec\n"
                 )
                 continue
 
@@ -591,7 +596,8 @@ class Scanner:
                 "please review and update the checksum/spdx expression accordingly"
             )
 
-        lic_tree = license_tree.create_exp_tree(reviewed_spdx_exp, exception_list=[], ignore_list=[])
+        lic_tree = license_tree.create_exp_tree(reviewed_spdx_exp, exception_list=[],
+                                                ignore_list=[])
         spdx_exp.extend(license_tree.get_top_lvl_ands(lic_tree))
 
         os.remove(path)
@@ -628,7 +634,9 @@ class Scanner:
                             )
                         )
                 else:
-                    common.pr_err(f"ERROR: '{os.path.basename(path)}' NOT FOUND at '{full_path}' ...")
+                    common.pr_err(
+                        f"ERROR: '{os.path.basename(path)}' NOT FOUND at '{full_path}' ..."
+                    )
 
             if not found_files:
                 pr_err(f"ERROR: Failed to find any of the manual review files: {filePaths}")
@@ -640,9 +648,6 @@ class Scanner:
             err_exit()
 
         return spdx_exp
-
-    def _emit_spdx(self, spdx_exp="None"):
-        safe_print(f"SPDX Expression: {spdx_exp}", columnLimit=False)
 
     def _cleanup_scan(self, scan_dir=""):
         try:
@@ -696,7 +701,7 @@ class Scanner:
         self,
         build_spec=None,
         path=None,
-        score=90,
+        score=common.default_lic_score,
         yaml_out=None,
         cpus=0,
         docker=False,
@@ -748,9 +753,7 @@ class Scanner:
                 os.makedirs(yaml_out)
                 yaml_out_dir = yaml_out
             else:
-                common.err_exit(
-                    f"ERROR: --yaml must point to a directory for --config_yaml"
-                )
+                common.err_exit("ERROR: --yaml must point to a directory for --config_yaml")
 
             print(
                 f"Outputting scancode YAML for each source under parent directory: {yaml_out_dir}"
@@ -823,8 +826,7 @@ class Scanner:
         with open(config_yaml, "w+") as out_cfg_yaml:
             ruamel_yaml.dump(self._config_yaml, out_cfg_yaml)
 
-
-        if(yaml_out_dir):
+        if yaml_out_dir:
             print(f"yaml output for each source located under {yaml_out_dir}")
 
     def __replace_unencodeable(self, string):
@@ -835,7 +837,6 @@ class Scanner:
             except UnicodeEncodeError:
                 chars.append("<bad char>")
         return "".join(chars)
-
 
     # For each file in the scan dir, check if the file path
     # contains some unencodable characters for 'utf-8'.
@@ -849,7 +850,7 @@ class Scanner:
                 try:
                     p = os.path.join(root, f)
                     p.encode('utf-8')
-                except UnicodeEncodeError as e:
+                except UnicodeEncodeError:
                     bad_files.append(self.__replace_unencodeable(os.path.join(root, f)))
 
         if bad_files:
@@ -879,7 +880,7 @@ class Scanner:
         file_sizes = []
         for root, _, files in os.walk(scan_dir):
             for file in files:
-                file_sizes.append(os.path.getsize(os.path.join(root,file)))
+                file_sizes.append(os.path.getsize(os.path.join(root, file)))
 
         file_sizes.sort(reverse=True)
 
@@ -887,95 +888,46 @@ class Scanner:
 
         # Use only 3/4 of the available memory
         available_memory *= 0.75
-
         # Assume overhead of roughly 1200 MB for one file + scancode
-        total_mem_usage = 1258291200 #1200 MB
+        total_mem_usage = 1258291200  # 1200 MB
         # Thread overhead seems to be about 1000MB per additional thread
-        thread_overhead = 1048576000 #1000 MB
+        thread_overhead = 1048576000  # 1000 MB
 
         if available_memory < total_mem_usage + file_sizes[0]:
-            err_exit("Available memory is not sufficient, risking OOM error. Free memory and try again later")
+            err_exit(
+                "Available memory is not sufficient, risking OOM error. " +
+                "Free memory and try again later"
+            )
 
         i = 0
         total = total_mem_usage
         while total < available_memory and i < len(file_sizes):
             # Assume entire file is loaded into memory, plus thread overhead
             total += file_sizes[i] + thread_overhead
-            i+=1
+            i += 1
 
         if i <= num_cpus:
             return i
 
         return num_cpus
 
+    def _scan(self,
+              scan_dir=None,
+              build_spec=None,
+              path=None,
+              score=common.default_lic_score,
+              yaml_out=None,
+              cpus=0,
+              alt_src_url=None,
+              extra_repo_urls=None,
+              timeout=None
+            ):
 
-    # Main scanning function
-    def scan(
-        self,
-        build_spec=None,
-        path=None,
-        score=90,
-        yaml_out=None,
-        cpus=0,
-        docker=False,
-        alt_src_url=None,
-        extra_repo_urls=None,
-        timeout=None
-    ):
-        yaml_tmp_path = f"{common.ph_scan_dir}/scan-results.yaml"
-        cwd = os.getcwd()
-        scan_dir = None
-        exceptions_list = None
-        cache_util = None
-        lic_db = None
         cached_spdx_ids = set()
-        self._extra_repo_urls = extra_repo_urls
-        abs_path = os.path.abspath(path)
-
-        if not path:
-            err_exit("ERROR: No input given for scan!")
-
-        if not os.path.exists(abs_path):
-            err_exit(f"Path: '{abs_path}' does not exist! Exiting...")
-
-        if not yaml_out:
-            yaml_out = "/tmp/%s.yaml" % os.path.splitext(os.path.basename(path))[0]
-            print(f"Warning: no output yaml path given, defaulting to: {yaml_out}")
-
-        docker_util = DockerUtil() if docker else DockerUtil.detect()
-        if docker_util is not None:
-            mnt_list, cmd = docker_util.build_scan_docker_cmd(
-                build_spec=build_spec,
-                path=path,
-                redis_host=common.redis_host,
-                redis_port=common.redis_port,
-                redis_ttl=common.redis_ttl,
-                score=score,
-                yaml_out=yaml_out,
-                cpus=cpus,
-                alt_src_url=alt_src_url,
-                extra_repo_urls=extra_repo_urls,
-                timeout=timeout
-            )
-            docker_util.run_docker_cmd(cmd=cmd, mount_list=mnt_list)
-            if yaml_out:
-                print(f"yaml output can be found at {yaml_out}")
-            return
-
-        self._check_prereqs()
-
-        # clean out the dir if anything there before
-        if os.path.exists(common.ph_scan_dir):
-            shutil.rmtree(common.ph_scan_dir)
-
-        os.makedirs(common.ph_scan_dir)
-
-        scan_dir = self._setup_scan_dir(path, build_spec, alt_src_url)
-
-        if not scan_dir:
-            self._emit_spdx()
-            self._cleanup_scan()
-            return
+        lic_db = None
+        cache_util = None
+        yaml_tmp_path = f"{tempfile.mkdtemp()}/scan-results.yaml"
+        cwd = os.getcwd()
 
         if build_spec:
             cached_spdx_ids.update(self._parse_manual_review(scan_dir))
@@ -996,9 +948,6 @@ class Scanner:
                 )
             else:
                 common.pr_err(f"Warning: Failed to find archive {bsname} in config.yaml!")
-
-        if not score:
-            score = 90
 
         if common.redis_host and common.redis_port:
             from CacheUtil import CacheUtil
@@ -1071,6 +1020,8 @@ class Scanner:
                     sc_yaml_out_path=yaml_tmp_path,
                 )
 
+                shutil.rmtree(os.path.dirname(yaml_tmp_path))
+
             err_exit()
 
         if not common.no_trimming:
@@ -1099,7 +1050,78 @@ class Scanner:
             sc_yaml_out_path=yaml_tmp_path,
         )
 
-        self._emit_spdx(spdx_exp)
+        shutil.rmtree(os.path.dirname(yaml_tmp_path))
+
+        return spdx_exp
+
+    # Main scanning function
+    def scan(
+        self,
+        build_spec=None,
+        path=None,
+        score=common.default_lic_score,
+        yaml_out=None,
+        cpus=0,
+        docker=False,
+        alt_src_url=None,
+        extra_repo_urls=None,
+        timeout=None
+    ):
+        scan_dir = None
+        self._extra_repo_urls = extra_repo_urls
+        abs_path = os.path.abspath(path)
+
+        if not path:
+            err_exit("ERROR: No input given for scan!")
+
+        if not os.path.exists(abs_path):
+            err_exit(f"Path: '{abs_path}' does not exist! Exiting...")
+
+        if not yaml_out:
+            yaml_out = "/tmp/%s.yaml" % os.path.splitext(os.path.basename(path))[0]
+            print(f"Warning: no output yaml path given, defaulting to: {yaml_out}")
+
+        docker_util = DockerUtil() if docker else DockerUtil.detect()
+        if docker_util is not None:
+            mnt_list, cmd = docker_util.build_scan_docker_cmd(
+                build_spec=build_spec,
+                path=path,
+                redis_host=common.redis_host,
+                redis_port=common.redis_port,
+                redis_ttl=common.redis_ttl,
+                score=score,
+                yaml_out=yaml_out,
+                cpus=cpus,
+                alt_src_url=alt_src_url,
+                extra_repo_urls=extra_repo_urls,
+                timeout=timeout
+            )
+            docker_util.run_docker_cmd(cmd=cmd, mount_list=mnt_list)
+            if yaml_out:
+                print(f"yaml output can be found at {yaml_out}")
+            return
+
+        self._check_prereqs()
+
+        scan_dir = self._setup_scan_dir(path, build_spec, alt_src_url)
+        if not scan_dir:
+            common.emit_spdx()
+            self._cleanup_scan()
+            return
+
+        spdx_exp = self._scan(
+            scan_dir=scan_dir,
+            build_spec=build_spec,
+            score=score,
+            alt_src_url=alt_src_url,
+            timeout=timeout,
+            cpus=cpus,
+            yaml_out=yaml_out,
+            extra_repo_urls=extra_repo_urls,
+            path=path,
+        )
+
+        common.emit_spdx(spdx_exp)
         self._cleanup_scan(scan_dir)
 
         return spdx_exp

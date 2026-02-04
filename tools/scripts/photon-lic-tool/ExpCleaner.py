@@ -2,7 +2,6 @@ from common import (
     cleanup_license_expression,
     get_exceptions_list,
     err_exit,
-    running_in_container,
     read_license_from_file,
 )
 from DockerUtil import DockerUtil

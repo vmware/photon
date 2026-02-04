@@ -66,7 +66,7 @@ class Validator:
         for license_exp in license_expressions:
             print(f"Validating license for {license_exp}")
             license_exp = license_expressions[license_exp]
-            print(f"License found:\n{license_exp}\n")
+            print(f"License found:\n{common.emit_spdx(license_exp)}\n")
 
             # for some reason, the license_expression package, which is used by the
             # official spdx-tools package, returns/uses the same database for both
@@ -123,11 +123,11 @@ class Validator:
                 "please update it."
             )
 
-
     # Get list of known licenses from SRP policy controls repo, if present.
     # The license-exception combination must be explicitly reviewed
     # (exception cannot be used for other licenses)
     def get_srp_known_licenses(self, srp_policy_controls=None):
+
         if not os.path.exists(srp_policy_controls):
             err_exit(f"SRP policy controls not found: {srp_policy_controls}")
 
@@ -174,5 +174,3 @@ class Validator:
                 other_non_permissive.add(lic)
 
         return network_copyleft, other_non_permissive
-
-

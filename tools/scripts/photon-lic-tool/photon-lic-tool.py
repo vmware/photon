@@ -19,12 +19,19 @@
 # photon-lic-tool.py lic-db --trim
 # or
 # photon-lic-tool.py lic-db --restore
+#
+# Analysis
+# photon-lic-tool.py analyze --yaml scancode-output.yaml --license-filter frontier-1.0
+# or
+# photon-lic-tool.py analyze --path <source path> --license-filter frontier-1.0
 
 import sys
 import os
 import yaml
 import atexit
 import common
+import builtins
+from functools import partial
 
 from argparse import ArgumentParser
 from DockerUtil import DockerUtil
@@ -32,7 +39,9 @@ from Comparator import Comparator
 from ExpCleaner import ExpCleaner
 from Validator import Validator
 from Scanner import Scanner
-from common import err_exit, pr_err, SignalContext
+from Analyzer import Analyzer
+from common import err_exit, pr_err, SignalContext, safe_print
+
 
 def scan(args):
     scanner = Scanner()
@@ -119,6 +128,17 @@ def docker_entry(args):
         docker_util.clean_docker_image()
 
 
+def analyze(args):
+    analyzer = Analyzer()
+    analyzer.analyze(
+        yaml_path=args.yaml,
+        license_filter=args.license_filter,
+        source_path=args.path,
+        context_lines=args.context_lines,
+        no_diff=args.no_diff,
+    )
+
+
 # Set global variables from config.yaml
 def parse_config(config_path=None):
     if not config_path:
@@ -135,6 +155,7 @@ def parse_config(config_path=None):
         common.redis_port = config_yaml["redis_port"]
         common.redis_ttl = config_yaml["redis_ttl"]
         common.no_trimming = config_yaml["no_trimming"]
+        common.wrap_output = config_yaml["wrap_output"]
     except KeyError as exception:
         err_exit(f"Missing required field in {config_path}!\n{exception}")
 
@@ -150,14 +171,16 @@ def parse_input():
     # Define subcommand metadata
     commands = {
         "validate": {
-            "help": "Validate a given SPDX expression for semantic correctness. Does not validate accuracy.",
+            "help": "Validate a given SPDX expression for semantic correctness. Does not " +
+                    "validate accuracy.",
             "func": validate,
             "args": [
                 (
                     "-f",
                     {
                         "action": "store",
-                        "help": "Read SPDX expression from input file. Format: License: <expression>",
+                        "help": "Read SPDX expression from input file. Format: License: " +
+                                "<expression>",
                     },
                 ),
                 (
@@ -177,7 +200,8 @@ def parse_input():
             ],
         },
         "scan": {
-            "help": "Scan all files in the given file (tarball, SRPM, etc.) and produce an SPDX expression.",
+            "help": "Scan all files in the given file (tarball, SRPM, etc.) and produce an " +
+                    "SPDX expression.",
             "func": scan,
             "args": [
                 (
@@ -199,6 +223,7 @@ def parse_input():
                     {
                         "action": "store",
                         "help": "Minimum license matching score.",
+                        "default": common.default_lic_score,
                     },
                 ),
                 (
@@ -342,7 +367,66 @@ def parse_input():
                 ),
             ],
         },
+        "analyze": {
+            "help": "Analyze a specific license ID from scan results, showing file context and " +
+                    "comparing to official license text.",
+            "func": analyze,
+            "args": [
+                (
+                    "--yaml",
+                    {
+                        "action": "store",
+                        "help": "Path to scan YAML output. If not provided, will run scan first.",
+                    },
+                ),
+                (
+                    "--license-filter",
+                    {
+                        "action": "store",
+                        "required": True,
+                        "help": "License expression filter to apply to the analysis (required)",
+                    },
+                ),
+                (
+                    "--path",
+                    {
+                        "action": "store",
+                        "help": "Path to source code or spec file (required)",
+                    },
+                ),
+                (
+                    "--context-lines",
+                    {
+                        "action": "store",
+                        "type": int,
+                        "default": 5,
+                        "help": "Number of context lines to show around matches (default: 5).",
+                    },
+                ),
+                (
+                    "--no-diff",
+                    {
+                        "action": "store_true",
+                        "default": False,
+                        "help": "Skip comparison with official license text from aboutcode.org.",
+                    },
+                ),
+            ],
+        },
     }
+
+    global_args = {
+        "--wrap-output":
+            {
+                "action": "store",
+                "type": int,
+                "default": 150,
+                "help": "Wrap output to specified number of columns.",
+            },
+    }
+
+    for arg_name, arg_opts in global_args.items():
+        parser.add_argument(arg_name, **arg_opts)
 
     for cmd_name, cmd_data in commands.items():
         sub_p = subparsers.add_parser(cmd_name, help=cmd_data["help"])
@@ -384,6 +468,10 @@ def main():
     args = parse_input()
 
     set_global_options(args)
+
+    if args.wrap_output:
+        common.wrap_output = args.wrap_output
+        builtins.print = partial(safe_print, columnLimit=args.wrap_output)
 
     def default_handler(sig, frame):
         raise Exception("Interrupted")
