@@ -92,6 +92,7 @@ targetDict = {
         "imgtree",
         "who-needs",
         "print-upward-deps",
+        "pull-stage-rpms",
     ],
 }
 
@@ -346,6 +347,29 @@ class Utilities:
             "get-upward-deps", self.pkg, self.display_option
         )
         self.logger.info("Upward dependencies: " + str(whoNeedsList))
+
+    def pull_stage_rpms(self):
+        if not self.args or len(self.args) != 1:
+            raise Exception("Please provide pull url as a parameter")
+
+        url = self.args[0]
+        files = self.specDepsObject.listRPMfilenames()
+        notFound = []
+        for f in files:
+            dst = os.path.join(constants.rpmPath, f)
+            if os.path.exists(dst):
+                continue
+            src = f"{url}/{f}"
+            print(f"Downloading {f}")
+            try:
+                downloader.downloadFile(src, dst)
+            except requests.exceptions.HTTPError:
+                self.logger.info("Not found")
+                notFound.append(f)
+            except Exception as e:
+                print(e)
+        if notFound:
+            self.logger.info("List of missing files: " + str(notFound))
 
 
 """
