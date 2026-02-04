@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -22,6 +22,7 @@ Patch7: CVE-2025-32988.patch
 Patch8: CVE-2025-32989.patch
 Patch9: CVE-2025-32990.patch
 Patch10: CVE-2025-6395.patch
+Patch11: gnutls-CVE-2025-9820.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -110,6 +111,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Wed Feb 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.7.10-6
+- Fixes CVE-2025-9820
 * Mon Jul 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-5
 - Fix CVE-2025-32988, CVE-2025-32989, CVE-2025-32990, CVE-2025-6395
 * Mon Feb 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.7.10-4
