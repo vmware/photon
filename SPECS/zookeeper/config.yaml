@@ -1,33 +1,21 @@
 sources:
-- archive: zookeeper-3.9.4.tar.gz
-  archive_sha512sum: 36bffae6440ed0d71ed83a621b8c52c583860b414812197373237f0c148bd16e6b599977c90e5eb81c0fce6b82ef44aa782621535417cffc4c2a0a51a56f2cdf
-  skip_validation: true
+- archive: zookeeper-3.9.4-source.tar.gz
+  archive_sha512sum: 3cee277cb97279eb1597dd4dfa3ceef73b9c9eb24efaa6d9cf8ead13adda748b25486ad15001c8abd1685d054e9005fdcdc30d89386823901df9d0b8daa90957
+  archive_type: upstream
+  name: zookeeper-release-3.9.4
+  version: 3.9.4
+  url: https://github.com/apache/zookeeper/archive/refs/tags/release-3.9.4.tar.gz
+  repo_url: https://github.com/apache/zookeeper
+  commit_id: 7246445ec281f3dbf53dc54e970c914f39713903
+  skip_list: []
+  missing: []
   spdx:
     package:
-      detailed_description: 'ZooKeeper is a centralized service for maintaining configuration
-        information, naming, providing distributed synchronization, and providing
-        group services. All of these kinds of services are used in some form or another
-        by distributed applications. Each time they are implemented there is a lot
-        of work that goes into fixing the bugs and race conditions that are inevitable.
-        Because of the difficulty of implementing these kinds of services, applications
-        initially usually skimp on them, which make them brittle in the presence of
-        change and difficult to manage. Even when done correctly, different implementations
-        of these services lead to management complexity when the applications are
-        deployed. '
-      home_page: http://zookeeper.apache.org/
-      license_concluded: (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
-        (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (EPL-1.0 OR Apache-2.0)
-        AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-3.0-only)
-        AND (EPL-1.0 OR LGPL-2.1-only) AND SSLeay-standalone AND BSD-3-Clause AND
-        LGPL-2.1-only AND OpenSSL-standalone AND ISC AND GPL-2.0-only AND GPL-2.0-only
-        WITH Classpath-exception-2.0 AND CDDL-1.0 AND Zlib AND EPL-1.0 AND EPL-2.0
-        AND OpenSSL AND BSD-2-Clause AND Apache-2.0 AND MIT
-      license_declared: (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
-        (GPL-2.0-only WITH Classpath-exception-2.0 OR CDDL-1.0) AND (EPL-1.0 OR Apache-2.0)
-        AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-3.0-only)
-        AND (EPL-1.0 OR LGPL-2.1-only) AND SSLeay-standalone AND BSD-3-Clause AND
-        LGPL-2.1-only AND OpenSSL-standalone AND ISC AND GPL-2.0-only AND GPL-2.0-only
-        WITH Classpath-exception-2.0 AND CDDL-1.0 AND Zlib AND EPL-1.0 AND EPL-2.0
-        AND OpenSSL AND BSD-2-Clause AND Apache-2.0 AND MIT
-      short_summary: Highly reliable distributed coordination
+      detailed_description: 'ZooKeeper is a centralized service for maintaining configuration information,
+      naming, providing distributed synchronization, and providing group services.
+      This package provides the Java server, client scripts, libraries, and systemd unit.'
+      home_page: http://zookeeper.apache.org
+      license_concluded: (EPL-1.0 OR LGPL-2.1-only) AND APSL-2.0 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-Attribution-HPND-disclaimer AND EPL-1.0 AND EPL-2.0 AND FSFUL AND ISC AND LGPL-2.1-only AND MIT AND OpenSSL
+      license_declared: (EPL-1.0 OR LGPL-2.1-only) AND APSL-2.0 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-Attribution-HPND-disclaimer AND EPL-1.0 AND EPL-2.0 AND FSFUL AND ISC AND LGPL-2.1-only AND MIT AND OpenSSL
+      short_summary: High-performance coordination service for distributed applications
       supplier: 'Organization: Broadcom, Inc.'

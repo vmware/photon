@@ -1,95 +1,119 @@
-Summary:          Highly reliable distributed coordination
-Name:             zookeeper
-Version:          3.9.4
-Release:          1%{?dist}
-URL:              http://zookeeper.apache.org/
-Group:            Applications/System
-Vendor:           VMware, Inc.
-Distribution:     Photon
+%define network_required 1
 
-Source0: %{name}-%{version}.tar.gz
+%global zk_root %{_libdir}/java/%{name}
+%global zk_conf_dir %{_sysconfdir}/%{name}
 
-Source1: zookeeper.service
-Source2: zkEnv.sh
+Summary:        High-performance coordination service for distributed applications
+Name:           zookeeper
+Version:        3.9.4
+Release:        2%{?dist}
+URL:            https://zookeeper.apache.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/apache/zookeeper/archive/refs/tags/%{name}-%{version}-source.tar.gz
+
+Source1: %{name}.service
+Source2: %{name}.preset
 Source3: %{name}.sysusers
+Source4: zkEnv.sh
 
-Source4: license.txt
-%include %{SOURCE4}
+Source5: license.txt
+%include %{SOURCE5}
 
 Patch0: zkSever_remove_cygwin_cypath.patch
 
-BuildRequires: systemd-devel
+BuildRequires:  openjdk11
+BuildRequires:  apache-maven
+BuildRequires:  systemd-devel
 
-Requires: systemd
-Requires: jre >= 11.0
-Requires(pre): systemd-rpm-macros
-Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
+Requires:       jre >= 11.0
+Requires:       systemd
+Requires(pre):  /usr/sbin/groupadd
+Requires(pre):  /usr/sbin/useradd
+Requires(pre):  systemd-rpm-macros
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
 
 %description
-ZooKeeper is a centralized service for maintaining configuration information, naming,
-providing distributed synchronization, and providing group services.
-All of these kinds of services are used in some form or another by distributed applications.
-Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable.
-Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them,
-which make them brittle in the presence of change and difficult to manage.
-Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
+ZooKeeper is a centralized service for maintaining configuration information,
+naming, providing distributed synchronization, and providing group services.
+This package provides the Java server, client scripts, libraries, and systemd unit.
 
 %prep
-%autosetup -p1 -n apache-%{name}-%{version}-bin
+%autosetup -p1 -n %{name}-release-%{version}
+
+%build
+JAVA_BIN=$(readlink -f $(command -v java))
+export JAVA_HOME=$(dirname $(dirname $JAVA_BIN))
+
+mvn clean install \
+  -Dmaven.javadoc.skip=true \
+  -DskipTests \
+  -DskipDocs
 
 %install
-mkdir -p %{buildroot}%{_bindir} \
-         %{buildroot}%{_libdir}/java/zookeeper \
-         %{buildroot}%{_libdir}/zookeeper \
-         %{buildroot}%{_var}/log/zookeeper \
-         %{buildroot}%{_sysconfdir}/zookeeper \
-         %{buildroot}%{_prefix}/share/zookeeper/templates/conf \
-         %{buildroot}%{_var}/zookeeper \
-         %{buildroot}%{_unitdir}
+install -d -m 0755 \
+  %{buildroot}%{_bindir} \
+  %{buildroot}%{zk_root} \
+  %{buildroot}%{zk_conf_dir} \
+  %{buildroot}%{_sharedstatedir}/%{name}/data \
+  %{buildroot}%{_var}/log/%{name} \
+  %{buildroot}%{_unitdir} \
+  %{buildroot}%{_presetdir} \
+  %{buildroot}%{_sysconfdir}/sysconfig \
+  %{buildroot}%{_libdir}/%{name} \
+  %{buildroot}%{_sysusersdir}
 
-cp lib/zookeeper-%{version}.jar %{buildroot}%{_libdir}/java/zookeeper
-cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
-
+tar xf %{name}-assembly/target/apache-%{name}-%{version}-bin.tar.gz
+pushd apache-%{name}-%{version}-bin
 mv bin/* %{buildroot}%{_bindir}
-mv lib/*.jar %{buildroot}%{_libdir}/java/zookeeper
-mv lib/* %{buildroot}%{_libdir}/zookeeper
-mv conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/zookeeper/zoo.cfg
-mv conf/* %{buildroot}%{_sysconfdir}/zookeeper
-pushd ..
-rm -rf %{buildroot}/%{name}-%{version}
+mv lib/*.jar %{buildroot}%{zk_root}/
+mv lib/* %{buildroot}%{_libdir}/%{name}
+mv conf/zoo_sample.cfg %{buildroot}%{zk_conf_dir}/zoo.cfg
+mv conf/* %{buildroot}%{zk_conf_dir}/
 popd
 
-cp %{SOURCE1} %{buildroot}%{_unitdir}
-cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
+install -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+install -D -m 0644 %{SOURCE2} %{buildroot}%{_presetdir}/50-%{name}.preset
+install -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
+install -D -m 0755 %{SOURCE4} %{buildroot}%{_bindir}/zkEnv.sh
 
-install -vdm755 %{buildroot}%{_presetdir}
-echo "disable zookeeper.service" > %{buildroot}%{_presetdir}/50-zookeeper.preset
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
+%clean
+rm -rf %{buildroot}
 
 %pre
-%sysusers_create_compat %{SOURCE3}
+%sysusers_create_compat %{SOURCE4}
 
 %post
-%{_sbindir}/ldconfig
-%systemd_post zookeeper.service
+/sbin/ldconfig
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun zookeeper.service
+%systemd_preun %{name}.service
 
 %postun
-%systemd_postun_with_restart zookeeper.service
 /sbin/ldconfig
+%systemd_postun_with_restart %{name}.service
 
 %files
-%defattr(-,root,root)
-%attr(0755,zookeeper,hadoop) %{_var}/log/zookeeper
-%config(noreplace) %{_sysconfdir}/zookeeper/*
-%{_unitdir}/zookeeper.service
-%{_presetdir}/50-zookeeper.preset
+%defattr(-,root,root,-)
+%config(noreplace) %{zk_conf_dir}/*
+%dir %attr(0755,%{name},hadoop) %{_var}/log/%{name}
+%dir %{zk_root}
+%{zk_root}/*
+%{_bindir}/*
+%dir %{_libdir}/%{name}
+%{_libdir}/%{name}/*
+%{_unitdir}/%{name}.service
+%{_presetdir}/50-%{name}.preset
 %{_sysusersdir}/%{name}.conf
-%{_prefix}/*
 
 %changelog
+* Thu Feb 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-2
+- Build deliverables from source
 * Tue Oct 21 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.4-1
 - Update to 3.9.4
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.3-2
