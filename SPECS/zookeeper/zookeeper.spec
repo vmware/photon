@@ -1,70 +1,91 @@
-Summary:          Highly reliable distributed coordination
-Name:             zookeeper
-Version:          3.9.3
-Release:          2%{?dist}
-URL:              http://zookeeper.apache.org
-License:          Apache License, Version 2.0
-Group:            Applications/System
-Vendor:           VMware, Inc.
-Distribution:     Photon
+%global zk_root %{_libdir}/java/%{name}
+%global zk_conf_dir %{_sysconfdir}/%{name}
 
-Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=d44d870c1691662efbf1a8baf1859c901b820dc5ff163b36e81beb27b6fbf3cd31b5f1f075697edaaf6d3e7a4cb0cc92f924dcff64b294ef13d535589bdaf143
+Summary:        High-performance coordination service for distributed applications
+Name:           zookeeper
+Version:        3.9.4
+Release:        1%{?dist}
+URL:            https://zookeeper.apache.org
+License:        Apache License, Version 2.0
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/apache/zookeeper/archive/refs/tags/%{name}-%{version}-source.tar.gz
+%define sha512 %{name}=3cee277cb97279eb1597dd4dfa3ceef73b9c9eb24efaa6d9cf8ead13adda748b25486ad15001c8abd1685d054e9005fdcdc30d89386823901df9d0b8daa90957
 
 Source1: %{name}.service
-Source2: zkEnv.sh
+Source2: %{name}.preset
+Source3: zkEnv.sh
 
 Patch0: zkSever_remove_cygwin_cypath.patch
 
+BuildRequires: openjdk8
+BuildRequires: apache-maven
 BuildRequires: systemd-devel
+BuildRequires: net-tools
 
-Requires:   systemd
-Requires:   (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
-Requires(pre):    systemd-rpm-macros
-Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+Requires: systemd
+Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
+Requires(pre):  shadow
+Requires(pre):  systemd-rpm-macros
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
 
 %description
-ZooKeeper is a centralized service for maintaining configuration information, naming,
-providing distributed synchronization, and providing group services.
-All of these kinds of services are used in some form or another by distributed applications.
-Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable.
-Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them,
-which make them brittle in the presence of change and difficult to manage.
-Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
+ZooKeeper is a centralized service for maintaining configuration information,
+naming, providing distributed synchronization, and providing group services.
+This package provides the Java server, client scripts, libraries, and systemd unit.
 
 %prep
-%autosetup -p1 -n apache-%{name}-%{version}-bin
+%autosetup -p1 -n %{name}-release-%{version}
+
+%build
+JAVA_BIN=$(readlink -f $(command -v java))
+export JAVA_HOME=$(dirname $(dirname $JAVA_BIN))
+
+mvn clean install \
+  -Dmaven.javadoc.skip=true \
+  -DskipTests \
+  -DskipDocs
 
 %install
-mkdir -p %{buildroot}%{_bindir} \
-         %{buildroot}%{_libdir}/java/%{name} \
-         %{buildroot}%{_libdir}/%{name} \
-         %{buildroot}%{_var}/log/%{name} \
-         %{buildroot}%{_sysconfdir}/%{name} \
-         %{buildroot}%{_datadir}/%{name}/templates/conf \
-         %{buildroot}%{_var}/%{name} \
-         %{buildroot}%{_unitdir}
+install -d -m 0755 \
+  %{buildroot}%{_bindir} \
+  %{buildroot}%{zk_root} \
+  %{buildroot}%{zk_conf_dir} \
+  %{buildroot}%{_sharedstatedir}/%{name}/data \
+  %{buildroot}%{_var}/log/%{name} \
+  %{buildroot}%{_unitdir} \
+  %{buildroot}%{_presetdir} \
+  %{buildroot}%{_sysconfdir}/sysconfig \
+  %{buildroot}%{_libdir}/%{name}
 
-cp lib/%{name}-%{version}.jar %{buildroot}%{_libdir}/java/%{name}
-cp conf/zoo_sample.cfg %{buildroot}%{_datadir}/%{name}/templates/conf/zoo.cfg
+tar xf %{name}-assembly/target/apache-%{name}-%{version}-bin.tar.gz
 
+pushd apache-%{name}-%{version}-bin
 mv bin/* %{buildroot}%{_bindir}
-mv lib/*.jar %{buildroot}%{_libdir}/java/%{name}
+mv lib/*.jar %{buildroot}%{zk_root}/
 mv lib/* %{buildroot}%{_libdir}/%{name}
-mv conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/%{name}/zoo.cfg
-mv conf/* %{buildroot}%{_sysconfdir}/%{name}
+mv conf/zoo_sample.cfg %{buildroot}%{zk_conf_dir}/zoo.cfg
+mv conf/* %{buildroot}%{zk_conf_dir}/
+popd
 
-cp %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
-cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
+install -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+install -D -m 0644 %{SOURCE2} %{buildroot}%{_presetdir}/50-%{name}.preset
+install -D -m 0755 %{SOURCE3} %{buildroot}%{_bindir}/zkEnv.sh
 
-install -vdm755 %{buildroot}%{_presetdir}
-echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
+%clean
+rm -rf %{buildroot}
 
 %pre
-getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
+getent group hadoop >/dev/null || %{_sbindir}/groupadd -r hadoop
 getent passwd %{name} >/dev/null || \
-    /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_datadir}/%{name} %{name}
+    %{_sbindir}/useradd --comment "ZooKeeper" \
+        --shell /bin/bash -M -r \
+        --groups hadoop \
+        --home %{_datadir}/%{name} %{name}
 
 %post
 /sbin/ldconfig
@@ -78,14 +99,21 @@ getent passwd %{name} >/dev/null || \
 /sbin/ldconfig
 
 %files
-%defattr(-,root,root)
-%attr(0755,%{name},hadoop) %{_var}/log/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/*
+%defattr(-,root,root,-)
+%config(noreplace) %{zk_conf_dir}/*
+%dir %attr(0755,%{name},hadoop) %{_var}/log/%{name}
+%dir %{zk_root}
+%{zk_root}/*
+%{_bindir}/*
+%dir %{_libdir}/%{name}
+%{_libdir}/%{name}/*
 %{_unitdir}/%{name}.service
 %{_presetdir}/50-%{name}.preset
-%{_prefix}/*
 
 %changelog
+* Thu Feb 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-1
+- Upgrade to v3.9.4
+- Build deliverables from source
 * Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.3-2
 - Add jdk21 to requires list
 * Wed Jul 16 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.3-1
