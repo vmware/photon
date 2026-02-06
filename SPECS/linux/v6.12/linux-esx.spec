@@ -17,7 +17,7 @@
 %define archdir x86
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 %endif
 
 %ifarch aarch64
@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.60
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -70,7 +70,7 @@ Source10001: jitterentropy_canister_wrapper.c
 Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
-%define fips_canister_version 6.12.60-13.ph5
+%define fips_canister_version 6.12.60-18.ph5
 %define ExtraBuildRequires linux-fips-canister = %{fips_canister_version}
 BuildRequires:       linux-fips-canister = %{fips_canister_version}
 
@@ -539,6 +539,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-15
+- Update canister version to 6.12.60-18
 * Fri Feb 06 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-14
 - Disabling FIPS build until canister finalised.
 * Tue Feb 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-13
