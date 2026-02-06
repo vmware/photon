@@ -44,10 +44,6 @@
 %define arch x86_64
 %define archdir x86
 %global fips 1
-# Set canister_build to 1 to officially build and ship
-# linux-fips-canister RPM.
-# Remove the line below once canister development done.
-%global canister_build 1
 %endif
 
 %ifarch aarch64
@@ -81,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.60
-Release:        18%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        19%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -130,7 +126,7 @@ Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
 %if 0%{?canister_usage}
-%define fips_canister_version 6.12.60-13.ph5
+%define fips_canister_version 6.12.60-18.ph5
 %define ExtraBuildRequires linux-fips-canister = %{fips_canister_version}
 BuildRequires:       linux-fips-canister = %{fips_canister_version}
 %endif
@@ -933,6 +929,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.60-19
+- Update canister version to 6.12.60-18
 * Thu Feb 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-18
 - Improve FIPS canister matching plugin
 * Tue Feb 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.60-17
