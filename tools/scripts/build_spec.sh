@@ -43,7 +43,7 @@ GNU Tools are needed for this script to run properly.
 fi
 
 CONTAINER=build_spec
-SOURCES_BASEURL=https://packages.vmware.com/photon/photon_sources/1.0
+SOURCES_BASEURL=https://packages.broadcom.com/photon/photon_sources/1.0
 SPECPATH=$($READLINK -m "$1")
 SPECFILE=$(basename "$SPECPATH")
 SPECDIR=$(dirname "$SPECPATH")

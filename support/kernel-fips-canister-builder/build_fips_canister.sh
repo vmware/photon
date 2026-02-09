@@ -141,8 +141,9 @@ function copy_photon_sources_patches() {
  # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
 EOF
     fi
+    packagesServer="https://packages.broadcom.com/photon"
     CANISTER_TARBALL_VERSION="$CANISTER_SOURCE_VERSION-$KERNEL_VERSION"
-    wget https://packages.vmware.com/photon/photon_sources/1.0/linux-$version.tar.xz -P $SPECDIR/
+    wget $packagesServer/photon_sources/1.0/linux-$version.tar.xz -P $SPECDIR/
 
     grep "Source.*:" $SPECPATH | awk '{print $2}' | while read -r line ; do
        if [[ $line =~ "tar" ]]; then
@@ -153,11 +154,11 @@ EOF
                   version="\%\{$versionvar\}"
                   pkgname="$(basename $line)"
                   name="${pkgname/$version/$versionval}"
-                  wget https://packages.vmware.com/photon/photon_sources/1.0/$name -P $SPECDIR/
+                  wget $packagesServer/photon_sources/1.0/$name -P $SPECDIR/
              fi
           else
             name=$(basename $line)
-            wget https://packages.vmware.com/photon/photon_sources/1.0/$name -P $SPECDIR
+            wget $packagesServer/photon_sources/1.0/$name -P $SPECDIR
           fi
        fi
     done

@@ -1,7 +1,7 @@
-From 934b3b3c0c12be2435f8edbe484c2696dda93864 Mon Sep 17 00:00:00 2001
+From 1c4dc6f55836bc1b1704dafd00a79472cbc6ff65 Mon Sep 17 00:00:00 2001
 From: Joe Lawrence <joe.lawrence@redhat.com>
 Date: Mon, 16 Jan 2023 09:33:55 -0500
-Subject: [PATCH] kpatch-build: ignore init/version-timestamp.o
+Subject: [PATCH 4/5] kpatch-build: ignore init/version-timestamp.o
 
 Kernel v6.1+ commit 2df8220cc511 ("kbuild: build init/built-in.a just
 once") split init_uts_ns and linux_banner out to
@@ -16,7 +16,7 @@ Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/kpatch-build/kpatch-cc b/kpatch-build/kpatch-cc
-index 2a3d2644..17aae25b 100755
+index 2a3d264..17aae25 100755
 --- a/kpatch-build/kpatch-cc
 +++ b/kpatch-build/kpatch-cc
 @@ -44,6 +44,7 @@ if [[ "$TOOLCHAINCMD" =~ ^(.*-)?gcc$ || "$TOOLCHAINCMD" =~ ^(.*-)?clang$ ]] ; th
@@ -27,3 +27,6 @@ index 2a3d2644..17aae25b 100755
  				kernel/system_certificates.o|\
  				lib/*|\
  				tools/*|\
+-- 
+2.53.0
+

@@ -1,12 +1,14 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://github.com/dynup/kpatch
 License:        GPLv2
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch:      x86_64
 
 Source0:        https://github.com/dynup/kpatch/archive/refs/tags/%{name}-v%{version}.tar.gz
 %define sha512  %{name}=ab3a771dfcde92a9eee768afcf7fddb6f1ad5ba9e8c7f44d579d258ce9b6ee1722869b1b70c4597ae951b0faf71413efa26a5b135f50308c996b284a9dcee5b7
@@ -16,19 +18,16 @@ Source2:        scripts/gen_livepatch.sh
 Source3:        scripts/README.txt
 Source4:        scripts/rpm/spec.file
 
-BuildArch:      x86_64
-
-Patch0:         0001-Added-support-for-Photon-OS.patch
-Patch1:         0001-adding-option-to-set-description-field-of-module.patch
-Patch2:         0001-allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
+Patch0: 0001-Added-support-for-Photon-OS.patch
+Patch1: 0002-adding-option-to-set-description-field-of-module.patch
+Patch2: 0003-Allow-livepatches-to-be-visible-to-modinfo-after-loa.patch
 
 # Bug fix
-Patch3:         kpatch-build-ignore-init-version-timestamp-o.patch
-Patch4:         0001-Support-multiline-MODULE_DESCRIPTION.patch
+Patch3: 0004-kpatch-build-ignore-init-version-timestamp.o.patch
+Patch4: 0005-Support-multiline-MODULE_DESCRIPTION.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
-BuildRequires:  elfutils
 BuildRequires:  elfutils-devel
 BuildRequires:  systemd-rpm-macros
 
@@ -115,6 +114,8 @@ cp %{SOURCE4} %{buildroot}%{_sysconfdir}/gen_livepatch/build-rpm.spec
 %{_sysconfdir}/gen_livepatch/build-rpm.spec
 
 %changelog
+* Sat Feb 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.8-4
+- Update to packages.broadcom.com url
 * Thu Apr 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.8-3
 - Limit auto generated livepatch kernel module name to 38 characters
 - Added support for multiline module descriptions

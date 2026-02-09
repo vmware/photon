@@ -3,7 +3,7 @@
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    19%{?dist}
+Release:    20%{?dist}
 License:    Apache
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
@@ -11,7 +11,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 
-Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
+Source0: https://packages.broadcom.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
 %define sha512 %{name}=fe59ad4867a00429719a7401701a433a90ed9c6ddb49a37072f8486ae0ca9c3da685a49d9376c8bb7b38f114a5293e1698b7fb314e71198bbb80f729547402eb
 
 Patch0: use-system-provided-commons-httpclient-jar.patch
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %{_prefix}/lib/*.jar
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0b3-20
+- Update URL to packages.broadcom.com
 * Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0b3-19
 - Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0b3-18

@@ -54,7 +54,7 @@ def get(package, source, checksum, sourcesPath, URLs, logger):
             return
         logger.info("checksum of " + sourcePath[0] + " does not match.")
     for baseurl in URLs:
-        #form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
+        #form url: https://packages.broadcom.com/photon/photon_sources/1.0/<filename>.
         url = '%s/%s' % (baseurl, source)
         destfile = os.path.join(sourcesPath, source)
         logger.debug("Downloading: " + url)

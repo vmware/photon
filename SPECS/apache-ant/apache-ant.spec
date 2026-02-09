@@ -8,7 +8,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.10
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    Apache
 URL:        http://ant.apache.org
 Group:      Applications/System
@@ -23,7 +23,7 @@ Source0: http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-
 Source1: http://hamcrest.googlecode.com/files/hamcrest-%{hamcrest_ver}.tar.gz
 %define sha512 hamcrest=5672bc627bc71d6fd64b6f776b89ac16ed68819fa4a0748c1250b57f1065c1e7e18ba184d9fe3392e54000ddeb353d0d8d67f4eecdf464974563f05c6b226fc2
 
-Source2: https://packages.vmware.com/photon/photon_sources/1.0//maven-ant-tasks-%{ant_tasks_ver}.tar.gz
+Source2: https://packages.broadcom.com/photon/photon_sources/1.0//maven-ant-tasks-%{ant_tasks_ver}.tar.gz
 %define sha512 maven-ant-tasks=4df5b96a11819f82732c54656db8b0e0f4697079113d644622b4f82dc218ac1829b97aa8dc2427d3903ebdb0eb82e2ee35f9d3160647edb09bb243d8ba266fd8
 
 Patch0: %{name}-CVE-2021-36373-CVE-2021-36374.patch
@@ -138,6 +138,8 @@ rm -rf %{buildroot}
 %{_bindir}/runant.pl
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.10-7
+- Update URL to packages.broadcom.com
 * Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.10-6
 - Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.10-5

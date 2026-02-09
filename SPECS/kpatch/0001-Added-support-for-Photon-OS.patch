@@ -1,7 +1,7 @@
-From 530b5eee7006e3d580c56d6a47ff0c80b24a3311 Mon Sep 17 00:00:00 2001
+From 47d9eee6d16f635092de655605fa2c7a9691d7e1 Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <blamoreaux@vmware.com>
 Date: Fri, 24 Mar 2023 19:31:15 +0000
-Subject: [PATCH] Added support for Photon OS
+Subject: [PATCH 1/5] Added support for Photon OS
 
 Adding support for building livepatches on Photon OS.
 ---
@@ -9,10 +9,10 @@ Adding support for building livepatches on Photon OS.
  1 file changed, 93 insertions(+), 1 deletion(-)
 
 diff --git a/kpatch-build/kpatch-build b/kpatch-build/kpatch-build
-index 568cc34..9b33092 100755
+index 45e8b14..c58abfa 100755
 --- a/kpatch-build/kpatch-build
 +++ b/kpatch-build/kpatch-build
-@@ -765,6 +765,13 @@ while [[ $# -gt 0 ]]; do
+@@ -770,6 +770,13 @@ while [[ $# -gt 0 ]]; do
  	shift
  done
  
@@ -26,7 +26,7 @@ index 568cc34..9b33092 100755
  if [[ ${#PATCH_LIST[@]} -eq 0 ]]; then
  	warn "no patch file(s) specified"
  	usage
-@@ -847,7 +854,7 @@ if [[ -z "$USERSRCDIR" ]] && [[ -f "$RELEASE_FILE" ]]; then
+@@ -852,7 +859,7 @@ if [[ -z "$USERSRCDIR" ]] && [[ -f "$RELEASE_FILE" ]]; then
  	DISTRO="$ID"
  fi
  
@@ -35,7 +35,7 @@ index 568cc34..9b33092 100755
  	[[ -z "$VMLINUX" ]] && VMLINUX="/usr/lib/debug/lib/modules/$ARCHVERSION/vmlinux"
  	[[ -e "$VMLINUX" ]] || die "kernel-debuginfo-$ARCHVERSION not installed"
  
-@@ -973,6 +980,91 @@ else
+@@ -978,6 +985,91 @@ else
  		sed -i "s/^SUBLEVEL.*/${sublevel}/" "$KERNEL_SRCDIR/Makefile" || die
  		echo "$ARCHVERSION" > "$VERSIONFILE" || die
  
@@ -84,7 +84,7 @@ index 568cc34..9b33092 100755
 +		fi
 +
 +		echo "Getting source rpm"
-+		SRC_RPM_URL="https://packages.vmware.com/photon/$PHOTON_VERSION/photon_srpms_${PHOTON_VERSION}_x86_64/$SRC_RPM_NAME"
++		SRC_RPM_URL="https://packages.broadcom.com/photon/$PHOTON_VERSION/photon_srpms_${PHOTON_VERSION}_x86_64/$SRC_RPM_NAME"
 +
 +		# allow downloading/copying of source rpm from either local or custom urls.
 +		# Just need these variables to be exported before running to enable these options.
@@ -128,5 +128,5 @@ index 568cc34..9b33092 100755
  		die "Unsupported distribution"
  	fi
 -- 
-2.35.6
+2.53.0
 

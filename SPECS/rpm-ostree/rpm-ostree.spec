@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -152,6 +152,8 @@ install -vdm711 %{buildroot}%{_datadir}/empty
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2021.10-7
+- Update URL to packages.broadcom.com
 * Fri Feb 24 2023 Ankit Jain <ankitja@vmware.com> 2021.10-6
 - Added /usr/share/empty dir required to bind mount rpm database
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-5

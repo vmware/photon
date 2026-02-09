@@ -60,6 +60,7 @@ DEBUGINFO_LOCAL_PATH=""
 RPM_MACRO_FILE=""
 HAS_DIST_TAG=1
 patches=()
+packageSeverURL="https://packages.broadcom.com/photon"
 
 # args
 #   1. string to match
@@ -371,7 +372,7 @@ install_kernel_dependencies() {
 
 parse_source_rpm() {
     echo -e "\nDownloading and/or processing source rpm"
-    local src_rpm_url="https://packages.vmware.com/photon/${PHOTON_VERSION}/photon_srpms_${PHOTON_VERSION}_x86_64/$SRC_PKGNAME"
+    local src_rpm_url="${packageSeverURL}/${PHOTON_VERSION}/photon_srpms_${PHOTON_VERSION}_x86_64/$SRC_PKGNAME"
 
     # allow downloading/copying of source rpm from either local or custom urls. Just need these variables to be exported before
     # running to enable these options.
@@ -425,7 +426,7 @@ parse_debuginfo_rpm() {
     if [[ -n "$DEBUGINFO_LOCAL_PATH" ]]; then
         cp "$DEBUGINFO_LOCAL_PATH" "$DEBUG_PKGNAME"
     else
-        curl "https://packages.vmware.com/photon/$PHOTON_VERSION/photon_debuginfo_${PHOTON_VERSION}_x86_64/x86_64/$DEBUG_PKGNAME" --output "$DEBUG_PKGNAME"  > /dev/null || error
+        curl "${packageSeverURL}/$PHOTON_VERSION/photon_debuginfo_${PHOTON_VERSION}_x86_64/x86_64/$DEBUG_PKGNAME" --output "$DEBUG_PKGNAME"  > /dev/null || error
     fi
 
     local absolute_path=$(rpm -qlp "$DEBUG_PKGNAME" | grep "vmlinux-$LINUX_VERSION")

@@ -1,7 +1,7 @@
-From ca27f78e8186fbcce8872a73a70bee64e57ea6da Mon Sep 17 00:00:00 2001
+From b60fcd7fb7530778e72173034d85d9465bb1a8b4 Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <blamoreaux@vmware.com>
 Date: Thu, 15 Dec 2022 21:33:31 +0000
-Subject: [PATCH] Allow livepatches to be visible to modinfo after loading
+Subject: [PATCH 3/5] Allow livepatches to be visible to modinfo after loading
 
 There is a problem with kpatch where livepatch modules, once loaded, can be seen with lsmod, but not modinfo.
 This is because kpatch by default installs livepatches into /ver/lib/kpatch/<kernel-version>.
@@ -16,7 +16,7 @@ information about loaded/installed livepatch modules.
  1 file changed, 23 insertions(+), 13 deletions(-)
 
 diff --git a/kpatch/kpatch b/kpatch/kpatch
-index 2a00b07..3184b5a 100755
+index 21647c1..36dc292 100755
 --- a/kpatch/kpatch
 +++ b/kpatch/kpatch
 @@ -23,7 +23,8 @@
@@ -132,5 +132,5 @@ index 2a00b07..3184b5a 100755
  
  "list")
 -- 
-2.35.5
+2.53.0
 
