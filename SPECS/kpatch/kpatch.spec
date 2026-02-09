@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/dynup/kpatch/archive/refs/tags/kpatch-v%{version}.tar.gz
-Source1:        https://packages.vmware.com/photon/photon_sources/1.0/%{kpatch_utils}.tar.gz
+Source1:        https://packages.broadcom.com/photon/photon_sources/1.0/%{kpatch_utils}.tar.gz
 
 Source2:        license.txt
 %include %{SOURCE2}

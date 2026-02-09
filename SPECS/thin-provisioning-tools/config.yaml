@@ -28,7 +28,7 @@ sources:
   spdx:
     package:
       detailed_description: Thin provisioning tools dependencies stored as cargo registry
-      home_page: https://packages.vmware.com/photon/photon_sources/1.0/
+      home_page: https://packages.broadcom.com/photon/photon_sources/1.0/
       license_concluded: MIT AND Unlicense AND Apache-2.0 WITH LLVM-exception AND
         (MIT OR Unlicense) AND BSD-3-Clause AND 0BSD AND (MIT OR Apache-2.0) AND BSD-2-Clause
         AND (BSD-3-Clause OR GPL-2.0-only) AND Unicode-DFS-2016 AND GPL-2.0-only AND

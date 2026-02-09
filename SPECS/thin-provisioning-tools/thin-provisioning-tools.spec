@@ -4,7 +4,7 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        1.0.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
@@ -49,6 +49,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.14-4
+- Update URL to packages.broadcom.com
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.14-3
 - Rebuild with shared clang libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.14-2

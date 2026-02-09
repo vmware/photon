@@ -7,7 +7,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.12
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -15,7 +15,7 @@ Distribution:   Photon
 
 Source0: http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
 
-Source1: https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
+Source1: https://packages.broadcom.com/photon/photon_sources/1.0/maven-ant-tasks-%{maven_tasks_ver}.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -129,6 +129,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.12-7
+- Update URL to packages.broadcom.com
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.12-6
 - Update java requires
 * Wed Mar 26 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.12-5

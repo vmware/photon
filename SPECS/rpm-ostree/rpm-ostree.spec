@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2025.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -168,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2025.8-3
+- Update URL to packages.broadcom.com
 * Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2025.8-2
 - Bump version as a part of libarchive upgrade
 * Tue Jun 17 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2025.8-1

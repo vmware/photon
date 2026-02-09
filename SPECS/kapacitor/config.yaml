@@ -26,7 +26,7 @@ sources:
   spdx:
     package:
       detailed_description: kapacitor dependencies stored as cargo registry
-      home_page: https://packages.vmware.com/photon/photon_sources/1.0/
+      home_page: https://packages.broadcom.com/photon/photon_sources/1.0/
       license_concluded: Zlib AND blessing AND CC-BY-3.0 AND (Apache-2.0 OR MIT) AND
         Apache-2.0 WITH LLVM-exception AND BSL-1.0 AND CC0-1.0 AND (Apache-2.0 WITH
         LLVM-exception OR Apache-2.0 OR MIT) AND GPL-3.0-only AND MIT-testregex AND

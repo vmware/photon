@@ -4,7 +4,7 @@ Summary:        OpenBSD netcat to read and write data across connections using T
 Name:           netcat
 # Version obtained from netcat.c header comment
 Version:        1.228
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://man.openbsd.org/nc.1
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ Distribution:   Photon
 # Example:
 # mv src/tree/master/usr.bin/nc nc-1270245
 # tar cJF nc-1270245.tar.xz nc-1270245
-Source0: https://packages.vmware.com/photon/photon_sources/1.0/nc-%{commit_id}.tar.xz
+Source0: https://packages.broadcom.com/photon/photon_sources/1.0/nc-%{commit_id}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -60,6 +60,8 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.228-2
+- Update URL to packages.broadcom.com
 * Mon Apr 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.228-1
 - Switch to BSD netcat.
 - GNU netcat-0.7.1 was released back in Jan 2004.

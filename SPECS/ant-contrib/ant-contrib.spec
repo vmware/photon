@@ -3,7 +3,7 @@
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    20%{?dist}
+Release:    21%{?dist}
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -11,7 +11,7 @@ Distribution:   Photon
 
 BuildArch:      noarch
 
-Source0: https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
+Source0: https://packages.broadcom.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -59,6 +59,8 @@ rm -rf %{buildroot}
 %{ant_prefix}/lib/*.jar
 
 %changelog
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0b3-21
+- Update URL to packages.broadcom.com
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0b3-20
 - Update Requires to jre >= 11.0
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.0b3-19

@@ -5,7 +5,7 @@ sources:
   archive_type: None
   name: "nc-1270245"
   version: 1.228
-  url: https://packages.vmware.com/photon/photon_sources/1.0/nc-1270245.tar.xz
+  url: https://packages.broadcom.com/photon/photon_sources/1.0/nc-1270245.tar.xz
   repo_url: https://github.com/openbsd/src.git
   commit_id: 127024533874d33a814299a400ef47fe8790e00e
   skip_list: []
