@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:      Contains programs for manipulating text files
 Name:         gawk
-Version:      5.3.2
-Release:      1%{?dist}
+Version:      5.1.1
+Release:      6.1%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -27,43 +27,14 @@ Requires:   readline
 %description
 The Gawk package contains programs for manipulating text files.
 
-%package extras
-Summary:    Extra set of gawk utilities
-Conflicts:  %{name} < 5.3.2-1
-Requires:   %{name} = %{version}-%{release}
+%package        doc
+Summary:        Documentation files for gawk
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}
+Conflicts:      %{name} < 5.1.1-6
 
-%description extras
-%{summary}
-
-%package all-langpacks
-Summary:    Additional localisation files for gawk utility
-Conflicts:  %{name} < 5.3.2-1
-
-%description all-langpacks
-The base package of gawk supports only the english localisation.
-This subpackage contains additional localisation files.
-
-%package devel
-Summary:    Header file for gawk extensions development
-Requires:   %{name} = %{version}-%{release}
-Conflicts:  %{name} < 5.3.2-1
-
-%description devel
-This subpackage provides /usr/include/gawkapi.h header file, which contains
-definitions for use by extension functions calling into gawk. For more info
-about gawk extensions, please refer to `The GNU Awk User's Guide`.
-
-However, unless you are developing an extension to gawk, you most likely do not
-need this subpackage.
-
-%package doc
-Summary:    Documentation files for gawk
-BuildArch:  noarch
-Requires:   %{name} = %{version}-%{release}
-Conflicts:  %{name} < 5.3.2-1
-
-%description doc
-%{summary}
+%description    doc
+Documentation files for gawk
 
 %prep
 %autosetup -p1
@@ -75,9 +46,9 @@ Conflicts:  %{name} < 5.3.2-1
 
 %install
 %make_install %{?_smp_mflags}
-install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{version}
-cp -av doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_docdir}/%{name}-%{version}
-rm -r %{buildroot}%{_infodir}
+install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+rm -rf %{buildroot}%{_infodir}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %find_lang %{name}
@@ -85,39 +56,29 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %if 0%{?with_check}
 %check
 sed -i 's/ pty1 / /' test/Makefile
-%make_build check
+make %{?_smp_mflags} check
 %endif
 
-%files
+%ldconfig_scriptlets
+
+%files -f %{name}.lang
 %defattr(-,root,root)
-%{_bindir}/%{name}
-%{_bindir}/awk
-%{_bindir}/%{name}-%{version}
-
-%files extras
-%defattr(-,root,root)
-%{_libdir}/*awk
-%{_libexecdir}/*awk
-%{_sysconfdir}/profile.d/gawk.*
-%{_bindir}/gawkbug
-
-%files devel
-%defattr(-,root,root,-)
-%{_includedir}/gawkapi.h
-%{_datadir}/*awk
-
-%files -f %{name}.lang all-langpacks
-%defattr(-,root,root,-)
+%{_bindir}/*
+%{_libdir}/%{name}/*
+%{_includedir}/*
+%{_libexecdir}/*
+%{_datarootdir}/awk/*
+%{_sysconfdir}/profile.d/gawk.csh
+%{_sysconfdir}/profile.d/gawk.sh
 
 %files doc
 %defattr(-,root,root,-)
 %{_mandir}/*/*
-%{_docdir}/%{name}-%{version}/*
+%{_defaultdocdir}/%{name}-%{version}/*
 
 %changelog
-* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-1
-- Split package into further sub packages
-- Upgrade to v5.3.2
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.1-6.1
+- Bump after moving to SPECS/91
 * Wed Jul 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.1.1-6
 - Remove unintended license for SRP compliance
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.1.1-5

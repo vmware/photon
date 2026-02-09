@@ -1,52 +1,49 @@
 sources:
-- archive: gawk-5.1.1.tar.xz
-  archive_sha512sum: 794538fff03fdb9a8527a6898b26383d01988e8f8456f8d48131676387669a8bb3e706fa1a17f6b6316ddba0ebe653c24ad5dd769f357de509d6ec25f3ff1a43
-  skip_validation: true
+- archive: gawk-5.3.2.tar.xz
+  archive_sha512sum: 2268150fa35ae049a6ff3d0d0fa110db10477014c25f50e2ab4e3ee5fd60133369d2a994f59db4eb718020a0af5c4003ae7278c63e7fffa72f431ff4a1429e48
+  archive_type: upstream
+  name: gawk-5.3.2
+  version: 5.3.2
+  url: https://ftp.gnu.org/gnu/gawk/gawk-5.3.2.tar.xz
+  repo_url: https://https.git.savannah.gnu.org/git/gawk.git
+  commit_id: 027ebff56b83600d88fd303b98c36201116a7560
+  skip_list: []
+  missing: [README.git, implementation-notes.txt, helpers, agpl-3.0.txt, rw.po, rand-mpfr1.ok, .gitignore, igawk.1, Checklist, ast.po, ga.po, bootstrap.sh, Makevars.template, he.po, xhe.po, old-extension]
   license_manual_review:
   - file_paths:
-    - gawk-5.1.1/doc/it/gawktexi.in
-    sha256sum: 1cbdd82472b8f097ff7817109d2e528f5719af2b007c6deacbea691b711a536b
+    - gawk-5.3.2/doc/wordlist
+    sha256sum: d171a2d663cad736fcda0fda7861cd120c934454b22d757dfd726bc62398c0bf
     spdx_exp: ''
   - file_paths:
-    - gawk-5.1.1/doc/wordlist
-    sha256sum: a5fd4ef160377956c4940b3303496ff5ece78affe7a178f77a097b849a923190
+    - gawk-5.3.2/doc/gawk.texi
+    sha256sum: c4b12c5b2c83247e55951ab6c32a2d3b3c8b1ac2ec316c89c40ac0a1bf62c757
     spdx_exp: ''
   - file_paths:
-    - gawk-5.1.1/doc/gawktexi.in
-    sha256sum: 719668f5df1a2a14324455621596b8b4c58da26e46146d5b5352f6ddc8ffe25d
+    - gawk-5.3.2/doc/it/gawk.texi
+    sha256sum: d25986909bd3b286ba234ff22089a03af0ed656a9de1a3b16c639421ae316930
     spdx_exp: ''
   - file_paths:
-    - gawk-5.1.1/doc/gawk.texi
-    sha256sum: 697763ed9c5a20a03b650bc5d2158cd6e8336db41cc5cb033ed40686e4b38ea5
+    - gawk-5.3.2/doc/gawkinet.texi
+    sha256sum: 1cc44fcded20540eba62b591539efa78cc4afd4ff445637e266ef270f3993879
+    spdx_exp: ''
+    # support/ChangeLog contains an agpl entry due to which changelog, pma.c gets flagged for AGPL
+  - file_paths:
+    - gawk-5.3.2/support/ChangeLog
+    sha256sum: c7039d421be72cab6ce19919b6278b885c79624b1fc956cebd9973ce6d29a7a6
     spdx_exp: ''
   - file_paths:
-    - gawk-5.1.1/doc/gawkinet.texi
-    sha256sum: 78b9c804e3cba76a05ae89868b1b0a095e36e6de7aee11f04f331c31dac69084
+    - gawk-5.3.2/support/pma.c
+    sha256sum: 9573d624006e279df39e51e5da0f347801a0289fac27b4a7d9b9a65681fca1c7
+    spdx_exp: ''
+  - file_paths:
+    - gawk-5.3.2/support/pma.h
+    sha256sum: 689f2ae7431f23fe7c8c92d23f3bd584f1cdb6796ba3d4b9696214597d7eb2f1
     spdx_exp: ''
   spdx:
     package:
-      detailed_description: 'The Gawk package contains programs for manipulating text
-        files. '
+      detailed_description: 'The Gawk package contains programs for manipulating text files.'
       home_page: http://www.gnu.org/software/gawk
-      license_concluded: FSFAP AND GPL-3.0-or-later WITH Texinfo-exception AND FSFAP-no-warranty-disclaimer
-        AND GFDL-1.3-invariants-only AND GFDL-1.3-or-later AND GPL-2.0-or-later WITH
-        Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-2.0-only AND Latex2e-translated-notice
-        AND FSFUL AND AGPL-3.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND GFDL-1.3-only
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND CC-BY-SA-3.0 AND GPL-1.0-or-later
-        WITH Autoconf-exception-generic AND BSD-3-Clause AND GPL-3.0-only AND LGPL-2.0-or-later
-        AND GFDL-1.1-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-1.0-or-later AND
-        LGPL-2.0-only AND LGPL-2.1-only AND X11 AND GPL-3.0-or-later WITH Libtool-exception
-        AND GPL-2.0-or-later
-      license_declared: FSFAP AND GPL-3.0-or-later WITH Texinfo-exception AND FSFAP-no-warranty-disclaimer
-        AND GFDL-1.3-invariants-only AND GFDL-1.3-or-later AND GPL-2.0-or-later WITH
-        Autoconf-exception-generic AND GPL-3.0-or-later AND GPL-2.0-only AND Latex2e-translated-notice
-        AND FSFUL AND AGPL-3.0-or-later AND LGPL-2.1-or-later AND FSFULLR AND GFDL-1.3-only
-        AND GPL-3.0-or-later WITH Bison-exception-2.2 AND CC-BY-SA-3.0 AND GPL-1.0-or-later
-        WITH Autoconf-exception-generic AND BSD-3-Clause AND GPL-3.0-only AND LGPL-2.0-or-later
-        AND GFDL-1.1-or-later AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND FSFULLRWD AND GPL-1.0-or-later AND
-        LGPL-2.0-only AND LGPL-2.1-only AND X11 AND GPL-3.0-or-later WITH Libtool-exception
-        AND GPL-2.0-or-later
+      license_concluded: BSD-3-Clause AND CC-BY-ND-3.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GFDL-1.3-only AND GFDL-1.3-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND Latex2e-translated-notice AND MIT AND X11
+      license_declared: BSD-3-Clause AND CC-BY-ND-3.0 AND FSFAP AND FSFAP-no-warranty-disclaimer AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GFDL-1.3-only AND GFDL-1.3-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND Latex2e-translated-notice AND MIT AND X11
       short_summary: Contains programs for manipulating text files
       supplier: 'Organization: Broadcom, Inc.'
