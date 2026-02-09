@@ -4,7 +4,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -429,6 +429,13 @@ mktoy %{_bindir}/login \
       %{_bindir}/su \
       %{_bindir}/passwd
 
+%triggerpostun -- systemd
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy %{_sbindir}/halt \
+      %{_sbindir}/poweroff \
+      %{_sbindir}/reboot
+
 %triggerpostun -- tar
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
@@ -467,6 +474,7 @@ mktoy %{_bindir}/dmesg \
       %{_bindir}/fallocate \
       %{_bindir}/flock \
       %{_bindir}/ionice \
+      %{_bindir}/logger \
       %{_bindir}/nsenter \
       %{_bindir}/renice \
       %{_bindir}/rev \
@@ -686,6 +694,11 @@ mktoy %{_bindir}/which
 %ghost %{_bindir}/su
 %ghost %{_bindir}/passwd
 
+# systemd
+%ghost %{_sbindir}/halt
+%ghost %{_sbindir}/poweroff
+%ghost %{_sbindir}/reboot
+
 # tar
 %ghost %{_bindir}/tar
 
@@ -706,6 +719,7 @@ mktoy %{_bindir}/which
 %ghost %{_sbindir}/blockdev
 %ghost %{_sbindir}/hwclock
 %ghost %{_sbindir}/losetup
+%ghost %{_bindir}/logger
 %ghost %{_sbindir}/mkswap
 %ghost %{_sbindir}/pivot_root
 %ghost %{_sbindir}/swapoff
@@ -772,6 +786,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Mon Feb 09 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.8.9-10
+- enable logger, reboot
 * Mon Dec 22 2025 Oliver Kurth <okurth@vmware.com> 0.8.9-9
 - enable arp, arping, dhcp, ip, traceroute
 * Tue Dec 02 2025 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.8.9-8
