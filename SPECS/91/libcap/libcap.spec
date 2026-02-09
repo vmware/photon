@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %global debug_package %{nil}
 
 Summary:        Libcap
 Name:           libcap
-Version:        2.77
-Release:        1%{?dist}
+Version:        2.66
+Release:        4.1%{?dist}
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -15,28 +15,12 @@ Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libca
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires:       %{name}-minimal = %{version}-%{release}
-Requires:       %{name}-libs = %{version}-%{release}
+Patch0:         CVE-2023-2602.patch
+Patch1:         CVE-2023-2603.patch
 
 %description
 The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available in Linux kernels.
 These capabilities are a partitioning of the all powerful root privilege into a set of distinct privileges.
-
-%package        libs
-Group:          System Environment/Libraries
-Conflicts:      %{name} < 2.77-1
-Summary:        Libraries for %{name}
-
-%description    libs
-This package contains minimal set of shared %{name} libraries.
-
-%package        minimal
-Conflicts:      %{name} < 2.77-1
-Requires:       %{name}-libs = %{version}-%{release}
-Summary:        Minimal set of %{name} tools
-
-%description    minimal
-%{summary}
 
 %package        devel
 Summary:        Development files for libcap
@@ -46,33 +30,30 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 The libcap-devel package contains libraries, header files and documentation for developing applications that use libcap.
 
-%package        doc
-Summary:        Documentation files for %{name}
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}
-Conflicts:      %{name} < 2.77-1
-
-%description    doc
-%{summary}
-
 %prep
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
+if [ %{_host} != %{_build} ]; then
+  MFLAGS="CC=%{_arch}-unknown-linux-gnu-gcc AR=%{_arch}-unknown-linux-gnu-ar RANLIB=%{_arch}-unknown-linux-gnu-ranlib BUILD_CC=gcc"
+else
+  MFLAGS=
+fi
+sed -i 's:LIBDIR:PAM_&:g' pam_cap/Makefile
+make %{?_smp_mflags} $MFLAGS
 
 %install
 make prefix=%{_prefix} \
      SBINDIR=%{_sbindir} \
+     PAM_LIBDIR=%{_libdir} \
      RAISE_SETFCAP=no \
      DESTDIR=%{buildroot} \
-     LIBDIR=%{_lib} \
      %{?_smp_mflags} \
      install
 %ifarch aarch64
 test -d %{buildroot}%{_libdir} && mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
 %endif
-chmod -v 755 %{buildroot}/%{_libdir}/libcap.so
+chmod -v 755 %{buildroot}/usr/lib64/libcap.so
 
 %check
 cd progs
@@ -81,40 +62,25 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 
 %files
 %defattr(-,root,root)
-%exclude %{_sbindir}/getcap
-%exclude %{_sbindir}/setcap
-%exclude %{_libdir}/libcap.so.*
-%{_libdir}/libpsx.so.*
+%{_lib64dir}/libcap.so.*
+%{_lib64dir}/libpsx.so.*
+%{_mandir}/man1/*
+%{_mandir}/man8/*
 %{_sbindir}/*
-
-%files libs
-%defattr(-,root,root)
-%{_libdir}/libcap.so.*
-
-%files minimal
-%defattr(-,root,root)
-%{_sbindir}/getcap
-%{_sbindir}/setcap
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%exclude %{_libdir}/libcap.a
-%exclude %{_libdir}/libpsx.a
-%{_libdir}/pkgconfig/*
-%{_libdir}/libcap.so
-%{_libdir}/libpsx.so
-
-%files doc
-%{_mandir}/man1/*
+%exclude %{_lib64dir}/libcap.a
+%exclude %{_lib64dir}/libpsx.a
+%{_lib64dir}/pkgconfig/*
+%{_lib64dir}/libcap.so
+%{_lib64dir}/libpsx.so
 %{_mandir}/man3/*
-%{_mandir}/man5/*
-%{_mandir}/man7/*
-%{_mandir}/man8/*
 
 %changelog
-*   Mon Feb 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.77-1
--   Update to v2.77 and split libcap into sub-packages
+*   Mon Feb 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.66-4.1
+-   Release bump for 2.66-4.1 version
 *   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.66-4
 -   Release bump for SRP compliance
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.66-3

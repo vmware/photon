@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %define rpmhome %{_libdir}/%{name}
 
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    9%{?dist}
+Release:    8.1%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -74,7 +74,7 @@ Summary:  Libraries for rpm
 Requires: nss-libs
 Requires: popt
 Requires: libgcc
-Requires: libcap-libs
+Requires: libcap
 Requires: zlib
 Requires: bzip2-libs
 Requires: elfutils-libelf
@@ -332,8 +332,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
-* Mon Feb 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.18.2-9
-- Update libcap-libs dependency after package split
+* Mon Feb 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.18.2-8.1
+- Spec bump for 9.1 subrelease
 * Thu Jan 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8
 - Fix division by zero in elfdeps
 * Tue Nov 25 2025 Bo Gan <bo.gan@broadcom.com> 4.18.2-7

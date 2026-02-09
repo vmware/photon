@@ -1,14 +1,7 @@
 sources:
-- archive: libcap-2.77.tar.xz
-  archive_type: upstream
-  archive_sha512sum: c783cb43ffb40eb005fb880efe18e72667c743af79d647f67ee3201d5ff1e64446f9c850cced935a04b63a8ee3380bbf28dd91e2dfbcbddb561c8d096da610d0
-  name: libcap-2.77
-  version: 2.77
-  url: https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.77.tar.xz
-  repo_url: https://git.kernel.org/pub/scm/libs/libcap/libcap.git
-  commit_id: 3b2513a1ba696f01d31edfa93f35c30b379cc70e
-  skip_list: []
-  missing: ['shared' , '.gitignore']
+- archive: libcap-2.66.tar.xz
+  archive_sha512sum: ac005b622f6e065f30ce282a5c87240e7b9da75366ee537aa4835bc501b44bc242c10a4ba4dc070e2415fc7f635d1c3c4e45fbeeaf962cf7973dda82bf6377f0
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'The libcap package implements the user-space interfaces

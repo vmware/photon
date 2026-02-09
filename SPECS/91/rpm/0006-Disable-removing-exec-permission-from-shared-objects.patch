@@ -1,0 +1,119 @@
+From b9c82541a32e7ee1552981da3b5d494668c00a6c Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 10 Sep 2024 17:04:04 +0530
+Subject: [PATCH 6/6] Disable removing exec permission from shared objects
+
+More info at:
+https://github.com/rpm-software-management/rpm/discussions/3195
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ platform.in          |  2 --
+ scripts/Makefile.am  |  4 ++--
+ scripts/Makefile.in  | 10 +++++-----
+ scripts/brp-elfperms | 13 -------------
+ 4 files changed, 7 insertions(+), 22 deletions(-)
+ delete mode 100755 scripts/brp-elfperms
+
+diff --git a/platform.in b/platform.in
+index 6541080..abaaa52 100644
+--- a/platform.in
++++ b/platform.in
+@@ -73,12 +73,10 @@
+ %__brp_strip %{_rpmconfigdir}/brp-strip %{__strip}
+ %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
+ %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
+-%__brp_elfperms %{_rpmconfigdir}/brp-elfperms
+ %__brp_remove_la_files %{_rpmconfigdir}/brp-remove-la-files
+ 
+ %__os_install_post    \
+     %{?__brp_compress} \
+-    %{?__brp_elfperms} \
+     %{?__brp_strip} \
+     %{?__brp_strip_static_archive} \
+     %{?__brp_strip_comment_note} \
+diff --git a/scripts/Makefile.am b/scripts/Makefile.am
+index 5cbed80..f43b455 100644
+--- a/scripts/Makefile.am
++++ b/scripts/Makefile.am
+@@ -8,7 +8,7 @@ CLEANFILES =
+ EXTRA_DIST = \
+ 	brp-compress \
+ 	brp-strip brp-strip-comment-note \
+-	brp-strip-static-archive brp-elfperms \
++	brp-strip-static-archive \
+ 	brp-remove-la-files \
+ 	check-files check-prereqs \
+ 	check-buildroot check-rpaths check-rpaths-worker \
+@@ -26,7 +26,7 @@ EXTRA_DIST = \
+ rpmconfig_SCRIPTS = \
+ 	brp-compress \
+ 	brp-strip brp-strip-comment-note \
+-	brp-strip-static-archive brp-elfperms \
++	brp-strip-static-archive \
+ 	brp-remove-la-files \
+ 	check-files check-prereqs \
+ 	check-buildroot check-rpaths check-rpaths-worker \
+diff --git a/scripts/Makefile.in b/scripts/Makefile.in
+index b741243..a23cdd9 100644
+--- a/scripts/Makefile.in
++++ b/scripts/Makefile.in
+@@ -145,11 +145,11 @@ am__v_P_1 = :
+ AM_V_GEN = $(am__v_GEN_@AM_V@)
+ am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+ am__v_GEN_0 = @echo "  GEN     " $@;
+-am__v_GEN_1 = 
++am__v_GEN_1 =
+ AM_V_at = $(am__v_at_@AM_V@)
+ am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+ am__v_at_0 = @
+-am__v_at_1 = 
++am__v_at_1 =
+ SOURCES =
+ DIST_SOURCES =
+ am__can_run_installinfo = \
+@@ -429,11 +429,11 @@ rpmconfigdir = $(prefix)/lib/rpm
+ # Libtool version (current-revision-age) for all our libraries
+ rpm_version_info = 13:1:4
+ AM_CFLAGS = @RPMCFLAGS@
+-CLEANFILES = 
++CLEANFILES =
+ EXTRA_DIST = \
+ 	brp-compress \
+ 	brp-strip brp-strip-comment-note \
+-	brp-strip-static-archive brp-elfperms \
++	brp-strip-static-archive \
+ 	brp-remove-la-files \
+ 	check-files check-prereqs \
+ 	check-buildroot check-rpaths check-rpaths-worker \
+@@ -451,7 +451,7 @@ EXTRA_DIST = \
+ rpmconfig_SCRIPTS = \
+ 	brp-compress \
+ 	brp-strip brp-strip-comment-note \
+-	brp-strip-static-archive brp-elfperms \
++	brp-strip-static-archive \
+ 	brp-remove-la-files \
+ 	check-files check-prereqs \
+ 	check-buildroot check-rpaths check-rpaths-worker \
+diff --git a/scripts/brp-elfperms b/scripts/brp-elfperms
+deleted file mode 100755
+index 0749f36..0000000
+--- a/scripts/brp-elfperms
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#!/bin/sh
+-# If using normal root, avoid changing anything.
+-if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
+-	exit 0
+-fi
+-
+-ELFCLASSIFY=/usr/bin/eu-elfclassify
+-
+-[ -x ${ELFCLASSIFY} ] || exit 0
+-
+-# Strip executable bits from ELF DSO's which are not actually executable
+-find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) | ${ELFCLASSIFY} --shared --print0 --stdin | xargs -0 -r chmod a-x
+-
+-- 
+2.46.0
+
