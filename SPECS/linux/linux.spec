@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.248
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -537,6 +537,11 @@ Patch300: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
 
 # CVE-2025-68283
 Patch301: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
+
+# CVE-2023-53510
+Patch302: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
+# CVE-2025-39901
+Patch303: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1228,6 +1233,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Feb 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.248-3
+- Fix CVE-2023-53510 and CVE-2025-39901.
 * Fri Feb 06 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.248-2
 - Fix CVE-2025-38685, CVE-2025-38512, CVE-2024-58240
 * Tue Feb 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.248-1

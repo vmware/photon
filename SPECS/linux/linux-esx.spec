@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.248
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -509,10 +509,14 @@ Patch296: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
 Patch298: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # CVE-2025-68283
 Patch299: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
+# CVE-2023-53510
+Patch300: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
+# CVE-2025-39901
+Patch301: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
 
 #Patches for ptp_vmw
-Patch301: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
-Patch302: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
+Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
+Patch352: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
 # GPUs support for DriverVM
 Patch400: amdgpu-Add-Missing-Sienna-Cichlid-DID.patch
@@ -669,10 +673,10 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m61 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M300
+%autopatch -p1 -m100 -M301
 
 #Patches for ptp_vmw
-%autopatch -p1 -m301 -M302
+%autopatch -p1 -m351 -M352
 
 # GPUs support for DriverVM
 %autopatch -p1 -m400 -M400
@@ -897,6 +901,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.248-3
+- Fix CVE-2023-53510 and CVE-2025-39901.
 * Fri Feb 06 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.248-2
 - Fix CVE-2025-38685
 * Tue Feb 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.248-1

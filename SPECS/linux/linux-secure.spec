@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.248
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -473,6 +473,11 @@ Patch300: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
 # Fix CVE-2024-58240
 Patch301: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
 
+# CVE-2023-53510
+Patch302: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
+# CVE-2025-39901
+Patch303: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -738,6 +743,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.248-3
+- Fix CVE-2023-53510 and CVE-2025-39901.
 * Fri Feb 06 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.248-2
 - Fix CVE-2025-38685, CVE-2024-58240
 * Tue Feb 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.248-1

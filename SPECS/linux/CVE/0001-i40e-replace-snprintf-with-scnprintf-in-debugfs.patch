@@ -1,0 +1,72 @@
+From 7ce728d0847bf4c4b091ee4a9c78d5b3e8c38fe6 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Mon, 9 Feb 2026 09:23:18 +0000
+Subject: [PATCH 1/2] i40e: replace snprintf with scnprintf in debugfs
+
+  -  The 'command' and 'netdev_ops' debugfs files are a legacy debugging
+interface supported by the i40e driver since its early days by commit
+02e9c290814c ("i40e: debugfs interface").
+
+Both of these debugfs files provide a read handler which is mostly useless,
+and which is implemented with questionable logic. They both use a static
+256 byte buffer which is initialized to the empty string. In the case of
+the 'command' file this buffer is literally never used and simply wastes
+space. In the case of the 'netdev_ops' file, the last command written is
+saved here.
+
+On read, the files contents are presented as the name of the device
+followed by a colon and then the contents of their respective static
+buffer. For 'command' this will always be "<device>: ". For 'netdev_ops',
+this will be "<device>: <last command written>". But note the buffer is
+shared between all devices operated by this module. At best, it is mostly
+meaningless information, and at worse it could be accessed simultaneously
+as there doesn't appear to be any locking mechanism.
+
+We have also recently received multiple reports for both read functions
+about their use of snprintf and potential overflow that could result in
+reading arbitrary kernel memory. For the 'command' file, this is definitely
+impossible, since the static buffer is always zero and never written to.
+For the 'netdev_ops' file, it does appear to be possible, if the user
+carefully crafts the command input, it will be copied into the buffer,
+which could be large enough to cause snprintf to truncate, which then
+causes the copy_to_user to read beyond the length of the buffer allocated
+by kzalloc.
+
+A minimal fix would be to replace snprintf() with scnprintf() which would
+cap the return to the number of bytes written, preventing an overflow.
+
+Since the upstream fix of 9fcdb1c3c4ba: i40e: remove read access to debugfs
+files cannot be backported to linux stable v5.10 kernel, implement the minimal
+fix as indicated in the upstream commit, so that the vulnerability can be
+prevented.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
+index 8bcf5902babf..2a8ac67290fc 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
+@@ -85,7 +85,7 @@ static ssize_t i40e_dbg_command_read(struct file *filp, char __user *buffer,
+ 	if (!buf)
+ 		return -ENOSPC;
+ 
+-	len = snprintf(buf, buf_size, "%s: %s\n",
++	len = scnprintf(buf, buf_size, "%s: %s\n",
+ 		       pf->vsi[pf->lan_vsi]->netdev->name,
+ 		       i40e_dbg_command_buf);
+ 
+@@ -1672,7 +1672,7 @@ static ssize_t i40e_dbg_netdev_ops_read(struct file *filp, char __user *buffer,
+ 	if (!buf)
+ 		return -ENOSPC;
+ 
+-	len = snprintf(buf, buf_size, "%s: %s\n",
++	len = scnprintf(buf, buf_size, "%s: %s\n",
+ 		       pf->vsi[pf->lan_vsi]->netdev->name,
+ 		       i40e_dbg_netdev_ops_buf);
+ 
+-- 
+2.39.4
+

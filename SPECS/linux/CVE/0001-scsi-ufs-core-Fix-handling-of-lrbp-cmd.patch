@@ -1,0 +1,89 @@
+From 7882ff9233e97ab2edc312aa3ab95015d036e131 Mon Sep 17 00:00:00 2001
+From: Bart Van Assche <bvanassche@acm.org>
+Date: Wed, 24 May 2023 13:36:20 -0700
+Subject: [PATCH 2/2] scsi: ufs: core: Fix handling of lrbp->cmd
+
+[ Upstream commit 549e91a9bbaa0ee480f59357868421a61d369770 ]
+
+ufshcd_queuecommand() may be called two times in a row for a SCSI command
+before it is completed. Hence make the following changes:
+
+ - In the functions that submit a command, do not check the old value of
+   lrbp->cmd nor clear lrbp->cmd in error paths.
+
+ - In ufshcd_release_scsi_cmd(), do not clear lrbp->cmd.
+
+See also scsi_send_eh_cmnd().
+
+This commit prevents that the following appears if a command times out:
+
+WARNING: at drivers/ufs/core/ufshcd.c:2965 ufshcd_queuecommand+0x6f8/0x9a8
+Call trace:
+ ufshcd_queuecommand+0x6f8/0x9a8
+ scsi_send_eh_cmnd+0x2c0/0x960
+ scsi_eh_test_devices+0x100/0x314
+ scsi_eh_ready_devs+0xd90/0x114c
+ scsi_error_handler+0x2b4/0xb70
+ kthread+0x16c/0x1e0
+
+Fixes: 5a0b0cb9bee7 ("[SCSI] ufs: Add support for sending NOP OUT UPIU")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Link: https://lore.kernel.org/r/20230524203659.1394307-3-bvanassche@acm.org
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Srinidhi Rao: Backported this fix to v5.10 kernel]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ drivers/scsi/ufs/ufshcd.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index c5f41023c71b..1c25d03b243c 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -2558,7 +2558,6 @@ static int ufshcd_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
+ 
+ 	lrbp = &hba->lrb[tag];
+ 
+-	WARN_ON(lrbp->cmd);
+ 	lrbp->cmd = cmd;
+ 	lrbp->sense_bufflen = UFS_SENSE_SIZE;
+ 	lrbp->sense_buffer = cmd->sense_buffer;
+@@ -2574,7 +2573,6 @@ static int ufshcd_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
+ 
+ 	err = ufshcd_map_sg(hba, lrbp);
+ 	if (err) {
+-		lrbp->cmd = NULL;
+ 		ufshcd_release(hba);
+ 		goto out;
+ 	}
+@@ -2802,7 +2800,7 @@ static int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
+ 
+ 	init_completion(&wait);
+ 	lrbp = &hba->lrb[tag];
+-	WARN_ON(lrbp->cmd);
++	lrbp->cmd = NULL;
+ 	err = ufshcd_compose_dev_cmd(hba, lrbp, cmd_type, tag);
+ 	if (unlikely(err))
+ 		goto out_put_tag;
+@@ -4997,8 +4995,6 @@ static void __ufshcd_transfer_req_compl(struct ufs_hba *hba,
+ 			result = ufshcd_transfer_rsp_status(hba, lrbp);
+ 			scsi_dma_unmap(cmd);
+ 			cmd->result = result;
+-			/* Mark completed command as NULL in LRB */
+-			lrbp->cmd = NULL;
+ 			/* Do not touch lrbp after scsi done */
+ 			cmd->scsi_done(cmd);
+ 			__ufshcd_release(hba);
+@@ -6416,7 +6412,6 @@ static int ufshcd_issue_devman_upiu_cmd(struct ufs_hba *hba,
+ 
+ 	init_completion(&wait);
+ 	lrbp = &hba->lrb[tag];
+-	WARN_ON(lrbp->cmd);
+ 
+ 	lrbp->cmd = NULL;
+ 	lrbp->sense_bufflen = 0;
+-- 
+2.39.4
+
