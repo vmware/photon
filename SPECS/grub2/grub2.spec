@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.12
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -188,8 +188,10 @@ sed -e "s,@@VERSION@@,%{version},g" \
     -e "s,@@GRUB_PH_GEN@@,%{grub_photon_generation},g" \
     %{SOURCE2} > grub-sbat.csv
 
+%define builtin_efi_modules fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm gcry_sha512 password_pbkdf2 pbkdf2
+
 %ifarch x86_64
-./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv %{builtin_efi_modules}
 
 %if "%{?signing_script}" != ""
 %{signing_script} --file_type pe \
@@ -205,7 +207,7 @@ search.fs_label rootfs root
 configfile /boot/%{name}/grub.cfg
 EOF
 
-./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/%{name} -O arm64-efi -c grub-embed-config.cfg --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
+./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/%{name} -O arm64-efi -c grub-embed-config.cfg --sbat=grub-sbat.csv %{builtin_efi_modules}
 %endif
 
 %if 0%{?with_check}
@@ -271,6 +273,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Tue Feb 10 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.12-3
+- grub2-efi: add modules for password support
 * Sun Jan 18 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12-2
 - CVE-2025-61662, CVE-2025-61663, CVE-2025-61664
 * Wed Oct 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12-1
