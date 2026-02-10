@@ -6,7 +6,7 @@
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.29
+Version:        11.0.30
 Release:        1%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
@@ -15,7 +15,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-11.0=85cdccee7e359e6b51aee7ebb23bff75c26dd2fa6054a853b23b3bfa3b13bcad3c195fea91ffe5d4078c05ebb7fd9db6cf276451f2029073108f406ca362f611
+%define sha512 jdk-11.0=d7352305622c439a07065664fc9c69b41b81990177f412b31fd7ac5654a60fec22a63ec91f7c747ee85e45755e7aa00ac7a31c8c43d400fd0a1d320b9577d3a1
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -247,6 +247,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-1
+- Upgrade to v11.0.30
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.29-1
 - This is a prep change for ExtraBuildRequires removal from jdk specs
 - Version upgrade contains a bunch of CVE fixes

@@ -6,7 +6,7 @@
 
 Summary:    OpenJDK
 Name:       openjdk21
-Version:    21.0.9
+Version:    21.0.10
 Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk21u
@@ -15,7 +15,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-21=f209839c830e5db7080613b5d5e7c33ccd6a55cb72a2e6237bb26646569691a34a7b93349c9fa219a3496e111e156c2d24abda3b389056b16625668e8756aed0
+%define sha512 jdk-21=3b956c32bd5079f787be0a84d0b85f7c93eeb65565b9456d9dfd16f97e85c6fa92263e9077b8b8326296bb5f777cf39646a0c25b2a52d3e0a5b98131cbc70155
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -229,6 +229,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-1
+- Upgrade to v21.0.10
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-1
 - This is a prep change for ExtraBuildRequires removal from jdk specs
 - Version upgrade contains a bunch of CVE fixes

@@ -1,6 +1,6 @@
 %global security_hardening  none
 %define jdk_major_version   1.8.0
-%define subversion          472
+%define subversion          482
 %define bootstrapjdkversion 1.8.0.112
 %define _use_internal_dependency_generator 0
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
@@ -8,7 +8,7 @@
 
 Summary:    OpenJDK
 Name:       openjdk8
-Version:    1.8.0.472
+Version:    1.8.0.482
 Release:    1%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
@@ -17,7 +17,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/jdk8u%{subversion}-ga.tar.gz
-%define sha512 jdk8u=1acebcb878d0da98fe9d66040037ddeb10c307c89402a8e2471f074068589f6bcbcaafffd24d2eb94e1aaf25e953430d94e299465e3222869789f252eacc6446
+%define sha512 jdk8u=c9951addcb0cac3f7bb2b1a5643811367b23a889908697c8091322c9551afec720fe31a2ca97ebd97ad0a48661d554fc59388d86a947fade7268bfaeab8b4dd5
 
 Patch0: Awt_build_headless_only.patch
 Patch1: check-system-ca-certs-x86.patch
@@ -299,6 +299,8 @@ rm -rf %{buildroot}/*
 %{jdkInstallDir}/src.zip
 
 %changelog
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.482-1
+- Upgrade to v1.8.0.482
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.472-1
 - Club aarch64 and amd64 specs
 - This is also a prep change for ExtraBuildRequires removal from jdk specs

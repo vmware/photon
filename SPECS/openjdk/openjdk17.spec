@@ -6,7 +6,7 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.17
+Version:    17.0.18
 Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
@@ -15,7 +15,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-17=ddb409fe2c8714af081e1174df2b1febcb05097dd83eed60abe9cdaf6b9cfb9a960626480ff4f8719e8890480274ca5ce2abb449317aeb617d9bfe964b33ad29
+%define sha512 jdk-17=d828e4e6cb730c9452eb1085c752d8bb03c66f2edc9d177fc6c8eaa15e316f71b63545f1fcc5a628a5a40d280155da059a913c976a1af257df4d657ed940c5b8
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -238,6 +238,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-1
+- Upgrade to v17.0.18
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.17-1
 - This is a prep change for ExtraBuildRequires removal from jdk specs
 - Version upgrade contains a bunch of CVE fixes
