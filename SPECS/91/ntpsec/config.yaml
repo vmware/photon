@@ -1,0 +1,15 @@
+sources:
+- archive: ntpsec-1.2.3.tar.gz
+  archive_sha512sum: cec0c6ddff81c3da48157f3437945c11832b29577482c86c9d6df997d0194fea9df43ad05189c63efbf5a491a9a7f98eaae78065445d5e31499b1f1d78e217fb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NTPsec is a more secure and improved implementation of
+        the Network Time Protocol derived from the original NTP project. '
+      home_page: https://www.ntpsec.org/
+      license_concluded: GPL-1.0-or-later AND MIT AND NTP-0 AND BSD-4-Clause AND BSD-3-Clause
+        AND NTP AND CC-BY-4.0 AND ISC AND BSD-2-Clause AND Beerware AND Apache-2.0
+      license_declared: GPL-1.0-or-later AND MIT AND NTP-0 AND BSD-4-Clause AND BSD-3-Clause
+        AND NTP AND CC-BY-4.0 AND ISC AND BSD-2-Clause AND Beerware AND Apache-2.0
+      short_summary: Improved implementation of Network Time Protocol
+      supplier: 'Organization: Broadcom, Inc.'

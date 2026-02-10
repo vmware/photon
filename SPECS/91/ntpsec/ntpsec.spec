@@ -1,10 +1,10 @@
-# Build this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} >= 92
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        7%{?dist}
+Release:        6.1%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,27 +35,13 @@ Requires:       gcc
 Requires:       glibc
 Requires:       openssl
 Requires:       libevent
-Requires:       libcap-libs
 Requires:       systemd
-Requires:       %{name}-minimal = %{version}-%{release}
 
-Provides: ntp
-Obsoletes: ntp
+Conflicts:      ntp
 
 %description
 NTPsec is a more secure and improved implementation of the Network Time
 Protocol derived from the original NTP project.
-
-%package        minimal
-Summary:        Minimal NTPsec utilities
-Group:          System Environment/NetworkingPrograms
-Requires:       libcap-libs
-Conflicts:      %{name} < 1.2.3-7
-
-%description    minimal
-Minimal NTPsec utilities package containing ntptime binary.
-This is a lightweight package for systems that only need
-basic NTP time adjustment capabilities.
 
 %package -n python3-ntp
 Summary:        Python ntpsec bindings
@@ -128,7 +114,6 @@ rm -rf %{buildroot}/*
 %attr(0750, root, root) %config(noreplace) %{_sysconfdir}/ntp.conf
 %attr(0750, root, root) %config(noreplace) %{_sysconfdir}/logrotate.d/ntpsec.conf
 %attr(644,ntp,ntp) %{_sharedstatedir}/ntp/ntp.drift
-%exclude %{_bindir}/ntptime
 %{_bindir}/ntp*
 %{_sbindir}/ntp*
 %{_unitdir}/ntp*.service
@@ -139,17 +124,13 @@ rm -rf %{buildroot}/*
 %dir %attr(-,ntp,ntp) %{_localstatedir}/log/ntpstats
 %{_sysusersdir}/%{name}.conf
 
-%files minimal
-%defattr(-,root,root)
-%{_bindir}/ntptime
-
 %files -n python3-ntp
 %defattr(-,root,root)
 %{python3_sitearch}/ntp*
 
 %changelog
-* Tue Feb 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-7
-- Split ntptime binary to new ntpsec-minimal subpackage
+* Tue Feb 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-6.1
+- Bump after moving to SPECS/91
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-6
 - Rebuild with shared clang libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.2.3-5

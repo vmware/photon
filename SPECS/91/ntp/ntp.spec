@@ -1,7 +1,10 @@
+# Build this spec if subrelease is less than 92
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p18
-Release:        4%{?dist}
+Release:        4.1%{?dist}
 URL:            http://www.ntp.org
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
@@ -189,6 +192,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+* Fri Feb 27 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.8p18-4.1
+- Bump after moving to SPECS/91
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.8p18-4
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2.8p18-3

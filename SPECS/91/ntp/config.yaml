@@ -2,6 +2,11 @@ sources:
 - archive: ntp-4.2.8p18.tar.gz
   archive_sha512sum: c314f645d7d85e1028327657f30557cdfd86d417565b6c9fcbb40fca8a4c22a97b70908e8b73c6b31e14915b5b910ae0055fd42e819dd3cb48583b2a826c3fc4
   skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - ntp-4.2.8p18/sntp/libopts/m4/libopts.m4
+    sha256sum: d57b271c41193a0403de3187d0a90cbce19f2e45b7c4e076f6c5db0ff0982163
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'The ntp package contains a client and server to keep
