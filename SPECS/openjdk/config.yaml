@@ -1,7 +1,14 @@
 sources:
-- archive: jdk-11.0.29-ga.tar.gz
-  archive_sha512sum: 85cdccee7e359e6b51aee7ebb23bff75c26dd2fa6054a853b23b3bfa3b13bcad3c195fea91ffe5d4078c05ebb7fd9db6cf276451f2029073108f406ca362f611
-  skip_validation: true
+- archive: jdk-11.0.30-ga.tar.gz
+  archive_sha512sum: d7352305622c439a07065664fc9c69b41b81990177f412b31fd7ac5654a60fec22a63ec91f7c747ee85e45755e7aa00ac7a31c8c43d400fd0a1d320b9577d3a1
+  archive_type: upstream
+  name: jdk11u-jdk-11.0.30-ga
+  version: 11.0.30
+  url: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-11.0.30-ga.tar.gz
+  repo_url: https://github.com/openjdk/jdk11u
+  commit_id: 5d80a0e0571e163077356904d7810fcc8d9b26f0
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The OpenJDK package installs java class library and javac java compiler.'
@@ -53,9 +60,16 @@ sources:
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: jdk-17.0.17-ga.tar.gz
-  archive_sha512sum: ddb409fe2c8714af081e1174df2b1febcb05097dd83eed60abe9cdaf6b9cfb9a960626480ff4f8719e8890480274ca5ce2abb449317aeb617d9bfe964b33ad29
-  skip_validation: true
+- archive: jdk-17.0.18-ga.tar.gz
+  archive_sha512sum: d828e4e6cb730c9452eb1085c752d8bb03c66f2edc9d177fc6c8eaa15e316f71b63545f1fcc5a628a5a40d280155da059a913c976a1af257df4d657ed940c5b8
+  archive_type: upstream
+  name: jdk17u-jdk-17.0.18-ga
+  version: 17.0.18
+  url: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-17.0.18-ga.tar.gz
+  repo_url: https://github.com/openjdk/jdk17u
+  commit_id: 20a272cada273ceeec432dc027ddb62a93304143
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The OpenJDK package installs java class library and javac java compiler.'
@@ -103,9 +117,16 @@ sources:
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: jdk-21.0.9-ga.tar.gz
-  archive_sha512sum: f209839c830e5db7080613b5d5e7c33ccd6a55cb72a2e6237bb26646569691a34a7b93349c9fa219a3496e111e156c2d24abda3b389056b16625668e8756aed0
-  skip_validation: true
+- archive: jdk-21.0.10-ga.tar.gz
+  archive_sha512sum: 3b956c32bd5079f787be0a84d0b85f7c93eeb65565b9456d9dfd16f97e85c6fa92263e9077b8b8326296bb5f777cf39646a0c25b2a52d3e0a5b98131cbc70155
+  archive_type: upstream
+  name: jdk21u-jdk-21.0.10-ga
+  version: 21.0.10
+  url: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-21.0.10-ga.tar.gz
+  repo_url: https://github.com/openjdk/jdk21u
+  commit_id: 97a3d2372d457c5a72413df14bf08cf99545c695
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The OpenJDK package installs java class library and javac java compiler.'

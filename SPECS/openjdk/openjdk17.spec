@@ -1,4 +1,4 @@
-%define bootstrap           1
+%define bootstrap           0
 %global security_hardening  none
 %define jdk_major_version   17
 %define _use_internal_dependency_generator 0
@@ -12,8 +12,8 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.17
-Release:    2%{?dist}
+Version:    17.0.18
+Release:    1%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -55,7 +55,7 @@ BuildRequires: libXt-devel
 BuildRequires: cups-devel
 
 %if 0%{?bootstrap} == 0
-BuildRequires: openjdk17
+%define ExtraBuildRequires openjdk17
 %endif
 
 Requires: chkconfig
@@ -71,7 +71,7 @@ AutoReqProv: no
 The OpenJDK package installs java class library and javac java compiler.
 
 %package        jre
-Summary:        JRE subset files from jdk11
+Summary:        JRE subset files from jdk17
 Requires:       chkconfig
 Requires(postun): chkconfig
 Requires:       alsa-lib
@@ -110,6 +110,11 @@ This package provides the runtime library class sources.
 %if 0%{?bootstrap} == 1
 tar xf %{SOURCE1} -C %{_var}/opt
 %endif
+
+# avoid libpng-6.x license
+rm -r src/java.desktop/macosx \
+      src/java.desktop/share/native/libsplashscreen \
+      src/java.desktop/share/legal/libpng.md
 
 %build
 unset JAVA_HOME
@@ -263,6 +268,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-1
+- Upgrade to v17.0.18
 * Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.17-2
 - Bootstrap using upstream jdk binaries
 * Mon Nov 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.17-1

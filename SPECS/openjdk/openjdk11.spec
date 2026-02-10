@@ -1,4 +1,4 @@
-%define bootstrap           1
+%define bootstrap           0
 %global security_hardening  none
 %define jdk_major_version   1.11.0
 %define _use_internal_dependency_generator 0
@@ -19,8 +19,8 @@
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.29
-Release:        2%{?dist}
+Version:        11.0.30
+Release:        1%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -62,7 +62,7 @@ BuildRequires: libXt-devel
 BuildRequires: cups-devel
 
 %if 0%{?bootstrap} == 0
-BuildRequires: openjdk11
+%define ExtraBuildRequires openjdk11
 %endif
 
 Requires: chkconfig
@@ -117,6 +117,11 @@ This package provides the runtime library class sources.
 %if 0%{?bootstrap} == 1
 tar xf %{SOURCE1} -C %{_var}/opt
 %endif
+
+# avoid libpng-6.x license
+rm -r src/java.desktop/macosx \
+      src/java.desktop/share/native/libsplashscreen \
+      src/java.desktop/share/legal/libpng.md
 
 %build
 unset JAVA_HOME
@@ -279,6 +284,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-1
+- Upgrade to v11.0.30
 * Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.29-2
 - Bootstrap using upstream jdk binaries
 * Mon Nov 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.29-1

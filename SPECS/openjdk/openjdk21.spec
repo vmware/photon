@@ -1,4 +1,4 @@
-%define bootstrap           1
+%define bootstrap           0
 %global security_hardening  none
 %define jdk_major_version   21
 %define _use_internal_dependency_generator 0
@@ -12,8 +12,8 @@
 
 Summary:    OpenJDK
 Name:       openjdk21
-Version:    21.0.9
-Release:    2%{?dist}
+Version:    21.0.10
+Release:    1%{?dist}
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -55,7 +55,7 @@ BuildRequires: libXt-devel
 BuildRequires: cups-devel
 
 %if 0%{?bootstrap} == 0
-BuildRequires: openjdk21
+%define ExtraBuildRequires openjdk21
 %endif
 
 Requires: chkconfig
@@ -105,6 +105,11 @@ This package provides the runtime library class sources.
 %if 0%{?bootstrap} == 1
 tar xf %{SOURCE1} -C %{_var}/opt
 %endif
+
+# avoid libpng-6.x license
+rm -r src/java.desktop/macosx \
+      src/java.desktop/share/native/libsplashscreen \
+      src/java.desktop/share/legal/libpng.md
 
 %build
 unset JAVA_HOME
@@ -254,6 +259,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-1
+- Upgrade to v21.0.10
 * Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-2
 - Bootstrap using upstream jdk binaries
 * Mon Nov 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-1
