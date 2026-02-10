@@ -1,5 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
-
+%global build_if %{photon_subrelease} <= 91
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 %define gopath_comp github.com/%{name}/%{name}
@@ -7,7 +6,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        2.1.5
-Release:        2%{?dist}
+Release:        1.1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -143,8 +142,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
-* Thu Feb 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.5-2
-- Bump up version as a part of runc upgrade to v1.4.0
+* Thu Feb 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.5-1.1
+- Bump after moving to SPECS/91
 * Mon Nov 17 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.5-1
 - Upgrade to v2.1.5
 - Fix CVE-2024-25621, CVE-2025-64329

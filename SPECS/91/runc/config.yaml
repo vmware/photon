@@ -1,12 +1,12 @@
 sources:
-- archive: runc-1.4.0.tar.gz
-  archive_sha512sum: a5b52d8494a4210d9ff4caefd0513b94b80ef9dd16c6eb369761cde2fce30214f765eee01c3cbb2e0cfd933371362fd89b08656b434d76038ffe1f8a59dea215
+- archive: runc-1.2.8.tar.gz
+  archive_sha512sum: 8d29a2ca179320f9a01c37383506f10aea1764e18b3321c507787556e3a531e23221f8369696d8caaf30124a523a68d0ad3609bae5ab06aa6c519e644d54d4ef
   archive_type: upstream
-  name: runc-1.4.0
-  version: 1.4.0
-  url: https://github.com/opencontainers/runc/archive/refs/tags/v1.4.0.tar.gz
+  name: runc-1.2.8
+  version: 1.2.8
+  url: https://github.com/opencontainers/runc/archive/refs/tags/v1.2.8.tar.gz
   repo_url: https://github.com/opencontainers/runc
-  commit_id: 8bd78a9977e604c4d5f67a7415d7b8b8c109cdc4
+  commit_id: eeb7e6024f9ee43876301b1d23c353384fa6dcdd
   skip_list: []
   missing: []
   spdx:

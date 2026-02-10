@@ -1,0 +1,24 @@
+sources:
+- archive: containerd-2.1.5.tar.gz
+  archive_type: upstream
+  version: 2.1.5
+  name: containerd-2.1.5
+  url: https://github.com/containerd/containerd/archive/refs/tags/v2.1.5.tar.gz
+  repo_url: https://github.com/containerd/containerd.git
+  commit_id: fcd43222d6b07379a4be9786bda52438f0dd16a1
+  skip_list: []
+  missing: []
+  archive_sha512sum: 6376228edf615b1ff3d40287622d4f72793be091d59d5d7e97f7bdc4f265aa4412f4a5dd1937ef795e54aa5ee8a87d785e859d7c6525a25fa86631b878cefc59
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'Containerd is an open source project. It is available
+        as a daemon for Linux, which manages the complete container lifecycle of its
+        host system. '
+      home_page: https://containerd.io/docs
+      license_concluded: MIT AND GPL-1.0-or-later AND BSD-2-Clause AND CC-BY-SA-4.0
+        AND MPL-2.0 AND Apache-2.0 AND ISC AND BSD-3-Clause
+      license_declared: MIT AND GPL-1.0-or-later AND BSD-2-Clause AND CC-BY-SA-4.0
+        AND MPL-2.0 AND Apache-2.0 AND ISC AND BSD-3-Clause
+      short_summary: Containerd
+      supplier: 'Organization: Broadcom, Inc.'

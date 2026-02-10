@@ -1,17 +1,17 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.4.0
+%define RUNC_VERSION 1.2.8
 %define RUNC_BRANCH  v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
 
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.4.0
-Release:             1%{?dist}
+Version:             1.2.8
+Release:             1.1%{?dist}
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
@@ -67,8 +67,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
-* Mon Feb 09 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 1.4.0-1
-- Version upgrade to v1.4.0
+* Thu Feb 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.2.8-1.1
+- Bump after moving to SPECS/91
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.8-1
 - Version upgrade to v1.2.8
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.14-4

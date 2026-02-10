@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define network_required 1
 %define debug_package %{nil}
@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        28.2.2
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -300,8 +300,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
-* Thu Feb 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2.2-4
-- Bump up version as a part of runc upgrade to v1.4.0
+* Thu Feb 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2.2-3.1
+- Bump up version as a part of runc upgrade to 1.4.0
 * Mon Nov 17 2025 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-3
 - Bump up version as a part of containerd upgrade
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-2
