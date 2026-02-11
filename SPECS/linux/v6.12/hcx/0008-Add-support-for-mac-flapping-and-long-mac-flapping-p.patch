@@ -1,8 +1,7 @@
-From f00def6e241b8be0e11a70bdff821b89f22845a8 Mon Sep 17 00:00:00 2001
+From 381eb87af65deb72eb2eec3cdd3cc566d00f7494 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Sun, 4 Jan 2026 02:28:11 +0530
-Subject: [PATCH 08/19] Add support for mac-flapping and long mac-flapping
- prevention
+Subject: [PATCH] Add support for mac-flapping and long mac-flapping prevention
 
 Add fields to the bridge so that it can track when macs
 move from one bridge port to another. If that happens
@@ -32,7 +31,7 @@ Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
  5 files changed, 262 insertions(+), 11 deletions(-)
 
 diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index b76f0aec8c5a..d19cc1ddd2dc 100644
+index b76f0aec8..d19cc1ddd 100644
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
 @@ -539,5 +539,8 @@ void br_dev_setup(struct net_device *dev)
@@ -45,7 +44,7 @@ index b76f0aec8c5a..d19cc1ddd2dc 100644
  	INIT_DELAYED_WORK(&br->gc_work, br_fdb_cleanup);
  }
 diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 642b8ccaae8e..8f3c482e9bce 100644
+index 9dd405b64..62d098726 100644
 --- a/net/bridge/br_fdb.c
 +++ b/net/bridge/br_fdb.c
 @@ -24,6 +24,14 @@
@@ -74,7 +73,7 @@ index 642b8ccaae8e..8f3c482e9bce 100644
  	err = rhashtable_lookup_insert_fast(&br->fdb_hash_tbl, &fdb->rhnode,
  					    br_fdb_rht_params);
  	if (err) {
-@@ -887,14 +899,33 @@ static bool __fdb_mark_active(struct net_bridge_fdb_entry *fdb)
+@@ -891,14 +903,33 @@ static bool __fdb_mark_active(struct net_bridge_fdb_entry *fdb)
  		  test_and_clear_bit(BR_FDB_NOTIFY_INACTIVE, &fdb->flags));
  }
  
@@ -111,15 +110,15 @@ index 642b8ccaae8e..8f3c482e9bce 100644
  
  	fdb = fdb_find_rcu(&br->fdb_hash_tbl, addr, vid);
  	if (likely(fdb)) {
-@@ -906,6 +937,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+@@ -910,6 +941,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  		} else {
  			unsigned long now = jiffies;
  			bool fdb_modified = false;
 +			unsigned long fdb_updated_to_check = fdb->updated;
  
- 			if (now != fdb->updated) {
- 				fdb->updated = now;
-@@ -915,9 +947,78 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+ 			if (now != READ_ONCE(fdb->updated)) {
+ 				WRITE_ONCE(fdb->updated, now);
+@@ -919,9 +951,78 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  			/* fastpath: update of existing entry */
  			if (unlikely(source != READ_ONCE(fdb->dst) &&
  				     !test_bit(BR_FDB_STICKY, &fdb->flags))) {
@@ -198,7 +197,7 @@ index 642b8ccaae8e..8f3c482e9bce 100644
  				/* Take over HW learned entry */
  				if (unlikely(test_bit(BR_FDB_ADDED_BY_EXT_LEARN,
  						      &fdb->flags)))
-@@ -928,6 +1029,42 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+@@ -932,6 +1033,42 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  				 */
  				if (unlikely(test_bit(BR_FDB_LOCKED, &fdb->flags)))
  					clear_bit(BR_FDB_LOCKED, &fdb->flags);
@@ -241,7 +240,7 @@ index 642b8ccaae8e..8f3c482e9bce 100644
  			}
  
  			if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, &flags))) {
-@@ -953,6 +1090,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+@@ -957,6 +1094,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
  		 */
  		spin_unlock(&br->hash_lock);
  	}
@@ -249,7 +248,7 @@ index 642b8ccaae8e..8f3c482e9bce 100644
  }
  
  /* Dump information about entries, in response to GETNEIGH */
-@@ -1174,7 +1312,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+@@ -1178,7 +1316,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
  
  		local_bh_disable();
  		rcu_read_lock();
@@ -259,7 +258,7 @@ index 642b8ccaae8e..8f3c482e9bce 100644
  		local_bh_enable();
  	} else if (ndm->ndm_flags & NTF_EXT_LEARNED) {
 diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index c7c0e27033ac..cae476b58802 100644
+index 408559d16..73c5e3023 100644
 --- a/net/bridge/br_input.c
 +++ b/net/bridge/br_input.c
 @@ -33,9 +33,11 @@ int br_arp_probe __read_mostly = 1;
@@ -334,10 +333,10 @@ index c7c0e27033ac..cae476b58802 100644
  
  /* note: already called with rcu_read_lock */
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 51d014dd13e5..edb1a4047cda 100644
+index db31d918d..50b34f3b1 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -297,6 +297,10 @@ struct net_bridge_fdb_entry {
+@@ -298,6 +298,10 @@ struct net_bridge_fdb_entry {
  	/* write-heavy members should not affect lookups */
  	unsigned long			updated ____cacheline_aligned_in_smp;
  	unsigned long			used;
@@ -348,7 +347,7 @@ index 51d014dd13e5..edb1a4047cda 100644
  
  	struct rcu_head			rcu;
  };
-@@ -589,6 +593,12 @@ struct net_bridge {
+@@ -590,6 +594,12 @@ struct net_bridge {
  	struct hlist_head		mep_list;
  #endif
  	struct ukn_unicast_stats __percpu *ukn_stats;
@@ -361,7 +360,7 @@ index 51d014dd13e5..edb1a4047cda 100644
  };
  
  struct br_input_skb_cb {
-@@ -860,8 +870,8 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf, unsigned long count,
+@@ -861,8 +871,8 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf, unsigned long count,
  		   unsigned long off);
  int br_fdb_add_local(struct net_bridge *br, struct net_bridge_port *source,
  		     const unsigned char *addr, u16 vid);
@@ -373,7 +372,7 @@ index 51d014dd13e5..edb1a4047cda 100644
  int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
  		  struct net_device *dev, const unsigned char *addr, u16 vid,
 diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index cc0f7a30196d..cd74ef897a37 100644
+index cc0f7a301..cd74ef897 100644
 --- a/net/bridge/br_sysfs_br.c
 +++ b/net/bridge/br_sysfs_br.c
 @@ -888,6 +888,87 @@ static ssize_t default_pvid_store(struct device *d,
@@ -475,5 +474,5 @@ index cc0f7a30196d..cd74ef897a37 100644
  };
  
 -- 
-2.43.0
+2.43.7
 
