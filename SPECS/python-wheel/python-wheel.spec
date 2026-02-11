@@ -2,7 +2,7 @@
 
 Name:           python3-wheel
 Version:        0.37.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A built-package format for Python
 License:        MIT
 URL:            https://pypi.org/project/wheel
@@ -14,6 +14,8 @@ Source0: https://github.com/pypa/wheel/archive/%{version}.tar.gz#/wheel-%{versio
 %define sha512 %{srcname}=c977a740c17abd1fa4b4c2382a33f3ff887baa4231c36990d988cb8531496074e39744786ef6ac0da9c9af4977bce5b2da145377a3ac15eea918f8125bff66ec
 
 BuildArch:      noarch
+
+Patch0: CVE-2022-40898.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -45,6 +47,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.37.1-3
+- Patch CVE-2022-40898
 * Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.37.1-2
 - Spec fixes. Remove readme, license files.
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.37.1-1
