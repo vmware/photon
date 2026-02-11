@@ -556,6 +556,10 @@ class CleanUp:
     def clean_stage_for_incremental_build():
         rpmPath = constants.rpmPath
 
+        if not os.path.exists(rpmPath):
+            print(f"{rpmPath} is empty, return ...")
+            return
+
         baseCommit = str(configdict["photon-build-param"].get("base-commit", ""))
         if baseCommit:
             cmd = ["git", "diff", "--name-only", baseCommit]
@@ -568,10 +572,6 @@ class CleanUp:
             shutil.rmtree(rpmPath, ignore_errors=True)
             return
 
-        if not os.path.exists(rpmPath):
-            print(f"{rpmPath} is empty, return ...")
-            return
-
         if not baseCommit:
             return
 
@@ -582,7 +582,34 @@ class CleanUp:
             print("No spec files were changed in this incremental build")
             return
 
-        spec_fns = [os.path.join(phPath, f) for f in files]
+        spec_fns = []
+        specMap = SPECS.getData().mapSpecFileNameToSpecObj
+        versionsGetter = SPECS.getData().getVersions
+        stageRPMS = constants.rpmPath
+
+        for file in files:
+            spec_path = os.path.join(phPath, file)
+            spec_obj = specMap.get(spec_path)
+            if not spec_obj:
+                print(f"Spec object not found for {spec_path}")
+                continue
+
+            name = spec_obj.name
+            arch = spec_obj.buildarch[name]
+
+            for version in versionsGetter(name):
+                rpm_file = f"{stageRPMS}/{arch}/{name}-{version}.{arch}.rpm"
+
+                if os.path.isfile(rpm_file):
+                    print(f"{rpm_file} exists, so not cleaning dependencies")
+                else:
+                    print(f"{rpm_file} does not exist, dependent packages will be rebuilt")
+                    spec_fns.append(spec_path)
+
+        if not spec_fns:
+            print("No need to clean anything for this incremental build ...")
+            return
+
         try:
             CleanUp.removeUpwardDeps(":".join(spec_fns), "tree")
         except Exception as error:
