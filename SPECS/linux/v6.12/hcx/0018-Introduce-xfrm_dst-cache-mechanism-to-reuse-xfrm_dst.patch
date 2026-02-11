@@ -1,7 +1,7 @@
-From 16800cd86240094a1b31987cdc655f4b5162b9cf Mon Sep 17 00:00:00 2001
+From df88407c737430b5caf04a139ed820d2c4cc2e6e Mon Sep 17 00:00:00 2001
 From: Jonathan Shao <jonathan.shao@broadcom.com>
 Date: Thu, 22 Jan 2026 20:22:00 +0530
-Subject: [PATCH 18/19] Introduce xfrm_dst cache mechanism to reuse xfrm_dst in
+Subject: [PATCH] Introduce xfrm_dst cache mechanism to reuse xfrm_dst in
  xfrm_bundle_create()
 
 The xfrm policy (xfrm_dst) cache was introduced in 4.14.
@@ -43,7 +43,7 @@ Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
  6 files changed, 364 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index fb23f84a2cb9..372331d8b63f 100644
+index c4433ce54..e7f463120 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
 @@ -3256,6 +3256,16 @@ struct softnet_data {
@@ -74,7 +74,7 @@ index fb23f84a2cb9..372331d8b63f 100644
  static inline netdev_tx_t __netdev_start_xmit(const struct net_device_ops *ops,
  					      struct sk_buff *skb, struct net_device *dev,
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index b6fff506bf30..2a27db94ce26 100644
+index b6fff506b..2a27db94c 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
 @@ -380,6 +380,7 @@ int xfrm_policy_register_afinfo(const struct xfrm_policy_afinfo *afinfo, int fam
@@ -86,7 +86,7 @@ index b6fff506bf30..2a27db94ce26 100644
  
  struct xfrm_tmpl;
 diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index 0c87e137619a..16a251bb46f2 100644
+index 0c87e1376..16a251bb4 100644
 --- a/net/core/net-procfs.c
 +++ b/net/core/net-procfs.c
 @@ -227,6 +227,51 @@ static const struct proc_ops softnet_rps_seq_proc_ops = {
@@ -173,7 +173,7 @@ index 0c87e137619a..16a251bb46f2 100644
  	remove_proc_entry("softnet_stat", net->proc_net);
  out_dev:
 diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 32ad8f3fc81e..570ef7cda2ac 100644
+index 32ad8f3fc..570ef7cda 100644
 --- a/net/xfrm/xfrm_device.c
 +++ b/net/xfrm/xfrm_device.c
 @@ -514,6 +514,10 @@ static int xfrm_dev_down(struct net_device *dev)
@@ -188,7 +188,7 @@ index 32ad8f3fc81e..570ef7cda2ac 100644
  }
  
 diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 2c42d83fbaa2..54bd0d8c45ec 100644
+index 2c42d83fb..54bd0d8c4 100644
 --- a/net/xfrm/xfrm_policy.c
 +++ b/net/xfrm/xfrm_policy.c
 @@ -2847,8 +2847,229 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
@@ -525,7 +525,7 @@ index 2c42d83fbaa2..54bd0d8c45ec 100644
  			if (IS_ERR(xdst)) {
  				xfrm_pols_put(pols, num_pols);
 diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index b9bac6836452..99afd693a3a6 100644
+index c927560a7..710f1dffe 100644
 --- a/net/xfrm/xfrm_state.c
 +++ b/net/xfrm/xfrm_state.c
 @@ -855,6 +855,7 @@ xfrm_dev_state_flush_secctx_check(struct net *net, struct net_device *dev, bool
@@ -533,7 +533,7 @@ index b9bac6836452..99afd693a3a6 100644
  #endif
  
 +extern int netdev_xfrm_cache;
- int xfrm_state_flush(struct net *net, u8 proto, bool task_valid, bool sync)
+ int xfrm_state_flush(struct net *net, u8 proto, bool task_valid)
  {
  	int i, err = 0, cnt = 0;
 @@ -888,9 +889,11 @@ int xfrm_state_flush(struct net *net, u8 proto, bool task_valid)
@@ -551,5 +551,5 @@ index b9bac6836452..99afd693a3a6 100644
  }
  EXPORT_SYMBOL(xfrm_state_flush);
 -- 
-2.43.0
+2.43.7
 

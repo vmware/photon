@@ -76,8 +76,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.60
-Release:        22%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.69
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -199,9 +199,6 @@ Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 
-# Crypto: zero initialize memory allocated via sock_kmalloc
-Patch27: 0001-crypto-zero-initialize-memory-allocated-via-sock_kma.patch
-
 Patch28: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
 
 %ifarch x86_64
@@ -231,7 +228,6 @@ Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-Patch102: 0001-crypto-seqiv-Do-not-use-req-iv-after-crypto_aead_enc.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -963,6 +959,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-1
+- Update to version 6.12.69
 * Wed Feb 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-22
 - Disable Bluetooth and CAN support
 - Fix requires on doc sub package

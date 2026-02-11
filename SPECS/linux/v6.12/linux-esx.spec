@@ -28,8 +28,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.60
-Release:        16%{?dist}
+Version:        6.12.69
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -185,7 +185,6 @@ Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-Patch102: 0001-crypto-seqiv-Do-not-use-req-iv-after-crypto_aead_enc.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -551,6 +550,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 11 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-1
+- Update to version 6.12.69
 * Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-16
 - Port ARM patches to v6.12 and include new patch to
 - report guest crashes to the VMware hypervisor
