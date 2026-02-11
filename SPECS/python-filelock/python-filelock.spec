@@ -1,12 +1,14 @@
 Name:           python3-filelock
 Version:        3.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A platform independent file lock
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/benediktschmitt/py-filelock
 Source0:        https://files.pythonhosted.org/packages/14/ec/6ee2168387ce0154632f856d5cc5592328e9cf93127c5c9aeca92c8c16cb/filelock-%{version}.tar.gz
+
+Patch0:         CVE-2026-22701.patch
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -48,6 +50,8 @@ the same lock object twice, it will not block.
 %exclude %{python3_sitelib}/filelock/__pycache__/filelock*.py[co]
 
 %changelog
+* Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.0-3
+- Fix CVE-2026-22701
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.8.0-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.8.0-1
