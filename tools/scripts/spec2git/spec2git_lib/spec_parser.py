@@ -248,12 +248,7 @@ class SpecFileParser:
         for source_num, source_file in self.sources.items():
             # Check if it's a URL
             if source_file.startswith(('http://', 'https://', 'ftp://')):
-                # Extract filename from URL
-                from urllib.parse import urlparse
-                parsed = urlparse(source_file)
-                filename = Path(parsed.path).name
-                dest_path = sources_dir / filename
-
+                dest_path = sources_dir / os.path.basename(source_file)
                 if not dest_path.exists():
                     self.logger.debug(f"Source{source_num} is a URL, needs downloading: {source_file}")
                     # Note: SourceHandler will handle the actual download
@@ -262,7 +257,10 @@ class SpecFileParser:
                         if source_path and source_path.exists():
                             # For downloaded files, we need to copy not symlink
                             shutil.copy2(source_path, dest_path)
-                            self.logger.debug(f"Downloaded/copied {filename} to SOURCES/")
+                            self.logger.debug(
+                                f"Downloaded/copied {os.path.basename(source_path)} to " +
+                                f"SOURCES/{os.path.basename(dest_path)}"
+                            )
                     except Exception as e:
                         self.logger.warning(f"Could not download/find source {source_file}: {e}")
             else:
