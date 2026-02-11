@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.69
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -208,6 +208,16 @@ Patch207: 0001-vmw_vmci-arm64-support-memory-ordering.patch
 # Report guest crash to vmware hypervisor
 Patch208: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
 %endif
+
+# 9p: [300..350]
+Patch300: 0001-fs-9p-Add-opt_metaonly-cache-option.patch
+Patch301: 0002-p9fs_dir_readdir-offset-support.patch
+Patch303: 0003-Enable-cache-loose-for-vdfs-9p.patch
+Patch304: 0004-Ensure-seekdir-take-effect-when-entries-in-readdir-b.patch
+Patch305: 0005-Initialize-fid-iounit-during-creation-of-p9_fid.patch
+Patch307: 0006-fscache-Only-fetch-attr-from-inode-cache-when-cache-.patch
+Patch308: 0007-9p-fscache-Make-dcache-work-with-case-insensitive-vo.patch
+Patch309: 0008-9p-fscache-Ensure-consistent-blksize-is-returned-fro.patch
 
 # Only LKCM/JENT related patches below
 # Jitterentropy support and FIPS compliance
@@ -536,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 09 2026 Albert Guo <albert.guo@broadcom.com> 6.12.69-5
+- Ported 8 9P patches for VDFS from 6.1.y to 6.12.y.
 * Mon Mar 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-4
 - Fix aarch64 build
 * Thu Feb 26 2026 Bo Gan <bo.gan@broadcom.com> 6.12.69-3
