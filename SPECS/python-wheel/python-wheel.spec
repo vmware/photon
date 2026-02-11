@@ -2,7 +2,7 @@
 
 Name:           python3-wheel
 Version:        0.37.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A built-package format for Python
 URL:            https://pypi.org/project/wheel
 Group:          Development/Languages/Python
@@ -15,6 +15,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildArch:      noarch
+
+Patch0: CVE-2022-40898.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -46,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.37.1-4
+- Patch CVE-2022-40898
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.37.1-3
 - Release bump for SRP compliance
 * Tue Mar 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.37.1-2
