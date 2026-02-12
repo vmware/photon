@@ -1,10 +1,11 @@
-%global zk_root %{_libdir}/java/%{name}
-%global zk_conf_dir %{_sysconfdir}/%{name}
+%global debug_package   %{nil}
+%global zk_root         %{_libdir}/java/%{name}
+%global zk_conf_dir     %{_sysconfdir}/%{name}
 
 Summary:        High-performance coordination service for distributed applications
 Name:           zookeeper
 Version:        3.9.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://zookeeper.apache.org
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -72,6 +73,9 @@ mv conf/zoo_sample.cfg %{buildroot}%{zk_conf_dir}/zoo.cfg
 mv conf/* %{buildroot}%{zk_conf_dir}/
 popd
 
+rm %{buildroot}%{_bindir}/README.txt \
+   %{buildroot}%{_bindir}/*.cmd
+
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 install -D -m 0644 %{SOURCE2} %{buildroot}%{_presetdir}/50-%{name}.preset
 install -D -m 0755 %{SOURCE3} %{buildroot}%{_bindir}/zkEnv.sh
@@ -111,6 +115,9 @@ getent passwd %{name} >/dev/null || \
 %{_presetdir}/50-%{name}.preset
 
 %changelog
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-2
+- Disable debuginfo package
+- Don't package cmd file, it is for Windows hosts
 * Thu Feb 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-1
 - Upgrade to v3.9.4
 - Build deliverables from source
