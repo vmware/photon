@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.15
+Version:        15.16
 Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -739,6 +739,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.16-1
+- Upgrade to v15.16
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.15-1
 - Upgrade to v15.15
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 15.14-3

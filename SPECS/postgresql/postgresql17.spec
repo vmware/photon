@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql17
-Version:        17.7
+Version:        17.8
 Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -743,6 +743,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.8-1
+- Upgrade to v17.8
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.7-1
 - Upgrade to v17.7
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.6-1

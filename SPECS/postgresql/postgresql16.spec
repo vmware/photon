@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql16
-Version:        16.11
+Version:        16.12
 Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -736,6 +736,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.12-1
+- Upgrade to v16.12
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.11-1
 - Upgrade to v16.11
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 16.10-3

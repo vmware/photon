@@ -12,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.20
+Version:        14.21
 Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -741,6 +741,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.21-1
+- Upgrade to v14.21
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.20-1
 - Upgrade to v14.20
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 14.19-3
