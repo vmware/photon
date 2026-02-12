@@ -1,12 +1,13 @@
 %define network_required 1
 
-%global zk_root %{_libdir}/java/%{name}
-%global zk_conf_dir %{_sysconfdir}/%{name}
+%global debug_package   %{nil}
+%global zk_root         %{_libdir}/java/%{name}
+%global zk_conf_dir     %{_sysconfdir}/%{name}
 
 Summary:        High-performance coordination service for distributed applications
 Name:           zookeeper
 Version:        3.9.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://zookeeper.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -68,6 +69,7 @@ install -d -m 0755 \
   %{buildroot}%{_sysusersdir}
 
 tar xf %{name}-assembly/target/apache-%{name}-%{version}-bin.tar.gz
+
 pushd apache-%{name}-%{version}-bin
 mv bin/* %{buildroot}%{_bindir}
 mv lib/*.jar %{buildroot}%{zk_root}/
@@ -75,6 +77,9 @@ mv lib/* %{buildroot}%{_libdir}/%{name}
 mv conf/zoo_sample.cfg %{buildroot}%{zk_conf_dir}/zoo.cfg
 mv conf/* %{buildroot}%{zk_conf_dir}/
 popd
+
+rm %{buildroot}%{_bindir}/README.txt \
+   %{buildroot}%{_bindir}/*.cmd
 
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 install -D -m 0644 %{SOURCE2} %{buildroot}%{_presetdir}/50-%{name}.preset
@@ -112,6 +117,9 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-3
+- Disable debuginfo package
+- Don't package cmd file, it is for Windows hosts
 * Thu Feb 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-2
 - Build deliverables from source
 * Tue Oct 21 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.4-1
