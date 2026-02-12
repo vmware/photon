@@ -1,6 +1,6 @@
 Name:           python3-filelock
 Version:        3.0.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A platform independent file lock
 License:        MIT
 Group:          Development/Languages/Python
@@ -8,7 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/benediktschmitt/py-filelock
 Source0:        https://files.pythonhosted.org/packages/14/ec/6ee2168387ce0154632f856d5cc5592328e9cf93127c5c9aeca92c8c16cb/filelock-%{version}.tar.gz
-%define sha1    filelock=ca03bf213ee1d7a9b6353cebc265072aae40fdcb
+%define sha512  filelock=09b8b16c12a60044a259a5d644bc8066660871104a7f4cd431431173d475b9f15744adfb8d86ec8cda69f2a1b52bd14cb8a066d70fa5e49c449bc5ee702ec2a0
+Patch0:         CVE-2026-22701.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-setuptools
@@ -46,6 +47,8 @@ python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 %exclude %{python3_sitelib}/__pycache__/filelock*.py[co]
 
 %changelog
+*   Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.0.12-3
+-   Fix CVE-2026-22701
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.12-2
 -   Update release to compile with python 3.10
 *   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.0.12-1
