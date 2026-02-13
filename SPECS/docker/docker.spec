@@ -1,5 +1,3 @@
-%global build_if %{photon_subrelease} >= 92
-
 %define network_required 1
 %define debug_package %{nil}
 %define __os_install_post %{nil}
