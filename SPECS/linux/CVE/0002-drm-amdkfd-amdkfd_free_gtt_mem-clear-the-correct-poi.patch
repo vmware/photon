@@ -1,4 +1,4 @@
-From 49e46d2196945cc66d7f9a7a86d23989dce2168a Mon Sep 17 00:00:00 2001
+From 471f673fe48035202c332aa695f53632d66fde0e Mon Sep 17 00:00:00 2001
 From: Philip Yang <Philip.Yang@amd.com>
 Date: Mon, 3 Mar 2025 08:29:50 +0000
 Subject: [PATCH] drm/amdkfd: amdkfd_free_gtt_mem clear the correct pointer
@@ -20,6 +20,8 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 [vamsi: Redo the patch for 5.10]
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+[Srinidhi Rao: Redo the patch for v5.10.250]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
 ---
  drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c         | 14 +++++++-------
  drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h         |  2 +-
@@ -29,7 +31,7 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  5 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
-index d3a974d10..7eae06d8c 100644
+index d3a974d10552..7eae06d8c54e 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c
 @@ -310,15 +310,15 @@ int amdgpu_amdkfd_alloc_gtt_mem(struct kgd_dev *kgd, size_t size,
@@ -56,7 +58,7 @@ index d3a974d10..7eae06d8c 100644
  
  int amdgpu_amdkfd_alloc_gws(struct kgd_dev *kgd, size_t size,
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h
-index 32e385f28..24848048f 100644
+index 32e385f287cb..24848048fb82 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h
 @@ -183,7 +183,7 @@ int amdgpu_amdkfd_evict_userptr(struct kgd_mem *mem, struct mm_struct *mm)
@@ -69,7 +71,7 @@ index 32e385f28..24848048f 100644
  void amdgpu_amdkfd_free_gws(struct kgd_dev *kgd, void *mem_obj);
  int amdgpu_amdkfd_add_gws_to_process(void *info, void *gws, struct kgd_mem **mem);
 diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device.c b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
-index 148e43dee..230e9b362 100644
+index 148e43dee657..230e9b362219 100644
 --- a/drivers/gpu/drm/amd/amdkfd/kfd_device.c
 +++ b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
 @@ -782,7 +782,7 @@ bool kgd2kfd_device_init(struct kfd_dev *kfd,
@@ -91,10 +93,10 @@ index 148e43dee..230e9b362 100644
  			amdgpu_amdkfd_free_gws(kfd->kgd, kfd->gws);
  	}
 diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
-index 195b7e02d..62f7aa618 100644
+index 85b43d48f2dc..4724b8759e18 100644
 --- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
 +++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
-@@ -1971,7 +1971,7 @@ static void deallocate_hiq_sdma_mqd(struct kfd_dev *dev,
+@@ -1837,7 +1837,7 @@ static void deallocate_hiq_sdma_mqd(struct kfd_dev *dev,
  {
  	WARN(!mqd, "No hiq sdma mqd trunk to free");
  
@@ -102,9 +104,9 @@ index 195b7e02d..62f7aa618 100644
 +	amdgpu_amdkfd_free_gtt_mem(dev->kgd, &mqd->gtt_mem);
  }
  
- void device_queue_manager_uninit(struct device_queue_manager *dqm)
+ struct device_queue_manager *device_queue_manager_init(struct kfd_dev *dev)
 diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c b/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c
-index dadeb2013..b4727b768 100644
+index dc468dfce391..50f4c4d54f1d 100644
 --- a/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c
 +++ b/drivers/gpu/drm/amd/amdkfd/kfd_mqd_manager_v9.c
 @@ -293,7 +293,7 @@ static void free_mqd(struct mqd_manager *mm, void *mqd,
@@ -117,5 +119,5 @@ index dadeb2013..b4727b768 100644
  	} else {
  		kfd_gtt_sa_free(mm->dev, mqd_mem_obj);
 -- 
-2.40.4
+2.39.4
 

@@ -1,0 +1,53 @@
+From dc2cfe92ac4d8713f49348c8d52e4d1e5f6d7075 Mon Sep 17 00:00:00 2001
+From: Min Li <lm0963hack@gmail.com>
+Date: Tue, 28 Mar 2023 17:36:27 +0800
+Subject: [PATCH] drm/i915: fix race condition UAF in
+ i915_perf_add_config_ioctl
+
+[ Upstream commit dc30c011469165d57af9adac5baff7d767d20e5c ]
+
+Userspace can guess the id value and try to race oa_config object creation
+with config remove, resulting in a use-after-free if we dereference the
+object after unlocking the metrics_lock.  For that reason, unlocking the
+metrics_lock must be done after we are done dereferencing the object.
+
+Signed-off-by: Min Li <lm0963hack@gmail.com>
+Fixes: f89823c21224 ("drm/i915/perf: Implement I915_PERF_ADD/REMOVE_CONFIG interface")
+Cc: <stable@vger.kernel.org> # v4.14+
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+Reviewed-by: Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20230328093627.5067-1-lm0963hack@gmail.com
+[tursulin: Manually added stable tag.]
+(cherry picked from commit 49f6f6483b652108bcb73accd0204a464b922395)
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Srinidhi Rao: Backported this fix to v5.10.x]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ drivers/gpu/drm/i915/i915_perf.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_perf.c b/drivers/gpu/drm/i915/i915_perf.c
+index 5e670aace59f..97fac36841e6 100644
+--- a/drivers/gpu/drm/i915/i915_perf.c
++++ b/drivers/gpu/drm/i915/i915_perf.c
+@@ -4134,11 +4134,13 @@ int i915_perf_add_config_ioctl(struct drm_device *dev, void *data,
+ 		goto sysfs_err;
+ 	}
+ 
+-	mutex_unlock(&perf->metrics_lock);
++	id = oa_config->id;
+ 
+ 	DRM_DEBUG("Added config %s id=%i\n", oa_config->uuid, oa_config->id);
+ 
+-	return oa_config->id;
++	mutex_unlock(&perf->metrics_lock);
++
++	return id;
+ 
+ sysfs_err:
+ 	mutex_unlock(&perf->metrics_lock);
+-- 
+2.39.4
+

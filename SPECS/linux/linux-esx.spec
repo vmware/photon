@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.248
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.250
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ BuildArch:      x86_64
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=db06b9889a5ac645652b2f277692622d2afc97d3d74de8595c059b232b169846ad8b642923ebd40ee8e8599faa3e7e4bc0834d31072d0c685a54c85100441cf2
+%define sha512 linux=068205807da00d56851d6281366e24fb0805b9321bc0c177c89006565766f660b72a0e60ec2744d904b66717fe17fdba78bd0854c7928f179e35c791cd6d5579
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -493,8 +493,6 @@ Patch287: 0002-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
 # CVE-2025-38584
 Patch288: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 
-# CVE-2025-38201
-Patch290: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
 # CVE-2022-49622
 Patch291: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
 Patch292: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
@@ -513,6 +511,10 @@ Patch299: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
 Patch300: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
 # CVE-2025-39901
 Patch301: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
+#CVE-2023-54202
+Patch302: 0001-drm-i915-fix-race-condition-UAF-in-i915_perf_add_con.patch
+#CVE-2023-53794
+Patch303: 0001-cifs-fix-session-state-check-in-reconnect-to-avoid-u.patch
 
 #Patches for ptp_vmw
 Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -673,7 +675,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m61 -M97
 
 # CVE: [100..300]
-%autopatch -p1 -m100 -M301
+%autopatch -p1 -m100 -M303
 
 #Patches for ptp_vmw
 %autopatch -p1 -m351 -M352
@@ -901,6 +903,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.250-1
+- Update to version 5.10.250
 * Mon Feb 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.248-3
 - Fix CVE-2023-53510 and CVE-2025-39901.
 * Fri Feb 06 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.248-2
