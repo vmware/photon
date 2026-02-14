@@ -148,11 +148,39 @@ class Scanner:
         if not spec_path:
             return
 
+        # Create the populated spec file
+        result = common.run_cmd(
+            [
+                f"rpmspec",
+                "-P",
+                spec_path,
+                "-D",
+                f"_topdir {common.rpm_build_root}",
+                "-D",
+                f"_sourcedir {os.path.dirname(spec_path)}",
+            ],
+            capture=True,
+        )
+
+        populated_spec_path = f"/tmp/{os.path.basename(spec_path)}"
+        with open(populated_spec_path, "w") as populated_spec_f:
+            populated_spec_f.write(result.stdout.decode())
+
+        spec_path = populated_spec_path
+
         with open(spec_path, "r") as spec_f:
             for line in spec_f:
-                match = re.match("BuildRequires:.*", line)
+                match = re.match("BuildRequires:\s+(.*)", line, flags=re.IGNORECASE)
                 if match:
-                    build_reqs.append(match.group().split(":")[1].strip())
+                    build_req = match.group(1).replace(" ", "")
+                    build_reqs.append(build_req)
+                    continue
+
+                match = re.match("%define\s+ExtraBuildRequires\s+(.*)", line, flags=re.IGNORECASE)
+                if match:
+                    for extra_build_req in match.group(1).split(','):
+                        extra_build_req = extra_build_req.replace(" ", "")
+                        build_reqs.append(extra_build_req)
 
         install_cmd = "tdnf install -y".split()
 
@@ -304,6 +332,7 @@ class Scanner:
 
             if attempts < 2:
                 print("Trying to install required packages and trying again...")
+                shutil.rmtree(f"{common.rpm_build_root}/BUILD")
                 self._install_build_reqs(spec_path)
             else:
                 err_exit()
@@ -439,6 +468,7 @@ class Scanner:
                 src = line[span[1]:].strip()
                 src = os.path.basename(src)
                 self._used_sources.append(src)
+
 
     def _setup_scan_dir(self, path="", build_spec=False, alt_src_url=None):
         scan_dir = ""
