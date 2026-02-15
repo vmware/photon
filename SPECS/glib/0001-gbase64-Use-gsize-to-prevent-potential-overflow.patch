@@ -1,0 +1,39 @@
+From 6845f7776982849a2be1d8c9b0495e389092bff2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marco=20Trevisan=20=28Trevi=C3=B1o=29?= <mail@3v1n0.net>
+Date: Wed, 21 Jan 2026 20:04:23 +0100
+Subject: [PATCH] gbase64: Use gsize to prevent potential overflow
+
+Both g_base64_encode_step() and g_base64_encode_close() return gsize
+values, but these are summed to an int value.
+
+If the sum of these returned values is bigger than MAXINT, we overflow
+while doing the null byte write.
+
+Spotted by treeplus.
+Thanks to the Sovereign Tech Resilience programme from the Sovereign
+Tech Agency.
+
+ID: #YWH-PGM9867-168
+Closes: #3870
+---
+ glib/gbase64.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/glib/gbase64.c b/glib/gbase64.c
+index 2ea4a4ef4..214b48911 100644
+--- a/glib/gbase64.c
++++ b/glib/gbase64.c
+@@ -240,8 +240,9 @@ g_base64_encode (const guchar *data,
+                  gsize         len)
+ {
+   gchar *out;
+-  gint state = 0, outlen;
++  gint state = 0;
+   gint save = 0;
++  gsize outlen;
+ 
+   g_return_val_if_fail (data != NULL || len == 0, NULL);
+ 
+-- 
+2.43.7
+
