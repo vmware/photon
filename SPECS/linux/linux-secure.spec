@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.250
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -475,11 +475,16 @@ Patch301: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
 Patch302: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
 # CVE-2025-39901
 Patch303: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
+# CVE-2023-53596
+Patch304: 0001-drivers-base-Free-devm-resources-when-unregistering-a-device.patch
 
 #CVE-2023-54202
-Patch304: 0001-drm-i915-fix-race-condition-UAF-in-i915_perf_add_con.patch
+Patch305: 0001-drm-i915-fix-race-condition-UAF-in-i915_perf_add_con.patch
 #CVE-2023-53794
-Patch305: 0001-cifs-fix-session-state-check-in-reconnect-to-avoid-u.patch
+Patch306: 0001-cifs-fix-session-state-check-in-reconnect-to-avoid-u.patch
+
+# Fix CVE-2022-50552
+Patch307: 0001-blk-mq-use-quiesced-elevator-switch-when-reinitializ.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -746,6 +751,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.250-2
+- Fix CVE-2022-50552, CVE-2023-53596
 * Fri Feb 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.250-1
 - Update to version 5.10.250
 * Mon Feb 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.248-3

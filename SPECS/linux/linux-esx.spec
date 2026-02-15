@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.250
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -515,6 +515,11 @@ Patch301: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
 Patch302: 0001-drm-i915-fix-race-condition-UAF-in-i915_perf_add_con.patch
 #CVE-2023-53794
 Patch303: 0001-cifs-fix-session-state-check-in-reconnect-to-avoid-u.patch
+# CVE-2023-53596
+Patch304: 0001-drivers-base-Free-devm-resources-when-unregistering-a-device.patch
+
+# Fix CVE-2022-50552
+Patch305: 0001-blk-mq-use-quiesced-elevator-switch-when-reinitializ.patch
 
 #Patches for ptp_vmw
 Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -674,8 +679,8 @@ The Linux package contains the Linux kernel doc files
 # -esx
 %autopatch -p1 -m61 -M97
 
-# CVE: [100..300]
-%autopatch -p1 -m100 -M303
+# CVE: [100..350]
+%autopatch -p1 -m100 -M350
 
 #Patches for ptp_vmw
 %autopatch -p1 -m351 -M352
@@ -903,6 +908,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.250-2
+- Fix CVE-2022-50552, CVE-2023-53596
 * Fri Feb 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.250-1
 - Update to version 5.10.250
 * Mon Feb 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.248-3

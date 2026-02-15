@@ -1,0 +1,137 @@
+From bf4d88b411103282b3f302c4b36f31638e668e81 Mon Sep 17 00:00:00 2001
+From: Hou Tao <houtao1@huawei.com>
+Date: Sat, 29 Jul 2023 17:51:06 +0800
+Subject: [PATCH] bpf, cpumap: Make sure kthread is running before map update
+ returns
+
+commit 640a604585aa30f93e39b17d4d6ba69fcb1e66c9 upstream.
+
+The following warning was reported when running stress-mode enabled
+xdp_redirect_cpu with some RT threads:
+
+  ------------[ cut here ]------------
+  WARNING: CPU: 4 PID: 65 at kernel/bpf/cpumap.c:135
+  CPU: 4 PID: 65 Comm: kworker/4:1 Not tainted 6.5.0-rc2+ #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  Workqueue: events cpu_map_kthread_stop
+  RIP: 0010:put_cpu_map_entry+0xda/0x220
+  ......
+  Call Trace:
+   <TASK>
+   ? show_regs+0x65/0x70
+   ? __warn+0xa5/0x240
+   ......
+   ? put_cpu_map_entry+0xda/0x220
+   cpu_map_kthread_stop+0x41/0x60
+   process_one_work+0x6b0/0xb80
+   worker_thread+0x96/0x720
+   kthread+0x1a5/0x1f0
+   ret_from_fork+0x3a/0x70
+   ret_from_fork_asm+0x1b/0x30
+   </TASK>
+
+The root cause is the same as commit 436901649731 ("bpf: cpumap: Fix memory
+leak in cpu_map_update_elem"). The kthread is stopped prematurely by
+kthread_stop() in cpu_map_kthread_stop(), and kthread() doesn't call
+cpu_map_kthread_run() at all but XDP program has already queued some
+frames or skbs into ptr_ring. So when __cpu_map_ring_cleanup() checks
+the ptr_ring, it will find it was not emptied and report a warning.
+
+An alternative fix is to use __cpu_map_ring_cleanup() to drop these
+pending frames or skbs when kthread_stop() returns -EINTR, but it may
+confuse the user, because these frames or skbs have been handled
+correctly by XDP program. So instead of dropping these frames or skbs,
+just make sure the per-cpu kthread is running before
+__cpu_map_entry_alloc() returns.
+
+After apply the fix, the error handle for kthread_stop() will be
+unnecessary because it will always return 0, so just remove it.
+
+Fixes: 6710e1126934 ("bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Reviewed-by: Pu Lehui <pulehui@huawei.com>
+Acked-by: Jesper Dangaard Brouer <hawk@kernel.org>
+Link: https://lore.kernel.org/r/20230729095107.1722450-2-houtao@huaweicloud.com
+Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ kernel/bpf/cpumap.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index e32d0083c6ad..30dc180ff176 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -25,6 +25,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/kthread.h>
+ #include <linux/capability.h>
++#include <linux/completion.h>
+ #include <trace/events/xdp.h>
+ 
+ #include <linux/netdevice.h>   /* netif_receive_skb_core */
+@@ -69,6 +70,7 @@ struct bpf_cpu_map_entry {
+ 	struct rcu_head rcu;
+ 
+ 	struct work_struct kthread_stop_wq;
++	struct completion kthread_running;
+ };
+ 
+ struct bpf_cpu_map {
+@@ -213,7 +215,6 @@ static void put_cpu_map_entry(struct bpf_cpu_map_entry *rcpu)
+ static void cpu_map_kthread_stop(struct work_struct *work)
+ {
+ 	struct bpf_cpu_map_entry *rcpu;
+-	int err;
+ 
+ 	rcpu = container_of(work, struct bpf_cpu_map_entry, kthread_stop_wq);
+ 
+@@ -223,14 +224,7 @@ static void cpu_map_kthread_stop(struct work_struct *work)
+ 	rcu_barrier();
+ 
+ 	/* kthread_stop will wake_up_process and wait for it to complete */
+-	err = kthread_stop(rcpu->kthread);
+-	if (err) {
+-		/* kthread_stop may be called before cpu_map_kthread_run
+-		 * is executed, so we need to release the memory related
+-		 * to rcpu.
+-		 */
+-		put_cpu_map_entry(rcpu);
+-	}
++	kthread_stop(rcpu->kthread);
+ }
+ 
+ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
+@@ -309,6 +303,7 @@ static int cpu_map_kthread_run(void *data)
+ 	struct bpf_cpu_map_entry *rcpu = data;
+ 	unsigned long last_qs = jiffies;
+ 
++	complete(&rcpu->kthread_running);
+ 	set_current_state(TASK_INTERRUPTIBLE);
+ 
+ 	/* When kthread gives stop order, then rcpu have been disconnected
+@@ -465,6 +460,7 @@ __cpu_map_entry_alloc(struct bpf_cpumap_val *value, u32 cpu, int map_id)
+ 		goto free_ptr_ring;
+ 
+ 	/* Setup kthread */
++	init_completion(&rcpu->kthread_running);
+ 	rcpu->kthread = kthread_create_on_node(cpu_map_kthread_run, rcpu, numa,
+ 					       "cpumap/%d/map:%d", cpu, map_id);
+ 	if (IS_ERR(rcpu->kthread))
+@@ -477,6 +473,12 @@ __cpu_map_entry_alloc(struct bpf_cpumap_val *value, u32 cpu, int map_id)
+ 	kthread_bind(rcpu->kthread, cpu);
+ 	wake_up_process(rcpu->kthread);
+ 
++	/* Make sure kthread has been running, so kthread_stop() will not
++	 * stop the kthread prematurely and all pending frames or skbs
++	 * will be handled by the kthread before kthread_stop() returns.
++	 */
++	wait_for_completion(&rcpu->kthread_running);
++
+ 	return rcpu;
+ 
+ free_prog:
+-- 
+2.43.7
+
