@@ -1,7 +1,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.75.2
-Release:      14%{?dist}
+Release:      15%{?dist}
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -81,6 +81,14 @@ Patch27: CVE-2025-14512.patch
 
 # CVE-2026-1484
 Patch28: 0001-gbase64-Use-gsize-to-prevent-potential-overflow.patch
+Patch29: 0002-gbase64-Ensure-that-the-out-value-is-within-allocated-size.patch
+
+Patch30: 0001-CVE-2026-0988.patch
+Patch31: 0001-CVE-2026-1485.patch
+Patch32: 0001-CVE-2026-1489.patch
+Patch33: 0002-CVE-2026-1489.patch
+Patch34: 0003-CVE-2026-1489.patch
+Patch35: 0004-CVE-2026-1489.patch
 
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C,
@@ -159,6 +167,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Mon Feb 16 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.75.2-15
+- Fix CVE-2026-0988, CVE-2026-1485, CVE-2026-1489
 * Sun Feb 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-14
 - Fix CVE-2026-1484
 * Tue Jan 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-13
