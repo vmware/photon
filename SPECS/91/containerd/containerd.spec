@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define debug_package %{nil}
 %define __os_install_post %{nil}
@@ -6,8 +6,8 @@
 
 Summary:        Containerd
 Name:           containerd
-Version:        2.2.1
-Release:        1%{?dist}
+Version:        2.1.5
+Release:        2.1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -16,7 +16,7 @@ Distribution:   Photon
 Source0: https://github.com/containerd/containerd/archive/%{name}-%{version}.tar.gz
 
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT dea7da592f5d1d2b7755e3a161be07f43fad8f75
+%define CONTAINERD_GITCOMMIT c787fb98911740dd3ff2d0e45ce88cdf01410486
 
 Source1: %{name}-config.toml
 Source2: disable-%{name}-by-default.preset
@@ -86,6 +86,7 @@ export GOPATH="${PWD}"
 # Also, attempting to create go.mod and re-vendor would be wrong in this case,
 # as it could overwrite patches to vendor/, as well as fetching un-release
 # upstream versions. Typically, embargoed CVEs can cause those versions to be hiddden.
+export GO111MODULE=off
 cd src/%{gopath_comp}
 
 make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} \
@@ -142,10 +143,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
-* Fri Feb 13 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 2.2.1-1
-- Version upgrade to 2.2.1
-* Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.5-3
-- Bump version as a part of go upgrade
+* Fri Feb 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.5-2.1
+- Bump after moving to SPECS/91
 * Thu Feb 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.5-2
 - Bump up version as a part of runc upgrade to v1.4.0
 * Mon Nov 17 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.5-1
