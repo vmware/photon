@@ -56,7 +56,7 @@ expected_pkg_list=(
 )
 
 if [ ${isRpmV6} -ne 0 ]; then
-  expected_pkg_list+=(libgomp libstdc++ rpm-sequoia)
+  expected_pkg_list+=(libstdc++ rpm-sequoia)
 fi
 
 actual_pkg_count=${#actual_pkg_list[@]}
