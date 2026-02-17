@@ -687,6 +687,7 @@ srp_approved_licenses:
     - gtkbook
     - hdparm
     - libpng-2.0
+    - libpng-1.6.35
     - libselinux-1.0
     - libtiff
     - lsof
