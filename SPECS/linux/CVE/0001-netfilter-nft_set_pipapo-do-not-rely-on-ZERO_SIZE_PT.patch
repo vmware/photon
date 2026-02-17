@@ -1,7 +1,9 @@
-From 07ace0bbe03b3d8e85869af1dec5e4087b1d57b8 Mon Sep 17 00:00:00 2001
+From d89bbe2e09b12a20d11c89ad9fcec93c33f995ed Mon Sep 17 00:00:00 2001
 From: Florian Westphal <fw@strlen.de>
 Date: Tue, 13 Feb 2024 16:23:38 +0100
 Subject: [PATCH] netfilter: nft_set_pipapo: do not rely on ZERO_SIZE_PTR
+
+commit 07ace0bbe03b3d8e85869af1dec5e4087b1d57b8 upstream
 
 pipapo relies on kmalloc(0) returning ZERO_SIZE_PTR (i.e., not NULL
 but pointer is invalid).
@@ -12,12 +14,15 @@ allocation.
 Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Mukul Sikka <mukul.sikka@broadcom.com>
+[ Brennan : Modified for new context since b85e3367a5 was upstreamed
+            to v6.1 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
- net/netfilter/nft_set_pipapo.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ net/netfilter/nft_set_pipapo.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
 diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
-index 8336f2052..75e9371df 100644
+index 863162c82330..2072c89a467d 100644
 --- a/net/netfilter/nft_set_pipapo.c
 +++ b/net/netfilter/nft_set_pipapo.c
 @@ -525,6 +525,8 @@ static struct nft_pipapo_elem *pipapo_get(const struct net *net,
@@ -29,19 +34,24 @@ index 8336f2052..75e9371df 100644
  
  	res_map = kmalloc_array(m->bsize_max, sizeof(*res_map), GFP_ATOMIC);
  	if (!res_map) {
-@@ -1360,11 +1362,17 @@ static struct nft_pipapo_match *pipapo_clone(struct nft_pipapo_match *old)
+@@ -1365,14 +1367,20 @@ static struct nft_pipapo_match *pipapo_clone(struct nft_pipapo_match *old)
  		       src->bsize * sizeof(*dst->lt) *
  		       src->groups * NFT_PIPAPO_BUCKETS(src->bb));
  
--		dst->mt = kvmalloc(src->rules * sizeof(*src->mt), GFP_KERNEL);
--		if (!dst->mt)
+-		if (src->rules > (INT_MAX / sizeof(*src->mt)))
 -			goto out_mt;
 +		if (src->rules > 0) {
++			if (src->rules > (INT_MAX / sizeof(*src->mt)))
++				goto out_mt;
++
 +			dst->mt = kvmalloc_array(src->rules, sizeof(*src->mt),
 +						 GFP_KERNEL);
 +			if (!dst->mt)
 +				goto out_mt;
-+
+ 
+-		dst->mt = kvmalloc(src->rules * sizeof(*src->mt), GFP_KERNEL);
+-		if (!dst->mt)
+-			goto out_mt;
 +			memcpy(dst->mt, src->mt, src->rules * sizeof(*src->mt));
 +		} else {
 +			dst->mt = NULL;

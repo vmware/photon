@@ -1,8 +1,7 @@
-From 6aed10d6e61b0efa80ecbb45ff1688927951cff6 Mon Sep 17 00:00:00 2001
+From f9ec4b47187526d1f47587d79ae42c15448f5115 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 24 Jul 2020 14:23:05 +0530
-Subject: [PATCH 06/11] Add initial support for vxlan trunk to cgw kernel, with
- ip tool to program
+Subject: [PATCH] Add initial support for vxlan trunk to cgw kernel, with
 
 Adds a new linux net device, vxlantrunk, that translates vxlan to vlan
 
@@ -16,7 +15,7 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
  create mode 100644 net/ipv4/vxlan_trunk.c
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 0373e0935..bc58f23af 100644
+index 609e4d864..9b254e966 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
 @@ -1621,6 +1621,13 @@ struct net_device_ops {
@@ -34,7 +33,7 @@ index 0373e0935..bc58f23af 100644
  
  /**
 diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 51c13cf9c..062879a44 100644
+index 63a092293..c06fdff64 100644
 --- a/include/uapi/linux/rtnetlink.h
 +++ b/include/uapi/linux/rtnetlink.h
 @@ -13,7 +13,8 @@
@@ -48,11 +47,11 @@ index 51c13cf9c..062879a44 100644
  /****
   *		Routing/neighbour discovery messages.
 diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index bbdd9c44f..d0d404e68 100644
+index d1c8d4beb..bce726b35 100644
 --- a/net/ipv4/Makefile
 +++ b/net/ipv4/Makefile
-@@ -28,7 +28,7 @@ obj-$(CONFIG_NET_IPIP) += ipip.o
- gre-y := gre_demux.o
+@@ -29,7 +29,7 @@ gre-y := gre_demux.o
+ fou-y := fou_core.o fou_nl.o
  obj-$(CONFIG_NET_FOU) += fou.o
  obj-$(CONFIG_NET_IPGRE_DEMUX) += gre.o
 -obj-$(CONFIG_NET_IPGRE) += ip_gre.o
@@ -1920,4 +1919,5 @@ index 000000000..9e6d73a12
 +MODULE_ALIAS_NETDEV("vxlantrunk0");
 +MODULE_ALIAS_NETDEV("vlantrunk0");
 -- 
-2.39.0
+2.43.7
+

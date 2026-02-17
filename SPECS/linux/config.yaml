@@ -1,26 +1,27 @@
 shared_sources:
 - 91/stalld/config.yaml
 sources:
-- archive: linux-6.1.161.tar.xz
+- archive: linux-6.1.163.tar.xz
   archive_type: upstream
-  version: 6.1.161
-  name: linux-6.1.161
-  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.161.tar.xz
+  version: 6.1.163
+  name: linux-6.1.163
+  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.163.tar.xz
   repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-  commit_id: cd9b81672742d239a3f05fe545bf4212b56d0ac9
+  commit_id: 8ce36b2849ef65d98b77bcced8cf72333b2d5da0
   skip_list: []
   missing: []
-  archive_sha512sum: 332dddc033fac11263afaf77a444f41fbd12d92b7c58cb7b8509cccbaf3fbf2e4b4a2c9e1eac66ff4195f153a7b79fbfb58b7eb55f530a067d512ad357c4affa
+  archive_sha512sum: 
+    b364d51b3bb1883f0468db2bf5db8a31ff23cdf861cc44446fd235c5bb1854f706de7fe2ff4ba228f7f7ebf524efcc6c76536cbb99fb77a8f879778c22967d82
   skip_validation: false
   license_manual_review:
   # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
   - file_paths:
-    - linux-6.1.161/drivers/pci/controller/pci-mvebu.c
+    - linux-6.1.163/drivers/pci/controller/pci-mvebu.c
     sha256sum: f2ed59ce938e92a0dff71c849860cafb5a5d2a78b34e5c0aa974288d98cccfcc
     spdx_exp: GPL-2.0-only
   # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
   - file_paths:
-    - linux-6.1.161/Documentation/process/kernel-docs.rst
+    - linux-6.1.163/Documentation/process/kernel-docs.rst
     sha256sum: 6e641499dcde7927e30dcdea64a6be9f53234d7036f4069ec47bdf5490005166
     spdx_exp: ''
   spdx:
@@ -116,7 +117,8 @@ sources:
       short_summary: Kernel
       supplier: 'Organization: Broadcom, Inc.'
 - archive: jitterentropy-3.4.1-4.tar.bz2
-  archive_sha512sum: 37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
+  archive_sha512sum: 
+    37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
   skip_validation: true
   spdx:
     package:
@@ -136,7 +138,8 @@ sources:
         entropy for encryption and other sensitive operations.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: fips-canister-5.0.0-6.1.75-2.ph5-secure.tar.bz2
-  archive_sha512sum: ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
+  archive_sha512sum: 
+    ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
   skip_validation: true
   spdx:
     package:
@@ -156,7 +159,8 @@ sources:
         strict security and regulatory standards.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: efa_linux_2.1.1.tar.gz
-  archive_sha512sum: 2ceb5a4011a6b5f69d0a389e3d6f188d29cb87373202b42fe6c1f29ac2a310d1180a9ffad3e362680b675edc8007850b541e477b918781ef406afc55ca0d1c6e
+  archive_sha512sum: 
+    2ceb5a4011a6b5f69d0a389e3d6f188d29cb87373202b42fe6c1f29ac2a310d1180a9ffad3e362680b675edc8007850b541e477b918781ef406afc55ca0d1c6e
   skip_validation: true
   spdx:
     package:
@@ -177,7 +181,8 @@ sources:
         AWS platforms.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: ena_linux_2.8.3.tar.gz
-  archive_sha512sum: 173435137b6fe47d110db376c4c3eff8da7a10803dde5f41f694d04e74319861c16398f257a1c917a4fc05477c86e6e7b42e6a63e2f42de7ea9166f77ba9b01d
+  archive_sha512sum: 
+    173435137b6fe47d110db376c4c3eff8da7a10803dde5f41f694d04e74319861c16398f257a1c917a4fc05477c86e6e7b42e6a63e2f42de7ea9166f77ba9b01d
   skip_validation: true
   spdx:
     package:

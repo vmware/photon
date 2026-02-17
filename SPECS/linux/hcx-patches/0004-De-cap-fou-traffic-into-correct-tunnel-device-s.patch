@@ -1,7 +1,7 @@
-From bea71f52f0115440e269b42a802a8d071ce89262 Mon Sep 17 00:00:00 2001
+From 0b0321886f0cbb2c26bdc0d545f7fc8a84efa93f Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 18 Jun 2021 09:31:39 +0000
-Subject: [PATCH 04/11] De-cap fou traffic into correct tunnel device(s)
+Subject: [PATCH] De-cap fou traffic into correct tunnel device(s)
 
 Default fou device doesn't allow multiple fou tunnels
 between one pair of IPs. Previous patch has been working
@@ -30,16 +30,16 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---
  include/linux/skbuff.h |  1 +
- net/ipv4/fou.c         |  5 +++++
+ net/ipv4/fou_core.c    |  5 +++++
  net/ipv4/ip_tunnel.c   | 10 ++++++++++
  net/ipv4/ipip.c        | 34 ++++++++++++++++++++++++++++++++++
  4 files changed, 50 insertions(+)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 2feee144f..9dee4f213 100644
+index 9a04a188b..686c8075e 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -1039,6 +1039,7 @@ struct sk_buff {
+@@ -1034,6 +1034,7 @@ struct sk_buff {
  	__u16			transport_header;
  	__u16			network_header;
  	__u16			mac_header;
@@ -47,11 +47,11 @@ index 2feee144f..9dee4f213 100644
  
  #ifdef CONFIG_KCOV
  	u64			kcov_handle;
-diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
-index 0c3c6d0ce..4b90bdce0 100644
---- a/net/ipv4/fou.c
-+++ b/net/ipv4/fou.c
-@@ -53,6 +53,11 @@ static inline struct fou *fou_from_sock(struct sock *sk)
+diff --git a/net/ipv4/fou_core.c b/net/ipv4/fou_core.c
+index 4ee6c424d..3109102b4 100644
+--- a/net/ipv4/fou_core.c
++++ b/net/ipv4/fou_core.c
+@@ -55,6 +55,11 @@ static inline struct fou *fou_from_sock(struct sock *sk)
  
  static int fou_recv_pull(struct sk_buff *skb, struct fou *fou, size_t len)
  {
@@ -64,10 +64,10 @@ index 0c3c6d0ce..4b90bdce0 100644
  	 * FOU header if present).
  	 */
 diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
-index 622111450..f744c5f5e 100644
+index 77b02b3f1..b45819b41 100644
 --- a/net/ipv4/ip_tunnel.c
 +++ b/net/ipv4/ip_tunnel.c
-@@ -56,8 +56,10 @@
+@@ -57,8 +57,10 @@
  #ifdef CONFIG_SYSCTL
  struct ctl_table_header *ipip_sysctl_header = NULL;
  int ipip_tunnel_skip_encap_decap __read_mostly = 0;
@@ -78,7 +78,7 @@ index 622111450..f744c5f5e 100644
  
  struct ctl_table ipip_sysctl_table[] = {
  	{
-@@ -67,6 +69,13 @@ struct ctl_table ipip_sysctl_table[] = {
+@@ -68,6 +70,13 @@ struct ctl_table ipip_sysctl_table[] = {
  		.mode           = 0644,
  		.proc_handler   = proc_dointvec,
  	},
@@ -92,7 +92,7 @@ index 622111450..f744c5f5e 100644
  	{}
  };
  EXPORT_SYMBOL_GPL(ipip_sysctl_table);
-@@ -84,6 +93,7 @@ EXPORT_SYMBOL_GPL(ipip_sysctl_init);
+@@ -85,6 +94,7 @@ EXPORT_SYMBOL_GPL(ipip_sysctl_init);
  
  #else
  #define ipip_tunnel_skip_encap_decap 0
@@ -101,7 +101,7 @@ index 622111450..f744c5f5e 100644
  
  static unsigned int ip_tunnel_hash(__be32 key, __be32 remote)
 diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
-index 31d04fe13..6eff9376b 100644
+index 4c38ef333..a250ca678 100644
 --- a/net/ipv4/ipip.c
 +++ b/net/ipv4/ipip.c
 @@ -119,9 +119,11 @@ MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
@@ -127,7 +127,7 @@ index 31d04fe13..6eff9376b 100644
  	if (tunnel) {
  		const struct tnl_ptk_info *tpi;
  
-@@ -452,6 +458,28 @@ static void ipip_netlink_parms(struct nlattr *data[],
+@@ -453,6 +459,28 @@ static void ipip_netlink_parms(struct nlattr *data[],
  		*fwmark = nla_get_u32(data[IFLA_IPTUN_FWMARK]);
  }
  
@@ -156,7 +156,7 @@ index 31d04fe13..6eff9376b 100644
  static int ipip_newlink(struct net *src_net, struct net_device *dev,
  			struct nlattr *tb[], struct nlattr *data[],
  			struct netlink_ext_ack *extack)
-@@ -469,6 +497,9 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+@@ -470,6 +498,9 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
  	}
  
  	ipip_netlink_parms(data, &p, &t->collect_md, &fwmark);
@@ -166,7 +166,7 @@ index 31d04fe13..6eff9376b 100644
  	return ip_tunnel_newlink(dev, tb, &p, fwmark);
  }
  
-@@ -490,6 +521,9 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
+@@ -491,6 +522,9 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
  	}
  
  	ipip_netlink_parms(data, &p, &collect_md, &fwmark);
@@ -177,4 +177,5 @@ index 31d04fe13..6eff9376b 100644
  		return -EINVAL;
  
 -- 
-2.39.0
+2.43.7
+

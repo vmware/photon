@@ -1,0 +1,20 @@
+From e90134336cc01e4b2c62e2dcc6a607ae98b1c272 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Wed, 18 Feb 2026 11:19:25 -0600
+Subject: [PATCH 67/67] Linux 6.1.163-rt59 REBASE
+
+Signed-off-by: Clark Williams <clark.williams@gmail.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 75493460c41f..8cdeb45db6e2 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt51
++-rt59
+-- 
+2.53.0
+

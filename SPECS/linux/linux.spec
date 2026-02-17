@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.161
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.163
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -364,10 +364,7 @@ Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
 
 #Fix CVE-2025-38201
 Patch192: 0001-netfilter-nft_set_pipapo-do-not-rely-on-ZERO_SIZE_PT.patch
-Patch193: 0001-netfilter-nft_set_pipapo-clamp-maximum-map-bucket-si.patch
 
-# Fix CVE-2025-38361
-Patch194: 0001-drm-amd-display-Check-dce_hwseq-before-dereferencing.patch
 # fix CVE-2025-38704
 Patch195: 0001-rcu-nocb-Fix-possible-invalid-rdp-s-nocb_cb_kthread-.patch
 # Fix CVE-2025-39744
@@ -410,24 +407,14 @@ Patch216: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
 Patch217: 0001-smb-client-fix-potential-UAF-in-smb2_close_cached_fi.patch
 # CVE-2025-68219
 Patch218: 0001-cifs-fix-memory-leak-in-smb3_fs_context_parse_param-.patch
-# CVE-2025-38718
-Patch219: 0001-sctp-linearize-cloned-gso-packets-in-sctp_rcv.patch
 # CVE-2025-71068
 Patch220: 0001-svcrdma-bound-check-rq_pages-index-in-inline-path.patch
-# CVE-2026-23011
-Patch221: 0001-ipv4-ip_gre-make-ipgre_header-robust.patch
-# CVE-2026-23010
-Patch222: 0001-ipv6-Fix-use-after-free-in-inet6_addr_del.patch
-# CVE-2026-23001
-Patch223: 0001-macvlan-fix-possible-UAF-in-macvlan_forward_source.patch
 # CVE-2023-53510
 Patch224: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
 # Fix CVE-2025-68353
 Patch225: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 # CVE-2023-54271
 Patch226: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
-# CVE-2026-22999
-Patch227: 0001-net-sched-sch_qfq-do-not-free-existing-class-in-qfq_.patch
 # Fix CVE-2025-68190
 Patch229: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # Fix CVE-2024-25742 and CVE-2024-25743
@@ -1194,6 +1181,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Feb 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-1
+- Update to version 6.1.163
 * Sat Feb 07 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.161-8
 - Fixes CVE-2025-68190, CVE-2024-25742 and CVE-2024-25743
 * Fri Feb 06 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.161-7
