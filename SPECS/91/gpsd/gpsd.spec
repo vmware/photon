@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} <= 91
+
 Name:           gpsd
 Version:        3.25
-Release:        7%{?dist}
+Release:        7.1%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -242,6 +244,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Fri Feb 13 2026 Tapas Kundu <tapas.kundu@broadcom.com> 3.25-7.1
+- Bump after moving to SPECS/91
 * Wed Jan 14 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.25-7
 - Fix CVE-2025-67268
 * Mon Jan 12 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.25-6
