@@ -1,12 +1,19 @@
 sources:
-- archive: setuptools-rust-1.5.2.tar.gz
-  archive_sha512sum: 79b1de5581b9558cdf227320c421aa2445b2e6b8583ed9c118ee8d7acdfde9d947e7d11fa6a9697c475d4ca387c86ca6846429099ec30d2eb6e40f8849fcecc0
-  skip_validation: true
+- archive: setuptools_rust-1.12.0.tar.gz
+  archive_sha512sum: 60ca0327758bcb29c2b7e2c28f264c9d23f62de049deca0a9e7c284f2b82fbca36d1db09bf3ef940fb688efa6c3969b1c93e08d8da11bb9f6ec40ff48ecefbcc
+  archive_type: upstream
+  name: setuptools_rust-1.12.0
+  version: 1.12.0
+  url: https://files.pythonhosted.org/packages/bc/c4/8d3d282cee60d3ea0369fa15ce27387810040360adb4133e31990a7a2aba/setuptools_rust-1.12.0.tar.gz
+  repo_url: https://github.com/PyO3/setuptools-rust
+  commit_id: d92876b377c50bf2df8844885b35ca04f336841b
+  skip_list: []
+  missing: [setuptools_rust.egg-info, setup.cfg, PKG-INFO]
   spdx:
     package:
       detailed_description: 'setuptools-rust is a plugin for setuptools to build Rust
         Python extensions implemented with PyO3 or rust-cpython. Compile and distribute
-        Python extensions written in Rust as easily as if they were written in C. '
+        Python extensions written in Rust as easily as if they were written in C.'
       home_page: https://github.com/PyO3/setuptools-rust
       license_concluded: CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND MIT AND Python-2.0 AND
         WTFPL

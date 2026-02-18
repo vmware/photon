@@ -1,0 +1,22 @@
+sources:
+- archive: pyproject_hooks-1.2.0.tar.gz
+  archive_sha512sum: c198624ca278001922e07039333aa623a87bd9ef9f38ec98346d6d49f19dec422f788f6737623b461d76586bc8fa752518906bc7501e822429803881700ce701
+  archive_type: upstream
+  name: pyproject-hooks-1.2.0
+  version: 1.2.0
+  url: https://github.com/pypa/pyproject-hooks/archive/refs/tags/v1.2.0.tar.gz
+  repo_url: https://github.com/pypa/pyproject-hooks
+  commit_id: 4b7c6d113fb89b755d762a88712c8a6873cddd47
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'This is a low-level library for calling build-backends in
+      pyproject.toml-based project. It provides the basic functionality
+      to help write tooling that generates distribution files from
+      Python projects.'
+      home_page: https://github.com/pypa/pyproject-hooks
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Wrappers to call pyproject.toml-based build backend hooks
+      supplier: 'Organization: Broadcom, Inc.'

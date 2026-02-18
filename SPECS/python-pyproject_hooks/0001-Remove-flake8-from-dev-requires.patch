@@ -1,0 +1,23 @@
+From 5ff26a4fbc203585e2a8dc812772fb08b9a3d611 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 6 Jun 2024 13:32:21 +0530
+Subject: [PATCH] Remove flake8 from dev requires
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ dev-requirements.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/dev-requirements.txt b/dev-requirements.txt
+index 4a8c47a..3bf90e7 100644
+--- a/dev-requirements.txt
++++ b/dev-requirements.txt
+@@ -1,5 +1,4 @@
+ pytest
+-flake8
+ testpath
+ setuptools>=30
+ tomli >=1.1.0 ; python_version<'3.11'
+-- 
+2.34.1
+

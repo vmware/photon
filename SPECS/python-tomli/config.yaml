@@ -1,0 +1,20 @@
+sources:
+- archive: tomli-2.4.0.tar.gz
+  archive_sha512sum: 8bd8c46d4e4337142fbd94a6a78b478db804bc7c535c11eb447a3613afdda3428b679dc06228b37ccaad73af334c204c38236b0b5287f7ff6d21387f1355d420
+  archive_type: upstream
+  name: tomli-2.4.0
+  version: 2.4.0
+  url: https://github.com/hukkin/tomli/archive/refs/tags/2.4.0.tar.gz
+  repo_url: https://github.com/hukkin/tomli
+  commit_id: a678e6fdeffa89bd28e4ecc148b926a4e1bbbc7b
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Tomli is a Python library for parsing TOML.
+      Tomli is fully compatible with TOML v1.0.0.'
+      home_page: https://github.com/hukkin/tomli
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Setuptools plugin for Rust support
+      supplier: 'Organization: Broadcom, Inc.'

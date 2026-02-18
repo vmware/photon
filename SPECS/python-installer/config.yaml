@@ -1,0 +1,21 @@
+sources:
+- archive: installer-0.7.0.tar.gz
+  archive_sha512sum: e89c2d28ca73d9c4291d645dda675fdcfcaba2e4f8765b9fa4a2f211e27711510f3d171b96a6b024c11808ba7f06b7b560a7cb31fafba815bd5c7396f26789f7
+  archive_type: upstream
+  name: installer-0.7.0
+  version: 0.7.0
+  url: https://files.pythonhosted.org/packages/05/18/ceeb4e3ab3aa54495775775b38ae42b10a92f42ce42dfa44da684289b8c8/installer-0.7.0.tar.gz
+  repo_url: https://github.com/pypa/installer
+  commit_id: b1d39180f8548820d09ce992dfadff0a42242c48
+  skip_list: []
+  missing: [PKG-INFO]
+  spdx:
+    package:
+      detailed_description: 'This is a low-level library for installing a Python package from
+      a wheel distribution. It provides basic functionality and abstractions
+      for handling wheels and installing packages from wheels.'
+      home_page: https://github.com/PyO3/setuptools-rust
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A library for installing Python wheels
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,32 +1,34 @@
 %global build_if %{photon_subrelease} >= 92
 
+%define srcname flit_core
+
 Name:           python3-flit-core
 Version:        3.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The build backend used by Hatch
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.org/project/flit_core/
-Source0:        https://files.pythonhosted.org/packages/source/f/flit_core/flit_core-%{version}.tar.gz
+URL:            https://pypi.org/project/flit_core
+
+BuildArch:      noarch
+
+Source0:        https://files.pythonhosted.org/packages/source/f/flit_core/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  ca-certificates
-BuildRequires:  python3-xml
+
+%define ExtraBUildRequires python3-pip
 
 Requires:       python3
-
-BuildArch:      noarch
 
 %description
 This is the extensible, standards compliant build backend used by Hatch.
 
 %prep
-%autosetup -n flit_core-%{version}
+%autosetup -n %{srcname}-%{version}
 
 %build
 python3 -m ensurepip
@@ -35,14 +37,18 @@ python3 -m ensurepip
 %install
 %{pyproject_install}
 
+%if 0%{?with_check}
 %check
 python3 setup.py test
+%endif
 
 %files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-2
+- Fix BuildRequires
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.12.0-1
 - Upgrade to 3.12.0 for compatiblity with python 3.14
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.7.1-2

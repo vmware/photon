@@ -1,0 +1,19 @@
+sources:
+- archive: build-1.4.0.tar.gz
+  archive_sha512sum: aad08af8a163c914671c1b149306061ea93fc1fb5f066dda5a351ddec4b7b374160bf657d30b0eccc498c4f53950307646d792b58cb0efb91975b2541e111d88
+  archive_type: upstream
+  name: build-1.4.0
+  version: 1.4.0
+  url: https://github.com/pypa/build/archive/refs/tags/1.4.0.tar.gz
+  repo_url: https://github.com/pypa/build
+  commit_id: 54f238d1664124e06a68c6c22fd5b1418fa5feb2
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'A simple, correct PEP517 package builder.'
+      home_page: https://github.com/pypa/build
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A simple, correct PEP517 package builder.
+      supplier: 'Organization: Broadcom, Inc.'

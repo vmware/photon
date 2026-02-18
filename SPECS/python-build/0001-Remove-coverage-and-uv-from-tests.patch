@@ -1,0 +1,29 @@
+From f414cc586b9256cc3c709e428ffab2419038c24b Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 6 Jun 2024 13:03:18 +0530
+Subject: [PATCH] Remove coverage and uv from tests
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ pyproject.toml | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 74bf3ff..b217d16 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -50,10 +50,9 @@ docs = [
+   "sphinx-issues >= 3.0.0",
+ ]
+ test = [
+-  "build[uv, virtualenv]",
++  "build[ virtualenv]",
+   "filelock >= 3",
+   "pytest >= 6.2.4",
+-  "pytest-cov >= 2.12",
+   "pytest-mock >= 2",
+   "pytest-rerunfailures >= 9.1",
+   "pytest-xdist >= 1.34",
+-- 
+2.34.1
+
