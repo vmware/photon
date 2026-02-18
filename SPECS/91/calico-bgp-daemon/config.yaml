@@ -1,0 +1,30 @@
+sources:
+- archive: calico-bgp-daemon-0.2.2.tar.gz
+  archive_sha512sum: d5d68d52797e419f8cf99cf276ae6ffefe4764a3ed321e495b39bf6a8e72ca608a32f6cede08e296b2643a7b648fe9554ea44bd3eade7eb40a1bf0c289464cef
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'GoBGP based Calico BGP Daemon, an alternative to BIRD
+        in calico/node. '
+      home_page: https://github.com/projectcalico/calico-bgp-daemon
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: GoBGP based Calico BGP Daemon
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: glide-vendor-for-calico-bgp-daemon-0.2.2.tar.gz
+  archive_sha512sum: 090a834f2b709e0e5b0d634a5aade2afb0142daacf95c5e05c57e02c8d019583950a6249d550eab311b0f708270c109df9e0af9b1e022e6c8c72f0b350afe1e4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: glide modules for building calico bgp daemon.
+      home_page: https://github.com/projectcalico/calico-bgp-daemon
+      license_concluded: CC-BY-SA-3.0 AND BSD-2-Clause AND JSON AND BSD-3-Clause AND
+        MPL-2.0 AND CC-BY-SA-2.0 AND CDDL-1.0 AND Apache-2.0 AND CC-BY-4.0 AND CC-BY-SA-2.5
+        AND CC-BY-SA-1.0 AND ISC AND LGPL-3.0-or-later WITH LGPL-3.0-linking-exception
+        AND MIT AND radvd AND LGPL-3.0-only
+      license_declared: CC-BY-SA-3.0 AND BSD-2-Clause AND JSON AND BSD-3-Clause AND
+        MPL-2.0 AND CC-BY-SA-2.0 AND CDDL-1.0 AND Apache-2.0 AND CC-BY-4.0 AND CC-BY-SA-2.5
+        AND CC-BY-SA-1.0 AND ISC AND LGPL-3.0-or-later WITH LGPL-3.0-linking-exception
+        AND MIT AND radvd AND LGPL-3.0-only
+      short_summary: glide modules for building calico bgp daemon.
+      supplier: 'Organization: Broadcom, Inc.'
