@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.69
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -202,14 +202,23 @@ Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 Patch28: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
 
 %ifarch x86_64
-# VMW: [50..59]
-Patch55: x86-vmware-Log-kmsg-dump-on-panic.patch
-Patch56: x86-vmware-Fix-steal-time-clock-under-SEV.patch
+# VMW: [50..60]
+Patch50: x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch51: x86-vmware-Support-steal-time-clock-for-encrypted-gu.patch
+# Report guest crash to vmware hypervisor
+Patch52: 0001-x86-report-guest-crash-to-vmware-hypervisor.patch
+
+# SEV on VMware
+Patch53: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch54: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch55: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
+# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch56: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 
 # Secure Boot and Kernel Lockdown
-Patch58: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-Patch59: 0002-Add-.sbat-section.patch
-Patch60: 0003-Verify-SBAT-on-kexec.patch
+Patch57: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch58: 0002-Add-.sbat-section.patch
+Patch59: 0003-Verify-SBAT-on-kexec.patch
 %endif
 
 #Secure:
@@ -244,6 +253,8 @@ Patch209: 0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch210: 0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch211: 0005-vmw_balloon-add-arm64-support.patch
 Patch212: 0001-vmw_vmci-arm64-support-memory-ordering.patch
+# Report guest crash to vmware hypervisor
+Patch213: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
 %endif
 
 # perf: off-cpu sample
@@ -278,12 +289,6 @@ Patch322: 0185-Introduce-page-touching-DMA-ops-binding.patch
 Patch323: 0444-drivers-base-memory-use-MHP_MEMMAP_ON_MEMORY-from-th.patch
 Patch324: 0490-Correct-read-overflow-in-page-touching-DMA-ops-bindi.patch
 
-# SEV on VMware: [600..609]
-Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
-Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
-Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
-# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 %endif
 
 #HCX-Patches
@@ -306,15 +311,6 @@ Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
 Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
 Patch718: 0018-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
 Patch719: 0019-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
-
-# Report guest crash to vmware hypervisor
-%ifarch aarch64
-Patch1000: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
-%endif
-
-%ifarch x86_64
-Patch1000: 0001-x86-report-guest-crash-to-vmware-hypervisor.patch
-%endif
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -582,13 +578,9 @@ The kernel fips-canister
 %ifarch x86_64
 # AWS x86
 %autopatch -p1 -m300 -M339
-# SEV on VMware
-%autopatch -p1 -m600 -M603
 %endif
 
 %autopatch -p1 -m701 -M720
-
-%autopatch -p1 -m1000 -M1000
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -959,6 +951,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Feb 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-2
+- Support steal clock on TDX enabled VMs
 * Fri Feb 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-1
 - Update to version 6.12.69
 * Wed Feb 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.60-22

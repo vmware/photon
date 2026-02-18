@@ -31,9 +31,9 @@ index 8b6728509..909bac6ce 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,6 +30,7 @@
- #include <linux/reboot.h>
  #include <linux/static_call.h>
  #include <linux/kmsg_dump.h>
+ #include <linux/set_memory.h>
 +#include <linux/panic_notifier.h>
  #include <asm/div64.h>
  #include <asm/x86_init.h>

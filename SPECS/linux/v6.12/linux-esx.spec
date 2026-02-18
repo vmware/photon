@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.69
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -125,15 +125,21 @@ Patch32: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 
 %ifarch x86_64
 # VMW: [50..59]
-Patch51: x86-vmware-Log-kmsg-dump-on-panic.patch
-Patch52: x86-vmware-Fix-steal-time-clock-under-SEV.patch
-Patch53: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch54: 07-vmware-only.patch
-Patch55: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+Patch50: x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch51: x86-vmware-Support-steal-time-clock-for-encrypted-gu.patch
+# Report guest crash to vmware hypervisor
+Patch52: 0001-x86-report-guest-crash-to-vmware-hypervisor.patch
+
+# SEV on VMware
+Patch53: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch54: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch55: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
+# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch56: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
 
 # Secure Boot and Kernel Lockdown
-Patch56: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
-Patch57: 0002-Add-.sbat-section.patch
+Patch57: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
+Patch58: 0002-Add-.sbat-section.patch
 # NOTE: linux-esx does not support kexec, omitting SBAT verify logic.
 # CONFIG_SECURITY_SBAT_VERIFY=y
 # Patch58: 0003-Verify-SBAT-on-kexec.patch
@@ -151,9 +157,12 @@ Patch65: 04-quiet-boot.patch
 Patch66: 05-pv-ops-clocksource.patch
 Patch67: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 Patch68: halt-on-panic.patch
+Patch69: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch70: 07-vmware-only.patch
+Patch71: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 %if 0%{?vmxnet3_sw_timestamp}
-Patch71: 0009-esx-vmxnet3-software-timestamping.patch
+Patch72: 0009-esx-vmxnet3-software-timestamping.patch
 %endif
 
 # vmxnet3
@@ -196,24 +205,8 @@ Patch204: 0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch205: 0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch206: 0005-vmw_balloon-add-arm64-support.patch
 Patch207: 0001-vmw_vmci-arm64-support-memory-ordering.patch
-%endif
-
-%ifarch x86_64
-# SEV on VMware: [600..609]
-Patch600: 0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
-Patch601: 0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
-Patch602: 0001-x86-boot-unconditional-preserve-CR4.MCE.patch
-# TODO: Review: Patch602: 0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
-Patch603: 0001-x86-vmware-Redefine-the-macro-of-CPUID_VMWARE.patch
-%endif
-
 # Report guest crash to vmware hypervisor
-%ifarch aarch64
-Patch1000: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
-%endif
-
-%ifarch x86_64
-Patch1000: 0001-x86-esx-report-guest-crash-to-vmware-hypervisor.patch
+Patch208: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
 %endif
 
 # Only LKCM/JENT related patches below
@@ -359,19 +352,12 @@ The Linux package contains the Linux kernel doc files
 # 9P
 %autopatch -p1 -m300 -M309
 
-%ifarch x86_64
-# SEV on VMware
-%autopatch -p1 -m600 -M609
-%endif
-
 # prep for viomem out-of-tree module
 mkdir ../viomem
 pushd ../viomem
 cp %{SOURCE30} Makefile
 cp %{SOURCE31} .
 popd
-
-%autopatch -p1 -m1000 -M1000
 
 # Jitterentropy support and FIPS compliance
 %autopatch -p1 -m10000 -M10000
@@ -550,6 +536,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Feb 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-2
+- Support steal clock on TDX enabled VMs
 * Wed Feb 11 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-1
 - Update to version 6.12.69
 * Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.60-16
