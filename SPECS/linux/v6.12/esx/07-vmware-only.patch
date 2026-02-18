@@ -48,18 +48,18 @@ diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
 index 889bb8619..1565cd2d5 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -30,6 +30,7 @@
- #include <linux/reboot.h>
- #include <linux/static_call.h>
+@@ -31,6 +31,7 @@
  #include <linux/kmsg_dump.h>
+ #include <linux/set_memory.h>
+ #include <linux/panic_notifier.h>
 +#include <asm/pci_x86.h>
  #include <asm/div64.h>
  #include <asm/x86_init.h>
  #include <asm/hypervisor.h>
-@@ -473,6 +474,10 @@ static void __init vmware_platform_setup(void)
- 	vmware_set_capabilities();
- 
+@@ -534,6 +535,10 @@ static void __init vmware_platform_setup(void)
  	kmsg_dump_register(&kmsg_dumper);
+ 
+ 	register_guest_crash_reporter();
 +#ifdef CONFIG_PCI
 +	/* PCI BIOS service won't work from a PV guest. */
 +	pci_probe &= ~PCI_PROBE_BIOS;
