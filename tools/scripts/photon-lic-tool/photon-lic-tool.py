@@ -130,7 +130,7 @@ def parse_config(config_path=None):
     try:
         common.ignore_list = config_yaml["license_ignore_list"]
         common.disallowed_licenses = config_yaml["disallowed_licenses"]
-        common.srp_approved_licenses = config_yaml["srp_approved_licenses"]
+        common.srp_known_licenses = config_yaml["srp_known_licenses"]
         common.redis_host = config_yaml["redis_host"]
         common.redis_port = config_yaml["redis_port"]
         common.redis_ttl = config_yaml["redis_ttl"]

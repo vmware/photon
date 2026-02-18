@@ -76,9 +76,9 @@ redis_ttl: 31536000
 # for many subsequent scans
 no_trimming: "False"
 
-# Approved license list from Broadcom SRP Policy Controls
+# Known license list from Broadcom SRP Policy Controls
 # This may be out of date, please update if needed.
-srp_approved_licenses:
+srp_known_licenses:
     - 0BSD
     - ADSL
     - AFL-1.1

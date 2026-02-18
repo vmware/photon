@@ -48,11 +48,11 @@ class Validator:
         exceptions_list = get_exceptions_list()
         if srp_policy_controls:
             network_copyleft, other_non_permissive = self.get_disallowed_licenses(srp_policy_controls)
-            srp_approved_licenses = self.get_srp_approved_licenses(srp_policy_controls)
+            srp_known_licenses = self.get_srp_known_licenses(srp_policy_controls)
         else:
             network_copyleft = common.disallowed_licenses["network_copyleft"]
             other_non_permissive = common.disallowed_licenses["other_non_permissive"]
-            srp_approved_licenses = common.srp_approved_licenses
+            srp_known_licenses = common.srp_known_licenses
 
         # read from file
         if file:
@@ -105,9 +105,9 @@ class Validator:
                     errors += 1
 
                 # This will check approved exception combinations as well, e.g 'A WITH B'
-                if key not in srp_approved_licenses:
+                if key not in srp_known_licenses:
                     pr_err(
-                        f"ERROR: {key} has not been reviewed/approved by Broadcom SRP team."
+                        f"ERROR: {key} has not been reviewed by Broadcom SRP team."
                     )
                     errors += 1
 
@@ -119,35 +119,35 @@ class Validator:
             err_exit(
                 f"Failed to validate SPDX license - "
                 f"found {errors} error(s) and {warnings} warning(s)\n"
-                f"If srp_approved_licenses in {os.path.basename(config_path)} is out of sync, "
+                f"If srp_known_licenses in {os.path.basename(config_path)} is out of sync, "
                 "please update it."
             )
 
 
-    # Get list of approved licenses from SRP policy controls repo, if present.
-    # The license-exception combination must be explicitly approved
-    #(exception cannot be used for other licenses)
-    def get_srp_approved_licenses(self, srp_policy_controls=None):
+    # Get list of known licenses from SRP policy controls repo, if present.
+    # The license-exception combination must be explicitly reviewed
+    # (exception cannot be used for other licenses)
+    def get_srp_known_licenses(self, srp_policy_controls=None):
         if not os.path.exists(srp_policy_controls):
             err_exit(f"SRP policy controls not found: {srp_policy_controls}")
 
-        srp_approved_licenses_file = os.path.join(
+        srp_known_licenses_file = os.path.join(
                 srp_policy_controls,
                 "data/legal/osc/vcf_9.1/licenses/data.json"
             )
 
-        srp_approved_licenses = set()
+        srp_known_licenses = set()
 
-        if not os.path.exists(srp_approved_licenses_file):
-            err_exit(f"SRP Policy Controls repo is missing {srp_approved_licenses_file}")
+        if not os.path.exists(srp_known_licenses_file):
+            err_exit(f"SRP Policy Controls repo is missing {srp_known_licenses_file}")
 
-        with open(srp_approved_licenses_file, "r") as f:
+        with open(srp_known_licenses_file, "r") as f:
             json_data = json.load(f)
 
             for lic_key, lic_data in json_data.items():
-                srp_approved_licenses.add(lic_key)
+                srp_known_licenses.add(json_data[lic_key]['spdx_id'])
 
-        return srp_approved_licenses
+        return srp_known_licenses
 
     def get_disallowed_licenses(self, srp_policy_controls=None):
         if not os.path.exists(srp_policy_controls):
