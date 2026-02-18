@@ -7,7 +7,6 @@ license_ignore_list:
 disallowed_licenses:
     network_copyleft:
         - AGPL-1.0
-        - AGPL-1.0
         - AGPL-1.0-only
         - AGPL-1.0-or-later
         - AGPL-3.0
@@ -19,7 +18,12 @@ disallowed_licenses:
         - CC-BY-SA-4.0
         - CPAL-1.0
         - OSL-3.0
+        - PS-or-PDF-font-exception-20170817
         - SSPL-1.0
+	- EUPL-1.0
+        - EUPL-1.1
+        - EUPL-1.2
+
     other_non_permissive:
         - Abstyles
         - AFL-2.0
@@ -47,10 +51,8 @@ disallowed_licenses:
         - CPOL-1.02
         - Elastic License
         - Facebook BSD License with Patent Provision
-        - H2 License
         - Oracle Binary Code License Agreement
         - Oracle Technology License for Oracle Java SE
-        - Other Non-Permissive License
         - PolyForm-Free-Trial-1.0.0
         - PolyForm-Noncommercial-1.0.0
         - PolyForm-Shield-1.0.0
@@ -63,6 +65,9 @@ disallowed_licenses:
         - ODbL-1.0
         - OGDL-Taiwan-1.0
         - Netscape Public License v1.1
+        - Oracle Berkeley DB License
+        - Nmap Exception to GNU General Public License v2.0 only
+        - BUSL-1.1
 
 # Redis cache options (OPTIONAL)
 redis_host:
@@ -87,9 +92,7 @@ srp_known_licenses:
     - AFL-2.1
     - AFL-3.0
     - AGPL-1.0-only
-    - AGPL-1.0-only
     - AGPL-1.0-or-later
-    - AGPL-3.0-only
     - AGPL-3.0-only
     - AGPL-3.0-or-later
     - AML
@@ -266,7 +269,6 @@ srp_known_licenses:
     - GNAT-exception
     - GNU-compiler-exception
     - GPL-1.0-only
-    - GPL-1.0-only
     - GPL-1.0-or-later
     - GPL-1.0-or-later WITH Autoconf-exception-2.0
     - GPL-1.0-or-later WITH Autoconf-exception-generic
@@ -274,15 +276,11 @@ srp_known_licenses:
     - GPL-1.0-or-later WITH Linux-syscall-note
     - GPL-1.0-or-later WITH PS-or-PDF-font-exception-20170817
     - GPL-2.0-only
-    - GPL-2.0-only
-    - GPL-2.0-only WITH Autoconf-exception-2.0
     - GPL-2.0-only WITH Autoconf-exception-2.0
     - GPL-2.0-only WITH Bison-exception-1.24
     - GPL-2.0-only WITH Bison-exception-2.2
     - GPL-2.0-only WITH Classpath-exception-2.0
-    - GPL-2.0-only WITH Classpath-exception-2.0
     - GPL-2.0-only WITH Font-exception-2.0
-    - GPL-2.0-only WITH GCC-exception-2.0
     - GPL-2.0-only WITH GCC-exception-2.0
     - GPL-2.0-only WITH Linux-syscall-note
     - GPL-2.0-only WITH Universal-FOSS-exception-1.0
@@ -314,11 +312,9 @@ srp_known_licenses:
     - GPL-2.0-with-autoconf-exception
     - GPL-2.0-with-classpath-exception
     - GPL-3.0-only
-    - GPL-3.0-only
     - GPL-3.0-only WITH Autoconf-exception-3.0
     - GPL-3.0-only WITH Bison-exception-1.24
     - GPL-3.0-only WITH Font-exception-2.0
-    - GPL-3.0-only WITH GCC-exception-3.1
     - GPL-3.0-only WITH GCC-exception-3.1
     - GPL-3.0-only WITH Qt-GPL-exception-1.0
     - GPL-3.0-only WITH x11vnc-openssl-exception
@@ -373,7 +369,6 @@ srp_known_licenses:
     - Kazlib
     - LAL-1.3
     - LGPL-2.0-only
-    - LGPL-2.0-only
     - LGPL-2.0-only WITH Linux-syscall-note
     - LGPL-2.0-or-later
     - LGPL-2.0-or-later WITH GCC-exception-2.0
@@ -381,7 +376,6 @@ srp_known_licenses:
     - LGPL-2.0-or-later WITH Libtool-exception
     - LGPL-2.0-or-later WITH Linux-syscall-note
     - LGPL-2.0-or-later WITH WxWindows-exception-3.1
-    - LGPL-2.1-only
     - LGPL-2.1-only
     - LGPL-2.1-only WITH Linux-syscall-note
     - LGPL-2.1-only WITH Qwt-exception-1.0
@@ -392,7 +386,6 @@ srp_known_licenses:
     - LGPL-2.1-or-later WITH cryptsetup-OpenSSL-exception
     - LGPL-2.1-or-later WITH x11vnc-openssl-exception
     - LGPL-3.0-linking-exception
-    - LGPL-3.0-only
     - LGPL-3.0-only
     - LGPL-3.0-or-later
     - LGPL-3.0-or-later WITH LGPL-3.0-linking-exception
@@ -473,15 +466,18 @@ srp_known_licenses:
     - LicenseRef-MIT-v2-with-Ad-Clause-License
     - LicenseRef-MaxMind-Open-Data-License
     - LicenseRef-Microsoft-Proprietary-SDK-License
+    - LicenseRef-Microsoft-Proprietary-WDK-License
     - LicenseRef-MinIO-Proprietary
     - LicenseRef-NPSL-0.93
     - LicenseRef-NVIDIA-Proprietary
     - LicenseRef-Network-Computing-Devices-License
+    - LicenseRef-Nmap-Exception-to-GNU-General-Public-License-v2.0-only
     - LicenseRef-Open-Group-License
     - LicenseRef-Open-LDAP-Public-License
     - LicenseRef-OpenVPN-GPL-2-Only-with-Exception-License
     - LicenseRef-Oracle-Berkeley-DB-License
     - LicenseRef-Oracle-Binary-Code-License-Agreement
+    - LicenseRef-Oracle-Free-Use-Terms-and-Conditions
     - LicenseRef-Oracle-Technology-License-for-Oracle-Java-SE
     - LicenseRef-PSF-1.6a2
     - LicenseRef-PSF-1.6b1
@@ -492,6 +488,7 @@ srp_known_licenses:
     - LicenseRef-PolyForm-Free-Trial-1.0.0
     - LicenseRef-PolyForm-Shield-1.0.0
     - LicenseRef-Public-Domain
+    - LicenseRef-Python-Imaging-Library-Software-License
     - LicenseRef-PythonPlot-License
     - LicenseRef-QT-Proprietary-License
     - LicenseRef-Red-Hat-License
@@ -505,7 +502,12 @@ srp_known_licenses:
     - LicenseRef-Sun-Binary-Code-License-Agreement
     - LicenseRef-Sun-Freely-Redistributable-License
     - LicenseRef-Sun-GPL-With-Classpath-Exception-v2.0
+    - LicenseRef-TP-Free
+    - LicenseRef-TP-IOVP
+    - LicenseRef-TP-Paid-Company
+    - LicenseRef-TP-Paid-Product
     - LicenseRef-Tanuki-Commercial-Developer-License
+    - LicenseRef-Tanuki-Java-Service-Wrapper-License
     - LicenseRef-Tenntenn
     - LicenseRef-Terracotta-Public-License
     - LicenseRef-UBUNTU-FONT-LICENCE-Version-1.0
@@ -545,7 +547,6 @@ srp_known_licenses:
     - MPL-2.0
     - MPL-2.0-no-copyleft-exception
     - MS-LPL
-    - MS-LPL
     - MS-PL
     - MS-RL
     - MakeIndex
@@ -566,6 +567,7 @@ srp_known_licenses:
     - NTP
     - NTP-0
     - Nokia
+    - Noweb
     - ODbL-1.0
     - OFL-1.0
     - OFL-1.1
@@ -624,7 +626,6 @@ srp_known_licenses:
     - SSH-short
     - SSLeay-standalone
     - SSPL-1.0
-    - SSPL-1.0
     - Saxpath
     - SchemeReport
     - Sendmail
@@ -642,7 +643,6 @@ srp_known_licenses:
     - TTWL
     - TU-Berlin-1.0
     - TU-Berlin-2.0
-    - Tanuki-Java-Service-Wrapper-License
     - TermReadKey
     - Texinfo-exception
     - UBDL-exception
@@ -686,8 +686,8 @@ srp_known_licenses:
     - gnuplot
     - gtkbook
     - hdparm
-    - libpng-2.0
     - libpng-1.6.35
+    - libpng-2.0
     - libselinux-1.0
     - libtiff
     - lsof
