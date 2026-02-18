@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.163
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -386,6 +386,9 @@ Patch223: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
 Patch226: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # Fix CVE-2024-25742 and CVE-2024-25743
 Patch227: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
+
+# Fix CVE-2025-71184
+Patch228: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
 
 # aarch64 [250..269]
 %ifarch aarch64
@@ -766,6 +769,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-2
+- Fix CVE-2025-71184
 * Tue Feb 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-1
 - Update to version 6.1.163
 * Sat Feb 07 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.161-7

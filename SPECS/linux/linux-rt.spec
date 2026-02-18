@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.163
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -352,6 +352,9 @@ Patch226: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
 Patch229: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # Fix CVE-2024-25742 and CVE-2024-25743
 Patch230: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
+
+# Fix CVE-2025-71184
+Patch231: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -727,6 +730,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-2
+- Fix CVE-2025-71184
 * Tue Feb 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-1
 - Update to version 6.1.163, -rt59
 * Sat Feb 07 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.161-7

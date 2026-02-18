@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.163
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -419,6 +419,9 @@ Patch226: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
 Patch229: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # Fix CVE-2024-25742 and CVE-2024-25743
 Patch230: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
+
+# Fix CVE-2025-71184
+Patch231: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1181,6 +1184,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-2
+- Fix CVE-2025-71184
 * Tue Feb 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-1
 - Update to version 6.1.163
 * Sat Feb 07 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.161-8
