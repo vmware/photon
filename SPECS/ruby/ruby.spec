@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -32,6 +32,8 @@ Patch15:        CVE-2025-27219.patch
 Patch16:        CVE-2025-27220.patch
 Patch17:        CVE-2025-27221-1.patch
 Patch18:        CVE-2025-27221-2.patch
+Patch19:        CVE-2025-6442.patch
+Patch20:        0001-Only-strip-space-and-horizontal-tab-in-headers-webrick-part.patch
 
 Source1: macros.ruby
 
@@ -130,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Feb 18 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.4-19
+- Fix CVE-2025-6442
 * Mon Jun 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-18
 - Fix CVE-2025-0306
 * Wed Mar 19 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-17
