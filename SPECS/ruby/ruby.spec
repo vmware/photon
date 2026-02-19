@@ -4,7 +4,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        3.4.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -40,14 +40,12 @@ Requires:       libyaml
 Requires:       openssl >= 3.0.13-2
 
 Obsoletes:      rubygem-base64
-Obsoletes:      rubygem-connection_pool
 Obsoletes:      rubygem-drb
 Obsoletes:      rubygem-ruby2-keywords
 
-Provides:      rubygem-base64
-Provides:      rubygem-connection_pool
-Provides:      rubygem-drb
-Provides:      rubygem-ruby2-keywords
+Provides:      rubygem-base64 = 0.2.0
+Provides:      rubygem-drb = 2.2.1
+Provides:      rubygem-ruby2-keywords = 0.0.5
 
 %description
 The Ruby package contains the Ruby development environment.
@@ -123,6 +121,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Thu Feb 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.7-3
+- Fix provides with proper version info
 * Thu Oct 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.7-2
 - Fix CVE-2025-58767 Upgrade rexml to rexml-3.4.4 from rexml-3.4.0
 * Wed Oct 22 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.4.7-1
