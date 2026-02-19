@@ -23,7 +23,7 @@ def initLogger():
 
     logLevel = constants.logLevel
 
-    logger = Logger.getLogger("CommandUtils", logpath=logPath, loglevel=logLevel)
+    logger = Logger.getLogger(logpath=logPath, loglevel=logLevel)
 
 
 class CommandUtils:
@@ -70,7 +70,6 @@ class CommandUtils:
         clean_env=False,
         shell=False,
     ):
-        global logger
         if logger:
             logger.debug(f"Running {args}")
         else:
@@ -128,3 +127,18 @@ class CommandUtils:
     @staticmethod
     def splitlines(output):
         return [line for line in output.split("\n") if line]
+
+    @staticmethod
+    def umountWithRetry(path, retries=20):
+        retry = 0
+        d = path
+        while retry < retries:
+            _, _, rc = CommandUtils.runCmd(["mountpoint", d], ignore_rc=True, capture=True)
+            if rc:
+                break
+            _, err, rc = CommandUtils.runCmd(["umount", "-lR", d], ignore_rc=True)
+            if not rc:
+                break
+            print(err, file=sys.stderr)
+            retry += 1
+            time.sleep(10)

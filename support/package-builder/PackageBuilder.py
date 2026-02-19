@@ -112,7 +112,7 @@ class PackageBuilder(object):
                 )
                 if not os.path.isdir(specDir):
                     raise Exception(
-                        f"ERROR: {package}-{version}, '{specDir}' does not exist ..."
+                        f"ERROR: {self.package}-{self.version}, '{specDir}' does not exist ..."
                     )
 
                 for source in SPECS.getData().getSources(self.package, self.version):

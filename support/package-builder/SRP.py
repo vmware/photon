@@ -4,7 +4,6 @@ import os
 import json
 import copy
 import csv
-import shutil
 import tempfile
 from urllib.parse import unquote
 

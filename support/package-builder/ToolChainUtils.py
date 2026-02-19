@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import os
-
 import RepoUtil
-from CommandUtils import CommandUtils
+
 from constants import constants
 from Logger import Logger
 from SpecData import SPECS
@@ -18,41 +16,13 @@ class ToolChainUtils(object):
         self.buildStage = buildStage
         self.buildMode = buildMode
         if logName is None:
-            logName = "Toolchain Utils"
+            logName = "ToolchainUtils"
         if logPath is None:
             logPath = constants.logPath
         self.cmdlog = cmdlog
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
-        self.installRPMPackageOptions = ["-y"]
-
-    def _findPublishedRPM(self, package, rpmdirPath):
-        listFoundRPMFiles = CommandUtils.findFile(f"{package}-*.rpm", rpmdirPath)
-        if listFoundRPMFiles == []:
-            # package string may include -version
-            listFoundRPMFiles = CommandUtils.findFile(f"{package}*.rpm", rpmdirPath)
-        listFilterRPMFiles = []
-        for f in listFoundRPMFiles:
-            rpmFileName = os.path.basename(f)
-            checkRPMName = rpmFileName.replace(package, "")
-            rpmNameSplit = checkRPMName.split("-")
-            if len(rpmNameSplit) == 3 or checkRPMName in [
-                f".{constants.buildArch}.rpm",
-                ".noarch.rpm",
-            ]:
-                listFilterRPMFiles.append(f)
-        if len(listFilterRPMFiles) == 1:
-            return listFilterRPMFiles[0]
-        if len(listFilterRPMFiles) == 0:
-            return None
-        if len(listFilterRPMFiles) > 1:
-            self.logger.error(
-                "Found multiple rpm files for given package in rpm directory."
-                + "Unable to determine the rpm file for package:"
-                + package
-            )
-            return None
 
     def getListDependentPackages(self, package, version):
         listBuildRequiresPkg = SPECS.getData(
@@ -71,7 +41,7 @@ class ToolChainUtils(object):
         packageName=None,
         packageVersion=None,
     ):
-        self.logger.debug("Installing toolchain RPMS.......")
+        self.logger.debug("Installing toolchain RPMS ...")
         rpmFiles = []
         packages = []
         listBuildRequiresPackages = []
@@ -107,22 +77,12 @@ class ToolChainUtils(object):
             installRoot=chroot.getRootPath(), repoArgs=repoArgs, logger=self.logger
         )
         try:
-            tdnf.run(
-                subCmd=["makecache"],
-                args=["--refresh"],
-                repoArgs=[],
-                errMsg="Unable to refresh cache",
-            )
             response = tdnf.run(
-                subCmd=["upgrade", "--exclude=photon-release"],
-                args=self.installRPMPackageOptions,
-                repoArgs=[],
+                subCmd=["upgrade", "--refresh", "--exclude=photon-release"],
                 errMsg="Unable to upgrade",
             )
             response = tdnf.run(
                 subCmd=["install"] + packages,
-                args=self.installRPMPackageOptions,
-                repoArgs=[],
                 errMsg="Unable to install rpms",
             )
             self.logger.debug(
@@ -140,7 +100,7 @@ class ToolChainUtils(object):
             )
             rpmFiles = tdnf.processInstalled(response)
         except Exception as e:
-            self.logger.debug(f"Failed installing/processing rpmFiles {str(e)}")
+            raise Exception(f"Failed installing/processing rpmFiles {str(e)}")
         finally:
             tdnf.clean()
 
@@ -164,6 +124,5 @@ class ToolChainUtils(object):
         tdnf.run(
             subCmd=["install", "--nogpgcheck"] + listOfToolChainPkgs,
             repoArgs=repoArgs,
-            args=self.installRPMPackageOptions,
             errMsg="Extra BuildRequires RPM installation failed",
         )

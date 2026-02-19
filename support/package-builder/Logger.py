@@ -2,62 +2,52 @@
 
 import os
 import logging
+import threading
 
 
 class Logger(object):
+    _configured = False
+    _lock = threading.Lock()
+
     @staticmethod
     def string_to_loglevel(loglevel):
-        logLevelMap = {
+        return {
             "error": logging.ERROR,
             "warning": logging.WARNING,
             "info": logging.INFO,
             "debug": logging.DEBUG,
-        }
-        return logLevelMap.get(loglevel, logging.INFO)
+        }.get(loglevel, logging.INFO)
 
     @staticmethod
-    def getLogger(mymodule, logpath=None, loglevel="info"):
-        logfile = f"{mymodule}.log"
-        if logpath is not None:
-            if not os.path.isdir(logpath):
-                os.makedirs(logpath)
-            logfile = f"{logpath}/{logfile}"
-        logger = logging.getLogger(mymodule)
-        if not logger.handlers:
-            # creating file handler
-            fhandler = logging.FileHandler(logfile)
-            # create console handler
+    def getLogger(mymodule="Main", logpath=None, loglevel="info"):
+        with Logger._lock:
+            if Logger._configured:
+                return logging.getLogger(mymodule)
+
+            logfile = f"{mymodule}.log"
+            if logpath:
+                os.makedirs(logpath, exist_ok=True)
+                logfile = f"{logpath}/{logfile}"
+
+            root = logging.getLogger()
+            root.setLevel(Logger.string_to_loglevel(loglevel))
+
+            # File handler (ONE)
+            fh = logging.FileHandler(logfile)
+            fh.setFormatter(
+                logging.Formatter("%(asctime)s - %(name)s - %(message)s")
+            )
+
+            # Console handler (ONE)
             ch = logging.StreamHandler()
-            fhformatter = logging.Formatter("%(asctime)s - %(name)s - %(message)s")
-            if loglevel == "debug":
-                chformatter = logging.Formatter("%(asctime)s - %(name)s - %(message)s")
-            else:
-                chformatter = logging.Formatter("%(message)s")
-            if mymodule == "werkzeug":
-                import anticrlf
+            ch.setFormatter(logging.Formatter("%(message)s"))
 
-                if loglevel == "debug":
-                    chformatter = anticrlf.LogFormatter(
-                        "%(asctime)s - %(name)s - %(message)s"
-                    )
-                else:
-                    chformatter = logging.Formatter("%(message)s")
-                fhformatter = anticrlf.LogFormatter(
-                    "%(asctime)s - %(name)s - %(message)s"
-                )
-            # add formatter to handler
-            fhandler.setFormatter(fhformatter)
-            # fhandler.setLevel(logging.DEBUG)
-            ch.setFormatter(chformatter)
-            # ch.setLevel(Logger.string_to_loglevel(loglevel))
-            logger.setLevel(Logger.string_to_loglevel(loglevel))
-            logger.addHandler(ch)
-            logger.addHandler(fhandler)
-            logger.debug("-" * 75)
-            logger.debug("Starting Log")
-            logger.debug("-" * 75)
+            root.addHandler(fh)
+            root.addHandler(ch)
 
-        return logger
+            Logger._configured = True
+
+        return logging.getLogger(mymodule)
 
 
 if __name__ == "__main__":

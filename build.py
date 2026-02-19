@@ -28,6 +28,7 @@ from check_spec import check_specs
 from CommandUtils import CommandUtils
 from constants import BuildStage, constants
 from Logger import Logger
+from PackageManager import PackageManager
 from SpecData import SPECS
 from SpecDeps import SpecDependencyGenerator
 from StringUtils import StringUtils
@@ -110,7 +111,7 @@ def url_validator(url):
     try:
         res = urlparse(url)
         return all([res.scheme, res.netloc])
-    except:
+    except Exception:
         return False
 
 
@@ -235,9 +236,6 @@ class Utilities is used for generating spec dependency, printing upward dependen
 
 
 class Utilities:
-    global configdict
-    global check_prerequesite
-
     def __init__(self, args):
         self.img = configdict.get("utility", {}).get("img", None)
         self.json_file = configdict.get("utility", {}).get("file", "packages_*.json")
@@ -378,9 +376,6 @@ class Buildenvironmentsetup does job like pulling toolchain RPMS and creating st
 
 
 class BuildEnvironmentSetup:
-    global configdict
-    global check_prerequesite
-
     def packages_cached():
         check_prerequesite["packages-cached"] = True
 
@@ -652,9 +647,6 @@ It uses Builder class in builder.py in order to build packages.
 
 
 class RpmBuildTarget:
-    global configdict
-    global check_prerequesite
-
     def __init__(self):
         self.logger = Logger.getLogger("Main", constants.logPath, constants.logLevel)
 
@@ -970,9 +962,6 @@ starting build process are present on the system
 
 
 class CheckTools:
-    global configdict
-    global check_prerequesite
-
     def check_pre_reqs():
         if check_prerequesite["check-pre-reqs"]:
             return
@@ -987,18 +976,24 @@ class CheckTools:
         CheckTools.check_git_hooks(releaseDir)
         check_prerequesite["check-pre-reqs"] = True
 
-    def create_ph_builder_img():
-        if not os.path.exists(
-            f"{constants.buildImagesPath}/{constants.baseImageTarball}"
-        ):
-            runCmd(["wget", "-P", constants.buildImagesPath, constants.baseImagePath])
-        runCmd(
-            [
-                os.path.join(photonDir, "tools", "scripts", "ph-docker-img-import.sh"),
-                f"{constants.buildImagesPath}/{constants.baseImageTarball}",
-                f"photon:{constants.releaseVersionToConsume}",
-            ]
-        )
+    def create_ph_builder_img(extraArgs=[]):
+        buildImgsPath = constants.buildImagesPath
+        baseImgPath = constants.baseImagePath
+        baseImgTarball = constants.baseImageTarball
+        version = constants.releaseVersionToConsume
+        scriptPath = f"{photonDir}/tools/scripts/ph-docker-img-import.sh"
+
+        imgName = f"photon:{version}"
+        imgFile = f"{buildImgsPath}/{baseImgTarball}"
+
+        if not os.path.exists(imgFile):
+            runCmd(["wget", "-P", buildImgsPath, baseImgPath])
+
+        cmd = [scriptPath, imgFile, imgName]
+
+        cmd.extend(extraArgs)
+
+        runCmd(cmd)
 
     def check_git_hooks(repoDir=photonDir):
         git_hooks_path = f"{repoDir}/.git/hooks"
@@ -1101,9 +1096,6 @@ It uses class ImageBuilder to build different images.
 
 
 class BuildImage:
-    global configdict
-    global check_prerequesite
-
     def __init__(self, imgName):
         self.src_root = configdict["photon-path"]
         self.generated_data_path = Build_Config.dataDir
@@ -1121,7 +1113,6 @@ class BuildImage:
         self.rpmPath = constants.rpmPath
         self.srpmPath = constants.sourceRpmPath
         self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
-        self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
         self.poi_image = configdict["photon-build-param"].get("poi-image", None)
 
         self.ova_images = ["ova_uefi", "ova"]
@@ -1331,9 +1322,13 @@ class BuildImage:
             )
             return
 
+        print("Build base container image ...")
+        ph_k8s_builder_tag = "ph_k8s_builder"
+        CheckTools.create_ph_builder_img(extraArgs=[ph_k8s_builder_tag])
+
         BuildImage.photon_docker_image()
 
-        wkdir = f"{photonDir}/support/dockerfiles/k8s-docker-images"
+        workDir = f"{photonDir}/support/dockerfiles/k8s-docker-images"
 
         ph_dist_tag = configdict["photon-build-param"]["photon-dist-tag"]
 
@@ -1357,7 +1352,7 @@ class BuildImage:
                 constants.buildNumber,
                 Build_Config.stagePath,
             ],
-            cwd=wkdir,
+            cwd=workDir,
         )
 
         for script in k8s_build_scripts:
@@ -1366,13 +1361,13 @@ class BuildImage:
                 ph_dist_tag,
                 constants.releaseVersion,
                 Build_Config.stagePath,
-                ph_builder_tag,
+                ph_k8s_builder_tag,
             ]
 
             for specPath in constants.specPaths:
                 cmd.append(specPath)
 
-            runCmd(cmd, cwd=wkdir)
+            runCmd(cmd, cwd=workDir)
 
         print("Successfully built all the k8s docker images")
 
@@ -1410,9 +1405,6 @@ used by package-builder and imagebuilder...
 
 
 def initialize_constants():
-    global configdict
-    global check_prerequesite
-
     if check_prerequesite["initialize-constants"]:
         return
 
@@ -1637,8 +1629,6 @@ def initialize_constants():
 
 
 def set_default_value_of_config():
-    global configdict
-
     key = "additional-path"
     cfgs = [
         "photon-sources-path",
@@ -1815,7 +1805,6 @@ def main():
             cfgPath = str(PurePath(curDir, f"photon-{branch}", build_cfg))
 
     global configdict
-    global check_prerequesite
     global phPath
     global releaseDir
 

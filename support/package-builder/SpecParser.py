@@ -597,8 +597,8 @@ class SpecParser(object):
     def _isConditionTrue(self, line, spec_fn, full_condition=False):
         words = line.strip().split()
         if len(words) == 1:
-                cond = self._replaceMacros(words[0])
-                return eval(f"({cond}) != 0")
+            cond = self._replaceMacros(words[0])
+            return eval(f"({cond}) != 0")
 
         cond = ""
         start_word = 0 if full_condition else 1

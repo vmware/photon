@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import os
-
 import PullSources
 import RepoUtil
+
 from CommandUtils import CommandUtils
 from constants import constants
 from Logger import Logger

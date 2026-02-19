@@ -1,12 +1,9 @@
 #!/usr/bin/env/ python3
 
 import json
-import os
 import pathlib
 import platform
 import re
-import shlex
-import shutil
 from copy import deepcopy
 from enum import Enum
 
@@ -302,7 +299,7 @@ class constants(object):
 
         # adding releasenumber rpm macro
         if constants.subreleaseVersion is None:
-            raise Exception(f"Photon subrelease version must be set")
+            raise Exception("Photon subrelease version must be set")
         constants.addMacro("photon_subrelease", constants.subreleaseVersion)
 
         if constants.katBuild:
@@ -369,7 +366,7 @@ class constants(object):
     def storeScriptsToCopy(key, val):
         dest = val.get("dest")
         if not dest:
-            self.logger.debug("Empty dest value, return ...")
+            print("Empty dest value, return ...")
             return
         constants.CopyToSandboxDict[key] = deepcopy(val)
 
