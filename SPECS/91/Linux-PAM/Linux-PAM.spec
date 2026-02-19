@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define STIG_HARDEN 0
 
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
-Version:        1.7.2
-Release:        1%{?dist}
+Version:        1.5.3
+Release:        11.1%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -28,15 +28,22 @@ Source4: license.txt
 %include %{SOURCE4}
 
 Patch0: 0001-faillock-add-support-to-print-login-failures.patch
-Patch1: 0002-faillock-open-tally-file-in-O_CLOEXEC-mode.patch
+# CVE-2024-22365
+Patch1: 0002-Linux-PAM-protect-dir.patch
+Patch2: 0003-pam_pwhistory-fix-passing-NULL-filename-argument-to-.patch
+Patch3: 0004-fix-build-if-crypt_r_isnt-available.patch
+Patch4: 0005-faillock-open-tally-file-in-O_CLOEXEC-mode.patch
+Patch5: 0006-CVE-2024-10963.patch
+Patch6: 0007-CVE-2024-10041.patch
+Patch7: 0008-CVE-2025-6020-prep.patch
+Patch8: 0009-CVE-2025-6020.patch
 
 BuildRequires:  libselinux-devel
+BuildRequires:  gdbm-devel
 BuildRequires:  libxcrypt-devel
-BuildRequires:  meson
-BuildRequires:  libnsl-devel
 
-Requires: libnsl
 Requires: libselinux
+Requires: gdbm
 Requires: libxcrypt
 
 %define ExtraBuildRequires systemd-rpm-macros
@@ -66,25 +73,33 @@ for developing applications that use Linux-PAM.
 %autosetup -p1
 
 %build
-%{meson} \
-  -Dpwaccess=disabled \
-  -Deconf=disabled \
-  -Daudit=disabled \
-  -Delogind=disabled \
-  -Dlogind=disabled \
-  -Dopenssl=enabled \
-  -Dpam_userdb=disabled \
-  -Dselinux=enabled \
-  -Dvendordir='' \
-  -Ddocs=disabled \
-  -Dsecuredir=%{_libdir}/security \
-  -Ddocdir=%{_docdir}/%{name}-%{version}
+sh ./configure --host=%{_host} --build=%{_build} \
+    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --disable-dependency-tracking \
+    --prefix=%{_prefix} \
+    --exec-prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
+    --sysconfdir=%{_sysconfdir} \
+    --datadir=%{_datadir} \
+    --includedir=%{_includedir}/security \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libexecdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
+    --enable-selinux \
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --enable-securedir=%{_libdir}/security \
+    --enable-db=ndbm
 
-%{meson_build}
+%make_build
 
 %install
-%{meson_install}
-
+%make_install %{?_smp_mflags}
 chmod -v 4755 %{buildroot}%{_sbindir}/unix_chkpwd
 install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_auth.so
@@ -134,6 +149,8 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %{_libdir}/security/*
 %{_libdir}/*.so.*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
 %{_tmpfilesdir}/pam.conf
 %{_unitdir}/pam_namespace.service
 %dir %{_var}/log/faillock
@@ -148,11 +165,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
+%{_mandir}/man3/*
+%{_docdir}/%{name}-%{version}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Thu Feb 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.2-1
-- Upgrade to v1.7.2
+* Thu Feb 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-11.1
+- Bump after moving to SPECS/91
 * Fri Nov 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-11
 - Fix CVE-2025-6020, CVE-2024-10041
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-10
