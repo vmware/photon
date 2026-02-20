@@ -20,7 +20,7 @@ disallowed_licenses:
         - OSL-3.0
         - PS-or-PDF-font-exception-20170817
         - SSPL-1.0
-	- EUPL-1.0
+        - EUPL-1.0
         - EUPL-1.1
         - EUPL-1.2
 
