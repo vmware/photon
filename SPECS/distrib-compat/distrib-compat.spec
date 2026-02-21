@@ -1,7 +1,7 @@
 Summary:       Set of scripts and tools to get compatbility with other distributions.
 Name:          distrib-compat
 Version:       0.1
-Release:       4%{?dist}
+Release:       5%{?dist}
 URL:           http://photon.org
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
@@ -17,6 +17,7 @@ Source5: license.txt
 %include %{SOURCE5}
 
 Patch0:        distrib-compat-gen-debuginfo.patch
+Patch1:        distrib-compat-upstream-backports.patch
 
 %description
 Set of scripts and tools to get compatbility with other distributions.
@@ -47,6 +48,12 @@ ln -sfv sysctl.d/99-compat.conf %{buildroot}%{_sysconfdir}/sysctl.conf
 %{_sbindir}/*
 
 %changelog
+* Sat Feb 21 2026 Daniel Casota <daniel@casota.ch> 0.1-5
+- Backport upstream killproc fixes from bitstreamout/killproc v2.23:
+  COMM_LEN truncation in swap_name, sig_forced flag in killproc,
+  pipe2 parent-child sync in startproc, UID-based fallback in pidof/
+  verify_pidfile/check_pids, expandpath replacing realpath, O_CLOEXEC
+  on script open, atexit proc cleanup
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.1-4
 - Release bump for SRP compliance
 * Thu Aug 04 2022 Ankit Jain <ankitja@vmware.com> 0.1-3
