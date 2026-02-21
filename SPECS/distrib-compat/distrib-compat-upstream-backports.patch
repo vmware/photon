@@ -1,0 +1,580 @@
+diff --git a/killproc.c b/killproc.c
+index 41a6b59..7b771dd 100644
+--- a/killproc.c
++++ b/killproc.c
+@@ -45,6 +45,7 @@ int killproc_main(int argc, char **argv)
+     int process_group = 0, group_leader = 0, wait = 5, iargc = 0;
+     unsigned short flags = (KILL|PIDOF|KSTOP);
+     boolean pid_forced = false;
++    boolean sig_forced = true;
+ 
+     openlog (we_are, LOG_OPTIONS, LOG_FACILITY);
+     for (c = 0; c < argc; c++)
+@@ -71,11 +72,13 @@ int killproc_main(int argc, char **argv)
+ 		memset(sig, 0, len);
+ 		*sig = 'q';		/* set dummy option -q */
+ 		snum = tmp;
++		sig_forced = false;
+ 		break;
+ 	    } else if ( (tmp = signame_to_signum(sig)) > 0 ) {
+ 		memset(sig, 0, len);
+ 		*sig = 'q';		/* set dummy option -q */
+ 		snum = tmp;
++		sig_forced = false;
+ 		break;
+ 	    }
+ 	}
+@@ -288,7 +291,10 @@ again:
+ 	    goto again;
+ 	}
+ 
+-	if (snum == SIGKILL)
++	if (snum == SIGKILL)	/* SIGKILL was specified on the command line */
++	    goto badterm;
++
++	if (!sig_forced)	/* SIGTERM was specified on the command line */
+ 	    goto badterm;
+ 
+ 	if (check_pids(fullname,root,flags) < 0)
+diff --git a/libinit.c b/libinit.c
+index ce719e1..5adccd6 100644
+--- a/libinit.c
++++ b/libinit.c
+@@ -279,6 +279,15 @@ void logprogress(int prio, const char *fmt, ...)
+     va_end(args);
+ }
+ 
++static void undo_proc(void)
++{
++#ifdef MNT_DETACH
++    umount2("/proc", MNT_DETACH);
++#else
++    umount("/proc");
++#endif
++}
++
+ /* For mounting the /proc file system */
+ void getproc(void)
+ {
+@@ -290,6 +299,8 @@ void getproc(void)
+     errno = 0;
+     if (stat("/proc/version", &st) < 0)
+ 	error(100, "/proc not mounted, failed to mount: %s\n", strerror(errno));
++
++    atexit(undo_proc);
+ }
+ 
+ /* Open the /proc directory, if necessary mounts it */
+@@ -347,7 +358,7 @@ static boolean isscript(const char* fullname, const char *root)
+ 	goto out;
+ 
+     ret = false;
+-    if ((fp = open(fullname, O_RDONLY, 0)) != -1 ) {
++    if ((fp = open(fullname, O_RDONLY|O_CLOEXEC, 0)) != -1 ) {
+ 	if (xread(fp, head, sizeof(head)) > 0 && head[0] == '#' && head[1] == '!') {
+ 	    if ((script_exe = strchr(head, '/'))) {
+ 		char * ptr = strpbrk(script_exe, " \t\n");
+@@ -479,12 +490,15 @@ int pidof (const char * inname, const char * root, unsigned short flags)
+     boolean isscrpt = false;
+     unsigned num = 0;
+     pid_t pid;
++    uid_t uid;
+     char *swapname = NULL;
+     char *fullname = (char *)inname;
++    char *realname = NULL;
+     PROC *p, *n;
+ 
+     p_pid  = getpid();
+     p_ppid = getppid();
++    uid    = getuid();
+ 
+     dir = openproc();		/* Open /proc and maybe do mount before */
+     p_pppid = getpppid(p_ppid); /* Requires existence of /proc */
+@@ -511,6 +525,7 @@ int pidof (const char * inname, const char * root, unsigned short flags)
+ 	    warn("cannot stat %s: %s\n", fullname, strerror(errno));
+ 	    return -1;
+ 	}
++	realname = expandpath(fullname);
+     }
+ 
+     if (flags & (KTHREAD|KSHORT)) {
+@@ -570,14 +585,25 @@ int pidof (const char * inname, const char * root, unsigned short flags)
+ 	 * 2.2 and above do not lost the link name even if the original
+ 	 * file is deleted. The link is marked as deleted.
+ 	 */
+-	if (!(flags & (KTHREAD|KSHORT)) && !isscrpt &&
+-	     (fstatat(dfd, here(d->d_name, "exe"), &pid_st, 0) == 0)) {
++	if (!(flags & (KTHREAD|KSHORT)) && !isscrpt) {
+ 
+ 	    char entry[PATH_MAX+1];
+-	    const char *name;
+-	    char *realname;
++	    const char *name = NULL;
+ 	    boolean found;
+ 
++	    if (fstatat(dfd, here(d->d_name, "exe"), &pid_st, 0) < 0) {
++		if (uid && (errno == EACCES || errno == EPERM)) {
++		    errno = 0;
++		    if (fstatat(dfd, d->d_name, &pid_st, 0) < 0)
++			continue;
++		    if (pid_st.st_uid == uid)
++			goto risky;
++		}
++		if (errno != EPERM && errno != EACCES)
++		    goto risky;
++		continue;
++	    }
++
+ 	    if (pid_st.st_dev != full_st.st_dev)
+ 		continue;		/* No processes below (kernel 2.2 and up) */
+ 
+@@ -605,14 +631,9 @@ int pidof (const char * inname, const char * root, unsigned short flags)
+ 			break;
+ 		    }
+ 
+-		    if ((realname = realpath(fullname, NULL)) == (char*)0)
+-			continue;
+-
+-		    if (strncmp(realname, name, PATH_MAX) == 0)
++		    if (realname && strncmp(realname, name, PATH_MAX) == 0)
+ 			found = true;
+ 
+-		    free(realname);
+-
+ 		    break;
+ 	    }
+ 
+@@ -658,6 +679,7 @@ int pidof (const char * inname, const char * root, unsigned short flags)
+ 	    }
+ 	}
+ 
++    risky:
+ 	/*
+ 	 * High risk ... the name in stat isn't exact enough to identify
+ 	 * a swapped out script process, because only the name without
+@@ -728,11 +750,15 @@ int verify_pidfile (const char * pid_file, const char * inname,
+     ssize_t cnt;
+     boolean isscrpt = false;
+     pid_t pid;
++    uid_t uid;
+     char *swapname = NULL, *bufp;
+     char *fullname = (char *)inname;
++    char *realname = NULL;
+     struct stat pid_st, full_st;
+     char buf[BUFSIZ];
+-    
++
++    uid = getuid();
++
+     if (!ignore) {
+     	PROC *p, *n;
+ 	n = remember;
+@@ -792,6 +818,7 @@ int verify_pidfile (const char * pid_file, const char * inname,
+ 	    warn("cannot stat %s: %s\n", fullname, strerror(errno));
+ 	    return -1;
+ 	}
++	realname = expandpath(fullname);
+     }
+ 
+     if (flags & (KTHREAD|KSHORT)) {
+@@ -826,15 +853,24 @@ int verify_pidfile (const char * pid_file, const char * inname,
+     }
+ 
+     errno = 0;
+-    if (!(flags & (KTHREAD|KSHORT)) && !isscrpt &&
+-	 (stat(proc(buf, "exe"), &pid_st) == 0)) {
++    if (!(flags & (KTHREAD|KSHORT)) && !isscrpt) {
+ 
+ 	char entry[PATH_MAX+1];
+ 	const char *name;
+-	char *realname;
+ 	boolean found;
+ 	ssize_t rll;
+ 
++	if (stat(proc(buf, "exe"), &pid_st) < 0) {
++	    if (uid && (errno == EACCES || errno == EPERM)) {
++		errno = 0;
++		if (stat(proc(buf, ""), &pid_st) < 0)
++		    goto out;
++		if (pid_st.st_uid == uid)
++		    goto risky;
++	    }
++	    goto out;
++	}
++
+ 	if (pid_st.st_dev != full_st.st_dev)
+ 	    goto out;
+ 
+@@ -862,14 +898,9 @@ int verify_pidfile (const char * pid_file, const char * inname,
+ 		    break;
+ 		}
+ 
+-		if ((realname = realpath(fullname, NULL)) == (char*)0)
+-		    goto out;
+-
+-		if (strncmp(realname, name, PATH_MAX) == 0)
++		if (realname && strncmp(realname, name, PATH_MAX) == 0)
+ 		    found = true;
+ 
+-		free(realname);
+-
+ 		break;
+ 	}
+ 
+@@ -878,7 +909,7 @@ int verify_pidfile (const char * pid_file, const char * inname,
+ 
+ 	goto out;
+     }
+-
++risky:
+     if (errno && errno != ENOENT) {
+ 	warn("Can not read %s: %s\n", procbuf, strerror(errno));
+ 	free(swapname);
+@@ -949,11 +980,15 @@ int check_pids (const char * inname, const char * root, unsigned short flags)
+     boolean isscrpt = false;
+     char *swapname = (char*)0;
+     char *fullname = (char *)inname;
++    char *realname = (char*)0;
+     const char *pid;
+     struct stat pid_st, full_st;
+     PROC *p, *n, *l;
++    uid_t uid;
+     int fp;
+ 
++    uid = getuid();
++
+     if (!fullname) {
+ 	warn("program or process name required\n");
+ 	return -1;
+@@ -966,6 +1001,7 @@ int check_pids (const char * inname, const char * root, unsigned short flags)
+ 	    warn("cannot stat %s: %s\n", fullname, strerror(errno));
+ 	    return -1;
+ 	}
++	realname = expandpath(fullname);
+     }
+ 
+     if (flags & (KTHREAD|KSHORT)) {
+@@ -1020,14 +1056,23 @@ int check_pids (const char * inname, const char * root, unsigned short flags)
+ 
+ 	/* killproc and daemon/startproc should use the full path */
+ 	errno = 0;
+-	if (!(flags & (KTHREAD|KSHORT)) && !isscrpt &&
+-	     (stat(proc(pid, "exe"), &pid_st) == 0)) {
++	if (!(flags & (KTHREAD|KSHORT)) && !isscrpt) {
+ 
+ 	    char entry[PATH_MAX+1];
+ 	    const char *name;
+-	    char *realname;
+ 	    ssize_t rll;
+ 
++	    if (stat(proc(pid, "exe"), &pid_st) < 0) {
++		if (uid && (errno == EACCES || errno == EPERM)) {
++		    errno = 0;
++		    if (stat(proc(pid, ""), &pid_st) < 0)
++			goto ignore;
++		    if (pid_st.st_uid == uid)
++			goto risky;
++		}
++		goto ignore;
++	    }
++
+ 	    if (pid_st.st_dev != full_st.st_dev)
+ 		goto ignore;		/* Does not belong to rembered list */
+ 
+@@ -1052,21 +1097,15 @@ int check_pids (const char * inname, const char * root, unsigned short flags)
+ 		    if (strncmp(fullname, name, PATH_MAX) == 0)
+ 			continue;	/* Found */
+ 
+-		    if ((realname = realpath(fullname, NULL)) == (char*)0)
+-			goto ignore;	/* Bogus */
+-
+-		    if (strncmp(realname, name, PATH_MAX) == 0) {
+-			free(realname);
++		    if (realname && strncmp(realname, name, PATH_MAX) == 0)
+ 			continue;	/* Found */
+-		    }
+-		    free(realname);
+ 
+ 		    break;
+ 	    }
+ 
+ 	    skip = true;		/* No stat entry check needed */
+ 	}
+-
++    risky:
+ 	if (!(flags & (KTHREAD|KSHORT)) &&  isscrpt &&
+ 	    (fp = open(proc(pid, "cmdline"), O_PROCMODE)) != -1) {
+ 
+@@ -1479,6 +1518,102 @@ void init_nfs(void)
+     endmntent(mnt);
+ }
+ 
++/*
++ * Somehow the realpath(3) glibc function call, nevertheless
++ * it avoids lstat(2) system calls.
++ */
++static char real[PATH_MAX+1];
++char* expandpath(const char * path)
++{
++    char tmpbuf[PATH_MAX+1];
++    const char *start, *end;
++    char *curr, *dest;
++    int deep = MAXSYMLINKS;
++
++    if (!path || *path == '\0')
++	return (char*)0;
++
++    curr = &real[0];
++
++    if (*path != '/') {
++	if (!getcwd(curr, PATH_MAX))
++	    return (char*)0;
++	dest = rawmemchr(curr, '\0');
++    } else {
++	*curr = '/';
++	dest = curr + 1;
++    }
++
++    for (start = end = path; *start; start = end) {
++
++	while (*start == '/')
++	    ++start;
++
++	for (end = start; *end && *end != '/'; ++end)
++	    ;
++
++	if (end - start == 0)
++	    break;
++	else if (end - start == 1 && start[0] == '.') {
++	    ;
++	} else if (end - start == 2 && start[0] == '.' && start[1] == '.') {
++	    if (dest > curr + 1)
++		while ((--dest)[-1] != '/')
++		    ;
++	} else {
++	    char lnkbuf[PATH_MAX+1];
++	    size_t len;
++	    ssize_t n;
++
++	    if (dest[-1] != '/')
++		*dest++ = '/';
++
++	    if (dest + (end - start) > curr + PATH_MAX) {
++		errno = ENAMETOOLONG;
++		return (char*)0;
++	    }
++
++	    dest = mempcpy(dest, start, end - start);
++	    *dest = '\0';
++
++	    if (deep-- < 0) {
++		errno = ELOOP;
++		return (char*)0;
++	    }
++
++	    errno = 0;
++	    if ((n = readlink(curr, lnkbuf, PATH_MAX)) < 0) {
++		deep = MAXSYMLINKS;
++		if (errno == EINVAL)
++		    continue;    /* Not a symlink */
++		return (char*)0;
++	    }
++	    lnkbuf[n] = '\0';
++
++	    len = strlen(end);
++	    if ((n + len) > PATH_MAX) {
++		errno = ENAMETOOLONG;
++		return (char*)0;
++	    }
++
++	    memmove(&tmpbuf[n], end, len + 1);
++	    path = end = memcpy(tmpbuf, lnkbuf, n);
++
++	    if (lnkbuf[0] == '/')
++		dest = curr + 1;
++	    else if (dest > curr + 1)
++		while ((--dest)[-1] != '/');
++
++	}
++    }
++
++    if (dest > curr + 1 && dest[-1] == '/')
++	--dest;
++    *dest = '\0';
++
++    return curr;
++}
++
+ boolean check4nfs(const char * path)
+ {
+     char buf[PATH_MAX+1];
+diff --git a/libinit.h b/libinit.h
+index 43d84a7..56c6ae5 100644
+--- a/libinit.h
++++ b/libinit.h
+@@ -117,6 +117,7 @@
+ #endif
+ #define  DEFPIDEXT ".pid"
+ #define  DEFPIDLEN 14		/* The string length of /var/run/.pid + 1 */
++#define  COMM_LEN 15		/* The length of the task command name in /proc/<pid>/stat */
+ 
+ typedef enum _boolean {false, true} boolean;
+ 
+@@ -139,6 +140,7 @@ extern void clear_pids (void);
+ extern void error(int stat, const char *fmt, ...);
+ extern void warn(const char *fmt, ...);
+ extern int rlstat(char ** file, struct stat *st, const unsigned short flag);
++extern char* expandpath(const char * path);
+ extern void init_nfs(void);
+ extern void getproc(void);
+ boolean check4nfs(const char * path);
+@@ -197,10 +199,12 @@ static char * base_name ( const char * full )
+ 
+ static inline char * swap_name ( const char * base )
+ {
+-    size_t len = strlen(base) + 2 + 1;
+-    char *swap = (char*)xmalloc(len);
+-
+-    return strcat(strcat(strcpy(swap,"("),base),")");
++    size_t len = strlen(base);
++    char *swap;
++    if (len > COMM_LEN)
++	len = COMM_LEN;
++    swap = (char*)xmalloc(len + 2 + 1);
++    return strcat(strncat(strcpy(swap,"("),base, COMM_LEN),")");
+ }
+ 
+ extern void addnewenv ( const char * name, const char * entry );
+diff --git a/startproc.c b/startproc.c
+index f7f0a97..67b0c6f 100644
+--- a/startproc.c
++++ b/startproc.c
+@@ -47,7 +47,7 @@ static int wpopts = WNOHANG|WUNTRACED;
+ static char *wlist = NULL;
+ 
+ static volatile sig_atomic_t signaled = 0;
+-static void (*save_sigquit) = SIG_DFL;
++static sighandler_t save_sigquit = SIG_DFL;
+ static void sig_quit(int nsig)
+ {
+     (void)signal(nsig, save_sigquit);
+@@ -389,6 +389,8 @@ static int do_start(const char *inname, char *argv[], const char* log_file,
+     const char * fullname;
+     char proc_exe[6+9+4+1];
+     static struct stat itsme;
++    sigset_t newset, oldset;
++    int fdpipe[2];
+ 
+     if ((n = snprintf(proc_exe, sizeof(proc_exe) - 1, "/proc/%d/exe", getpid())) > 0) {
+ 	proc_exe[n] = '\0';
+@@ -414,21 +416,38 @@ static int do_start(const char *inname, char *argv[], const char* log_file,
+     errno = 0;
+ 
+     {
++	sigemptyset(&newset);
++	sigaddset(&newset, SIGQUIT);
++	sigaddset(&newset, SIGCHLD);
++	sigprocmask(SIG_UNBLOCK, &newset, &oldset);
+ 	save_sigquit = signal(SIGQUIT, sig_quit);
+ 	if (sigchld)
+ 	    (void)signal(SIGCHLD, sig_chld);
+ 	else
+ 	    (void)signal(SIGCHLD, SIG_DFL);
++	if (pipe2(fdpipe, O_CLOEXEC) < 0) {
++	    if (errno == ENOSYS) {
++		if (pipe(fdpipe) < 0 ||
++		    fcntl(fdpipe[0], F_SETFD, FD_CLOEXEC) < 0 ||
++		    fcntl(fdpipe[1], F_SETFD, FD_CLOEXEC) < 0)
++		    error(100, "cannot open a pipe: %s\n", strerror(errno));
++	    }
++	}
+     	pid = fork();
+     }
+ 
+     switch (pid) {
+     case 0:
+     	{
++	    sigprocmask(SIG_SETMASK, &oldset, NULL);
+ 	    (void)signal(SIGINT,  SIG_DFL);
+ 	    (void)signal(SIGQUIT, SIG_DFL);
+ 	    (void)signal(SIGSEGV, SIG_DFL);
+ 	    (void)signal(SIGTERM, SIG_DFL);
++
++	    close(fdpipe[1]);
++	    read(fdpipe[0], proc_exe, 1);	/* Wait on parent with the pipe */
++	    close(fdpipe[0]);
+ 	}
+ 
+ 	if (root) {
+@@ -562,8 +581,8 @@ static int do_start(const char *inname, char *argv[], const char* log_file,
+ 	    fclose(tmp);
+ 	fflush(stdout);
+ 	fflush(stderr);		/* flush stdout and especially stderr */
+-	usleep(1);		/* Force the kernel to run the scheduler and update
+-				   the environment of the current processes */
++
++	close(fdpipe[0]);
+ 
+ 	if ((n = snprintf(proc_exe, sizeof(proc_exe) - 1, "/proc/%d/exe", pid)) > 0) {
+ 	    proc_exe[n] = '\0';
+@@ -575,17 +594,22 @@ static int do_start(const char *inname, char *argv[], const char* log_file,
+ 	     * pid but before the execve() is done by the kernel, in later
+ 	     * case be sure not to run on our own binary.
+ 	     */
++	    n = 0;
+ 	    do {
+ 		struct stat serv;
+ 
+ 		errno = 0;
+ 		if (stat(proc_exe, &serv) < 0) {
+ 		    if (errno == ENOENT)
+-			break;			/* Seems to be a fast system */
++			break;			/* Seems to be a fast system
++						 * should not happen due to the pipe */
+ 
+ 		    error(100, "cannot stat %s: %s\n", proc_exe, strerror(errno));
+ 		}
+ 
++		if (n++ == 0)
++		    close(fdpipe[1]);		/* Sync child over the pipe */
++
+ 		if (itsme.st_dev != serv.st_dev || itsme.st_ino != serv.st_ino)
+ 		    break;			/* Seems to be a slow system */
+ 
+@@ -594,6 +618,9 @@ static int do_start(const char *inname, char *argv[], const char* log_file,
+ 	    } while (true);
+ 
+ 	} else {
++
++	    close(fdpipe[1]);			/* Sync child over the pipe */
++
+ 	    warn("error in snprintf: %s\n", strerror(errno));
+ 	    usleep(100*1000);
+ 	}
+@@ -604,7 +631,7 @@ retry:
+ 	case -1:		/* WNOHANG and hopefully no child but daemon */
+ 	    if (errno == EINTR)
+ 		goto retry;
+-	    if (errno != ECHILD) /* ECHILD shouldn´t happen, should it? (it does) */
++	    if (errno != ECHILD) /* ECHILD should not happen, should it? (it does) */
+ 		error(LSB_PROOFE," waitpid on %s: %s\n", fullname, strerror(errno));
+ 	    break;
+ 	case 0:			/* WNOHANG and no status available */
+@@ -614,7 +641,7 @@ retry:
+ 	     * to see a process damage.
+ 	     */
+ 	    usleep(10*1000);	/* 10 ms time for the child and its child */
+-	    if (++n < 10)
++	    if (++n < 50)
+ 		goto retry;
+ 	    break;
+ 	default:
+@@ -690,7 +717,7 @@ static void waiton(const char *list)
+     int fd = inotify_init1(IN_CLOEXEC);
+     char *buf = strdup(list);
+     char *bufp;
+-    wait_t *restrict p, *n, *l, *wait = (wait_t*)0;
++    wait_t *restrict p = (wait_t*)0, *n, *l, *wait = (wait_t*)0;
+ 
+     if (fd < 0)
+ 	error(100, "error in inotify_init(): %s\n", strerror(errno));
