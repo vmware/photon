@@ -1,6 +1,6 @@
 sources:
-- archive: googleauth-1.13.1.gem
-  archive_sha512sum: 70729a0238f3d54bf74d8ec52d9c20f2bd6c880ad3214d6e5da582a6b466007887e44f9810a94e10f2820e33f66117f1ebbe3654ebd32d5f342ab26c8342da72
+- archive: googleauth-1.16.1.gem
+  archive_sha512sum: 29987bd929c72f64adc6160e7bca55a868bd27a7dcceb168fb6b5177a0e06fc3df0006eec5862cdb99b352e0175ada757de17cc268ef64af7a92609bc99afa9a
   skip_validation: true
   spdx:
     package:

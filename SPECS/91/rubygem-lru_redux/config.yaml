@@ -1,0 +1,12 @@
+sources:
+- archive: lru_redux-1.1.0.gem
+  archive_sha512sum: b489ec89fbe4e2ab06f967a1c21ca487026151a93ebf782538fd0626657d39b0a7ed45ff4c24388b2c45d9cdcb622ae8c56eade5c5da27e2c31f110ad5bc8c2c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'An efficient, thread safe implementation of an LRU cache. '
+      home_page: https://rubygems.org/gems/lru_redux/versions/1.1.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: An efficient, thread safe implementation of an LRU cache.
+      supplier: 'Organization: Broadcom, Inc.'

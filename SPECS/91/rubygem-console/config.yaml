@@ -1,0 +1,13 @@
+sources:
+- archive: console-1.30.2.gem
+  archive_sha512sum: 6033d07ae514d70cbd19187c08a0f5db64c95e4cd405a32c44c14757d70a9a634c5234aa33257c311351db233b56461b714498bd3c75998c68e54624d44848e3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides beautiful console logging for Ruby applications.
+        Implements fast, buffered log output. '
+      home_page: https://rubygems.org/gems/console/versions/1.30.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Beautiful logging for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

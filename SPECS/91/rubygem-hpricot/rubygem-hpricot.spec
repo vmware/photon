@@ -1,0 +1,56 @@
+%global build_if %{photon_subrelease} <= 91
+%global debug_package %{nil}
+%global gem_name hpricot
+
+Name: rubygem-hpricot
+Version:        0.8.6
+Release:        7.1%{?dist}
+Summary:        a swift, liberal HTML parser with a fantastic library
+Group:          Development/Library
+URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  ruby-devel
+
+Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+
+Requires: ruby
+
+%description
+Hpricot is a fast, flexible HTML parser written in C. It's designed to be
+very accommodating and to have a very helpful library
+
+%prep
+%gem_unpack %{SOURCE0}
+
+%build
+%gem_build
+
+%install
+%gem_install
+
+%files
+%defattr(-,root,root,-)
+%{gem_base}
+
+%changelog
+* Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.6-7.1
+- Bump after moving to SPECS/91
+* Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.6-7
+- Spec bump with ruby upgrade
+* Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.6-6
+- Build gems properly
+- Release bump for SRP compliance
+* Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.6-4
+- Add gem macros
+* Mon Apr 22 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.6-3
+- Update build command, to build with source code
+* Fri Nov 25 2022 Shivani Agarwal <shivania2@vmware.com> 0.8.6-2
+- Version bump to build with new ruby
+* Thu Sep 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.6-1
+- Initial build

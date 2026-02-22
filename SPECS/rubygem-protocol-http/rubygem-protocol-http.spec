@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name protocol-http
 
 Name: rubygem-protocol-http
-Version:        0.50.1
+Version:        0.58.0
 Release:        1%{?dist}
 Summary:        Provides abstractions to handle HTTP protocols.
 Group:          Development/Libraries
@@ -38,6 +39,8 @@ Provides abstractions for working with the HTTP protocol.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.58.0-1
+- Update to version 0.58.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.50.1-1
 - Upgrade to 0.50.1
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.24.0-3

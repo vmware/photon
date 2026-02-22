@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name activesupport
 
 Name: rubygem-activesupport
-Version:        7.0.8.7
-Release:        2%{?dist}
+Version:        8.1.3
+Release:        1%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -16,23 +17,18 @@ Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
 Source1: license.txt
 %include %{SOURCE1}
 
-# Fix CVE-2026-33169
-Patch0:         0001-Improve-performance-of-NumberToDelimitedConverter.patch
-# Fix CVE-2026-33170
-Patch1:         0001-Fix-SafeBuffer-to-preserve-unsafe-status.patch
-# Fix CVE-2026-33176
-Patch2:         0001-NumberHelper-handle-very-large-numbers.patch
-Patch3:         0002-NumberConverter-reject-scientific-notation.patch
-
 BuildRequires:  ruby-devel
+BuildRequires:  ruby
 BuildRequires:  rubygem-concurrent-ruby
+BuildRequires:  rubygem-connection_pool
 BuildRequires:  rubygem-i18n
 BuildRequires:  rubygem-tzinfo
 
 Requires: ruby
-Requires: rubygem-i18n
-Requires: rubygem-concurrent-ruby
-Requires: rubygem-tzinfo
+Requires: rubygem-concurrent-ruby >= 1.3.1
+Requires: rubygem-connection_pool >= 2.2.5
+Requires: rubygem-i18n >= 1.6
+Requires: rubygem-tzinfo >= 2.0.5
 
 %description
 A toolkit of support libraries and Ruby core extensions extracted from the
@@ -41,7 +37,6 @@ time zones, and testing.
 
 %prep
 %gem_unpack %{SOURCE0}
-%autopatch -p1
 
 %build
 %gem_build
@@ -54,6 +49,8 @@ time zones, and testing.
 %{gemdir}
 
 %changelog
+* Thu Apr 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.1.3-1
+- Update to version 8.1.3
 * Wed Apr 01 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.7-2
 - Fix CVE-2026-33176, CVE-2026-33170 and CVE-2026-33169
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.7-1

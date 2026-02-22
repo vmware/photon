@@ -1,0 +1,13 @@
+sources:
+- archive: tzinfo-2.0.6.gem
+  archive_sha512sum: 4c1b84060c1ec2aa1e7570330fecf1ee753ef45e3921282216dc27d20454a396f2f02906d0f2409c813f2919b23c2a9a28519d99a2f76dca72d8f94b4b95d3ff
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'TZInfo provides daylight savings aware transformations
+        between times in different time zones. '
+      home_page: https://rubygems.org/gems/tzinfo/versions/2.0.6
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Timezone related support for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

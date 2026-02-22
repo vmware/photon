@@ -1,6 +1,6 @@
 sources:
-- archive: io-endpoint-0.15.2.gem
-  archive_sha512sum: 5dfb49a8c797cfa909e9aa97794c5c466d6a95b2cdd156dcb74bba0ebf10deef69c79d48710dcb0f8d949703c3f00c7678855e06eb4996d5a94dd47d1979a615
+- archive: io-endpoint-0.16.0.gem
+  archive_sha512sum: 22d9be3dd54cadad3d44309c483bfa04c261bf2dd8090daf4eb8980c8a736b9d85fbde276a62d469e70d28545817d76b2e2a9601fccce6964cf7af83d72fd5c9
   skip_validation: true
   spdx:
     package:

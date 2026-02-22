@@ -1,0 +1,12 @@
+sources:
+- archive: fluent-plugin-s3-1.8.3.gem
+  archive_sha512sum: 2222e94bb3c60c8a5fc60b9f94bd9221bbfe7564c02d36fcf66bd7d44dfa98142e42a6b6bb4bd37413fdd9debc31c912359fa9439d15606198449abb4af438ce
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Amazon S3 output plugin for Fluentd event collector. '
+      home_page: https://rubygems.org/gems/fluent-plugin-s3/versions/1.8.3
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Amazon S3 output plugin for Fluentd event collector.
+      supplier: 'Organization: Broadcom, Inc.'

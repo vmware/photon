@@ -1,0 +1,13 @@
+sources:
+- archive: hpricot-0.8.6.gem
+  archive_sha512sum: f0ea9168ae79d099cdb751dd5a205e0896dfb229759e499fff833e94209d1497aa97becb285176dcbcc1fee19bc11913ca3ac0d7a467067e5d837c1eb6e310ad
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Hpricot is a fast, flexible HTML parser written in C.
+        It''s designed to be very accommodating and to have a very helpful library '
+      home_page: https://rubygems.org/gems/hpricot/versions/0.8.6
+      license_concluded: Apache-2.0 AND MIT AND CC-BY-NC-1.0 AND Ruby
+      license_declared: Apache-2.0 AND MIT AND CC-BY-NC-1.0 AND Ruby
+      short_summary: a swift, liberal HTML parser with a fantastic library
+      supplier: 'Organization: Broadcom, Inc.'

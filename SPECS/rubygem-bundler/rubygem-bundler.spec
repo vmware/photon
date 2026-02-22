@@ -1,8 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gem_name bundler
 
 Name:           rubygem-bundler
-Version:        2.6.8
+Version:        4.0.4
 Release:        1%{?dist}
 Summary:        manages an application's dependencies
 Group:          Development/Languages
@@ -37,6 +38,8 @@ across many machines, systematically and repeatably.
 %{gem_base}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.4-1
+- Update to version 4.0.4
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.6.8-1
 - Upgrade to 2.6.8
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.24-5

@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name http-form_data
 
 Name: rubygem-http-form_data
 Version:        2.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Utility-belt to build form data request bodies. Provides support for application/x-www-form-urlencoded and multipart/form-data types.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +39,8 @@ Utility-belt to build form data request bodies. Provides support for application
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.0-5
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.3.0-4
 - Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.0-3

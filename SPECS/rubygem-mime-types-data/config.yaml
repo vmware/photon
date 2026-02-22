@@ -1,14 +1,20 @@
 sources:
-- archive: mime-types-data-3.2025.0507.gem
-  archive_sha512sum: bfd122838caa1dba1278760036a10f41abed34e1cdff36ff27108219a7c6eb65067f985d8b790d7a6c04cc466689fc74ab283b4142d76dccab6ecdf4d902994d
+- archive: mime-types-data-3.2026.0113.gem
+  archive_sha512sum: 63511041caa7c211b49250c7800545be763b6597123088b686c950e48739d48eb32c71286782701f863e9c06a8b74c1798309f0809d6a08c859a1bea1548887b
   skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - mime-types-data-3.2026.0113.gem-extract/data.tar.gz-extract/CODE_OF_CONDUCT.md
+    - mime-types-data-3.2026.0113/CODE_OF_CONDUCT.md
+    sha256sum: 0e368f3a6eb52f4e5938489832b4c53a1f0fa22cec4bb05fce5fd464e033de8d
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'mime-types-data provides a registry for information about
         MIME media type definitions. It can be used with the Ruby mime-types library
         or other software to determine defined filename extensions for MIME types,
         or to use filename extensions to look up the likely MIME type definitions. '
-      home_page: https://rubygems.org/gems/mime-types-data/versions/3.2025.0507
+      home_page: https://rubygems.org/gems/mime-types-data/versions/3.2026.0113
       license_concluded: MIT
       license_declared: MIT
       short_summary: Provides a registry for information about MIME media type definitions.

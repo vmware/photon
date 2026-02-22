@@ -1,0 +1,12 @@
+sources:
+- archive: protocol-url-0.4.0.gem
+  archive_sha512sum: dfc2bad3d01fb67b3c2560ba3a0d2769796f117d9d7b7c3fe4eee674d8b438f567ef6a2bdbe6364883722b4d67cdcdca068dc49f3aeb134815278631546f985a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides abstractions for working with URLs. Part of the Protocol family of libraries for async I/O.'
+      home_page: https://rubygems.org/gems/protocol-url/versions/0.4.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Provides abstractions for working with URLs
+      supplier: 'Organization: Broadcom, Inc.'

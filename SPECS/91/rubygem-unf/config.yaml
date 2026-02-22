@@ -1,0 +1,14 @@
+sources:
+- archive: unf-0.2.0.gem
+  archive_sha512sum: 916863d31313ef6d87c9b4d3d14dec51d764132589c838347e08a57a09ca97419fe4e9a00cced1ffb6083f106a7736217c72029dd3946c756c09b4f3b5355b48
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a wrapper library to bring Unicode Normalization
+        Form support to Ruby/JRuby. '
+      home_page: https://rubygems.org/gems/unf/versions/0.2.0
+      license_concluded: BSD-2-Clause
+      license_declared: BSD-2-Clause
+      short_summary: This is a wrapper library to bring Unicode Normalization Form
+        support to Ruby/JRuby.
+      supplier: 'Organization: Broadcom, Inc.'

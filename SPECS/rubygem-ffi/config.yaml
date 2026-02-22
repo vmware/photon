@@ -1,11 +1,11 @@
 sources:
-- archive: ffi-1.17.2.gem
-  archive_sha512sum: 61fd30c546d9d4a695dd3954eba205cd6ddf36f2c67eb2f823591a6ece540d2d11fcc792704218d969d21bf7111e36bc54f40e5d9eeb1be4fdb06274a17bec13
+- archive: ffi-1.17.3.gem
+  archive_sha512sum: 89780f4236e29d2591679e7a87758ecc27e77d7bce270e3cb57ef12a939be485aa1077e5d6d87539f17cfddcd59697d802e2152a0284d5e6891328d5ec207517
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Ruby FFI library '
-      home_page: https://rubygems.org/gems/ffi/versions/1.17.2
+      home_page: https://rubygems.org/gems/ffi/versions/1.17.3
       license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND BSD-3-Clause AND BSD-Source-Code AND CC-PDDC AND FSFAP AND FSFUL AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND X11
       license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND BSD-3-Clause AND BSD-Source-Code AND CC-PDDC AND FSFAP AND FSFUL AND FSFULLRWD AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND X11
       short_summary: Ruby FFI library

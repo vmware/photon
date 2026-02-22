@@ -1,6 +1,6 @@
 sources:
-- archive: google-cloud-storage-1.54.0.gem
-  archive_sha512sum: f452fa61f23a0da1aaed1bbf718cff7dc296315290b60b0db63db55dc8bfc2c3e8a55163d5e2b9f76ea2faeed1b639d666e476bb6927c3aba676bb440aabaf2e
+- archive: google-cloud-storage-1.58.0.gem
+  archive_sha512sum: a6f6fc0c00a64de15f66d9c66753d8b9fda57011a880ab590c14b455001a30b5a6f3c1eee88b1321df95eaf8655650b622474f743d6a4c3e193459db04c78958
   skip_validation: true
   spdx:
     package:

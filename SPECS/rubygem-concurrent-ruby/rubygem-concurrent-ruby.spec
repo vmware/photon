@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name concurrent-ruby
 
 Name: rubygem-concurrent-ruby
-Version:        1.3.4
+Version:        1.3.6
 Release:        1%{?dist}
 Summary:        Modern concurrency tools for Rails framework.
 Group:          Development/Languages
@@ -14,6 +15,10 @@ Source0:        https://rubygems.org/downloads/concurrent-ruby-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Provides:      rubygem-thread_safe <= 0.3.6-5
+# Enable this once tdnf supports handling Obsoletes with snapshots.
+#Obsoletes:     rubygem-thread_safe <= 0.3.6-5
 
 BuildRequires: ruby-devel
 
@@ -38,6 +43,8 @@ classic concurrency patterns.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.6-1
+- Update to version 1.3.6
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.4-1
 - Upgrade to 1.3.4
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.10-3

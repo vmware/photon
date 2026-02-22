@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name addressable
 
 Name: rubygem-addressable
-Version:        2.8.7
+Version:        2.8.8
 Release:        1%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
@@ -21,7 +22,7 @@ BuildArch: noarch
 BuildRequires: ruby-devel
 BuildRequires: rubygem-public_suffix
 
-Requires: rubygem-public_suffix >= 2.0.2, rubygem-public_suffix < 6.0.3
+Requires: rubygem-public_suffix >= 2.0.2, rubygem-public_suffix < 8.0
 Requires: ruby
 
 %description
@@ -42,6 +43,8 @@ It more closely conforms to the relevant RFCs and adds support for IRIs and URI 
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.8-1
+- Update to version 2.8.8
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.7-1
 - Upgrade to 2.8.7
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.1-3

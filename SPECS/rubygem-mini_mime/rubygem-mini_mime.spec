@@ -1,3 +1,4 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name mini_mime
@@ -5,7 +6,7 @@
 Summary:        A minimal mime type library.
 Name:           rubygem-mini_mime
 Version:        1.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -40,6 +41,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.5-3
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.5-2
 - Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.5-1

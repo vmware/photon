@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name rest-client
 
 Name: rubygem-rest-client
 Version:        2.1.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A simple HTTP and REST client for Ruby, inspired by the Sinatra microframework style of specifying actions: get, put, post, delete.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -50,6 +51,8 @@ ln -srv %{buildroot}%{gemdir}/bin/restclient %{buildroot}/%{_bindir}/restclient
 %{_bindir}/restclient
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com>  2.1.0-8
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.1.0-7
 - Spec bump with ruby upgrade
 * Tue Mar 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.0-6

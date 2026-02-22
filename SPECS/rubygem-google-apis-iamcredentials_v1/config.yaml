@@ -1,6 +1,6 @@
 sources:
-- archive: google-apis-iamcredentials_v1-0.22.0.gem
-  archive_sha512sum: 7266820dc9655ed636e8aa8fe5191ab62cbbb53cafce9290c6df053994047543fe8e65d41ae17cbf464915a4067505a9b549297e12a2491c740c31aa1ac1afe4
+- archive: google-apis-iamcredentials_v1-0.26.0.gem
+  archive_sha512sum: 0810b411615b46235a6a423ba25637f4e4b59315ce3258e5ffdd7c14a0f5435773cf4b1e063a3e68e63243fdd414fac62fa307bf7d4350df452e842c4b4d9f33
   skip_validation: true
   spdx:
     package:

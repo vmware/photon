@@ -1,11 +1,11 @@
 sources:
-- archive: kubeclient-4.12.0.gem
-  archive_sha512sum: a6ba6ea647360afda3e560e2ddaf400cb98a435c5204af37063635ed915a2295b97f871ea872bd49ba902c0d1330d7700a810672fd2669c65983644e33ccdd66
+- archive: kubeclient-4.13.0.gem
+  archive_sha512sum: 67ee5a43af74de86563903723bbcce0e561f5b1cd43daac625ac28198fca74fdfc951a7437e8a32e4eedae2a3e8ef01ddfb7da6aeae90c448681dcf0d59f8127
   skip_validation: true
   spdx:
     package:
       detailed_description: 'A client for Kubernetes REST api. '
-      home_page: https://rubygems.org/gems/kubeclient/versions/4.12.0
+      home_page: https://rubygems.org/gems/kubeclient/versions/4.13.0
       license_concluded: MIT
       license_declared: MIT
       short_summary: A client for Kubernetes REST api.

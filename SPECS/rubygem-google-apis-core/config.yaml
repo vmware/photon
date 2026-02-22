@@ -1,6 +1,6 @@
 sources:
-- archive: google-apis-core-0.16.0.gem
-  archive_sha512sum: 9cd658a8e5fb40485de18a588a72643e3258a9b0b9cff8e96060e431faefd6df34aae9b6c473b59765d07d953385e2914c9048801909523a38bf8c91da975c92
+- archive: google-apis-core-1.0.2.gem
+  archive_sha512sum: 1e42852539b989b478b9e24a9cc7a00bb4401eb67880c7735192d593ab0d0729269978d50fd50f791a465ba1e7a9343c4c7407374fcebddea3773cf035eb8231
   skip_validation: true
   spdx:
     package:

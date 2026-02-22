@@ -1,6 +1,6 @@
 sources:
-- archive: net-http-0.6.0.gem
-  archive_sha512sum: e388ad9208ee0100425ae594c46720f284f0e090ca4fc53f1d3e02c8ac4017bcb155aaeba4916f93342bf21be66fc68845849f5cda332da860b147c9ff2584c3
+- archive: net-http-0.9.1.gem
+  archive_sha512sum: ee8f452ac00b992bb274e7077676bd6b375692749c0fd428f42e4047b17efba142be3b9b45abab951c16976a6b1de4c94ed4ff47f727b4773b5143d5e31abb1f
   skip_validation: true
   spdx:
     package:

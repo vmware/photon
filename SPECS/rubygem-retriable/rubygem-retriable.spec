@@ -1,3 +1,4 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name retriable
@@ -5,7 +6,7 @@
 Summary:        Retriable is an simple DSL to retry failed code blocks with randomized exponential backoff.
 Name:           rubygem-retriable
 Version:        3.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,6 +42,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.2-3
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.2-2
 - Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.2-1

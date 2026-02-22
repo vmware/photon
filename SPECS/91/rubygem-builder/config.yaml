@@ -1,0 +1,14 @@
+sources:
+- archive: builder-3.3.0.gem
+  archive_sha512sum: 33b6ef4d8ebb437afac4bb7243faac0e2e44694dc8f8404df3421c7e0889234675af0d2e32e035594b1563f9fbc90a039910d2484996508329be2fd234c4bc06
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Builder provides a number of builder objects that make
+        creating structured data simple to do. Currently the following builder objects
+        are supported: '
+      home_page: http://onestepback.org
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Builders for MarkUp
+      supplier: 'Organization: Broadcom, Inc.'

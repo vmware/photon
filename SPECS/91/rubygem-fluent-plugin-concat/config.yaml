@@ -1,0 +1,13 @@
+sources:
+- archive: fluent-plugin-concat-2.5.0.gem
+  archive_sha512sum: 828179a0b2596c7ad8bbaeb1d814f4ee41698c2908fdb88e0c33cd1d08159baa44dac655eeffa12fd8e692def0f6bfeeffdf6605a8d769753e8e288be6d5793f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fluentd Filter plugin to concatenate multiline log separated
+        in multiple events. '
+      home_page: https://rubygems.org/gems/fluent-plugin-concat/versions/2.5.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Fluentd Filter plugin to concat multiple event messages.
+      supplier: 'Organization: Broadcom, Inc.'

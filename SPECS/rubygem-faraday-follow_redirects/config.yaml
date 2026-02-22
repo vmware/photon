@@ -1,0 +1,12 @@
+sources:
+- archive: faraday-follow_redirects-0.5.0.gem
+  archive_sha512sum: 2ad3d9355acd23d8c0d2899e4e80a3160c343c4fd12c1119a694d1b75e14fdd86ee088f630cf880462fc873ab60b23979b463acf1922f63eeb61d5155968396a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Faraday 1.x and 2.x compatible extraction of FaradayMiddleware::FollowRedirects. This middleware follows HTTP redirects for Faraday connections.'
+      home_page: https://rubygems.org/gems/faraday-follow_redirects/versions/0.5.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Faraday middleware for following redirects
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,12 +1,12 @@
 sources:
-- archive: aws-sdk-sqs-1.94.0.gem
-  archive_sha512sum: 500db4897392f1a9c6827029b6035817b9ed08034ea44a54a37116851ec2afad10a45dee7f738b21b372d6b251aebf2a50bfca5d1226d583cf685011372515cd
+- archive: aws-sdk-sqs-1.110.0.gem
+  archive_sha512sum: 434abd0b15184706a0e9a4130a99219a88221b1494f946b7c2b1aeacf1a24aff3a1184dc12de16ae707f5392dafdfb82a9f7afd84c749eb0dc34dd8cc22d735e
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Official AWS Ruby gem for Amazon Simple Queue Service
         (Amazon SQS). This gem is part of the AWS SDK for Ruby. '
-      home_page: https://rubygems.org/gems/aws-sdk-sqs/versions/1.94.0
+      home_page: https://rubygems.org/gems/aws-sdk-sqs/versions/1.110.0
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Official AWS Ruby gem for Amazon Simple Queue Service (Amazon

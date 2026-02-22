@@ -1,8 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gem_name kubeclient
 
 Name:           rubygem-kubeclient
-Version:        4.12.0
+Version:        4.13.0
 Release:        1%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
@@ -19,7 +20,7 @@ BuildArch: noarch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-activesupport
-BuildRequires:  rubygem-http < 5.2.1
+BuildRequires:  rubygem-http < 6.0
 BuildRequires:  rubygem-recursive-open-struct
 BuildRequires:  rubygem-jsonpath
 BuildRequires:  rubygem-rest-client
@@ -27,9 +28,9 @@ BuildRequires:  rubygem-http-accept < 2.0
 BuildRequires:  findutils
 
 Requires:       rubygem-activesupport
-Requires:       rubygem-recursive-open-struct > 1.1
+Requires:       rubygem-recursive-open-struct
 Requires:       rubygem-rest-client
-Requires:       rubygem-http < 5.2.1
+Requires:       rubygem-http < 6.0
 Requires:       rubygem-http-accept < 2.0
 Requires:       rubygem-jsonpath
 Requires:       rubygem-ffi-compiler
@@ -52,6 +53,8 @@ A client for Kubernetes REST api.
 %{gem_base}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.13.0-1
+- Update to version 4.13.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.12.0-1
 - Upgrade to 4.12.0
 * Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.10.1-6

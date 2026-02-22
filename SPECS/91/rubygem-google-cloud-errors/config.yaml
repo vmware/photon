@@ -1,0 +1,12 @@
+sources:
+- archive: google-cloud-errors-1.5.0.gem
+  archive_sha512sum: 6d1829eb05dbb3f4514b38857ff85046d8c0c544327733f709924d33a891a0ca38ad059acf66df84a0d9e78a250080e333d85355959180f69660ab704ea8cd45
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'google-cloud-errors defines error classes for google-cloud-ruby.'
+      home_page: https://rubygems.org/gems/google-cloud-errors
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: google-cloud-errors defines error classes for google-cloud-ruby.
+      supplier: 'Organization: Broadcom, Inc.'

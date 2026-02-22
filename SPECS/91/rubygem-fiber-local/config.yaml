@@ -1,0 +1,13 @@
+sources:
+- archive: fiber-local-1.1.0.gem
+  archive_sha512sum: 2c6563bc72a3fdcb9e640ae6b190e1f6b59d697d7a45dfa14811d03ee18e4ba5f8f659305f917a26c47b2495449ae7d6bd654ec12cea39509e4b205e720c67c5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides low level cross-platform primitives for constructing
+        event loops, with support for select, kqueue, epoll and io_uring. '
+      home_page: https://rubygems.org/gems/fiber-local/versions/1.1.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: An event loop.
+      supplier: 'Organization: Broadcom, Inc.'

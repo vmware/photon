@@ -1,3 +1,4 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name optimist
@@ -5,7 +6,7 @@
 Summary:        Optimist is a commandline option parser for Ruby that just gets out of your way.
 Name:           rubygem-optimist
 Version:        3.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +16,10 @@ Source0: http://rubygems.org/gems/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Provides:      rubygem-trollop <= 2.9.10-4
+# Enable this once tdnf supports handling Obsoletes with snapshots.
+#Obsoletes:     rubygem-trollop <= 2.9.10-4
 
 BuildRequires: ruby-devel
 
@@ -40,6 +45,8 @@ and sensible defaults for everything you don't specify.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.1-2
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.1-1
 - Upgrade to 3.2.1
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.0-3

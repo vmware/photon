@@ -1,6 +1,6 @@
 sources:
-- archive: http-cookie-1.0.8.gem
-  archive_sha512sum: 2331da73f2c077e9582d609a08a60a247c0b44b8e4a7be820ac3ed630a05779b985a19de3ed94a5a4753f401be0392d364313498b03475c442ed4859d2a142cd
+- archive: http-cookie-1.1.0.gem
+  archive_sha512sum: c360d8ffa7b3febf544e96e9408759a4aa5289f7b6ff5829ee4d880ac0802e80a80b65eaa042df1dc4ac77c171f4b809f11a4e2f4b3960561a914785636d837a
   skip_validation: true
   spdx:
     package:
@@ -10,7 +10,7 @@ sources:
         support for the legacy cookies.txt and the latest cookies.sqlite formats of
         Mozilla Firefox, and its modular API makes it easy to add support for a new
         backend store. '
-      home_page: https://rubygems.org/gems/http-cookie/versions/1.0.8
+      home_page: https://rubygems.org/gems/http-cookie/versions/1.1.0
       license_concluded: MIT
       license_declared: MIT
       short_summary: HTTP::Cookie is a Ruby library to handle HTTP Cookies based on

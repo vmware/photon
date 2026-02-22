@@ -1,10 +1,11 @@
 # Generated from backports-2.5.1.gem by gem2rpm -*- rpm-spec -*-
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name backports
 
 Name: rubygem-backports
-Version:        3.25.1
+Version:        3.25.3
 Release:        1%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
@@ -21,13 +22,11 @@ BuildRequires:  ruby-devel
 BuildRequires:  rubygem-activesupport
 BuildRequires:  rubygem-i18n
 BuildRequires:  rubygem-tzinfo
-BuildRequires:  rubygem-thread_safe
 BuildRequires:  rubygem-concurrent-ruby
 
 Requires:       rubygem-activesupport
 Requires:       rubygem-i18n
 Requires:       rubygem-tzinfo
-Requires:       rubygem-thread_safe
 Requires:       rubygem-concurrent-ruby
 Requires:       ruby
 
@@ -58,6 +57,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.25.3-1
+- Update to version 3.25.3
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.25.1-1
 - Upgrade to 3.25.1
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.0-4

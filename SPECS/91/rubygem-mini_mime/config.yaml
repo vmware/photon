@@ -1,0 +1,12 @@
+sources:
+- archive: mini_mime-1.1.5.gem
+  archive_sha512sum: 036d657910f34385f23fd78110716ee01f2139847fac8fb06a4f505285dea1f1024e2adc4c4895f2c1248047bf9c333bbae3decb9d5351816a79d69ebf7a15c2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A minimal mime type library.'
+      home_page: https://rubygems.org/gems/mini_mime
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A minimal mime type library.
+      supplier: 'Organization: Broadcom, Inc.'

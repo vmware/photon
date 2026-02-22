@@ -1,6 +1,6 @@
 sources:
-- archive: rubyzip-2.4.1.gem
-  archive_sha512sum: 113a1d8913826d6f96f6d7bdaee49bb9dbc5a5ff01054f93467a377ab3b890c782d42a2ed466d17385868350079345aada87541ba7617e28a4af700d17aab9ef
+- archive: rubyzip-3.2.2.gem
+  archive_sha512sum: 80c373455fba0aca30e841ce4de546913530cca662acfe26d71c82e78201a0cf05c71ea107c7bba856f1ec140a1dba8c6f2c51bc8f066866279bf9bed1adde93
   skip_validation: true
   spdx:
     package:

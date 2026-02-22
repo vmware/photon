@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name sigdump
 
 Name: rubygem-sigdump
 Version:        0.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        signal handler which dumps backtrace of running threads
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -38,6 +39,8 @@ and see /tmp/sigdump-<pid>.log.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-2
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-1
 - Upgrade to 0.2.5
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.2.4-4

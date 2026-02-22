@@ -1,0 +1,14 @@
+sources:
+- archive: timers-4.4.0.gem
+  archive_sha512sum: d3c1d75d4a0a825c1548328c6cedfbfec6dfbcba435a8de21ac40d06cd3034da576dbfd721117f8a82b347b32885a7aa6b3530fe0703c8f368f2faa536f29743
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Schedule procs to run after a certain time, or at periodic
+        intervals, using any API that accepts a timeout. '
+      home_page: https://rubygems.org/gems/timers/versions/4.4.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Schedule procs to run after a certain time, or at periodic intervals,
+        using any API that accepts a timeout.
+      supplier: 'Organization: Broadcom, Inc.'

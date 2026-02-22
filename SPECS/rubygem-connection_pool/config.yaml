@@ -1,0 +1,12 @@
+sources:
+- archive: connection_pool-3.0.2.gem
+  archive_sha512sum: 11987130f3860294852079c4e75f7b6382735550f98e1bebf44f3ae4ff683b5d681895976eb6d6f85ab7a70370955d4144044ad841d5d654d28d628e5098f618
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Generic connection pool for Ruby. Provides a thread-safe connection pooling mechanism for any type of connection.'
+      home_page: https://rubygems.org/gems/connection_pool/versions/3.0.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Generic connection pool for Ruby
+      supplier: 'Organization: Broadcom, Inc.'

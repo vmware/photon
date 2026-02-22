@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name aws-sigv4
 
 Name: rubygem-aws-sigv4
-Version:        1.11.0
+Version:        1.12.1
 Release:        1%{?dist}
 Summary:        Amazon Web Services Signature Version 4 signing library.
 Group:          Development/Languages
@@ -39,6 +40,8 @@ Generates sigv4 signature for HTTP requests.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.12.1-1
+- Update to version 1.12.1
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.11.0-1
 - Upgrade to 1.11.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.2-3

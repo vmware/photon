@@ -1,6 +1,6 @@
 sources:
-- archive: libxml-ruby-5.0.2.gem
-  archive_sha512sum: 449464107c1b533c25ec3ba4e722f5805f1e487609939306ee4535ba9b8197e47d79d50fa69571f0dff9d7ab974ee848ce95679a6f64da84aaf109c367ef6829
+- archive: libxml-ruby-5.0.5.gem
+  archive_sha512sum: 7ff96a3a61e0e0e4715369c797890a8b3295184974d6476b0311703209be1382f0817af94bdac35e85cb8b5d0d7041aa313b1d87c0a54dadc69ac3e49bc15eea
   skip_validation: true
   spdx:
     package:

@@ -1,0 +1,53 @@
+%global build_if %{photon_subrelease} <= 91
+%global debug_package %{nil}
+%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
+%global gem_name protocol-hpack
+
+Name: rubygem-protocol-hpack
+Version:        1.5.1
+Release:        1.1%{?dist}
+Summary:        A compresssor and decompressor for HTTP 2.0 HPACK.
+Group:          Development/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
+Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: ruby-devel
+
+Requires: ruby
+
+BuildArch: noarch
+
+%description
+Provides a compressor and decompressor for HTTP 2.0 headers, HPACK, as defined by RFC7541.
+
+%prep
+%gem_unpack %{SOURCE0}
+
+%build
+%gem_build
+
+%install
+%gem_install
+
+%files
+%defattr(-,root,root,-)
+%{gemdir}
+
+%changelog
+* Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.5.1-1.1
+- Bump after moving to SPECS/91
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.5.1-1
+- Upgrade to 1.5.1
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-3
+- Build gems properly
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.2-2
+- Release bump for SRP compliance
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.2-1
+- Automatic Version Bump
+* Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.4.1-1
+- Initial build

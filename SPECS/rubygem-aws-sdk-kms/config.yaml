@@ -1,12 +1,12 @@
 sources:
-- archive: aws-sdk-kms-1.100.0.gem
-  archive_sha512sum: 8ff7c5c26d3fe257268cd6d71300c94a2ee32257202b6bbdbe35eba1928c2151fee14f09856e329e2b0ef3ae3faaedffde822176f9e2934eac1fc97095128d33
+- archive: aws-sdk-kms-1.121.0.gem
+  archive_sha512sum: e2a193802fb6ee989eadc291cc9fe3e571f95eb523cd0dbecb7ff1e4919f0bad739fa67964b9e540517971a3c158f422138b33b1c3236519541e91a66b5bb8df
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Official AWS Ruby gem for AWS Key Management Service
         (KMS). This gem is part of the AWS SDK for Ruby. '
-      home_page: https://rubygems.org/gems/aws-sdk-kms/versions/1.100.0
+      home_page: https://rubygems.org/gems/aws-sdk-kms/versions/1.121.0
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Official AWS Ruby gem for AWS Key Management Service (KMS).

@@ -1,0 +1,13 @@
+sources:
+- archive: aws-eventstream-1.3.2.gem
+  archive_sha512sum: 1400e5c7a546c17a7707c722aaee90ba7b726ecc5423b76a220e3e9ac1636ea095d33eda0697b31c340d5c20e3e51bd68e263cc10b45a62913245e296da1a1b8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Amazon Web Services event stream library. Decodes and
+        encodes binary stream under `vnd.amazon.event-stream` content-type '
+      home_page: https://rubygems.org/gems/aws-eventstream/versions/1.3.2
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Amazon Web Services event stream library.
+      supplier: 'Organization: Broadcom, Inc.'

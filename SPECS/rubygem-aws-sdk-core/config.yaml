@@ -1,12 +1,12 @@
 sources:
-- archive: aws-sdk-core-3.241.0.gem
-  archive_sha512sum: afc2b3206a9182ac891a749c769649ecf9a3f4eb9d66beb6c59c4962ace054c051de62d8b135265ae4ada489ac7c75e48435842caa4f133197f197be14e65ca0
+- archive: aws-sdk-core-3.241.4.gem
+  archive_sha512sum: d9e11b0a82cce0a6d672147b0889e8ceca2d646ced9fa16a06960b44bdd384949529253aa130869e8cca0b1d779ebdc5de572bc2e33a93c8ecc82be633be8020
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Provides API clients for AWS. This gem is part of the
         official AWS SDK for Ruby.. '
-      home_page: https://rubygems.org/gems/aws-sdk-core/versions/3.241.0
+      home_page: https://rubygems.org/gems/aws-sdk-core/versions/3.241.4
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Provides API clients for AWS.

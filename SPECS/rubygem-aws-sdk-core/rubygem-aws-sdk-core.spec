@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name aws-sdk-core
 
 Name: rubygem-aws-sdk-core
-Version:        3.241.0
+Version:        3.241.4
 Release:        1%{?dist}
 Summary:        Provides API clients for AWS.
 Group:          Development/Languages
@@ -44,6 +45,8 @@ Provides API clients for AWS. This gem is part of the official AWS SDK for Ruby.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.241.4-1
+- Update to version 3.241.4
 * Mon Jan 05 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.241.0-1
 - Bump version to 3.241.0 to be compatible with rubygem-aws-sdk-s3 upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.223.0-1

@@ -1,0 +1,12 @@
+sources:
+- archive: sin_lru_redux-2.5.2.gem
+  archive_sha512sum: 36d60d7eccba420774078f5de918d5740be5ed9ee4952e0406a001646c97d38b326ffd189250df459d7d0f4f5c875a80587330a50f26dd0ad01e7004f9284b64
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Efficient and thread-safe LRU cache implementation for Ruby. A high-performance LRU (Least Recently Used) cache with thread-safety.'
+      home_page: https://rubygems.org/gems/sin_lru_redux/versions/2.5.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Efficient and thread-safe LRU cache
+      supplier: 'Organization: Broadcom, Inc.'

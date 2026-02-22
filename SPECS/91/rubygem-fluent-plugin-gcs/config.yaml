@@ -1,0 +1,12 @@
+sources:
+- archive: fluent-plugin-gcs-0.4.4.gem
+  archive_sha512sum: 6190c85e35c704593e537f60169ac50571f1457a6905eb02377f1b959cda927273525efaf38eef3c25ceaa03b21d6414878c82bb37bce007569fbeed0928cb83
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Google Cloud Storage output plugin for Fluentd.'
+      home_page: https://rubygems.org/gems/fluent-plugin-gcs
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Google Cloud Storage output plugin for Fluentd.
+      supplier: 'Organization: Broadcom, Inc.'

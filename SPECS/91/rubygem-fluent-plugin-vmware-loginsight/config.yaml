@@ -1,0 +1,12 @@
+sources:
+- archive: fluent-plugin-vmware-loginsight-1.4.2.gem
+  archive_sha512sum: 7b8799439f319bc6049f0c81a12ec0c57c6e535db26310915aeec15b6ca14c967cb66752a203e7eff85a8b1891a716f603b34a12f57518753abffad230a5a8c8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fluent output plugin to forward logs to VMware Log Insight. '
+      home_page: https://rubygems.org/gems/fluent-plugin-vmware-loginsight/versions/1.4.2
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Fluent output plugin to forward logs to VMware Log Insight.
+      supplier: 'Organization: Broadcom, Inc.'

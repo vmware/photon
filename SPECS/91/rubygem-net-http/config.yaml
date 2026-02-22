@@ -1,0 +1,12 @@
+sources:
+- archive: net-http-0.6.0.gem
+  archive_sha512sum: e388ad9208ee0100425ae594c46720f284f0e090ca4fc53f1d3e02c8ac4017bcb155aaeba4916f93342bf21be66fc68845849f5cda332da860b147c9ff2584c3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'HTTP client api for Ruby.'
+      home_page: https://rubygems.org/gems/net-http
+      license_concluded: Ruby AND BSD-2-Clause
+      license_declared: Ruby AND BSD-2-Clause
+      short_summary: HTTP client api for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

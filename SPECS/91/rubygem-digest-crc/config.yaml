@@ -1,0 +1,12 @@
+sources:
+- archive: digest-crc-0.7.0.gem
+  archive_sha512sum: 5057385de6c548bf4a78bee6dbeb9ae74b270af7786d18615a31dc30e3fc0351cbf4103c7d5714e0b09d352158c3589fd757fb03ade0a15b4e95bfdea08f323f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Adds support for calculating Cyclic Redundancy Check (CRC) to the Digest module.'
+      home_page: https://rubygems.org/gems/digest-crc
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Adds support for calculating Cyclic Redundancy Check (CRC) to the Digest module.
+      supplier: 'Organization: Broadcom, Inc.'

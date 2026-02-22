@@ -1,0 +1,12 @@
+sources:
+- archive: fluent-plugin-remote_syslog-1.1.0.gem
+  archive_sha512sum: 19def4d336469ce254e50171e37e47cfbe616afe63ceb30606fcc852aae224eedaa7cbbc235a68094ee505229cb24ecb8a19137cf5708916de8ec311f283adf6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fluentd plugin for remote syslog protocol '
+      home_page: https://rubygems.org/gems/fluent-plugin-remote_syslog/versions/1.1.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Fluentd output plugin for remote syslog
+      supplier: 'Organization: Broadcom, Inc.'

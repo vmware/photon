@@ -1,0 +1,13 @@
+sources:
+- archive: backports-3.25.1.gem
+  archive_sha512sum: a69f9b38d5f2b868a0823c3e2750b01e0d1a5c8b52c5e49a04de13fd0fd7262e881768f583c6545c4257bb12a20d6531d0a5132173ee629ee7464db2421dbbc4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Essential backports that enable many of the nice features
+        of Ruby 1.8.7 up to 2.1.0 for earlier versions. '
+      home_page: http://github.com/marcandre/backports
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Backports of Ruby features for older Ruby
+      supplier: 'Organization: Broadcom, Inc.'

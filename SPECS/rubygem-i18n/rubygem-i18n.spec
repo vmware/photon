@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name i18n
 
 Name: rubygem-i18n
-Version:        1.14.7
+Version:        1.14.8
 Release:        1%{?dist}
 Summary:        Support for ruby.
 Group:          Development/Languages
@@ -39,6 +40,8 @@ New wave Internationalization support for Ruby.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.14.8-1
+- Update to version 1.14.8
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.14.7-1
 - Upgrade to 1.14.7
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.0-3

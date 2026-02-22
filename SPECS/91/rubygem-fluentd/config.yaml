@@ -1,0 +1,15 @@
+sources:
+- archive: fluentd-1.18.0.gem
+  archive_sha512sum: 949735ba2650104b102932f2aa60b8c101bcbdea95a6dcdf2129481877c94d068728af71a76d9e33bb5acc8e14f608c1dd1b14cb783e7ecd0de32dd53c44b076
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fluentd is an open source data collector designed to
+        scale and simplify log management. It can collect, process and ship many kinds
+        of data in near real-time. '
+      home_page: https://rubygems.org/gems/fluentd/versions/1.18.0
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: An open source data collector designed to scale and simplify
+        log management
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,14 @@
+sources:
+- archive: domain_name-0.6.20240107.gem
+  archive_sha512sum: 9911389bdfdae984f697726cd7feff5a41b944a98982cfa76d49002c4f64e51d0ec7db6259eddc97fecbcc13c9723134af26b83e050c31943dc8495866874d59
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a Domain Name manipulation library for Ruby.
+        It can also be used for cookie domain validation based on the Public Suffix
+        List. '
+      home_page: https://rubygems.org/gems/domain_name/versions/0.6.20240107
+      license_concluded: MPL-2.0 AND BSD-3-Clause AND BSD-2-Clause
+      license_declared: MPL-2.0 AND BSD-3-Clause AND BSD-2-Clause
+      short_summary: This is a Domain Name manipulation library for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

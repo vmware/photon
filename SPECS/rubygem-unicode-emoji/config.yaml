@@ -1,6 +1,6 @@
 sources:
-- archive: unicode-emoji-4.0.4.gem
-  archive_sha512sum: d189ee50a2c0d79a9639e28f4c198ea37662d9ccc585d9bbe93cbba69d282fa5474d7187ddd83f14525f5f24fba436b1f77d0afe8bad673b956a8bcb6de1baee
+- archive: unicode-emoji-4.2.0.gem
+  archive_sha512sum: f04cf4d617923bc7bb865e6a2458d2cc31f8a987470f410ed3678d71efac6b799b1e6f3ca35359535417c90a4e910af9beb90bfdc3fc0b6b9a706a881203cb31
   skip_validation: true
   spdx:
     package:

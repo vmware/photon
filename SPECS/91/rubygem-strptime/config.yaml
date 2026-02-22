@@ -1,0 +1,12 @@
+sources:
+- archive: strptime-0.2.5.gem
+  archive_sha512sum: 2f4493c6143f4984d7410c5b5270b8f93db211ae758ba3d5ca6f9e198733ad7e6d4d6996d9599f691b34d3329a242b99bd326767e52df0721b944e299ab03140
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'a fast strptime/strftime engine which uses VM '
+      home_page: https://rubygems.org/gems/strptime/versions/0.2.5
+      license_concluded: BSD-2-Clause
+      license_declared: BSD-2-Clause
+      short_summary: a fast strptime/strftime engine which uses VM
+      supplier: 'Organization: Broadcom, Inc.'

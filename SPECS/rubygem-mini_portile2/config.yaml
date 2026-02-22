@@ -1,6 +1,6 @@
 sources:
-- archive: mini_portile2-2.8.8.gem
-  archive_sha512sum: bf9d613680cd77ec016fe7b95417008a6b7048739d476758fd8c8854436648fbbe6f41446b198a40bfe7a50f3a48fbcc35427f3cf2cd28257f5222923cb8f700
+- archive: mini_portile2-2.8.9.gem
+  archive_sha512sum: 7107b3eb3376e19bcf083ece525a5241f6c2f5253cba0d20f4fbdaccf156a7ea8ac15b3d8275c2b0b91720642d24e10de61c31628640a6e0cd49de697219d7be
   skip_validation: true
   spdx:
     package:

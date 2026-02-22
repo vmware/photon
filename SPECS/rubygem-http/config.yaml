@@ -1,13 +1,13 @@
 sources:
-- archive: http-5.2.0.gem
-  archive_sha512sum: 88a813498db68827ea665c3a568ce45b0096203484564f3de18d46abdd87d2ecd756745f9f530965db306f8e37185d3d0b31959082bbe01fee5545b36b0716bd
+- archive: http-5.3.1.gem
+  archive_sha512sum: 57902d997cfa51b8cb091ce0651d12a9bffb05992b6582c7fc0260a5208539faebedbcc1e837a2ff502336a8930abf4a1b8d531bac3f5643986850735efaa658
   skip_validation: true
   spdx:
     package:
       detailed_description: 'An easy-to-use client library for making requests from
         Ruby. It uses a simple method chaining system for building requests, similar
         to Python''s Requests.'
-      home_page: https://rubygems.org/gems/http/versions/5.2.0
+      home_page: https://rubygems.org/gems/http/versions/5.3.1
       license_concluded: MIT
       license_declared: MIT
       short_summary: An easy-to-use client library for making requests from Ruby.

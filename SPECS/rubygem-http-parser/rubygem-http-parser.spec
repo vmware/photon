@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gem_name http-parser
 
 Name:           rubygem-http-parser
 Version:        1.2.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -39,6 +40,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gem_base}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-7
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-6
 - Spec bump with ruby upgrade
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-5

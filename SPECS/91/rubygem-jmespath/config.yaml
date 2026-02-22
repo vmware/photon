@@ -1,0 +1,12 @@
+sources:
+- archive: jmespath-1.6.1.gem
+  archive_sha512sum: e06f6f4d47abbe552cff4055fff3841380ee8779b61c5f68b184e1acbcc588a97ad7d83225671a9f547d1077041592553f5f44649d6ceb76d369a0fc462439f3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Implements JMESPath for Ruby. '
+      home_page: https://rubygems.org/gems/jmespath/versions/1.6.1
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Implements JMESPath for Ruby.
+      supplier: 'Organization: Broadcom, Inc.'

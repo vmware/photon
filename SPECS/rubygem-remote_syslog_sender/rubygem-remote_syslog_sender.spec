@@ -1,11 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name remote_syslog_sender
 
 Name:           rubygem-remote_syslog_sender
 Summary:        Message sender that sends directly to a remote syslog endpoint (Support UDP, TCP, TCP+TLS)
-Version:        1.2.2
-Release:        4%{?dist}
+Version:        1.2.3
+Release:        1%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,6 +42,8 @@ Message sender that sends directly to a remote syslog endpoint (Support UDP, TCP
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-1
+- Update to version 1.2.3
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.2-4
 - Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.2-3

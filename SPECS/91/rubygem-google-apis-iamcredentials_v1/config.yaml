@@ -1,0 +1,12 @@
+sources:
+- archive: google-apis-iamcredentials_v1-0.22.0.gem
+  archive_sha512sum: 7266820dc9655ed636e8aa8fe5191ab62cbbb53cafce9290c6df053994047543fe8e65d41ae17cbf464915a4067505a9b549297e12a2491c740c31aa1ac1afe4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is a simple REST client for IAM Service Account Credentials API V1.'
+      home_page: https://rubygems.org/gems/google-apis-iamcredentials_v1
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: This is a simple REST client for IAM Service Account Credentials API V1.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,11 +1,11 @@
 sources:
-- archive: protocol-http2-0.22.1.gem
-  archive_sha512sum: 822559470f464790b8a071d73174708b6efb892a3bdfd10b93bcca0687ed6a232d11792e3e0234c804ada2c0aa17bfcc1bdd5c229fa7cc758e446e5112f8ae16
+- archive: protocol-http2-0.24.0.gem
+  archive_sha512sum: feee9bbb61694cafd754afbb7537909804d0be4bbfa710b82f6a0776c29da49fd2dd0b987bc9cda7caf2379d7718cd7263864e53b74e3055741ef8e51d52fad4
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Provides a low-level implementation of the HTTP/2 protocol. '
-      home_page: https://rubygems.org/gems/protocol-http2/versions/0.22.1
+      home_page: https://rubygems.org/gems/protocol-http2/versions/0.24.0
       license_concluded: MIT
       license_declared: MIT
       short_summary: A low level implementation of the HTTP/2 protocol.

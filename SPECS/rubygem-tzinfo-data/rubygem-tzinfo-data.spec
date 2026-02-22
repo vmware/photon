@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name tzinfo-data
 
 Name: rubygem-tzinfo-data
-Version:        1.2025.2
+Version:        1.2025.3
 Release:        1%{?dist}
 Summary:        data from the IANA Time Zone database packaged as Ruby modules
 Group:          Development/Languages
@@ -40,6 +41,8 @@ Ruby modules for use with TZInfo.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2025.3-1
+- Update to version 1.2025.3
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2025.2-1
 - Upgrade to 1.2025.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2022.6-3

@@ -1,6 +1,6 @@
 sources:
-- archive: fluent-plugin-concat-2.5.0.gem
-  archive_sha512sum: 828179a0b2596c7ad8bbaeb1d814f4ee41698c2908fdb88e0c33cd1d08159baa44dac655eeffa12fd8e692def0f6bfeeffdf6605a8d769753e8e288be6d5793f
+- archive: fluent-plugin-concat-2.6.0.gem
+  archive_sha512sum: 7cffce6de8e06b38747f41dc237c3409c4a206f168ecbc417e460528d507e39415fabb6658449206854308f82b9a3f759726ba5ce423c38fc067cf744b1aab28
   skip_validation: true
   spdx:
     package:

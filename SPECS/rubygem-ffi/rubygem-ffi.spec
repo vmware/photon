@@ -1,8 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gem_name ffi
 
 Name:           rubygem-ffi
-Version:        1.17.2
+Version:        1.17.3
 Release:        1%{?dist}
 Summary:        Ruby FFI library
 Group:          Development/Languages
@@ -39,6 +40,8 @@ Ruby FFI library
 %{gem_base}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.17.3-1
+- Update to version 1.17.3
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.17.2-1
 - Upgrade to 1.17.2
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.5-4

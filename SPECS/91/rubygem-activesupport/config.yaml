@@ -1,0 +1,22 @@
+sources:
+- archive: activesupport-7.0.8.7.gem
+  archive_type: upstream
+  archive_sha512sum: ed9bdbfcb47b0429c69d69b915b9d9dc954493f831080d9e000c8e3f127d27ecf90118b77b9badfe1328cfe53acdadb604cf5a51ba48f744aa10510eaeef1d5d
+  name: rubygem-activesupport-7.0.8.7
+  version: "7.0.8.7"
+  url: https://rubygems.org/downloads/activesupport-7.0.8.7.gem
+  repo_url: https://github.com/rails/rails/
+  commit_id: 778eab826538be6da355d848aecaea2245e3b8ce
+  skip_list: []
+  missing: []
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A toolkit of support libraries and Ruby core extensions
+        extracted from the Rails framework. Rich support for multibyte strings, internationalization,
+        time zones, and testing. '
+      home_page: https://rubygems.org/gems/activesupport/versions/7.0.8.7
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Support libaries for Rails framework.
+      supplier: 'Organization: Broadcom, Inc.'

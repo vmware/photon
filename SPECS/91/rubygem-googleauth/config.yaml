@@ -1,0 +1,12 @@
+sources:
+- archive: googleauth-1.13.1.gem
+  archive_sha512sum: 70729a0238f3d54bf74d8ec52d9c20f2bd6c880ad3214d6e5da582a6b466007887e44f9810a94e10f2820e33f66117f1ebbe3654ebd32d5f342ab26c8342da72
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Google Auth Library for Ruby'
+      home_page: https://rubygems.org/gems/googleauth
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Google Auth Library for Ruby
+      supplier: 'Organization: Broadcom, Inc.'

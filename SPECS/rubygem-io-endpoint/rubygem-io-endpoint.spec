@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name io-endpoint
 
 Summary:        Abstraction for IO endpoints including sockets, SSL, pipes, etc.
 Name:           rubygem-io-endpoint
-Version:        0.15.2
+Version:        0.16.0
 Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -44,5 +45,7 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.16.0-1
+- Update to version 0.16.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.15.2-1
 - Initial version.

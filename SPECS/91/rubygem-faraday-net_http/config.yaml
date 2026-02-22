@@ -1,0 +1,12 @@
+sources:
+- archive: faraday-net_http-3.4.0.gem
+  archive_sha512sum: 4fe2bcc70b07249b8852e700ba8f8ac8060bcf36229c5d74a3f061450d39cb055db0785950d72cd7ca0c0fd636de168d4c5e2a1928940939e082feb5f6223e89
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Faraday adapter for Net::HTTP'
+      home_page: https://rubygems.org/gems/faraday-net_http
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Faraday adapter for Net::HTTP
+      supplier: 'Organization: Broadcom, Inc.'

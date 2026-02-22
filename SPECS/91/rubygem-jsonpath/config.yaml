@@ -1,0 +1,13 @@
+sources:
+- archive: jsonpath-1.1.5.gem
+  archive_sha512sum: c5f70c24c47cb703af25ac3302b3e4312f174c754d24965fd67c6b1ab0986c43a684a542e6fe520f14cf3765b3dec48306bd7321ed6a7b57dc6a5de4c78fdc42
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JSONPath is a lightweight library to search and extract
+        data from JSON documents. '
+      home_page: https://rubygems.org/gems/jsonpath
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Ruby Gem for JSONPath implementation
+      supplier: 'Organization: Broadcom, Inc.'

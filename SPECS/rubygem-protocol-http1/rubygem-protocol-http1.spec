@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name protocol-http1
 
 Name: rubygem-protocol-http1
-Version:        0.34.0
+Version:        0.36.0
 Release:        1%{?dist}
 Summary:        A low level implementation of the HTTP/1 protocol.
 Group:          Development/Libraries
@@ -43,6 +44,8 @@ Provides a low-level implementation of the HTTP/1 protocol.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.36.0-1
+- Update to version 0.36.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.34.0-1
 - Upgrade to 0.34.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15.1-3

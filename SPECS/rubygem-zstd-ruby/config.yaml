@@ -1,0 +1,12 @@
+sources:
+- archive: zstd-ruby-1.5.7.1.gem
+  archive_sha512sum: 7901720868e8cc7f9180d72a74ad554a5e474d9f70c47e5c2552b3c87ecf7a7815e44564781627a728cab35ae1e440a38f1eab4d8e24320adb3eef9f364d81a1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ruby binding for zstd(Zstandard - Fast real-time compression algorithm). See https://github.com/facebook/zstd'
+      home_page: https://rubygems.org/gems/zstd-ruby/versions/1.5.7.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Ruby binding for zstd compression algorithm
+      supplier: 'Organization: Broadcom, Inc.'

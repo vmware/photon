@@ -1,0 +1,14 @@
+sources:
+- archive: yajl-ruby-1.4.3.gem
+  archive_sha512sum: 8cfde677f11ad80a468dce7876b97aa87fa35d78fcd727d4542e00c09cc28d1cca3301cf7c4e1f773edf2192262ec8d6ffab93b11d488d2b048d8013f6c7645a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ruby C bindings to the excellent Yajl JSON stream-based
+        parser library. '
+      home_page: https://rubygems.org/gems/yajl-ruby/versions/1.4.3
+      license_concluded: MIT AND BSD-3-Clause
+      license_declared: MIT AND BSD-3-Clause
+      short_summary: Ruby C bindings to the excellent Yajl JSON stream-based parser
+        library.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,11 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name net-http
 
 Summary:        HTTP client api for Ruby.
 Name:           rubygem-net-http
-Version:        0.6.0
-Release:        2%{?dist}
+Version:        0.9.1
+Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -40,6 +41,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.9.1-1
+- Update to version 0.9.1
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.6.0-2
 - Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.6.0-1

@@ -1,12 +1,12 @@
 sources:
-- archive: remote_syslog_sender-1.2.2.gem
-  archive_sha512sum: f79af93c5fea6814ef03ba3d343205b3e3380bd1e6247b2fbd7881506df1dd219c47de992130e5666a3ac8fff753645e1c737b76f5f66b2e1c160c3d204de6b8
+- archive: remote_syslog_sender-1.2.3.gem
+  archive_sha512sum: e88c0335db2c0223b5f61899ebe441a06ba8a34eb6ca966ed84c18ee39610dd360fd72f39b664d5edd32e5a5f4b45b66f2c4395f59f3c6a14d054136c330b6e0
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Message sender that sends directly to a remote syslog
         endpoint (Support UDP, TCP, TCP+TLS) '
-      home_page: https://rubygems.org/gems/remote_syslog_sender/versions/1.2.2
+      home_page: https://rubygems.org/gems/remote_syslog_sender/versions/1.2.3
       license_concluded: MIT
       license_declared: MIT
       short_summary: Message sender that sends directly to a remote syslog endpoint

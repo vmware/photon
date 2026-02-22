@@ -1,6 +1,6 @@
 sources:
-- archive: metrics-0.12.2.gem
-  archive_sha512sum: 9c7cff3b9a1cbc73e64db8a20a15544e478ea97760eb6829ee3fb06956688e8bd4bbd9f7d3dafec535a41d1746dac18c3e3e001e3351a0f898a822068d71a162
+- archive: metrics-0.15.0.gem
+  archive_sha512sum: 7d7f9bc1a0ddf06965c10c428be2f444dae2324cf1f9a0ce4c9d44a94a04d88ab82345fee67b9f1bf9ee29c85bd26f44c1bdefbe982e2b4dd46c8a83f88c8eba
   skip_validation: true
   spdx:
     package:

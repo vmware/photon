@@ -1,0 +1,12 @@
+sources:
+- archive: google-logging-utils-0.2.0.gem
+  archive_sha512sum: 02abb5eb49bae0a7bf091d687795a678e4ee70da7e34bc48a4e24eeebcb5ae813f3d4e89228f292ff2bd997dcff364f748016ee9dc8ce107fa7dd781dd39f357
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Utility classes for logging to Google Cloud Logging'
+      home_page: https://rubygems.org/gems/google-logging-utils
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Utility classes for logging to Google Cloud Logging
+      supplier: 'Organization: Broadcom, Inc.'

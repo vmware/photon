@@ -1,0 +1,12 @@
+sources:
+- archive: io-console-0.8.2.gem
+  archive_sha512sum: 0d84909fc8bc527c93cd6ec1a5d5566ffb9a0e14a50fb7b8b6b7f7dfc564a5b17afc3077d192917dc3047323182c9f4b37783c2907ebb777d4317e71dd4127aa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'IO::Console provides very simple and portable access to console. It does not provide higher layer features, such like curses and readline.'
+      home_page: https://rubygems.org/gems/io-console/versions/0.8.2
+      license_concluded: (BSD-2-Clause OR Ruby) AND BSD-2-Clause AND Ruby
+      license_declared: (BSD-2-Clause OR Ruby) AND BSD-2-Clause AND Ruby
+      short_summary: Console interface for Ruby
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name dig_rb
 
 Name: rubygem-dig_rb
 Version:        1.0.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Array/Hash/Struct#dig backfill for ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -36,6 +37,8 @@ Array/Hash/Struct#dig backfill for ruby
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.1-6
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.1-5
 - Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.1-4

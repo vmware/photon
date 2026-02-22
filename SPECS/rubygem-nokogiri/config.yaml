@@ -1,43 +1,95 @@
 sources:
-- archive: nokogiri-1.18.8.gem
-  archive_sha512sum: 972f5d3aba21a2e9baa373c19344dcc4fe6bc6190b1ae7b6eccd34af5d4be025df1172c57e25ae82b4b3e71d95fd418e5e7a8e981958da6ff34a240ea90a4040
-  skip_validation: true
+- archive: nokogiri-1.19.1.gem
+  archive_type: upstream
+  archive_sha512sum: eb8f55c2ca5e0b15b0f106fef7333bc4e4a93e0936a276823deaf32f77351826ae709cda56bd47411c194a5e5a1abe07abbe122461093e28ea70444290a7d778
+  name: rubygem-nokogiri-1.19.1.gem
+  version: "1.19.1"
+  url: https://rubygems.org/downloads/nokogiri-1.19.1.gem
+  repo_url: https://github.com/sparklemotion/nokogiri
+  commit_id: d9130457369de8a6efcb764e6da2cb80d5d3b6dd
+  skip_list: []
+  missing: ['.rubocop_todo.yml', 'Rakefile', 'misc', 'CHANGELOG.md', 'java', '.rubocop_exclude.yml', 'nokogiri.gemspec', 'scripts', 'test', '.editorconfig', 'adr', 'suppressions', 'CONTRIBUTING.md', 'org', '.cross_rubies', 'xerces', 'fuzzer', 'net', '.gitkeep', 'xalan', 'appveyor.yml', '.gitignore', 'Gemfile-libxml-ruby', 'SECURITY.md', 'nu', 'xml-apis', 'gperf-filter.sed', 'oci-images', 'ports', 'ROADMAP.md', 'CODE_OF_CONDUCT.md', '.github', '.rubocop.yml', '.gitmodules', 'rakelib', 'isorelax']
+  skip_validation: false
   license_manual_review:
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/test/schemas/changelog093_1.xsd
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/test/schemas/changelog093_1.xsd
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/test/schemas/changelog093_1.xsd
     sha256sum: 415769142ed8530e213000b9e3430bf702d372822ec0c8164691a4bdd34088a2
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/result/intsubset2.xml
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml
     sha256sum: a243b10390a9a6d3316a08c1c520f27051756602931965a1cea1a8780fb9edba
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/result/noent/intsubset2.xml.sax2
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/noent/intsubset2.xml.sax2
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/noent/intsubset2.xml.sax2
     sha256sum: 92eefb73d7f167dc8c19ed6ed412625a0e490d150b9b2786e3e962f1c52d677c
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/result/noent/intsubset2.xml
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/noent/intsubset2.xml
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/noent/intsubset2.xml
     sha256sum: a243b10390a9a6d3316a08c1c520f27051756602931965a1cea1a8780fb9edba
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/result/intsubset2.xml.sax2
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.sax2
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.sax2
     sha256sum: 92eefb73d7f167dc8c19ed6ed412625a0e490d150b9b2786e3e962f1c52d677c
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/result/intsubset2.xml.sax
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.sax
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.sax
     sha256sum: 3225772007aa0c92dea1e3b4121fc6fda2b61614fbb5081b3b9a08ebfef498b6
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/test/intsubset2.xml
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/test/intsubset2.xml
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/test/intsubset2.xml
     sha256sum: 817a075583738093b43723ecf4bbd5663625e84cdbf5e7d71e3cce2fd0aeacb2
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/result/intsubset2.xml.rde
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.rde
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.rde
     sha256sum: eadcd256c7648c434af64f0b76227e61c916fc70632ae43040c75988b0df23ac
     spdx_exp: ''
   - file_paths:
-    - nokogiri-1.18.8/ports/archives/libxml2-2.13.8.tar.xz-extract/libxml2-2.13.8/result/intsubset2.xml.rdr
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.rdr
+    - nokogiri-1.19.1/ports/archives/libxml2-2.13.9.tar.xz-extract/libxml2-2.13.9/result/intsubset2.xml.rdr
     sha256sum: eadcd256c7648c434af64f0b76227e61c916fc70632ae43040c75988b0df23ac
+    spdx_exp: ''
+  - file_paths:
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/README
+    - nokogiri-1.19.1/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/README
+    sha256sum: 9a48dbf8520aa3d6aa43982ee58bf207eda13e4c72aac02cf95904f11038384f
+    spdx_exp: ''
+  - file_paths:
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/calstblx.dtd
+    - nokogiri-1.19.1/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/calstblx.dtd
+    sha256sum: 78a2078e9f5d695c85b36abfc8a3bcbb57278c8cac6434c1cbb2865e2b22f99f
+    spdx_exp: ''
+  - file_paths:
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbnotnx.mod
+    - nokogiri-1.19.1/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbnotnx.mod
+    sha256sum: c33a49268e6b78cfb43f82e59d177ac9c9f37c710fb659ee0e8d35800f215a13
+    spdx_exp: ''
+  - file_paths:
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbcentx.mod
+    - nokogiri-1.19.1/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbcentx.mod
+    sha256sum: 63046ccc1f08248b1a1eb040e4741943e154ccaee3099338805d777f80b9657e
+    spdx_exp: ''
+  - file_paths:
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbhierx.mod
+    - nokogiri-1.19.1/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbhierx.mod
+    sha256sum: 6eeecdde7cc0552cc1579550b4eb212edb02ac5d5ccbf0a4effb9ec355d55f42
+    spdx_exp: ''
+  - file_paths:
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbpoolx.mod
+    - nokogiri-1.19.1/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/dbpoolx.mod
+    sha256sum: b502f6babdf20606467109299588e57f2b9e005e83bd729d214ea5c374caadd3
+    spdx_exp: ''
+  - file_paths:
+    - nokogiri-1.19.1.gem-extract/data.tar.gz-extract/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/docbookx.dtd
+    - nokogiri-1.19.1/ports/archives/libxslt-1.1.43.tar.xz-extract/libxslt-1.1.43/tests/docbook/dtd/4.0/docbookx.dtd
+    sha256sum: b614660a3400f9a159dfdebf59fcaac237a7b18b73152df4adc4541bc9b93e75
     spdx_exp: ''
   spdx:
     package:

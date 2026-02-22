@@ -1,11 +1,11 @@
 sources:
-- archive: oj-3.16.1.gem
-  archive_sha512sum: 4665f10330e3b0121806a9d6e89977141f18466aa09377c313b384fd7331551e9c2ccb3caa59f6fe3b1d40975f8970be53f5cc10413dd2856439b6294003722f
+- archive: oj-3.16.13.gem
+  archive_sha512sum: 9f76f3ee5538adc879e8347fddcf384e7fdbc7b3cff3839072eb826ff53f6e2fbe4c7ceff5563f63c0601bdec0652891205787125c404f1fcf735fc33a853705
   skip_validation: true
   spdx:
     package:
       detailed_description: 'The fastest JSON parser and object serializer. '
-      home_page: https://rubygems.org/gems/oj/versions/3.16.1
+      home_page: https://rubygems.org/gems/oj/versions/3.16.13
       license_concluded: MIT
       license_declared: MIT
       short_summary: The fastest JSON parser and object serializer.

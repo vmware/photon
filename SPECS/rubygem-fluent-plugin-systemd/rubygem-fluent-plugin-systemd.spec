@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name fluent-plugin-systemd
 
 Name: rubygem-fluent-plugin-systemd
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        This is a fluentd input plugin. It reads logs from the systemd journal.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -43,6 +44,8 @@ This is a fluentd input plugin. It reads logs from the systemd journal.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.1-2
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.1-1
 - Upgrade to 1.1.1
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.5-3

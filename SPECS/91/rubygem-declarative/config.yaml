@@ -1,0 +1,12 @@
+sources:
+- archive: declarative-0.0.20.gem
+  archive_sha512sum: de162d347ae327725c45779424d8a9f4e25109eb45e5f4bc4f8e8b86ddd347623aa93630f371b766f070f6236e2d03008d481e1e9332073869468abbe3eca822
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'DSL for nested generic schemas with inheritance and refining.'
+      home_page: https://rubygems.org/gems/declarative
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: DSL for nested generic schemas with inheritance and refining.
+      supplier: 'Organization: Broadcom, Inc.'

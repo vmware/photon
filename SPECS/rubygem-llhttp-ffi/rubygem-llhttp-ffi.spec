@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gem_name llhttp-ffi
 
 Name:           rubygem-llhttp-ffi
 Version:        0.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -21,7 +22,7 @@ BuildRequires: rubygem-ffi-compiler
 Requires: rubygem-addressable >= 2.3.0, rubygem-addressable < 3.0.0
 Requires: rubygem-http-cookie >= 1.0.0, rubygem-http-cookie < 2.0.0
 Requires: rubygem-http-form_data >= 2.2.0
-Requires: rubygem-http_parser.rb >= 0.6.0, rubygem-http_parser.rb < 0.8.1
+Requires: rubygem-http_parser.rb >= 0.6.0, rubygem-http_parser.rb < 0.9.0
 Requires: rubygem-http-parser
 Requires: rubygem-ffi-compiler
 Requires: ruby
@@ -44,6 +45,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gem_base}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.5.1-2
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.5.1-1
 - Upgrade to 0.5.1
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.4.0-5

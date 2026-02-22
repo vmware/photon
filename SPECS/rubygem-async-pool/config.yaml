@@ -1,12 +1,12 @@
 sources:
-- archive: async-pool-0.10.3.gem
-  archive_sha512sum: 2839878852356733594c1c9f24c553d9f06e6658f261ef9bbfc0cdac87ec3b1b3609e2f20216b9931b8cb81c06adb8eb40868f53d68752740736b79bbcee9509
+- archive: async-pool-0.11.1.gem
+  archive_sha512sum: 4057eece27b8b47c85228f0a2d08eb70e3fa9bf4c5ef560af8a07ae734044c3e996cac3d2db32523bb9344c24267a83b6cd0681c3f004686555c67340db4a053
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Provides low level cross-platform primitives for constructing
         event loops, with support for select, kqueue, epoll and io_uring. '
-      home_page: https://rubygems.org/gems/async-pool/versions/0.10.3
+      home_page: https://rubygems.org/gems/async-pool/versions/0.11.1
       license_concluded: MIT
       license_declared: MIT
       short_summary: An event loop.

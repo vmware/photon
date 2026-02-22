@@ -1,0 +1,13 @@
+sources:
+- archive: ronn-0.7.3.gem
+  archive_sha512sum: 885418c88d5a1073f9457ea11e29d82d3bb40ad12506589ccfab83ad447445e41282c9688aba5646082ae5ecc6a047fa9439ffae14561152fc61a136474f611c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ronn converts textfiles to standard roff-formatted UNIX
+        manpages or HTML '
+      home_page: https://rubygems.org/gems/ronn/versions/0.7.3
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: manual authoring tool
+      supplier: 'Organization: Broadcom, Inc.'

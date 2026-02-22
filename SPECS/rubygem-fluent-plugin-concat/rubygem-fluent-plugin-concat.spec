@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name fluent-plugin-concat
 
 Name: rubygem-fluent-plugin-concat
-Version:        2.5.0
-Release:        4%{?dist}
+Version:        2.6.0
+Release:        1%{?dist}
 Summary:        Fluentd Filter plugin to concat multiple event messages.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -40,6 +41,8 @@ Fluentd Filter plugin to concatenate multiline log separated in multiple events.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.6.0-1
+- Update to version 2.6.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.5.0-4
 - Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.5.0-3

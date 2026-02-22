@@ -1,0 +1,14 @@
+sources:
+- archive: rest-client-2.1.0.gem
+  archive_sha512sum: fe5d44409dfe607566b4c0324441d9a3981776699027bfbc92283b1cd425f204211fc872593cb0784e0ca7a5e061e98793540eedfeb1891d9a8afd53a5ce01de
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A simple HTTP and REST client for Ruby, inspired by the
+        Sinatra microframework style of specifying actions: get, put, post, delete. '
+      home_page: https://rubygems.org/gems/rest-client/versions/2.1.0
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
+      short_summary: 'A simple HTTP and REST client for Ruby, inspired by the Sinatra
+        microframework style of specifying actions: get, put, post, delete.'
+      supplier: 'Organization: Broadcom, Inc.'

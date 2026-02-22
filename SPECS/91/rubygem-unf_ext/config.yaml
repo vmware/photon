@@ -1,0 +1,12 @@
+sources:
+- archive: unf_ext-0.0.9.1.gem
+  archive_sha512sum: f2d0d58dc0ed30e3e99ac75022c8ea78bf4ad51c8803009c059de087b1cd439e06a8e7ef4c1be5c75048f85afe6c301f402ed21405ff02ad36ea73209416994d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Unicode Normalization Form support library for CRuby. '
+      home_page: https://rubygems.org/gems/unf_ext/versions/0.0.9.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Unicode Normalization Form support library for CRuby.
+      supplier: 'Organization: Broadcom, Inc.'

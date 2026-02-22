@@ -1,11 +1,11 @@
 sources:
-- archive: i18n-1.14.7.gem
-  archive_sha512sum: 52be5d4f2bccc6be24aac23e8a72abef94efa16d37df153a067500a3be2d9dbbc232ca6804f2a473b7fddc529a2c76536de31c69a5c6a19c22ad9405b16f690d
+- archive: i18n-1.14.8.gem
+  archive_sha512sum: d58ad5276191ac08481da7d680572cabb655f6e5ddca6fcfa524e1dcfb73e3759e9fa2c70cafdf62028f31612c9a01219fb2c9bec6ec5bdcfb1d684404e51714
   skip_validation: true
   spdx:
     package:
       detailed_description: 'New wave Internationalization support for Ruby. '
-      home_page: https://rubygems.org/gems/i18n/versions/1.14.7
+      home_page: https://rubygems.org/gems/i18n/versions/1.14.8
       license_concluded: MIT
       license_declared: MIT
       short_summary: Support for ruby.

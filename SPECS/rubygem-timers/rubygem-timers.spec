@@ -1,10 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name timers
 
 Name: rubygem-timers
 Version:        4.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Schedule procs to run after a certain time, or at periodic intervals, using any API that accepts a timeout.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +39,8 @@ Schedule procs to run after a certain time, or at periodic intervals, using any 
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.4.0-2
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.4.0-1
 - Upgrade to 4.4.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.5-3

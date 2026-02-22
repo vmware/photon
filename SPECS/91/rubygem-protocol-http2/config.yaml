@@ -1,0 +1,12 @@
+sources:
+- archive: protocol-http2-0.22.1.gem
+  archive_sha512sum: 822559470f464790b8a071d73174708b6efb892a3bdfd10b93bcca0687ed6a232d11792e3e0234c804ada2c0aa17bfcc1bdd5c229fa7cc758e446e5112f8ae16
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides a low-level implementation of the HTTP/2 protocol. '
+      home_page: https://rubygems.org/gems/protocol-http2/versions/0.22.1
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A low level implementation of the HTTP/2 protocol.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,3 +1,4 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name rbvmomi
@@ -5,7 +6,7 @@
 Summary:        Ruby interface to the VMware vSphere API.
 Name:           rubygem-rbvmomi
 Version:        3.0.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -48,6 +49,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.0-6
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.0-5
 - Spec bump with ruby upgrade
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.0-4

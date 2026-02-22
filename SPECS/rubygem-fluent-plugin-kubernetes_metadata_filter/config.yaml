@@ -1,6 +1,6 @@
 sources:
-- archive: fluent-plugin-kubernetes_metadata_filter-3.6.0.gem
-  archive_sha512sum: d51cc4f85458e024f28f143344f63b3d0dcf475d9616b5663638b0bc46f5e1151fc2665bfd3a179498898c68c1206f72842baddb6ab052ce56fbad5072d0aa49
+- archive: fluent-plugin-kubernetes_metadata_filter-3.8.0.gem
+  archive_sha512sum: 33cd0abf9df65bbd90e8148ef8bcc1c8400e2de8f605d02eea2d8816bfbff6e007eee415ea270a3bd0a8880b43b624a46fe41e8a34d3da87a9de7a173763a763
   skip_validation: true
   spdx:
     package:
@@ -16,7 +16,7 @@ sources:
         emitting a log record, it will use an ''orphan'' namespace ID in the metadata.
         This behaviors supports multi-tenant systems that rely on the authenticity
         of the namespace for proper log isolation. '
-      home_page: https://rubygems.org/gems/fluent-plugin-kubernetes_metadata_filter/versions/3.6.0
+      home_page: https://rubygems.org/gems/fluent-plugin-kubernetes_metadata_filter/versions/3.8.0
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Fluentd Filter plugin to add Kubernetes metadata.

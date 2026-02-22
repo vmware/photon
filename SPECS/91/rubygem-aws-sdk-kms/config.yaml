@@ -1,0 +1,13 @@
+sources:
+- archive: aws-sdk-kms-1.100.0.gem
+  archive_sha512sum: 8ff7c5c26d3fe257268cd6d71300c94a2ee32257202b6bbdbe35eba1928c2151fee14f09856e329e2b0ef3ae3faaedffde822176f9e2934eac1fc97095128d33
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Official AWS Ruby gem for AWS Key Management Service
+        (KMS). This gem is part of the AWS SDK for Ruby. '
+      home_page: https://rubygems.org/gems/aws-sdk-kms/versions/1.100.0
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Official AWS Ruby gem for AWS Key Management Service (KMS).
+      supplier: 'Organization: Broadcom, Inc.'

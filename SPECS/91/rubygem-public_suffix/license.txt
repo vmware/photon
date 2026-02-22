@@ -1,0 +1,1 @@
+License: MIT AND MPL-2.0

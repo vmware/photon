@@ -1,0 +1,25 @@
+From 8f8cce2a9233dc6deda1510ee8555279802d8517 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivani.agarwal@broadcom.com>
+Date: Wed, 25 Mar 2026 09:44:57 +0000
+Subject: [PATCH] Fix: Relax 'uri' version constraint.
+
+---
+ fluentd.gemspec | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fluentd.gemspec b/fluentd.gemspec
+index e5be769..cc330a5 100644
+--- a/fluentd.gemspec
++++ b/fluentd.gemspec
+@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
+   s.add_runtime_dependency(%q<strptime>.freeze, [">= 0.2.4".freeze, "< 1.0.0".freeze])
+   s.add_runtime_dependency(%q<webrick>.freeze, ["~> 1.4".freeze])
+   s.add_runtime_dependency(%q<zstd-ruby>.freeze, ["~> 1.5".freeze])
+-  s.add_runtime_dependency(%q<uri>.freeze, ["~> 1.0".freeze, "< 1.1.0".freeze])
++  s.add_runtime_dependency(%q<uri>.freeze, ["~> 1.0".freeze, "< 1.2.0".freeze])
+   s.add_runtime_dependency(%q<async-http>.freeze, ["~> 0.86".freeze])
+   s.add_runtime_dependency(%q<base64>.freeze, ["~> 0.2".freeze])
+   s.add_runtime_dependency(%q<csv>.freeze, ["~> 3.2".freeze])
+-- 
+2.43.7
+

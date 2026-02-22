@@ -1,6 +1,6 @@
 sources:
-- archive: faraday-net_http-3.4.0.gem
-  archive_sha512sum: 4fe2bcc70b07249b8852e700ba8f8ac8060bcf36229c5d74a3f061450d39cb055db0785950d72cd7ca0c0fd636de168d4c5e2a1928940939e082feb5f6223e89
+- archive: faraday-net_http-3.4.2.gem
+  archive_sha512sum: 93994eae7a6e0406b978031f2cf9f5ee55364493a1b4605d1621d79a730c1be3813c76113ec5626f0c846aa379fc9d202f1316bd8d42655e8c5a52dcff9872c3
   skip_validation: true
   spdx:
     package:

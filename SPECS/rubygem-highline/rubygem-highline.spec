@@ -1,23 +1,25 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name highline
 
-Name: rubygem-highline
-Version: 3.1.2
-Release: 1%{?dist}
-Summary: A high-level IO library that provides validation, type conversion, and more for command-line interfaces
-Group: Applications/Programming
+Name:           rubygem-highline
+Version:        3.1.2
+Release:        2%{?dist}
+Summary:        A high-level IO library that provides validation, type conversion, and more for command-line interfaces
+Group:          Applications/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL: https://rubygems.org/gems/%{gem_name}
-Source0: https://rubygems.org/downloads/highline-%{version}.gem
+URL:            https://rubygems.org/gems/%{gem_name}
+Source0:        https://rubygems.org/downloads/highline-%{version}.gem
 
-Source1: license.txt
-%include %{SOURCE1}
+Source1:        license.txt
+%include        %{SOURCE1}
 
-BuildRequires: ruby-devel
+BuildRequires:  ruby-devel
 
-Requires: ruby
+Requires:       ruby
+
 %description
 A high-level IO library that provides validation, type conversion, and more for command-line interfaces
 
@@ -40,6 +42,8 @@ LANG=en_US.UTF-8  rake test
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.2-2
+- bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.2-1
 - Upgrade to 3.1.2
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.3-3

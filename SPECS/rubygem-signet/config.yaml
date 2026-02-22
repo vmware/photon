@@ -1,6 +1,6 @@
 sources:
-- archive: signet-0.20.0.gem
-  archive_sha512sum: 4b9f49192c30986817f1dc38ef93e1d7d5de7899c6ec60473fe1461171d296aa82a906bc7ac18e948500165613a35d122019edc956e7c679e601fa5a1c176e58
+- archive: signet-0.21.0.gem
+  archive_sha512sum: 34c3bbffaad07afb8dabecb4ae21347ac095a811033582c1b1e332132475683de6de8c1a738641deefbfc62148cc79e0527d463a9b993f4377b7646935ee0482
   skip_validation: true
   spdx:
     package:

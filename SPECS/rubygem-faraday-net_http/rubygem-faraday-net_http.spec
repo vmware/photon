@@ -1,11 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name faraday-net_http
 
 Summary:        Faraday adapter for Net::HTTP
 Name:           rubygem-faraday-net_http
-Version:        3.4.0
-Release:        2%{?dist}
+Version:        3.4.2
+Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +45,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.2-1
+- Update to version 3.4.2
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.0-2
 - Spec bump with ruby upgrade
 * Fri Feb 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.0-1

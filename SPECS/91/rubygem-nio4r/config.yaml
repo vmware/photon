@@ -1,0 +1,12 @@
+sources:
+- archive: nio4r-2.7.4.gem
+  archive_sha512sum: 6c8280484066ffc39e98b99dfaf5a69fe2a28cafb380924f448673fda8b69b5d97f8b75b8345b91d92f6186f0664e09bec8e1c7c19c070219b030f554824d2ac
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cross-platform asynchronous I/O primitives for scalable network clients and servers. Inspired by the Java NIO API, but simplified for ease-of-use. '
+      home_page: https://rubygems.org/gems/nio4r/versions/2.7.4
+      license_concluded: (BSD-2-Clause OR GPL-2.0-or-later) AND BSD-2-Clause AND MIT
+      license_declared: (BSD-2-Clause OR GPL-2.0-or-later) AND BSD-2-Clause AND MIT
+      short_summary: Cross-platform asynchronous I/O primitives for scalable network clients and servers.
+      supplier: 'Organization: Broadcom, Inc.'

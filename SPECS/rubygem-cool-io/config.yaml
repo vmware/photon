@@ -1,12 +1,12 @@
 sources:
-- archive: cool.io-1.9.0.gem
-  archive_sha512sum: 3e9f2051353c0bcf89cbe51e97606d69965d576776312cd021af12b3a8cd95e505212a1a92b3152effc3580791221c854b2158a9e37acd9f89e391732383cd44
+- archive: cool.io-1.9.1.gem
+  archive_sha512sum: 67515ced64535e1926e6e92eec872e149897629ec6da6c109bdc869a1e3e3b0911f935a610b45fd827e627cdea48f7cc5c1ed799267496e63f1f747f263b42c3
   skip_validation: true
   spdx:
     package:
       detailed_description: 'a high performance event framework for Ruby which uses
         the libev C library '
-      home_page: https://rubygems.org/gems/cool.io/versions/1.9.0
+      home_page: https://rubygems.org/gems/cool.io/versions/1.9.1
       license_concluded: MIT AND (BSD-2-Clause OR GPL-2.0-or-later)
       license_declared: MIT AND (BSD-2-Clause OR GPL-2.0-or-later)
       short_summary: a high performance event framework for Ruby which uses the libev

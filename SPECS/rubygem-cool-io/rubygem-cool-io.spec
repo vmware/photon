@@ -1,8 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gem_name cool.io
 
 Name:           rubygem-cool-io
-Version:        1.9.0
+Version:        1.9.1
 Release:        1%{?dist}
 Summary:        a high performance event framework for Ruby which uses the libev C library
 Group:          Development/Languages
@@ -35,6 +36,8 @@ A high performance event framework for Ruby which uses the libev C library
 %{gem_base}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.9.1-1
+- Update to version 1.9.1
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.9.0-1
 - Upgrade to 1.9.0
 * Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.1-4

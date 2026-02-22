@@ -1,6 +1,6 @@
 sources:
-- archive: io-stream-0.6.1.gem
-  archive_sha512sum: 9aa0c98909e44c3ee3c75e1e6eb931887a032c05bf7ed27b46fe299cdf120dd243345ac6fd7868fb2c56aced615e06334c68e596c0f1cdcbc78eb73637a5e0a8
+- archive: io-stream-0.11.1.gem
+  archive_sha512sum: a20d2c99c60590df702af32bb89c26739ea515857dd406c5434e01cc9a420d2f848acb117fec86a6ab65dff85332fdc74e97ec57809a9d5099189c975a607fbe
   skip_validation: true
   spdx:
     package:

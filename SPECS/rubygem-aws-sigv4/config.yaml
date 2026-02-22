@@ -1,12 +1,12 @@
 sources:
-- archive: aws-sigv4-1.11.0.gem
-  archive_sha512sum: 2ad243cedbf386c141caa63ccc9c4896a9777946f4330db851ca986c66115464cb6ccba3a20528e719d9c2bb1c386d4095915af9f06209ca1fc565e701ed6dbc
+- archive: aws-sigv4-1.12.1.gem
+  archive_sha512sum: 39423ad2075cc4eeaaa0ea787bd1defa87654fb33c40d72056aefaa134bf5c19e7eba43f01108abb7ba48c95b5f831f9f0a3b56366a71422c75583e5391e3e8c
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Amazon Web Services Signature Version 4 signing library.
         Generates sigv4 signature for HTTP requests. '
-      home_page: https://rubygems.org/gems/aws-sigv4/versions/1.11.0
+      home_page: https://rubygems.org/gems/aws-sigv4/versions/1.12.1
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Amazon Web Services Signature Version 4 signing library.

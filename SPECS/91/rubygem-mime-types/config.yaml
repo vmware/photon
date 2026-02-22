@@ -1,0 +1,22 @@
+sources:
+- archive: mime-types-3.7.0.gem
+  archive_sha512sum: ea00d78a3176c96c28b45df68d4b32a1e6b7ce604311178a3a114e544ff7fa56e8abb7c7aff1a29f8b7f4797759739c284c73638777fb9599ae3483d5046de08
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The mime-types library provides a library and registry
+        for information about MIME content type definitions. It can be used to determine
+        defined filename extensions for MIME types, or to use filename extensions
+        to look up the likely MIME type definitions. Version 3.0 is a major release
+        that requires Ruby 2.0 compatibility and removes deprecated functions. The
+        columnar registry format introduced in 2.6 has been made the primary format;
+        the registry data has been extracted from this library and put into {mime-types-data}[https://github.com/mime-types/mime-types-data].
+        Additionally, mime-types is now licensed exclusively under the MIT licence
+        and there is a code of conduct in effect. There are a number of other smaller
+        changes described in the History file. '
+      home_page: https://rubygems.org/gems/mime-types/versions/3.7.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: The mime-types library provides a library and registry for information
+        about MIME content type definitions.
+      supplier: 'Organization: Broadcom, Inc.'

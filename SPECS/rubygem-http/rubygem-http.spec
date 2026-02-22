@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name http
 
 Name:           rubygem-http
-Version:        5.2.0
+Version:        5.3.1
 Release:        1%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
@@ -26,7 +27,7 @@ BuildRequires: rubygem-llhttp-ffi
 Requires: rubygem-addressable >= 2.3.0, rubygem-addressable < 3.0.0
 Requires: rubygem-http-cookie >= 1.0.0, rubygem-http-cookie < 2.0.0
 Requires: rubygem-http-form_data >= 2.2.0
-Requires: rubygem-http_parser.rb >= 0.6.0, rubygem-http_parser.rb < 0.8.1
+Requires: rubygem-http_parser.rb >= 0.6.0, rubygem-http_parser.rb < 0.9.0
 Requires: rubygem-http-parser
 Requires: rubygem-llhttp-ffi
 Requires: ruby
@@ -51,6 +52,8 @@ method chaining system for building requests, similar to Python's Requests.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.3.1-1
+- Update to version 5.3.1
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.2.0-1
 - Upgrade to 5.2.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.1-3

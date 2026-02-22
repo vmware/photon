@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name aws-sdk-s3
 
 Name: rubygem-aws-sdk-s3
-Version:        1.209.0
+Version:        1.212.0
 Release:        1%{?dist}
 Summary:        Official AWS Ruby gem for Amazon Simple Storage Service (Amazon S3).
 Group:          Development/Languages
@@ -43,6 +44,8 @@ This gem is part of the AWS SDK for Ruby.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.212.0-1
+- Update to version 1.212.0
 * Mon Jan 05 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.209.0-1
 - Upgrade to 1.209.0 to fix CVE-2025-14762
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.185.0-1

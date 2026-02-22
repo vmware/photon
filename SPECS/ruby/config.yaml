@@ -1,10 +1,10 @@
 sources:
-- archive: ruby-3.4.7.tar.gz
-  archive_sha512sum: 7c9b807aa794a19377b0048da0e94869bf57905cf68d4f30b959aefb9f67834a51e06a23c9eee858e7f90938dbc38a5072bc946df502a6bcf86bf198ae061e22
+- archive: ruby-4.0.1.tar.gz
+  archive_sha512sum: f4eead09c7355b878a34343dd8cfb9c4c36f02ad3b9a7fd42981d722444beca0182ddea4fc771e2e01a05d9f14978a979ba0ba3590d366f53b6947f43fd78aff
   license_manual_review:
   - file_paths:
-    - ruby-3.4.7/lib/rubygems/util/licenses.rb
-    sha256sum: 853af9a10748ef12fe3dcc3a6f3c74d0fdc5f328de0f865f0664ab9294a999d2
+    - ruby-4.0.1/lib/rubygems/util/licenses.rb
+    sha256sum: 4419e64d89791e9103cbf4406b394f85a2d466f1297268b3f171de8259584670
     spdx_exp: 2-clause BSDL
   skip_validation: true
   spdx:
@@ -14,15 +14,4 @@ sources:
       license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-2-Clause OR Ruby) AND (EPL-1.0 OR LGPL-2.1-or-later) AND (EPL-2.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR MIT) AND (MIT OR Ruby) AND AGPL-3.0-only AND Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause AND BSD-4-Clause-UC AND CC-BY-2.0 AND CC-BY-4.0 AND CC0-1.0 AND FSFUL AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND HPND-Markus-Kuhn AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND OFL-1.1 AND Python-2.0 AND Ruby AND Zlib AND dtoa
       license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-2-Clause OR Ruby) AND (EPL-1.0 OR LGPL-2.1-or-later) AND (EPL-2.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later) AND (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR MIT) AND (MIT OR Ruby) AND AGPL-3.0-only AND Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause AND BSD-4-Clause-UC AND CC-BY-2.0 AND CC-BY-4.0 AND CC0-1.0 AND FSFUL AND FSFULLR AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND HPND-Markus-Kuhn AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND OFL-1.1 AND Python-2.0 AND Ruby AND Zlib AND dtoa
       short_summary: Ruby
-      supplier: 'Organization: Broadcom, Inc.'
-- archive: rexml-3.4.4.tar.gz
-  archive_sha512sum: 1c8f1051a8a63696952a036f06fef99df4d2750b2ab5a0f513b82bb736f0c61fe4974b021a2cafb9194efcbe247b037bd9049ba9de6793c869984579470af75d
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: REXML supports both tree and stream document parsing
-      home_page: https://github.com/ruby/rexml
-      license_concluded: BSD-2-Clause AND MIT AND Saxpath
-      license_declared: BSD-2-Clause AND MIT AND Saxpath
-      short_summary: REXML supports both tree and stream document parsing
       supplier: 'Organization: Broadcom, Inc.'

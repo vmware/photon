@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name rubyzip
 
 Name:           rubygem-rubyzip
-Version:        2.4.1
+Version:        3.2.2
 Release:        1%{?dist}
 Summary:        Ruby library for reading and writing Zip files
 Group:          Applications/Programming
@@ -44,5 +45,7 @@ rake test
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.2-1
+- Update to version 3.2.2
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.4.1-1
 - Initial version

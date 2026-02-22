@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name async-http
 
 Name: rubygem-async-http
-Version:        0.89.0
+Version:        0.94.0
 Release:        1%{?dist}
 Summary:        A HTTP client and server library.
 Group:          Development/Libraries
@@ -17,23 +18,25 @@ Source1: license.txt
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-async
+BuildRequires: rubygem-async-pool
+BuildRequires: rubygem-fiber-local
+BuildRequires: rubygem-io-endpoint
+BuildRequires: rubygem-io-stream
 BuildRequires: rubygem-protocol-http
 BuildRequires: rubygem-protocol-http1
 BuildRequires: rubygem-protocol-http2
-BuildRequires: rubygem-fiber-local
-BuildRequires: rubygem-async-pool
-BuildRequires: rubygem-io-stream
-BuildRequires: rubygem-io-endpoint
+BuildRequires: rubygem-protocol-url
 
+Requires: ruby
 Requires: rubygem-async >= 2.10.2
+Requires: rubygem-async-pool
+Requires: rubygem-fiber-local
+Requires: rubygem-io-endpoint
+Requires: rubygem-io-stream
 Requires: rubygem-protocol-http >= 0.24.0
 Requires: rubygem-protocol-http1 >= 0.15.1
 Requires: rubygem-protocol-http2 >= 0.15.0
-Requires: rubygem-fiber-local
-Requires: rubygem-async-pool
-Requires: rubygem-io-stream
-Requires: rubygem-io-endpoint
-Requires: ruby
+Requires: rubygem-protocol-url >= 0.2
 
 BuildArch: noarch
 
@@ -56,6 +59,8 @@ and async-io. falcon provides a rack-compatible server.
 %{gemdir}
 
 %changelog
+* Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.94.0-1
+- Update to version 0.94.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.89.0-1
 - Upgrade to 0.89.0
 * Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.60.2-3
