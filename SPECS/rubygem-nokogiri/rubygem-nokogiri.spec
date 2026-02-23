@@ -4,7 +4,7 @@
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
 Version:        1.13.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -12,6 +12,9 @@ Distribution:   Photon
 URL:            https://rubygems.org/gems/nokogiri/
 Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
 %define sha512  nokogiri=1928b41b1e8f5e99792b8427b8228343d53deca56d472055b2afdf29d247637acc3403c5183be0f80e64b55ba20747a152ce5eebdaf90a4c431ca54010ce4b3f
+
+# Remove this patch with nokogiri-1.19.1 upgrade
+Patch0:         0001-Raise-RuntimeError-when-canonicalization-fails.patch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-mini_portile2
@@ -28,6 +31,7 @@ Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -40,6 +44,8 @@ Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features
 %{gem_base}
 
 %changelog
+*   Mon Feb 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.6-2
+-   Fixing potential security issue with Raise RuntimeError when canonicalization fails
 *   Mon May 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.6-1
 -   Fix CVE-2022-29181, CVE-2022-24836, CVE-2018-25032 and CVE-2021-30560
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.12.5-5
