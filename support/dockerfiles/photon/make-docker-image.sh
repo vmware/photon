@@ -9,6 +9,11 @@ echoerr() {
 PH_REL_VER="${PHOTON_RELEASE_VERSION}"
 echo "PHOTON_RELEASE_VERSION=${PH_REL_VER}"
 
+# TODO: this should be set from env or while invoking this script from build.py
+# Since we are still at development phase for 9.2, keeping the logic fragmented
+# Once all package splits are done, builder should be patched as needed
+PH_SUBRELASE_VER=""
+
 arch="$(uname -m)"
 SYSROOT=/sysroot
 ROOTFS_TAR_FILENAME="/photon/stage/photon-rootfs-$PH_REL_VER-$PHOTON_BUILD_NUMBER.${arch}.tar.gz"
@@ -50,13 +55,19 @@ fi
 expected_pkg_list=(
   bash bzip2-libs ca-certificates ca-certificates-pki curl curl-libs
   e2fsprogs-libs elfutils-libelf expat-libs filesystem glibc glibc-libs
-  krb5 libcap libgcc libsolv libssh2 libxcrypt lua-libs ncurses-libs nspr
+  krb5 libgcc libsolv libssh2 libxcrypt lua-libs ncurses-libs nspr
   nss-libs openssl-libs photon-release photon-repos popt readline rpm-libs
   sqlite-libs tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
 )
 
 if [ ${isRpmV6} -ne 0 ]; then
   expected_pkg_list+=(libstdc++ rpm-sequoia)
+fi
+
+if rpm --root "${SYSROOT}" -q libcap-libs; then
+  expected_pkg_list+=(libcap-libs)
+else
+  expected_pkg_list+=(libcap)
 fi
 
 actual_pkg_count=${#actual_pkg_list[@]}
