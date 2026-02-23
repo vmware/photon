@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.1.1898
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -15,6 +15,8 @@ Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
 %define sha512 %{name}=0e50efdcec32377e894554d32d58a78d49ebcc5dbb27f6856827ae3dc619ddb2257175e69ca44078157e210d9ba8fd459b858b2c9588321fcef4ad9b379142d8
 
 Source1:        vimrc
+
+Patch0: vim-CVE-2026-26269.patch
 
 BuildRequires:  ncurses-devel
 
@@ -180,6 +182,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Feb 23 2026 Dweep Advani <dweep.advani@broadcom.com> 9.1.1898-2
+- Fix CVE-2026-26269
 * Tue Dec 23 2025 Dweep Advani <dweep.advani@broadcom.com> 9.1.1898-1
 - Update to 9.1.1898 to match 5.0 and address CVE-2025-53905 and CVE-2025-53906
 * Mon Jun 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 9.1.1441-1
