@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.250
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -556,6 +556,10 @@ Patch308: 0001-bpf-cpumap-Fix-memory-leak-in-cpu_map_update_elem.patch
 
 # Fix CVE-2023-53577
 Patch309: 0001-bpf-cpumap-Make-sure-kthread-is-running-before-map-u.patch
+# CVE-2023-53867
+Patch310: 0001-ceph-drop-private-list-from-remove_session_caps_cb.patch
+Patch311: 0002-ceph-fix-auth-cap-handling-logic-in-remove_session_c.patch
+Patch312: 0003-ceph-fix-potential-use-after-free-bug-when-trimming-.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1247,6 +1251,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Feb 24 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.250-3
+- Fixes CVE-2023-53867
 * Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.250-2
 - Fix CVE-2022-50552, CVE-2023-53441, CVE-2023-53577, CVE-2023-53596
 * Fri Feb 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.250-1

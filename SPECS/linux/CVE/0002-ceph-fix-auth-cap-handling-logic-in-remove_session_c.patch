@@ -1,0 +1,47 @@
+From 8a1eb9fd19ca42cf9c5250455fdc38a64eed4b7a Mon Sep 17 00:00:00 2001
+From: Jeff Layton <jlayton@kernel.org>
+Date: Thu, 2 Sep 2021 12:47:01 -0400
+Subject: [PATCH 2/3] ceph: fix auth cap handling logic in
+ remove_session_caps_cb
+
+[ Upstream commit 3c3050267e3c9a230f23a5621d7c6bd084d15094 ]
+
+The existing logic relies on ci->i_auth_cap being NULL, but if we end up
+removing the auth cap early, then we'll do a lot of useless work and
+lock-taking on the remaining caps. Ensure that we only do the auth cap
+removal when we're _actually_ removing the auth cap.
+
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+[Ankit: Backported for v5.10 ]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ fs/ceph/mds_client.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 9c788f59d..cb4fa030b 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -1640,6 +1640,7 @@ static int remove_session_caps_cb(struct inode *inode, struct ceph_cap *cap,
+ 	struct ceph_fs_client *fsc = (struct ceph_fs_client *)arg;
+ 	struct ceph_mds_client *mdsc = fsc->mdsc;
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
++	bool is_auth;
+ 	bool dirty_dropped = false;
+ 	bool invalidate = false;
+ 	int capsnap_release = 0;
+@@ -1647,8 +1648,9 @@ static int remove_session_caps_cb(struct inode *inode, struct ceph_cap *cap,
+ 	dout("removing cap %p, ci is %p, inode is %p\n",
+ 	     cap, ci, &ci->vfs_inode);
+ 	spin_lock(&ci->i_ceph_lock);
++	is_auth = (cap == ci->i_auth_cap);
+ 	__ceph_remove_cap(cap, false);
+-	if (!ci->i_auth_cap) {
++	if (is_auth) {
+ 		struct ceph_cap_flush *cf;
+ 
+ 		if (READ_ONCE(fsc->mount_state) == CEPH_MOUNT_SHUTDOWN) {
+-- 
+2.40.4
+

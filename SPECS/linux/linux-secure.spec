@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.250
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -485,6 +485,10 @@ Patch306: 0001-cifs-fix-session-state-check-in-reconnect-to-avoid-u.patch
 
 # Fix CVE-2022-50552
 Patch307: 0001-blk-mq-use-quiesced-elevator-switch-when-reinitializ.patch
+# CVE-2023-53867
+Patch308: 0001-ceph-drop-private-list-from-remove_session_caps_cb.patch
+Patch309: 0002-ceph-fix-auth-cap-handling-logic-in-remove_session_c.patch
+Patch310: 0003-ceph-fix-potential-use-after-free-bug-when-trimming-.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -751,6 +755,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 24 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.250-3
+- Fixes CVE-2023-53867
 * Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.250-2
 - Fix CVE-2022-50552, CVE-2023-53596
 * Fri Feb 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 5.10.250-1
