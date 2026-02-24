@@ -13,7 +13,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql17
 Version:        17.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -56,6 +56,7 @@ BuildRequires: openssl-devel
 BuildRequires: systemtap-sdt-devel
 BuildRequires: boost-devel
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 BuildRequires: tar
 BuildRequires: tcl-devel
 BuildRequires: tzdata
@@ -112,6 +113,7 @@ PostgreSQL server.
 Summary:    The programs needed to create and run a PostgreSQL server
 Requires:   %{name} = %{version}-%{release}
 Requires:   %{name}-libs = %{version}-%{release}
+Requires(pre): shadow
 
 %description server
 PostgreSQL is an advanced Object-Relational database management system (DBMS).
@@ -743,6 +745,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 17.8-2
+- Add missing shadow dependency for user creation
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.8-1
 - Upgrade to v17.8
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.7-1

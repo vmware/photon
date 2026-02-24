@@ -12,7 +12,7 @@
 Summary:        Docker
 Name:           docker
 Version:        28.2.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -65,6 +65,7 @@ Requires:       containerd
 # 20.10 uses containerd v2 shim by default
 Requires:       /usr/bin/containerd-shim-runc-v2
 Requires:       iptables
+Requires(pre):  shadow
 
 %description    engine
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -298,6 +299,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 28.2.2-7
+- Add missing shadow dependency for user creation
 * Fri Feb 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2.2-6
 - Bump up version as a part of containerd upgrade to 2.2.1
 * Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 28.2.2-5

@@ -1,7 +1,7 @@
 Summary:        TCG Software Stack (TSS)
 Name:           trousers
 Version:        0.3.15
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://sourceforge.net/projects/trousers
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -13,7 +13,9 @@ Source1:        %{name}.sysusers
 Source2: license.txt
 %include %{SOURCE2}
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 Requires:       systemd-rpm-macros
+Requires(pre):  shadow
 Requires:       libtspi = %{version}-%{release}
 
 %description
@@ -77,6 +79,8 @@ chown -R tss:tss %{_sharedstatedir}/tpm
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.15-7
+- Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.3.15-6
 - Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.3.15-5

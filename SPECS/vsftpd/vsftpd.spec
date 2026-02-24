@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -20,12 +20,14 @@ BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: libnsl-devel
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 
 Requires: libcap
 Requires: Linux-PAM
 Requires: openssl
 Requires: libnsl
 Requires: systemd-rpm-macros
+Requires(pre): shadow
 
 %description
 Very secure and very small FTP daemon.
@@ -78,6 +80,8 @@ fi
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.0.5-7
+- Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.5-6
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.0.5-5

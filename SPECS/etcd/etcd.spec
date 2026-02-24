@@ -2,7 +2,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.6.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -19,7 +19,9 @@ Source4: license.txt
 BuildRequires:  go
 BuildRequires:  git
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 Requires(pre):  systemd-rpm-macros
+Requires(pre):  shadow
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
@@ -86,6 +88,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.5-3
+- Add missing shadow dependency for user creation
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.5-2
 - Bump version as a part of go upgrade
 * Fri Oct 10 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.6.5-1

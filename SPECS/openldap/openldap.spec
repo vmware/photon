@@ -4,7 +4,7 @@
 Summary:        OpenLdap-2.6.4
 Name:           openldap
 Version:        2.6.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://www.openldap.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -27,6 +27,7 @@ Patch1: %{name}-add-export-symbols-LDAP_CONNECTIONLESS.patch
 Requires: openssl
 Requires: cyrus-sasl
 Requires: systemd
+Requires(pre): shadow
 
 BuildRequires: cyrus-sasl-devel
 BuildRequires: openssl-devel
@@ -34,6 +35,7 @@ BuildRequires: groff
 BuildRequires: e2fsprogs-devel
 BuildRequires: libtool
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 BuildRequires: libltdl-devel
 
 %description
@@ -181,6 +183,8 @@ rm -rf %{buildroot}/*
 %dir %attr(-,ldap,ldap) %{_sharedstatedir}/%{name}
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.6.4-5
+- Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.6.4-4
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6.4-3

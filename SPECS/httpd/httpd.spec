@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.66
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -31,6 +31,7 @@ BuildRequires: expat-devel
 BuildRequires: lua-devel
 BuildRequires: nghttp2-devel
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 
 Requires: nghttp2
 Requires: pcre
@@ -41,6 +42,7 @@ Requires: lua
 Requires: systemd
 Requires(post): systemd
 Requires(pre): systemd-rpm-macros
+Requires(pre): shadow
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 Provides: apache2
@@ -190,6 +192,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.4.66-2
+- Add missing shadow dependency for user creation
 * Mon Dec 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.66-1
 - Upgrade to v2.4.66, fixes a bunch of CVEs
 * Tue Jul 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.65-1

@@ -2,7 +2,7 @@
 
 Name:           nss-pam-ldapd
 Version:        0.9.12
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        nsswitch module which uses directory servers
 URL:            https://github.com/arthurdejong/nss-pam-ldapd
 Group:          System Environment/Security
@@ -24,9 +24,11 @@ BuildRequires: automake
 BuildRequires: autoconf
 BuildRequires: Linux-PAM-devel
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 %{?systemd_requires}
 
 Requires: systemd
+Requires(pre): shadow
 Requires: openldap
 Requires: krb5
 Requires: Linux-PAM
@@ -96,6 +98,8 @@ rm -rf %{buildroot}/*
 %attr(0775,nslcd,root) /run/nslcd
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.9.12-11
+- Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.9.12-10
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.12-9

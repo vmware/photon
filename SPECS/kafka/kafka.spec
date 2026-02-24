@@ -10,7 +10,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.9.1
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -33,6 +33,7 @@ Provides:   kafka
 Provides:   kafka-server
 
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 BuildRequires: curl
 BuildRequires: zookeeper
 BuildRequires: openjdk11
@@ -40,6 +41,7 @@ BuildRequires: openjdk11
 Requires: zookeeper
 Requires: systemd-rpm-macros
 Requires: jre >= 11.0
+Requires(pre): shadow
 Requires(post): (coreutils or coreutils-selinux)
 
 %{?systemd_requires}
@@ -129,6 +131,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.9.1-6
+- Add missing shadow dependency for user creation
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.1-5
 - Update Requires to jre >= 11.0
 * Mon Aug 11 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-4

@@ -5,7 +5,7 @@
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
 Version:        0.2.2
-Release:        16%{?dist}
+Release:        17%{?dist}
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,8 +19,10 @@ Source2: license.txt
 
 BuildRequires:  go
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 
 Requires(pre): systemd-rpm-macros
+Requires(pre): shadow
 Requires:  systemd
 
 %description
@@ -84,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/cloud-network.service
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.2.2-17
+- Add missing shadow dependency for user creation
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.2.2-16
 - Bump version as a part of go upgrade
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-15

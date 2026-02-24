@@ -1,6 +1,6 @@
 Name:           mlocate
 Version:        0.26
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        An utility for finding files by name.
 URL:            https://pagure.io/mlocate
 Vendor:         VMware, Inc.
@@ -19,6 +19,9 @@ BuildRequires:  grep
 BuildRequires:  xz
 BuildRequires:  gettext
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
+
+Requires(pre):  shadow
 
 %description
 mlocate is a locate/updatedb implementation.  The 'm' stands for "merging":
@@ -63,6 +66,8 @@ fi
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.26-7
+- Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.26-6
 - Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.26-5

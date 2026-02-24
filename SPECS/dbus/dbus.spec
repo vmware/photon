@@ -3,7 +3,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.16.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -18,6 +18,7 @@ Source2: %{name}.sysusers
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  xz-devel
 BuildRequires:  meson
 
@@ -26,6 +27,7 @@ Requires:       systemd-libs
 Requires:       xz
 Requires:       systemd-rpm-macros
 Requires:       %{name}-libs = %{version}-%{release}
+Requires(pre):  shadow
 
 %description
 The dbus package contains dbus.
@@ -136,6 +138,8 @@ install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.16.2-2
+- Add missing shadow dependency for user creation
 * Thu Jan 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.2-1
 - Upgrade to v1.16.2
 * Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8

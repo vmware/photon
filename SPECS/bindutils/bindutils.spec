@@ -5,7 +5,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.20.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -27,6 +27,7 @@ Patch5:         0003-CVE-2025-40780.patch
 
 Requires:       krb5
 Requires:       e2fsprogs-libs
+Requires(pre):  shadow
 Requires:       openssl-libs
 Requires:       libuv
 Requires:       userspace-rcu
@@ -40,6 +41,7 @@ BuildRequires:  libuv-devel
 BuildRequires:  nghttp2-devel
 BuildRequires:  libcap-devel
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  userspace-rcu-devel
@@ -138,6 +140,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 9.20.7-6
+- Add missing shadow dependency for user creation
 * Tue Oct 21 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.20.7-5
 - Fix CVE-2025-8677, CVE-2025-40778, CVE-2025-40780
 * Mon Aug 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 9.20.7-4

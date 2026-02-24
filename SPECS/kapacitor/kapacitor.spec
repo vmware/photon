@@ -4,7 +4,7 @@
 
 Name:           kapacitor
 Version:        1.7.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Vendor:         VMware, Inc.
@@ -27,10 +27,12 @@ Patch4:         flux-0.194.5-proc-macro2.patch
 BuildRequires:  go
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  rust
 
 Requires:       systemd
 Requires:       systemd-rpm-macros
+Requires(pre):  shadow
 
 %description
 Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
@@ -122,6 +124,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.7.7-5
+- Add missing shadow dependency for user creation
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.7-4
 - Bump version as a part of go upgrade
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.7-3

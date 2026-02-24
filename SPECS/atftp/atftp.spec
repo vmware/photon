@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          8%{?dist}
+Release:          9%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
@@ -17,12 +17,14 @@ Source4: license.txt
 %include %{SOURCE4}
 
 BuildRequires:    systemd-devel
+BuildRequires:    systemd-rpm-macros
 BuildRequires:    readline-devel
 BuildRequires:    pcre2-devel
 
 Requires:         systemd
 Requires:         pcre2-libs
 Requires(pre):    systemd-rpm-macros
+Requires(pre):    shadow
 
 Provides:         tftp-server
 Provides:         tftp
@@ -73,8 +75,10 @@ ATFTPD_DIRECTORY=%{_sharedstatedir}/tftpboot
 ATFTPD_BIND_ADDRESSES=
 EOF
 
+%if 0%{?with_check}
 %check
 %make_build check
+%endif
 
 %pre
 if [ $1 -eq 1 ] ; then
@@ -113,6 +117,8 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.8.0-9
+- Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.0-8
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.8.0-7

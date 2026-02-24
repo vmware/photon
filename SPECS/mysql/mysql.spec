@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,6 +29,7 @@ BuildRequires: ncurses-devel
 BuildRequires: libnuma-devel
 BuildRequires: libfido2-devel
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 BuildRequires: libaio-devel
 
 Requires: icu
@@ -45,6 +46,7 @@ Requires: ncurses-libs
 Requires: libnuma
 Requires: libfido2
 Requires: libaio
+Requires(pre): shadow
 
 %description
 MySQL is a free, widely used SQL engine.
@@ -181,6 +183,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 8.4.7-2
+- Add missing shadow dependency for user creation
 * Thu Oct 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.7-1
 - Upgrade to v8.4.7, fixes a bunch of CVEs
 * Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.4.4-5
