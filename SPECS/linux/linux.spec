@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.250
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.251
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=068205807da00d56851d6281366e24fb0805b9321bc0c177c89006565766f660b72a0e60ec2744d904b66717fe17fdba78bd0854c7928f179e35c791cd6d5579
+%define sha512 linux=98eaebcd45405c9088fc10af043f83f24fa00585b91c0122670d53c1b794195f49462387043cba59d2eafa07165ce353f1fbb5215ae984030814ae07502ce7b0
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -570,8 +570,6 @@ Patch353: 0003-of-overlay-Correct-symbol-path-fixups.patch
 # Rpi fan driver
 Patch354: 0001-Add-rpi-poe-fan-driver.patch
 
-# Fix CVE-2022-49711
-Patch355: 0001-bus-fsl-mc-bus-fix-KASAN-use-after-free-in-fsl_mc_bu.patch
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -1251,6 +1249,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-1
+- Update to version 5.10.251
 * Tue Feb 24 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.250-3
 - Fixes CVE-2023-53867
 * Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.250-2
