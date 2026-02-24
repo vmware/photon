@@ -25,15 +25,15 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.163
-Release:        2%{?dist}
+Version:        6.1.164
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt59
+%define rt_version rt60
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
@@ -730,6 +730,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.164-1
+- Update to version 6.1.164, -rt60
 * Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-2
 - Fix CVE-2025-71184
 * Tue Feb 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-1
