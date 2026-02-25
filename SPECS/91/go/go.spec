@@ -1,4 +1,4 @@
-%define build_if %{photon_subrelease} >=92
+%global build_if %{photon_subrelease} <= 91
 
 %global goroot          %{_libdir}/golang
 %global gopath          %{_datadir}/gocode
@@ -15,8 +15,8 @@
 
 Summary:        Go
 Name:           go
-Version:        1.26.1
-Release:        1%{?dist}
+Version:        1.24.13
+Release:        2.1%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ Source1: license.txt
 
 Requires: glibc
 Requires: gcc
+
+Patch0: CVE-2026-27142.patch
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
@@ -120,8 +122,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-* Thu Mar 12 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.1-1
-- Upgrade to v1.26.1
+* Fri Mar 13 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2.1
+- Bump after moving to SPECS/91
 * Wed Mar 11 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2
 - Fix CVE-2026-27142
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.13-1

@@ -1,1 +1,1 @@
-License: (BSD-3-Clause OR OpenSSL) AND Apache-2.0 AND BSD-1-Clause AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND GPL-1.0-or-later AND GPL-2.0-only AND IJG AND ISC AND MIT AND MPEG-SSG AND OpenSSL AND OpenSSL-standalone AND SSLeay-standalone AND SunPro
+License: (BSD-3-Clause OR OpenSSL) AND Apache-2.0 AND BSD-1-Clause AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND GPL-1.0-or-later AND GPL-2.0-only AND ISC AND MIT AND OpenSSL AND OpenSSL-standalone AND SSLeay-standalone AND SunPro
