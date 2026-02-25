@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define network_required 1
 %define debug_package %{nil}
@@ -13,14 +13,14 @@
 
 Summary:        Docker
 Name:           docker
-Version:        29.2.1
-Release:        1%{?dist}
+Version:        28.2.2
+Release:        7.1%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/moby/moby/archive/refs/tags/docker-v%{version}.tar.gz
+Source0: https://github.com/moby/moby/archive/moby-%{version}.tar.gz
 
 Source2: https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
 
@@ -46,7 +46,6 @@ BuildRequires:  jq
 BuildRequires:  libapparmor-devel
 BuildRequires:  libslirp-devel
 BuildRequires:  slirp4netns
-BuildRequires:  nftables-devel
 
 Requires:       docker-engine = %{version}-%{release}
 Requires:       docker-cli = %{version}-%{release}
@@ -104,8 +103,8 @@ Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
 
 %prep
 # Using autosetup is not feasible
-%setup -q -c -n moby-docker-v%{version}
-pushd moby-docker-v%{version}
+%setup -q -c -n moby-%{version}
+pushd moby-%{version}
 %autopatch -p1
 popd
 
@@ -113,7 +112,7 @@ mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
          bin
 
-mv moby-docker-v%{version} src/%{gopath_comp_engine}
+mv moby-%{version} src/%{gopath_comp_engine}
 
 pushd src/%{gopath_comp_engine}
 rm -f man/go.mod
@@ -133,6 +132,7 @@ popd
 
 %build
 export GOPATH="${PWD}"
+export GO111MODULE=off
 
 CONTAINERD_MIN_VER="1.2.0-beta.1"
 BUILDTIME="$(date -u --rfc-3339 ns | sed -e 's/ /T/')"
@@ -193,6 +193,9 @@ install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/docker-prox
 # install tini
 ln -srv %{buildroot}%{_bindir}/tini %{buildroot}%{_bindir}/docker-init
 
+# install udev rules
+install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}/80-docker.rules
+
 # add init scripts
 install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/docker.service
 install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/docker.socket
@@ -220,8 +223,8 @@ done
 install -v -D -m 0644 %{SOURCE5} %{buildroot}%{_presetdir}/50-docker.preset
 
 # docker-rootless
-install -D -p -m 0755 %{_builddir}/moby-docker-v%{version}/src/github.com/docker/docker/contrib/dockerd-rootless.sh %{buildroot}%{_bindir}/dockerd-rootless.sh
-install -D -p -m 0755 %{_builddir}/moby-docker-v%{version}/src/github.com/docker/docker/contrib/dockerd-rootless-setuptool.sh %{buildroot}%{_bindir}/dockerd-rootless-setuptool.sh
+install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless.sh %{buildroot}%{_bindir}/dockerd-rootless.sh
+install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless-setuptool.sh %{buildroot}%{_bindir}/dockerd-rootless-setuptool.sh
 
 %pre engine
 if [ $1 -gt 0 ] ; then
@@ -277,6 +280,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/docker-proxy
 %{_bindir}/docker-init
 %{_bindir}/dockerd
+%{_udevrulesdir}/80-docker.rules
 %{_sharedstatedir}/docker-engine/distribution_based_engine.json
 
 %files cli
@@ -297,8 +301,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
-* Tue Feb 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.2.1-1
-- Upgrade to version 29.2.1
+* Tue Feb 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2.2-7.1
+- Bump after moving to SPECS/91
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 28.2.2-7
 - Add missing shadow dependency for user creation
 * Fri Feb 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 28.2.2-6
