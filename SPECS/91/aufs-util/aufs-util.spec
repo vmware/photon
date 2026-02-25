@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} <= 91
 %define aufs_include_dir aufs-standalone-aufs%{version}/include
 
 Summary:        Utilities for aufs
 Name:           aufs-util
 Version:        6.0
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 URL:            https://sourceforge.net/p/aufs/aufs-util/ref/master/branches/
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -53,6 +54,8 @@ export CPPFLAGS="-I ${PWD}/%{aufs_include_dir}/uapi"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Feb 25 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.0-3.1
+- Bump after move to subrelease 91
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 6.0-3
 - Release bump for SRP compliance
 * Sat May 25 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0-2
