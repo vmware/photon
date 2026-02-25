@@ -4,7 +4,7 @@
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
 Version:        1.18.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +13,9 @@ Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# Remove this patch with nokogiri-1.19.1 upgrade
+Patch0:         0001-Raise-RuntimeError-when-canonicalization-fails.patch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-mini_portile2
@@ -28,6 +31,7 @@ Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -43,6 +47,8 @@ rm -rf %{buildroot}/*
 %{gem_base}
 
 %changelog
+* Mon Feb 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.18.8-2
+- Fixing potential security issue with Raise RuntimeError when canonicalization fails
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.18.8-1
 - Upgrade to 1.18.8
 * Fri Sep 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.13.9-8

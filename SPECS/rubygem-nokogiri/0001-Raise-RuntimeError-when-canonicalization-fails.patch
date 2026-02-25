@@ -1,0 +1,53 @@
+From 884faa08e2eb090cf91a2396416805017402fbc2 Mon Sep 17 00:00:00 2001
+From: Mike Dalessio <mike.dalessio@gmail.com>
+Date: Mon, 16 Feb 2026 16:41:42 -0500
+Subject: [PATCH] Raise RuntimeError when canonicalization fails
+
+The return value of xmlC14NExecute was not being checked, so
+canonicalization failures (e.g., relative namespace URIs) silently
+returned an empty string. This could allow downstream libraries to
+accept invalid canonicalized output.
+
+Check the return value and raise RuntimeError on failure, matching
+JRuby's existing behavior.
+
+This behavior was named as a contributing cause to GHSA-x4h9-gwv3-r4m4
+
+[Shivani: Backported to nokogiri-1.18.8, dropped test file changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ ext/nokogiri/xml_document.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/ext/nokogiri/xml_document.c b/ext/nokogiri/xml_document.c
+index 7408193..eb646f8 100644
+--- a/ext/nokogiri/xml_document.c
++++ b/ext/nokogiri/xml_document.c
+@@ -652,15 +652,19 @@ rb_xml_document_canonicalize(int argc, VALUE *argv, VALUE self)
+     }
+   }
+ 
+-  xmlC14NExecute(c_doc, c_callback_wrapper, rb_callback,
+-                 c_mode,
+-                 c_namespaces,
+-                 (int)RTEST(rb_comments_p),
+-                 c_obuf);
++  int ret = xmlC14NExecute(c_doc, c_callback_wrapper, rb_callback,
++                           c_mode,
++                           c_namespaces,
++                           (int)RTEST(rb_comments_p),
++                           c_obuf);
+ 
+   ruby_xfree(c_namespaces);
+   xmlOutputBufferClose(c_obuf);
+ 
++  if (ret < 0) {
++    rb_raise(rb_eRuntimeError, "canonicalization failed");
++  }
++
+   return rb_funcall(rb_io, rb_intern("string"), 0);
+ }
+ 
+-- 
+2.43.7
+
