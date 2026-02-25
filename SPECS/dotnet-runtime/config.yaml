@@ -1,7 +1,8 @@
 sources:
-- archive: dotnet-runtime-8.0.17-linux-x64.tar.gz
-  archive_sha512sum: d573388bd64deb12e6464fc6a4240f6ed7cd1c6b17370096304b8ac2d800318c3af36f8185a3b780afe52b041824deef9d377a96a6baed759c8283829054649a
+- archive: dotnet-runtime-8.0.24-linux-x64.tar.gz
+  archive_sha512sum: a1dcea409fc297675d6c30ac3baf5d67e93cd89c92fd99305115652c49e448c56eef959b60e870de6b3c0d2da0bd3f42afe089b5f5cb3b06884d3b2294326912
   skip_validation: true
+  url: https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.24/dotnet-runtime-8.0.24-linux-x64.tar.gz
   spdx:
     package:
       detailed_description: '.NET Core is a development platform that you can use

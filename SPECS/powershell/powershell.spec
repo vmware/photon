@@ -5,7 +5,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.4.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -193,6 +193,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Wed Feb 25 2026 Mukul Sikka <mukul.sikka@broadcom.com> 7.4.11-3
+- Bump version as a part of dotnet-runtime 8.0.24 upgrade
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.11-2
 - Rebuild with clang shared libs
 * Sun Aug 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.11-1
