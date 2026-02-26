@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.251
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -562,6 +562,13 @@ Patch311: 0002-ceph-fix-auth-cap-handling-logic-in-remove_session_c.patch
 Patch312: 0003-ceph-fix-potential-use-after-free-bug-when-trimming-.patch
 
 %ifarch aarch64
+# CVE-2026-23221
+Patch313: CVE/0001-bus-fsl-mc-Replace-snprintf-and-sprintf-with-sysfs_e.patch
+Patch314: CVE/0002-fsl-mc-Use-driver_set_override-instead-of-open-codin.patch
+Patch315: CVE/0003-bus-fsl-mc-fix-use-after-free-in-driver_override_sho.patch
+%endif
+
+%ifarch aarch64
 # Rpi of_configfs patches
 Patch351: 0001-OF-DT-Overlay-configfs-interface.patch
 Patch352: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
@@ -569,7 +576,6 @@ Patch353: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
 Patch354: 0001-Add-rpi-poe-fan-driver.patch
-
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -1249,6 +1255,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Feb 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-2
+- Fix CVE-2026-23221
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-1
 - Update to version 5.10.251
 * Tue Feb 24 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.250-3

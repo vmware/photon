@@ -1,0 +1,50 @@
+From 640d9f8c015a5fccda16d1e9a8ed849ccbb123e7 Mon Sep 17 00:00:00 2001
+From: Gui-Dong Han <hanguidong02@gmail.com>
+Date: Wed, 3 Dec 2025 01:44:38 +0800
+Subject: [PATCH 3/3] bus: fsl-mc: fix use-after-free in driver_override_show()
+
+[ Upstream commit 148891e95014b5dc5878acefa57f1940c281c431 ]
+
+The driver_override_show() function reads the driver_override string
+without holding the device_lock. However, driver_override_store() uses
+driver_set_override(), which modifies and frees the string while holding
+the device_lock.
+
+This can result in a concurrent use-after-free if the string is freed
+by the store function while being read by the show function.
+
+Fix this by holding the device_lock around the read operation.
+
+Fixes: 1f86a00c1159 ("bus/fsl-mc: add support for 'driver_override' in the mc-bus")
+Cc: stable@vger.kernel.org
+Signed-off-by: Gui-Dong Han <hanguidong02@gmail.com>
+Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Link: https://lore.kernel.org/r/20251202174438.12658-1-hanguidong02@gmail.com
+Signed-off-by: Christophe Leroy (CS GROUP) <chleroy@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/bus/fsl-mc/fsl-mc-bus.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+index cc7a88d14249..82cbb64092f4 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -177,8 +177,12 @@ static ssize_t driver_override_show(struct device *dev,
+ 				    struct device_attribute *attr, char *buf)
+ {
+ 	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
++	ssize_t len;
+ 
+-	return sysfs_emit(buf, "%s\n", mc_dev->driver_override);
++	device_lock(dev);
++	len = sysfs_emit(buf, "%s\n", mc_dev->driver_override);
++	device_unlock(dev);
++	return len;
+ }
+ static DEVICE_ATTR_RW(driver_override);
+ 
+-- 
+2.43.7
+

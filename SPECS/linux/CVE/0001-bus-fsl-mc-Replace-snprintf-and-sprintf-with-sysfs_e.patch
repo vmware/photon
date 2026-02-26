@@ -1,0 +1,49 @@
+From 867c0f338da539e1336fa871bfe68b7532344807 Mon Sep 17 00:00:00 2001
+From: Chelsy Ratnawat <chelsyratnawat2001@gmail.com>
+Date: Fri, 22 Aug 2025 05:43:39 -0700
+Subject: [PATCH 1/3] bus: fsl-mc: Replace snprintf and sprintf with sysfs_emit
+ in sysfs show functions
+
+[ Upstream commit a50522c805a6c575c80f41b04706e084d814e116 ]
+
+Use sysfs_emit() instead of snprintf()/sprintf()  when writing
+to sysfs buffers, as recommended by the kernel documentation.
+
+Signed-off-by: Chelsy Ratnawat <chelsyratnawat2001@gmail.com>
+Acked-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Link: https://lore.kernel.org/r/20250822124339.1739290-1-chelsyratnawat2001@gmail.com
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Stable-dep-of: 148891e95014 ("bus: fsl-mc: fix use-after-free in driver_override_show()")
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/bus/fsl-mc/fsl-mc-bus.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+index 4f13e7d8101b..7b0c58f31acf 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -151,8 +151,8 @@ static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
+ {
+ 	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
+ 
+-	return sprintf(buf, "fsl-mc:v%08Xd%s\n", mc_dev->obj_desc.vendor,
+-		       mc_dev->obj_desc.type);
++	return sysfs_emit(buf, "fsl-mc:v%08Xd%s\n", mc_dev->obj_desc.vendor,
++			mc_dev->obj_desc.type);
+ }
+ static DEVICE_ATTR_RO(modalias);
+ 
+@@ -195,7 +195,7 @@ static ssize_t driver_override_show(struct device *dev,
+ {
+ 	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%s\n", mc_dev->driver_override);
++	return sysfs_emit(buf, "%s\n", mc_dev->driver_override);
+ }
+ static DEVICE_ATTR_RW(driver_override);
+ 
+-- 
+2.43.7
+
