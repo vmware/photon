@@ -1,15 +1,7 @@
 sources:
-- archive: procps-4.0.6.tar.gz
-  archive_type: upstream
-  version: 4.0.6
-  name: procps-4.0.6
-  url: https://github.com/warmchang/procps/archive/refs/tags/v4.0.6.tar.gz
-  repo_url: https://github.com/warmchang/procps.git
-  commit_id: 4dafddf4c3f4646caa517f039a2307e92657ec93
-  skip_list: []
-  missing: []
-  archive_sha512sum: c0bec12a264f524334cb9677f3a189bbb452c3f49b29f5a86cb5ffc295961963902146b5c2d390c5d066094fbc20a3c432865a5a622df1ff70aca65d78d82ba3
-  skip_validation: false
+- archive: procps-ng-4.0.4.tar.xz
+  archive_sha512sum: 94375544e2422fefc23d7634063c49ef1be62394c46039444f85e6d2e87e45cfadc33accba5ca43c96897b4295bfb0f88d55a30204598ddb26ef66f0420cefb4
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'The Procps package contains programs for monitoring processes. '

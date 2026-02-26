@@ -1,24 +1,20 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        4.0.6
-Release:        1%{?dist}
+Version:        4.0.4
+Release:        4.1%{?dist}
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://sourceforge.net/projects/procps-ng/files/Production/procps-%{version}.tar.gz
+Source0: https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: ncurses-devel
-BuildRequires: autoconf
-BuildRequires: automake
-BuildRequires: pkg-config
-BuildRequires: libtool
 
 Requires: ncurses
 
@@ -43,14 +39,14 @@ Requires:   %{name} = %{version}-%{release}
 These are the additional language files of procps-ng
 
 %prep
-%autosetup -p1 -n procps-%{version}
+%autosetup -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
   export ac_cv_func_malloc_0_nonnull=yes
   export ac_cv_func_realloc_0_nonnull=yes
 fi
-sh autogen.sh
+
 %configure \
    --docdir=%{_docdir}/%{name}-%{version} \
    --disable-static \
@@ -92,7 +88,6 @@ rm -rf %{buildroot}
 %{_bindir}/vmstat
 %{_bindir}/pmap
 %{_bindir}/tload
-%{_bindir}/hugetop
 %{_bindir}/pwdx
 %{_bindir}/top
 %{_bindir}/slabtop
@@ -119,8 +114,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
-* Thu Feb 26 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.0.6-1
-- Version upgrade to procps-ng 4.0.6
+* Thu Feb 26 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.0.4-4.1
+- Bump after moving to SPECS/91
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.0.4-4
 - Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.4-3
