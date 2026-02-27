@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql16
-Version:        16.12
-Release:        2%{?dist}
+Version:        16.13
+Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -738,6 +738,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.13-1
+- Upgrade to v16.13
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 16.12-2
 - Add missing shadow dependency for user creation
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.12-1

@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.16
-Release:        2%{?dist}
+Version:        15.17
+Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -741,6 +741,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.17-1
+- Upgrade to v15.17
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 15.16-2
 - Add missing shadow dependency for user creation
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.16-1

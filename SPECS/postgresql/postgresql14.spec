@@ -12,8 +12,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.21
-Release:        2%{?dist}
+Version:        14.22
+Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -743,6 +743,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.22-1
+- Upgrade to v14.22
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 14.21-2
 - Add missing shadow dependency for user creation
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.21-1
