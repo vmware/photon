@@ -1,0 +1,47 @@
+From 8a944275fdc7dc978eb6f8a344eda76a8f390604 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Mon, 9 Mar 2026 04:57:14 +0000
+Subject: [PATCH] abi/4.0: adjust for kernel 6.12 feature support
+
+The abi/4.0 file shipped with apparmor 4.1.6 declares features that
+do not match what the kernel 6.12 AppArmor module actually exposes.
+Fix the two mismatches:
+
+1. ipc/posix_mqueue: POSIX message queue mediation is not yet
+   upstreamed into the mainline kernel. Remove the ipc section.
+
+2. policy/permstable32_version: The kernel 6.12 only supports
+   permstable32 version 1 (0x000001), not version 2. Downgrade
+   to match.
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ profiles/apparmor.d/abi/4.0 | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/profiles/apparmor.d/abi/4.0 b/profiles/apparmor.d/abi/4.0
+index 9e61fe3..9a1cfd9 100644
+--- a/profiles/apparmor.d/abi/4.0
++++ b/profiles/apparmor.d/abi/4.0
+@@ -31,9 +31,6 @@ version {1.2
+ file {mask {create read write exec append mmap_exec link lock
+ }
+ }
+-ipc {posix_mqueue {create read write open delete setattr getattr
+-}
+-}
+ mount {mask {mount umount pivot_root
+ }
+ }
+@@ -56,7 +53,7 @@ policy {outofband {0x000001
+ }
+ permstable32 {allow deny subtree cond kill complain prompt audit quiet hide xindex tag label
+ }
+-permstable32_version {0x000002
++permstable32_version {0x000001
+ }
+ set_load {yes
+ }
+-- 
+2.43.7
+

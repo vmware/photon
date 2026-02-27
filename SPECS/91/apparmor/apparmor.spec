@@ -1,20 +1,19 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 Name:           apparmor
-Version:        4.1.6
-Release:        1%{?dist}
+Version:        3.1.2
+Release:        17.1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 URL:            https://launchpad.net/apparmor
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
 
-Source0: https://launchpad.net/%{name}/4.1/%{version}/+download/%{name}-v%{version}.tar.gz
+Source0: https://launchpad.net/%{name}/3.1/%{version}/+download/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: 0001-apparmor-profile-fix-for-sbin.syslog-ng.patch
-Patch1: 0001-abi-4.0-adjust-for-kernel-6.12-feature-support.patch
 
 BuildRequires: perl
 BuildRequires: python3-devel
@@ -35,7 +34,6 @@ BuildRequires: curl-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
 BuildRequires: bison
-BuildRequires: autoconf-archive
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
@@ -149,7 +147,7 @@ Requires:       libapparmor = %{version}-%{release}
 This package contains the AppArmor module for perl.
 
 %prep
-%autosetup -p1 -n %{name}-v%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 pushd ./libraries/libapparmor
@@ -255,7 +253,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}.d/sbin.*
 %config(noreplace) %{_sysconfdir}/%{name}.d/usr.*
 %config(noreplace) %{_sysconfdir}/%{name}.d/local/*
-%config(noreplace) %{_sysconfdir}/%{name}.d/*
+%config(noreplace) %{_sysconfdir}/%{name}.d/samba-*
+%config(noreplace) %{_sysconfdir}/%{name}.d/zgrep
 %{_libdir}/%{name}/profile-load
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/extra-profiles/*
@@ -271,7 +270,7 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}.d
 %config(noreplace) %{_sysconfdir}/%{name}/parser.conf
-%config(noreplace) %{_sysconfdir}/%{name}/default_unconfined.template
+%{_localstatedir}/lib/%{name}
 %doc %{_mandir}/man5/%{name}.d.5.gz
 %doc %{_mandir}/man5/%{name}.vim.5.gz
 %doc %{_mandir}/man7/%{name}.7.gz
@@ -308,7 +307,6 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/easyprof/
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/%{name}.vim
-%{_datadir}/polkit-1/actions/net.apparmor.pkexec.aa-notify.policy
 %doc %{_mandir}/man1/aa-features-abi.1.gz
 %doc %{_mandir}/man2/aa_change_profile.2.gz
 %doc %{_mandir}/man5/logprof.conf.5.gz
@@ -331,9 +329,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
-* Fri Feb 27 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.1.6-1
-- Update to version 4.1.6
-- Fix update profiles supported by kernel v6.12.y
+* Fri Jan 30 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.1.2-17.1
+- Release bump for 9.1
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 3.1.2-17
 - Release bump for perl 5.40.2
 * Mon Apr 07 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.1.2-16

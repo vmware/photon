@@ -1,14 +1,7 @@
 sources:
-- archive: apparmor-v4.1.6.tar.gz
-  archive_type: upstream
-  archive_sha512sum: 7b843290b1a9c500f4896b16d1532d4b242cf035f817bf08204ee4b787e25c89d366a7bd752e98921d3884666ad8a017c5aeb82d7739232058a1fce9f0fdc7b7
-  name: apparmor-v4.1.6
-  version: 4.1.6
-  url: https://gitlab.com/apparmor/apparmor/-/archive/v4.1.6/apparmor-v4.1.6.tar.gz
-  repo_url: https://gitlab.com/apparmor/apparmor.git
-  commit_id: c0e9c22be14fd20c8512f3c92286f53c9b97f94b
-  skip_list: []
-  missing: []
+- archive: apparmor-3.1.2.tar.gz
+  archive_sha512sum: e4fa8e0985472c00d3b68044f4150659787cf15b384b901af32b5aba3f0b2839f33bfe0b0675bf8ea7a1f5727152756a276c75b1dec383a33b92b0a1b8615a11
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'AppArmor is a file and network mandatory access control
