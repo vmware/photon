@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.69
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -951,6 +951,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Feb 26 2026 Bo Gan <bo.gan@broadcom.com> 6.12.69-3
+- Enable MEMCG_V1 and CPUSETS_V1 for other flavors as generic/x86 does
 * Fri Feb 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-2
 - Support steal clock on TDX enabled VMs
 * Fri Feb 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-1
