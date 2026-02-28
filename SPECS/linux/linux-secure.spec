@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.251
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -490,6 +490,11 @@ Patch308: 0001-ceph-drop-private-list-from-remove_session_caps_cb.patch
 Patch309: 0002-ceph-fix-auth-cap-handling-logic-in-remove_session_c.patch
 Patch310: 0003-ceph-fix-potential-use-after-free-bug-when-trimming-.patch
 
+# CVE-2026-23069
+Patch311: 0001-vsock-virtio-fix-potential-underflow-in-virtio_trans.patch
+# CVE-2026-23086
+Patch312: 0002-vsock-virtio-cap-TX-credit-to-local-buffer-size.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -755,6 +760,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Feb 28 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.251-2
+- Fix CVE-2026-23069, CVE-2026-23086
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-1
 - Update to version 5.10.251
 * Tue Feb 24 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.250-3

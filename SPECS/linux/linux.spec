@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.251
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -567,6 +567,11 @@ Patch313: CVE/0001-bus-fsl-mc-Replace-snprintf-and-sprintf-with-sysfs_e.patch
 Patch314: CVE/0002-fsl-mc-Use-driver_set_override-instead-of-open-codin.patch
 Patch315: CVE/0003-bus-fsl-mc-fix-use-after-free-in-driver_override_sho.patch
 %endif
+
+# CVE-2026-23069
+Patch316: 0001-vsock-virtio-fix-potential-underflow-in-virtio_trans.patch
+# CVE-2026-23086
+Patch317: 0002-vsock-virtio-cap-TX-credit-to-local-buffer-size.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1255,6 +1260,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sat Feb 28 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.251-3
+- Fix CVE-2026-23069, CVE-2026-23086
 * Thu Feb 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-2
 - Fix CVE-2026-23221
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.251-1
