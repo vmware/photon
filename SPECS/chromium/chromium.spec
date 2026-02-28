@@ -7,7 +7,7 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        142.0.7444.175
+Version:        145.0.7632.155
 Release:        1%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
@@ -18,15 +18,14 @@ Distribution:   Photon
 # Contact Shreenidhi Shedi for cleanup related info.
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.xz
 
-Source1: depot_tools-8efa575.tar.xz
+Source1: depot_tools-044f01a.tar.xz
 
 Source2: headless.gn
 
 Source3: license.txt
 %include %{SOURCE3}
 
-Patch0: swiftshader-buildgn.patch
-Patch1: build-gn.patch
+Patch0: gn-tweaks.patch
 
 BuildRequires: git
 BuildRequires: nss-devel
@@ -89,6 +88,8 @@ cp -a  %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Sat Feb 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 145.0.7632.155-1
+- Upgrade to v145.0.7632.155
 * Mon Dec 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 142.0.7444.175-1
 - Upgrade to v142.0.7444.175
 * Tue Sep 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 140.0.7339.127-1

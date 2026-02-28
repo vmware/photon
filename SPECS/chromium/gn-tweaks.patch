@@ -1,6 +1,19 @@
---- src/BUILD.gn	2025-12-01 00:26:08.528365511 +0530
-+++ src/BUILD.gn	2025-12-01 00:11:24.020320990 +0530
-@@ -1155,7 +1155,6 @@ if (use_blink && !is_cronet_build) {
+From 7e28a5ee8103902fe483f7f6b66189ab22654565 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 27 Feb 2026 06:30:17 -0600
+Subject: [PATCH] gn patches
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ BUILD.gn                         | 39 +-------------------------------
+ third_party/swiftshader/BUILD.gn | 18 ---------------
+ 2 files changed, 1 insertion(+), 56 deletions(-)
+
+diff --git a/BUILD.gn b/BUILD.gn
+index 6c30a84bff..d66fd32298 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1148,7 +1148,6 @@ if (use_blink && !is_cronet_build) {
          "//chrome",
          "//chrome/test/chromedriver:chromedriver_server",
          "//third_party/blink/tools:wpt_tests_isolate",
@@ -8,7 +21,7 @@
        ]
      }
 
-@@ -1171,7 +1170,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1164,7 +1163,6 @@ if (use_blink && !is_cronet_build) {
          "//chrome/test/chromedriver:chromedriver_server",
          "//headless:headless_shell",
          "//third_party/blink/tools:wpt_tests_isolate",
@@ -16,17 +29,17 @@
        ]
        if (is_mac || is_linux) {
          data_deps += [ "//third_party/hyphenation-patterns:bundle_hyphen_data" ]
-@@ -1266,9 +1264,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1259,9 +1257,6 @@ if (use_blink && !is_cronet_build) {
        "//testing/scripts/run_isolated_script_test.py",
        "//testing/xvfb.py",
        "//third_party/blink/tools/",
--      "//third_party/blink/web_tests/external/wpt/.config.json",
+-      "//third_party/blink/web_tests/external/wpt/config.tmpl.json",
 -      "//third_party/blink/web_tests/resources/",
 -      "//third_party/blink/web_tests/TestLists/",
        "//third_party/pywebsocket3/src/mod_pywebsocket/",
        "//third_party/test_fonts/test_fonts/",
        "//third_party/wpt_tools/",
-@@ -1358,7 +1353,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1351,7 +1346,6 @@ if (use_blink && !is_cronet_build) {
 
      data_deps = [
        ":blink_web_tests_support_data",
@@ -34,7 +47,7 @@
      ]
      data = [ "//third_party/blink/perf_tests/" ]
    }
-@@ -1369,7 +1363,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1362,7 +1356,6 @@ if (use_blink && !is_cronet_build) {
    # this target.
    group("blink_web_tests_expectations") {
      testonly = true
@@ -42,7 +55,7 @@
    }
 
    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
-@@ -1393,7 +1386,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1386,7 +1379,6 @@ if (use_blink && !is_cronet_build) {
 
      data_deps = [
        ":blink_web_tests_support_data",
@@ -50,7 +63,7 @@
      ]
      data = [ "//third_party/blink/perf_tests/" ]
    }
-@@ -1418,7 +1410,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1411,7 +1403,6 @@ if (use_blink && !is_cronet_build) {
 
      data_deps = [
        ":blink_web_tests_support_data",
@@ -58,7 +71,7 @@
        "//third_party/webgpu-cts",
      ]
      data = [ "//third_party/webgpu-cts/scripts/" ]
-@@ -1469,35 +1460,7 @@ if (use_blink && !is_cronet_build) {
+@@ -1462,35 +1453,7 @@ if (use_blink && !is_cronet_build) {
        "//testing/flake_suppressor_common/",
        "//third_party/blink/renderer/bindings/scripts/",
        "//third_party/blink/renderer/build/scripts/",
@@ -95,3 +108,31 @@
 
      data_deps = [ "//ui/base:goldctl" ]
    }
+diff --git a/third_party/swiftshader/BUILD.gn b/third_party/swiftshader/BUILD.gn
+index cec2b68d5b..19c9bd5517 100644
+--- a/third_party/swiftshader/BUILD.gn
++++ b/third_party/swiftshader/BUILD.gn
+@@ -74,21 +74,3 @@ group("swiftshader") {
+     "src/Vulkan:swiftshader_libvulkan",
+   ]
+ }
+-
+-if (build_with_chromium) {
+-  group("swiftshader_tests") {
+-    testonly = true
+-
+-    data_deps = [ "tests/SystemUnitTests:swiftshader_system_unittests" ]
+-
+-    if (supports_llvm) {
+-      data_deps +=
+-          [ "tests/ReactorUnitTests:swiftshader_reactor_llvm_unittests" ]
+-    }
+-
+-    if (supports_subzero) {
+-      data_deps +=
+-          [ "tests/ReactorUnitTests:swiftshader_reactor_subzero_unittests" ]
+-    }
+-  }
+-}
+--
+2.43.7
