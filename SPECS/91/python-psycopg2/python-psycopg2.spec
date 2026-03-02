@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define srcname     psycopg2
 
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
 Version:        2.9.3
-Release:        8%{?dist}
+Release:        7.1%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,10 +18,10 @@ Source1: license.txt
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  postgresql18-devel
+BuildRequires:  postgresql17-devel
 
 Requires:   python3
-Requires:   (postgresql18 or postgresql17 or postgresql16 or postgresql15 or postgresql14 or postgresql13)
+Requires:   (postgresql17 or postgresql16 or postgresql15 or postgresql14 or postgresql13)
 
 %description
 Psycopg is the most popular PostgreSQL database adapter for the Python programming language. Its main features are the complete implementation of the Python DB API 2.0 specification and the thread safety (several threads can share the same connection). It was designed for heavily multi-threaded applications that create and destroy lots of cursors and make a large number of concurrent “INSERT”s or “UPDATE”s.
@@ -75,8 +75,8 @@ groupdel -f %{user}
 %{python3_sitelib}/*
 
 %changelog
-* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.3-8
-- Build with pgsql18
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.3-7.1
+- Bump release after moving to SPECS/91
 * Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.3-7
 - Build with pgsql17
 * Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.3-6

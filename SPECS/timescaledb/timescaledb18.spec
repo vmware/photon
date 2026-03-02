@@ -1,12 +1,14 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname         timescaledb
-%global pgmajorversion  17
+%global pgmajorversion  18
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pglibdir       %{_pgbaseinstdir}/lib/postgresql
 %global _pgdatadir      %{_pgbaseinstdir}/share/postgresql
 
 Summary:        A PostgreSQL extension for high-performance real-time analytics
-Name:           timescaledb17
-Version:        2.20.2
+Name:           timescaledb18
+Version:        2.25.0
 Release:        1%{?dist}
 URL:            https://www.timescale.com
 Group:          Productivity/Databases/Tools
@@ -14,6 +16,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/timescale/timescaledb/archive/refs/tags/%{srcname}-%{version}.tar.gz
+
 Source1: license.txt
 %include %{SOURCE1}
 
@@ -63,7 +66,5 @@ rm -rf %{buildroot}/*
 %exclude %{_pglibdir}/pgxs/src/test/perl/
 
 %changelog
-* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.20.2-1
-- Upgrade to v2.20.2
-* Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.19.2-1
+* Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.25.0-1
 - Initial version

@@ -1,1 +1,1 @@
-License: MIT AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND X11 AND BSD-2-Clause AND FSFUL AND FSFAP AND FSFULLRWD
+License: BSD-2-Clause AND BSD-3-Clause AND MIT AND bcrypt-Solar-Designer

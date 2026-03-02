@@ -8,13 +8,15 @@ Name:       pgaudit17
 Version:    17.1
 Release:    1%{?dist}
 Summary:    PostgreSQL Audit Extension
-License:    PostgreSQL
 URL:        http://pgaudit.org
 Group:      Applications/Databases
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/pgaudit/pgaudit/archive/refs/tags/%{srcname}-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: build-essential
 BuildRequires: postgresql%{pgmajorversion}-devel

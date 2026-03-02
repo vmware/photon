@@ -1,1 +1,1 @@
-License: Python-2.0 AND BSD-3-Clause AND PostgreSQL AND Apache-2.0 AND MIT
+License: Apache-2.0 AND MIT AND PostgreSQL AND Python-2.0

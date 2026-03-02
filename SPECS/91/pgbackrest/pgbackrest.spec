@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Reliable PostgreSQL Backup & Restore
 Name:           pgbackrest
-Version:        2.58.0
-Release:        1%{?dist}
+Version:        2.54.2
+Release:        3.1%{?dist}
 Url:            https://pgbackrest.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,19 +19,17 @@ Source2: license.txt
 BuildRequires: openssl-devel
 BuildRequires: libxml2-devel
 BuildRequires: lz4-devel
-BuildRequires: postgresql18-devel
+BuildRequires: postgresql17-devel
+BuildRequires: cmake
 BuildRequires: libyaml-devel
-BuildRequires: libssh2-devel
-BuildRequires: meson
 
-Requires: libssh2
 Requires: openssl
 Requires: xz-libs
 Requires: zstd-libs
 Requires: bzip2-libs
 Requires: lz4
 Requires: libxml2
-Requires: (postgresql18-libs or postgresql17-libs or postgresql16-libs or postgresql15-libs or postgresql14-libs or postgresql13-libs)
+Requires: (postgresql17-libs or postgresql16-libs or postgresql15-libs or postgresql14-libs or postgresql13-libs)
 
 %description
 pgBackRest aims to be a reliable, easy-to-use backup and restore solution
@@ -44,11 +42,15 @@ utilizing algorithms that are optimized for database-specific requirements.
 %build
 ln -sv $(pg_config --libdir)/pkgconfig/* %{_libdir}/pkgconfig/
 
-%{meson}
-%{meson_build}
+pushd src
+%configure
+%make_build
+popd
 
 %install
-%{meson_install}
+pushd src
+%make_install %{?_smp_mflags}
+popd
 
 mkdir -p %{buildroot}%{_sysconfdir}/%{name} \
          %{buildroot}%{_var}/log/%{name}
@@ -62,8 +64,8 @@ cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
-* Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.58.0-1
-- Upgrade version to v2.58.0, which supports pgsql18
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.54.2-3.1
+- Bump release after moving to SPECS/91
 * Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.54.2-3
 - Build with pgsql17
 * Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.54.2-2

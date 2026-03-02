@@ -1,12 +1,14 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname         pgaudit
-%global pgmajorversion  16
+%global pgmajorversion  18
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pglibdir       %{_pgbaseinstdir}/lib/postgresql
 %global _pgdatadir      %{_pgbaseinstdir}/share/postgresql
 
-Name:       pgaudit16
-Version:    16.0
-Release:    2%{?dist}
+Name:       pgaudit18
+Version:    18.0
+Release:    1%{?dist}
 Summary:    PostgreSQL Audit Extension
 URL:        http://pgaudit.org
 Group:      Applications/Databases
@@ -68,7 +70,5 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
-* Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.0-2
-- Fix directory ownership during file packaging
-* Thu Apr 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.0-1
-- pgAudit for pgsql16
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 18.0-1
+- Initial version

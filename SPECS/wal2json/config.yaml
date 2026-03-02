@@ -1,6 +1,5 @@
 sources:
 - archive: wal2json-2.6.tar.gz
-  skip_validation: false
   archive_sha512sum: 73c89b1251696fad269019050e1cd479ee114e671714a4aecae12f862fc339b1d30faa44a298da64f972ca028687e0d9e7baaec64b35117bb13702afa8f00ca3
   name: wal2json-wal2json_2_6
   version: 2.6
