@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.69
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -589,10 +589,6 @@ popd
 
 # Jitterentropy support and FIPS compliance
 %autopatch -p1 -m10000 -M10000
-%if 0%{?fips}
-
-# Using autosetup is not feasible
-%setup -q -T -D -b 10000 -n linux-%{version}
 
 # prep for viomem out-of-tree module
 mkdir ../viomem
@@ -600,6 +596,11 @@ pushd ../viomem
 cp %{SOURCE30} Makefile
 cp %{SOURCE31} .
 popd
+
+%if 0%{?fips}
+
+# Using autosetup is not feasible
+%setup -q -T -D -b 10000 -n linux-%{version}
 
 cp -rf ../%{jent_name}/ crypto/
 rm -rf crypto/jitterentropy-kcapi.c
@@ -951,6 +952,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Mar 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-4
+- Fix aarch64 build
 * Thu Feb 26 2026 Bo Gan <bo.gan@broadcom.com> 6.12.69-3
 - Enable MEMCG_V1 and CPUSETS_V1 for other flavors as generic/x86 does
 * Fri Feb 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-2
