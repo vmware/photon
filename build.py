@@ -116,7 +116,7 @@ def url_validator(url):
 
 
 def check_first_pass():
-    marker_path = os.environ.get("FIRST_PASS_MARKER", "")
+    marker_path = os.environ.get("FIRST_PASS_MARKER")
     return marker_path and os.path.exists(marker_path)
 
 
@@ -259,7 +259,7 @@ class Utilities:
             if "pkg" not in os.environ:
                 if not args or len(args) != 1:
                     raise Exception(
-                        "Please provide package name as a parameter or as an environment variable pkg=<pkg-name>"
+                        "ERROR: Please provide package name as a parameter or as an environment variable pkg=<pkg-name>"
                     )
                 self.pkg = args[0]
             else:
@@ -267,7 +267,7 @@ class Utilities:
             self.display_option = "tree"
 
         if configdict["targetName"] == "imgtree" and "img" not in os.environ:
-            raise Exception("img not present in os.environ")
+            raise Exception("ERROR: img not present in os.environ")
 
         if configdict["targetName"] == "imgtree":
             self.json_file = "packages_" + os.environ["img"] + ".json"
@@ -348,7 +348,7 @@ class Utilities:
 
     def pull_stage_rpms(self):
         if not self.args or len(self.args) != 1:
-            raise Exception("Please provide pull url as a parameter")
+            raise Exception("ERROR: Please provide pull url as a parameter")
 
         url = self.args[0]
         files = self.specDepsObject.listRPMfilenames()
@@ -365,7 +365,7 @@ class Utilities:
                 self.logger.info("Not found")
                 notFound.append(f)
             except Exception as e:
-                print(e)
+                print(f"ERROR: {e}")
         if notFound:
             self.logger.info("List of missing files: " + str(notFound))
 
@@ -555,7 +555,7 @@ class CleanUp:
             print(f"{rpmPath} is empty, return ...")
             return
 
-        baseCommit = str(configdict["photon-build-param"].get("base-commit", ""))
+        baseCommit = configdict["photon-build-param"].get("base-commit")
         if baseCommit:
             cmd = ["git", "diff", "--name-only", baseCommit]
         else:
@@ -930,7 +930,7 @@ class RpmBuildTarget:
         BuildEnvironmentSetup.photon_stage()
 
         RpmBuildTarget().packages()
-        if configdict["photon-build-param"].get("generate-pkg-list", ""):
+        if configdict["photon-build-param"].get("generate-pkg-list"):
             GenerateOSSFiles.buildPackagesList(
                 os.path.join(Build_Config.stagePath, "packages_list.csv")
             )
@@ -1046,7 +1046,7 @@ class CheckTools:
         if not glob.glob(Build_Config.dockerEnv) and docker.__version__ < docker_py_ver:
             print(f"\nERROR: Python3 package docker-{docker_py_ver} not installed.")
             print(f"Please use: pip3 install docker=={docker_py_ver}\n")
-            raise Exception()
+            raise Exception("")
 
     def check_spec_files():
         if check_prerequesite["check-spec-files"]:
@@ -1055,19 +1055,19 @@ class CheckTools:
         script_fn = f"{photonDir}/tools/scripts/get_modified_files.sh"
 
         cmd = ""
-        if configdict.get("photon-path", ""):
+        if configdict.get("photon-path"):
             cmd += f"{script_fn} {configdict['photon-path']} ; "
-        if configdict.get("release-branch-path", ""):
+        if configdict.get("release-branch-path"):
             cmd += f"{script_fn} {configdict['release-branch-path']}"
 
         if not cmd:
             raise Exception(
-                "build-config.json: photon-path and release-branch-path are empty ..."
+                "ERROR: build-config.json: photon-path and release-branch-path are empty ..."
             )
 
         cmd = cmd.rstrip(" ;")
 
-        baseCommit = str(configdict["photon-build-param"].get("base-commit", ""))
+        baseCommit = configdict["photon-build-param"].get("base-commit")
         if baseCommit:
             cmd = f"git diff --name-only {baseCommit}"
 
@@ -1084,7 +1084,7 @@ class CheckTools:
             files = [os.path.join(phPath, f) for f in files]
 
         if check_specs(files):
-            raise Exception("Spec file check failed")
+            raise Exception("ERROR: Spec file check failed")
 
         check_prerequesite["check-spec-files"] = True
 
@@ -1189,7 +1189,7 @@ class BuildImage:
         elif img in {"rpi", "ls1012afrwy"}:
             img_fn = f"{img_fn}.xz"
         else:
-            raise Exception(f"Invalid image format {img}")
+            raise Exception(f"ERROR: Invalid image format {img}")
 
         retval = os.path.exists(img_fn)
         if retval:
@@ -1439,7 +1439,7 @@ def initialize_constants():
     Build_Config.setBuildThreads(configdict["photon-build-param"]["threads"])
     buildType = configdict["photon-build-param"]["photon-build-type"]
     if buildType not in ["chroot", "systemd-nspawn", "container"]:
-        raise Exception("Unknown sandbox type: " + buildType)
+        raise Exception(f"ERROR: Unknown sandbox type: {buildType}")
     Build_Config.setPkgBuildType(buildType)
     constants.setSandboxType(buildType)
     Build_Config.setPkgJsonInput(
@@ -1478,7 +1478,7 @@ def initialize_constants():
     # Override with env variable if provided
     base_image_url = os.environ.get("PH_DOCKER_IMAGE_URL", base_image_url)
     if not base_image_url:
-        raise Exception("photon-docker-image-urls is empty")
+        raise Exception("ERROR: photon-docker-image-urls is empty")
 
     constants.setBaseImageTarballPath(base_image_url)
 
@@ -1486,48 +1486,59 @@ def initialize_constants():
     constants.setBuildBase(BuildStage.TOOLCHAIN, "base-toolchain")
     constants.setBuildBase(BuildStage.PACKAGES, "base-packages")
 
-    src_url = configdict["photon-build-param"].get("pull-sources-config", "")
+    src_url = configdict["photon-build-param"].get("pull-sources-config")
     if not src_url:
-        raise Exception("pull-sources-config is empty")
+        raise Exception("ERROR: pull-sources-config is empty")
 
     if not url_validator(src_url) and os.path.exists(src_url):
         # TODO: can be removed in future
         constants.setPullSourcesURL(Builder.get_baseurl(src_url))
     else:
         if not url_validator(src_url):
-            raise Exception(f"Invalid pull-sources-config url {src_url}")
+            raise Exception(f"ERROR: Invalid pull-sources-config url {src_url}")
         constants.setPullSourcesURL(src_url)
 
-    repo_url = configdict["photon-build-param"].get("package-repo-url", "")
+    repo_url = configdict["photon-build-param"].get("package-repo-url")
     if not repo_url:
-        raise Exception("package-repo-url is empty")
+        raise Exception("ERROR: package-repo-url is empty")
 
     if not url_validator(repo_url) and os.path.exists(repo_url):
         # TODO: can be removed in future
         constants.setPackageRepoURL(repo_url)
     else:
         if not url_validator(repo_url):
-            raise Exception(f"Invalid package-repo-url url {repo_url}")
+            raise Exception(f"ERROR: Invalid package-repo-url: {repo_url}")
         constants.setPackageRepoURL(repo_url)
 
-    repo_path = configdict["photon-build-param"].get("package-repo-path", "")
+    repo_path = configdict["photon-build-param"].get("package-repo-path")
     if repo_path and os.path.exists(repo_path):
         constants.setPackageRepoPath(repo_path)
 
-    repo_snapshot_file_path = configdict["photon-build-param"].get(
-        "package-repo-snapshot-file-path", ""
-    )
-    if repo_snapshot_file_path and os.path.isfile(repo_snapshot_file_path):
-        constants.setPackageRepoSnapshotFilePath(repo_snapshot_file_path)
+    snapshot_url = ""
+    # TODO: remove 92 default after adding photon-mainline key in 5.0 build-config.json
+    # Use snapshots only for releaseases other than mainline versions
+    phMainlineVer = configdict["photon-build-param"].get("photon-mainline", "92")
+    subrelease = constants.subreleaseVersion
+    if subrelease != phMainlineVer:
+        snapshot_url = configdict["photon-build-param"].get("package-repo-snapshot-file-url")
+        if snapshot_url:
+            if os.path.isfile(snapshot_url) or url_validator(snapshot_url):
+                if "SUBRELEASE" in snapshot_url:
+                    snapshot_url = snapshot_url.replace("SUBRELEASE", subrelease)
+                constants.setPackageRepoSnapshotURL(snapshot_url)
+            else:
+                raise Exception(f"ERROR: Invalid snapshot location config: {snapshot_url}")
+        assert snapshot_url
+        print(f"Using snapshot: {snapshot_url}")
+    else:
+        print(f"Skipping snapshot for {phMainlineVer} builds ...")
 
-    bootstrap_repo_path = configdict["photon-build-param"].get(
-        "bootstrap-repo-path", ""
-    )
+    bootstrap_repo_path = configdict["photon-build-param"].get("bootstrap-repo-path")
     if bootstrap_repo_path:
         if os.path.exists(bootstrap_repo_path):
             constants.setBootstrapPackageRepoPath(bootstrap_repo_path)
         else:
-            raise Exception(f"Invalid bootstrap-repo-path {bootstrap_repo_path}")
+            raise Exception(f"ERROR: Invalid bootstrap-repo-path {bootstrap_repo_path}")
 
     constants.setRPMCheck(configdict["photon-build-param"].get("rpm-check-flag", False))
     constants.setRpmCheckStopOnError(
@@ -1612,7 +1623,7 @@ def initialize_constants():
     constants.isolatedDockerNetwork = configdict.get("isolated-docker-network", None)
 
     filesToCopyToSb = configdict.get("photon-build-param", {}).get(
-        "copy-to-sandbox", ""
+        "copy-to-sandbox"
     )
     for k, v in filesToCopyToSb.items():
         if not v:
@@ -1682,7 +1693,7 @@ def process_env_build_params(ph_build_param):
         "REBUILD": "rebuild",
         "PACKAGE_REPO_URL": "package-repo-url",
         "PACKAGE_REPO_PATH": "package-repo-path",
-        "PACKAGE_REPO_SNAPSHOT_FILE_PATH": "package-repo-snapshot-file-path",
+        "PACKAGE_REPO_SNAPSHOT_FILE_URL": "package-repo-snapshot-file-url",
         "BOOTSTRAP_REPO_PATH": "bootstrap-repo-path",
     }
 
@@ -1783,7 +1794,7 @@ def main():
         and not cfgPath
         and not os.path.isfile(os.path.join(curDir, build_cfg))
     ):
-        raise Exception("Either specify branchName or configpath...")
+        raise Exception("ERROR: Either specify branchName or configpath...")
 
     if branch and not os.path.isdir(f"{curDir}/photon-{branch}"):
         runCmd(
@@ -1814,10 +1825,10 @@ def main():
 
     # Use env variable over the condif value
     releaseDir = os.environ.get(
-        "RELEASE_BRANCH_PATH", configdict.get("release-branch-path", "")
+        "RELEASE_BRANCH_PATH", configdict.get("release-branch-path")
     )
-    if releaseDir == "":
-        raise Exception("release-branch-path is empty")
+    if not releaseDir:
+        raise Exception("ERROR: release-branch-path is empty")
 
     # Convert it to absolute path and save in configdict
     releaseDir = os.path.abspath(releaseDir)
@@ -1831,12 +1842,12 @@ def main():
     configdict = merge_dicts(configdict, releasedict)
 
     # PHOTON_SUBRELEASE env variable should overwrite build options config file
-    subrelease = os.environ.get("PHOTON_SUBRELEASE", configdict["photon-build-param"].get("photon-subrelease", ""))
-    if subrelease == "":
-        raise Exception("photon-subrelease is empty")
+    subrelease = os.environ.get("PHOTON_SUBRELEASE", configdict["photon-build-param"].get("photon-subrelease"))
+    if not subrelease:
+        raise Exception("ERROR: photon-subrelease is empty")
     configdict["photon-build-param"]["photon-subrelease"] = subrelease
 
-    if not configdict.get("photon-path", ""):
+    if not configdict.get("photon-path"):
         configdict["photon-path"] = os.path.dirname(cfgPath)
 
     configdict["stage-path"] = os.path.abspath(
@@ -1888,7 +1899,7 @@ def main():
             check_prerequesite[item] = False
 
     phPath = configdict["photon-path"]
-    baseCommit = str(configdict["photon-build-param"].get("base-commit", ""))
+    baseCommit = configdict["photon-build-param"].get("base-commit")
     if baseCommit:
         cmd = ["git", "merge-base", "--is-ancestor", baseCommit, "HEAD"]
         _, _, rc = runCmd(
@@ -1961,7 +1972,7 @@ def main():
         if attr:
             attr()
     except Exception as e:
-        print(e)
+        print(f"ERROR: {e}")
         traceback.print_exc()
         sys.exit(1)
 

@@ -97,7 +97,7 @@ class constants(object):
     bootstrapRepoPath = None
     packageRepoURL = None
     packageRepoPath = None
-    packageRepoSnapshotFilePath = None
+    packageRepoSnapshotURL = None
     sandboxType: SandboxType = SandboxType.CHROOT
     testLogger = None
 
@@ -438,8 +438,8 @@ class constants(object):
         constants.packageRepoPath = path
 
     @staticmethod
-    def setPackageRepoSnapshotFilePath(path):
-        constants.packageRepoSnapshotFilePath = path
+    def setPackageRepoSnapshotURL(path):
+        constants.packageRepoSnapshotURL = path
 
     @staticmethod
     def setBootstrapPackageRepoPath(path):

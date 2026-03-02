@@ -17,20 +17,22 @@ from Sandbox import Container
 cpu_count = os.cpu_count() or 1
 ncpus = max(1, cpu_count // 2)
 
-packages_repo_template = """
+packages_repo_template = """\
 [packages]
 name=packages
 enabled=1
 gpgcheck=0
-skip_if_unavailable=True
+skip_if_unavailable=1
+skip_md_filelists=1
 """
 
-local_repo_template = """
+local_repo_template = """\
 [local]
 name=local
 enabled=1
 gpgcheck=0
-skip_if_unavailable=True
+skip_if_unavailable=1
+skip_md_filelists=1
 """
 
 BOOTSTRAP_REPO = "bootstrap.repo"
@@ -114,46 +116,36 @@ class TDNF:
         with tempfile.NamedTemporaryFile(
             mode="w", delete=False, prefix="local", suffix=".repo"
         ) as temp_file:
-            # Write the string constant to the temporary file
             temp_file.write(local_repo_template)
             temp_file.write(f"baseurl=file:///local/{sandboxRepoSuffix}")
             temp_file.flush()
             temp_file_path = temp_file.name
-            self.sandbox.putFiles(
-                [temp_file_path],
-                self.repoDir,
-            )
+            self.sandbox.putFiles([temp_file_path], self.repoDir)
             os.remove(temp_file_path)
 
         with tempfile.NamedTemporaryFile(
             mode="w", delete=False, suffix=".repo"
         ) as temp_file:
-            snapShotFn = constants.packageRepoSnapshotFilePath
-            # Write the string constant to the temporary file
             temp_file.write(packages_repo_template)
             if constants.packageRepoPath:
                 temp_file.write("baseurl=file:///packages")
             else:
                 temp_file.write(f"baseurl={constants.packageRepoURL}")
 
+            snapShotFn = constants.packageRepoSnapshotURL
             if snapShotFn:
-                temp_file.write(
-                    f"snapshot={self.repoDir}/{os.path.basename(snapShotFn)}"
-                )
+                if os.path.isfile(snapShotFn):
+                    snapshotCfg = f"snapshot={self.repoDir}/{os.path.basename(snapShotFn)}"
+                    self.sandbox.putFiles([snapShotFn], self.repoDir)
+                else:
+                    snapshotCfg = f"snapshot={snapShotFn}"
+
+                temp_file.write(f"\n{snapshotCfg}")
 
             temp_file.flush()
             temp_file_path = temp_file.name
-            self.sandbox.putFiles(
-                [temp_file_path],
-                self.repoDir,
-            )
+            self.sandbox.putFiles([temp_file_path], self.repoDir)
             os.remove(temp_file_path)
-
-            if snapShotFn:
-                self.sandbox.putFiles(
-                    [snapShotFn],
-                    self.repoDir,
-                )
 
     def run(self, subCmd=[], repoArgs=[], args=[], errMsg=""):
         if not repoArgs:
@@ -167,9 +159,11 @@ class TDNF:
             optionalOut.write(out)
             self.logger.debug(out)
 
-        _, _, rc = self.sandbox.runCmd(cmd, sandbox_user="root", logfn=logfn, ignore_rc=True)
+        out, err, rc = self.sandbox.runCmd(cmd, sandbox_user="root", logfn=logfn, ignore_rc=True)
         if rc:
             self.logger.error(f"Command Executed: {cmd} rc {rc}")
+            self.logger.error(out)
+            self.logger.error(err)
             raise Exception(errMsg)
 
         out = optionalOut.getvalue()

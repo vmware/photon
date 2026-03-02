@@ -22,7 +22,8 @@ def copyRPMsToRepo(sandboxPath, listRPMFiles=[], listSRPMFiles=[]):
 
     rpmTargetPath = constants.sourceRpmPath
     for rpmFile in listSRPMFiles:
-        shutil.move(f"{sandboxPath}/{rpmFile}", rpmTargetPath)
+        fn = os.path.basename(rpmFile)
+        shutil.move(f"{sandboxPath}/{rpmFile}", f"{rpmTargetPath}/{fn}")
 
     rpmTempPath = tempfile.mkdtemp(prefix=".rpmdir", dir=rpmPath)
 
