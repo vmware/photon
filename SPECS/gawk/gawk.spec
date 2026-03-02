@@ -3,7 +3,7 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.3.2
-Release:      1%{?dist}
+Release:      2%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -20,19 +20,28 @@ Provides:   awk
 
 BuildRequires: readline-devel
 
-Requires:   mpfr
-Requires:   gmp
-Requires:   readline
+Requires:   %{name}-bin = %{version}-%{release}
+Requires:   %{name}-extras = %{version}-%{release}
 
 %description
 The Gawk package contains programs for manipulating text files.
 
 %package extras
 Summary:    Extra set of gawk utilities
-Conflicts:  %{name} < 5.3.2-1
+Conflicts:  %{name} < 5.3.2-2
 Requires:   %{name} = %{version}-%{release}
 
 %description extras
+%{summary}
+
+%package bin
+Summary:  Gawk binary
+Conflicts: %{name} < 5.3.2-2
+Requires:   mpfr
+Requires:   gmp
+Requires:   readline
+
+%description bin
 %{summary}
 
 %package all-langpacks
@@ -90,6 +99,9 @@ sed -i 's/ pty1 / /' test/Makefile
 
 %files
 %defattr(-,root,root)
+
+%files bin
+%defattr(-,root,root)
 %{_bindir}/%{name}
 %{_bindir}/awk
 %{_bindir}/%{name}-%{version}
@@ -100,11 +112,11 @@ sed -i 's/ pty1 / /' test/Makefile
 %{_libexecdir}/*awk
 %{_sysconfdir}/profile.d/gawk.*
 %{_bindir}/gawkbug
+%{_datadir}/*awk
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/gawkapi.h
-%{_datadir}/*awk
 
 %files -f %{name}.lang all-langpacks
 %defattr(-,root,root,-)
@@ -115,6 +127,8 @@ sed -i 's/ pty1 / /' test/Makefile
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-2
+- Introduce bin subpackage
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-1
 - Split package into further sub packages
 - Upgrade to v5.3.2
