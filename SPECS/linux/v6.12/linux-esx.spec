@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.69
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -145,20 +145,20 @@ Patch58: 0002-Add-.sbat-section.patch
 # Patch58: 0003-Verify-SBAT-on-kexec.patch
 #external-entropy
 Patch59: 0001-external_entropy-Enable-External-Entropy-support.patch
+Patch60: 07-vmware-only.patch
 %endif
 
 # linux-esx [60..89]
-Patch60: init-do_mounts-recreate-dev-root.patch
-Patch61: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch62: 01-clear-linux.patch
-Patch63: 02-pci-probe.patch
-Patch64: poweroff-without-firmware.patch
-Patch65: 04-quiet-boot.patch
-Patch66: 05-pv-ops-clocksource.patch
-Patch67: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-Patch68: halt-on-panic.patch
-Patch69: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch70: 07-vmware-only.patch
+Patch61: init-do_mounts-recreate-dev-root.patch
+Patch62: serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch63: 01-clear-linux.patch
+Patch64: 02-pci-probe.patch
+Patch65: poweroff-without-firmware.patch
+Patch66: 04-quiet-boot.patch
+Patch67: 05-pv-ops-clocksource.patch
+Patch68: 0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+Patch69: halt-on-panic.patch
+Patch70: x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
 Patch71: revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 %if 0%{?vmxnet3_sw_timestamp}
@@ -330,11 +330,11 @@ The Linux package contains the Linux kernel doc files
 
 %ifarch x86_64
 # VMW x86
-%autopatch -p1 -m50 -M59
+%autopatch -p1 -m50 -M60
 %endif
 
 # linux-esx
-%autopatch -p1 -m60 -M89
+%autopatch -p1 -m61 -M89
 
 # Backward compatibility
 %if "%{dist}" == ".ph5"
@@ -536,6 +536,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-4
+- Fix aarch64 build
 * Thu Feb 26 2026 Bo Gan <bo.gan@broadcom.com> 6.12.69-3
 - Enable MEMCG_V1 and CPUSETS_V1 for other flavors as generic/x86 does
 * Fri Feb 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-2
