@@ -1,13 +1,13 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
-Version:        0.11.2
+Version:        0.11.4
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/NetworkingLibraries
 URL:            https://www.libssh.org
 
-Source0: https://www.libssh.org/files/0.10/%{name}-%{version}.tar.xz
+Source0: https://git.libssh.org/projects/libssh.git/snapshot/%{name}-%{version}.tar.xz
 
 Source1: libssh_client.config
 Source2: libssh_server.config
@@ -110,6 +110,8 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}_server.config
 
 %changelog
+* Wed Mar 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.11.4-1
+- Upgrade to v0.11.4 to address security issues
 * Thu Aug 07 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.11.2-1
 - Version upgrade to v0.11.2
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.10.6-2

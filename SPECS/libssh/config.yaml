@@ -1,29 +1,14 @@
 sources:
-- archive: libssh-0.11.2.tar.xz
-  skip_validation: false
-  archive_sha512sum: 
-    15d56c3f82ee81c3ab4af2b17eba054626bb53c3337ef45f829479f8b64c552f6e7cbf307e41c9792bcb3438f282d2690acbe994150bd03a8b6c21ba8b1cfe50
+- archive: libssh-0.11.4.tar.xz
+  archive_sha512sum: 55f315fafb7c545c8ad9b1e6a4d9d5b7aadfbbd782dfd1919699deed1089ff05506b66b047e395062f010c299ad44ce71d20384288444ed202a9a5abfc34b495
   archive_type: upstream
-  name: libssh-0.11.2
-  version: 0.11.2
+  name: libssh-0.11.4
+  version: 0.11.4
   repo_url: https://git.libssh.org/projects/libssh.git
-  commit_id: dff6c0821ed54f6fbf5b755af43f54cbb723b1b1
-  url: https://www.libssh.org/files/0.11/libssh-0.11.2.tar.xz
-  skip_list:
-  - RCS
-  - CVS
-  - tags
-  - .git
-  - .hg
-  - .bzr
-  - _darcs
-  - __pycache__
-  missing:
-  - .gitignore
-  - .gitlab-c
-  - .gitlab-ci.yml
-  - .gitleaks.toml
-  - .gitlab-ci
+  commit_id: 46accf06695b1dd13a47d3382dc38d99c66b53fb
+  url: https://git.libssh.org/projects/libssh.git/snapshot/libssh-0.11.4.tar.xz
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The ssh library was designed to be used by programmers
@@ -32,15 +17,9 @@ sources:
         execute programs, transfer files, use a secure and transparent tunnel for
         your remote programs. With its Secure FTP implementation, you can play with
         remote files easily, without third-party programs others than libcrypto (from
-        openssl). '
+        openssl).'
       home_page: https://www.libssh.org
-      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND 
-        GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND 
-        LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND 
-        SSH-short
-      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND 
-        GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND 
-        LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND 
-        SSH-short
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND SSH-short
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND SSH-short
       short_summary: A library implementing the SSH protocol
       supplier: 'Organization: Broadcom, Inc.'
