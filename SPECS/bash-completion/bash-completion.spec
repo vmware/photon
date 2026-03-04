@@ -1,16 +1,18 @@
 Summary:        Programmable completion for Bash
 Name:           bash-completion
 Version:        2.15.0
-Release:        1%{?dist}
-License:        GPL-2.0-or-later
+Release:        2%{?dist}
 URL:            https://github.com/scop/bash-completion
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
+BuildArch: noarch
+
 Source0: https://github.com/scop/bash-completion/releases/download/%{version}/%{name}-%{version}.tar.xz
 
-BuildArch: noarch
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires: automake
 BuildRequires: make
@@ -71,5 +73,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Mar 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.15.0-2
+- Move license to license.txt
 * Tue Sep 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.15.0-1
 - Initial version.

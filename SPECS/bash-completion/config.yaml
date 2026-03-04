@@ -5,7 +5,6 @@ sources:
   commit_id: d4a1c565dfcafc21a6c9cfe56966a531a42b6219
   missing: [Makefile.in, .gitignore, portinstall, missing, .dockerignore, freebsd-update, pkgutil, install-sh, config.sub, requirements-dev.txt, docker, pkg_delete, aclocal.m4, kldload, lspci, uscan, runLint, .pymarkdown.json, .pre-commit-config.yaml, .github, .typos.toml, version.txt, .gitlint, config.guess, portupgrade, kldunload, update-test-cmd-list, generate, configure, test-cmd-list.txt, rg, portsnap, requirements.txt]
   skip_list: []
-  skip_validation: false
   name: "bash-completion-2.15.0"
   version: 2.15.0
   repo_url: https://github.com/scop/bash-completion
@@ -15,7 +14,7 @@ sources:
       detailed_description: 'bash-completion is a collection of shell functions that take advantage
 of the programmable completion feature of bash.'
       home_page: https://github.com/scop/bash-completion
-      license_concluded: GPL-2.0-or-later
-      license_declared: GPL-2.0-or-later
+      license_concluded: BSD-3-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND X11
+      license_declared: BSD-3-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND X11
       short_summary: Programmable completion for Bash
       supplier: 'Organization: Broadcom, Inc.'
