@@ -44,8 +44,8 @@ index db7254d52d93..e13b8798ba23 100644
  #define RTNL_FAMILY_IPMR		128
  #define RTNL_FAMILY_IP6MR		129
 -#define RTNL_FAMILY_MAX			129
-+#define RTNL_FAMILY_TRUNK		130
-+#define RTNL_FAMILY_MAX			130
++#define RTNL_FAMILY_TRUNK		200
++#define RTNL_FAMILY_MAX			200
  
  /****
   *		Routing/neighbour discovery messages.

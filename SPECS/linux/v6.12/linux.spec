@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.69
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -952,6 +952,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Mar 04 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.69-5
+- HCX: Update enums to higher value to avoid UAPI conflict with new kernel features
 * Mon Mar 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-4
 - Fix aarch64 build
 * Thu Feb 26 2026 Bo Gan <bo.gan@broadcom.com> 6.12.69-3

@@ -18,12 +18,12 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
 ---
  include/linux/skbuff.h                        |  1 +
- include/uapi/linux/netfilter_arp/arp_tables.h |  7 ++-
+ include/uapi/linux/netfilter_arp/arp_tables.h |  6 ++-
  net/bridge/br_forward.c                       |  9 ++++
  net/bridge/br_private.h                       | 12 +++++
  net/bridge/br_vlan.c                          | 15 ++++--
  net/ipv4/netfilter/arp_tables.c               | 52 ++++++++++++++++++-
- 6 files changed, 90 insertions(+), 6 deletions(-)
+ 6 files changed, 89 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
 index db174ad9bb76..fb9513bd66e4 100644
@@ -41,18 +41,16 @@ diff --git a/include/uapi/linux/netfilter_arp/arp_tables.h b/include/uapi/linux/
 index a6ac2463f787..df634f16662a 100644
 --- a/include/uapi/linux/netfilter_arp/arp_tables.h
 +++ b/include/uapi/linux/netfilter_arp/arp_tables.h
-@@ -57,7 +57,10 @@ struct arpt_arp {
- 
- 	/* ARP hardware address and protocol address format. */
- 	__be16 arhrd, arhrd_mask;
-+
- 	__be16 arpro, arpro_mask;
+@@ -70,6 +70,8 @@
+ 	__u8 flags;
+ 	/* Inverse flags */
+ 	__u16 invflags;
 +	/* Vlan of packet. */
 +	__u16 vlan, vlan_mask;
+ };
  
- 	/* The protocol address length is only accepted if it is 4
- 	 * so there is no use in offering a way to do filtering on it.
-@@ -88,7 +91,9 @@ struct arpt_arp {
+ /* Values for "flag" field in struct arpt_ip (general arp structure).
+@@ -88,7 +90,9 @@ struct arpt_arp {
  #define ARPT_INV_ARPHRD		0x0080	/* Invert the sense of ARP HRD. */
  #define ARPT_INV_ARPPRO		0x0100	/* Invert the sense of ARP PRO. */
  #define ARPT_INV_ARPHLN		0x0200	/* Invert the sense of ARP HLN. */
