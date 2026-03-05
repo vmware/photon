@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.1.10
-Release:          2%{?dist}
+Release:          1.1%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -19,19 +19,19 @@ BuildRequires: systemd-devel
 BuildRequires: openldap-devel
 BuildRequires: openssl-devel
 BuildRequires: shadow
-BuildRequires: gdbm-devel
+BuildRequires: tinycdb-devel
 BuildRequires: cyrus-sasl-devel
 
 Requires(pre): systemd-rpm-macros
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 Requires: cyrus-sasl
+Requires: tinycdb
 Requires: (coreutils or coreutils-selinux)
 Requires: systemd
 Requires: m4
 Requires: openldap
 Requires: /bin/sed
 Requires: net-tools
-Requires: gdbm
 
 %description
 Sendmail is widely used Mail Transport agent which helps in sending
@@ -43,8 +43,8 @@ of email from systems to network and is not just a mail client.
 
 %build
 cat >> devtools/Site/site.config.m4 << "EOF"
-APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6')
-APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber -lgdbm_compat -lgdbm')
+APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6 -DCDB')
+APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber -lcdb')
 APPENDDEF(`confINCDIRS', `-I/usr/include/sasl')
 APPENDDEF(`confLIBS', `-lresolv')
 define(`confMANGRP',`root')
@@ -192,8 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
-* Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.1.10-2
-- Switch map backend to ndbm to remove dependency on tinycdb.
+* Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.1.10-1.1
+- Bump after moving to SPECS/91
 * Fri Oct 03 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.18.1.10-1
 - Update to 8.18.1.10
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 8.18.0.2-3

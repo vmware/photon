@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Name:       tinycdb
 Summary:    Utility and library for manipulating constant databases
 Version:    0.78
-Release:    2%{?dist}
+Release:    2.1%{?dist}
 URL:        http://www.corpit.ru/mjt/tinycdb.html
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -68,6 +70,8 @@ cp %{SOURCE1} %{buildroot}%{_libdir}/pkgconfig/
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.78-2.1
+- Bump after moving to SPECS/91
 * Fri Dec 13 2024 Dweep Advani <dweep.advani@broadcom.com> 0.78-2
 - Release bump for SRP compliance
 * Wed Feb 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.78-1

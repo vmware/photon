@@ -1,0 +1,18 @@
+sources:
+- archive: sendmail.8.18.1.10.tar.gz
+  archive_sha512sum: eda3dbb9a689d1e550776c96591122c484036755ba53fdaf5623130144cbab315256c9bf491161090731a8f762184e69505c45009a333aabdf40567ea226273d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Sendmail is widely used Mail Transport agent which helps
+        in sending email from one system to another. This program helps in movement
+        of email from systems to network and is not just a mail client. '
+      home_page: http://www.sendmail.org
+      license_concluded: MIT AND HPND-sell-variant AND MIT-CMU AND CDDL-1.0 AND Sendmail
+        AND mailprio AND ISC AND BSD-4-Clause-UC AND BSD-3-Clause AND BSD-4-Clause
+        AND PostgreSQL
+      license_declared: MIT AND HPND-sell-variant AND MIT-CMU AND CDDL-1.0 AND Sendmail
+        AND mailprio AND ISC AND BSD-4-Clause-UC AND BSD-3-Clause AND BSD-4-Clause
+        AND PostgreSQL
+      short_summary: Commonly used Mail transport agent (MTA)
+      supplier: 'Organization: Broadcom, Inc.'
