@@ -19,10 +19,10 @@ Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
 ---
  include/net/ip_tunnels.h       |   1 +
- include/uapi/linux/if_tunnel.h |   2 +
+ include/uapi/linux/if_tunnel.h |   1 +
  net/ipv4/ip_gre.c              | 170 +++++++++++++++++++++++++++++++++
  net/ipv4/ip_tunnel.c           |   1 +
- 4 files changed, 174 insertions(+)
+ 4 files changed, 173 insertions(+)
 
 diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
 index b1bb100c326c..f10d53125943 100644
@@ -40,19 +40,11 @@ diff --git a/include/uapi/linux/if_tunnel.h b/include/uapi/linux/if_tunnel.h
 index e1a246dd8c62..836e85972324 100644
 --- a/include/uapi/linux/if_tunnel.h
 +++ b/include/uapi/linux/if_tunnel.h
-@@ -53,6 +53,7 @@ struct ip_tunnel_parm {
- 	__be32			i_key;
- 	__be32			o_key;
- 	struct iphdr		iph;
-+	__u16			mss_clamp;
- };
- 
- enum {
-@@ -140,6 +141,7 @@ enum {
+@@ -140,6 +140,7 @@ enum {
  	IFLA_GRE_ERSPAN_VER,
  	IFLA_GRE_ERSPAN_DIR,
  	IFLA_GRE_ERSPAN_HWID,
-+	IFLA_GRE_MSS_CLAMP,
++	IFLA_GRE_MSS_CLAMP = 30,
  	__IFLA_GRE_MAX,
  };
  

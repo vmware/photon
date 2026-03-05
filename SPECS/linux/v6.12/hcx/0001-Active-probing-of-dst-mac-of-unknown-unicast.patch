@@ -38,31 +38,31 @@ Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
  10 files changed, 323 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index c5fe3b2a5..bb6c3a2a7 100644
+index 3ff96ae31bf6..056238a97f23 100644
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
 @@ -61,6 +61,7 @@ struct br_ip_list {
  #define BR_PORT_LOCKED		BIT(21)
  #define BR_PORT_MAB		BIT(22)
  #define BR_NEIGH_VLAN_SUPPRESS	BIT(23)
-+#define BR_SINK_CONNECTED	BIT(24)
++#define BR_SINK_CONNECTED	BIT(30)
  
  #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
  
 diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 2acc7687e..e1c734e29 100644
+index 2acc7687e017..e1c734e29d21 100644
 --- a/include/uapi/linux/if_link.h
 +++ b/include/uapi/linux/if_link.h
 @@ -1094,6 +1094,7 @@ enum {
  	IFLA_BRPORT_MCAST_MAX_GROUPS,
  	IFLA_BRPORT_NEIGH_VLAN_SUPPRESS,
  	IFLA_BRPORT_BACKUP_NHID,
-+	IFLA_BRPORT_SINK_CONNECTED,
++	IFLA_BRPORT_SINK_CONNECTED = 60,
  	__IFLA_BRPORT_MAX
  };
  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
 diff --git a/net/bridge/br.c b/net/bridge/br.c
-index 35e9842f4..7cde464b5 100644
+index 35e9842f4203..7cde464b5bed 100644
 --- a/net/bridge/br.c
 +++ b/net/bridge/br.c
 @@ -441,6 +441,10 @@ static int __init br_init(void)
@@ -87,7 +87,7 @@ index 35e9842f4..7cde464b5 100644
  
  module_init(br_init)
 diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 26b79feb3..b76f0aec8 100644
+index 26b79feb385d..b76f0aec8c5a 100644
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
 @@ -119,18 +119,26 @@ static int br_dev_init(struct net_device *dev)
@@ -135,7 +135,7 @@ index 26b79feb3..b76f0aec8 100644
  
  static int br_dev_open(struct net_device *dev)
 diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 44459c9d2..408559d16 100644
+index 2eb2bb664388..c7c0e27033ac 100644
 --- a/net/bridge/br_input.c
 +++ b/net/bridge/br_input.c
 @@ -23,6 +23,21 @@
@@ -422,7 +422,7 @@ index 44459c9d2..408559d16 100644
  			br_flood(br, skb, pkt_type, local_rcv, false, vid);
  		else
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 6b97ae47f..1af43bf2e 100644
+index 6b97ae47f855..1af43bf2e786 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
 @@ -190,6 +190,7 @@ static inline size_t br_port_info_size(void)
@@ -459,10 +459,10 @@ index 6b97ae47f..1af43bf2e 100644
  	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 00956eb4f..8e9ac489c 100644
+index 741b0b8c4bab..b1333722f335 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -462,6 +462,14 @@ static inline struct net_bridge_port *br_port_get_rtnl(const struct net_device *
+@@ -461,6 +461,14 @@ static inline struct net_bridge_port *br_port_get_rtnl(const struct net_device *
  		rtnl_dereference(dev->rx_handler_data) : NULL;
  }
  
@@ -477,7 +477,7 @@ index 00956eb4f..8e9ac489c 100644
  static inline struct net_bridge_port *br_port_get_rtnl_rcu(const struct net_device *dev)
  {
  	return netif_is_bridge_port(dev) ?
-@@ -581,6 +589,7 @@ struct net_bridge {
+@@ -580,6 +588,7 @@ struct net_bridge {
  #if IS_ENABLED(CONFIG_BRIDGE_CFM)
  	struct hlist_head		mep_list;
  #endif
@@ -485,7 +485,7 @@ index 00956eb4f..8e9ac489c 100644
  };
  
  struct br_input_skb_cb {
-@@ -2304,6 +2313,11 @@ static inline void br_switchdev_init(struct net_bridge *br)
+@@ -2303,6 +2312,11 @@ static inline void br_switchdev_init(struct net_bridge *br)
  
  #endif /* CONFIG_NET_SWITCHDEV */
  
@@ -498,7 +498,7 @@ index 00956eb4f..8e9ac489c 100644
  void br_recalculate_neigh_suppress_enabled(struct net_bridge *br);
  void br_do_proxy_suppress_arp(struct sk_buff *skb, struct net_bridge *br,
 diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index ea7335422..cc0f7a301 100644
+index ea733542244c..cc0f7a30196d 100644
 --- a/net/bridge/br_sysfs_br.c
 +++ b/net/bridge/br_sysfs_br.c
 @@ -933,6 +933,29 @@ static ssize_t vlan_stats_per_port_store(struct device *d,
@@ -540,7 +540,7 @@ index ea7335422..cc0f7a301 100644
  };
  
 diff --git a/net/bridge/br_sysfs_if.c b/net/bridge/br_sysfs_if.c
-index 74fdd8105..8f8058d3b 100644
+index 74fdd8105dca..8f8058d3b754 100644
 --- a/net/bridge/br_sysfs_if.c
 +++ b/net/bridge/br_sysfs_if.c
 @@ -240,6 +240,7 @@ BRPORT_ATTR_FLAG(multicast_flood, BR_MCAST_FLOOD);
@@ -560,7 +560,7 @@ index 74fdd8105..8f8058d3b 100644
  };
  
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 650c3c20e..28b7fb972 100644
+index 650c3c20e79f..5b52819a4114 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
 @@ -62,7 +62,7 @@
@@ -568,7 +568,7 @@ index 650c3c20e..28b7fb972 100644
  
  #define RTNL_MAX_TYPE		50
 -#define RTNL_SLAVE_MAX_TYPE	44
-+#define RTNL_SLAVE_MAX_TYPE	48
++#define RTNL_SLAVE_MAX_TYPE	60
  
  struct rtnl_link {
  	rtnl_doit_func		doit;
@@ -582,5 +582,5 @@ index 650c3c20e..28b7fb972 100644
  				IFLA_BRPORT_PROXYARP, BR_PROXYARP) ||
  	    brport_nla_put_flag(skb, flags, mask,
 -- 
-2.43.7
+2.43.0
 
