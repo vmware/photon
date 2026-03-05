@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        Programmable completion for Bash
 Name:           bash-completion
-Version:        2.17.0
-Release:        1%{?dist}
+Version:        2.15.0
+Release:        2.1%{?dist}
 URL:            https://github.com/scop/bash-completion
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -73,8 +75,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/pkgconfig/%{name}.pc
 
 %changelog
-* Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.17.0-1
-- Upgrade to v2.17.0
+* Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.15.0-2.1
+- Bump after moving to SPECS/91
 * Wed Mar 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.15.0-2
 - Move license to license.txt
 * Tue Sep 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.15.0-1

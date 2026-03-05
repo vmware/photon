@@ -1,20 +1,20 @@
 sources:
-- archive: bash-completion-2.15.0.tar.xz
-  archive_sha512sum: 3b7e98801c3ceab7853c0603bdaa0cd6f0a658e0f7f24b092f341bd1794633b62d33e664035b6ab3c03b5a3dd941b16f87a415aade8a2707578c59cc48b1a9f7
+- archive: bash-completion-2.17.0.tar.xz
+  archive_sha512sum: 79f7a22de7df7a6a5cad2e8088ce7e013a3cd5542f3af825c04b2607c824022913dd775202ddab7964dd759e50d5bdf9be6451c70d488efaef10f7cf2f7ac73e
   archive_type: upstream
-  commit_id: d4a1c565dfcafc21a6c9cfe56966a531a42b6219
-  missing: [Makefile.in, .gitignore, portinstall, missing, .dockerignore, freebsd-update, pkgutil, install-sh, config.sub, requirements-dev.txt, docker, pkg_delete, aclocal.m4, kldload, lspci, uscan, runLint, .pymarkdown.json, .pre-commit-config.yaml, .github, .typos.toml, version.txt, .gitlint, config.guess, portupgrade, kldunload, update-test-cmd-list, generate, configure, test-cmd-list.txt, rg, portsnap, requirements.txt]
+  commit_id: 47cc2eb87af2f95bc3a6b13ccebe6bd39b1b107a
+  missing: [requirements-dev.txt, aclocal.m4, docker, uscan, generate, requirements.txt, Makefile.in, runLint, shtab, .dockerignore, .pymarkdown.json, install-sh, .github, test-cmd-list.txt, .pre-commit-config.yaml, .gitignore, update-test-cmd-list, configure, missing, version.txt, .typos.toml, config.guess, config.sub, .gitlint, lspci, rg]
   skip_list: []
-  name: "bash-completion-2.15.0"
-  version: 2.15.0
+  name: "bash-completion-2.17.0"
+  version: 2.17.0
   repo_url: https://github.com/scop/bash-completion
-  url: https://github.com/scop/bash-completion/releases/download/2.15.0/bash-completion-2.15.0.tar.xz
+  url: https://github.com/scop/bash-completion/releases/download/2.17.0/bash-completion-2.17.0.tar.xz
   spdx:
     package:
       detailed_description: 'bash-completion is a collection of shell functions that take advantage
 of the programmable completion feature of bash.'
       home_page: https://github.com/scop/bash-completion
-      license_concluded: BSD-3-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND X11
-      license_declared: BSD-3-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND X11
+      license_concluded: (GPL-2.0-or-later OR ISC) AND BSD-3-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND X11
+      license_declared: (GPL-2.0-or-later OR ISC) AND BSD-3-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND X11
       short_summary: Programmable completion for Bash
       supplier: 'Organization: Broadcom, Inc.'
