@@ -1,7 +1,9 @@
+%global subrelease %{?photon_subrelease}%{!?photon_subrelease:0}
+
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        7%{?dist}
+Release:        8.%{subrelease}%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Source1:        VMWARE-RPM-GPG-KEY
@@ -13,11 +15,12 @@ Source6:        photon-debuginfo.repo
 Source7:        photon-release.repo
 Source8:        photon-srpms.repo
 Source9:        photon-extras.repo
-Source10:       migrate-repo-url.inc
-Source11:       license.txt
+Source10:       photon-snapshot.repo
+Source11:       migrate-repo-url.inc
+Source12:       license.txt
 
-%include %{SOURCE10}
 %include %{SOURCE11}
+%include %{SOURCE12}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Requires:       photon-release
@@ -28,7 +31,13 @@ BuildArch:      noarch
 Photon repo files and gpg keys
 
 %build
-# Nothing to do
+%if %{subrelease} < 92
+# Disable photon-updates repo for 90 and 91 by default
+sed -i 's|^enabled=1|enabled=0|g' %{SOURCE4}
+%else
+# Disable photon-snapshot repo for 92 by default
+sed -i 's|^enabled=1|enabled=0|g' %{SOURCE10}
+%endif
 
 %post
 [ $1 -gt 1 ] || exit 0
@@ -44,36 +53,51 @@ Photon repo files and gpg keys
 
 %install
 rm -rf %{buildroot}
-install -d -m 755 %{buildroot}/etc/yum.repos.d
-install -m 644 %{SOURCE3} %{buildroot}/etc/yum.repos.d
-install -m 644 %{SOURCE4} %{buildroot}/etc/yum.repos.d
-install -m 644 %{SOURCE5} %{buildroot}/etc/yum.repos.d
-install -m 644 %{SOURCE6} %{buildroot}/etc/yum.repos.d
-install -m 644 %{SOURCE7} %{buildroot}/etc/yum.repos.d
-install -m 644 %{SOURCE8} %{buildroot}/etc/yum.repos.d
-install -m 644 %{SOURCE9} %{buildroot}/etc/yum.repos.d
+install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE9} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/yum.repos.d
 
-install -d -m 755 %{buildroot}/etc/pki/rpm-gpg
-install -m 644 %{SOURCE1} %{buildroot}/etc/pki/rpm-gpg
-install -m 644 %{SOURCE2} %{buildroot}/etc/pki/rpm-gpg
+install -d -m 755 %{buildroot}%{_sysconfdir}/pki/rpm-gpg
+install -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg
+install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pki/rpm-gpg
+
+# Set subrelease and updatenumber tdnf variable
+mkdir -p %{buildroot}%{_sysconfdir}/tdnf/vars
+echo "latest" > %{buildroot}%{_sysconfdir}/tdnf/vars/updatenumber
+echo %{subrelease} > %{buildroot}%{_sysconfdir}/tdnf/vars/subrelease
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%dir /etc/yum.repos.d
-/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
-/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096
-%config(noreplace) /etc/yum.repos.d/photon-debuginfo.repo
-%config(noreplace) /etc/yum.repos.d/photon-iso.repo
-%config(noreplace) /etc/yum.repos.d/photon.repo
-%config(noreplace) /etc/yum.repos.d/photon-updates.repo
-%config(noreplace) /etc/yum.repos.d/photon-release.repo
-%config(noreplace) /etc/yum.repos.d/photon-srpms.repo
-%config(noreplace) /etc/yum.repos.d/photon-extras.repo
+%dir %{_sysconfdir}/yum.repos.d
+%{_sysconfdir}/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+%{_sysconfdir}/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096
+%config(noreplace) %{_sysconfdir}/tdnf/vars/updatenumber
+# subrelease file is intentionally not marked as config(noreplace)
+# When upgrading to new subrelease, photon-repos must be upgraded as well.
+%config %{_sysconfdir}/tdnf/vars/subrelease
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-debuginfo.repo
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-iso.repo
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon.repo
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-updates.repo
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-release.repo
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-srpms.repo
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-extras.repo
+%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-snapshot.repo
 
 %changelog
+*   Wed Mar 04 2026 Bo Gan <bo.gan@broadcom.com> 5.0-8.%{subrelease}
+-   Add photon-snapshot repo file, and enable (by default) for 90 and 91
+-   Disable photon-updates repo for 92
+-   Change the versioning with sub-release suffix
 *   Wed Dec 03 2025 Bo Gan <bo.gan@broadcom.com> 5.0-7
 -   Patch old broadcom URLs to new ones
 *   Wed Jul 23 2025 Bo Gan <bo.gan@broadcom.com> 5.0-6
