@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Minimalistic C client library for Redis
 Name:           hiredis
 Version:        1.1.0
-Release:        6%{?dist}
+Release:        5.1%{?dist}
 Group:          Productivity/Databases/Clients
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,13 +15,10 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: make
-# Optional: only needed if %check is enabled (make check requires a running redis/valkey server)
-%if 0%{?with_check}
-BuildRequires: valkey
-%endif
+BuildRequires: redis
 
 %description
-Hiredis is a minimalistic C client library for Redis and Valkey databases.
+Hiredis is a minimalistic C client library for the Redis database.
 
 %package devel
 Summary:    Development files for %{name}
@@ -30,7 +27,7 @@ Requires:   %{name} = %{version}-%{release}
 
 %description devel
 The %{name}-devel package contains the header files and
-libraries for developing with Redis and Valkey databases.
+libraries for Redis database.
 
 %prep
 %autosetup -p1
@@ -40,8 +37,6 @@ libraries for developing with Redis and Valkey databases.
 
 %install
 %make_install PREFIX=%{_prefix}
-# Do not ship static library
-rm -f %{buildroot}%{_libdir}/libhiredis.a
 
 %if 0%{?with_check}
 %check
@@ -58,12 +53,13 @@ make check %{?_smp_mflags}
 %files devel
 %doc CHANGELOG.md README.md
 %{_includedir}/%{name}/
+%{_libdir}/libhiredis.a
 %{_libdir}/libhiredis.so
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
-* Thu Mar 05 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.0-6
-- hiredis builds standalone (valkey only needed for optional make check)
+* Fri Mar 06 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.0-5.1
+- Backup to SPECS/91
 * Thu Oct 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.1.0-5
 - Version bump up to consume redis v7.2.11
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.1.0-4
@@ -74,7 +70,3 @@ make check %{?_smp_mflags}
 - Bump up version to consume redis v7.0.13
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1
 - Automatic Version Bump
-* Wed Jul 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.2-2
-- Bump version as a part of redis upgrade
-* Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.2-1
-- hiredis initial build

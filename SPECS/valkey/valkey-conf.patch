@@ -1,0 +1,33 @@
+From: Packager <packager@broadcom.com>
+Date: Fri, 6 Mar 2026 12:00:00 +0000
+Subject: [PATCH] Use FHS paths for valkey logfile and data dir
+
+Configure Valkey to use distribution-friendly paths: log to
+/var/log/valkey/valkey.log and use /var/lib/valkey as the data
+directory. Matches common Linux FHS and packaging practice.
+
+Source/Credit: Redis/Valkey packaging patterns used in Fedora and
+other distributions (e.g. log and dir under /var).
+See: https://src.fedoraproject.org/rpms/valkey
+
+--- a/valkey.conf
++++ b/valkey.conf
+@@ -440,7 +440,7 @@
+ # Specify the log file name. Also the empty string can be used to force
+ # the server to log on the standard output. Note that if you use standard
+ # output for logging but daemonize, logs will be sent to /dev/null
+-logfile ""
++logfile "/var/log/valkey/valkey.log"
+ 
+ # To enable logging to the system logger, just set 'syslog-enabled' to yes,
+ # and optionally update the other syslog parameters to suit your needs.
+@@ -631,7 +631,7 @@
+ # Note that modifying 'dir' during runtime may have unexpected behavior,
+ # for example when a child process is running, related file operations may
+ # have unexpected effects.
+-dir ./
++dir /var/lib/valkey
+ 
+ ################################# REPLICATION #################################
+ 
+

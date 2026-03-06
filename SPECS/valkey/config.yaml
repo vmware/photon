@@ -1,0 +1,23 @@
+sources:
+- archive: valkey-9.0.3.tar.gz
+  archive_type: upstream
+  archive_sha512sum: f67beb01e04eb3322a2b8380db37e681b85b99de9b1a675125d28e36ac026586c8dd4e078d02e005968eda098141bbecc780a1375f6c82f01e7d5e3cafc8d7c8
+  name: valkey-9.0.3
+  url: https://github.com/valkey-io/valkey/archive/refs/tags/9.0.3.tar.gz
+  repo_url: https://github.com/valkey-io/valkey.git
+  commit_id: 6e63ad9ccdceea562a6ea9ea9df9160c0d1109d6
+  license_manual_review: []
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Valkey is an open-source, Redis-compatible in-memory data structure store, used as database, cache and message broker.'
+      home_page: https://valkey.io
+      license_concluded: (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR GPL-2.0-or-later) AND Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND 
+        BSD-3-Clause AND BSL-1.0 AND CC-BY-3.0 AND CC-BY-4.0 AND CC0-1.0 AND FSFAP AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 
+        AND ISC AND MIT AND NTP AND Zlib
+      license_declared:  (BSD-2-Clause OR CC0-1.0) AND (BSD-2-Clause OR GPL-2.0-or-later) AND Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND 
+        BSD-3-Clause AND BSL-1.0 AND CC-BY-3.0 AND CC-BY-4.0 AND CC0-1.0 AND FSFAP AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 
+        AND ISC AND MIT AND NTP AND Zlib
+      short_summary: advanced key-value store (Redis-compatible)
+      supplier: 'Organization: Broadcom, Inc.'

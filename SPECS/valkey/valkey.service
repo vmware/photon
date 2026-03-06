@@ -1,0 +1,12 @@
+[Unit]
+Description=Valkey in-memory key-value database
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/valkey-server /etc/valkey/valkey.conf --daemonize no
+ExecStop=/usr/bin/valkey-cli shutdown
+User=valkey
+Group=valkey
+
+[Install]
+WantedBy=multi-user.target

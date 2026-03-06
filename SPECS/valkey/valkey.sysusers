@@ -1,0 +1,2 @@
+g valkey -
+u valkey - "Valkey Database Server" /var/lib/valkey /sbin/nologin

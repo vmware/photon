@@ -1,0 +1,13 @@
+sources:
+- archive: hiredis-1.1.0.tar.gz
+  archive_sha512sum: 9dad012c144ed24de6aa413a3a10d19a9d0d9ece18dbc388406cd86c5b98cb66c76c586cb559c601ed13a75051d8921dc2882534cc3605513fde47d57276c3bb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Hiredis is a minimalistic C client library for the Redis
+        database. '
+      home_page: https://github.com/redis/hiredis
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: Minimalistic C client library for Redis
+      supplier: 'Organization: Broadcom, Inc.'
