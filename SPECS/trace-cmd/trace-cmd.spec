@@ -36,6 +36,9 @@ to record and analyze the traces.
 %autosetup -p1 -n %{name}-v%{version}
 
 %build
+# to fix intermittent build failure
+%make_build || \
+%make_build || \
 %make_build
 
 %install
