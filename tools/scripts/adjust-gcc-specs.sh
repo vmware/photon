@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# Security hardening consist of 5 compile and link time options
+# Security hardening consist of 7 compile and link time options
 # specified below:
 USE_STACK_PROTECTOR=1
+USE_STACK_CLASH_PROTECTION=1
 USE_FORTIFY_SOURCE=1
 USE_PIE=1
 USE_ZRELRO=1
 USE_ZNOW=1
+USE_ZNOEXECSTACK=1
 
 echo "Using options: $@"
 
@@ -47,8 +49,13 @@ if [ $USE_STACK_PROTECTOR -eq 1 ]; then
   CC1PLUS_EXTRA="$CC1PLUS_EXTRA %{!fno-stack-protector-strong:-fstack-protector-strong}"
 fi
 
+if [ $USE_STACK_CLASH_PROTECTION -eq 1 ]; then
+  CC1_EXTRA="$CC1_EXTRA %{!fno-stack-clash-protection:-fstack-clash-protection}"
+  CC1PLUS_EXTRA="$CC1PLUS_EXTRA %{!fno-stack-clash-protection:-fstack-clash-protection}"
+fi
+
 if [ $USE_FORTIFY_SOURCE -eq 1 ]; then
-  CPP_EXTRA="$CPP_EXTRA %{O1|O2|O3|Os|Ofast:-D_FORTIFY_SOURCE=2}"
+  CPP_EXTRA="$CPP_EXTRA %{O1|O2|O3|Os|Ofast:-D_FORTIFY_SOURCE=3}"
 fi
 
 if [ $USE_PIE -eq 1 ]; then
@@ -65,6 +72,10 @@ fi
 
 if [ $USE_ZNOW -eq 1 ]; then
   LINK_EXTRA="$LINK_EXTRA %{!nonow:-z now}"
+fi
+
+if [ $USE_ZNOEXECSTACK -eq 1 ]; then
+  LINK_EXTRA="$LINK_EXTRA %{!execstack:-z noexecstack}"
 fi
 
 # Create gcc spec file
