@@ -17,7 +17,7 @@ if [ $# -ne 2 ]; then
   abort 1 "Usage: $0 <release-tag-commit-id> <chromium-version>"
 fi
 
-pushd /tmp
+pushd /var/tmp
 
 commit="$1"
 version="$2"
@@ -108,6 +108,6 @@ popd # _tmp_
 
 rm -rf depot_tools
 
-popd # /tmp
+popd # /var/tmp
 
 echo -e "\n\n--- Done: tarballs are at $outputdir ---"
