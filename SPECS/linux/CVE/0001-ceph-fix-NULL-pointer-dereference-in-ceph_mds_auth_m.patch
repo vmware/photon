@@ -1,0 +1,140 @@
+From faf67a44544d47ff25127ac7594ccf1f4cc815bb Mon Sep 17 00:00:00 2001
+From: Viacheslav Dubeyko <Slava.Dubeyko@ibm.com>
+Date: Tue, 3 Feb 2026 14:54:46 -0800
+Subject: [PATCH] ceph: fix NULL pointer dereference in ceph_mds_auth_match()
+
+commit 7987cce375ac8ce98e170a77aa2399f2cf6eb99f upstream.
+
+The CephFS kernel client has regression starting from 6.18-rc1.
+We have issue in ceph_mds_auth_match() if fs_name == NULL:
+
+    const char fs_name = mdsc->fsc->mount_options->mds_namespace;
+    ...
+    if (auth->match.fs_name && strcmp(auth->match.fs_name, fs_name)) {
+            / fsname mismatch, try next one */
+            return 0;
+    }
+
+Patrick Donnelly suggested that: In summary, we should definitely start
+decoding `fs_name` from the MDSMap and do strict authorizations checks
+against it. Note that the `-o mds_namespace=foo` should only be used for
+selecting the file system to mount and nothing else. It's possible
+no mds_namespace is specified but the kernel will mount the only
+file system that exists which may have name "foo".
+
+This patch reworks ceph_mdsmap_decode() and namespace_equals() with
+the goal of supporting the suggested concept. Now struct ceph_mdsmap
+contains m_fs_name field that receives copy of extracted FS name
+by ceph_extract_encoded_string(). For the case of "old" CephFS file
+systems, it is used "cephfs" name.
+
+[ idryomov: replace redundant %*pE with %s in ceph_mdsmap_decode(),
+  get rid of a series of strlen() calls in ceph_namespace_match(),
+  drop changes to namespace_equals() body to avoid treating empty
+  mds_namespace as equal, drop changes to ceph_mdsc_handle_fsmap()
+  as namespace_equals() isn't an equivalent substitution there ]
+
+Cc: stable@vger.kernel.org
+Fixes: 22c73d52a6d0 ("ceph: fix multifs mds auth caps issue")
+Link: https://tracker.ceph.com/issues/73886
+Signed-off-by: Viacheslav Dubeyko <Slava.Dubeyko@ibm.com>
+Reviewed-by: Patrick Donnelly <pdonnell@ibm.com>
+Tested-by: Patrick Donnelly <pdonnell@ibm.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Guru: ceph_mds_auth_match() changes not ported as ceph_namespace_match()
+ helper and m_fs_name usage in auth matching are absent in 5.10.
+ ceph_decode_skip_n() omitted as ceph_extract_encoded_string() already
+ advances *p past the string data.]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/ceph/mdsmap.c             | 22 ++++++++++++++++------
+ include/linux/ceph/ceph_fs.h |  6 ++++++
+ include/linux/ceph/mdsmap.h  |  1 +
+ 3 files changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/fs/ceph/mdsmap.c b/fs/ceph/mdsmap.c
+index a3b1bebee7ad..ef6f72e6cb38 100644
+--- a/fs/ceph/mdsmap.c
++++ b/fs/ceph/mdsmap.c
+@@ -351,10 +351,16 @@ struct ceph_mdsmap *ceph_mdsmap_decode(struct ceph_mds_client *mdsc, void **p, v
+ 	}
+ 	if (mdsmap_ev >= 8) {
+ 		const struct ceph_mount_options *fsopt = mdsc->fsc->mount_options;
+-		u32 name_len;
++		size_t name_len;
+ 		/* enabled */
+ 		ceph_decode_8_safe(p, end, m->m_enabled, bad_ext);
+-		ceph_decode_32_safe(p, end, name_len, bad_ext);
++		m->m_fs_name = ceph_extract_encoded_string(p, end,
++					&name_len,
++					GFP_NOFS);
++		if (IS_ERR(m->m_fs_name)) {
++			m->m_fs_name = NULL;
++			goto nomem;
++		}
+ 		/*
+ 		  * Check if the mds namespace in ceph_mount_options matches
+ 		  * the passed in namespace string. First time match (when
+@@ -363,14 +369,17 @@ struct ceph_mdsmap *ceph_mdsmap_decode(struct ceph_mds_client *mdsc, void **p, v
+ 		  */
+ 		if (fsopt->mds_namespace &&
+ 		    (strlen(fsopt->mds_namespace) != name_len ||
+-		    strncmp(fsopt->mds_namespace, *p, name_len))) {
++		    strncmp(fsopt->mds_namespace, m->m_fs_name, name_len))) {
+ 			pr_warn("fsname %*pE doesn't match mds_namespace %s\n",
+-				       (int)name_len, (char *)*p,
++				       (int)name_len, m->m_fs_name,
+ 				       fsopt->mds_namespace);
+ 			goto bad;
+ 		}
+-		ceph_decode_need(p, end, name_len, bad_ext);
+-		*p += name_len;
++	} else {
++		m->m_enabled = false;
++		m->m_fs_name = kstrdup(CEPH_OLD_FS_NAME, GFP_NOFS);
++		if (!m->m_fs_name)
++			goto nomem;
+ 	}
+ 	/* damaged */
+ 	if (mdsmap_ev >= 9) {
+@@ -415,6 +424,7 @@ void ceph_mdsmap_destroy(struct ceph_mdsmap *m)
+ 		kfree(m->m_info);
+ 	}
+ 	kfree(m->m_data_pg_pools);
++	kfree(m->m_fs_name);
+ 	kfree(m);
+ }
+ 
+diff --git a/include/linux/ceph/ceph_fs.h b/include/linux/ceph/ceph_fs.h
+index 8287382d3d1d..c917f3da881a 100644
+--- a/include/linux/ceph/ceph_fs.h
++++ b/include/linux/ceph/ceph_fs.h
+@@ -31,6 +31,12 @@
+ #define CEPH_INO_CEPH   2       /* hidden .ceph dir */
+ #define CEPH_INO_DOTDOT 3	/* used by ceph fuse for parent (..) */
+ 
++/*
++ * name for "old" CephFS file systems,
++ * see ceph.git e2b151d009640114b2565c901d6f41f6cd5ec652
++ */
++#define CEPH_OLD_FS_NAME	"cephfs"
++
+ /* arbitrary limit on max # of monitors (cluster of 3 is typical) */
+ #define CEPH_MAX_MON   31
+ 
+diff --git a/include/linux/ceph/mdsmap.h b/include/linux/ceph/mdsmap.h
+index a4d9e64d94bd..61a50f046be6 100644
+--- a/include/linux/ceph/mdsmap.h
++++ b/include/linux/ceph/mdsmap.h
+@@ -38,6 +38,7 @@ struct ceph_mdsmap {
+ 	bool m_enabled;
+ 	bool m_damaged;
+ 	int m_num_laggy;
++	char *m_fs_name;
+ };
+ 
+ static inline struct ceph_entity_addr *
+-- 
+2.43.0
+

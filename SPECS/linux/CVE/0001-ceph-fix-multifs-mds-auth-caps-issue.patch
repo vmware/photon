@@ -1,0 +1,148 @@
+From fb9d68b7450b4736d6a01609d9fdcfb5b0d33026 Mon Sep 17 00:00:00 2001
+From: Kotresh HR <khiremat@redhat.com>
+Date: Thu, 11 Sep 2025 15:02:35 +0530
+Subject: [PATCH] ceph: fix multifs mds auth caps issue
+
+[ Upstream commit 22c73d52a6d05c5a2053385c0d6cd9984732799d ]
+
+The mds auth caps check should also validate the
+fsname along with the associated caps. Not doing
+so would result in applying the mds auth caps of
+one fs on to the other fs in a multifs ceph cluster.
+The bug causes multiple issues w.r.t user
+authentication, following is one such example.
+
+Steps to Reproduce (on vstart cluster):
+1. Create two file systems in a cluster, say 'fsname1' and 'fsname2'
+2. Authorize read only permission to the user 'client.usr' on fs 'fsname1'
+    $ceph fs authorize fsname1 client.usr / r
+3. Authorize read and write permission to the same user 'client.usr' on fs 'fsname2'
+    $ceph fs authorize fsname2 client.usr / rw
+4. Update the keyring
+    $ceph auth get client.usr >> ./keyring
+
+With above permssions for the user 'client.usr', following is the
+expectation.
+  a. The 'client.usr' should be able to only read the contents
+     and not allowed to create or delete files on file system 'fsname1'.
+  b. The 'client.usr' should be able to read/write on file system 'fsname2'.
+
+But, with this bug, the 'client.usr' is allowed to read/write on file
+system 'fsname1'. See below.
+
+5. Mount the file system 'fsname1' with the user 'client.usr'
+     $sudo bin/mount.ceph usr@.fsname1=/ /kmnt_fsname1_usr/
+6. Try creating a file on file system 'fsname1' with user 'client.usr'. This
+   should fail but passes with this bug.
+     $touch /kmnt_fsname1_usr/file1
+7. Mount the file system 'fsname1' with the user 'client.admin' and create a
+   file.
+     $sudo bin/mount.ceph admin@.fsname1=/ /kmnt_fsname1_admin
+     $echo "data" > /kmnt_fsname1_admin/admin_file1
+8. Try removing an existing file on file system 'fsname1' with the user
+   'client.usr'. This shoudn't succeed but succeeds with the bug.
+     $rm -f /kmnt_fsname1_usr/admin_file1
+
+For more information, please take a look at the corresponding mds/fuse patch
+and tests added by looking into the tracker mentioned below.
+
+v2: Fix a possible null dereference in doutc
+v3: Don't store fsname from mdsmap, validate against
+    ceph_mount_options's fsname and use it
+v4: Code refactor, better warning message and
+    fix possible compiler warning
+
+[ Slava.Dubeyko: "fsname check failed" -> "fsname mismatch" ]
+
+Link: https://tracker.ceph.com/issues/72167
+Signed-off-by: Kotresh HR <khiremat@redhat.com>
+Reviewed-by: Viacheslav Dubeyko <Slava.Dubeyko@ibm.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Guru: namespace_equals helper inlined; client-side validation
+in ceph_mds_auth_match is not ported as the feature is absent in 5.10.]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/ceph/mds_client.c        |  2 +-
+ fs/ceph/mdsmap.c            | 18 +++++++++++++++++-
+ include/linux/ceph/mdsmap.h |  3 ++-
+ 3 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index f411e3551246..25cd9a459c7f 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -5041,7 +5041,7 @@ void ceph_mdsc_handle_mdsmap(struct ceph_mds_client *mdsc, struct ceph_msg *msg)
+ 		return;
+ 	}
+ 
+-	newmap = ceph_mdsmap_decode(&p, end);
++	newmap = ceph_mdsmap_decode(mdsc, &p, end);
+ 	if (IS_ERR(newmap)) {
+ 		err = PTR_ERR(newmap);
+ 		goto bad_unlock;
+diff --git a/fs/ceph/mdsmap.c b/fs/ceph/mdsmap.c
+index 47f2903bacb9..a3b1bebee7ad 100644
+--- a/fs/ceph/mdsmap.c
++++ b/fs/ceph/mdsmap.c
+@@ -12,6 +12,7 @@
+ #include <linux/ceph/decode.h>
+ 
+ #include "super.h"
++#include "mds_client.h"
+ 
+ #define CEPH_MDS_IS_READY(i, ignore_laggy) \
+ 	(m->m_info[i].state > 0 && ignore_laggy ? true : !m->m_info[i].laggy)
+@@ -114,7 +115,7 @@ static int __decode_and_drop_compat_set(void **p, void* end)
+  * Ignore any fields we don't care about (there are quite a few of
+  * them).
+  */
+-struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end)
++struct ceph_mdsmap *ceph_mdsmap_decode(struct ceph_mds_client *mdsc, void **p, void *end)
+ {
+ 	struct ceph_mdsmap *m;
+ 	const void *start = *p;
+@@ -349,10 +350,25 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end)
+ 		__decode_and_drop_type(p, end, u8, bad_ext);
+ 	}
+ 	if (mdsmap_ev >= 8) {
++		const struct ceph_mount_options *fsopt = mdsc->fsc->mount_options;
+ 		u32 name_len;
+ 		/* enabled */
+ 		ceph_decode_8_safe(p, end, m->m_enabled, bad_ext);
+ 		ceph_decode_32_safe(p, end, name_len, bad_ext);
++		/*
++		  * Check if the mds namespace in ceph_mount_options matches
++		  * the passed in namespace string. First time match (when
++		  * ->mds_namespace is NULL) is treated specially, since
++		  * ->mds_namespace needs to be initialized by the caller.
++		  */
++		if (fsopt->mds_namespace &&
++		    (strlen(fsopt->mds_namespace) != name_len ||
++		    strncmp(fsopt->mds_namespace, *p, name_len))) {
++			pr_warn("fsname %*pE doesn't match mds_namespace %s\n",
++				       (int)name_len, (char *)*p,
++				       fsopt->mds_namespace);
++			goto bad;
++		}
+ 		ceph_decode_need(p, end, name_len, bad_ext);
+ 		*p += name_len;
+ 	}
+diff --git a/include/linux/ceph/mdsmap.h b/include/linux/ceph/mdsmap.h
+index 35d385296fbb..a4d9e64d94bd 100644
+--- a/include/linux/ceph/mdsmap.h
++++ b/include/linux/ceph/mdsmap.h
+@@ -63,8 +63,9 @@ static inline bool ceph_mdsmap_is_laggy(struct ceph_mdsmap *m, int w)
+ 	return false;
+ }
+ 
++struct ceph_mds_client;
+ extern int ceph_mdsmap_get_random_mds(struct ceph_mdsmap *m);
+-extern struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end);
++extern struct ceph_mdsmap *ceph_mdsmap_decode(struct ceph_mds_client *mdsc, void **p, void *end);
+ extern void ceph_mdsmap_destroy(struct ceph_mdsmap *m);
+ extern bool ceph_mdsmap_is_cluster_available(struct ceph_mdsmap *m);
+ 
+-- 
+2.43.0
+

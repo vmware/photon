@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.252
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -570,6 +570,12 @@ Patch317: 0003-mm-split-critical-region-in-remap_file_pages-and-inv.patch
 Patch318: 0001-vsock-virtio-fix-potential-underflow-in-virtio_trans.patch
 # CVE-2026-23086
 Patch319: 0002-vsock-virtio-cap-TX-credit-to-local-buffer-size.patch
+# CVE-2025-39738
+Patch320: 0001-btrfs-do-not-allow-relocation-of-partially-dropped-s.patch
+# CVE-2025-40362
+Patch321: 0001-ceph-fix-multifs-mds-auth-caps-issue.patch
+# CVE-2026-23189
+Patch322: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1262,6 +1268,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.252-2
+- Fixes CVE-2025-40362, CVE-2025-39738 and CVE-2026-23189
 * Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.252-1
 - Update to version 5.10.252
 * Tue Mar 03 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 5.10.251-4

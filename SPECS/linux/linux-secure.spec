@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.252
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -500,6 +500,12 @@ Patch314: 0001-mm-add-vma_lookup-update-find_vma_intersection-comme.patch
 Patch315: 0001-mm-mmap.c-don-t-unlock-VMAs-in-remap_file_pages.patch
 Patch316: 0002-mm-call-the-security_mmap_file-LSM-hook-in-remap_fil.patch
 Patch317: 0003-mm-split-critical-region-in-remap_file_pages-and-inv.patch
+# CVE-2025-39738
+Patch318: 0001-btrfs-do-not-allow-relocation-of-partially-dropped-s.patch
+# CVE-2025-40362
+Patch319: 0001-ceph-fix-multifs-mds-auth-caps-issue.patch
+#CVE-2026-23189
+Patch320: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -766,6 +772,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.252-2
+- Fixes CVE-2025-40362, CVE-2025-39738 and CVE-2026-23189
 * Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.252-1
 - Update to version 5.10.252
 * Tue Mar 03 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 5.10.251-3
