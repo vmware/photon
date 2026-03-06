@@ -3,7 +3,7 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.3.2
-Release:      2%{?dist}
+Release:      3%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -20,19 +20,13 @@ Provides:   awk
 
 BuildRequires: readline-devel
 
+Obsoletes:  %{name}-extras
+Conflicts:  %{name}-extras < 5.3.2-3
+
 Requires:   %{name}-bin = %{version}-%{release}
-Requires:   %{name}-extras = %{version}-%{release}
 
 %description
 The Gawk package contains programs for manipulating text files.
-
-%package extras
-Summary:    Extra set of gawk utilities
-Conflicts:  %{name} < 5.3.2-2
-Requires:   %{name} = %{version}-%{release}
-
-%description extras
-%{summary}
 
 %package bin
 Summary:  Gawk binary
@@ -99,20 +93,17 @@ sed -i 's/ pty1 / /' test/Makefile
 
 %files
 %defattr(-,root,root)
+%{_libdir}/*awk
+%{_libexecdir}/*awk
+%{_sysconfdir}/profile.d/gawk.*
+%{_bindir}/gawkbug
+%{_datadir}/*awk
 
 %files bin
 %defattr(-,root,root)
 %{_bindir}/%{name}
 %{_bindir}/awk
 %{_bindir}/%{name}-%{version}
-
-%files extras
-%defattr(-,root,root)
-%{_libdir}/*awk
-%{_libexecdir}/*awk
-%{_sysconfdir}/profile.d/gawk.*
-%{_bindir}/gawkbug
-%{_datadir}/*awk
 
 %files devel
 %defattr(-,root,root,-)
@@ -127,6 +118,8 @@ sed -i 's/ pty1 / /' test/Makefile
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Fri Mar 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-3
+- Remove extras sub package, unnecessary
 * Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-2
 - Introduce bin subpackage
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-1
