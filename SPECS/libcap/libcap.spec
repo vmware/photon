@@ -4,7 +4,7 @@
 Summary:        Libcap
 Name:           libcap
 Version:        2.77
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -59,25 +59,32 @@ Conflicts:      %{name} < 2.77-1
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 %install
-make prefix=%{_prefix} \
-     SBINDIR=%{_sbindir} \
-     RAISE_SETFCAP=no \
-     DESTDIR=%{buildroot} \
-     LIBDIR=%{_lib} \
-     %{?_smp_mflags} \
-     install
-%ifarch aarch64
-test -d %{buildroot}%{_libdir} && mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
-%endif
-chmod -v 755 %{buildroot}/%{_libdir}/libcap.so
+%make_install %{?_smp_mflags} \
+  prefix=%{_prefix} \
+  RAISE_SETFCAP=no \
+  LIBDIR=%{_libdir}
 
+chmod -v 755 %{buildroot}%{_libdir}/%{name}.so
+
+%if 0%{?with_check}
 %check
-cd progs
-sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
-./quicktest.sh
+%make_build test
+%endif
+
+%post libs
+/sbin/ldconfig
+
+%postun libs
+/sbin/ldconfig
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -106,6 +113,7 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_libdir}/libpsx.so
 
 %files doc
+%defattr(-,root,root)
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
@@ -113,6 +121,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man8/*
 
 %changelog
+*   Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.77-2
+-   Fix aarch64 build, cleanup spec
 *   Mon Feb 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.77-1
 -   Update to v2.77 and split libcap into sub-packages
 *   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.66-4
