@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.164
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -390,7 +390,13 @@ Patch227: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
 # Fix CVE-2025-71184
 Patch228: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
 
-# aarch64 [250..269]
+# Fix CVE-2024-53068
+Patch229: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
+
+# Fix CVE-2025-38081
+Patch230: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
+
+# aarch64 [250..260]
 %ifarch aarch64
 Patch250: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
 Patch251: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
@@ -400,12 +406,6 @@ Patch254: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch255: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch256: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch257: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
-
-# Fix CVE-2024-53068
-Patch261: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
-
-# Fix CVE-2025-38081
-Patch262: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 %endif
 
 # 9p: [300..350]
@@ -566,7 +566,7 @@ The Linux package contains the Linux kernel doc files
 
 %ifarch aarch64
 # aarch64 patches
-%autopatch -p1 -m250 -M269
+%autopatch -p1 -m250 -M260
 %endif
 
 # 9P
@@ -769,6 +769,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.164-2
+- Move aarch64 CVE fix patches out of aarch64 guard
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.164-1
 - Update to version 6.1.164
 * Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-2

@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.164
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -250,10 +250,8 @@ Patch134: 0001-drm-amd-display-Check-link_index-before-accessing-dc.patch
 # Fix CVE-2024-50029
 Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 
-%ifarch aarch64
 # Fix CVE-2025-39901
 Patch136: 0001-i40e-remove-read-access-to-debugfs-files.patch
-%endif
 
 # Fix CVE-2024-41045
 Patch137: 0001-bpf-Defer-work-in-bpf_timer_cancel_and_free.patch
@@ -423,6 +421,12 @@ Patch230: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
 # Fix CVE-2025-71184
 Patch231: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
 
+# Fix CVE-2024-53068
+Patch232: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
+
+# Fix CVE-2025-38081
+Patch233: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
+
 %ifarch aarch64
 # aarch specific patches [250..269]
 # Rpi of_configfs patches
@@ -438,12 +442,6 @@ Patch257: 6.0-0005-scsi-vmw_pvscsi-add-arm64-support.patch
 Patch258: 6.0-0006-vmxnet3-build-only-for-x86-and-arm64.patch
 Patch259: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch260: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
-
-# Fix CVE-2024-53068
-Patch261: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
-
-# Fix CVE-2025-38081
-Patch262: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 %endif
 
 # perf: off-cpu sample
@@ -764,7 +762,7 @@ The kernel fips-canister
 
 %ifarch aarch64
 # aarch64 patches
-%autopatch -p1 -m250 -M269
+%autopatch -p1 -m250 -M260
 %endif
 
 %autopatch -p1 -m271 -M273
@@ -1184,6 +1182,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.164-2
+- Move aarch64 CVE fix patches out of aarch64 guard
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.164-1
 - Update to version 6.1.164
 * Wed Feb 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.163-2
