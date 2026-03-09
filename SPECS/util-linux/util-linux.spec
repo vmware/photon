@@ -1,8 +1,9 @@
 %global build_if %{photon_subrelease} >= 92
+
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.38
-Release:        10%{?dist}
+Version:        2.41.4
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,13 +13,6 @@ Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: CVE-2024-28085-pre1.patch
-Patch1: CVE-2024-28085-pre2.patch
-Patch2: CVE-2024-28085-pre3.patch
-Patch3: CVE-2024-28085.patch
-Patch4: CVE-2025-14104-1.patch
-Patch5: CVE-2025-14104-2.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -75,6 +69,9 @@ Logger utility binary from util-linux
 %prep
 %autosetup -p1
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
+# Do not build coresched (schedutils/coresched.c) due to license
+sed -i '/^if BUILD_CORESCHED$/,/^endif$/d' schedutils/Makemodule.am
+sed -i '/bash-completion\/coresched/d' bash-completion/Makemodule.am
 
 %build
 export GTKDOCIZE=true
@@ -84,7 +81,11 @@ autoreconf -fiv
     --disable-silent-rules \
     --disable-static \
     --disable-use-tty-group \
-    --without-python
+    --disable-liblastlog2 \
+    --without-python \
+    --disable-asciidoc \
+    --disable-poman \
+    --disable-gtk-doc
 
 %make_build
 
@@ -147,6 +148,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Fri Apr 03 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.41.4-1
+- Update to v2.41.4
 * Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.38-10
 - Split logger as a sub package
 * Mon Dec 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.38-9
