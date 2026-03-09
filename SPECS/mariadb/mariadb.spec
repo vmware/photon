@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          11.4.9
+Version:          11.4.10
 Release:          1%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -449,6 +449,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/*/errmsg.sys
 
 %changelog
+* Mon Mar 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.4.10-1
+- Upgrade to v11.4.10
 * Tue Dec 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.4.9-1
 - Upgrade to v11.4.9
 * Fri Oct 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.4.7-1

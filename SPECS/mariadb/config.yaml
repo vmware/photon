@@ -1,23 +1,22 @@
 sources:
-- archive: mariadb-11.4.9.tar.gz
-  archive_sha512sum: 53241230b5d56cd0df72792dbb761f6efd45bea432de78c541ae934785187a9eaf55f2ad12d1cdd34058b21d0ef7c7f7a80b9b719119a1b22359f0a1ac970600
+- archive: mariadb-11.4.10.tar.gz
+  archive_sha512sum: 47be47a58e809531117b44d79e13a703f89d48bef00503606fa0d558bcf28f2415b3bb7ad1e9673726dc315bbebce3d0ce31d0b3d9071aa22d8c0962d641af28
   archive_type: upstream
-  commit_id: aa6a2e6bf05d43c3bb44db50566937a5f97a6580
-  skip_validation: false
-  name: mariadb-11.4.9
-  version: 11.4.9
+  commit_id: 054a893f1645b77e52a329a7fc8cf614eebd1fad
+  name: mariadb-11.4.10
+  version: 11.4.10
   repo_url: https://github.com/MariaDB/server
-  url: https://archive.mariadb.org/mariadb-11.4.9/source/mariadb-11.4.9.tar.gz
+  url: https://archive.mariadb.org/mariadb-11.4.10/source/mariadb-11.4.10.tar.gz
   skip_list: []
-  missing: ['*.md', LPCExpresso.project, .watchmanconfig, .drone.jsonnet, memtable, mplabx, VERSION.txt, rdb_source_revision.h, INFO_SRC, LICENSE.leveldb, test, trace_replay, zephyr, testsuite, hdfs, devin_lifeguard.yaml, appveyor.yml, monitoring, buckifier, LPCExpresso.cproject, core_dumps, fuzz, m4, coverage, datatypes, memory, src, .circleci, build_tools, README, writeengine, yy_oracle.hh, man, unittest, gencertbuf.pl, mqx, LICENSE.Apache, wolfssl-VS2022.vcxproj, options, pull_to_vagrant.sh, Dockerfile.patch, CONTRIBUTOR_AGREEMENT.txt, .gitattributes, tests, gitversionEngine.in, SCRIPTS-LIST, doc, db_stress_tool, wolfssl.rc, RTOS, yy_oracle.cc, COPYING, async-check.sh, wolfssl64.sln, README.rst, fips-hash.sh, env, .editorconfig, examples, support, benchmarks, win, storage-manager, wsrep-API, port, linuxkm, ddlproc, resource.h, source_revision.h, .clang-tidy, autogen.sh, columnstoreversion.h.in, utilities, yy_mariadb.hh, tools, scripts, oam, libmariadb, CodeTree, plugins, .git-blame-ignore-revs, .gitignore, LICENSE, .gitmodules, ci-scripts, valgrind-error.sh, table, wolfssl.vcxproj, stamp-h.in, GNUmakefile, CONTRIBUTORS.txt, oamapps, .travis.yml, versioning, Vagrantfile, configure.ac, wolfssl, VERSION, wrapper, yy_mariadb.cc, db, mysql-test, .vscode, cmake-format.py, build, libmarias3.pc.in, valgrind-bash.supp, java, INSTALL, rpm, Makefile, wnr-example.conf, .clang-format, yatl, mariadb_config, fips-check.sh, microbench, plugin, cache, commit-tests.sh, IDE, extra, util, libmarias3, .cyignore, appveyor-download.bat, src.mk, .codespellexcludelines, wolfcrypt, dbsim, cmapi, input, LICENSING, cmake, client, thirdparty.inc, primitives, CMakeLists.txt, .wolfssl_known_macro_extras, test_util, .github, sslSniffer, setup-repo.sh, version.h.in, win-iconv, mcsconfig.h.in, external, wolfssl.vcproj, tirtos, include, dbcon, travis.sh, dmlproc, Makefile.am, Docker, AUTHORS, certs, logging, docs, .lgtm.yml, defs.bzl, utils, COPYING.LIB, benchmark, file, TARGETS, quit, mcapi, debian, third-party]
+  missing: ['*.md', external, Dockerfile.patch, buckifier, appveyor-download.bat, defs.bzl, ci-scripts, INSTALL, m4, bsdkm, GNUmakefile, devin_lifeguard.yaml, datatypes, wolfssl, utilities, CONTRIBUTOR_AGREEMENT.txt, logging, cache, .vscode, examples, src, zephyr, win, fips-hash.sh, mqx, sslSniffer, setup-repo.sh, .gitmodules, client, oam, TARGETS, rpm, hdfs, .drone.jsonnet, rdb_source_revision.h, test, wsrep-API, debian, RTOS, db, fuzz, memtable, test_util, stamp-h.in, LICENSE.leveldb, file, db_stress_tool, pull_to_vagrant.sh, oamapps, benchmarks, resource.h, commit-tests.sh, .watchmanconfig, input, libmarias3, unittest, valgrind-error.sh, thirdparty.inc, LPCExpresso.project, tirtos, win-iconv, yy_oracle.hh, .lgtm.yml, plugin, java, .clang-tidy, COPYING, dbsim, quit, dmlproc, ddlproc, mcsconfig.h.in, certs, wolfssl-VS2022.vcxproj, .git-blame-ignore-revs, writeengine, env, configure.ac, include, cmapi, Makefile.am, .gitignore, versioning, benchmark, LICENSE, COPYING.LIB, LICENSE.Apache, scripts, extra, .github, SCRIPTS-LIST, plugins, wolfssl.rc, travis.sh, core_dumps, mcapi, third-party, VERSION.txt, libmariadb, yy_oracle.cc, CMakePresets.json, man, IDE, CMakeSettings.json, .wolfssl_known_macro_extras, CodeTree, monitoring, testsuite, .clang-format, primitives, gencertbuf.pl, cmake-format.py, valgrind-bash.supp, dbcon, wolfssl.vcproj, appveyor.yml, mysql-test, INFO_SRC, microbench, wolfcrypt, build_tools, doc, columnstoreversion.h.in, wrapper, port, cmake, src.mk, README.rst, coverage, memory, async-check.sh, .gitattributes, README, wnr-example.conf, fips-check.sh, util, support, CONTRIBUTORS.txt, tests, docs, mplabx, yy_mariadb.cc, storage-manager, CMakeLists.txt, linuxkm, utils, Docker, VERSION, LICENSING, options, Makefile, libmarias3.pc.in, LPCExpresso.cproject, .editorconfig, .cyignore, .travis.yml, trace_replay, yy_mariadb.hh, autogen.sh, gitversionEngine.in, wolfssl.vcxproj, table, tools, wolfssl64.sln, build, mariadb_config, AUTHORS, version.h.in, Vagrantfile, source_revision.h, yatl, .circleci, .codespellexcludelines]
   license_manual_review:
   - file_paths:
-    - mariadb-11.4.9/storage/columnstore/columnstore/utils/libmarias3/libmarias3/docs/introduction/license.rst
-    - mariadb-11.4.9/storage/maria/libmarias3/docs/introduction/license.rst
+    - mariadb-11.4.10/storage/columnstore/columnstore/utils/libmarias3/libmarias3/docs/introduction/license.rst
+    - mariadb-11.4.10/storage/maria/libmarias3/docs/introduction/license.rst
     sha256sum: 7091df43d6ded9b0e798c59e524821d2b798fee514dd01be57243cfc7638ac18
     spdx_exp: LGPL-2.1-or-later
   - file_paths:
-    - mariadb-11.4.9/storage/columnstore/columnstore/utils/udfsdk/docs/source/license.rst
+    - mariadb-11.4.10/storage/columnstore/columnstore/utils/udfsdk/docs/source/license.rst
     sha256sum: 44db5157c4b46c42f1e366f569d58deb3a8e1526ad93602e247cbb162308a414
     spdx_exp: LGPL-2.1-or-later
   spdx:
