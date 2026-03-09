@@ -4,7 +4,7 @@
 
 Name: rubygem-fluentd
 Version:        1.15.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -35,9 +35,8 @@ Requires: rubygem-tzinfo >= 1.0.0
 Requires: rubygem-tzinfo-data > 1.0.0
 Requires: rubygem-yajl-ruby >= 1.0
 Requires: rubygem-bundler >= 1.14.0
-Requires: rubygem-webrick >= 1.4.2, rubygem-webrick < 1.8.0
 Requires: rubygem-concurrent-ruby
-Requires: ruby
+Requires: ruby >= 2.7.4-20
 
 BuildArch: noarch
 Provides: rubygem(%{gem_name}) = %{version}
@@ -59,6 +58,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Mar 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.3-3
+-   Remove rubygem-webrick from Requires, since it is only provided by ruby-2.7.4
 *   Mon Nov 10 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.3-2
 -   Version bump for rubygem-yajl-upgrade
 *   Wed Apr 16 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.15.3-1

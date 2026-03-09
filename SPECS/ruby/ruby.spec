@@ -1,9 +1,9 @@
-%define rexml_version    3.3.9
+%define rexml_version   3.4.4
 
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -15,7 +15,6 @@ Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.
 
 Patch0:         0001-openssl-3.0.0-compatibility.patch
 Patch1:         ruby-CVE-2022-28739.patch
-Patch2:         ruby-CVE-2021-28965.patch
 Patch3:         ruby-CVE-2021-41819.patch
 Patch4:         CVE-2021-33621.patch
 Patch5:         CVE-2021-41819.patch
@@ -38,7 +37,7 @@ Patch20:        0001-Only-strip-space-and-horizontal-tab-in-headers-webrick-part
 Source1: macros.ruby
 
 Source2:        rexml-%{rexml_version}.tar.gz
-%define sha512  rexml-%{rexml_version}.tar.gz=cc38609e5321f157b0a9ea793386017c8d4f743aabd66fc31a8f450f68c57e89825ec1d549efc4e2459ae952e57bbc87d47f9a0affa457639b89b9374e0bb137
+%define sha512  rexml-%{rexml_version}.tar.gz=1c8f1051a8a63696952a036f06fef99df4d2750b2ab5a0f513b82bb736f0c61fe4974b021a2cafb9194efcbe247b037bd9049ba9de6793c869984579470af75d
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -52,6 +51,8 @@ Requires:       gmp
 # CVE-2025-0306 requires "rsa: add implicit rejection in PKCS#1 v1.5 patch in openssl".
 # This patch is present in openssl from 3.0.13-3 version
 Requires:       openssl >= 3.0.13-3
+
+Provides:       rubygem-webrick = 1.6.1
 
 %description
 The Ruby package contains the Ruby development environment.
@@ -72,7 +73,7 @@ Header files for doing development with ruby.
 %autosetup -p1
 
 %build
-# Modification to upgrade rexml-3.2.5 to rexml-3.3.9
+# Modification to upgrade rexml-3.2.3.1 to rexml-3.4.4
 tar -xvpf %{SOURCE2}
 cp -a rexml-%{rexml_version}/lib/rexml/* lib/rexml/
 cp -a rexml-%{rexml_version}/test/* test/rexml
@@ -132,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Mon Mar 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-20
+- Fix CVE-2025-58767 Upgrade rexml to rexml-3.4.4 from rexml-3.2.3.1
 * Wed Feb 18 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.7.4-19
 - Fix CVE-2025-6442
 * Mon Jun 09 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.4-18
