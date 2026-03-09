@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.11.15
+Version:          10.11.16
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0: https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=98d1e54954b69cf87a96be7d76f80333f27832a29279e6b0a9615b830e171713222abcb9ec9b9a545c0fc4a0f9f8e3d4774babcabf534a6fa3cb3dfdaed0dedc
+%define sha512 %{name}=202ad856dad6ffaf5800e3629e938865c07e8590efafeb696aa9b0c7599e4e3b4eefb977f4c8f65bf03a5d6d4a6ac40154d62566a33fc6bf048cbeb79969601f
 
 Source1: %{name}.preset
 
@@ -25,6 +25,7 @@ BuildRequires: libxml2-devel
 BuildRequires: libaio-devel
 BuildRequires: gnutls-devel
 BuildRequires: fmt-devel
+BuildRequires: pcre2-devel
 
 Conflicts: mysql
 
@@ -440,6 +441,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/errmsg-utf8.txt
 
 %changelog
+* Mon Mar 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.16-1
+- Upgrade to v10.11.16
 * Tue Dec 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.15-1
 - Upgrade to v10.11.15
 * Mon Sep 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.14-1
