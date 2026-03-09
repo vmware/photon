@@ -155,7 +155,6 @@ def parse_config(config_path=None):
         common.redis_port = config_yaml["redis_port"]
         common.redis_ttl = config_yaml["redis_ttl"]
         common.no_trimming = config_yaml["no_trimming"]
-        common.wrap_output = config_yaml["wrap_output"]
     except KeyError as exception:
         err_exit(f"Missing required field in {config_path}!\n{exception}")
 
