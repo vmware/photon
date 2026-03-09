@@ -1,5 +1,5 @@
 # Photon OS 5.0 STIG auditd rules
-# Updated 7/11/2024
+# Updated 3/09/2026
 
 # First rule - delete all
 -D
@@ -9,8 +9,8 @@
 -b 640
 
 # PHTN-50-000003 audit useradd/groupadd commands
--w /usr/sbin/useradd -p x -k useradd
--w /usr/sbin/groupadd -p x -k groupadd
+-a always,exit -F path=/usr/sbin/useradd -F perm=x -F key=useradd
+-a always,exit -F path=/usr/sbin/groupadd -F perm=x -F key=groupadd
 
 # PHTN-50-000019 audit all execve syscalls
 -a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -F key=execpriv
@@ -25,12 +25,12 @@
 -a always,exit -F arch=b32 -S chmod,lchown,fchmod,fchown,chown,setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr,fchownat,fchmodat -F auid=0 -F key=perm_mod
 
 # PHTN-50-000076 audit usermod/groupmod commands
--w /usr/sbin/usermod -p x -k usermod
--w /usr/sbin/groupmod -p x -k groupmod
+-a always,exit -F path=/usr/sbin/usermod -F perm=x -F key=usermod
+-a always,exit -F path=/usr/sbin/groupmod -F perm=x -F key=groupmod
 
 # PHTN-50-000078 audit userdel/groupdel commands
--w /usr/sbin/userdel -p x -k userdel
--w /usr/sbin/groupdel -p x -k groupdel
+-a always,exit -F path=/usr/sbin/userdel -F perm=x -F key=userdel
+-a always,exit -F path=/usr/sbin/groupdel -F perm=x -F key=groupdel
 
 # PHTN-50-000107 audit privileged functions
 -a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
@@ -60,19 +60,19 @@
 -a always,exit -F path=/usr/sbin/usernetctl -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged
 
 # PHTN-50-000173 audit failed logons
--w /var/log/faillog -p wa -k logons
--w /var/log/lastlog -p wa -k logons
--w /var/log/tallylog -p wa -k logons
+-a always,exit -F path=/var/log/faillog -F perm=wa -F key=logons
+-a always,exit -F path=/var/log/lastlog -F perm=wa -F key=logons
+-a always,exit -F path=/var/log/tallylog -F perm=wa -F key=logons
 
 # PHTN-50-000175 audit loading kernel modules
 -a always,exit -F arch=b32 -S init_module -F key=modules
 -a always,exit -F arch=b64 -S init_module -F key=modules
 
 # PHTN-50-000204 audit account modifications
--w /etc/passwd -p wa -k passwd
--w /etc/shadow -p wa -k shadow
--w /etc/group -p wa -k group
--w /etc/gshadow -p wa -k gshadow
+-a always,exit -F path=/etc/passwd -F perm=wa -F key=passwd
+-a always,exit -F path=/etc/shadow -F perm=wa -F key=shadow
+-a always,exit -F path=/etc/group -F perm=wa -F key=group
+-a always,exit -F path=/etc/gshadow -F perm=wa -F key=gshadow
 
 # PHTN-50-000266 audit account changes
--w /etc/security/opasswd -p wa -k opasswd
+-a always,exit -F path=/etc/security/opasswd -F perm=wa -F key=opasswd

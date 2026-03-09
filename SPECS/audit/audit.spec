@@ -1,32 +1,24 @@
 %global build_if %{photon_subrelease} >= 92
-%define with_golang 0
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        3.0.9
-Release:        28%{?dist}
+Version:        4.1.3
+Release:        1%{?dist}
 Group:          System Environment/Security
-URL:            http://people.redhat.com/sgrubb/audit
+URL:            https://github.com/linux-audit/audit-userspace
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
+Source0: https://github.com/linux-audit/audit-userspace/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 Source2: audit.STIG.rules
 
-# patches for audit workaround for linux-headers >= 5.17
-# https://github.com/linux-audit/audit-userspace/issues/252
-# https://github.com/linux-audit/audit-userspace/issues/236
-# https://listman.redhat.com/archives/linux-audit/2022-February/msg00085.html
-# patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-flex-array-workaround.patch
-Patch0: audit-3.0.8-flex-array-workaround.patch
-Patch1: audit-3.0.8-undo-flex-array.patch
-Patch2: py3.14-buildfix.patch
-Patch3: distutils-fix.patch
-
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
 BuildRequires: krb5-devel
 BuildRequires: openldap-devel
 BuildRequires: libcap-ng-devel
@@ -35,10 +27,7 @@ BuildRequires: e2fsprogs-devel
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
 
-%if 0%{?with_golang}
-BuildRequires: go
-%endif
-
+Requires: %{name}-rules = %{version}-%{release}
 Requires: systemd
 Requires: krb5
 Requires: openldap
@@ -61,20 +50,28 @@ The libraries and header files needed for audit development.
 Summary:        Python3 bindings for libaudit
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
+Requires:       libcap-ng-devel
 
 %description -n python3-%{name}
-The python3-audit package contains the python2 bindings for libaudit
+The python3-audit package contains the python3 bindings for libaudit
 and libauparse.
 
+%package        rules
+Summary:        Audit rules and utilities
+Requires:       %{name} = %{version}-%{release}
+Requires(post): (coreutils or coreutils-selinux)
+Requires(post): gawk
+Requires(post): grep
+Conflicts:      %{name} < 4.1.3
+
+%description    rules
+The audit-rules package contains the rules and utilities to load audit rules.
+
 %prep
-# Using autosetup is not feasible
-%setup -q
-cp %{_includedir}/linux/%{name}.h lib/
-%patch -p1 0
-%patch -p1 2
-%patch -p1 3
+%autosetup -p1 -n %{name}-userspace-%{version}
 
 %build
+autoreconf -fiv
 %configure \
     --exec_prefix=%{_usr} \
     --with-python3=yes \
@@ -82,16 +79,13 @@ cp %{_includedir}/linux/%{name}.h lib/
     --with-libcap-ng=yes \
     --with-aarch64 \
     --enable-zos-remote \
-%if 0%{?with_golang}
-    --with-golang \
-%endif
     --enable-systemd \
     --disable-static
 
 %make_build
 
 %install
-mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/%{name}/rules.d} \
+mkdir -p %{buildroot}/{etc/%{name}/plugins.d,etc/%{name}/rules.d} \
          %{buildroot}%{_var}/log/%{name} \
          %{buildroot}%{_var}/spool/%{name}
 
@@ -101,11 +95,7 @@ install -vdm755 %{buildroot}%{_presetdir}
 echo "enable auditd.service" > %{buildroot}%{_presetdir}/50-auditd.preset
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/rules.d/audit.STIG.rules
 
-# undo the workaround
-pushd %{buildroot}
-patch --fuzz=1 -p0 < %{PATCH1}
-find . -name '*.orig' -delete
-popd
+find %{buildroot} -name '*.la' -delete
 
 %check
 %make_build check
@@ -121,58 +111,101 @@ end
 /sbin/ldconfig
 systemctl daemon-reload
 %systemd_post auditd.service
+if [ $1 -eq 2 ] ; then
+    state=$(systemctl show -P ActiveState auditd 2>/dev/null)
+    if [ "$state" = "active" ] ; then
+        auditctl --signal stop 2>/dev/null || true
+        systemctl start auditd 2>/dev/null || true
+    fi
+elif [ $1 -eq 1 ] ; then
+    systemctl start auditd 2>/dev/null || true
+fi
+
+%post rules
+%systemd_post audit-rules.service
+augenrules --load 2>/dev/null || true
+
+%preun
+if [ $1 -eq 0 ] ; then
+    auditctl --signal stop 2>/dev/null || true
+    systemctl disable auditd.service 2>/dev/null || true
+fi
+
+%preun rules
+%systemd_preun audit-rules.service
+if [ $1 -eq 0 ] ; then
+    auditctl -D > /dev/null 2>&1 || true
+fi
 
 %postun
 /sbin/ldconfig
 systemctl daemon-reload
-%systemd_postun_with_restart auditd.service
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_sbindir}/*
+%attr(755,root,root) %{_sbindir}/auditd
+%attr(755,root,root) %{_sbindir}/ausearch
+%attr(755,root,root) %{_sbindir}/aureport
+%attr(755,root,root) %{_sbindir}/audisp-remote
+%attr(755,root,root) %{_sbindir}/audisp-syslog
+%attr(755,root,root) %{_sbindir}/audisp-af_unix
+%attr(755,root,root) %{_sbindir}/audisp-filter
+%attr(755,root,root) %{_sbindir}/audispd-zos-remote
 %{_libdir}/*.so.*
 %{_unitdir}/auditd.service
 %{_presetdir}/50-auditd.preset
 %{_libexecdir}/*
 %{_mandir}/man5/*
+%exclude %{_mandir}/man7/audit.rules.7*
 %{_mandir}/man7/*
+%exclude %{_mandir}/man8/auditctl.8*
+%exclude %{_mandir}/man8/augenrules.8*
 %{_mandir}/man8/*
 %dir %{_var}/log/%{name}
-%{_var}/spool/%{name}
-%attr(750,root,root) %dir %{_sysconfdir}/%{name}
-%attr(750,root,root) %dir %{_sysconfdir}/%{name}/rules.d
-
-%attr(750,root,root) %dir %{_sysconfdir}/audispd
-%attr(750,root,root) %dir %{_sysconfdir}/audispd/plugins.d
+%attr(700,root,root) %dir %{_var}/spool/%{name}
+%attr(750,root,root) %dir %{_sysconfdir}/%{name}/plugins.d
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/auditd.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/audisp-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/audisp-filter.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/zos-remote.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/plugins.d/*.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/libaudit.conf
+%{_sysconfdir}/bash_completion.d/%{name}.bash_completion
+%{_tmpfilesdir}/%{name}.conf
+
+%files rules
+%defattr(-,root,root)
+%attr(755,root,root) %dir %{_datadir}/%{name}-rules
+%{_datadir}/%{name}-rules/*
+%attr(755,root,root) %{_sbindir}/auditctl
+%attr(755,root,root) %{_sbindir}/augenrules
+%{_mandir}/man8/auditctl.8*
+%{_mandir}/man8/augenrules.8*
+%{_mandir}/man7/audit.rules.7*
+%{_unitdir}/audit-rules.service
+%attr(750,root,root) %dir %{_sysconfdir}/%{name}
+%attr(750,root,root) %dir %{_sysconfdir}/%{name}/rules.d
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/rules.d/audit.STIG.rules
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/%{name}-stop.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/rules.d/%{name}.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/%{name}.rules
-%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/%{name}/%{name}-stop.rules
-%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/sample-rules/*.rules
-%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/%{name}/sample-rules/README-rules
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/libaudit.conf
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%if 0%{?with_golang}
-%{_libdir}/golang/*
-%endif
 %{_includedir}/*.h
 %{_mandir}/man3/*
 %{_datadir}/aclocal/%{name}.m4
 
 %files -n python3-%{name}
 %defattr(-,root,root,-)
-%{python3_sitelib}/*
+%{python3_sitearch}/*
 
 %changelog
+* Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.1.3-1
+- Update to version 4.1.3
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-28
 - Fix build with python 3.14
 * Thu Nov 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-27
