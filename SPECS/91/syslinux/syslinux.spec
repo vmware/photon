@@ -1,3 +1,4 @@
+%global build_if %{photon_subrelease} <= 91
 %global security_hardening  none
 %define zlibver             1.2.13
 %define libpngver           1.6.39
@@ -5,7 +6,7 @@
 Summary:      Simple kernel loader which boots from a FAT filesystem
 Name:         syslinux
 Version:      6.04
-Release:      12%{?dist}
+Release:      12.1%{?dist}
 URL:          http://www.syslinux.org
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -95,6 +96,8 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
+* Mon Mar 09 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.04-12.1
+- Create subrelease version
 * Thu Jul 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-12
 - Cleanup licenses
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 6.04-11
