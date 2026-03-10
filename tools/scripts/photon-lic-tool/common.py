@@ -14,6 +14,7 @@ import requests
 import builtins
 import traceback
 import re
+import errno
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -99,7 +100,7 @@ class SignalContext:
 
 
 def safe_print(*args, columnLimit=True, **kwargs):
-    if not columnLimit:
+    if not columnLimit or sys.stdout.isatty():
         _real_print(*args, **kwargs)
         return
 
@@ -125,7 +126,7 @@ def safe_print(*args, columnLimit=True, **kwargs):
 
 
 def emit_spdx(spdx_exp="None"):
-    safe_print(f"SPDX Expression: {spdx_exp}", columnLimit=wrap_output if wrap_output else 150)
+    safe_print(f"SPDX Expression: {spdx_exp}", columnLimit=False)
 
 
 def err_exit(msg=None):
@@ -184,13 +185,31 @@ def pr_err(msg):
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
-    for item in os.listdir(src):
+    os.makedirs(dst, exist_ok=True)
+
+    try:
+        entries = os.listdir(src)
+    except FileNotFoundError:
+        return
+
+    for item in entries:
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
-        if os.path.isdir(s):
-            shutil.copytree(s, d, symlinks, ignore)
-        else:
-            shutil.copy2(s, d)
+
+        try:
+            if symlinks and os.path.islink(s):
+                linkto = os.readlink(s)
+                os.symlink(linkto, d)
+            elif os.path.isdir(s):
+                copytree(s, d, symlinks, ignore)
+            else:
+                shutil.copy2(s, d)
+        except FileNotFoundError:
+            continue
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                continue
+            raise
 
 
 # rpm */SOURCES dir requires all patches to be on the first level,
