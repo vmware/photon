@@ -1,10 +1,11 @@
 %global VER 3.11
 %global with_gdb_hooks 1
+%global common_modules_path %{_libdir}/python3-common-modules/site-packages
 
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -207,6 +208,9 @@ cp -p Tools/scripts/pathfix.py %{buildroot}%{_bindir}/pathfix.py
 %endif
 %endif
 
+install -d -m 0755 %{buildroot}%{common_modules_path}
+echo "%{common_modules_path}" > %{buildroot}%{_libdir}/python%{VER}/site-packages/common.pth
+
 %check
 %make_build test
 
@@ -238,7 +242,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/*/*
 
 %dir %{_libdir}/python%{VER}
+%dir %{_libdir}/python3-common-modules
+%dir %{common_modules_path}
 %{_libdir}/python%{VER}/site-packages/README.txt
+%{_libdir}/python%{VER}/site-packages/common.pth
 %{_libdir}/libpython3.so
 %{_libdir}/libpython%{VER}.so.1.0
 
@@ -305,6 +312,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Mar 10 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-5
+- Add common.pth containing path to python-common site-packages
 * Tue Jan 06 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-4
 - Fix CVE-2025-13836
 * Tue Oct 21 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-3
