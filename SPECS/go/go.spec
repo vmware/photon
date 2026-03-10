@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.22.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -35,6 +35,7 @@ Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
 Patch0: CVE-2025-22871.patch
 Patch1: CVE-2025-68121-1.patch
 Patch2: CVE-2025-68121-2.patch
+Patch3: CVE-2026-27142.patch
 
 Requires:       glibc
 Requires:       gcc
@@ -133,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Mar 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.12-3
+- Fix CVE-2026-27142
 * Thu Feb 19 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.12-2
 - Fix CVE-2025-22871, CVE-2025-68121
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.12-1
