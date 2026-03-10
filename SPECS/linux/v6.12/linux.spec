@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.69
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -952,6 +952,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Mar 16 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-7
+- SELinux as a default LSM
+- Add erofs support
+- Enable CONFIG_NF_FLOW_TABLE=m
 * Mon Mar 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.69-6
 - Fix af_unix boolean registration from the wrong array to the correct one
 * Wed Mar 04 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.69-5

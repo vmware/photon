@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.69
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -546,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 16 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-7
+- SELinux as a default LSM
 * Mon Mar 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.69-6
 - Fix af_unix boolean registration from the wrong array to the correct one
 * Mon Mar 09 2026 Albert Guo <albert.guo@broadcom.com> 6.12.69-5
