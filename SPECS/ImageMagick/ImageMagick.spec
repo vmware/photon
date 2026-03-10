@@ -1,9 +1,9 @@
 %global VER 7.1.2
-%global Patchlevel 13
+%global Patchlevel 16
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.2.13
+Version:        7.1.2.16
 Release:        1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
@@ -13,7 +13,7 @@ License:        ImageMagick
 Url:            http://www.imagemagick.org
 
 Source0: https://imagemagick.org/archive/releases/%{name}-%{VER}-%{Patchlevel}.tar.gz
-%define sha512 %{name}=fe0ee9d89bc8be98e12a03304ed0853f12af744dffd236e8dc5c7fd8c7d0d4b1e8874a8d0609de9f0ea3f554859dd7497b51c26f4f34fdbb9811d54691d61074
+%define sha512 %{name}=2efefad8347af4b4408c8a9d19709aa5f7d2f2c036b9851e4ee5dc0f5e0894dc26be81fb536e97c9f0b48a85cf06f3600f0ec6eaf81c324dcfefe978c6b1bb8c
 
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       libgomp
@@ -172,6 +172,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Tue Mar 10 2026 Michelle Wang <michelle.wang@broadcom.com> 7.1.2.16-1
+- Upgrade to v7.1.2.16, includes CVE fixes
 * Tue Feb 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 7.1.2.13-1
 - Upgrade to v7.1.2.13, includes CVE fixes
 * Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.1.2.12-1
