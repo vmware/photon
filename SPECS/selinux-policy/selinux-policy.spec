@@ -3,7 +3,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -138,6 +138,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Tue Mar 10 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 36.5-12
+- Enforcing mode by default
 * Wed Oct 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-11
 - Fix motd denials
 * Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-10
