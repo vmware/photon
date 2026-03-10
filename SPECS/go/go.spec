@@ -14,7 +14,7 @@
 Summary:        Go
 Name:           go
 Version:        1.24.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -33,6 +33,8 @@ Source1: license.txt
 
 Requires: glibc
 Requires: gcc
+
+Patch0: CVE-2026-27142.patch
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
@@ -118,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Wed Mar 11 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2
+- Fix CVE-2026-27142
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.13-1
 - Upgrade to v 1.24.13, fixes several CVEs
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.5-1
