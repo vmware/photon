@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.164
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.166
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1182,6 +1182,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.166-1
+- Update to version 6.1.166
 * Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.164-2
 - Move aarch64 CVE fix patches out of aarch64 guard
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.164-1

@@ -1,4 +1,4 @@
-From dfb1f70c4584ce16d060a8ee70c12879500d14c4 Mon Sep 17 00:00:00 2001
+From bc25c9a28e8bf163fc8858414c38288f92669638 Mon Sep 17 00:00:00 2001
 From: John Johansen <john.johansen@canonical.com>
 Date: Thu, 26 Mar 2020 02:25:34 -0700
 Subject: [PATCH 2/3] apparmor: af_unix mediation
@@ -696,10 +696,10 @@ index 000000000..cea67eee8
 +	return error;
 +}
 diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
-index 83bec6fe6..15940864d 100644
+index 5b785453e..f4c20d83b 100644
 --- a/security/apparmor/apparmorfs.c
 +++ b/security/apparmor/apparmorfs.c
-@@ -2360,6 +2360,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
+@@ -2373,6 +2373,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
  	{ }
  };
  
@@ -711,7 +711,7 @@ index 83bec6fe6..15940864d 100644
  static struct aa_sfs_entry aa_sfs_entry_query_label[] = {
  	AA_SFS_FILE_STRING("perms", "allow deny audit quiet"),
  	AA_SFS_FILE_BOOLEAN("data",		1),
-@@ -2384,6 +2389,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
+@@ -2397,6 +2402,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
  	AA_SFS_DIR("caps",			aa_sfs_entry_caps),
  	AA_SFS_DIR("ptrace",			aa_sfs_entry_ptrace),
  	AA_SFS_DIR("signal",			aa_sfs_entry_signal),
@@ -917,7 +917,7 @@ index 668b5b5c8..4f93f82c5 100644
  
  /**
 diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index 1e2f40db1..bcb2cb2b3 100644
+index 97389b9c4..66ff5105b 100644
 --- a/security/apparmor/lsm.c
 +++ b/security/apparmor/lsm.c
 @@ -23,8 +23,10 @@
@@ -1039,7 +1039,7 @@ index 1e2f40db1..bcb2cb2b3 100644
  }
  
  /**
-@@ -1089,11 +1185,25 @@ static int apparmor_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
+@@ -1096,11 +1192,25 @@ static int apparmor_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
  
  static struct aa_label *sk_peer_label(struct sock *sk)
  {
@@ -1065,7 +1065,7 @@ index 1e2f40db1..bcb2cb2b3 100644
  	return ERR_PTR(-ENOPROTOOPT);
  }
  
-@@ -1240,6 +1350,9 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
+@@ -1247,6 +1357,9 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
  	LSM_HOOK_INIT(sk_free_security, apparmor_sk_free_security),
  	LSM_HOOK_INIT(sk_clone_security, apparmor_sk_clone_security),
  
@@ -1076,7 +1076,7 @@ index 1e2f40db1..bcb2cb2b3 100644
  	LSM_HOOK_INIT(socket_post_create, apparmor_socket_post_create),
  	LSM_HOOK_INIT(socket_bind, apparmor_socket_bind),
 diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-index cfd2f2a8c..50e17fb0a 100644
+index 762f004a6..f14f00390 100644
 --- a/security/apparmor/net.c
 +++ b/security/apparmor/net.c
 @@ -8,6 +8,7 @@
@@ -1156,9 +1156,9 @@ index cfd2f2a8c..50e17fb0a 100644
  	if (aad(sa)->peer) {
  		audit_log_format(ab, " peer=");
  		aa_label_xaudit(ab, labels_ns(aad(sa)->label), aad(sa)->peer,
-@@ -203,7 +252,9 @@ int aa_sock_file_perm(struct aa_label *label, const char *op, u32 request,
- 	AA_BUG(!sock);
- 	AA_BUG(!sock->sk);
+@@ -205,7 +254,9 @@ int aa_sock_file_perm(struct aa_label *label, const char *op, u32 request,
+ 	if (!sock || !sock->sk)
+ 		return 0;
  
 -	return aa_label_sk_perm(label, op, request, sock->sk);
 +	return af_select(sock->sk->sk_family,
@@ -1168,7 +1168,7 @@ index cfd2f2a8c..50e17fb0a 100644
  
  #ifdef CONFIG_NETWORK_SECMARK
 diff --git a/security/apparmor/policy_unpack.c b/security/apparmor/policy_unpack.c
-index a891b8b69..50881898f 100644
+index 60d6831e8..2378e71d8 100644
 --- a/security/apparmor/policy_unpack.c
 +++ b/security/apparmor/policy_unpack.c
 @@ -293,11 +293,11 @@ static bool unpack_u16(struct aa_ext *e, u16 *data, const char *name)
@@ -1186,5 +1186,5 @@ index a891b8b69..50881898f 100644
  
  VISIBLE_IF_KUNIT bool aa_unpack_u32(struct aa_ext *e, u32 *data, const char *name)
 -- 
-2.39.0
+2.40.4
 
