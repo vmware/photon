@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.251
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.252
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ BuildArch:      x86_64
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=98eaebcd45405c9088fc10af043f83f24fa00585b91c0122670d53c1b794195f49462387043cba59d2eafa07165ce353f1fbb5215ae984030814ae07502ce7b0
+%define sha512 linux=d6061953a2516b40ea6a34f10b08a11f6771b7ab827eb96c14caad1d7a1114db26842da5fe378186e2cc800eea294773fa1a49e92710a1404601b75aa5eb62cd
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -766,6 +766,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.252-1
+- Update to version 5.10.252
 * Tue Mar 03 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 5.10.251-3
 - Security fixes: CVE-2024-47745
 * Sat Feb 28 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.251-2

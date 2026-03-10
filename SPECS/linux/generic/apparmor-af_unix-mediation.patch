@@ -1,4 +1,4 @@
-From dee789d5819cdea0b74ef713da37e5f7653acee4 Mon Sep 17 00:00:00 2001
+From 20d2c375a6949e1d00d2384f512953908ead1198 Mon Sep 17 00:00:00 2001
 From: John Johansen <john.johansen@canonical.com>
 Date: Thu, 26 Mar 2020 02:25:34 -0700
 Subject: [PATCH 12/12] apparmor: af_unix mediation
@@ -11,14 +11,14 @@ Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  security/apparmor/Makefile          |   3 +-
- security/apparmor/af_unix.c         | 652 ++++++++++++++++++++++++++++++++++++
+ security/apparmor/af_unix.c         | 652 ++++++++++++++++++++++++++++
  security/apparmor/apparmorfs.c      |   6 +
  security/apparmor/file.c            |   4 +-
- security/apparmor/include/af_unix.h | 114 +++++++
+ security/apparmor/include/af_unix.h | 114 +++++
  security/apparmor/include/net.h     |   4 +
  security/apparmor/include/path.h    |   1 +
  security/apparmor/include/policy.h  |  10 +-
- security/apparmor/lsm.c             | 113 +++++++
+ security/apparmor/lsm.c             | 113 +++++
  security/apparmor/net.c             |  53 ++-
  security/apparmor/policy_unpack.c   |   4 +-
  11 files changed, 956 insertions(+), 8 deletions(-)
@@ -26,7 +26,7 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  create mode 100644 security/apparmor/include/af_unix.h
 
 diff --git a/security/apparmor/Makefile b/security/apparmor/Makefile
-index ff23fcf..fad407f 100644
+index ff23fcfef..fad407f6f 100644
 --- a/security/apparmor/Makefile
 +++ b/security/apparmor/Makefile
 @@ -5,7 +5,8 @@ obj-$(CONFIG_SECURITY_APPARMOR) += apparmor.o
@@ -41,7 +41,7 @@ index ff23fcf..fad407f 100644
  clean-files := capability_names.h rlim_names.h net_names.h
 diff --git a/security/apparmor/af_unix.c b/security/apparmor/af_unix.c
 new file mode 100644
-index 00000000..54b3796
+index 000000000..76821155b
 --- /dev/null
 +++ b/security/apparmor/af_unix.c
 @@ -0,0 +1,652 @@
@@ -698,10 +698,10 @@ index 00000000..54b3796
 +	return error;
 +}
 diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
-index 0a7fe2d..901f2d1 100644
+index 3e8b06424..d145a9f21 100644
 --- a/security/apparmor/apparmorfs.c
 +++ b/security/apparmor/apparmorfs.c
-@@ -2348,6 +2348,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
+@@ -2363,6 +2363,11 @@ static struct aa_sfs_entry aa_sfs_entry_ns[] = {
  	{ }
  };
  
@@ -713,7 +713,7 @@ index 0a7fe2d..901f2d1 100644
  static struct aa_sfs_entry aa_sfs_entry_query_label[] = {
  	AA_SFS_FILE_STRING("perms", "allow deny audit quiet"),
  	AA_SFS_FILE_BOOLEAN("data",		1),
-@@ -2372,6 +2377,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
+@@ -2387,6 +2392,7 @@ static struct aa_sfs_entry aa_sfs_entry_features[] = {
  	AA_SFS_DIR("caps",			aa_sfs_entry_caps),
  	AA_SFS_DIR("ptrace",			aa_sfs_entry_ptrace),
  	AA_SFS_DIR("signal",			aa_sfs_entry_signal),
@@ -722,7 +722,7 @@ index 0a7fe2d..901f2d1 100644
  	{ }
  };
 diff --git a/security/apparmor/file.c b/security/apparmor/file.c
-index 92acf9a..60cd84c 100644
+index 92acf9a49..60cd84cfc 100644
 --- a/security/apparmor/file.c
 +++ b/security/apparmor/file.c
 @@ -12,6 +12,7 @@
@@ -745,7 +745,7 @@ index 92acf9a..60cd84c 100644
  	if (request & ~perms->allow)
 diff --git a/security/apparmor/include/af_unix.h b/security/apparmor/include/af_unix.h
 new file mode 100644
-index 00000000..d1b7f23
+index 000000000..d1b7f2316
 --- /dev/null
 +++ b/security/apparmor/include/af_unix.h
 @@ -0,0 +1,114 @@
@@ -864,7 +864,7 @@ index 00000000..d1b7f23
 +
 +#endif /* __AA_AF_UNIX_H */
 diff --git a/security/apparmor/include/net.h b/security/apparmor/include/net.h
-index 74768db..4ff96fa0 100644
+index 74768db94..4ff96fa0b 100644
 --- a/security/apparmor/include/net.h
 +++ b/security/apparmor/include/net.h
 @@ -49,6 +49,7 @@
@@ -886,7 +886,7 @@ index 74768db..4ff96fa0 100644
  		__e = DEF_FN;			\
  	}					\
 diff --git a/security/apparmor/include/path.h b/security/apparmor/include/path.h
-index 44a7945..44592cd 100644
+index 44a7945fb..44592cd98 100644
 --- a/security/apparmor/include/path.h
 +++ b/security/apparmor/include/path.h
 @@ -13,6 +13,7 @@
@@ -898,7 +898,7 @@ index 44a7945..44592cd 100644
  	PATH_CHROOT_REL = 0x8,		/* do path lookup relative to chroot */
  	PATH_CHROOT_NSCONNECT = 0x10,	/* connect paths that are at ns root */
 diff --git a/security/apparmor/include/policy.h b/security/apparmor/include/policy.h
-index f904105..f1c9cdc 100644
+index 020c32def..1ab36c747 100644
 --- a/security/apparmor/include/policy.h
 +++ b/security/apparmor/include/policy.h
 @@ -230,9 +230,13 @@ static inline unsigned int PROFILE_MEDIATES_AF(struct aa_profile *profile,
@@ -919,7 +919,7 @@ index f904105..f1c9cdc 100644
  
  /**
 diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index ffeaee5..b83c574 100644
+index 37aa1650c..fcabbe148 100644
 --- a/security/apparmor/lsm.c
 +++ b/security/apparmor/lsm.c
 @@ -23,8 +23,10 @@
@@ -1041,7 +1041,7 @@ index ffeaee5..b83c574 100644
  }
  
  /**
-@@ -1056,11 +1152,25 @@ static int apparmor_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
+@@ -1063,11 +1159,25 @@ static int apparmor_socket_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
  
  static struct aa_label *sk_peer_label(struct sock *sk)
  {
@@ -1067,7 +1067,7 @@ index ffeaee5..b83c574 100644
  	return ERR_PTR(-ENOPROTOOPT);
  }
  
-@@ -1207,6 +1317,9 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
+@@ -1211,6 +1321,9 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
  	LSM_HOOK_INIT(sk_free_security, apparmor_sk_free_security),
  	LSM_HOOK_INIT(sk_clone_security, apparmor_sk_clone_security),
  
@@ -1078,7 +1078,7 @@ index ffeaee5..b83c574 100644
  	LSM_HOOK_INIT(socket_post_create, apparmor_socket_post_create),
  	LSM_HOOK_INIT(socket_bind, apparmor_socket_bind),
 diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-index 163791f..0e97fb1 100644
+index 570df8de1..04ff55b80 100644
 --- a/security/apparmor/net.c
 +++ b/security/apparmor/net.c
 @@ -8,6 +8,7 @@
@@ -1158,9 +1158,9 @@ index 163791f..0e97fb1 100644
  	if (aad(sa)->peer) {
  		audit_log_format(ab, " peer=");
  		aa_label_xaudit(ab, labels_ns(aad(sa)->label), aad(sa)->peer,
-@@ -202,7 +251,9 @@ int aa_sock_file_perm(struct aa_label *label, const char *op, u32 request,
- 	AA_BUG(!sock);
- 	AA_BUG(!sock->sk);
+@@ -204,7 +253,9 @@ int aa_sock_file_perm(struct aa_label *label, const char *op, u32 request,
+ 	if (!sock || !sock->sk)
+ 		return 0;
  
 -	return aa_label_sk_perm(label, op, request, sock->sk);
 +	return af_select(sock->sk->sk_family,
@@ -1170,7 +1170,7 @@ index 163791f..0e97fb1 100644
  
  #ifdef CONFIG_NETWORK_SECMARK
 diff --git a/security/apparmor/policy_unpack.c b/security/apparmor/policy_unpack.c
-index 3a5a698..910368b 100644
+index e095f7590..864e0c691 100644
 --- a/security/apparmor/policy_unpack.c
 +++ b/security/apparmor/policy_unpack.c
 @@ -324,11 +324,11 @@ static bool unpack_u16(struct aa_ext *e, u16 *data, const char *name)
@@ -1188,5 +1188,5 @@ index 3a5a698..910368b 100644
  
  static bool unpack_u32(struct aa_ext *e, u32 *data, const char *name)
 -- 
-2.7.4
+2.40.4
 
