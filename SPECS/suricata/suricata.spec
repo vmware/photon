@@ -3,7 +3,7 @@
 Summary:        Intrusion Detection System
 Name:           suricata
 Version:        7.0.6
-Release:        7%{?dist}
+Release:        8%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://suricata.io
@@ -36,7 +36,7 @@ BuildRequires: libyaml-devel
 BuildRequires: libnfnetlink-devel
 BuildRequires: libnetfilter_queue-devel
 BuildRequires: zlib-devel
-BuildRequires: pcre-devel
+BuildRequires: pcre2-devel
 BuildRequires: libcap-ng-devel
 BuildRequires: lz4-devel
 BuildRequires: libpcap-devel
@@ -74,7 +74,7 @@ Requires: nss-libs
 Requires: nss
 Requires: libpcap
 Requires: systemd
-Requires: pcre-libs
+Requires: pcre2-libs
 Requires: libyaml
 
 Requires(post): systemd
@@ -176,6 +176,8 @@ install -m 0644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 %{_datadir}/%{name}/rules
 
 %changelog
+* Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 7.0.6-8
+- Migrate from pcre to pcre2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.0.6-7
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.0.6-6

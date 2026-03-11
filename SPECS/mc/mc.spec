@@ -1,7 +1,7 @@
 Summary:        File manager
 Name:           mc
 Version:        4.8.33
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.midnight-commander.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -13,11 +13,11 @@ Source1:        license.txt
 %include        %{SOURCE1}
 
 Requires:       glib
-Requires:       pcre
+Requires:       pcre2
 Requires:       slang
 
 BuildRequires:  glib-devel
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  slang-devel
 
 %description
@@ -48,6 +48,8 @@ make %{?_smp_mflags} -k check
 %exclude %dir %{_libdir}
 
 %changelog
+* Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.8.33-2
+- Migrate from pcre to pcre2
 * Mon Nov 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.8.33-1
 - Upgrade to 4.8.33
 * Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> 4.8.28-4

@@ -3,7 +3,7 @@
 Summary:        A secure, fast, compliant, and very flexible web server
 Name:           lighttpd
 Version:        1.4.82
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.lighttpd.net/
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -51,7 +51,6 @@ for every server that is suffering load problems.
 %autosetup -p1
 
 %build
-export LIBS='-lssl -lcrypto -lcurl -lcares -lz -lglib-2.0 -lgthread-2.0 -lpcre -lstdc++'
 ./autogen.sh
 %configure \
     --bindir=%{_sbindir}        \
@@ -59,7 +58,7 @@ export LIBS='-lssl -lcrypto -lcurl -lcares -lz -lglib-2.0 -lgthread-2.0 -lpcre -
     --enable-ipv6               \
     --with-openssl              \
     --with-lua                  \
-    --with-pcre
+    --with-pcre2
 
 %make_build
 
@@ -118,6 +117,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/%{name}*8*
 
 %changelog
+* Tue Jun 02 2026 Bo Gan <bo.gan@broadcom.com> 1.4.82-3
+- Migrate from pcre to pcre2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.82-2
 - Extended to build for subrelease 91 and above
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.4.82-1

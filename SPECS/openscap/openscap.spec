@@ -3,7 +3,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -21,7 +21,7 @@ BuildRequires:  libxslt-devel
 BuildRequires:  XML-Parser
 BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  libacl-devel
 BuildRequires:  libselinux-devel
 BuildRequires:  libcap-devel
@@ -42,7 +42,7 @@ Requires:       libcap
 Requires:       openssl
 Requires:       libgcrypt
 Requires:       libacl
-Requires:       pcre-libs
+Requires:       pcre2-libs
 Requires:       xmlsec1
 
 %description
@@ -84,6 +84,7 @@ Python bindings.
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
+    -DWITH_PCRE2=ON \
     -DENABLE_PERL=ON \
     -DENABLE_SCE=ON
 
@@ -126,6 +127,8 @@ Python bindings.
 %{python3_sitelib}
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 1.3.14-4
+- Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.3.14-3
 - Release version bump as part of libxml2/libxslt
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.14-2

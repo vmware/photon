@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        3.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -13,7 +13,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: openssl-devel
-BuildRequires: pcre-devel
+BuildRequires: pcre2-devel
 BuildRequires: lua-devel
 BuildRequires: pkg-config
 BuildRequires: zlib-devel
@@ -39,7 +39,7 @@ It contains the documentation and manpages for haproxy package.
 rm -r addons/51degrees
 
 %build
-make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
+make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE2=1 USE_OPENSSL=1 \
         USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
 make %{?_smp_mflags} -C admin/systemd
 sed -i s/"local\/"/""/g admin/systemd/haproxy.service
@@ -65,6 +65,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+* Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.2.1-2
+- Migrate from pcre to pcre2
 * Mon Jul 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.1-1
 - Update to 3.2.1
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.8.2-2

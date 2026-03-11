@@ -1,13 +1,13 @@
 sources:
-- archive: nmap-7.99.tar.bz2
-  archive_sha512sum: 9ff69659b76573eb10b6e472a0217032fd5fed20f0ac971b3736a4222fb6251c5fbf381ebea7ede313b8ff2feac90a848f645000c61200772d01b843594f4ba4
-  version: 7.99
-  name: nmap-7.99
+- archive: nmap-7.93.tar.bz2
+  archive_sha512sum: 4ec9295e25bd7a215e718c3dbbf09bfe6339b60850f4a8d09b5ad0cbf41a0da8ece0168efc5ca91ba1ecbd83b1d31735d77dacd5f1ec1a9fd212454dd1f0f0fd
+  version: 7.93
+  name: nmap-7.93
   archive_type: upstream
   skip_validation: true
-  url: https://nmap.org/dist/nmap-7.99.tar.bz2
+  url: https://nmap.org/dist/nmap-7.93.tar.bz2
   repo_url: https://github.com/nmap/nmap
-  commit_id: deb076224e9f138ea29fa4823bcce0030301dc54 # Reintegrate Nmap 7.99 release branch
+  commit_id: 9732e6979e2dfc731ce1a8fcd3101e9c1b6c4ffb # Merge Nmap 7.93 release branch
   spdx:
     package:
       detailed_description: 'nmap is a utility for network exploration or security

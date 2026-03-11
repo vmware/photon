@@ -14,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.18
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -37,7 +37,6 @@ Source2: license-openjdk17.txt
 
 Source3: setup-zip-wrappers.sh
 
-BuildRequires: pcre-devel
 BuildRequires: which
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
@@ -269,6 +268,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 17.0.18-5
+- Remove unnecessary pcre build dependency
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 17.0.18-4
 - Replace deprecated zip/unzip with Python zipfile wrappers in PATH
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.18-3

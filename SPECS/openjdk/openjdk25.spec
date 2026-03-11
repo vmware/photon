@@ -14,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk25
 Version:    25.0.2
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://github.com/openjdk/jdk25u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -37,7 +37,6 @@ Source2: license-openjdk25.txt
 
 Source3: setup-zip-wrappers.sh
 
-BuildRequires: pcre-devel
 BuildRequires: which
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
@@ -261,6 +260,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 25.0.2-5
+- Remove unnecessary pcre build dependency
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 25.0.2-4
 - Replace deprecated zip/unzip with Python zipfile wrappers in PATH
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.0.2-3

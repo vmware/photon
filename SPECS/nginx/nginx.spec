@@ -8,7 +8,7 @@ Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
 Version:        1.30.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -29,14 +29,14 @@ Source5: license.txt
 Patch0: convert-to-dynamic.patch
 
 BuildRequires:  openssl-devel
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  which
 BuildRequires:  systemd-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 
 Requires: openssl
-Requires: pcre
+Requires: pcre2
 Requires: systemd
 
 Requires(pre): systemd-rpm-macros
@@ -115,7 +115,6 @@ sh ./configure \
     --group=%{nginx_user} \
     --add-dynamic-module=njs-%{njs_ver}/%{name} \
     --add-dynamic-module=./headers-more-nginx-module-%{headers_more_nginx_module_ver} \
-    --with-pcre \
     --with-compat \
     --with-http_ssl_module \
     --modules-path=%{dyn_modules_dir} \
@@ -204,6 +203,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 1.30.2-3
+- Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.30.2-2
 - Release version bump as part of libxml2/libxslt
 * Thu May 21 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.30.2-1

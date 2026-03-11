@@ -1,14 +1,6 @@
 sources:
-- archive: grep-3.12.tar.xz
-  archive_type: upstream
-  archive_sha512sum: c54b4db5a8b9afe098c088decd94977746305284d716666a60bac82b4edc0fae4acf828970b5b6fc7d58ecd549f638e17e6958f33a71fedcc7d7415b9228b161
-  name: "grep-3.12"
-  version: 3.12
-  url: https://mirrors.ocf.berkeley.edu/gnu/grep/grep-3.12.tar.xz
-  repo_url: https://git.savannah.gnu.org/git/grep.git
-  commit_id: 847dcfb763d3fc305275e0d25ed99e92dd1e4094
-  skip_list: []
-  missing: []
+- archive: grep-3.7.tar.xz
+  archive_sha512sum: e9e45dcd40af8367f819f2b93c5e1b4e98a251a9aa251841fa67a875380fae52cfa27c68c6dbdd6a4dde1b1017ee0f6b9833ef6dd6e419d32d71b6df5e972b82
   skip_validation: true
   spdx:
     package:

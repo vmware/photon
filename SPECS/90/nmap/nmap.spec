@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Nmap (“Network Mapper”) is a utility for network discovery and security auditing
 Name:           nmap
-Version:        7.99
-Release:        1%{?dist}
+Version:        7.93
+Release:        9.1%{?dist}
 URL:            http://nmap.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -23,12 +23,12 @@ BuildRequires:  krb5-devel
 BuildRequires:  libcap-devel
 BuildRequires:  libgpg-error
 BuildRequires:  libpcap-devel
-BuildRequires:  pcre2-devel
+BuildRequires:  pcre-devel
 BuildRequires:  zlib-devel
 BuildRequires:  lua-devel
 
 Requires:       libpcap
-Requires:       pcre2
+Requires:       pcre
 Requires:       gnupg
 Requires:       lua
 Requires:       openssl
@@ -91,8 +91,8 @@ rm -rf %{buildroot}%{_datadir}/man/ \
 %{_bindir}/ncat
 
 %changelog
-* Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 7.99-1
-- Version dump, and migrate from pcre to pcre2
+* Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 7.93-9.1
+- Bump after moving to /90
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.93-9
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 7.93-8

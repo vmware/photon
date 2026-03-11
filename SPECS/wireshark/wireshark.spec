@@ -2,7 +2,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
 Version:        4.6.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -27,13 +27,13 @@ BuildRequires:  libnl-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libxml2-devel
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  systemd-devel
 BuildRequires:  git
 
 Requires:       libpcap
 Requires:       libnl
-Requires:       pcre
+Requires:       pcre2
 Requires:       c-ares
 Requires:       libcap
 Requires:       libnl
@@ -103,6 +103,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 4.6.6-3
+- Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.6.6-2
 - Release version bump as part of libxml2/libxslt
 * Mon Jun 01 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.6.6-1
@@ -111,7 +113,7 @@ rm -rf %{buildroot}%{_mandir} \
   CVE-2026-6519, CVE-2026-6868, CVE-2026-7375)
 - Drop Patch0 (SpeexDSP): replaced by -DBUILD_sharkd=OFF cmake flag
 - Drop Patch1 (CVE-2025-13499): fixed upstream in 4.6.1+
-* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 4.2.12-4
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.2.12-4
 - Version bump due to gnutls update
 * Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.12-3
 - Fix CVE-2025-13499

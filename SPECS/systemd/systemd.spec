@@ -7,7 +7,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        257.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -69,7 +69,7 @@ Requires:       libmicrohttpd
 Requires:       libseccomp
 Requires:       libselinux
 
-Requires:       pcre
+Requires:       pcre2
 Requires:       xz
 Requires:       libgpg-error
 
@@ -98,7 +98,7 @@ BuildRequires:  meson
 BuildRequires:  libmicrohttpd-devel
 BuildRequires:  ninja-build
 BuildRequires:  openssl-devel
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  pkg-config
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
@@ -681,9 +681,11 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 257.13-5
+- Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 257.13-4
 - Release version bump as part of libxml2/libxslt
-* Fri May 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 257.13-3
+* Fri May 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 257.13-3
 - Version bump due to gnutls update
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-2
 - Build with subrelease >= 91

@@ -21,7 +21,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.30
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -44,7 +44,6 @@ Source2: license-openjdk11.txt
 
 Source3: setup-zip-wrappers.sh
 
-BuildRequires: pcre-devel
 BuildRequires: which
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
@@ -285,6 +284,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 11.0.30-5
+- Remove unnecessary pcre build dependency
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 11.0.30-4
 - Replace deprecated unzip with Python zipfile wrapper via setup-zip-wrappers.sh
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.30-3

@@ -5,7 +5,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.88.0
-Release:      4%{?dist}
+Release:      5%{?dist}
 URL:          https://developer.gnome.org/glib
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -23,7 +23,7 @@ Source2: license.txt
 %include %{SOURCE2}
 
 BuildRequires:  cmake
-BuildRequires:  pcre-devel
+BuildRequires:  pcre2-devel
 BuildRequires:  libffi-devel
 BuildRequires:  pkg-config
 BuildRequires:  python3-xml
@@ -48,7 +48,7 @@ BuildRequires:  autoconf-archive
 %endif
 
 Requires: elfutils-libelf
-Requires: pcre-libs
+Requires: pcre2-libs
 Requires: libffi
 Requires: libselinux
 
@@ -69,7 +69,7 @@ dynamic loading and an object system. Development libs and headers are in glib-d
 Summary:  Header files for the glib library
 Requires: %{name} = %{version}-%{release}
 Requires: python3-xml
-Requires: pcre-devel
+Requires: pcre2-devel
 Requires: util-linux-devel
 Requires: python3
 Requires: libffi-devel
@@ -171,6 +171,8 @@ popd
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.88.0-5
+- Migrate from pcre to pcre2
 * Tue May 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.88.0-4
 - Enable for 91 subrlease
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-3

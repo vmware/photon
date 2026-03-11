@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/aide/aide
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ Patch0: CVE-2025-54389.patch
 Patch1: CVE-2025-54409.patch
 
 BuildRequires: build-essential
-BuildRequires: pcre-devel
+BuildRequires: pcre2-devel
 BuildRequires: libgpg-error-devel
 BuildRequires: openssl-devel
 BuildRequires: zlib-devel
@@ -34,7 +34,7 @@ BuildRequires: e2fsprogs-devel
 BuildRequires: check-devel
 %endif
 
-Requires: pcre
+Requires: pcre2
 Requires: libgpg-error
 Requires: openssl
 Requires: libgcrypt
@@ -99,6 +99,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.19-2
+- Migrate from pcre to pcre2
 * Tue Oct 07 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 0.19-1
 - Version upgrade
 * Thu Aug 14 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17.4-8

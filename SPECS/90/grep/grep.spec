@@ -1,8 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
+
 Summary:    Programs for searching through files
 Name:       grep
-Version:    3.12
-Release:    1%{?dist}
+Version:    3.7
+Release:    6.1%{?dist}
 URL:        http://www.gnu.org/software/grep
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -13,10 +14,10 @@ Source0: http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires: pcre2-devel
-BuildRequires: pcre2-libs
+BuildRequires: pcre-devel
+BuildRequires: pcre-libs
 
-Requires: pcre2-libs
+Requires: pcre-libs
 
 Conflicts: toybox < 0.8.2-2
 
@@ -63,8 +64,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-* Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.12-1
-- Migrate from pcre to pcre2, bump to latest as pcre2 support is in 3.8
+* Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 3.7-6.1
+- Bump after moving to /90
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.7-6
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.7-5

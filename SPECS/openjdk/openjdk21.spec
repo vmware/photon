@@ -14,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk21
 Version:    21.0.10
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -37,7 +37,6 @@ Source2: license-openjdk21.txt
 
 Source3: setup-zip-wrappers.sh
 
-BuildRequires: pcre-devel
 BuildRequires: which
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
@@ -260,6 +259,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 21.0.10-5
+- Remove unnecessary pcre build dependency
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 21.0.10-4
 - Replace deprecated zip/unzip with Python zipfile wrappers in PATH
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 21.0.10-3

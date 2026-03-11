@@ -3,7 +3,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.31
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,6 +18,7 @@ Source4: %{name}.sysusers
 Source5: license.txt
 %include %{SOURCE5}
 
+BuildRequires: pcre2-devel
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: jansson-devel
@@ -49,7 +50,6 @@ Requires: libstdc++
 Requires: libxslt
 Requires: libyaml
 Requires: openldap
-Requires: pcre
 Requires: python3
 Requires: ruby
 Requires: util-linux
@@ -235,6 +235,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 2.0.31-4
+- Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.0.31-3
 - Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.31-2
