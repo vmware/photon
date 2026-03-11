@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        29.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -297,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.2.1-2
+- Version bump for removing lzo support in docker
 * Tue Feb 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.2.1-1
 - Upgrade to version 29.2.1
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 28.2.2-7

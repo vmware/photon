@@ -1,10 +1,10 @@
-#Build this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} >= 92
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        FSArchiver - Filesystem Archiver for Linux
 Name:           fsarchiver
 Version:        0.8.6
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 URL:            http://www.fsarchiver.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -16,6 +16,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  xz-devel
+BuildRequires:  lzo-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  attr-devel
@@ -40,8 +41,7 @@ sed -i '/unistd/a #include <sys/sysmacros.h>' src/devinfo.c
     --bindir=/bin \
     --disable-silent-rules \
     --disable-lz4 \
-    --disable-zstd \
-    --disable-lzo
+    --disable-zstd
 
 make %{?_smp_mflags}
 
@@ -59,8 +59,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man8/*
 
 %changelog
-* Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.8.6-4
-- Remove deprecated lzo dependency
+* Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.8.6-3.1
+- Spec bump for 9.1 subrelease
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.8.6-3
 - Release bump for SRP compliance
 * Fri Dec 23 2022 Oliver Kurth <okurth@vmware.com> 0.8.6-2

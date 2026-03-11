@@ -7,7 +7,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        2.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -142,6 +142,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Thu Mar 12 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 2.2.1-2
+- Version bump for removing lzo support in containerd
 * Fri Feb 13 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 2.2.1-1
 - Version upgrade to 2.2.1
 * Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.5-3

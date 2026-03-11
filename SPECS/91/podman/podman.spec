@@ -1,4 +1,5 @@
-%global build_if %{photon_subrelease} >= 92
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
 
 %global dnsnamevers 1.3.1
 %global gvisorvers 0.7.3
@@ -6,7 +7,7 @@
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        4.5.1
-Release:        14%{?dist}
+Release:        13.1%{?dist}
 URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
@@ -182,8 +183,8 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
-* Thu Mar 12 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 4.5.1-14
-- Version bump for removing lzo support in podman
+* Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.5.1-13.1
+- Spec bump for 9.1 subrelease
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.1-13
 - Bump version as a part of go upgrade
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-12

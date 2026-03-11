@@ -2,7 +2,7 @@
 
 Name:           btrfs-progs
 Version:        6.1.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
@@ -13,7 +13,6 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  lzo-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  libacl-devel
 BuildRequires:  python3-devel
@@ -23,7 +22,6 @@ BuildRequires:  asciidoc3
 BuildRequires:  systemd-devel
 
 Requires:       e2fsprogs
-Requires:       lzo
 
 %description
 The btrfs-progs package provides all the userspace programs needed to create,
@@ -48,7 +46,9 @@ btrfs filesystem-specific programs.
 sh ./autogen.sh
 %configure \
     --disable-zstd \
-    --disable-documentation
+    --disable-documentation \
+    --disable-lzo
+
 make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
@@ -87,6 +87,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
+* Tue Mar 31 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 6.1.3-5
+- Version bump for removing lzo support in btrfs-progs
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.3-4
 - Remove stale BuildRequires: xmlto; documentation is already disabled
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.1.3-3

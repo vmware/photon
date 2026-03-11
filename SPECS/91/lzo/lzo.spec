@@ -1,6 +1,9 @@
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
+
 Name:           lzo
 Version:        2.10
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 Summary:        Data compression library with very fast (de)compression
 Group:          System Environment/Libraries
 URL:            http://www.oberhumer.com/opensource/lzo/
@@ -89,6 +92,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/lzo2.pc
 
 %changelog
+* Wed Mar 11 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.10-3.1
+- Deprecate lzo to build only with subrelease 91 or less
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.10-3
 - Release bump for SRP compliance
 * Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.10-2
