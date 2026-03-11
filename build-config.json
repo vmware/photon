@@ -12,6 +12,7 @@
     "photon-docker-image": "photon:5.0",
 
     "package-repo-url": "https://packages.broadcom.com/photon/$releasever/photon_$releasever_$basearch",
+
     "package-repo-snapshot-file-url": "https://packages.broadcom.com/photon/$releasever/photon_snapshots_$releasever_$basearch/SUBRELEASE/snapshot-SUBRELEASE-latest.$basearch.list",
 
     "photon-docker-image-urls": {

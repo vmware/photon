@@ -30,7 +30,7 @@ class SRP(object):
         if not self.srpcli:
             if SRP.msg_printed:
                 return
-            logger.info("SRPCLI is not provided. SRP provenance will not be generated.")
+            logger.debug("SRPCLI is not provided. SRP provenance will not be generated.")
             SRP.msg_printed = True
             return
 
@@ -109,7 +109,7 @@ class SRP(object):
                 f"--version={self.version}",
                 f"--release={self.release}",
                 f"--dist-tag={self.distTag}",
-                f"--arch={constants.targetArch}",
+                f"--arch={constants.buildArch}",
             ]
         )
         self.srpcli_run(["provenance", "action", "start", f"--name=build-{self.pkg}"])
@@ -171,7 +171,7 @@ class SRP(object):
         elif a == "src":
             reponame = f"{reponame}_srpms"
 
-        repo = f"https://packages.broadcom.com/photon/{branch}/{reponame}_{branch}_{constants.targetArch}"
+        repo = f"https://packages.broadcom.com/photon/{branch}/{reponame}_{branch}_{constants.buildArch}"
         return f"uid.obj.comp.package.rpm(name='{n}',version='{v}',release='{r}.{t}',arch='{a}',original_repository='{repo}')"
 
     def goDepPathToUid(self, path):

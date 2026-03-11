@@ -48,7 +48,7 @@ def get(package, source, checksum, sourcesPath, URLs, logger):
     for baseurl in URLs:
         """
         From url:
-        https://packages.vmware.com/photon/photon_sources/1.0/<filename>
+        https://packages.broadcom.com/photon/photon_sources/1.0/<filename>
         """
         url = f"{baseurl}/{source}"
         destfile = os.path.join(sourcesPath, source)

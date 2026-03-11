@@ -69,6 +69,7 @@ class CommandUtils:
         env=None,
         clean_env=False,
         shell=False,
+        timeout=None,
     ):
         if logger:
             logger.debug(f"Running {args}")
@@ -97,8 +98,8 @@ class CommandUtils:
             args, cwd=cwd, env=new_env, shell=shell, stdout=fp, stderr=fp
         )
 
-        out, err = sp.communicate()
-        rc = sp.wait()
+        out, err = sp.communicate(timeout=timeout)
+        rc = sp.returncode
 
         out = out.decode() if out else ""
         err = err.decode() if err else ""

@@ -4,3 +4,5 @@ baseurl=file:///bootstrap
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
+skip_md_filelists=1
+priority=90

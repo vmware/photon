@@ -109,7 +109,6 @@ def getConstants():
     constant_dict["acvpBuild"] = constants.acvpBuild
     constant_dict["tmpDirPath"] = constants.tmpDirPath
     constant_dict["buildArch"] = constants.buildArch
-    constant_dict["currentArch"] = constants.currentArch
 
     return constant_dict, SUCCESS
 

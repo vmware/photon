@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import shutil
 
 from CommandUtils import CommandUtils
 from constants import BuildStage, constants
@@ -22,25 +23,21 @@ class PackageBuilder(object):
         self.buildMode = buildMode
         self.mapPackageToCycles = mapPackageToCycles
         self.logName = f"build-{pkg}"
-        self.logPath = os.path.join(constants.logPath, f"{pkg}.{constants.currentArch}")
-        # Cleanup the log directory
-        os.makedirs(self.logPath, exist_ok=True)
-        CommandUtils.runCmd(["find", self.logPath, "-name", "*.log", "-delete"])
+        self.logPath = os.path.join(constants.logPath, pkg)
         self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
-
         self.srp = SRP(pkg, self.logger)
 
-        baseImageTarball = constants.buildBaseImageTarball[buildStage]
+        shutil.rmtree(self.logPath, ignore_errors=True)
+        os.makedirs(self.logPath, exist_ok=True)
 
         self.sandbox = init_sandbox(
             name=pkg,
             sandboxType=sandboxType,
-            baseImagePath=os.path.join(constants.buildImagesPath, baseImageTarball),
             optionalMounts={
                 "bindsrw": [
                     [
-                        f"{constants.stagePath}/LOGS/{pkg}.{constants.buildArch}",
-                        f"{constants.topDirPath}/LOGS/{pkg}.{constants.buildArch}",
+                        f"{constants.logPath}/{pkg}",
+                        f"{constants.topDirPath}/LOGS/{pkg}",
                     ]
                 ],
             },
@@ -50,9 +47,7 @@ class PackageBuilder(object):
 
     def build(self, doneList):
         # do not build if RPM is already built
-        # test only if the package is in the testForceRPMS with rpmCheck
-        # build only if the package is not in the testForceRPMS with rpmCheck
-        if not (constants.rpmCheck or self.package in constants.testForceRPMS):
+        if not constants.rpmCheck:
             if self._checkIfPackageIsAlreadyBuilt(self.package, self.version, doneList):
                 return
 
@@ -83,14 +78,10 @@ class PackageBuilder(object):
                 self.version,
             )
 
-            if (self.package not in constants.listCoreToolChainPackages) or (
-                constants.rpmCheck and self.package in constants.testForceRPMS
-            ):
+            if self.package not in constants.listCoreToolChainPackages:
                 self._installDependencies(constants.buildArch)
 
-            pkgUtils = PackageUtils(
-                self.buildStage, self.buildMode, self.logName, self.logPath
-            )
+            pkgUtils = PackageUtils(self.buildStage, self.buildMode)
             for _, v in constants.CopyToSandboxDict.items():
                 pkgUtils.copyFileToSandbox(self.sandbox, v["src"], v["dest"])
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
@@ -133,13 +124,13 @@ class PackageBuilder(object):
             self.logger.error(
                 f"Failed while building package: {self.package}-{self.version}"
             )
-            self.logger.debug(
+            self.logger.error(
                 f"Sandbox: {self.sandbox.name} not deleted for debugging."
             )
-            if constants.rpmCheck and self.package in constants.testForceRPMS:
-                logFileName = os.path.join(self.logPath, f"{self.package}-test.log")
+            if constants.rpmCheck:
+                logFileName = f"{self.logPath}/{self.package}-test.log"
             else:
-                logFileName = os.path.join(self.logPath, f"{self.package}.log")
+                logFileName = f"{self.logPath}/{self.package}.log"
             CommandUtils.runCmd(
                 ["tail", "-n", "100", logFileName],
                 ignore_rc=True,
@@ -155,16 +146,13 @@ class PackageBuilder(object):
     def _installDependencies(self, arch, deps=[]):
         (
             listDependentPackages,
-            listTestPackages,
             listInstalledPackages,
             listInstalledRPMs,
         ) = self._findDependentPackagesAndInstalledRPM(self.sandbox, arch)
 
         # PackageUtils should be initialized here - as per arch basis
         # Do not move it to __init__
-        pkgUtils = PackageUtils(
-            self.buildStage, self.buildMode, self.logName, self.logPath
-        )
+        pkgUtils = PackageUtils(self.buildStage, self.buildMode)
 
         if listDependentPackages:
             self.logger.debug(
@@ -172,27 +160,10 @@ class PackageBuilder(object):
             )
             for pkg in listDependentPackages:
                 pkgName, pkgVer = StringUtils.splitPackageNameAndVersion(pkg)
-                pkgUtils.prepRPMforInstall(
-                    pkgName
-                    if self.buildStage is BuildStage.CORE_TOOLCHAIN
-                    else f"{pkgName}-{pkgVer}"
-                )
-            for pkg in listTestPackages:
-                flag = False
-                pkgName, pkgVer = StringUtils.splitPackageNameAndVersion(pkg)
-                for depPkg in listDependentPackages:
-                    depPackageName, depPackageVersion = (
-                        StringUtils.splitPackageNameAndVersion(depPkg)
-                    )
-                    if depPackageName == pkgName:
-                        flag = True
-                        break
-                if not flag:
-                    pkgUtils.prepRPMforInstall(
-                        pkgName
-                        if self.buildStage is BuildStage.CORE_TOOLCHAIN
-                        else f"{pkgName}-{pkgVer}"
-                    )
+                if self.buildStage is not BuildStage.CORE_TOOLCHAIN:
+                    pkgName = f"{pkgName}-{pkgVer}"
+                pkgUtils.prepRPMforInstall(pkgName)
+
             pkgUtils.installRPMSInOneShot(self.sandbox, arch)
             self.logger.debug(f"Finished installing the build dependencies for {arch}")
 
@@ -209,7 +180,7 @@ class PackageBuilder(object):
         return pkg
 
     def _findInstalledPackages(self, sandbox, arch):
-        pkgUtils = PackageUtils(self.logName, self.logPath)
+        pkgUtils = PackageUtils(self.buildStage, self.buildMode)
         listInstalledRPMs = pkgUtils.findInstalledRPMPackages(sandbox, arch)
         listInstalledPackages = []
         for installedRPM in listInstalledRPMs:
@@ -221,9 +192,6 @@ class PackageBuilder(object):
     def _checkIfPackageIsAlreadyBuilt(self, package, version, doneList):
         basePkg = SPECS.getData().getSpecName(package) + "-" + version
         return basePkg in doneList
-
-    def _findRunTimeRequiredRPMPackages(self, rpmPackage, version, arch):
-        return SPECS.getData(arch).getRequiresForPackage(rpmPackage, version)
 
     def _findBuildTimeRequiredPackages(self, arch):
         deps = SPECS.getData(arch).getBuildRequiresForPackage(
@@ -243,27 +211,11 @@ class PackageBuilder(object):
         )
         self.logger.debug(listInstalledPackages)
         listDependentPackages = self._findBuildTimeRequiredPackages(arch)
-        listTestPackages = []
-        if constants.rpmCheck and self.package in constants.testForceRPMS:
-            # One time optimization
-            if len(constants.listMakeCheckRPMPkgWithVersionstoInstall) == 0:
-                for package in constants.listMakeCheckRPMPkgtoInstall:
-                    version = SPECS.getData(arch).getHighestVersion(package)
-                    constants.listMakeCheckRPMPkgWithVersionstoInstall.append(
-                        package + "-" + version
-                    )
-
+        if constants.rpmCheck:
             listDependentPackages.extend(self._findBuildTimeCheckRequiredPackages())
-            testPackages = (
-                set(constants.listMakeCheckRPMPkgWithVersionstoInstall)
-                - set(listInstalledPackages)
-                - set([self.package + "-" + self.version])
-            )
-            listTestPackages = list(set(testPackages))
             listDependentPackages = list(set(listDependentPackages))
         return (
             listDependentPackages,
-            listTestPackages,
             listInstalledPackages,
             listInstalledRPMs,
         )

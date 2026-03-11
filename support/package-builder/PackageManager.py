@@ -4,9 +4,9 @@ import copy
 import os
 import sys
 import threading
-
 import docker
 import RepoUtil
+
 from CommandUtils import CommandUtils
 from constants import BuildMode, BuildStage, constants
 from Logger import Logger
@@ -20,9 +20,9 @@ from ThreadPool import ThreadPool
 
 class PackageManager(object):
     def __init__(self, logName=None, logPath=None, pkgBuildType="chroot"):
-        if logName is None:
+        if not logName:
             logName = "PackageManager"
-        if logPath is None:
+        if not logPath:
             logPath = constants.logPath
         self.logName = logName
         self.logPath = logPath
@@ -34,62 +34,102 @@ class PackageManager(object):
         self.listOfPackagesAlreadyBuilt = set()
         self.pkgBuildType = pkgBuildType
         self.cmdUtils = CommandUtils()
+        self.installRootPath = f"{constants.buildImagesPath}/sandboxBase"
+        self.buildStageMarkerFile = f"{self.installRootPath}/stage-marker.txt"
+
         if self.pkgBuildType == "container":
             self.dockerClient = docker.from_env(version="auto")
+
+    def shouldOverwrite(self, stage, marker_file=None):
+        if not marker_file:
+            marker_file = self.buildStageMarkerFile
+        if not os.path.isfile(marker_file):
+            return True
+
+        with open(marker_file, "r") as f:
+            content = f.read().strip()
+
+        return content != stage.value
+
+    def getPkgListToBuild(self, pkgList):
+        notBuilt = []
+        pkgUtils = PackageUtils(Scheduler.buildStage, Scheduler.buildMode)
+        for package in pkgList:
+            flag = False
+            for version in SPECS.getData().getVersions(package):
+                if flag:
+                    break
+                # Mark package available only if all subpackages are available
+                listRPMPackages = SPECS.getData().getRPMPackages(package, version)
+                for rpmPkg in listRPMPackages:
+                    if not pkgUtils.findRPMFile(rpmPkg, version):
+                        notBuilt.append(package)
+                        flag = True
+                        break
+
+        return notBuilt
 
     def buildToolChainPackages(self, buildThreads):
         if constants.toolchainBootstrap:
             self.logger.info("Bootstraping toolchain...")
             Scheduler.setBuildMode(BuildMode.BOOTSTRAP)
-        self.logger.info("Building toolchain...")
-        self.logger.info(constants.listToolChainPackages)
+
+        self.logger.info("Step 1: Building core toolchain...")
+        self.logger.info(constants.listCoreToolChainPackages)
+
         self.logger.info("\nPreparing toolchain build base image:")
         Scheduler.setBuildStage(BuildStage.CORE_TOOLCHAIN)
-        self._createBuildImage(
-            targetName=constants.buildBase[BuildStage.CORE_TOOLCHAIN],
-            targetFile=constants.buildBaseImageTarball[BuildStage.CORE_TOOLCHAIN],
-        )
-        self._buildGivenPackages(constants.listCoreToolChainPackages, buildThreads)
+
+        toBuild = self.getPkgListToBuild(constants.listCoreToolChainPackages)
+
+        if toBuild:
+            overwrite = self.shouldOverwrite(BuildStage.CORE_TOOLCHAIN)
+            self._createBuildImage(overwrite=overwrite)
+            self._buildGivenPackages(toBuild, buildThreads)
+
+        self.logger.info("Step 2: Building toolchain ...")
+        self.logger.info(constants.listToolChainPackages)
         Scheduler.setBuildStage(BuildStage.TOOLCHAIN)
-        self._createBuildImage(
-            targetName=constants.buildBase[BuildStage.TOOLCHAIN],
-            targetFile=constants.buildBaseImageTarball[BuildStage.TOOLCHAIN],
-        )
-        self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
+        toBuild = self.getPkgListToBuild(constants.listToolChainPackages)
+        if toBuild:
+            overwrite = self.shouldOverwrite(BuildStage.CORE_TOOLCHAIN)
+            self._createBuildImage(overwrite=overwrite)
+            self._buildGivenPackages(toBuild, buildThreads)
+
         self.logger.info("The entire toolchain is now available")
         if constants.toolchainBootstrap:
             self.logger.info("Bootstraping toolchain complete...")
             sys.exit(0)
-        Scheduler.setBuildStage(BuildStage.PACKAGES)
         self.logger.info(45 * "-")
         self.logger.info("")
 
+        Scheduler.setBuildStage(BuildStage.PACKAGES)
+
     def buildPackages(self, listPackages, buildThreads):
         rebuild = constants.rebuild
+
+        def checkPackagesSandbox():
+            overwrite = self.shouldOverwrite(BuildStage.PACKAGES)
+            self._createBuildImage(overwrite=overwrite)
+
         if constants.rpmCheck:
             constants.rpmCheck = False
             constants.addMacro("with_check", "0")
-            self.buildToolChainPackages(buildThreads)
+            checkPackagesSandbox()
             self._buildTestPackages(buildThreads)
             constants.rpmCheck = True
             constants.addMacro("with_check", "1")
-            self._createBuildImage(
-                targetName=constants.buildBase[BuildStage.PACKAGES],
-                targetFile=constants.buildBaseImageTarball[BuildStage.PACKAGES],
-            )
-            self._buildGivenPackages(listPackages, buildThreads, rebuild)
         else:
             self.buildToolChainPackages(buildThreads)
+            checkPackagesSandbox()
             self.logger.info(
                 "Step 3: Building the following package(s) and dependencies..."
             )
             self.logger.info(listPackages)
             self.logger.info("")
-            self._createBuildImage(
-                targetName=constants.buildBase[BuildStage.PACKAGES],
-                targetFile=constants.buildBaseImageTarball[BuildStage.PACKAGES],
-            )
-            self._buildGivenPackages(listPackages, buildThreads, rebuild)
+
+        self._buildGivenPackages(listPackages, buildThreads, rebuild)
+
         self.logger.info("Package build has been completed")
         self.logger.info("")
 
@@ -114,10 +154,9 @@ class PackageManager(object):
     Returns set of package name and version like
     ["name1-vers1", "name2-vers2",..]
     """
-
     def _readAlreadyAvailablePackages(self):
         listAvailablePackages = set()
-        pkgUtils = PackageUtils(self.logName, self.logPath)
+        pkgUtils = PackageUtils(Scheduler.buildStage, Scheduler.buildMode)
         listPackages = SPECS.getData().getListPackages()
         for package in listPackages:
             for version in SPECS.getData().getVersions(package):
@@ -170,7 +209,7 @@ class PackageManager(object):
         return True
 
     def _buildTestPackages(self, buildThreads):
-        self.buildToolChain()
+        self.buildToolChainPackages()
         self._buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
     def _initializeThreadPool(self, statusEvent):
@@ -190,6 +229,10 @@ class PackageManager(object):
         # Extend listPackages from ["name1", "name2",..] to
         # ["name1-vers1", "name2-vers2",..]
         listPackageNamesAndVersions = set()
+
+        # for make pkgs=a,b,c
+        if Scheduler.buildStage.value == "none":
+            Scheduler.setBuildStage(BuildStage.PACKAGES)
 
         for pkg in listPackages:
             versionGiven = None
@@ -255,10 +298,8 @@ class PackageManager(object):
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
                 raise Exception("Unknown error")
 
-    def _createImageTarball(
+    def _createSandboxBase(
         self,
-        targetName=None,
-        targetFile=None,
         baseImage=None,
         releaseVer=None,
         packagesToInstall=None,
@@ -268,80 +309,82 @@ class PackageManager(object):
         postSteps=None,
         overwrite=False,
     ):
-        if targetName is None or targetFile is None:
-            raise Exception("Unable to create image.targetFile or targetName is empty")
+        targetPath = self.installRootPath
 
-        imageTarballPath = f"{constants.buildImagesPath}/{targetFile}"
+        if os.path.isfile(self.buildStageMarkerFile):
+            with open(self.buildStageMarkerFile, "r") as f:
+                content = f.read().strip()
+            self.logger.info(f"Current build stage: {content}")
 
-        if overwrite:
-            cmd = ["rm", "-f", imageTarballPath]
-            self.cmdUtils.runCmd(cmd)
+        if os.path.exists(targetPath):
+            if not overwrite:
+                self.logger.info(f"Photon core sandbox {targetPath} exists")
+                return
+            self.cmdUtils.runCmd(["rm", "-rf", "--one-file-system", targetPath])
 
-        if os.path.exists(imageTarballPath) and os.path.getsize(imageTarballPath) > 0:
-            self.logger.debug(f"photon build image {imageTarballPath} exists")
-            return
-        self.logger.debug(f"Generating build image.. {targetFile}")
+        self.logger.info(f"Changing build stage to: {Scheduler.buildStage.value}")
+        self.logger.info(f"Generating base sandbox -> {targetPath}")
 
-        targetPath = f"{constants.buildImagesPath}/{targetName}"
         os.makedirs(targetPath, exist_ok=True)
 
-        if baseImage is not None:
+        if baseImage:
             cmd = [
                 "tar",
                 "--same-owner",
                 "-p-xf",
-                os.path.join(constants.buildImagesPath, baseImage),
+                f"{constants.buildImagesPath}/{baseImage}"
                 "-C",
                 targetPath,
             ]
             self.cmdUtils.runCmd(cmd)
 
-        if preSteps is not None and type(preSteps) is list:
+        if preSteps and isinstance(preSteps, list):
             for step in preSteps:
                 self.logger.debug(
-                    f"Executing pre step {step} for base image: {targetName}"
+                    f"Executing pre step {step} for base image: {targetPath}"
                 )
                 self.cmdUtils.runCmd(step)
 
-        repoArgs = []
+        tdnfArgs = []
 
-        if releaseVer is not None:
-            repoArgs = [f"--releasever={releaseVer}"]
+        if releaseVer:
+            tdnfArgs = [f"--releasever={releaseVer}"]
         elif constants.toolchainBootstrap:
-            repoArgs = [f"--releasever={constants.releaseVersionToConsume}"]
+            tdnfArgs = [f"--releasever={constants.releaseVersionToConsume}"]
 
-        repoArgs = repoArgs + RepoUtil.getRepoArgs(
-            Scheduler.buildStage, Scheduler.buildMode
-        )
+        tdnfArgs += RepoUtil.getRepoArgs(Scheduler.buildStage, Scheduler.buildMode)
 
         exclusionArgs = None
-        if type(packagesToExcludeForUpgrade) is list:
+        if isinstance(packagesToExcludeForUpgrade, list):
             exclusionArgs = ["--exclude"] + packagesToExcludeForUpgrade
 
-        subCmds: list = [["makecache"]]
-        if exclusionArgs is not None:
-            subCmds.append(["upgrade"] + exclusionArgs)
-        else:
-            subCmds.append(["upgrade"])
+        subCmds = [["makecache", "--refresh"], ["upgrade", "-y"]]
+        if exclusionArgs:
+            subCmds.append(exclusionArgs)
 
-        if packagesToRemove is not None and len(packagesToRemove) > 0:
-            subCmds.append(["remove"] + packagesToRemove)
+        if packagesToRemove and len(packagesToRemove):
+            subCmds.append(["remove", "-y"] + packagesToRemove)
 
-        if packagesToInstall is not None and len(packagesToInstall) > 0:
-            subCmds.append(["install"] + packagesToInstall)
+        if packagesToInstall and len(packagesToInstall):
+            subCmds.append(["install", "-y", "--setopt=tsflags=nodocs"] + packagesToInstall)
 
-        tdnf = TDNF(installRoot=targetPath, repoArgs=repoArgs, logger=self.logger)
+        tdnf = TDNF(installRoot=targetPath, logger=self.logger)
         for cmd in subCmds:
-            self.logger.debug(f"Executing cmd for base image {targetName}: {cmd}")
+            self.logger.debug(f"Executing cmd for base image {targetPath}: {cmd}")
             try:
+                # No need to hold lock here
+                # When sandbox is getting created, nothing is getting built
+                RepoUtil.updateRepoData()
                 tdnf.run(
-                    subCmd=cmd,
-                    args=[],
+                    args=tdnfArgs + cmd,
                     errMsg=f"Unable to call {cmd} in {targetPath}",
                 )
+                assert Scheduler.buildStage.value != "none"
+                open(self.buildStageMarkerFile, "w").write(Scheduler.buildStage.value)
             except Exception as e:
                 # make sure sandbox is cleared
                 tdnf.clean()
+                self.cmdUtils.runCmd(["rm", "-rf", targetPath])
                 raise e
 
         tdnf.clean()
@@ -354,29 +397,20 @@ class PackageManager(object):
         # for step in steps:
         #     self.cmdUtils.runCmd(step)
 
-        if postSteps is not None and type(postSteps) is list:
+        if postSteps and isinstance(postSteps, list):
             for step in postSteps:
                 self.logger.debug(
-                    f"Executing post step {step} for base image: {targetName}"
+                    f"Executing post step {step} for base image: {targetPath}"
                 )
                 self.cmdUtils.runCmd(step)
 
-        self.logger.debug("Compressing photon build image..")
-        self.cmdUtils.runCmd(
-            args=["tar", "--same-owner", "-p", "-cf", imageTarballPath, "."],
-            cwd=targetPath,
-        )
-        self.cmdUtils.runCmd(["rm", "-rf", targetPath])
-
-    def _createBuildImage(self, targetName, targetFile):
+    def _createBuildImage(self, overwrite=False):
         releaseVer = constants.releaseVersion
         if constants.toolchainBootstrap:
             releaseVer = None
-        self._createImageTarball(
-            targetName=targetName,
-            targetFile=targetFile,
-            baseImage=None,
+        self._createSandboxBase(
             releaseVer=releaseVer,
+            overwrite=overwrite,
             packagesToInstall=[
                 "coreutils-selinux",
                 "shadow",
@@ -384,8 +418,4 @@ class PackageManager(object):
                 "build-essential",
                 "photon-release",
             ],
-            packagesToRemove=None,
-            preSteps=None,
-            postSteps=None,
-            overwrite=False,
         )

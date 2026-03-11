@@ -69,12 +69,14 @@ class SpecData(object):
                 )
 
     def generateSpecPkgsMap(self):
+        if not constants.stagePath:
+            return
+
         lines = []
         append = lines.append
         skipped = self.skippedSpecs
 
         pkgMap = self.mapSpecObjects
-        outFile = f"{constants.stagePath}/pkg_info.pkg_map.txt"
 
         for specObjs in pkgMap.values():
             for specObj in specObjs:
@@ -87,10 +89,11 @@ class SpecData(object):
 
         lines.sort(key=str.lower)
 
+        outFile = f"{constants.stagePath}/pkg_info.pkg_map.txt"
         with open(outFile, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
-        self.logger.info(f"Spec to packages map written to: {outFile}")
+            self.logger.info(f"Spec to packages map written to: {outFile}")
 
     def _getListSpecFiles(self, paths):
         listSpecFiles = []
@@ -156,9 +159,9 @@ class SpecData(object):
             if specObj.version == version:
                 return field(specObj)
         self.logger.error(
-            "Could not find " + package + "-" + version + " package from specs"
+            f"Could not find {package}-{version} package from specs"
         )
-        raise Exception("Invalid package: " + package + "-" + version)
+        raise Exception(f"Invalid package: {package}-{version}")
 
     def getBuildRequiresForPackage(self, package, version):
         buildRequiresList = []
@@ -166,7 +169,7 @@ class SpecData(object):
             package, version, field=lambda x: x.buildRequires
         ):
             properVersion = self._getProperVersion(pkg)
-            buildRequiresList.append(pkg.package + "-" + properVersion)
+            buildRequiresList.append(f"{pkg.package}-{properVersion}")
         return buildRequiresList
 
     def getExtraBuildRequiresForPackage(self, package, version):
@@ -174,20 +177,11 @@ class SpecData(object):
         for pkg in self._getSpecObjField(
             package, version, field=lambda x: x.extraBuildRequires
         ):
-            if pkg.compare == "=" and pkg.version != "":
-                packages.append(pkg.package + "-" + pkg.version)
+            if pkg.compare and pkg.compare == "=":
+                packages.append(f"{pkg.package}-{pkg.version}")
             else:
                 # if no version deps for publishrpms - use just name
                 packages.append(pkg.package)
-        return packages
-
-    def getBuildRequiresNativeForPackage(self, package, version):
-        packages = []
-        for pkg in self._getSpecObjField(
-            package, version, field=lambda x: x.buildRequiresNative
-        ):
-            properVersion = self._getProperVersion(pkg)
-            packages.append(pkg.package + "-" + properVersion)
         return packages
 
     def getBuildRequiresForPkg(self, pkg):
@@ -201,7 +195,7 @@ class SpecData(object):
             package, version, field=lambda x: x.installRequires
         ):
             properVersion = self._getProperVersion(pkg)
-            requiresList.append(pkg.package + "-" + properVersion)
+            requiresList.append(f"{pkg.package}-{properVersion}")
         return requiresList
 
     def getRequiresAllForPkg(self, pkg):
@@ -245,10 +239,10 @@ class SpecData(object):
                     requiresPackages = specObj.installRequiresPackages[package]
                     for pkg in requiresPackages:
                         properVersion = self._getProperVersion(pkg)
-                        requiresList.append(pkg.package + "-" + properVersion)
+                        requiresList.append(f"{pkg.package}-{properVersion}")
                 return requiresList
         self.logger.error(
-            "Could not find " + package + "-" + version + " package from specs"
+            f"Could not find {package}-{version} package from specs"
         )
         raise Exception("Invalid package: " + package + "-" + version)
 
@@ -276,9 +270,6 @@ class SpecData(object):
         for name in objlist:
             listPkgName.append(name.package)
         return listPkgName
-
-    def getRelease(self, package, version):
-        return self._getSpecObjField(package, version, field=lambda x: x.release)
 
     def getVersions(self, package):
         versions = []
@@ -380,29 +371,6 @@ class SpecData(object):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
         return self.getSpecName(package) + "-" + version
 
-    def printAllObjects(self):
-        listSpecs = self.mapSpecObjects.keys()
-        for spec in listSpecs:
-            for specObj in self.mapSpecObjects[spec]:
-                self.logger.debug(f"-----------Spec: {specObj.name} --------------")
-                self.logger.debug(f"Version: {specObj.version}")
-                self.logger.debug(f"Release: {specObj.release}")
-                self.logger.debug(f"SpecFile: {specObj.specFile}")
-                self.logger.debug("Source Files")
-                self.logger.debug(specObj.listSources)
-                self.logger.debug("Patch Files")
-                self.logger.debug(specObj.listPatches)
-                self.logger.debug("List RPM packages")
-                self.logger.debug(specObj.listPackages)
-                self.logger.debug("Build require packages")
-                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequires))
-                self.logger.debug("install require packages")
-                self.logger.debug(self.getPkgNamesFromObj(specObj.installRequires))
-                self.logger.debug(specObj.installRequiresPackages)
-                self.logger.debug(f"security_hardening: {specObj.securityHardening}")
-                self.logger.debug(f"BuildArch: {specObj.buildarch}")
-                self.logger.debug("------------------------------------------------")
-
 
 class SPECS(object):
     __instance = None
@@ -411,7 +379,7 @@ class SPECS(object):
     @staticmethod
     def getData(arch=None):
         if not arch:
-            arch = constants.currentArch
+            arch = constants.buildArch
 
         """ Static access method. """
         if SPECS.__instance is None:
@@ -427,18 +395,22 @@ class SPECS(object):
         self.initialize()
 
     def initialize(self):
-        # Full parsing
-        self.specData[constants.buildArch] = SpecData(
-            constants.buildArch, constants.logPath, constants.specPaths
-        )
+        defPkg = None
 
-        if constants.buildArch != constants.targetArch:
-            self.specData[constants.targetArch] = SpecData(
-                constants.targetArch, constants.logPath, constants.specPaths
-            )
+        for specDir in constants.specPaths:
+            if defPkg:
+                break
+            specDir = f"{specDir}/linux"
+            for root, _, files in os.walk(specDir):
+                if "linux.spec" in files:
+                    spec = SpecParser(f"{root}/linux.spec", constants.buildArch)
+                    if spec.skipSpec:
+                        continue
+                    defPkg = spec.packages.get("default")
+                    break
 
-        kernelversionrelease = SPECS.getData().getHighestVersion("linux")
-        kernelversion, kernelrelease = kernelversionrelease.split("-", 1)
+        kernelversion = defPkg.version
+        kernelrelease = defPkg.release
 
         # adding kernelversion rpm macro
         constants.addMacro("KERNEL_VERSION", kernelversion)
@@ -456,11 +428,49 @@ class SPECS(object):
                                                   int(kernelrelease_comp[0])))
 
         if kernelsubrelease:
-            kernelsubrelease = "." + kernelsubrelease
-            constants.addMacro("kernelsubrelease", kernelsubrelease)
+            constants.addMacro("kernelsubrelease", f".{kernelsubrelease}")
 
         # Full parsing
         self.specData[constants.buildArch] = SpecData(
             constants.buildArch, constants.logPath, constants.specPaths
         )
 
+
+if __name__ == "__main__":
+    import sys
+    import platform
+
+    if len(sys.argv) < 2:
+        print("Usage: %prog <specFilesPath>")
+        sys.exit(1)
+
+    specFilesPath = [sys.argv[1]]
+    arch = platform.machine()
+    logPath = "/tmp"
+    constants.stagePath = "/tmp"
+
+    constants.addMacro("photon_subrelease", "92")
+
+    spec_data = SpecData(arch, logPath, specFilesPath)
+    listSpecs = spec_data.mapSpecObjects.keys()
+
+    for spec in listSpecs:
+        for specObj in spec_data.mapSpecObjects[spec]:
+            print(f"-----------Spec: {specObj.name}--------------")
+            print(f"Version: {specObj.version}")
+            print(f"Release: {specObj.release}")
+            print(f"SpecFile: {specObj.specFile}")
+            print("Source Files")
+            print(specObj.listSources)
+            print("Patch Files")
+            print(specObj.listPatches)
+            print("List RPM packages")
+            print(specObj.listPackages)
+            print("Build require packages")
+            print(spec_data.getPkgNamesFromObj(specObj.buildRequires))
+            print("install require packages")
+            print(spec_data.getPkgNamesFromObj(specObj.installRequires))
+            print(specObj.installRequiresPackages)
+            print(f"security_hardening: {specObj.securityHardening}")
+            print(f"BuildArch: {specObj.buildarch}")
+            print("------------------------------------------------")

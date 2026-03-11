@@ -12,7 +12,7 @@ fi
 BUILDROOT=$1
 
 (
-  for mpoint in run sys proc; do
+  for mpoint in sys proc; do
     if mountpoint -q ${BUILDROOT}/${mpoint}; then
       umount ${BUILDROOT}/${mpoint}
     fi
@@ -44,10 +44,6 @@ if [ ${EUID} -eq 0 ]; then
 
   if ! mountpoint -q ${BUILDROOT}/sys; then
     mount -t sysfs sysfs ${BUILDROOT}/sys
-  fi
-
-  if ! mountpoint -q ${BUILDROOT}/run; then
-    mount -t tmpfs tmpfs ${BUILDROOT}/run
   fi
 
   if [ -h ${BUILDROOT}/dev/shm ]; then

@@ -26,7 +26,7 @@ import PullSources as downloader
 from builder import Builder
 from check_spec import check_specs
 from CommandUtils import CommandUtils
-from constants import BuildStage, constants
+from constants import constants
 from Logger import Logger
 from PackageManager import PackageManager
 from SpecData import SPECS
@@ -408,11 +408,10 @@ class BuildEnvironmentSetup:
                 os.path.join(
                     configdict["additional-path"]["photon-cache-path"],
                     "RPMS",
-                    constants.currentArch,
+                    constants.buildArch,
                 ),
             ]
         )
-        RpmBuildTarget.create_repo()
 
     def sources():
         if check_prerequesite["sources"]:
@@ -612,7 +611,7 @@ class CleanUp:
 
     def clean_stage_rpms():
         allFiles = []
-        arch = constants.currentArch
+        arch = constants.buildArch
         rpmPath = constants.rpmPath
 
         for i in ["noarch", arch]:
@@ -672,12 +671,6 @@ class RpmBuildTarget:
 
             Utilities(None).generate_dep_lists()
 
-            if constants.buildArch != constants.targetArch:
-                os.makedirs(
-                    os.path.join(constants.rpmPath, constants.targetArch),
-                    exist_ok=True,
-                )
-
         self.logger.debug(f"Source Path : {constants.sourcePath}")
         self.logger.debug(f"Spec Path : {constants.specPaths}")
         self.logger.debug(f"Rpm Path : {constants.rpmPath}")
@@ -689,25 +682,8 @@ class RpmBuildTarget:
             configdict["photon-build-param"]["pkg-build-options"]
         )
 
-        if constants.buildArch != constants.targetArch:
-            # It is cross compilation
-            # first build all native packages
-            Builder.buildPackagesForAllSpecs(
-                Build_Config.buildThreads,
-                Build_Config.pkgBuildType,
-                Build_Config.pkgInfoFile,
-                self.logger,
-            )
-
-            # Then do the build to the target
-            constants.currentArch = constants.targetArch
-            constants.crossCompiling = True
-
     @staticmethod
     def create_repo():
-        if check_prerequesite["create-repo"]:
-            return
-
         createrepo_cmd = configdict["createrepo-cmd"]
         runCmd(
             [
@@ -718,7 +694,6 @@ class RpmBuildTarget:
                 constants.rpmPath,
             ]
         )
-        check_prerequesite["create-repo"] = True
 
     @staticmethod
     def ostree_repo():
@@ -762,9 +737,10 @@ class RpmBuildTarget:
                 Build_Config.pkgInfoFile,
                 self.logger,
             )
-            RpmBuildTarget.create_repo()
         else:
             BuildEnvironmentSetup.packages_cached()
+
+        RpmBuildTarget.create_repo()
         check_prerequesite["packages"] = True
 
     def package(self, pkgName):
@@ -774,6 +750,8 @@ class RpmBuildTarget:
         Builder.buildSpecifiedPackages(
             [pkgName], Build_Config.buildThreads, Build_Config.pkgBuildType
         )
+
+        RpmBuildTarget.create_repo()
 
     def packages_minimal(self):
         if check_prerequesite["packages-minimal"]:
@@ -789,6 +767,8 @@ class RpmBuildTarget:
             )
         else:
             BuildEnvironmentSetup.packages_cached()
+
+        RpmBuildTarget.create_repo()
         check_prerequesite["packages-minimal"] = True
 
     def packages_basic(self):
@@ -805,6 +785,8 @@ class RpmBuildTarget:
             )
         else:
             BuildEnvironmentSetup.packages_cached()
+
+        RpmBuildTarget.create_repo()
         check_prerequesite["packages-basic"] = True
 
     def packages_rt(self):
@@ -821,6 +803,8 @@ class RpmBuildTarget:
             )
         else:
             BuildEnvironmentSetup.packages_cached()
+
+        RpmBuildTarget.create_repo()
         check_prerequesite["packages-rt"] = True
 
     def packages_initrd(self):
@@ -834,6 +818,8 @@ class RpmBuildTarget:
             Build_Config.pkgInfoFile,
             self.logger,
         )
+
+        RpmBuildTarget.create_repo()
         check_prerequesite["packages-initrd"] = True
 
     def packages_docker(self):
@@ -846,6 +832,8 @@ class RpmBuildTarget:
             Build_Config.pkgInfoFile,
             self.logger,
         )
+
+        RpmBuildTarget.create_repo()
         check_prerequesite["packages-docker"] = True
 
     def updated_packages(self):
@@ -859,6 +847,7 @@ class RpmBuildTarget:
             Build_Config.pkgInfoFile,
             self.logger,
         )
+        RpmBuildTarget.create_repo()
         check_prerequesite["updated-packages"] = True
 
     def buildGivenPackages(self, pkgs, rebuild=False):
@@ -866,6 +855,7 @@ class RpmBuildTarget:
         self.logger.debug(f"Building following packages: {pkgs}")
         pkgMgr = PackageManager()
         pkgMgr._buildGivenPackages(pkgs, Build_Config.buildThreads, rebuild=rebuild)
+        RpmBuildTarget.create_repo()
 
     def check_packages(self):
         if check_prerequesite["check-packages"]:
@@ -894,6 +884,7 @@ class RpmBuildTarget:
             build_extra_pkgs=True,
         )
 
+        RpmBuildTarget.create_repo()
         check_prerequesite["extra-packages"] = True
 
     def distributed_build():
@@ -911,7 +902,8 @@ class RpmBuildTarget:
             return
 
         pkgManager = PackageManager()
-        pkgManager.buildToolChain()
+        pkgManager.buildToolChainPackages()
+        RpmBuildTarget.create_repo()
         check_prerequesite["core_toolchain"] = True
 
     def toolchain(self):
@@ -920,6 +912,7 @@ class RpmBuildTarget:
 
         pkgManager = PackageManager()
         pkgManager.buildToolChainPackages(Build_Config.buildThreads)
+        RpmBuildTarget.create_repo()
         check_prerequesite["toolchain"] = True
 
     def generate_yaml_files(self):
@@ -1016,7 +1009,7 @@ class CheckTools:
             runCmd([f"{photonDir}/tools/src/contain/make.sh"])
 
     def check_all_tools():
-        tools = ["g++", "gawk", "docker"]
+        tools = ["g++", "docker"]
         for tool in tools:
             if not shutil.which(tool):
                 raise Exception(f"ERROR: {tool} not present")
@@ -1145,7 +1138,7 @@ class BuildImage:
         self.iso_path = (
             f"{Build_Config.stagePath}/{imgType}-"
             f"{constants.releaseVersion}-"
-            f"{constants.buildNumber}.{constants.currentArch}.iso"
+            f"{constants.buildNumber}.{constants.buildArch}.iso"
         )
 
         if int(os.environ.get("BUILD_DEBUG_ISO", 0)) == 1:
@@ -1163,7 +1156,7 @@ class BuildImage:
         release_ver = constants.releaseVersion
         img_fn = (
             f"{Build_Config.stagePath}/{img}/photon-{img}-{release_ver}-"
-            f"{build_num}.{constants.currentArch}"
+            f"{build_num}.{constants.buildArch}"
         )
 
         if img == "ova":
@@ -1184,7 +1177,7 @@ class BuildImage:
                 img = f"-{img}"
             img_fn = (
                 f"{Build_Config.stagePath}/photon{img}-{release_ver}-"
-                f"{build_num}.{constants.currentArch}.iso"
+                f"{build_num}.{constants.buildArch}.iso"
             )
         elif img in {"rpi", "ls1012afrwy"}:
             img_fn = f"{img_fn}.xz"
@@ -1261,7 +1254,7 @@ class BuildImage:
 
         img_fname = (
             f"photon-rootfs-{constants.releaseVersion}-"
-            f"{constants.buildNumber}.{constants.currentArch}.tar.gz"
+            f"{constants.buildNumber}.{constants.buildArch}.tar.gz"
         )
 
         if os.path.isfile(os.path.join(Build_Config.stagePath, img_fname)):
@@ -1473,7 +1466,7 @@ def initialize_constants():
     base_image_url = (
         configdict.get("photon-build-param", {})
         .get("photon-docker-image-urls", {})
-        .get(constants.currentArch, None)
+        .get(constants.buildArch, None)
     )
     # Override with env variable if provided
     base_image_url = os.environ.get("PH_DOCKER_IMAGE_URL", base_image_url)
@@ -1481,10 +1474,6 @@ def initialize_constants():
         raise Exception("ERROR: photon-docker-image-urls is empty")
 
     constants.setBaseImageTarballPath(base_image_url)
-
-    constants.setBuildBase(BuildStage.CORE_TOOLCHAIN, "base-core-toolchain")
-    constants.setBuildBase(BuildStage.TOOLCHAIN, "base-toolchain")
-    constants.setBuildBase(BuildStage.PACKAGES, "base-packages")
 
     src_url = configdict["photon-build-param"].get("pull-sources-config")
     if not src_url:
@@ -1517,7 +1506,7 @@ def initialize_constants():
     snapshot_url = ""
     # TODO: remove 92 default after adding photon-mainline key in 5.0 build-config.json
     # Use snapshots only for releaseases other than mainline versions
-    phMainlineVer = configdict["photon-build-param"].get("photon-mainline", "92")
+    phMainlineVer = configdict["photon-build-param"].get("photon-mainline")
     subrelease = constants.subreleaseVersion
     if subrelease != phMainlineVer:
         snapshot_url = configdict["photon-build-param"].get("package-repo-snapshot-file-url")
@@ -1543,9 +1532,6 @@ def initialize_constants():
     constants.setRPMCheck(configdict["photon-build-param"].get("rpm-check-flag", False))
     constants.setRpmCheckStopOnError(
         configdict["photon-build-param"].get("rpm-check-stop-on-error", False)
-    )
-    constants.setPublishBuildDependencies(
-        configdict["photon-build-param"].get("publish-build-dependencies", False)
     )
     constants.setStagePath(Build_Config.stagePath)
     constants.setRpmPath(os.path.join(Build_Config.stagePath, "RPMS"))
@@ -1682,7 +1668,6 @@ def process_env_build_params(ph_build_param):
         "KAT_BUILD": "kat-build",
         "CANISTER_BUILD": "canister-build",
         "ACVP_BUILD": "acvp-build",
-        "BUILDDEPS": "publish-build-dependencies",
         "BUILD_SRC_RPM": "build-src-rpm",
         "BUILD_DBGINFO_RPM": "build-dbginfo-rpm",
         "RPMCHECK": "rpm-check-flag",
@@ -1717,7 +1702,6 @@ def process_env_build_params(ph_build_param):
             "BUILD_SRC_RPM",
             "BUILD_DBGINFO_RPM",
             "KAT_BUILD",
-            "BUILDDEPS",
             "SCHEDULER_SERVER",
             "CANISTER_BUILD",
             "ACVP_BUILD",

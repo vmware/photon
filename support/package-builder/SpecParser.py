@@ -9,7 +9,6 @@ from constants import constants
 from SpecStructures import dependentPackageData
 from SpecStructures import Package
 from SpecStructures import SpecObject
-from argparse import ArgumentParser
 
 strUtils = StringUtils()
 
@@ -80,7 +79,7 @@ class SpecParser(object):
                 else:
                     inMacro += 1
             elif self._isIfCondition(line):
-                if not self._isConditionTrue(line, file):
+                if not self._isConditionTrue(line):
                     skip_conditional_body()
                 else:
                     inMacro += 1
@@ -321,7 +320,7 @@ class SpecParser(object):
         if not match:
             raise ValueError(f"{self.specfile}: Invalid build_if line: {line}")
         condition = match.group(1).strip()
-        return self._isConditionTrue(condition, self.specfile, True)
+        return self._isConditionTrue(condition, True)
 
     def _isConditionalArch(self, line):
         if re.search("^%ifarch", line):
@@ -354,13 +353,10 @@ class SpecParser(object):
             "^requires:",
             r"^requires\((pre|post|preun|postun)\):",
             "^provides:",
-            "^obsoletes:",
-            "^conflicts:",
             "^url:",
             "^source[0-9]*:",
             "^patch[0-9]*:",
             "^buildrequires:",
-            "^buildprovides:",
             "^buildarch:",
         ]
         return any([re.search(r, line, flags=re.IGNORECASE) for r in headersPatterns])
@@ -498,23 +494,16 @@ class SpecParser(object):
         if "patch" in headerName:
             pkg.patches.append(headerContent)
             return True
-        if (
-            headerName.startswith("requires")
-            or headerName == "provides"
-            or headerName == "obsoletes"
-            or headerName == "conflicts"
-            or headerName == "buildrequires"
-            or headerName == "buildprovides"
-        ):
+        if headerName in {
+            "buildrequires",
+            "requires",
+            "provides"
+        } or headerName.startswith("requires"):
             dpkg = self._readDependentPackageData(headerContent)
             if not dpkg:
                 return False
             if headerName.startswith("requires"):
                 pkg.requires.extend(dpkg)
-            if headerName == "obsoletes":
-                pkg.obsoletes.extend(dpkg)
-            elif headerName == "conflicts":
-                pkg.conflicts.extend(dpkg)
             elif headerName == "provides":
                 pkg.provides.extend(dpkg)
             elif headerName == "buildrequires":
@@ -525,9 +514,6 @@ class SpecParser(object):
                     # and build will fail to construct a dependency graph.
                     dpkg = list(set(dpkg) - set(pkg.extrabuildrequires))
                     pkg.buildrequires.extend(dpkg)
-            if headerName == "buildprovides":
-                pkg.buildprovides.extend(dpkg)
-
             return True
         return False
 
@@ -594,7 +580,7 @@ class SpecParser(object):
     def _isIfCondition(self, line):
         return line.startswith("%if ")
 
-    def _isConditionTrue(self, line, spec_fn, full_condition=False):
+    def _isConditionTrue(self, line, full_condition=False):
         words = line.strip().split()
         if len(words) == 1:
             cond = self._replaceMacros(words[0])
@@ -743,26 +729,110 @@ class SpecParser(object):
         return specObj
 
 
-def main():
+if __name__ == "__main__":
+    import sys
+    from argparse import ArgumentParser
+
     usage = "Usage: %prog [options]"
     parser = ArgumentParser(usage)
     parser.add_argument(dest="spec_file", default=None)
     parser.add_argument("-a", "--arch", dest="arch", default="x86_64")
-    parser.add_argument("-s", "--subrelease", dest="subrelease", default="91")
+    parser.add_argument("-s", "--subrelease", dest="subrelease", default="92")
 
     options = parser.parse_args()
     constants.addMacro("photon_subrelease", options.subrelease)
     constants.setSubreleaseVersion(options.subrelease)
 
-    sp = SpecParser(options.spec_file, options.arch)
-    if sp.skipSpec:
-        print(f"Skipping spec file: {options.spec_file}")
-        return
-    so = sp.createSpecObject()
-    # Useful for standalone parser development and debugging.
-    # Print whatever property you need.
-    print(*so.listSources, sep="\n")
+    specfile = options.spec_file
+    arch = options.arch
 
+    parser = SpecParser(specfile, arch)
+    if parser.skipSpec:
+        print(f"Skipping spec file: {specfile}")
+        sys.exit(0)
 
-if __name__ == "__main__":
-    main()
+    print("========== SpecParser Raw Fields ==========")
+    print(f"arch: {parser.arch}")
+    print(f"specfile: {parser.specfile}")
+    """
+    def print_macro(name, macro):
+        print(f"\n{name}:")
+        if macro is None:
+            print("  None")
+            return
+        print(f"  macroName: {macro.macroName}")
+        print(f"  macroFlag: {macro.macroFlag}")
+        print(f"  content: {macro.content}")
+        print(f"  position: {macro.position}")
+        print(f"  endposition: {macro.endposition}")
+
+    print_macro("cleanMacro", parser.cleanMacro)
+    print_macro("prepMacro", parser.prepMacro)
+    print_macro("buildMacro", parser.buildMacro)
+    print_macro("installMacro", parser.installMacro)
+    print_macro("changelogMacro", parser.changelogMacro)
+    print_macro("checkMacro", parser.checkMacro)
+    """
+    print(f"packages: {parser.packages}")
+    for pkgname, pkg in parser.packages.items():
+        print(f"Package '{pkgname}':")
+        print(f"  name: {pkg.name}")
+        print(f"  version: {pkg.version}")
+        print(f"  release: {pkg.release}")
+        print(f"  arch: {pkg.buildarch}")
+        print(f"  license: {pkg.license}")
+        print(f"  sources: {pkg.sources}")
+        print(f"  patches: {pkg.patches}")
+        print(f"  requires: {pkg.requires}")
+
+    print(f"\nspecAdditionalContent: {parser.specAdditionalContent}")
+
+    print(f"globalSecurityHardening: {parser.globalSecurityHardening}")
+    print(f"networkRequired: {parser.networkRequired}")
+    print(f"defs: {parser.defs}")
+    print(f"conditionalCheckMacroEnabled: {parser.conditionalCheckMacroEnabled}")
+    print(f"currentPkg: {parser.currentPkg}")
+
+    print("\n========== SpecObject High-Level Fields ==========")
+    specObj = parser.createSpecObject()
+    print(f"Spec: {specObj.name}")
+    print(f"Version: {specObj.version}")
+    print(f"Release: {specObj.release}")
+    print(f"Epoch: {specObj.epoch}")
+    print(f"License: {specObj.license}")
+    print(f"Summary: {specObj.summary}")
+    print(f"URL: {specObj.url}")
+    print(f"SpecFile: {specObj.specFile}")
+    print(f"security_hardening: {specObj.securityHardening}")
+    print(f"networkRequired: {specObj.networkRequired}")
+    print(f"isCheckAvailable: {specObj.isCheckAvailable}")
+    print(f"Source URL: {specObj.sourceurl}")
+
+    print("\n--- Sources ---")
+    for src in specObj.listSources:
+        print(f"  {src}")
+
+    print("\n--- Patches ---")
+    for patch in specObj.listPatches:
+        print(f"  {patch}")
+
+    print("\n--- Packages ---")
+    for pkg in specObj.listPackages:
+        desc = specObj.descriptions.get(pkg, "")
+        arch = specObj.buildarch.get(pkg, "")
+        print(f"  Package: {pkg}")
+        print(f"  Description: {desc}")
+        print(f"  BuildArch: {arch}")
+
+    def print_requires(title, requires):
+        print(f"\n--- {title} ---")
+        for i in requires:
+            if i.compare:
+                print(f"{i.package} {i.compare} {i.version}")
+            else:
+                print(f"{i.package}")
+
+    print_requires("Build Requires", specObj.buildRequires)
+    print_requires("Install Requires", specObj.installRequires)
+    print_requires("Check Build Requires", specObj.checkBuildRequires)
+    print_requires("Extra Build Requires", specObj.extraBuildRequires)

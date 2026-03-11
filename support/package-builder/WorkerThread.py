@@ -22,7 +22,7 @@ class WorkerThread(threading.Thread):
         while True:
             pkg, buildStage, buildMode = Scheduler.Scheduler.getNextPackageToBuild()
             doneList = Scheduler.Scheduler.getDoneList()
-            if pkg is None:
+            if not pkg:
                 break
             pkgBuilder = PackageBuilder(
                 pkg, self.mapPackageToCycle, self.pkgBuildType, buildStage, buildMode

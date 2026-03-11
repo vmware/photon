@@ -29,8 +29,8 @@ class SpecDependencyGenerator(object):
             try:
                 listRequiredPackages = SPECS.getData().getRequiresForPkg(specPkg)
             except Exception as e:
-                self.logger.info(f"Caught Exception: {e}")
-                self.logger.info(f"{specPkg} is missing")
+                self.logger.error(f"Caught Exception: {e}")
+                self.logger.error(f"{specPkg} is missing")
                 raise e
 
             for depPkg in listRequiredPackages:
@@ -160,7 +160,7 @@ class SpecDependencyGenerator(object):
     # Returns list of RPM names of all packages excluding src.rpm
     def listRPMfilenames(self, includeDebuginfoRPMs=False):
         output = []
-        arch = constants.currentArch
+        arch = constants.buildArch
         for base_package in SPECS.getData().getListPackages():
             for version in SPECS.getData().getVersions(base_package):
                 listRPMPackages = SPECS.getData().getRPMPackages(base_package, version)

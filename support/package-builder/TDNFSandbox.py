@@ -3,7 +3,6 @@
 import io
 import json
 import os
-import shutil
 import tempfile
 
 from CommandUtils import CommandUtils
@@ -24,6 +23,7 @@ enabled=1
 gpgcheck=0
 skip_if_unavailable=1
 skip_md_filelists=1
+priority=100
 """
 
 local_repo_template = """\
@@ -33,6 +33,7 @@ enabled=1
 gpgcheck=0
 skip_if_unavailable=1
 skip_md_filelists=1
+priority=10
 """
 
 BOOTSTRAP_REPO = "bootstrap.repo"
@@ -45,8 +46,6 @@ class TDNF:
         self,
         logger,
         installRoot,
-        repoArgs=[],
-        defaultArgs=["-y"],
         cmdlog=lambda cmd, env: None,
     ):
         self.installRoot = installRoot
@@ -54,8 +53,6 @@ class TDNF:
         self.logger = logger
         self.cmdUtils = CommandUtils()
         self.cmdlog = cmdlog
-        self.repoArgs = repoArgs
-        self.defaultArgs = defaultArgs
         self.repoDir = "/etc/yum.repos.d"
         self.localRepoPath = constants.stagePath
 
@@ -70,29 +67,20 @@ class TDNF:
         binds = [[self.localRepoPath, "/local"]]
         bindsrw = [[self.installRoot, self.installRootSandboxPath]]
 
-        arch = constants.buildArch
         repoPath = self.repoPath
         rpmPath = constants.rpmPath
 
-        for d in ["noarch", arch]:
-            if not os.path.isdir(repoPath):
-                os.makedirs(f"{repoPath}/noarch")
-                os.makedirs(f"{repoPath}/{arch}")
-                break
-            _, _, rc = self.cmdUtils.runCmd(["mountpoint", f"{repoPath}/{d}"],
-                                            ignore_rc=True, capture=True)
-            if rc == 0:
-                self.cmdUtils.runCmd(["umount", "-lR", f"{repoPath}/{d}"])
+        if os.path.isdir(repoPath):
+            CommandUtils.umountWithRetry(repoPath)
+        else:
+            os.makedirs(repoPath)
 
-        for d in ["noarch", arch]:
-            cmd = ["mount", "--bind", "-o", "ro", f"{rpmPath}/{d}", f"{repoPath}/{d}"]
-            self.cmdUtils.runCmd(cmd, logfn=self.logger.debug)
-
-        cmd = ["createrepo", f"--workers={ncpus}", "--general-compress-type=gz", f"{repoPath}"]
-        self.cmdUtils.runCmd(cmd, capture=True)
+        cmd = ["mount", "--bind", "-o", "ro", rpmPath, repoPath]
+        self.cmdUtils.runCmd(cmd, logfn=self.logger.debug)
 
         if constants.packageRepoPath:
             binds.append([constants.packageRepoPath, "/packages"])
+
         # Always default to Docker
         self.sandbox = Container(
             name=self.sandboxName,
@@ -110,7 +98,7 @@ class TDNF:
         if constants.bootstrapRepoPath:
             self.sandbox.putFiles(
                 [str(os.path.join(os.path.dirname(__file__), BOOTSTRAP_REPO))],
-                self.repoDir,
+                self.repoDir
             )
 
         with tempfile.NamedTemporaryFile(
@@ -147,20 +135,32 @@ class TDNF:
             self.sandbox.putFiles([temp_file_path], self.repoDir)
             os.remove(temp_file_path)
 
-    def run(self, subCmd=[], repoArgs=[], args=[], errMsg=""):
-        if not repoArgs:
-            repoArgs = self.repoArgs
-
-        tdnfArgs = repoArgs + [f"--installroot={self.installRootSandboxPath}"] + args + self.defaultArgs
-        cmd = self.tdnfCmd + tdnfArgs + subCmd
+    def run(self, args=[], errMsg="", ignore_rc=False):
+        tdnfArgs = args + [f"--installroot={self.installRootSandboxPath}"]
+        cmd = self.tdnfCmd + tdnfArgs
         optionalOut = io.StringIO("")
 
         def logfn(out):
             optionalOut.write(out)
             self.logger.debug(out)
 
-        out, err, rc = self.sandbox.runCmd(cmd, sandbox_user="root", logfn=logfn, ignore_rc=True)
-        if rc:
+        needRepoLock = any(action in cmd for action in ("install", "update", "upgrade"))
+
+        run_args = {
+            "sandbox_user": "root",
+            "logfn": logfn,
+            "ignore_rc": True,
+        }
+
+        if needRepoLock:
+            cmd.append("--refresh")
+            from RepoUtil import RepoLock
+            with RepoLock(constants.stagePath):
+                out, err, rc = self.sandbox.runCmd(cmd, **run_args)
+        else:
+            out, err, rc = self.sandbox.runCmd(cmd, **run_args)
+
+        if rc and not ignore_rc:
             self.logger.error(f"Command Executed: {cmd} rc {rc}")
             self.logger.error(out)
             self.logger.error(err)
@@ -171,12 +171,7 @@ class TDNF:
         return out
 
     def clean(self):
-        for d in ["noarch", constants.buildArch]:
-            d = f"{self.repoPath}/{d}"
-            self.cmdUtils.umountWithRetry(d)
-            os.rmdir(d)
-
-        shutil.rmtree(f"{self.repoPath}/repodata")
+        self.cmdUtils.umountWithRetry(self.repoPath)
         os.rmdir(self.repoPath)
 
         if self.sandbox:
@@ -189,10 +184,9 @@ class TDNF:
         if not isinstance(packages, list):
             return packages_info
         for package in packages:
-            name = package.get("Name", None)
-            evr = package.get("Evr", None)
-            arch = package.get("Arch", None)
-            if name and evr and arch:
-                package = f"{name}-{evr}.{arch}"
-                packages_info.append(package)
+            name = package["Name"]
+            evr = package["Evr"]
+            arch = package["Arch"]
+            package = f"{name}-{evr}.{arch}"
+            packages_info.append(package)
         return packages_info

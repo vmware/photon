@@ -1,4 +1,4 @@
-#!/usr/bin/env/ python3
+#!/usr/bin/env python3
 
 import json
 import pathlib
@@ -7,7 +7,6 @@ import re
 from copy import deepcopy
 from enum import Enum
 
-from CommandUtils import CommandUtils as cmdUtils
 from Logger import Logger
 
 PH_COMMIT_URI_PREFIX = "https://github.com/vmware/photon/commit/"
@@ -43,13 +42,10 @@ class constants(object):
     buildRootPath = "/mnt"
     pullsourcesURL = ""
     extrasourcesURLs = {}
-    buildBase = {}
-    buildBaseImageTarball = {}
     buildPatch = False
     rpmCheck = False
     startSchedulerServer = False
     sourceRpmPath = ""
-    publishBuildDependencies = False
     packageWeightsPath = None
     dockerUnixSocket = "/var/run/docker.sock"
     userDefinedMacros = {}
@@ -62,18 +58,13 @@ class constants(object):
     katBuild = False
     canisterBuild = False
     acvpBuild = False
-    testForceRPMS = []
     tmpDirPath = "/dev/shm"
     buildOptions = {}
     srpcli = None
     observerDockerImage = None
     observationIgnHostPatterns = []
     isolatedDockerNetwork = None
-    # will be extended later from listMakeCheckRPMPkgtoInstall
     buildArch = platform.machine()
-    targetArch = platform.machine()
-    currentArch = buildArch
-    hostRpmIsNotUsable = -1
     photonDir = ""
     buildSrcRpm = 0
     buildDbgInfoRpm = 0
@@ -84,13 +75,6 @@ class constants(object):
     CopyToSandboxDict = {}
     SandboxEnv = {}
     adjustGCCSpecScript = None
-    signingOptsSandbox = {}
-    signingOptsHost = {}
-    signingMap = {
-        "srp-signing-script": "script",
-        "srp-signing-params": "params",
-        "srp-signing-auth": "auth",
-    }
     rebuild = False
     photonBuilder = "photon-builder"
     toolchainBootstrap = False
@@ -114,24 +98,6 @@ class constants(object):
     # and stage2 published rpms will/might be used after stage2 only local
     # RPMS will be used
     listToolChainRPMsToInstall = []
-
-    # List of packages that will be installed in addition for each
-    # package to make check
-    listMakeCheckRPMPkgtoInstall = []
-
-    """
-    List of packages that requires privileged docker
-    to run make check.
-    """
-    listReqPrivilegedDockerForTest = []
-
-    """
-    List of Packages which causes "Makecheck" job
-    to stuck indefinately or getting failed.
-    Until these pkgs %check is fixed, these pkgs will be
-    skip to run makecheck.
-    """
-    listMakeCheckPkgToSkip = []
 
     """
     .spec file might contain lines such as
@@ -216,10 +182,6 @@ class constants(object):
     @staticmethod
     def setStartSchedulerServer(startSchedulerServer):
         constants.startSchedulerServer = startSchedulerServer
-
-    @staticmethod
-    def setPublishBuildDependencies(publishBuildDependencies):
-        constants.publishBuildDependencies = publishBuildDependencies
 
     @staticmethod
     def setPackageWeightsPath(packageWeightsPath):
@@ -314,6 +276,7 @@ class constants(object):
         if constants.releasePkgPreqPath:
             with open(constants.releasePkgPreqPath, "r") as file:
                 pkgPreq = json.load(file)
+
             constants.listCoreToolChainPackages.extend(
                 pkgPreq["listCoreToolChainPackages"]
             )
@@ -323,22 +286,11 @@ class constants(object):
             constants.listToolChainRPMsToInstall.extend(
                 pkgPreq["listToolChainRPMsToInstall"]
             )
-            constants.listMakeCheckRPMPkgtoInstall.extend(
-                pkgPreq["listMakeCheckRPMPkgtoInstall"]
-            )
-            constants.listReqPrivilegedDockerForTest.extend(
-                pkgPreq["listReqPrivilegedDockerForTest"]
-            )
-            constants.listMakeCheckPkgToSkip.extend(pkgPreq["listMakeCheckPkgToSkip"])
             constants.providedBy = pkgPreq["providedBy"]
 
-        if len(constants.signingOptsSandbox) == len(constants.signingMap):
-            for k, v in constants.signingOptsSandbox.items():
-                constants.addMacro(f"signing_{k}", v)
+        from signing import addSigningMacros
 
-    @staticmethod
-    def setTestForceRPMS(listsPackages):
-        constants.testForceRPMS = listsPackages
+        addSigningMacros()
 
     @staticmethod
     def setPhotonDir(phDir):
@@ -373,12 +325,10 @@ class constants(object):
         if key == "adjust-gcc-specs":
             constants.adjustGCCSpecScript = dest
             return
-        if key in constants.signingMap:
-            signingOpt = constants.signingMap[key]
-            src = val.get("src")
-            if src:
-                constants.signingOptsHost[signingOpt] = src
-                constants.signingOptsSandbox[signingOpt] = dest
+        from signing import setScriptToCopy, signingMap
+
+        if key in signingMap:
+            setScriptToCopy(key, val)
             return
 
     @staticmethod
@@ -386,32 +336,10 @@ class constants(object):
         constants.SandboxEnv[key] = val
 
     @staticmethod
-    def checkIfHostRpmNotUsable():
-        if constants.hostRpmIsNotUsable >= 0:
-            return constants.hostRpmIsNotUsable
-
-        # if rpm doesn't have zstd support
-        # if host rpm doesn't support sqlite backend db
-        cmds = [
-            "rpm --showrc | grep -qw 'rpmlib(PayloadIsZstd)'",
-            "rpm -E %{_db_backend} | grep -qw 'sqlite'",
-            "rpm -E %{_dbpath} | grep -qw '/usr/lib/sysimage/rpm'",
-        ]
-
-        for cmd in cmds:
-            _, _, retval = cmdUtils.runCmd(cmd, shell=True, ignore_rc=True)
-            if retval != 0:
-                constants.hostRpmIsNotUsable = 1
-                break
-
-        if constants.hostRpmIsNotUsable < 0:
-            constants.hostRpmIsNotUsable = 0
-
-        return constants.hostRpmIsNotUsable
-
-    @staticmethod
     def enable_fips_in_make_check():
-        constants.listMakeCheckRPMPkgtoInstall.append("openssl-fips-provider")
+        # TODO: sshedi
+        # install fips-proivder in sandbox during rpmcheck
+        pass
 
     @staticmethod
     def set_resume_build(val):
@@ -457,11 +385,6 @@ class constants(object):
     def setBaseImageTarballPath(baseImagePath):
         constants.baseImagePath = baseImagePath
         constants.baseImageTarball = pathlib.PurePath(baseImagePath).name
-
-    @staticmethod
-    def setBuildBase(stage, buildBase):
-        constants.buildBase[stage] = buildBase
-        constants.buildBaseImageTarball[stage] = f"{buildBase}.tar"
 
     @staticmethod
     def setBuildImagesPath(buildImagesPath):

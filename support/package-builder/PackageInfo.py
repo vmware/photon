@@ -4,7 +4,7 @@ import json
 import os
 
 from Logger import Logger
-from constants import constants
+from constants import constants, BuildMode, BuildStage
 from PackageUtils import PackageUtils
 from SpecData import SPECS
 
@@ -24,7 +24,7 @@ class PackageInfo(object):
     def loadPackagesData(self):
         listPackages = SPECS.getData().getListPackages()
         listPackages.sort()
-        pkgUtils = PackageUtils(self.logName, self.logPath)
+        pkgUtils = PackageUtils(BuildStage.PACKAGES, BuildMode.STANDARD)
         for package in listPackages:
             for version in SPECS.getData().getVersions(package):
                 srpmFile = pkgUtils.findSourceRPMFile(package, version)

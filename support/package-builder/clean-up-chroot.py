@@ -28,7 +28,7 @@ def removeAllFilesFromChroot(chrootPath):
     cmd = ["rm", "--one-file-system", "-rf", chrootPath]
     _, _, rc = CommandUtils.runCmd(cmd, capture=True, ignore_rc=True)
     if rc:
-        print("Unable to remove files from chroot " + chrootPath)
+        print(f"Unable to remove files from chroot: {chrootPath}")
         return False
     return True
 

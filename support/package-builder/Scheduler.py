@@ -110,10 +110,7 @@ class Scheduler(object):
 
         for pkg in Scheduler.sortedList:
             pkgName, pkgVersion = StringUtils.splitPackageNameAndVersion(pkg)
-            if (
-                pkg not in Scheduler.listOfAlreadyBuiltPackages
-                or pkgName in constants.testForceRPMS
-            ):
+            if pkg not in Scheduler.listOfAlreadyBuiltPackages:
                 Scheduler.listOfPackagesToBuild.append(pkg)
 
         Scheduler.listOfPackagesCurrentlyBuilding = set()
@@ -135,11 +132,6 @@ class Scheduler(object):
         # all the `make check`s in parallel.
         skipGraphBuild = constants.rpmCheck
         Scheduler._setPriorities(skipGraphBuild)
-
-        if constants.publishBuildDependencies:
-            # This must be called only after calling _setPriorities(),
-            # which builds the dependency graph.
-            Scheduler._publishBuildDependencies()
 
     @staticmethod
     def notifyPackageBuildCompleted(package):

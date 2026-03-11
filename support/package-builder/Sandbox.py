@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
+
 from contextlib import ExitStack, suppress
 
 from CommandUtils import CommandUtils
@@ -34,10 +35,10 @@ def sandbox_default_env():
 
 def prepare_chroot_dirs(rootPath):
     if constants.bootstrapRepoPath:
-        os.makedirs(os.path.join(rootPath, "/mnt/bootstrap"), exist_ok=True)
+        os.makedirs(f"{rootPath}/mnt/bootstrap", exist_ok=True)
     extra_dirs = ["RPMS", "SRPMS", "SOURCES", "SPECS", "LOGS", "BUILD", "BUILDROOT"]
     for d in extra_dirs:
-        os.makedirs(os.path.join(rootPath + constants.topDirPath, d), exist_ok=True)
+        os.makedirs(f"{rootPath}{constants.topDirPath}/{d}", exist_ok=True)
 
 
 def copy_file_from_container(container, path):
@@ -62,34 +63,16 @@ def copy_file_from_container(container, path):
     return f
 
 
-def tar_chroot(rootPath, fmt):
-    if fmt != "tar" and fmt != "tgz":
-        raise Exception(f"Chroot.archive(): format {fmt} not supported")
-    cmd = ["tar", "--one-file-system", "--xattrs", "-S", "-C", rootPath, "-c", "."]
-    if fmt == "tgz":
-        cmd += ["-z"]
-    tarf = tempfile.TemporaryFile(mode="w+b")
-    try:
-        subprocess.run(cmd, stdout=tarf, check=True)
-    except Exception as e:
-        tarf.close()
-        raise Exception(f"ERROR: {e}")
-    tarf.seek(0, 0)
-    return tarf
-
-
 class Sandbox(object):
     def __init__(
         self,
         name,
-        baseImagePath,
         optionalMounts,
         logger,
         cmdAudit=lambda cmd, env: None,
     ):
         self.name = name
         self.cmdAudit = cmdAudit
-        self.baseImagePath = baseImagePath
         self.optionalMounts = optionalMounts
         self.logger = logger
 
@@ -100,9 +83,6 @@ class Sandbox(object):
         pass
 
     def runCmd(self, network_required=False, **kwargs):
-        pass
-
-    def archive(self, fmt="tar"):
         pass
 
     def putFiles(self, src, dest):
@@ -123,14 +103,18 @@ class Sandbox(object):
         self.cmdAudit(cmd, env)
         return CommandUtils.runCmd(cmd, env=env, **kwargs)
 
-    def extract_sandbox_base(self, imagePath):
+    def mountSandboxBase(self):
+        base = f"{constants.buildImagesPath}/sandboxBase"
+        rootPath = self.getRootPath()
         cmds = [
+            ["mkdir", "-p", f"{rootPath}/upper", f"{rootPath}/work"],
             [
-                "mkdir",
-                "-p",
-                self.getRootPath(),
+                "mount",
+                "-t", "overlay",
+                "overlay",
+                "-o", f"lowerdir={base},upperdir={rootPath}/upper,workdir={rootPath}/work",
+                rootPath,
             ],
-            ["tar", "--same-owner", "-p", "-xf", imagePath, "-C", self.getRootPath()],
         ]
 
         for cmd in cmds:
@@ -169,34 +153,29 @@ class Chroot(Sandbox):
     def __init__(
         self,
         name,
-        baseImagePath,
         optionalMounts,
         logger,
         cmdAudit=lambda cmd, env: None,
     ):
-        Sandbox.__init__(self, name, baseImagePath, optionalMounts, logger, cmdAudit)
-        self.chrootPath = os.path.join(constants.buildRootPath, self.name)
+        Sandbox.__init__(self, name, optionalMounts, logger, cmdAudit)
+        self.chrootPath = f"{constants.buildRootPath}/{self.name}"
         self.prepareBuildRootCmd = os.path.join(
             os.path.dirname(__file__), "prepare-build-root.sh"
         )
 
     def create(self):
-        if os.geteuid() != 0:
+        if os.geteuid():
             raise Exception(f"Unable to create {self.name} as non-root user")
 
         if os.path.isdir(self.chrootPath):
             if constants.resume_build:
                 return
             self.destroy()
-        self.extract_sandbox_base(
-            self.baseImagePath
-            if self.baseImagePath
-            else os.path.join(constants.buildImagesPath, constants.baseImageTarball)
-        )
+        self.mountSandboxBase()
         prepare_chroot_dirs(rootPath=self.chrootPath)
         self._cmd([self.prepareBuildRootCmd, self.chrootPath])
         self._prepare_mounts()
-        self.logger.info(f"Successfully created chroot: {self.chrootPath}")
+        self.logger.debug(f"Successfully created chroot: {self.chrootPath}")
 
     def destroy(self):
         self.logger.debug(f"Deleting chroot: {self.chrootPath}")
@@ -212,7 +191,7 @@ class Chroot(Sandbox):
         clean_env=True,
         shell=False,
         **kwargs,
-    ) -> tuple[str, str, int]:
+    ):
         if shell:
             raise Exception("Chroot.runCmd() does not support shell=True")
         env = {**sandbox_default_env(), **env}
@@ -222,9 +201,6 @@ class Chroot(Sandbox):
         self.logger.debug(f"Chroot.runCmd({cmd}, env={env})")
         chroot_prefix += [self.chrootPath]
         return self._cmd(chroot_prefix + cmd, clean_env=True, env=env, **kwargs)
-
-    def archive(self, fmt="tar"):
-        return tar_chroot(self.chrootPath, fmt)
 
     def putFiles(self, files, dest):
         if not os.path.isabs(dest):
@@ -264,18 +240,17 @@ class Chroot(Sandbox):
         for bind in self.optionalMounts.get("bindsrw", []):
             dirsToTry.append(self.chrootPath + bind[1])
         dirsToTry += [
-            os.path.join(self.chrootPath, d)
+            f"{self.chrootPath}/{d}"
             for d in [
                 "dev/pts",
                 "dev",
                 "proc",
-                "run",
                 "sys",
                 "tmp",
             ]
         ]
         dirsToTry += [
-            os.path.join(self.chrootPath + constants.topDirPath, d)
+            f"{self.chrootPath}{constants.topDirPath}/{d}"
             for d in ["RPMS", "SRPMS"]
         ]
         for d in dirsToTry:
@@ -292,19 +267,20 @@ class Chroot(Sandbox):
                 # Try unmount with lazy umount
                 self._cmd(["umount", "-R", "-l", d], ignore_rc=True)
 
+        CommandUtils.umountWithRetry(self.chrootPath)
+
 
 @register(SandboxType.SYSTEMD_NSPAWN)
 class SystemdNspawn(Sandbox):
     def __init__(
         self,
         name,
-        baseImagePath,
         optionalMounts,
         logger,
         cmdAudit=lambda cmd, env: None,
     ):
-        Sandbox.__init__(self, name, baseImagePath, optionalMounts, logger, cmdAudit)
-        self.nspawnRootPath = os.path.join(constants.buildRootPath, self.name)
+        Sandbox.__init__(self, name, optionalMounts, logger, cmdAudit)
+        self.nspawnRootPath = f"{constants.buildRootPath}/{self.name}"
         self.observationFile = None
 
     def create(self):
@@ -312,11 +288,7 @@ class SystemdNspawn(Sandbox):
             if constants.resume_build:
                 return
             self.destroy()
-        self.extract_sandbox_base(
-            self.baseImagePath
-            if self.baseImagePath
-            else os.path.join(constants.buildImagesPath, constants.baseImageTarball)
-        )
+        self.mountSandboxBase()
         prepare_chroot_dirs(self.nspawnRootPath)
 
         self.logger.debug(f"Successfully created nspawn root: {self.nspawnRootPath}")
@@ -332,8 +304,9 @@ class SystemdNspawn(Sandbox):
             ).stdout
         ):
             self.logger.debug(f"Removing nspawn container: {container_name} ...")
-            self._cmd(f"machinectl terminate {container_name}".split(), ignore_rc=True)
+            self._cmd(["machinectl", "terminate", container_name], ignore_rc=True)
 
+        CommandUtils.umountWithRetry(self.nspawnRootPath)
         self._cmd(["rm", "--one-file-system", "-rf", self.nspawnRootPath])
 
     def _prepare_mount_arguments(self) -> list[str]:
@@ -383,7 +356,7 @@ class SystemdNspawn(Sandbox):
                 observer = stack.enter_context(Observer(self))
                 if observer is None:
                     self.logger.warning(
-                        "Observer is not available. Sandbox will not have a networking"
+                        "Observer is not available. Sandbox will not have networking"
                     )
                     network_required = False
                 else:
@@ -398,9 +371,6 @@ class SystemdNspawn(Sandbox):
             for k, v in env.items():
                 nspawnCmd += ["--setenv", f"{k}={v}"]
             return self._cmd(nspawnCmd + cmd, clean_env=True, env=nspawnEnv, **kwargs)
-
-    def archive(self, fmt="tar"):
-        return tar_chroot(self.nspawnRootPath, fmt)
 
     def putFiles(self, files, dest):
         if not os.path.isabs(dest):
@@ -436,10 +406,11 @@ class Container(Sandbox):
     ):
         import docker
 
-        Sandbox.__init__(self, name, baseImagePath, optionalMounts, logger, cmdAudit)
+        Sandbox.__init__(self, name, optionalMounts, logger, cmdAudit)
         self.dockerClient = docker.from_env(version="auto")
         self.containerName = "photon-sandbox-" + self.name.replace("+", "p")
         self.container = None
+        self.baseImagePath = baseImagePath
 
     def create(self):
         mountVols = {
@@ -473,18 +444,13 @@ class Container(Sandbox):
             if existing is not None:
                 existing.remove(force=True)
 
-        # TODO: Is init=True equivalent of --sig-proxy?
-        # privilegedDocker = False
         cap_list = ["SYS_PTRACE"]
-        #  if packageName in constants.listReqPrivilegedDockerForTest:
-        #  privilegedDocker = True
 
         self.container = self.dockerClient.containers.run(
             self.baseImagePath,
             entrypoint="/usr/bin/tail",
             detach=True,
             cap_add=cap_list,
-            # privileged=privilegedDocker,
             privileged=False,
             name=self.containerName,
             network_mode="host",
@@ -539,7 +505,7 @@ class Container(Sandbox):
             logfn(output[0].decode("utf-8"))
 
         retval = self.dockerClient.api.exec_inspect(execInst["Id"])["ExitCode"]
-        if retval != 0 and not ignore_rc:
+        if retval and not ignore_rc:
             stdout = output[0].decode() if output[0] else ""
             stderr = output[1].decode() if output[1] else ""
             raise Exception(
@@ -550,19 +516,13 @@ class Container(Sandbox):
         stderr = output[1].decode() if output[1] else ""
         return stdout, stderr, retval
 
-    def archive(self, fmt="tar"):
-        if fmt != "tar":
-            raise Exception("only tar format is supported in Container.archive()")
-        tarStream = self.container.export()
-        tarf = tempfile.TemporaryFile(mode="w+b")
-        for buf in tarStream:
-            tarf.write(buf)
-        tarf.seek(0, 0)
-        return tarf
-
     def destroy(self):
-        self.container.remove(force=True)
-        self.container = None
+        if self.container:
+            self.container.remove(force=True)
+            self.container = None
+        if self.dockerClient:
+            self.dockerClient.close()
+            self.dockerClient = None
 
     def putFiles(self, files, dest):
         self.logger.debug(f"{files} to {dest}")
@@ -711,11 +671,10 @@ class Observer(object):
         self.container = None
 
 
-def init_sandbox(sandboxType, name, baseImagePath, optionalMounts, logger, cmdAudit):
+def init_sandbox(sandboxType, name, optionalMounts, logger, cmdAudit):
     return SB_TYPES[sandboxType](
         name=name,
         logger=logger,
         cmdAudit=cmdAudit,
-        baseImagePath=baseImagePath,
         optionalMounts=optionalMounts,
     )

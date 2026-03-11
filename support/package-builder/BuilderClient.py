@@ -62,9 +62,6 @@ class BuilderClient:
         constants.setPullSourcesURL(constant_dict["pullsourcesURL"])
         constants.setRPMCheck(constant_dict["rpmCheck"])
         constants.setRpmCheckStopOnError(constant_dict["rpmCheckStopOnError"])
-
-        constants.setPublishBuildDependencies(constant_dict["publishBuildDependencies"])
-
         constants.setPackageWeightsPath(constant_dict["packageWeightsPath"])
         constants.setKatBuild(constant_dict["katBuild"])
         constants.setCanisterBuild(constant_dict["canisterBuild"])

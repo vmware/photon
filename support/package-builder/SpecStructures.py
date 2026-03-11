@@ -46,15 +46,12 @@ class Package(object):
         self.sources = []
         self.patches = []
         self.buildrequires = []
-        self.buildprovides = []
         self.checkbuildrequires = []
         self.extrabuildrequires = []
         self.buildrequiresnative = []
 
         self.requires = []
         self.provides = []
-        self.obsoletes = []
-        self.conflicts = []
 
         self.filesMacro = None
 

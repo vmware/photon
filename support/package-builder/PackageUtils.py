@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import threading
 import PullSources
 import RepoUtil
 
@@ -13,13 +14,11 @@ from TDNFSandbox import TDNF
 
 
 class PackageUtils(object):
-    def __init__(self, buildStage, buildMode, logName=None, logPath=None):
+    def __init__(self, buildStage, buildMode):
         self.buildStage = buildStage
         self.buildMode = buildMode
-        if logName is None:
-            logName = "PackageUtils"
-        if logPath is None:
-            logPath = constants.logPath
+        logName = "PackageUtils"
+        logPath = constants.logPath
         self.scriptDir = os.path.dirname(__file__)
         self.logName = logName
         self.logPath = logPath
@@ -50,25 +49,18 @@ class PackageUtils(object):
 
     def installRPMSInOneShot(self, sandbox, arch):
         repoArgs = RepoUtil.getRepoArgs(self.buildStage, self.buildMode)
-        if len(self.packagesToInstallInAOneShot) != 0:
+        if len(self.packagesToInstallInAOneShot):
             self.logger.debug(f"Installing rpms: {self.packagesToInstallInAOneShot}")
-            tdnf = TDNF(
-                installRoot=sandbox.getRootPath(), repoArgs=repoArgs, logger=self.logger
-            )
+            tdnf = TDNF(installRoot=sandbox.getRootPath(), logger=self.logger)
             try:
+                subCmd = ["upgrade", "-y"]
                 tdnf.run(
-                    subCmd=["makecache"],
-                    args=[],
-                    errMsg="Unable to refresh cache",
-                )
-                tdnf.run(
-                    subCmd=["upgrade"],
-                    args=self.installRPMPackageOptions,
+                    args=subCmd + self.installRPMPackageOptions + repoArgs,
                     errMsg="Unable to upgrade rpms",
                 )
+                subCmd = ["install", "-y", "--setopt=tsflags=nodocs"] + self.packagesToInstallInAOneShot
                 tdnf.run(
-                    subCmd=["install"] + self.packagesToInstallInAOneShot,
-                    args=self.installRPMPackageOptions,
+                    args=subCmd + self.installRPMPackageOptions + repoArgs,
                     errMsg="Unable to install rpms",
                 )
             finally:
@@ -85,7 +77,6 @@ class PackageUtils(object):
         sandboxSpecPath = os.path.join(constants.topDirPath, "SPECS", specName)
         if (
             constants.rpmCheck
-            and package in constants.testForceRPMS
             and SPECS.getData().isCheckAvailable(package, version)
         ):
             logFilePath = os.path.join(destLogPath, f"{package}-test.log")
@@ -94,8 +85,8 @@ class PackageUtils(object):
         sandbox.putFiles(specFile, sandboxSpecPath)
 
         sources_urls, macros = self._getAdditionalBuildOptions(package)
-        self.logger.debug(f"Extra macros for {package}: " + str(macros))
-        self.logger.debug(f"Extra source URLs for {package}: " + str(sources_urls))
+        self.logger.debug(f"Extra macros for {package}: {macros}")
+        self.logger.debug(f"Extra source URLs for {package}: {sources_urls}")
         constants.setExtraSourcesURLs(package, sources_urls)
 
         self._copySources(sandbox, listSourcesFiles, package, version, sourcePath)
@@ -133,20 +124,12 @@ class PackageUtils(object):
             if self.CheckForDbgSymbols(RpmsToCheck):
                 raise Exception("Rpm sanity check error")
 
-            logmsg = f"{package} build done - RPMs: [ {logmsg}]\n"
-            self.logger.info(logmsg)
+            self.logger.info(f"{package} build done - RPMs: [ {logmsg}]\n")
         except Exception as e:
             self.logger.error(f"Failed while building rpm: {package}-{version}")
             raise e
-        self.logger.debug("RPM build is successful")
 
-        signArgs = self.CheckForSigningArgs()
-        if signArgs:
-            self.logger.debug("Initiate signing RPMs")
-            self.signPackages(listRPMFiles, SRPM=False, cmd=signArgs)
-            self.signPackages(listSRPMFiles, SRPM=True, cmd=signArgs)
-        else:
-            self.logger.warning("Skip signing RPMs")
+        self.logger.debug("RPM build is successful")
 
         return listRPMFiles, listSRPMFiles
 
@@ -181,7 +164,7 @@ class PackageUtils(object):
 
     def findRPMFile(self, package, version="*", arch=None, throw=False):
         if not arch:
-            arch = constants.currentArch
+            arch = constants.buildArch
 
         if version == "*":
             version = SPECS.getData(arch).getHighestVersion(package)
@@ -208,7 +191,7 @@ class PackageUtils(object):
 
     def findDebugRPMFile(self, package, version="*", arch=None):
         if not arch:
-            arch = constants.currentArch
+            arch = constants.buildArch
 
         if version == "*":
             version = SPECS.getData(arch).getHighestVersion(package)
@@ -223,35 +206,6 @@ class PackageUtils(object):
         cmd = [self.rpmBinary] + self.queryRpmPackageOptions
         out, _, _ = sandbox.runCmd(cmd, capture=True)
         return CommandUtils.splitlines(out)
-
-    def CheckForSigningArgs(self):
-        if len(constants.signingOptsHost) != len(constants.signingMap):
-            return None
-
-        cmd = [
-            constants.signingOptsHost["script"],
-            "--file_type",
-            "rpm",
-            "--config_file",
-            constants.signingOptsHost["params"],
-            "--auth_file",
-            constants.signingOptsHost["auth"],
-            "--artifact",
-        ]
-        return cmd
-
-    def signPackages(self, RpmsToSign, SRPM, cmd):
-        for rpm in RpmsToSign:
-            if SRPM:
-                path = constants.sourceRpmPath
-                arch = ""
-            else:
-                path = constants.rpmPath
-                arch = rpm.split(".")[-2]
-            rpm = os.path.basename(rpm)
-            rpm_full_path = os.path.join(path, arch, rpm)
-            CommandUtils.runCmd(cmd + [rpm_full_path], logfn=self.logger.debug)
-            self.logger.debug(f"Signed RPM: {rpm_full_path}")
 
     def adjustGCCSpecs(self, sandbox, package, version):
         if constants.adjustGCCSpecScript is None:
@@ -367,7 +321,7 @@ class PackageUtils(object):
         ):
             rpmBuildcmd += ["-D", "debug_package %{nil}"]
 
-        if constants.rpmCheck and package in constants.testForceRPMS:
+        if constants.rpmCheck:
             pr_pounds = "#" * (68 + 2 * len(package))
             self.logger.debug(pr_pounds)
             make_check_na = not SPECS.getData().isCheckAvailable(package, version)
@@ -403,15 +357,30 @@ class PackageUtils(object):
         if network_required:
             self.logger.debug(f"{package} requires network to build...")
 
-        with open(logFile, "w") as logfp:
-            _, _, returnVal = sandbox.runCmd(
-                rpmBuildcmd,
-                logfile=logfp,
-                ignore_rc=True,
-                network_required=network_required,
-            )
+        build_result = [None]
 
-        if constants.rpmCheck and package in constants.testForceRPMS:
+        def run_build():
+            with open(logFile, "w") as logfp:
+                _, _, rc = sandbox.runCmd(
+                    rpmBuildcmd,
+                    logfile=logfp,
+                    ignore_rc=True,
+                    network_required=network_required,
+                )
+                build_result[0] = rc
+
+        build_thread = threading.Thread(target=run_build)
+        build_thread.start()
+        while build_thread.is_alive():
+            build_thread.join(timeout=300)
+            if build_thread.is_alive():
+                self.logger.debug(
+                    f"Build still in progress for {package}-{version}..."
+                )
+        build_thread.join()
+        returnVal = build_result[0]
+
+        if constants.rpmCheck:
             if make_check_na:
                 constants.testLogger.info(f"{package}: N/A")
             elif not returnVal:
@@ -443,6 +412,6 @@ class PackageUtils(object):
                 listRPMFiles.append(rpm)
             elif "/SRPMS/" in rpm:
                 listSRPMFiles.append(rpm)
-        self.logger.info("Updating repo")
-        RepoUtil.copyRPMsToRepo(sandbox.getRootPath(), listRPMFiles, listSRPMFiles)
+        self.logger.debug("Moving built rpms to repo")
+        RepoUtil.signAndMoveRPMsToRepo(sandbox.getRootPath(), listRPMFiles, listSRPMFiles)
         return listRPMFiles, listSRPMFiles

@@ -15,9 +15,9 @@ class ToolChainUtils(object):
     ):
         self.buildStage = buildStage
         self.buildMode = buildMode
-        if logName is None:
+        if not logName:
             logName = "ToolchainUtils"
-        if logPath is None:
+        if not logPath:
             logPath = constants.logPath
         self.cmdlog = cmdlog
         self.logName = logName
@@ -72,35 +72,35 @@ class ToolChainUtils(object):
                 package = package.replace("coreutils", "coreutils-selinux")
             packages.append(package)
         packages.append("build-essential")
+
         repoArgs = RepoUtil.getRepoArgs(self.buildStage, self.buildMode)
-        tdnf = TDNF(
-            installRoot=chroot.getRootPath(), repoArgs=repoArgs, logger=self.logger
-        )
+        tdnf = TDNF(installRoot=chroot.getRootPath(), logger=self.logger)
         try:
+            subCmd = ["upgrade", "-y", "--exclude=photon-release"]
             response = tdnf.run(
-                subCmd=["upgrade", "--refresh", "--exclude=photon-release"],
+                args=subCmd + repoArgs,
                 errMsg="Unable to upgrade",
             )
+
+            subCmd = ["install", "-y", "--setopt=tsflags=nodocs"] + packages
             response = tdnf.run(
-                subCmd=["install"] + packages,
+                args=subCmd + repoArgs,
                 errMsg="Unable to install rpms",
             )
             self.logger.debug(
-                f"Successfully installed default toolchain RPMS in sandbox {chroot.getRootPath()} {rpmFiles}"  # noqa: E501
+                f"Successfully installed default toolchain RPMS in sandbox {chroot.getRootPath()} {rpmFiles}"
             )
             if packageName:
                 self.installExtraToolchainRPMS(
                     tdnf, chroot, packageName, packageVersion
                 )
             response = tdnf.run(
-                subCmd=["list"],
-                repoArgs=[],
-                args=["--installed", "-j"],
+                args=["list", "--installed", "--disablerepo=*", "-j"],
                 errMsg="Listing installed RPMs",
             )
             rpmFiles = tdnf.processInstalled(response)
         except Exception as e:
-            raise Exception(f"Failed installing/processing rpmFiles {str(e)}")
+            raise Exception(f"Failed installing/processing rpmFiles {e} while building {packageName}")
         finally:
             tdnf.clean()
 
@@ -121,8 +121,9 @@ class ToolChainUtils(object):
             "--disablerepo=*",
             "--enablerepo=packages",
         ]
+
+        subCmd = ["install", "-y", "--nogpgcheck", "--setopt=tsflags=nodocs"] + listOfToolChainPkgs
         tdnf.run(
-            subCmd=["install", "--nogpgcheck"] + listOfToolChainPkgs,
-            repoArgs=repoArgs,
+            args=subCmd + repoArgs,
             errMsg="Extra BuildRequires RPM installation failed",
         )
