@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.69
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -546,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.69-6
+- Fix af_unix boolean registration from the wrong array to the correct one
 * Mon Mar 09 2026 Albert Guo <albert.guo@broadcom.com> 6.12.69-5
 - Ported 8 9P patches for VDFS from 6.1.y to 6.12.y.
 * Mon Mar 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.69-4
