@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:    This package contains programs to find files
 Name:       findutils
 Version:    4.9.0
-Release:    5%{?dist}
+Release:    4.1%{?dist}
 URL:        http://www.gnu.org/software/findutils
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -15,8 +15,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Conflicts:      toybox < 0.8.2-2
-BuildRequires:  libselinux-devel
-Requires:       libselinux
 
 %description
 These programs are provided to recursively search through a
@@ -92,8 +90,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-* Wed Mar 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.9.0-5
-- Enable selinux support
+* Wed Mar 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.9.0-4.1
+- Move to subrelease 91
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.9.0-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.0-3
