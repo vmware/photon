@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20250605
-Release:          2%{?dist}
+Release:          1.1%{?dist}
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
@@ -24,14 +24,6 @@ BuildRequires:    iproute2
 Requires:         libcap
 Requires:         libgcrypt
 Requires:         systemd
-Requires:         %{name}-arping = %{version}-%{release}
-
-%package          arping
-Summary:          Subset of %{name} containing the "arping" binary
-Requires:         libcap
-
-%description arping
-%{summary}
 
 %description
 The Iputils package contains programs for basic networking.
@@ -61,14 +53,12 @@ ln -sf tracepath %{buildroot}%{_bindir}/tracepath6
 %{_bindir}/tracepath6
 %{_bindir}/tracepath
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/clockdiff
+%attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/arping
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
 
-%files arping
-%attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/arping
-
 %changelog
-* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 20250605-2
-- Introduce -arping for users demanding smaller footprint.
+* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 20250605-1.1
+- Bump after moving to SPECS/91
 * Wed Oct 29 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 20250605-1
 - Version upgrade to fix CVE-2025-48964 and CVE-2025-47268.
 * Fri Mar 28 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 20221126-5
