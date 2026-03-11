@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Standard Linux utility for controlling network drivers and hardware
 Name:           ethtool
 Version:        6.1
-Release:        3%{?dist}
+Release:        2.1%{?dist}
 URL:            https://www.kernel.org/pub/software/network/ethtool
 Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
@@ -16,18 +16,11 @@ Source1: license.txt
 
 BuildRequires:  libmnl-devel
 
-Requires:       %{name}-bin = %{version}-%{release}
+Requires:       libmnl
 
 %description
 ethtool is the standard Linux utility for controlling network drivers and hardware,
 particularly for wired Ethernet devices
-
-%package        bin
-Summary:        Subset of %{name} containing only the binary
-Requires:       libmnl
-
-%description    bin
-%{summary}
 
 %prep
 %autosetup -p1
@@ -51,15 +44,13 @@ rm -rf %{buildroot}/*
 %files
 %doc AUTHORS COPYING NEWS README ChangeLog
 %defattr(-,root,root)
+%{_sbindir}/ethtool
 %{_datadir}/bash-completion/completions/ethtool
 %{_mandir}/*
 
-%files bin
-%{_sbindir}/ethtool
-
 %changelog
-* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 6.1-3
-- Introduce -bin subpackage for users demanding smaller footprint.
+* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 6.1-2.1
+- Bump after moving to SPECS/91
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1-2
 - Release bump for SRP compliance
 * Wed Dec 21 2022 Susant Sahani <ssahani@vmware.com> 6.1-1
