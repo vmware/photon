@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        6.0.0
-Release:        3%{?dist}
+Release:        2.1%{?dist}
 URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -25,8 +25,6 @@ BuildRequires: libmnl-devel
 Requires: elfutils-libelf
 Requires: glibc
 Requires: libmnl
-Requires: %{name}-ip = %{version}-%{release}
-Requires: %{name}-ifstat = %{version}-%{release}
 
 Provides: iproute
 
@@ -42,18 +40,6 @@ Requires: %{name} = %{version}-%{release}
 %description devel
 This package contains the header files for %{name}. If you like to develop programs using %{name},
 you will need to install %{name}-devel.
-
-%package ip
-Summary: Subset of %{name} containing the "ip" binary
-
-%description ip
-%{summary}
-
-%package ifstat
-Summary: Subset of %{name} containing the "ifstat" binary
-
-%description ifstat
-%{summary}
 
 %prep
 %autosetup -p1
@@ -84,20 +70,10 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_sysconfdir}/%{name}/*
 %{_sbindir}/*
-%exclude %{_sbindir}/ip
-%exclude %{_sbindir}/ifstat
 %{_libdir}/tc/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/*
-
-%files ip
-%defattr(-,root,root)
-%{_sbindir}/ip
-
-%files ifstat
-%defattr(-,root,root)
-%{_sbindir}/ifstat
 
 %files devel
 %defattr(-,root,root)
@@ -105,8 +81,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
-* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 6.0.0-3
-- Introduce -ip and -ifstat subpackage for users demanding smaller footprint.
+* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 6.0.0-2.1
+- Bump after moving to SPECS/91
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 6.0.0-2
 - Release bump for SRP compliance
 * Mon Oct 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-1
