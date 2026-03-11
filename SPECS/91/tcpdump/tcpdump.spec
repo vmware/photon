@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.99.4
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 URL:            http://www.tcpdump.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -18,19 +18,12 @@ Patch0: CVE-2024-2397.patch
 
 BuildRequires: libpcap-devel
 
-Requires: %{name}-bin = %{version}-%{release}
+Requires: libpcap
 
 %description
 Tcpdump is a common packet analyzer that runs under the command line.
 It allows the user to display TCP/IP and other packets being
 transmitted or received over a network to which the computer is attached.
-
-%package bin
-Summary: Subset of %{name} containing only the binary
-Requires: libpcap
-
-%description bin
-%{summary}
 
 %prep
 %autosetup -p1
@@ -49,16 +42,13 @@ make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
+%{_bindir}/tcpdump
 %{_bindir}/tcpdump.%{version}
 %{_mandir}/man1/tcpdump.1.gz
 
-%files bin
-%defattr(-,root,root)
-%{_bindir}/tcpdump
-
 %changelog
-* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 4.99.4-4
-- Introduce -bin subpackage for users demanding smaller footprint.
+* Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 4.99.4-3.1
+- Bump after moving to SPECS/91
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.99.4-3
 - Release bump for SRP compliance
 * Thu Mar 28 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 4.99.4-2
