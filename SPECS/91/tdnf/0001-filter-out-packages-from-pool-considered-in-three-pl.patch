@@ -1,0 +1,64 @@
+From e4e25198f69af90346cc1a717c0c0c372d82e3e8 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Thu, 12 Mar 2026 21:01:27 +0000
+Subject: [PATCH] filter out packages from pool->considered in three places,
+ fixing obsoletes and others
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ solv/simplequery.c | 6 ++++--
+ solv/tdnfpackage.c | 2 ++
+ solv/tdnfrepo.c    | 2 ++
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/solv/simplequery.c b/solv/simplequery.c
+index 3805b58..9a3906d 100644
+--- a/solv/simplequery.c
++++ b/solv/simplequery.c
+@@ -95,7 +95,9 @@ SolvFindSolvablesByNevraId(
+     Id p;
+     FOR_POOL_SOLVABLES(p)
+     {
+-        Solvable *s = &pool->solvables[p];
++        const Solvable *s = &pool->solvables[p];
++        if (pool->considered && !MAPTST(pool->considered, p))
++            continue;
+         if (installed == (s->repo == pool->installed)) {
+             if (s->name == name && s->evr == evr && s->arch == arch) {
+                 queue_push(qresult, p);
+@@ -246,4 +248,4 @@ SolvRequiresFromQueue(
+         queue_free(&q_tmp);
+     }
+     return dwError;
+-}
+\ No newline at end of file
++}
+diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
+index 5e1ba7c..bf6e316 100644
+--- a/solv/tdnfpackage.c
++++ b/solv/tdnfpackage.c
+@@ -1422,6 +1422,8 @@ SolvFindBestAvailable(
+     * for the best package */
+     FOR_PROVIDES(p, pp, idName)
+     {
++        if (pool->considered && !MAPTST(pool->considered, p))
++            continue;
+         if (pool->solvables[p].name == idName)
+             continue;               /* already done in step 1 */
+         if (!is_obsoleting(pool, pool->solvables + p, pool->solvables + q.elements[0]))
+diff --git a/solv/tdnfrepo.c b/solv/tdnfrepo.c
+index c27b907..ff812d7 100644
+--- a/solv/tdnfrepo.c
++++ b/solv/tdnfrepo.c
+@@ -257,6 +257,8 @@ SolvCountPackages(
+     pool = pSack->pPool;
+     FOR_POOL_SOLVABLES(p)
+     {
++        if (pool->considered && !MAPTST(pool->considered, p))
++            continue;
+         dwCount++;
+     }
+     *pdwCount = dwCount;
+-- 
+2.43.0
+

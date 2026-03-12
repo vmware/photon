@@ -1,0 +1,55 @@
+From 5e5d9d7dec938e0d67bc76d75a3e0e206aa67297 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Thu, 12 Mar 2026 21:01:27 +0000
+Subject: [PATCH 1/2] filter out packages from pool->considered in three
+ places, fixing obsoletes and others
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ solv/simplequery.c | 2 ++
+ solv/tdnfpackage.c | 2 ++
+ solv/tdnfrepo.c    | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/solv/simplequery.c b/solv/simplequery.c
+index 23d334a..ae66947 100644
+--- a/solv/simplequery.c
++++ b/solv/simplequery.c
+@@ -96,6 +96,8 @@ SolvFindSolvablesByNevraId(
+     FOR_POOL_SOLVABLES(p)
+     {
+         const Solvable *s = &pool->solvables[p];
++        if (pool->considered && !MAPTST(pool->considered, p))
++            continue;
+         if (installed == (s->repo == pool->installed)) {
+             if (s->name == name && s->evr == evr && s->arch == arch) {
+                 queue_push(qresult, p);
+diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
+index 0662ca0..4c46822 100644
+--- a/solv/tdnfpackage.c
++++ b/solv/tdnfpackage.c
+@@ -1422,6 +1422,8 @@ SolvFindBestAvailable(
+     * for the best package */
+     FOR_PROVIDES(p, pp, idName)
+     {
++        if (pool->considered && !MAPTST(pool->considered, p))
++            continue;
+         if (pool->solvables[p].name == idName)
+             continue;               /* already done in step 1 */
+         if (!is_obsoleting(pool, pool->solvables + p, pool->solvables + q.elements[0]))
+diff --git a/solv/tdnfrepo.c b/solv/tdnfrepo.c
+index 02aaab2..e2d9926 100644
+--- a/solv/tdnfrepo.c
++++ b/solv/tdnfrepo.c
+@@ -257,6 +257,8 @@ SolvCountPackages(
+     pool = pSack->pPool;
+     FOR_POOL_SOLVABLES(p)
+     {
++        if (pool->considered && !MAPTST(pool->considered, p))
++            continue;
+         dwCount++;
+     }
+     *pdwCount = dwCount;
+-- 
+2.43.0
+

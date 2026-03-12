@@ -11,7 +11,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.5.16
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -23,6 +23,7 @@ Source1: license.txt
 Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
+Patch1: 0001-filter-out-packages-from-pool-considered-in-three-pl.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -295,6 +296,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Mar 12 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.16-1.2
+- fix obsoletes in snapshots, PR 561
 * Mon Mar 02 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.16-1.1
 - bump after moving to SPECS/91
 * Fri Jan 09 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.16-1
