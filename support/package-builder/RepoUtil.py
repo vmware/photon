@@ -70,7 +70,7 @@ def updateRepoData():
         f"--workers={ncpus}",
         "--skip-stat",
         "--no-database",
-        "--compress-type=gz",
+        "--general-compress-type=gz",
         repoPath,
     ]
     if constants.rebuild:
