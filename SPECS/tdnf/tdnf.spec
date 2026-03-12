@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.3.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -13,6 +13,7 @@ Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{versi
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 Patch1:         add-a-command-line-option-to-set-RPM-macros.patch
+Patch2:         connect-timeout.patch
 
 Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
@@ -228,6 +229,8 @@ systemctl try-restart %{name}-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Mar 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.12-2
+- Add connect timeout patch
 * Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.12-1
 - Upgrade to v3.3.12
 * Mon Jul 01 2024 Bo Gan <bo.gan@broadcom.com> 3.3.11-2

@@ -1,0 +1,94 @@
+From 8e0f4cecf2915543b934ca1778ffdbe713e50e46 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 7 Mar 2026 14:03:45 +0530
+Subject: [PATCH] Add configurable connect timeout for downloads
+
+Introduce connect_timeout config option and apply it via
+CURLOPT_CONNECTTIMEOUT in remote downloads to avoid long hangs
+when DNS resolution succeeds but TCP connection does not establish.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ client/config.c     | 7 +++++++
+ client/defines.h    | 2 ++
+ client/remoterepo.c | 6 ++++++
+ etc/tdnf/tdnf.conf  | 1 +
+ include/tdnftypes.h | 1 +
+ 5 files changed, 17 insertions(+)
+
+diff --git a/client/config.c b/client/config.c
+index 7724237c..58f1d9d5 100644
+--- a/client/config.c
++++ b/client/config.c
+@@ -144,6 +144,13 @@ TDNFReadConfig(
+                   &pConf->nOpenMax);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
++    dwError = TDNFReadKeyValueInt(
++                  pSection,
++                  TDNF_CONF_KEY_CONNECT_TIMEOUT,
++                  TDNF_CONF_DEFAULT_CONNECT_TIMEOUT,
++                  &pConf->nConnectTimeout);
++    BAIL_ON_TDNF_ERROR(dwError);
++
+     dwError = TDNFConfigReadProxySettings(
+                   pSection,
+                   pConf);
+diff --git a/client/defines.h b/client/defines.h
+index 06a38f76..737ad328 100644
+--- a/client/defines.h
++++ b/client/defines.h
+@@ -88,6 +88,7 @@ typedef enum
+ #define TDNF_CONF_KEY_EXCLUDE             "excludepkgs"
+ #define TDNF_CONF_KEY_MINVERSIONS         "minversions"
+ #define TDNF_CONF_KEY_OPENMAX             "openmax"
++#define TDNF_CONF_KEY_CONNECT_TIMEOUT     "connect_timeout"
+ 
+ //Repo file key names
+ #define TDNF_REPO_KEY_BASEURL             "baseurl"
+@@ -137,6 +138,7 @@ typedef enum
+ #define TDNF_REPO_METADATA_EXPIRE_NEVER   "never"
+ 
+ #define TDNF_DEFAULT_OPENMAX              1024
++#define TDNF_CONF_DEFAULT_CONNECT_TIMEOUT 0  // seconds (unlimited)
+ 
+ // repo default settings
+ #define TDNF_REPO_DEFAULT_ENABLED            0
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index 502cd2b5..f03ebad6 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -597,6 +597,12 @@ TDNFDownloadFile(
+     dwError = curl_easy_setopt(pCurl, CURLOPT_FOLLOWLOCATION, 1L);
+     BAIL_ON_TDNF_CURL_ERROR(dwError);
+ 
++    if (pTdnf->pConf->nConnectTimeout > 0)
++    {
++        curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT,
++                          (long)pTdnf->pConf->nConnectTimeout);
++    }
++
+     if (!pTdnf->pArgs->nQuiet && pszProgressData != NULL)
+     {
+         //print progress only if tty or verbose is specified.
+diff --git a/etc/tdnf/tdnf.conf b/etc/tdnf/tdnf.conf
+index a10bcbe8..9a55d8e7 100644
+--- a/etc/tdnf/tdnf.conf
++++ b/etc/tdnf/tdnf.conf
+@@ -4,3 +4,4 @@ installonly_limit=3
+ clean_requirements_on_remove=0
+ repodir=/etc/yum.repos.d
+ cachedir=/var/cache/tdnf
++connect_timeout=10
+diff --git a/include/tdnftypes.h b/include/tdnftypes.h
+index 60039f51..d73bc8f5 100644
+--- a/include/tdnftypes.h
++++ b/include/tdnftypes.h
+@@ -242,6 +242,7 @@ typedef struct _TDNF_CONF
+     int nCleanRequirementsOnRemove;
+     int nKeepCache;
+     int nOpenMax;          //set max number of open files
++    int nConnectTimeout;
+     char* pszRepoDir;
+     char* pszCacheDir;
+     char* pszProxy;
