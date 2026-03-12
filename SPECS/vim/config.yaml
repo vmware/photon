@@ -1,11 +1,11 @@
 sources:
-- archive: vim-9.1.1898.tar.gz
-  archive_sha512sum: 0e50efdcec32377e894554d32d58a78d49ebcc5dbb27f6856827ae3dc619ddb2257175e69ca44078157e210d9ba8fd459b858b2c9588321fcef4ad9b379142d8
+- archive: vim-9.2.0136.tar.gz
+  archive_sha512sum: 3a9b8719adc04ee81e8ffdbcfb9a7bb584683cffa31cc1cd2bb5f6a7933335e7a09c6303d58e4a0bc9054d5eeec6cb913d4d54afbed0515a311c7af583322ec3
   archive_type: upstream
-  name: vim-9.1.1898
-  url: https://github.com/vim/vim/archive/refs/tags/v9.1.1898.tar.gz
+  name: vim-9.2.0136
+  url: https://github.com/vim/vim/archive/refs/tags/v9.2.0136.tar.gz
   repo_url: https://github.com/vim/vim
-  commit_id: cf4d9625c6eb21107e030dc879c1390596fbdb8d
+  commit_id: 93a7855f01b61fafd2063481252ece7cb6fe6b0c
   skip_list: []
   missing: []
   spdx:

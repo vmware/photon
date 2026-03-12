@@ -1,10 +1,10 @@
 %define debug_package %{nil}
-%global maj_ver vim91
+%global maj_ver vim92
 
 Summary:        Text editor
 Name:           vim
-Version:        9.1.1898
-Release:        2%{?dist}
+Version:        9.2.0136
+Release:        1%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -16,8 +16,6 @@ Source1: vimrc
 
 Source2: license.txt
 %include %{SOURCE2}
-
-Patch0: vim-CVE-2026-26269.patch
 
 BuildRequires:  ncurses-devel
 
@@ -112,6 +110,7 @@ fi
 %{_datadir}/vim/%{maj_ver}/import/dist/vimhighlight.vim
 %{_datadir}/vim/vim*/spell/*
 %{_datadir}/vim/vim*/syntax/*
+%{_datadir}/vim/vim*/xdg.vim
 %exclude %{_datadir}/vim/%{maj_ver}/syntax/nosyntax.vim
 %exclude %{_datadir}/vim/vim*/syntax/syntax.vim
 %exclude %{_datadir}/vim/%{maj_ver}/autoload/dist/ft.vim
@@ -146,6 +145,7 @@ fi
 %lang(lv) %{_datadir}/vim/vim*/lang/lv/LC_MESSAGES/vim.mo
 %lang(sr) %{_datadir}/vim/vim*/lang/sr/LC_MESSAGES/vim.mo
 %lang(vi) %{_datadir}/vim/vim*/lang/vi/LC_MESSAGES/vim.mo
+%lang(ta) %{_datadir}/vim/vim*/lang/ta/LC_MESSAGES/vim.mo
 %lang(tr) %{_datadir}/vim/vim*/lang/tr/LC_MESSAGES/vim.mo
 %lang(hu) %{_datadir}/vim/vim*/lang/hu/LC_MESSAGES/vim.mo
 %lang(zh_CN.UTF-8) %{_datadir}/vim/vim*/lang/zh_CN.UTF-8/LC_MESSAGES/vim.mo
@@ -166,7 +166,6 @@ fi
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/vimrc
-%{_datadir}/vim/vim*/syntax/syntax.vim
 %{_datadir}/vim/vim*/colors/desert.vim
 %{_datadir}/vim/vim*/colors/lists/default.vim
 %{_datadir}/vim/vim*/defaults.vim
@@ -183,6 +182,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Mar 11 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-1
+- Upgrade to 9.2.0136 to fix multiple CVEs
 * Mon Feb 23 2026 Dweep Advani <dweep.advani@broadcom.com> 9.1.1898-2
 - Fix CVE-2026-26269
 * Fri Nov 07 2025 Mukul Sikka <mukul.sikka@broadcom.com> 9.1.1898-1
