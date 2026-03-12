@@ -1,11 +1,11 @@
 sources:
-- archive: SQUID_7_4.tar.gz
-  archive_sha512sum: ff2388d1f2437e85cebe8d80e6a9b3f914314cf7256de0353ae5029546aa8d2052c41b6a100f691c77b6717dcf1754199052c3d241f7cd61ba57cc09151a4261
+- archive: squid-6.12.tar.xz
+  archive_sha512sum: 7ab61f19416426fb8284de7bddc1ea9a5a7b3148fc54c018a243071ba5854610ef38a248f6a22634a2acb7d3ea408b582af1f48818dfe698ade0b7b8c00fd183
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - squid-SQUID_7_4/CREDITS
-    sha256sum: 1e8a8497a64367e231ae4a6d3fb1ff03b9958879f0f2c5e77129c17487a0ece3
+    - squid-6.12/CREDITS
+    sha256sum: dbcc5ee4312134c8045e74fb0405e531a507dfe560158f3a1bb63bed3d246404
     spdx_exp: GPL-2.0-or-later
   spdx:
     package:

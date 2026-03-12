@@ -1,19 +1,17 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %define _confdir %{_sysconfdir}
 %define _squiddatadir %{_datadir}/%{name}
-%define upstream_name SQUID
-%define upstream_version 7_4
 
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
-Version:        7.4
-Release:        1%{?dist}
+Version:        6.12
+Release:        5.1%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/squid-cache/squid/archive/refs/tags/%{upstream_name}_%{upstream_version}.tar.gz
+Source0: http://www.squid-cache.org/Versions/v6/%{name}-%{version}.tar.xz
 Source1: %{name}.sysconfig
 Source2: %{name}.pam
 Source3: %{name}.service
@@ -24,6 +22,9 @@ Source7: errorpage_custom.css
 
 Source8: license.txt
 %include %{SOURCE8}
+
+Patch0: CVE-2025-62168.patch
+Patch1: CVE-2025-59362.patch
 
 BuildRequires: Linux-PAM-devel
 BuildRequires: ed
@@ -41,9 +42,6 @@ BuildRequires: openssl-devel
 BuildRequires: systemd-devel
 BuildRequires: systemd-rpm-macros
 BuildRequires: cyrus-sasl-devel
-BuildRequires: autoconf
-BuildRequires: automake
-BuildRequires: libltdl-devel
 
 Requires: openssl
 Requires: shadow
@@ -59,7 +57,6 @@ Requires: libecap
 Requires: expat-libs
 Requires: libgcc
 Requires: libstdc++
-Requires: libltdl
 Requires(pre): systemd-rpm-macros
 
 %description
@@ -75,14 +72,11 @@ lookup program (dnsserver), a program for retrieving FTP data
 (ftpget), and some management and client tools.
 
 %prep
-%autosetup -p1 -n squid-%{upstream_name}_%{upstream_version}
+%autosetup -p1
 cp %{SOURCE7} errors/errorpage.css
 
 %build
 %define _lto_cflags %{nil}
-
-# Generate the configure script
-./bootstrap.sh
 
 sh ./configure --host=%{_host} --build=%{_build} \
       --program-prefix= \
@@ -106,8 +100,8 @@ sh ./configure --host=%{_host} --build=%{_build} \
       --enable-eui \
       --enable-follow-x-forwarded-for \
       --enable-auth \
-      --enable-auth-basic="DB,fake,getpwnam,LDAP,NCSA,PAM,POP3,RADIUS,SASL" \
-      --enable-auth-ntlm="fake" \
+      --enable-auth-basic="DB,fake,getpwnam,LDAP,NCSA,PAM,POP3,RADIUS,SASL,SMB,SMB_LM" \
+      --enable-auth-ntlm="SMB_LM,fake" \
       --enable-auth-digest="file,LDAP" \
       --enable-external-acl-helpers="LDAP_group,unix_group,wbinfo_group" \
       --enable-cache-digests \
@@ -224,12 +218,14 @@ rm -rf %{buildroot}
 %{_tmpfilesdir}/squid.conf
 
 %config(noreplace) %{_sysconfdir}/pam.d/%{name}.pam
+%config(noreplace) %{_sysconfdir}/%{name}/cachemgr.conf.default
 %config(noreplace) %{_sysconfdir}/%{name}/errorpage.css.default
 %config(noreplace) %{_sysconfdir}/%{name}/mime.conf.default
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf.documented
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf.default
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}.logrotate
 
+%{_sysconfdir}/%{name}/cachemgr.conf
 %{_sysconfdir}/%{name}/errorpage.css
 %{_sysconfdir}/%{name}/mime.conf
 %{_sysconfdir}/%{name}/%{name}.conf
@@ -241,12 +237,13 @@ rm -rf %{buildroot}
 %attr(-,root,root) %{_datadir}/%{name}/errors
 %{_datadir}/%{name}/icons
 %{_sbindir}/%{name}
+%{_bindir}/%{name}client
+%{_bindir}/purge
 %{_libdir}/%{name}/*
 
 %changelog
-* Thu Mar 12 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.4-1
-- Upgrade to version 7.4
-- Remove deprecated SMB and SMB_LM auth helpers from configure flags
+* Tue Mar 10 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12-5.1
+- Bump version after moving to SPECS/91
 * Thu Nov 20 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.12-5
 - Fix for CVE-2025-62168
 * Tue Jul 29 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12-4
