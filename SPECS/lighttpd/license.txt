@@ -1,1 +1,1 @@
-License: BSD-2-Clause AND MIT AND RSA-MD AND BSD-3-Clause AND OML AND Apache-2.0 AND FSFAP AND Beerware AND blessing
+License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Beerware AND FSFAP AND MIT AND OML AND RSA-MD AND blessing

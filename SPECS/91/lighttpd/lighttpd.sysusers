@@ -1,0 +1,2 @@
+g lighttpd -
+u lighttpd - "lighttpd web server" /var/lib/lighttpd /sbin/nologin

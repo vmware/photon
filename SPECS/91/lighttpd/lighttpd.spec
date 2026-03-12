@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %define documentroot /srv/www/htdocs
 Summary:        A secure, fast, compliant, and very flexible web server
 Name:           lighttpd
-Version:        1.4.82
-Release:        1%{?dist}
+Version:        1.4.76
+Release:        3.1%{?dist}
 URL:            https://www.lighttpd.net/
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -118,8 +118,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/%{name}*8*
 
 %changelog
-* Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.4.82-1
-- Upgrade to 1.4.82
+* Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.4.76-3.1
+- Bump after moving to 91 subrelease
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.76-3
 - Renaming sysusers to conf to fix auto user creation
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.4.76-2

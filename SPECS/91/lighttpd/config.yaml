@@ -1,15 +1,7 @@
 sources:
-- archive: lighttpd-1.4.82.tar.gz
-  archive_type: upstream
-  archive_sha512sum: 63b4c7a5ad3bbd3b412f2e857ea7c509f5549ab2ca781efd53614f22c5c0ac1f3d77d9d2000e692be2c2799450fec4c1d654efc53d4d5c5450525249e19f8f09
-  skip_validation: false
-  name: "lighttpd-1.4.82"
-  version: 1.4.82
-  url: https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-1.4.82.tar.gz
-  repo_url: https://git.lighttpd.net/lighttpd/lighttpd1.4
-  commit_id: 95a86758ed084efd2654418f1fca780c4fc6f300
-  skip_list: []
-  missing: []
+- archive: lighttpd-1.4.76.tar.gz
+  archive_sha512sum: e8dcc1e113aeaec33e3b329f12ed3bf3ee67c8d056db0a1646f20ae1bc59dae0e439c388976367e4124ee1f90ae06375748e7f8ee891b5423ed282e0ccb532cc
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'lighttpd a secure, fast, compliant and very flexible
