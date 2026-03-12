@@ -140,8 +140,8 @@ def check_for_version(spec, err_dict):
     clog = spec.changelog.splitlines()
     changelog_ver = clog[0].split()[-1]
 
-    # combine Release & Version from header
-    release_ver = f"{spec.version}-" + spec.release.split("%")[0]
+    # combine Release & Version from header, without the %{?...} part
+    release_ver = f"{spec.version}-" + spec.release.split("%{?", maxsplit=1)[0]
 
     if changelog_ver != release_ver:
         err_msg = ("Changelog & Release version mismatch " "%s != %s") % (
