@@ -1,10 +1,10 @@
 %define debug_package %{nil}
-%global maj_ver vim91
+%global maj_ver vim92
 
 Summary:        Text editor
 Name:           vim
-Version:        9.1.1898
-Release:        2%{?dist}
+Version:        9.2.0136
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,11 +12,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=0e50efdcec32377e894554d32d58a78d49ebcc5dbb27f6856827ae3dc619ddb2257175e69ca44078157e210d9ba8fd459b858b2c9588321fcef4ad9b379142d8
+%define sha512 %{name}=3a9b8719adc04ee81e8ffdbcfb9a7bb584683cffa31cc1cd2bb5f6a7933335e7a09c6303d58e4a0bc9054d5eeec6cb913d4d54afbed0515a311c7af583322ec3
 
 Source1:        vimrc
-
-Patch0: vim-CVE-2026-26269.patch
 
 BuildRequires:  ncurses-devel
 
@@ -107,6 +105,7 @@ fi
 %{_datadir}/vim/vim*/vimrc_example.vim
 %{_datadir}/vim/vim*/print/*
 %{_datadir}/vim/vim*/scripts.vim
+%{_datadir}/vim/vim*/xdg.vim
 %{_datadir}/vim/%{maj_ver}/import/dist/vimhelp.vim
 %{_datadir}/vim/%{maj_ver}/import/dist/vimhighlight.vim
 %{_datadir}/vim/vim*/spell/*
@@ -145,6 +144,7 @@ fi
 %lang(lv) %{_datadir}/vim/vim*/lang/lv/LC_MESSAGES/vim.mo
 %lang(sr) %{_datadir}/vim/vim*/lang/sr/LC_MESSAGES/vim.mo
 %lang(vi) %{_datadir}/vim/vim*/lang/vi/LC_MESSAGES/vim.mo
+%lang(ta) %{_datadir}/vim/vim*/lang/ta/LC_MESSAGES/vim.mo
 %lang(tr) %{_datadir}/vim/vim*/lang/tr/LC_MESSAGES/vim.mo
 %lang(hu) %{_datadir}/vim/vim*/lang/hu/LC_MESSAGES/vim.mo
 %lang(zh_CN.UTF-8) %{_datadir}/vim/vim*/lang/zh_CN.UTF-8/LC_MESSAGES/vim.mo
@@ -165,7 +165,6 @@ fi
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/vimrc
-%{_datadir}/vim/vim*/syntax/syntax.vim
 %{_datadir}/vim/vim*/colors/desert.vim
 %{_datadir}/vim/vim*/colors/lists/default.vim
 %{_datadir}/vim/vim*/defaults.vim
@@ -182,6 +181,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Thu Mar 12 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-1
+- Upgrade to 9.2.0136 to fix multiple CVEs
 * Mon Feb 23 2026 Dweep Advani <dweep.advani@broadcom.com> 9.1.1898-2
 - Fix CVE-2026-26269
 * Tue Dec 23 2025 Dweep Advani <dweep.advani@broadcom.com> 9.1.1898-1
