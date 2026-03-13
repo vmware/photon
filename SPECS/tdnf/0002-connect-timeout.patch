@@ -1,0 +1,99 @@
+From 549ac3d50d2becd06b41c16f1979487f72acea5d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 12 Mar 2026 08:20:06 +0530
+Subject: [PATCH] Add configurable connect timeout for downloads
+
+Introduce connect_timeout config option and apply it via
+CURLOPT_CONNECTTIMEOUT in remote downloads to avoid long hangs
+when DNS resolution succeeds but TCP connection does not establish.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ client/config.c     | 5 +++++
+ client/remoterepo.c | 6 ++++++
+ common/config.h     | 2 ++
+ etc/tdnf/tdnf.conf  | 1 +
+ include/tdnftypes.h | 1 +
+ 5 files changed, 15 insertions(+)
+
+diff --git a/client/config.c b/client/config.c
+index 450581de..b2b475a4 100644
+--- a/client/config.c
++++ b/client/config.c
+@@ -164,6 +164,10 @@ TDNFConfigFromCnfTree(PTDNF_CONF pConf, struct cnfnode *cn_top)
+         {
+             pConf->nCliGPGCheck = isTrue(cn->value);
+         }
++        else if (strcmp(cn->name, TDNF_CONF_KEY_CONNECT_TIMEOUT) == 0)
++        {
++            pConf->nConnectTimeout = strtoi(cn->value);
++        }
+         else if (strcmp(cn->name, TDNF_CONF_KEY_SSL_VERIFY) == 0)
+         {
+             pConf->nSSLVerify = isTrue(cn->value);
+@@ -345,6 +349,7 @@ TDNFReadConfig(
+     pConf->nOpenMax = TDNF_CONF_DEFAULT_OPENMAX;
+     pConf->nInstallOnlyLimit = TDNF_CONF_DEFAULT_INSTALLONLY_LIMIT;
+     pConf->nSSLVerify = TDNF_CONF_DEFAULT_SSLVERIFY;
++    pConf->nConnectTimeout = TDNF_CONF_DEFAULT_CONNECT_TIMEOUT;
+ 
+     register_ini(NULL);
+     mod_ini = find_cnfmodule("ini");
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index 9b20d407..c8cb4d81 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -218,6 +218,12 @@ TDNFDownloadFile(
+     dwError = curl_easy_setopt(pCurl, CURLOPT_FOLLOWLOCATION, 1L);
+     BAIL_ON_TDNF_CURL_ERROR(dwError);
+ 
++    if (pTdnf->pConf->nConnectTimeout > 0)
++    {
++        curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT,
++                          (long)pTdnf->pConf->nConnectTimeout);
++    }
++
+     if (!pTdnf->pArgs->nQuiet && pszProgressData != NULL)
+     {
+         //print progress only if tty or verbose is specified.
+diff --git a/common/config.h b/common/config.h
+index 95d97e77..4d7cf633 100644
+--- a/common/config.h
++++ b/common/config.h
+@@ -56,6 +56,7 @@
+ #define TDNF_CONF_KEY_VARS_DIRS           "varsdir"
+ #define TDNF_CONF_KEY_CHECK_UPDATE_COMPAT "dnf_check_update_compat"
+ #define TDNF_CONF_KEY_DISTROSYNC_REINSTALL_CHANGED "distrosync_reinstall_changed"
++#define TDNF_CONF_KEY_CONNECT_TIMEOUT     "connect_timeout"
+ 
+ #define TDNF_PLUGIN_CONF_KEY_ENABLED      "enabled"
+ 
+@@ -117,6 +118,7 @@
+ #define TDNF_CONF_DEFAULT_OPENMAX            1024
+ #define TDNF_CONF_DEFAULT_INSTALLONLY_LIMIT  2
+ #define TDNF_CONF_DEFAULT_SSLVERIFY          1
++#define TDNF_CONF_DEFAULT_CONNECT_TIMEOUT    0  // seconds (unlimited)
+ 
+ // repo default settings
+ #define TDNF_REPO_DEFAULT_ENABLED            0
+diff --git a/etc/tdnf/tdnf.conf b/etc/tdnf/tdnf.conf
+index 7b5df18f..ecaddd94 100644
+--- a/etc/tdnf/tdnf.conf
++++ b/etc/tdnf/tdnf.conf
+@@ -4,3 +4,4 @@ installonly_limit=3
+ clean_requirements_on_remove=1
+ repodir=/etc/yum.repos.d
+ cachedir=/var/cache/tdnf
++connect_timeout=10
+diff --git a/include/tdnftypes.h b/include/tdnftypes.h
+index 68b81610..dcc4e4a3 100644
+--- a/include/tdnftypes.h
++++ b/include/tdnftypes.h
+@@ -264,6 +264,7 @@ typedef struct _TDNF_CONF
+     int nOpenMax;          //set max number of open files
+     int nCheckUpdateCompat;
+     int nDistroSyncReinstallChanged;
++    int nConnectTimeout;
+     rpmtransFlags rpmTransFlags;
+     int nPluginsEnabled;
+     int nSkipDigest;
