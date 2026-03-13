@@ -2,8 +2,8 @@
 
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
-Version:        6.0.0
-Release:        3%{?dist}
+Version:        6.12.0
+Release:        1%{?dist}
 URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -82,7 +82,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/%{name}/*
+%{_datadir}/%{name}/*
 %{_sbindir}/*
 %exclude %{_sbindir}/ip
 %exclude %{_sbindir}/ifstat
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri Mar 13 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.0-1
+- Update to v6.12.0 and fix UAPI enums in HCX patches
 * Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 6.0.0-3
 - Introduce -ip and -ifstat subpackage for users demanding smaller footprint.
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 6.0.0-2

@@ -1,7 +1,14 @@
 sources:
-- archive: iproute2-6.0.0.tar.xz
-  archive_sha512sum: be30362b0df6906aa786f935d5f555b8b86c747fe05314066f4180ab2f7c952ae227b7cf04c15e75d8f99ca17bafb7c8dc0fb1c18f3a9e3222d98716bb449f7a
-  skip_validation: true
+- archive: iproute2-6.12.0.tar.xz
+  archive_type: upstream
+  archive_sha512sum: dbd6afb8162a6086e4be9045b8dc53aa563bd4b7abaf43ee13cd7d493730ff0b90e6985f68c6f42d64f4af6a692d0589e0cefd2f24045ec1c10418cfb73940b2
+  name: iproute2-6.12.0
+  version: 6.12.0
+  url: http://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.12.0.tar.xz
+  repo_url: https://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+  commit_id: 742fb8a25c8740a1b93251ed33da08a60b8353aa
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The IPRoute2 package contains programs for basic and
