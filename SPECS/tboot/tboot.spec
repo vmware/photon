@@ -1,7 +1,13 @@
+# powershell's make files use -D_FORTIFY_SOURCE=2, which conflicts
+# with =3 from adjust-gcc-specs.sh, failing the build with error:
+# `"_FORTIFY_SOURCE" redefined [-Werror]`
+# Use `nofortify` until tboot move to =3.
+%global security_hardening nofortify
+
 Summary:    Trusted pre-kernel module and tools.
 Name:       tboot
 Version:    1.10.5
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://sourceforge.net/projects/tboot/
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -36,6 +42,8 @@ make debug=y DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{_sysconfdir}
 
 %changelog
+*   Sat Mar 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.5-3
+-   Set security_hardening nofortify
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.10.5-2
 -   Release bump for SRP compliance
 *   Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.10.5-1

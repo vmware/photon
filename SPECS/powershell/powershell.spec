@@ -1,7 +1,7 @@
 # powershell's make files use -D_FORTIFY_SOURCE=2, which conflicts
 # with =3 from adjust-gcc-specs.sh, failing the build with error:
 # `"_FORTIFY_SOURCE" redefined [-Werror]`
-# Use `nofortify` until powershell mave to =3.
+# Use `nofortify` until powershell move to =3.
 %global security_hardening nofortify
 
 %global ps_native_ver   7.4.0

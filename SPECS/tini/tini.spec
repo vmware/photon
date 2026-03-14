@@ -1,9 +1,15 @@
 %global debug_package %{nil}
 %define TINI_GITCOMMIT de40ad0
 
+# powershell's make files use -D_FORTIFY_SOURCE=2, which conflicts
+# with =3 from adjust-gcc-specs.sh, failing the build with error:
+# `"_FORTIFY_SOURCE" redefined [-Werror]`
+# Use `nofortify` until tini move to =3.
+%global security_hardening nofortify
+
 Name:           tini
 Version:        0.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A tiny but valid init for containers
 Vendor:         VMware, Inc.
 Group:          System Environment/Base
@@ -46,5 +52,7 @@ export CFLAGS
 %exclude %{_bindir}/tini-static
 
 %changelog
+* Sat Mar 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.19.0-2
+- Set security_hardening nofortify
 * Tue Apr 08 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.19.0-1
 - Initial build
