@@ -4,7 +4,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -40,7 +40,6 @@ Requires:       systemd
 Requires:       %{name}-minimal = %{version}-%{release}
 
 Provides: ntp
-Obsoletes: ntp
 
 %description
 NTPsec is a more secure and improved implementation of the Network Time
@@ -148,6 +147,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Sat Mar 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-8
+- Remove obsoletes: ntp to keep 91 stable
 * Tue Feb 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-7
 - Split ntptime binary to new ntpsec-minimal subpackage
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-6
