@@ -4,7 +4,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -31,7 +31,6 @@ BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
 
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires:       gcc
 Requires:       glibc
 Requires:       openssl
 Requires:       libevent
@@ -147,6 +146,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Mon Mar 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-9
+- Remove requires gcc
 * Sat Mar 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-8
 - Remove obsoletes: ntp to keep 91 stable
 * Tue Feb 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-7
