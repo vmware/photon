@@ -1,4 +1,3 @@
-%global build_if %{photon_subrelease} <= 91
 %global security_hardening  none
 %define zlibver             1.2.13
 %define libpngver           1.6.39
@@ -6,7 +5,7 @@
 Summary:      Simple kernel loader which boots from a FAT filesystem
 Name:         syslinux
 Version:      6.04
-Release:      13%{?dist}
+Release:      14%{?dist}
 URL:          http://www.syslinux.org
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -96,6 +95,8 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
+* Sun Mar 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-14
+- Remove photon_subrelease clause
 * Sun Mar 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-13
 - Revert SPECS/91 move
 - This package should be there as long as bios boot is supported
