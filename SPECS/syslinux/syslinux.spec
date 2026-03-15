@@ -6,7 +6,7 @@
 Summary:      Simple kernel loader which boots from a FAT filesystem
 Name:         syslinux
 Version:      6.04
-Release:      12.1%{?dist}
+Release:      13%{?dist}
 URL:          http://www.syslinux.org
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -96,6 +96,9 @@ rm %{buildroot}%{_bindir}/sha1pass
 %{_datadir}/%{name}/com32/*
 
 %changelog
+* Sun Mar 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-13
+- Revert SPECS/91 move
+- This package should be there as long as bios boot is supported
 * Mon Mar 09 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.04-12.1
 - Create subrelease version
 * Thu Jul 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.04-12
