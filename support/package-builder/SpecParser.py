@@ -524,7 +524,7 @@ class SpecParser(object):
         if nrWords != 3:
             print(f"Error: Unable to parse line: {line}")
             return False
-        if words[2] not in {"none", "nonow", "nopie", "nofortify"}:
+        if words[2] not in {"none", "nonow", "nopie", "nofortify", "nofortify3"}:
             print(f"Error: Invalid security_hardening value: {words[2]}")
             return False
         self.globalSecurityHardening = words[2]

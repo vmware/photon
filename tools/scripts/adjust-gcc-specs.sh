@@ -4,7 +4,7 @@
 # specified below:
 USE_STACK_PROTECTOR=1
 USE_STACK_CLASH_PROTECTION=1
-USE_FORTIFY_SOURCE=1
+_FORTIFY_SOURCE_VALUE=3
 USE_PIE=1
 USE_ZRELRO=1
 USE_ZNOW=1
@@ -22,7 +22,10 @@ if [ -n "$1" ]; then
       exit 0
       ;;
     nofortify)
-      USE_FORTIFY_SOURCE=0
+      _FORTIFY_SOURCE_VALUE=0
+      ;;
+    nofortify3)
+      _FORTIFY_SOURCE_VALUE=2
       ;;
     nopie)
       USE_PIE=0
@@ -54,8 +57,8 @@ if [ $USE_STACK_CLASH_PROTECTION -eq 1 ]; then
   CC1PLUS_EXTRA="$CC1PLUS_EXTRA %{!fno-stack-clash-protection:-fstack-clash-protection}"
 fi
 
-if [ $USE_FORTIFY_SOURCE -eq 1 ]; then
-  CPP_EXTRA="$CPP_EXTRA %{O1|O2|O3|Os|Ofast:-D_FORTIFY_SOURCE=3}"
+if [ $_FORTIFY_SOURCE_VALUE -ne 0 ]; then
+  CPP_EXTRA="$CPP_EXTRA %{O1|O2|O3|Os|Ofast:-D_FORTIFY_SOURCE=$_FORTIFY_SOURCE_VALUE}"
 fi
 
 if [ $USE_PIE -eq 1 ]; then
