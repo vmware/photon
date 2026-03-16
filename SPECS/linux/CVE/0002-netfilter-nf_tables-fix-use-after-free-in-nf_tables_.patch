@@ -1,0 +1,54 @@
+From 54dd7fd9723d11dc01946e4a0261832d4b34e90d Mon Sep 17 00:00:00 2001
+From: Inseo An <y0un9sa@gmail.com>
+Date: Tue, 17 Feb 2026 21:14:40 +0900
+Subject: [PATCH 2/2] netfilter: nf_tables: fix use-after-free in
+ nf_tables_addchain()
+
+[ Upstream commit 71e99ee20fc3f662555118cf1159443250647533 ]
+
+nf_tables_addchain() publishes the chain to table->chains via
+list_add_tail_rcu() (in nft_chain_add()) before registering hooks.
+If nf_tables_register_hook() then fails, the error path calls
+nft_chain_del() (list_del_rcu()) followed by nf_tables_chain_destroy()
+with no RCU grace period in between.
+
+This creates two use-after-free conditions:
+
+ 1) Control-plane: nf_tables_dump_chains() traverses table->chains
+    under rcu_read_lock(). A concurrent dump can still be walking
+    the chain when the error path frees it.
+
+ 2) Packet path: for NFPROTO_INET, nf_register_net_hook() briefly
+    installs the IPv4 hook before IPv6 registration fails.  Packets
+    entering nft_do_chain() via the transient IPv4 hook can still be
+    dereferencing chain->blob_gen_X when the error path frees the
+    chain.
+
+Add synchronize_rcu() between nft_chain_del() and the chain destroy
+so that all RCU readers -- both dump threads and in-flight packet
+evaluation -- have finished before the chain is freed.
+
+Fixes: 91c7b38dc9f0 ("netfilter: nf_tables: use new transaction infrastructure to handle chain")
+Signed-off-by: Inseo An <y0un9sa@gmail.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ net/netfilter/nf_tables_api.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 2aacc1e51f55..274f803fede1 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2364,6 +2364,7 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 
+ err_register_hook:
+ 	nft_chain_del(chain);
++	synchronize_rcu();
+ err_chain_add:
+ 	nft_trans_destroy(trans);
+ err_trans:
+-- 
+2.43.7
+

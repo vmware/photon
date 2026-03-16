@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.252
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -576,6 +576,10 @@ Patch320: 0001-btrfs-do-not-allow-relocation-of-partially-dropped-s.patch
 Patch321: 0001-ceph-fix-multifs-mds-auth-caps-issue.patch
 # CVE-2026-23189
 Patch322: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
+
+# CVE-2026-23231
+Patch323: 0001-netfilter-nf_tables-register-hooks-last-when-adding-.patch
+Patch324: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1268,6 +1272,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Mar 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-3
+- Fix CVE-2026-23231
 * Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.252-2
 - Fixes CVE-2025-40362, CVE-2025-39738 and CVE-2026-23189
 * Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.252-1

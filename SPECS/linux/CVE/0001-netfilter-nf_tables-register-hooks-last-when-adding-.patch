@@ -1,0 +1,190 @@
+From f305359186724ac4bc058d5cd01782e6e6f9a3e7 Mon Sep 17 00:00:00 2001
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Mon, 19 Feb 2024 19:43:53 +0100
+Subject: [PATCH] netfilter: nf_tables: register hooks last when adding new
+ chain/flowtable
+
+[ Upstream commit d472e9853d7b46a6b094224d131d09ccd3a03daf ]
+
+Register hooks last when adding chain/flowtable to ensure that packets do
+not walk over datastructure that is being released in the error path
+without waiting for the rcu grace period.
+
+Fixes: 91c7b38dc9f0 ("netfilter: nf_tables: use new transaction infrastructure to handle chain")
+Fixes: 3b49e2e94e6e ("netfilter: nf_tables: add flow table netlink frontend")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Keerthana: Backport to v5.10.y]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ net/netfilter/nf_tables_api.c | 78 ++++++++++++++++++-----------------
+ 1 file changed, 40 insertions(+), 38 deletions(-)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index dcb35be8b2af..2aacc1e51f55 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -651,15 +651,16 @@ static int nft_delobj(struct nft_ctx *ctx, struct nft_object *obj)
+ 	return err;
+ }
+ 
+-static int nft_trans_flowtable_add(struct nft_ctx *ctx, int msg_type,
+-				   struct nft_flowtable *flowtable)
++static struct nft_trans *
++nft_trans_flowtable_add(struct nft_ctx *ctx, int msg_type,
++		        struct nft_flowtable *flowtable)
+ {
+ 	struct nft_trans *trans;
+ 
+ 	trans = nft_trans_alloc(ctx, msg_type,
+ 				sizeof(struct nft_trans_flowtable));
+ 	if (trans == NULL)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	if (msg_type == NFT_MSG_NEWFLOWTABLE)
+ 		nft_activate_next(ctx->net, flowtable);
+@@ -668,22 +669,22 @@ static int nft_trans_flowtable_add(struct nft_ctx *ctx, int msg_type,
+ 	nft_trans_flowtable(trans) = flowtable;
+ 	nft_trans_commit_list_add_tail(ctx->net, trans);
+ 
+-	return 0;
++	return trans;
+ }
+ 
+ static int nft_delflowtable(struct nft_ctx *ctx,
+ 			    struct nft_flowtable *flowtable)
+ {
+-	int err;
++	struct nft_trans *trans;
+ 
+-	err = nft_trans_flowtable_add(ctx, NFT_MSG_DELFLOWTABLE, flowtable);
+-	if (err < 0)
+-		return err;
++	trans = nft_trans_flowtable_add(ctx, NFT_MSG_DELFLOWTABLE, flowtable);
++	if (IS_ERR(trans))
++		return PTR_ERR(trans);
+ 
+ 	nft_deactivate_next(ctx->net, flowtable);
+ 	nft_use_dec(&ctx->table->use);
+ 
+-	return err;
++	return 0;
+ }
+ 
+ /*
+@@ -2335,19 +2336,15 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 	rcu_assign_pointer(chain->rules_gen_0, rules);
+ 	rcu_assign_pointer(chain->rules_gen_1, rules);
+ 
+-	err = nf_tables_register_hook(net, table, chain);
+-	if (err < 0)
+-		goto err_destroy_chain;
+-
+ 	if (!nft_use_inc(&table->use)) {
+ 		err = -EMFILE;
+-		goto err_use;
++		goto err_destroy_chain;
+ 	}
+ 
+ 	trans = nft_trans_chain_add(ctx, NFT_MSG_NEWCHAIN);
+ 	if (IS_ERR(trans)) {
+ 		err = PTR_ERR(trans);
+-		goto err_unregister_hook;
++		goto err_trans;
+ 	}
+ 
+ 	nft_trans_chain_policy(trans) = NFT_CHAIN_POLICY_UNSET;
+@@ -2355,17 +2352,22 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 		nft_trans_chain_policy(trans) = policy;
+ 
+ 	err = nft_chain_add(table, chain);
+-	if (err < 0) {
+-		nft_trans_destroy(trans);
+-		goto err_unregister_hook;
+-	}
++	if (err < 0)
++		goto err_chain_add;
++
++	/* This must be LAST to ensure no packets are walking over this chain. */
++	err = nf_tables_register_hook(net, table, chain);
++	if (err < 0)
++		goto err_register_hook;
+ 
+ 	return 0;
+ 
+-err_unregister_hook:
++err_register_hook:
++	nft_chain_del(chain);
++err_chain_add:
++	nft_trans_destroy(trans);
++err_trans:
+ 	nft_use_dec_restore(&table->use);
+-err_use:
+-	nf_tables_unregister_hook(net, table, chain);
+ err_destroy_chain:
+ 	nf_tables_chain_destroy(chain);
+ 
+@@ -7200,8 +7202,8 @@ static int nf_tables_newflowtable(struct net *net, struct sock *nlsk,
+ 	u8 genmask = nft_genmask_next(net);
+ 	int family = nfmsg->nfgen_family;
+ 	struct nft_flowtable *flowtable;
+-	struct nft_hook *hook, *next;
+ 	struct nft_table *table;
++	struct nft_trans *trans;
+ 	struct nft_ctx ctx;
+ 	int err;
+ 
+@@ -7281,34 +7283,34 @@ static int nf_tables_newflowtable(struct net *net, struct sock *nlsk,
+ 	err = nft_flowtable_parse_hook(&ctx, nla[NFTA_FLOWTABLE_HOOK],
+ 				       &flowtable_hook, flowtable, true);
+ 	if (err < 0)
+-		goto err4;
++		goto err_flowtable_parse_hooks;
+ 
+ 	list_splice(&flowtable_hook.list, &flowtable->hook_list);
+ 	flowtable->data.priority = flowtable_hook.priority;
+ 	flowtable->hooknum = flowtable_hook.num;
+ 
++	trans = nft_trans_flowtable_add(&ctx, NFT_MSG_NEWFLOWTABLE, flowtable);
++	if (IS_ERR(trans)) {
++		err = PTR_ERR(trans);
++		goto err_flowtable_trans;
++	}
++
++	/* This must be LAST to ensure no packets are walking over this flowtable. */
+ 	err = nft_register_flowtable_net_hooks(ctx.net, table,
+ 					       &flowtable->hook_list,
+ 					       flowtable);
+-	if (err < 0) {
+-		nft_flowtable_hooks_destroy(&flowtable->hook_list);
+-		goto err4;
+-	}
+-
+-	err = nft_trans_flowtable_add(&ctx, NFT_MSG_NEWFLOWTABLE, flowtable);
+ 	if (err < 0)
+-		goto err5;
++		goto err_flowtable_hooks;
+ 
+ 	list_add_tail_rcu(&flowtable->list, &table->flowtables);
+ 
+ 	return 0;
+-err5:
+-	list_for_each_entry_safe(hook, next, &flowtable->hook_list, list) {
+-		nft_unregister_flowtable_hook(net, flowtable, hook);
+-		list_del_rcu(&hook->list);
+-		kfree_rcu(hook, rcu);
+-	}
+-err4:
++
++err_flowtable_hooks:
++	nft_trans_destroy(trans);
++err_flowtable_trans:
++	nft_flowtable_hooks_destroy(&flowtable->hook_list);
++err_flowtable_parse_hooks:
+ 	flowtable->data.type->free(&flowtable->data);
+ err3:
+ 	module_put(type->owner);
+-- 
+2.43.7
+
