@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.5.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
@@ -27,6 +27,7 @@ Patch12: CVE-2025-9900.patch
 Patch13: CVE-2024-13978-prep.patch
 Patch14: CVE-2024-13978-1.patch
 Patch15: CVE-2024-13978-2.patch
+Patch16: CVE-2025-61144.patch
 
 BuildRequires:  libjpeg-turbo-devel
 
@@ -80,6 +81,8 @@ It contains the libraries and header files to create applications
 %{_mandir}/man*/*
 
 %changelog
+* Mon Mar 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-11
+- Fix CVE-2025-61144
 * Tue Feb 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.1-10
 - Fix CVE-2024-13978
 * Mon Oct 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-9
