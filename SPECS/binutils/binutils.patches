@@ -36,3 +36,5 @@ Patch35:        CVE-2025-7545.patch
 Patch36:        CVE-2025-7546.patch
 Patch37:        CVE-2025-11839.patch
 Patch38:        CVE-2025-11840.patch
+Patch39:        CVE-2025-69649.patch
+Patch40:        CVE-2025-69652.patch

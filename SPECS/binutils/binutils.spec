@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.35
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -144,6 +144,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Tue Mar 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.35-18
+- CVE fixes
 * Wed Nov 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.35-17
 - Fix CVE-2025-11839, CVE-2025-11840
 * Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.35-16
