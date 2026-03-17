@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        The Xorg applications.
 Name:           xorg-applications
 Version:        7.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.x.org
 Group:          Development/System
 Vendor:         VMware, Inc.
@@ -64,6 +66,8 @@ done
 %{_datadir}/*
 
 %changelog
+* Tue Mar 17 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 7.7-7
+- Deprecating for 92 and above, Split for Subrelease 91
 * Fri Dec 13 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 7.7-6
 - Release bump for SRP compliance
 * Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-5

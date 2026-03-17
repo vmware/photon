@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 91
+
 %global debug_package %{nil}
 
 Summary:           The Xorg fonts.
 Name:              xorg-fonts
 Version:           7.7
-Release:           4%{?dist}
+Release:           5%{?dist}
 URL:               http://www.x.org
 Group:             Development/System
 Vendor:            VMware, Inc.
@@ -126,6 +128,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Tue Mar 17 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 7.7-5
+- Deprecating for 92 and above, Split for Subrelease 91
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 7.7-4
 - Release bump for SRP compliance
 * Wed Jan 11 2023 Shivani Agarwal <shivania2@vmware.com> 7.7-3
