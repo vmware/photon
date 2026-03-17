@@ -1,6 +1,6 @@
 Name:           stunnel
 Version:        5.72
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A TLS-encrypting socket wrapper
 Group:          System Environment/Libraries
 URL:            https://www.stunnel.org
@@ -21,7 +21,6 @@ Buildrequires: python3-cryptography
 
 Requires: openssl-libs
 Requires: libnsl
-Requires: rpcsvc-proto
 Requires: finger
 Requires: perl
 
@@ -56,6 +55,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}*
 
 %changelog
+* Tue Mar 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.72-5
+- Drop runtime dependency on rpcsvc-proto
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 5.72-4
 - Build without tcp_wrappers
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 5.72-3

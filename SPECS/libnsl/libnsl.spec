@@ -1,7 +1,7 @@
 Summary:        Libraries for the public client interface for NIS(YP) and NIS+.
 Name:           libnsl
 Version:        2.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Libraries
 URL:            https://github.com/thkukuk/libnsl
 Vendor:         VMware, Inc.
@@ -13,10 +13,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Requires:       libtirpc
-Requires:       rpcsvc-proto
 
 BuildRequires:  libtirpc-devel
-BuildRequires:  rpcsvc-proto-devel
 
 %description
 The libnsl package contains the public client interface for NIS(YP) and NIS+.
@@ -61,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.a
 
 %changelog
+* Tue Mar 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.0.0-5
+- Remove rpcsvc-proto as a dependency
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.0-4
 - Release bump for SRP compliance
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.0.0-3
