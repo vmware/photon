@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        4.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
@@ -117,6 +119,8 @@ rm -rf %{buildroot}
 %{_sbindir}/ptp4l
 
 %changelog
+*   Tue Mar 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.2-4
+-   Add missing build_if
 *   Thu Oct 30 2025 Ajay Kaher <ajay.kaher@broadcom.com> 4.2-3
 -   Split linuxptp binary into minimal package with:
 -   phc2sys, phc_ctl, pmc, ptp4l
