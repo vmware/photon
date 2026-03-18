@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
-%define toolchain_prefix 2025-12-11
-%define bootstrap_toolchain_ver 1.92.0
+%global build_if %{photon_subrelease} <= 91
+%define toolchain_prefix 2025-04-03
+%define bootstrap_toolchain_ver 1.86.0
 
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.93.1
-Release:        1%{?dist}
+Version:        1.87.0
+Release:        3.1%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -22,7 +22,7 @@ Source3: https://static.rust-lang.org/dist/%{toolchain_prefix}/rust-std-%{bootst
 Source4: license.txt
 %include %{SOURCE4}
 
-Patch0: 0001-Fix-PassPlugin.h-path-for-llvm-22.patch
+Patch0: 0001_remove_spdx_dependency.patch
 
 BuildRequires: cmake
 BuildRequires: ninja-build
@@ -62,13 +62,12 @@ Documentation files for rust
 for library in %{libraries}; do
   rm -rf src/llvm-project/$library
 done
-# eza has copyleft license, so avoid it.
-rm -r src/tools/rustc-perf/collector/compile-benchmarks/eza-*
 
 %if 0%{?with_check} == 0
 # Remove files to handle unintended licenses
 rm -r tests/*
 %endif
+rm -r vendor/spdx-0.10.8/*
 
 mkdir -p build/cache/%{toolchain_prefix}
 cp %{SOURCE1} %{SOURCE2} %{SOURCE3} build/cache/%{toolchain_prefix}/
@@ -78,7 +77,7 @@ export LLVM_LINK_SHARED=1
 sh ./configure \
     --prefix=%{_prefix} \
     --enable-extended \
-    --tools="cargo,rustdoc,clippy,rustfmt" \
+    --tools="cargo" \
     --llvm-root=%{_prefix} \
     --disable-llvm-static-stdcpp \
     --disable-llvm-bitcode-linker \
@@ -110,10 +109,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/rustc
-%{_bindir}/cargo-clippy
-%{_bindir}/cargo-fmt
-%{_bindir}/clippy-driver
-%{_bindir}/rustfmt
 %{_bindir}/rustdoc
 %{_bindir}/rust-lldb
 %{_libdir}/lib*.so*
@@ -123,7 +118,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/cargo
 %{_datadir}/zsh/*
 %{_sysconfdir}/bash_completion.d/cargo
-%{_sysconfdir}/target-spec-json-schema.json
 %doc src/tools/rustfmt/{README,CHANGELOG,Configurations}.md
 %doc src/tools/clippy/{README.md,CHANGELOG.md}
 
@@ -134,8 +128,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
-* Thu Mar 05 2026 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.93.1-1
-- Update to v1.93.1
+* Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.87.0-3.1
+- Release bump for 9.1
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.87.0-3
 - Rebuild with shared llvm libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.87.0-2

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 # The post hooks strip the binary which removes
 # the BEGIN_trigger and END_trigger functions
@@ -7,8 +7,8 @@
 %global _find_debuginfo_opts    -g
 
 Name:           bpftrace
-Version:        0.25.1
-Release:        1%{?dist}
+Version:        0.21.2
+Release:        5.1%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -37,8 +37,6 @@ BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  systemtap-sdt-devel
-BuildRequires:  vim-extra
-BuildRequires:  pkg-config
 
 Requires:       bcc
 Requires:       bcc-tools
@@ -64,7 +62,7 @@ and predecessor tracers such as DTrace and SystemTap
 LLVM_LIBS="$(llvm-config --libs --system-libs all)"
 LLVM_CFLAGS="$(llvm-config --cxxflags | sed 's/-fno-exceptions//g') -fexceptions"
 
-export CXXFLAGS="$LLVM_CFLAGS -DBPF_TRACE_KPROBE_SESSION=32 -DBPF_TRACE_UPROBE_MULTI=33 -DBPF_F_UPROBE_MULTI_RETURN=1 -fpermissive"
+export CXXFLAGS="$LLVM_CFLAGS"
 export LDFLAGS="$LLVM_LIBS -lz"
 
 %{cmake} \
@@ -74,9 +72,6 @@ export LDFLAGS="$LLVM_LIBS -lz"
     -DENABLE_TESTS:BOOL=OFF \
     -DBUILD_DEPS=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DLIBBPF_INCLUDE_DIRS=/usr/include \
-    -DLIBBPF_LIBRARIES=/usr/lib/libbpf.so \
-    -DUSE_SYSTEM_LIBBPF=ON \
     -DUSE_SYSTEM_BPF_BCC=ON
 
 %{cmake_build}
@@ -92,20 +87,21 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%doc README.md
+%doc README.md CONTRIBUTING-TOOLS.md
 %doc docs/reference_guide.md docs/tutorial_one_liners.md
 %license LICENSE
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/tools
+%dir %{_datadir}/%{name}/tools/doc
 %{_bindir}/%{name}
 %{_bindir}/%{name}-aotrt
 %{_mandir}/man8/*
 %attr(0755,-,-) %{_datadir}/%{name}/tools/*.bt
 %attr(0755,-,-) %{_datadir}/%{name}/tools/old/*.bt
-%{_datadir}/bash-completion/completions/bpftrace
+%{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
-* Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.25.1-1
+* Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.21.2-5.1
 - Bump to build with updated llvm
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.21.2-5
 - Rebuild with shared llvm libraries

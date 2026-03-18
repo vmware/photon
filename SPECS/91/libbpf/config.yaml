@@ -1,14 +1,7 @@
 sources:
-- archive: libbpf-1.7.0.tar.gz
-  archive_type: upstream
-  archive_sha512sum: 29996f76d45222070b7554c1a098d67cf0933876a0fb3965800a304239a7e8dcc4d2ecc3ffe049dfbebe62e29e12cca793c6b22d5845955dd17faff5786691dd
-  name: "libbpf-1.7.0"
-  version: 1.7.0
-  url: https://github.com/libbpf/libbpf/archive/refs/tags/v1.7.0.tar.gz
-  repo_url: https://github.com/libbpf/libbpf.git
-  commit_id: f5dcbae736e5d7f83a35718e01be1a8e3010fa39
-  skip_list: []
-  missing: ['libbpf-logo-compact.png', 'libbpf-logo-sparse-mono.png', 'libbpf-logo-sideways-mono.png', 'libbpf-logo-sideways.png', 'libbpf-logo-compact-mono.png', 'libbpf-logo-sideways-darkbg.png', 'libbpf-logo-sparse.png', 'libbpf-logo-sparse-darkbg.png', 'libbpf-logo-compact-darkbg.png']
+- archive: libbpf-1.2.2.tar.gz
+  archive_sha512sum: bc7620207e6f521b9b5baab00bd81346084b8eabf81bff3ec24e5367d389f2a331a0b082798f8bb5d4fea836c3c0cc961fc881abc3a4e05d91152150bdfe47be
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Library for loading eBPF programs and reading and manipulating

@@ -1,7 +1,14 @@
 sources:
-- archive: glslang-11.13.0.tar.gz
-  archive_sha512sum: 20c2a6543b002648f459f26bd36b5c445afd6d8eae175e400dbe45632f11ca8de1f9e6f6e98fd6f910aa75d90063e174c095e7df26d9d4982192b84d08b0dc8b
-  skip_validation: true
+- archive: glslang-16.2.0.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 68b00bb3c84e5ecfa1ca2ba50bf1bd3e9fe6e04ffb09fbfbd54274e9eea5c3aa5ea8d229fcd834f92d6dd11c52c77264ceb80b8461591eb4b062bf87aa7f0619
+  name: "glslang-16.2.0"
+  version: 16.2.0
+  url: https://github.com/KhronosGroup/glslang/archive/refs/tags/16.2.0.tar.gz
+  repo_url: https://github.com/KhronosGroup/glslang.git
+  commit_id: f0bd0257c308b9a26562c1a30c4748a0219cc951
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: '%{name} is the official reference compiler front end

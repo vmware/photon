@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        SPIR-V LLVM Translator
 Name:           spirv-llvm-translator
 Version:        18.1.13
-Release:        2%{?dist}
+Release:        2.1%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -75,6 +77,8 @@ This package contains command-line tools for SPIRV-LLVM-Translator, such as llvm
 %{_libdir}/pkgconfig/LLVMSPIRVLib.pc
 
 %changelog
+* Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 18.1.13-2.1
+- Release bump for 9.1
 * Tue Oct 28 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.13-2
 - Fix aarch64 build issue
 * Thu Jun 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.13-1

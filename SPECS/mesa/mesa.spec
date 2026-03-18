@@ -2,8 +2,8 @@
 
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        25.1.4
-Release:        3%{?dist}
+Version:        25.3.6
+Release:        1%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -43,6 +43,7 @@ BuildRequires:  spirv-llvm-translator-devel
 BuildRequires:  clang-devel
 BuildRequires:  libunwind-devel
 BuildRequires:  lm-sensors-devel
+BuildRequires:  libdisplay-info-devel
 %ifarch aarch64
 BuildRequires:  python3-pycparser
 %endif
@@ -59,13 +60,20 @@ Mesa is an OpenGL compatible 3D graphics library.
 
 %package        vulkan-drivers
 Summary:        Mesa Vulkan drivers
-Requires:       spirv-tools-devel
+Requires:       elfutils-libelf
+Requires:       expat-libs
+Requires:       libdisplay-info
+Requires:       libdrm
+Requires:       libllvm
+Requires:       libwayland-client
+Requires:       spirv-tools-libs
 
 %description    vulkan-drivers
 The drivers with support for the Vulkan API.
 
 %package        libgbm
 Summary:        Mesa gbm runtime library
+Requires:       %{name}-libgallium = %{version}-%{release}
 Requires:       expat
 Requires:       libdrm
 Requires:       libwayland-server
@@ -85,6 +93,11 @@ Mesa libgbm development package.
 %package libEGL
 Summary: Mesa EGL runtime library
 Group: System/Libraries
+Requires: %{name}-libgbm = %{version}-%{release}
+Requires: %{name}-libgallium = %{version}-%{release}
+Requires: expat-libs
+Requires: libdrm
+Requires: libwayland-client
 
 %description libEGL
 This package contains the Mesa implementation of the EGL library.
@@ -107,6 +120,11 @@ This package contains development files for the Mesa Direct Rendering Infrastruc
 %package libgallium
 Summary: Gallium shared library from Mesa
 Group: System/Libraries
+Requires: elfutils-libelf
+Requires: expat-libs
+Requires: libdrm
+Requires: libllvm
+Requires: spirv-tools-libs
 
 %description libgallium
 This package contains the Gallium shared library from Mesa.
@@ -116,19 +134,15 @@ This package contains the Gallium shared library from Mesa.
 
 %build
 %{meson} \
-    -Dgallium-vdpau=disabled \
     -Dgallium-va=disabled \
-    -Dgallium-xa=disabled \
-    -Dgallium-nine=false \
-    -Dgallium-opencl=disabled \
     -Dplatforms=wayland \
-    -Dosmesa=false \
     -Dvulkan-layers=device-select \
     -Dshared-glapi=disabled \
     -Dgles1=disabled \
     -Dopengl=false \
     -Dgbm=enabled \
     -Dglx=disabled \
+    -Dgallium-mediafoundation=disabled \
     -Dxlib-lease=disabled \
     -Dandroid-libbacktrace=disabled \
     -Dlmsensors=disabled \
@@ -140,7 +154,6 @@ This package contains the Gallium shared library from Mesa.
     -Dbuild-tests=false \
     -Dselinux=false \
     -Dvulkan-drivers=auto \
-    -Dintel-clc=auto \
     -Dgles2=disabled \
     -Dmicrosoft-clc=disabled \
     -Dbuild-aco-tests=false \
@@ -225,6 +238,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libgallium-*.so
 
 %changelog
+* Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 25.3.6-1
+- Bump to build with updated llvm
+- Fixed requires for whole spec
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.1.4-3
 - Bump version as a part of python3.14 upgrade
 * Thu Oct 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 25.1.4-2

@@ -1,4 +1,4 @@
-From 110a460336cf7ee95ad7e800227c71e61c0f60cb Mon Sep 17 00:00:00 2001
+From 3f05a17a60745dfa4619d0d92b3a8e3236e0b402 Mon Sep 17 00:00:00 2001
 From: Shivani Agarwal <shivani.agarwal@broadcom.com>
 Date: Wed, 25 Jun 2025 03:48:23 +0000
 Subject: [PATCH] Remove Nouveau from vulkan-drivers and gallium-drivers auto
@@ -10,11 +10,11 @@ Removed Tegra and Nouveau due to rust and bindgen dependency
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/meson.build b/meson.build
-index 58194e7..ec96314 100644
+index 933710e..7dea4bb 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -138,22 +138,22 @@ if gallium_drivers.contains('auto')
-     # TODO: Sparc
+@@ -153,22 +153,22 @@ if gallium_drivers.contains('auto')
+     # TODO: handle llvm being disabled or auto when setting default_drivers
      if ['x86', 'x86_64'].contains(host_machine.cpu_family())
        gallium_drivers = [
 -        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'svga', 'llvmpipe', 'softpipe',
@@ -41,8 +41,8 @@ index 58194e7..ec96314 100644
        ]
      else
        error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
-@@ -223,7 +223,7 @@ _vulkan_drivers = get_option('vulkan-drivers')
- if _vulkan_drivers.contains('auto')
+@@ -249,7 +249,7 @@ if _vulkan_drivers.contains('auto')
+   # TODO: handle swrat driver if llvm is auto/disabled
    if system_has_kms_drm
      if host_machine.cpu_family().startswith('x86')
 -      _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'nouveau', 'swrast']

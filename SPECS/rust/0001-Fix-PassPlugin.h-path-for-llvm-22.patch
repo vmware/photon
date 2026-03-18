@@ -1,0 +1,29 @@
+From 334a3e0ca868e22425c136cdf58fdcc452853c69 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Sun, 29 Mar 2026 14:48:59 +0000
+Subject: [PATCH] Fix PassPlugin.h path for llvm-22
+
+- In llvm-22, PassPlugin.h has been moved under
+ Plugins instead of Passes directory
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp b/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp
+index 714ba0f17..a48fde625 100644
+--- a/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp
++++ b/compiler/rustc_llvm/llvm-wrapper/PassWrapper.cpp
+@@ -23,7 +23,7 @@
+ #include "llvm/MC/TargetRegistry.h"
+ #include "llvm/Object/ObjectFile.h"
+ #include "llvm/Passes/PassBuilder.h"
+-#include "llvm/Passes/PassPlugin.h"
++#include "llvm/Plugins/PassPlugin.h"
+ #include "llvm/Passes/StandardInstrumentations.h"
+ #include "llvm/Support/CBindingWrapping.h"
+ #include "llvm/Support/FileSystem.h"
+-- 
+2.40.4
+

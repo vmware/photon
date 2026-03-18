@@ -1,6 +1,6 @@
 sources:
-- archive: cargo-1.92.0-x86_64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 7b315dff9a895a482aefae57e6c72d0de191fa2f9a1ffcde65db63312672c6d0f60a11dc544286250a11298fd46f5e6fff9865c894216d98c0eaa61862216356
+- archive: cargo-1.86.0-x86_64-unknown-linux-gnu.tar.xz
+  archive_sha512sum: 19ef3de97fc0a21bde800c5a10bfda835d9cc48399d473b65e245d2b16d42e172454579eca4c4acd72107e0a5796d82ea185b834a2d9a23cf27e74c02232bc3e
   skip_validation: true
   spdx:
     package:
@@ -16,8 +16,8 @@ sources:
         GPL-2.0-only WITH GCC-exception-2.0
       short_summary: cargo bootstrap toolchain to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
-- archive: cargo-1.92.0-aarch64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: afd212a92f65537b357208b842b9b6ca51f68d60ffdd29ed56ba77ec24694664fadb1166254c960617ca43152aaeb547195b7bdc1cb61e4343af091820e98abc
+- archive: cargo-1.86.0-aarch64-unknown-linux-gnu.tar.xz
+  archive_sha512sum: d8fd6cc891a9639670731b06098b5ea1729f8b9a78ee6f64cd1fece0557020533d401bb4a3edc7870d2c801cd2748af70eab105581df7bbff831f151194cc230
   skip_validation: true
   spdx:
     package:
@@ -33,8 +33,8 @@ sources:
         GPL-2.0-only WITH GCC-exception-2.0
       short_summary: cargo bootstrap toolchain to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
-- archive: rust-std-1.92.0-x86_64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 50deb6f287bd94c32ed97ef1120c16e65c20ce22e6f53c4e7bb20063d3faa07e480c30f768c3d4719e5cc90540eea48134ff445c70dad38f974d255b28758411
+- archive: rust-std-1.86.0-x86_64-unknown-linux-gnu.tar.xz
+  archive_sha512sum: 4e6c73db6eb9235d0656eaa04d968d7e0ee0b1beb132e59affcfcb9141e3da0861fdf900109c66221a20bc70d4150f19955419ff865b34aa5b883d7b4fc0ab0b
   skip_validation: true
   spdx:
     package:
@@ -46,8 +46,8 @@ sources:
         AND MIT AND Apache-2.0 AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception
       short_summary: std toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
-- archive: rust-std-1.92.0-aarch64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 8420e8fc55c5a9dc6810f2b674eb5044056ab030a34d794747a9fdaf855af74f2727dcc53b580d7803be81dc179c4e70dbbb23e96b35d8abf47ad00ea3d730eb
+- archive: rust-std-1.86.0-aarch64-unknown-linux-gnu.tar.xz
+  archive_sha512sum: 25be69a030f013bf431376b5e9e0d7c03e703b4e1780f9644b66f789da3d5bf4b38cee1b36c204423e5454cd08cb42c7e98a8cfc0cad8946ae70832b012c8f2e
   skip_validation: true
   spdx:
     package:
@@ -59,8 +59,8 @@ sources:
         AND MIT AND Apache-2.0 AND BSD-2-Clause AND Apache-2.0 WITH LLVM-exception
       short_summary: std toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
-- archive: rustc-1.92.0-x86_64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 56391790ef6792decfbadd96b6571b7e3197dc11a75ca216dbad88d4b26237a50cf1940502b6dcbd2b978e560c0b44b52a1ea22e0954f51443a304d457c9cdbd
+- archive: rustc-1.86.0-x86_64-unknown-linux-gnu.tar.xz
+  archive_sha512sum: 849d324b79918a1796288425b5121e6ca1d55a7588dfa1d284c07c2f6c39ee94775b4e74dbd7e99cf9b471b3744d403310455b33e898378d09ecad853d1f0c88
   skip_validation: true
   spdx:
     package:
@@ -74,8 +74,8 @@ sources:
         OR Apache-2.0)
       short_summary: Bootstrap toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
-- archive: rustc-1.92.0-aarch64-unknown-linux-gnu.tar.xz
-  archive_sha512sum: 62e488dfd6cda1611dfa964874bcccf569d8f567c3904f36350f0ba83003e976b105d65418d6ee3ccd0ca6d32d63c9e7ecc9d7a9d975e8c267bdd692f9e5a26c
+- archive: rustc-1.86.0-aarch64-unknown-linux-gnu.tar.xz
+  archive_sha512sum: e17ab6f2d54fb24f2bffbe584e2cab88da776c0a67ee464f63c132ef58ee4070467705c07cbda1de7920a94ae048a6973f2ad2f9f7437132000b033a4c041102
   skip_validation: true
   spdx:
     package:
@@ -89,64 +89,56 @@ sources:
         OR Apache-2.0)
       short_summary: Bootstrap toolchain requried to build rust-lang
       supplier: 'Organization: Broadcom, Inc.'
-- archive: rustc-1.93.1-src.tar.xz
-  archive_sha512sum: fbff2e960e20a5b4c1320bfe22aca445a5792c10f902c6eb69fc7de2a1f8965b06b0906141526a5f0fa02bcbb6b02d80865481bd62656f7b9a11fbdcf5bc9f02
+- archive: rustc-1.87.0-src.tar.xz
+  archive_sha512sum: 2ef08c9be45434401f916d54b3739f52d255f8a3a4ce05a717499250c2333eeaf601f1d18085b878c027c609f44da74d0151f5bfc2c9ae1e01166919a91a1d2b
   license_manual_review:
   - file_paths:
-    - rustc-1.93.1-src/src/doc/embedded-book/LICENSE-CC-BY-SA
+    - rustc-1.87.0-src/src/doc/embedded-book/LICENSE-CC-BY-SA
     sha256sum: 3b2890eacd851373001c4a14623458e3adaf1b1967939aa9c38a318e28d61c00
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/src/doc/index.md
-    sha256sum: 6d5eccc54479a51f186af54e6c9d3a387ffd307cf01a1840ffd4e70afa6e2ff7
+    - rustc-1.87.0-src/src/doc/index.md
+    sha256sum: 178ff7a16134c8efe40e33dd3b3a7dccedb9ef8a8ef8876d5c792e621f3550a0
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/src/doc/embedded-book/README.md
+    - rustc-1.87.0-src/src/doc/embedded-book/README.md
     sha256sum: 1fb6453a8e07ce11e4e1e452dd73f7c1ab142acf244b721074fbae8303e1af79
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/src/doc/embedded-book/src/intro/index.md
+    - rustc-1.87.0-src/src/doc/embedded-book/src/intro/index.md
     sha256sum: e66038ddf163aff1221fb63e6c8064adce851759b83ba2417984895731f4f8c0
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/build/cache/2025-12-11/rustc-1.92.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.92.0-x86_64-unknown-linux-gnu/rustc/lib/rustlib/x86_64-unknown-linux-gnu/bin/wasm-component-ld
-    sha256sum: 3a3d78abaa1d2fa1a4b3aa055597cb6611c28fe4140d8235db8895ccf3af13ad
+    - rustc-1.87.0-src/build/cache/2025-04-03/rustc-1.86.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.86.0-x86_64-unknown-linux-gnu/rustc/lib/rustlib/x86_64-unknown-linux-gnu/bin/wasm-component-ld
+    sha256sum: 3c5167b0651b703b8cfdbb59d2a2eb299fb1f3952ce2cffbe6f3df6e91ee19a2
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/build/cache/2025-12-11/rustc-1.92.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.92.0-x86_64-unknown-linux-gnu/rustc/manifest.in
-    sha256sum: 7f9965aa68aee483844018cd4ea3dae6054209a18b0e6220fce58c9b346702fe
+    - rustc-1.87.0-src/build/cache/2025-04-03/rustc-1.86.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.86.0-x86_64-unknown-linux-gnu/rustc/manifest.in
+    sha256sum: ae18b32773e927ed45e7d878efe430527cfc3ef9042068219ab856b3ee0da985
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/license-metadata.json
+    - rustc-1.87.0-src/license-metadata.json
     sha256sum: 7c693ea746d879a27c3db8ae26131090d0cd89c36f79550ea6674b97e2da9a03
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/build/cache/2025-12-11/rustc-1.92.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.92.0-x86_64-unknown-linux-gnu/rustc/share/doc/rust/licenses/CC-BY-SA-4.0.txt
+    - rustc-1.87.0-src/build/cache/2025-04-03/rustc-1.86.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.86.0-x86_64-unknown-linux-gnu/rustc/share/doc/rust/licenses/CC-BY-SA-4.0.txt
     sha256sum: 23ee78c8bae49cf08ea2f0c84945c66b987ebe4520881fb51b3dad4fb43d07c2
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/build/cache/2025-12-11/rustc-1.92.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.92.0-x86_64-unknown-linux-gnu/rustc/share/doc/rust/COPYRIGHT.html
-    sha256sum: 4c00ebce99a3e37d52257eb99dd31ee25f193280b4ec594601ab2dde7b47522d
+    - rustc-1.87.0-src/build/cache/2025-04-03/rustc-1.86.0-x86_64-unknown-linux-gnu.tar.xz-extract/rustc-1.86.0-x86_64-unknown-linux-gnu/rustc/share/doc/rust/COPYRIGHT.html
+    sha256sum: a6c84cf2d16e472244c95d919fa3d33f134a267c12f2f22c6df8c51cd24bc16f
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/LICENSES/CC-BY-SA-4.0.txt
+    - rustc-1.87.0-src/LICENSES/CC-BY-SA-4.0.txt
     sha256sum: 23ee78c8bae49cf08ea2f0c84945c66b987ebe4520881fb51b3dad4fb43d07c2
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/REUSE.toml
-    sha256sum: 350e18272ddc391fd6536aaadabc3696f77b3812d2115ee3a9d2f32391c9680e
+    - rustc-1.87.0-src/REUSE.toml
+    sha256sum: 6f5693d31a9c6f004b6defac2a8482c46ae3abe16fcce230bd8071e3327c1b45
     spdx_exp: ''
   - file_paths:
-    - rustc-1.93.1-src/vendor/html_parser-0.7.0/benches/wikipedia-2020-12-21.html
+    - rustc-1.87.0-src/vendor/html_parser-0.7.0/benches/wikipedia-2020-12-21.html
     sha256sum: aeea191f9d48b1af02c023eb77f92965aea0917b7899341992520f7d15f0a072
-    spdx_exp: ''
-  - file_paths:
-    - rustc-1.93.1-src/src/tools/rustc-perf/collector/compile-benchmarks/REUSE.toml
-    sha256sum: 358f28cc13fe30d424d7d5e789a9cb97b77b5804cf4241cac86d3caffea0d1c7
-    spdx_exp: ''
-  - file_paths:
-    - rustc-1.93.1-src/src/tools/rustc-perf/LICENSES/EUPL-1.2.txt
-    sha256sum: 6fc9e709ccbfe0d77fbffa2427a983282be2eb88e47b1cdb49f21a83b4d1e665
     spdx_exp: ''
   skip_validation: true
   spdx:
@@ -154,9 +146,9 @@ sources:
       detailed_description: 'Rust Programming Language '
       home_page: https://github.com/rust-lang/rust
       license_concluded: GPL-2.0-or-later AND (MIT OR Apache-2.0) AND BSD-4-Clause-UC
-        AND (NCSA OR MIT) AND GPL-2.0-or-later WITH GNAT-exception
+        AND (NCSA OR MIT) AND CC-BY-SA-4.0 AND GPL-2.0-or-later WITH GNAT-exception
         AND FSFULLR AND FSFULLRWD AND (Apache-2.0 OR MIT) AND GPL-3.0-or-later WITH
-        Autoconf-exception-2.0 AND GPL-2.0-only AND GPL-3.0-only
+        Autoconf-exception-2.0 AND CC-BY-NC-SA-4.0 AND GPL-2.0-only AND GPL-3.0-only
         AND (curl AND ISC) AND HPND-UC AND snprintf AND BSD-1-Clause AND MIT-0 AND
         CC-PDDC AND curl AND CC-BY-3.0 AND (GPL-2.0-only OR MIT) AND Apache-2.0 AND
         BlueOak-1.0.0 AND Beerware AND Spencer-94 AND (MIT OR Apache-2.0 OR BSD-1-Clause)
@@ -167,7 +159,7 @@ sources:
         AND Unlicense AND GPL-3.0-or-later AND (MIT OR GPL-1.0-or-later) AND Artistic-1.0-Perl
         AND OpenSSL-standalone AND BSL-1.0 AND Artistic-2.0 AND (Apache-2.0 OR MIT)
         AND GPL-1.0-or-later WITH Autoconf-exception-generic AND 0BSD AND APSL-2.0
-        AND LGPL-2.1-or-later AND LGPL-2.1-only AND GPL-3.0-or-later
+        AND LGPL-2.1-or-later AND LGPL-2.1-only AND CC-BY-SA-3.0 AND GPL-3.0-or-later
         WITH Texinfo-exception AND MPL-2.0 AND Zlib AND X11 AND GPL-3.0-or-later WITH
         Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
         AND MIT AND BSD-Source-Code AND CC-BY-4.0 AND ISC AND OpenSSL AND GFDL-1.1-or-later
@@ -178,9 +170,9 @@ sources:
         OR Apache-2.0 OR MIT) AND LGPL-2.0-or-later AND (GPL-2.0-or-later OR LGPL-2.1-or-later
         OR MPL-1.1 OR BSD-3-Clause) AND Python-2.0 AND (MIT OR Apache-2.0)
       license_declared: GPL-2.0-or-later AND (MIT OR Apache-2.0) AND BSD-4-Clause-UC
-        AND (NCSA OR MIT) AND GPL-2.0-or-later WITH GNAT-exception
+        AND (NCSA OR MIT) AND CC-BY-SA-4.0 AND GPL-2.0-or-later WITH GNAT-exception
         AND FSFULLR AND FSFULLRWD AND (Apache-2.0 OR MIT) AND GPL-3.0-or-later WITH
-        Autoconf-exception-2.0 AND GPL-2.0-only AND GPL-3.0-only
+        Autoconf-exception-2.0 AND CC-BY-NC-SA-4.0 AND GPL-2.0-only AND GPL-3.0-only
         AND (curl AND ISC) AND HPND-UC AND snprintf AND BSD-1-Clause AND MIT-0 AND
         CC-PDDC AND curl AND CC-BY-3.0 AND (GPL-2.0-only OR MIT) AND Apache-2.0 AND
         BlueOak-1.0.0 AND Beerware AND Spencer-94 AND (MIT OR Apache-2.0 OR BSD-1-Clause)
@@ -191,7 +183,7 @@ sources:
         AND Unlicense AND GPL-3.0-or-later AND (MIT OR GPL-1.0-or-later) AND Artistic-1.0-Perl
         AND OpenSSL-standalone AND BSL-1.0 AND Artistic-2.0 AND (Apache-2.0 OR MIT)
         AND GPL-1.0-or-later WITH Autoconf-exception-generic AND 0BSD AND APSL-2.0
-        AND LGPL-2.1-or-later AND LGPL-2.1-only AND GPL-3.0-or-later
+        AND LGPL-2.1-or-later AND LGPL-2.1-only AND CC-BY-SA-3.0 AND GPL-3.0-or-later
         WITH Texinfo-exception AND MPL-2.0 AND Zlib AND X11 AND GPL-3.0-or-later WITH
         Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
         AND MIT AND BSD-Source-Code AND CC-BY-4.0 AND ISC AND OpenSSL AND GFDL-1.1-or-later

@@ -1,7 +1,14 @@
 sources:
-- archive: SPIRV-Tools-vulkan-sdk-1.4.313.0.tar.gz
-  archive_sha512sum: 2e0cffc9550fa95da8622424012e1fa2decbc6b981e30114ac0b7a332d7a9abed9a2138dc83ff6eb0b6d3946c1f1b43679de0754ccb98380d4981e8130a5e248
-  skip_validation: true
+- archive: SPIRV-Tools-vulkan-sdk-1.4.341.0.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 429954f382e3a4006c012642509d0530001eb56e802686f35b1dd33a21167e08e2b164cb2f32e8acdd66da7f5bea6046aa184945d7138d3b0b929e512437c40d
+  name: "SPIRV-Tools-vulkan-sdk-1.4.341.0"
+  version: 1.4.341.0
+  url: https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/vulkan-sdk-1.4.341.0.tar.gz
+  repo_url: https://github.com/KhronosGroup/SPIRV-Tools.git
+  commit_id: fbe4f3ad913c44fe8700545f8ffe35d1382b7093
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The package includes an assembler, binary module parser,

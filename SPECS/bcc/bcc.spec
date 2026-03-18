@@ -5,7 +5,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.35.0
-Release:         3%{?dist}
+Release:         4%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -15,6 +15,9 @@ Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: bcc-llvm21.patch
+Patch1: 0001-Fix-build-with-LLVM-22.patch
 
 BuildRequires: cmake
 BuildRequires: build-essential
@@ -29,9 +32,15 @@ BuildRequires: pkg-config
 BuildRequires: ncurses-devel
 BuildRequires: curl-devel
 BuildRequires: libbpf-devel
+BuildRequires: libxml2-devel
+BuildRequires: libllvm
 BuildRequires: zip
 
 Requires: curl-libs
+Requires: elfutils
+Requires: libbpf
+Requires: libclang
+Requires: libllvm
 
 %description
 BCC is a toolkit for creating efficient kernel tracing and manipulation programs,
@@ -133,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.35.0-4
+- Bump to build with updated llvm
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.35.0-3
 - Bump version as a part of python3.14 upgrade
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.35.0-2

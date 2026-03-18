@@ -1,0 +1,1 @@
+License: MIT AND BSD-3-Clause AND Apache-2.0 AND GPL-1.0-or-later AND GPL-2.0-or-later AND Apache-2.0 WITH LLVM-exception

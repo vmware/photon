@@ -1,18 +1,18 @@
 sources:
-- archive: mesa-25.3.6.tar.xz
+- archive: libdisplay-info-0.3.0.tar.gz
   archive_type: upstream
-  archive_sha512sum: 73620003e1e67c6b5ad076afb19e0b250214cfb6ed830166fb70058173ec3b19a2a8f5b5a78d8cce7a70745f5e4fa439913d15d8b38ca0002455b238f5865d38
-  name: "mesa-25.3.6"
-  version: 25.3.6
-  url: https://archive.mesa3d.org/mesa-25.3.6.tar.xz
-  repo_url: https://gitlab.freedesktop.org/mesa/mesa.git
-  commit_id: 06f9e28304d5d3f109c33535c1c25b9df5769af2
+  archive_sha512sum: fa023df810d9354135c3a8576233b1a4bab29d943e9ec61ba30cfe512001e4aa56ffc10e1af42ec4d1caa5c10d8e34e3bdbe51d1858d3db580b03a3fa266ee66
+  name: "libdisplay-info-0.3.0"
+  version: 0.3.0
+  url: https://gitlab.freedesktop.org/emersion/libdisplay-info/-/archive/0.3.0/libdisplay-info-0.3.0.tar.gz
+  repo_url: https://gitlab.freedesktop.org/emersion/libdisplay-info.git
+  commit_id: 47a5590e9c4eb35d67651b8c05a55f1a48259329
   skip_list: []
   missing: []
   spdx:
     package:
-      detailed_description: 'Mesa is an OpenGL compatible 3D graphics library. '
-      home_page: http://www.mesa3d.org
+      detailed_description: 'EDID and DisplayID library'
+      home_page: https://gitlab.freedesktop.org/emersion/libdisplay-info
       license_concluded: (Apache-2.0 OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND HPND AND HPND-sell-variant AND ICU AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Khronos-old AND NCSA AND SGI-B-2.0 AND X11
       license_declared: (Apache-2.0 OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND HPND AND HPND-sell-variant AND ICU AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Khronos-old AND NCSA AND SGI-B-2.0 AND X11
       short_summary: Mesa is an OpenGL compatible 3D graphics library.

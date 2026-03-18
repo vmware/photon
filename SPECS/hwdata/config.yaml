@@ -1,18 +1,18 @@
 sources:
-- archive: mesa-25.3.6.tar.xz
+- archive: hwdata-0.405.tar.gz
   archive_type: upstream
-  archive_sha512sum: 73620003e1e67c6b5ad076afb19e0b250214cfb6ed830166fb70058173ec3b19a2a8f5b5a78d8cce7a70745f5e4fa439913d15d8b38ca0002455b238f5865d38
-  name: "mesa-25.3.6"
-  version: 25.3.6
-  url: https://archive.mesa3d.org/mesa-25.3.6.tar.xz
-  repo_url: https://gitlab.freedesktop.org/mesa/mesa.git
-  commit_id: 06f9e28304d5d3f109c33535c1c25b9df5769af2
+  archive_sha512sum: a6e68c70a438eeabd8c733e1fe34ff3147c5fb2e4d7da41ba0c0041aee9aa8b88240631fc292c41caeaf663a384a148c28a08efad8c646d702060eac6768b7d1
+  name: "hwdata-0.405"
+  version: 0.405
+  url: https://github.com/vcrhonek/hwdata/archive/refs/tags/v0.405.tar.gz
+  repo_url: https://github.com/vcrhonek/hwdata.git
+  commit_id: be46d7186e918e62eb75de399e800145a781c8db
   skip_list: []
   missing: []
   spdx:
     package:
-      detailed_description: 'Mesa is an OpenGL compatible 3D graphics library. '
-      home_page: http://www.mesa3d.org
+      detailed_description: 'Hardware identification and configuration data'
+      home_page: https://github.com/vcrhonek/hwdata
       license_concluded: (Apache-2.0 OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND HPND AND HPND-sell-variant AND ICU AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Khronos-old AND NCSA AND SGI-B-2.0 AND X11
       license_declared: (Apache-2.0 OR MIT) AND (GPL-2.0-only OR MIT) AND (GPL-2.0-only WITH Linux-syscall-note OR MIT) AND (MIT OR Unlicense) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND HPND AND HPND-sell-variant AND ICU AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MIT-Khronos-old AND NCSA AND SGI-B-2.0 AND X11
       short_summary: Mesa is an OpenGL compatible 3D graphics library.

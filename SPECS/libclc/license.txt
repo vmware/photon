@@ -1,1 +1,0 @@
-License:(MIT OR NCSA) AND Apache-2.0 WITH LLVM-exception AND BSD-3-Clause AND MIT AND NCSA AND SunPro

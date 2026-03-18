@@ -1,0 +1,15 @@
+sources:
+- archive: Vulkan-Loader-1.3.237.tar.gz
+  archive_sha512sum: 54d9503ec575380d49ccf20dcedefa38baf29483c1fa125059cf2535021ed4c618781317dfca659cdbadb40331da4ffb61d88849504d6cfb688ea24cc92254e8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This project provides the Khronos official Vulkan ICD
+        desktop loader for Windows, Linux, and MacOS. '
+      home_page: https://github.com/KhronosGroup/Vulkan-Loader
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND HPND-Kevlin-Henney AND CC-BY-ND-4.0
+        AND MIT
+      license_declared: Apache-2.0 AND BSD-3-Clause AND HPND-Kevlin-Henney AND CC-BY-ND-4.0
+        AND MIT
+      short_summary: Vulkan ICD desktop loader
+      supplier: 'Organization: Broadcom, Inc.'

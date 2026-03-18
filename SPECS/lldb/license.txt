@@ -1,1 +1,0 @@
-License: APSL-2.0 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-3-Clause AND FSFAP-no-warranty-disclaimer AND ISC AND NCSA AND Python-2.0

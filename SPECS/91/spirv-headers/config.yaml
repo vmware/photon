@@ -1,14 +1,7 @@
 sources:
-- archive: SPIRV-Headers-vulkan-sdk-1.4.341.0.tar.gz
-  archive_type: upstream
-  archive_sha512sum: d624371dd455c66a300344c89812598ffe11b5eedba555779f789e85c29dc67317741858c60e0744a1e6755cc0d2759b8659f0674f4cc31479c4cb6fc25ed23b
-  name: "SPIRV-Headers-vulkan-sdk-1.4.341.0"
-  version: 1.4.341.0
-  url: https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/vulkan-sdk-1.4.341.0.tar.gz
-  repo_url: https://github.com/KhronosGroup/SPIRV-Headers.git
-  commit_id: 04f10f650d514df88b76d25e83db360142c7b174
-  skip_list: []
-  missing: []
+- archive: SPIRV-Headers-vulkan-sdk-1.4.313.0.tar.gz
+  archive_sha512sum: c89b7992d8bdf956b551b3efa0fe67135574379973be446d18d215b4868799a3f5dab3002d230ccc54d723391ee37240cf0f2cd394898326d40685cbec673670
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Header files from the SPIR-V registry  This includes:  *

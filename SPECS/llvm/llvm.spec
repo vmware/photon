@@ -2,23 +2,24 @@
 
 %define network_required 1
 %global debug_package   %{nil}
-%define llvm_maj_ver    18
+%define llvm_maj_ver    22
 
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        18.1.8
-Release:        3%{?dist}
+Version:        22.1.0
+Release:        1%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/llvm/llvm-project/releases/tag/%{name}-%{version}.src.tar.xz
-
-Source1: https://github.com/llvm/llvm-project/releases/download/cmake-%{version}.src.tar.xz
+Source0: https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-project-%{version}.src.tar.xz
+Source1: https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/refs/tags/SPIRV-LLVM-Translator-%{version}.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: llvm-spirv-translator-photon.patch
 
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
@@ -26,10 +27,19 @@ BuildRequires:  libffi-devel
 BuildRequires:  python3-devel
 BuildRequires:  ninja-build
 BuildRequires:  glibc-devel
+BuildRequires:  swig
+BuildRequires:  libedit-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  xz-devel
+BuildRequires:  zlib-devel
+BuildRequires:  spirv-headers-devel
+BuildRequires:  spirv-tools-devel
 
 Requires:       libllvm = %{version}-%{release}
-
-Patch0: 0001-llvm-CodeGen-Fix-build-failure-for-MI-dump.patch
+Requires:       libclang = %{version}-%{release}
+Requires:       spirv-llvm-translator = %{version}-%{release}
+Requires:       zlib
+Requires:       zstd-libs
 
 %description
 The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
@@ -40,81 +50,225 @@ acronym; it is the full name of the project.
 %package        devel
 Summary:        Development headers for llvm
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
 
 %package -n     libllvm
 Summary:        llvm shared library
-Group:          System Environment/Libraries
+Requires:       libedit
+Requires:       libffi
 Requires:       libxml2
+Requires:       zlib
+Requires:       zstd-libs
 
 %description -n libllvm
 The libllvm package contains shared libraries for llvm
 
+%package -n     clang
+Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
+Requires:       libclang = %{version}-%{release}
+Requires:       llvm = %{version}-%{release}
+Requires:       libstdc++-devel
+Requires:       ncurses
+Requires:       zlib
+Requires:       libxml2
+Requires:       python3
+
+%description -n clang
+The goal of the Clang project is to create a new C based language front-end:
+C, C++, Objective C/C++, OpenCL C and others for the LLVM compiler. You can get and build the source today.
+
+%package -n     clang-devel
+Summary:        Development headers for clang
+Requires:       clang = %{version}-%{release}
+Requires:       llvm-devel = %{version}-%{release}
+Requires:       ncurses-devel
+
+%description -n clang-devel
+The clang-devel package contains libraries, header files and documentation for developing applications that use clang.
+
+%package -n     libclang
+Summary:        clang shared library
+
+%description -n libclang
+The libclang package contains shared libraries for clang
+
+%package -n     libclc
+Summary:        OpenCL C language library implementation
+Requires:       spirv-llvm-translator-tools
+
+%description -n libclc
+libclc is an open source implementation of the OpenCL C programming language
+library requirements, as specified by the OpenCL 1.1 Specification.
+
+%package -n     libclc-devel
+Summary:        Development files for libclc
+Requires:       libclc = %{version}-%{release}
+Requires:       clang-devel
+
+%description -n libclc-devel
+Development files for libclc, including headers and pkg-config files.
+
+%package -n     libclc-spirv
+Summary:        SPIR-V subset of libclc
+Requires:       libclc = %{version}-%{release}
+Requires:       spirv-tools
+
+%description -n libclc-spirv
+The libclc-spirv package contains only the spirv*-mesa3d-.spv files,
+which are needed for Mesa OpenCL support with RustiCL.
+
+%package -n     lldb
+Summary:        A next generation, high-performance debugger.
+Requires:       liblldb = %{version}-%{release}
+Requires:       clang = %{version}-%{release}
+Requires:       lua
+
+%description -n lldb
+LLDB is a next generation, high-performance debugger.
+It is built as a set of reusable components which highly leverage existing libraries in the larger LLVM Project,
+such as the Clang expression parser and LLVM disassembler.
+
+%package -n     lldb-devel
+Summary:        Development headers for lldb
+Requires:       lldb = %{version}-%{release}
+
+%description -n lldb-devel
+The lldb-devel package contains libraries, header files and documentation
+for developing applications that use lldb.
+
+%package -n     liblldb
+Summary:        lldb shared library
+Group:          System Environment/Libraries
+
+%description -n liblldb
+The liblldb package contains shared libraries for lldb
+
+%package -n     python3-lldb
+Summary:        Python module for lldb
+Requires:       lldb = %{version}-%{release}
+Requires:       python3-six
+
+%description -n python3-lldb
+The package contains the LLDB Python3 module.
+
+%package -n     spirv-llvm-translator
+Summary:        LLVM to SPIR-V Translator
+Requires:       libllvm = %{version}-%{release}
+
+%description -n spirv-llvm-translator
+A tool and library for translating between LLVM IR and SPIR-V.
+
+%package -n     spirv-llvm-translator-devel
+Summary:        Development files for the LLVM to SPIR-V Translator
+Requires:       spirv-llvm-translator = %{version}-%{release}
+%description -n spirv-llvm-translator-devel
+Headers and libraries for spirv-llvm-translator.
+
+%package -n     spirv-llvm-translator-tools
+Summary:        SPIRV-LLVM-Translator command-line tools
+Requires:       spirv-llvm-translator = %{version}-%{release}
+
+%description -n spirv-llvm-translator-tools
+This package contains command-line tools for SPIRV-LLVM-Translator, such as llvm-spirv.
+
 %prep
-%autosetup -p1 -n %{name}-%{version}.src -a1
+%autosetup -p1 -n %{name}-project-%{version}.src -a1
 
 %build
-mv cmake-%{version}.src ../cmake
-
-# if we use a bigger value, we will hit OOM, so don't increase it
-# unless you are absolutely sure
+# Calculate build jobs to prevent OOM
 build_jobs="$(( ($(nproc)+1) / 2 ))"
 link_jobs="$(( (build_jobs + 1) / 2 ))"
 
 %ifarch aarch64
 [ "${build_jobs}" -gt 4 ] && build_jobs=4 || :
 %endif
-
 [ "${link_jobs}" -gt 2 ] && link_jobs=2 || :
 
-%{cmake} -G Ninja \
+cd llvm
+
+%cmake -G Ninja \
   -DCMAKE_INSTALL_PREFIX=%{_usr} \
-  -DBUILD_SHARED_LIBS:BOOL=ON \
+  -DCMAKE_BUILD_TYPE=Release \
+  "-DLLVM_ENABLE_PROJECTS=clang;lldb" \
+  "-DLLVM_ENABLE_RUNTIMES=libclc" \
+  "-DLLVM_EXTERNAL_PROJECTS=SPIRV-LLVM-Translator" \
+  "-DLLVM_EXTERNAL_SPIRV_LLVM_TRANSLATOR_SOURCE_DIR=%{_builddir}/%{name}-project-%{version}.src/SPIRV-LLVM-Translator-%{version}" \
+  -DBUILD_SHARED_LIBS:BOOL=OFF \
+  -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
+  -DLLVM_LINK_LLVM_DYLIB:BOOL=ON \
   -DLLVM_PARALLEL_LINK_JOBS=${link_jobs} \
   -DLLVM_PARALLEL_COMPILE_JOBS=${build_jobs} \
   -DLLVM_ENABLE_FFI:BOOL=ON \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DLLVM_INCLUDE_TESTS=OFF \
-  -DLLVM_ENABLE_LIBPFM:BOOL=OFF \
-  -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF \
-  -DLLVM_ENABLE_LIBCXX:BOOL=OFF \
-  -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON \
-  -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
-  -DLLVM_INCLUDE_GO_TESTS=No \
   -DLLVM_ENABLE_RTTI:BOOL=ON \
+  "-DLLVM_TARGETS_TO_BUILD=host;AMDGPU;BPF" \
+  -DLLVM_INCLUDE_TESTS=OFF \
+  -DLLVM_INCLUDE_EXAMPLES=OFF \
   -DLLVM_INCLUDE_BENCHMARKS=OFF \
-  -DCMAKE_C_FLAGS=-pipe \
-  -DCMAKE_CXX_FLAGS=-pipe \
+  -DLLDB_ENABLE_PYTHON=ON \
+  -DLLDB_PYTHON_EXE_RELATIVE_PATH=%{python3} \
   -Wno-dev
 
-# Build libLLVM.so first. This ensures that when libLLVM.so is linking, there
-# are no other compile jobs running. This will help reduce OOM errors on the
-# builders without having to artificially limit the number of concurrent jobs.
+# Build the core LLVM shared library first to mitigate OOM errors
 %{cmake_build} --target LLVM
 
+# Build the clang core library next
+%{cmake_build} --target libclang-cpp.so
+
+%{cmake_build} --target llvm-spirv
+
+# Build the rest of the monorepo
 %{cmake_build}
 
 %install
+cd llvm
 %{cmake_install}
+
+mkdir -p %{buildroot}%{python3_sitelib}
+mv %{buildroot}%{_libdir}/{libear,libscanbuild} %{buildroot}%{python3_sitelib}
+
+mkdir -p %{buildroot}%{_libdir}/clc
+mv %{buildroot}%{_libdir}/clang/*/lib/libclc/* %{buildroot}%{_libdir}/clc/
+sed -i 's|libexecdir=.*|libexecdir=%{_libdir}/clc|' %{buildroot}%{_datadir}/pkgconfig/libclc.pc
+
+mkdir -p %{buildroot}%{_includedir}/clc
+cp -a %{_builddir}/%{name}-project-%{version}.src/libclc/clc/include/clc/* %{buildroot}%{_includedir}/clc/
+
+find %{buildroot}%{_libdir} -name '*.a' -delete
+# Patch LLVM and Clang CMake manifests to not crash when finding missing .a files
+sed -i 's/FATAL_ERROR "The imported target/WARNING "The imported target/g' %{buildroot}%{_libdir}/cmake/llvm/LLVMExports.cmake
+sed -i 's/FATAL_ERROR "The imported target/WARNING "The imported target/g' %{buildroot}%{_libdir}/cmake/clang/ClangTargets.cmake
 
 %if 0%{?with_check}
 %check
 # deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
-%{make_build} -C %{__cmake_builddir} check-llvm
+ninja -C build check-llvm
 %endif
 
 %clean
 rm -rf %{buildroot}/*
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets -n libllvm
+%ldconfig_scriptlets -n libclang
+%ldconfig_scriptlets -n liblldb
+%ldconfig_scriptlets -n spirv-llvm-translator
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
+%{_bindir}/bugpoint
+%{_bindir}/dsymutil
+%{_bindir}/llvm-*
+%{_bindir}/llc
+%{_bindir}/lli
+%{_bindir}/opt
+%{_bindir}/sancov
+%{_bindir}/sanstats
+%{_bindir}/verify-uselistorder
+%{_bindir}/reduce-chunk-list
+%{_bindir}/yaml2macho-core
 %dir %{_datadir}/opt-viewer
 %{_datadir}/opt-viewer/opt-diff.py
 %{_datadir}/opt-viewer/opt-stats.py
@@ -125,15 +279,108 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/cmake/*
-%{_includedir}/*
-%{_libdir}/*.so
+%{_libdir}/cmake/llvm/*
+%{_includedir}/llvm
+%{_includedir}/llvm-c/
+%{_libdir}/libLLVM*.so
+%{_libdir}/libLTO.so
+%{_libdir}/libRemarks.so
 
 %files -n libllvm
 %defattr(-,root,root)
-%{_libdir}/*.so.*
+%{_libdir}/libLLVM*.so.*
+%{_libdir}/libLTO.so.*
+%{_libdir}/libRemarks.so.*
+
+%files -n clang
+%defattr(-,root,root)
+%{_bindir}/amdgpu-arch
+%{_bindir}/analyze-build
+%{_bindir}/clang
+%{_bindir}/clang++
+%{_bindir}/clang-*
+%{_bindir}/diagtool
+%{_bindir}/git-clang-format
+%{_bindir}/hmaptool
+%{_bindir}/intercept-build
+%{_bindir}/nvptx-arch
+%{_bindir}/offload-arch
+%{_bindir}/scan-build
+%{_bindir}/scan-build-py
+%{_bindir}/scan-view
+%{_libexecdir}/*
+%{_datadir}/clang
+%{_datadir}/man
+%{_datadir}/scan-build
+%{_datadir}/scan-view
+
+%files -n clang-devel
+%defattr(-,root,root)
+%{_libdir}/libclang*.so
+%{_libdir}/cmake/clang/*
+%{_libdir}/clang/*
+%{_includedir}/clang
+%{_includedir}/clang-c/
+%{python3_sitelib}/libear
+%{python3_sitelib}/libscanbuild
+
+%files -n libclang
+%{_libdir}/libclang*.so.*
+
+%files -n libclc
+%defattr(-,root,root)
+%dir %{_libdir}/clc
+%{_libdir}/clc/*.bc
+
+%files -n libclc-spirv
+%defattr(-,root,root)
+%dir %{_libdir}/clc
+%{_libdir}/clc/spirv-mesa3d-.spv
+%{_libdir}/clc/spirv64-mesa3d-.spv
+
+%files -n libclc-devel
+%defattr(-,root,root)
+%dir %{_includedir}/clc
+%{_includedir}/clc/*
+%{_datadir}/pkgconfig/libclc.pc
+
+%files -n lldb
+%defattr(-,root,root)
+%{_bindir}/lldb
+%{_bindir}/lldb-*
+
+%files -n lldb-devel
+%defattr(-,root,root)
+%{_libdir}/liblldb.so
+%{_libdir}/liblldbIntelFeatures.so
+%{_libdir}/lua/*/lldb.so
+%{_includedir}/lldb
+
+%files -n liblldb
+%{_libdir}/liblldb.so.*
+%{_libdir}/liblldbIntelFeatures.so.*
+
+%files -n python3-lldb
+%defattr(-,root,root,-)
+%{python3_sitelib}/lldb
+
+%files -n spirv-llvm-translator
+%defattr(-,root,root)
+%{_libdir}/libLLVMSPIRVLib.so.*
+
+%files -n spirv-llvm-translator-tools
+%defattr(-,root,root)
+%{_bindir}/llvm-spirv
+
+%files -n spirv-llvm-translator-devel
+%defattr(-,root,root)
+%{_includedir}/LLVMSPIRVLib/
+%{_libdir}/libLLVMSPIRVLib.so
+%{_libdir}/pkgconfig/LLVMSPIRVLib.pc
 
 %changelog
+* Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 22.1.0-1
+- Update llvm to 22.1.0 to build latest version of rust-1.93.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 18.1.8-3
 - Bump version as a part of python3.14 upgrade
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.8-2

@@ -1,10 +1,14 @@
-shared_sources:
-  - shared-cfg-yml/cmake.yaml
-
 sources:
-- archive: llvm-18.1.8.src.tar.xz
-  archive_sha512sum: 930814730bb2d80cf7f7b2968f0f1f1442009ca62a7ca29992b69d63823270584b059d16aa845bb381411da566e7e4f255fcfbc38acbdf865eb0419b4dfd7459
-  skip_validation: true
+- archive: llvm-project-22.1.0.src.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 588753a26742cfc76ca179398eaac6a31e68b1fa5bfaf7300ce710a89bba1dc9bfe41229bb9277663a3cde4468e74922153e5d1529eb7c6fe4de5ba3cb62ba45
+  name: "llvm-project-22.1.0.src"
+  version: 22.1.0
+  url: https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.0/llvm-project-22.1.0.src.tar.xz
+  repo_url: https://github.com/llvm/llvm-project.git
+  commit_id: 4434dabb69916856b824f68a64b029c67175e532
+  skip_list: ['.git_archival.txt']
+  missing: []
   spdx:
     package:
       detailed_description: 'The LLVM Project is a collection of modular and reusable
@@ -23,3 +27,22 @@ sources:
         NCSA AND BSD-3-Clause AND ISC
       short_summary: A collection of modular and reusable compiler and toolchain technologies.
       supplier: 'Organization: Broadcom, Inc.'
+- archive: SPIRV-LLVM-Translator-22.1.0.tar.gz
+  archive_type: upstream
+  archive_sha512sum: eeda165c6c5e7c78c3df758e47336924daaf328651de2784824c5fee7f0a1aed140a3b38f05e7526851876b75ac1f7a02d665f418b82ef4cab96d40930d8646c
+  name: "SPIRV-LLVM-Translator-22.1.0"
+  version: 22.1.0
+  url: https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/refs/tags/v22.1.0.tar.gz
+  repo_url: https://github.com/KhronosGroup/SPIRV-LLVM-Translator.git
+  commit_id: 567786558a00e8b7ec0457f1706504784e229150
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      short_summary: SPIRV-LLVM-Translator is a library and tool for converting between LLVM IR and SPIR-V.
+      detailed_description: SPIRV-LLVM-Translator provides both a library and a command-line tool (llvm-spirv) for translating LLVM Intermediate Representation (IR) to and from SPIR-V, the binary intermediate language used by Vulkan and OpenCL. It is essential for toolchains that target SPIR-V from LLVM-based languages or need to consume SPIR-V in LLVM-based environments.
+      home_page: https://github.com/KhronosGroup/SPIRV-LLVM-Translator
+      supplier: 'Organization: VMware, Inc.'
+      license_concluded: Apache-2.0 WITH LLVM-exception AND MIT-Khronos-old AND NCSA
+      license_declared: Apache-2.0 WITH LLVM-exception AND MIT-Khronos-old AND NCSA
+      copyright_text: Copyright (c) 2025 VMware, Inc.

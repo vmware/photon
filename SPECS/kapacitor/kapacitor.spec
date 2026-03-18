@@ -4,7 +4,7 @@
 
 Name:           kapacitor
 Version:        1.7.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Vendor:         VMware, Inc.
@@ -65,6 +65,9 @@ cd src/github.com/influxdata/kapacitor
 go get ./cmd/kapacitor
 pushd ../../../../pkg/mod/github.com/influxdata/flux@v%{libflux_version}
 %autopatch -p1 -m1 -M4
+chmod -R u+w .
+# Find every Rust file and disable the strict warning limits
+find . -type f -name "*.rs" -exec sed -i 's/deny(warnings/allow(warnings/g' {} +
 popd
 
 go build ./cmd/kapacitor
@@ -124,6 +127,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu Mar 05 2026 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.7.7-6
+- Build compatible with updated rust-1.93.1 and old rust-1.87.0
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.7.7-5
 - Add missing shadow dependency for user creation
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.7-4

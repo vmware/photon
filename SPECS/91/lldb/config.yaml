@@ -1,5 +1,5 @@
 shared_sources:
-  - shared-cfg-yml/cmake.yaml
+  - 91/shared-cfg-yml/cmake.yaml
 
 sources:
 - archive: lldb-18.1.8.src.tar.xz
