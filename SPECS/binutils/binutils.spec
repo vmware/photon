@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -151,6 +151,8 @@ rm $(dirname $(gcc --print-libgcc-file-name))/../specs
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Tue Mar 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-15
+- CVE fixes
 * Wed Nov 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-14
 - Fix CVE-2025-11839, CVE-2025-11840
 * Thu Oct 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-13
