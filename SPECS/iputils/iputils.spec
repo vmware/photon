@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20200821
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -10,6 +10,8 @@ Distribution:     Photon
 
 Source0: %{name}-s%{version}.tar.gz
 %define sha512 %{name}=4a57c3637cdd9aab2600682774e27370716cbdf1c7ac8ae61bf86c21c08701a5b697792df4aa95309b196eaa74f3cb6b2836a40f04da0e602156e982ac99d8c9
+
+Patch0: 0001-arping-Fix-exit-code-if-receive-more-replies-than-se.patch
 
 BuildRequires:    libcap-devel
 BuildRequires:    libgcrypt-devel
@@ -74,6 +76,8 @@ mv -f RELNOTES.tmp RELNOTES.old
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+* Wed Mar 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20200821-5
+- Fix exit code in arping, if received more replies than sent.
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 20200821-4
 - Bump version as a part of meson upgrade
 * Mon Oct 09 2023 Shreenidhi Shedi <sshedi@vmware.com> 20200821-3
