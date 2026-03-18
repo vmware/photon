@@ -4,7 +4,7 @@
 
 Name:           cloud-init
 Version:        25.1.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -85,6 +85,7 @@ Requires: python3-netifaces
 Requires: python3-pyserial
 Requires: dhcp-client
 Requires: openssl-c_rehash
+Requires: libselinux-python3
 
 BuildArch: noarch
 
@@ -156,6 +157,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Tue Mar 24 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 25.1.3-6
+- Requires libselinux-python3 for context handling support
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.1.3-5
 - Bump version as a part of python3.14 upgrade
 * Mon Sep 15 2025 Tapas Kundu <tapas.kundu@broadcom.com> 25.1.3-4
