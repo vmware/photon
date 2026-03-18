@@ -1,7 +1,6 @@
 %__python3 /usr/bin/python3
 %python3 %__python3
 %python3_sitelib %(%{__python3} -Ic "from sysconfig import get_path,get_path_names; print(get_path(get_path_names()[2]))")
-%python3_common_sitelib %{_libdir}/python3-common-modules/site-packages
 %python3_sitearch %(%{__python3} -Ic "from sysconfig import get_path,get_path_names; print(get_path(get_path_names()[3]))")
 %python3_version %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}.{0.minor}'.format(sys.version_info))")
 %python3_version_nodots %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}{0.minor}'.format(sys.version_info))")
@@ -55,37 +54,6 @@
       sed -i '/direct_url.json/d' ${distinfo}/RECORD
     fi
   done
-}
-
-# Macro to find and remove all __pycache__ directories
-%py3_cleanup_bytecode() %{expand:\\\
-  find %{buildroot} -depth -type d -name '__pycache__' -exec rm -rf {} +
-}
-
-# Macro to strip version suffixes from metadata directories
-%py3_normalize_metadata() %{expand:\\\
-  if [ -d "%{buildroot}%{python3_sitelib}" ]; then
-    for d in %{buildroot}%{python3_sitelib}/*egg-info %{buildroot}%{python3_sitelib}/*dist-info; do
-      [ -d "$d" ] || continue;
-      new=$(echo "$d" | sed -r 's/-py[0-9]+(\.[0-9]+)*//');
-      [ "$d" = "$new" ] || mv "$d" "$new";
-    done;
-  fi
-}
-
-# Macro to move site-packages contents to the common-modules directory
-%py3_move_to_common() %{expand:\\\
-  mkdir -p %{buildroot}%{python3_common_sitelib}
-  if [ -d "%{buildroot}%{python3_sitelib}" ] && [ "$(ls -A %{buildroot}%{python3_sitelib} 2>/dev/null)" ]; then
-    mv %{buildroot}%{python3_sitelib}/* %{buildroot}%{python3_common_sitelib}/;
-  fi
-}
-
-# Primary macro to clean and move pure python packages to common-modules
-%py3_install_common_modules() %{expand:\\\
-  %py3_cleanup_bytecode
-  %py3_normalize_metadata
-  %py3_move_to_common
 }
 
 #pyproject macros
