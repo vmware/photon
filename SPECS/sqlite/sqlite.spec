@@ -1,7 +1,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.38.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -15,6 +15,7 @@ Patch0: CVE-2022-46908.patch
 Patch1: CVE-2023-36191.patch
 Patch2: CVE-2025-29088.patch
 Patch3: CVE-2025-6965.patch
+Patch4: CVE-2025-70873.patch
 
 BuildRequires:  tcl
 
@@ -101,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.*
 
 %changelog
+* Wed Mar 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.38.5-7
+- Fix CVE-2025-70873
 * Wed Sep 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.38.5-6
 - Fix CVE-2025-6965
 - Build from git tag source
