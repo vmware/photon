@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %global security_hardening nofortify
 %define _use_internal_dependency_generator 0
 
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        10%{?dist}
+Release:        9.1%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -140,10 +140,6 @@ install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
 rm -rf %{buildroot}%{_infodir}
-# Skip shipping include-fixed headers that conflict with glibc, to ensure multi glibc compatibility
-pushd %{buildroot}%{_lib}/%{name}/%{_arch}-unknown-linux-gnu/%{version}/include-fixed
-rm -rf pthread.h features.h sys/ math.h stdlib.h
-popd
 %find_lang %{name} --all-name
 
 %check
@@ -255,8 +251,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
-* Thu Mar 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-10
-- Skip shipping include-fixed
+* Thu Mar 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-9.1
+- Mark sub release
 * Tue Aug 05 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-9
 - Clean up unintended licenses
 * Wed Jun 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 12.2.0-8
