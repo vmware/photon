@@ -1,0 +1,15 @@
+sources:
+- archive: pyroute2-0.7.3.tar.gz
+  archive_sha512sum: c8aeddaeaa014bcf8c4b831cb5b4080db5c99b582f3999fdbdd840b9448e032fbbf64ce5707ebc0795765138d8e89cde830efb2469c827ed8d4e63dd1beafe62
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The pyroute2 library consists of a common netlink messages
+        coder / decoder and a number of protocol-specific modules. It may be used
+        to work with existing protocols such as RTNL as well as to create your own
+        netlink protocols. '
+      home_page: https://github.com/svinota/pyroute2
+      license_concluded: BSD-3-Clause AND GPL-2.0-or-later AND Apache-2.0 AND GPL-2.0-only
+      license_declared: BSD-3-Clause AND GPL-2.0-or-later AND Apache-2.0 AND GPL-2.0-only
+      short_summary: Pure Python netlink library
+      supplier: 'Organization: Broadcom, Inc.'

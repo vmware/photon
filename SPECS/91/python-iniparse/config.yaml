@@ -1,0 +1,16 @@
+sources:
+- archive: iniparse-0.5.tar.gz
+  archive_sha512sum: b3f10d1b36497c3c5c71cb0a1ac73d74d8944f4ad3b7acc4a4b0246c2f1a20c184d9af20bbb3cb8ec4f57fddfb5e103b92688847debb4200ef0583353d7f9556
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'iniparse is an INI parser for Python which is API compatible
+        with the standard library''s ConfigParser, preserves structure of INI files
+        (order of sections & options, indentation, comments, and blank lines are preserved
+        when data is updated), and is more convenient to use. '
+      home_page: http://code.google.com/p/iniparse/
+      license_concluded: Python-2.0 AND MIT
+      license_declared: Python-2.0 AND MIT
+      short_summary: Python Module for Accessing and Modifying Configuration Data
+        in INI files
+      supplier: 'Organization: Broadcom, Inc.'

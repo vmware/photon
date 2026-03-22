@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname networkx
 
 Name:           python3-networkx
 Version:        3.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Creates and Manipulates Graphs and Networks
 URL:            https://networkx.org
 Vendor:         VMware, Inc.
@@ -46,6 +48,8 @@ pip3 install tomli
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2-4
+- Bump version as a part of python3.14 upgrade
 * Fri Jul 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.2-3
 - Remove files to handle unintended copyright inclusions
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2-2

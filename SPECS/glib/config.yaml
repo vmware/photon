@@ -1,24 +1,23 @@
 sources:
-- archive: glib-2.75.2.tar.xz
-  archive_sha512sum: f8e34d112c720e17fbc2325e5091f55d120cc82aa2a9012c6e9e3b81a969af97e501910f3f986fa305ab1abfbd77e69ee9c71bcdda33c6795c3b087e684272f6
+- archive: glib-2.88.0.tar.xz
+  archive_sha512sum: ceead8d88720db17dc6bbff7aff14f261f90afc5e8261448aae0657f89b5fcc616cf62f4b049be88a4ddd3f50a869bbcdb66b29777da4969a47987828ecac280
   license_manual_review:
   # This file itself is not licensed and just lists the tests files
   - file_paths:
-    - glib-2.75.2/.reuse/dep5
-    sha256sum: c2d91289b082d7502c1b1f10834e83bd8c646cff7b8bfda30b9bd71d85cdd770
+    - glib-2.88.0/.reuse/dep5
+    sha256sum: 2e79c13df143ec611331d2a963b07f4c6da9fa50d84dd6df5064c2b68faf2db1
     spdx_exp: LGPL-2.1-or-later
   # This file itself is not licensed and just lists the tests files
   - file_paths:
-    - glib-2.75.2/docs/reference/glib/gvariant-specification-1.0.rst
-    sha256sum: 3a20a387cc9a0b0d27ed858bc23ca3eeca48b8f836b1f7ccd3d4898a06e61c6b
-    spdx_exp: ''
+    - glib-2.88.0/docs/reference/glib/gvariant-specification-1.0.rst
+    sha256sum: 7b09dbf254808acac3c6ce0fd1ae6de6c9a2eafe8bc7622e8c8c154c5a932164
   skip_validation: true
   spdx:
     package:
       detailed_description: 'The GLib package contains a low-level libraries useful
         for providing data structure handling for C, portability wrappers and interfaces
         for such runtime functionality as an event loop, threads, dynamic loading
-        and an object system. Development libs and headers are in glib-devel. '
+        and an object system. Development libs and headers are in glib-devel.'
       home_page: https://developer.gnome.org/glib/
       license_concluded: LGPL-3.0-or-later AND LGPL-2.0-only AND GPL-2.0-or-later
         WITH Autoconf-exception-2.0 AND GPL-2.0-or-later AND FSFULLR AND Apache-2.0

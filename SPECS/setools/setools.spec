@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Policy analysis tools for SELinux
 Name:           setools
-Version:        4.4.0
-Release:        3%{?dist}
+Version:        4.5.1
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -16,20 +18,19 @@ BuildRequires:  cython3
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  libselinux-devel
+BuildRequires:  python3-networkx
 
 Requires:       python3
 Requires:       libselinux
 Requires:       libsepol
-# setools use networkx library, which we do not have.
-# It can be installed by: pip3 install networkx
-#Requires:       networkx
+Requires:       selinux-policy
+Requires:       python3-networkx
 
 %description
 Policy analysis tools for SELinux
 
 %prep
 %autosetup -p1 -n %{name}
-sed -i "s/, 'networkx>=2.0'//" setup.py
 
 %build
 python3 setup.py build_ext
@@ -53,6 +54,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man1/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.5.1-1
+- Upgrade to v4.5.1 to compile with python 3.14
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.0-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.4.0-2

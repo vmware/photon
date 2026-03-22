@@ -1,0 +1,30 @@
+sources:
+- archive: defusedxml-0.7.1.tar.gz
+  archive_sha512sum: 93c1e077b22a278011497f3b3f4409b5259e0077768caa121e0f078f80f39c082f3870eaaf4bad5166fe8c3b2d169ccdea62c2840ba6969240a8371cef34c4d5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The results of an attack on a vulnerable XML library
+        can be fairly dramatic. With just a few hundred Bytes of XML data an attacker
+        can occupy several Gigabytes of memory within seconds. An attacker can also
+        keep CPUs busy for a long time with a small to medium size request. Under
+        some circumstances it is even possible to access local files on your server,
+        to circumvent a firewall, or to abuse services to rebound attacks to third
+        parties.  The attacks use and abuse less common features of XML and its parsers.
+        The majority of developers are unacquainted with features such as processing
+        instructions and entity expansions that XML inherited from SGML. At best they
+        know about <!DOCTYPE> from experience with HTML but they are not aware that
+        a document type definition (DTD) can generate an HTTP request or load a file
+        from the file system.  None of the issues is new. They have been known for
+        a long time. Billion laughs was first reported in 2003. Nevertheless some
+        XML libraries and applications are still vulnerable and even heavy users of
+        XML are surprised by these features. It''s hard to say whom to blame for the
+        situation. It''s too short sighted to shift all blame on XML parsers and XML
+        libraries for using insecure default settings. After all they properly implement
+        XML specifications. Application developers must not rely that a library is
+        always configured for security and potential harmful data by default. '
+      home_page: https://pypi.python.org/pypi/defusedxml
+      license_concluded: PSF-2.0 AND Python-2.0
+      license_declared: PSF-2.0 AND Python-2.0
+      short_summary: XML bomb protection for Python stdlib modules
+      supplier: 'Organization: Broadcom, Inc.'

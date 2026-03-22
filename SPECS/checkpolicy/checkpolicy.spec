@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        SELinux policy compiler
 Name:           checkpolicy
-Version:        3.4
-Release:        2%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -39,6 +41,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/checkmodule.8.gz
 
 %changelog
+* Fri Dec 19 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
+- Update to 3.5 to build with python3.14
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.4-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1

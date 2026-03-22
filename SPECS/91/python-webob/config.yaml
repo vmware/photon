@@ -1,0 +1,17 @@
+sources:
+- archive: WebOb-1.8.7.tar.gz
+  archive_sha512sum: ff6a1ce796a59d9c078dc908a0d6307a080230a5c806be2278eebcbb78016bed43067e78e3e4a6d72a5f51184c137e8267ac75cbb92b057db008b51a792ff489
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'WebOb provides objects for HTTP requests and responses.
+        Specifically it does this by wrapping the WSGI request environment and response
+        status/headers/app_iter(body).  The request and response objects provide many
+        conveniences for parsing HTTP request and forming HTTP responses. Both objects
+        are read/write: as a result, WebOb is also a nice way to create HTTP requests
+        and parse HTTP responses. '
+      home_page: https://pypi.python.org/pypi/WebOb
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: WebOb provides objects for HTTP requests and responses..
+      supplier: 'Organization: Broadcom, Inc.'

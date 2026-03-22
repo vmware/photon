@@ -15,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql18
 Version:        18.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -751,6 +751,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 18.3-2
+- Bump version as a part of python3.14 upgrade
 * Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 18.3-1
 - Initial version
 - Please refer https://www.postgresql.org/docs/release/18.0/ for the full release notes.

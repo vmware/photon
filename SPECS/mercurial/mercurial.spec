@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        6.3.1
-Release:        2%{?dist}
+Version:        7.2
+Release:        1%{?dist}
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,6 +14,8 @@ Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
+BuildRequires:  python3-setuptools_scm
+
 Requires:       python3
 
 %description
@@ -22,13 +26,12 @@ Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 %autosetup
 
 %build
-ln -sf /usr/bin/python3 /usr/bin/python
-make %{?_smp_mflags} build
+%{pyproject_wheel}
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p %{buildroot}/%{_bindir}
-%py3_install
+%{pyproject_install}
 
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
@@ -58,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_hg
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2-1
+- Upgrade to 7.2 to compile with python3.14
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.3.1-2
 - Release bump for SRP compliance
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 6.3.1-1

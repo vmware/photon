@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Extensions to the standard Python datetime module
 Name:           python3-dateutil
 Version:        2.8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-3
 - Release bump for SRP compliance
 * Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-2

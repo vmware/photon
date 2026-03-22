@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           libtdb
 Summary:        Trivial database library
 Version:        1.4.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://tdb.samba.org
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -92,6 +94,8 @@ Python3 bindings for libtdb
 %{python3_sitearch}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.13-2
+- Bump version as a part of python3.14 upgrade
 * Tue Apr 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.13-1
 - Upgrade to v1.4.13, needed by samba-4.19.3
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.8-3

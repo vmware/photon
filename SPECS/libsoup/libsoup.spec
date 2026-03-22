@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.6.5
-Release:         3%{?dist}
+Release:         4%{?dist}
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
@@ -27,7 +29,6 @@ BuildRequires: glib-devel
 BuildRequires: libxml2-devel
 BuildRequires: intltool
 BuildRequires: python3-devel
-BuildRequires: python3-tools
 BuildRequires: glib-networking
 BuildRequires: autogen
 BuildRequires: sqlite-devel
@@ -107,6 +108,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.6.5-4
+- Bump version as a part of python3.14 upgrade
 * Mon Oct 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.5-3
 - Fix CVE-2025-4945, CVE-2025-4969 ,CVE-2025-4476,
 - CVE-2025-11021, CVE-2025-12105

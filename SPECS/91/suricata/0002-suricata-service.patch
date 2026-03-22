@@ -1,0 +1,29 @@
+diff -ur suricata-4.1.1.orig/etc/suricata.service.in suricata-4.1.1/etc/suricata.service.in
+--- suricata-4.1.1.orig/etc/suricata.service.in	2018-12-17 09:39:22.000000000 -0500
++++ suricata-4.1.1/etc/suricata.service.in	2018-12-17 12:50:15.490858743 -0500
+@@ -1,16 +1,23 @@
+ # Sample Suricata systemd unit file.
+ [Unit]
+ Description=Suricata Intrusion Detection Service
+-After=syslog.target network-online.target
++After=syslog.target network-online.target systemd-tmpfiles-setup.service
++Documentation=man:suricata(1)
+ 
+ [Service]
+ # Environment file to pick up $OPTIONS. On Fedora/EL this would be
+ # /etc/sysconfig/suricata, or on Debian/Ubuntu, /etc/default/suricata.
+-#EnvironmentFile=-/etc/sysconfig/suricata
++EnvironmentFile=-/etc/sysconfig/suricata
+ #EnvironmentFile=-/etc/default/suricata
+ ExecStartPre=/bin/rm -f @e_rundir@suricata.pid
+ ExecStart=/sbin/suricata -c @e_sysconfdir@suricata.yaml --pidfile @e_rundir@suricata.pid $OPTIONS
+ ExecReload=/bin/kill -USR2 $MAINPID
+ 
++### Security Settings ###
++MemoryDenyWriteExecute=true
++LockPersonality=true
++ProtectControlGroups=true
++ProtectKernelModules=true
++
+ [Install]
+ WantedBy=multi-user.target

@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname Werkzeug
 
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
 Version:        2.2.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -59,6 +61,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./  python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-5
+- Bump version as a part of python3.14 upgrade
 * Tue Apr 1 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-4
 - Fix CVE-2024-49767, CVE-2023-25577, CVE-2023-23934, CVE-2023-46136
 * Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-3

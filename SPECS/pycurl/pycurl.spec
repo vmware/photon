@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           pycurl3
-Version:        7.45.1
-Release:        4%{?dist}
+Version:        7.45.7
+Release:        1%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 URL:            http://pycurl.sourceforge.net
@@ -19,6 +21,8 @@ Patch0: Fix_makecheck.patch
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  cython3
 
 %if 0%{?with_check}
 BuildRequires: python3-setuptools
@@ -82,6 +86,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.45.7-1
+- Version upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.45.1-4
 - Release bump for SRP compliance
 * Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 7.45.1-3

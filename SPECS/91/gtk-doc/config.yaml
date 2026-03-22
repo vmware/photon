@@ -1,0 +1,20 @@
+sources:
+- archive: gtk-doc-1.33.2.tar.xz
+  archive_sha512sum: f50f68ab6b4bc59f55e84b49c1481f05700171cbf79eca9ba8f3a142a30a4ba88fe096983ebb8d117a9ef8bcea40934674096683d956f5c54cae457d31f651ab
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The GTK-Doc package contains a code documenter. This
+        is useful for extracting specially formatted comments from the code to create
+        API documentation. '
+      home_page: http://www.gnu.org/software/gtk-doc
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GFDL-1.3-only
+        AND FSFAP AND FSFAP-no-warranty-disclaimer AND GPL-3.0-or-later AND GPL-1.0-or-later
+        AND GFDL-1.1-or-later AND GPL-2.0-or-later AND GFDL-1.1-only AND GPL-2.0-only
+        AND GFDL-1.3-no-invariants-only
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GFDL-1.3-only
+        AND FSFAP AND FSFAP-no-warranty-disclaimer AND GPL-3.0-or-later AND GPL-1.0-or-later
+        AND GFDL-1.1-or-later AND GPL-2.0-or-later AND GFDL-1.1-only AND GPL-2.0-only
+        AND GFDL-1.3-no-invariants-only
+      short_summary: Program to generate documenation
+      supplier: 'Organization: Broadcom, Inc.'

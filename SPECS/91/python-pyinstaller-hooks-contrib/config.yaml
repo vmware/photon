@@ -1,0 +1,17 @@
+sources:
+- archive: pyinstaller-hooks-contrib-2025.8.tar.gz
+  archive_sha512sum: 29d8f8702ebefc7668a7342634663706bcb5bf9b0189c5f8ccc4b7f5acf630d05765052d250fa73df9b2a0371ca8f088d6c73652f6059be9996c7bd6a9aabf2b
+  url: https://github.com/pyinstaller/pyinstaller-hooks-contrib/archive/refs/tags/v2025.8.tar.gz
+  commit_id: 2770126f5300a11462a603c15305c280b920fce6
+  repo_url: https://github.com/pyinstaller/pyinstaller-hooks-contrib
+  name: pyinstaller-hooks-contrib-2025.8
+  archive_type: upstream
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pyinstaller contrib hooks consist of  hooks for many packages, and allows PyInstaller to work with these packages seamlessly. '
+      home_page: https://pypi.org/project/pyinstaller-hooks-contrib
+      license_concluded: Apache-2.0 AND Bitstream-Vera AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later
+      license_declared: Apache-2.0 AND Bitstream-Vera AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later
+      short_summary: PyInstaller hooks contrib is a required module during pyinstaller installation.
+      supplier: 'Organization: Broadcom, Inc.'

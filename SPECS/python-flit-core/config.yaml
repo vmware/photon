@@ -1,7 +1,15 @@
 sources:
-- archive: flit_core-3.7.1.tar.gz
-  archive_sha512sum: 8c477bcd2924a93b51e6f3d8bbc3599929663c8d5addf16062e8e1b6c5acd740a4e4905b144092efb6e38e9700479525013831a53e055438f94c1e53ff5c6f8d
-  skip_validation: true
+- archive: flit_core-3.12.0.tar.gz
+  archive_sha512sum: 189dcd674722164b165e18b11c4dc72b8309fa2e3c82fc1ed6a9160bb5c6c1f86e2b2cfa111603cf73dca0dba74a496a664d5cbb6242587b47f139c42f7ae8bd
+  archive_type: upstream
+  skip_validation: false
+  name: flit_core-3.12.0
+  version: "3.12.0"
+  url: https://files.pythonhosted.org/packages/69/59/b6fc2188dfc7ea4f936cd12b49d707f66a1cb7a1d2c16172963534db741b/flit_core-3.12.0.tar.gz
+  repo_url: https://github.com/pypa/flit
+  commit_id: 1c8141722066ffe1497e511982feeea0f091ddb6
+  missing: ['update-vendored-tomli.sh', '.pre-commit-config.yaml', '.coveragerc', 'config.py', 'wheel.py', 'codecov.yml', '.github', 'SECURITY.md', 'bootstrap_install.py', '.gitignore', '.bumpversion.cfg', 'prepare_license_list.py', 'tests', 'vendor', 'LICENSE', 'flit_core', 'tox.ini', 'bootstrap_dev.py', 'doc', 'sdist.py', 'versionno.py', '__init__.py', '_spdx_data.py', '.readthedocs.yml', 'PKG-INFO', 'buildapi.py', 'common.py', 'flit', 'tests_core', 'pyproject.toml', 'build_dists.py', 'README.rst']
+  skip_list: ['README.rst', 'pyproject.toml']
   spdx:
     package:
       detailed_description: 'This is the extensible, standards compliant build backend

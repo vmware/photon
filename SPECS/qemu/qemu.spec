@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 
 %ifarch x86_64
@@ -11,7 +13,7 @@
 Summary:        QEMU utilities and emulators
 Name:           qemu
 Version:        7.2.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -24,6 +26,7 @@ Source1:        license.txt
 Source2:        qemu-%{targetArch}-static.conf
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  glib-devel
 BuildRequires:  pixman-devel
 BuildRequires:  ninja-build
@@ -245,6 +248,8 @@ make %{?_smp_mflags} check
 %{_libdir}/binfmt.d/qemu-%{targetArch}-static.conf
 
 %changelog
+* Wed Feb 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.0-8
+- Bump up release as part of python3 upgrade
 * Tue Dec 23 2025 Oliver Kurth <oliver.kurth@broadcom.com> 7.2.0-7
 - fix aarch64 build
 * Tue Dec 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.0-6

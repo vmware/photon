@@ -1,0 +1,13 @@
+sources:
+- archive: pika-1.2.1.tar.gz
+  archive_sha512sum: 2688f8f04990c25a5cb6f6bea4f3407bbf35fca9060e24ab4dc181f829bf4fe7d76d46f35947c8cb1f040ec880effc6e62d7303ec418eb703d51dc7a1a96d72d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Pika is a pure-Python implementation of the AMQP 0-9-1\
+        \ protocol including RabbitMQ\u2019s extensions. "
+      home_page: https://github.com/pika/pika
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Pika is a RabbitMQ (AMQP 0-9-1) client library for Python.
+      supplier: 'Organization: Broadcom, Inc.'

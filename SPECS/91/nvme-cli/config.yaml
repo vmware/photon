@@ -1,0 +1,14 @@
+sources:
+- archive: nvme-cli-2.3.tar.gz
+  archive_sha512sum: 9ef654e782ba737d3858fb11f24caf27aea820480179d07d32599731be204e52693062cdb86786ab5cdd1d94fe32ae9028baa0a58693d2eaee5a2b71155e3db2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NVM-Express user space tooling for Linux '
+      home_page: https://github.com/linux-nvme/nvme-cli
+      license_concluded: BSD-3-Clause AND MIT AND GPL-2.0-or-later AND LGPL-2.1-or-later
+        AND GPL-1.0-or-later AND CC0-1.0 AND GPL-2.0-only
+      license_declared: BSD-3-Clause AND MIT AND GPL-2.0-or-later AND LGPL-2.1-or-later
+        AND GPL-1.0-or-later AND CC0-1.0 AND GPL-2.0-only
+      short_summary: NVM-Express user space tooling for Linux
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,14 @@
 sources:
-- archive: setools-4.4.0.tar.bz2
-  archive_sha512sum: 2ec92d7a6e30261549b6a8d2f17175d4a7d8313ef0cd81f4a19a91c53fe0107bac9a89c19dd67a4c534ee51ec520590795b4312f9e03e69fdf1763b0c35291f8
-  skip_validation: true
+- archive: setools-4.5.1.tar.bz2
+  archive_sha512sum: 1045c223423fcb056ffbc2f93c4dc0ccc6ae078ce7d2acbe3a3c65de19440fe801b5b9f71038cde62bf9851f52d868c845aafbe33691ee531cf9854217e061d8
+  archive_type: upstream
+  skip_validation: false
+  name: setools
+  version: "4.5.1"
+  url: https://github.com/SELinuxProject/setools/releases/download/4.5.1/setools-4.5.1.tar.bz2
+  repo_url: https://github.com/SELinuxProject/setools
+  commit_id: 659ec47aba0126e3a198362ed1659bf600c067eb
+  missing: []
   spdx:
     package:
       detailed_description: 'Policy analysis tools for SELinux '

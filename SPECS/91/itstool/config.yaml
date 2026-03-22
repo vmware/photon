@@ -1,0 +1,19 @@
+sources:
+- archive: itstool-2.0.7.tar.bz2
+  archive_sha512sum: 710c188e518a7eccbf9d31df59692fd6acc79430589a93ef4333f33f74440c311c340614ca74cc43191830567a98024d0981325ccd83a8fd9b75410d9dd91992
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Itstool extracts messages from XML files and outputs
+        PO template files, then merges translations from MO files to create translated
+        XML files. It determines what to translate and how to chunk it into messages
+        using the W3C Internationalization Tag Set (ITS). '
+      home_page: http://itstool.org
+      license_concluded: GPL-2.0-or-later AND FSFAP AND FSFULLRWD AND FSFULLR AND
+        GPL-3.0-only AND X11 AND GPL-3.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL
+      license_declared: GPL-2.0-or-later AND FSFAP AND FSFULLRWD AND FSFULLR AND GPL-3.0-only
+        AND X11 AND GPL-3.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL
+      short_summary: Itstool-2.0.6
+      supplier: 'Organization: Broadcom, Inc.'

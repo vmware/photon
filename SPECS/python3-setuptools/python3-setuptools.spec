@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname             setuptools
 %define python_wheel_dir    %{_datadir}/python-wheels
 %define python_wheel_name   %{srcname}-%{version}-py3-none-any.whl
@@ -6,25 +8,20 @@ Summary:        Extensions to the standard Python datetime module
 Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
-Version:        69.0.3
-Release:        8%{?dist}
+Version:        80.9.0
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/setuptools
 
-Source0: https://files.pythonhosted.org/packages/5f/36/7374297692bb9dbd7569a0f84887c7e5e314c41d5d9518cb76fbb130620d/%{srcname}-%{version}.tar.gz
+Source0: https://files.pythonhosted.org/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2024-6345.patch
-Patch1: CVE-2025-47273.patch
-
 BuildRequires: python3-devel
 BuildRequires: python3-xml
-
-%define ExtraBuildRequires: python3-wheel
 
 Requires:       python3
 Requires:       python3-xml
@@ -53,7 +50,7 @@ A Python wheel of setuptools to use with venv.
 %{python3} setup.py bdist_wheel
 
 %install
-%{py3_install}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot} --skip-build
 find %{buildroot}%{python3_sitelib} -name '*.exe' -delete
 mkdir -p %{buildroot}%{python_wheel_dir}
 install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
@@ -77,6 +74,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 80.9.0-1
+- Bump up release as part of python3 upgrade
 * Wed May 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 69.0.3-8
 - Fix CVE-2025-47273
 * Fri Jan 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 69.0.3-7

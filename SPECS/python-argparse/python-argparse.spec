@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-argparse
 Version:        1.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.org/project/argparse
 Summary:        Python command-line parsing library
 Group:          Development/Languages/Python
@@ -53,6 +55,8 @@ in a number of ways including:
 %python3_sitelib/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.0-2
 - Release bump for SRP compliance
 * Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 1.4.0-1

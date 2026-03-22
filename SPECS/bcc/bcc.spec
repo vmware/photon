@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.35.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -131,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.35.0-3
+- Bump version as a part of python3.14 upgrade
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.35.0-2
 - Rebuild with shared llvm libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.35.0-1

@@ -1,28 +1,31 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           python3-ecdsa
 Version:        0.18.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/ecdsa
+BuildArch:      noarch
 
 Source0:        https://pypi.python.org/packages/source/e/ecdsa/ecdsa-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-Requires:       python3
-
 %if 0%{?with_check}
 BuildRequires: python3-pip
 BuildRequires: python3-pytest
 BuildRequires: openssl
 %endif
+
+Requires:       python3
+Requires:       python3-six
 
 %description
 This is an easy-to-use implementation of ECDSA cryptography (Elliptic Curve
@@ -57,6 +60,8 @@ tox -e coverage
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18.0-2
 - Release bump for SRP compliance
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 0.18.0-1

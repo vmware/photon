@@ -1,0 +1,13 @@
+sources:
+- archive: python-schedutils-0.6.tar.xz
+  archive_sha512sum: 1373eb0ae7594aeaf0ffa75abeb89424208531049f93d4bd068b0cedc603380c374361c87c09bb01acd6346dfe0de654a2112321f0b9110ec103d51549b8f4d2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python interface for the Linux scheduler sched_{get,set}{affinity,scheduler}\
+        functions and friends. '
+      home_page: https://git.kernel.org/pub/scm/libs/python/python-schedutils/python-schedutils.git/
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: Linux scheduler python bindings
+      supplier: 'Organization: Broadcom, Inc.'

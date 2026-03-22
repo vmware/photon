@@ -1,0 +1,13 @@
+sources:
+- archive: lxcfs-5.0.3.tar.gz
+  archive_sha512sum: 967e60bd7ea545f1fcdd805adc0083e39684013c18f42a51753b5be8cdabfb86a652d02471a1f71c7b4fa756da09b72d324b724d68091d539edd10ea63add1fd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'LXCFS is a simple userspace filesystem designed to work
+        around some current limitations of the Linux kernel. '
+      home_page: https://linuxcontainers.org/lxcfs/downloads/
+      license_concluded: LGPL-2.1-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only
+      license_declared: LGPL-2.1-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only
+      short_summary: Linux Containers File System
+      supplier: 'Organization: Broadcom, Inc.'

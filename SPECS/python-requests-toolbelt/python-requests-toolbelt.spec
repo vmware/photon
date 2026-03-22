@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname requests-toolbelt
 
 Name:           python3-requests-toolbelt
 Version:        0.10.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Utility belt for advanced users of python-requests
 Group:          Development/Languages/Python
 URL:            https://toolbelt.readthedocs.io
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/requests_toolbelt-*.egg-info/
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.1-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.1-3
 - Release bump for SRP compliance
 * Tue Dec 26 2023 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.1-2

@@ -1,0 +1,24 @@
+sources:
+- archive: libmbim-1.26.2.tar.xz
+  archive_sha512sum: 7cce1fa6ff5630a1cc565a2198544de9f4a1db20b30304fac96de6c698eaf56b17fe6ccb089151623d4484d88fda6abe980bced19dfbf0d3ef425fc954fb5844
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The libmbim package contains a GLib-based library for
+        talking to WWAN modems and devices which speak the Mobile Interface Broadband
+        Model (MBIM) protocol. '
+      home_page: https://www.freedesktop.org
+      license_concluded: GPL-2.0-or-later AND GPL-3.0-or-later AND FSFAP AND GPL-2.0-only
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.1-or-later AND
+        MIT AND FSFUL AND LGPL-2.1-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND
+        X11 AND FSFAP-no-warranty-disclaimer
+      license_declared: GPL-2.0-or-later AND GPL-3.0-or-later AND FSFAP AND GPL-2.0-only
+        AND LGPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.1-or-later AND
+        MIT AND FSFUL AND LGPL-2.1-only AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND FSFULLRWD AND FSFULLR AND GPL-2.0-or-later WITH Libtool-exception AND
+        X11 AND FSFAP-no-warranty-disclaimer
+      short_summary: Library for talking to WWAN modems and devices
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,15 @@
 sources:
-- archive: checkpolicy-3.4.tar.gz
-  archive_sha512sum: e7f7a4e987af473fd7cda0e47539061a8cb2e65a6b930f4736c538eb319129b260a3f03d2f50863e73a275ee3d58c441c33f95c80ea2bff6157e37226be54b92
-  skip_validation: true
+- archive: checkpolicy-3.5.tar.gz
+  archive_sha512sum: fcd490d865af3b4350c32c5dd9916f8406219841e1e255d8945c6dcc958535247aa27af5597a6988e19f11faea7beeabcb46e8ba2431112bb4aa5c7697bca529
+  archive_type: upstream
+  skip_validation: false
+  name: checkpolicy-3.5
+  version: "3.5"
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.5/checkpolicy-3.5.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: d6e96c5929a3f1aa1dce93505edd9f0158757ac2
+  skip_list: ['LICENSE', '.gitignore', 'Makefile']
+  missing: ['libsemanage', 'test', 'parse_util.h', 'CONTRIBUTING.md', 'policycoreutils', 'lgtm.yml', 'module_compiler.c', '.travis.yml', '.circleci', 'mcstrans', 'queue.h', 'secilc', 'policy_parse.y', 'checkpolicy.8', 'queue.c', 'libselinux', 'README.md', 'checkpolicy.h', 'scripts', 'checkpolicy', 'checkmodule.c', 'policy_define.c', 'semodule-utils', 'libsepol', 'policy_scan.l', 'gui', 'parse_util.c', 'python', 'CleanSpec.mk', 'ru', 'policy_define.h', 'dbus', 'restorecond', 'checkpolicy.c', 'sandbox', 'checkmodule.8', 'module_compiler.h', '.github', 'SECURITY.md']
   spdx:
     package:
       detailed_description: 'checkpolicy is a program that checks and compiles a SELinux

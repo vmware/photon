@@ -1,0 +1,14 @@
+sources:
+- archive: pytest-7.1.2.tar.gz
+  archive_sha512sum: e61c9b0a8fc053626da307d6bac1f5caab451c4948ef7c7f2e2f991c3433a55f81ec0d9412fca646c02f22e695c71e873ee48fc0ab0aad337ce01b70628df494
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pytest framework makes it easy to write small tests,
+        yet scales to support complex functional testing for applications and libraries. '
+      home_page: https://docs.pytest.org
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: pytest is a mature full-featured Python testing tool that helps
+        you write better programs
+      supplier: 'Organization: Broadcom, Inc.'

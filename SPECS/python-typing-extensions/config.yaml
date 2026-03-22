@@ -1,13 +1,13 @@
 sources:
-- archive: typing_extensions-4.3.0.tar.gz
-  archive_sha512sum: 69e4a393aaaaa45d20f32027cc35c77a950bf1f9b82f0eb2906a4b466eb319b867b5f53c0afc71ca613817d7e37d305fe73c50e93b1d4b389fdb8f1e4d5f8535
+- archive: typing_extensions-4.15.0.tar.gz
+  archive_sha512sum: 7ad50638ddbb575a929ffde20ac7b421970abacb311ce1b10b4bbc3b331318784863a8f67b44531327a69be08f5ab7ade65cbd1b5cd35af69fde491d800c8074
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Typing defines a standard notation for Python function
         and variable type annotations. The notation can be used for documenting code
         in a concise, standard format, and it has been designed to also be used by
-        static and runtime type checkers, static analyzers, IDEs and other tools. '
+        static and runtime type checkers, static analyzers, IDEs and other tools.'
       home_page: https://pypi.org/project/typing-extensions
       license_concluded: Python-2.0
       license_declared: Python-2.0

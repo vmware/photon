@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global sssd_user root
 
 # Set child attrs assuming root user
@@ -24,7 +26,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        17%{?dist}
+Release:        18%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -932,7 +934,7 @@ fi
 
 %files -n python3-sssdconfig
 %defattr(-,root,root)
-%{python3_sitearch}/SSSDConfig-%{version}-py3.11.egg-info
+%{python3_sitearch}/SSSDConfig-%{version}-py%{python3_version}.egg-info
 %dir %{python3_sitelib}/SSSDConfig
 %{python3_sitelib}/SSSDConfig/*.py*
 %dir %{python3_sitelib}/SSSDConfig/__pycache__
@@ -1031,6 +1033,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-18
+- Bump version as a part of python3.14 upgrade
 * Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-17
 - Add scriptlets in post for few sub packages
 * Tue Dec 30 2025 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.8.2-16

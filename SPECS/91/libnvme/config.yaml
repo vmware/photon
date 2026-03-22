@@ -1,0 +1,19 @@
+sources:
+- archive: libnvme-1.3.tar.gz
+  archive_sha512sum: c874b29b73e55be842f71e74a226a76fcd50dfa72e2be100f0437bc83e740cd146b6d2f2cdaa940c11c3d8c48ff2c065ac0e8a83d4d0dde743edf4179f328670
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides type definitions for NVMe specification structures,
+        enumerations, and bit fields, helper functions to construct, dispatch, and
+        decode commands and payloads, and utilities to connect, scan, and manage nvme
+        devices on a Linux system. '
+      home_page: https://github.com/linux-nvme/libnvme
+      license_concluded: BSD-3-Clause AND CC0-1.0 AND GPL-2.0-only AND Apache-2.0
+        AND GPL-1.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+        AND MIT
+      license_declared: BSD-3-Clause AND CC0-1.0 AND GPL-2.0-only AND Apache-2.0 AND
+        GPL-1.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+        AND MIT
+      short_summary: Linux-native nvme device management library
+      supplier: 'Organization: Broadcom, Inc.'

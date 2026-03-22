@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Python parsing module.
 Name:           python3-pyparsing
 Version:        3.0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pyparsing/%{version}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -44,6 +46,8 @@ Python parsing module.
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.9-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.9-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.9-1

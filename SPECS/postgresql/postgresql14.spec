@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname         postgresql
 %global pgmajorversion  14
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
@@ -13,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql14
 Version:        14.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -743,6 +745,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 14.22-2
+- Bump version as a part of python3.14 upgrade
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.22-1
 - Upgrade to v14.22
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 14.21-2

@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-mock
 Version:        4.0.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Rolling backport of unittest.mock for all Pythons
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/e2/be/3ea39a8fd4ed3f9a25aae18a1bff2df7a610bca93c8ede7475e32d8b73a0/mock-4.0.3.tar.gz
@@ -43,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.0.3-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.0.3-3
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.0.3-2

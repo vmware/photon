@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.8.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,6 +14,7 @@ Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
 BuildRequires:  swig
 
 %description
@@ -74,6 +77,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.3-5
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.3-4
 - Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.8.3-3

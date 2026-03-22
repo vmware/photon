@@ -1,0 +1,26 @@
+sources:
+- archive: pyrsistent-0.18.1.tar.gz
+  archive_sha512sum: 353ad6e9165e1afdde37730a9289cf8dde28491abb688d702a8c8f5279e24f5ce387a5d00ac4a077322299f9c1a535781bcacdcd1cb914ddb317b3ca9641778b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pyrsistent is a number of persistent collections (by
+        some referred to as functional data structures). Persistent in the sense that
+        they are immutable.  All methods on a data structure that would normally mutate
+        it instead return a new copy of the structure containing the requested updates.
+        The original structure is left untouched.  This will simplify the reasoning
+        about what a program does since no hidden side effects ever can take place
+        to these data structures. You can rest assured that the object you hold a
+        reference to will remain the same throughout its lifetime and need not worry
+        that somewhere five stack levels below you in the darkest corner of your application
+        someone has decided to remove that element that you expected to be there.  Pyrsistent
+        is influenced by persistent data structures such as those found in the standard
+        library of Clojure. The data structures are designed to share common elements
+        through path copying. It aims at taking these concepts and make them as pythonic
+        as possible so that they can be easily integrated into any python program
+        without hassle. '
+      home_page: https://pypi.org/project/pyrsistent
+      license_concluded: MIT AND BSD-3-Clause
+      license_declared: MIT AND BSD-3-Clause
+      short_summary: Persistent/Functional/Immutable data structures
+      supplier: 'Organization: Broadcom, Inc.'

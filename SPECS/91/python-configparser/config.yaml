@@ -1,0 +1,15 @@
+sources:
+- archive: configparser-5.3.0.tar.gz
+  archive_sha512sum: d93998978062dfb9c6a1462bf943be856c7420df29b458faba13d00ccb8238b3a1017f1ee719f1f830dee5d99f46151837b132374e092d75bfabbf4afec0b722
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The ancient ConfigParser module available in the standard
+        library 2.x has seen a major update in Python 3.2. This is a backport of those
+        changes so that they can be used directly in Python 2.6 - 3.5. '
+      home_page: https://pypi.python.org/pypi/configparser
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: This library brings the updated configparser from Python 3.5
+        to Python 2.6-3.5.
+      supplier: 'Organization: Broadcom, Inc.'

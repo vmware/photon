@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.7
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -12,6 +14,8 @@ Source0:       %{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-Use-openssl-to-generate-password-hash.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -65,6 +69,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.7-4
+- Bump version as a part of python3.14 upgrade
 * Tue Sep 23 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.7-3
 - Release bump to build with new pyinstaller
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7-2

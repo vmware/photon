@@ -1,6 +1,6 @@
 sources:
-- archive: fail2ban-1.0.2.tar.gz
-  archive_sha512sum: 688a84361b5794e1658f53d2d200ce752fe1e3320ddb1742c32c4b4b82a79ace16ae464e7ea3eeb94a0e862bcac73c2d3a0e61dd7b28e179a4c857f950d74dbb
+- archive: fail2ban-1.1.0.tar.gz
+  archive_sha512sum: 9bff7b9c41e58a953901800468e5c4153c9db6af01c7eb18111ad8620b40d03a0771020472fb759b2809d250e2bb45471e6c7e8283e72ea48290ecf7bf921821
   skip_validation: true
   spdx:
     package:

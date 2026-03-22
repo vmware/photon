@@ -1,0 +1,50 @@
+From 23a7b68034809bc19956c56af6d2209070ce9ab9 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 22 Oct 2025 19:31:25 +0530
+Subject: [PATCH] Add motd rules to fix denials
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/contrib/motd.te | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/policy/modules/contrib/motd.te b/policy/modules/contrib/motd.te
+index 33d7a1b..2bdd2f6 100644
+--- a/policy/modules/contrib/motd.te
++++ b/policy/modules/contrib/motd.te
+@@ -1,5 +1,12 @@
+ policy_module(motd, 1.0)
+ 
++gen_require(`
++	type lib_t;
++')
++
++type tdnf_exec_t;
++type tdnf_t;
++
+ attribute_role motd_roles;
+ roleattribute system_r motd_roles;
+ 
+@@ -16,3 +23,19 @@ auth_login_pgm_domain(motd_t);
+ files_read_var_files(motd_t);
+ manage_files_pattern(motd_t, motd_var_run_t, motd_var_run_t);
+ 
++# Allow motdgen to write to __pycache__ directories
++allow motd_t lib_t:dir read;
++allow motd_t lib_t:file { read open };
++
++# Allow motdgen (via sh) to create and write cached-updateinfo.txt in /var
++allow motd_t var_t:file { create write };
++
++# Allow motdgen to write anywhere under /run
++allow motd_t var_run_t:dir { write add_name remove_name };
++allow motd_t var_run_t:file { create write append unlink read open lock };
++
++# Optional: allow motdgen to write Python compiled bytecode in /usr/lib
++allow motd_t lib_t:file write;
++
++# Domain transition: motd_t executing tdnf_exec_t -> tdnf_t
++type_transition motd_t tdnf_exec_t:process tdnf_t;
+-- 
+2.51.0
+

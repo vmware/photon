@@ -1,0 +1,35 @@
+sources:
+- archive: cbindgen-0.29.2.tar.gz
+  version: 0.29.2
+  name: cbindgen-0.29.2
+  archive_sha512sum: 79264c940672b418a59debf1e8c1c672879fd766e21c0a491c9eeeee9895ba4e448173e6a7539c11cf05ca2145637717b8be06749c1a274e4f2e1d0485617885
+  archive_type: upstream
+  skip_validation: false
+  url: https://github.com/mozilla/cbindgen/archive/refs/tags/v0.29.2.tar.gz
+  repo_url: https://github.com/mozilla/cbindgen
+  commit_id: 76f41c090c0587d940a0ef81a41c8b995f074926
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'thin-provisioning-tools contains check,dump, restore,
+        repair, rmap and metadata_size tools to manage device-mapper thin provisioning
+        target metadata devices; cache check, dump, metadata_size, restore and repair
+        tools to manage device-mapper cache metadata devices are included and era
+        check, dump, restore and invalidate to manage snapshot eras. '
+      home_page: https://github.com/jthornber/thin-provisioning-tools
+      license_concluded: MPL-2.0
+      license_declared: MPL-2.0
+      short_summary: A project for generating C bindings from Rust code
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: cbindgen-registry-0.29.2-1.ph5.tar.gz
+  archive_sha512sum: 4bb62018326a72efcc31a28a646ad04b9f58005d601dc3f61bb7db6374b7869274374466b7877987b561f7adb2c7a46b1eb3e49bf6027dfa52f14998568dfb3c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Contains vendor rust file sources which were needed to
+        do offline build
+      home_page: https://github.com/vmware/photon
+      license_concluded: MPL-2.0
+      license_declared: MPL-2.0
+      short_summary: Contains vendor rust file sources
+      supplier: 'Organization: Broadcom, Inc.'

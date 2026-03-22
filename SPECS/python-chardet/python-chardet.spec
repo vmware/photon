@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        A Universal Character Encoding Detector in Python
 Name:           python3-chardet
 Version:        5.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.org/project/chardet
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -52,6 +54,8 @@ rm tests/ascii/*
 %{_bindir}/chardetect
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-4
+- Bump version as a part of python3.14 upgrade
 * Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-3
 - Clean up unintended licenses
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-2

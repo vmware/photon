@@ -1,0 +1,12 @@
+sources:
+- archive: legacy_cgi-2.6.4.tar.gz
+  archive_sha512sum: daeda7344bd9397c32febbc179e12fc5253ff025f3a56c3d63495a2c6551ebea23f9ea990f89ddf2666e7839a5f4e2dc78d3997970918a0dfa654d101b9464bb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fork of the standard library cgi and cgitb modules, being deprecated in PEP-594'
+      home_page: https://github.com/jackrosenthal/legacy-cgi
+      license_concluded: Python-2.0.1
+      license_declared: Python-2.0.1
+      short_summary: Fork of the standard library cgi and cgitb modules, being deprecated in PEP-594
+      supplier: 'Organization: Broadcom, Inc.'

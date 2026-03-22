@@ -1,21 +1,4 @@
 sources:
-- archive: postgresql-10.23.tar.bz2
-  skip_validation: true
-  archive_sha512sum: 9fd031cad0c3caacae105215167abd5dc4fdd15dea77a12cb0a977fab6e245e3fda163f202cc7786e50c69e5c3f180d32676a3b18ea30a9a14f0bcab56aa19dd
-  name: postgresql-10.23
-  version: 10.23
-  url: http://ftp.postgresql.org/pub/source/v10.23/postgresql-10.23.tar.bz2
-  repo_url: https://github.com/postgres/postgres.git
-  commit_id: 02991e79f8f58bc208f05dcc8af0c62dbe0a6ea4
-  missing: []
-  spdx:
-    package:
-      detailed_description: PostgreSQL is an object-relational database management system.
-      home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND MIT AND GPL-3.0-or-later WITH Bison-exception-2.2 AND PostgreSQL AND Spencer-99 AND BSD-2-Clause AND GPL-1.0-or-later AND Martin-Birgmeier AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-macro AND X11 AND TCL AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL AND MIT AND GPL-3.0-or-later WITH Bison-exception-2.2 AND PostgreSQL AND Spencer-99 AND BSD-2-Clause AND GPL-1.0-or-later AND Martin-Birgmeier AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-macro AND X11 AND TCL AND BSD-2-Clause-Views AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause
-      short_summary: PostgreSQL database engine
-      supplier: 'Organization: Broadcom, Inc.'
 
 - archive: postgresql-13.23.tar.bz2
   skip_validation: true

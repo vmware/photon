@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define debug_package %{nil}
 
 Name:           python3-PyYAML
-Version:        5.4.1
-Release:        3%{?dist}
+Version:        6.0.3
+Release:        1%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,7 +40,7 @@ PyYAML is applicable for a broad range of tasks from complex
 configuration files to object serialization and persistence.
 
 %prep
-%autosetup -p1 -n PyYAML-%{version}
+%autosetup -p1 -n pyyaml-%{version}
 
 %build
 %py3_build
@@ -57,10 +59,12 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc PKG-INFO README LICENSE examples
+%doc PKG-INFO LICENSE examples
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.3-1
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.1-3
 - Release bump for SRP compliance
 * Wed Mar 01 2023 Nitesh Kumar <kunitesh@vmware.com> 5.4.1-2

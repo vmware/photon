@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Draw tables in terminal/console applications from a list of lists of strings
 Name:           python3-terminaltables
 Version:        3.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -47,6 +49,8 @@ python3 -m pytest tests
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.0-2
 - Release bump for SRP compliance
 * Fri May 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.0-1

@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-filelock
 Version:        3.8.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A platform independent file lock
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -38,18 +40,20 @@ the same lock object twice, it will not block.
 %install
 %py3_install
 
+rm -r %{buildroot}%{python3_sitelib}/filelock/__pycache__
+
 %check
 %{__python3} test.py
 
-%files -n python3-filelock
+%files
 %defattr(-,root,root,-)
 %license LICENSE
 %doc README.md
-%{python3_sitelib}/filelock/*
-%{python3_sitelib}/filelock-0.0.0-py%{python3_version}.egg-info/*
-%exclude %{python3_sitelib}/filelock/__pycache__/filelock*.py[co]
+%{python3_sitelib}/filelock*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.8.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.0-3
 - Fix CVE-2026-22701
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.8.0-2

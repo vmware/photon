@@ -1,0 +1,13 @@
+sources:
+- archive: SPIRV-Tools-vulkan-sdk-1.4.313.0.tar.gz
+  archive_sha512sum: 2e0cffc9550fa95da8622424012e1fa2decbc6b981e30114ac0b7a332d7a9abed9a2138dc83ff6eb0b6d3946c1f1b43679de0754ccb98380d4981e8130a5e248
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The package includes an assembler, binary module parser,
+        disassembler, and validator for SPIR-V.. '
+      home_page: https://github.com/KhronosGroup/SPIRV-Tools/
+      license_concluded: MIT-Khronos-old AND BSD-3-Clause AND MIT AND Apache-2.0
+      license_declared: MIT-Khronos-old AND BSD-3-Clause AND MIT AND Apache-2.0
+      short_summary: API and commands for processing SPIR-V modules
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Version numbering for anarchists and software realists
 Name:           python3-looseversion
 Version:        1.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -46,6 +48,8 @@ tox
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.3.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.3.0-2
 - Release bump for SRP compliance
 * Thu Apr 18 2024 Prafful Mehrotra <prafful.mehrotra@broadcom.com> 1.3.0-1

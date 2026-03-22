@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname         postgresql
 %global pgmajorversion  13
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
@@ -13,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.23
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -727,6 +729,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 13.23-3
+- Bump version as a part of python3.14 upgrade
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 13.23-2
 - Add missing shadow dependency for user creation
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.23-1

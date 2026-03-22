@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-setuptools-rust
 Version:        1.5.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Setuptools plugin for Rust support
 Group:          Development/Languages/Python
 Url:            https://github.com/PyO3/setuptools-rust
@@ -51,6 +53,8 @@ rm -rf examples/html-py-ever/tests
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.5.2-4
+- Bump version as a part of python3.14 upgrade
 * Wed Jul 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.5.2-3
 - Avoid illegal licenses
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.5.2-2

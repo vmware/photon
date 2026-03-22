@@ -1,0 +1,18 @@
+sources:
+- archive: glslang-11.13.0.tar.gz
+  archive_sha512sum: 20c2a6543b002648f459f26bd36b5c445afd6d8eae175e400dbe45632f11ca8de1f9e6f6e98fd6f910aa75d90063e174c095e7df26d9d4982192b84d08b0dc8b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: '%{name} is the official reference compiler front end
+        for the OpenGL ES and OpenGL shading languages. It implements a strict interpretation
+        of the specifications for these languages. '
+      home_page: https://github.com/KhronosGroup/glslang
+      license_concluded: GPL-1.0-or-later AND AML-glslang AND GPL-3.0-only AND Apache-2.0
+        AND JSON AND BSD-2-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
+        BSD-3-Clause AND MIT-Khronos-old AND MIT
+      license_declared: GPL-1.0-or-later AND AML-glslang AND GPL-3.0-only AND Apache-2.0
+        AND JSON AND BSD-2-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
+        BSD-3-Clause AND MIT-Khronos-old AND MIT
+      short_summary: OpenGL and OpenGL ES shader front end and validator
+      supplier: 'Organization: Broadcom, Inc.'

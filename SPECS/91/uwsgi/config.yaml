@@ -1,0 +1,22 @@
+sources:
+- archive: uwsgi-2.0.21.tar.gz
+  archive_sha512sum: 36a9c1b87a4c3d08482b9045d2227f56b006acb53f38ddf1b510880ae5fc24c0177a077338ec8af3ef0b8f8e220bc4fc7f8311dab8066e13cbcbb616f736c795
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The uWSGI project aims at developing a full stack for
+        building hosting services. Application servers (for various programming languages
+        and protocols), proxies, process managers and monitors are all implemented
+        using a common api and a common configuration style.  Thanks to its pluggable
+        architecture it can be extended to support more platforms and languages. Currently,
+        you can write plugins in C, C++ and Objective-C.  The "WSGI" part in the name
+        is a tribute to the namesake Python standard, as it has been the first developed
+        plugin for the project. Versatility, performance, low-resource usage and reliability
+        are the strengths of the project (and the only rules followed). '
+      home_page: https://github.com/unbit/uwsgi
+      license_concluded: GPL-2.0-only WITH GCC-exception-2.0 AND Apache-2.0 AND GPL-2.0-only
+        AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only WITH GCC-exception-2.0 AND Apache-2.0 AND GPL-2.0-only
+        AND GPL-2.0-or-later
+      short_summary: Application Container Server for Networked/Clustered Web Applications
+      supplier: 'Organization: Broadcom, Inc.'

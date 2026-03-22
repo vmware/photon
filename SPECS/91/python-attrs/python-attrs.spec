@@ -1,0 +1,89 @@
+%global build_if %{photon_subrelease} <= 91
+
+Summary:        Attributes without boilerplate.
+Name:           python3-attrs
+Version:        22.1.0
+Release:        3.1%{?dist}
+Url:            https://pypi.python.org/pypi/attrs
+Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        attrs-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildArch:      noarch
+
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if 0%{?with_check}
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python3-zope.interface
+BuildRequires:  python3-pip
+%endif
+
+Requires:       python3
+
+Provides:       python3dist(attrs) = %{version}-%{release}
+Provides:       python%{python3_version}dist(attrs) = %{version}-%{release}
+
+%description
+Attributes without boilerplate.
+
+%prep
+%autosetup -p1 -n attrs-%{version}
+
+%build
+%py3_build
+
+%install
+%py3_install
+
+%check
+#python2 does not support for tests
+pip3 install pytest hypothesis==4.38.0
+python3 setup.py test
+
+%files
+%defattr(-,root,root,-)
+%{python3_sitelib}/*
+
+%changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.1.0-3.1
+- Bump after moving to SPECS/91
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.1.0-3
+- Release bump for SRP compliance
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.1.0-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 22.1.0-1
+- Automatic Version Bump
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-2
+- Fix build with new rpm
+* Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20.3.0-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.2.0-2
+- openssl 1.1.1
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1
+- Automatic Version Bump
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 20.1.0-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 19.3.0-1
+- Automatic Version Bump
+* Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 18.2.0-4
+- Mass removal python2
+* Thu Feb 27 2020 Tapas Kundu <tkundu@vmware.com> 18.2.0-3
+- hypothesis 4.38.2 has requirement attrs>=19.2.0,
+- but we have attrs 18.2.0 which is incompatible.
+* Tue Nov 13 2018 Tapas Kundu <tkundu@vmware.com> 18.2.0-2
+- Fixed the makecheck errors
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.2.0-1
+- Update to version 18.2.0
+* Thu Jul 06 2017 Chang Lee <changlee@vmware.com> 16.3.0-3
+- Updated %check
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 16.3.0-2
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 16.3.0-1
+- Initial packaging for Photon

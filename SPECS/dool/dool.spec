@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:    Versatile resource statistics tool
 Name:       dool
 Version:    1.2.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/scottchiefbaker/dool
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -56,6 +58,8 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.0-3
+- Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.2.0-2
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-1

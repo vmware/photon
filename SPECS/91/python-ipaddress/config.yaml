@@ -1,0 +1,12 @@
+sources:
+- archive: ipaddress-1.0.23.tar.gz
+  archive_sha512sum: 340e2a8698df1868038f55889671442eba17f06ec3f493759d8d0a9bf406eefbe1f67c14ca616f52e5bf2280942dcece7e89fb19de0923bee1ee20e60f48896e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'IPv4/IPv6 manipulation library '
+      home_page: https://pypi.python.org/pypi/ipaddress
+      license_concluded: Python-2.0
+      license_declared: Python-2.0
+      short_summary: Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
+      supplier: 'Organization: Broadcom, Inc.'

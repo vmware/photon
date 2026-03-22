@@ -1,21 +1,25 @@
+%global build_if %{photon_subrelease} >= 92
+
 #
 # spec file for package python3-linux-procfs
 #
 
 Name:           python3-linux-procfs
 Version:        0.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Summary:        Linux /proc abstraction classes
 URL:            https://git.kernel.org/pub/scm/libs/python/python-linux-procfs/python-linux-procfs.git/
+
+BuildArch:     noarch
+
 Source0:        https://cdn.kernel.org/pub/software/libs/python/python-linux-procfs/python-linux-procfs-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildArch:     noarch
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-defusedxml
@@ -23,6 +27,8 @@ BuildRequires: python3-defusedxml
 %if 0%{?with_check}
 BuildRequires: python3-six
 %endif
+
+Requires:      python3
 
 %description
 Abstractions to extract information from the Linux kernel /proc files.
@@ -49,6 +55,8 @@ LANG=en_US.UTF-8 python3 bitmasklist_test.py
 %license COPYING
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.0-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.7.0-1

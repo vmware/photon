@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-backports_abc
 Version:        0.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A backport of recent additions to the 'collections.abc' module.
 Group:          Development/Languages/Python
 Url:            https://github.com/cython/backports_abc
@@ -38,6 +40,8 @@ python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5-2
 - Release bump for SRP compliance
 * Wed Apr 17 2024 Prafful Mehrotra <prafful.mehrotra@broadcom.com> 0.5-1

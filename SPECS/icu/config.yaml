@@ -1,7 +1,14 @@
 sources:
-- archive: icu4c-72_1-src.tgz
-  archive_sha512sum: 848c341b37c0ff077e34a95d92c6200d5aaddd0ee5e06134101a74e04deb08256a5e817c8aefab020986abe810b7827dd7b2169a60dacd250c298870518dcae8
-  skip_validation: true
+- archive: icu4c-76_1-src.tgz
+  archive_sha512sum: b702ab62fb37a1574d5f4a768326d0f8fa30d9db5b015605b5f8215b5d8547f83d84880c586d3dcc7b6c76f8d47ef34e04b0f51baa55908f737024dd79a42a6c
+  archive_type: upstream
+  skip_validation: false
+  name: icu/source
+  version: "76.1"
+  url: https://github.com/unicode-org/icu/releases/download/release-76-1/icu4c-76_1-src.tgz
+  repo_url: https://github.com/unicode-org/icu
+  commit_id: 8eca245c7484ac6cc179e3e5f7c1ea7680810f39
+  missing: ['.github', 'currency', '.gitignore', 'pkgdata', 'gencnval', 'extra', 'install-sh', 'escapesrc', 'gencfu', 'README.md', 'test', '.gitattributes', 'layoutex', 'SECURITY.md', 'genren', 'data', 'KEYS', 'gennorm2', 'release', 'icupkg', 'trac', 'memcheck', 'icuexportdata', 'configure', 'runConfigureICU', 'python', 'stubdata', 'unicodetools', 'config.sub', 'configure.ac', 'Makefile.in', '.bazelrc', 'LICENSE', 'gensprep', 'icu4c', 'samples', 'i18n', 'config.guess', 'toolutil', 'common', 'cldr', 'gencolusb', 'WORKSPACE', 'genccode', 'colprobe', 'vendor', 'unicode', 'Doxyfile.in', 'ctestfw', 'io', '.bazeliskrc', 'icu4j', 'aclocal.m4', 'icuinfo', 'gencmn', 'CONTRIBUTING.md', 'gentest', 'images', 'allinone', 'acinclude.m4', 'config', 'docs', 'scripts', 'genbrk', '.clang-format', 'commit-checker', 'mkinstalldirs', 'tzcode', 'testdata', 'multi', '.cpyskip.txt', 'icuswap', 'icudefs.mk.in', 'genrb', 'makeconv', 'gendict']
   spdx:
     package:
       detailed_description: 'The International Components for Unicode (ICU) package

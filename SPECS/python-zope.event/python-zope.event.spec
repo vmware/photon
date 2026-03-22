@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-zope.event
 Version:        4.5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Very basic event publishing system
 Group:          Development/Libraries/Python
 Url:            http://pypi.python.org/pypi/zope.event
@@ -42,6 +44,8 @@ python setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.5.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.5.0-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.5.0-2

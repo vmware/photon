@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname gevent
 
 Summary:        Coroutine-based network library
 Name:           python3-gevent
-Version:        23.9.1
-Release:        2%{?dist}
+Version:        25.9.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,6 +22,7 @@ BuildRequires: python3-xml
 BuildRequires: python3-pip
 BuildRequires: python3-zope.interface
 BuildRequires: python3-wheel
+BuildRequires: cython3
 
 %if 0%{?with_check}
 BuildRequires: lsof
@@ -65,6 +68,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.9.1-1
+- Bump up release as part of python3 upgrade
 * Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 23.9.1-2
 - Release bump for SRP compliance
 * Mon Dec 16 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.9.1-1

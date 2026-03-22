@@ -1,0 +1,13 @@
+sources:
+- archive: deepmerge-1.1.0.tar.gz
+  archive_sha512sum: 9facde604ee02271ad49d9a14e88fa23690c41728c3c350594533725c2e38803cc75f9345ff19bb63ceb318ea7c58a46ed0d6091682560509401206c8b4e8537
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A tools to handle merging of nested data structures in
+        python. '
+      home_page: https://pypi.org/project/deepmerge
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python toolset to deeply merge python dictionaries.
+      supplier: 'Organization: Broadcom, Inc.'

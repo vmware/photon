@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global cmocka_version 1.1.5
 %global talloc_version 2.4.1
 %global tdb_version 1.4.8
@@ -5,7 +7,7 @@
 
 Name:           libldb
 Version:        2.8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A schema-less, ldap like, API and database
 Distribution:   Photon
 Vendor:         VMware, Inc.
@@ -155,6 +157,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-3
+- Bump version as a part of python3.14 upgrade
 * Tue Jul 01 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-2
 - Bump release for new license scan
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-1

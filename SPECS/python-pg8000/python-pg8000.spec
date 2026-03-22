@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 %define srcname pg8000
 
 Name:           python3-pg8000
 Version:        1.31.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Pure-Python PostgreSQL Driver
 URL:            http://pgaudit.org
 Group:          Applications/Databases
@@ -51,6 +53,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.31.5-2
+- Bump version as a part of python3.14 upgrade
 * Mon Jan 12 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.31.5-1
 - Update to 1.31.5, Fixes CVE-2025-61385
 * Fri Aug 29 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.31.2-1

@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global frr_libdir %{_libexecdir}/%{name}
 
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        10.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -118,7 +120,8 @@ sh ./configure --host=%{_host} --build=%{_build} \
         --disable-babeld \
         --with-moduledir=%{_libdir}/%{name}/modules \
         --with-crypto=openssl \
-        --enable-fpm
+        --enable-fpm \
+        --disable-doc
 
 %make_build PYTHON=%{python3}
 
@@ -210,15 +213,15 @@ fi
 %{_datadir}/yang/*.yang
 %{_tmpfilesdir}/%{name}.conf
 %{_sysusersdir}/%{name}.conf
-%{_infodir}/*info*
 %{_bindir}/*
 %dir %{frr_libdir}/
 %{frr_libdir}/*
-%{_datadir}/man/*
 %{_libdir}/%{name}/modules/*.so
 %{frr_libdir}/*.py
 
 %changelog
+* Fri Feb 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 10.5.0-3
+- Bump up as part of python3-sphinx update
 * Fri Jan 02 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 10.5.0-2
 - Bump up as part of net-snmp update
 * Wed Nov 05 2025 HarinadhD <harinadh.dommaraju@broadcom.com> 10.5.0-1

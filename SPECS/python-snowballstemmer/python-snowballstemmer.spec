@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-snowballstemmer
 Version:        2.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python stemming library
 Group:          Development/Languages/Python
 Url:            https://github.com/shibukawa/snowball_py
@@ -57,6 +59,8 @@ It includes following language algorithms:
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.0-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1

@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define debug_package %{nil}
 
 Summary:        OpenCL C language library implementation
 Name:           libclc
 Version:        18.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -78,5 +80,7 @@ rm -rf %{buildroot}/*
 %{_includedir}/clc
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 18.1.8-2
+- Bump version as a part of python3.14 upgrade
 * Tue Jun 24 2025 Shivani Agarwal <shivania2@vmware.com> 18.1.8-1
 - Initial libclc version, required for mesa

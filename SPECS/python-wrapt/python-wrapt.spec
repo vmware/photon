@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:       A Python module for decorators, wrappers and monkey patching
 Name:          python3-wrapt
 Version:       1.14.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Tools/Python
 URL:           https://github.com/GrahamDumpleton/wrapt
 Vendor:        VMware, Inc.
@@ -38,6 +40,8 @@ of function wrappers and decorator functions.
 %{python3_sitearch}/wrapt-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.14.1-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.14.1-2
 - Release bump for SRP compliance
 * Mon Aug 29 2022 Srish Srinivasan <ssrish@vmware.com> 1.14.1-1

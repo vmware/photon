@@ -1,6 +1,6 @@
 sources:
-- archive: ruamel.yaml-0.17.21.tar.gz
-  archive_sha512sum: 1ecda5ecacf913a499e40b4df8d5d6112b8c2facf5ce42c36eedad1ea4745884f98919b70a9d51ba8b095463e27371f6b84e314fe8f512c318963ab32f2cbf17
+- archive: ruamel.yaml-0.19.1.tar.gz
+  archive_sha512sum: 726e9348b36bf78cf80c72154d1652ef6f128bcb28b53a3814543a7568e9d079d35be191608691bf6fddc98996cf621b8e77b118510627806aab20b029bfe718
   skip_validation: true
   spdx:
     package:

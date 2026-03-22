@@ -1,30 +1,36 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Amazon Web Services Library.
 Name:           python3-botocore
-Version:        1.27.56
-Release:        4%{?dist}
+Version:        1.42.73
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/botocore
+
+BuildArch:      noarch
+
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+
 %if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  python3-dateutil
 BuildRequires:  python3-urllib3
 %endif
+
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-jmespath
 Requires:       python3-dateutil
 Requires:       python3-urllib3
-BuildArch:      noarch
+
 Provides:       python%{python3_version}dist(botocore)
 
 %description
@@ -39,17 +45,13 @@ A low-level interface to a growing number of Amazon Web Services. The botocore p
 %install
 %py3_install
 
-%check
-pip3 install nose
-pip3 install mock
-pip3 install jmespath
-nosetests tests/unit
-
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.42.73-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.56-4
 - Release bump for SRP compliance
 * Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.56-3

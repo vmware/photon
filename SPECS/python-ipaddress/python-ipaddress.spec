@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-ipaddress
 Version:        1.0.23
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/ipaddress
@@ -41,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.23-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.23-3
 - Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.23-2

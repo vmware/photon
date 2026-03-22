@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:       Convert output of command line tools and others to JSON
 Name:          jc
 Version:       1.23.6
-Release:       3%{?dist}
+Release:       4%{?dist}
 URL:           https://github.com/kellyjonbrazil/jc
 Group:         Development/Languages/Python
 Vendor:        VMware, Inc.
@@ -81,6 +83,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{name}-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.23.6-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.23.6-3
 - Release bump for SRP compliance
 * Sat Dec 09 2023 Oliver Kurth <oliver.kurth@broadcom.com> 1.23.6-2

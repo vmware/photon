@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define debug_package %{nil}
 
 Summary:        YAML parser/emitter.
 Name:           python3-ruamel-yaml
-Version:        0.17.21
-Release:        3%{?dist}
+Version:        0.19.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -53,6 +55,8 @@ find %{buildroot} -name '*.pyc' -delete
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.19.1-1
+- Upragde to 0.19.1, as part of python3 upgrade
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.17.21-3
 - Remove dependency on python3-typing
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.17.21-2

@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname python-etcd
 
 Name:           python3-etcd
 Version:        0.4.5
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Python API for etcd
 Group:          Development/Languages/Python
 Url:            https://github.com/jplana/python-etcd
@@ -61,6 +63,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.5-10
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.5-9
 - Release bump for SRP compliance
 * Tue Aug 06 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.5-8

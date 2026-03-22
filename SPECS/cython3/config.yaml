@@ -1,7 +1,14 @@
 sources:
-- archive: Cython-0.29.32.tar.gz
-  archive_sha512sum: 55462792fa70d8edf60aa470627ab494918d7297fd7d282a7a54da76ee5a180233108404a1c8f3d79f6408f19b6e4f46b36e59fd47c38ede24f061f374437b6f
-  skip_validation: true
+- archive: cython-3.2.2.tar.gz
+  archive_sha512sum: 50cd07e4a89e11a902745a41455cdf4e7522c54c220881d523630b06961da7d39af78ce05180ba3e27839b458920fe2a23554350e33b9c16e80bc70dab19b975
+  archive_type: upstream
+  name: cython-3.2.2
+  version: "3.2.2"
+  url: https://github.com/cython/cython/archive/refs/tags/3.2.2.tar.gz
+  repo_url: https://github.com/cython/cython
+  commit_id: 2a8ee41263f6bc898a32c75a9156071bee5e8788
+  missing: ['CONTRIBUTING.md', 'BUILD.bazel', 'windows_bugs_39.txt', 'ipython-COPYING.rst', 'limited_api_bugs_38.txt', 'memoryview_tests.txt', 'PKG-INFO', '.editorconfig', '.hgtags', '.gitrev', '.github', '.hgignore', 'locking', '.codespellrc', 'pyproject.toml', 'Doc', '.gitignore', 'runcodestyle.py', 'README.rst', '.readthedocs.yaml', '.mailmap']
+  skip_list: []
   spdx:
     package:
       detailed_description: 'Cython is an optimising static compiler for both the

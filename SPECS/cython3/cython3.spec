@@ -1,19 +1,23 @@
+%global build_if %{photon_subrelease} >= 92
+
+%global srcname cython
+
 Summary:        C extensions for Python3
 Name:           cython3
-Version:        0.29.32
-Release:        4%{?dist}
+Version:        3.2.2
+Release:        1%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://cython.org/
 
-Source0:        https://github.com/cython/cython/archive/Cython-%{version}.tar.gz
+Source0:        https://github.com/cython/cython/archive/cython-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-xml
+BuildRequires:  python3-pip
 
 Requires:       python3
 
@@ -26,10 +30,10 @@ It makes writing C extensions for Python as easy as Python itself.
 %autosetup -p1 -n cython-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-python3 setup.py install --skip-build --root %{buildroot}
+%{pyproject_install}
 mv %{buildroot}%{_bindir}/cython %{buildroot}%{_bindir}/cython3
 mv %{buildroot}%{_bindir}/cythonize %{buildroot}%{_bindir}/cythonize3
 mv %{buildroot}%{_bindir}/cygdb %{buildroot}%{_bindir}/cygdb3
@@ -44,13 +48,15 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
-%{python3_sitelib}/*.egg-info
+%{python3_sitelib}/%{srcname}-%{version}.dist-info/
 %{python3_sitelib}/Cython/*
 %{python3_sitelib}/cython.py*
 %{python3_sitelib}/pyximport/*
 %{python3_sitelib}/__pycache__/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-1
+- Update to 3.2.2, as part of python3 upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.29.32-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.29.32-3

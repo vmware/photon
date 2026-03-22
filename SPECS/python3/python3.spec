@@ -1,10 +1,12 @@
-%global VER 3.11
+%global build_if %{photon_subrelease} >= 92
+
+%global VER 3.14
 %global with_gdb_hooks 1
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.11.13
-Release:        6%{?dist}
+Version:        3.14.1
+Release:        1%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -16,16 +18,10 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels.ph5-1.0-3.tar.xz
+Source2: pip-wheel.ph5-1.0-1.tar.xz
 
 Source3: license.txt
 %include %{SOURCE3}
-
-Patch0: cgi3.patch
-Patch1: use-HMAC-SHA256-in-FIPS-mode.patch
-Patch2: ensurepip-upgrade-bundled-pip-and-setuptools.patch
-Patch3: CVE-2025-8194.patch
-Patch4: CVE-2025-13836.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -121,15 +117,6 @@ python package will also need to be installed.  You'll probably also
 want to install the python-docs package, which contains Python
 documentation.
 
-%package        tools
-Summary:        A collection of development tools included with Python.
-Group:          Development/Tools
-Requires:       %{name} = %{version}-%{release}
-
-%description    tools
-The Python package includes several development tools that are used
-to build python programs.
-
 %package test
 Summary: Regression tests package for Python.
 Group: Development/Tools
@@ -163,12 +150,10 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__dev_ptc=no
 fi
 
-rm -vf Lib/ensurepip/_bundled/pip*.whl \
-       Lib/ensurepip/_bundled/setuptools*.whl
+rm -vf Lib/ensurepip/_bundled/pip*.whl
 
-pushd setuptools-pip-wheels/%{_arch}
+pushd pip-wheel/%{_arch}
 cp pip*.whl \
-   setuptools*.whl \
    ../../Lib/ensurepip/_bundled/
 popd
 
@@ -193,10 +178,8 @@ find %{buildroot}%{_libdir} \( -type f -name '*.pyc' -or \
                                -type f -name '*.pyo' \
                                -type f -name '*.o' \
                                -type f -name '*__pycache__' \) -delete
-rm %{buildroot}%{_bindir}/2to3
 mkdir -p %{buildroot}%{_rpmmacrodir}
 install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}
-cp -p Tools/scripts/pathfix.py %{buildroot}%{_bindir}/pathfix.py
 
 %if 0%{?__debug_package}
 %if 0%{?with_gdb_hooks}
@@ -218,12 +201,8 @@ ln -sfrv %{_bindir}/%{name} %{_bindir}/python
 #we are handling the uninstall rpm
 #in case of upgrade/downgrade we dont need any action
 #as python will still be linked to python3
-if [ $1 -eq 0 ] ; then
-  if [ -f "%{_bindir}/python2" ]; then
-    ln -sfrv %{_bindir}/python2 %{_bindir}/python
-  else
-    rm -f %{_bindir}/python
-  fi
+if [ $1 -eq 0 ]; then
+  rm -f %{_bindir}/python
 fi
 /sbin/ldconfig
 
@@ -244,8 +223,6 @@ rm -rf %{buildroot}/*
 
 %exclude %{_bindir}/pip3
 %exclude %{_bindir}/pip%{VER}
-%exclude %{_libdir}/python%{VER}/ctypes/test
-%exclude %{_libdir}/python%{VER}/distutils/tests
 %exclude %{_libdir}/python%{VER}/idlelib/idle_test
 %exclude %{_libdir}/python%{VER}/test
 %exclude %{_libdir}/python%{VER}/lib-dynload/_ctypes_test.*.so
@@ -253,10 +230,7 @@ rm -rf %{buildroot}/*
 %files libs
 %defattr(-, root, root)
 %{_libdir}/python%{VER}
-%exclude %{_libdir}/python%{VER}/lib2to3
 %exclude %{_libdir}/python%{VER}/site-packages/
-%exclude %{_libdir}/python%{VER}/ctypes/test
-%exclude %{_libdir}/python%{VER}/distutils/tests
 %exclude %{_libdir}/python%{VER}/idlelib/idle_test
 %exclude %{_libdir}/python%{VER}/test
 %exclude %{_libdir}/python%{VER}/lib-dynload/_ctypes_test.*.so
@@ -281,19 +255,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpython%{VER}.so
 %{_libdir}/pkgconfig/python-%{VER}.pc
 %{_libdir}/pkgconfig/%{name}.pc
-%{_bindir}/pathfix.py
 %{_bindir}/%{name}-config
 %{_bindir}/python%{VER}-config
 %{_libdir}/pkgconfig/python-%{VER}-embed.pc
 %{_libdir}/pkgconfig/%{name}-embed.pc
-
-%exclude %{_bindir}/2to3*
-%exclude %{_bindir}/idle*
-
-%files tools
-%defattr(-, root, root, 755)
-%{_libdir}/python%{VER}/lib2to3
-%{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
 
 %files test
@@ -305,6 +270,9 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.1-1
+- Update to 3.14
+- Removed python3-tools as 2to3 tool is deprecated
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-6
 - Revert addition of common.pth change
 * Tue Mar 10 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-5

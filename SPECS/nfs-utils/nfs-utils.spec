@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.6.2
-Release:          11%{?dist}
+Release:          12%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -176,6 +178,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libnfsidmap.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.6.2-12
+- Bump version as a part of python3.14 upgrade
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.6.2-11
 - Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.6.2-10

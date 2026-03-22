@@ -1,0 +1,13 @@
+sources:
+- archive: incremental-24.7.2.tar.gz
+  archive_sha512sum: d738d32392ff3a3fa15b880598a74c8fe61383ab2ca167612ffdad464edda9d08fbfabfdf5c4939731c4d0489a76ba72a483fe3813351610b3618fbcc9539d82
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Incremental is a small library that versions your Python
+        projects. '
+      home_page: https://pypi.python.org/pypi/incremental
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Incremental is a small library that versions your Python projects.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,16 @@
+sources:
+- archive: hypothesis-6.54.4.tar.gz
+  archive_sha512sum: 5c40daa2acb56fa0d4e7b84351eaf86bf470311a50608075c58f26b305d3e5811eceb50349b898da92e5d6a257e753f5ee68e14dcafd01731647e4aa42322e4a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Hypothesis is an advanced testing library for Python.
+        It lets you write tests which are parametrized by a source of examples, and
+        then generates simple and comprehensible examples that make your tests fail.
+        This lets you find more bugs in your code with less work '
+      home_page: https://github.com/HypothesisWorks/hypothesis-python
+      license_concluded: CC0-1.0 AND BSD-3-Clause AND MPL-2.0
+      license_declared: CC0-1.0 AND BSD-3-Clause AND MPL-2.0
+      short_summary: Python library for creating unit tests which are simpler to write
+        and more powerful
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,176 @@
+From 129bda7dc564743c007e3e4ec6bc00e515ff83cb Mon Sep 17 00:00:00 2001
+From: Kuntal Nayak <kuntal.nayak@broadcom.com>
+Date: Thu, 24 Jul 2025 23:39:44 +0000
+Subject: [PATCH] ovs: use source under permitted license
+
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ utilities/ovs-dpctl-top.in | 128 ++++++++++++++++++++++++++++---------
+ 1 file changed, 97 insertions(+), 31 deletions(-)
+
+diff --git a/utilities/ovs-dpctl-top.in b/utilities/ovs-dpctl-top.in
+index 2c1766eff..6fa7d2c32 100755
+--- a/utilities/ovs-dpctl-top.in
++++ b/utilities/ovs-dpctl-top.in
+@@ -15,11 +15,7 @@
+ # limitations under the License.
+ #
+ #
+-# The approximate_size code was copied from
+-# http://getpython3.com/diveintopython3/your-first-python-program.html#divingin
+-# which is licensed under # "Dive Into Python 3," Copyright 2011 Mark Pilgrim,
+-# used under a Creative Commons Attribution-Share-Alike license:
+-# http://creativecommons.org/licenses/by-sa/3.0/
++# python-humanize/humanize is licensed under the MIT License
+ #
+ #
+ 
+@@ -156,6 +152,7 @@ import threading
+ import time
+ import socket
+ 
++from math import log
+ 
+ ##
+ # The following two definitions provide the necessary netaddr functionality.
+@@ -621,42 +618,111 @@ def get_terminal_size():
+ 
+ ##
+ # Content derived from:
+-# http://getpython3.com/diveintopython3/your-first-python-program.html#divingin
++# Python humanize package:-> src/humanize/filesize.py
++# https://github.com/python-humanize/humanize/blob/main/src/humanize/filesize.py
+ ##
+-SUFFIXES = {1000: ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+-            1024: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']}
+-
+-
+-def approximate_size(size, a_kilobyte_is_1024_bytes=True):
+-    """Convert a file size to human-readable form.
+-
+-    Keyword arguments:
+-    size -- file size in bytes
+-    a_kilobyte_is_1024_bytes -- if True (default), use multiples of 1024
+-                                    if False, use multiples of 1000
+-
+-    Returns: string
+ 
++suffixes = {
++    "decimal": (
++        " kB",
++        " MB",
++        " GB",
++        " TB",
++        " PB",
++        " EB",
++        " ZB",
++        " YB",
++        " RB",
++        " QB",
++    ),
++    "binary": (
++        " KiB",
++        " MiB",
++        " GiB",
++        " TiB",
++        " PiB",
++        " EiB",
++        " ZiB",
++        " YiB",
++        " RiB",
++        " QiB",
++    ),
++    "gnu": "KMGTPEZYRQ",
++}
++
++
++def naturalsize(
++    value: float | str,
++    binary: bool = False,
++    gnu: bool = False,
++    format: str = "%.1f",
++) -> str:
++    """Format a number of bytes like a human-readable filesize (e.g. 10 kB).
++
++    By default, decimal suffixes (kB, MB) are used.
++
++    Non-GNU modes are compatible with jinja2's `filesizeformat` filter.
++
++    Examples:
++        ```pycon
++        >>> naturalsize(3000000)
++        '3.0 MB'
++        >>> naturalsize(300, False, True)
++        '300B'
++        >>> naturalsize(3000, False, True)
++        '2.9K'
++        >>> naturalsize(3000, False, True, "%.3f")
++        '2.930K'
++        >>> naturalsize(3000, True)
++        '2.9 KiB'
++        >>> naturalsize(10**28)
++        '10.0 RB'
++        >>> naturalsize(10**34 * 3)
++        '30000.0 QB'
++        >>> naturalsize(-4096, True)
++        '-4.0 KiB'
++
++        ```
++
++    Args:
++        value (int, float, str): Integer to convert.
++        binary (bool): If `True`, uses binary suffixes (KiB, MiB) with base
++            2<sup>10</sup> instead of 10<sup>3</sup>.
++        gnu (bool): If `True`, the binary argument is ignored and GNU-style
++            (`ls -sh` style) prefixes are used (K, M) with the 2**10 definition.
++        format (str): Custom formatter.
++
++    Returns:
++        str: Human readable representation of a filesize.
+     """
+-    size = float(size)
+-    if size < 0:
+-        raise ValueError('number must be non-negative')
+-
+-    if (a_kilobyte_is_1024_bytes):
+-        multiple = 1024
++    if gnu:
++        suffix = suffixes["gnu"]
++    elif binary:
++        suffix = suffixes["binary"]
+     else:
+-        multiple = 1000
+-    for suffix in SUFFIXES[multiple]:
+-        size /= multiple
+-        if size < multiple:
+-            return "%.1f %s" % (size, suffix)
++        suffix = suffixes["decimal"]
+ 
+-    raise ValueError('number too large')
++    base = 1024 if (gnu or binary) else 1000
++    bytes_ = float(value)
++    abs_bytes = abs(bytes_)
+ 
++    if abs_bytes == 1 and not gnu:
++        return f"{int(bytes_)} Byte"
+ 
++    if abs_bytes < base:
++        return f"{int(bytes_)}B" if gnu else f"{int(bytes_)} Bytes"
++
++    exp = int(min(log(abs_bytes, base), len(suffix)))
++    ret: str = format % (bytes_ / (base**exp)) + suffix[exp - 1]
++    return ret
+ ##
+ # End copied content
+ ##
++
++def approximate_size(size, a_kilobyte_is_1024_bytes=True):
++    return naturalsize(size, binary=a_kilobyte_is_1024_bytes)
++
++
+ class ColMeta:
+     """ Concepts about columns. """
+     def __init__(self, sortable, width):
+-- 
+2.39.4
+

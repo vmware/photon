@@ -1,0 +1,23 @@
+sources:
+- archive: OpenIPMI-2.0.33.tar.gz
+  archive_sha512sum: 615fccd1ffd4af18584c1b0e54667ba2de60b6d42b44e7448f27808114180fa3b31b4834276bdf69c3df1e5210df871fd888deec8186377524838390fe41e641
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains a shared library implementation
+        of IPMI and the basic tools used with OpenIPMI. '
+      home_page: https://sourceforge.net/projects/openipmi
+      license_concluded: FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND LGPL-2.1-or-later AND FSFAP AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause-No-Nuclear-Warranty AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later AND LGPL-2.1-only AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later
+        AND X11 AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      license_declared: FSFULLR AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND
+        LGPL-2.1-or-later AND FSFAP AND FSFUL AND GPL-2.0-or-later WITH Libtool-exception
+        AND BSD-3-Clause-No-Nuclear-Warranty AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND GPL-3.0-or-later AND LGPL-2.1-only AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Libtool-exception AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later
+        AND X11 AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic
+      short_summary: A shared library implementation of IPMI and the basic tools
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package   %{nil}
 %define srcname         Twisted
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        24.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -90,6 +92,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.0-2
+- Bump version as a part of python3.14 upgrade
 * Mon Oct 13 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.0-1
 - Upgrade to 24.7.0, fixes CVE-2024-41671
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-4

@@ -1,6 +1,6 @@
 sources:
-- archive: libtraceevent-1.6.3.tar.gz
-  archive_sha512sum: 8064eb18dda6fdbff020759ed92e785b87d34be9ebc30cb6085785edeb8d7252cabf8d33d8738a3ec407672a3d891884d0f0b4c551fce26c76fa8eaf61b9e2f5
+- archive: libtraceevent-1.8.7.tar.gz
+  archive_sha512sum: 63c520794effe8e570bef80b7e81696b59de0e095c8a184722e79450856ebaed5e9e89c1c679a010da75043e80db2b2968a9af47da1f436f844ca7112e1d0451
   skip_validation: true
   spdx:
     package:

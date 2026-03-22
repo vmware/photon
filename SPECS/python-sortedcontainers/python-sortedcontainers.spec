@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Pure Python sorted container types
 Name:           python3-sortedcontainers
 Version:        2.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -42,10 +44,11 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,-)
-%{python3_sitelib}/sortedcontainers*.egg-info/*
-%{python3_sitelib}/sortedcontainers/*
+%{python3_sitelib}/sortedcontainers*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.0-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.4.0-1

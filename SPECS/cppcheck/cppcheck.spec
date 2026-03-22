@@ -1,7 +1,7 @@
 Summary:        Tool for static C/C++ code analysis
 Name:           cppcheck
 Version:        2.9.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://cppcheck.sourceforge.io
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -66,6 +66,8 @@ make checkcfg %{?_smp_mflags}
 %{_datadir}/%{name}/addons/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.3-4
+- Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.9.3-3
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-2

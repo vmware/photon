@@ -1,7 +1,15 @@
 sources:
-- archive: gevent-23.9.1.tar.gz
-  archive_sha512sum: c0600a5f9e50040009c3467ad802dda8a48422dca4e781acc9ca3428446399932da2f07d7345936ef634783611cf664d219f614980ed6b936f4a510e56ea753c
-  skip_validation: true
+- archive: gevent-25.9.1.tar.gz
+  archive_sha512sum: 8c7f6030020fd6d762ebb1afccb7fb8306e2cf1a45dabf8a471709264acc35003ea2be44f4e0733a75c703256776b4f22a96be50e926c9dc053f453f0b1f3522
+  archive_type: upstream
+  skip_validation: false
+  name: gevent-25.9.1
+  version: "25.9.1"
+  url: https://files.pythonhosted.org/packages/9e/48/b3ef2673ffb940f980966694e40d6d32560f3ffa284ecaeb5ea3a90a6d3f/gevent-25.9.1.tar.gz
+  repo_url: https://github.com/gevent/gevent/
+  commit_id: 86937db8eadc4e1a4e1ffc374dc67d2fcf4c7196
+  missing: ['config.yml', '.gitignore', '_generated_include', 'cares.html', 'gevent.egg-info', 'corecext.html', 'PKG-INFO', 'cares.c', 'workflows', 'm4', 'dependabot.yml', 'corecext.h', 'corecext.c']
+  skip_list: ['setup.cfg']
   spdx:
     package:
       detailed_description: gevent is a coroutine-based Python networking library.

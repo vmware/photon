@@ -1,0 +1,27 @@
+From 9f1195ee86b95fbdd41432ad9881e3968f9edd11 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 17 May 2024 23:03:56 +0530
+Subject: [PATCH 30/35] syslog denial fix
+
+Fixes following denial, started happening with CgroupV2.
+
+type=AVC msg=audit(1716303105.488:249): avc:  denied  { read } for  pid=636 comm="systemd-journal" name="init.scope" dev="cgroup2" ino=17 scontext=system_u:system_r:syslogd_t:s0 tcontext=system_u:object_r:cgroup_t:s0 tclass=dir permissive=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/logging.te | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/policy/modules/system/logging.te b/policy/modules/system/logging.te
+index b1f8b20..6ab5f77 100644
+--- a/policy/modules/system/logging.te
++++ b/policy/modules/system/logging.te
+@@ -790,3 +790,5 @@ ifdef(`hide_broken_symptoms',`
+ ')
+ 
+ logging_stream_connect_syslog(syslog_client_type)
++
++allow syslogd_t cgroup_t:dir read;
+-- 
+2.45.0
+

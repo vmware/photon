@@ -1,0 +1,14 @@
+sources:
+- archive: cffi-1.15.1.tar.gz
+  archive_sha512sum: e99cafcb029076abc29e435b490fa0573ee2856f4051b7ca8a5b38cd125d56dd9dae8b189f59ceb3d728a675da8ee83239e09e19f8b0feeddea4b186ab5173a5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Foreign Function Interface for Python, providing a convenient\
+        \ and reliable way of calling existing C code from Python. The interface is\
+        \ based on LuaJIT\u2019s FFI. "
+      home_page: https://pypi.python.org/pypi/cffi
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Interface for Python to call C code
+      supplier: 'Organization: Broadcom, Inc.'

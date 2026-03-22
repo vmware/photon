@@ -1,0 +1,24 @@
+sources:
+- archive: greenlet-2.0.0.tar.gz
+  archive_sha512sum: 2c4ae0623e8258a85012fca3c4c419cab3634679dc05a51b9079bcae3afb6f6c3c5052b249dbdb48a8dac3d20b9313343b217862ab34f3ae6dd5cda66e53dc35
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "The greenlet package is a spin-off of Stackless, a version\
+        \ of CPython that supports micro-threads called \u201Ctasklets\u201D. Tasklets\
+        \ run pseudo-concurrently (typically in a single or a few OS-level threads)\
+        \ and are synchronized with data exchanges on \u201Cchannels\u201D.  A \u201C\
+        greenlet\u201D, on the other hand, is a still more primitive notion of micro-thread\
+        \ with no implicit scheduling; coroutines, in other words. This is useful\
+        \ when you want to control exactly when your code runs. You can build custom\
+        \ scheduled micro-threads on top of greenlet; however, it seems that greenlets\
+        \ are useful on their own as a way to make advanced control flow structures.\
+        \ For example, we can recreate generators; the difference with Python\u2019\
+        s own generators is that our generators can call nested functions and the\
+        \ nested functions can yield values too. Additionally, you don\u2019t need\
+        \ a \u201Cyield\u201D keyword. See the example in tests/test_generator.py. "
+      home_page: https://pypi.python.org/pypi/greenlet
+      license_concluded: Python-2.0 AND PSF-2.0 AND MIT
+      license_declared: Python-2.0 AND PSF-2.0 AND MIT
+      short_summary: Lightweight in-process concurrent programming
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.6.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
@@ -89,6 +91,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.6.6-6
+- Bump version as a part of python3.14 upgrade
 * Fri Aug 08 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.6-5
 - Remove not required docuementation
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-4

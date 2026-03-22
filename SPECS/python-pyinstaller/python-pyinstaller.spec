@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define debug_package %{nil}
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
 Version:        6.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -94,6 +96,8 @@ popd
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.16.0-2
+- Bump version as a part of python3.14 upgrade
 * Fri Sep 19 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.16.0-1
 - Upgrade to latest
 * Thu Jan 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.5-4

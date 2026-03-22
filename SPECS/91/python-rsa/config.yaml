@@ -1,0 +1,15 @@
+sources:
+- archive: rsa-4.9.tar.gz
+  archive_sha512sum: 85f359cc448a42f267f425fcf761597eeeab942523de49284b01d6ea2bcca8bddf0fac26926b487ae91c15889a7c4897a33ee00de859f28fe9cca19ef98c3f19
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python-RSA is a pure-Python RSA implementation. It supports
+        encryption and decryption, signing and verifying signatures, and key generation
+        according to PKCS#1 version 1.5. It can be used as a Python library as well
+        as on the command-line. '
+      home_page: http://stuvel.eu/rsa
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Pure-Python RSA implementation
+      supplier: 'Organization: Broadcom, Inc.'

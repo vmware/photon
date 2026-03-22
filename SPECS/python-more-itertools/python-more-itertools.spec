@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-more-itertools
 Version:        8.14.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        More routines for operating on Python iterables, beyond itertools
 Group:          Development/Libraries
 URL:            https://github.com/erikrose/more-itertools
@@ -45,6 +47,8 @@ Python iterables
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.14.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.14.0-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 8.14.0-1

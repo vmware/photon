@@ -1,0 +1,38 @@
+[Unit]
+Description=RabbitMQ broker
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=@RMQ_USER@
+Group=@RMQ_GROUP@
+UMask=0027
+NotifyAccess=all
+TimeoutStartSec=600
+
+# To override LimitNOFILE, create the following file:
+#
+# /etc/systemd/system/rabbitmq-server.service.d/limits.conf
+#
+# with the following content:
+#
+# [Service]
+# LimitNOFILE=65536
+
+LimitNOFILE=32768
+
+# Restart:
+# The following setting will automatically restart RabbitMQ
+# in the event of a failure. systemd service restarts are not a
+# replacement for service monitoring. Please see
+# https://www.rabbitmq.com/monitoring.html
+Restart=on-failure
+RestartSec=10
+WorkingDirectory=/var/lib/rabbitmq
+ExecStart=@RMQ_ROOTDIR@/sbin/rabbitmq-server
+ExecStop=@RMQ_ROOTDIR@/sbin/rabbitmqctl shutdown
+# See rabbitmq/rabbitmq-server-release#51
+SuccessExitStatus=69
+
+[Install]
+WantedBy=multi-user.target

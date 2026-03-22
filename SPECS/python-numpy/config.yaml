@@ -1,7 +1,14 @@
 sources:
-- archive: numpy-1.23.4.tar.gz
-  archive_sha512sum: 727ca8950b0fbd5670e939b1c9c5cea852781ec4254d56a1659a91dc0430fc10b01ffdd16e1bb28a62319f91029e087024f4c6298bfc859a6050bfb507edcff8
-  skip_validation: true
+- archive: numpy-2.4.2.tar.gz
+  archive_sha512sum: dbb1a95737695e7c93c2c0fc9c666ee9681b5fb5b720f4dd2fe448e18732bd4679c0932386acc9720968c1c6df2377501a0d0a9d5c2610c6f6a994c08cdab6d0
+  archive_type: upstream
+  skip_validation: false
+  name: numpy-2.4.2
+  version: "2.4.2"
+  url: https://files.pythonhosted.org/packages/57/fd/0005efbd0af48e55eb3c7208af93f2862d4b1a56cd78e84309a2d959208d/numpy-2.4.2.tar.gz
+  repo_url: https://github.com/numpy/numpy
+  commit_id: c81c49f77451340651a751e76bca607d85e4fd55
+  missing: ['.bazelrc', 'run_project_tests.py', 'manual tests', 'Gruntfile.js', 'jax', 'CODEOWNERS', 'data', 'CODE_OF_CONDUCT.md', '.flake8', 'mesonbuild', '.editorconfig', 'pyproject.toml', 'unittests', 'run_tests.py', 'pocketfft_hdronly.h', 'setup.py', 'ci', 'hwy_tests.bzl', 'package.json', 'libhwy.pc.in', 'meson_options.txt', 'version.py', 'utils', 'README.rst', 'scripts', 'lib', 'COPYING', 'run_tests.bat', 'run_unittests.py', 'CONTRIBUTING.md', 'skip_ci.py', 'PKG-INFO', 'subprojects', '.bcr', 'benchmarks', 'tests', 'run_shell_checks.py', 'meson.py', 'LICENSE', 'libhwy-test.pc.in', '.mailmap', 'CONTRIBUTING', 'BUILD', 'CMakeLists.txt.in', 'libhwy-contrib.pc.in', 'README.md', 'config', 'cross', 'docs', 'run_cross_test.py', 'pocketfft_demo.cc', 'rebuild.sh', 'CMakeLists.txt', 'src', 'test cases', 'linux', '.github', 'MathJax.js', 'g3doc', '.gitignore', 'packaging', 'MANIFEST.in', 'runtests.py', 'examples', '.readthedocs.yaml', 'LICENSE.md', 'pythoncapi_compat.h', 'debian', 'WORKSPACE', 'run_tests.sh', '.clang-format', 'cmake', '.gitattributes', 'example.c', '.pylintrc', 'meson.build', 'graphics', 'tools', 'extensions', 'misc', 'hwy.gni', 'Makefile', 'azure-pipelines.yml', '.mypy.ini', 'run_single_test.py', 'SECURITY.md', 'preamble.js.lds', 'contributing.md', 'run_format_tests.py', 'run_mypy.py', 'run_meson_command_tests.py', 'setup.cfg', 'upgrade_pythoncapi.py', 'man', 'MODULE.bazel', 'hwy', 'run-bench.py']
   spdx:
     package:
       detailed_description: 'NumPy is a general-purpose array-processing package designed

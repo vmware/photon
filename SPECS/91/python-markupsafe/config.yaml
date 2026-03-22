@@ -1,0 +1,13 @@
+sources:
+- archive: markupsafe-2.1.1.tar.gz
+  archive_sha512sum: 6b06a5f470858409eb186d20edd129be90f31030be91fcc73e989b0a4ee51c3755cce0938edd9a7c73471d307385260f868101b5e11cc4d97c309420b5a573da
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'MarkupSafe implements a XML/HTML/XHTML Markup safe string
+        for Python. '
+      home_page: https://github.com/pallets/markupsafe
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: A XML/HTML/XHTML Markup safe string for Python.
+      supplier: 'Organization: Broadcom, Inc.'

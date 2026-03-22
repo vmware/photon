@@ -1,0 +1,13 @@
+sources:
+- archive: ruamel.yaml-0.17.21.tar.gz
+  archive_sha512sum: 1ecda5ecacf913a499e40b4df8d5d6112b8c2facf5ce42c36eedad1ea4745884f98919b70a9d51ba8b095463e27371f6b84e314fe8f512c318963ab32f2cbf17
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ruamel.yaml is a YAML parser/emitter that supports roundtrip
+        preservation of comments, seq/map flow style, and map key order '
+      home_page: https://pypi.org/project/ruamel.yaml
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: YAML parser/emitter.
+      supplier: 'Organization: Broadcom, Inc.'

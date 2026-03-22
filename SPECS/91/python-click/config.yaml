@@ -1,0 +1,17 @@
+sources:
+- archive: click-8.1.3.tar.gz
+  archive_sha512sum: be5b0c8b72ef7c10854f31406668ca4d6f826381deff10bb6a87a406166c09af97e2165f1327094d96abade15efb872892af37f20fdbc855b659cb2c7bd2f2c5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Click is a Python package for creating beautiful command\
+        \ line interfaces in a composable way with as little code as necessary. It's\
+        \ the \"Command Line Interface Creation Kit\". It\u2019s highly configurable\
+        \ but comes with sensible defaults out of the box. It aims to make the process\
+        \ of writing command line tools quick and fun while also preventing any frustration\
+        \ caused by the inability to implement an intended CLI API. "
+      home_page: https://palletsprojects.com/p/click
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Composable command line interface toolkit
+      supplier: 'Organization: Broadcom, Inc.'

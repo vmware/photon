@@ -1,0 +1,17 @@
+sources:
+- archive: mock-4.0.3.tar.gz
+  archive_sha512sum: aa4275344a40fd3eea75c1c305f82dd6a561d2a4584b7acd0a85f3a9b34d0cfd1722770d74ae26c04d871d844a3189186d7f087017ddf850d6c378cc98676ea5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'mock is a library for testing in Python. It allows you
+        to replace parts of your system under test with mock objects and make assertions
+        about how they have been used. mock is now part of the Python standard library,
+        available as unittest.mock in Python 3.3 onwards. This package contains a
+        rolling backport of the standard library mock code compatible with Python
+        3.6 and up. '
+      home_page: https://files.pythonhosted.org/packages/e2/be/3ea39a8fd4ed3f9a25aae18a1bff2df7a610bca93c8ede7475e32d8b73a0/mock-4.0.3.tar.gz
+      license_concluded: BSD-2-Clause AND BSD-3-Clause
+      license_declared: BSD-2-Clause AND BSD-3-Clause
+      short_summary: Rolling backport of unittest.mock for all Pythons
+      supplier: 'Organization: Broadcom, Inc.'

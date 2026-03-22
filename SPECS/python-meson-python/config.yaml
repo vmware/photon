@@ -1,0 +1,20 @@
+sources:
+- archive: meson_python-0.19.0.tar.gz
+  archive_sha512sum: 3ad3fd06a526c3e0b055eaabf67a574930b0d092c6fd6dd7e6ff773a7d1d0454de436352769a381d91f0b997dbcfbc9f83e1910bc2805beef15a6288cee1158f
+  archive_type: upstream
+  skip_validation: false
+  name: meson_python-0.19.0
+  version: "0.19.0"
+  url: https://files.pythonhosted.org/packages/32/98/7fe5d1bf741c03c6eea04b6245737dbd79657d4f9200e82fcbb4cc12637b/meson_python-0.19.0.tar.gz
+  repo_url: https://github.com/mesonbuild/meson-python
+  commit_id: d7578513e2a73c6a0ab4ea861b16af06115b2e3e
+  missing: ['baz.py', 'PKG-INFO', 'qux.py']
+  spdx:
+    package:
+      detailed_description: 'meson-python is a Python build back-end built on top of the Meson build system.
+                             It enables using Meson for the configuration and build steps of Python packages.' 
+      home_page: https://pypi.org/project/meson-python/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Meson PEP 517 Python build backend
+      supplier: 'Organization: Broadcom, Inc.'

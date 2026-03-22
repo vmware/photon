@@ -1,6 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+%global security_hardening nofortify3
+
 Name:         distcc
 Version:      3.4
-Release:      4%{?dist}
+Release:      5%{?dist}
 Summary:      Distributed C/C++ compilation
 URL:          https://github.com/distcc/distcc
 Group:        Applications/File
@@ -18,6 +21,7 @@ BuildRequires: autoconf
 BuildRequires: which
 BuildRequires: popt-devel
 BuildRequires: python3-devel
+BuildRequires: python3-setuptools
 BuildRequires: krb5-devel
 BuildRequires: binutils-devel
 BuildRequires: systemd-rpm-macros
@@ -104,6 +108,8 @@ rm -rf %{buildroot}%{_docdir}/*
 %dir /usr/lib/gcc-cross
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.4-5
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.4-4
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 3.4-3

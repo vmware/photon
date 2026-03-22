@@ -1,0 +1,24 @@
+sources:
+- archive: scons-4.1.0.tar.gz
+  archive_sha512sum: f79b86bb09783767b3872cfb8efb665372714a604af2aaf3adc66eee63d3afe27bc6b2aab83813743c83f71c81c800d42842e916501787ba402ce2726dda9b44
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "SCons is an Open Source software construction tool\u2014\
+        that is, a next-generation build tool. Think of SCons as an improved, cross-platform\
+        \ substitute for the classic Make utility with integrated functionality similar\
+        \ to autoconf/automake and compiler caches such as ccache. In short, SCons\
+        \ is an easier, more reliable and faster way to build software. "
+      home_page: https://sourceforge.net/projects/scons
+      license_concluded: Python-2.0 AND GPL-1.0-or-later AND BSD-3-Clause AND DocBook-XML
+        AND (MIT OR GPL-1.0-or-later) AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+        AND MIT AND GPL-2.0-only AND Zlib AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+        AND Apache-2.0 AND EPL-1.0 AND (MIT OR GPL-2.0-only) AND GPL-3.0-only AND
+        BSD-2-Clause AND CC-BY-3.0 AND LGPL-2.0-or-later AND LGPL-2.1-only
+      license_declared: Python-2.0 AND GPL-1.0-or-later AND BSD-3-Clause AND DocBook-XML
+        AND (MIT OR GPL-1.0-or-later) AND (MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later)
+        AND MIT AND GPL-2.0-only AND Zlib AND (MIT OR BSD-3-Clause OR GPL-1.0-or-later)
+        AND Apache-2.0 AND EPL-1.0 AND (MIT OR GPL-2.0-only) AND GPL-3.0-only AND
+        BSD-2-Clause AND CC-BY-3.0 AND LGPL-2.0-or-later AND LGPL-2.1-only
+      short_summary: An Open Source software construction tool
+      supplier: 'Organization: Broadcom, Inc.'

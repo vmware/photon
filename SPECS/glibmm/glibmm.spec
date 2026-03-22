@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        C++ interface to the glib
 Name:           glibmm
 Version:        2.74.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -78,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.74.0-5
+- Bump version as a part of python3.14 upgrade
 * Wed Aug 13 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.74.0-4
 - License cleanup
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.74.0-3

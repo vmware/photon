@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        XML and HTML with Python
 Name:           python3-lxml
-Version:        4.9.1
-Release:        5%{?dist}
+Version:        6.0.2
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            https://github.com/lxml/lxml
 Vendor:         VMware, Inc.
@@ -49,6 +51,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.2-1
+- Bump up release as part of cython3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.1-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.1-4

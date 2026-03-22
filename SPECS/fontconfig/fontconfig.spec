@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        library for configuring and customizing font access.
 Name:           fontconfig
 Version:        2.14.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -80,29 +82,31 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
-*   Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.14.1-5
--   Version bump for expat upgrade
-*   Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.14.1-4
--   Release bump for SRP compliance
-*   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.14.1-3
--   Bump version as a part of libxml2 upgrade
-*   Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.14.1-2
--   Bump version as a part of freetype2 upgrade
-*   Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.1-1
--   Automatic Version Bump
-*   Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 2.14.0-2
--   Fix fontconfig -> freetype2 dependency
-*   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
--   Automatic Version Bump
-*   Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.93-2
--   Add freetype2-devel requires for -devel subpackage.
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.13.93-1
--   Automatic Version Bump
-*   Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.13.1-1
--   Bump version to 2.13.1
-*   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.12.1-3
--   Add a patch for run-test. This issue was introduced by freetype 2.7.1
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.12.1-2
--   Requires expat-devel
-*   Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.12.1-1
--   Initial version.
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.14.1-6
+- Bump version as a part of python3.14 upgrade
+* Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.14.1-5
+- Version bump for expat upgrade
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.14.1-4
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.14.1-3
+- Bump version as a part of libxml2 upgrade
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.14.1-2
+- Bump version as a part of freetype2 upgrade
+* Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.1-1
+- Automatic Version Bump
+* Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 2.14.0-2
+- Fix fontconfig -> freetype2 dependency
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
+- Automatic Version Bump
+* Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.93-2
+- Add freetype2-devel requires for -devel subpackage.
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.13.93-1
+- Automatic Version Bump
+* Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.13.1-1
+- Bump version to 2.13.1
+* Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.12.1-3
+- Add a patch for run-test. This issue was introduced by freetype 2.7.1
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.12.1-2
+- Requires expat-devel
+* Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.12.1-1
+- Initial version.

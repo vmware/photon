@@ -1,0 +1,68 @@
+From c5b944fc887df702e6a52133c1a7942a3428fdad Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 16 Mar 2022 16:37:17 +0530
+Subject: [PATCH 20/35] authlogin.if: add transition rules for shadow, group,
+ passwd (+) files
+
+groupadd & useradd commands create /etc/passwd+, /etc/shadow+.
+/etc/group+ files and later rename them to /etc/passwd, /etc/shadow,
+/etc/group respectively.
+
+This patch adds proper transition rules for these files.
+
+Without this change, changing user password results in "Authentication
+token manipulation error".
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/authlogin.if | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/policy/modules/system/authlogin.if b/policy/modules/system/authlogin.if
+index b5b3702..2ef14a5 100644
+--- a/policy/modules/system/authlogin.if
++++ b/policy/modules/system/authlogin.if
+@@ -782,6 +782,7 @@ interface(`auth_manage_shadow',`
+ 	typeattribute $1 can_read_shadow_passwords, can_write_shadow_passwords;
+ 	files_var_filetrans($1, shadow_t, file, "shadow")
+ 	files_var_filetrans($1, shadow_t, file, "shadow-")
++	files_var_filetrans($1, shadow_t, file, "shadow+")
+ 	files_etc_filetrans($1, shadow_t, file, "gshadow")
+ 	files_etc_filetrans($1, shadow_t, file, "nshadow")
+ 	files_etc_filetrans($1, shadow_t, file, "opasswd")
+@@ -2180,10 +2181,10 @@ interface(`auth_filetrans_named_content',`
+ 
+ 	files_etc_filetrans($1, passwd_file_t, file, "group")
+ 	files_etc_filetrans($1, passwd_file_t, file, "group-")
+-	#files_etc_filetrans($1, passwd_file_t, file, "group+")
++	files_etc_filetrans($1, passwd_file_t, file, "group+")
+ 	files_etc_filetrans($1, passwd_file_t, file, "passwd")
+ 	files_etc_filetrans($1, passwd_file_t, file, "passwd-")
+-	#files_etc_filetrans($1, passwd_file_t, file, "passwd+")
++	files_etc_filetrans($1, passwd_file_t, file, "passwd+")
+ 	files_etc_filetrans($1, passwd_file_t, file, "passwd.OLD")
+ 	files_etc_filetrans($1, passwd_file_t, file, "ptmptmp")
+ 	files_etc_filetrans($1, passwd_file_t, file, "passwd.lock")
+@@ -2192,6 +2193,7 @@ interface(`auth_filetrans_named_content',`
+ 	files_etc_filetrans($1, passwd_file_t, file, ".pwd.lock")
+ 	files_etc_filetrans($1, shadow_t, file, "shadow")
+ 	files_etc_filetrans($1, shadow_t, file, "shadow-")
++	files_etc_filetrans($1, shadow_t, file, "shadow+")
+ 	files_etc_filetrans($1, shadow_t, file, "gshadow")
+ 	files_etc_filetrans($1, shadow_t, file, "opasswd")
+ 	logging_log_named_filetrans($1, lastlog_t, file, "lastlog")
+@@ -2348,9 +2350,11 @@ interface(`auth_manage_passwd',`
+ 	allow $1 passwd_file_t:file manage_file_perms;
+ 	files_etc_filetrans($1, passwd_file_t, file, "passwd")
+ 	files_etc_filetrans($1, passwd_file_t, file, "passwd-")
++	files_etc_filetrans($1, passwd_file_t, file, "passwd+")
+ 	files_etc_filetrans($1, passwd_file_t, file, "ptmptmp")
+ 	files_etc_filetrans($1, passwd_file_t, file, "group")
+ 	files_etc_filetrans($1, passwd_file_t, file, "group-")
++	files_etc_filetrans($1, passwd_file_t, file, "group+")
+ 	files_etc_filetrans($1, passwd_file_t, file, ".pwd.lock")
+ 	files_etc_filetrans($1, passwd_file_t, file, "passwd.lock")
+ 	files_etc_filetrans($1, passwd_file_t, file, "group.lock")
+-- 
+2.45.0
+

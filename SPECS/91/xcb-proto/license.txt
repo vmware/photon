@@ -1,0 +1,1 @@
+License: MIT AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND HPND-sell-variant AND FSFUL AND FSFULLR AND FSFULLRWD

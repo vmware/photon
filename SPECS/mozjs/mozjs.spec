@@ -1,9 +1,11 @@
-%global major 102
+%global build_if %{photon_subrelease} >= 92
+
+%global major 140
 
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
-Version:       102.12.0
-Release:       10%{?dist}
+Version:       140.7.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://spidermonkey.dev
@@ -21,24 +23,25 @@ Patch1:     init_patch.patch
 Patch2:     spidermonkey_checks_disable.patch
 Patch3:     copy-headers.patch
 Patch4:     fix-soname.patch
-Patch5:     remove-sloppy-m4-detection-from-bundled-autoconf.patch
+Patch6:     compile-with-py314.patch
 
-Patch6:     CVE-2022-46175.patch
-Patch7:     CVE-2024-45491.patch
-Patch8:     CVE-2024-45492.patch
+Patch5:     CVE-2022-46175.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
 BuildRequires: python3-devel
+BuildRequires: python3-setuptools
 BuildRequires: zlib-devel
 BuildRequires: clang-devel
-BuildRequires: icu-devel >= 70.1
+BuildRequires: icu-devel >= 76.1
 BuildRequires: rust
 BuildRequires: autoconf
 BuildRequires: nss-devel
 BuildRequires: readline-devel
+BuildRequires: python3-curses
+BuildRequires: cbindgen
 
-Requires:      icu >= 70.1
+Requires:      icu >= 76.1
 Requires:      python3
 
 Provides:      mozjs60
@@ -82,9 +85,6 @@ export AWK=awk
 export AC_MACRODIR=$PWD/build/autoconf/
 
 cd js/src
-
-sh ../../build/autoconf/autoconf.sh --localdir=$PWD configure.in > configure
-chmod +x configure
 
 %configure \
   --with-system-icu \
@@ -150,6 +150,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Mon Feb 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 140.7.0-1
+- Upgrade to build with python3.14
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 102.12.0-10
 - Bump to build with updated clang
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 102.12.0-9

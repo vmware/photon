@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname numpy
 
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
-Version:        1.23.4
-Release:        3%{?dist}
+Version:        2.4.2
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,8 +18,12 @@ Source1: license.txt
 
 BuildRequires: python3-setuptools
 BuildRequires: python3-devel
+BuildRequires: python3-pip
 BuildRequires: lapack-devel
 BuildRequires: unzip
+BuildRequires: python3-meson-python
+BuildRequires: python3-packaging
+BuildRequires: ninja-build
 BuildRequires: cython3
 
 %if 0%{?with_check}
@@ -43,10 +49,10 @@ general-purpose data-base applications.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-%py3_install
+%{pyproject_install}
 
 %check
 PATH=%{buildroot}%{_bindir}:${PATH} \
@@ -55,12 +61,13 @@ PATH=%{buildroot}%{_bindir}:${PATH} \
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/f2py3
 %{_bindir}/f2py
-%{_bindir}/f2py%{python3_version}
+%{_bindir}/numpy-config
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.2-1
+- Upgrade to 2.4.2 as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.23.4-3
 - Release bump for SRP compliance
 * Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.4-2

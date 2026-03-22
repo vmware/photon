@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        3.0.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -151,6 +153,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 %{_mandir}/man5/ovsdb.local-config.5.gz
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.2-7
+- Bump version as a part of python3.14 upgrade
 * Wed Jul 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 3.0.2-6
 - Avoid illegal licenses
 * Mon May 26 2025 Dweep Advani <dweep.advani@broadcom.com> 3.0.2-5

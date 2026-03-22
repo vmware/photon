@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-mako
 Version:        1.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python templating language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -46,6 +48,8 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.4-2
+- Bump version as a part of python3.14 upgrade
 * Tue Apr 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.4-1
 - Upgrade to fix CVE-2022-40023
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-2

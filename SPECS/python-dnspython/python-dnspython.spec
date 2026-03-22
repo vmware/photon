@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        A DNS toolkit for Python
 Name:           python3-dnspython
 Version:        2.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/dnspython
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -51,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.6.1-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.6.1-2
 - Release bump for SRP compliance
 * Mon Jun 24 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.6.1-1

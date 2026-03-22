@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
-Version:        3.1.4
-Release:        5%{?dist}
+Version:        3.3.4
+Release:        1%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
 Vendor:         VMware, Inc.
@@ -14,15 +16,16 @@ Source1: license.txt
 
 BuildRequires:  audit-devel
 BuildRequires:  swig
-BuildRequires:  python3-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  gcc
 BuildRequires:  libtraceevent-devel
 BuildRequires:  libtracefs-devel
+BuildRequires:  meson
+BuildRequires:  asciidoc3
+BuildRequires:  xmlto
 
 Requires:       audit
-Requires:       python3
 Requires:       libtraceevent
 Requires:       libtracefs
 Requires:       zstd-libs
@@ -36,13 +39,15 @@ to record and analyze the traces.
 %autosetup -p1 -n %{name}-v%{version}
 
 %build
-# to fix intermittent build failure
-%make_build || \
-%make_build || \
-%make_build
+%{meson} \
+    --default-library=shared \
+    -Dhtmldir=%{_docdir}/%{name} \
+    -Dpython=false
+
+%{meson_build}
 
 %install
-%make_install %{?_smp_mflags} prefix=%{_prefix}
+%{meson_install}
 
 %clean
 rm -rf %{buildroot}
@@ -53,9 +58,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc COPYING COPYING.LIB README
 %{_bindir}/%{name}
-%{_sysconfdir}/bash_completion.d/%{name}.bash
+%{_datadir}/bash-completion/completions/%{name}.bash
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3.4-1
+- Upgrade to 3.3.4 as part of python3 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.1.4-5
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.1.4-4

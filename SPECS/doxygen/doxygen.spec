@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.9.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
 Vendor:         VMware, Inc.
@@ -51,6 +53,8 @@ make %{?_smp_mflags} check
 %{_bindir}/%{name}
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.9.5-4
+- Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.9.5-3
 - Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.9.5-2

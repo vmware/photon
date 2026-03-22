@@ -1,0 +1,88 @@
+%global build_if %{photon_subrelease} <= 91
+
+Summary:        Liberty Alliance Single Sign On
+Name:           lasso
+Version:        2.9.0
+Release:        1.1%{?dist}
+Group:          Development/Libraries/C++
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Url:            https://lasso.entrouvert.org/
+Source0:        https://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+BuildRequires: libxml2-devel
+BuildRequires: glib-devel
+BuildRequires: openssl-devel
+BuildRequires: python3-six
+BuildRequires: which
+BuildRequires: xmlsec1-devel
+Requires:      xmlsec1
+
+%description
+Lasso is a library that implements the Liberty Alliance Single Sign On
+standards, including the SAML and SAML2 specifications. It allows to handle
+the whole life-cycle of SAML based Federations, and provides bindings
+for multiple languages.
+
+%package devel
+Summary: Lasso development headers and documentation
+Group: Development/Libraries/C++
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+This package contains the header files, static libraries and development
+documentation for Lasso
+
+%prep
+%autosetup
+
+%build
+./autogen.sh --disable-java \
+             --disable-perl \
+             --enable-php5=no \
+             --disable-python \
+             --disable-gtk-doc \
+             --prefix=%{_prefix}
+
+%make_build %{?_smp_mflags}
+
+%install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+find %{buildroot} -name '*.la' -delete
+find %{buildroot} -name '*.a' -delete
+
+%check
+%make_build %{?_smp_mflags} check
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+%files
+%{_libdir}/liblasso.so.3*
+%doc AUTHORS NEWS README
+%license COPYING
+
+%files devel
+
+%{_libdir}/liblasso.so
+%{_libdir}/pkgconfig/lasso.pc
+%{_includedir}/%{name}
+%{_defaultdocdir}/%{name}
+
+%changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.0-1.1
+- Bump after moving to SPECS/91
+* Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.9.0-1
+- Version upgrade to 2.9.0
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.8.0-5
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-4
+- Bump version as a part of libxml2 upgrade
+* Tue Dec 06 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-3
+- Bump version as a part of xmlsec1 upgrade
+* Fri Oct 21 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.8.0-2
+- Bump version as a part of xmlsec1 upgrade
+* Mon Apr 04 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.0-1
+- lasso initial build

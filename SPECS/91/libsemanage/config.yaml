@@ -1,0 +1,19 @@
+sources:
+- archive: libsemanage-3.4.tar.gz
+  archive_sha512sum: 831dc789545bb9a0b009bdb4f7fe52f6197ad8325946640f886a960d08e40b8a69eccd5a70cce51466bb5cb7f742feb78d19a9ec63383fbd03aa451508677e73
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Security-enhanced Linux is a feature of the Linux\xAE\
+        \ kernel and a number of utilities with enhanced security functionality designed\
+        \ to add mandatory access controls to Linux.  The Security-enhanced Linux\
+        \ kernel contains new architectural components originally developed to improve\
+        \ the security of the Flask operating system. These architectural components\
+        \ provide general support for the enforcement of many kinds of mandatory access\
+        \ control policies, including those based on the concepts of Type Enforcement\xAE\
+        , Role-based Access Control, and Multi-level Security. "
+      home_page: https://github.com/SELinuxProject/selinux/wiki
+      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later
+      short_summary: SELinux policy management libraries
+      supplier: 'Organization: Broadcom, Inc.'

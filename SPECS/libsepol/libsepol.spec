@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
-Version:        3.4
-Release:        4%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
@@ -11,8 +13,6 @@ Source0: https://github.com/SELinuxProject/selinux/releases/download/%{version}/
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: fix-validation-of-user.patch
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -94,6 +94,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Mon Dec 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
+- Update as part of libselinux update
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.4-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-3

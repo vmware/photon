@@ -1,7 +1,15 @@
 sources:
-- archive: libnvme-1.3.tar.gz
-  archive_sha512sum: c874b29b73e55be842f71e74a226a76fcd50dfa72e2be100f0437bc83e740cd146b6d2f2cdaa940c11c3d8c48ff2c065ac0e8a83d4d0dde743edf4179f328670
-  skip_validation: true
+- archive: libnvme-1.16.1.tar.gz
+  archive_sha512sum: 92113cd62af53366fb63f2f385c2059dede171fef4d9a240fa941382e338d2941e90aeb40ae2d202311d7b531e41181839f45f8ab4da1b3a79ce4b597fcd4993
+  archive_type: upstream
+  skip_validation: false
+  name: libnvme-1.16.1
+  version: "1.16.1"
+  url: https://github.com/linux-nvme/libnvme/archive/refs/tags/v1.16.1.tar.gz
+  repo_url: https://github.com/linux-nvme/libnvme
+  commit_id: becae3d874b40bfedede672b4b2f58ae8c3be3b5
+  missing: []
+  skip_list: []
   spdx:
     package:
       detailed_description: 'Provides type definitions for NVMe specification structures,

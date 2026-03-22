@@ -1,0 +1,16 @@
+sources:
+- archive: Sphinx-5.1.1.tar.gz
+  archive_sha512sum: 82cb4c435b0f6cee6bf80b81028f06e425e3d6fb5614e64b1f5a8c715ece80b697b5b55e04f3afe26236bb4590de9cd41008d6480c4b3d895803d83e914afff3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Sphinx is a tool that makes it easy to create intelligent
+        and beautiful documentation for Python projects (or other documents consisting
+        of multiple reStructuredText sources), written by Georg Brandl. It was originally
+        created to translate the new Python documentation, but has now been cleaned
+        up in the hope that it will be useful to many other projects. '
+      home_page: www.sphinx-doc.org
+      license_concluded: BSD-3-Clause AND FSFAP AND MIT AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND FSFAP AND MIT AND BSD-2-Clause
+      short_summary: Python documentation generator
+      supplier: 'Organization: Broadcom, Inc.'

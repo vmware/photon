@@ -1,11 +1,9 @@
-#
-# spec file for package python3-schedutils
-#
+%global build_if %{photon_subrelease} >= 92
 
 Name:           python3-schedutils
 Summary:        Linux scheduler python bindings
 Version:        0.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,7 +14,10 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  gcc
+
+Requires:       python3
 
 %description
 Python interface for the Linux scheduler sched_{get,set}{affinity,scheduler}\
@@ -42,6 +43,8 @@ python3 setup.py install --skip-build --root %{buildroot}
 %{python3_sitearch}/*.egg-info
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6-5
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6-4
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.6-3

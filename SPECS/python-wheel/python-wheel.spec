@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname wheel
 
 Name:           python3-wheel
 Version:        0.37.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A built-package format for Python
 URL:            https://pypi.org/project/wheel
 Group:          Development/Languages/Python
@@ -48,6 +50,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.37.1-5
+- Bump version as a part of python3.14 upgrade
 * Wed Feb 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.37.1-4
 - Patch CVE-2022-40898
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.37.1-3

@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define network_required 1
 
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -222,6 +224,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-11
+- Bump version as a part of python3.14 upgrade
 * Mon May 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-10
 - Fix CVE-2024-47619
 * Thu Jan 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.1-9

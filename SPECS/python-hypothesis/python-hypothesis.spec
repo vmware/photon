@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-hypothesis
 Version:        6.54.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 Group:          Development/Languages/Python
 Url:            https://github.com/HypothesisWorks/hypothesis-python
@@ -44,6 +46,8 @@ and then generates simple and comprehensible examples that make your tests fail.
 %{_bindir}/hypothesis
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.54.4-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.54.4-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 6.54.4-1

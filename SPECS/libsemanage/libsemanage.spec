@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        SELinux policy management libraries
 Name:           libsemanage
-Version:        3.4
-Release:        4%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -97,6 +99,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
+- Update to 3.5 as part of libselinux upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.4-4
 - Release bump for SRP compliance
 * Thu Jan 12 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.4-3

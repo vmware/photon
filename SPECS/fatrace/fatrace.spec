@@ -1,16 +1,16 @@
 Summary:        fatrace reports file access events from all running processes.
 Name:           fatrace
 Version:        0.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://launchpad.net/fatrace
+Group:          Utilities
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        https://launchpad.net/fatrace/trunk/%{version}/+download/%{name}-%{version}.tar.bz2
 
 Source1: license.txt
 %include %{SOURCE1}
-Requires:       python3
-Group:          Utilities
-Vendor:         VMware, Inc.
-Distribution:   Photon
 
 %description
 fatrace reports file access events from all running processes.
@@ -35,6 +35,8 @@ make -k check %{_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*
 
 %changelog
+*   Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15-3
+-   Remove python3 requires
 *   Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.15-2
 -   Release bump for SRP compliance
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15-1

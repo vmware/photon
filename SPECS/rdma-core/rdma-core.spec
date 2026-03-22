@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
-Version:        42.0
-Release:        5%{?dist}
+Version:        60.1
+Release:        1%{?dist}
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
 Vendor:         VMware, Inc.
@@ -289,7 +291,6 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/rdma/modules/opa.conf
 %config(noreplace) %{_sysconfdir}/rdma/modules/rdma.conf
 %config(noreplace) %{_sysconfdir}/rdma/modules/roce.conf
-%config(noreplace) %{_sysconfdir}/udev/rules.d/70-persistent-ipoib.rules
 %{_unitdir}/rdma-hw.target
 %{_unitdir}/rdma-load-modules@.service
 %{_libdir}/udev/rdma_rename
@@ -303,6 +304,7 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %doc %{_docdir}/%{name}-%{version}/README.md
 %doc %{_docdir}/%{name}-%{version}/udev.md
 %doc %{_docdir}/%{name}-%{version}/tests/*
+%doc %{_docdir}/%{name}-%{version}/70-persistent-ipoib.rules
 %license COPYING.*
 
 %files devel
@@ -329,10 +331,14 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %dir %{_sysconfdir}/libibverbs.d
 %config(noreplace) %{_sysconfdir}/libibverbs.d/*.driver
 %{_libdir}/libefa.so.*
+%{_libdir}/libhns.so*
+%{_libdir}/libmana.so*
 %{_libdir}/libibverbs*.so.*
 %dir %{_libdir}/libibverbs
 %{_libdir}/libibverbs/*.so
 %{_mandir}/man7/rxe*
+%{_mandir}/man7/hnsdv*
+%{_mandir}/man7/manadv*
 %doc %{_docdir}/%{name}-%{version}/libibverbs.md
 %doc %{_docdir}/%{name}-%{version}/rxe.md
 %doc %{_docdir}/%{name}-%{version}/tag_matching.md
@@ -520,6 +526,8 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 60.1-1
+- Upgrade to 60.1 as part of python3 upgrade
 * Wed Oct 29 2025 Dweep Advani <dweep.advani@broadcom.com> 42.0-5
 - Fixed the changelog entry for 42.0-4 which containted non-breaking space
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 42.0-4

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.0.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,6 +30,7 @@ BuildRequires: systemd-devel
 BuildRequires: iptables-devel
 BuildRequires: jansson-devel
 BuildRequires: python3-devel
+BuildRequires: python3-setuptools
 BuildRequires: libedit-devel
 
 Requires: readline
@@ -143,6 +146,8 @@ chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 %{python3_sitelib}/%{name}/
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.6-7
+- Bump version as a part of python3.14 upgrade
 * Mon Oct 27 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.6-6
 - Bump up to build with latest jansson
 * Wed Jul 23 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 1.0.6-5

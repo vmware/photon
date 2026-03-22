@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname             pip
 %define python_wheel_dir    %{_datadir}/python-wheels
 %define python_wheel_name   %{srcname}-%{version}-py3-none-any.whl
@@ -6,8 +8,8 @@ Summary:        The PyPA recommended tool for installing Python packages.
 Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
-Version:        24.3.1
-Release:        5%{?dist}
+Version:        25.3
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -22,7 +24,6 @@ Source2: %{srcname}.conf
 
 Patch0: dummy-certifi.patch
 Patch1: exclude-None-versioned-packages.patch
-Patch2: CVE-2024-47081.patch
 Patch3: CVE-2025-50181.patch
 
 BuildRequires:  python3-devel
@@ -30,6 +31,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-wheel
 BuildRequires:  ca-certificates
+BuildRequires:  python3-flit-core
 
 Requires:       python3
 Requires:       python3-setuptools
@@ -86,6 +88,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.3-1
+- Update to 25.3, as part of python3 upgrade
 * Wed Nov 19 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.3.1-5
 - Fix CVE-2025-50181
 * Wed Nov 19 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.3.1-4

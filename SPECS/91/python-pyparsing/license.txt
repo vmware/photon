@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND GPL-3.0-only AND MIT AND BSD-3-Clause AND MIT-CMU AND GPL-3.0-or-later AND GPL-1.0-or-later AND GPL-2.0-or-later

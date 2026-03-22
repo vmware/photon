@@ -4,8 +4,8 @@
 
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
-Version:        2.9.3
-Release:        8%{?dist}
+Version:        2.9.11
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -75,6 +75,8 @@ groupdel -f %{user}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.11-1
+- Version upgrade
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.3-8
 - Build with pgsql18
 * Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.3-7

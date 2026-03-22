@@ -1,0 +1,13 @@
+sources:
+- archive: tpm2-pytss-1.2.0.tar.gz
+  archive_sha512sum: 9f317b2144e27ac0e6b876d1987cd5c64f4c1f70d1689cea3d926749d9778b2ad813335269cff70c8335f15b72b1233fffe062f4cb5791c5480c58119cf42db7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'TPM2 TSS Python bindings for Enhanced System API (ESYS).
+        This package primarily exposes the TPM 2.0 Enhanced System API. '
+      home_page: https://github.com/tpm2-software/tpm2-pytss
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: Python bindings for tpm2-tss
+      supplier: 'Organization: Broadcom, Inc.'

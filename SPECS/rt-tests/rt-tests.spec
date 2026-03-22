@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        rt-tests tests various real-time features of linux
 Name:           rt-tests
 Version:        2.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/
 Source0:        %{name}-%{version}.tar.gz
@@ -13,6 +15,7 @@ Distribution:   Photon
 BuildRequires:  build-essential
 BuildRequires:  libnuma-devel
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 Requires:       python3
 Requires:       libnuma
 Requires:       glibc
@@ -44,6 +47,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4-4
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.4-2

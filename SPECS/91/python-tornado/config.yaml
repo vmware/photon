@@ -1,0 +1,14 @@
+sources:
+- archive: tornado-6.2.tar.gz
+  archive_sha512sum: 157cbeee21bef29ac68b319329e7fc57db4c68dbb5a245e2171b7a28427ebbfe16b745e3bdbdec5912caae5eaa60c3cbbf8830c9c76fec5ffdf025e234468517
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Tornado is a Python web framework and asynchronous networking
+        library '
+      home_page: https://pypi.python.org/pypi/tornado
+      license_concluded: CC-BY-3.0 AND Apache-2.0
+      license_declared: CC-BY-3.0 AND Apache-2.0
+      short_summary: Tornado is a Python web framework and asynchronous networking
+        library
+      supplier: 'Organization: Broadcom, Inc.'

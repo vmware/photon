@@ -1,22 +1,21 @@
 sources:
-- archive: SQLAlchemy-2.0.0.tar.gz
-  archive_sha512sum: 54bde6047a94fc6b050ca6e4b6136ab2a62de0f55665c07a7bec953c75462e32908e88de5c2dc42ee45cd0b8b9f155dd33d148408ab5e3cc579b0e13cdf00801
+- archive: sqlalchemy-2.0.48.tar.gz
+  archive_sha512sum: ec108625627b6f2611d55786e5d4079954fea1ba46e923d19d0f33a98ca6a2a4eac605d3d09746defd6a8eb9defd577097df98eff1b64c7c2d6d5647ac1122fe
   archive_type: upstream
-  version: 2.0.0
-  name: SQLAlchemy-2.0.0
-  url: https://files.pythonhosted.org/packages/54/55/a475df74f583b4ceeefd5a121fd28045af54efe204863de1e3b154385674/SQLAlchemy-2.0.0.tar.gz
+  version: 2.0.48
+  name: sqlalchemy-2.0.0
+  url: https://files.pythonhosted.org/packages/1f/73/b4a9737255583b5fa858e0bb8e116eb94b88c910164ed2ed719147bde3de/sqlalchemy-2.0.48.tar.gz
   repo_url: https://github.com/sqlalchemy/sqlalchemy
-  commit_id: ad2a65ef7e3cd57912c6c0373c8b843b8a1730eb
+  commit_id: 746f5765c275dd8b3ab8eb738d489e7448fd40e1
   missing: ['errors.html', 'glossary.html', 'SQLAlchemy.egg-info', 'faq', 'dialects', 'regen_callcounts.tox.ini', 'searchindex.js', '_images', 'contents.html', 'intro.html', 'reap_dbs.py', 'profiles.txt', 'copyright.html', 'index.html', '.pre-commit-config.yaml', 'PKG-INFO', '.github', '.git-blame-ignore-revs', 'genindex.html', '.gitreview', 'mypy_plugin.ini', 'space_invaders.jpg', 'changelog', '.gitignore', 'core', 'tutorial', 'notfound.html', '_static', 'orm', 'search.html', '_modules']
   skip_list: ['setup.cfg']
-  skip_validation: false
   spdx:
     package:
       detailed_description: 'SQLAlchemy is the Python SQL toolkit and Object Relational
         Mapper that gives application developers the full power and flexibility of
         SQL. SQLAlchemy provides a full suite of well known enterprise-level persistence
         patterns, designed for efficient and high-performing database access, adapted
-        into a simple and Pythonic domain language. '
+        into a simple and Pythonic domain language.'
       home_page: http://www.sqlalchemy.org
       license_concluded: BSD-3-Clause AND MIT AND LGPL-2.0-only
       license_declared: BSD-3-Clause AND MIT AND LGPL-2.0-only

@@ -1,11 +1,11 @@
 sources:
-- archive: pytest-7.1.2.tar.gz
-  archive_sha512sum: e61c9b0a8fc053626da307d6bac1f5caab451c4948ef7c7f2e2f991c3433a55f81ec0d9412fca646c02f22e695c71e873ee48fc0ab0aad337ce01b70628df494
+- archive: pytest-9.0.2.tar.gz
+  archive_sha512sum: 4f8177b30e39a644763d3e37a78d28d2e8b40e47a834862096571255279adfde22278d27801e36e366cc49e7ab59c38a0f4597b9f5b4c3e45912bd046ef214c9
   skip_validation: true
   spdx:
     package:
       detailed_description: 'pytest framework makes it easy to write small tests,
-        yet scales to support complex functional testing for applications and libraries. '
+        yet scales to support complex functional testing for applications and libraries.'
       home_page: https://docs.pytest.org
       license_concluded: MIT
       license_declared: MIT

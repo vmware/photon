@@ -1,7 +1,14 @@
 sources:
-- archive: rdma-core-42.0.tar.gz
-  archive_sha512sum: 9e497d3a23bcd72828a717b59016fe25c88b4ec389e166936410c53dac0c6d6d2f45a76eaec18383ab3ca1a11d1b978b19247a3b7cfb121047d3891288a8c38e
-  skip_validation: true
+- archive: rdma-core-60.1.tar.gz
+  archive_sha512sum: 43a0ba2f04e1a79329246336515d51acac576a783c40c18c00e23d0dde9dd5d75f5c669abdc2e5b0a8e9bb0ee724d8f6336a19001ee21928ecf22cb09c633089
+  archive_type: upstream
+  skip_validation: false
+  name: rdma-core-60.1
+  version: "60.1"
+  url: https://github.com/linux-rdma/rdma-core/releases/download/v60.1/rdma-core-60.1.tar.gz
+  repo_url: https://github.com/linux-rdma/rdma-core
+  commit_id: 54224f4c9c1d4b9d81b0b717307fc6ce177df127
+  missing: ['pandoc-prebuilt']
   spdx:
     package:
       detailed_description: 'Userspace libraries and daemons for the Linux Kernel''s

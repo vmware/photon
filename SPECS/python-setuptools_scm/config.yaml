@@ -1,7 +1,14 @@
 sources:
-- archive: setuptools_scm-7.0.5.tar.gz
-  archive_sha512sum: 5b3420f0aaa0dd1655afb0fdcedc3738b75dbb9d8205e0ad67555c251d330a0d3620a7297cfdcfabbc7386a8acf43fe73fa7f3b17e2d156495fd8b2ab7d1c985
-  skip_validation: true
+- archive: setuptools_scm-9.2.2.tar.gz
+  archive_sha512sum: 757ca11a3d13601606b6914ea70e3d271d287f26ada976ec77334fc0f611208669585d2580994f1ddff830cd698a837d3e882dd5cdccdaf9f8eba34fdd8cb708
+  archive_type: upstream
+  skip_validation: false
+  name: setuptools_scm-9.2.2
+  version: "9.2.2"
+  url: https://files.pythonhosted.org/packages/7b/b1/19587742aad604f1988a8a362e660e8c3ac03adccdb71c96d86526e5eb62/setuptools_scm-9.2.2.tar.gz
+  repo_url: https://github.com/pypa/setuptools-scm
+  commit_id: e56b78fcd4c1e79aa36c1e4700fca34c8ff540fe
+  missing: ['nextgen', 'setup.cfg', 'PKG-INFO', 'setuptools_scm.egg-info', '.pre-commit-config.yaml', '.cursor', '.git_archival.txt', '.readthedocs.yaml']
   spdx:
     package:
       detailed_description: "setuptools_scm handles managing your python package versions\

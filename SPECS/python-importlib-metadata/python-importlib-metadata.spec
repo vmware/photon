@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname importlib_metadata
 
 Summary:        Library to access the metadata for a Python package
 Name:           python3-importlib-metadata
 Version:        6.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 URL:            https://github.com/python/importlib_metadata
 Vendor:         VMware, Inc.
@@ -66,6 +68,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-3
 - Release bump for SRP compliance
 * Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-2

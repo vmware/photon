@@ -1,0 +1,13 @@
+sources:
+- archive: pycodestyle-2.9.1.tar.gz
+  archive_sha512sum: da1c67815b50d13c8eb70cebcc12c761a6407518a4ed4a8780ee7064089c9e89a5c3246d05f19916c0ec293fc1a372d3b2adb72e11f775b1cfbd1fbbe07a1a83
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pycodestyle is a tool to check your Python code against
+        some of the style conventions in PEP 8. '
+      home_page: https://pypi.python.org/pypi/python-pam/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: A tool to check your Python code
+      supplier: 'Organization: Broadcom, Inc.'

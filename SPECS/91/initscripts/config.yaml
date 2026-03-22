@@ -1,0 +1,13 @@
+sources:
+- archive: initscripts-10.17.tar.gz
+  archive_sha512sum: 6c99a7b52b5bc0ced1877a7b2a280b885778bb12e89dc0d606a5b5eda1aa87feecdea6c19803afab01953c9d352c409e59665914832f7107b6b3816d4740594c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This package contains the script that activates and deactivates
+        most network interfaces, some utilities, and other legacy files. '
+      home_page: https://github.com/fedora-sysv/initscripts
+      license_concluded: GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+      short_summary: Scripts to bring up network interfaces and legacy utilities
+      supplier: 'Organization: Broadcom, Inc.'

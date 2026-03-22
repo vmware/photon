@@ -1,0 +1,15 @@
+sources:
+- archive: more-itertools-8.14.0.tar.gz
+  archive_sha512sum: a85ad9359ddd65caa81b743ff342c3917420d57ffc53b130eaa2d049fc90b55e0e00f12c878b49eb5f882b62e3a3b2a4ea04677c4e959958eab89aa5dd26eb0d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python''s itertools library is a gem - you can compose
+        elegant solutions for a variety of problems with the functions it provides.
+        In more-itertools we collect additional building blocks, recipes, and routines
+        for working with Python iterables '
+      home_page: https://github.com/erikrose/more-itertools
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: More routines for operating on Python iterables, beyond itertools
+      supplier: 'Organization: Broadcom, Inc.'

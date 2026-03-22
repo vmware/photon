@@ -1,0 +1,16 @@
+sources:
+- archive: trace-cmd-v3.1.4.tar.gz
+  archive_sha512sum: 93ad775c1767d2a02b72386a29867c3bc141171403c152c0c4cb907da16b5ae69100924279d9529083449c1774c97c35d5b4790b188bcd4930cfa69076cef0b8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'trace-cmd is a user-space command line tool that makes
+        it convenient to use the Ftrace functionality in the kernel by providing appropriate
+        command interfaces to record and analyze the traces. '
+      home_page: https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only AND GPL-1.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later
+      short_summary: trace-cmd is a user-space front-end command-line tool for Ftrace
+      supplier: 'Organization: Broadcom, Inc.'

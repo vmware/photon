@@ -1,14 +1,14 @@
 sources:
-- archive: Python-3.11.13.tar.xz
-  archive_sha512sum: 70f57464d548eac4fe0d0c7f85a14b0e549a4e25ef66de4fc36b06ce72a3efe87dadfcd56ee275c10483cf802fbc9d73b61f9fb2941a46e2f92f075aeb1afe85
+- archive: Python-3.14.1.tar.xz
+  archive_sha512sum: b5ec011190536126fedade5c33a4afabc081a133ad5c734f4b872769d376735775219d63a482812d139fdd90c46707927065ab9dc733d0bce2d1ebc59fe705a2
   archive_type: upstream
   skip_validation: false
-  name: Python-3.11.13
-  version: "3.11.13"
-  url: https://www.python.org/ftp/python/3.11.13/Python-3.11.13.tar.xz
+  name: Python-3.14.1
+  version: "3.14.1"
+  url: https://www.python.org/ftp/python/3.14.1/Python-3.14.1.tar.xz
   repo_url: https://github.com/python/cpython
-  commit_id: 498b971ea3673012a1d4b21860b229d55fc6e575
-  missing: ['.gitignore', 'NEWS', 'NEWS.d', '.github', '.gitattributes', '.azure-pipelines']
+  commit_id: 57e0d177c26d4a508ef46adae9cbae46fca39f70
+  missing: ['mypy', 'NEWS', '.gitignore', 'NEWS.d', '.azure-pipelines', '.gitattributes', '.github']
   spdx:
     package:
       detailed_description: 'The Python 3 package contains a new version of Python
@@ -34,12 +34,12 @@ sources:
         AND MS-RL
       short_summary: A high-level scripting language
       supplier: 'Organization: Broadcom, Inc.'
-- archive: setuptools-pip-wheels.ph5-1.0-3.tar.xz
-  archive_sha512sum: fe850c7b78127ebdb019ea3e6b94862310725b659ad5f5b6818115f9a6ab4a524313652fa8493ee7477dbe32ed8ad8017d045e038f99ae818e9ff2bebbb7de26
+- archive: pip-wheel.ph5-1.0-1.tar.xz
+  archive_sha512sum: c90c697bd3a8cfb61160b5c13955b6369347081aceed725a9c431eb9a8746f0385905abaef03dce39de25c935ee57b90b14469e1973fd3c4dc39dda319eeb4df
   skip_validation: true
   spdx:
     package:
-      detailed_description: Installation wheels for setup tools and pip.
+      detailed_description: Installation wheel for pip.
       home_page: https://pypi.org/project/pip/
       license_concluded: (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0)
         AND Apache-2.0 AND BSD-2-Clause AND Python-2.0 AND BSD-3-Clause AND MIT

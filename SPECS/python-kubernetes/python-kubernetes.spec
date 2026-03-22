@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global srcname kubernetes
 
 Summary:    Python client for the kubernetes API.
 Name:       python3-kubernetes
 Version:    30.1.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://pypi.python.org/pypi/kubernetes
 Group:      Development/Languages/Python
 Vendor:     VMware, Inc.
@@ -55,6 +57,8 @@ Python client for the kubernetes API.
 %{python3_sitelib}/%{srcname}-*.egg-info
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 30.1.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 30.1.0-3
 - Release bump for SRP compliance
 * Fri Aug 09 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 30.1.0-2

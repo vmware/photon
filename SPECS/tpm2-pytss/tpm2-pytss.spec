@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:       tpm2-pytss
 Version:    1.2.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 Summary:    Python bindings for tpm2-tss
 URL:        https://github.com/tpm2-software/tpm2-pytss
 Vendor:     VMware, Inc.
@@ -62,6 +64,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.0-5
+- Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.2.0-4
 - Release bump for SRP compliance
 * Fri Jun 28 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.2.0-3

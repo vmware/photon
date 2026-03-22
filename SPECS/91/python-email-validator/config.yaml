@@ -1,0 +1,13 @@
+sources:
+- archive: email_validator-1.2.1.tar.gz
+  archive_sha512sum: e758518ef114e08cca0f83c681e6ff7ec6fad54c1e0bba727ee0f8917e93040ed3873ba0207e21a4830208d98637937294c5c28d67c317dc4ad3351c7d3f99a4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This library validates that address are of the form x@y.com.
+        This is the sort of validation you would want for a login form on a website. '
+      home_page: https://github.com/JoshData/python-email-validator
+      license_concluded: CC0-1.0
+      license_declared: CC0-1.0
+      short_summary: A robust email syntax and deliverability validation library
+      supplier: 'Organization: Broadcom, Inc.'

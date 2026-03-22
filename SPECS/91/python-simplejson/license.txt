@@ -1,0 +1,1 @@
+License: MIT AND (MIT OR AFL-2.1 OR Python-2.0) AND AFL-3.0 AND AFL-2.1

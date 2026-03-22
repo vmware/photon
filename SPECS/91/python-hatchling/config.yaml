@@ -1,0 +1,15 @@
+sources:
+- archive: hatchling-1.11.1.tar.gz
+  archive_sha512sum: 3ff9d41517eb2ebb8a3fab2d57e7430800650209e3253171cc96f83c4dc62441b82f3a69626566c795932df857d1c31dbb32b5a447324f83136aa9163fde540e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This is the extensible, standards compliant build backend
+        used by Hatch. '
+      home_page: https://pypi.org/project/hatchling/
+      license_concluded: Motosoto AND MPL-1.1 AND CECILL-B AND MPL-1.0 AND EFL-1.0
+        AND CC0-1.0 AND BSD-3-Clause AND MirOS AND MPL-2.0 AND MIT AND MIT-0 AND CECILL-C
+      license_declared: Motosoto AND MPL-1.1 AND CECILL-B AND MPL-1.0 AND EFL-1.0
+        AND CC0-1.0 AND BSD-3-Clause AND MirOS AND MPL-2.0 AND MIT AND MIT-0 AND CECILL-C
+      short_summary: The build backend used by Hatch
+      supplier: 'Organization: Broadcom, Inc.'

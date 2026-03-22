@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.26.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://www.freedesktop.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -72,6 +74,8 @@ make %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.2-7
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.2-6
 - Release bump for SRP compliance
 * Tue Jan 03 2023 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.26.2-5

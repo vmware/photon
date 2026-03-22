@@ -1,0 +1,1 @@
+License: (MIT OR GPL-1.0-or-later) AND GPL-1.0-or-later AND MIT-0 AND BSD-2-Clause AND BSD-3-Clause AND GPL-3.0-only AND Python-2.0 AND GPL-3.0-or-later AND Apache-2.0 AND LGPL-3.0-or-later AND MIT AND GPL-2.0-or-later

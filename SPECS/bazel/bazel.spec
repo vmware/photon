@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 %define __os_install_post %{nil}
 
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -61,6 +63,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.3.2-8
+- Bump version as a part of python3.14 upgrade
 * Tue Aug 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-7
 - Fix copyleft licensing
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.3.2-6

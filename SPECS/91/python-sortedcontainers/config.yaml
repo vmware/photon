@@ -1,0 +1,13 @@
+sources:
+- archive: sortedcontainers-2.4.0.tar.gz
+  archive_sha512sum: 4c01522bc01367a27bb005f16a487c127459f949f3d9fa7094e559993ceb074b3f84dda167f300778f46bdc15669f05866b6117ff6c369ca9a561ae20ab7c53f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'SortedContainers is an Apache2 licensed sorted collections
+        library, written in \ pure-Python, and fast as C-extensions. '
+      home_page: http://www.python.org
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Pure Python sorted container types
+      supplier: 'Organization: Broadcom, Inc.'

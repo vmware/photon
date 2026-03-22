@@ -1,7 +1,15 @@
 sources:
-- archive: libsemanage-3.4.tar.gz
-  archive_sha512sum: 831dc789545bb9a0b009bdb4f7fe52f6197ad8325946640f886a960d08e40b8a69eccd5a70cce51466bb5cb7f742feb78d19a9ec63383fbd03aa451508677e73
-  skip_validation: true
+- archive: libsemanage-3.5.tar.gz
+  archive_sha512sum: 959fbd0d6bc6849da6caa13dc41c3f8818cbbd29f04b5d2ac7246c4b395b4f370f113a04cc9cfcb52be2afebfa636013ac4ad4011384c58c7ce066a45cae2751
+  archive_type: upstream
+  skip_validation: false
+  name: libsemanage-3.5
+  version: "3.5"
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.5/libsemanage-3.5.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux/
+  commit_id: d6e96c5929a3f1aa1dce93505edd9f0158757ac2
+  missing: ['README.md', '.travis.yml', 'mcstrans', 'example', 'CONTRIBUTING.md', 'gui', 'scripts', 'libsepol', 'policycoreutils', 'libsemanage', 'secilc', 'SECURITY.md', 'CleanSpec.mk', 'include', 'man', 'restorecond', '.circleci', 'src', '.github', 'lgtm.yml', 'semodule-utils', 'dbus', 'tests', 'checkpolicy', 'utils', 'sandbox', 'python', 'libselinux']
+  skip_list: ['.gitignore', 'Makefile', 'LICENSE']
   spdx:
     package:
       detailed_description: "Security-enhanced Linux is a feature of the Linux\xAE\

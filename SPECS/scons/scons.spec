@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           scons
 Version:        4.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An Open Source software construction tool
 Group:          Development/Tools
 URL:            https://sourceforge.net/projects/scons
@@ -45,6 +47,8 @@ rm -rf %{buildroot}
 %{_datadir}/*.1
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.1.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.1.0-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.1.0-2

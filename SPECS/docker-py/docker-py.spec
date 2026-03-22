@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           docker-py3
 Version:        6.0.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Python API for docker
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -66,6 +68,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-7
+- Bump version as a part of python3.14 upgrade
 * Wed Jan 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-6
 - Fix functionality break introduced by CVE-2024-35195 in python3-requests
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0.0-5

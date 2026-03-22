@@ -1,19 +1,20 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define network_required 1
 Name:           python3-typing-extensions
-Version:        4.3.0
-Release:        4%{?dist}
+Version:        4.15.0
+Release:        1%{?dist}
 Summary:        Backported and Experimental Type Hints for Python 3.7+
 Group:          Development/Tools
 Url:            https://pypi.org/project/typing-extensions
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://files.pythonhosted.org/packages/9e/1d/d128169ff58c501059330f1ad96ed62b79114a2eb30b8238af63a2e27f70/typing_extensions-4.3.0.tar.gz
+Source0: typing_extensions-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0:         backport-generic-typedict.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-pip
@@ -53,6 +54,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.15.0-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.0-4
 - Release bump for SRP compliance
 * Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.3.0-3

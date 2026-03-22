@@ -1,23 +1,27 @@
-%define srcname sphinxcontrib-applehelp
+%global build_if %{photon_subrelease} >= 92
+
+%define srcname sphinxcontrib_applehelp
 
 Name:           python3-sphinxcontrib-applehelp
-Version:        1.0.2
-Release:        4%{?dist}
+Version:        2.0.0
+Release:        1%{?dist}
 Summary:        Sphinx extension for Apple help books
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 URL:            https://pypi.org/project/sphinxcontrib-applehelp
 Distribution:   Photon
 
-Source0: https://files.pythonhosted.org/packages/9f/01/ad9d4ebbceddbed9979ab4a89ddb78c9760e74e6757b1880f1b2760e8295/%{srcname}-%{version}.tar.gz
+BuildArch: noarch
+
+Source0: %{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildArch: noarch
-
 BuildRequires: python3-devel
+BuildRequires: python3-pip
 BuildRequires: python3-setuptools
+BuildRequires: python3-flit-core
 
 Requires: python3
 
@@ -30,18 +34,18 @@ sphinxcontrib-applehelp is a sphinx extension which outputs Apple help books.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{py3_build}
+%pyproject_wheel
 
 %install
-%{py3_install}
+%pyproject_install
 
 %files
 %defattr(-,root,root,-)
-%license LICENSE
-%doc README.rst
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.0-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.2-4
 - Release bump for SRP compliance
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0.2-3

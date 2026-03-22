@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-deepmerge
 Version:        1.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 URL:            https://pypi.org/project/deepmerge
@@ -60,6 +62,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-2
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.0-1

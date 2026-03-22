@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Linux kernel trace file system library
 Name:           libtracefs
-Version:        1.5.0
-Release:        2%{?dist}
+Version:        1.8.3
+Release:        1%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git
 Vendor:         VMware, Inc.
@@ -43,6 +45,7 @@ rm -rf %{buildroot}
 
 %files
 %{_libdir}/%{name}.so.*
+%{_datadir}/bash-completion/completions/tracefs_sql.bash
 
 %files devel
 %{_includedir}/tracefs/*.h
@@ -51,6 +54,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Feb 17 2026 Prashtn S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.3-1
+- Upgrade for trace-cmd
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.0-2
 - Release bump for SRP compliance
 * Mon Nov 14 2022 Michelle Wang <michellew@vmware.com> 1.5.0-1

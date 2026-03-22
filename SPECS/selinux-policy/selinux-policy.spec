@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define container_selinux_ver   2.181.0
 
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        12%{?dist}
+Release:        13%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -138,6 +140,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 36.5-13
+- Bump version as a part of python3.14 upgrade
 * Tue Mar 10 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 36.5-12
 - Enforcing mode by default
 * Wed Oct 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 36.5-11

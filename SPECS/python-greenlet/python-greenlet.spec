@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Lightweight in-process concurrent programming
 Name:           python3-greenlet
-Version:        2.0.0
-Release:        2%{?dist}
+Version:        3.3.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -43,6 +45,8 @@ A “greenlet”, on the other hand, is a still more primitive notion of micro-t
 /usr/include/python%{python3_version}/greenlet/greenlet.h
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3.1-1
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-2
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.0-1

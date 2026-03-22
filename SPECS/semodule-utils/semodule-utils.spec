@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        SELinux policy module utils
 Name:           semodule-utils
-Version:        3.4
-Release:        2%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -43,6 +45,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/semodule_unpackage.8.gz
 
 %changelog
+* Fri Dec 19 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
+- Updated to 3.5 as part of python3.14 update
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.4-1

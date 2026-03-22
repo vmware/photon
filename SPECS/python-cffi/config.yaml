@@ -1,7 +1,14 @@
 sources:
-- archive: cffi-1.15.1.tar.gz
-  archive_sha512sum: e99cafcb029076abc29e435b490fa0573ee2856f4051b7ca8a5b38cd125d56dd9dae8b189f59ceb3d728a675da8ee83239e09e19f8b0feeddea4b186ab5173a5
-  skip_validation: true
+- archive: cffi-2.0.0.tar.gz
+  archive_sha512sum: a71b74e642e11eb50e9bb4ae0e7116bdb3c4a7c9622a3766d84506fa7994c02e09644b41b439b95ca99b0303e91891897cff38018d498eb087e0961f0ad4fb8b
+  archive_type: upstream
+  name: cffi-2.0.0
+  version: "2.0.0"
+  url: https://files.pythonhosted.org/packages/eb/56/b1ba7935a17738ae8453301356628e8147c79dbb825bcbc73dc7401f9846/cffi-2.0.0.tar.gz
+  repo_url: https://github.com/python-cffi/cffi
+  commit_id: 6366c01d84e9a78e7e85f12ebe9760ba5d19b6d3
+  missing: ['README.ctypes', 'PKG-INFO', 'tools', 'setup.cfg', 'cffi.egg-info', '.readthedocs.yaml', 'build_libffi.bat', '.gitignore', 'suppressions_free_threading.txt', 'README', 'LICENSE', '.github']
+  skip_list: []
   spdx:
     package:
       detailed_description: "Foreign Function Interface for Python, providing a convenient\

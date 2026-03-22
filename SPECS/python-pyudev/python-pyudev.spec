@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Python binding for libudev
 Name:           python3-pyudev
 Version:        0.23.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
@@ -58,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-4
+- Bump version as a part of python3.14 upgrade
 * Tue Feb 04 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-3
 - Remove pip from Requires
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-2

@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define network_required 1
 %global debug_package   %{nil}
 %define llvm_maj_ver    18
@@ -5,7 +7,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        18.1.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -132,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 18.1.8-3
+- Bump version as a part of python3.14 upgrade
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.8-2
 - Enable BUILD_SHARED_LIBS=ON to avoid duplicate LLVM command-line option registration errors
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 18.1.8-1

@@ -1,7 +1,13 @@
 sources:
-- archive: trace-cmd-v3.1.4.tar.gz
-  archive_sha512sum: 93ad775c1767d2a02b72386a29867c3bc141171403c152c0c4cb907da16b5ae69100924279d9529083449c1774c97c35d5b4790b188bcd4930cfa69076cef0b8
-  skip_validation: true
+- archive: trace-cmd-v3.3.4.tar.gz
+  archive_sha512sum: ea7329010e6bc7fb1f2fc3324dd97f6496c45f3d25b551843e9027b8cc34425d1e34c6c07f875ea5d03397d1b4c83b64b9283d21b930efcdc961e08a93a04362
+  archive_type: upstream
+  name: trace-cmd-v3.3.4
+  version: "3.3.4"
+  url: https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git/snapshot/trace-cmd-v3.3.4.tar.gz
+  repo_url: https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
+  commit_id: 3360b56d57abcd3153d8b7ef3b4a446e18616771
+  missing: ['.gitignore', '.gitattributes']
   spdx:
     package:
       detailed_description: 'trace-cmd is a user-space command line tool that makes

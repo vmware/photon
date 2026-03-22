@@ -1,0 +1,12 @@
+sources:
+- archive: pluggy-1.0.0.tar.gz
+  archive_sha512sum: cf0bcbb4330c24ce473614befa19548f33fb39fa0ad094e1eae786202d7adadc28e16499f80ab96b630091765404ca5c5b6f9a55bc605e03514d8ab50cf9ae00
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The plugin manager stripped of pytest specific details. '
+      home_page: https://pypi.org/project/pluggy/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: The plugin manager stripped of pytest specific details
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,12 @@
+sources:
+- archive: nocasedict-1.0.4.tar.gz
+  archive_sha512sum: cd72c206cfe0b892630b75f78e2393c5e81c67a265e8ec64f0e6a54866061527aa9a5a62b0bc38f9fa57a04a3aca4aa41aa0e1ee45eb7745c04dc3a7a1fdff45
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A case-insensitive ordered dictionary for Python '
+      home_page: https://files.pythonhosted.org/packages/ad/80/40b0bfddbea87c6e7d400171b42ee1a82b954114d706a8871e0eb4225c60/nocasedict-1.0.2.tar.gz
+      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+      short_summary: A case-insensitive ordered dictionary for Python
+      supplier: 'Organization: Broadcom, Inc.'

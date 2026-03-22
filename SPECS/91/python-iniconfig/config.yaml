@@ -1,0 +1,18 @@
+sources:
+- archive: iniconfig-1.1.1.tar.gz
+  archive_sha512sum: c9341db7e3ec2204b6a674fca7824cbeb492e3576d5ac3f084b234c82842b28f2f6acbfdb812e183f4334a95b990551f942a4caf548f5ce7ef14885f931535ee
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "iniconfig is a small and simple INI-file parser module\
+        \ having a unique set of features:  1. tested against Python2.4 across to\
+        \ Python3.2, Jython, PyPy 2. maintains order of sections and entries 3. supports\
+        \ multi-line values with or without line-continuations 4. supports \u201C\
+        #\u201D comments everywhere 5. raises errors with proper line-numbers 6. no\
+        \ bells and whistles like automatic substitutions 7. iniconfig raises an Error\
+        \ if two sections have the same name. "
+      home_page: http://github.com/RonnyPfannschmidt/iniconfig
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: 'iniconfig: brain-dead simple config-ini parsing'
+      supplier: 'Organization: Broadcom, Inc.'

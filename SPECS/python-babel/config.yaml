@@ -1,7 +1,15 @@
 sources:
-- archive: Babel-2.10.3.tar.gz
-  archive_sha512sum: 72a5759d2cfa239df56f3d2809b23367b9691e21de92535b30f9b3455d253682f6c18ca919f3fb039deed2663db9276307f6343cbbab56fca96ff1ac9c214fa7
-  skip_validation: true
+- archive: babel-2.18.0.tar.gz
+  archive_sha512sum: e8fafa5d026dbb3aa02eca0ca2c08bb80adf78825a4b4d71c15a1c6d142bac058adfe38b8b52ce3fab42fcea615c8e543ee28dfe3ad50b4598e6b1b587be59fe
+  archive_type: upstream
+  skip_validation: false
+  name: babel-2.18.0
+  version: "2.18.0"
+  url: https://files.pythonhosted.org/packages/7d/b2/51899539b6ceeeb420d40ed3cd4b7a40519404f9baf3d4ac99dc413a834b/babel-2.18.0.tar.gz
+  repo_url: https://github.com/python-babel/babel
+  commit_id: 56c63caf50b18b152541b5dcafd51f645d867074
+  missing: ['*.dat', 'SECURITY.md', 'PKG-INFO', 'CONTRIBUTING.md', 'babel.egg-info', '.gitignore', '.readthedocs.yml', '.coveragerc', 'misc', '.github', '.pre-commit-config.yaml', 'cldr', 'contrib']
+  skip_list: ['setup.cfg']
   spdx:
     package:
       detailed_description: 'Babel is an integrated collection of utilities that assist

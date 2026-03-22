@@ -1,13 +1,17 @@
+%global build_if %{photon_subrelease} >= 92
+
+%global srcname babel
+
 Name:           python3-babel
-Version:        2.10.3
-Release:        3%{?dist}
+Version:        2.18.0
+Release:        1%{?dist}
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
 Group:          Development/Languages/Python
 Url:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/7d/b2/51899539b6ceeeb420d40ed3cd4b7a40519404f9baf3d4ac99dc413a834b/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -41,7 +45,7 @@ The functionality Babel provides for internationalization (I18n) and localizatio
 2.A Python interface to the CLDR (Common Locale Data Repository), providing access to various locale display names, localized number and date formatting, etc.
 
 %prep
-%autosetup -n Babel-%{version} -p1
+%autosetup -n %{srcname}-%{version} -p1
 
 %build
 %py3_build
@@ -61,6 +65,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.18.0-1
+- Update to 2.18.0 as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.10.3-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.10.3-2

@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-pywbem
 Version:        1.4.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
 URL:            http://pywbem.sourceforge.net
@@ -71,6 +73,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-3
 - Release bump for SRP compliance
 * Tue Jun 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-2

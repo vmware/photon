@@ -1,0 +1,13 @@
+sources:
+- archive: jmespath-1.0.1.tar.gz
+  archive_sha512sum: a1c2424d859f732ba854fabf5e3e47cef88f782d6e9707e5f49f29ddef2fab391aa69866f2e70a58a5f4373a43ab098a787a9a03c15025acf46e5a25243513fb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "JMESPath (pronounced \u201Cjames path\u201D) allows you\
+        \ to declaratively specify how to extract elements from a JSON document. "
+      home_page: https://pypi.python.org/pypi/jmespath
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Query Language for JSON
+      supplier: 'Organization: Broadcom, Inc.'

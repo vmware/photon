@@ -1,0 +1,51 @@
+sources:
+- archive: bazel-5.3.2-dist.zip
+  archive_sha512sum: a63895c224d51619cf83e6e55872aa6d55d17c7dcea59eaf467069d2c95259f5964fbf8fa5994df0e3c030234a7adf70a2715edb4edbbe2bf69d21dd698c0833
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Bazel is Google''s own build tool, now publicly available
+        in Beta. Bazel has built-in support for building both client and server software,
+        including client applications for both Android and iOS platforms. It also
+        provides an extensible framework that you can use to develop your own build
+        rules. '
+      home_page: http://bazel.build/
+      license_concluded: (Apache-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later
+        OR MIT) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSD-3-Clause OR GPL-2.0-only)
+        AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1
+        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND (EPL-1.0 OR GPL-2.0-only) AND (GPL-2.0-only
+        OR MIT) AND (GPL-3.0-only OR MIT) AND (LGPL-3.0-or-later OR Ruby) AND APSL-2.0
+        AND Apache-1.1 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause
+        AND BSD-3-Clause AND BSL-1.0 AND CC-BY-2.5 AND CC-BY-SA-3.0 AND CC-PDDC AND
+        CC0-1.0 AND CDDL-1.1 AND CPL-1.0 AND EPL-1.0 AND EPL-2.0 AND FSFAP AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH GNAT-exception AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND HPND AND HPND-export2-US AND HPND-sell-variant
+        AND ICU AND IJG AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
+        AND LGPL-3.0-only AND LPD-document AND Libpng AND MIT AND MIT-open-group AND
+        MPL-1.1 AND MPL-2.0 AND NTP AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone
+        AND Python-2.0 AND RSA-MD AND SAX-PD AND SMLNJ AND SSLeay-standalone AND Unicode-3.0
+        AND Unicode-TOU AND W3C AND W3C-19980720 AND X11 AND XFree86-1.1 AND Zlib
+        AND dtoa
+      license_declared: (Apache-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later
+        OR MIT) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSD-3-Clause OR GPL-2.0-only)
+        AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1
+        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1 OR GPL-2.0-only
+        WITH Classpath-exception-2.0) AND (EPL-1.0 OR GPL-2.0-only) AND (GPL-2.0-only
+        OR MIT) AND (GPL-3.0-only OR MIT) AND (LGPL-3.0-or-later OR Ruby) AND APSL-2.0
+        AND Apache-1.1 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause
+        AND BSD-3-Clause AND BSL-1.0 AND CC-BY-2.5 AND CC-BY-SA-3.0 AND CC-PDDC AND
+        CC0-1.0 AND CDDL-1.1 AND CPL-1.0 AND EPL-1.0 AND EPL-2.0 AND FSFAP AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-or-later
+        AND GPL-2.0-or-later WITH GNAT-exception AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND HPND AND HPND-export2-US AND HPND-sell-variant
+        AND ICU AND IJG AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
+        AND LGPL-3.0-only AND LPD-document AND Libpng AND MIT AND MIT-open-group AND
+        MPL-1.1 AND MPL-2.0 AND NTP AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone
+        AND Python-2.0 AND RSA-MD AND SAX-PD AND SMLNJ AND SSLeay-standalone AND Unicode-3.0
+        AND Unicode-TOU AND W3C AND W3C-19980720 AND X11 AND XFree86-1.1 AND Zlib
+        AND dtoa
+      short_summary: Build software of any size, quickly and reliably, just as engineers
+        do at Google.
+      supplier: 'Organization: Broadcom, Inc.'

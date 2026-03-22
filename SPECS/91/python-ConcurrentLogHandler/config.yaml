@@ -1,0 +1,17 @@
+sources:
+- archive: concurrent-log-handler-0.9.20.tar.gz
+  archive_sha512sum: fd9e66c713f6be675fd8aa8001254641ba354ba04b95fade4b101ce9cdddc66444de60c87832bd3270d004ef97c52a266a3345e9f9df8f5dea13d6ce80f05e57
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "ConcurrentLogHandler is a module that provides an additional\
+        \ log handler for Python\u2019s standard logging package (PEP 282). This handler\
+        \ will write log events to log file which is rotated when the log file reaches\
+        \ a certain size. Multiple processes can safely write to the same log file\
+        \ concurrently. "
+      home_page: https://github.com/Preston-Landers/concurrent-log-handler
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Concurrent logging handler (drop-in replacement for RotatingFileHandler)
+        Python 2.6+
+      supplier: 'Organization: Broadcom, Inc.'

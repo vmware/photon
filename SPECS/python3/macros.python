@@ -14,18 +14,12 @@
 %py3_shbang_opts_nodash %(opts=%{py3_shbang_opts}; echo ${opts#-})
 %py3_shebang_flags %(opts=%{py3_shbang_opts}; echo ${opts#-})
 %py3_shebang_fix %{expand:\\\
-  if [ -f /usr/bin/pathfix%{python3_version}.py ]; then
-    pathfix=/usr/bin/pathfix%{python3_version}.py
-  else
-    # older versions of Python don't have it and must BR /usr/bin/pathfix.py from python3-devel explicitly
-    pathfix=/usr/bin/pathfix.py
-  fi
   if [ -z "%{?py3_shebang_flags}" ]; then
     shebang_flags="-k"
   else
     shebang_flags="-ka%{py3_shebang_flags}"
   fi
-  $pathfix -pni %{__python3} $shebang_flags}
+}
 
 # Use the slashes after expand so that the command starts on the same line as
 # the macro
@@ -65,7 +59,6 @@
 %pyproject_install() %{expand:\\\
   %{__python3} -m pip install --root %{buildroot} --no-deps --no-index --no-warn-script-location --disable-pip-version-check --progress-bar off --verbose pyproject-wheeldir/*.whl %{?*}
   if [ -d %{buildroot}%{_bindir} ]; then
-    %py3_shebang_fix %{buildroot}%{_bindir}/*
     rm -rfv %{buildroot}%{_bindir}/__pycache__
   fi
 }

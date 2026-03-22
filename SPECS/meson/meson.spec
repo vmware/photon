@@ -1,18 +1,20 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
-Version:        1.3.2
-Release:        2%{?dist}
+Version:        1.4.2
+Release:        1%{?dist}
 URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch:      noarch
 
 Source0: https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-BuildArch:      noarch
 
 BuildRequires:  gcc
 BuildRequires:  python3-devel
@@ -61,6 +63,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-1
+- Version upgrade
 * Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> 1.3.2-2
 - Bump release for new license scan
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.3.2-1

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        A streaming media framework
 Name:           gstreamer
 Version:        1.25.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -80,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.25.1-3
+- Bump version as a part of python3.14 upgrade
 *   Tue Aug 12 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.25.1-2
 -   Licensing cleanup
 *   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.25.1-1

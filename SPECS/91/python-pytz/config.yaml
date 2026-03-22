@@ -1,0 +1,16 @@
+sources:
+- archive: pytz-2022.2.1.tar.gz
+  archive_sha512sum: 9c78d9f484e2e0e101ca7e10fba8e6c9870255b2c320b3499a0cc9b480adac64b07f2f124048aa957c6bc9311a4ac43060368e1f0d85d8e8c8f7df598e47912b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pytz brings the Olson tz database into Python. This library
+        allows accurate and cross platform timezone calculations using Python 2.4
+        or higher. It also solves the issue of ambiguous times at the end of daylight
+        saving time, which you can read more about in the Python Library Reference
+        (``datetime.tzinfo``). '
+      home_page: https://pypi.python.org/pypi/pytz
+      license_concluded: ZPL-2.1 AND MIT
+      license_declared: ZPL-2.1 AND MIT
+      short_summary: World timezone definitions, modern and historical
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,78 @@
+From d497aa4f770ca02f6083e93b94996a8fe32c2ff4 Mon Sep 17 00:00:00 2001
+From: Mike Hommey <mh+mozilla@glandium.org>
+Date: Tue, 19 Aug 2025 05:09:09 +0000
+Subject: [PATCH] Bug 1969769 - Change uses of ast.Str with ast.Constant.
+ r=firefox-build-system-reviewers,ahochheiden
+
+ast.Str was deprecated in python 3.12 and removed in 3.14. It inherited
+from ast.Constant, `Str.s` was equivalent to `Constant.value`, so we can
+use the latter on both old and newer python versions.
+
+Differential Revision: https://phabricator.services.mozilla.com/D261512
+---
+ python/mozbuild/mozbuild/frontend/reader.py        | 14 +++++++-------
+ .../mozbuild/mozbuild/vendor/rewrite_mozbuild.py   |  6 ++----
+ 2 files changed, 9 insertions(+), 11 deletions(-)
+
+diff --git a/python/mozbuild/mozbuild/frontend/reader.py b/python/mozbuild/mozbuild/frontend/reader.py
+index 9f6292cb909de..89bf9995c1768 100644
+--- a/python/mozbuild/mozbuild/frontend/reader.py
++++ b/python/mozbuild/mozbuild/frontend/reader.py
+@@ -470,7 +470,7 @@ def c(new_node):
+             return c(
+                 ast.Subscript(
+                     value=c(ast.Name(id=self._global_name, ctx=ast.Load())),
+-                    slice=c(ast.Index(value=c(ast.Str(s=node.id)))),
++                    slice=c(ast.Index(value=c(ast.Constant(value=node.id)))),
+                     ctx=node.ctx,
+                 )
+             )
+@@ -1039,8 +1039,8 @@ def assigned_variable(node):
+                 else:
+                     # Others
+                     assert isinstance(target.slice, ast.Index)
+-                    assert isinstance(target.slice.value, ast.Str)
+-                    key = target.slice.value.s
++                    assert isinstance(target.slice.value, ast.Constant)
++                    key = target.slice.value.value
+             elif isinstance(target, ast.Attribute):
+                 assert isinstance(target.attr, str)
+                 key = target.attr
+@@ -1051,11 +1051,11 @@ def assigned_values(node):
+             value = node.value
+             if isinstance(value, ast.List):
+                 for v in value.elts:
+-                    assert isinstance(v, ast.Str)
+-                    yield v.s
++                    assert isinstance(v, ast.Constant)
++                    yield v.value
+             else:
+-                assert isinstance(value, ast.Str)
+-                yield value.s
++                assert isinstance(value, ast.Constant)
++                yield value.value
+ 
+         assignments = []
+ 
+diff --git a/python/mozbuild/mozbuild/vendor/rewrite_mozbuild.py b/python/mozbuild/mozbuild/vendor/rewrite_mozbuild.py
+index cfcc0f18b9a9a..de06b58819b6a 100644
+--- a/python/mozbuild/mozbuild/vendor/rewrite_mozbuild.py
++++ b/python/mozbuild/mozbuild/vendor/rewrite_mozbuild.py
+@@ -327,15 +327,13 @@ def assignment_node_to_source_filename_list(code, node):
+     """
+     if isinstance(node.value, ast.List) and "elts" in node.value._fields:
+         for f in node.value.elts:
+-            if not isinstance(f, ast.Constant) and not isinstance(f, ast.Str):
++            if not isinstance(f, ast.Constant):
+                 log(
+                     "Found non-constant source file name in list: ",
+                     ast_get_source_segment(code, f),
+                 )
+                 return []
+-        return [
+-            f.value if isinstance(f, ast.Constant) else f.s for f in node.value.elts
+-        ]
++        return [f.value for f in node.value.elts]
+     elif isinstance(node.value, ast.ListComp):
+         # SOURCES += [f for f in foo if blah]
+         log("Could not find the files for " + ast_get_source_segment(code, node.value))

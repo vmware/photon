@@ -1,30 +1,32 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-pygobject
-Version:        3.42.2
-Release:        3%{?dist}
+Version:        3.56.1
+Release:        1%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.org/project/PyGObject
 
-Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
+Source0:        https://pypi.org/project/PyGObject/#files/pygobject-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-%if 0%{?with_check}
-Patch0:         pygobject-makecheck-fixes.patch
-%endif
-
 Requires:       python3
 Requires:       gobject-introspection
-Requires:       glib
+Requires:       glib >= 2.88.0
 
 BuildRequires:  python3-setuptools
 BuildRequires:  glib-devel
 BuildRequires:  python3-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  which
+BuildRequires:  python3-pip
+BuildRequires:  python3-meson-python
+BuildRequires:  meson
+BuildRequires:  cmake
 
 %if 0%{?with_check}
 BuildRequires:  python3-gobject-introspection
@@ -47,18 +49,21 @@ Requires:       python3-pygobject = %{version}-%{release}
 Development files for pygobject.
 
 %prep
-%autosetup -p1 -n PyGObject-%{version}
+%autosetup -p1 -n pygobject-%{version}
 
 %build
-export PYGOBJECT_WITHOUT_PYCAIRO='True'
-%py3_build
+%meson \
+  -Dpython=%{python3} \
+  -Dtests=false \
+  -Dpycairo=disabled
+
+%meson_build
 
 %install
-export PYGOBJECT_WITHOUT_PYCAIRO='True'
-%py3_install
+%meson_install
 
-%check
 %if 0%{?with_check}
+%check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pytest
 python3 setup.py test
@@ -77,6 +82,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.56.1-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.42.2-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.42.2-2

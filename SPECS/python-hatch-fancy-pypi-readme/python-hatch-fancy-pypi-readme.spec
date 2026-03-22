@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-hatch-fancy-pypi-readme
 Version:        22.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Fancy PyPI READMEs with Hatch
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -46,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.8.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.8.0-2
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 22.8.0-1

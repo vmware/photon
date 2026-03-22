@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.28.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -96,6 +98,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.28.1-9
+- Bump version as a part of python3.14 upgrade
 * Tue Sep 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.28.1-8
 - Fix CVE-2023-32681 and CVE-2024-47081
 * Wed Jan 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.28.1-7

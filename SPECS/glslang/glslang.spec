@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           glslang
 Version:        11.13.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        OpenGL and OpenGL ES shader front end and validator
 URL:            https://github.com/KhronosGroup/glslang
 Group:          Development/Tools
@@ -64,6 +66,8 @@ interpretation of the specifications for these languages.
 %{_libdir}/cmake/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 11.13.0-4
+- Bump version as a part of python3.14 upgrade
 *   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 11.13.0-3
 -   Release bump for SRP compliance
 *   Thu Dec 15 2022 Shivani Agarwal <shivania2@vmware.com> 11.13.0-2

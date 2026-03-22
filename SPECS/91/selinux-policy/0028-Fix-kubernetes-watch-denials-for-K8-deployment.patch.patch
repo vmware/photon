@@ -1,0 +1,68 @@
+From 8a14ce54fdba210bc676523c74f58330411bf2ce Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Fri, 17 Feb 2023 09:11:29 +0000
+Subject: [PATCH 28/35] Fix-kubernetes-watch-denials-for-K8-deployment.patch
+
+Changes are added to resolve following kubernetes  denials
+
+avc:  denied  { watch } for  pid=2498 comm="kube-apiserver"
+path="/etc/kubernetes/pki/front-proxy-ca.crt" dev="sda3" ino=3278903
+scontext=system_u:system_r:container_t:s0:c305,c829
+tcontext=system_u:object_r:kubernetes_file_t:s0 tclass=file permissive=1
+
+avc:  denied  { watch } for  pid=2491 comm="kube-controller"
+path="/etc/kubernetes/pki/ca.crt" dev="sda3" ino=3278897
+scontext=system_u:system_r:container_t:s0:c488,c866
+tcontext=system_u:object_r:kubernetes_file_t:s0 tclass=file permissive=1
+---
+ policy/modules/contrib/container.if | 24 ++++++++++++++++++++++++
+ policy/modules/contrib/container.te |  1 +
+ 2 files changed, 25 insertions(+)
+
+diff --git a/policy/modules/contrib/container.if b/policy/modules/contrib/container.if
+index b37c2f7..d9eaa3f 100644
+--- a/policy/modules/contrib/container.if
++++ b/policy/modules/contrib/container.if
+@@ -228,6 +228,30 @@ interface(`container_runtime_watch_bin_files',`
+          allow $1 bin_t:file watch_file_perms;
+ ')
+ 
++########################################
++## <summary>
++##      Allow process to watch kubernetes files.
++## </summary>
++## <desc>
++##      <p>
++##      Allow the specified domain to watch kubernetes files
++##      </p>
++## </desc>
++## <param name="domain">
++##      <summary>
++##      Domain allowed access.
++##      </summary>
++## </param>
++#
++interface(`container_runtime_watch_kubernetes_files',`
++        gen_require(`
++                type kubernetes_file_t;
++        ')
++
++         allow $1 kubernetes_file_t:dir watch_dir_perms;
++         allow $1 kubernetes_file_t:file watch_file_perms;
++')
++
+ ########################################
+ ## <summary>
+ ##      Manage container var lib files.
+diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
+index a330bac..e8bde7e 100644
+--- a/policy/modules/contrib/container.te
++++ b/policy/modules/contrib/container.te
+@@ -1305,3 +1305,4 @@ container_runtime_manage_var_lib_files(container_t)
+ container_runtime_rename_var_lib_files(container_t)
+ container_runtime_create_var_lib_files(container_t)
+ container_runtime_map_var_lib_files(container_t)
++container_runtime_watch_kubernetes_files(container_t)
+-- 
+2.45.0
+

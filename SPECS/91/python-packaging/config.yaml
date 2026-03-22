@@ -1,0 +1,17 @@
+sources:
+- archive: packaging-25.0.tar.gz
+  archive_sha512sum: fb8419f81f0f817440c0b297fc6e963832e219e7a324bf4e0321f1e131a4822f17a19f2eb033a8d4adb622ccb16db59776ec44906a0c0b34f2877b59b9558c18
+  url: https://github.com/pypa/packaging/archive/refs/tags/25.0.tar.gz
+  commit_id: f58537628042c7f29780b9d33f31597e7fc9d664
+  repo_url: https://github.com/pypa/packaging
+  name: packaging-25.0
+  archive_type: upstream
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Cryptography is a Python library which exposes cryptographic recipes and primitives. '
+      home_page: https://pypi.python.org/pypi/packaging
+      license_concluded: (Apache-2.0 OR BSD-2-Clause) AND (Apache-2.0 OR BSD-3-Clause) AND (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND MIT
+      license_declared: (Apache-2.0 OR BSD-2-Clause) AND (Apache-2.0 OR BSD-3-Clause) AND (Apache-2.0 OR MIT) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND MIT
+      short_summary: Core utilities for Python packages
+      supplier: 'Organization: Broadcom, Inc.'

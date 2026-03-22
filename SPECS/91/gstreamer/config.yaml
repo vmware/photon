@@ -1,0 +1,27 @@
+sources:
+- archive: gstreamer-1.25.1.tar.xz
+  archive_sha512sum: 8432f8ccdf84883d2e7764319429514d655248c1c6c7cc710bc76ffa0254b9bab98111281acf6233cc703f47c20a768c92d97839c3816df834bf6c35953febd7
+  skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - gstreamer-1.25.1/NEWS
+    sha256sum: 5e90dc0f231ea215669963c1639e7d09cf7e09021fe65690fc265d903ac17b88
+    spdx_exp: ''
+  spdx:
+    package:
+      detailed_description: 'GStreamer is a streaming media framework that enables
+        applications to share a common set of plugins for things like video encoding
+        and decoding, audio encoding and decoding, audio and video filters, audio
+        visualisation, web streaming and anything else that streams in real-time or
+        otherwise. '
+      home_page: http://gstreamer.freedesktop.org/
+      license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND 0BSD
+        AND Apache-2.0 AND BSD-3-Clause AND CC-BY-SA-4.0 AND GFDL-1.1-or-later AND
+        GPL-1.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
+        AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0
+      license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND 0BSD
+        AND Apache-2.0 AND BSD-3-Clause AND CC-BY-SA-4.0 AND GFDL-1.1-or-later AND
+        GPL-1.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
+        AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0
+      short_summary: A streaming media framework
+      supplier: 'Organization: Broadcom, Inc.'

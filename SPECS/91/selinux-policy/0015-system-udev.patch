@@ -1,0 +1,46 @@
+From 8e7797e90104e47a50611cf62e246ee9de67ad95 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:45:15 +0530
+Subject: [PATCH 15/35] system udev
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/udev.fc | 4 ++++
+ policy/modules/system/udev.te | 6 ++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/policy/modules/system/udev.fc b/policy/modules/system/udev.fc
+index 49fd32e..90fb746 100644
+--- a/policy/modules/system/udev.fc
++++ b/policy/modules/system/udev.fc
+@@ -48,6 +48,10 @@ ifdef(`distro_redhat',`
+ /var/run/libgpod(/.*)?	        gen_context(system_u:object_r:udev_var_run_t,s0)    
+ /var/run/udev(/.*)?		gen_context(system_u:object_r:udev_var_run_t,s0)
+ 
++/run/PackageKit/udev(/.*)?	gen_context(system_u:object_r:udev_var_run_t,s0)
++/run/libgpod(/.*)?	        gen_context(system_u:object_r:udev_var_run_t,s0)
++/run/udev(/.*)?		gen_context(system_u:object_r:udev_var_run_t,s0)
++
+ ifdef(`distro_debian',`
+ /var/run/xen-hotplug -d	gen_context(system_u:object_r:udev_var_run_t,s0)
+ ')
+diff --git a/policy/modules/system/udev.te b/policy/modules/system/udev.te
+index a0f302b..897d7cd 100644
+--- a/policy/modules/system/udev.te
++++ b/policy/modules/system/udev.te
+@@ -226,6 +226,12 @@ ifdef(`distro_gentoo',`
+ 	init_getattr_script_status_files(udev_t)
+ ')
+ 
++ifdef(`distro_photon',`
++	optional_policy(`
++		unconfined_domain(udev_t)
++	')
++')
++
+ ifdef(`distro_redhat',`
+ 	fs_manage_hugetlbfs_dirs(udev_t)
+ 
+-- 
+2.45.0
+

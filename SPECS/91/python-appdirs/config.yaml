@@ -1,0 +1,13 @@
+sources:
+- archive: appdirs-1.4.4.tar.gz
+  archive_sha512sum: 8b0cdd9fd471d45b186aa47607691cf378dabd3edc7b7026a57bd6d6f57698e86f440818a5e23ba4288b35d6bb8cb6eb0106eae8aab09d8863ee15025d300883
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A small Python module for determining appropriate platform-specific
+        dirs, e.g. a "user data dir". '
+      home_page: https://pypi.python.org/pypi/appdirs
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python 2 and 3 compatibility utilities
+      supplier: 'Organization: Broadcom, Inc.'

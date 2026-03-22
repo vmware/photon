@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-jsonpointer
 Version:        2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Applying JSON Patches in Python
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -40,6 +42,8 @@ python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 2.3-1

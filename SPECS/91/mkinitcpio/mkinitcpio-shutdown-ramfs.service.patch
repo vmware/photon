@@ -1,0 +1,8 @@
+--- systemd/mkinitcpio-generate-shutdown-ramfs.service  2017-05-05 17:37:54.445255220 +0000
++++ systemd/mkinitcpio-generate-shutdown-ramfs.service.1        2017-05-05 17:36:59.969323070 +0000
+@@ -9,4 +9,5 @@
+ # /tmp could be umounted at this point
+ # use /run as temporary directory
+ Environment=TMPDIR=/run
++ExecStartPre=/usr/bin/mkdir -p /run/initramfs
+ ExecStart=/usr/bin/mkinitcpio -A sd-shutdown -k none -c /dev/null -d /run/initramfs

@@ -1,0 +1,25 @@
+sources:
+- archive: libvirt-9.3.0.tar.xz
+  archive_sha512sum: b9349dcd7798c76d75bb20afad67d6e676758cb201acaf7aed5109f0e91422b2bcca964a2f19aa8dc4fd0eca2923902474e16e3839bf8b15aca827028e88ddb7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Libvirt is collection of software that provides a convenient
+        way to manage virtual machines and other virtualization functionality, such
+        as storage and network interface management. These software pieces include
+        an API library, a daemon (libvirtd), and a command line utility (virsh). An
+        primary goal of libvirt is to provide a single way to manage multiple different
+        virtualization providers/hypervisors. For example, the command ''virsh list
+        --all'' can be used to list the existing virtual machines for any supported
+        hypervisor (KVM, Xen, VMWare ESX, etc.) No need to learn the hypervisor specific
+        tools. '
+      home_page: http://libvirt.org
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND OFL-1.1 AND GPL-1.0-or-later
+        AND LGPL-2.1-or-later AND LGPL-2.1-only AND FSFAP AND GPL-3.0-or-later AND
+        LGPL-2.0-only AND BSD-3-Clause AND ISC-Veillard AND LGPL-2.0-or-later
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only AND OFL-1.1 AND GPL-1.0-or-later
+        AND LGPL-2.1-or-later AND LGPL-2.1-only AND FSFAP AND GPL-3.0-or-later AND
+        LGPL-2.0-only AND BSD-3-Clause AND ISC-Veillard AND LGPL-2.0-or-later
+      short_summary: Virtualization API library that supports KVM, QEMU, Xen, ESX
+        etc
+      supplier: 'Organization: Broadcom, Inc.'

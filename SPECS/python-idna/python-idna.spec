@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname idna
 
 Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python3-idna
 Version:        3.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/idna
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -51,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3-5
+- Bump version as a part of python3.14 upgrade
 * Thu Jan 23 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3-4
 - Fix CVE-2024-3651
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3-3

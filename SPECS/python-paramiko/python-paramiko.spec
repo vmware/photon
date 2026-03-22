@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname paramiko
 
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.12.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -66,6 +68,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.0-9
+- Bump version as a part of python3.14 upgrade
 * Mon Feb 24 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.12.0-8
 - Fix some operations while openssl fips is enabled
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.0-7

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Library to provide an easy API to file locking.
 Name:           python3-portalocker
 Version:        2.8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.org/project/portalocker
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -51,6 +53,8 @@ pip3 install redis tomli
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-2
 - Release bump for SRP compliance
 * Tue Jun 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-1

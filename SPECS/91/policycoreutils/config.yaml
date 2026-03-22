@@ -1,0 +1,13 @@
+sources:
+- archive: policycoreutils-3.4.tar.gz
+  archive_sha512sum: ded0d6fb5e3f165a893ee42411ac82616ddf37a02acaca6a8437b8f10ea12e5594bbd7bc7e3ead12df00c018078950f3fbe55604c41b0554257c4ca18f55ebb6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'policycoreutils contains the policy core utilities that
+        are required for basic operation of a SELinux system. '
+      home_page: https://github.com/SELinuxProject/selinux/wiki
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: SELinux policy core utilities
+      supplier: 'Organization: Broadcom, Inc.'

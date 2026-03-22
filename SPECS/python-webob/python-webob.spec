@@ -1,30 +1,30 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        WebOb provides objects for HTTP requests and responses..
 Name:           python3-webob
-Version:        1.8.7
-Release:        4%{?dist}
+Version:        1.8.9
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/WebOb
-Source0:        https://pypi.python.org/packages/1a/2b/322d6e01ba19c1e28349efe46dab1bd480c81a55af0658d63dc48ed62ee6/WebOb-%{version}.tar.gz
+
+BuildArch:      noarch
+
+Source0: webob-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2024-42353.patch
-
-BuildArch:      noarch
-
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
 %endif
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+
 Requires:       python3
-Requires:       python3-libs
+Requires:       python3-legacy-cgi
 
 %description
 WebOb provides objects for HTTP requests and responses. Specifically it does this by wrapping the WSGI request environment and response status/headers/app_iter(body).
@@ -32,8 +32,7 @@ WebOb provides objects for HTTP requests and responses. Specifically it does thi
 The request and response objects provide many conveniences for parsing HTTP request and forming HTTP responses. Both objects are read/write: as a result, WebOb is also a nice way to create HTTP requests and parse HTTP responses.
 
 %prep
-%autosetup -p1 -n WebOb-%{version}
-%{__rm} -f tests/performance_test.py
+%autosetup -p1 -n webob-%{version}
 
 %build
 %py3_build
@@ -49,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.9-1
+- Version upgrade
 * Thu Jun 05 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.8.7-4
 - Release bump for SRP compliance
 * Wed Dec 18 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.7-3

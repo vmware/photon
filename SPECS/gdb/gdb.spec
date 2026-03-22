@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global build_minimal_gdb 1
 
 Summary:        C debugger
 Name:           gdb
 Version:        13.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -18,6 +20,8 @@ Source2: license.txt
 Patch0: CVE-2023-39128.patch
 Patch1: CVE-2023-39129.patch
 Patch2: CVE-2023-39130.patch
+Patch3: compile-with-py314-1.patch
+Patch4: compile-with-py314-2.patch
 
 Requires: expat
 Requires: ncurses
@@ -183,6 +187,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 13.2-7
+- Add patch to compile with python3.14
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 13.2-6
 - Fix CVE-2023-39128, CVE-2023-39129 and CVE-2023-39130
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 13.2-5

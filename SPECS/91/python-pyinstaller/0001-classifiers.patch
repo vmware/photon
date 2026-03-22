@@ -1,0 +1,43 @@
+From daa8da05d1d3436899723006ffd22155c45923a8 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 19 Sep 2025 17:45:05 +0000
+Subject: [PATCH] classifiers: make less specific
+
+Old version of python-hatchling does not have
+updated classifiers list for newer python versions.
+
+As per packaging.python.org:
+
+ Although the list of classifiers is often used to declare
+ what Python versions a project supports, this information
+ is only used for searching and browsing projects on PyPI,
+ not for installing projects.
+
+I.e, this is not important for our build process.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ pyproject.toml | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 12ebbd3..f054813 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -45,13 +45,6 @@ classifiers = [
+     "Programming Language :: Python",
+     "Programming Language :: Python :: 3",
+     "Programming Language :: Python :: 3 :: Only",
+-    "Programming Language :: Python :: 3.8",
+-    "Programming Language :: Python :: 3.9",
+-    "Programming Language :: Python :: 3.10",
+-    "Programming Language :: Python :: 3.11",
+-    "Programming Language :: Python :: 3.12",
+-    "Programming Language :: Python :: 3.13",
+-    "Programming Language :: Python :: 3.14",
+     "Programming Language :: Python :: Implementation :: CPython",
+     "Topic :: Software Development",
+     "Topic :: Software Development :: Build Tools",
+-- 
+2.40.4
+

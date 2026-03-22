@@ -1,0 +1,12 @@
+[Unit]
+Description=distcc: a fast, free distributed C/C++ compiler
+Documentation: https://www.distcc.org/
+After=network.target
+
+[Service]
+DynamicUser=true
+EnvironmentFile=-/etc/sysconfig/distccd
+ExecStart=/usr/bin/distccd --no-detach --daemon --whitelist=/etc/distcc/clients.allow $OPTIONS
+
+[Install]
+WantedBy=multi-user.target

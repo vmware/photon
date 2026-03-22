@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-py
 Version:        1.11.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python development support library
 Group:          Development/Languages/Python
 Url:            https://github.com/pytest-dev/py
@@ -56,6 +58,8 @@ py.code: dynamic code generation and introspection
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.11.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.11.0-3
 - Release bump for SRP compliance
 * Fri Jul 19 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 1.11.0-2

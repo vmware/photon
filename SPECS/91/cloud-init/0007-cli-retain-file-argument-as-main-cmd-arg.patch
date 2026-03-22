@@ -1,0 +1,101 @@
+From a560812d82baf42525ae8df3b1cc01622d69c525 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 5 Dec 2024 10:44:48 +0530
+Subject: [PATCH 7/9] cli-retain-file-argument-as-main-cmd-arg
+
+Description: Retain support for cloud-init -f FILE argument on the
+commandline
+
+Upstream has disallowed the use of -f/--file argument as a generic
+argument on the command line before the positional cloud-init subcommand
+is
+provided.
+Retain the ability to provide -f/--file on the commandline before the
+subcommand init, modules or single.
+Author: Chad Smith <chad.smith@canonical.com>
+Origin: backport
+Bug: https://bugs.launchpad.net/ubuntu/+source/cloud-init/+bug/2064300
+
+Refer: https://github.com/canonical/cloud-init/issues/5302
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cloudinit/cmd/main.py            | 17 +++++++++++++++++
+ tests/unittests/cmd/test_main.py |  5 ++++-
+ 2 files changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/cloudinit/cmd/main.py b/cloudinit/cmd/main.py
+index 207b97cf9..9a5dda9cc 100644
+--- a/cloudinit/cmd/main.py
++++ b/cloudinit/cmd/main.py
+@@ -127,6 +127,12 @@ def extract_fns(args):
+     # since it would of broke if it couldn't have
+     # read that file already...
+     fn_cfgs = []
++    if args.main_files:
++        # Append common --file argument to beginning of list when present.
++        # Avoid namespace collision with same --file arg defined in subcommands
++        for fh in args.main_files:
++            fn_cfgs.append(os.path.realpath(fh.name))
++
+     if args.files:
+         for fh in args.files:
+             # The realpath is more useful in logging
+@@ -1052,6 +1058,17 @@ def main(sysv_args=None):
+         help="Show additional pre-action logging (default: %(default)s).",
+         default=False,
+     )
++    parser.add_argument(
++        "--file",
++        "-f",
++        action="append",
++        dest="main_files",
++        help=(
++            "Use additional yaml configuration files for subcommands: init,"
++            " modules or single"
++        ),
++        type=argparse.FileType("rb"),
++    )
+     parser.add_argument(
+         "--force",
+         action="store_true",
+diff --git a/tests/unittests/cmd/test_main.py b/tests/unittests/cmd/test_main.py
+index ab5a73bd5..160c4a82e 100644
+--- a/tests/unittests/cmd/test_main.py
++++ b/tests/unittests/cmd/test_main.py
+@@ -14,7 +14,7 @@ from cloudinit.cmd import main
+ from cloudinit.util import ensure_dir, load_text_file, write_file
+ 
+ MyArgs = namedtuple(
+-    "MyArgs", "debug files force local reporter subcommand skip_log_setup"
++    "MyArgs", "debug main_files files force local reporter subcommand skip_log_setup"
+ )
+ 
+ 
+@@ -121,6 +121,7 @@ class TestMain:
+             files = None
+         cmdargs = MyArgs(
+             debug=False,
++            main_files=None,
+             files=files,
+             force=False,
+             local=False,
+@@ -157,6 +158,7 @@ class TestMain:
+         write_file(cloud_cfg_file, safeyaml.dumps(cfg))
+         cmdargs = MyArgs(
+             debug=False,
++            main_files=None,
+             files=None,
+             force=False,
+             local=False,
+@@ -355,6 +357,7 @@ class TestMain:
+         write_file(cloud_cfg_file, safeyaml.dumps(cfg))
+         cmdargs = MyArgs(
+             debug=False,
++            main_files=None,
+             files=None,
+             force=False,
+             local=False,
+-- 
+2.48.1
+

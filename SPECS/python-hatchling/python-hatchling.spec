@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-hatchling
 Version:        1.11.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The build backend used by Hatch
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,13 +15,15 @@ Source1: license.txt
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-pip
 BuildRequires:  python3-pathspec
 BuildRequires:  python3-packaging
 BuildRequires:  python3-pluggy
 
 Requires:       python3
+Requires:       python3-pluggy
+Requires:       python3-pathspec
+Requires:       python3-packaging
 
 Provides:       python3dist(hatchling) = %{version}-%{release}
 
@@ -44,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.11.1-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.11.1-2
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.11.1-1

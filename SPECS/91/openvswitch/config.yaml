@@ -1,0 +1,27 @@
+sources:
+- archive: openvswitch-3.0.2.tar.gz
+  archive_sha512sum: 875f043fcd80dabdba5d7a35e950c804926ef307977d8bec10c9f2f225d4cc7c851f1b65f6c9af838950344c0b103531c266738e61da16900966ff8da0ba76aa
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Open vSwitch provides standard network bridging functions
+        and support for the OpenFlow protocol for remote per-flow control of traffic. '
+      home_page: http://www.openvswitch.org/
+      license_concluded: (BSD-2-Clause OR GPL-2.0-only) AND (CC-BY-3.0 OR CC-BY-4.0)
+        AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-3.0 AND CC-BY-SA-3.0
+        AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND ISC AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND MIT AND Python-2.0 AND SISSL AND X11
+      license_declared: (BSD-2-Clause OR GPL-2.0-only) AND (CC-BY-3.0 OR CC-BY-4.0)
+        AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-3.0 AND CC-BY-SA-3.0
+        AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-only WITH Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-3.0-or-later WITH Libtool-exception AND ISC AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND MIT AND Python-2.0 AND SISSL AND X11
+      short_summary: Open vSwitch daemon/database/utilities
+      supplier: 'Organization: Broadcom, Inc.'

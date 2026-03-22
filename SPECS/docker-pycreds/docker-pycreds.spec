@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           docker-pycreds3
 Version:        0.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python API for docker credentials store
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -47,6 +49,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.4.0-3
 - Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.0-2

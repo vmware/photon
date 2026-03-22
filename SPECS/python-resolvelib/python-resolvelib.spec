@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-resolvelib
 Version:        0.8.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Resolve abstract dependencies into concrete ones
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,6 +52,8 @@ with them, and it will spit out a resolution result.
 %{python3_sitelib}/resolvelib
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.1-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.1-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.8.1-1

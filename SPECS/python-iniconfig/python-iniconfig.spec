@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        iniconfig: brain-dead simple config-ini parsing
 Name:           python3-iniconfig
 Version:        1.1.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://github.com/RonnyPfannschmidt/iniconfig
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -46,10 +48,11 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root,-)
 %license LICENSE
-%{python3_sitelib}/iniconfig/*
-%{python3_sitelib}/iniconfig*.egg-info/*
+%{python3_sitelib}/iniconfig*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.1-5
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.1-4
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.1-3

@@ -1,0 +1,15 @@
+sources:
+- archive: setuptools-rust-1.5.2.tar.gz
+  archive_sha512sum: 79b1de5581b9558cdf227320c421aa2445b2e6b8583ed9c118ee8d7acdfde9d947e7d11fa6a9697c475d4ca387c86ca6846429099ec30d2eb6e40f8849fcecc0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'setuptools-rust is a plugin for setuptools to build Rust
+        Python extensions implemented with PyO3 or rust-cpython. Compile and distribute
+        Python extensions written in Rust as easily as if they were written in C. '
+      home_page: https://github.com/PyO3/setuptools-rust
+      license_concluded: CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND MIT AND Python-2.0 AND
+        WTFPL
+      license_declared: CC-BY-SA-3.0 AND CC-BY-SA-4.0 AND MIT AND Python-2.0 AND WTFPL
+      short_summary: Setuptools plugin for Rust support
+      supplier: 'Organization: Broadcom, Inc.'

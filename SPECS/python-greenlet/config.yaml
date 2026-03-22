@@ -1,7 +1,14 @@
 sources:
-- archive: greenlet-2.0.0.tar.gz
-  archive_sha512sum: 2c4ae0623e8258a85012fca3c4c419cab3634679dc05a51b9079bcae3afb6f6c3c5052b249dbdb48a8dac3d20b9313343b217862ab34f3ae6dd5cda66e53dc35
-  skip_validation: true
+- archive: greenlet-3.3.1.tar.gz
+  archive_sha512sum: 890e9a56f15c39101b45aabb006545640777a987d8f962c63859c2b4e26adfb5ae33310905982475809d3fcfb3b0ee5a9b11817c380708bba2d3c25cd5ad1822
+  archive_type: upstream
+  skip_validation: false
+  name: greenlet-3.3.1
+  version: "3.3.1"
+  url: https://files.pythonhosted.org/packages/8a/99/1cd3411c56a410994669062bd73dd58270c00cc074cac15f385a1fd91f8a/greenlet-3.3.1.tar.gz
+  repo_url: https://github.com/python-greenlet/greenlet
+  commit_id: d1a0a3fa740425b8dd4dceafbecedda21d70cc08
+  missing: ['.gitignore', 'PKG-INFO', 'setup.cfg', 'greenlet.egg-info']
   spdx:
     package:
       detailed_description: "The greenlet package is a spin-off of Stackless, a version\

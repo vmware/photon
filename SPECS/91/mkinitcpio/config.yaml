@@ -1,0 +1,12 @@
+sources:
+- archive: mkinitcpio-34.tar.gz
+  archive_sha512sum: 38a80bb9e769b9fbf143c91fc52af1b29dfed81f05a3a9c4bb52d15a5e8a37fe55185ecc2218bcf6d13ac77e510803ee27314430e7b161a565b0e698e275f690
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Multi-format archive and compression library '
+      home_page: https://projects.archlinux.org/mkinitcpio.git/
+      license_concluded: GPL-2.0-only AND GPL-1.0-or-later
+      license_declared: GPL-2.0-only AND GPL-1.0-or-later
+      short_summary: Modular initramfs image creation utility
+      supplier: 'Organization: Broadcom, Inc.'

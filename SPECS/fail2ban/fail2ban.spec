@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Daemon to ban hosts that cause multiple authentication errors
 Name:           fail2ban
-Version:        1.0.2
-Release:        6%{?dist}
+Version:        1.1.0
+Release:        1%{?dist}
 Group:          Productivity/Networking/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,13 +17,12 @@ Source2: license.txt
 %include %{SOURCE2}
 
 Patch0: 0001-Set-proper-config-path-in-include-section.patch
-Patch1: 0001-Replace-2to3-binary-name-with-2to3-3.11.patch
 
 BuildArch: noarch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-BuildRequires: python3-tools
+BuildRequires: python3-pip
 BuildRequires: sqlite-devel
 BuildRequires: systemd-devel
 
@@ -94,19 +95,23 @@ by default.
 %autosetup -p1
 
 %build
-bash ./%{name}-2to3
-%{py3_build}
+%{pyproject_wheel}
 
 %install
-%{py3_install}
+%{pyproject_install}
 ln -sfv python3 %{buildroot}%{_bindir}/%{name}-python
+mv %{buildroot}%{python3_sitelib}/etc %{buildroot}
+mv %{buildroot}%{python3_sitelib}/%{_datadir} %{buildroot}%{_datadir}
+rmdir %{buildroot}%{python3_sitelib}%{_prefix}
+rm -rf %{buildroot}/%{_sysconfdir}/%{name}/action.d/__pycache__
 
 mkdir -p %{buildroot}%{_unitdir} \
          %{buildroot}%{_tmpfilesdir} \
          %{buildroot}%{_mandir}/man{1,5} \
-         %{buildroot}%{_sysconfdir}/logrotate.d
+         %{buildroot}%{_sysconfdir}/logrotate.d \
+         %{buildroot}%{_sysconfdir}/%{name}/jail.d/
 
-cp -p build/%{name}.service %{buildroot}%{_unitdir}
+sed -e 's,@BINDIR@,%{_bindir},' files/fail2ban.service.in > %{buildroot}%{_unitdir}/fail2ban.service
 
 install -p -m 644 man/*.1 %{buildroot}%{_mandir}/man1
 install -p -m 644 man/*.5 %{buildroot}%{_mandir}/man5
@@ -123,6 +128,7 @@ rm -rf %{buildroot}%{_sysconfdir}/%{name}/action.d/*ipfw.conf \
        %{buildroot}%{_docdir}/%{name}
 
 # systemd journal configuration
+
 cp -p %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}/jail.d/
 
 %if 0%{?with_check}
@@ -202,6 +208,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/jail.d/00-%{name}-systemd.conf
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-1
+- Upgrade to 1.1.0 as part of python3 upgrade
 * Mon Oct 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2-6
 - Version bump up to use sendmail v8.18.1.10
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.0.2-5

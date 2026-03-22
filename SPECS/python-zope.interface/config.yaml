@@ -1,7 +1,14 @@
 sources:
-- archive: zope.interface-5.4.0.tar.gz
-  archive_sha512sum: ef15d63397e05ad9fc44b2d5d786b0399b6973bb5f4866fab839ff612756f3157f2099d0f5c0469b574a5c8b5920a7c2a5c6eab8e8f84c24d5c43e816669bffe
-  skip_validation: true
+- archive: zope.interface-8.2.tar.gz
+  archive_sha512sum: 9338ad23b2a1ab6c3af900058fb8bd8f94c48005107eaddf22740e53b2140b5e75541d2e73b83eb50b21f2c2fe9662f163b0be3703807de64030e553f994ae43
+  archive_type: upstream
+  skip_validation: false
+  name: zope.interface-8.2
+  version: "8.2"
+  url: https://github.com/zopefoundation/zope.interface/archive/refs/tags/8.2.tar.gz
+  repo_url: https://github.com/zopefoundation/zope.interface
+  commit_id: 042df54deaf208f5308b02396a0bc3b6f1c459ee
+  missing: []
   spdx:
     package:
       detailed_description: "This package is intended to be independently reusable\

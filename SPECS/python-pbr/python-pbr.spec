@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Python Build Reasonableness
 Name:           python3-pbr
 Version:        5.10.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -61,6 +63,8 @@ python3 setup.py test
 %{python3_sitelib}/pbr
 
 %changelog
+*   Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.10.0-4
+-   Bump version as a part of python3.14 upgrade
 *   Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.10.0-3
 -   Release bump for SRP compliance
 *   Tue May 23 2023 Shivani Agarwal <shivania2@vmware.com> 5.10.0-2

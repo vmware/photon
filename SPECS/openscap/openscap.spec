@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -29,7 +31,8 @@ BuildRequires:  util-linux-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
 BuildRequires:  popt-devel
-BuildRequires:  python3-devel
+BuildRequires:  python3-macros
+BuildRequires:  python3-setuptools
 BuildRequires:  cmake
 
 Requires:       curl
@@ -120,9 +123,11 @@ Python bindings.
 
 %files python3
 %defattr(-,root,root)
-%{_libdir}/python%{python3_version}/*
+%{python3_sitelib}
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.3.6-16
+- Add python3-setuptools in BuildRequires for python3.14
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-15
 - Release bump for SRP compliance
 * Tue Mar 12 2024 Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com> 1.3.6-14

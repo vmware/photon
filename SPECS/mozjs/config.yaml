@@ -1,7 +1,14 @@
 sources:
-- archive: firefox-102.12.0esr.source.tar.xz
-  archive_sha512sum: 2a85cf1e1c83a862c2886a63dcf3e3e8bca9dd3ed72c5d0223db52387fff3796bc0dcbb508adb8c10a30729f20554c5aac37f8ad045b0088a593d28e39d77fe5
-  skip_validation: true
+- archive: firefox-140.7.0esr.source.tar.xz
+  archive_sha512sum: 7781b1e203130c1cdf2a0c2ecb05a9cfa824c75d467e7faca78b66bd5568c821324112aecb774883d9f447af7fa4ade36488ff1017255af5510c8f641990e472
+  archive_type: upstream
+  skip_validation: false
+  name: firefox-140.7.0
+  version: "140.7.0"
+  url: https://ftp.mozilla.org/pub/firefox/releases/140.7.0esr/source/firefox-140.7.0esr.source.tar.xz
+  repo_url: https://github.com/mozilla-firefox/firefox
+  commit_id: 73462f0ff623648c49b17892d06fab955d6a6ee1
+  missing: ['.hgrc', '.hgtags', '.hgempty', '.hg-annotate-ignore-revs', '.gitkeep', '.cvsignore', '.gitmodules', '.hgignore', 'sourcestamp.txt', '.gitattributes']
   spdx:
     package:
       detailed_description: 'SpiderMonkey is the code-name for Mozilla Firefox''s

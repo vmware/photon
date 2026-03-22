@@ -1,0 +1,12 @@
+sources:
+- archive: websocket-client-1.4.1.tar.gz
+  archive_sha512sum: a2804421e97ccbfb61cb2e8a2be6ecd5d5d60210971e27ca4e00a4854fb49df2e3c87ec87c0ec11565d7ce03f419dc3cbd8c2402843a8fced49d75d65d07b502
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'WebSocket client for python '
+      home_page: https://github.com/websocket-client/websocket-client
+      license_concluded: LGPL-2.1-only AND Apache-2.0
+      license_declared: LGPL-2.1-only AND Apache-2.0
+      short_summary: WebSocket client for python
+      supplier: 'Organization: Broadcom, Inc.'

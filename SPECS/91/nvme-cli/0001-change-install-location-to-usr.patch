@@ -1,0 +1,25 @@
+From da822a8f5812d515fa00047eebebd896660965bb Mon Sep 17 00:00:00 2001
+From: Srish Srinivasan <ssrish@vmware.com>
+Date: Fri, 10 Mar 2023 17:14:27 +0000
+Subject: [PATCH] change-install-location-to-usr
+
+---
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index c05dc47..0441885 100644
+--- a/meson.build
++++ b/meson.build
+@@ -8,7 +8,7 @@ project(
+     default_options: [
+       'c_std=gnu99',
+       'buildtype=debug',
+-      'prefix=/usr/local',
++      'prefix=/usr',
+       'warning_level=1',
+     ]
+ )
+-- 
+2.39.0
+

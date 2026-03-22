@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-toml
 Version:        0.10.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python Library for Tom's Obvious, Minimal Language
 Group:          Development/Libraries
 URL:            https://pypi.python.org/pypi/
@@ -40,6 +42,8 @@ Python Library for Tom's Obvious, Minimal Language
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.2-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.10.2-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.10.2-1

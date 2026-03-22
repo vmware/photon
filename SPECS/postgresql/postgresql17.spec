@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname         postgresql
 %global pgmajorversion  17
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
@@ -13,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql17
 Version:        17.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -745,6 +747,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 17.9-2
+- Bump version as a part of python3.14 upgrade
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.9-1
 - Upgrade to v17.9
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 17.8-2

@@ -1,13 +1,17 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname pkgconfig
 
 Name:       python3-pkgconfig
 Version:    1.5.5
-Release:    3%{?dist}
+Release:    4%{?dist}
 Summary:    Python interface to the pkg-config command line tool
 URL:        https://github.com/matze/pkgconfig
 Vendor:     VMware, Inc.
 Group:      System Environment/Security
 Distribution: Photon
+
+BuildArch:      noarch
 
 # Using github URL but actually downloaded from:
 # https://pypi.org/project/pkgconfig/
@@ -19,7 +23,7 @@ Source1: license.txt
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 
-BuildArch:      noarch
+Requires: python3
 
 %description
 pkgconfig is a Python module to interface with the pkg-config command line
@@ -53,6 +57,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/%{srcname}/
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.5.5-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.5.5-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.5-2

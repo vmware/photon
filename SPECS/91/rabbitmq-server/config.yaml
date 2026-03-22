@@ -1,0 +1,23 @@
+sources:
+- archive: rabbitmq-server-4.1.4.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 31ed45d4a9604e280f3d06123f72d1471916a26d2b7972e7971924d87015ea3bd894505edd016ed508c316cc7a13322fc78b847e486ddb4788830b3b3b328e3a
+  name: rabbitmq-server-4.1.4
+  version: "4.1.4"
+  url: https://github.com/rabbitmq/rabbitmq-server/releases/download/v4.1.4/rabbitmq-server-4.1.4.tar.xz
+  repo_url: https://github.com/rabbitmq/rabbitmq-server
+  commit_id: 6ae0246266a3012190d02d46ed760c8a92093d4a
+  skip_list: ['LICENSE', 'LICENSE-APACHE2', 'plugins.mk', '4.1.4.md']
+  missing: ['aten', 'LICENSE-MPL-2.0', 'recon', 'LICENSE-MPL2', 'khepri', '.bazelrc', 'systemd', 'LICENSE-httpc_aws', '.mix', 'bazel', 'observer_cli', 'gen_batch_server', 'BUILD.bazel', 'git-revisions.txt', 'docker', 'rabbitmq-mix.mk', '.gitignore', 'rabbitmq_run.bzl', 'LICENSE-Apache-2.0', 'jose', 'osiris', 'rabbitmq_amqp_client', 'rabbitmq_ct_client_helpers', 'BUILD.bats', 'MODULE.bazel', 'LICENSE-rabbitmq_aws', 'elvis_mk', 'cowlib', 'rabbitmq_home.bzl', 'rabbitmqctl.bzl', 'seshat', 'user-template.bazelrc', 'LICENSE-MIT-Mochi', 'cowboy', 'packaging', 'LICENSE-BSD-recon', '.git-blame-ignore-revs', 'examples', 'LICENSE-MIT-jQuery', '.gitkeep', 'BUILD.package_generic_unix', 'cuttlefish', 'khepri_mnesia_migration', 'prometheus', 'stdout_formatter', 'PKG_LINUX.md', 'quantile_estimator', 'activemq.bzl', 'sysmon_handler', 'rabbitmq_ct_helpers', 'tools', 'getopt', '.hgignore', 'csv', 'LICENSE-MIT-Sammy060', 'LICENSE-MIT-Erlware-Commons', '.hex', 'test', 'rabbitmq.bzl', 'LICENSE-BSD-base64js', 'doc', 'rabbitmq_package_generic_unix.bzl', 'LICENSE-MIT-EJS10', 'LICENSE-APL2-Stomp-Websocket', 'LICENSE-APACHE2-excanvas', 'ra', 'base64url', 'json', 'LICENSE-MIT-EJS', 'app.bzl', 'syslog', 'thoas', 'PKG_WINDOWS.md', 'enough', 'ranch', 'trust_store_http', 'horus', 'LICENSE-MPL', 'gun', 'mix.lock', 'LICENSE-MIT-Sammy', 'bats.bzl', 'erlang_ls.config', 'accept', 'credentials_obfuscation', 'LICENSE-ISC-cowboy', 'eetcd', 'moduleindex.yaml', 'LICENSE-APACHE2-ExplorerCanvas', 'LICENSE-MIT-jQuery164', 'LICENSE-erlcloud', 'redbug', '.github', 'dist.bzl', 'LICENSE-MIT-Flot']
+  spdx:
+    package:
+      detailed_description: 'rabbitmq messaging server '
+      home_page: https://github.com/rabbitmq/rabbitmq-server
+      license_concluded: MIT AND ISC AND Apache-2.0 AND ErlPL-1.1 AND MPL-1.0 AND
+        CC0-1.0 AND (BSD-3-Clause OR EPL-2.0) AND BSD-2-Clause AND (Apache-2.0 OR
+        MPL-2.0) AND BSD-3-Clause AND MPL-2.0 AND MPL-1.1
+      license_declared: MIT AND ISC AND Apache-2.0 AND ErlPL-1.1 AND MPL-1.0 AND CC0-1.0
+        AND (BSD-3-Clause OR EPL-2.0) AND BSD-2-Clause AND (Apache-2.0 OR MPL-2.0)
+        AND BSD-3-Clause AND MPL-2.0 AND MPL-1.1
+      short_summary: RabbitMQ messaging server
+      supplier: 'Organization: Broadcom, Inc.'

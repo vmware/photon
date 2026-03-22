@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
 Version:        2.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -70,6 +72,8 @@ find %{buildroot} -name '*.a' -delete
 %{_defaultdocdir}/%{name}
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.0-2
+- Bump version as a part of python3.14 upgrade
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.9.0-1
 - Version upgrade to 2.9.0
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.8.0-5

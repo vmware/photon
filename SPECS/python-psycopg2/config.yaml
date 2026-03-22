@@ -1,6 +1,6 @@
 sources:
-- archive: psycopg2-2.9.3.tar.gz
-  archive_sha512sum: 048184d1d162a371fc0fba711448a6fa8a6aac193421f4484c7f7b91c39065d5b632fa34fc15a901eca055d597302b1f9e38330b248ed0e4653dcdc544b0d660
+- archive: psycopg2-2.9.11.tar.gz
+  archive_sha512sum: 44f7b03d958dc62822be8a8c38d738c4016c3a1f860c824158b78ba0a23f04ca63377171b22a14e38b76df868458ede25f29e4643197912adb2f1a1db8c0d5c0
   skip_validation: true
   spdx:
     package:
@@ -16,7 +16,7 @@ sources:
         \ FROM\u201D support. Many Python types are supported out-of-the-box and adapted\
         \ to matching PostgreSQL data types; adaptation can be extended and customized\
         \ thanks to a flexible objects adaptation system.  Psycopg 2 is both Unicode\
-        \ and Python 3 friendly. "
+        \ and Python 3 friendly."
       home_page: https://pypi.python.org/pypi/psycopg2
       license_concluded: LGPL-3.0-or-later AND PSF-2.0 AND LGPL-3.0-only AND LGPL-2.0-or-later
         AND Zlib

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -103,6 +105,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.14.5-7
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.5-6
 - Release bump for SRP compliance
 * Wed Jan 03 2024 Anmol Jain <anmol.jain@broadcom.com> 1.14.5-5

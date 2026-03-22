@@ -1,0 +1,22 @@
+sources:
+- archive: numpy-1.23.4.tar.gz
+  archive_sha512sum: 727ca8950b0fbd5670e939b1c9c5cea852781ec4254d56a1659a91dc0430fc10b01ffdd16e1bb28a62319f91029e087024f4c6298bfc859a6050bfb507edcff8
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NumPy is a general-purpose array-processing package designed
+        to efficiently manipulate large multi-dimensional arrays of arbitrary records
+        without sacrificing too much speed for small multi-dimensional arrays. NumPy
+        is built on the Numeric code base and adds features introduced by numarray
+        as well as an extended C-API and the ability to create arrays of arbitrary
+        type which also makes NumPy suitable for interfacing with general-purpose
+        data-base applications. '
+      home_page: https://pypi.python.org/pypi/numpy
+      license_concluded: SunPro AND GPL-3.0-only AND MIT AND Zlib AND Apache-2.0 AND
+        GPL-3.0-or-later AND BSD-3-Clause-Open-MPI AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH GCC-exception-3.1 AND CC-BY-4.0 AND BSD-2-Clause AND BSD-2-Clause-Views
+      license_declared: SunPro AND GPL-3.0-only AND MIT AND Zlib AND Apache-2.0 AND
+        GPL-3.0-or-later AND BSD-3-Clause-Open-MPI AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH GCC-exception-3.1 AND CC-BY-4.0 AND BSD-2-Clause AND BSD-2-Clause-Views
+      short_summary: Array processing for numbers, strings, records, and objects
+      supplier: 'Organization: Broadcom, Inc.'

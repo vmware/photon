@@ -1,0 +1,1 @@
+License: LGPL-2.1-only AND Apache-2.0

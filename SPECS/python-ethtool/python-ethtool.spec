@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 #
 # spec file for package python3-ethtool
 #
@@ -5,7 +7,7 @@
 %global pypi_name ethtool
 Name:           python3-ethtool
 Version:        0.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -25,12 +27,14 @@ BuildRequires:  asciidoc3
 BuildRequires: docbook-xml
 BuildRequires: xmlto
 BuildRequires: python3-defusedxml
-Requires:      libnl
 
 %if 0%{?with_check}
 BuildRequires: net-tools
 BuildRequires: ethtool
 %endif
+
+Requires:      libnl
+Requires:      python3
 
 %description
 Python 3 bindings for the ethtool kernel interface, that allows querying and
@@ -70,6 +74,8 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.15-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.15-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 0.15-1

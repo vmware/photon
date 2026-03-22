@@ -1,0 +1,17 @@
+sources:
+- archive: python-daemon-2.3.2.tar.gz
+  archive_sha512sum: d9f6e6c376a496fae96bd9efed0a56d00a137617a3d1d5ef74802ef176bc813bb1d49bbb9164cdbec03213529f944b32b257bcc64283abfa4a3522ff00826bfd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "This library implements the well-behaved daemon specification\
+        \ of PEP 3143, \u201CStandard daemon process library\u201D.  A well-behaved\
+        \ Unix daemon process is tricky to get right, but the required steps are much\
+        \ the same for every daemon program. A DaemonContext instance holds the behaviour\
+        \ and configured process environment for the program; use the instance as\
+        \ a context manager to enter a daemon state. "
+      home_page: https://pypi.org/project/python-daemon
+      license_concluded: Apache-2.0 AND GPL-3.0-only AND GPL-1.0-or-later
+      license_declared: Apache-2.0 AND GPL-3.0-only AND GPL-1.0-or-later
+      short_summary: Library to implement a well-behaved Unix daemon process.
+      supplier: 'Organization: Broadcom, Inc.'

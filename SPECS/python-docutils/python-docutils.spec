@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname docutils
 
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python3-docutils
 Version:        0.19
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -60,6 +62,8 @@ PATH=%{buildroot}%{_bindir}:${PATH} \
 %{_bindir}/rst2html4.py
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.19-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.19-3
 - Release bump for SRP compliance
 * Tue Aug 08 2023 Shreenidhi Shedi <sshedi@vmware.com> 0.19-2

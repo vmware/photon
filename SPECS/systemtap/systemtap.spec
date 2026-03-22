@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define with_boost     1
 %define with_crash     1
 %define with_docs      0
@@ -8,7 +10,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       15%{?dist}
+Release:       16%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -391,6 +393,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.8-16
+- Bump version as a part of python3.14 upgrade
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.8-15
 - Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.8-14

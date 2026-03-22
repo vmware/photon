@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global talloc_version 2.4.1
 
 Name:           libtevent
 Version:        0.15.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The tevent library
 URL:            http://tevent.samba.org/
 Vendor:         VMware, Inc.
@@ -89,6 +91,8 @@ Python 3 bindings for libtevent
 %{python3_sitearch}/_tevent.cpython*.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.15.0-3
+- Bump version as a part of python3.14 upgrade
 * Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 0.15.0-2
 - Cleanup and rescan licenses
 * Fri Apr 11 2025 Michelle Wang <michelle.wang@broadcom.com> 0.15.0-1

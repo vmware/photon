@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    9%{?dist}
+Release:    10%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -332,6 +332,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.18.2-10
+- Bump version as a part of python3.14 upgrade
 * Mon Feb 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.18.2-9
 - Update libcap-libs dependency after package split
 * Thu Jan 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8

@@ -1,0 +1,76 @@
+%global build_if %{photon_subrelease} <= 91
+
+%define srcname oauthlib
+
+Summary:        An implementation of the OAuth request-signing logic
+Name:           python3-oauthlib
+Version:        3.2.2
+Release:        2.1%{?dist}
+Url:            https://pypi.python.org/pypi/python-oauthlib/
+Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://files.pythonhosted.org/packages/6d/fa/fbf4001037904031639e6bfbfc02badfc7e12f137a8afa254df6c4c8a670/%{srcname}-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
+BuildRequires:  libffi-devel
+
+Requires:       python3
+
+BuildArch:      noarch
+
+%description
+OAuthLib is a generic utility which implements the logic of OAuth without assuming a specific HTTP request object or web framework
+
+%prep
+%autosetup -p1 -n %{srcname}-%{version}
+
+%build
+%{pyproject_wheel}
+
+%install
+%{pyproject_install}
+
+%check
+pip3 install jwt
+%{python3} setup.py test
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root)
+%{python3_sitelib}/%{srcname}/
+%{python3_sitelib}/%{srcname}-%{version}.dist-info/
+
+%changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-2.1
+- Bump after moving to SPECS/91
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-2
+- Release bump for SRP compliance
+* Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.2-1
+- Upgrade to v3.2.2
+* Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.0-2
+- Update release to compile with python 3.11
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.0-1
+- Automatic Version Bump
+* Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.1.0-2
+- Mass removal python2
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.1.0-1
+- Update to version 2.1.0
+* Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 2.0.2-3
+- Add  libffi-devel in BuildRequires and install mock python module in %check
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.2-2
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Thu Apr 13 2017 Anish Swaminathan <anishs@vmware.com> 2.0.2-1
+- Initial packaging for Photon

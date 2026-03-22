@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           btrfs-progs
 Version:        6.1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
@@ -86,6 +88,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.1.3-3
+- Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 6.1.3-2
 - Release bump for SRP compliance
 * Fri Feb 10 2023 Gerrit Photon <photon-checkins@vmware.com> 6.1.3-1

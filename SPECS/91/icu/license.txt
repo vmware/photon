@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause AND ICU AND NAIST-2003 AND Unicode-3.0 AND Unicode-DFS-2016 AND FSFAP AND NTP AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLRWD

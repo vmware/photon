@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
 Name:           iotop
 Version:        0.6
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://guichaz.free.fr/iotop/
 Group:          System/Monitoring
 Vendor:         VMware, Inc.
@@ -12,6 +14,7 @@ Source1: license.txt
 %include %{SOURCE1}
 Patch0:         python3_compatibility_fix.patch
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-curses
@@ -47,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6-10
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.6-9
 - Release bump for SRP compliance
 * Mon Nov 28 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.6-8

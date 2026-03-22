@@ -1,0 +1,50 @@
+From 8170efad364aa8e062cba3b722b81aca9eda8cf5 Mon Sep 17 00:00:00 2001
+From: Andrew Burgess <aburgess@redhat.com>
+Date: Wed, 6 Dec 2023 16:57:11 +0100
+Subject: [PATCH] gdb/python: avoid use of _PyOS_ReadlineTState
+
+In python/py-gdb-readline.c we make use of _PyOS_ReadlineTState,
+however, this variable is no longer public in Python 3.13, and so GDB
+no longer builds.
+
+We are making use of _PyOS_ReadlineTState in order to re-acquire the
+Python Global Interpreter Lock (GIL).  The _PyOS_ReadlineTState
+variable is set in Python's outer readline code prior to calling the
+user (GDB) supplied readline callback function, which for us is
+gdbpy_readline_wrapper.  The gdbpy_readline_wrapper function is called
+without the GIL held.
+
+Instead of using _PyOS_ReadlineTState, I propose that we switch to
+calling PyGILState_Ensure() and PyGILState_Release().  These functions
+will acquire the GIL based on the current thread.  I think this should
+be sufficient; I can't imagine why we'd be running
+gdbpy_readline_wrapper on one thread on behalf of a different Python
+thread.... that would be unexpected I think.
+
+Approved-By: Tom Tromey <tom@tromey.com>
+---
+ gdb/python/py-gdb-readline.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/gdb/python/py-gdb-readline.c b/gdb/python/py-gdb-readline.c
+index 124cec8055d0..699d396dd194 100644
+--- a/gdb/python/py-gdb-readline.c
++++ b/gdb/python/py-gdb-readline.c
+@@ -56,13 +56,11 @@ gdbpy_readline_wrapper (FILE *sys_stdin, FILE *sys_stdout,
+       if (except.reason == RETURN_QUIT)
+ 	return NULL;
+ 
+-      /* The thread state is nulled during gdbpy_readline_wrapper,
+-	 with the original value saved in the following undocumented
+-	 variable (see Python's Parser/myreadline.c and
+-	 Modules/readline.c).  */
+-      PyEval_RestoreThread (_PyOS_ReadlineTState);
++
++      /* This readline callback is called without the GIL held.  */
++      gdbpy_gil gil;
++
+       gdbpy_convert_exception (except);
+-      PyEval_SaveThread ();
+       return NULL;
+     }
+ 

@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        18.1.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -108,6 +110,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 18.1.8-3
+- Bump version as a part of python3.14 upgrade
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 18.1.8-2
 - Rebuild with shared llvm libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 18.1.8-1

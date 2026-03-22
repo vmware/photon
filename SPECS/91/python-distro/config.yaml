@@ -1,0 +1,13 @@
+sources:
+- archive: distro-1.7.0.tar.gz
+  archive_sha512sum: 14516ecab33ee8c57c35a8279eb515fd699031fabac7d8886092ea98696797d55503179870aeb513a85e1a66c7e69f2f60bb6ea9fc935be975cb5135e1917ecc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Distro provides information about the OS distribution
+        it runs on, such as a reliable machine-readable ID, or version information. '
+      home_page: https://pypi.python.org/pypi/distro
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Distro - an OS platform information API
+      supplier: 'Organization: Broadcom, Inc.'

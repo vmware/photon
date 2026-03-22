@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Bluetooth utilities
 Name:           bluez
 Version:        5.71
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -87,6 +89,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.71-4
+- Bump version as a part of python3.14 upgrade
 * Fri Jun 27 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.71-3
 - Build only for aarch64
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.71-2

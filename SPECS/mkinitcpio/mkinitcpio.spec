@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:       Modular initramfs image creation utility
 Name:          mkinitcpio
 Version:       34
-Release:       4%{?dist}
+Release:       5%{?dist}
 URL:           https://projects.archlinux.org/mkinitcpio.git/
 Group:         System Environment/Development
 Vendor:        VMware, Inc.
@@ -52,6 +54,8 @@ sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 %{_datadir}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 34-5
+- Bump version as a part of python3.14 upgrade
 * Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 34-4
 - Add dockbook-xml to build requires
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 34-3

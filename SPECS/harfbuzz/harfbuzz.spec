@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        7.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -15,6 +17,7 @@ Source1: license.txt
 BuildRequires:  glib-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  gobject-introspection-devel
+BuildRequires:  python3-setuptools
 
 Requires:       glib
 Requires:       freetype2
@@ -71,6 +74,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Tue Jan 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.0.1-4
+- Add python3-setuptools in BuildRequires for python3.14
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 7.0.1-3
 - Release bump for SRP compliance
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 7.0.1-2

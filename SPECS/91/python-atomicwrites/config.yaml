@@ -1,0 +1,12 @@
+sources:
+- archive: atomicwrites-1.4.1.tar.gz
+  archive_sha512sum: d02f58ba639a3ba677eedd78016d366a6e77c79d31903ad34f0a50202aba9b9616f933e9763c42da197ada124abd3510c54d0b10099159308c186bccc6270f32
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python Atomic file writes '
+      home_page: https://github.com/untitaker/python-atomicwrites
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python Atomic file writes
+      supplier: 'Organization: Broadcom, Inc.'

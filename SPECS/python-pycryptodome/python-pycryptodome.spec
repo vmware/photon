@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Cryptographic library for Python
 Name:           python3-pycryptodome
 Version:        3.20.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.pycryptodome.org/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -14,7 +16,6 @@ Source1: license.txt
 
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
-BuildRequires:  python3-tools
 
 Requires:       python3
 
@@ -42,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.20.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.20.0-2
 - Release bump for SRP compliance
 * Mon Apr 15 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.20.0-1

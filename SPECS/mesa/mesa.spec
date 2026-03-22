@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        25.1.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -223,6 +225,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libgallium-*.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.1.4-3
+- Bump version as a part of python3.14 upgrade
 * Thu Oct 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 25.1.4-2
 - Remove Tegra driver from Gallium driver auto list as it depends on Nouveau
 - which is already disabled due to Rust and Bindgen dependencies.

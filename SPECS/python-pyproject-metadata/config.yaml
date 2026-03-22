@@ -1,0 +1,20 @@
+sources:
+- archive: pyproject_metadata-0.11.0.tar.gz
+  archive_sha512sum: c26e6deef7fa34147079006934d79846bba39289f87a1c30fabb5d378b7596bb13f4719686a94350d03933960459b351ba55bebbf0f16558984e40d92f05f784
+  archive_type: upstream
+  skip_validation: false
+  name: pyproject_metadata-0.11.0
+  version: "0.11.0"
+  url: https://files.pythonhosted.org/packages/83/fa/8bf4fa41adfebd95dce360afe3f5fca243a17932089d3d5486e95ca44c57/pyproject_metadata-0.11.0.tar.gz
+  repo_url: https://github.com/pypa/pyproject-metadata
+  commit_id: 7c346cf35ef116c6ee634951191b09695aec4d83
+  missing: ['noxfile.py', 'PKG-INFO', '.pre-commit-config.yaml', '.github', '.readthedocs.yml']
+  spdx:
+    package:
+      detailed_description: 'Given a Python data structure representing pyproject.toml [project] metadata (already parsed),
+                             it will validate this input and generate a PEP 643-compliant metadata file. '
+      home_page: https://pypi.org/project/pyproject-metadata/
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: PEP 621 metadata parsing
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,13 +1,17 @@
-%define srcname Sphinx
+%global build_if %{photon_subrelease} >= 92
+
+%define srcname sphinx
 
 Summary:       Python documentation generator
 Name:          python3-sphinx
-Version:       5.1.1
-Release:       5%{?dist}
+Version:       9.1.0
+Release:       1%{?dist}
 Group:         Development/Tools
 URL:           www.sphinx-doc.org
 Vendor:        VMware, Inc.
 Distribution:  Photon
+
+BuildArch: noarch
 
 Source0: https://github.com/sphinx-doc/sphinx/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
@@ -15,29 +19,14 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
-BuildRequires: python3-setuptools
-BuildRequires: python3-babel
-BuildRequires: python3-docutils
-BuildRequires: python3-jinja2
-BuildRequires: python3-Pygments
-BuildRequires: python3-six
-BuildRequires: python3-alabaster
-BuildRequires: python3-imagesize
-BuildRequires: python3-requests
-BuildRequires: python3-snowballstemmer
-BuildRequires: python3-packaging
-BuildRequires: python3-sphinxcontrib-applehelp
-BuildRequires: python3-sphinxcontrib-devhelp
-BuildRequires: python3-sphinxcontrib-qthelp
-BuildRequires: python3-sphinxcontrib-htmlhelp
-BuildRequires: python3-sphinxcontrib-jsmath
-BuildRequires: python3-sphinxcontrib-serializinghtml
+BuildRequires: python3-flit-core
+BuildRequires: python3-pip
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
-BuildRequires: python3-pip
 %endif
 
+Requires: python3-roman-numerals
 Requires: python3-sphinxcontrib-applehelp
 Requires: python3-sphinxcontrib-devhelp
 Requires: python3-sphinxcontrib-qthelp
@@ -56,8 +45,6 @@ Requires: python3-imagesize
 Requires: python3-requests
 Requires: python3-snowballstemmer
 
-BuildArch: noarch
-
 %description
 Sphinx is a tool that makes it easy to create intelligent and
 beautiful documentation for Python projects (or other documents
@@ -70,10 +57,10 @@ useful to many other projects.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{py3_build}
+%pyproject_wheel
 
 %install
-%{py3_install}
+%pyproject_install
 
 for fn in quickstart build autogen apidoc; do
   mv %{buildroot}%{_bindir}/sphinx-${fn} %{buildroot}%{_bindir}/sphinx-${fn}3
@@ -96,6 +83,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1.0-1
+- Version upgrade
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 5.1.1-5
 - Remove dependency on python3-typing
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.1.1-4

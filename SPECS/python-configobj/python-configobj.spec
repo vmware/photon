@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-configobj
 Version:        5.0.6
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Config file reading, writing and validation
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -40,6 +42,8 @@ python3 validate.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.6-8
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.6-7
 - Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.6-6

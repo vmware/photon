@@ -1,0 +1,13 @@
+sources:
+- archive: ujson-5.4.0.tar.gz
+  archive_sha512sum: 9622e872391d5467455b32e324d7b680487664ca486bfc56ba8c3969853e5db94725cd45e81b535dca80af4a3c718af171ce7adb6dcb9b98a37a8068824f89c6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'UltraJSON is an ultra fast JSON encoder and decoder written
+        in pure C with bindings for Python. '
+      home_page: https://pypi.org/project/ujson
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Ultra fast JSON encoder and decoder written in pure C
+      supplier: 'Organization: Broadcom, Inc.'

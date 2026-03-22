@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Interface for Python to call C code
 Name:           python3-cffi
-Version:        1.15.1
-Release:        2%{?dist}
+Version:        2.0.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -51,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.15.1-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.15.1-1

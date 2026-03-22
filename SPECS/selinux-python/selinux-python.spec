@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        SELinux policy core utilities
 Name:           selinux-python
-Version:        3.4
-Release:        3%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -13,6 +15,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-pip
+BuildRequires:  python3-setuptools
 BuildRequires:  libsepol-devel
 BuildRequires:  libselinux-devel
 
@@ -55,6 +59,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %exclude %{_sharedstatedir}/sepolgen/perm_map
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
+- Update to 3.5 as part of python3 upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-3
 - Release bump for SRP compliance
 * Tue Jan 02 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-2

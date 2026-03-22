@@ -1,7 +1,14 @@
 sources:
-- archive: nvme-cli-2.3.tar.gz
-  archive_sha512sum: 9ef654e782ba737d3858fb11f24caf27aea820480179d07d32599731be204e52693062cdb86786ab5cdd1d94fe32ae9028baa0a58693d2eaee5a2b71155e3db2
-  skip_validation: true
+- archive: nvme-cli-2.16.tar.gz
+  archive_sha512sum: 507018ff41832574bef5b88ea6a17336b9792c54f8e5c619d041bce23124e1d6d5e5e824407f46d4f1b4d6899125885eb14289f3399e61c7e7a59a603f1635e2
+  archive_type: upstream
+  skip_validation: false
+  name: nvme-cli-2.16
+  version: "2.16"
+  url: https://github.com/linux-nvme/nvme-cli/archive/refs/tags/v2.16.tar.gz
+  repo_url: https://github.com/linux-nvme/nvme-cli
+  commit_id: faf7326a2997dea91687fd3daa17fc405910a4c1
+  missing: []
   spdx:
     package:
       detailed_description: 'NVM-Express user space tooling for Linux '

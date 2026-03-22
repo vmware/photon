@@ -1,29 +1,27 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-M2Crypto
-Version:        0.38.0
-Release:        4%{?dist}
+Version:        0.47.0
+Release:        1%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
-Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9ead1ffc57b164710821048e3d997f1363b9/M2Crypto-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: m2crypto-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-%if 0%{?with_check}
-Patch0:         makecheck.patch
-%endif
-Vendor:         VMware, Inc.
-Distribution:   Photon
-
-BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  swig
 BuildRequires:  python3-xml
+
 Requires:       python3
 Requires:       openssl
-Patch1:         0001-openssl-3.0.0-support.patch
 
 %description
 M2Crypto is a crypto and SSL toolkit for Python featuring the following:
@@ -36,18 +34,16 @@ server. S/MIME. ZServerSSL: A HTTPS server for Zope. ZSmime: An S/MIME
 messenger for Zope.
 
 %prep
-# Using autosetup is not feasible
-%setup -q -n M2Crypto-%{version}
-%if 0%{?with_check}
-%patch -p1 0
-%endif
-%patch -p1 1
+%autosetup -p1 -n m2crypto-%{version}
 
 %build
-CFLAGS="%{optflags}" python3 setup.py build --openssl=/usr/include --bundledlls
+CFLAGS="$CFLAGS `pkg-config --cflags openssl`" ; export CFLAGS
+LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
+%py3_build
 
 %install
-rm -rf %{buildroot}
+CFLAGS="$CFLAGS `pkg-config --cflags openssl`" ; export CFLAGS
+LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
 %py3_install
 
 %check
@@ -61,6 +57,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.47.0-1
+- Version upgrade
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.38.0-4
 - Remove python3-typing
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.38.0-3

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:    Program to generate documenation
 Name:       gtk-doc
 Version:    1.33.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://www.gnu.org/software/%{name}
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -54,6 +56,8 @@ cd tests && make check-TESTS %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.33.2-6
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.33.2-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.33.2-4

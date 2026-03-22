@@ -1,0 +1,15 @@
+sources:
+- archive: altgraph-0.17.2.tar.gz
+  archive_sha512sum: b452353b03a8d5588822fd250d37dac72529b22a1f7ce4c797fb6d24d9625b946059995722ef33d035743d5cac97cbbcb47d8eda8df172878bf3631059c3e9bb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'altgraph is a fork of graphlib: a graph (network) package
+        for constructing graphs, BFS and DFS traversals, topological sort, shortest
+        paths, etc. with graphviz output. '
+      home_page: https://pypi.org/project/altgraph
+      license_concluded: MIT AND MIT-0
+      license_declared: MIT AND MIT-0
+      short_summary: Altgraph helps in creating graph network for doing BFS and DFS
+        traversals.
+      supplier: 'Organization: Broadcom, Inc.'

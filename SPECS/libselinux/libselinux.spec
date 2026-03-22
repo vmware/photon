@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.4
-Release:        6%{?dist}
+Version:        3.5
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -18,6 +20,8 @@ BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre2-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
 
 %define ExtraBuildRequires systemd-rpm-macros
 
@@ -123,6 +127,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
+- Update to build with python 3.14
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4-6
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.4-5

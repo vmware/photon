@@ -1,0 +1,32 @@
+sources:
+- archive: libpsl-0.21.1.tar.gz
+  archive_sha512sum: a5084b9df4ff2a0b1f5074b20972efe0da846473396d27b57967c7f6aa190ab3c910b4bfc4f8f03802f08decbbad5820d850c36ad59610262ae37fe77de0c7f5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'libpsl is a C library to handle the Public Suffix List.
+        A "public suffix" is a domain name under which Internet users can directly
+        register own names.  Browsers and other web clients can use it to  - Avoid
+        privacy-leaking "supercookies"; - Avoid privacy-leaking "super domain" certificates;
+        - Domain highlighting parts of the domain in a user interface; - Sorting domain
+        lists by site;  Libpsl...  - has built-in PSL data for fast access; - allows
+        to load PSL data from files; - checks if a given domain is a "public suffix";
+        - provides immediate cookie domain verification; - finds the longest public
+        part of a given domain; - finds the shortest private part of a given domain;
+        - works with international domains (UTF-8 and IDNA2008 Punycode); - is thread-safe;
+        - handles IDNA2008 UTS#46; '
+      home_page: https://github.com/rockdaboot/libpsl
+      license_concluded: MIT AND BSD-3-Clause AND FSFULLRWD AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MPL-2.0 AND GPL-3.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-1.0-or-later
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND CC0-1.0
+      license_declared: MIT AND BSD-3-Clause AND FSFULLRWD AND FSFULLR AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND MPL-2.0 AND GPL-3.0-or-later WITH
+        Libtool-exception AND GPL-3.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-macro AND GPL-1.0-or-later
+        AND X11 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND CC0-1.0
+      short_summary: libpsl - C library to handle the Public Suffix List
+      supplier: 'Organization: Broadcom, Inc.'

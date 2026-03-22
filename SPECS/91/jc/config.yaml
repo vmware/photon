@@ -1,0 +1,27 @@
+sources:
+- archive: jc-1.23.6.tar.gz
+  archive_sha512sum: a79a289f9d30dc8827f1276e34dcd80af60800b5b4b4eb8d0c4bfbea4a996e932efe2242adad2e1b58cbfb4f1ff8a0bcc591df5c9d630226201d347d0d8d9c47
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'CLI tool that converts the output of popular command-line
+        tools, file-types, and common strings to JSON, YAML, or Dictionaries. '
+      home_page: https://github.com/kellyjonbrazil/jc
+      license_concluded: Python-2.0 AND MPL-2.0 AND LGPL-2.0-only AND FTL AND GPL-2.0-only
+        AND (GPL-2.0-or-later OR LGPL-2.0-or-later) AND (BSD-3-Clause OR Apache-2.0)
+        AND LGPL-3.0-or-later AND LGPL-2.0-or-later AND Ruby AND SISSL AND GPL-3.0-only
+        AND ISC AND GPL-2.0-or-later AND Vim AND (LGPL-2.0-or-later AND BSD-3-Clause)
+        AND (GPL-2.0-or-later OR BSD-3-Clause) AND BSD-3-Clause AND MIT AND (LGPL-2.0-or-later
+        AND GPL-2.0-or-later) AND GPL-1.0-or-later AND GPL-3.0-or-later AND (LGPL-3.0-or-later
+        AND GPL-2.0-or-later) AND (GPL-2.0-or-later OR LGPL-2.0-or-later) AND Apache-2.0
+        AND NTP-0 AND JSON AND BSD-2-Clause AND Zlib
+      license_declared: Python-2.0 AND MPL-2.0 AND LGPL-2.0-only AND FTL AND GPL-2.0-only
+        AND (GPL-2.0-or-later OR LGPL-2.0-or-later) AND (BSD-3-Clause OR Apache-2.0)
+        AND LGPL-3.0-or-later AND LGPL-2.0-or-later AND Ruby AND SISSL AND GPL-3.0-only
+        AND ISC AND GPL-2.0-or-later AND Vim AND (LGPL-2.0-or-later AND BSD-3-Clause)
+        AND (GPL-2.0-or-later OR BSD-3-Clause) AND BSD-3-Clause AND MIT AND (LGPL-2.0-or-later
+        AND GPL-2.0-or-later) AND GPL-1.0-or-later AND GPL-3.0-or-later AND (LGPL-3.0-or-later
+        AND GPL-2.0-or-later) AND (GPL-2.0-or-later OR LGPL-2.0-or-later) AND Apache-2.0
+        AND NTP-0 AND JSON AND BSD-2-Clause AND Zlib
+      short_summary: Convert output of command line tools and others to JSON
+      supplier: 'Organization: Broadcom, Inc.'

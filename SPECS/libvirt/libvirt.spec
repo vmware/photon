@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        9.3.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
@@ -211,6 +213,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 9.3.0-13
+- Bump version as a part of python3.14 upgrade
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.3.0-12
 - Fix requires on doc sub package
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 9.3.0-11

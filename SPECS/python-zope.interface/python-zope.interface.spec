@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname zope.interface
 
 Name:           python3-zope.interface
-Version:        5.4.0
-Release:        3%{?dist}
+Version:        8.2
+Release:        1%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 Group:          Development/Languages/Python
@@ -58,6 +60,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Thu Mar 05 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2-1
+- Upgrade to 8.2, as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.4.0-2

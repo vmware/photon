@@ -1,0 +1,19 @@
+sources:
+- archive: lockfile-0.12.2.tar.gz
+  archive_sha512sum: 67b7d651d7e963a497c2604912c61eed90181cdd09c744a0ceaa26e6bbe09d1a871ce48be3949b7da7ea6b366b15492c8c8de589edeca2641ca5e6cb3804df07
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The lockfile package exports a LockFile class which provides
+        a simple API for locking files. Unlike the Windows msvcrt.locking function,
+        the fcntl.lockf and flock functions, and the deprecated posixfile module,
+        the API is identical across both Unix (including Linux and Mac) and Windows
+        platforms. The lock mechanism relies on the atomic nature of the link (on
+        Unix) and mkdir (on Windows) system calls. An implementation based on SQLite
+        is also provided, more as a demonstration of the possibilities it provides
+        than as production-quality code. '
+      home_page: https://github.com/openstack/pylockfile
+      license_concluded: Apache-2.0 AND MIT AND Python-2.0
+      license_declared: Apache-2.0 AND MIT AND Python-2.0
+      short_summary: file locking module
+      supplier: 'Organization: Broadcom, Inc.'

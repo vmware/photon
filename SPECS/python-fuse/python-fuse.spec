@@ -1,9 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-fuse
-Version:        1.0.5
-Release:        2%{?dist}
+Version:        1.0.9
+Release:        1%{?dist}
 Summary:        Python interface to libfuse
 Group:          Development/Languages/Python
 Url:            https://github.com/libfuse/%{name}/archive/%{version}.tar.gz
+
 Source0: https://github.com/libfuse/python-fuse/archive/refs/tags/python-fuse-%{version}.tar.gz
 
 Source1: license.txt
@@ -37,6 +40,8 @@ find %{buildroot}%{_libdir} -name '*.pyc' -delete
 %{python3_sitelib}/fuse*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.9-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.5-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1

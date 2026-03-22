@@ -1,7 +1,15 @@
 sources:
-- archive: ninja-build-1.11.1.tar.gz
-  archive_sha512sum: 1bca38877c70ee6613f347ffccef5adc02ba0a3947c62ae004ea97f918442b5a3de92378e4f820ae2a7676bc7609d25fbc7d41f6cfb3a61e5e4b26ec3639e403
-  skip_validation: true
+- archive: ninja-build-1.12.0.tar.gz
+  archive_sha512sum: 167cd838ad47815183b79302a6e19227d956e634ae9d4211f0895ea9f4d893932e1154a765a9d5a1a3167b1a48b398f255fb4f46eb1395a6da11070bda628875
+  archive_type: upstream
+  skip_validation: false
+  name: ninja-1.12.0
+  version: "1.12.0"
+  url: https://github.com/ninja-build/ninja/archive/refs/tags/v1.12.0.tar.gz
+  repo_url: https://github.com/ninja-build/ninja
+  commit_id: 65d0dfcbbea6b8ca7d8a3a0f673ecb522379e43c
+  missing: []
+  skip_list: []
   spdx:
     package:
       detailed_description: 'Ninja is a small build system with a focus on speed.

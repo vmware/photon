@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-netaddr
 Version:        0.8.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A network address manipulation library for Python
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -54,6 +56,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.0-3
 - Release bump for SRP compliance
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.0-2

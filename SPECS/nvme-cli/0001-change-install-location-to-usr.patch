@@ -14,12 +14,12 @@ index c05dc47..0441885 100644
 @@ -8,7 +8,7 @@ project(
      default_options: [
        'c_std=gnu99',
-       'buildtype=debug',
+       'buildtype=debugoptimized',
 -      'prefix=/usr/local',
 +      'prefix=/usr',
        'warning_level=1',
-     ]
- )
+       'sysconfdir=etc',
+       'wrap_mode=nofallback',
 -- 
 2.39.0
 

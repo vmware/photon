@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Python C parser
 Name:           python3-pycparser
 Version:        2.21
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,6 +45,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.21-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.21-2
 - Release bump for SRP compliance
 * Mon Oct 10 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.21-1

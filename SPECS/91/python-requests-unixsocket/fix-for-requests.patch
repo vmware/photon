@@ -1,0 +1,25 @@
+From 8b02ed531d8def03b4cf767e8a925be09db43dff Mon Sep 17 00:00:00 2001
+From: Simon Deziel <simon.deziel@canonical.com>
+Date: Wed, 22 May 2024 12:02:20 -0400
+Subject: [PATCH] adapters: fix for requests 2.32.2+
+
+Signed-off-by: Simon Deziel <simon.deziel@canonical.com>
+---
+ requests_unixsocket/adapters.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/requests_unixsocket/adapters.py b/requests_unixsocket/adapters.py
+index 83e1400..c3c73cc 100644
+--- a/requests_unixsocket/adapters.py
++++ b/requests_unixsocket/adapters.py
+@@ -63,6 +63,10 @@ def __init__(self, timeout=60, pool_connections=25, *args, **kwargs):
+             pool_connections, dispose_func=lambda p: p.close()
+         )
+ 
++    # Fix for requests 2.32.2+: https://github.com/psf/requests/pull/6710
++    def get_connection_with_tls_context(self, request, verify, proxies=None, cert=None):
++        return self.get_connection(request.url, proxies)
++
+     def get_connection(self, url, proxies=None):
+         proxies = proxies or {}
+         proxy = proxies.get(urlparse(url.lower()).scheme)

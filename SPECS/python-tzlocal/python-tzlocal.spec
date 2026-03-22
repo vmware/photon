@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname tzlocal
 
 Summary:        tzinfo object for the local timezone.
 Name:           python3-tzlocal
 Version:        4.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -64,6 +66,8 @@ pip3 install tomli mocker pytest-mock
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.2-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.2-3
 - Release bump for SRP compliance
 * Sat Aug 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.2-2

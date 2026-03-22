@@ -1,0 +1,17 @@
+sources:
+- archive: pyasn1-modules-0.2.8.tar.gz
+  archive_sha512sum: fdfcaa065deffdd732deaa1fa30dec2fc4a90ffe15bd12de40636ce0212f447611096d2f4e652ed786b5c47544439e6a93721fabe121f3320f13965692a1ca5b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "This is a small but growing collection of ASN.1 data\
+        \ structures expressed in Python terms using pyasn1 data model. It\u2019s\
+        \ thought to be useful to protocol developers and testers. All modules are\
+        \ py2k/py3k-compliant. If you happen to convert some ASN.1 module into pyasn1\
+        \ that is not yet present in this collection and wish to contribute - please\
+        \ send it to me. Written by Ilya Etingof <ilya@glas.net>. "
+      home_page: https://pypi.python.org/pypi/pyasn1-modules
+      license_concluded: BSD-2-Clause AND BSD-3-Clause
+      license_declared: BSD-2-Clause AND BSD-3-Clause
+      short_summary: A collection of ASN.1-based protocols modules.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define debug_package %{nil}
 
 Summary:        Distro - an OS platform information API
 Name:           python3-distro
 Version:        1.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -48,6 +50,8 @@ tox
 /usr/bin/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.7.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.7.0-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1

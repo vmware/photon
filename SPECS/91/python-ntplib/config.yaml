@@ -1,0 +1,16 @@
+sources:
+- archive: ntplib-0.4.0.tar.gz
+  archive_sha512sum: e17e329ebbac05817a5e41322552b5befbfdeeeff16297d6ecdac5246f42826f14b40cc5f4929d662774a6635dfc624e9338c54eaa52d5b4504125b62708ab53
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "This module offers a simple interface to query NTP servers\
+        \ from Python.  It also provides utility functions to translate NTP fields\
+        \ values to text (mode, leap indicator\u2026). Since it\u2019s pure Python,\
+        \ and only depends on core modules, it should work on any platform with a\
+        \ Python implementation. "
+      home_page: https://pypi.python.org/pypi/ntplib/
+      license_concluded: MIT AND LGPL-2.0-or-later
+      license_declared: MIT AND LGPL-2.0-or-later
+      short_summary: Python NTP library
+      supplier: 'Organization: Broadcom, Inc.'

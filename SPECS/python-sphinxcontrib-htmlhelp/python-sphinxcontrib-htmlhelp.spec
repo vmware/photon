@@ -1,23 +1,27 @@
-%define srcname sphinxcontrib-htmlhelp
+%global build_if %{photon_subrelease} >= 92
+
+%define srcname sphinxcontrib_htmlhelp
 
 Name:           python3-sphinxcontrib-htmlhelp
-Version:        2.0.0
-Release:        4%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 Summary:        Sphinx extension for HTML help files
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 URL:            https://pypi.org/project/sphinxcontrib-htmlhelp
 Distribution:   Photon
 
-Source0: https://files.pythonhosted.org/packages/c9/2e/a7a5fef38327b7f643ed13646321d19903a2f54b0a05868e4bc34d729e1f/%{srcname}-%{version}.tar.gz
+BuildArch: noarch
+
+Source0: %{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildArch: noarch
-
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-pip
+BuildRequires: python3-flit-core
 
 Requires: python3
 
@@ -30,18 +34,18 @@ sphinxcontrib-htmlhelp is a sphinx extension which renders HTML help files.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{py3_build}
+%pyproject_wheel
 
 %install
-%{py3_install}
+%pyproject_install
 
 %files
 %defattr(-,root,root,-)
-%license LICENSE
-%doc README.rst
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.0-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-4
 - Release bump for SRP compliance
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.0-3

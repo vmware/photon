@@ -1,0 +1,15 @@
+sources:
+- archive: WALinuxAgent-2.9.1.1.tar.gz
+  archive_sha512sum: 3f44aecc16ac545db4b550586f168dbbdef34289aad6775973517bf645e5a1d486864c01e974f03a71b3e946c14e1ca140673a75c1cd602aac28725eaa68e83d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Windows Azure Linux Agent supports the provisioning
+        and running of Linux VMs in the Windows Azure cloud. This package should be
+        installed on Linux disk images that are built to run in the Windows Azure
+        environment. '
+      home_page: https://github.com/Azure/WALinuxAgent
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
+      short_summary: The Windows Azure Linux Agent
+      supplier: 'Organization: Broadcom, Inc.'

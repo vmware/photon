@@ -1,7 +1,6 @@
 sources:
-- archive: M2Crypto-0.38.0.tar.gz
-  archive_sha512sum: 
-    b1e24e3101ce0dd9f17be4cabeddc2ec0f1228b270d74ef2fb38bae8807c5025b031d0743185f06370786a3dd5c3f42129720534dcff07ea4de3c727613f8d20
+- archive: m2crypto-0.47.0.tar.gz
+  archive_sha512sum: a99a0e084831fde0bafe4be0ca748ec171a9c38225dd5d49d1af5a80122e89c75921589936b58fcd8b71f53ab006038d10dfd362d5cc37ae6bf1018ab378cce8
   skip_validation: true
   spdx:
     package:
@@ -10,7 +9,7 @@ sources:
         AES). SSL functionality to implement clients and servers. HTTPS extensions
         to Python's httplib, urllib, and xmlrpclib. Unforgeable HMAC'ing AuthCookies
         for web session management. FTP/TLS client and server. S/MIME. ZServerSSL:
-        A HTTPS server for Zope. ZSmime: An S/MIME messenger for Zope. "
+        A HTTPS server for Zope. ZSmime: An S/MIME messenger for Zope."
       home_page: https://pypi.python.org/pypi/M2Crypto/0.26.0
       license_concluded: BSD-3-Clause AND MIT AND OpenSSL
       license_declared: BSD-3-Clause AND MIT AND OpenSSL

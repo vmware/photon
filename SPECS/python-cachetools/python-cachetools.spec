@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global srcname cachetools
 
 Summary:    Extensible memoizing collections and decorators
 Name:       python3-cachetools
 Version:    5.4.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://pypi.python.org/pypi/%{srcname}
 Group:      Development/Languages/Python
 Vendor:     VMware, Inc.
@@ -55,6 +57,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{srcname}-%{version}.dist-info/
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-2
 - Release bump for SRP compliance
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.4.0-1

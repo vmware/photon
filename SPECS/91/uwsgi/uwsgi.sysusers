@@ -1,0 +1,2 @@
+g uwsgi -
+u uwsgi - "uWSGI daemon user" /run/uwsgi /sbin/nologin

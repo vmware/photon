@@ -1,0 +1,42 @@
+sources:
+- archive: git-2.43.7.tar.xz
+  skip_validation: false
+  archive_sha512sum: b6d912e70eb4e8bb899c1243b0b2b9b18d9d861ae2a18e85714658385f194407dc83e717827fd902c024e0492e8eb3a37b09ebf1e9048258eb4ba43e55c9e833
+  archive_type: upstream
+  name: git-2.43.7
+  version: 2.43.7
+  repo_url: https://github.com/git/git/
+  commit_id: 7a1903ad46b5cc7524c0734a5034dccaec07209b
+  url: https://www.kernel.org/pub/software/scm/git/git-2.43.7.tar.gz
+  skip_list:
+  - RCS
+  - CVS
+  - tags
+  - .git
+  - .hg
+  - .bzr
+  - _darcs
+  - __pycache__
+  missing:
+  - version
+  - configure
+  spdx:
+    package:
+      detailed_description: 'Git is a free and open source, distributed version control
+        system designed to handle everything from small to very large projects with
+        speed and efficiency. Every Git clone is a full-fledged repository with complete
+        history and full revision tracking capabilities, not dependent on network
+        access or a central server. Branching and merging are fast and easy to do.
+        Git is used for version control of files, much like tools such as Mercurial,
+        Bazaar, Subversion-1.7.8, CVS-1.11.23, Perforce, and Team Foundation Server. '
+      home_page: http://git-scm.com
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-2.0-only
+        OR MIT) AND Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND CC-PDDC AND FSFUL
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only
+        AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND Zlib
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-2.0-only
+        OR MIT) AND Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND CC-PDDC AND FSFUL
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only
+        AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND Zlib
+      short_summary: Fast distributed version control system
+      supplier: 'Organization: Broadcom, Inc.'

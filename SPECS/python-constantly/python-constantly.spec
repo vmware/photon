@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Symbolic constants in Python.
 Name:           python3-constantly
-Version:        15.1.0
-Release:        5%{?dist}
+Version:        23.10.4
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/constantly
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +20,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-versioneer
 Requires:       python3
 Requires:       python3-libs
 
@@ -41,6 +44,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.10.4-1
+- Upgrade to 23.10.4 as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 15.1.0-5
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 15.1.0-4

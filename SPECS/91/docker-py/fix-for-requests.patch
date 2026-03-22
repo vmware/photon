@@ -1,0 +1,18 @@
+From e33e0a437ecd895158c8cb4322a0cdad79312636 Mon Sep 17 00:00:00 2001
+From: Felix Fontein <felix@fontein.de>
+Date: Mon, 20 May 2024 21:13:41 +0200
+Subject: Hotfix for requests 2.32.2+.
+
+diff --git a/docker/transport/basehttpadapter.py b/docker/transport/basehttpadapter.py
+index dfbb193..2301b6b 100644
+--- a/docker/transport/basehttpadapter.py
++++ b/docker/transport/basehttpadapter.py
+@@ -6,3 +6,8 @@ class BaseHTTPAdapter(requests.adapters.HTTPAdapter):
+         super().close()
+         if hasattr(self, 'pools'):
+             self.pools.clear()
++
++    # Fix for requests 2.32.2+:
++    # https://github.com/psf/requests/commit/c98e4d133ef29c46a9b68cd783087218a8075e05
++    def get_connection_with_tls_context(self, request, verify, proxies=None, cert=None):
++        return self.get_connection(request.url, proxies)

@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define network_required 1
 %define java_min_ver_needed     3.3.3
 
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -155,6 +157,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.23.3-6
+- Bump version as a part of python3.14 upgrade
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.23.3-5
 - Update Requires to jre >= 11.0
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.23.3-4

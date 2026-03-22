@@ -1,11 +1,16 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Python package for providing Mozilla's CA Bundle
 Name:           python3-certifi
 Version:        2023.11.17
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/certifi
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch:      noarch
+
 Source0:        https://github.com/certifi/python-certifi/archive/certifi-%{version}.tar.gz
 
 Source1: license.txt
@@ -21,9 +26,8 @@ BuildRequires:  ca-certificates
 BuildRequires:  python3-pytest
 %endif
 
+Requires:       python3
 Requires:       ca-certificates
-
-BuildArch:      noarch
 
 %description
 Certifi is a carefully curated collection of
@@ -47,6 +51,8 @@ SSL certificates while verifying the identity of TLS hosts
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2023.11.17-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2023.11.17-3
 - Release bump for SRP compliance
 * Fri Aug 23 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2023.11.17-2

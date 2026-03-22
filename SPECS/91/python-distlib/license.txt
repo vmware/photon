@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND BSD-3-Clause AND Python-2.0 AND ZPL-2.1 AND HPND

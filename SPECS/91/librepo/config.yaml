@@ -1,0 +1,15 @@
+sources:
+- archive: librepo-1.14.5.tar.gz
+  archive_sha512sum: 9dda5067142b04e46e8ee344a47df21dae89a9c26e91588fc92bcbaee5291348a38ee79a5e807d7a8cba6cb13af78985e8b2e9b23d7f9eabecd0123459c43935
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library providing C and Python (libcURL like) API to
+        downloading repository metadata. '
+      home_page: https://github.com/rpm-software-management/librepo
+      license_concluded: GPL-2.0-only AND LGPL-2.0-or-later AND GPL-3.0-only AND GPL-1.0-or-later
+        AND Apache-2.0 AND LGPL-2.1-only AND LGPL-2.1-or-later AND GPL-2.0-or-later
+      license_declared: GPL-2.0-only AND LGPL-2.0-or-later AND GPL-3.0-only AND GPL-1.0-or-later
+        AND Apache-2.0 AND LGPL-2.1-only AND LGPL-2.1-or-later AND GPL-2.0-or-later
+      short_summary: Repodata downloading library
+      supplier: 'Organization: Broadcom, Inc.'

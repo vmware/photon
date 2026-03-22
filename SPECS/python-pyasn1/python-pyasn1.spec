@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-pyasn1
 Version:        0.4.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.8-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.8-3
 - Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.8-2

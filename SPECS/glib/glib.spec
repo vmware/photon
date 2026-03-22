@@ -1,13 +1,15 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
-Version:      2.75.2
-Release:      15%{?dist}
-URL:          https://developer.gnome.org/glib/
+Version:      2.88.0
+Release:      1%{?dist}
+URL:          https://developer.gnome.org/glib
 Group:        Applications/System
 Vendor:       VMware, Inc.
 Distribution: Photon
 
-Source0:  https://gitlab.gnome.org/GNOME/glib/-/releases/{version}/glib-%{version}.tar.xz
+Source0:  https://download.gnome.org/sources/glib/%{version}/glib-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -40,55 +42,6 @@ Provides: pkgconfig(gobject-2.0)
 Provides: pkgconfig(gio-2.0)
 Provides: pkgconfig(gio-unix-2.0)
 Provides: pkgconfig(gthread-2.0)
-
-# CVE-2024-34397
-# Upstream MR: https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4040
-Patch01: 0001-gdbusmessage-Cache-the-arg0-value.patch
-Patch02: 0002-tests-Add-a-data-driven-test-for-signal-subscription.patch
-Patch03: 0003-tests-Add-support-for-subscribing-to-signals-from-a-.patch
-Patch04: 0004-tests-Add-a-test-case-for-what-happens-if-a-unique-n.patch
-Patch05: 0005-tests-Add-test-coverage-for-signals-that-match-the-m.patch
-Patch06: 0006-gdbusprivate-Add-symbolic-constants-for-the-message-.patch
-Patch07: 0007-gdbusconnection-Move-SignalData-SignalSubscriber-hig.patch
-Patch08: 0008-gdbusconnection-Factor-out-signal_data_new_take.patch
-Patch09: 0009-gdbusconnection-Factor-out-add_signal_data.patch
-Patch10: 0010-gdbusconnection-Factor-out-remove_signal_data_if_unu.patch
-Patch11: 0011-gdbusconnection-Stop-storing-sender_unique_name-in-S.patch
-Patch12: 0012-gdbus-Track-name-owners-for-signal-subscriptions.patch
-Patch13: 0013-gdbusconnection-Don-t-deliver-signals-if-the-sender-.patch
-Patch14: 0014-tests-Add-a-test-for-matching-by-two-well-known-name.patch
-Patch15: 0015-tests-Add-a-test-for-signal-filtering-by-well-known-.patch
-Patch16: 0016-tests-Ensure-that-unsubscribing-with-GetNameOwner-in.patch
-Patch17: 0017-gdbus-proxy-test-Wait-before-asserting-name-owner-ha.patch
-# Upstream MR to fix regression due to above MR 4040
-# https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4056
-Patch18: 0001-gdbusconnection-Allow-name-owners-to-have-the-syntax.patch
-Patch19: CVE-2024-52533.patch
-
-# CVE-2025-4373
-Patch20: 0001-gstring-carefully-handle-gssize-parameters.patch
-Patch21: 0002-gstring-Make-len_unsigned-unsigned.patch
-
-# CVE-2025-7039
-Patch22: 0001-gfileutils-fix-computation-of-temporary-file-name.patch
-
-Patch23: CVE-2025-13601.patch
-
-Patch24: 0001-CVE-2025-14087.patch
-Patch25: 0002-CVE-2025-14087.patch
-Patch26: 0003-CVE-2025-14087.patch
-Patch27: CVE-2025-14512.patch
-
-# CVE-2026-1484
-Patch28: 0001-gbase64-Use-gsize-to-prevent-potential-overflow.patch
-Patch29: 0002-gbase64-Ensure-that-the-out-value-is-within-allocated-size.patch
-
-Patch30: 0001-CVE-2026-0988.patch
-Patch31: 0001-CVE-2026-1485.patch
-Patch32: 0001-CVE-2026-1489.patch
-Patch33: 0002-CVE-2026-1489.patch
-Patch34: 0003-CVE-2026-1489.patch
-Patch35: 0004-CVE-2026-1489.patch
 
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C,
@@ -128,6 +81,11 @@ CONFIGURE_OPTS=(
     -Dtests=false
     -Dinstalled_tests=false
     -Ddefault_library=both
+    -Ddtrace=disabled
+    -Dsystemtap=disabled
+    -Dintrospection=disabled
+    -Dsysprof=disabled
+    -Dman-pages=disabled
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -146,6 +104,7 @@ CONFIGURE_OPTS=(
 %{_libdir}/libgio-*.so.*
 %{_libdir}/libgobject-*.so.*
 %{_libexecdir}/gio-launch-desktop
+%{_libdir}/libgirepository-*.so.*
 
 %files devel
 %defattr(-, root, root)
@@ -167,6 +126,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-1
+- Version upgrade
 * Mon Feb 16 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.75.2-15
 - Fix CVE-2026-0988, CVE-2026-1485, CVE-2026-1489
 * Sun Feb 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.75.2-14

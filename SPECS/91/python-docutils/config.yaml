@@ -1,0 +1,17 @@
+sources:
+- archive: docutils-0.19.tar.gz
+  archive_sha512sum: fb904a899f2b6f3c07c5079577bd7c52a3182cb85f6a4149391e523498df15bfa317f0c04095b890beeb3f89c2b444875a2a609d880ac4d7fbc3125e46b37ea5
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Docutils is a modular system for processing documentation
+        into useful formats, such as HTML, XML, and LaTeX. For input Docutils supports
+        reStructuredText, an easy-to-read, what-you-see-is-what-you-get plaintext
+        markup syntax. '
+      home_page: https://pypi.python.org/pypi/docutils
+      license_concluded: BSD-2-Clause AND BSD-3-Clause AND Python-2.0 AND BSD-2-Clause-Views
+        AND GPL-3.0-or-later AND FSFAP AND GPL-3.0-only AND GPL-1.0-or-later
+      license_declared: BSD-2-Clause AND BSD-3-Clause AND Python-2.0 AND BSD-2-Clause-Views
+        AND GPL-3.0-or-later AND FSFAP AND GPL-3.0-only AND GPL-1.0-or-later
+      short_summary: Docutils -- Python Documentation Utilities.
+      supplier: 'Organization: Broadcom, Inc.'

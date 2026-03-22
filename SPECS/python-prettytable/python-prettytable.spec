@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-prettytable
 Version:        3.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,6 +52,8 @@ LANG=en_US.UTF-8 python3 prettytable_test.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3.0-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3.0-3
 - Release bump for SRP compliance
 * Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3.0-2

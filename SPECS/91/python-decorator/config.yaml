@@ -1,0 +1,15 @@
+sources:
+- archive: decorator-5.1.1.tar.gz
+  archive_sha512sum: 584857ffb0c3e52344b473ceb9e28adfd7d789d480a528471f8ab37be055ebe5feb170f41077010e25350e1c311189d45b90773cf12f0043de98ea8ebcde20ab
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The goal of the decorator module is to make it easy to
+        define signature-preserving function decorators and decorator factories. It
+        also includes an implementation of multiple dispatch and other niceties (please
+        check the docs). '
+      home_page: https://pypi.org/project/decorator
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: Module to simplify usage of decorators
+      supplier: 'Organization: Broadcom, Inc.'

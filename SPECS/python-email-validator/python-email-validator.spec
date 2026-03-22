@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        A robust email syntax and deliverability validation library
 Name:           python3-email-validator
 Version:        1.2.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -56,6 +58,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/email_validator-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-3
 - Release bump for SRP compliance
 * Thu Jul 25 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-2

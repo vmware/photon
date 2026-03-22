@@ -1,0 +1,54 @@
+From ee0e1b5ffbf7c155b47d44ea86f11bfbbd0536d0 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:42:43 +0530
+Subject: [PATCH 11/35] system logging
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/logging.fc | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/policy/modules/system/logging.fc b/policy/modules/system/logging.fc
+index 8dd07cd..16a0400 100644
+--- a/policy/modules/system/logging.fc
++++ b/policy/modules/system/logging.fc
+@@ -62,11 +62,17 @@ ifdef(`distro_suse', `
+ /var/log/audit(/.*)?		gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
+ /var/run/log(/.*)?		gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
+ /var/run/systemd/journal(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
++/run/log(/.*)?		gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
++/run/systemd/journal(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
+ 
+ ifndef(`distro_gentoo',`
+ /var/log/audit\.log.*	--	gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
+ ')
+ 
++ifdef(`distro_photon',`
++/var/opt/audit(/.*)?		gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
++')
++
+ ifdef(`distro_redhat',`
+ /var/named/chroot/var/log -d	gen_context(system_u:object_r:var_log_t,s0)
+ /var/named/chroot/dev/log -s	gen_context(system_u:object_r:devlog_t,s0)
+@@ -85,6 +91,18 @@ ifdef(`distro_redhat',`
+ /var/run/syslog-ng(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,s0)
+ /var/run/systemd/journal/syslog	-s	gen_context(system_u:object_r:devlog_t,mls_systemhigh)
+ 
++/run/audit_events	-s	gen_context(system_u:object_r:auditd_var_run_t,mls_systemhigh)
++/run/audispd_events	-s	gen_context(system_u:object_r:audisp_var_run_t,mls_systemhigh)
++/run/auditd\.pid	--	gen_context(system_u:object_r:auditd_var_run_t,mls_systemhigh)
++/run/auditd_sock	-s	gen_context(system_u:object_r:auditd_var_run_t,mls_systemhigh)
++/run/klogd\.pid	--	gen_context(system_u:object_r:klogd_var_run_t,s0)
++/run/log		-s	gen_context(system_u:object_r:devlog_t,s0)
++/run/metalog\.pid	--	gen_context(system_u:object_r:syslogd_var_run_t,s0)
++/run/syslogd\.pid	--	gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
++/run/syslog-ng.ctl	--	gen_context(system_u:object_r:syslogd_var_run_t,s0)
++/run/syslog-ng(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,s0)
++/run/systemd/journal/syslog	-s	gen_context(system_u:object_r:devlog_t,mls_systemhigh)
++
+ /var/spool/audit(/.*)?		gen_context(system_u:object_r:audit_spool_t,mls_systemhigh)
+ /var/spool/bacula/log(/.*)? 	gen_context(system_u:object_r:var_log_t,s0)
+ /var/spool/postfix/pid	-d	gen_context(system_u:object_r:var_run_t,s0)
+-- 
+2.45.0
+

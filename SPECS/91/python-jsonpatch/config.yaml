@@ -1,0 +1,12 @@
+sources:
+- archive: jsonpatch-1.32.tar.gz
+  archive_sha512sum: edd5d7433b1bd0513b9998c989778ae3ede47251aab2e19b7111fe5f6ae7fda75202df473f258cd13e73aae1f5908d85ec046c59d99ad8264a454a84a00bf75f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Library to apply JSON Patches according to RFC 6902. '
+      home_page: https://pypi.python.org/pypi/jsonpatch
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Applying JSON Patches in Python
+      supplier: 'Organization: Broadcom, Inc.'

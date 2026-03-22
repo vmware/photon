@@ -1,0 +1,24 @@
+sources:
+- archive: container-selinux-2.181.0.tar.gz
+  archive_sha512sum: 8d85263599cf66b2d83e510ab75056d425ae5cd9b330c820d053e328575129ccca5320c92f29c8e0310d49b90261755567a28b93ae684f21f49698789ea6bf1b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Provides default Photon OS SELinux policy.
+      home_page: https://github.com/containers/container-selinux
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: SELinux policy.
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: selinux-policy-36.5.tar.gz
+  archive_sha512sum: 85bf6c98b1d226019122226ca4761821c6d8b46c7c40b00b67a9279f3d1fc847ea4bdde2fddcdaa161aa577b86a495f5ad80f8736acd813ad74a366b9aeaaa89
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Provides default Photon OS SELinux policy. '
+      home_page: https://github.com/SELinuxProject/selinux/wiki
+      license_concluded: GPL-1.0-or-later AND Apache-2.0 AND GPL-2.0-or-later AND
+        GPL-2.0-only
+      license_declared: GPL-1.0-or-later AND Apache-2.0 AND GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: SELinux policy
+      supplier: 'Organization: Broadcom, Inc.'

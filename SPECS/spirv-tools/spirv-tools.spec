@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        API and commands for processing SPIR-V modules
 Name:           spirv-tools
 Version:        1.4.313.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Tools/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -93,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libSPIRV-Tools-shared.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.313.0-2
+- Bump version as a part of python3.14 upgrade
 *   Thu Jun 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.313.0-1
 -   Upgarde to 1.4.313.0
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.3.231.1-4

@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
 %define with_golang 0
 
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.9
-Release:        27%{?dist}
+Release:        28%{?dist}
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
@@ -23,6 +24,8 @@ Source2: audit.STIG.rules
 # patch source: https://src.fedoraproject.org/rpms/audit/blob/rawhide/f/audit-3.0.8-flex-array-workaround.patch
 Patch0: audit-3.0.8-flex-array-workaround.patch
 Patch1: audit-3.0.8-undo-flex-array.patch
+Patch2: py3.14-buildfix.patch
+Patch3: distutils-fix.patch
 
 BuildRequires: krb5-devel
 BuildRequires: openldap-devel
@@ -67,7 +70,9 @@ and libauparse.
 # Using autosetup is not feasible
 %setup -q
 cp %{_includedir}/linux/%{name}.h lib/
-%autopatch -p1 -M0
+%patch -p1 0
+%patch -p1 2
+%patch -p1 3
 
 %build
 %configure \
@@ -168,6 +173,8 @@ systemctl daemon-reload
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-28
+- Fix build with python 3.14
 * Thu Nov 13 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-27
 - Rename default.rules to audit.STIG.rules
 * Tue Nov 04 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-26

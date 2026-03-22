@@ -1,0 +1,20 @@
+sources:
+- archive: ansible-2.18.6.tar.gz
+  archive_sha512sum: 1b23cd170ecaf79ce0b7e5260e743912d1a9e7a6ab185527dd65dcb16a2788add2054c8b6ec1a6197190c9910f81d6287493ae17860898de9a70251dff1a77a0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Ansible is a radically simple IT automation system. It
+        handles configuration-management, application deployment, cloud provisioning,
+        ad-hoc task-execution, and multinode orchestration - including trivializing
+        things like zero downtime rolling updates with load balancers. '
+      home_page: https://www.ansible.com
+      license_concluded: (MIT OR GPL-1.0-or-later) AND MIT-0 AND GPL-3.0-or-later
+        AND GPL-1.0-or-later AND LGPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause
+        AND GPL-2.0-or-later AND MIT AND Python-2.0 AND Apache-2.0 AND GPL-3.0-only
+      license_declared: (MIT OR GPL-1.0-or-later) AND MIT-0 AND GPL-3.0-or-later AND
+        GPL-1.0-or-later AND LGPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND
+        GPL-2.0-or-later AND MIT AND Python-2.0 AND Apache-2.0 AND GPL-3.0-only
+      short_summary: Configuration-management, application deployment, cloud provisioning
+        system
+      supplier: 'Organization: Broadcom, Inc.'

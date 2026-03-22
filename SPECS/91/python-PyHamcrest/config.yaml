@@ -1,0 +1,13 @@
+sources:
+- archive: PyHamcrest-2.0.2.tar.gz
+  archive_sha512sum: f66d9119b93bdc29d2120cc58c1ba25f9777be7ec82fa888bfcbcc38f03bb0cbc59267d858f6a279bab5576061fe77618f5db320febf6f62d55b67b68be7c06a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "PyHamcrest is a framework for writing matcher objects,\
+        \ allowing you to declaratively define \u201Cmatch\u201D rules. "
+      home_page: https://pypi.org/project/PyHamcrest
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Python Hamcrest framework for matcher objects
+      supplier: 'Organization: Broadcom, Inc.'

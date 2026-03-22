@@ -1,13 +1,13 @@
 sources:
-- archive: python-fuse-1.0.5.tar.gz
-  archive_sha512sum: e0d0cc0f3dee9416eefe430119e8f2f5a9bbc88a214d36d1d23c7e1f7ce78cc977a173f6d22c05cb928715d5c657ba29738f60453323b25299dddc08d57595d2
+- archive: python-fuse-1.0.9.tar.gz
+  archive_sha512sum: 2c0514b2ead677fd20ed12d340ddd14983dd55bd27a6e0d213995700f8dfe783930e33d6df93e7042584e2205d9fcc9b27fc159c39bc21e79a7934b402b89c4b
   skip_validation: true
   spdx:
     package:
       detailed_description: 'FUSE (Filesystem in USErspace) is a simple interface
         for userspace programs to export a virtual filesystem to the linux kernel.
         "fuse.py" reexports the root filesystem within the mount point. It also offers
-        a class, fuse.Fuse, which can be subclassed to create a filesystem. '
+        a class, fuse.Fuse, which can be subclassed to create a filesystem.'
       home_page: https://github.com/libfuse/python3-fuse/archive/1.0.5.tar.gz
       license_concluded: LGPL-2.0-or-later AND LGPL-2.1-only
       license_declared: LGPL-2.0-or-later AND LGPL-2.1-only

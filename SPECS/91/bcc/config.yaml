@@ -1,0 +1,34 @@
+sources:
+- archive: bcc-0.35.0.tar.gz
+  archive_type: upstream
+  version: 0.35.0
+  name: bcc-0.35.0
+  url: https://github.com/iovisor/bcc/archive/refs/tags/v0.35.0.tar.gz
+  repo_url: https://github.com/iovisor/bcc.git
+  commit_id: c31a1ca305f787ba53e001ead45ebf65233a32cf
+  skip_list: []
+  missing: []
+  archive_sha512sum: 23cc1413fef785165fe9fd29a242fb13e4e56da7d63699dbed3d6d12902a1de392b412cb0e5754eff5aeecf0a023568d593c9f4cb5bca7a88013aadfaef4fa3d
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'BCC is a toolkit for creating efficient kernel tracing
+        and manipulation programs, and includes several useful tools and examples.
+        It makes use of extended BPF (Berkeley Packet Filters), formally known as
+        eBPF, a new feature that was first added to Linux 3.15. Much of what BCC uses
+        requires Linux 4.1 and above. '
+      home_page: https://github.com/iovisor/bcc
+      license_concluded: GPL-1.0-or-later AND (LGPL-2.1-only OR BSD-2-Clause) AND
+        BSL-1.0 AND (MPL-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND
+        Apache-2.0 AND MIT AND GPL-2.0-or-later AND Apache-2.0 WITH LLVM-exception
+        AND GPL-2.0-only WITH Linux-syscall-note AND (GPL-2.0-or-later OR BSD-2-Clause)
+        AND (BSD-3-Clause OR GPL-1.0-or-later) AND GPL-2.0-only AND (BSD-3-Clause
+        OR GPL-2.0-only) AND GPL-3.0-only AND TMate AND BSD-3-Clause AND (MIT OR GPL-2.0-only)
+      license_declared: GPL-1.0-or-later AND (LGPL-2.1-only OR BSD-2-Clause) AND BSL-1.0
+        AND (MPL-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND Apache-2.0
+        AND MIT AND GPL-2.0-or-later AND Apache-2.0 WITH LLVM-exception AND GPL-2.0-only
+        WITH Linux-syscall-note AND (GPL-2.0-or-later OR BSD-2-Clause) AND (BSD-3-Clause
+        OR GPL-1.0-or-later) AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND
+        GPL-3.0-only AND TMate AND BSD-3-Clause AND (MIT OR GPL-2.0-only)
+      short_summary: BPF Compiler Collection (BCC)
+      supplier: 'Organization: Broadcom, Inc.'

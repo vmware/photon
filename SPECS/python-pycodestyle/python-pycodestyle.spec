@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        A tool to check your Python code
 Name:           python3-pycodestyle
 Version:        2.9.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/python-pam/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -39,6 +41,8 @@ python3 setup.py test
 %{_bindir}/pycodestyle
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.1-4
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.1-3
 - Release bump for SRP compliance
 * Fri Dec 02 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.1-2

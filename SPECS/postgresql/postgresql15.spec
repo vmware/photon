@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname         postgresql
 %global pgmajorversion  15
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
@@ -13,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -741,6 +743,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 15.17-2
+- Bump version as a part of python3.14 upgrade
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.17-1
 - Upgrade to v15.17
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 15.16-2

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:       Linux Containers File System
 Name:          lxcfs
 Version:       5.0.3
-Release:       3%{?dist}
+Release:       4%{?dist}
 URL:           https://linuxcontainers.org/lxcfs/downloads/
 Source0:       %{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
@@ -60,6 +62,8 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/%{name}
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.3-4
+- Bump version as a part of python3.14 upgrade
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 5.0.3-3
 - Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0.3-2

@@ -1,0 +1,13 @@
+sources:
+- archive: sphinxcontrib-devhelp-1.0.2.tar.gz
+  archive_sha512sum: 83b46eaf26df3932ea2136cfda1c0fca4fc08ce8bca564845b3efe5bb00d6c8c93991f4edd4913d4ec796e2d85bd2c7265adf28e98f42e8094daeb5ac11a0eb1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'sphinxcontrib-devhelp is a sphinx extension which outputs
+        Devhelp document. '
+      home_page: https://pypi.org/project/sphinxcontrib-devhelp
+      license_concluded: BSD-2-Clause AND BSD-3-Clause
+      license_declared: BSD-2-Clause AND BSD-3-Clause
+      short_summary: Sphinx extension for Devhelp documents
+      supplier: 'Organization: Broadcom, Inc.'

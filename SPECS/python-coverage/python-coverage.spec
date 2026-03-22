@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        The code coverage tool for Python
 Name:           python3-coverage
 Version:        6.4.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,23 +13,18 @@ Source0:        https://files.pythonhosted.org/packages/source/c/coverage/covera
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  iana-etc
-%endif
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-six
 %endif
+
+Requires:       python3
 
 %description
 Code coverage measurement for Python.
@@ -53,6 +50,8 @@ LANG=en_US.UTF-8 tox -e py36
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-3
+- Bump version as a part of python3.14 upgrade
 *   Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-2
 -   Release bump for SRP compliance
 *   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 6.4.4-1

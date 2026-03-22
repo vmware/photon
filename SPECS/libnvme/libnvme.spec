@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:          libnvme
 Summary:       Linux-native nvme device management library
-Version:       1.3
-Release:       3%{?dist}
+Version:       1.16.1
+Release:       1%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -17,9 +19,11 @@ BuildRequires: meson
 BuildRequires: json-c-devel
 BuildRequires: openssl-devel
 BuildRequires: dbus-devel
+BuildRequires: keyutils-devel
 Requires: json-c
 Requires: dbus
 Requires: openssl
+Requires: keyutils
 
 %description
 Provides type definitions for NVMe specification structures,
@@ -80,9 +84,11 @@ This package contains Python bindings for libnvme.
 %{python3_sitearch}/%{name}/
 
 %changelog
-*  Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.3-3
--  Bump version as a part of meson upgrade
-*  Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.3-2
--  Release bump for SRP compliance
-*  Fri Mar 10 2023 Srish Srinivasan <ssrish@vmware.com> 1.3-1
--  Initial build.
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.16.1-1
+- Bump up release as part of python3 upgrade
+* Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.3-3
+- Bump version as a part of meson upgrade
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.3-2
+- Release bump for SRP compliance
+* Fri Mar 10 2023 Srish Srinivasan <ssrish@vmware.com> 1.3-1
+- Initial build.

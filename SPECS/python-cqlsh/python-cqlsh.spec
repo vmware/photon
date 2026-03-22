@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname cqlsh
 
 Summary:        A Python-based command-line client for running simple CQL commands on a Cassandra cluster.
 Name:           python3-cqlsh
 Version:        6.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -43,6 +45,8 @@ This is a simple re-bundling of the open source tool that comes bundled with Cas
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.1.2-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.1.2-2
 - Release bump for SRP compliance
 * Sat Aug 05 2023 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-1

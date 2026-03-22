@@ -1,17 +1,20 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-pluggy
-Version:        1.0.0
-Release:        3%{?dist}
+Version:        1.6.0
+Release:        1%{?dist}
 Summary:        The plugin manager stripped of pytest specific details
 Group:          Development/Libraries
 URL:            https://pypi.org/project/pluggy/
-Source0:        https://files.pythonhosted.org/packages/f8/04/7a8542bed4b16a65c2714bf76cf5a0b026157da7f75e87cc88774aa10b14/pluggy-%{version}.tar.gz
-
-Source1: license.txt
-%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 BuildArch:      noarch
+
+Source0:        https://files.pythonhosted.org/packages/f8/04/7a8542bed4b16a65c2714bf76cf5a0b026157da7f75e87cc88774aa10b14/pluggy-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-packaging
@@ -33,16 +36,18 @@ The plugin manager stripped of pytest specific details.
 %autosetup -p1 -n pluggy-%{version}
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.0-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.0-3
 - Release bump for SRP compliance
 * Fri Jul 19 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.0-2

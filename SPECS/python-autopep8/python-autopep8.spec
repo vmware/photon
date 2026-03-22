@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        autopep8 automatically formats Python code
 Name:           python3-autopep8
-Version:        2.0.0
-Release:        3%{?dist}
+Version:        2.3.2
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/python-autopep8/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -14,20 +16,16 @@ Source1: license.txt
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-toml
+BuildRequires:  python3-pip
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
-BuildRequires: python3-tools
 BuildRequires: python3-pycodestyle
 %endif
 
 Requires:       python3-toml
 Requires:       python3
 Requires:       python3-pycodestyle
-Requires:       python3-tools
 
 %description
 autopep8 automatically formats Python code to conform to the PEP 8 style guide.
@@ -38,10 +36,10 @@ formatted.
 %autosetup -p1 -n autopep8-%{version}
 
 %build
-%py3_build
+%{pyproject_wheel}
 
 %install
-%py3_install
+%{pyproject_install}
 
 %if 0%{?with_check}
 %check
@@ -54,6 +52,8 @@ formatted.
 %{_bindir}/autopep8
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3.2-1
+- Upgrade to 2.3.2 as part of python3 upgrade to build with py3.14
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-3
 - Release bump for SRP compliance
 * Thu Aug 03 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.0.0-2

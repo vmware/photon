@@ -1,0 +1,31 @@
+sources:
+- archive: ctags-p6.2.20251102.0.tar.gz
+  archive_sha512sum: b3d670e1a9b4535ad17e4fc002e80132dbf02c4cb8de56e60259831cb765b1a0537f51b4c9a8c29c20f1f71de6b714dd4522dd8109048a8fdffed627eaca5a89
+  skip_validation: false
+  archive_type: upstream
+  name: ctags-p6.2.20251102.0
+  version: p6.2.20251102.0
+  url: https://github.com/universal-ctags/ctags/archive/refs/tags/p6.2.20251102.0.tar.gz
+  repo_url: https://github.com/universal-ctags/ctags
+  commit_id: dbf052f1012c7bd9e623106339c3bd285aae998a
+  skip_list: []
+  missing: ['NEWS.rst', 'makefiles', '.dir-locals.el', 'appveyor.yml', '.gitattributes', 'man', 'mk_mvc.mak', 'autogen.sh', 'peg', 'win32', 'COPYING', 'optlib', '.indent.pro', 'dsl', '.editorconfig', 'old-docs', '.ctags.d', 'circle.yml', 'm4', 'README.md', 'configure.ac', 'Makefile.am', '.uncrustify.cfg', 'gnulib', 'libreadtags', 'extra-cmds', 'main', '.gdbinit', 'Tmain', 'parsers', '.github', 'mk_mingw.mak', 'docs', 'source.mak', 'Units', 'misc', '.gitignore', '.readthedocs.yaml']
+  spdx:
+    package:
+      detailed_description: 'Universal Ctags (abbreviated as u-ctags) is a maintained
+        implementation of ctags. ctags generates an index (or tag) file of language
+        objects found in source files for programming languages. This index makes
+        it easy for text editors and other tools to locate the indexed items. '
+      home_page: https://ctags.io/
+      license_concluded: FSFULLR AND GPL-1.0-or-later AND Apache-2.0 AND GPL-2.0-or-later
+        AND GPL-2.0-only AND MIT AND MIT-CMU AND SMLNJ AND ZPL-2.1 AND GPL-3.0-or-later
+        AND BSD-3-Clause AND BSD-2-Clause AND GPL-3.0-only AND SunPro AND Unlicense
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND Ruby AND HPND AND
+        ISC AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      license_declared: FSFULLR AND GPL-1.0-or-later AND Apache-2.0 AND GPL-2.0-or-later
+        AND GPL-2.0-only AND MIT AND MIT-CMU AND SMLNJ AND ZPL-2.1 AND GPL-3.0-or-later
+        AND BSD-3-Clause AND BSD-2-Clause AND GPL-3.0-only AND SunPro AND Unlicense
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND Ruby AND HPND AND
+        ISC AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      short_summary: A C programming language indexing and/or cross-reference tool
+      supplier: 'Organization: Broadcom, Inc.'

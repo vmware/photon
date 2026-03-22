@@ -1,0 +1,33 @@
+sources:
+- archive: rdma-core-42.0.tar.gz
+  archive_sha512sum: 9e497d3a23bcd72828a717b59016fe25c88b4ec389e166936410c53dac0c6d6d2f45a76eaec18383ab3ca1a11d1b978b19247a3b7cfb121047d3891288a8c38e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Userspace libraries and daemons for the Linux Kernel''s
+        drivers/infiniband subsystem. '
+      home_page: https://github.com/linux-rdma/rdma-core
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND MIT AND (GPL-2.0-only
+        WITH Linux-syscall-note OR BSD-2-Clause) AND (GPL-2.0-only WITH Linux-syscall-note
+        OR Linux-OpenIB) AND GPL-2.0-or-later AND BSD-2-Clause AND (GPL-2.0-only OR
+        BSD-2-Clause OR CPL-1.0) AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-2-Clause)
+        AND CPL-1.0 AND Linux-OpenIB AND (MIT OR GPL-1.0-or-later) AND CC0-1.0 AND
+        (Linux-OpenIB OR GPL-2.0-only) AND GPL-2.0-only AND (GPL-2.0-only OR BSD-2-Clause)
+        AND BSD-3-Clause AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR BSD-3-Clause)
+        AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause) AND (GPL-2.0-only
+        WITH Linux-syscall-note OR Linux-OpenIB) AND GPL-2.0-only WITH Linux-syscall-note
+        AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only WITH Linux-syscall-note
+        OR BSD-3-Clause) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR BSD-2-Clause)
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND MIT AND (GPL-2.0-only WITH
+        Linux-syscall-note OR BSD-2-Clause) AND (GPL-2.0-only WITH Linux-syscall-note
+        OR Linux-OpenIB) AND GPL-2.0-or-later AND BSD-2-Clause AND (GPL-2.0-only OR
+        BSD-2-Clause OR CPL-1.0) AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-2-Clause)
+        AND CPL-1.0 AND Linux-OpenIB AND (MIT OR GPL-1.0-or-later) AND CC0-1.0 AND
+        (Linux-OpenIB OR GPL-2.0-only) AND GPL-2.0-only AND (GPL-2.0-only OR BSD-2-Clause)
+        AND BSD-3-Clause AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR BSD-3-Clause)
+        AND (GPL-2.0-only WITH Linux-syscall-note OR BSD-3-Clause) AND (GPL-2.0-only
+        WITH Linux-syscall-note OR Linux-OpenIB) AND GPL-2.0-only WITH Linux-syscall-note
+        AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only WITH Linux-syscall-note
+        OR BSD-3-Clause) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR BSD-2-Clause)
+      short_summary: RDMA Core Userspace Libraries and Daemons
+      supplier: 'Organization: Broadcom, Inc.'

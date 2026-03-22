@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-bcrypt
 Version:        3.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Good password hashing for your software and your servers.
 Group:          Development/Languages/Python
 Url:            https://github.com/pyca/bcrypt
@@ -20,6 +22,7 @@ BuildRequires:  curl-devel
 %endif
 
 Requires:       python3
+Requires:       python3-cffi
 
 %description
 Good password hashing for your software and your servers.
@@ -45,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-2
 - Release bump for SRP compliance
 * Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.2-1

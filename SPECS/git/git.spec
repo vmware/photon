@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.43.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -138,6 +140,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.43.7-2
+- Bump version as a part of python3.14 upgrade
 * Wed Aug 06 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.43.7-1
 - Version upgrade to v2.43.7
 * Thu Jul 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.4-4

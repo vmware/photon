@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global pypi_name xmltodict
 
 Summary:       Python to transform XML to JSON
 Name:          python3-%{pypi_name}
 Version:       0.13.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 URL:           https://github.com/martinblech/%{pypi_name}
 Group:         Development/Languages/Python
 Vendor:        VMware, Inc.
@@ -54,6 +56,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/%{pypi_name}-%{version}-*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.13.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.13.0-2
 - Release bump for SRP compliance
 * Sat Oct 14 2023 Oliver Kurth <okurth@vmware.com> 0.13.0-1

@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:       rpmdevtools
 Version:    9.6
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    RPM Development Tools
 URL:        https://pagure.io/rpmdevtools
 Vendor:         VMware, Inc.
@@ -75,5 +77,7 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 9.6-2
+- Bump version as a part of python3.14 upgrade
 * Mon Sep 22 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.6-1
 - Initial version.

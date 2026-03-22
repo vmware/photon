@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname backports.ssl_match_hostname
 
 Name:           python3-backports.ssl_match_hostname
 Version:        3.7.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Backported python ssl_match_hostname
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -41,6 +43,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.7.0.1-5
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.7.0.1-4
 - Release bump for SRP compliance
 * Tue Dec 06 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.0.1-3

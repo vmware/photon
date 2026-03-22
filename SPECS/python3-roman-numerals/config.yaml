@@ -1,0 +1,12 @@
+sources:
+- archive: roman_numerals-4.1.0.tar.gz
+  archive_sha512sum: 18541ec1a66e2b72d61baed44a90ef13b74e76ed29fecaeeff57cf48309c09daf6c052cc3e973ee33e69c1138dd284cd9d425b34b731280e6b679e43d8e2c945
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library for manipulating well-formed Roman numerals.'
+      home_page: https://github.com/pypa/trove-classifiers
+      license_concluded: 0BSD
+      license_declared: 0BSD
+      short_summary: A library for manipulating well-formed Roman numerals.
+      supplier: 'Organization: Broadcom, Inc.'

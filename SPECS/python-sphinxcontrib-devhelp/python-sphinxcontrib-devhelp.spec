@@ -1,8 +1,10 @@
-%define srcname sphinxcontrib-devhelp
+%global build_if %{photon_subrelease} >= 92
+
+%define srcname sphinxcontrib_devhelp
 
 Name:           python3-sphinxcontrib-devhelp
-Version:        1.0.2
-Release:        4%{?dist}
+Version:        2.0.0
+Release:        1%{?dist}
 Summary:        Sphinx extension for Devhelp documents
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -11,13 +13,15 @@ Distribution:   Photon
 
 BuildArch: noarch
 
-Source0: https://files.pythonhosted.org/packages/98/33/dc28393f16385f722c893cb55539c641c9aaec8d1bc1c15b69ce0ac2dbb3/%{srcname}-%{version}.tar.gz
+Source0: %{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-pip
+BuildRequires: python3-flit-core
 
 Requires: python3
 Requires: python3-docutils
@@ -31,18 +35,18 @@ sphinxcontrib-devhelp is a sphinx extension which outputs Devhelp document.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{py3_build}
+%pyproject_wheel
 
 %install
-%{py3_install}
+%pyproject_install
 
 %files
 %defattr(-,root,root,-)
-%license LICENSE
-%doc README.rst
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.0-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.2-4
 - Release bump for SRP compliance
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0.2-3

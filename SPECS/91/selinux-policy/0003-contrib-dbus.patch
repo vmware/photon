@@ -1,0 +1,28 @@
+From 103325b3d7b1af89dc18c540475200cd5579b8d8 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:30:24 +0530
+Subject: [PATCH 03/35] contrib dbus
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/contrib/dbus.fc | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/policy/modules/contrib/dbus.fc b/policy/modules/contrib/dbus.fc
+index 1c1db3d..68bff69 100644
+--- a/policy/modules/contrib/dbus.fc
++++ b/policy/modules/contrib/dbus.fc
+@@ -32,6 +32,10 @@ ifdef(`distro_gentoo',`
+ /var/run/user/%{USERID}/dbus(/.*)? 	gen_context(system_u:object_r:session_dbusd_tmp_t,s0)
+ /var/run/user/%{USERID}/dbus-1(/.*)? 	gen_context(system_u:object_r:session_dbusd_tmp_t,s0)
+ 
++/run/dbus(/.*)?        gen_context(system_u:object_r:system_dbusd_var_run_t,s0)
++
++/run/user/%{USERID}/dbus(/.*)?    gen_context(system_u:object_r:session_dbusd_tmp_t,s0)
++
+ ifdef(`distro_redhat',`
+ /var/named/chroot/var/run/dbus(/.*)?	gen_context(system_u:object_r:system_dbusd_var_run_t,s0)
+ ')
+-- 
+2.45.0
+

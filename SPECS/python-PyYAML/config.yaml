@@ -1,7 +1,14 @@
 sources:
-- archive: PyYAML-5.4.1.tar.gz
-  archive_sha512sum: 359c45d843fd839797572efeab121f17b1947647960dfb062f3618f25f71e1a6bc4bab14a1720b6b67f256089d5d48c452ec5419e3130222765c7ca41db11dad
-  skip_validation: true
+- archive: PyYAML-6.0.3.tar.gz
+  archive_sha512sum: 0df64497f51bd07ee01d7676afc4cf3eff228e1a73d4b1c7f034c7cba762f3451aa686e594af54e8e359173262cc0e47c110491bc7e29c3dd712a66c4316b2cf
+  archive_type: upstream
+  skip_validation: false
+  name: pyyaml-6.0.3
+  version: "6.0.3"
+  url: https://files.pythonhosted.org/packages/05/8e/961c0007c59b8dd7729d542c61a4d537767a59645b82a0b521206e1e25c2/pyyaml-6.0.3.tar.gz
+  repo_url: https://github.com/yaml/pyyaml
+  commit_id: 49790e73684bebad1df05ef8d828fa12f685bffb
+  missing: ['.gitignore', 'PKG-INFO', 'PyYAML.egg-info', 'setup.cfg', 'announcement.msg', 'tox.ini', '.github']
   spdx:
     package:
       detailed_description: 'YAML is a data serialization format designed for human

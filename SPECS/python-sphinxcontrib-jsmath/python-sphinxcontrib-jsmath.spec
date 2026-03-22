@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname sphinxcontrib-jsmath
 
 Name:           python3-sphinxcontrib-jsmath
 Version:        1.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Sphinx extension for math in HTML via JavaScript
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,6 +45,8 @@ via JavaScript.
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.1-5
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.1-4
 - Release bump for SRP compliance
 * Sun Aug 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.0.1-3

@@ -1,0 +1,23 @@
+sources:
+- archive: tzlocal-4.2.tar.gz
+  archive_sha512sum: 5d1000bd8756ca2678655dbeedcfd6ef8d709503293303c98a48af234aca0d1525913585d679759c6fd7d4c5ef046c98384ee6e7a9eba769f81d05173ff0d77f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "This Python module returns a tzinfo object with the local\
+        \ timezone information under Unix and Win-32. It requires pytz, and returns\
+        \ pytz tzinfo objects. This module attempts to fix a glaring hole in pytz,\
+        \ that there is no way to get the local timezone information, unless you know\
+        \ the zoneinfo name, and under several Linux distros that\u2019s hard or impossible\
+        \ to figure out. Also, with Windows different timezone system using pytz isn\u2019\
+        t of much use, unless you separately configure the zoneinfo timezone name.\
+        \ With tzlocal you only need to call get_localzone(), and you will get a tzinfo\
+        \ object with the local time zone info. On some Unices you will still not\
+        \ get to know what the timezone name is, but you don\u2019t need that when\
+        \ you have the tzinfo file. However, if the timezone name is readily available\
+        \ it will be used. "
+      home_page: https://github.com/regebro/tzlocal
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: tzinfo object for the local timezone.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,15 @@
 sources:
-- archive: autopep8-2.0.0.tar.gz
-  archive_sha512sum: 883b79f7011a374a2ef88073a45748268a20449a3bc8da519c036c71700352dd8c4accc60fcb592f1a53ceac06984fcbe6ede8a272bc718c2b79873be5f35dd8
-  skip_validation: true
+- archive: autopep8-2.3.2.tar.gz
+  archive_sha512sum: 1fc897feec093e7e945b10bbd3cbbef5a83c4ec7d86215fb9643434d80a14ff54bf613dbb9dd0acacc9706ac35e8f0486ef643ae49da040471965d41fdd03cc4
+  archive_type: upstream
+  skip_validation: false
+  name: autopep8-2.3.2
+  version: "2.3.2"
+  url: https://files.pythonhosted.org/packages/50/d8/30873d2b7b57dee9263e53d142da044c4600a46f2d28374b3e38b023df16/autopep8-2.3.2.tar.gz
+  repo_url: https://github.com/hhatto/autopep8
+  commit_id: 4046ad49e25b7fa1db275bf66b1b7d60600ac391
+  missing: ['suite', '.codecov.yml', 'install_hooks.bash', 'Makefile', 'hooks', '.gitignore', '.github', 'autopep8.egg-info', 'vectors_example.py', 'update_readme.py', '.pre-commit-config.yaml', 'acid_pypi.py', '.pre-commit-hooks.yaml', 'vim_autopep8.py', 'inspect_example.py', 'PKG-INFO', 'CONTRIBUTING.rst']
+  skip_list: ['setup.cfg']
   spdx:
     package:
       detailed_description: 'autopep8 automatically formats Python code to conform

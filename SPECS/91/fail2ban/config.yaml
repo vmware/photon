@@ -1,0 +1,20 @@
+sources:
+- archive: fail2ban-1.0.2.tar.gz
+  archive_sha512sum: 688a84361b5794e1658f53d2d200ce752fe1e3320ddb1742c32c4b4b82a79ace16ae464e7ea3eeb94a0e862bcac73c2d3a0e61dd7b28e179a4c857f950d74dbb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Fail2Ban scans log files and bans IP addresses that makes
+        too many password failures. It updates firewall rules to reject the IP address.
+        These rules can be defined by the user. Fail2Ban can read multiple log files
+        such as sshd or Apache web server ones.  The main package contains the core
+        server components for Fail2Ban with minimal dependencies.  You can install
+        this directly if you want to have a small installation and know what you are
+        doing. '
+      home_page: http://fail2ban.sourceforge.net
+      license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND MIT AND Apache-2.0
+        AND GPL-1.0-or-later AND GPL-3.0-or-later
+      license_declared: GPL-2.0-or-later AND GPL-2.0-only AND MIT AND Apache-2.0 AND
+        GPL-1.0-or-later AND GPL-3.0-or-later
+      short_summary: Daemon to ban hosts that cause multiple authentication errors
+      supplier: 'Organization: Broadcom, Inc.'

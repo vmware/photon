@@ -1,0 +1,22 @@
+sources:
+- archive: libsoup-3.6.5.tar.xz
+  archive_type: upstream
+  version: 3.6.5
+  name: libsoup-3.6.5
+  repo_url: https://gitlab.gnome.org/GNOME/libsoup.git
+  url: https://download.gnome.org/sources/libsoup/3.6/libsoup-3.6.5.tar.xz
+  commit_id: 766e17528251c9b696a6076300ac61adc95536ac
+  archive_sha512sum: cb44d93b16048d31ae04a8c2416bbe233e0e9bdaf2d9bfe2879260fd3da27e90a0bb05cddbd82cdf81a4a778bd451ad172a14dd31e2fd113c3bbbe13c0029b03
+  skip_list: []
+  missing: []
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'libsoup is HTTP client/server library for GNOME '
+      home_page: http://wiki.gnome.org/LibSoup
+      license_concluded: MIT AND MPL-2.0 AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      license_declared: MIT AND MPL-2.0 AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+      short_summary: libsoup HTTP client/server library
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,101 @@
+From 1e2c45e5fd92cee66b240a4f23828bc53ce7f364 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Mon, 24 Feb 2025 12:53:54 +0530
+Subject: [PATCH] Support key operations in openssl fips mode
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ paramiko/pkey.py   | 21 +++++++++++++++++++--
+ tests/test_pkey.py | 12 +++++++++---
+ 2 files changed, 28 insertions(+), 5 deletions(-)
+
+diff --git a/paramiko/pkey.py b/paramiko/pkey.py
+index 0566efc..7e615d1 100644
+--- a/paramiko/pkey.py
++++ b/paramiko/pkey.py
+@@ -23,9 +23,10 @@ Common API for all public keys.
+ import base64
+ from binascii import unhexlify
+ import os
+-from hashlib import md5
++from hashlib import md5, sha256
+ import re
+ import struct
++import _hashlib
+ 
+ import six
+ import bcrypt
+@@ -92,6 +93,8 @@ class PKey(object):
+     )
+     END_TAG = re.compile(r"^-{5}END (RSA|DSA|EC|OPENSSH) PRIVATE KEY-{5}\s*$")
+ 
++    OPENSSL_FIPS = _hashlib.get_fips_mode()
++
+     def __init__(self, msg=None, data=None):
+         """
+         Create a new instance of this public key type.  If ``msg`` is given,
+@@ -183,7 +186,12 @@ class PKey(object):
+         :return:
+             a 16-byte `string <str>` (binary) of the MD5 fingerprint, in SSH
+             format.
++            If openssl fips is enabled, sha256 fingerprint is returned
+         """
++
++        if self.OPENSSL_FIPS:
++            return sha256(self.asbytes()).digest()
++
+         return md5(self.asbytes()).digest()
+ 
+     def get_base64(self):
+@@ -404,7 +412,16 @@ class PKey(object):
+         keysize = self._CIPHER_TABLE[encryption_type]["keysize"]
+         mode = self._CIPHER_TABLE[encryption_type]["mode"]
+         salt = unhexlify(b(saltstr))
+-        key = util.generate_key_bytes(md5, salt, password, keysize)
++
++        # if users are in a openssl fips enabled environment and using
++        # md5 encrypted private key, it will not work anyway.
++        # instead of resulting in a traceback, provide an option to use
++        # fips compatible sha256 encrypted private key
++        if self.OPENSSL_FIPS:
++            key = util.generate_key_bytes(sha256, salt, password, keysize)
++        else:
++            key = util.generate_key_bytes(md5, salt, password, keysize)
++
+         decryptor = Cipher(
+             cipher(key), mode(salt), backend=default_backend()
+         ).decryptor()
+diff --git a/tests/test_pkey.py b/tests/test_pkey.py
+index a2376fa..f23b403 100644
+--- a/tests/test_pkey.py
++++ b/tests/test_pkey.py
+@@ -24,8 +24,10 @@ Some unit tests for public/private key objects.
+ import unittest
+ import os
+ import stat
++import _hashlib
++
+ from binascii import hexlify
+-from hashlib import md5
++from hashlib import md5, sha256
+ 
+ from paramiko import (
+     RSAKey,
+@@ -156,8 +158,12 @@ class KeyTest(unittest.TestCase):
+             self.assertEqual(fh.readline()[0:10], "DEK-Info: ")
+ 
+     def test_generate_key_bytes(self):
+-        key = util.generate_key_bytes(md5, x1234, "happy birthday", 30)
+-        exp = b"\x61\xE1\xF2\x72\xF4\xC1\xC4\x56\x15\x86\xBD\x32\x24\x98\xC0\xE9\x24\x67\x27\x80\xF4\x7B\xB3\x7D\xDA\x7D\x54\x01\x9E\x64"  # noqa
++        if not _hashlib.get_fips_mode():
++            key = util.generate_key_bytes(md5, x1234, "happy birthday", 30)
++            exp = b"\x61\xE1\xF2\x72\xF4\xC1\xC4\x56\x15\x86\xBD\x32\x24\x98\xC0\xE9\x24\x67\x27\x80\xF4\x7B\xB3\x7D\xDA\x7D\x54\x01\x9E\x64"  # noqa
++        else:
++            key = util.generate_key_bytes(sha256, x1234, "happy birthday", 30)
++            exp = b"Y\x8d?R\x96\x1a\xbb\xa0Pi\x81\x9fa\xf5\xc4\xca\xc9J\r\xff\xd1@,\xc7\x9a\xde\x009\x18L"
+         self.assertEqual(exp, key)
+ 
+     def test_load_rsa(self):
+-- 
+2.40.4
+

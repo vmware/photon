@@ -1,0 +1,1174 @@
+From d4aa26fe20210ad50a278f316191932393a4d116 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 3 Aug 2025 17:55:35 +0530
+Subject: [PATCH 1/3] feat(networkd): add support for rendering bridge devices
+
+This change extends the networkd renderer to support bridges defined
+through network config.
+
+Add tests for same.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cloudinit/net/networkd.py                     | 203 ++++++++++++------
+ .../systemd/network/10-cloud-init-br0.netdev  |  13 ++
+ .../systemd/network/10-cloud-init-br0.network |  19 ++
+ .../systemd/network/10-cloud-init-br1.netdev  |  13 ++
+ .../systemd/network/10-cloud-init-br1.network |  19 ++
+ .../systemd/network/10-cloud-init-br2.netdev  |  11 +
+ .../systemd/network/10-cloud-init-br2.network |  13 ++
+ .../network/10-cloud-init-eth3.network        |  10 +
+ .../network/10-cloud-init-eth4.network        |  10 +
+ .../network/10-cloud-init-vl101.network       |   1 +
+ .../network/10-cloud-init-vlan100.network     |   5 +
+ .../net/artifacts/photon_net_config_v2.yaml   |  75 ++++++-
+ 12 files changed, 322 insertions(+), 70 deletions(-)
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth3.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth4.network
+
+diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
+index 8672e56e364..47597aef1d0 100644
+--- a/cloudinit/net/networkd.py
++++ b/cloudinit/net/networkd.py
+@@ -5,7 +5,7 @@
+ # This file is part of cloud-init. See LICENSE file for license information.
+ 
+ import logging
+-from typing import Any, Dict, List, Optional
++from typing import Any, Callable, Dict, List, Optional, Tuple
+ 
+ from cloudinit import subp, util
+ from cloudinit.net import renderer, should_add_gateway_onlink_flag
+@@ -66,6 +66,7 @@ def __init__(self):
+             "NetDev": [],
+             "VLAN": [],
+             "Bond": [],
++            "Bridge": [],
+         }
+ 
+     def update_section(self, sec, key, val):
+@@ -348,6 +349,7 @@ def render_network_state(
+         network = self._render_content(network_state)
+         vlan_netdev = network.pop("vlan_netdev", {})
+         bond_netdev = network.pop("bond_netdev", {})
++        bridge_netdev = network.pop("bridge_netdev", {})
+ 
+         for k, v in network.items():
+             self.create_network_file(k, v, network_dir)
+@@ -358,10 +360,14 @@ def render_network_state(
+         for k, v in bond_netdev.items():
+             self.create_network_file(k, v, network_dir, ext=".netdev")
+ 
++        for k, v in bridge_netdev.items():
++            self.create_network_file(k, v, network_dir, ext=".netdev")
++
+     def _render_content(self, ns: NetworkState):
+         ret_dict = {}
+         vlan_link = {}
+         bond_link = {}
++        bridge_link = {}
+ 
+         if "vlans" in ns.config:
+             vlan_dict = self.render_vlans(ns)
+@@ -375,6 +381,12 @@ def _render_content(self, ns: NetworkState):
+             bond_link = bond_dict["bond_link"]
+             ret_dict["bond_netdev"] = bond_netdev
+ 
++        if "bridges" in ns.config:
++            bridge_dict = self.render_bridges(ns)
++            bridge_netdev = bridge_dict["bridge_netdev"]
++            bridge_link = bridge_dict["bridge_link"]
++            ret_dict["bridge_netdev"] = bridge_netdev
++
+         for iface in ns.iter_interfaces():
+             cfg = CfgParser()
+ 
+@@ -402,6 +414,33 @@ def _render_content(self, ns: NetworkState):
+                 if mac:
+                     iface["mac_address"] = mac
+ 
++            bridge_link_name = bridge_link.get(iface_name)
++            if bridge_link_name:
++                val = (
++                    bridge_link["path-cost"]
++                    .get(bridge_link_name, {})
++                    .get(iface_name)
++                )
++                if val:
++                    cfg.update_section("Bridge", "Cost", val)
++
++                val = (
++                    bridge_link["port-priority"]
++                    .get(bridge_link_name, {})
++                    .get(iface_name)
++                )
++                if val:
++                    cfg.update_section("Bridge", "Priority", val)
++
++                cfg.update_section("Network", "Bridge", bridge_link_name)
++
++            # TODO: revisit this once network state renders macaddress
++            # properly for bridge config
++            if not iface["mac_address"] and bridge_link.get("macaddress"):
++                mac = bridge_link["macaddress"].get(iface_name)
++                if mac:
++                    iface["mac_address"] = mac
++
+             link = self.generate_match_section(iface, cfg)
+ 
+             self.generate_link_section(iface, cfg)
+@@ -492,11 +531,10 @@ def render_vlans(self, ns: NetworkState) -> dict:
+             cfg.update_section("VLAN", "Id", vlan_id)
+             vlan_ndev_configs[vlan_name] = cfg.get_final_conf()
+ 
+-        ret_dict = {
++        return {
+             "vlan_netdev": vlan_ndev_configs,
+             "vlan_link": vlan_link_info,
+         }
+-        return ret_dict
+ 
+     def render_bonds(self, ns: NetworkState) -> dict:
+         bond_link_info: Dict[str, Any] = {}
+@@ -534,89 +572,116 @@ def render_bonds(self, ns: NetworkState) -> dict:
+             # Optional bond parameters
+             params = bond_cfg.get("parameters", {})
+ 
+-            if "mode" in params:
+-                cfg.update_section(section, "Mode", params["mode"])
++            ParamMapType = Dict[str, Tuple[str, Callable[[object], str]]]
+ 
+-            if "mii-monitor-interval" in params:
+-                cfg.update_section(
+-                    section,
+-                    "MIIMonitorSec",
+-                    f"{params['mii-monitor-interval']}ms",
+-                )
+-
+-            if "updelay" in params:
+-                cfg.update_section(
+-                    section, "UpDelaySec", f"{params['updelay']}ms"
+-                )
++            param_map: ParamMapType = {
++                "ad-select": ("AdSelect", str),
++                "all-slaves-active": (
++                    "AllSlavesActive",
++                    lambda v: str(v).lower(),
++                ),
++                "arp-all-targets": ("ARPAllTargets", str),
++                "arp-interval": ("ARPIntervalSec", lambda v: f"{v}ms"),
++                "arp-validate": ("ARPValidate", str),
++                "down-delay": ("DownDelaySec", lambda v: f"{v}ms"),
++                "fail-over-mac-policy": ("FailOverMACPolicy", str),
++                "gratuitous-arp": ("GratuitousARP", str),
++                "lacp-rate": ("LACPTransmitRate", str),
++                "learn-packet-interval": ("LearnPacketIntervalSec", str),
++                "mii-monitor-interval": ("MIIMonitorSec", lambda v: f"{v}ms"),
++                "min-links": ("MinLinks", lambda v: str(v)),
++                "mode": ("Mode", str),
++                "packets-per-slave": ("PacketsPerSlave", str),
++                "primary-reselect-policy": ("PrimaryReselectPolicy", str),
++                "transmit-hash-policy": ("TransmitHashPolicy", str),
++                "up-delay": ("UpDelaySec", lambda v: f"{v}ms"),
++            }
+ 
+-            if "downdelay" in params:
+-                cfg.update_section(
+-                    section, "DownDelaySec", f"{params['downdelay']}ms"
+-                )
++            for key, (option, formatter) in param_map.items():
++                if key in params:
++                    cfg.update_section(section, option, formatter(params[key]))
+ 
+-            if "arp-interval" in params:
+-                cfg.update_section(
+-                    section, "ARPIntervalSec", f"{params['arp-interval']}ms"
+-                )
+-
+-            if "arp-ip-target" in params:
+-                targets = params["arp-ip-target"]
++            if "arp-ip-targets" in params:
++                targets = params["arp-ip-targets"]
+                 if isinstance(targets, str):
+                     targets = [targets]
+-                ip_list = " ".join(targets)
+-                cfg.update_section(section, "ARPIPTargets", ip_list)
++                cfg.update_section(section, "ARPIPTargets", " ".join(targets))
+ 
+-            if "arp-validate" in params:
+-                cfg.update_section(
+-                    section, "ARPValidate", params["arp-validate"]
+-                )
++            bond_ndev_configs[bond_name] = cfg.get_final_conf()
+ 
+-            if "arp-all-targets" in params:
+-                cfg.update_section(
+-                    section, "ARPAllTargets", params["arp-all-targets"]
+-                )
++        return {
++            "bond_netdev": bond_ndev_configs,
++            "bond_link": bond_link_info,
++        }
+ 
+-            if "primary-reselect" in params:
+-                cfg.update_section(
+-                    section,
+-                    "PrimaryReselectPolicy",
+-                    params["primary-reselect"],
+-                )
++    def render_bridges(self, ns: NetworkState) -> dict:
++        bridge_link_info: Dict[str, Any] = {
++            "macaddress": {},
++            "path-cost": {},
++            "port-priority": {},
++        }
+ 
+-            if "lacp-rate" in params:
+-                cfg.update_section(
+-                    section, "LACPTransmitRate", params["lacp-rate"]
+-                )
++        bridge_ndev_configs = {}
+ 
+-            if "transmit-hash-policy" in params:
+-                cfg.update_section(
+-                    section,
+-                    "TransmitHashPolicy",
+-                    params["transmit-hash-policy"],
++        bridges = ns.config.get("bridges", {})
++        for bridge_name, bridge_cfg in bridges.items():
++            interfaces = bridge_cfg.get("interfaces", [])
++            if not interfaces:
++                LOG.warning(
++                    "Skipping bridge %s - missing 'interfaces'", bridge_name
+                 )
++                continue
+ 
+-            if "ad-select" in params:
+-                cfg.update_section(section, "AdSelect", params["ad-select"])
++            # Map each interface to its bridge
++            for iface in interfaces:
++                bridge_link_info[iface] = bridge_name
+ 
+-            if "min-links" in params:
+-                cfg.update_section(
+-                    section, "MinLinks", str(params["min-links"])
+-                )
++            # ---- .netdev config for the bridge ----
++            cfg = CfgParser()
++            cfg.update_section("NetDev", "Name", bridge_name)
++            cfg.update_section("NetDev", "Kind", "bridge")
+ 
+-            if "all-slaves-active" in params:
+-                cfg.update_section(
+-                    section,
+-                    "AllSlavesActive",
+-                    str(params["all-slaves-active"]).lower(),
+-                )
++            val = bridge_cfg.get("mtu")
++            if val:
++                cfg.update_section("NetDev", "MTUBytes", val)
+ 
+-            bond_ndev_configs[bond_name] = cfg.get_final_conf()
++            val = bridge_cfg.get("macaddress")
++            if val:
++                val = val.lower()
++                cfg.update_section("NetDev", "MACAddress", val)
++                bridge_link_info["macaddress"][bridge_name] = val
++
++            # Bridge parameters
++            params = bridge_cfg.get("parameters", {})
++            param_map = {
++                "ageing-time": "AgeingTimeSec",
++                "forward-delay": "ForwardDelaySec",
++                "hello-time": "HelloTimeSec",
++                "max-age": "MaxAgeSec",
++                "priority": "Priority",
++                "stp": "STP",
++            }
++            for key, sysd_key in param_map.items():
++                val = params.get(key)
++                if val:
++                    if isinstance(val, bool):
++                        val = "yes" if val else "no"
++                    cfg.update_section("Bridge", sysd_key, val)
++
++            val = params.get("path-cost")
++            if val:
++                bridge_link_info["path-cost"][bridge_name] = val
+ 
+-        ret_dict = {
+-            "bond_netdev": bond_ndev_configs,
+-            "bond_link": bond_link_info,
++            val = params.get("port-priority")
++            if val:
++                bridge_link_info["port-priority"][bridge_name] = val
++
++            bridge_ndev_configs[bridge_name] = cfg.get_final_conf()
++
++        return {
++            "bridge_netdev": bridge_ndev_configs,
++            "bridge_link": bridge_link_info,
+         }
+-        return ret_dict
+ 
+ 
+ def available(target=None):
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.netdev
+new file mode 100644
+index 00000000000..6240729bc99
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.netdev
+@@ -0,0 +1,13 @@
++[Bridge]
++AgeingTimeSec=300
++ForwardDelaySec=4
++HelloTimeSec=2
++MaxAgeSec=20
++Priority=2048
++STP=yes
++
++[NetDev]
++Kind=bridge
++MACAddress=00:11:22:33:44:aa
++MTUBytes=9000
++Name=br0
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.network
+new file mode 100644
+index 00000000000..2b733945902
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br0.network
+@@ -0,0 +1,19 @@
++[Address]
++Address=172.16.1.10/24
++
++[Link]
++MACAddress=00:11:22:33:44:aa
++MTUBytes=9000
++
++[Match]
++Name=br0
++
++[Network]
++DHCP=no
++DNS=1.1.1.1
++Domains=bridge.test
++
++[Route]
++Destination=0.0.0.0/0
++Gateway=172.16.1.1
++Metric=100
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.netdev
+new file mode 100644
+index 00000000000..6a7d7f81729
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.netdev
+@@ -0,0 +1,13 @@
++[Bridge]
++AgeingTimeSec=200
++ForwardDelaySec=3
++HelloTimeSec=1
++MaxAgeSec=15
++Priority=4096
++STP=yes
++
++[NetDev]
++Kind=bridge
++MACAddress=00:11:22:33:44:88
++MTUBytes=1500
++Name=br1
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.network
+new file mode 100644
+index 00000000000..ea656764107
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br1.network
+@@ -0,0 +1,19 @@
++[Address]
++Address=10.0.0.10/24
++
++[Link]
++MACAddress=00:11:22:33:44:88
++MTUBytes=1500
++
++[Match]
++Name=br1
++
++[Network]
++DHCP=no
++DNS=9.9.9.9
++Domains=vlan.bridge
++
++[Route]
++Destination=10.0.0.0/24
++Gateway=10.0.0.1
++Metric=200
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.netdev
+new file mode 100644
+index 00000000000..a273afde4b6
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.netdev
+@@ -0,0 +1,11 @@
++[Bridge]
++AgeingTimeSec=100
++HelloTimeSec=2
++MaxAgeSec=20
++Priority=8192
++
++[NetDev]
++Kind=bridge
++MACAddress=00:11:22:33:44:bb
++MTUBytes=1600
++Name=br2
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.network
+new file mode 100644
+index 00000000000..02b421b7c41
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-br2.network
+@@ -0,0 +1,13 @@
++[Address]
++Address=192.168.50.10/24
++
++[Link]
++MACAddress=00:11:22:33:44:bb
++MTUBytes=1600
++
++[Match]
++Name=br2
++
++[Network]
++DHCP=no
++DNS=8.8.4.4
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth3.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth3.network
+new file mode 100644
+index 00000000000..149bb852027
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth3.network
+@@ -0,0 +1,10 @@
++[Bridge]
++Cost=30
++Priority=32
++
++[Match]
++Name=eth3
++
++[Network]
++Bridge=br0
++DHCP=no
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth4.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth4.network
+new file mode 100644
+index 00000000000..fb31f7dfc25
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth4.network
+@@ -0,0 +1,10 @@
++[Bridge]
++Cost=40
++Priority=60
++
++[Match]
++Name=eth4
++
++[Network]
++Bridge=br0
++DHCP=no
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network
+index fb82925b4e6..2d9b2b6d947 100644
+--- a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vl101.network
+@@ -2,4 +2,5 @@
+ Name=vl101
+ 
+ [Network]
++Bridge=br2
+ DHCP=no
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network
+index f8afc4724f9..49ea2ce7d3c 100644
+--- a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan100.network
+@@ -4,6 +4,10 @@ Address=192.168.100.10/24
+ [Address]
+ Address=192.168.100.11/24
+ 
++[Bridge]
++Cost=45
++Priority=50
++
+ [Link]
+ MACAddress=00:11:22:33:44:66
+ MTUBytes=901
+@@ -12,6 +16,7 @@ MTUBytes=901
+ Name=vlan100
+ 
+ [Network]
++Bridge=br1
+ DHCP=ipv6
+ DNS=8.8.8.8 1.1.1.1
+ Domains=corp.example.com vlan.test
+diff --git a/tests/unittests/net/artifacts/photon_net_config_v2.yaml b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+index 7984f8438fe..d14cc438af7 100644
+--- a/tests/unittests/net/artifacts/photon_net_config_v2.yaml
++++ b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+@@ -1,6 +1,5 @@
+ network:
+   version: 2
+-
+   ethernets:
+     eth0:
+       match:
+@@ -28,6 +27,14 @@ network:
+         search:
+           - example.org
+ 
++    eth3:
++      dhcp4: false
++      dhcp6: false
++
++    eth4:
++      dhcp4: false
++      dhcp6: false
++
+   bonds:
+     bond0:
+       interfaces: [eth0, eth2]
+@@ -84,3 +91,69 @@ network:
+           - bond.vlan.test
+       mtu: 111
+       dhcp6: true
++
++  bridges:
++    br0:
++      interfaces: [eth3, eth4]
++      addresses: [172.16.1.10/24]
++      routes:
++        - to: 0.0.0.0/0
++          via: 172.16.1.1
++          metric: 100
++      nameservers:
++        addresses: [1.1.1.1]
++        search: [bridge.test]
++      mtu: 9000
++      macaddress: "00:11:22:33:44:aa"
++      parameters:
++        stp: true
++        forward-delay: 4
++        hello-time: 2
++        max-age: 20
++        priority: 2048
++        ageing-time: 300
++        path-cost:
++          eth3: 30
++          eth4: 40
++        port-priority:
++          eth3: 32
++          eth4: 60
++
++    br1:
++      interfaces: [vlan100]
++      addresses: [10.0.0.10/24]
++      routes:
++        - to: 10.0.0.0/24
++          via: 10.0.0.1
++          metric: 200
++      nameservers:
++        addresses: [9.9.9.9]
++        search: [vlan.bridge]
++      mtu: 1500
++      macaddress: "00:11:22:33:44:88"
++      parameters:
++        stp: true
++        forward-delay: 3
++        hello-time: 1
++        max-age: 15
++        priority: 4096
++        ageing-time: 200
++        path-cost:
++          vlan100: 45
++        port-priority:
++          vlan100: 50
++
++    br2:
++      interfaces: [vl101]
++      addresses: [192.168.50.10/24]
++      nameservers:
++        addresses: [8.8.4.4]
++      mtu: 1600
++      macaddress: "00:11:22:33:44:BB"
++      parameters:
++        stp: false
++        forward-delay: 0
++        hello-time: 2
++        max-age: 20
++        priority: 8192
++        ageing-time: 100
+
+From 74dbddc7fcb1742565af3955fae2d122ebc56290 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 6 Aug 2025 23:53:09 +0530
+Subject: [PATCH 2/3] Multiple vlans can be associated with same interface
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cloudinit/net/networkd.py                     | 17 +++--
+ .../network/10-cloud-init-eth0.network        |  2 +
+ .../network/10-cloud-init-vlan101.netdev      |  7 ++
+ .../network/10-cloud-init-vlan101.network     | 17 +++++
+ .../network/10-cloud-init-vlan102.netdev      |  7 ++
+ .../network/10-cloud-init-vlan102.network     | 17 +++++
+ .../net/artifacts/photon_net_config_v2.yaml   | 64 ++++++++++++-------
+ 7 files changed, 102 insertions(+), 29 deletions(-)
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.netdev
+ create mode 100644 tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network
+
+diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
+index 47597aef1d0..4345f0eaedc 100644
+--- a/cloudinit/net/networkd.py
++++ b/cloudinit/net/networkd.py
+@@ -5,6 +5,7 @@
+ # This file is part of cloud-init. See LICENSE file for license information.
+ 
+ import logging
++from collections import defaultdict
+ from typing import Any, Callable, Dict, List, Optional, Tuple
+ 
+ from cloudinit import subp, util
+@@ -373,6 +374,7 @@ def _render_content(self, ns: NetworkState):
+             vlan_dict = self.render_vlans(ns)
+             vlan_netdev = vlan_dict["vlan_netdev"]
+             vlan_link = vlan_dict["vlan_link"]
++            vlan_link["macaddress"] = vlan_dict["vlan_mac_info"]
+             ret_dict["vlan_netdev"] = vlan_netdev
+ 
+         if "bonds" in ns.config:
+@@ -392,9 +394,9 @@ def _render_content(self, ns: NetworkState):
+ 
+             iface_name = iface["name"]
+ 
+-            vlan_link_name = vlan_link.get(iface_name)
+-            if vlan_link_name:
+-                cfg.update_section("Network", "VLAN", vlan_link_name)
++            vlan_link_name = vlan_link.get(iface_name, [])
++            for i in vlan_link_name:
++                cfg.update_section("Network", "VLAN", i)
+ 
+             # TODO: revisit this once network state renders macaddress
+             # properly for vlan config
+@@ -496,9 +498,9 @@ def _render_content(self, ns: NetworkState):
+         return ret_dict
+ 
+     def render_vlans(self, ns: NetworkState) -> dict:
+-        vlan_link_info: Dict[str, Any] = {}
++        vlan_link_info = defaultdict(list)
++        vlan_mac_info = {}
+         vlan_ndev_configs = {}
+-        vlan_link_info["macaddress"] = {}
+ 
+         vlans = ns.config.get("vlans", {})
+         for vlan_name, vlan_cfg in vlans.items():
+@@ -511,7 +513,7 @@ def render_vlans(self, ns: NetworkState) -> dict:
+                 )
+                 continue
+ 
+-            vlan_link_info[parent] = vlan_name
++            vlan_link_info[parent].append(vlan_name)
+ 
+             # -------- .netdev for VLAN --------
+             cfg = CfgParser()
+@@ -526,7 +528,7 @@ def render_vlans(self, ns: NetworkState) -> dict:
+             if val:
+                 val = val.lower()
+                 cfg.update_section("NetDev", "MACAddress", val)
+-                vlan_link_info["macaddress"][vlan_name] = val
++                vlan_mac_info[vlan_name] = val
+ 
+             cfg.update_section("VLAN", "Id", vlan_id)
+             vlan_ndev_configs[vlan_name] = cfg.get_final_conf()
+@@ -534,6 +536,7 @@ def render_vlans(self, ns: NetworkState) -> dict:
+         return {
+             "vlan_netdev": vlan_ndev_configs,
+             "vlan_link": vlan_link_info,
++            "vlan_mac_info": vlan_mac_info,
+         }
+ 
+     def render_bonds(self, ns: NetworkState) -> dict:
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
+index e3a8358fd7a..7e958ea284e 100644
+--- a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
+@@ -9,3 +9,5 @@ Name=eth0
+ Bond=bond0
+ DHCP=no
+ VLAN=vlan100
++VLAN=vlan101
++VLAN=vlan102
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.netdev
+new file mode 100644
+index 00000000000..aec56f8196b
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.netdev
+@@ -0,0 +1,7 @@
++[NetDev]
++Kind=vlan
++MTUBytes=1400
++Name=vlan101
++
++[VLAN]
++Id=101
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network
+new file mode 100644
+index 00000000000..b5158e91d16
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network
+@@ -0,0 +1,17 @@
++[Address]
++Address=10.100.101.10/24
++
++[Link]
++MTUBytes=1400
++
++[Match]
++Name=vlan101
++
++[Network]
++DHCP=no
++DNS=1.1.1.1 9.9.9.9
++Domains=vlan101.local
++
++[Route]
++Destination=0.0.0.0/0
++Gateway=10.100.101.1
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.netdev b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.netdev
+new file mode 100644
+index 00000000000..2d8e8fba03f
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.netdev
+@@ -0,0 +1,7 @@
++[NetDev]
++Kind=vlan
++MTUBytes=1400
++Name=vlan102
++
++[VLAN]
++Id=102
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network
+new file mode 100644
+index 00000000000..c0992bb2e0d
+--- /dev/null
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network
+@@ -0,0 +1,17 @@
++[Address]
++Address=10.100.102.10/24
++
++[Link]
++MTUBytes=1400
++
++[Match]
++Name=vlan102
++
++[Network]
++DHCP=no
++DNS=8.8.8.8 1.0.0.1
++Domains=vlan102.local
++
++[Route]
++Destination=0.0.0.0/0
++Gateway=10.100.102.1
+diff --git a/tests/unittests/net/artifacts/photon_net_config_v2.yaml b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+index d14cc438af7..a99e955e5eb 100644
+--- a/tests/unittests/net/artifacts/photon_net_config_v2.yaml
++++ b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+@@ -1,5 +1,6 @@
+ network:
+   version: 2
++
+   ethernets:
+     eth0:
+       match:
+@@ -16,16 +17,13 @@ network:
+       match:
+         macaddress: "00:aa:bb:cc:dd:ee"
+       set-name: eth2
+-      mtu: 1400
+       dhcp4: false
++      mtu: 1400
+       addresses:
+         - 10.20.30.40/24
+       nameservers:
+-        addresses:
+-          - 9.9.9.9
+-          - 8.8.8.8
+-        search:
+-          - example.org
++        addresses: [9.9.9.9, 8.8.8.8]
++        search: [example.org]
+ 
+     eth3:
+       dhcp4: false
+@@ -52,19 +50,13 @@ network:
+     vlan100:
+       id: 100
+       link: eth0
+-      addresses:
+-        - 192.168.100.10/24
+-        - 192.168.100.11/24
++      addresses: [192.168.100.10/24, 192.168.100.11/24]
+       dhcp6: true
+       mtu: 901
+       macaddress: "00:11:22:33:44:66"
+       nameservers:
+-        addresses:
+-          - 8.8.8.8
+-          - 1.1.1.1
+-        search:
+-          - corp.example.com
+-          - vlan.test
++        addresses: [8.8.8.8, 1.1.1.1]
++        search: [corp.example.com, vlan.test]
+       routes:
+         - to: 10.10.200.0/24
+           via: 192.168.100.1
+@@ -73,6 +65,38 @@ network:
+           via: 192.168.100.2
+           metric: 150
+ 
++    vlan101:
++      id: 101
++      link: eth0
++      addresses: [10.100.101.10/24]
++      routes:
++        - to: 0.0.0.0/0
++          via: 10.100.101.1
++          table: 101
++      routing-policy:
++        - from: 10.100.101.10
++          table: 101
++      mtu: 1400
++      nameservers:
++        addresses: [1.1.1.1, 9.9.9.9]
++        search: [vlan101.local]
++
++    vlan102:
++      id: 102
++      link: eth0
++      addresses: [10.100.102.10/24]
++      routes:
++        - to: 0.0.0.0/0
++          via: 10.100.102.1
++          table: 102
++      routing-policy:
++        - from: 10.100.102.10
++          table: 102
++      mtu: 1400
++      nameservers:
++        addresses: [8.8.8.8, 1.0.0.1]
++        search: [vlan102.local]
++
+     vl101:
+       id: 101
+       link: eth2
+@@ -81,14 +105,10 @@ network:
+       id: 200
+       link: bond0
+       macaddress: "00:11:22:33:44:99"
+-      addresses:
+-        - 192.168.200.10/24
++      addresses: [192.168.200.10/24]
+       nameservers:
+-        addresses:
+-          - 1.1.1.1
+-          - 8.8.4.4
+-        search:
+-          - bond.vlan.test
++        addresses: [1.1.1.1, 8.8.4.4]
++        search: [bond.vlan.test]
+       mtu: 111
+       dhcp6: true
+ 
+
+From e8f09009e94dd31b04bafb28ff4fe3c0e2288156 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 9 Aug 2025 17:50:16 +0530
+Subject: [PATCH 3/3] Handle routing policy configurations
+
+Handle `to: default' value in network_state.py for networkd renderer.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cloudinit/net/network_state.py                | 18 +++++++++++
+ cloudinit/net/networkd.py                     | 30 +++++++++++++++++-
+ .../network/10-cloud-init-eth0.network        | 26 ++++++++++++++++
+ .../network/10-cloud-init-eth2.network        | 16 ++++++++++
+ .../network/10-cloud-init-vlan101.network     |  6 ++++
+ .../network/10-cloud-init-vlan102.network     |  5 +++
+ .../net/artifacts/photon_net_config_v2.yaml   | 31 +++++++++++++++++++
+ 7 files changed, 131 insertions(+), 1 deletion(-)
+
+diff --git a/cloudinit/net/network_state.py b/cloudinit/net/network_state.py
+index 9fd51e42916..ab7bb2c9a50 100644
+--- a/cloudinit/net/network_state.py
++++ b/cloudinit/net/network_state.py
+@@ -16,6 +16,7 @@
+     ipv4_mask_to_net_prefix,
+     ipv6_mask_to_net_prefix,
+     is_ip_network,
++    is_ipv4_address,
+     is_ipv4_network,
+     is_ipv6_address,
+     is_ipv6_network,
+@@ -923,6 +924,7 @@ def _add_dhcp_overrides(overrides, subnet):
+                         "gateway": route.get("via"),
+                         "metric": route.get("metric"),
+                         "mtu": route.get("mtu"),
++                        "table": route.get("table"),
+                     }
+                 )
+             )
+@@ -990,6 +992,22 @@ def _normalize_net_keys(network, address_keys=()):
+         raise ValueError(message)
+ 
+     addr = str(net.get(addr_key))
++    if addr == "default":
++        gw_ip = str(net.get("gateway"))
++        if not gw_ip:
++            message = "Gateway IP is empty"
++            LOG.error(message)
++            raise ValueError(message)
++
++        if is_ipv4_address(gw_ip):
++            addr = "0.0.0.0/0"
++        elif is_ipv6_address(gw_ip):
++            addr = "::/0"
++        else:
++            message = f"Invalid Gateway IP: '{gw_ip}'"
++            LOG.error(message)
++            raise ValueError(message)
++
+     if not is_ip_network(addr):
+         LOG.error("Address %s is not a valid ip network", addr)
+         raise ValueError(f"Address {addr} is not a valid ip address")
+diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
+index 4345f0eaedc..777490e6f6b 100644
+--- a/cloudinit/net/networkd.py
++++ b/cloudinit/net/networkd.py
+@@ -68,6 +68,7 @@ def __init__(self):
+             "VLAN": [],
+             "Bond": [],
+             "Bridge": [],
++            "RoutingPolicyRule": {},
+         }
+ 
+     def update_section(self, sec, key, val):
+@@ -104,7 +105,7 @@ def get_final_conf(self):
+             if k == "Address":
+                 for e in sorted(v):
+                     contents += f"[{k}]\n{e}\n\n"
+-            elif k == "Route":
++            elif k in ["Route", "RoutingPolicyRule"]:
+                 for n in sorted(v):
+                     contents += f"[{k}]\n"
+                     for e in sorted(v[n]):
+@@ -181,6 +182,7 @@ def parse_routes(self, rid, conf, cfg: CfgParser):
+             "gateway": "Gateway",
+             "network": "Destination",
+             "metric": "Metric",
++            "table": "Table",
+         }
+ 
+         # prefix is derived using netmask by network_state
+@@ -364,6 +366,26 @@ def render_network_state(
+         for k, v in bridge_netdev.items():
+             self.create_network_file(k, v, network_dir, ext=".netdev")
+ 
++    def parseRoutingPolicy(self, policy, cfg: CfgParser):
++        rid = 0
++        key = "RoutingPolicyRule"
++        for val in policy:
++            for k, v in val.items():
++                cfg.update_route_section(key, rid, k.capitalize(), v)
++            rid += 1
++
++    def extractRoutingPolicies(self, nsCfg: Dict):
++        routingPolicies = {}
++        key = "routing-policy"
++
++        for section in ("ethernets", "bonds", "vlans", "bridges"):
++            if section not in nsCfg:
++                continue
++            for iface, settings in nsCfg[section].items():
++                if key in settings:
++                    routingPolicies[iface] = settings[key]
++        return routingPolicies
++
+     def _render_content(self, ns: NetworkState):
+         ret_dict = {}
+         vlan_link = {}
+@@ -389,6 +411,8 @@ def _render_content(self, ns: NetworkState):
+             bridge_link = bridge_dict["bridge_link"]
+             ret_dict["bridge_netdev"] = bridge_netdev
+ 
++        routingPolicies = self.extractRoutingPolicies(ns.config)
++
+         for iface in ns.iter_interfaces():
+             cfg = CfgParser()
+ 
+@@ -398,6 +422,10 @@ def _render_content(self, ns: NetworkState):
+             for i in vlan_link_name:
+                 cfg.update_section("Network", "VLAN", i)
+ 
++            rPolicy = routingPolicies.get(iface_name)
++            if rPolicy:
++                self.parseRoutingPolicy(rPolicy, cfg)
++
+             # TODO: revisit this once network state renders macaddress
+             # properly for vlan config
+             if not iface["mac_address"] and vlan_link.get("macaddress"):
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
+index 7e958ea284e..16ea4e32dfb 100644
+--- a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth0.network
+@@ -1,3 +1,6 @@
++[Address]
++Address=192.0.2.10/24
++
+ [Link]
+ MTUBytes=1500
+ 
+@@ -11,3 +14,26 @@ DHCP=no
+ VLAN=vlan100
+ VLAN=vlan101
+ VLAN=vlan102
++
++[Route]
++Destination=0.0.0.0/0
++Gateway=192.168.14.1
++Metric=50
++Table=10
++
++[Route]
++Destination=::/0
++Gateway=2001:1::2
++Metric=100
++
++[RoutingPolicyRule]
++From=192.0.2.10
++Priority=100
++Table=10
++To=203.0.113.100
++
++[RoutingPolicyRule]
++From=203.0.113.101/24
++Priority=90
++Table=70
++To=192.0.2.11/8
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network
+index 712c52b71b6..e637cbec9f7 100644
+--- a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-eth2.network
+@@ -14,3 +14,19 @@ DHCP=no
+ DNS=9.9.9.9 8.8.8.8
+ Domains=example.org
+ VLAN=vl101
++
++[Route]
++Destination=198.51.100.0/24
++Gateway=10.20.30.1
++Metric=60
++
++[Route]
++Destination=192.0.2.0/24
++Gateway=10.20.30.1
++Metric=110
++
++[RoutingPolicyRule]
++From=10.20.30.40
++Priority=120
++Table=12
++To=198.51.100.200
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network
+index b5158e91d16..ac9ff4189c5 100644
+--- a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan101.network
+@@ -15,3 +15,9 @@ Domains=vlan101.local
+ [Route]
+ Destination=0.0.0.0/0
+ Gateway=10.100.101.1
++Table=101
++
++[RoutingPolicyRule]
++From=10.100.101.10
++Priority=100
++Table=101
+diff --git a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network
+index c0992bb2e0d..65b3f75412c 100644
+--- a/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network
++++ b/tests/unittests/net/artifacts/photon_net_config/etc/systemd/network/10-cloud-init-vlan102.network
+@@ -15,3 +15,8 @@ Domains=vlan102.local
+ [Route]
+ Destination=0.0.0.0/0
+ Gateway=10.100.102.1
++Table=102
++
++[RoutingPolicyRule]
++From=10.100.102.10
++Table=102
+diff --git a/tests/unittests/net/artifacts/photon_net_config_v2.yaml b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+index a99e955e5eb..c8d6e4351f8 100644
+--- a/tests/unittests/net/artifacts/photon_net_config_v2.yaml
++++ b/tests/unittests/net/artifacts/photon_net_config_v2.yaml
+@@ -8,6 +8,24 @@ network:
+       set-name: eth0
+       dhcp4: false
+       mtu: 1500
++      addresses: [192.0.2.10/24]
++      routes:
++        - to: default
++          via: 192.168.14.1
++          metric: 50
++          table: 10
++        - to: default
++          via: 2001:1::2
++          metric: 100
++      routing-policy:
++        - from: 192.0.2.10
++          to: 203.0.113.100
++          table: 10
++          priority: 100
++        - to: 192.0.2.11/8
++          from: 203.0.113.101/24
++          table: 70
++          priority: 90
+ 
+     eth1:
+       dhcp4: true
+@@ -24,6 +42,18 @@ network:
+       nameservers:
+         addresses: [9.9.9.9, 8.8.8.8]
+         search: [example.org]
++      routes:
++        - to: 198.51.100.0/24
++          via: 10.20.30.1
++          metric: 60
++        - to: 192.0.2.0/24
++          via: 10.20.30.1
++          metric: 110
++      routing-policy:
++        - from: 10.20.30.40
++          to: 198.51.100.200
++          table: 12
++          priority: 120
+ 
+     eth3:
+       dhcp4: false
+@@ -76,6 +106,7 @@ network:
+       routing-policy:
+         - from: 10.100.101.10
+           table: 101
++          priority: 100
+       mtu: 1400
+       nameservers:
+         addresses: [1.1.1.1, 9.9.9.9]

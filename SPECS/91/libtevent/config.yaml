@@ -1,0 +1,32 @@
+sources:
+- archive: tevent-0.15.0.tar.gz
+  archive_sha512sum: 470cc4489255a4f122ba1d680669589ba375d4081ff46631dd56f5104202d175bfb13356820eb9108a6b768b3837b2f5d26cc7b0acc3071c4787fb070df3cbab
+  skip_validation: true
+  archive_type: None
+  name: tevent-0.15.0
+  version: 0.15.0
+  url: https://download.samba.org/pub/tevent/tevent-0.15.0.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba/-/tree/master/lib/tevent
+  commit_id: 6a80d170bca0c938f78ab12e37481b52792a9d83
+  skip_list: []
+  missing: []
+  license_manual_review:
+  - file_paths:
+    - tevent-0.15.0/lib/talloc/man/talloc.3.xml
+    sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
+    spdx_exp: LGPL-3.0-or-later
+  spdx:
+    package:
+      detailed_description: 'Tevent is an event system based on the talloc memory
+        management library. Tevent has support for many event types, including timers,
+        signals, and the classic file descriptor events. Tevent also provide helpers
+        to deal with asynchronous code providing the tevent_req (Tevent Request) functions. '
+      home_page: http://tevent.samba.org/
+      license_concluded: snprintf AND ISC AND LGPL-3.0-or-later AND GPL-3.0-or-later
+        AND Apache-2.0 AND LGPL-2.1-or-later AND PostgreSQL AND BSD-3-Clause AND LGPL-2.0-or-later
+        AND AGPL-3.0-or-later
+      license_declared: snprintf AND ISC AND LGPL-3.0-or-later AND GPL-3.0-or-later
+        AND Apache-2.0 AND LGPL-2.1-or-later AND PostgreSQL AND BSD-3-Clause AND LGPL-2.0-or-later
+        AND AGPL-3.0-or-later
+      short_summary: The tevent library
+      supplier: 'Organization: Broadcom, Inc.'

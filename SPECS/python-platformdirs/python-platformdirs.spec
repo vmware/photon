@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname platformdirs
 
 Name:           python3-platformdirs
 Version:        3.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python module for determining appropriate platform-specific dirs
 URL:            https://github.com/platformdirs/platformdirs
 Vendor:         VMware, Inc.
@@ -60,6 +62,8 @@ pip3 install tomli pytest-mock
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.0-3
+- Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.0-2
 - Release bump for SRP compliance
 * Tue Aug 22 2023 Shreenidhi Shedi <sshedi@vmware.com> 3.10.0-1

@@ -1,11 +1,11 @@
 sources:
-- archive: pydantic-1.10.1.tar.gz
-  archive_sha512sum: e0394b90c39fd5294b7f4f280548d07113d771737943c390405d5bdbaf05216dc20c6adb7860cbbe1f8ee9698909447e72a8a5245009c710fe9b172d53bb2260
+- archive: pydantic-1.10.26.tar.gz
+  archive_sha512sum: 17adb1c8ed1331c58fa25470da10640a9d293133a7f8af4334205503f87c0f007d537b51036e5e4aedb6366e780568d631f0c1a4bdc10a25c1015193dc2be420
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Data validation and settings management using python
-        type hinting. '
+        type hinting.'
       home_page: https://pypi.org/project/pydantic
       license_concluded: MIT
       license_declared: MIT

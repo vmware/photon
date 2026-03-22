@@ -1,0 +1,13 @@
+sources:
+- archive: requests-unixsocket-0.3.0.tar.gz
+  archive_sha512sum: 21c887b0c3fa526a2debb3960e0ea4dc3b3015cdd517459b6484501176321408d1b4c87dd2840c7d8b71d08fa9114f655ae03f8bc9ff1fca33c914900ef82f5b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Requests is an Apache2 Licensed HTTP library, written
+        in Python, for human beings. '
+      home_page: https://pypi.org/project/requests-unixsocket
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Use requests to talk HTTP via a UNIX domain socket
+      supplier: 'Organization: Broadcom, Inc.'

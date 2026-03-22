@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           tuna
 Version:        0.18
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Application tuning command line utility
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,7 +14,9 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildArch:      noarch
-BuildRequires:  python3-devel, gettext
+BuildRequires:  python3-devel
+BuildRequires:  gettext
+BuildRequires:  python3-setuptools
 Requires:       python3-ethtool
 Requires:       python3-linux-procfs
 Requires:       python3-schedutils
@@ -64,6 +68,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18-5
+- Bump up release as part of python3 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.18-4
 - Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.18-3

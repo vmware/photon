@@ -1,7 +1,14 @@
 sources:
-- archive: uwsgi-2.0.21.tar.gz
-  archive_sha512sum: 36a9c1b87a4c3d08482b9045d2227f56b006acb53f38ddf1b510880ae5fc24c0177a077338ec8af3ef0b8f8e220bc4fc7f8311dab8066e13cbcbb616f736c795
-  skip_validation: true
+- archive: uwsgi-2.0.31.tar.gz
+  archive_sha512sum: d4d327f36455438e165298cb5a7d483c951f4acd3d834b46ceeda105bd3664792ead226b02e06db62e92c210544778119bf75a55d9d4f30f8fba896c7de51e6d
+  version: 2.0.31
+  name: uwsgi-2.0.31
+  archive_type: upstream
+  skip_validation: false
+  url: https://github.com/unbit/uwsgi/archive/refs/tags/2.0.31.tar.gz
+  repo_url: https://github.com/unbit/uwsgi
+  commit_id: ce518cce893d20e9c79eb2607f3a6c250468ae4d
+  missing: []
   spdx:
     package:
       detailed_description: 'The uWSGI project aims at developing a full stack for

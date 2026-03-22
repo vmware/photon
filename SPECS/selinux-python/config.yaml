@@ -1,7 +1,15 @@
 sources:
-- archive: selinux-python-3.4.tar.gz
-  archive_sha512sum: d601ce2628c4876dc4f2dfccd6db8ff45f68c5eb1b14cec3328644b71959107546469b27dfd90488fc669019b341d0cba708a1797f427ac7f86a0f05e86c0948
-  skip_validation: true
+- archive: selinux-python-3.5.tar.gz
+  archive_sha512sum: 2ac176a9f078f2b2721e5871ba21e92041eed54fc692fd8d809ff14327beee6de63b3084d0f1053a640b9e40bcc6461498915bb9b038a658cd772f77d80fd217
+  archive_type: upstream
+  skip_validation: false
+  name: selinux-python-3.5
+  version: "3.5"
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.5/selinux-python-3.5.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: d6e96c5929a3f1aa1dce93505edd9f0158757ac2
+  missing: ['.circleci', '.travis.yml', 'sepolgen', 'scripts', 'lgtm.yml', 'gui', 'dbus', 'CONTRIBUTING.md', 'libselinux', 'chcat', 'audit2allow', 'libsepol', 'CleanSpec.mk', 'README.md', 'semodule-utils', 'python', 'semanage', 'po', '.gitignore', 'secilc', 'libsemanage', 'mcstrans', 'policycoreutils', 'SECURITY.md', 'sandbox', 'restorecond', 'checkpolicy', '.github', 'sepolicy']
+  skip_list: ['LICENSE', 'Makefile']
   spdx:
     package:
       detailed_description: 'The %{name} package contains the management tools use

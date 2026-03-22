@@ -1,0 +1,23 @@
+diff -urp suricata-6.0.3.orig/configure.ac suricata-6.0.3/configure.ac
+--- suricata-6.0.3.orig/configure.ac	2021-06-30 12:24:47.000000000 -0400
++++ suricata-6.0.3/configure.ac	2021-07-01 13:19:04.292513777 -0400
+@@ -2752,7 +2752,7 @@ if test "$WINDOWS_PATH" = "yes"; then
+         e_rustdir="$e_abs_srcdir/rust"
+     fi
+ else
+-    EXPAND_VARIABLE(localstatedir, e_logdir, "/log/suricata/")
++    EXPAND_VARIABLE(localstatedir, e_logdir, "/log/suricata")
+     EXPAND_VARIABLE(localstatedir, e_rundir, "/run/")
+     EXPAND_VARIABLE(localstatedir, e_logfilesdir, "/log/suricata/files")
+     EXPAND_VARIABLE(localstatedir, e_logcertsdir, "/log/suricata/certs")
+Only in suricata-6.0.3: configure.ac.orig
+diff -urp suricata-6.0.3.orig/etc/suricata.logrotate.in suricata-6.0.3/etc/suricata.logrotate.in
+--- suricata-6.0.3.orig/etc/suricata.logrotate.in	2021-06-30 12:19:54.000000000 -0400
++++ suricata-6.0.3/etc/suricata.logrotate.in	2021-07-01 13:19:44.455509467 -0400
+@@ -1,5 +1,5 @@
+ # Sample /etc/logrotate.d/suricata configuration file.
+-@e_logdir@*.log @e_logdir@*.json {
++@e_logdir@/*.log @e_logdir@/*.json {
+     daily
+     missingok
+     rotate 5

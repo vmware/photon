@@ -1,0 +1,12 @@
+sources:
+- archive: netaddr-0.8.0.tar.gz
+  archive_sha512sum: a158bef87e862330c583f8b6709c4f575ec036dd31d725dad679e583ad4bef1a34f43225453bc93970ab720ae5f9f0fc2a6a3b92cbb922ed6f201414fd1e96d3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A network address manipulation library for Python '
+      home_page: https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-0.8.0.tar.gz
+      license_concluded: BSD-3-Clause AND MIT
+      license_declared: BSD-3-Clause AND MIT
+      short_summary: A network address manipulation library for Python
+      supplier: 'Organization: Broadcom, Inc.'

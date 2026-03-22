@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
-%define srcname SQLAlchemy
+%define srcname sqlalchemy
 
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python3-sqlalchemy
-Version:        2.0.0
+Version:        2.0.48
 Release:        1%{?dist}
 Url:            http://www.sqlalchemy.org
 Group:          Development/Languages/Python
@@ -18,7 +20,6 @@ BuildRequires:  python3-pip
 BuildRequires:  python3-wheel
 
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-typing-extensions
 
 %description
@@ -42,6 +43,8 @@ tox -e py311-sqlite
 %{python3_sitelib}/*
 
 %changelog
+* Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.48-1
+- Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1
 - Update to 2.0.0, fixes PVE-2022-51668
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.40-3

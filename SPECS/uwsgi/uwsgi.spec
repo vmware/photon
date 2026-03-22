@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
-Version:        2.0.21
-Release:        23%{?dist}
+Version:        2.0.31
+Release:        1%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,9 +18,8 @@ Source4: %{name}.sysusers
 Source5: license.txt
 %include %{SOURCE5}
 
-Patch0: CVE-2023-27522.patch
-
 BuildRequires: python3-devel
+BuildRequires: python3-setuptools
 BuildRequires: jansson-devel
 BuildRequires: libxml2-devel
 BuildRequires: curl-devel
@@ -234,6 +235,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.31-1
+- Upgrade to 2.0.31 as part of python3 upgrade
 * Mon Oct 27 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.0.21-23
 - Bump up to build with latest jansson
 * Wed Oct 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.21-22

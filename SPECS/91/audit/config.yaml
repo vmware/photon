@@ -1,0 +1,22 @@
+sources:
+- archive: audit-3.0.9.tar.gz
+  archive_sha512sum: 5219eb0b41746eca3406008a97731c0083e7be50ec88563a39537de22cb69fe88490f5fe5a11535930f360b11a62538e2ff6cbe39e059cd760038363954ef4d6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The audit package contains the user space utilities for
+        storing and searching the audit records generate by the audit subsystem in
+        the Linux 2.6 kernel. '
+      home_page: http://people.redhat.com/sgrubb/audit
+      license_concluded: GPL-2.0-only AND FSFAP AND LGPL-2.0-or-later AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-or-later
+        AND MIT AND FSFUL AND FSFULLR AND FSFULLRWD AND X11 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: GPL-2.0-only AND FSFAP AND LGPL-2.0-or-later AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND GPL-1.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-or-later
+        AND MIT AND FSFUL AND FSFULLR AND FSFULLRWD AND X11 AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: Kernel Audit Tool
+      supplier: 'Organization: Broadcom, Inc.'

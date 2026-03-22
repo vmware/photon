@@ -1,0 +1,14 @@
+sources:
+- archive: importlib_metadata-6.0.0.tar.gz
+  archive_sha512sum: 7d5cea465bf02722b28542f374e36ed55ab09455e1e548e838acf0cb38dcd84a79f5ef7cd673400852ff3a33271078ec8476f02aa7bf7748d3b85f4cefe3f678
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Library to access the metadata for a Python package.
+        This package supplies third-party access to the functionality of importlib.metadata
+        including improvements added to subsequent Python versions. '
+      home_page: https://github.com/python/importlib_metadata
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
+      short_summary: Library to access the metadata for a Python package
+      supplier: 'Organization: Broadcom, Inc.'

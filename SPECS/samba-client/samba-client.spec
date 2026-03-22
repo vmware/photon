@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global _samba_modules  pdb_tdbsam,pdb_ldap,pdb_smbpasswd,pdb_wbc_sam,pdb_samba4
 %define maj_ver         4.0
 
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -463,6 +465,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.19.3-8
+- Bump version as a part of python3.14 upgrade
 * Mon Jan 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-7
 - Build with system provided mit krb5
 - Fix CVE-2025-9640

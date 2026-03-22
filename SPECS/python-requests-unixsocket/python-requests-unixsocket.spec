@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define srcname requests-unixsocket
 
 Name:           python3-requests-unixsocket
 Version:        0.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Use requests to talk HTTP via a UNIX domain socket
 Url:            https://pypi.org/project/requests-unixsocket
 Group:          Development/Languages/Python
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.0-5
+- Bump version as a part of python3.14 upgrade
 * Tue Jan 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.0-4
 - Fix functionality break introduced by CVE-2024-35195 in python3-requests
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.0-3

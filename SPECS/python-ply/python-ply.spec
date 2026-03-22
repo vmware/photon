@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
+
 Name:           python3-ply
 Version:        3.11
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Python Lex & Yacc
 Group:          Development/Languages/Python
 Url:            http://www.dabeaz.com/ply/
@@ -11,6 +13,7 @@ Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 %if 0%{?with_check}
 BuildRequires:  python3-six
 %endif
@@ -56,6 +59,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11-8
+- Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11-7
 - Release bump for SRP compliance
 * Mon Oct 31 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.11-6
