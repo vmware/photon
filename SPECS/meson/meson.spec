@@ -4,7 +4,7 @@ Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        1.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,6 +63,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-2
+- Fix config.yaml manual license review entry
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-1
 - Version upgrade
 * Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> 1.3.2-2

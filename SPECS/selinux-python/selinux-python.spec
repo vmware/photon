@@ -3,7 +3,7 @@
 Summary:        SELinux policy core utilities
 Name:           selinux-python
 Version:        3.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -13,6 +13,8 @@ Source0: https://github.com/SELinuxProject/selinux/releases/download/%{version}/
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-Disable-build-isolation-for-sepolicy-python-module.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
@@ -59,6 +61,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %exclude %{_sharedstatedir}/sepolgen/perm_map
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-2
+- Fix build error
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
 - Update to 3.5 as part of python3 upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-3

@@ -3,7 +3,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -15,6 +15,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
+Patch1:         0001-libselinux-src-Makefile-build-python-module-without-.patch
 
 BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre2-devel
@@ -127,6 +128,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-2
+- Fix offline build error
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
 - Update to build with python 3.14
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4-6

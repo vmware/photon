@@ -1,0 +1,33 @@
+From bdd3f9015828fe62fa69dec7108a6363143e735a Mon Sep 17 00:00:00 2001
+From: Cathy Hu <cahu@suse.de>
+Date: Mon, 16 Feb 2026 17:07:34 +0100
+Subject: [PATCH] Disable build isolation for sepolicy python module
+
+same justification as:
+https://github.com/SELinuxProject/selinux/commit/17a9372391ad2c9bf0e440391d6fd13cb8cfdaf3
+
+Used patch by Daniel Garcia <daniel.garcia@suse.com>:
+https://build.opensuse.org/requests/1333291
+
+Signed-off-by: Cathy Hu <cahu@suse.de>
+Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
+---
+ sepolicy/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sepolicy/Makefile b/sepolicy/Makefile
+index 4e9e93d..1a722e9 100644
+--- a/sepolicy/Makefile
++++ b/sepolicy/Makefile
+@@ -27,7 +27,7 @@ test:
+ 	@$(PYTHON) test_sepolicy.py -v
+ 
+ install:
+-	$(PYTHON) -m pip install --prefix=$(PREFIX) `test -n "$(DESTDIR)" && echo --root $(DESTDIR) --ignore-installed --no-deps` $(PYTHON_SETUP_ARGS) .
++	$(PYTHON) -m pip install --no-build-isolation --prefix=$(PREFIX) `test -n "$(DESTDIR)" && echo --root $(DESTDIR) --ignore-installed --no-deps` $(PYTHON_SETUP_ARGS) .
+ 	[ -d $(DESTDIR)$(BINDIR) ] || mkdir -p $(DESTDIR)$(BINDIR)
+ 	install -m 755 sepolicy.py $(DESTDIR)$(BINDIR)/sepolicy
+ 	(cd $(DESTDIR)$(BINDIR); ln -sf sepolicy sepolgen)
+-- 
+2.43.7
+
