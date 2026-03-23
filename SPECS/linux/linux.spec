@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.252
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -580,6 +580,11 @@ Patch322: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
 # CVE-2026-23231
 Patch323: 0001-netfilter-nf_tables-register-hooks-last-when-adding-.patch
 Patch324: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
+
+# CVE-2026-23268
+Patch325: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
+# Fix CVE-2026-23277
+Patch326: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1272,6 +1277,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-4
+- Fix CVE-2026-23268, CVE-2026-23277
 * Mon Mar 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-3
 - Fix CVE-2026-23231
 * Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.252-2

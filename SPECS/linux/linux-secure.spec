@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.252
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -511,6 +511,11 @@ Patch320: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
 Patch321: 0001-netfilter-nf_tables-register-hooks-last-when-adding-.patch
 Patch322: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
 
+# CVE-2026-23268
+Patch323: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
+# Fix CVE-2026-23277
+Patch324: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -776,6 +781,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-4
+- Fix CVE-2026-23268, CVE-2026-23277
 * Mon Mar 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-3
 - Fix CVE-2026-23231
 * Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.10.252-2
