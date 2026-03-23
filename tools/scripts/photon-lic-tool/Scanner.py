@@ -629,7 +629,7 @@ class Scanner:
                         spdx_exp.extend(
                             self.__parse_found_manual_review_file(
                                 reviewed_f["sha256sum"],
-                                reviewed_f["spdx_exp"],
+                                reviewed_f.get("spdx_exp", ""),
                                 full_path,
                             )
                         )
