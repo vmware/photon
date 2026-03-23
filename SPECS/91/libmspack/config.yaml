@@ -1,280 +1,232 @@
 sources:
-- archive: libmspack-0.11alpha.tar.gz
-  archive_type: upstream
-  version: 0.11alpha
-  name: libmspack-0.11alpha
-  url: http://www.cabextract.org.uk/libmspack/libmspack-0.11alpha.tar.gz
-  repo_url: https://github.com/kyz/libmspack.git
-  commit_id: 370d41b64230907f7ca16586bcc1cd93304718f9
-  skip_list: []
-  missing: ['Makefile.am', 'README', 'depcomp', 'AUTHORS', 'libmspack.pc.in', 'libmspack.la', 'test', 'INSTALL', 'libmschmd.la', 'config.h.in', 'cabextract', 'examples', 'TODO', 'ar-lib', 'libmscabd.la', 'ChangeLog', 'doc', 'config.guess', 'config.sub', 'missing', 'configure', 'aclocal.m4', 'mspack', 'install-sh', 'ltmain.sh', 'README.md', 'libmspack', 'm4', 'compile', 'COPYING.LIB', 'acinclude.m4', 'NEWS', 'configure.ac', 'test-driver', 'Makefile.in']
-  archive_sha512sum: 40c487e5b4e2f63a6cada26d29db51f605e8c29525a1cb088566d02cf2b1cc9dba263f80e2101d7f8e9d69cf7684a15bcaf791fb4891ad013a56afc7256dfa62
+- archive: libmspack-0.10.1alpha.tar.gz
+  archive_sha512sum: a7b5f7caa49190c5021f3e768b92f2e51cc0ce685c9ab6ed6fb36de885c73231b58d47a8a3b5c5aa5c9ac56c25c500eb683d84dbf11f09f97f6cb4fff5adc245
   license_manual_review:
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/bad_folderindex.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/bad_folderindex.cab
     sha256sum: 011e30c814ac61aadfca88c415a379baff9e2e7639b0cbcb38b421d767474a8e
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/bad_nofiles.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/bad_nofiles.cab
     sha256sum: 49040cb133f2dbe06158eb5672c66a116ec3a4a58e5d237e0a88a691279bc31f
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/bad_nofolders.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/bad_nofolders.cab
     sha256sum: 23170315f2cf83f2774f6735663fb07f719bc0e488249303f939392fd99a11a3
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/bad_signature.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/bad_signature.cab
     sha256sum: 7b6c118991a4e97918e9696a4cd1cee76158e73293f59c3d619cc190661e3f3d
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/cve-2010-2800-mszip-infinite-loop.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/cve-2010-2800-mszip-infinite-loop.cab
     sha256sum: 3b93f97710a8d2361ae6464f5888abafd622732f4913c27c517578e06c256fa9
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/cve-2014-9556-qtm-infinite-loop.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/cve-2014-9556-qtm-infinite-loop.cab
     sha256sum: 2e6f57d26e12f3f1c0f1f968d7ebb92e77ea7720ea6f9e18f11eb00ef0e845ad
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/cve-2014-9732-folders-segfault.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/cve-2014-9732-folders-segfault.cab
     sha256sum: f4d8514c2a8352b8fb13be896fb3179662e0cef36c58312bf8f775e1663d07fe
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/cve-2015-4470-mszip-over-read.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/cve-2015-4470-mszip-over-read.cab
     sha256sum: 24e64dd19eb6fba1cac21017bf38327acd773453d1b8fe77b27bf7a06237f32a
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/cve-2015-4471-lzx-under-read.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/cve-2015-4471-lzx-under-read.cab
     sha256sum: 4afbf92314b20625970123acc9dc9682b745765ce16ae1e08ae857e333c74e85
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/cve-2017-11423-fname-overread.cab
-    sha256sum: d9e678ce8f43a107ab03aa2c8298a1eca083ca4fc089863dcdeebe2b11c1b35c
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/cve-2018-18584-qtm-max-size-block.cab
-    sha256sum: 3ba0c719d8fb12dc531e2a7790c2d15c12d8840de8e4ddc60572c4145181fbf4
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/filename-read-violation-1.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/filename-read-violation-1.cab
     sha256sum: 56680e32a66c070dcb3cedf6140bd921570ca66681f631c16f435348c7ab9f9a
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/filename-read-violation-2.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/filename-read-violation-2.cab
     sha256sum: 7c3cfb546f22e9c0a58e83801b267743dabb1cbcff54608c4e2a970eacb4799f
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/filename-read-violation-3.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/filename-read-violation-3.cab
     sha256sum: 0d4ab17615d0f04875534f793058508bf2a15da6ea50316628e230cd2ded0e9f
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/filename-read-violation-4.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/filename-read-violation-4.cab
     sha256sum: 3ada151c203d355ace5eec86396c9f07c7abc12b73b4cacea028a353a446b136
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/lzx-main-tree-no-lengths.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/lzx-main-tree-no-lengths.cab
     sha256sum: fd0ce6a326f735e4ad4bad8704f515a9eea9a0317e2a3b3c535ae3a15ca7d434
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/lzx-premature-matches.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/lzx-premature-matches.cab
     sha256sum: 09f25f73b76058196f27486dbb3ca4ff8f57d5cba5f548db727844155b911244
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/multi_basic_pt1.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/multi_basic_pt1.cab
     sha256sum: 3658aaf68b0d538a5b321919f1de3eb1bcc258cba44e97b07a1938230995c632
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/multi_basic_pt2.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/multi_basic_pt2.cab
     sha256sum: ce5fac4470fb850ae593de70ab03d3493069b77f8f81376216768bbf74e52321
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/multi_basic_pt3.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/multi_basic_pt3.cab
     sha256sum: e58b57f63ac0858effa75ceb6f242b447fbce6a910d3840c37228fdbc9e7bc95
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/multi_basic_pt4.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/multi_basic_pt4.cab
     sha256sum: fbcd45e503c3cffd5f5946ccc45bbc46b9884fe47abef7d09247154c7f8148fb
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/multi_basic_pt5.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/multi_basic_pt5.cab
     sha256sum: 16ebbb274c8dc09f98415795212683b9ea8b2d6450080a79ab63cd5cdbac7cc4
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/normal_255c_filename.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/normal_255c_filename.cab
     sha256sum: fb9bba673ed309eeafcee77c6194a3b9c9baaa54b47a1999f1b280c21f29a7ef
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_nodata.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_nodata.cab
     sha256sum: e7ba7901e4b38a64d6c8fb49e8ba77a13308beaba061a77ad747181766f1e6c1
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_nofiles.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_nofiles.cab
     sha256sum: 2d1980b8cbe9857ae39b62fad9168a96fc30810d8729fc9a92e1319089c12795
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_nofolder.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_nofolder.cab
     sha256sum: 88ab2bb7a6f7d1a2e59ad3badbe3687651589b81a4b6c05b14e6b388bdba0712
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_shortextheader.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_shortextheader.cab
     sha256sum: ff3bd292ab019824c92278ca63b24d57f4040345bd1c05f64fb7184d07b0d4ab
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_shortfile1.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_shortfile1.cab
     sha256sum: d5bfee6000d8c0471d1f1db67223abaaa2ec99031cb47b7a4c9994b07d5e1344
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_shortfile2.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_shortfile2.cab
     sha256sum: 29cf5a97b404e014a0bc143a43f02ff208b19203419a655645def6d5296dcd4f
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_shortfolder.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_shortfolder.cab
     sha256sum: 4c143f002ce619e66bedecd2fae7046db133b42ff6d0f48194ab9a2fb4144395
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_shortheader.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_shortheader.cab
     sha256sum: f55c6dd28b5939a09bccdf5b7e7ae0aea129603e0d6df019d021fbc7987bdad9
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_nofname.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_nofname.cab
     sha256sum: 29001eeaa397db3c854c224fffefcd135122b6de009ce28036184aef54179d58
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_noninfo.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_noninfo.cab
     sha256sum: 6d337b13d02e8e3aca210ebe8f30bdc328ba313a7071fb32fbd9674479f93042
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_nonname.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_nonname.cab
     sha256sum: 3999099ea8a3cdb2db30cba01ea9d30273ab68efbfe2f52015483b01e75c03d8
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_nopinfo.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_nopinfo.cab
     sha256sum: 6ad5d7542828b72dce21166d4a8acdaebf04e5505cb24d95962d30d496be3b05
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_nopname.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_nopname.cab
     sha256sum: 2ae2295fed585e5fd9e042b6ab16d0f3f782a20ade3a011f23e74c295176dfb9
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_shortfname.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_shortfname.cab
     sha256sum: 933d3aee0b789fa47319d3b60713d45b7f80127693e02e753e1f9cf48d0a5879
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_shortninfo.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_shortninfo.cab
     sha256sum: 0602b07c20fce311714d74d682870699a1900667eeb75acb1b2500e23087ca99
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_shortnname.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_shortnname.cab
     sha256sum: 95d239ae300e38b99defba95f909a7ad8b106a42116a1d075d71234f437a670d
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_shortpinfo.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_shortpinfo.cab
     sha256sum: 1963ef2a0a09a8e9ffab85ab226e0c3ca451b59feabe78ed8f277a3751ec113f
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/partial_str_shortpname.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/partial_str_shortpname.cab
     sha256sum: 41eaba6617f2d5c3e76067f46cff9069df0779c4b78da1dad078e2d132f8f060
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_---.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/qtm-max-size-block.cab
+    sha256sum: 3ba0c719d8fb12dc531e2a7790c2d15c12d8840de8e4ddc60572c4145181fbf4
+    spdx_exp: ''
+  - file_paths:
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_---.cab
     sha256sum: 00c218c33684a7548b2f883dc71b36eb910abc0e938038d7e967553cfeb5b00f
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_--D.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_--D.cab
     sha256sum: c76611d6f84a8a14b4fbf6c2117a6a9bff4dcb448afd7e0019a2d158f5849713
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_-F-.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_-F-.cab
     sha256sum: 093f71c2ce79223a5c6b8d68eea5e0bbd5c66c81d21c1a338a069b0b6f6553a6
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_-FD.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_-FD.cab
     sha256sum: 238a611079c5d141fa8807ac51d21759cde994dfbccf1b94984b08b8da383b3a
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_H--.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_H--.cab
     sha256sum: 2b5160a4865a0a7e2054e892389969a0a9894b62aa73b54810f330a43f66dcbf
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_H-D.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_H-D.cab
     sha256sum: c8bd7b0ecec2a3137a7983d42ecf600f4b3c7a33821537d2e0990bda511d3402
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_HF-.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_HF-.cab
     sha256sum: d1ea378d26017c4ce1e6843eb662872d01a3620840f3c3ebbc99b3569100f821
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/reserve_HFD.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/reserve_HFD.cab
     sha256sum: c5c9cf32c25e83bd336efbee5be0afe18cf4c87644ca682a7c97f815f808c8ab
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/search_basic.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/search_basic.cab
     sha256sum: 187abf012189d595f68709ee0358fdecb91204d28f94aea984b5222878e15447
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/cabd/search_tricky1.cab
+    - libmspack-0.10.1alpha/test/test_files/cabd/search_tricky1.cab
     sha256sum: 93b66b341aea74a9812509d62fedc74b92fa4deb8636b71821e128ba141f3cc6
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2015-4468-namelen-bounds.chm
-    sha256sum: 3e4cb920c16e25993e2ad920f95723e64b1d724bd27cd2c6d701ea6f7ac76bdb
+    - libmspack-0.10.1alpha/test/test_files/chmd/blank-filenames.chm
+    sha256sum: 72e3dff81a9d409bb8ec0673fe429c150ccf3569dba35f7ed942aa8375a9148c
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2015-4469-namelen-bounds.chm
-    sha256sum: 11b61822837a22791a93f32eaeb3d3a5f118e01b6c8d8fc86cb7948b9a689e72
+    - libmspack-0.10.1alpha/test/test_files/chmd/cve-2015-4468-namelen-bounds.chm
+    sha256sum: 892e6f33d6c314f4bf7a327ba74370b2ef95fda0c148ba9349c2ea591759fe87
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2015-4472-namelen-bounds.chm
+    - libmspack-0.10.1alpha/test/test_files/chmd/cve-2015-4469-namelen-bounds.chm
+    sha256sum: 51f96b15392a0c89608f0338e648a3c5cd8bedaf307866b7fb170afd56f0ae08
+    spdx_exp: ''
+  - file_paths:
+    - libmspack-0.10.1alpha/test/test_files/chmd/cve-2015-4472-namelen-bounds.chm
     sha256sum: 40e8e5cc000ce9fb40dc458cb1390f920a516513af040ad7eab54fe8a0f592d3
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2017-6419-lzx-negative-spaninfo.chm
+    - libmspack-0.10.1alpha/test/test_files/chmd/cve-2017-6419-lzx-negative-spaninfo.chm
     sha256sum: 0d7e37ceb9619ded8d17229948a483a65bc7a507935420e8558cf0df2d081b48
     spdx_exp: ''
   - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2018-14679-off-by-one.chm
-    sha256sum: 7fe9e6380251e93feeda14d5713f916e069f452b7f88fb3c0c0a9c93dee812c2
+    - libmspack-0.10.1alpha/test/test_files/chmd/short-system-filenames.chm
+    sha256sum: 9ed4447e73e1c8d9f23e62383f92ffccdfaa74d837d4dfe4d7279b38fe5755c2
     spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2018-14680-blank-filenames.chm
-    sha256sum: 72e3dff81a9d409bb8ec0673fe429c150ccf3569dba35f7ed942aa8375a9148c
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2018-14682-unicode-u100.chm
-    sha256sum: cbd759f14a837b41754bdb193ccfea1200504e60356e2903724f15d0dd750605
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2018-18585-blank-filenames.chm
-    sha256sum: 72e3dff81a9d409bb8ec0673fe429c150ccf3569dba35f7ed942aa8375a9148c
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/cve-2019-1010305-name-overread.chm
-    sha256sum: 816149b5998620e589fd8e1f2bfd7667e3feac3f9e43799bbd2553f23cfb69de
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/encints-32bit-both.chm
-    sha256sum: 6f93c7087beff90799fe7bd2ce8aea803aa26b6d330d147fd6cde8cd9a393c65
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/encints-32bit-lengths.chm
-    sha256sum: 1b876cd9eef4639f4fd2a74491614bc8f443d6720083e9eb3175cd254c662718
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/encints-32bit-offsets.chm
-    sha256sum: 2673d99ca83236453a6f6fd397bc8c652e8dcf65297fa160b41153fbc80dbea5
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/encints-64bit-both.chm
-    sha256sum: b051ff57e9eadc497227c228d68944dfed66a27797d05fc1d457488bade8bae2
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/encints-64bit-lengths.chm
-    sha256sum: 73c7f004f581c3789439e6c45adde9e6553a52d8ec00222f28ea8c7c40aa3cca
-    spdx_exp: ''
-  - file_paths:
-    - libmspack-0.11alpha/test/test_files/chmd/encints-64bit-offsets.chm
-    sha256sum: b4f8cff950353ed584fd391bae5ccfc8a71eeaeff4b3333d5968c57fb1914ab6
-    spdx_exp: ''
-  skip_validation: false
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'A library that provides compression and decompression

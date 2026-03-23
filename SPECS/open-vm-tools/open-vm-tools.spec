@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        13.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -177,6 +177,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 13.0.0-3
+- Rebuild for libmspack update
 * Thu Sep 25 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 13.0.0-2
 - Fix CVE-2025-41244
 * Mon Jun 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-1
