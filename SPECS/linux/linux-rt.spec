@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.166
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -355,6 +355,11 @@ Patch230: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
 
 # Fix CVE-2025-71184
 Patch231: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
+
+# Fix CVE-2026-23268
+Patch232: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
+# Fix CVE-2026-23277
+Patch233: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -730,6 +735,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.166-2
+- Fix CVE-2026-23268, CVE-2026-23277
 * Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.166-1
 - Update to version 6.1.166
 * Tue Feb 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.164-1

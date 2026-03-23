@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.166
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -395,6 +395,11 @@ Patch229: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
 
 # Fix CVE-2025-38081
 Patch230: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
+
+# Fix CVE-2026-23268
+Patch231: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
+# Fix CVE-2026-23277
+Patch232: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
 # aarch64 [250..260]
 %ifarch aarch64
@@ -769,6 +774,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.166-2
+- Fix CVE-2026-23268, CVE-2026-23277
 * Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.166-1
 - Update to version 6.1.166
 * Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.164-2

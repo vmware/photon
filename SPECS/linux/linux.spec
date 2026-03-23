@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.166
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -426,6 +426,11 @@ Patch232: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
 
 # Fix CVE-2025-38081
 Patch233: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
+
+# Fix CVE-2026-23268
+Patch234: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
+# Fix CVE-2026-23277
+Patch235: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1182,6 +1187,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.166-2
+- Fix CVE-2026-23268, CVE-2026-23277
 * Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.166-1
 - Update to version 6.1.166
 * Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.164-2
