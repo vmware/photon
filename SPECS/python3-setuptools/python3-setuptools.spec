@@ -9,7 +9,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        80.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -45,6 +45,9 @@ A Python wheel of setuptools to use with venv.
 
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
+%if 0%{?with_check} == 0
+rm -r setuptools/tests/
+%endif
 
 %build
 %{python3} setup.py bdist_wheel
@@ -55,8 +58,10 @@ find %{buildroot}%{python3_sitelib} -name '*.exe' -delete
 mkdir -p %{buildroot}%{python_wheel_dir}
 install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 
+%if 0%{?with_check}
 %check
 %{py3_test}
+%endif
 
 %post
 find %{python3_sitelib}/%{srcname}-* -type d -empty -delete
@@ -74,6 +79,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 80.9.0-2
+- Remove test dir while building
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 80.9.0-1
 - Bump up release as part of python3 upgrade
 * Wed May 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 69.0.3-8

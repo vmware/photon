@@ -1,9 +1,10 @@
 %global build_if %{photon_subrelease} >= 92
+%define debug_package %{nil}
 
 Summary:        The code coverage tool for Python
 Name:           python3-coverage
 Version:        6.4.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -50,8 +51,10 @@ LANG=en_US.UTF-8 tox -e py36
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
-* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-3
-- Bump version as a part of python3.14 upgrade
+*   Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.4.4-4
+-   Disable debuginfo package
+*   Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-3
+-   Bump version as a part of python3.14 upgrade
 *   Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-2
 -   Release bump for SRP compliance
 *   Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 6.4.4-1

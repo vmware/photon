@@ -113,9 +113,7 @@ This package contains the header files and libraries needed to do
 these types of tasks.
 
 Install python-devel if you want to develop Python extensions.  The
-python package will also need to be installed.  You'll probably also
-want to install the python-docs package, which contains Python
-documentation.
+python package will also need to be installed.
 
 %package test
 Summary: Regression tests package for Python.
@@ -140,6 +138,8 @@ python-devel packages require it. So install a python-devel package instead.
 
 %prep
 %autosetup -p1 -n Python-%{version} -a2
+rm -r Doc/library/hashlib.rst \
+      Lib/test/wheeldata
 
 %build
 export OPT="${CFLAGS}"
@@ -150,7 +150,7 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__dev_ptc=no
 fi
 
-rm -vf Lib/ensurepip/_bundled/pip*.whl
+rm -v Lib/ensurepip/_bundled/pip*.whl
 
 pushd pip-wheel/%{_arch}
 cp pip*.whl \

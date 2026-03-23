@@ -11,6 +11,7 @@ sources:
   - file_paths:
     - glib-2.88.0/docs/reference/glib/gvariant-specification-1.0.rst
     sha256sum: 7b09dbf254808acac3c6ce0fd1ae6de6c9a2eafe8bc7622e8c8c154c5a932164
+    spdx_exp: ''
   skip_validation: true
   spdx:
     package:

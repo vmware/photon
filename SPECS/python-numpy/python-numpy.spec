@@ -5,7 +5,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
 Version:        2.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -47,6 +47,7 @@ general-purpose data-base applications.
 
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
+rm -r vendored-meson/meson/docs
 
 %build
 %{pyproject_wheel}
@@ -66,6 +67,8 @@ PATH=%{buildroot}%{_bindir}:${PATH} \
 %{python3_sitelib}/*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.2-2
+- Remove unused doc dir
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.2-1
 - Upgrade to 2.4.2 as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.23.4-3

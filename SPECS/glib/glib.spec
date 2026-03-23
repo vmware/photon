@@ -3,7 +3,7 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.88.0
-Release:      1%{?dist}
+Release:      2%{?dist}
 URL:          https://developer.gnome.org/glib
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -73,9 +73,12 @@ Gsettings schemas compiling tool
 
 %prep
 %autosetup -p1
+rm docs/reference/glib/*.svg \
+   LICENSES/CC-BY-SA-3.0.txt
 
 %build
 CONFIGURE_OPTS=(
+    -Ddocumentation=false
     -Dlibelf=disabled
     -Dgtk_doc=false
     -Dtests=false
@@ -126,6 +129,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-2
+- Remove unused docs dir
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-1
 - Version upgrade
 * Mon Feb 16 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.75.2-15

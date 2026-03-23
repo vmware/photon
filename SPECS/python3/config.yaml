@@ -9,6 +9,11 @@ sources:
   repo_url: https://github.com/python/cpython
   commit_id: 57e0d177c26d4a508ef46adae9cbae46fca39f70
   missing: ['mypy', 'NEWS', '.gitignore', 'NEWS.d', '.azure-pipelines', '.gitattributes', '.github']
+  license_manual_review:
+  - file_paths:
+    - Python-3.14.1/Modules/blake2module.c
+    sha256sum: 0570777f446b1f0cc504f70c57b0992db67c7c4cc704c5febbb4f6b5ee4193c1
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'The Python 3 package contains a new version of Python
