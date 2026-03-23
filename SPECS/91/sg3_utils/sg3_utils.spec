@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Tools and Utilities for interaction with SCSI devices.
 Name:           sg3_utils
-Version:        1.48
-Release:        1%{?dist}
+Version:        1.47
+Release:        3.1%{?dist}
 URL:            https://github.com/doug-gilbert/sg3_utils
 Group:          System/Tools.
 Vendor:         VMware, Inc.
@@ -14,6 +14,8 @@ Source0: http://sg.danny.cz/sg/p/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0:         0001-sg3_utils-Fix-issue-with-rescan-scsi-bus.sh-removing.patch
+
 Provides:       sg_utils
 
 BuildRequires:  lua-devel
@@ -22,7 +24,7 @@ BuildRequires:  lua-devel
 Linux tools and utilities to send commands to SCSI devices.
 
 %package -n     libsg3_utils-devel
-Summary:        Devel package for sg3_utils.
+Summary:        Devel pacjage for sg3_utils.
 Group:          Development/Library.
 Requires:       %{name} = %{version}-%{release}
 
@@ -30,7 +32,7 @@ Requires:       %{name} = %{version}-%{release}
 Package containing static library object for development.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
@@ -56,8 +58,8 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
-* Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.48-1
-- Update to v1.48
+* Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.47-3.1
+- Bump version for 91 release
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.47-3
 - Release bump for SRP compliance
 * Tue Jun 20 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.47-2

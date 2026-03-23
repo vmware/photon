@@ -1,15 +1,7 @@
 sources:
-- archive: sg3_utils-1.48.tar.xz
-  archive_type: upstream
-  version: '1.48'
-  name: sg3_utils-1.48
-  url: http://sg.danny.cz/sg/p/sg3_utils-1.48.tar.xz
-  repo_url: https://github.com/doug-gilbert/sg3_utils.git
-  commit_id: d176dd620541c74dcf9df7f80720861579890f2c
-  skip_list: []
-  missing: ['config.h.in', 'autom4te.cache', 'config.sub', 'configure', 'depcomp', 'config.guess', 'Makefile.in', 'aclocal.m4', 'compile', 'ar-lib', 'missing', 'install-sh', 'ltmain.sh']
-  archive_sha512sum: d4f586ac8a4ba9b5de5885657785e25251c8a42913332d6eca38f92b546c06e8e8aa0553c4b5c04f553cf2d0a9e4f34827f65ba596ef65e43dec36b4345f444a
-  skip_validation: false
+- archive: sg3_utils-1.47.tar.xz
+  archive_sha512sum: ef072b8f0012d0944e21d2134aff7125e24ea24d1cbbb1aa79160e844f9a60236f1e244437a3bc08a22a7e99f613adad4a05ae5cc3916ded5a72d162cd3aa163
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Linux tools and utilities to send commands to SCSI devices. '
