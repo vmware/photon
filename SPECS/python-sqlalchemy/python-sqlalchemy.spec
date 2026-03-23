@@ -6,7 +6,7 @@
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python3-sqlalchemy
 Version:        2.0.48
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            http://www.sqlalchemy.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,6 +43,8 @@ tox -e py311-sqlite
 %{python3_sitelib}/*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.48-2
+- Fix config.yaml
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.48-1
 - Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1

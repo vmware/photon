@@ -3,7 +3,7 @@ sources:
   archive_sha512sum: ec108625627b6f2611d55786e5d4079954fea1ba46e923d19d0f33a98ca6a2a4eac605d3d09746defd6a8eb9defd577097df98eff1b64c7c2d6d5647ac1122fe
   archive_type: upstream
   version: 2.0.48
-  name: sqlalchemy-2.0.0
+  name: sqlalchemy-2.0.48
   url: https://files.pythonhosted.org/packages/1f/73/b4a9737255583b5fa858e0bb8e116eb94b88c910164ed2ed719147bde3de/sqlalchemy-2.0.48.tar.gz
   repo_url: https://github.com/sqlalchemy/sqlalchemy
   commit_id: 746f5765c275dd8b3ab8eb738d489e7448fd40e1

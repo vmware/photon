@@ -5,7 +5,7 @@
 
 Name:           python3-scramp
 Version:        1.4.6
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 Summary:        Python implementation of the SCRAM protocol
 URL:            https://pypi.org/project/scramp
 Group:          Development/Languages/Python
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.6-1.2
+- Fix config.yaml
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.6-1.1
 - Bump after moving to SPECS/91
 * Fri Aug 29 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.6-1

@@ -3,13 +3,13 @@
 Summary:        Interface for Python to call C code
 Name:           python3-cffi
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
+Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-r1-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -53,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.0-2
+- Fix config.yaml and use proper source tarball
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.15.1-2
