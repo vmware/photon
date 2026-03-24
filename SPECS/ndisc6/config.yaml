@@ -1,0 +1,22 @@
+sources:
+- archive: ndisc6-1.0.8.tar.bz2
+  archive_type: upstream
+  archive_sha512sum: 74a8b0058f9171f1098513891fc1ed890ec43f89195eb501af0e38a67f6e849e44ff7158acf8a6d2eb87c49a00daabf0c3a550e724c1c1afecc2437a35621cc0
+  name: ndisc6-1.0.8
+  version: '1.0.8'
+  url: https://www.remlab.net/files/ndisc6/ndisc6-1.0.8.tar.bz2
+  repo_url: https://salsa.debian.org/debian/ndisc6
+  commit_id: e94a84669dce65ba99742c207f9decb99a5c2474
+  missing: []
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'NDisc6 is a small collection of useful tools for IPv6
+        networking, including ndisc6 (ICMPv6 Neighbor Discovery tool replacing arping),
+        rdisc6 (ICMPv6 Router Discovery tool), tcptraceroute6, traceroute6, and rdnssd
+        (Recursive DNS Servers discovery Daemon). '
+      home_page: https://www.remlab.net/ndisc6/
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: IPv6 diagnostic tools
+      supplier: 'Organization: Broadcom, Inc.'
