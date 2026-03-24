@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.109
+Version:        9.0.116
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -20,7 +20,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=5ff1fdc882ffd3e3bd05be17b6dc45f914fb2b6553f2438ef30f929f2255cde49b1bac3e39f1a1b1440664b5477e64bde6c408a477e7eab097aa8cee01b82850
+%define sha512 %{_origname}=d484a3fc3eb20de9fdd082db0d7448a9e09b8ef872521ca92db2c058a58ee16137c8709b5e0fd93230d9fd1b5ee9032a95078b18fd7ee13daa78d0f0b3d243de
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -32,7 +32,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=b04c30118979069868b9e4166a520467f011a82b51d23181e192a2495ca6d628f4b9463f7bddfe4102df369e71ce1126cd0d09ec89bbfed6bae0ffd5e4b15e52
+%define sha512 base=06822c5c6ce421164839123bd55eaee9a19975e8bba046c1de22c8abb92ccb832721c586ceb52d3c4eec6c8ef4c7f772c43de2fa352f00b549c5d5e680f1ead7
 
 BuildArch: noarch
 
@@ -146,6 +146,9 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Mar 24 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.116-1
+- Version upgrade
+- Fixes multiple CVEs
 * Mon Oct 06 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.109-1
 - Version upgrade
 - Fixes multiple CVEs
