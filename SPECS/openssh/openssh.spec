@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -38,6 +38,7 @@ Patch12: CVE-2025-61984-prep.patch
 Patch13: CVE-2025-61984.patch
 Patch14: CVE-2025-61985-prep.patch
 Patch15: CVE-2025-61985.patch
+Patch16: CVE-2023-48795.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -220,6 +221,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Tue Mar 24 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.9p1-13
+- Fix CVE-2023-48795
 * Fri Nov 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-12
 - Fix User arg parsing issue which was introduced by CVE-2025-61984-prep.patch
 * Fri Oct 31 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-11
