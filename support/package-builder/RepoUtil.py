@@ -62,7 +62,7 @@ class RepoLock:
 
 
 # This function should be called holding repo lock
-def updateRepoData():
+def updateRepoData(rebuild=False):
     repoPath = constants.rpmPath
     cmd = [
         "createrepo_c",
@@ -73,7 +73,8 @@ def updateRepoData():
         "--general-compress-type=gz",
         repoPath,
     ]
-    if constants.rebuild:
+
+    if rebuild:
         cmd.remove("--skip-stat")
 
     out, err, rc = cmdUtils.runCmd(cmd, capture=True, timeout=600, ignore_rc=True)
@@ -114,6 +115,7 @@ def signAndMoveRPMsToRepo(sandboxPath, listRPMFiles, listSRPMFiles):
                 print(f"Signed RPM: {dest}")
 
         with RepoLock(constants.stagePath):
+            rebuild = False
             for rpmFile in listRPMFiles:
                 fn = os.path.basename(rpmFile)
                 src = f"{rpmTempPath}/{fn}"
@@ -122,9 +124,16 @@ def signAndMoveRPMsToRepo(sandboxPath, listRPMFiles, listSRPMFiles):
                 else:
                     dest = f"{rpmPath}/noarch/{fn}"
 
+                # if we remove rpm X from spec Y and build Z which
+                # needs Y, it will end up in checksum failed error due to skip-stat
+                # flag during createrepo, so if destination file already exists,
+                # mark it as rebuild
+                if not rebuild and os.path.isfile(dest):
+                    rebuild = True
+
                 shutil.move(src, dest)
 
-            updateRepoData()
+            updateRepoData(rebuild=rebuild)
     finally:
         shutil.rmtree(rpmTempPath, ignore_errors=True)
 

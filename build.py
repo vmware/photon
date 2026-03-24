@@ -730,6 +730,8 @@ class RpmBuildTarget:
         if check_prerequesite["packages"]:
             return
 
+        RpmBuildTarget.create_repo()
+
         if not configdict["additional-path"]["photon-cache-path"]:
             Builder.buildPackagesForAllSpecs(
                 Build_Config.buildThreads,
@@ -745,6 +747,7 @@ class RpmBuildTarget:
 
     def package(self, pkgName):
         self.logger.debug(f"Package to build: {pkgName}")
+        RpmBuildTarget.create_repo()
         if pkgName in constants.extraPackagesList:
             constants.extraPackagesList.remove(pkgName)
         Builder.buildSpecifiedPackages(
@@ -756,6 +759,7 @@ class RpmBuildTarget:
     def packages_minimal(self):
         if check_prerequesite["packages-minimal"]:
             return
+        RpmBuildTarget.create_repo()
 
         if not configdict["additional-path"]["photon-cache-path"]:
             Builder.buildPackagesInJson(
@@ -774,6 +778,7 @@ class RpmBuildTarget:
     def packages_basic(self):
         if check_prerequesite["packages-basic"]:
             return
+        RpmBuildTarget.create_repo()
 
         if not configdict["additional-path"]["photon-cache-path"]:
             Builder.buildPackagesInJson(
@@ -792,6 +797,7 @@ class RpmBuildTarget:
     def packages_rt(self):
         if check_prerequesite["packages-rt"]:
             return
+        RpmBuildTarget.create_repo()
 
         if not configdict["additional-path"]["photon-cache-path"]:
             Builder.buildPackagesInJson(
@@ -810,6 +816,7 @@ class RpmBuildTarget:
     def packages_initrd(self):
         if check_prerequesite["packages-initrd"]:
             return
+        RpmBuildTarget.create_repo()
 
         Builder.buildPackagesInJson(
             os.path.join(Build_Config.dataDir, "packages_installer_initrd.json"),
@@ -825,6 +832,7 @@ class RpmBuildTarget:
     def packages_docker(self):
         if check_prerequesite["packages-docker"]:
             return
+        RpmBuildTarget.create_repo()
 
         Builder.buildPackagesForAllSpecs(
             Build_Config.buildThreads,
@@ -839,6 +847,7 @@ class RpmBuildTarget:
     def updated_packages(self):
         if check_prerequesite["updated-packages"]:
             return
+        RpmBuildTarget.create_repo()
 
         constants.setRpmPath(Build_Config.updatedRpmPath)
         Builder.buildPackagesForAllSpecs(
@@ -854,6 +863,7 @@ class RpmBuildTarget:
         pkgs = pkgs.split(",")
         self.logger.debug(f"Building following packages: {pkgs}")
         pkgMgr = PackageManager()
+        RpmBuildTarget.create_repo()
         pkgMgr._buildGivenPackages(pkgs, Build_Config.buildThreads, rebuild=rebuild)
         RpmBuildTarget.create_repo()
 
@@ -874,6 +884,7 @@ class RpmBuildTarget:
     def extra_packages(self):
         if check_prerequesite["extra-packages"]:
             return
+        RpmBuildTarget.create_repo()
 
         Builder.buildSpecifiedPackages(
             constants.extraPackagesList,
@@ -911,6 +922,7 @@ class RpmBuildTarget:
             return
 
         pkgManager = PackageManager()
+        RpmBuildTarget.create_repo()
         pkgManager.buildToolChainPackages(Build_Config.buildThreads)
         RpmBuildTarget.create_repo()
         check_prerequesite["toolchain"] = True

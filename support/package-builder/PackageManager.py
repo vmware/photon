@@ -92,7 +92,7 @@ class PackageManager(object):
         Scheduler.setBuildStage(BuildStage.TOOLCHAIN)
         toBuild = self.getPkgListToBuild(constants.listToolChainPackages)
         if toBuild:
-            overwrite = self.shouldOverwrite(BuildStage.CORE_TOOLCHAIN)
+            overwrite = self.shouldOverwrite(BuildStage.TOOLCHAIN)
             self._createBuildImage(overwrite=overwrite)
             self._buildGivenPackages(toBuild, buildThreads)
 

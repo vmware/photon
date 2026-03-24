@@ -76,7 +76,7 @@ class Sandbox(object):
         self.optionalMounts = optionalMounts
         self.logger = logger
 
-    def create(self):
+    def create(self, network_required=False):
         pass
 
     def destroy(self):
@@ -163,7 +163,7 @@ class Chroot(Sandbox):
             os.path.dirname(__file__), "prepare-build-root.sh"
         )
 
-    def create(self):
+    def create(self, network_required=False):
         if os.geteuid():
             raise Exception(f"Unable to create {self.name} as non-root user")
 
@@ -175,6 +175,12 @@ class Chroot(Sandbox):
         prepare_chroot_dirs(rootPath=self.chrootPath)
         self._cmd([self.prepareBuildRootCmd, self.chrootPath])
         self._prepare_mounts()
+
+        if network_required:
+            src = "/etc/resolv.conf"
+            dest = f"{self.chrootPath}/{src}"
+            CommandUtils.runCmd(["cp", src, dest])
+
         self.logger.debug(f"Successfully created chroot: {self.chrootPath}")
 
     def destroy(self):
@@ -194,6 +200,7 @@ class Chroot(Sandbox):
     ):
         if shell:
             raise Exception("Chroot.runCmd() does not support shell=True")
+
         env = {**sandbox_default_env(), **env}
         chroot_prefix = ["chroot"]
         if sandbox_user:
@@ -283,7 +290,7 @@ class SystemdNspawn(Sandbox):
         self.nspawnRootPath = f"{constants.buildRootPath}/{self.name}"
         self.observationFile = None
 
-    def create(self):
+    def create(self, network_required=False):
         if os.path.isdir(self.nspawnRootPath):
             if constants.resume_build:
                 return
@@ -412,7 +419,7 @@ class Container(Sandbox):
         self.container = None
         self.baseImagePath = baseImagePath
 
-    def create(self):
+    def create(self, network_required=False):
         mountVols = {
             constants.tmpDirPath: {"bind": "/tmp", "mode": "rw"},
             constants.dockerUnixSocket: {

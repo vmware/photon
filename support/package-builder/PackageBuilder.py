@@ -63,7 +63,8 @@ class PackageBuilder(object):
         listSRPMFiles = []
         try:
             self.srp.initialize()
-            self.sandbox.create()
+            network_required = SPECS.getData().isNetworkRequired(self.package, self.version)
+            self.sandbox.create(network_required=network_required)
 
             tUtils = ToolChainUtils(
                 self.buildStage,

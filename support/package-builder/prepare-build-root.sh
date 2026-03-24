@@ -23,7 +23,9 @@ if mountpoint -q ${BUILDROOT}/dev; then
   umount -R ${BUILDROOT}/dev
 fi
 
-cp /etc/resolv.conf ${BUILDROOT}/etc/
+# Keeping it here in case if this script needed else where
+# This logic is moved to Sandbox.py now, works based on network_required flag in spec
+#cp /etc/resolv.conf ${BUILDROOT}/etc/
 
 if [ ${EUID} -eq 0 ]; then
   # Ommited in the filesystem.spec file - not needed for booting
