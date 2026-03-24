@@ -684,10 +684,9 @@ class RpmBuildTarget:
 
     @staticmethod
     def create_repo():
-        createrepo_cmd = configdict["createrepo-cmd"]
         runCmd(
             [
-                createrepo_cmd,
+                "createrepo_c",
                 "--general-compress-type=gz",
                 "--update",
                 "-S",
@@ -1021,21 +1020,10 @@ class CheckTools:
             runCmd([f"{photonDir}/tools/src/contain/make.sh"])
 
     def check_all_tools():
-        tools = ["g++", "docker"]
+        tools = ["g++", "docker", "createrepo_c"]
         for tool in tools:
             if not shutil.which(tool):
                 raise Exception(f"ERROR: {tool} not present")
-
-        createrepo_cmd = ""
-        for tool in {"createrepo", "createrepo_c"}:
-            createrepo_cmd = shutil.which(tool)
-            if createrepo_cmd:
-                break
-
-        if not createrepo_cmd:
-            raise Exception("ERROR: createrepo not found")
-
-        configdict["createrepo-cmd"] = createrepo_cmd
 
     def check_sanity(repoDir=photonDir):
         script = f"{photonDir}/tools/scripts/sanity_check.sh"
