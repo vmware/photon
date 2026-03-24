@@ -1,0 +1,158 @@
+From 3313ab34c7b795ab9fd9bca8ebe61a5e643a3865 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 14 Mar 2026 18:52:15 +0530
+Subject: [PATCH] Fix package installs from command line repo
+
+When installing packages from the command line, repo_internalize() must
+be called first, before pool_addfileprovides() and pool_createwhatprovides()
+
+Fixes: e8906072
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ client/api.c                      |  2 +-
+ pytests/repo/tdnf-test3.spec      | 24 ++++++++++++++++++
+ pytests/repo/tdnf-test4.spec      | 22 ++++++++++++++++
+ pytests/tests/test_installroot.py | 42 +++++++++++++++++++++++++++++++
+ 4 files changed, 89 insertions(+), 1 deletion(-)
+ create mode 100644 pytests/repo/tdnf-test3.spec
+ create mode 100644 pytests/repo/tdnf-test4.spec
+
+diff --git a/client/api.c b/client/api.c
+index 5f58614..9f001a0 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -832,9 +832,9 @@ TDNFAddCmdLinePackages(
+         queue_push(pQueueGoal, id);
+     }
+ 
++    repo_internalize(pTdnf->pSolvCmdLineRepo);
+     pool_addfileprovides(pSack->pPool);
+     pool_createwhatprovides(pSack->pPool);
+-    repo_internalize(pTdnf->pSolvCmdLineRepo);
+ 
+ cleanup:
+     TDNF_SAFE_FREE_MEMORY(pszRPMPath);
+diff --git a/pytests/repo/tdnf-test3.spec b/pytests/repo/tdnf-test3.spec
+new file mode 100644
+index 0000000..d0ee122
+--- /dev/null
++++ b/pytests/repo/tdnf-test3.spec
+@@ -0,0 +1,24 @@
++Summary:    basic install test file.
++Name:       tdnf-test3
++Version:    1.0
++Release:    1
++Vendor:     VMware, Inc.
++License:    VMware
++Url:        http://www.vmware.com
++Group:      Applications/tdnftest
++Distribution:   Photon
++
++%description
++Spec to test install rpms from local repo
++
++%prep
++%build
++%install
++
++mkdir -p %{buildroot}%{_bindir}
++echo "one" > %{buildroot}%{_bindir}/one
++
++%files
++%{_bindir}/one
++
++%changelog
+diff --git a/pytests/repo/tdnf-test4.spec b/pytests/repo/tdnf-test4.spec
+new file mode 100644
+index 0000000..75ec07d
+--- /dev/null
++++ b/pytests/repo/tdnf-test4.spec
+@@ -0,0 +1,22 @@
++Summary:    basic install test file.
++Name:       tdnf-test4
++Version:    1.0
++Release:    1
++Vendor:     VMware, Inc.
++License:    VMware
++Url:        http://www.vmware.com
++Group:      Applications/tdnftest
++Distribution:   Photon
++
++Requires(post): /usr/bin/one
++
++%description
++Spec to test install rpms from local repo
++
++%prep
++%build
++%install
++
++%files
++
++%changelog
+diff --git a/pytests/tests/test_installroot.py b/pytests/tests/test_installroot.py
+index 4d3d7ab..2a7cf24 100644
+--- a/pytests/tests/test_installroot.py
++++ b/pytests/tests/test_installroot.py
+@@ -7,12 +7,15 @@
+ #
+ 
+ import os
++import glob
+ import shutil
+ import pytest
+ import fnmatch
++import tempfile
+ 
+ INSTALLROOT = '/root/installroot'
+ REPOFILENAME = 'photon-test.repo'
++RELEASE_VER = '5.0'
+ 
+ REPODIR = '/root/yum.repos.d'
+ REPONAME = 'reposdir-test'
+@@ -128,3 +131,42 @@ def test_setopt_reposdir_with_installroot(utils):
+     assert REPONAME in "\n".join(ret['stdout'])
+ 
+     shutil.rmtree(INSTALLROOT)
++
++
++def test_installroot_local_rpms_disablerepo_after_download(utils):
++
++    workdir = tempfile.mkdtemp(prefix='test-tdnf-')
++    try:
++        installroot = os.path.join(workdir, 'installroot')
++        rpm_repo = os.path.join(workdir, 'rpm-repo')
++        os.makedirs(rpm_repo, exist_ok=True)
++        os.makedirs(installroot, exist_ok=True)
++
++        repo_url = "http://localhost:8080/photon-test"
++
++        ret = utils.run(
++            ['tdnf', 'install', '-y', 'tdnf-test3', 'tdnf-test4',
++             '--refresh', '--downloadonly',
++             '--releasever', RELEASE_VER,
++             '--installroot', installroot,
++             '--downloaddir', rpm_repo,
++             '--nogpgcheck',
++             '--disablerepo=*', '--enablerepo=pkgs',
++             f'--repofrompath=pkgs,{repo_url}'],
++            cwd=workdir
++        )
++        assert ret['retval'] == 0, 'downloadonly failed: {}'.format(ret.get('stderr', []))
++
++        rpms = glob.glob(os.path.join(rpm_repo, '*.rpm'))
++        assert len(rpms) >= 1, 'no RPMs downloaded into rpm-repo'
++
++        ret = utils.run(
++            ['tdnf', 'install', '-y', '--refresh', '--releasever', RELEASE_VER,
++             '--installroot', installroot, '--disablerepo=*', '--nogpgcheck'] + rpms,
++            cwd=workdir
++        )
++        assert ret['retval'] == 0, (
++            'install from local RPMs into installroot with --disablerepo=* failed: {}'
++        ).format(ret.get('stderr', []))
++    finally:
++        shutil.rmtree(workdir, ignore_errors=True)
+-- 
+2.53.0

@@ -10,7 +10,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.6.3
-Release:        3%{?buildtag}%{?dist}
+Release:        4%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -23,8 +23,9 @@ Source1:        license.txt
 Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
-Patch1: 0001-filter-out-packages-from-pool-considered-in-three-pl.patch
-Patch2: 0002-connect-timeout.patch
+Patch1: 0002-filter-out-packages-from-pool-considered-in-three-pl.patch
+Patch2: 0003-connect-timeout.patch
+Patch3: 0004-fix-command-line-installs.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -256,6 +257,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue Mar 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-4
+- Fix installs from command line repo
 * Fri Mar 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-3
 - Add connect timeout patch
 * Thu Mar 12 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.3-2
