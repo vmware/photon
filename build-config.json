@@ -35,7 +35,7 @@
     "pull-sources-config": "https://packages.broadcom.com/photon/photon_sources/1.0",
     "copy-to-sandbox": {
       "adjust-gcc-specs": {
-        "src": "tools/scripts/adjust-gcc-specs.sh",
+        "src": "support/package-builder/adjust-gcc-specs.sh",
         "dest": "/root/adjust-gcc-specs.sh"
       },
       "print-java-home": {
