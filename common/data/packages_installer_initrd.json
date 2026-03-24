@@ -38,6 +38,7 @@
         "linux",
         "lua",
         "lvm2",
+        "mkpasswd",
         "ncurses",
         "ncurses-terminfo",
         "nspr",
