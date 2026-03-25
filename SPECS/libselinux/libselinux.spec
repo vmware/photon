@@ -20,10 +20,8 @@ Patch1:         0001-libselinux-src-Makefile-build-python-module-without-.patch
 BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre2-devel
 BuildRequires:  swig
-BuildRequires:  python3-devel
-BuildRequires:  python3-pip
 
-%define ExtraBuildRequires systemd-rpm-macros python3-setuptools
+%define ExtraBuildRequires systemd-rpm-macros python3-setuptools python3-pip python3-devel
 
 Requires:       pcre2-libs
 # libselinux optionally uses libsepol by dlopen it.
