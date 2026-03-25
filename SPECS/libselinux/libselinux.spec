@@ -21,10 +21,9 @@ BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre2-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
 BuildRequires:  python3-pip
 
-%define ExtraBuildRequires systemd-rpm-macros
+%define ExtraBuildRequires systemd-rpm-macros python3-setuptools
 
 Requires:       pcre2-libs
 # libselinux optionally uses libsepol by dlopen it.
