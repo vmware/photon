@@ -146,6 +146,7 @@
         "/usr/sbin/useradd": "shadow",
         "/usr/sbin/userdel": "shadow",
         "/usr/sbin/groupadd": "shadow",
+        "/usr/sbin/groupdel": "shadow",
         "/sbin/service": "initscripts",
         "/usr/bin/which": "which",
         "/usr/bin/python": "python3",
