@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.5.6
-Release:        1%{?dist}
+Version:        3.0.18
+Release:        3%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -23,6 +23,22 @@ Source6: license.txt
 
 Patch0: openssl-cnf.patch
 Patch1: add-FIPS_mode-compatibility-macro.patch
+Patch2: CVE-2023-50782.patch
+
+Patch0011: 0001-Correct-handling-of-AEAD-encrypted-CMS-with-inadmiss.patch
+Patch0012: 0002-Fix-heap-buffer-overflow-in-BIO_f_linebuffer.patch
+Patch0013: 0003-Fix-OCB-AES-NI-HW-stream-path-unauthenticated-unencr.patch
+Patch0014: 0004-Check-return-code-of-UTF8_putc.patch
+Patch0015: 0005-Verify-ASN1-object-s-types-before-attempting-to-acce.patch
+Patch0016: 0006-Add-NULL-check-to-PKCS12_item_decrypt_d2i_ex.patch
+Patch0017: 0007-Ensure-ASN1-types-are-checked-before-use.patch
+
+Patch0018: 0001-dane_match_cert-should-X509_free-on-mcert-instead-of.patch
+Patch0019: 0002-Fix-NULL-Dereference-When-Delta-CRL-Lacks-CRL-Number.patch
+Patch0020: 0003-Fix-NULL-deref-in-ec-dh_cms_set_shared_info.patch
+Patch0021: 0004-Fix-NULL-deref-in-rsa_cms_decrypt.patch
+Patch0022: 0005-Avoid-possible-buffer-overflow-in-buf2hex-conversion.patch
+Patch0023: 0006-rsa_kem-validate-RSA_public_encrypt-result-in-RSASVE.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -111,9 +127,6 @@ export MACHINE=%{_arch}
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
-    enable-quic \
-    enable-ktls \
-    zlib-dynamic \
     -Wl,-z,noexecstack
 
 %make_build
@@ -135,10 +148,6 @@ gcc -Wall -Werror -Wextra -O2 -g -fPIC \
   -o %{buildroot}%{_libdir}/ossl-modules/${fn}.so \
   %{SOURCE5}
 
-sed -i 's|^libdir=.*|libdir=/usr/lib|' %{buildroot}%{_libdir}/pkgconfig/openssl.pc
-sed -i 's|^libdir=.*|libdir=/usr/lib|' %{buildroot}%{_libdir}/pkgconfig/libcrypto.pc
-sed -i 's|^libdir=.*|libdir=/usr/lib|' %{buildroot}%{_libdir}/pkgconfig/libssl.pc
-
 %check
 %make_build tests
 
@@ -147,9 +156,6 @@ sed -i 's|^libdir=.*|libdir=/usr/lib|' %{buildroot}%{_libdir}/pkgconfig/libssl.p
 %post libs
 if [ "$1" = 2 ] && [ -s "%{_sysconfdir}/ssl/provider_fips.cnf" ]; then
   sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
-  sed -i '/^#.include \/etc\/ssl\/provider_base.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
-  # Disable provider default if provider_fips.cnf is already present
-  sed -i '/^.include \/etc\/ssl\/provider_default.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
 fi
 
 %clean
@@ -182,8 +188,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %{_libdir}/*.so
-%exclude %{_libdir}/cmake/OpenSSL/OpenSSLConfig.cmake
-%exclude %{_libdir}/cmake/OpenSSL/OpenSSLConfigVersion.cmake
 
 %files perl
 %defattr(-,root,root)
@@ -204,8 +208,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
-* Thu Apr 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.6-1
-- Upgrade to 3.5.6
 * Mon Apr 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-3
 - Fix multiple CVEs
 - CVE-2026-28386 CVE-2026-28387 CVE-2026-28388 CVE-2026-28389

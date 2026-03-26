@@ -10,5 +10,3 @@
 .include /etc/ssl/provider_default.cnf
 
 #.include /etc/ssl/provider_fips.cnf
-
-#.include /etc/ssl/provider_base.cnf

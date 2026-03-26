@@ -2,7 +2,7 @@
 
 Name:           python3-M2Crypto
 Version:        0.47.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
@@ -37,13 +37,13 @@ messenger for Zope.
 %autosetup -p1 -n m2crypto-%{version}
 
 %build
-CFLAGS="$CFLAGS `pkg-config --cflags openssl`" ; export CFLAGS
-LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
+CFLAGS="$CFLAGS `pkg-config --cflags openssl` -D__fds_bits=fds_bits" ; export CFLAGS
+LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl` -D__fds_bits=fds_bits" ; export LDFLAGS
 %py3_build
 
 %install
-CFLAGS="$CFLAGS `pkg-config --cflags openssl`" ; export CFLAGS
-LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl`" ; export LDFLAGS
+CFLAGS="$CFLAGS `pkg-config --cflags openssl` -D__fds_bits=fds_bits" ; export CFLAGS
+LDFLAGS="$LDFLAGS`pkg-config --libs-only-L openssl` -D__fds_bits=fds_bits" ; export LDFLAGS
 %py3_install
 
 %check
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Mar 25 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 0.47.0-2
+- Rename deprecated __fds_bits to fds_bits.
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.47.0-1
 - Version upgrade
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.38.0-4

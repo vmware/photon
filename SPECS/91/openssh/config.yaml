@@ -1,20 +1,13 @@
 sources:
-- archive: openssh-10.2p1.tar.gz
-  archive_sha512sum: 66f3dd646179e71aaf41c33b6f14a207dc873d71d24f11c130a89dee317ee45398b818e5b94887b5913240964a38630d7bca3e481e0f1eff2e41d9e1cfdbdfc5
-  archive_type: upstream
-  name: openssh-10.2p1
-  version: 10.2p1
-  url: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.2p1.tar.gz
-  repo_url: https://github.com/openssh/openssh-portable
-  commit_id: d01efaa1c9ed84fd9011201dbc3c7cb0a82bcee3
-  skip_list: []
-  missing: []
+- archive: openssh-9.3p2.tar.gz
+  archive_sha512sum: 15b8c57aa120186f1d1c3c2b8dc6ffd26733e12f755a6b0a4255d9ec1815a61506275ff5723b4ac029e44bc2ad22852ac36e1101f292348fbfa79aa1a4cd3f35
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'The OpenSSH package contains ssh clients and the sshd
         daemon. This is useful for encrypting authentication and subsequent traffic
         over a network. The ssh and scp commands are secure implementions of telnet
-        and rcp respectively.'
+        and rcp respectively. '
       home_page: https://www.openssh.com
       license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
         BSD-3-Clause AND FSFUL AND snprintf AND GPL-1.0-or-later AND SSLeay-standalone

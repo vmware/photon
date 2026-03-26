@@ -4,7 +4,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +16,7 @@ Source2: license.txt
 %include %{SOURCE2}
 
 Patch0:         ntpstats_path.patch
+Patch1:         0001-ntpsec-Load-default-provider-before-fetching-MD5-ctx.patch
 
 BuildRequires:  binutils
 BuildRequires:  bison
@@ -146,6 +147,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Wed Apr 08 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.2.3-11
+- Fix MD5 issue when openssl FIPS mode is enabled.
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.3-10
 - Bump version as a part of python3.14 upgrade
 * Mon Mar 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-9

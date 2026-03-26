@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
-Version:        1.11.1
-Release:        1%{?dist}
+Version:        1.11.0
+Release:        4%{?dist}
 URL:            https://www.libssh2.org
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
@@ -13,6 +13,8 @@ Source0: https://www.libssh2.org/download/libssh2-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: libssh2-CVE-2023-48795.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -33,7 +35,7 @@ Requires:       %{name} = %{version}-%{release}
 These are the header files of libssh2.
 
 %prep
-%autosetup -n %{name}-%{name}-%{version} -p1
+%autosetup -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -41,14 +43,9 @@ if [ %{_host} != %{_build} ]; then
 else
   PREFIXES=
 fi
-
-autoreconf -vif
-
 %configure \
     --disable-static \
     --enable-shared \
-    --with-crypto=openssl \
-    --enable-clear-memory \
     $PREFIXES
 
 %make_build
@@ -68,8 +65,6 @@ autoreconf -vif
 %{_mandir}/man3/*
 
 %changelog
-* Wed Apr 08 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.11.1-1
-- Upgrade libssh due to OpenSSL upgrade to v3.5.x
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.0-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.0-3

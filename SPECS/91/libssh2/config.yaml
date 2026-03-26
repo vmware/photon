@@ -1,14 +1,7 @@
 sources:
-- archive: libssh2-1.11.1.tar.gz
-  archive_sha512sum: 616efcd7f5c1fb1046104ebce70549e4756e2a55150efa2df5bb7123051d3bf336023cedcbfe932cd7c690a0b4d1f1a93c760ea39f1dba50c2b06d0945dca958
-  archive_type: upstream
-  name: libssh2-libssh2-1.11.1
-  version: 1.11.1
-  url: https://github.com/libssh2/libssh2/archive/refs/tags/libssh2-1.11.1.tar.gz
-  repo_url: https://github.com/libssh2/libssh2
-  commit_id: a312b43325e3383c865a87bb1d26cb52e3292641
-  skip_list: []
-  missing: []
+- archive: libssh2-1.11.0.tar.gz
+  archive_sha512sum: ef85e152dc252bd9b1c05276972b9c22313f5d492743dde090235742746d67f634f2a419eff9162132e2274c8582113b75279b074e0c7b34b2526b92fd1a1e8e
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'libssh2 is a client-side C library implementing the SSH2

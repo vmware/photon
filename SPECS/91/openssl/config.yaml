@@ -1,13 +1,24 @@
 sources:
-- archive: openssl-3.5.6.tar.gz
+- archive: openssl-3.0.18.tar.gz
   archive_type: upstream
-  archive_sha512sum: 7e48989c01751104e1c94fde05726c0d6d7cb0dd4f3d045e0e8f36b1d330a2557665970c44ec9aae86f5f7420315326022249247cd6845e6d598134aa74ac33c
-  version: 3.5.6
-  name: openssl-3.5.6
-  url: https://github.com/openssl/openssl/releases/download/openssl-3.5.6/openssl-3.5.6.tar.gz
+  archive_sha512sum: 6bdd16f33b83ae2a12777230c4ff00d0595bbc00253ac8c3ac31e1375e818fc74d7f491bd2e507ff33cab9f0498cfb28fa8690f75a98663568d40901523cdf3c
+  version: 3.0.18
+  name: openssl-3.0.18
+  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.18/openssl-3.0.18.tar.gz
   repo_url: https://github.com/openssl/openssl
-  commit_id: 286ddeaac037533bbdce65b3c689e3f7ffebf0f6
-  missing: [.github, gost-engine, .gitmodules, pyca-cryptography, 90-team.norelease.conf, mktar.sh, krb5, .gitignore, .gitattributes, corpora, dev, .git-blame-ignore-revs, .clang-format, .codespellrc, .pre-commit-config.yaml]
+  commit_id: c10e643222ce5a185f2980d7352d545afacb0fed
+  missing:
+  - .github
+  - gost-engine
+  - .gitmodules
+  - pyca-cryptography
+  - 90-team.norelease.conf
+  - mktar.sh
+  - krb5
+  - .gitignore
+  - .gitattributes
+  - corpora
+  - dev
   spdx:
     package:
       detailed_description: 'The OpenSSL package contains management tools and libraries

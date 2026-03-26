@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %define STIG_HARDEN 0
 
 %define privsep_path %{_datadir}/empty.sshd
@@ -6,8 +6,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        10.2p1
-Release:        1%{?dist}
+Version:        9.3p2
+Release:        19%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -36,6 +36,16 @@ patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 %endif
 
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
+Patch2: CVE-2023-51385.patch
+Patch3: openssh-CVE-2023-48795.patch
+Patch4: CVE-2023-51384.patch
+Patch5: 0003-disable-async-signal-unsafe-code.patch
+Patch6: CVE-2025-26465.patch
+Patch7: CVE-2025-32728.patch
+Patch8: CVE-2025-61984-prep.patch
+Patch9: CVE-2025-61984.patch
+Patch10: CVE-2025-61985-prep.patch
+Patch11: CVE-2025-61985.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -44,16 +54,12 @@ BuildRequires: krb5-devel
 BuildRequires: e2fsprogs-devel
 BuildRequires: systemd-devel
 BuildRequires: groff
-BuildRequires: libselinux-devel
-BuildRequires: audit-devel
 
 Requires:      %{name}-clients = %{version}-%{release}
 Requires:      %{name}-server = %{version}-%{release}
 Requires:      systemd
 Requires:      openssl
 Requires(pre): systemd-rpm-macros
-Requires:      libselinux
-Requires:      audit
 
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
@@ -86,7 +92,7 @@ This provides the ssh server daemons, utilities, configuration and service files
 Summary: sshd.socket units
 Requires:   %{name}-server = %{version}-%{release}
 
-Conflicts: %{name}-server < 10.2p1-1%{?dist}
+Conflicts: %{name}-server < 9.3p2-8%{?dist}
 
 %description socket
 Users should install this only if they want to use socket mechanism
@@ -115,16 +121,10 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --mandir=%{_mandir} \
     --infodir=%{_infodir} \
     --with-privsep-path=%{privsep_path} \
-    --with-privsep-user=sshd \
     --with-pam \
     --enable-strip=no \
     --with-kerberos5=%{_prefix} \
-    --with-selinux \
-    --with-sandbox=seccomp_filter \
-    --with-ssl-engine \
-    --with-stackprotect \
-    --with-pie \
-    --with-audit=linux
+    --with-sandbox=seccomp_filter
 
 %make_build
 
@@ -204,8 +204,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/moduli.5.gz
 %{_mandir}/man8/sftp-server.8.gz
 %{_sysusersdir}/%{name}.conf
-%attr(0755,root,root) %{_libexecdir}/sshd-auth
-%attr(0755,root,root) %{_libexecdir}/sshd-session
 
 %files clients
 %defattr(-,root,root)
@@ -242,8 +240,6 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
-* Wed Apr 08 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 10.2p1-1
-- Upgrade openssh to version 10.2-P1
 * Fri Nov 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-19
 - Fix User arg parsing issue which was introduced by CVE-2025-61984-prep.patch
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-18

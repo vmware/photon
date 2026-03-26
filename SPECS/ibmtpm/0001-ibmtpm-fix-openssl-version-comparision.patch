@@ -1,0 +1,31 @@
+From 668e3ffe6cab97680200fae2787c5c2efb10698a Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Mon, 2 Mar 2026 10:46:25 +0000
+Subject: [PATCH] ibmtpm: fix openssl version comparision
+
+  -  Since struct bignum_st has not changes in openssl
+     version 3.5.x, increase the openssl version for
+     comparision to check whether bignum has changed
+     or not.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ src/BnToOsslMath.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/BnToOsslMath.h b/src/BnToOsslMath.h
+index 72939ea..fabb2cf 100644
+--- a/src/BnToOsslMath.h
++++ b/src/BnToOsslMath.h
+@@ -77,7 +77,7 @@
+ #include <openssl/ec.h>
+ #include <openssl/bn.h>
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x30300ff0L
++#if OPENSSL_VERSION_NUMBER >= 0x30600ff0L
+ // Check the bignum_st definition against the one below and either update the
+ // version check or provide the new definition for this version.
+ #  error Untested OpenSSL version
+-- 
+2.43.7
+

@@ -1,0 +1,73 @@
+From a1c9bbbd44b51b713559f9c4455b5123a369a51d Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Wed, 8 Apr 2026 10:23:01 +0000
+Subject: [PATCH] ntpsec: Load default provider before fetching MD5 ctx
+
+  -  Ever since openssl-3.0, it was possible to set
+     default_properties=fips=yes, which would in turn prevent
+     the calls to MD5 operation.
+     Hence commit-id : 2403ed08edac6a44a7af5d54f3718a293acd7b5b was merged
+     to ntpsec to fetch MD5 context by setting fips=no explicitly.
+     However, If default provider is not loaded and has been deactivated in
+     FIPS mode, then, the default provider needs to be loaded explicitly
+     before fetching MD5 context.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ libntp/macencrypt.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/libntp/macencrypt.c b/libntp/macencrypt.c
+index 19c789d..50241da 100644
+--- a/libntp/macencrypt.c
++++ b/libntp/macencrypt.c
+@@ -50,6 +50,8 @@
+ #include <stdint.h>
+ 
+ #include <openssl/err.h>
++#include <openssl/provider.h>
++#include <openssl/fips.h>
+ #include <openssl/evp.h>	/* provides OpenSSL digest API */
+ #include <openssl/md5.h>
+ 
+@@ -301,16 +303,36 @@ addr2refid(sockaddr_u *addr)
+ #if OPENSSL_VERSION_NUMBER >= 0x30000000L
+ 	EVP_MD *md5;
+ 	ctx = EVP_MD_CTX_new();
++	OSSL_PROVIDER *def_prov = NULL;
+ 	/* See section FIPS Provider:
+ 	 * https://www.openssl.org/docs/man3.0/man7/crypto.html
+ 	 * for property query strings
+ 	 */
+-	md5 = EVP_MD_fetch(NULL, "MD5", "fips=no");
++	/* In photon-5.0-rev2 9.2, default provider will not be available
++	 * In FIPS_Mode. Hence, load the provider_default explicitly
++	 */
++	if (FIPS_mode()) {
++		def_prov = OSSL_PROVIDER_load(NULL, "default");
++		if (def_prov == NULL) {
++			exit(1);
++		}
++	}
++	md5 = EVP_MD_fetch(NULL, "MD5", "provider=default,fips=no");
++	if (md5 == NULL) {
++		if (FIPS_mode())
++			OSSL_PROVIDER_unload(def_prov);
++		msyslog(LOG_ERR, "MAC: MD5 fetch failed");
++		exit(1);
++	}
+ 	if(!EVP_DigestInit_ex(ctx, md5, NULL)) {
++		if (FIPS_mode())
++			OSSL_PROVIDER_unload(def_prov);
+ 		msyslog(LOG_ERR, "MAC: MD5 init failed");
+ 		exit(1);
+ 	}
+ 	EVP_MD_free(md5);
++	if (FIPS_mode())
++		OSSL_PROVIDER_unload(def_prov);
+ #else
+ 	ctx = EVP_MD_CTX_create();
+ #ifdef EVP_MD_CTX_FLAG_NON_FIPS_ALLOW
+-- 
+2.43.7
+

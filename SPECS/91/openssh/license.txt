@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND ssh-keyscan AND SSH-short AND BSD-3-Clause AND OpenSSL-standalone AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-4.3TAHOE AND X11-distribute-modifications-variant AND MIT AND ISC AND snprintf AND SSH-OpenSSH AND NTP AND SSLeay-standalone AND X11 AND GPL-1.0-or-later AND FSFUL AND FSFULLRWD AND HPND

@@ -1,20 +1,20 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
-Version:        20240802.183
-Release:        1%{?dist}
-URL:            https://github.com/kgoldman/ibmswtpm2/releases
+Version:        1682
+Release:        3%{?dist}
+URL:            https://sourceforge.net/projects/ibmswtpm2/files
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: rev183-2024-08-02.tar.gz
+Source0: %{name}%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: 0001-ibmtpm-fix-openssl-version-comparision.patch
+Patch0: fix_openssl_version.patch
 
 BuildRequires: openssl-devel
 BuildRequires: systemd-devel
@@ -30,7 +30,7 @@ It is based on the TPM specification Parts 3 and 4 source code donated by Micros
 with additional files to complete the implementation.
 
 %prep
-%autosetup -n ibmswtpm2-rev183-2024-08-02 -p1
+%autosetup -p1 -cn %{name}-%{version}
 
 %build
 cd src
@@ -57,8 +57,6 @@ EOF
 %{_unitdir}/ibmtpm_server.service
 
 %changelog
-* Wed Mar 25 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 20240802.183-1
-- Upgrade ibmtpm to 20240802.183 due to openssl upgrade.
 * Fri Feb 21 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1682-3
 - Fix openssl version
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1682-2
