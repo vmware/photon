@@ -1,0 +1,24 @@
+sources:
+- archive: werkzeug-3.1.7.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 6764b63347e83ae918bdb4466356323f6c0d0357d35a8139363153a4acc156ad1dc8a823b7ef31c958ad2c01232507470b6e2a9cb8e3b1830fc4a588bd882655
+  version: 3.1.7
+  name: werkzeug-3.1.7
+  url: https://github.com/pallets/werkzeug/releases/download/3.1.7/werkzeug-3.1.7.tar.gz
+  repo_url: https://github.com/pallets/werkzeug
+  commit_id: 005d93bf3437226ab185d2edc6132918d3e45763
+  skip_list: []
+  missing: [.gitignore, .pre-commit-config.yaml, .editorconfig, PKG-INFO, .gitattributes, .github, .readthedocs.yaml, .devcontainer]
+  spdx:
+    package:
+      detailed_description: 'Werkzeug started as simple collection of various utilities
+        for WSGI applications and has become one of the most advanced WSGI utility
+        modules. It includes a powerful debugger, full featured request and response
+        objects, HTTP utilities to handle entity tags, cache control headers, HTTP
+        dates, cookie handling, file uploads, a powerful URL routing system and a
+        bunch of community contributed addon modules.'
+      home_page: https://pypi.python.org/pypi/Werkzeug
+      license_concluded: BSD-3-Clause AND CC-BY-2.5 AND CC-BY-3.0
+      license_declared: BSD-3-Clause AND CC-BY-2.5 AND CC-BY-3.0
+      short_summary: The Swiss Army knife of Python web development
+      supplier: 'Organization: Broadcom, Inc.'
