@@ -1,12 +1,12 @@
 sources:
-- archive: apache-tomcat-10.1.46-src.tar.gz
+- archive: apache-tomcat-10.1.53-src.tar.gz
   archive_type: upstream
-  archive_sha512sum: 4abb5a5fad013135c4107508e4530673e4af623658b6aff5c4fc18fd557dfca37b58a9c5c0479e52e240b53d469ad91a34225a80b718aa2f91b8d385d16d9682
-  name: apache-tomcat-10.1.46-src
-  version: 10.1.46
-  url: https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.46/src/apache-tomcat-10.1.46-src.tar.gz
+  archive_sha512sum: 4e4f24935bde3be23033ebfe67d98efb4084e7c8c78ccd4714728f555a0814642ef8f7ff7235b4fe476cb8e785f9e17265500274a4ff161a012ec2a65dfd3bac
+  name: apache-tomcat-10.1.53-src
+  version: 10.1.53
+  url: https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.53/src/apache-tomcat-10.1.53-src.tar.gz
   repo_url: https://github.com/apache/tomcat.git
-  commit_id: c13c35870418153273725eab75ce1c3a8364a331
+  commit_id: f3d5786aa1bd6c2a78d666afc89b2a4570f66593
   skip_list:
   - RCS
   - CVS
@@ -35,14 +35,14 @@ sources:
         AND EPL-1.0 AND CC0-1.0 AND Apache-2.0
       short_summary: Apache Tomcat 10.1
       supplier: 'Organization: Broadcom, Inc.'
-- archive: apache-tomcat-9.0.109-src.tar.gz
+- archive: apache-tomcat-9.0.116-src.tar.gz
   archive_type: upstream
-  archive_sha512sum: 5ff1fdc882ffd3e3bd05be17b6dc45f914fb2b6553f2438ef30f929f2255cde49b1bac3e39f1a1b1440664b5477e64bde6c408a477e7eab097aa8cee01b82850
-  name: apache-tomcat-9.0.109-src
-  version: 9.0.109
-  url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.109/src/apache-tomcat-9.0.109-src.tar.gz
+  archive_sha512sum: d484a3fc3eb20de9fdd082db0d7448a9e09b8ef872521ca92db2c058a58ee16137c8709b5e0fd93230d9fd1b5ee9032a95078b18fd7ee13daa78d0f0b3d243de
+  name: apache-tomcat-9.0.116-src
+  version: 9.0.116
+  url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.116/src/apache-tomcat-9.0.116-src.tar.gz
   repo_url: https://github.com/apache/tomcat.git
-  commit_id: 312541e51725cdfe98d8cc6414b31d36d913fdd1
+  commit_id: d2c7dce5e94d6d1d81ad7d66402140b1c1962a53
   skip_list:
   - RCS
   - CVS
@@ -68,13 +68,13 @@ sources:
         AND EPL-1.0 AND CC0-1.0 AND CDDL-1.0 AND Zlib
       short_summary: Apache Tomcat 9
       supplier: 'Organization: Broadcom, Inc.'
-- archive: base-for-apache-tomcat-10.1.46.tar.gz
-  archive_sha512sum: 2894b243248f3189eab6cbaf90190118584cb904d4694627c9d152b519608ccba28a0e6439164a435391a5ba20649b049c75c74f52c04520f88eff373251b2ee
+- archive: base-for-apache-tomcat-10.1.53.tar.gz
+  archive_sha512sum: e0bb773c13e6391c74a46cec71ccde53e4f0ba462fd5cdb8147bc8707a3d7b1b40dcc16ca609a79be2cdb5a96f3079fd43ee939fde057cd4e71d617a5b266d1d
   skip_validation: true
   license_manual_review:
   # Icon uses cc-by-sa-4.0 license
   - file_paths:
-    - base-for-apache-tomcat-10.1.46/nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp
+    - base-for-apache-tomcat-10.1.53/nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp
     sha256sum: 1cb56a65d201465110930fde78929f0ef0881b30c64d6b14dc014d97ca0d5774
     spdx_exp: ''
   spdx:
@@ -102,13 +102,13 @@ sources:
         AND Apache-2.0
       short_summary: Cached -Dbase.path folder of apache-tomcat build
       supplier: 'Organization: Broadcom, Inc.'
-- archive: base-for-apache-tomcat-9.0.109.tar.gz
-  archive_sha512sum: b04c30118979069868b9e4166a520467f011a82b51d23181e192a2495ca6d628f4b9463f7bddfe4102df369e71ce1126cd0d09ec89bbfed6bae0ffd5e4b15e52
+- archive: base-for-apache-tomcat-9.0.116.tar.gz
+  archive_sha512sum: 06822c5c6ce421164839123bd55eaee9a19975e8bba046c1de22c8abb92ccb832721c586ceb52d3c4eec6c8ef4c7f772c43de2fa352f00b549c5d5e680f1ead7
   skip_validation: true
   license_manual_review:
   # Icon uses cc-by-sa-4.0 license
   - file_paths:
-    - base-for-apache-tomcat-9.0.109/nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp
+    - base-for-apache-tomcat-9.0.116/nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp
     sha256sum: 1cb56a65d201465110930fde78929f0ef0881b30c64d6b14dc014d97ca0d5774
     spdx_exp: ''
   spdx:
