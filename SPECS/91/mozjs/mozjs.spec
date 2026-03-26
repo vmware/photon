@@ -5,7 +5,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       102.12.0
-Release:       10.1%{?dist}
+Release:       10.2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://spidermonkey.dev
@@ -28,6 +28,7 @@ Patch5:     remove-sloppy-m4-detection-from-bundled-autoconf.patch
 Patch6:     CVE-2022-46175.patch
 Patch7:     CVE-2024-45491.patch
 Patch8:     CVE-2024-45492.patch
+Patch9:     CVE-2026-2781.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
@@ -152,6 +153,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Thu Mar 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 102.12.0-10.2
+- Fix CVE-2026-2781
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 102.12.0-10.1
 - Bump after moving to SPECS/91
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 102.12.0-10
