@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.8
-Release:          6%{?dist}
+Release:          7%{?dist}
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
@@ -23,6 +23,7 @@ Patch4: 0004-Add-new-configs-min_spi-and-max_spi.patch
 Patch5: CVE-2023-26463.patch
 Patch6: CVE-2023-41913.patch
 Patch7: BDSA-2025-14741.patch
+Patch8: CVE-2026-25075.patch
 
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
@@ -94,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Fri Mar 27 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.9.8-7
+- Fix CVE-2026-25075
 * Thu Oct 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.9.8-6
 - Fix BDSA-2025-14741
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 5.9.8-5
