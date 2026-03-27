@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.18
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -22,10 +22,11 @@ Source2: setuptools-pip-wheels%{?dist}-2.0.tar.xz
 %define sha512 setuptools-pip-wheels=3949a17915c9040efce6eb5743553bffcc9ec1befe0daa2e3f15c0b7f116f13fd65015af99144d2f39d43c9caab4c73246346b9959ef245843356e85785a13c3
 
 Patch0:         cgi3.patch
-Patch4:         use-HMAC-SHA256-in-FIPS-mode.patch
-Patch6:         ensurepip-upgrade-bundled-pip-and-setuptools.patch
-Patch7:         CVE-2025-8194.patch
-Patch8:         CVE-2025-13836.patch
+Patch1:         use-HMAC-SHA256-in-FIPS-mode.patch
+Patch2:         ensurepip-upgrade-bundled-pip-and-setuptools.patch
+Patch3:         CVE-2025-8194.patch
+Patch4:         CVE-2025-13836.patch
+Patch5:         CVE-2026-4519.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -301,6 +302,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.10.18-4
+- Fix CVE-2026-4519
 * Tue Jan 06 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-3
 - Fix CVE-2025-13836
 * Tue Oct 21 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-2
