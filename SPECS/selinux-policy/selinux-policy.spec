@@ -5,7 +5,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        13%{?dist}
+Release:        14%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ BuildRequires: policycoreutils
 Requires: policycoreutils
 Requires: coreutils-selinux
 Requires: libselinux-utils
+# For automatic file labeling during an RPM transaction
+Requires: rpm-plugin-selinux
 
 %description
 Provides default Photon OS SELinux policy.
@@ -126,6 +128,7 @@ sed -i "s@SELINUXSTOREPATH@%{_sharedstatedir}/selinux@" %{buildroot}%{_rpmmacrod
 if [ $1 -ge 0 ]; then
   %{_sbindir}/setfiles %{_sysconfdir}/selinux/default/contexts/files/file_contexts /
 fi
+exit 0
 
 %files
 %defattr(-,root,root,-)
@@ -140,6 +143,8 @@ fi
 %{_datadir}/selinux
 
 %changelog
+* Tue Mar 24 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 36.5-14
+- Add requires: rpm-plugin-selinux
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 36.5-13
 - Bump version as a part of python3.14 upgrade
 * Tue Mar 10 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 36.5-12

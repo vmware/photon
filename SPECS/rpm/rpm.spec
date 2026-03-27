@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.0.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -56,6 +56,7 @@ BuildRequires:  sqlite-devel
 BuildRequires:  debugedit
 BuildRequires:  dwz
 BuildRequires:  python3-setuptools
+BuildRequires:  libselinux-devel
 
 %description
 RPM package manager
@@ -163,6 +164,15 @@ Requires: systemd
 This plugin blocks systemd from entering idle, sleep or shutdown while an rpm
 transaction is running using the systemd-inhibit mechanism.
 
+%package plugin-selinux
+Summary:  Rpm plugin for selinux functionality
+Requires: %{name}-libs = %{version}-%{release}
+Requires: libselinux
+
+%description plugin-selinux
+This plugin automatically sets the correct SELinux security contexts for
+installed files and executed scriptlets during RPM transactions
+
 %prep
 %autosetup -p1
 
@@ -181,6 +191,7 @@ transaction is running using the systemd-inhibit mechanism.
   -DWITH_AUDIT=OFF \
   -DWITH_SEQUOIA=ON \
   -DWITH_OPENSSL=ON \
+  -DWITH_SELINUX=ON \
   -DCMAKE_BUILD_TYPE=Debug \
   -DRPM_VENDOR=unknown \
   -Dhost=%{_host}
@@ -334,7 +345,14 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-plugins/systemd_inhibit.so
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
+%files plugin-selinux
+%defattr(-,root,root)
+%{_libdir}/%{name}-plugins/selinux.so
+%{_mandir}/man8/%{name}-plugin-selinux.8.gz
+
 %changelog
+* Wed Apr 01 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.0.1-2
+- Enable selinux plugin
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-1
 - Upgrade to v6.0.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.18.2-10
