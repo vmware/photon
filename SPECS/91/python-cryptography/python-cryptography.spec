@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Python cryptography library
 Name:           python3-cryptography
-Version:        49.0.0
-Release:        1%{?dist}
+Version:        41.0.7
+Release:        10%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,25 +13,21 @@ Source0: https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.
 
 # Steps to generate this tarball:
 # Extract cryptography tarball
-# do export OPENSSL_NO_VENDOR=1
 # Trigger build
-# maturin build --release --skip-auditwheel
 # cd ~/.cargo
 # tar czf <tar-name>.tar.gz registry
 
-Source1: %{name}-registry-%{version}-1%{?dist}.tar.gz
+Source1: %{name}-registry-%{version}-7%{?dist}.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
 
-Patch0: 0001-make-default-openssl-legacy-false.patch
+Patch0: CVE-2024-26130.patch
+Patch1: default-openssl-legacy-false.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
-BuildRequires:  python3-build
-BuildRequires:  python3-packaging
 BuildRequires:  python3-cffi
-BuildRequires:  python3-installer
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-setuptools-rust
@@ -39,13 +35,12 @@ BuildRequires:  python3-typing-extensions
 BuildRequires:  python3-semantic-version
 BuildRequires:  rust
 BuildRequires:  ca-certificates
-BuildRequires:  python3-maturin
 %if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
 %endif
 
-Requires:       openssl
+Requires:       openssl >= 3.0.13-2
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cffi
@@ -64,14 +59,11 @@ mv registry $HOME/.cargo/
 
 %build
 export CARGO_NET_OFFLINE=true
-export OPENSSL_NO_VENDOR=1
-%{py3_build_wheel}
+%{py3_build}
 
 %install
 export CARGO_NET_OFFLINE=true
-export OPENSSL_NO_VENDOR=1
-%{py3_install_wheel}
-%{py_byte_compile_and_ghost}
+%{py3_install}
 
 %check
 openssl req \
@@ -88,13 +80,11 @@ mv photon.pem /etc/ssl/certs
 pip3 install pretend pytest hypothesis iso8601 cryptography_vectors pytz
 python3 setup.py test
 
-%files -f %{py_ghost_filelist}
+%files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-* Fri Jul 10 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 49.0.0-1
-- Upgrade to version 49.0.0
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 41.0.7-10
 - Remove stale Requires: python3-asn1crypto; cryptography 41.x does not use it
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 41.0.7-9

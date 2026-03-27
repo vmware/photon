@@ -1,0 +1,14 @@
+sources:
+- archive: tpm2-pkcs11-1.8.0.tar.gz
+  archive_sha512sum: 006943b3853dc80e44d2322ea0278d6a9f2139c3b3e2a2c5f33436d479d698c5b9d685fb1166d22562bcf3d52edb1075efe7592c27a8c3a0cd05356cab3c9874
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'OSS implementation of the TCG TPM2 PKCSv11 Software Stack '
+      home_page: https://github.com/tpm2-software/tpm2-pkcs11
+      license_concluded: FSFULLR AND BSD-3-Clause AND FSFULLRWD AND FSFUL AND Apache-2.0
+        AND BSD-2-Clause
+      license_declared: FSFULLR AND BSD-3-Clause AND FSFULLRWD AND FSFUL AND Apache-2.0
+        AND BSD-2-Clause
+      short_summary: OSS implementation of the TCG TPM2 Software Stack (TSS2)
+      supplier: 'Organization: Broadcom, Inc.'

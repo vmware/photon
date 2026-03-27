@@ -1,17 +1,17 @@
 sources:
-- archive: tpm2-pytss-2.3.0.tar.gz
-  archive_sha512sum: 4c4d4ba8f31b8e41b8813187931afaca6692570fa081f6a11bb15c76ecd97883efe5f3491e6b38342e8cc3735211c4a17898a11bb3451abbdca60e87acd610b1
+- archive: tpm2-pytss-1.2.0.tar.gz
+  archive_sha512sum: 9f317b2144e27ac0e6b876d1987cd5c64f4c1f70d1689cea3d926749d9778b2ad813335269cff70c8335f15b72b1233fffe062f4cb5791c5480c58119cf42db7
   archive_type: upstream
-  version: 2.3.0
-  name: tpm2-pytss-2.3.0
-  url: https://github.com/tpm2-software/tpm2-pytss/archive/refs/tags/2.3.0.tar.gz
+  version: 1.2.0
+  name: tpm2-pytss-1.2.0
+  url: https://github.com/tpm2-software/tpm2-pytss/archive/refs/tags/1.2.0.tar.gz
   repo_url: https://github.com/tpm2-software/tpm2-pytss
-  commit_id: 930cee2c45b84ac533c320b883b226edaeda9a38
+  commit_id: 8ebc054af8e4e6c5fdadfbe5fbfd7876a98483fa
   skip_validation: false
   license_manual_review:
   - file_paths:
-    - tpm2-pytss-2.3.0-build/tpm2-pytss-2.3.0/src/tpm2_pytss/internal/crypto.py
-    sha256sum: 3989fda842c35704abf0dc100273c443c6e127b69e934af4bfe047f7e91bb278
+    - tpm2-pytss-1.2.0-build/tpm2-pytss-1.2.0/src/tpm2_pytss/internal/crypto.py
+    sha256sum: f452250bd4aeede57d5043e0219ba4c2d883c450ad3d69f533d1b8eb0acdfbd6
     spdx_exp: ''
   spdx:
     package:

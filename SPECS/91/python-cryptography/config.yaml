@@ -1,12 +1,7 @@
 sources:
-- archive: cryptography-49.0.0.tar.gz
-  archive_sha512sum: 6a4435e90b981dfe1cc90479846041f800d618b8a673351ae55e308eeb7c152959ee56cb7a7188a7b46ae3228577192c651bc9801796f62fed55e7f8c3258f33
-  archive_type: upstream
-  version: 49.0.0
-  name: cryptography-49.0.0
-  url: https://github.com/pyca/cryptography/archive/refs/tags/49.0.0.tar.gz
-  repo_url: https://github.com/pyca/cryptography
-  commit_id: c739e7347fe16a9f9f5adc3a0186abb73872be85
+- archive: cryptography-41.0.7.tar.gz
+  archive_sha512sum: 9a870d45296de6af1331e73b102226b8269892216cd7bc0adfb2f63ce1ca7021d338effd09182128253d8d8df154bbd19d46c47f10ddac86e739fcbf6df78307
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Cryptography is a Python library which exposes cryptographic
@@ -16,13 +11,13 @@ sources:
       license_declared: Apache-2.0 AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
       short_summary: Python cryptography library
       supplier: 'Organization: Broadcom, Inc.'
-- archive: python3-cryptography-registry-49.0.0-1.ph5.tar.gz
-  archive_sha512sum: d0aea9af534e5cb6acaec147f725edd4732fcfd6b65c629700cf4876252b55a5af18421ff2c090b00bd6266d078ec656437e151b2512b63626b9540a47a102b2
+- archive: python3-cryptography-registry-41.0.7-7.ph5.tar.gz
+  archive_sha512sum: 883deb32c63027a300ac4b6402faa63c4daaa31ee1723845f4ffbde56d8bc2cdece79a3692016018c5160dab3e41bb40659897652dbe0285bed6f82ca061d47a
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'Contains vendor rust file sources which were needed to
-        do offline build'
+      detailed_description: Contains vendor rust file sources which were needed to
+        do offline build
       home_page: https://github.com/vmware/photon
       license_concluded: BSD-3-Clause AND BSD-2-Clause AND (Apache-2.0 OR MIT) AND
         GPL-2.0-only AND bzip2-1.0.6 AND (MIT OR Apache-2.0) AND OpenSSL-standalone

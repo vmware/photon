@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Name:       tpm2-pytss
-Version:    2.3.0
-Release:    1%{?dist}
+Version:    1.2.0
+Release:    7%{?dist}
 Summary:    Python bindings for tpm2-tss
 URL:        https://github.com/tpm2-software/tpm2-pytss
 Vendor:     VMware, Inc.
@@ -14,20 +14,20 @@ Source0: https://github.com/tpm2-software/tpm2-pytss/archive/refs/tags/%{name}-%
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: replace-asn1crypto-with-the-ASN.1-parser-in-cryptography.patch
+Patch0: 0001-replace-asn1crypto-with-stdlib.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-pkgconfig
 BuildRequires: python3-pycparser
+BuildRequires: python3-pip
 BuildRequires: python3-wheel
-BuildRequires: python3-build
-BuildRequires: python3-installer
 BuildRequires: python3-packaging
 BuildRequires: python3-cryptography
 BuildRequires: python3-setuptools
 BuildRequires: python3-setuptools_scm
 BuildRequires: python3-typing-extensions
+BuildRequires: git
 BuildRequires: tpm2-tss-devel
 
 %if 0%{?with_check}
@@ -46,15 +46,13 @@ TPM2 TSS Python bindings for Enhanced System API (ESYS).
 This package primarily exposes the TPM 2.0 Enhanced System API.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -Sgit
 
 %build
-export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
-%py3_build_wheel
+%py3_build
 
 %install
-%py3_install_wheel
-%{py_byte_compile_and_ghost}
+%py3_install
 
 %if 0%{?with_check}
 %check
@@ -62,13 +60,11 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %pytest
 %endif
 
-%files -f %{py_ghost_filelist}
+%files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
-* Thu Jun 04 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3.0-1
-- Upgrade to latest as part of cryptography & python3 upgrade
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.0-7
 - Replace asn1crypto with stdlib base64 + minimal DER helpers in tsskey.py
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.0-6

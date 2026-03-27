@@ -1,0 +1,314 @@
+From 91a4fcea50d616bac26a1c9137581c5c2826aea7 Mon Sep 17 00:00:00 2001
+From: Erik Larsson <who+github@cnackers.org>
+Date: Thu, 30 Apr 2026 20:15:44 +0200
+Subject: [PATCH] tsskey: replace asn1crypto with the ASN.1 parser in
+ cryptography
+
+The latest release of cryptography have an ASN.1 parser so we can
+drop a dependency.
+
+Due to have tpm2-openssl and tpm2-tss-engine have encoded booleans
+we need to workaround how the empty_auth field is decoded.
+
+Also implement PEM encoding/decoding as we used asn1crypto for that.
+
+Signed-off-by: Erik Larsson <who+github@cnackers.org>
+---
+ docs/requirements.txt    |   2 -
+ setup.cfg                |   2 -
+ src/tpm2_pytss/tsskey.py | 116 +++++++++++++++++++++++++++------------
+ test/test_tsskey.py      |  40 ++++++++++----
+ 4 files changed, 112 insertions(+), 48 deletions(-)
+
+diff --git a/docs/requirements.txt b/docs/requirements.txt
+index fea5ba25..82b55c21 100644
+--- a/docs/requirements.txt
++++ b/docs/requirements.txt
+@@ -2,11 +2,9 @@ setuptools_scm[toml]>=3.4.3
+ cffi>=1.0.0
+ pkgconfig
+ cryptography>=3.0
+-asn1crypto
+ packaging
+ pycparser
+ cffi>=1.0.0
+-asn1crypto
+ cryptography>=3.0
+ packaging
+ pyyaml
+diff --git a/setup.cfg b/setup.cfg
+index 22c3456a..e3bebef6 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -29,12 +29,10 @@ setup_requires =
+     cffi>=1.0.0
+     pkgconfig
+     cryptography>=3.0
+-    asn1crypto
+     packaging
+     pycparser
+ install_requires =
+     cffi>=1.0.0
+-    asn1crypto
+     cryptography>=3.0
+     packaging
+     pyyaml
+diff --git a/src/tpm2_pytss/tsskey.py b/src/tpm2_pytss/tsskey.py
+index 9a9a204f..366ff4ab 100644
+--- a/src/tpm2_pytss/tsskey.py
++++ b/src/tpm2_pytss/tsskey.py
+@@ -1,12 +1,13 @@
+ # SPDX-License-Identifier: BSD-2
+ 
+ import warnings
++import base64
+ from ._libtpm2_pytss import lib
+ from .types import *
+ from .constants import TPM2_ECC, TPM2_CAP, ESYS_TR
+-from asn1crypto.core import ObjectIdentifier, Sequence, Boolean, OctetString, Integer
+-from asn1crypto import pem
+-
++from cryptography.hazmat import asn1
++from cryptography.x509 import ObjectIdentifier
++from typing import Annotated
+ 
+ _parent_rsa_template = TPMT_PUBLIC(
+     type=TPM2_ALG.RSA,
+@@ -98,14 +98,35 @@ _ecc_template = TPMT_PUBLIC(
+ 
+ _loadablekey_oid = ObjectIdentifier("2.23.133.10.1.3")
+ 
+-# _BooleanOne is used to encode True in the same way as tpm2-tss-engine
+-class _BooleanOne(Boolean):
+-    def set(self, value):
+-        self._native = bool(value)
+-        self.contents = b"\x00" if not value else b"\x01"
+-        self._header = None
+-        if self._trailer != b"":
+-            self._trailer = b""
++_pem_begin = b"-----BEGIN TSS2 PRIVATE KEY-----\n"
++_pem_end = b"-----END TSS2 PRIVATE KEY-----\n"
++
++
++def _tssprivkey_pem_unarmor(data: bytes) -> bytes:
++    begin = data.find(_pem_begin)
++    if begin == -1:
++        raise ValueError("beginning of PEM not found")
++    skip = begin + len(_pem_begin)
++    end = data.find(_pem_end, skip)
++    if end == -1:
++        raise ValueError("end of PEM not found")
++    pem_data = data[skip:end]
++    der_data = base64.b64decode(pem_data)
++    return der_data
++
++
++def _tssprivkey_pem_armor(data: bytes) -> bytes:
++    # base64 encode
++    pem_data = base64.b64encode(data)
++    # split with max length
++    split_data = _pem_begin
++    index = 0
++    while len(pem_data[index:]):
++        split_data += pem_data[index : index + 64] + b"\n"
++        index += 64
++    split_data += _pem_end
++    # append beginning, split data, end
++    return split_data
+ 
+ 
+ class TSSPrivKey(object):
+@@ -116,14 +137,21 @@ class TSSPrivKey(object):
+         Most users should use create_rsa/create_ecc together with to_pem and from_pem together with load.
+     """
+ 
+-    class _tssprivkey_der(Sequence):
+-        _fields = [
+-            ("type", ObjectIdentifier),
+-            ("empty_auth", _BooleanOne, {"explicit": 0, "optional": True}),
+-            ("parent", Integer),
+-            ("public", OctetString),
+-            ("private", OctetString),
+-        ]
++    @asn1.sequence
++    class _tssprivkey_load:
++        object_type: ObjectIdentifier = _loadablekey_oid
++        empty_auth: asn1.TLV
++        parent: int
++        public: bytes
++        private: bytes
++
++    @asn1.sequence
++    class _tssprivkey_save:
++        object_type: ObjectIdentifier = _loadablekey_oid
++        empty_auth: Annotated[bool, asn1.Explicit(0)]
++        parent: int
++        public: bytes
++        private: bytes
+ 
+     def __init__(self, private, public, empty_auth=True, parent=lib.TPM2_RH_OWNER):
+         """Initialize TSSPrivKey using raw values.
+@@ -165,15 +193,15 @@ def to_der(self):
+         Returns:
+             Returns the DER encoding as bytes.
+         """
+-        seq = self._tssprivkey_der()
+-        seq["type"] = _loadablekey_oid.native
+-        seq["empty_auth"] = self.empty_auth
+-        seq["parent"] = self.parent
+         pub = self.public.marshal()
+-        seq["public"] = pub
+         priv = self.private.marshal()
+-        seq["private"] = priv
+-        return seq.dump()
++        seq = self._tssprivkey_save(
++            empty_auth=self.empty_auth,
++            parent=self.parent,
++            public=pub,
++            private=priv,
++        )
++        return asn1.encode_der(seq)
+ 
+     def to_pem(self):
+         """Encode the TSSPrivKey as PEM encoded ASN.1.
+@@ -182,7 +210,7 @@ def to_pem(self):
+             Returns the PEM encoding as bytes.
+         """
+         der = self.to_der()
+-        return pem.armor("TSS2 PRIVATE KEY", der)
++        return _tssprivkey_pem_armor(der)
+ 
+     @staticmethod
+     def _getparenttemplate(ectx):
+@@ -310,6 +338,24 @@ def create_ecc(
+         template.parameters.eccDetail.curveID = curveID
+         return cls.create(ectx, template, parent, password)
+ 
++    @staticmethod
++    def _decode_bad_bool(tlv: asn1.TLV) -> bool:
++        # Some versions of tpm2-tss-engine and tpm2-openssl encode TRUE as 1.
++        # That is an invalid DER encoding, so handle that here.
++        data = bytes(tlv.data)
++        if len(data) != 3:
++            raise ValueError(
++                f"unexpected emptyAuth ASN.1 TLV length, expected 3, got {len(data)}"
++            )
++        tag, length, value = data
++        if tag != 1:
++            raise ValueError(f"unexpected emptyAuth ASN.1 tag, expected 1, got {tag}")
++        elif length != 1:
++            raise ValueError(
++                f"unexpected emptyAuth ASN.1 value length, expected 1, got {length}"
++            )
++        return bool(value)
++
+     @classmethod
+     def from_der(cls, data):
+         """Load a TSSPrivKey from DER ASN.1.
+@@ -320,13 +366,13 @@ def from_der(cls, data):
+         Returns:
+             Returns a TSSPrivKey instance.
+         """
+-        seq = cls._tssprivkey_der.load(data)
+-        if seq["type"].native != _loadablekey_oid.native:
++        seq = asn1.decode_der(cls._tssprivkey_load, data)
++        if seq.object_type != _loadablekey_oid:
+             raise TypeError("unsupported key type")
+-        empty_auth = seq["empty_auth"].native
+-        parent = seq["parent"].native
+-        public, _ = TPM2B_PUBLIC.unmarshal(bytes(seq["public"]))
+-        private, _ = TPM2B_PRIVATE.unmarshal(bytes(seq["private"]))
++        empty_auth = cls._decode_bad_bool(seq.empty_auth)
++        parent = seq.parent
++        public, _ = TPM2B_PUBLIC.unmarshal(seq.public)
++        private, _ = TPM2B_PRIVATE.unmarshal(seq.private)
+         return cls(private, public, empty_auth, parent)
+ 
+     @classmethod
+@@ -339,6 +385,8 @@ def from_pem(cls, data):
+         Returns:
+             Returns a TSSPrivKey instance.
+         """
++        der = _tssprivkey_pem_unarmor(data)
++        return cls.from_der(der)
+         pem_type, _, der = pem.unarmor(data)
+         if pem_type != "TSS2 PRIVATE KEY":
+             raise TypeError("unsupported PEM type")
+diff --git a/test/test_tsskey.py b/test/test_tsskey.py
+index 683de432..6e443b37 100644
+--- a/test/test_tsskey.py
++++ b/test/test_tsskey.py
+@@ -3,12 +3,12 @@
+ from tpm2_pytss import *
+ from tpm2_pytss.tsskey import TSSPrivKey, _parent_rsa_template, _parent_ecc_template
+ from .TSS2_BaseTest import TSS2_EsapiTest
+-from asn1crypto.core import ObjectIdentifier
+-from asn1crypto import pem
++from cryptography.hazmat import asn1
++from cryptography.x509 import ObjectIdentifier
+ 
+ import unittest
+ 
+-rsa_pem = b"""-----BEGIN TSS2 PRIVATE KEY-----
++rsa_invalid_bool_pem = b"""-----BEGIN TSS2 PRIVATE KEY-----
+ MIIB8gYGZ4EFCgEDoAMBAQECBEAAAAEEggEYARYAAQALAAYEcgAAABAAEAgAAAEA
+ AQEAzF/VFhLaIJ9Y3up8slssYhV1Fhh7KwYBCR1dqLeI9QkDF6M05b/Uc589yMsn
+ WVIheHnkEEXyo+rD6q12BpDrC9nS6G11hd9e5TPAibVOAvt8jY3C6/b0JGCFpMNq
+@@ -23,14 +23,30 @@
+ -----END TSS2 PRIVATE KEY-----
+ """
+ 
++rsa_pem = b"""-----BEGIN TSS2 PRIVATE KEY-----
++MIIB8gYGZ4EFCgEDoAMBAf8CBEAAAAEEggEYARYAAQALAAYEcgAAABAAEAgAAAEA
++AQEAzF/VFhLaIJ9Y3up8slssYhV1Fhh7KwYBCR1dqLeI9QkDF6M05b/Uc589yMsn
++WVIheHnkEEXyo+rD6q12BpDrC9nS6G11hd9e5TPAibVOAvt8jY3C6/b0JGCFpMNq
++W69ZonwSPO+aMPXogRBk2OL/jeost9IFbcJjEkwIs5rcaF4sI8wOXTXAx8rrqp0B
++aUjbZz1OJl9PxyCtizLPtdzfCoHVVu9FDrncKpSV1GuGWV6QCTAi8ln1KnRUdmnF
++YBltollhuZ5CLQRekfDdiPkm9ez2Ii/sbes2UvX3vSbyrI1WWCoNqeanSMDSvuMF
++CEBd8i5YDXhAYLcSu/shWZlvPQSBwAC+ACBvkTiYshUXeUbh6Sp+9uSw1RsgGNSf
++3BrApTSK5XtGEAAQUjLH4kLMJSC2c2KXRW/H9o9tuhafEX3VwlutMcz3AW+3m/gq
++MHGtezT22Oy+jImy2n1NiFotqF/3xZr6WD9IrrJh9MKhWZfucOgCpTclo7P3OaAX
++pCz81gA+sZ1NvvOLHL/ULNcKPcltDOHmI1ag6rhz1vQIq3r7Wd71RI5a/gUGxPCx
++RmxDJYOlsFlR3mG/MiqSSB6dZ67H/Q==
++-----END TSS2 PRIVATE KEY-----
++"""
++
+ 
+ class TSSKeyTest(TSS2_EsapiTest):
+     def test_rsa_frompem(self):
+         TSSPrivKey.from_pem(rsa_pem)
+ 
+     def test_rsa_topem(self):
+-        key = TSSPrivKey.from_pem(rsa_pem)
++        key = TSSPrivKey.from_pem(rsa_invalid_bool_pem)
+         pem = key.to_pem()
++        print(pem.decode("ascii"))
+         self.assertEqual(pem, rsa_pem)
+ 
+     def test_create_load_rsa(self):
+@@ -83,15 +99,19 @@ def test_persistent_parent_ecc(self):
+ 
+     def test_bad_pem_type(self):
+         bad_pem = rsa_pem.replace(b"TSS2", b"BORK")
+-        with self.assertRaises(TypeError) as e:
++        with self.assertRaises(ValueError) as e:
+             TSSPrivKey.from_pem(bad_pem)
+-        self.assertEqual(str(e.exception), "unsupported PEM type")
++        self.assertEqual(str(e.exception), "beginning of PEM not found")
+ 
+     def test_bad_oid(self):
+-        _, _, der = pem.unarmor(rsa_pem)
+-        dc = TSSPrivKey._tssprivkey_der.load(der)
+-        dc["type"] = ObjectIdentifier("1.2.3.4")
+-        badder = dc.dump()
++        seq = TSSPrivKey._tssprivkey_save(
++            object_type=ObjectIdentifier("1.2.3.4"),
++            empty_auth=False,
++            parent=1,
++            public=b"",
++            private=b"",
++        )
++        badder = asn1.encode_der(seq)
+ 
+         with self.assertRaises(TypeError) as e:
+             TSSPrivKey.from_der(badder)

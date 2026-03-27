@@ -1,7 +1,12 @@
 sources:
-- archive: pyOpenSSL-23.3.0.tar.gz
-  archive_sha512sum: bc1ccfa4fc5d7f48ba23ee2cdfbad2636ecab8e3989e8ab88136cba92fa08bb21920c0ce7198591837597a14f392dcd21de05697fd5abd7c31f6dcbed398dd47
-  skip_validation: true
+- archive: pyopenssl-26.3.0.tar.gz
+  archive_sha512sum: 47a01ac8d1f7dd4b9920234af5389b932380b8423d9fe85a2e282e02ebeb7ecb95f116413cb3d06362f942499db1de3c3c8968be578fa04cdd7a9989fa6758ff
+  archive_type: upstream
+  name: pyopenssl-26.3.0
+  version: 26.3.0
+  url: https://github.com/pyca/pyopenssl/archive/refs/tags/26.3.0.tar.gz
+  repo_url: https://github.com/pyca/pyopenssl
+  commit_id: f74084cec12d4960a89b135cdd7be95096f83ecc
   spdx:
     package:
       detailed_description: 'High-level wrapper around a subset of the OpenSSL library. '

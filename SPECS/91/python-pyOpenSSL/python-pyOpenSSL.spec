@@ -1,27 +1,25 @@
-%global build_if %{photon_subrelease} >= 92
-
-%global srcname pyopenssl
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
-Version:        26.3.0
-Release:        1%{?dist}
+Version:        23.3.0
+Release:        6%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/pyca/pyopenssl/archive/refs/tags/%{srcname}-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0: CVE-2026-27459.patch
+
+BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-BuildRequires:  python3-build
-BuildRequires:  python3-packaging
-BuildRequires:  python3-installer
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -38,8 +36,7 @@ BuildRequires:  python3-pytest
 %endif
 Requires:       python3
 Requires:       python3-libs
-Requires:       python3-cryptography >= 49.0.0
-Requires:       python3-cryptography < 50
+Requires:       python3-cryptography
 Requires:       python3-six
 
 BuildArch:      noarch
@@ -48,26 +45,23 @@ BuildArch:      noarch
 High-level wrapper around a subset of the OpenSSL library.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n pyopenssl-%{version}
 
 %build
-%py3_build_wheel
+%py3_build
 
 %install
-%py3_install_wheel
-%{py_byte_compile_and_ghost}
+%py3_install
 
 %check
 pip3 install pretend flaky tomli
 %pytest
 
-%files -f %{py_ghost_filelist}
+%files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-* Fri Jul 10 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.3.0-1
-- Upgrade to version 26.3.0
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.0-6
 - Replace asn1crypto
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 23.3.0-5

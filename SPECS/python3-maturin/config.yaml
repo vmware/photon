@@ -1,0 +1,30 @@
+sources:
+- archive: maturin-1.14.1.tar.gz
+  archive_sha512sum: db2fd5fa98edafad85e42bd9a5eae45525a706b550604d49a62431211dc14a83841a851ce5a53bfd298ce4a14546efc62e8ef4349946e40d5f688ee16f6b2962
+  archive_type: upstream
+  version: 1.14.1
+  name: maturin-1.14.1
+  url: https://github.com/PyO3/maturin/archive/refs/tags/v1.14.1.tar.gz
+  repo_url: https://github.com/PyO3/maturin
+  commit_id: 6febbe20f0006e62299c6a88b49e3ede5e2e2318
+  spdx:
+    package:
+      detailed_description: 'Build and publish crates with pyo3, cffi and uniffi bindings
+        as well as rust binaries as python packages'
+      home_page: https://pypi.python.org/pypi/cryptography
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
+      short_summary: Rust/Python Interoperability
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: python3-maturin-registry-1.14.1-1.ph5.tar.gz
+  archive_sha512sum: 2a62d5c58b614947c2cb3890c77223444ccefb69d2f30bb7fae80f5ac1c472ed1eb3b3ddfb6dafc3e9a7c05bc4302eb558ca19ffff81e7c107b77abd967b0d08
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Contains vendor rust file sources which were needed to
+        do offline build'
+      home_page: https://github.com/vmware/photon
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
+      short_summary: Contains vendor rust file sources
+      supplier: 'Organization: Broadcom, Inc.'
