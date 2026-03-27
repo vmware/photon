@@ -3,7 +3,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
 Version:        23.3.0
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -12,6 +12,9 @@ Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpe
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-27459.patch
+
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -60,6 +63,8 @@ pip3 install pretend flaky tomli
 %{python3_sitelib}/*
 
 %changelog
+* Fri Mar 27 2026 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.0-2.2
+- Fix CVE-2026-27459
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.3.0-2.1
 - Bump after moving to SPECS/91
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.3.0-2
