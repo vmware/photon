@@ -26,7 +26,7 @@ Patch1: CVE-2025-47273.patch
 BuildRequires: python3-devel
 BuildRequires: python3-xml
 
-%define ExtraBuildRequires: python3-wheel
+%define ExtraBuildRequires python3-wheel
 
 Requires:       python3
 Requires:       python3-xml
