@@ -102,25 +102,38 @@ index c7ea0b239..c4ff1ed5b 100644
  
  	vdev->reset_works = !ret;
  	pci_save_state(pdev);
-@@ -696,10 +709,14 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
+@@ -710,17 +710,21 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
  	 * We can not use the "try" reset interface here, which will
  	 * overwrite the previously restored configuration information.
  	 */
--	if (vdev->reset_works && pci_dev_trylock(pdev)) {
--		if (!__pci_reset_function_locked(pdev))
--			vdev->needs_reset = false;
--		pci_dev_unlock(pdev);
+-	if (vdev->reset_works) {
+-		bridge = pci_upstream_bridge(pdev);
+-		if (bridge && !pci_dev_trylock(bridge))
+-			goto out_restore_state;
+-		if (pci_dev_trylock(pdev)) {
+-			if (!__pci_reset_function_locked(pdev))
+-				vdev->needs_reset = false;
+-			pci_dev_unlock(pdev);
 +	if (vfio_pci_resets_disabled()) {
 +		pci_info(pdev, "refusing reset on disable\n");
 +	} else {
-+		if (vdev->reset_works && pci_dev_trylock(pdev)) {
-+			if (!__pci_reset_function_locked(pdev))
-+				vdev->needs_reset = false;
-+			pci_dev_unlock(pdev);
-+		}
++		if (vdev->reset_works) {
++			bridge = pci_upstream_bridge(pdev);
++			if (bridge && !pci_dev_trylock(bridge))
++				goto out_restore_state;
++			if (pci_dev_trylock(pdev)) {
++				if (!__pci_reset_function_locked(pdev))
++					vdev->needs_reset = false;
++				pci_dev_unlock(pdev);
++			}
++			if (bridge)
++				pci_dev_unlock(bridge);
+ 		}
+-		if (bridge)
+-			pci_dev_unlock(bridge);
  	}
  
- 	pci_restore_state(pdev);
+ out_restore_state:
 @@ -1247,6 +1264,12 @@ static int vfio_pci_ioctl_reset(struct vfio_pci_core_device *vdev,
  	if (!vdev->reset_works)
  		return -EINVAL;
