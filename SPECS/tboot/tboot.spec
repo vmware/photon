@@ -7,7 +7,7 @@
 Summary:    Trusted pre-kernel module and tools.
 Name:       tboot
 Version:    1.10.5
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://sourceforge.net/projects/tboot/
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
@@ -22,6 +22,9 @@ BuildRequires: zlib-devel
 BuildRequires: openssl-devel
 
 Requires:      libtspi
+Requires:      zlib
+Requires:      openssl-libs
+
 %description
 Trusted Boot (tboot) is an open source, pre- kernel/VMM module that uses
 Intel(R) Trusted Execution Technology (Intel(R) TXT) to perform a measured
@@ -45,6 +48,8 @@ make debug=y DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{_sysconfdir}
 
 %changelog
+*   Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.10.5-5
+-   Add zlib and openssl-libs as runtime requirements
 *   Wed Mar 25 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.10.5-4
 -   Add zlib and openssl build requirements
 *   Sat Mar 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.5-3
