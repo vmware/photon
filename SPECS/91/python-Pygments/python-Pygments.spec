@@ -3,16 +3,20 @@
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
 Version:        2.13.0
-Release:        5.1%{?dist}
+Release:        5.2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Pygments
 
+BuildArch:      noarch
+
 Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-4539.patch
 
 # Note: If you are fixing a CVE here, please check for the same in python3-pip
 
@@ -28,8 +32,6 @@ BuildRequires:  openssl-devel
 Requires:       python3
 Requires:       python3-setuptools
 
-BuildArch:      noarch
-
 %description
 Pygments is a syntax highlighting package written in Python.
 It is a generic syntax highlighter suitable for use in code hosting, forums, wikis or other applications that need to prettify source code. Highlights are:
@@ -40,7 +42,7 @@ a number of output formats, presently HTML, LaTeX, RTF, SVG, all image formats t
 it is usable as a command-line tool and as a library.
 
 %prep
-%autosetup -n Pygments-%{version}
+%autosetup -p1 -n Pygments-%{version}
 
 %build
 %{py3_build}
@@ -48,20 +50,14 @@ it is usable as a command-line tool and as a library.
 %install
 %{py3_install}
 
-%check
-#pushd ../p3dir
-#easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-#$easy_install_3 nose
-#PYTHON=python3 make test
-#popd
-#test incompatible with python3.7
-
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 %{_bindir}/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.0-5.2
+- Fix CVE-2026-4539
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.13.0-5.1
 - Bump after moving to SPECS/91
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.13.0-5

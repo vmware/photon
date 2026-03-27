@@ -3,11 +3,13 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.28.1
-Release:        8.1%{?dist}
+Release:        8.2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://python-requests.org
+
+BuildArch:      noarch
 
 Source0: http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 
@@ -20,6 +22,7 @@ Patch1: CVE-2023-32681.patch
 Patch2: CVE-2024-35195.patch
 Patch3: CVE-2024-35195-2.patch
 Patch4: CVE-2024-47081.patch
+Patch5: CVE-2026-25645.patch
 
 %if 0%{?with_check}
 Patch0:         fix_makecheck.patch
@@ -50,8 +53,6 @@ Requires:       python3-pyOpenSSL
 Requires:       python3-certifi
 Requires:       python3-idna
 Requires:       python3-charset-normalizer
-
-BuildArch:      noarch
 
 %description
 Requests is an Apache2 Licensed HTTP library, written in Python, for human
@@ -98,6 +99,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.28.1-8.2
+- Fix CVE-2026-25645
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.28.1-8.1
 - Bump after moving to SPECS/91
 * Tue Sep 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.28.1-8
