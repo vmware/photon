@@ -76,8 +76,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.69
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.78
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -952,6 +952,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Mar 26 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.78-1
+- Update to version 6.12.78
 * Mon Mar 16 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-7
 - SELinux as a default LSM
 - Add erofs support

@@ -11,9 +11,9 @@ diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
 index 2f4e5174e78c..72c239f65f13 100644
 --- a/drivers/usb/class/cdc-acm.c
 +++ b/drivers/usb/class/cdc-acm.c
-@@ -1934,6 +1934,20 @@ static const struct usb_device_id acm_ids[] = {
- 	.driver_info = IGNORE_DEVICE,
- 	},
+@@ -2011,6 +2011,20 @@ static const struct usb_device_id acm_ids[] = {
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ACM,
+ 		USB_CDC_PROTO_NONE) },
  
 +	/* Exclude Exar USB serial ports */
 +	{ USB_DEVICE(0x04e2, 0x1400), .driver_info = IGNORE_DEVICE, },
@@ -29,9 +29,9 @@ index 2f4e5174e78c..72c239f65f13 100644
 +	{ USB_DEVICE(0x04e2, 0x1422), .driver_info = IGNORE_DEVICE, },
 +	{ USB_DEVICE(0x04e2, 0x1424), .driver_info = IGNORE_DEVICE, },
 +
- 	/* control interfaces without any protocol set */
+ 	/* control interfaces with various AT-command sets */
  	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ACM,
- 		USB_CDC_PROTO_NONE) },
+ 		USB_CDC_ACM_PROTO_AT_V25TER) },
 -- 
 2.17.1
 

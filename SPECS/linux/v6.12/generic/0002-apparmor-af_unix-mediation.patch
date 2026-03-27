@@ -1323,9 +1323,9 @@ index 3cd71bf..b3c9b0d 100644
  	if (ad->peer) {
  		audit_log_format(ab, " peer=");
  		aa_label_xaudit(ab, labels_ns(ad->subj_label), ad->peer,
-@@ -211,7 +261,10 @@ int aa_sock_file_perm(const struct cred *subj_cred, struct aa_label *label,
- 	AA_BUG(!sock);
- 	AA_BUG(!sock->sk);
+@@ -263,7 +263,10 @@ int aa_sock_file_perm(const struct cred *subj_cred, struct aa_label *label,
+ 	if (!sock || !sock->sk)
+ 		return 0;
  
 -	return aa_label_sk_perm(subj_cred, label, op, request, sock->sk);
 +	return af_select(sock->sk->sk_family,
