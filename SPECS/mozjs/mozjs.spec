@@ -5,7 +5,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       140.7.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://spidermonkey.dev
@@ -16,16 +16,14 @@ Source0: https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firef
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0:        emitter.patch
-
-# Build fixes
+Patch0:     emitter.patch
 Patch1:     init_patch.patch
 Patch2:     spidermonkey_checks_disable.patch
 Patch3:     copy-headers.patch
 Patch4:     fix-soname.patch
-Patch6:     compile-with-py314.patch
-
 Patch5:     CVE-2022-46175.patch
+Patch6:     compile-with-py314.patch
+Patch7:     CVE-2026-2781.patch
 
 BuildRequires: which
 BuildRequires: python3-xml
@@ -66,16 +64,15 @@ developing applications that use %{name}.
 
 %prep
 %autosetup -p1 -n firefox-%{version}
-rm -rf modules/zlib security/nss third_party/rust/mp4parse/link-u-avif-sample-images/*
+rm -r modules/zlib security/nss third_party/rust/mp4parse/link-u-avif-sample-images/*
 # Tests are disabled anyways - avoid detecting CC-BY-SA licensed test components
 # Need to keep testing/mozbase/mozfile as this python module is used in many places
 # outside of ./testing/
-rm -rf testing/web-platform
-rm -rf browser/components/translation/test
+rm -r testing/web-platform
 
 # mozscreenshots extension borderify uses CC-BY-SA licensed .png
 # we don't need this for the library we package
-rm -rf browser/tools/mozscreenshots
+rm -r browser/tools/mozscreenshots
 
 %build
 export CC=gcc
@@ -150,6 +147,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 140.7.0-2
+- Fix CVE-2026-2781
 * Mon Feb 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 140.7.0-1
 - Upgrade to build with python3.14
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 102.12.0-10
