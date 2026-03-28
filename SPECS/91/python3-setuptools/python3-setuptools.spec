@@ -1,15 +1,13 @@
 %global build_if %{photon_subrelease} <= 91
 
 %define srcname             setuptools
-%define python_wheel_dir    %{_datadir}/python-wheels
-%define python_wheel_name   %{srcname}-%{version}-py3-none-any.whl
 
 Summary:        Extensions to the standard Python datetime module
 Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        69.0.3
-Release:        8.1%{?dist}
+Release:        8.2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -26,8 +24,6 @@ Patch1: CVE-2025-47273.patch
 BuildRequires: python3-devel
 BuildRequires: python3-xml
 
-%define ExtraBuildRequires python3-wheel
-
 Requires:       python3
 Requires:       python3-xml
 Requires(post): findutils
@@ -42,23 +38,15 @@ designed to facilitate packaging Python projects.
 It helps developers to easily share reusable code (in the form of a library) and programs
 (e.g., CLI/GUI tools implemented in Python), that can be installed with pip and uploaded to PyPI.
 
-%package wheel
-Summary:        The setuptools wheel
-
-%description wheel
-A Python wheel of setuptools to use with venv.
-
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{python3} setup.py bdist_wheel
+%py3_build
 
 %install
-%{py3_install}
+%py3_install
 find %{buildroot}%{python3_sitelib} -name '*.exe' -delete
-mkdir -p %{buildroot}%{python_wheel_dir}
-install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
 
 %check
 %{py3_test}
@@ -73,12 +61,9 @@ rm -rf %{buildroot}
 %defattr(-,root,root,755)
 %{python3_sitelib}/*
 
-%files wheel
-%defattr(-,root,root,755)
-%dir %{python_wheel_dir}
-%{python_wheel_dir}/%{python_wheel_name}
-
 %changelog
+* Sat Mar 28 2026 Factory AI Bot <factory-droid[bot]@users.noreply.github.com> 69.0.3-8.2
+- Remove erroneously introduced wheel subpackage and ExtraBuildRequires
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 69.0.3-8.1
 - Bump after moving to SPECS/91
 * Wed May 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 69.0.3-8
