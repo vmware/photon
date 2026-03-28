@@ -113,7 +113,7 @@ class PackageBuildDataGenerator(object):
                     sortedList.insert(index, p)
                     index = index + 1
 
-            alreadyProcessedPackages.add(p)
+            alreadyProcessedPackages.add(pkg)
 
             # Remove duplicate entries in sorted list in intervals
             if (len(sortedList) - prevSortListLen) > 100:
