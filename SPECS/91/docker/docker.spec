@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        28.2.2
-Release:        7.3%{?dist}
+Release:        7.4%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -35,6 +35,7 @@ Patch0: CVE-2025-54388.patch
 Patch1: CVE-2026-33997.patch
 Patch2: CVE-2026-34040-1.patch
 Patch3: CVE-2026-34040-2.patch
+Patch4: CVE-2026-33186.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
@@ -306,6 +307,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-7.4
+- Fix CVE-2026-33186
 * Thu Apr 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 28.2.2-7.3
 - Fix requires
 * Tue Apr 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-7.2

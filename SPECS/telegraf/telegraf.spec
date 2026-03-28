@@ -9,7 +9,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.37.3
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -23,6 +23,8 @@ Source3: %{name}.preset
 
 Source4: license.txt
 %include %{SOURCE4}
+
+Patch0: CVE-2026-33186.patch
 
 BuildRequires:    go
 BuildRequires:    systemd-devel
@@ -102,6 +104,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Apr 14 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.37.3-2
+- Fix CVE-2026-33186
 * Tue Mar 31 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.37.3-1
 - Upgrade to 1.37.3
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.36.4-2
