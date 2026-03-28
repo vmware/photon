@@ -606,6 +606,7 @@ class CleanUp:
 
         try:
             CleanUp.removeUpwardDeps(":".join(spec_fns), "tree")
+            RpmBuildTarget.create_repo()
         except Exception as error:
             raise (f"ERROR: in clean_stage_for_incremental_build: {error}")
 
@@ -637,6 +638,7 @@ class CleanUp:
                 os.remove(filePath)
             except Exception as e:
                 print(f"ERROR: while removing file {filePath}: {e}")
+        RpmBuildTarget.create_repo()
 
 
 """
@@ -658,8 +660,6 @@ class RpmBuildTarget:
                 BuildEnvironmentSetup.sources_cached()
             else:
                 BuildEnvironmentSetup.sources()
-
-            CheckTools.check_spec_files()
 
             specPaths = " ".join(constants.specPaths)
             cmd = (
@@ -729,6 +729,7 @@ class RpmBuildTarget:
         if check_prerequesite["packages"]:
             return
 
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         if not configdict["additional-path"]["photon-cache-path"]:
@@ -746,6 +747,7 @@ class RpmBuildTarget:
 
     def package(self, pkgName):
         self.logger.debug(f"Package to build: {pkgName}")
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
         if pkgName in constants.extraPackagesList:
             constants.extraPackagesList.remove(pkgName)
@@ -758,6 +760,8 @@ class RpmBuildTarget:
     def packages_minimal(self):
         if check_prerequesite["packages-minimal"]:
             return
+
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         if not configdict["additional-path"]["photon-cache-path"]:
@@ -777,6 +781,8 @@ class RpmBuildTarget:
     def packages_basic(self):
         if check_prerequesite["packages-basic"]:
             return
+
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         if not configdict["additional-path"]["photon-cache-path"]:
@@ -796,6 +802,8 @@ class RpmBuildTarget:
     def packages_rt(self):
         if check_prerequesite["packages-rt"]:
             return
+
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         if not configdict["additional-path"]["photon-cache-path"]:
@@ -815,6 +823,8 @@ class RpmBuildTarget:
     def packages_initrd(self):
         if check_prerequesite["packages-initrd"]:
             return
+
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         Builder.buildPackagesInJson(
@@ -831,6 +841,8 @@ class RpmBuildTarget:
     def packages_docker(self):
         if check_prerequesite["packages-docker"]:
             return
+
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         Builder.buildPackagesForAllSpecs(
@@ -846,6 +858,8 @@ class RpmBuildTarget:
     def updated_packages(self):
         if check_prerequesite["updated-packages"]:
             return
+
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         constants.setRpmPath(Build_Config.updatedRpmPath)
@@ -861,6 +875,7 @@ class RpmBuildTarget:
     def buildGivenPackages(self, pkgs, rebuild=False):
         pkgs = pkgs.split(",")
         self.logger.debug(f"Building following packages: {pkgs}")
+        CheckTools.check_spec_files()
         pkgMgr = PackageManager()
         RpmBuildTarget.create_repo()
         pkgMgr._buildGivenPackages(pkgs, Build_Config.buildThreads, rebuild=rebuild)
@@ -883,6 +898,8 @@ class RpmBuildTarget:
     def extra_packages(self):
         if check_prerequesite["extra-packages"]:
             return
+
+        CheckTools.check_spec_files()
         RpmBuildTarget.create_repo()
 
         Builder.buildSpecifiedPackages(
@@ -911,6 +928,8 @@ class RpmBuildTarget:
         if check_prerequesite["core_toolchain"]:
             return
 
+        CheckTools.check_spec_files()
+
         pkgManager = PackageManager()
         pkgManager.buildToolChainPackages()
         RpmBuildTarget.create_repo()
@@ -919,6 +938,8 @@ class RpmBuildTarget:
     def toolchain(self):
         if check_prerequesite["toolchain"]:
             return
+
+        CheckTools.check_spec_files()
 
         pkgManager = PackageManager()
         RpmBuildTarget.create_repo()
@@ -1042,6 +1063,11 @@ class CheckTools:
             raise Exception("")
 
     def check_spec_files():
+        # run spec checks only in non-tty sessions
+        # makes development experience better
+        if sys.stdout.isatty():
+            return
+
         if check_prerequesite["check-spec-files"]:
             return
 
@@ -1076,7 +1102,9 @@ class CheckTools:
         if baseCommit:
             files = [os.path.join(phPath, f) for f in files]
 
-        if check_specs(files):
+        subrelease = constants.subreleaseVersion
+        mainline = configdict["photon-build-param"].get("photon-mainline")
+        if check_specs(files, subrelease, mainline):
             raise Exception("ERROR: Spec file check failed")
 
         check_prerequesite["check-spec-files"] = True

@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import license_expression
+import operator
 
 from datetime import datetime
 
@@ -31,6 +32,12 @@ with open(f"{scriptPath}/{cfg_fn}", "r") as f:
     cfg_dict = json.load(f)
 
 g_ignore_list = []
+g_mainline = ""
+
+
+def pr_err(msg):
+    print(msg, file=sys.stderr)
+
 
 """
 Error Dictionary:
@@ -81,9 +88,8 @@ class ErrorDict:
                 continue
 
             if not pr_flg:
-                print(
-                    f"--- List of errors in {self.spec_fn} ---",
-                    file=sys.stderr,
+                pr_err(
+                    f"--- List of errors in {self.spec_fn} ---"
                 )
                 pr_flg = True
 
@@ -91,11 +97,11 @@ class ErrorDict:
 
             for msg in v[1:]:
                 if k == "unused_files":
-                    print(f"{msg}", file=sys.stderr)
+                    pr_err(msg)
                 else:
-                    print(f"ERROR in {self.spec_fn}: {msg}", file=sys.stderr)
+                    pr_err(f"ERROR in {self.spec_fn}: {msg}")
 
-        print("\n", file=sys.stderr)
+        pr_err("\n")
 
 
 def check_spec_header(spec, err_dict):
@@ -472,21 +478,20 @@ def check_make_smp_flags(lines_dict, err_dict):
     return ret
 
 
-def check_mentioned_but_unused_files(spec_fn, dirname):
+def check_mentioned_but_unused_files(spec_fn, dirname, subrelease):
     parsed_spec, _, _ = CommandUtils.runCmd(
-        ["rpmspec", "-D", f"%_sourcedir {dirname}", "-P", spec_fn],
+        ["rpmspec", "-D", f"_sourcedir {dirname}", "-D", f"photon_subrelease {subrelease}", "-P", spec_fn],
         capture=True,
     )
 
     parsed_spec = parsed_spec.split("\n")
 
-    # ignore everything after files
+    # ignore everything after %changelog
     # patch & sources get used much earlier
     idx = parsed_spec.index("%changelog")
     parsed_spec = parsed_spec[:idx]
 
     source_patch_list = []
-
     for line in parsed_spec:
         if re.search(source_regex, line) or re.search(patch_regex, line):
             fn = os.path.basename(line.split()[1])
@@ -525,10 +530,12 @@ def get_source_patches_from_all_specs(spec_fn, dirname):
             sources.extend(tmp.sources)
             patches.extend(tmp.patches)
 
+    other_files = [f for f in other_files if f not in sources + patches]
+
     return sources, patches, other_files
 
 
-def check_for_unused_files(spec_fn, err_dict, dirname):
+def check_for_unused_files(spec_fn, err_dict, dirname, subrelease):
     global g_ignore_list
 
     g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
@@ -559,7 +566,7 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
     # keep only basenames in source list
     source_patch_list = [os.path.basename(s) for s in source_patch_list]
 
-    mentioned_but_unused = check_mentioned_but_unused_files(spec_fn, dirname)
+    mentioned_but_unused = check_mentioned_but_unused_files(spec_fn, dirname, subrelease)
     for fn in mentioned_but_unused[:]:
         if fn in g_ignore_list:
             mentioned_but_unused.remove(fn)
@@ -571,7 +578,7 @@ def check_for_unused_files(spec_fn, err_dict, dirname):
             "- If you are using Photon OS, update rpm version to latest using tdnf and retry\n"
             "- If you are using any other distro, contact - 'shreenidhi.shedi@broadcom.com'\n"
         )
-        print(msg)
+        pr_err(msg)
 
     fns = list(set(other_files) - set(source_patch_list))
     for fn in fns[:]:
@@ -641,72 +648,6 @@ def check_spec_cfg_yml(srcs, specDir, err_dict):
     return False
 
 
-def check_entire_cfg_ymls():
-    global specPaths
-
-    retVal = 0
-    checkers = []
-    phCfgJson = "build-config.json"
-    filteredPaths = []
-
-    for path in specPaths:
-        with open(f"{path}/../{phCfgJson}", "r") as f:
-            data = json.load(f)
-        # skip this check for Ph5
-        if data["photon-branch"] == "5.0":
-            print("Skipping check_entire_cfg_ymls for Ph5 ...")
-            continue
-        filteredPaths.append(path)
-
-    specPaths = filteredPaths
-
-    checker = SourceArchiveChecker()
-    for path in specPaths:
-        checker.scanDirectory(path)
-        hasConflict, logs = checker.checkConflicts()
-        if hasConflict:
-            print("\n".join(logs), file=sys.stderr)
-            retVal = 1
-        checkers.append(checker)
-
-    if len(specPaths) == 1:
-        return retVal
-
-    # Check across both archive maps
-    map1, map2 = checkers[0].archiveMap, checkers[1].archiveMap
-    outputLines = []
-    hasConflict = False
-
-    def get_origins(entries):
-        return {src["_src_origin"] for src, _ in entries}
-
-    def check_across_maps(mapA, mapB):
-        nonlocal hasConflict
-        commonKeys = set(mapA.keys()) & set(mapB.keys())
-        for archiveName in sorted(commonKeys):
-            originsA = get_origins(mapA[archiveName])
-            originsB = get_origins(mapB[archiveName])
-            if originsA != originsB:
-                hasConflict = True
-                outputLines.append(
-                    f"\n[Across maps] Conflict in archive: {archiveName}"
-                )
-                outputLines.append(
-                    f" - Origins in map1: {', '.join(originsA)}"
-                )
-                outputLines.append(
-                    f" - Origins in map2: {', '.join(originsB)}"
-                )
-
-    check_across_maps(map1, map2)
-
-    if hasConflict:
-        print("\n".join(outputLines), file=sys.stderr)
-        retVal = 1
-
-    return retVal
-
-
 def check_proper_spdx_license(spec, err_dict):
     sec = "license"
     bad_ids = ["unknown-spdx", "LicenseRef", "scancode"]
@@ -733,6 +674,109 @@ def check_proper_spdx_license(spec, err_dict):
         return True
 
     return False
+
+
+def check_subrelease_specs(specsList, mainline):
+    ret = False
+
+    if not specsList:
+        return ret
+
+    pattern = re.compile(r'^\s*%global\s+build_if\s+%\{photon_subrelease\}\s+(.*)')
+    cond_pattern = re.compile(r'(>=|<=|>|<|==)\s*(\d+)')
+
+    ops = {
+        ">": operator.gt,
+        ">=": operator.ge,
+        "<": operator.lt,
+        "<=": operator.le,
+        "==": operator.eq
+    }
+
+    def comparator(match, subrel, spec):
+        expr = match.group(1).strip()
+
+        m = cond_pattern.search(expr)
+        if not m:
+            return None
+
+        op, val = m.groups()
+        val = int(val)
+        assert val >= 90, f"photon_subrelease should be >= 90 - {spec}"
+        assert val <= mainline, f"photon_subrelease should be <= {mainline}: {spec}"
+        return ops[op](subrel, int(val))
+
+    def build_if_check(path):
+        with open(path) as f:
+            for line in f:
+                m = pattern.search(line)
+                if m:
+                    return False, m
+        return True, None
+
+    for rel in range(90, mainline):
+        for specDir in specPaths:
+            rel_dir = f"{specDir}/{rel}"
+            for specFile in specsList:
+                branched = False
+                v1 = False
+                v2 = False
+
+                subRelSpec = f"{rel_dir}/{specFile}"
+                mainSpec = f"{specDir}/{specFile}"
+
+                spec_base_name = os.path.basename(mainSpec)
+
+                if os.path.isfile(subRelSpec):
+                    branched = True
+                    r, m = build_if_check(subRelSpec)
+                    if r:
+                        pr_err(f"ERROR: subrel: {spec_base_name} does not contain %global build_if")
+                        ret = True
+                    else:
+                        cmp_rel = comparator(m, mainline, subRelSpec)
+                        if cmp_rel:
+                            pr_err(f"ERROR1: subrel: {m.group(1)} in {spec_base_name} is wrong")
+                            ret = True
+
+                        v1 = comparator(m, rel, subRelSpec)
+                        if not v1:
+                            pr_err(f"ERROR2: subrel: {m.group(1)} in {spec_base_name} is wrong")
+                            ret = True
+
+                if os.path.isfile(mainSpec):
+                    r, m = build_if_check(mainSpec)
+                    if r and branched:
+                        pr_err(f"ERROR: main: {spec_base_name} does not contain %global build_if")
+                        ret = True
+                        continue
+
+                    if not m:
+                        continue
+
+                    cmp_main = comparator(m, mainline, mainSpec)
+                    if not cmp_main:
+                        if "SPECS/linux/" not in mainSpec:
+                            pr_err(f"ERROR1: main: {m.group(1)} in {spec_base_name} is wrong")
+                            ret = True
+                        else:
+                            pr_err(f"WARNING1: main: {m.group(1)} in {spec_base_name} is wrong")
+                            pr_err("This will soon be treated as hard error, please fix it")
+
+                    v2 = comparator(m, rel, mainSpec)
+                    if v2:
+                        if "SPECS/linux/" not in mainSpec:
+                            pr_err(f"ERROR2: main: {m.group(1)} in {spec_base_name} is wrong")
+                            ret = True
+                        else:
+                            pr_err(f"WARNING2: main: {m.group(1)} in {spec_base_name} is wrong")
+                            pr_err("This will soon be treated as hard error, please fix it")
+
+                if v1 and v2:
+                    pr_err(f"ERROR: {spec_base_name} has wrong photon_subrelease condition")
+                    ret = True
+
+    return ret
 
 
 def find_file_in_dir(fn, path):
@@ -795,7 +839,7 @@ def create_altered_spec(spec_fn):
 
 
 def getSpecObj(spec_fn):
-    macros = {"dist": ".ph5"}
+    macros = {"dist": distTag}
     spec = Spec.from_file(spec_fn, macros)
     return spec
 
@@ -815,20 +859,26 @@ def setSpecPaths():
     distTag = data["photon-build-param"]["photon-dist-tag"]
 
 
-def check_specs(files_list):
+def check_specs(files_list, subrelease, mainline):
     ret = False
     global specPaths
 
     setSpecPaths()
 
+    specsForSubrelCheck = []
+
     for spec_fn in files_list:
         if not spec_fn.endswith(".spec"):
             continue
 
+        tmp = "/".join(spec_fn.split("/")[-2:])
+        if tmp not in specsForSubrelCheck:
+            specsForSubrelCheck.append(tmp)
+
         print(f"Checking spec file: {spec_fn}")
 
         if not os.path.isfile(spec_fn):
-            print(f"{spec_fn} has been deleted in this changeset")
+            print(f"WARNING: {spec_fn} has been deleted in this changeset")
             continue
 
         specTopDir = spec_fn.split("SPECS/", 1)[0] + "SPECS"
@@ -856,7 +906,7 @@ def check_specs(files_list):
                 check_for_configure(lines_dict, err_dict),
                 check_setup(lines_dict, err_dict),
                 check_make_smp_flags(lines_dict, err_dict),
-                check_for_unused_files(altered_spec, err_dict, currSpecDir),
+                check_for_unused_files(altered_spec, err_dict, currSpecDir, subrelease),
                 check_proper_spdx_license(spec, err_dict),
             ]
         ):
@@ -869,18 +919,56 @@ def check_specs(files_list):
         if os.path.exists(altered_spec):
             os.remove(altered_spec)
 
-    retVal = check_entire_cfg_ymls()
-    if retVal:
+    global g_mainline
+    g_mainline = mainline
+    n = int(mainline)
+    assert n >= 90, f"mainline should be  90 >= mainline <= {n}"
+    assert int(subrelease) >= 90, f"subrelease should be 90 >= subrelease <= {n}"
+    assert int(subrelease) <= n, f"subrelease should be 90 >= subrelease <= {n}"
+
+    if check_subrelease_specs(specsForSubrelCheck, n):
         ret = True
-        print("\nERROR: config.yaml sanity check failed ...", file=sys.stderr)
 
     return ret
 
 
 def main():
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <directory>|<spec-path>", file=sys.stderr)
-        return 1
+    import argparse
+
+    mainline = "92"
+    subrelease = "91"
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "paths",
+        nargs="+",
+        help="spec files or directories"
+    )
+
+    parser.add_argument(
+        "--mainline",
+        type=int,
+        default=int(mainline),
+        help=f"mainline version (default: {mainline})"
+    )
+
+    parser.add_argument(
+        "--subrelease",
+        type=int,
+        default=int(subrelease),
+        help=f"subrelease version (default: {subrelease})"
+    )
+
+    args = parser.parse_args()
+
+    paths = args.paths
+    mainline = args.mainline
+    subrelease = args.subrelease
+
+    #print(f"Paths={paths}")
+    print(f"Subrelease={subrelease}")
+    print(f"Mainline={mainline}")
 
     files = []
 
@@ -889,24 +977,21 @@ def main():
         for r, _, fns in os.walk(dirname):
             for fn in fns:
                 if fn.endswith((".spec", ".spec.in")):
-                    files.append(os.path.join(r, fn))
+                    spec_files.append(os.path.join(r, fn))
         return spec_files
 
-    for arg in range(1, len(sys.argv)):
-        if sys.argv[arg].endswith((".spec", ".spec.in")):
-            files.append(sys.argv[arg])
-        elif os.path.isdir(sys.argv[arg]):
-            files += get_specs_in_dir(sys.argv[arg])
+    for path in paths:
+        if path.endswith((".spec", ".spec.in")):
+            files.append(path)
+        elif os.path.isdir(path):
+            files += get_specs_in_dir(path)
 
     if not files:
-        print(
-            "spec-checker: No spec files found in the specified directory/directories.",
-            file=sys.stderr,
-        )
+        pr_err("spec-checker: No spec files found in the specified directory/directories.")
         return 0
 
-    if check_specs(files):
-        print("ERROR: spec check failed", file=sys.stderr)
+    if check_specs(files, subrelease, mainline):
+        pr_err("ERROR: spec check failed")
         return 1
 
     return 0

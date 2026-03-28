@@ -20,4 +20,38 @@ if [ -z "${modified_spec_files}" ]; then
 fi
 
 python3 ${COMM_REPO_DIR}/support/spec-checker/check_spec.py ${modified_spec_files}
-exit $?
+retVal="$?"
+if [ "$retVal" -ne 0 ]; then
+  echo "ERROR: spec check failed" >&2
+fi
+
+# run this only in console sessions
+if [ -t 1 ]; then
+  python3 ${COMM_REPO_DIR}/support/spec-checker/check_spec_backup_diffs.py
+  back_diff_ret="$?"
+  while true; do
+    if [ -n "${IGNORE_SPLIT_SPEC_DIFF}" ] || [ "${back_diff_ret}" -eq 0 ]; then
+      break
+    fi
+    printf "Differences detected in micro branched specs. Continue? [y/N]: "
+    read ans < /dev/tty
+
+    case "$ans" in
+      y|Y)
+        echo "Proceeding by ignoring extra diffs as instructed by user"
+        break
+        ;;
+      n|N)
+        echo "ERROR: failing spec check" >&2
+        retVal=1
+        break
+        ;;
+      *)
+        sleep 0.5
+        echo "Invalid input. Please enter y or n" >&2
+        ;;
+    esac
+  done
+fi
+
+exit $retVal
