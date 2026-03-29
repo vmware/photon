@@ -5,7 +5,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        22%{?dist}
+Release:        23%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -41,6 +41,9 @@ Patch507: CVE-2025-0395.patch
 Patch508: 0001-memalign-reinstate-alignment-overflow-check-CVE-2026.patch
 Patch509: 0002-resolv-Fix-NSS-DNS-backend-for-getnetbyaddr-CVE-2026.patch
 Patch510: 0003-posix-Reset-wordexp_t-fields-with-WRDE_REUSE-CVE-202.patch
+
+Patch511: resolv-Count-records-correctly-CVE-2026-4437.patch
+Patch512: resolv-Check-hostname-for-validity-CVE-2026-4438.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -374,6 +377,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Sun Mar 29 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-23
+- Fix CVE-2026-4437, CVE-2026-4438
 * Thu Jan 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-22
 - Fix CVE-2026-0861, CVE-2026-0915, CVE-2025-15281
 * Sat Dec 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.36-21
