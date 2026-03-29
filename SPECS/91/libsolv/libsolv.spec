@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        A free package dependency solver
 Name:           libsolv
-Version:        0.7.35
-Release:        1%{?dist}
+Version:        0.7.22
+Release:        7.1%{?dist}
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -79,8 +79,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
-* Tue Jan 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.35-1
-- Upgrade to v0.7.35
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.22-7.1
+- Bump after moving to SPECS/91
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.7.22-7
 - Version bump for expat upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.7.22-6

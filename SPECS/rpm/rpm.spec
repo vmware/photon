@@ -3,38 +3,42 @@
 
 Summary:    Package manager
 Name:       rpm
-Version:    4.18.2
-Release:    10%{?dist}
+Version:    6.0.1
+Release:    1%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
 
-Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
+Source0: https://github.com/rpm-software-management/rpm/releases/download/%{name}-%{version}-release/%{name}-%{version}.tar.bz2
 
 Source1:    macros
-Source2:    macros.php
-Source3:    macros.perl
-Source4:    macros.vpath
-Source5:    macros.ldconfig
+Source2:    macros.perl
+Source3:    macros.vpath
+Source4:    macros.ldconfig
 
-Source6: license.txt
-%include %{SOURCE6}
+Source5: license.txt
+%include %{SOURCE5}
 
 Patch0: 0001-This-patch-fixes-a-warning-that-is-shown-upon-every-.patch
 Patch1: 0002-commit-buffer-cache-to-disk-after-ending-rpm-transac.patch
 Patch2: 0003-If-rpm-is-not-triggered-from-tty-rpm-transactions-wo.patch
 Patch3: 0004-Migrate-rpmdb-to-usr-lib-sysimage-rpm.patch
-Patch4: 0005-Fix-a-race-condition-in-brp-strip.patch
-Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
-Patch6: 0007-build-support-findreq-findprov-in-Requires-Provides-.patch
-Patch7: 0008-fix-division-by-zero-in-elfdeps-RhBug-2299414.patch
+Patch4: 0005-build-support-findreq-findprov-in-Requires-Provides-.patch
+Patch5: 0006-Disable-scdoc.patch
+Patch6: 0007-replace-format-with-string-concatenation.patch
+Patch7: 0008-fix-host.patch
+Patch8: 0009-rpm-6.0-rpmformat.patch
+Patch9: 0010-rpm-6.0-vfylevel.patch
+Patch10: 0011-dilute-user-group-requires.patch
 
 Requires:   bash
 Requires:   zstd-libs
 Requires:   %{name}-libs = %{version}-%{release}
 
-BuildRequires:  pandoc-bin
+BuildRequires:  libarchive-devel
+BuildRequires:  rpm-sequoia-devel
+BuildRequires:  cmake
 BuildRequires:  systemd-devel
 BuildRequires:  dbus-devel >= 1.3
 BuildRequires:  systemd-rpm-macros
@@ -60,6 +64,7 @@ RPM package manager
 Summary:    Libraries and header files for rpm
 Provides:   pkgconfig(%{name})
 Requires:   zstd-devel
+Requires:   rpm-sequoia-devel
 Requires:   %{name} = %{version}-%{release}
 Requires:   %{name}-sign-libs = %{version}-%{release}
 Requires:   %{name}-build-libs = %{version}-%{release}
@@ -82,6 +87,7 @@ Requires: xz-libs
 Requires: zstd-libs
 Requires: openssl-libs
 Requires: lua-libs
+Requires: rpm-sequoia
 
 Conflicts:  libsolv < 0.7.19
 
@@ -114,6 +120,7 @@ Requires: elfutils-libelf
 Requires: cpio
 Requires: systemd-rpm-macros
 Requires: python3-macros
+Requires: perl-rpm-packaging
 Requires: dwz
 Requires: debugedit
 # toybox versions of find and xargs are not sufficient
@@ -131,7 +138,6 @@ Binaries, libraries and scripts to build rpms.
 
 %package lang
 Summary:  Additional language files for rpm
-Group:    Applications/System
 Requires: %{name} = %{version}-%{release}
 
 %description lang
@@ -139,7 +145,6 @@ These are the additional language files of rpm.
 
 %package -n python3-%{name}
 Summary:  Python 3 bindings for rpm.
-Group:    Development/Libraries
 Requires: python3
 Requires: python3-setuptools
 Requires: %{name}-sign-libs = %{version}-%{release}
@@ -162,33 +167,30 @@ transaction is running using the systemd-inhibit mechanism.
 %autosetup -p1
 
 %build
-# pass -L opts to gcc as well to prioritize it over standard libs
-sed -i 's/-Wl,-L//g' python/setup.py.in
-sed -i '/library_dirs/d' python/setup.py.in
-sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
+%{cmake} \
+  -DENABLE_TESTSUITE=OFF \
+  -DENABLE_OPENMP=OFF \
+  -DCMAKE_INSTALL_PREFIX=%{_usr} \
+  -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+  -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=%{_sharedstatedir} \
+  -DENABLE_BDB_RO=ON \
+  -DENABLE_NDB=OFF \
+  -DENABLE_SQLITE=ON \
+  -DENABLE_PLUGINS=ON \
+  -DWITH_ACL=OFF \
+  -DWITH_AUDIT=OFF \
+  -DWITH_SEQUOIA=ON \
+  -DWITH_OPENSSL=ON \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DRPM_VENDOR=unknown \
+  -Dhost=%{_host}
 
-sh autogen.sh --noconfigure
-
-%configure \
-  CPPFLAGS='-I%{_includedir}/nspr -I%{_includedir}/nss -DLUA_COMPAT_APIINTCASTS' \
-    --disable-dependency-tracking \
-    --disable-static \
-    --enable-python \
-    --with-cap \
-    --with-vendor=vmware \
-    --disable-silent-rules \
-    --enable-zstd \
-    --without-archive \
-    --enable-sqlite \
-    --enable-bdb-ro \
-    --enable-plugins \
-    --with-crypto=openssl \
-    --enable-nls
-
-%make_build
+%{cmake_build}
 
 %install
-%make_install %{?_smp_mflags}
+%{cmake_install}
+
+rm -r %{buildroot}%{_docdir}
 find %{buildroot} -name '*.la' -delete
 
 ln -sfrv %{buildroot}%{_bindir}/find-debuginfo \
@@ -199,24 +201,19 @@ ln -sfrv %{buildroot}%{_bindir}/find-debuginfo \
 # System macros and prefix
 install -dm644 %{buildroot}%{_sysconfdir}/%{name}
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
-install -vm644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}
-install -vm644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}
-install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
-install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
-
-%check
-%make_build check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
-%make_build clean
-
-%post libs -p /sbin/ldconfig
-%postun libs -p /sbin/ldconfig
+install -vm644 %{SOURCE2} %{SOURCE3} %{SOURCE4} %{buildroot}%{_rpmmacrodir}
 
 %clean
 rm -rf %{buildroot}
 
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
+%{_bindir}/rpm2archive
+%{_bindir}/rpmsort
 %{_bindir}/gendiff
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmgraph
@@ -230,32 +227,33 @@ rm -rf %{buildroot}
 %{rpmhome}/rpm2cpio.sh
 %{rpmhome}/tgpg
 %{rpmhome}/platform
-%{_libdir}/%{name}-plugins/ima.so
+%{rpmhome}/sysusers.sh
 %{_libdir}/%{name}-plugins/syslog.so
 %{_libdir}/%{name}-plugins/prioreset.so
-%{_libdir}/%{name}-plugins/fsverity.so
+%{_libdir}/rpm-plugins/fapolicyd.so
 %exclude %{_libdir}/%{name}-plugins/dbus_announce.so
+%{_libdir}/rpm-plugins/selinux.so
+%{_libdir}/rpm-plugins/unshare.so
+%{_datadir}/dbus-1/system.d/org.rpm.conf
 
-%{_sysconfdir}/dbus-1/system.d/org.%{name}.conf
-
-%{_mandir}/man8/rpm2cpio.8.gz
+%{_mandir}/man5/rpm-rpmrc.5*
+%{_mandir}/man7/rpm-lua.7*
+%{_mandir}/man7/rpm-macros.7*
+%{_mandir}/man7/rpm-payloadflags.7*
+%{_mandir}/man7/rpm-queryformat.7*
+%{_mandir}/man7/rpm-version.7*
+%{_mandir}/man8/rpm-common.8*
+%{_mandir}/man5/rpm-manifest.5*
+%{_mandir}/man5/rpm-macrofile.5*
+%{_mandir}/man1/rpmgraph.1*
+%{_mandir}/man1/rpm2archive.1*
+%{_mandir}/man5/rpm-config.5*
+%{_mandir}/man1/rpm2cpio.1*
 %{_mandir}/man8/rpmdb.8.gz
-%{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
-%{_mandir}/man8/%{name}-misc.8.gz
-%{_mandir}/man8/%{name}-plugin-ima.8.gz
-%{_mandir}/man8/%{name}-plugin-prioreset.8.gz
-%{_mandir}/man8/%{name}-plugin-syslog.8.gz
-%{_mandir}/man8/%{name}-plugins.8.gz
 %{_mandir}/man8/%{name}.8.gz
-%{_mandir}/man8/%{name}-plugin-dbus-announce.8.gz
-%exclude %{_mandir}/fr/man8/*.gz
-%exclude %{_mandir}/ja/man8/*.gz
-%exclude %{_mandir}/ko/man8/*.gz
-%exclude %{_mandir}/pl/man1/*.gz
-%exclude %{_mandir}/pl/man8/*.gz
-%exclude %{_mandir}/ru/man8/*.gz
-%exclude %{_mandir}/sk/man8/*.gz
+%{_mandir}/man8/%{name}-plugin*
+%{_mandir}/man1/rpmsort.1*
 
 %files libs
 %defattr(-,root,root)
@@ -282,12 +280,12 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_bindir}/rpmlua
 %{_rpmmacrodir}/*
-%{rpmhome}/perl.req
 %{rpmhome}/find-lang.sh
 %{rpmhome}/find-provides
 %{rpmhome}/find-requires
 %{rpmhome}/brp-*
 %{rpmhome}/fileattrs/*
+%exclude %{rpmhome}/fileattrs/sysusers.attr
 %{rpmhome}/script.req
 %{rpmhome}/check-buildroot
 %{rpmhome}/check-files
@@ -295,7 +293,6 @@ rm -rf %{buildroot}
 %{rpmhome}/check-rpaths
 %{rpmhome}/check-rpaths-worker
 %{rpmhome}/elfdeps
-%{rpmhome}/mkinstalldirs
 %{rpmhome}/pkgconfigdeps.sh
 %{rpmhome}/ocamldeps.sh
 %{rpmhome}/*.prov
@@ -303,12 +300,17 @@ rm -rf %{buildroot}
 %{rpmhome}/find-debuginfo.sh
 %{rpmhome}/rpm_macros_provides.sh
 %{rpmhome}/rpmuncompress
+%{rpmhome}/rpm-setup-autosign
+%{rpmhome}/rpmdump
+%{_mandir}/man5/rpmbuild-config.5.*
 %{_mandir}/man1/gendiff.1*
-%{_mandir}/man8/rpmbuild.8*
-%{_mandir}/man8/rpmdeps.8*
-%{_mandir}/man8/rpmspec.8*
-%{_mandir}/man8/rpmsign.8.gz
-%{_mandir}/man8/rpmlua.8.gz
+%{_mandir}/man1/rpmbuild.1*
+%{_mandir}/man1/rpmdeps.1*
+%{_mandir}/man1/rpmspec.1*
+%{_mandir}/man1/rpmlua.1*
+%{_mandir}/man1/rpm-setup-autosign.1*
+%{_mandir}/man1/rpmuncompress.1*
+%{_mandir}/man1/rpmsign.1*
 
 %files devel
 %defattr(-,root,root)
@@ -318,6 +320,7 @@ rm -rf %{buildroot}
 %{_libdir}/librpm.so
 %{_libdir}/librpmsign.so
 %{_libdir}/librpmbuild.so
+%{_libdir}/cmake/%{name}
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
@@ -332,6 +335,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-1
+- Upgrade to v6.0.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.18.2-10
 - Bump version as a part of python3.14 upgrade
 * Mon Feb 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.18.2-9

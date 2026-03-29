@@ -58,7 +58,6 @@
       "nspr",
       "nss",
       "openssl",
-      "pandoc-bin",
       "patch",
       "pcre",
       "perl",

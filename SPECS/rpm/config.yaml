@@ -1,10 +1,17 @@
 sources:
-- archive: rpm-4.18.2.tar.bz2
-  archive_sha512sum: 1544efef04190299ac988f52c4f6e58ba9ff8943fe1f3e1353fb2bf4d73248935dac65a8a73b32c5d2d96f6875ce25c5196a78ed645d9504465cf1e89e0a268a
-  skip_validation: true
+- archive: rpm-6.0.1.tar.bz2
+  archive_sha512sum: 55a03b6c65c6bd009ce824feb6298d305eb497464d860aa92ccdf15bcea9af0e2dd70e9ac4b26a8494a222656201314dc1c7a245d9cb5416b058f66f8276f4e9
+  archive_type: upstream
+  name: rpm-6.0.1
+  version: 6.0.1
+  url: https://github.com/rpm-software-management/rpm/releases/download/rpm-6.0.1-release/rpm-6.0.1.tar.bz2
+  repo_url: https://github.com/rpm-software-management/rpm
+  commit_id: 58a917a6c5e24e9e8a01976c17d2eee06249b9b6
+  skip_list: []
+  missing: [ka.po, kw.po, ChangeLog, el.po, cmn.po, es.po, sr@latin.po, nl.po, rpm.pot, vi.po, zh_TW.po, README, tr.po, da.po, eo.po, ms.po, pt_BR.po, te.po, ja.po, POTFILES.in, nb.po, sr.po, he.po, zh_CN.po, Makevars, it.po, pl.po, CMakeLists.txt, ca.po, gu.po, ar.po, si.po, sv.po, is.po, id.po, de.po, cs.po, pa.po, LINGUAS, pt.po, uk.po, sk.po, fi.po, ko.po, fr.po, ie.po, ro.po, ru.po, sl.po, br.po]
   spdx:
     package:
-      detailed_description: 'RPM package manager '
+      detailed_description: 'RPM package manager'
       home_page: http://rpm.org
       license_concluded: LGPL-2.1-or-later AND DOC AND GPL-2.0-only AND FSFULLRWD
         AND (GPL-1.0-or-later OR LGPL-2.0-or-later) AND BSD-3-Clause AND GPL-3.0-or-later

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Name:            drpm
 Summary:         A library for making, reading and applying deltarpm packages
 Version:         0.5.1
-Release:         9%{?dist}
+Release:         9.1%{?dist}
 URL:             https://github.com/rpm-software-management/%{name}
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -68,6 +70,8 @@ cd %{__cmake_builddir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.5.1-9.1
+- Bump after moving to SPECS/91
 * Wed Jan 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.5.1-9
 - Release bump for SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.5.1-8

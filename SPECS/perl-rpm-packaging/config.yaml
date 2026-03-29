@@ -1,0 +1,19 @@
+sources:
+- archive: perl-rpm-packaging-1.3.tar.gz
+  archive_sha512sum: eeb24c39af76850a7dc93e69b3a37ee9e03cebea7f82a0a0a79c92088f9bd4407899c2a923b7e03e55709341fceb85a2ba1cf289963275beeb97fbaeb80ab16b
+  archive_type: upstream
+  name: perl-rpm-packaging-1.3
+  version: 1.3
+  url: https://github.com/rpm-software-management/perl-rpm-packaging/archive/refs/tags/v1.3.tar.gz
+  repo_url: https://github.com/rpm-software-management/perl-rpm-packaging
+  commit_id: 77665218337fa46bcdcbbec34df294b9c8012be7
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Tools for packaging Perl projects with rpm'
+      home_page: https://github.com/rpm-software-management/perl-rpm-packaging
+      license_concluded: (GPL-2.0-only OR LGPL-2.0-only) AND GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: (GPL-2.0-only OR LGPL-2.0-only) AND GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Tools for packaging Perl projects with rpm
+      supplier: 'Organization: Broadcom, Inc.'

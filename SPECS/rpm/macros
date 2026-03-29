@@ -28,7 +28,3 @@
 %_include_minidebuginfo 1
 %_use_internal_dependency_generator 1
 %_build_id_links alldebug
-
-%install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
-%%install\
-%{nil}

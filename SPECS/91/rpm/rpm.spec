@@ -53,6 +53,8 @@ BuildRequires:  debugedit
 BuildRequires:  dwz
 BuildRequires:  python3-setuptools
 
+%define ExtraBuildRequires pandoc-bin
+
 %description
 RPM package manager
 

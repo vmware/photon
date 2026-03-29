@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 91
+
 %global debug_package %{nil}
 
 Summary:        Conversion between markup formats
 Name:           pandoc-bin
 Version:        2.19.2
-Release:        5%{?dist}
+Release:        5.1%{?dist}
 URL:            https://github.com/jgm/pandoc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -54,6 +56,8 @@ popd
 %{_mandir}/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.19.2-5.1
+- Bump after moving to SPECS/91
 * Sun Aug 03 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.19.2-5
 - Bump up release to rescan licenses
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.19.2-4

@@ -1,0 +1,31 @@
+sources:
+- archive: rpm-sequoia-1.10.0.tar.gz
+  archive_sha512sum: 9daef76430385f6a9e54cc7613929a3d0123227b26872ef917bd9d00623e812d0c658c6b71cdb9a885f63c9c02050dc9a697610886c8a33a57f33303dfdf8bd7
+  archive_type: upstream
+  name: rpm-sequoia-1.10.0
+  version: 1.10.0
+  url: https://github.com/rpm-software-management/rpm-sequoia/archive/refs/tags/v1.10.0.tar.gz
+  repo_url: https://github.com/rpm-software-management/rpm-sequoia
+  commit_id: eb3cd2bfaf42a8806cba5bd060c7458654625c94
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'An OpenPGP backend for rpm using Sequoia PGP'
+      home_page: https://sequoia-pgp.org
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-3.0-only
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-3.0-only
+      short_summary: Implementation of the RPM PGP interface using Sequoia
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: rpm-sequoia-registry-1.10.0.tar.gz
+  archive_sha512sum: e769d7c9444d6b40d96e0f61a81c9e3135c29490e065d01bc54e99f6c7a407871e345de02d5c94ba651b8ab1932140fdd44ecca348cef066304ca1db3fb7b253
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Contains vendor rust file sources which were needed to do offline build
+      home_page: https://github.com/vmware/photon
+      short_summary: Contains vendor rust file sources
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-3.0-only
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-3.0-only
+      supplier: 'Organization: Broadcom, Inc.'

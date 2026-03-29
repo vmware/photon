@@ -1,7 +1,6 @@
 %define bootstrap           0
 %global security_hardening  none
 %define jdk_major_version   21
-%define _use_internal_dependency_generator 0
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 %define jdkInstallDir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 
@@ -13,7 +12,7 @@
 Summary:    OpenJDK
 Name:       openjdk21
 Version:    21.0.10
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -259,6 +258,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-2
+- Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
 * Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-1
 - Upgrade to v21.0.10
 * Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-2

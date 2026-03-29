@@ -1,4 +1,3 @@
-%define _use_internal_dependency_generator 0
 %define _origname   apache-tomcat
 %define _prefix     %{_var}/opt/%{name}
 %define _origprefix %{_var}/opt/%{_origname}
@@ -12,7 +11,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.116
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -148,6 +147,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.116-2
+- Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
 * Mon Mar 23 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.116-1
 - Version upgrade
 - Fixes multiple CVEs

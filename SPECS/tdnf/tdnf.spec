@@ -4,13 +4,12 @@
 %define history_db_fn   %{hist_db_dir}/history.db
 %define history_util    %{_libexecdir}/%{name}/%{name}-history-util
 %define _tdnfpluginsdir %{_libdir}/%{name}-plugins
-
 %global automatic_services %{name}-automatic.timer %{name}-automatic-notifyonly.timer %{name}-automatic-install.timer
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.6.3
-Release:        4%{?buildtag}%{?dist}
+Release:        5%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -18,16 +17,19 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
+
 Source1:        license.txt
 %include %{SOURCE1}
+
 Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 Patch1: 0002-filter-out-packages-from-pool-considered-in-three-pl.patch
 Patch2: 0003-connect-timeout.patch
 Patch3: 0004-fix-command-line-installs.patch
+Patch4: 0005-check-for-RPMTAG_OPENPGP.patch
 
-Requires:       rpm-libs
+Requires:       rpm-libs >= 6.0.1
 Requires:       curl-libs
 Requires:       expat-libs
 Requires:       %{name}-cli-libs = %{version}-%{release}
@@ -64,6 +66,7 @@ BuildRequires:  python3-requests
 BuildRequires:  python3-urllib3
 BuildRequires:  python3-pyOpenSSL
 BuildRequires:  python3-pytest
+BuildRequires:  sudo
 %endif
 
 %description
@@ -129,13 +132,15 @@ Systemd units that can periodically download package upgrades and apply them.
 %autosetup -p1
 
 %build
+# set BUILD_WITH_RPM_6X=ON if you are using v6 rpm format
+# Check SPECS/rpm/0009-rpm-6.0-rpmformat.patch
 %{cmake} \
   -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_INSTALL_PREFIX=%{_prefix} \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
   -DSYSTEMD_DIR=%{_unitdir} \
   -DHISTORY_DB_DIR=%{hist_db_dir} \
-  ..
+  -DBUILD_WITH_RPM_6X=OFF
 
 %{cmake_build}
 
@@ -156,7 +161,9 @@ find %{buildroot} -name '*.a' -delete
 
 %if 0%{?with_check}
 %check
+%define _make_output_sync %{nil}
 pip3 install flake8
+mkdir -p %{_rundir}/user/$(id -u)
 %make_build -C %{__cmake_builddir} check
 %endif
 
@@ -257,6 +264,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Mar 25 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-5
+- Bump version as a part of rpm upgrade
 * Tue Mar 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-4
 - Fix installs from command line repo
 * Fri Mar 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-3

@@ -1,0 +1,26 @@
+From 7b6acd3c45d36978520b95dcbb33bbdf6ffdbc81 Mon Sep 17 00:00:00 2001
+From: Bo Gan <bo.gan@broadcom.com>
+Date: Tue, 25 Nov 2025 22:53:05 -0800
+Subject: [PATCH 5/8] build: support findreq/findprov in Requires/Provides bits
+
+Signed-off-by: Bo Gan <bo.gan@broadcom.com>
+---
+ build/parsePreamble.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/build/parsePreamble.cc b/build/parsePreamble.cc
+index c5bd80e..422a274 100644
+--- a/build/parsePreamble.cc
++++ b/build/parsePreamble.cc
+@@ -366,6 +366,8 @@ static struct tokenBits_s const installScriptBits[] = {
+     { "post",		RPMSENSE_SCRIPT_POST },
+     { "rpmlib",		RPMSENSE_RPMLIB },
+     { "verify",		RPMSENSE_SCRIPT_VERIFY },
++    { "findreq",   RPMSENSE_FIND_REQUIRES },
++    { "findprov",  RPMSENSE_FIND_PROVIDES },
+     { "pretrans",	RPMSENSE_PRETRANS },
+     { "posttrans",	RPMSENSE_POSTTRANS },
+     { "preuntrans",	RPMSENSE_PREUNTRANS },
+-- 
+2.43.7
+

@@ -1,0 +1,27 @@
+From 49e37e8f2f714b6436c1835d10aec952f788c22e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 13 Jan 2026 13:12:19 +0000
+Subject: [PATCH 8/8] fix host
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bc38ce7..8a09884 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -160,7 +160,9 @@ function(makemacros)
+ 	set(host_cpu ${CMAKE_HOST_SYSTEM_PROCESSOR})
+ 	string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} host_os)
+ 	set(host_vendor ${RPM_VENDOR})
++if(NOT DEFINED host)
+ 	set(host ${host_cpu}-${host_vendor}-${host_os})
++endif()
+ 
+ 	set(RPMCANONVENDOR ${host_vendor})
+ 	set(RPMCANONOS ${host_os})
+-- 
+2.43.7
+

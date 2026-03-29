@@ -2,8 +2,8 @@
 
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
-Version:        0.20.1
-Release:        10%{?dist}
+Version:        1.2.2
+Release:        1%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,7 +14,10 @@ Source0:        https://github.com/rpm-software-management/createrepo_c/archive/
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0: 0001-Make-default-compression-method-configurable-at-buil.patch
+
 BuildRequires:  bzip2-devel
+BuildRequires:  doxygen
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  expat-devel
@@ -26,13 +29,10 @@ BuildRequires:  rpm-devel
 BuildRequires:  xz-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
-BuildRequires:  drpm-devel
 BuildRequires:  zchunk-devel
 
-Requires:       drpm
 Requires:       zchunk-libs
 Requires:       zlib
-Requires:       drpm
 Requires:       zchunk-libs
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -69,12 +69,16 @@ headers and libraries for createrepo_c
 
 %prep
 %autosetup -p1
+%if 0%{?with_check} == 0
+rm -r tests/testdata
+%endif
 
 %build
 %{cmake} \
     -DWITH_LIBMODULEMD=OFF \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DDEFAULT_COMPRESSION_METHOD=gz
 
 %{cmake_build}
 
@@ -103,6 +107,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.2-1
+- Upgrade to v1.2.2
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.20.1-10
 - Bump version as a part of python3.14 upgrade
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.20.1-9

@@ -57,9 +57,9 @@ This package contains libraries and header files need for development.
 
 pushd crash-gcore-command-%{GCORE_VERSION}
 %ifarch aarch64
-%patch0 -p1
+%patch -P 0 -p1
 %endif
-%patch1 -p1
+%patch -P 1 -p1
 popd
 
 %build

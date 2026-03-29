@@ -1,4 +1,3 @@
-%define _use_internal_dependency_generator 0
 %define _origname   apache-tomcat
 %define _prefix     %{_var}/opt/%{name}
 %define _origprefix %{_var}/opt/%{_origname}
@@ -12,7 +11,7 @@
 Summary:        Apache Tomcat 10.1
 Name:           apache-tomcat10
 Version:        10.1.53
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -152,6 +151,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.1.53-2
+- Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
 * Thu Mar 26 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 10.1.53-1
 - Version upgrade
 - Fixes CVE-2025-48989

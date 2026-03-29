@@ -1,0 +1,28 @@
+From 9bf6099372f6e36281b48d21629bbb385bc10e32 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Mon, 12 Jan 2026 17:00:16 +0000
+Subject: [PATCH 6/8] Disable scdoc
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7c1a9ff..bc38ce7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -314,8 +314,8 @@ mark_as_advanced(FIND_DEBUGINFO)
+ find_program(PODMAN podman)
+ mark_as_advanced(PODMAN)
+ 
+-find_program(SCDOC NAMES scdoc REQUIRED)
+-mark_as_advanced(SCDOC)
++#find_program(SCDOC NAMES scdoc REQUIRED)
++#mark_as_advanced(SCDOC)
+ 
+ find_program(SCD2HTML NAMES scd2html)
+ mark_as_advanced(SCD2HTML)
+-- 
+2.43.7
+

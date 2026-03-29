@@ -1,11 +1,10 @@
 %global build_if %{photon_subrelease} >= 92
 %global security_hardening nofortify
-%define _use_internal_dependency_generator 0
 
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -255,6 +254,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.2.0-11
+- Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
 * Thu Mar 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-10
 - Skip shipping include-fixed
 * Tue Aug 05 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-9
