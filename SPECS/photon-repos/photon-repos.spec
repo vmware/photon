@@ -3,9 +3,14 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        8.%{subrelease}%{?dist}
+Release:        9.%{subrelease}%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+BuildArch:      noarch
+
 Source1:        VMWARE-RPM-GPG-KEY
 Source2:        VMWARE-RPM-GPG-KEY-4096
 Source3:        photon.repo
@@ -21,11 +26,9 @@ Source12:       license.txt
 
 %include %{SOURCE11}
 %include %{SOURCE12}
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 Requires:       photon-release
 Provides:       photon-repos
-BuildArch:      noarch
 
 %description
 Photon repo files and gpg keys
@@ -52,7 +55,6 @@ sed -i 's|^enabled=1|enabled=0|g' %{SOURCE10}
 }
 
 %install
-rm -rf %{buildroot}
 install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum.repos.d
@@ -94,6 +96,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-snapshot.repo
 
 %changelog
+* Mon Mar 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-9.%{subrelease}
+-   Set skip_md_filelists in snapshot repo
 *   Wed Mar 04 2026 Bo Gan <bo.gan@broadcom.com> 5.0-8.%{subrelease}
 -   Add photon-snapshot repo file, and enable (by default) for 90 and 91
 -   Disable photon-updates repo for 92
