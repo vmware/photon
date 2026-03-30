@@ -1,0 +1,114 @@
+sources:
+- archive: msmtp-1.8.32.tar.gz
+  archive_sha512sum: 5ee08324ba73bebaede7c2b9a48c20b0d3f500b0aacf4d931cc768551168d34fa35ad4e86942a03f8edaf9ecdb6932160c6aa0496e046449ec4bb367552bb37f
+  archive_type: upstream
+  name: msmtp-msmtp-1.8.32
+  url: https://github.com/marlam/msmtp/archive/refs/tags/msmtp-1.8.32.tar.gz
+  repo_url: https://github.com/marlam/msmtp.git
+  commit_id: f6774d9e0558ca9d03b763908da0100cb82f8dc8
+  skip_validation: false
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'msmtp provides SMTP client and server. It supports many
+                             authentication methods and supports Sendmail compatible
+                             interface while running on wide variety of platforms.'
+      home_page: https://marlam.de/msmtp/
+      license_concluded: FSFAP AND GFDL-1.2-or-later AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.1-or-later
+      license_declared: FSFAP AND GFDL-1.2-or-later AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.1-or-later
+      supplier: 'Organization: Broadcom, Inc.'
+      short_summary: 'msmtp provides SMTP client and server'
+  license_manual_review:
+  - file_paths:
+    - msmtp-msmtp-1.8.32/NEWS
+    sha256sum: 3244f0cb7e92cb70b9e6d4cbb5d13b8f3e21b478b528c4281d6a2b32a6994eb4
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/boldquot.sed
+    sha256sum: c109dbd6b520bb784590fe4b3bbec28d4877b0e8618e180d0f53d695bee43fc7
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/de.po
+    sha256sum: eac9e2706b0cfbb3bd434d80f5277fc11712b941e78f1bae40ac81d752269b6b
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/en@boldquot.header
+    sha256sum: 80b9c9513f18b49d75e23f0e54e7a331a2ebda50eb0b28f82d48b012340ff5f7
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/en@quot.header
+    sha256sum: b277bf95b5e1c56f5d860ed3d479a20c37a41d3f965d0954531a8e907bb2f960
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/eo.po
+    sha256sum: ffeb3fc31c1ffd721521db9e676ee492330328053cfd187d3eb1b1c42912b16c
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/es.po
+    sha256sum: 7aed88b49ad9167bcbed1c590e88022dfc575055d082a06a45d8b009c71ca8d2
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/fr.po
+    sha256sum: 3ef315ae98d1fd6c9df2801f8b08c43f4a726e81aa4f7c469ca35a0a2da830df
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/insert-header.sed
+    sha256sum: 120513c5348e88d0f9f0381da50dfb5f2dc6557581f8ac76125f2f4d84ab0f45
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/pt_BR.po
+    sha256sum: 8c9d3be5a07fedf1d44368dcb9c8c83e44906bba5ab472ec5c436f51828822c9
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/quot.sed
+    sha256sum: a2a83b6f6c4d6a0c28828c81ff621f1d7cb703ed07b56d83bdafe86dcb4d316f
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/ro.po
+    sha256sum: f2a1283a6df6810be8af53d57ea1bf1ecc81b3e3236a15bbf6a83a57f9f8c636
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/ru.po
+    sha256sum: 75a655eb8dd3914f669209df432f368b36be04d51c24d88b8730ae7defec045a
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/Rules-quot
+    sha256sum: ff0938a507a30899173bb116bcdf44f961ee810fb0d28d48b1be0a89f2f37351
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/sr.po
+    sha256sum: 117f4b38d774ceffad20a1c3f97b5e2bbcea5f1843e7a581b5c5633bef84450b
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/sv.po
+    sha256sum: 86c8a4b1e2899a4471c03a9e0ff0de1364c78203e48420301861797f7629fcca
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/ta.po
+    sha256sum: 7f097f590edea42cc527f3a8f7ddea94422fcf9abe110818e4fc79f1f7bb2995
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/uk.po
+    sha256sum: 0328c7dbd68eb27d2ced413d92641db029b2870036cb55199748f9c29661a124
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/src/mtls-openssl.c
+    sha256sum: 09e2e4daea5d71f242101fdc4d5045a90f23a46b11ae916124f569ae0edcb9a3
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/src/netrc.c
+    sha256sum: 6f930b2b4549faa6e8d55856795727e2e71e030048078ff5203c136902733f15
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/build-aux/config.rpath
+    sha256sum: 772c44d89098cbcc95b12cee420fd2f1833ac2da0338df99c5e590d1c1672234
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/po/zh_CN.po
+    sha256sum: 67026337a872faff1646af60c0da494eba01d1777d745ddb639e9471e65e9d2e
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - msmtp-msmtp-1.8.32/src/netrc.h
+    sha256sum: 4592f20c193c36513309b250e1dc8636378b634d70fb33f341c2998f291bd7b6
+    spdx_exp: GPL-3.0-or-later
