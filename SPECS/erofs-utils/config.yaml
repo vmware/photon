@@ -1,0 +1,21 @@
+sources:
+- archive: erofs-utils-1.9.1.tar.gz
+  archive_sha512sum: c66ac253e319886fc41e96813de2edb4281317df6477a8ea71a4af49d5750991964347d533a9be825daf2320370141859e3643c52abbac6bfabdd477f7365ebf
+  archive_type: upstream
+  name: erofs-utils-1.9.1
+  url: https://github.com/erofs/erofs-utils/archive/refs/tags/v1.9.1.tar.gz
+  repo_url: https://github.com/erofs/erofs-utils
+  commit_id: d3fbccba6e409c100843563b416c47cd82c87ca0
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'The erofs-utils package contains utilities for creating
+        and managing EROFS (Enhanced Read-Only File System) filesystems. EROFS is
+        a lightweight read-only file system with modern designs for scenarios which
+        need high-performance read-only requirements.'
+      home_page: https://github.com/erofs/erofs-utils
+      license_concluded: GPL-2.0-or-later AND Apache-2.0
+      license_declared: GPL-2.0-or-later AND Apache-2.0
+      short_summary: Utilities for creating and managing EROFS filesystems
+      supplier: 'Organization: Broadcom, Inc.'
+
