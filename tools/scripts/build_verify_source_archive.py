@@ -460,12 +460,12 @@ Commands
             config = yaml.safe_load(configFile)
             sources = []
             sources = config.get("sources", [])
-            if not sources:
+            if not sources and not config.get("shared_sources"):
                 logging.error("missing sources in package configuration")
                 sys.exit(1)
 
             for source in sources:
-                if not source.get("archive", ""):
+                if not source.get("archive"):
                     continue
                 # processing one source entry
                 if source and type(source) is dict:
