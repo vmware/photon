@@ -1,20 +1,19 @@
-From 0e5ca3234d449e068a9f6951590689ea1a3a66fb Mon Sep 17 00:00:00 2001
+From feb077627a83bd24f6bcf502a7a74f2317498946 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 1 Mar 2023 01:29:02 +0530
-Subject: [PATCH 2/4] dracut.sh: validate instmods calls
+Subject: [PATCH 6/7] dracut.sh: validate instmods calls
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- dracut.sh                        | 15 ++++++++++++---
- modules.d/01fips/module-setup.sh |  8 +++++---
- 2 files changed, 17 insertions(+), 6 deletions(-)
+ dracut.sh | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/dracut.sh b/dracut.sh
-index bbb3469..76998a6 100755
+index 7107ce6..e917fd1 100755
 --- a/dracut.sh
 +++ b/dracut.sh
-@@ -2104,11 +2104,17 @@ if [[ $no_kernel != yes ]]; then
-
+@@ -2202,11 +2202,17 @@ if [[ $no_kernel != yes ]]; then
+ 
      if [[ -n ${add_drivers// /} ]]; then
          # shellcheck disable=SC2086
 -        hostonly='' instmods -c $add_drivers
@@ -30,10 +29,10 @@ index bbb3469..76998a6 100755
 +            dfatal "instmods failed for force_drivers: $force_drivers"
 +            exit 1
 +        fi
-         rm -f "$initdir"/etc/cmdline.d/20-force_driver.conf
-         for mod in $force_drivers; do
-             echo "rd.driver.pre=$mod" >> "$initdir"/etc/cmdline.d/20-force_drivers.conf
-@@ -2116,7 +2122,10 @@ if [[ $no_kernel != yes ]]; then
+         if [[ $kernel_only != yes ]]; then
+             rm -f "$initdir"/etc/cmdline.d/20-force_driver.conf
+             for mod in $force_drivers; do
+@@ -2216,7 +2222,10 @@ if [[ $no_kernel != yes ]]; then
      fi
      if [[ $filesystems ]]; then
          # shellcheck disable=SC2086
@@ -43,27 +42,8 @@ index bbb3469..76998a6 100755
 +            exit 1
 +        fi
      fi
-
+ 
      dinfo "*** Installing kernel module dependencies ***"
-diff --git a/modules.d/01fips/module-setup.sh b/modules.d/01fips/module-setup.sh
-index a3e5602..0b759f9 100755
---- a/modules.d/01fips/module-setup.sh
-+++ b/modules.d/01fips/module-setup.sh
-@@ -43,10 +43,12 @@ installkernel() {
-     mkdir -m 0755 -p "${initdir}/etc/modprobe.d"
+-- 
+2.43.7
 
-     for _mod in $_fipsmodules; do
--        if hostonly='' instmods -c -s "$_mod"; then
--            echo "$_mod" >> "${initdir}/etc/fipsmodules"
--            echo "blacklist $_mod" >> "${initdir}/etc/modprobe.d/fips.conf"
-+        if ! hostonly='' instmods -c -s "$_mod"; then
-+            dfatal "ERROR: instmods -c -s $_mod failed"
-+            return 1
-         fi
-+        echo "$_mod" >> "${initdir}/etc/fipsmodules"
-+        echo "blacklist $_mod" >> "${initdir}/etc/modprobe.d/fips.conf"
-     done
-
-     # with hostonly_default_device fs module for /boot is not installed by default
---
-2.39.2

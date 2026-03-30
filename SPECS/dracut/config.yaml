@@ -1,14 +1,21 @@
 sources:
-- archive: dracut-059.tar.gz
-  archive_sha512sum: 196bc8bf18703c72bffb51a7e0493719c58173ad2da7d121eb42f9a8de47e953af36d109214dc4a10b2dc2d3bd19e844f7f51c2bdec087e064ea11f75124032d
-  skip_validation: true
+- archive: dracut-109.tar.gz
+  archive_sha512sum: c1fb0191911b3b3eac4f568db1cbc8184e2b518a70a0567777b72ef8a5af70a8bdb1b3f8acce2d92eb2dc807e056d5b75aed93292cd05bc8c333efe5d4b98adc
+  archive_type: upstream
+  name: dracut-ng-109
+  version: 109
+  url: https://github.com/dracut-ng/dracut-ng/archive/refs/tags/109.tar.gz
+  repo_url: https://github.com/dracut-ng/dracut-ng
+  commit_id: 13c5e5feee9ba86b960d351f87aa0eb25f242ff0
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'dracut contains tools to create a bootable initramfs
         for 2.6 Linux kernels. Unlike existing implementations, dracut does hard-code
         as little as possible into the initramfs. dracut contains various modules
         which are driven by the event-based udev. Having root on MD, DM, LVM2, LUKS
-        is supported as well as NFS, iSCSI, NBD, FCoE with the dracut-network package. '
+        is supported as well as NFS, iSCSI, NBD, FCoE with the dracut-network package.'
       home_page: https://github.com/dracutdevs/dracut/wiki
       license_concluded: GPL-3.0-or-later AND LGPL-2.1-only AND BSD-3-Clause AND LGPL-2.0-or-later
         AND GPL-2.0-or-later AND GPL-2.0-only AND LGPL-2.1-or-later AND DOC AND GPL-1.0-or-later

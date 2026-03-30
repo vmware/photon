@@ -1,23 +1,12 @@
-From baa81a261711d3743f32e5fb55a09baec6096ff5 Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
-Date: Fri, 30 Jan 2026 13:09:03 +0000
-Subject: [PATCH 2/7] disable xattr
-
-Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
----
- dracut-init.sh               | 6 +-----
- src/install/dracut-install.c | 3 +--
- 2 files changed, 2 insertions(+), 7 deletions(-)
-
 diff --git a/dracut-init.sh b/dracut-init.sh
-index 0235cd2..79bb45c 100755
+index 40b66f5..f72de3d 100755
 --- a/dracut-init.sh
 +++ b/dracut-init.sh
 @@ -19,11 +19,7 @@
  #
- export LC_MESSAGES=C kernel
+ export LC_MESSAGES=C
  
--if [[ $EUID == "0" ]] && ! [[ ${DRACUT_NO_XATTR-} ]]; then
+-if [[ $EUID == "0" ]] && ! [[ $DRACUT_NO_XATTR ]]; then
 -    export DRACUT_CP="cp --reflink=auto --sparse=auto --preserve=mode,timestamps,xattr,links -dfr"
 -else
 -    export DRACUT_CP="cp --reflink=auto --sparse=auto --preserve=mode,timestamps,links -dfr"
@@ -27,10 +16,10 @@ index 0235cd2..79bb45c 100755
  # is_func <command>
  # Check whether $1 is a function.
 diff --git a/src/install/dracut-install.c b/src/install/dracut-install.c
-index b1b2391..00ecea8 100644
+index 96b20e9..433ebf7 100644
 --- a/src/install/dracut-install.c
 +++ b/src/install/dracut-install.c
-@@ -437,8 +437,7 @@ static int cp(const char *src, const char *dst)
+@@ -329,8 +329,7 @@ static int cp(const char *src, const char *dst)
  
  normal_copy:
          pid = fork();
@@ -40,6 +29,3 @@ index b1b2391..00ecea8 100644
          if (pid == 0) {
                  execlp("cp", "cp", "--reflink=auto", "--sparse=auto", preservation, "-fL", src, dst, NULL);
                  _exit(errno == ENOENT ? 127 : 126);
--- 
-2.43.7
-

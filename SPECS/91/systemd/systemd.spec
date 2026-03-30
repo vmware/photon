@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define STIG_HARDEN 0
 
@@ -6,14 +6,14 @@
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        257.13
-Release:        1%{?dist}
+Version:        253.19
+Release:        17.1%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/systemd/systemd/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
 
 Source1:        99-vmware-hotplug.rules
 
@@ -40,17 +40,19 @@ Source14:       sysusers.generate-pre.sh
 Source15: license.txt
 %include %{SOURCE15}
 
-Patch0: 0001-enoX-uses-instance-number-for-vmware-hv.patch
-Patch1: 0002-Fetch-dns-servers-from-environment.patch
-Patch2: 0003-systemd-do-not-use-ftrivial-auto-var-init-zero.patch
-Patch3: 0004-Remove-unused-default-groups-rules-and-tmpfiles.patch
-Patch4: 0005-default-conf-modifications.patch
+Patch0: enoX-uses-instance-number-for-vmware-hv.patch
+Patch1: fetch-dns-servers-from-environment.patch
+Patch2: execute-suppress-credentials-mount-if-empty.patch
+Patch3: fix-lvrename-unmount.patch
+Patch4: revert-network-delay-to-configure-address-until-it-i.patch
+Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
+Patch6: do-not-allocate-1m-on-stack.patch
+Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
+Patch8: sd-netlink-make-default-timeout-configurable.patch
 
 %if 0%{?STIG_HARDEN}
-Patch4: harden-tmpfs-mount-options.patch
+Patch9: harden-tmpfs-mount-options.patch
 %endif
-
-Conflicts: dracut < 109
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -229,35 +231,72 @@ Requires:      %{name} = %{version}-%{release}
 They can be useful to test systemd internals.
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-stable-%{version} -p1
+
+sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
 %build
+if [ %{_host} != %{_build} ]; then
+CPU_FAMILY=""
+test %{_arch} == "aarch64" && CPU_FAMILY="aarch64"
+test %{_arch} == "i686" && CPU_FAMILY="x86"
+
+cat > cross-compile-config.txt << EOF
+[binaries]
+c = '%{_host}-gcc'
+cpp = '%{_host}-g++'
+ar = '%{_host}-ar'
+ld = '%{_host}-ld'
+ranlib = '%{_host}-ranlib'
+strip = '%{_host}-strip'
+pkgconfig = '%{_host}-pkg-config'
+
+[properties]
+needs_exe_wrapper = true
+c_args = ['--sysroot=/target-%{_arch}']
+cpp_args = ['--sysroot=/target-%{_arch}']
+c_link_args = ['-lssp']
+cpp_link_args = ['-lssp']
+
+[host_machine]
+system = 'linux'
+cpu_family = '$CPU_FAMILY'
+cpu = '%{_arch}'
+endian = 'little'
+EOF
+
+  CROSS_COMPILE_CONFIG="--cross-file ./cross-compile-config.txt"
+else
+  CROSS_COMPILE_CONFIG=
+fi
+
 CONFIGURE_OPTS=(
        -Dmode=release
-       -Dkmod=enabled
+       -Dkmod=true
        -Duser-path=%{_usr}/local/bin:%{_usr}/local/sbin:%{_bindir}:%{_sbindir}
        -Dservice-watchdog=
-       -Dblkid=enabled
-       -Dseccomp=enabled
+       -Dblkid=true
+       -Dseccomp=true
        -Ddefault-dnssec=no
        -Dfirstboot=false
        -Dldconfig=false
-       -Dxz=enabled
-       -Dzlib=enabled
-       -Dbzip2=enabled
-       -Dlz4=enabled
-       -Dacl=enabled
+       -Dxz=true
+       -Dzlib=true
+       -Dbzip2=true
+       -Dlz4=true
+       -Dacl=true
        -Dsmack=true
-       -Dgcrypt=enabled
+       -Dgcrypt=true
+       -Dsplit-usr=true
        -Dsysusers=true
-       -Dpam=enabled
-       -Dpolkit=enabled
-       -Dselinux=enabled
-       -Dlibcurl=enabled
-       -Dgnutls=enabled
+       -Dpam=true
+       -Dpolkit=true
+       -Dselinux=true
+       -Dlibcurl=true
+       -Dgnutls=true
        -Ddefault-dns-over-tls=opportunistic
        -Ddns-over-tls=true
-       -Dopenssl=enabled
+       -Dopenssl=true
        -Db_ndebug=false
        -Dhwdb=true
        -Ddefault-kill-user-processes=false
@@ -265,44 +304,22 @@ CONFIGURE_OPTS=(
        -Dinstall-tests=true
        -Dnobody-user=nobody
        -Dnobody-group=nobody
+       -Dsplit-usr=false
        -Dsplit-bin=true
        -Db_lto=true
        -Db_ndebug=false
+       -Ddefault-hierarchy=hybrid
        -Dsysvinit-path=%{_sysconfdir}/rc.d/init.d
        -Drc-local=%{_sysconfdir}/rc.d/rc.local
        -Dfallback-hostname=photon
        -Doomd=false
-       -Dhomed=disabled
+       -Dhomed=false
        -Dversion-tag=v%{version}-%{release}
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
-       -Dsysupdate=disabled
-       -Dbpf-framework=disabled
-       -Dpwquality=disabled
-       -Dpasswdqc=disabled
-       -Dapparmor=disabled
-       -Daudit=disabled
-       -Dxenctrl=disabled
-       -Dlibcryptsetup=disabled
-       -Dlibcryptsetup-plugins=disabled
-       -Dlibidn2=disabled
-       -Dlibidn=disabled
-       -Dlibiptc=disabled
-       -Dqrencode=disabled
-       -Dp11kit=disabled
-       -Dlibfido2=disabled
-       -Dtpm2=disabled
-       -Dlibarchive=disabled
-       -Dxkbcommon=disabled
-       -Ddbus=disabled
-       -Dbootloader=disabled
-       -Dukify=disabled
-       -Drepart=disabled
-       -Dsshdconfdir=no
-       -Dsshconfdir=no
-       -Dshellprofiledir=no
-       -Defi=true
+       -Dsysupdate=false
+       $CROSS_COMPILE_CONFIG
 )
 
 %{meson} "${CONFIGURE_OPTS[@]}"
@@ -311,9 +328,21 @@ CONFIGURE_OPTS=(
 %install
 %{meson_install}
 
-rm %{buildroot}%{_sysusersdir}/README
-find %{buildroot} -name '*.la' -delete
+sed -i '/srv/d' %{buildroot}%{_tmpfilesdir}/home.conf
+sed -i "s:0775 root lock:0755 root root:g" %{buildroot}%{_tmpfilesdir}/legacy.conf
+sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}%{_systemd_util_dir}/network/99-default.link
 
+sed -i "s:#ShowStatus=yes:ShowStatus=yes:g" %{buildroot}%{_sysconfdir}/%{name}/system.conf
+sed -i "s:#LLMNR=yes:LLMNR=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSSEC=no:DNSSEC=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+sed -i "s:#DNSOverTLS=opportunistic:DNSOverTLS=no:g" %{buildroot}%{_sysconfdir}/%{name}/resolved.conf
+
+sed -i 's/#DefaultOOMPolicy=stop/DefaultOOMPolicy=continue/' %{buildroot}%{_sysconfdir}/%{name}/system.conf
+
+rm -f %{buildroot}%{_var}/log/README \
+      %{buildroot}%{_sysusersdir}/README
+
+find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -dm 0755 %{buildroot}/boot/
@@ -335,10 +364,6 @@ install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE13}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE14}
 
 rm -r %{buildroot}%{_datadir}/zsh
-
-rm %{buildroot}%{_bindir}/bootctl \
-   %{buildroot}%{_datadir}/bash-completion/completions/bootctl \
-   %{buildroot}%{_systemd_util_dir}/tests/testdata/units/TEST-87-AUX-UTILS-VM.bootctl.sh
 
 %find_lang %{name} ../%{name}.lang
 
@@ -411,13 +436,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_sbindir}/shutdown
 %{_sbindir}/telinit
 %{_sbindir}/resolvconf
-%{_sbindir}/mount.ddi
-%{_bindir}/importctl
-%{_bindir}/run0
-%{_bindir}/%{name}-confext
-%{_bindir}/%{name}-vmspawn
-%{_bindir}/%{name}-vpick
-%{_bindir}/varlinkctl
 %{_bindir}/busctl
 %{_bindir}/coredumpctl
 %{_bindir}/hostnamectl
@@ -452,6 +470,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/%{name}-umount
 %{_bindir}/timedatectl
 %{_bindir}/userdbctl
+%{_bindir}/%{name}-repart
 %{_bindir}/%{name}-dissect
 %{_bindir}/%{name}-sysext
 %{_bindir}/%{name}-creds
@@ -463,7 +482,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_tmpfilesdir}/portables.conf
 %{_tmpfilesdir}/static-nodes-permissions.conf
 %{_tmpfilesdir}/provision.conf
-%{_tmpfilesdir}/20-systemd-stub.conf
 %{_tmpfilesdir}/%{name}-nologin.conf
 %{_tmpfilesdir}/%{name}-tmp.conf
 %{_tmpfilesdir}/%{name}.conf
@@ -488,7 +506,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_systemd_util_dir}/%{name}*
 %{_systemd_util_dir}/user*
 %{_systemd_util_dir}/import-pubring.gpg
-%{_systemd_util_dir}/profile.d/70-systemd-shell-extra.sh
 %{_unitdir}/*
 %{_presetdir}/*
 %{_systemdgeneratordir}/*
@@ -499,7 +516,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_datadir}/polkit-1
 %{_datadir}/%{name}
 %{_var}/log/journal
-%{_datadir}/mime/packages/io.systemd.xml
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/basic.target.wants
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/bluetooth.target.wants
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/default.target.wants
@@ -539,14 +555,12 @@ udevadm hwdb --update &>/dev/null || :
 %{_sysconfdir}/%{name}/sleep.conf
 %{_sysconfdir}/%{name}/timesyncd.conf
 %{_sysconfdir}/udev/udev.conf
-%{_sysconfdir}/udev/iocost.conf
 %{_tmpfilesdir}/%{name}-pstore.conf
 %{_bindir}/kernel-install
 %{_bindir}/%{name}-hwdb
 %{_bindir}/udevadm
 %{_libdir}/udev/v4l_id
 %{_libdir}/udev/dmi_memory_id
-%{_libdir}/udev/iocost
 %{_libdir}/kernel
 %{_libdir}/modprobe.d
 %{_libdir}/modules-load.d
@@ -558,6 +572,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_unitdir}/hybrid-sleep.target
 %{_unitdir}/initrd-udevadm-cleanup-db.service
 %{_unitdir}/kmod-static-nodes.service
+%{_unitdir}/quotaon.service
 %{_unitdir}/sleep.target
 %{_unitdir}/sockets.target.wants/%{name}-udevd-control.socket
 %{_unitdir}/sockets.target.wants/%{name}-udevd-kernel.socket
@@ -572,11 +587,13 @@ udevadm hwdb --update &>/dev/null || :
 %{_unitdir}/%{name}-backlight@.service
 %{_unitdir}/%{name}-fsck-root.service
 %{_unitdir}/%{name}-fsck@.service
+%{_unitdir}/%{name}-hibernate-resume@.service
 %{_unitdir}/%{name}-hibernate.service
 %{_unitdir}/%{name}-hwdb-update.service
 %{_unitdir}/%{name}-hybrid-sleep.service
 %{_unitdir}/%{name}-modules-load.service
 %{_unitdir}/%{name}-pstore.service
+%{_unitdir}/%{name}-quotacheck.service
 %{_unitdir}/%{name}-random-seed.service
 %{_unitdir}/%{name}-remount-fs.service
 %{_unitdir}/%{name}-rfkill.service
@@ -635,9 +652,7 @@ udevadm hwdb --update &>/dev/null || :
 %files pam
 %defattr(-,root,root)
 %{_libdir}/security/pam_systemd.so
-%{_libdir}/security/pam_systemd_loadkey.so
 %{_libdir}/pam.d/%{name}-user
-%{_libdir}/pam.d/%{name}-run0
 
 %files container
 %defattr(-,root,root)
@@ -645,8 +660,8 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/machinectl
 # Below two files are packaged with systemd main package
 # And without it etc/systemd/system won't get created by systemd
-#%%{_systemd_util_dir}/%%{name}-machined
-#%%{_unitdir}/%%{name}-machined.service
+#%%{_systemd_util_dir}/%{name}-machined
+#%%{_unitdir}/%{name}-machined.service
 %{_unitdir}/%{name}-nspawn@.service
 %{_unitdir}/dbus-org.freedesktop.machine1.service
 %{_unitdir}/var-lib-machines.mount
@@ -681,8 +696,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
-* Sun Mar 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-1
-- Upgrade to v257.13
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.1
+- Bump after moving to SPECS/91
 * Wed Nov 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17
 - Revert tmpfs hardening fix
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-16

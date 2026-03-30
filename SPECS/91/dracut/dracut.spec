@@ -1,18 +1,19 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define dracutlibdir        %{_libdir}/%{name}
 %global __requires_exclude  pkg-config
 
 Summary:        dracut to create initramfs
 Name:           dracut
-Version:        109
-Release:        1%{?dist}
+Version:        059
+Release:        11.1%{?dist}
 Group:          System Environment/Base
-URL:            https://github.com/dracut-ng/dracut-ng
+# The entire source code is GPLv2+; except install/* which is LGPLv2+
+URL:            https://github.com/dracutdevs/dracut/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/dracut-ng/dracut-ng/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/dracutdevs/dracut/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -20,10 +21,11 @@ Source1: license.txt
 Patch0: 0001-Add-mkinitrd-support-to-dracut.patch
 Patch1: 0002-disable-xattr.patch
 Patch2: 0003-fix-initrd-naming-for-photon.patch
-Patch3: 0004-Adjust-host_only-flag-based-on-running-environment.patch
-Patch4: 0005-mkinitrd-verbose-fix.patch
-Patch5: 0006-dracut.sh-validate-instmods-calls.patch
-Patch6: 0007-feat-dracut.sh-support-multiple-config-dirs.patch
+Patch4: 0004-fix-hostonly.patch
+Patch5: 0005-mkinitrd-verbose-fix.patch
+Patch6: 0006-dracut.sh-validate-instmods-calls.patch
+Patch7: 0007-feat-dracut.sh-support-multiple-config-dirs.patch
+Patch8: 0008-fix-dracut-systemd-rootfs-generator-cannot-write-out.patch
 
 BuildRequires:  bash
 BuildRequires:  pkg-config
@@ -61,7 +63,8 @@ Requires: %{name} = %{version}-%{release}
 This package contains tools to assemble the local initrd and host configuration.
 
 %prep
-%autosetup -p1 -n %{name}-ng-%{version}
+%autosetup -p1
+rm -r man
 
 %build
 %configure \
@@ -85,8 +88,7 @@ rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/00dash
 # remove gentoo specific modules
 rm -fr -- %{buildroot}%{dracutlibdir}/modules.d/96securityfs \
           %{buildroot}%{dracutlibdir}/modules.d/97masterkey \
-          %{buildroot}%{dracutlibdir}/modules.d/98integrity \
-          %{buildroot}%{dracutlibdir}/%{name}.conf.d/*
+          %{buildroot}%{dracutlibdir}/modules.d/98integrity
 
 mkdir -p %{buildroot}/boot/%{name} \
          %{buildroot}%{_sharedstatedir}/%{name}/overlay \
@@ -160,8 +162,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
-* Thu Mar 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 109-1
-- Upgrade to v109
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 059-11.1
+- Bump after moving to SPECS/91
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 059-11
 - Bump-up to build with kmod-34.1
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 059-10

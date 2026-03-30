@@ -1,7 +1,7 @@
-From 63dd86b6931c19ac6a818e17d05e81c1696de4d6 Mon Sep 17 00:00:00 2001
+From c3069df73fa18c1b332e1057d35e98f3b8d9249f Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 1 Mar 2023 01:23:55 +0530
-Subject: [PATCH 5/7] mkinitrd: verbose fix
+Subject: [PATCH] mkinitrd: verbose fix
 
 Add a sanity check to verify initrd post creation.
 If something is wrong with initrd, show an error on tty.
@@ -458,5 +458,5 @@ index 0ef65bd..bbe4e79 100755
 +
 +exit ${final_ret}
 -- 
-2.43.7
+2.41.0
 

@@ -1,0 +1,73 @@
+From 5c0c468229ae01f3d0c226eb17e5f16e9922000d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 12 Mar 2026 22:40:00 +0530
+Subject: [PATCH] default conf modifications
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ src/core/system.conf.in      | 6 +++---
+ src/resolve/resolved.conf.in | 6 +++---
+ tmpfiles.d/home.conf         | 1 -
+ 3 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/src/core/system.conf.in b/src/core/system.conf.in
+index 1c08aa4..d403c18 100644
+--- a/src/core/system.conf.in
++++ b/src/core/system.conf.in
+@@ -23,7 +23,7 @@
+ #LogLocation=no
+ #LogTime=no
+ #DumpCore=yes
+-#ShowStatus=yes
++ShowStatus=yes
+ #CrashChangeVT=no
+ #CrashShell=no
+ #CrashAction=freeze
+@@ -59,7 +59,7 @@
+ #DefaultIPAccounting=no
+ #DefaultMemoryAccounting={{ 'yes' if MEMORY_ACCOUNTING_DEFAULT else 'no' }}
+ #DefaultTasksAccounting=yes
+-#DefaultTasksMax=15%
++DefaultTasksMax=infinity
+ #DefaultLimitCPU=
+ #DefaultLimitFSIZE=
+ #DefaultLimitDATA=
+@@ -78,7 +78,7 @@
+ #DefaultLimitRTTIME=
+ #DefaultMemoryPressureThresholdSec=200ms
+ #DefaultMemoryPressureWatch=auto
+-#DefaultOOMPolicy=stop
++DefaultOOMPolicy=continue
+ #DefaultSmackProcessLabel=
+ #ReloadLimitIntervalSec=
+ #ReloadLimitBurst=
+diff --git a/src/resolve/resolved.conf.in b/src/resolve/resolved.conf.in
+index 0031b15..8548452 100644
+--- a/src/resolve/resolved.conf.in
++++ b/src/resolve/resolved.conf.in
+@@ -24,10 +24,10 @@
+ #DNS=
+ #FallbackDNS={{DNS_SERVERS}}
+ #Domains=
+-#DNSSEC={{DEFAULT_DNSSEC_MODE_STR}}
+-#DNSOverTLS={{DEFAULT_DNS_OVER_TLS_MODE_STR}}
++DNSSEC=no
++DNSOverTLS=no
+ #MulticastDNS={{DEFAULT_MDNS_MODE_STR}}
+-#LLMNR={{DEFAULT_LLMNR_MODE_STR}}
++LLMNR=no
+ #Cache=yes
+ #CacheFromLocalhost=no
+ #DNSStubListener=yes
+diff --git a/tmpfiles.d/home.conf b/tmpfiles.d/home.conf
+index 7d9ed66..302d61a 100644
+--- a/tmpfiles.d/home.conf
++++ b/tmpfiles.d/home.conf
+@@ -8,4 +8,3 @@
+ # See tmpfiles.d(5) for details.
+ 
+ Q /home 0755 - - -
+-q /srv 0755 - - -
+-- 
+2.53.0
+

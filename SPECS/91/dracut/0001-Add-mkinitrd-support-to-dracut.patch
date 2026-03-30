@@ -1,7 +1,7 @@
-From dd3e022dc67ae18a02879bb52be3eee94ecffc4a Mon Sep 17 00:00:00 2001
+From 5089e404ea2f1b3bb65e878cd94c4f0a1379ca2e Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 12 Jul 2021 21:51:15 +0530
-Subject: [PATCH 1/7] Add mkinitrd support to dracut
+Subject: [PATCH] Add mkinitrd support to dracut
 
 dracut upstream removed mkinitrd:
 https://github.com/dracutdevs/dracut/commit/43df4ee274e7135aff87868bf3bf2fbab47aa8b4
@@ -11,25 +11,26 @@ Photon OS needs this tool.
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
  Makefile           |   4 +-
+ man/dracut.asc     |   3 +
  man/mkinitrd.8.asc |  66 +++++++++++++
  mkinitrd-dracut.sh | 225 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 294 insertions(+), 1 deletion(-)
+ 4 files changed, 297 insertions(+), 1 deletion(-)
  create mode 100644 man/mkinitrd.8.asc
  create mode 100755 mkinitrd-dracut.sh
 
 diff --git a/Makefile b/Makefile
-index 24e2fb6..c9dd3be 100644
+index e7d69e10..e797a05b 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -52,6 +52,7 @@ man7pages = man/dracut.cmdline.7 \
+@@ -37,6 +37,7 @@ man7pages = man/dracut.cmdline.7 \
              man/dracut.modules.7
  
  man8pages = man/dracut.8 \
 +            man/mkinitrd.8 \
              man/dracut-catimages.8 \
-             modules.d/77dracut-systemd/dracut-cmdline.service.8 \
-             modules.d/77dracut-systemd/dracut-mount.service.8 \
-@@ -193,6 +194,7 @@ install: all
+             modules.d/98dracut-systemd/dracut-cmdline.service.8 \
+             modules.d/98dracut-systemd/dracut-initqueue.service.8 \
+@@ -148,6 +149,7 @@ install: all
  	mkdir -p $(DESTDIR)$(mandir)/man1 $(DESTDIR)$(mandir)/man5 $(DESTDIR)$(mandir)/man7 $(DESTDIR)$(mandir)/man8
  	install -m 0755 dracut.sh $(DESTDIR)$(bindir)/dracut
  	install -m 0755 dracut-catimages.sh $(DESTDIR)$(bindir)/dracut-catimages
@@ -37,8 +38,8 @@ index 24e2fb6..c9dd3be 100644
  	install -m 0755 lsinitrd.sh $(DESTDIR)$(bindir)/lsinitrd
  	install -m 0644 dracut.conf $(DESTDIR)$(sysconfdir)/dracut.conf
  	mkdir -p $(DESTDIR)$(sysconfdir)/dracut.conf.d
-@@ -311,7 +313,7 @@ distclean: clean
- 	$(RM) Makefile.inc
+@@ -265,7 +267,7 @@ srpm: syncheck
+ endif
  
  syncheck:
 -	@ret=0;for i in dracut-initramfs-restore.sh modules.d/*/*.sh; do \
@@ -46,9 +47,23 @@ index 24e2fb6..c9dd3be 100644
                  [ "$${i##*/}" = "module-setup.sh" ] && continue; \
                  read line < "$$i"; [ "$${line#*bash*}" != "$$line" ] && continue; \
  		[ $$V ] && echo "posix syntax check: $$i"; bash --posix -n "$$i" ; ret=$$(($$ret+$$?)); \
+diff --git a/man/dracut.asc b/man/dracut.asc
+index cc11d01e..f35535c2 100644
+--- a/man/dracut.asc
++++ b/man/dracut.asc
+@@ -162,6 +162,9 @@ include::dracut.cmdline.7.asc[]
+ [[lsinitrd1]]
+ include::lsinitrd.1.asc[]
+ 
++[[mkinitrd8]]
++include::mkinitrd.8.asc[]
++
+ = Developer Manual
+ 
+ :leveloffset: 1
 diff --git a/man/mkinitrd.8.asc b/man/mkinitrd.8.asc
 new file mode 100644
-index 0000000..82afe2d
+index 00000000..82afe2df
 --- /dev/null
 +++ b/man/mkinitrd.8.asc
 @@ -0,0 +1,66 @@
@@ -120,7 +135,7 @@ index 0000000..82afe2d
 +*dracut*(8)
 diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
 new file mode 100755
-index 0000000..657e8b2
+index 00000000..657e8b29
 --- /dev/null
 +++ b/mkinitrd-dracut.sh
 @@ -0,0 +1,225 @@
@@ -350,5 +365,5 @@ index 0000000..657e8b2
 +    fi
 +done
 -- 
-2.43.7
+2.17.1
 

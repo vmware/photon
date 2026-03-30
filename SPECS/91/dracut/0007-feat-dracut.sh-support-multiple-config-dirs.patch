@@ -1,7 +1,7 @@
-From 10ef7574f30aa8b209e91eb81950d6f5af4d1e35 Mon Sep 17 00:00:00 2001
+From d1b46f8b53ceccabf33d4cc479a85778ba83abfb Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Sat, 18 Feb 2023 18:11:51 +0530
-Subject: [PATCH 7/7] feat(dracut.sh): support multiple config dirs
+Subject: [PATCH 2/2] feat(dracut.sh): support multiple config dirs
 
 Configuration can come from many places, users should not be restricted
 to keep all configuration files in one directory.
@@ -9,14 +9,15 @@ to keep all configuration files in one directory.
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
  dracut.sh          | 29 ++++++++++++++++++-----------
+ man/dracut.8.asc   |  4 ++--
  mkinitrd-dracut.sh |  6 +++---
- 2 files changed, 21 insertions(+), 14 deletions(-)
+ 3 files changed, 23 insertions(+), 16 deletions(-)
 
 diff --git a/dracut.sh b/dracut.sh
-index e917fd1..f5b3cf6 100755
+index bbb3469..0787a92 100755
 --- a/dracut.sh
 +++ b/dracut.sh
-@@ -168,8 +168,9 @@ Creates initial ramdisk images for preloading modules
+@@ -154,8 +154,9 @@ Creates initial ramdisk images for preloading modules
    -q, --quiet           Decrease verbosity level.
    -c, --conf [FILE]     Specify configuration file to use.
                           Default: /etc/dracut.conf
@@ -25,10 +26,10 @@ index e917fd1..f5b3cf6 100755
 +  --confdir [LIST]      Specify a space separated list of configuration
 +                         directories to use *.conf files from.
 +                         Default: /etc/dracut.conf.d
-   --add-confdir [DIR]   Add an extra configuration directory to use *.conf
-                          files from. If the directory is not existed, will
-                          look for subdirectory under confdir.
-@@ -727,7 +728,7 @@ while :; do
+   --tmpdir [DIR]        Temporary directory to be used instead of default
+                          ${TMPDIR:-/var/tmp}.
+   -r, --sysroot [DIR]   Specify sysroot directory to collect files from.
+@@ -668,7 +669,7 @@ while :; do
              shift
              ;;
          --confdir)
@@ -37,51 +38,66 @@ index e917fd1..f5b3cf6 100755
              PARMS_TO_STORE+=" '$2'"
              shift
              ;;
-@@ -1000,15 +1001,20 @@ elif [[ ! -e $conffile ]]; then
+@@ -911,15 +912,20 @@ elif [[ ! -e $conffile ]]; then
      exit 1
  fi
- 
+
 -if [[ -z $confdir ]]; then
 +if [ ${#confdirs_l[@]} -eq 0 ]; then
      if [[ $allowlocal ]]; then
 -        confdir="$dracutbasedir/dracut.conf.d"
 +        confdirs_l=("$dracutbasedir/dracut.conf.d")
      else
--        confdir="${dracutsysrootdir-}/etc/dracut.conf.d"
+-        confdir="$dracutsysrootdir/etc/dracut.conf.d"
 +        confdirs_l=("$dracutsysrootdir/etc/dracut.conf.d")
      fi
 -elif [[ ! -d $confdir ]]; then
--    printf "%s\n" "dracut[F]: Configuration directory '$confdir' not found." >&2
+-    printf "%s\n" "dracut: Configuration directory '$confdir' not found." >&2
 -    exit 1
 +else
-+		# shellcheck disable=SC2068
-+		for d in ${confdirs_l[@]}; do
-+			if [[ ! -d $d ]]; then
-+				printf "%s\n" "dracut: Configuration directory '$d' not found." >&2
-+				exit 1
-+			fi
-+		done
++    # shellcheck disable=SC2068
++    for d in ${confdirs_l[@]}; do
++        if [[ ! -d $d ]]; then
++            printf "%s\n" "dracut: Configuration directory '$d' not found." >&2
++            exit 1
++        fi
++    done
  fi
- 
- if [[ -n $add_confdir ]]; then
-@@ -1032,8 +1038,9 @@ if [[ -f $conffile ]]; then
+
+ # source our config file
+@@ -929,8 +935,9 @@ if [[ -f $conffile ]]; then
      . "$conffile"
  fi
- 
+
 -# source our config dir
--for f in $(dropindirs_sort ".conf" "$confdir" ${add_confdir:+"$add_confdir"} "$dracutbasedir/dracut.conf.d" "/run/initramfs/dracut.conf.d"); do
+-for f in $(dropindirs_sort ".conf" "$confdir" "$dracutbasedir/dracut.conf.d"); do
 +# source config files from all config dirs
 +# shellcheck disable=SC2086
 +for f in $(dropindirs_sort ".conf" ${confdirs_l[@]} "$dracutbasedir/dracut.conf.d"); do
      check_conf_file "$f"
      # shellcheck disable=SC1090
      [[ -e $f ]] && . "$f"
+diff --git a/man/dracut.8.asc b/man/dracut.8.asc
+index 5c2b147..3eddb5a 100644
+--- a/man/dracut.8.asc
++++ b/man/dracut.8.asc
+@@ -305,8 +305,8 @@ example:
+ Default:
+    _/etc/dracut.conf_
+
+-**--confdir** _<configuration directory>_::
+-    Specify configuration directory to use.
++**--confdir** _<list of dracut configuration directories>_::
++    Specify a space-separated list of dracut configuration directories to use.
+ +
+ Default:
+    _/etc/dracut.conf.d_
 diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
-index bbe4e79..b433169 100755
+index 1213d89..8cec7b9 100755
 --- a/mkinitrd-dracut.sh
 +++ b/mkinitrd-dracut.sh
-@@ -276,7 +276,7 @@ for ((i = 0; $i < ${#targets[@]}; i++)); do
- 
+@@ -267,7 +267,7 @@ for ((i = 0; $i < ${#targets[@]}; i++)); do
+
    # this check is for combination of newer and older kernels
    if [ -d "/lib/modules/${kernel}/dracut.conf.d" ]; then
 -    dracut_cmd+=("--confdir \"/lib/modules/${kernel}/dracut.conf.d /etc/dracut.conf.d\"")
@@ -89,18 +105,17 @@ index bbe4e79..b433169 100755
    elif [ -d "/var/lib/initramfs/kernel" ]; then
      kernel_ver_dir="/var/lib/initramfs/kernel"
      if [ -s "$kernel_ver_dir/$kernel" ]; then
-@@ -289,9 +289,9 @@ for ((i = 0; $i < ${#targets[@]}; i++)); do
+@@ -280,9 +280,9 @@ for ((i = 0; $i < ${#targets[@]}; i++)); do
    fi
- 
+
    if [[ $basicmodules ]]; then
 -    dracut_cmd+=("--add-drivers \"$basicmodules\"")
 +    dracut_cmd+=(--add-drivers \"$basicmodules\")
    fi
 -  dracut_cmd+=("\"$target\" \"$kernel\"")
 +  dracut_cmd+=("$target" "$kernel")
- 
+
    if [ ${quiet} -eq 1 ]; then
      eval "${dracut_cmd[@]}" &> "${log_fn}"
--- 
-2.43.7
-
+--
+2.39.2
