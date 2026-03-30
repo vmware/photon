@@ -1,10 +1,10 @@
-# Build this spec if subrelease is 92 or higher
-%global build_if %{photon_subrelease} >= 92
+# Build this spec if subrelease is 91 or less
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.2602.0
-Release:        1%{?dist}
+Version:        8.2504.0
+Release:        2.1%{?dist}
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ Source4: license.txt
 %include %{SOURCE4}
 
 BuildRequires:  systemd-devel
+BuildRequires:  libestr-devel
 BuildRequires:  libfastjson-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  liblogging-devel
@@ -28,21 +29,15 @@ BuildRequires:  gnutls-devel
 BuildRequires:  curl-devel
 BuildRequires:  libgpg-error-devel
 BuildRequires:  bison
-BuildRequires:  protobuf-c-devel
-BuildRequires:  snappy-devel
-BuildRequires:  libestr-devel
-BuildRequires:  liblognorm-devel
 
 Requires:       gnutls
 Requires:       systemd
+Requires:       libestr
 Requires:       libfastjson
 Requires:       libgcrypt
 Requires:       liblogging
 Requires:       librelp
 Requires:       libgpg-error
-Requires:       protobuf-c
-Requires:       snappy
-Requires:       libestr
 
 %description
 RSYSLOG is the rocket-fast system for log processing.
@@ -50,14 +45,6 @@ It offers high-performance, great security features and a modular design.
 While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging,
 being able to accept inputs from a wide variety of sources, transform them,
 and output to the results to diverse destinations.
-
-%package mmnormalize
-Summary:       Log normalization support for rsyslog
-Requires:      %{name} = %{version}-%{release}
-Requires:      liblognorm
-
-%description mmnormalize
-This module provides the capability to normalize log messages via liblognorm.
 
 %prep
 %autosetup -p1
@@ -75,8 +62,7 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
     --enable-imtcp \
     --enable-openssl \
     --enable-imfile \
-    --enable-omstdout \
-    --enable-mmnormalize
+    --enable-omstdout
 
 %make_build
 
@@ -119,16 +105,10 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 %dir %{_sharedstatedir}/rsyslog
-%exclude %{_libdir}/rsyslog/mmnormalize.so
-
-%files mmnormalize
-%defattr(-,root,root)
-%{_libdir}/rsyslog/mmnormalize.so
 
 %changelog
-* Mon Mar 30 2026 Tapas Kundu <tapas.kundu@broadcom.com> 8.2602.0-1
-- Enable mmnormalize
-- Update to 8.2602.0
+* Fri Mar 13 2026 Tapas Kundu <tapas.kundu@broadcom.com> 8.2504.0-2.1
+- Sub braching for 9.1
 * Mon Oct 27 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.2504.0-2
 - Include auth and daemon related logs in messages
 * Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.2504.0-1

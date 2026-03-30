@@ -1,0 +1,17 @@
+sources:
+- archive: liblognorm-2.0.9.tar.gz
+  archive_sha512sum: ddff84b6874252c137a50337dbfa8490ce17fa287e466cb2b76474c6abe309fea86c182803f2a8febe3e10add950a0432ec6ea13f1059c07518f104e2c087445
+  archive_type: upstream
+  name: liblognorm-2.0.9
+  skip_validation: false
+  repo_url: https://github.com/rsyslog/liblognorm
+  url: https://github.com/rsyslog/liblognorm/archive/refs/tags/v2.0.9.tar.gz
+  commit_id: 3804548e3541747bde3e82a78d2c2dcd865296dd
+  spdx:
+    package:
+      detailed_description: 'Liblognorm is a fast-samples based normalization library.'
+      home_page: https://www.liblognorm.com/
+      license_concluded: Apache-2.0 AND LGPL-2.1-only AND LGPL-2.1-or-later
+      license_declared: Apache-2.0 AND LGPL-2.1-only AND LGPL-2.1-or-later
+      short_summary: Liblognorm is a fast-samples based normalization library.
+      supplier: 'Organization: Broadcom, Inc.'
