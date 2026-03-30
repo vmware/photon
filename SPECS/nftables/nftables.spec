@@ -2,8 +2,8 @@
 
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
-Version:        1.0.6
-Release:        7%{?dist}
+Version:        1.1.6
+Release:        1%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,8 +18,6 @@ Source3: nft_ruleset_photon.nft
 Source4: license.txt
 %include %{SOURCE4}
 
-Patch0:  0001-config-remove-doc-directory-inclusion.patch
-
 BuildRequires: flex
 BuildRequires: bison
 BuildRequires: libmnl-devel
@@ -31,11 +29,13 @@ BuildRequires: iptables-devel
 BuildRequires: jansson-devel
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-wheel
+BuildRequires: python3-pip
 BuildRequires: libedit-devel
 
 Requires: readline
 Requires: systemd
-Requires: python3
+Requires: iptables-libs
 Requires: %{name}-libs = %{version}-%{release}
 
 %description
@@ -71,6 +71,7 @@ Development tools and static libraries and header files for the libnftables libr
 %package -n     python3-%{name}
 Summary:        Python module providing an interface to libnftables
 Requires:       %{name} = %{version}-%{release}
+Requires:       python3
 
 %description -n python3-%{name}
 The nftables python module provides an interface to libnftables via ctypes.
@@ -85,14 +86,19 @@ rm -f doc/*
     --with-xtables \
     --with-json \
     --disable-man-doc \
-    --enable-python \
-    --with-python-bin=%{python3} \
     --disable-static
 
 %make_build
+pushd py
+%{pyproject_wheel}
+popd
 
 %install
 %make_install %{?_smp_mflags}
+pushd py
+%pyproject_install
+rm -rf %{buildroot}/%{python3_sitelib}/%{name}/__pycache__
+popd
 
 mkdir -p %{buildroot}{%{_unitdir},%{_presetdir}}
 cp -a %{SOURCE1} %{buildroot}%{_unitdir}
@@ -142,10 +148,13 @@ chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 
 %files -n python3-%{name}
 %defattr(-, root, root)
-%{python3_sitelib}/%{name}-*.egg-info
+%{python3_sitelib}/%{name}-*.dist-info
 %{python3_sitelib}/%{name}/
 
 %changelog
+* Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.6-1
+- Upgrade to 1.1.6
+- Fix build after iptables upgrade
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.6-7
 - Bump version as a part of python3.14 upgrade
 * Mon Oct 27 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.0.6-6

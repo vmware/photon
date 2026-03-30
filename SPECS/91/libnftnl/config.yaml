@@ -1,6 +1,6 @@
 sources:
-- archive: libnftnl-1.3.1.tar.xz
-  archive_sha512sum: a4e689b003cc2ae2ecf203335265f337d6de7a50af5410d649a567535c109d08ee9dbae9e8572b1af8c67f09ea27877ca059e04ed3b1c12183ef7b4185bdd10f
+- archive: libnftnl-1.2.4.tar.bz2
+  archive_sha512sum: 5375d1d15627aabf25129433630395f53009b22a255fcd113b302af7f2f0a234fd54c827b0ef1c8fd3a13e272a1696f780560672d4af6abad0e19805f9d56326
   skip_validation: true
   spdx:
     package:

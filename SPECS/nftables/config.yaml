@@ -1,6 +1,6 @@
 sources:
-- archive: nftables-1.0.6.tar.xz
-  archive_sha512sum: afe08381acd27d39cc94743190b07c579f8c49c4182c9b8753d5b3a0b7d1fe89ed664fdbc19cef1547c3ca4a0c1e32ca4303dba9ec626272fa08c77e88c11119
+- archive: nftables-1.1.6.tar.xz
+  archive_sha512sum: 8d0a833d0ae2b6ac82e0da8bb74ffb69679e49a938b86a75d4ee3d81343400a95fe064cf95d60d22df30370779e524b31497a9c89a516d9bff645f3f83bb6bb1
   skip_validation: true
   spdx:
     package:

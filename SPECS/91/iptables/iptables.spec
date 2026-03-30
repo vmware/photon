@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 Summary:        Linux kernel packet control tool
 Name:           iptables
-Version:        1.8.13
-Release:        1%{?dist}
+Version:        1.8.9
+Release:        6.1%{?dist}
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -20,15 +20,11 @@ Source6: license.txt
 %include %{SOURCE6}
 
 Requires(post):   systemd
-Requires(post):   grep
 Requires(preun):  systemd
 Requires(postun): systemd
 
 Requires: %{name}-libs = %{version}-%{release}
-Requires: %{name}-nft-bin = %{version}-%{release}
 
-BuildRequires:  automake
-BuildRequires:  autoconf
 BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
@@ -54,16 +50,9 @@ Conflicts: %{name} < 1.8.9-3%{?dist}
 %description libs
 %{summary}
 
-%package        nft-bin
-Summary:        Minimal binary files for iptables-nft
-Requires:       %{name}-libs = %{version}-%{release}
-
-%description    nft-bin
-%{summary}
-
 %package        devel
 Summary:        Header and development files for iptables
-Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 It contains the libraries and header files to create applications.
@@ -98,12 +87,6 @@ install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/systemd/scripts
 %{_fixperms} %{buildroot}/*
 
 %post
-if alternatives --display %{name} 2>/dev/null | grep -q "/usr/sbin/%{name}-legacy"; then
-    alternatives --remove %{name} %{_sbindir}/%{name}-legacy
-fi
-if alternatives --display ip6tables 2>/dev/null | grep -q "/usr/sbin/ip6tables-legacy"; then
-    alternatives --remove ip6tables %{_sbindir}/ip6tables-legacy
-fi
 for target in %{name} \
               ip6tables \
               ebtables \
@@ -112,6 +95,14 @@ for target in %{name} \
     --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-nft-save \
     --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-nft-restore
 done
+
+for target in %{name} \
+              ip6tables; do
+  alternatives --install %{_sbindir}/${target} ${target} %{_sbindir}/${target}-legacy 10000 \
+    --slave %{_sbindir}/${target}-save ${target}-save %{_sbindir}/${target}-legacy-save \
+    --slave %{_sbindir}/${target}-restore ${target}-restore %{_sbindir}/${target}-legacy-restore
+done
+
 /sbin/ldconfig
 %systemd_post %{name}.service
 
@@ -127,6 +118,8 @@ if [ $1 -eq 0 ]; then
               arptables; do
   alternatives --remove ${target} %{_sbindir}/${target}-nft
   done
+  alternatives --remove %{name} %{_sbindir}/%{name}-legacy
+  alternatives --remove ip6tables %{_sbindir}/ip6tables-legacy
 fi
 /sbin/ldconfig
 %systemd_postun_with_restart %{name}.service
@@ -141,32 +134,14 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/scripts/ip4save
 %config(noreplace) %{_sysconfdir}/systemd/scripts/ip6save
 %config(noreplace) %{_sysconfdir}/ethertypes
-%{_bindir}/*
+%config(noreplace) %{_sysconfdir}/xtables.conf
 %{_sbindir}/*
+%{_bindir}/*
 %{_libdir}/%{name}/*
 %{_unitdir}/%{name}.service
 %{_mandir}/man1/*
 %{_mandir}/man8/*
-%exclude %{_sbindir}/ip{,6}tables-legacy*
-%exclude %{_sbindir}/xtables-legacy-multi
-%exclude %{_bindir}/iptables-xml
-%exclude %{_mandir}/man1/iptables-xml*
-%exclude %{_mandir}/man8/xtables-legacy*
-%exclude %{_datadir}/xtables
-%exclude %{_datadir}/xtables/iptables.xslt
-%exclude %{_libdir}/iptables/lib{arp,eb}t*
-%exclude %{_sbindir}/ip{,6}tables-nft*
-%exclude %{_sbindir}/{eb,arp}tables-nft*
-%exclude %{_sbindir}/xtables-nft-multi
-%exclude %{_libdir}/iptables
-
-%files nft-bin
-%defattr(-,root,root)
-%{_sbindir}/ip{,6}tables-nft*
-%{_sbindir}/{eb,arp}tables-nft*
-%{_sbindir}/xtables-nft-multi
-%dir %{_libdir}/iptables
-%{_libdir}/iptables/*
+%{_datadir}/xtables/%{name}.xslt
 
 %files libs
 %defattr(-,root,root)
@@ -180,9 +155,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
-* Wed Mar 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.13-1
-- Upgrade to 1.8.13
-- Disable legacy variant, iptables-nft is now default
+* Wed Mar 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.9-6.1
+- mark subrelease
 * Tue Oct 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.9-6
 - Move sysctl confs to systemd sysctl hardening conf
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.8.9-5
