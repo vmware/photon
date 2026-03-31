@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.38
-Release:        10%{?dist}
+Release:        9.1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -28,7 +28,6 @@ BuildRequires:  ncurses-terminfo
 %endif
 
 Requires: %{name}-libs = %{version}-%{release}
-Requires: logger = %{version}-%{release}
 
 Conflicts: toybox < 0.8.2-2
 
@@ -56,21 +55,6 @@ Summary:    library files for util-linux
 Group:      Development/Libraries
 %description libs
 These are library files of util-linux.
-
-%package -n logger
-Summary:    Logger utility from util-linux
-Group:      Applications/System
-Conflicts:  %{name} < 2.38-10
-Requires:   logger-bin = %{version}-%{release}
-%description -n logger
-Logger utility from util-linux
-
-%package -n logger-bin
-Summary:    Logger utility binary from util-linux
-Group:      Applications/System
-Conflicts:  %{name} < 2.38-10
-%description -n logger-bin
-Logger utility binary from util-linux
 
 %prep
 %autosetup -p1
@@ -111,24 +95,12 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_libdir}/libfdisk.so.*
 %{_libdir}/libsmartcols.so.*
 %{_bindir}/*
-%exclude %{_bindir}/logger
 %{_sbindir}/*
 %{_mandir}/man1/*
-%exclude %{_mandir}/man1/logger.1.gz
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/*
-%exclude %{_datadir}/bash-completion/completions/logger
 %{_docdir}/%{name}/getopt*
-
-%files -n logger-bin
-%defattr(-,root,root)
-%{_bindir}/logger
-
-%files -n logger
-%defattr(-,root,root)
-%{_datadir}/bash-completion/completions/logger
-%{_mandir}/man1/logger.1.gz
 
 %files libs
 %defattr(-,root,root)
@@ -147,8 +119,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
-* Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.38-10
-- Split logger as a sub package
+* Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.38-9.1
+- Mark subrelease
 * Mon Dec 15 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.38-9
 - Fix CVE-2025-14104
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.38-8
