@@ -1,7 +1,7 @@
 Name:           libxcrypt
 Summary:        Extended crypt library for DES, MD5, Blowfish and others
 Version:        4.4.36
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/besser82/%{name}
 Distribution:   Photon
 Group:          System Environment/Security
@@ -64,11 +64,9 @@ developing applications that use %{name}.
 %clean
 rm -rf %{buildroot}
 
-%post
-/sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -83,6 +81,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Thu Apr 02 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.4.36-4
+- Don't require shell for post scripts
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.4.36-3
 - Release bump for SRP compliance
 * Sun Dec 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.36-2

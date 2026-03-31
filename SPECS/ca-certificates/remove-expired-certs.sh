@@ -2,7 +2,7 @@
 
 OPENSSL=/usr/bin/openssl
 if ! test -x ${OPENSSL}; then
-  echo "ERROR: ${OPENSSL} not present, quit ..." 1>&2
+  echo "WARNING: ${OPENSSL} not present, stopping expired certs removal ..." 1>&2
   exit 1
 fi
 

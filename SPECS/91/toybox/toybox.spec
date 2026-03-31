@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 # also defined in coreutils.spec and coreutils-selinux.spec
 %define coreutils_present           %{_sharedstatedir}/rpm-state/coreutils
@@ -6,7 +6,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        11%{?dist}
+Release:        10.1%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -27,14 +27,11 @@ BuildRequires:  openssl-devel
 BuildRequires:  libxcrypt-devel
 BuildRequires:  zlib-devel
 
-Requires(post): openssl-libs
-Requires(post): zlib
-Requires(post): glibc
-Requires(post): libxcrypt
+Requires:       openssl-libs
+Requires:       libxcrypt
+Requires:       zlib
 
 Provides:       /bin/grep
-Provides:       /bin/sh
-Provides:       /bin/bash
 
 %description
 Toybox combines common Linux command line utilities together into a single
@@ -87,13 +84,11 @@ mktoy() { \
   done \
 }
 
-%post -p %{_bindir}/toysh
-export opt="--install"
-toysh %{_bindir}/%{name}-toys -- $opt
+%posttrans
+%{_bindir}/%{name}-toys --install
 
-%preun -p %{_bindir}/toysh
-export opt="--uninstall"
-toysh %{_bindir}/%{name}-toys -- $opt
+%preun
+%{_bindir}/%{name}-toys --uninstall
 
 %triggerpostun -- dos2unix
 [ $2 -eq 0 ] || exit 0
@@ -105,11 +100,6 @@ mktoy %{_bindir}/dos2unix \
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
 mktoy %{_bindir}/host
-
-%triggerpostun -- bash
-[ $2 -eq 0 ] || exit 0
-%{_mktoy_}
-mktoy %{_bindir}/bash %{_bindir}/sh
 
 %triggerpostun -- bzip2
 [ $2 -eq 0 ] || exit 0
@@ -352,7 +342,7 @@ mktoy %{_sbindir}/httpd
 %triggerpostun -- iotop
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
-mktoy %{_bindir}/iotop
+mktoy %{_sbindir}/iotop
 
 %triggerpostun -- iproute2
 [ $2 -eq 0 ] || exit 0
@@ -645,10 +635,10 @@ mktoy %{_bindir}/which
 %ghost %{_sbindir}/ip
 
 # iotop
-%ghost %{_bindir}/iotop
+%ghost %{_sbindir}/iotop
 
 # iputils
-%ghost %{_sbindir}/arping
+%ghost %{_bindir}/arping
 %ghost %{_bindir}/ping
 %ghost %{_bindir}/ping6
 
@@ -798,10 +788,9 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
-* Tue Mar 31 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-11
-- Fix paths for arp and iotop to match real packages
-- Explicitly note that toybox provides a shell, use our shell to install
-- symlinks in %post instead of %posttrans
+* Fri Apr 10 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-10.1
+- Move to subrelease 91
+- Fix paths for arp and arping
 * Mon Feb 09 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.8.9-10
 - enable logger, reboot
 * Mon Dec 22 2025 Oliver Kurth <okurth@vmware.com> 0.8.9-9

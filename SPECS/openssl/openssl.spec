@@ -3,7 +3,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -21,16 +21,17 @@ Source5: jitterentropy.c
 Source6: license.txt
 %include %{SOURCE6}
 
+Source7: openssl-libs-post.lua
+
 Patch0: openssl-cnf.patch
 Patch1: add-FIPS_mode-compatibility-macro.patch
 
-%if 0%{?with_check}
 BuildRequires: zlib-devel
-%endif
 
 Requires: glibc
 Requires: libgcc
 Requires: %{name}-libs = %{version}-%{release}
+Requires: zlib
 
 Provides: nxtgn-openssl
 Obsoletes: nxtgn-openssl
@@ -45,7 +46,6 @@ web browsers (for accessing HTTPS sites).
 Summary: Core libraries and other files needed by openssl.
 Conflicts: %{name} < 3.0.8-1
 Conflicts: %{name}-fips-provider <= 3.0.8-3
-Requires: bash
 
 %description libs
 %{summary}
@@ -75,6 +75,7 @@ Perl scripts that convert certificates and keys to various formats.
 Summary:    rehash script for ca certificates
 Group:      Applications/Internet
 Requires:   %{name} = %{version}-%{release}
+Requires:   /bin/bash
 Provides:   nxtgn-openssl-c_rehash
 Obsoletes:  nxtgn-openssl-c_rehash
 
@@ -113,7 +114,7 @@ export MACHINE=%{_arch}
     enable-egd \
     enable-quic \
     enable-ktls \
-    zlib-dynamic \
+    zlib \
     -Wl,-z,noexecstack
 
 %make_build
@@ -144,13 +145,9 @@ sed -i 's|^libdir=.*|libdir=/usr/lib|' %{buildroot}%{_libdir}/pkgconfig/libssl.p
 
 %ldconfig_scriptlets libs
 
-%post libs
-if [ "$1" = 2 ] && [ -s "%{_sysconfdir}/ssl/provider_fips.cnf" ]; then
-  sed -i '/^#.include \/etc\/ssl\/provider_fips.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
-  sed -i '/^#.include \/etc\/ssl\/provider_base.cnf/s/^#//g' %{_sysconfdir}/ssl/distro.cnf
-  # Disable provider default if provider_fips.cnf is already present
-  sed -i '/^.include \/etc\/ssl\/provider_default.cnf/s/^/#/g' %{_sysconfdir}/ssl/distro.cnf
-fi
+%post -p <lua> libs
+-- %{SOURCE7}
+%{expand:%(cat %{SOURCE7})}
 
 %clean
 rm -rf %{buildroot}/*
@@ -204,6 +201,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri Apr 10 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.5.6-2
+- Convert libs post-script to lua instead of bash
+- Change the dependency from zlib-dynamic back to zlib.
 * Thu Apr 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.6-1
 - Upgrade to 3.5.6
 * Mon Apr 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-3

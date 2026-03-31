@@ -1,4 +1,4 @@
-From 6af07fa47a582a0d131ccbf73c0015d35ea6460a Mon Sep 17 00:00:00 2001
+From 5d6726143da7f124baa0f3d26583cbfb709e038f Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Sun, 21 Aug 2022 10:59:35 +0530
 Subject: [PATCH] fix deliverables path
@@ -6,7 +6,7 @@ Subject: [PATCH] fix deliverables path
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
 Signed-off-by: Harinadh D <hdommaraju@vmware.com>
-[ Brennan : Fix paths for arp and iotop ]
+[ Brennan : Fixed paths for arp and arping ]
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  toys/lsb/pidof.c         |  2 +-
@@ -22,11 +22,12 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  toys/other/vconfig.c     |  2 +-
  toys/other/vmstat.c      |  2 +-
  toys/other/watchdog.c    |  2 +-
- toys/pending/arp.c       | 18 +++++++++---------
+ toys/pending/arp.c       |  2 +-
+ toys/pending/arping.c    |  2 +-
  toys/posix/kill.c        |  4 ++--
- toys/posix/ps.c          | 12 ++++++------
+ toys/posix/ps.c          | 14 +++++++-------
  toys/posix/test.c        |  2 +-
- 17 files changed, 34 insertions(+), 34 deletions(-)
+ 18 files changed, 28 insertions(+), 28 deletions(-)
 
 diff --git a/toys/lsb/pidof.c b/toys/lsb/pidof.c
 index 791eed0..3a8d69c 100644
@@ -204,7 +205,7 @@ index c3268a1..b8627bc 100644
  config WATCHDOG
    bool "watchdog"
 diff --git a/toys/pending/arp.c b/toys/pending/arp.c
-index 5f7c4a1..5d1f8fc 100644
+index 5f7c4a1..826948c 100644
 --- a/toys/pending/arp.c
 +++ b/toys/pending/arp.c
 @@ -4,7 +4,7 @@
@@ -216,6 +217,19 @@ index 5f7c4a1..5d1f8fc 100644
  
  config ARP
    bool "arp"
+diff --git a/toys/pending/arping.c b/toys/pending/arping.c
+index 68ee5ea..c36397c 100644
+--- a/toys/pending/arping.c
++++ b/toys/pending/arping.c
+@@ -5,7 +5,7 @@
+  *
+  * No Standard.
+ 
+-USE_ARPING(NEWTOY(arping, "<1>1s:I:w#<0c#<0AUDbqf[+AU][+Df]", TOYFLAG_USR|TOYFLAG_SBIN))
++USE_ARPING(NEWTOY(arping, "<1>1s:I:w#<0c#<0AUDbqf[+AU][+Df]", TOYFLAG_USR|TOYFLAG_BIN))
+ 
+ config ARPING
+   bool "arping"
 diff --git a/toys/posix/kill.c b/toys/posix/kill.c
 index 2f47f60..d94964d 100644
 --- a/toys/posix/kill.c
@@ -239,10 +253,10 @@ index 2f47f60..d94964d 100644
        if (count != ocount) continue;
  
 diff --git a/toys/posix/ps.c b/toys/posix/ps.c
-index 1fdfc17..bd552c5 100644
+index 1fdfc17..59b0a42 100644
 --- a/toys/posix/ps.c
 +++ b/toys/posix/ps.c
-@@ -45,7 +45,7 @@
+@@ -45,12 +45,12 @@
   * TODO: pgrep -f only searches the amount of cmdline that fits in toybuf.
   * TODO: pgrep qemu-system-i386 never matches because one char too long
  
@@ -251,6 +265,12 @@ index 1fdfc17..bd552c5 100644
  // stayroot because iotop needs root to read other process' proc/$$/io
  // TOP and IOTOP have a large common option block used for common processing,
  // the default values are different but the flags are in the same order.
+ USE_TOP(NEWTOY(top, ">0O*h" "Hk*o*p*u*s#<1d%<100=3000m#n#<1bq[!oO]", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_LOCALE))
+-USE_IOTOP(NEWTOY(iotop, ">0AaKO" "Hk*o*p*u*s#<1=7d%<100=3000m#n#<1bq", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_STAYROOT|TOYFLAG_LOCALE))
++USE_IOTOP(NEWTOY(iotop, ">0AaKO" "Hk*o*p*u*s#<1=7d%<100=3000m#n#<1bq", TOYFLAG_USR|TOYFLAG_SBIN|TOYFLAG_STAYROOT|TOYFLAG_LOCALE))
+ USE_PGREP(NEWTOY(pgrep, "?cld:u*U*t*s*P*g*G*fnovxL:[-no]", TOYFLAG_USR|TOYFLAG_BIN))
+ USE_PKILL(NEWTOY(pkill,    "?Vu*U*t*s*P*g*G*fnovxl:[-no]", TOYFLAG_USR|TOYFLAG_BIN))
+ 
 @@ -556,7 +556,7 @@ static char *string_field(struct procpid *tb, struct ofields *field)
  
    // Clock displays
