@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.2
-Release:        11%{?dist}
+Release:        10.1%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -31,8 +31,6 @@ Provides: /bin/bash
 
 BuildRequires:  readline
 
-Requires:           %{name}-bin = %{version}-%{release}
-# Temporary change to avoid bash being installed before readline
 Requires:           readline
 Requires(post):     /bin/grep
 Requires(post):     /usr/bin/cp
@@ -61,15 +59,6 @@ Group:      Documentation
 Requires:   %{name} = %{version}-%{release}
 %description docs
 The package contains bash doc files.
-
-%package    bin
-Summary:    standalone bash binary
-Conflicts:  %{name} < 5.2-11
-Requires:   glibc
-Requires:   readline
-Requires:   ncurses-libs
-%description  bin
-It contains the standalone bash binary
 
 %prep
 %autosetup -p1
@@ -134,13 +123,8 @@ rm -rf %{buildroot}%{_infodir}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%exclude %{_bindir}/%{name}
 %{_libdir}/%{name}/*
 %{_sysconfdir}/
-
-%files bin
-%defattr(-,root,root)
-%{_bindir}/%{name}
 
 %files devel
 %{_includedir}/%{name}/*
@@ -156,8 +140,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/*/*
 
 %changelog
-* Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-11
-- Package bash binary as a sub package
+* Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-10.1
+- mark subrelease
 * Thu Oct 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-10
 - Fix used licenses
 * Tue Sep 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-9
