@@ -1,8 +1,8 @@
 %define network_required 1
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.6.5
-Release:        4%{?dist}
+Version:        3.6.9
+Release:        1%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -16,9 +16,6 @@ Source3:        etcd.sysusers
 
 Source4: license.txt
 %include %{SOURCE4}
-
-Patch0: CVE-2026-33343.patch
-Patch1: CVE-2026-33413.patch
 
 BuildRequires:  go
 BuildRequires:  git
@@ -92,6 +89,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Mar 31 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.9-1
+- Version upgrade to 3.5.9
 * Mon Mar 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.5-4
 - Fixes CVE-2026-33413 and CVE-2026-33343
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.5-3
