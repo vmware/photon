@@ -1,21 +1,23 @@
 %global build_if %{photon_subrelease} >= 92
 
 Name:           python3-pyasn1
-Version:        0.4.8
-Release:        4%{?dist}
+Version:        0.6.3
+Release:        1%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            https://github.com/etingof/pyasn1
+URL:            https://github.com/pyasn1/pyasn1
 
-Source0: https://github.com/etingof/pyasn1/archive/refs/tags/pyasn1-%{version}.tar.gz
+Source0: https://files.pythonhosted.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
 
 Requires:       python3
 
@@ -30,14 +32,14 @@ but then generalized to be suitable for a wide range of protocols based on ASN.1
 %autosetup -p1 -n pyasn1-%{version}
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
 
 %if 0%{?with_check}
 %check
-python3 setup.py test
+python3 -m pytest tests/
 %endif
 
 %files
@@ -45,6 +47,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Mar 31 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.3-1
+- Update to 0.6.3
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.8-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.8-3
