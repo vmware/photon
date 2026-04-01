@@ -7,7 +7,7 @@
 Summary:        Tools for packaging Perl projects with rpm
 Name:           perl-rpm-packaging
 Version:        1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            https://github.com/rpm-software-management/perl-rpm-packaging
 Vendor:         VMware, Inc.
@@ -21,6 +21,8 @@ Source1: license.txt
 BuildRequires:  perl
 
 Requires:       perl
+
+Conflicts: rpm-build < 6.0.1
 
 %description
 This package contains the RPM scripts for "Provides" and "Requires" detection of perl packages.
@@ -43,6 +45,8 @@ chmod 755 %{buildroot}%{rpmhome}/perl.* \
 %{rpmhome}/*
 
 %changelog
+* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3-3
+- Conflict with earlier versions of rpm-build
 * Tue Mar 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3-2
 - Disable debug info package
 * Sun Mar 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3-1
