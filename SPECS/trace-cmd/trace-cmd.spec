@@ -3,7 +3,7 @@
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
 Version:        3.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
 Vendor:         VMware, Inc.
@@ -22,8 +22,6 @@ BuildRequires:  gcc
 BuildRequires:  libtraceevent-devel
 BuildRequires:  libtracefs-devel
 BuildRequires:  meson
-BuildRequires:  asciidoc3
-BuildRequires:  xmlto
 
 Requires:       audit
 Requires:       libtraceevent
@@ -41,8 +39,8 @@ to record and analyze the traces.
 %build
 %{meson} \
     --default-library=shared \
-    -Dhtmldir=%{_docdir}/%{name} \
-    -Dpython=false
+    -Dpython=false \
+    -Ddoc=false
 
 %{meson_build}
 
@@ -61,6 +59,9 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}.bash
 
 %changelog
+* Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.3.4-2
+- Remove BuildRequires: xmlto and asciidoc3; documentation not packaged
+- Disable documentation via meson -Ddoc=false
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.3.4-1
 - Upgrade to 3.3.4 as part of python3 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.1.4-5

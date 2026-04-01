@@ -2,7 +2,7 @@
 
 Name:           btrfs-progs
 Version:        6.1.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
@@ -19,7 +19,6 @@ BuildRequires:  libacl-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-BuildRequires:  xmlto
 BuildRequires:  asciidoc3
 BuildRequires:  systemd-devel
 
@@ -88,6 +87,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
+* Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.3-4
+- Remove stale BuildRequires: xmlto; documentation is already disabled
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.1.3-3
 - Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 6.1.3-2

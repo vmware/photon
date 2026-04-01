@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:    The  purpose  of  xmlto is to convert an XML file to the desired format
 Name:       xmlto
 Version:    0.0.28
-Release:    5%{?dist}
+Release:    5.1%{?dist}
 URL:        https://pagure.io/xmlto
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -51,6 +53,8 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/*
 
 %changelog
+* Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.0.28-5.1
+- Bump after moving to SPECS/91
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.0.28-5
 - Release bump for SRP compliance
 * Fri Oct 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.0.28-4

@@ -22,7 +22,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       4.1.4
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -48,7 +48,6 @@ BuildRequires: rsync
 BuildRequires: zip
 BuildRequires: git
 BuildRequires: libxslt-devel
-BuildRequires: xmlto
 BuildRequires: python3-xml
 BuildRequires: python3-devel
 BuildRequires: elixir
@@ -158,6 +157,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.1.4-3
+- Remove stale BuildRequires: xmlto; Erlang build does not use xmlto
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.1.4-2
 - Bump version as a part of python3.14 upgrade
 * Wed Oct 29 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.4-1

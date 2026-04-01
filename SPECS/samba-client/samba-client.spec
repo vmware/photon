@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,7 +28,6 @@ BuildRequires: python3-devel
 BuildRequires: libarchive
 BuildRequires: libarchive-devel
 BuildRequires: Linux-PAM-devel
-BuildRequires: xmlto
 BuildRequires: python3-defusedxml
 BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
@@ -465,6 +464,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.3-9
+- Remove BuildRequires: xmlto; confirmed xmlto not used in samba 4.19.3 build system
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.19.3-8
 - Bump version as a part of python3.14 upgrade
 * Mon Jan 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-7

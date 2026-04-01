@@ -1,7 +1,7 @@
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
 Version:        74
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 Url:            https://github.com/pmem/ndctl
 Vendor:         VMware, Inc.
@@ -15,7 +15,6 @@ Source1: license.txt
 BuildRequires:  meson
 BuildRequires:  asciidoc3
 BuildRequires:  which
-BuildRequires:  xmlto
 BuildRequires:  libtool
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
@@ -147,6 +146,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libcxl.pc
 
 %changelog
+* Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 74-5
+- Remove stale BuildRequires: xmlto; docs are disabled via meson -Ddocs=disabled
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 74-4
 - Bump-up to build with kmod-34.1
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 74-3
