@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.44
+Version:        8.0.45
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Distribution:   Photon
 Url:            http://www.mysql.com
 
 Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define sha512 %{name}-boost=f6881d6f88a4060796e1eac47c1ffe3ea005c27f1b0509fd97774ba5b1e7bf86d0f8c4e13126750f0cc3dd86af92c26459ae8fecf9e8f0f058dab43e93bb3b42
+%define sha512 %{name}-boost=9ab52da87e9c1570328080b802f8c9ca1bcbb08e489e1d6cc3282b994cfd07099a0cf5eee420faa684e8372aee66495b34b633224dca98cd5caa8f4a93e500a4
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -179,6 +179,8 @@ getent passwd 'mysql' >/dev/null || \
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.45-1
+- Upgrade version to fix CVEs
 * Thu Oct 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.44-1
 - Upgrade to v8.0.44, fixes a bunch of CVEs
 * Tue Jun 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.41-2
