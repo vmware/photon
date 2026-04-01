@@ -1,7 +1,9 @@
+%global debug_package %{nil}
+
 Name:       basic
 Summary:    Metapackage to install minimal profile
 Version:    5.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon
 Vendor:     VMware, Inc.
@@ -39,5 +41,7 @@ Metapackage to install basic profile
 %files
 
 %changelog
+* Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 5.0-2
+- Disable debuginfo package
 * Mon Jan 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-1
 - Basic set of packages required for Photon's basic iso

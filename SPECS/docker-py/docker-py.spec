@@ -1,8 +1,9 @@
 %global build_if %{photon_subrelease} >= 92
+%global debug_package %{nil}
 
 Name:           docker-py3
 Version:        6.0.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Python API for docker
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -68,6 +69,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 6.0.0-8
+- Disable debuginfo package
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-7
 - Bump version as a part of python3.14 upgrade
 * Wed Jan 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-6

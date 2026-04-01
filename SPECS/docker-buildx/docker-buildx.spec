@@ -1,4 +1,6 @@
 %global build_if %{photon_subrelease} >= 92
+%global debug_package %{nil}
+
 %define srcname     buildx
 %define plugins_dir %{_libexecdir}/docker/cli-plugins
 %define network_required 1
@@ -6,7 +8,7 @@
 Name:       docker-buildx
 Summary:    Docker CLI plugin for extended build capabilities with BuildKit
 Version:    0.32.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://github.com/docker/buildx
 Group:      Applications
 Vendor:     VMware, Inc.
@@ -62,6 +64,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 0.32.0-2
+- Disable debuginfo package
 * Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.32.0-1
 - Upgrade to 0.32.0, fixes CVE-2025-0495
 * Tue Feb 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17.1-6

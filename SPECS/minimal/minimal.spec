@@ -1,7 +1,9 @@
+%global debug_package %{nil}
+
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -64,6 +66,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 5.0-6
+- Disable debuginfo package
 * Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5
 - Add bash-completion to requires
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 5.0-4

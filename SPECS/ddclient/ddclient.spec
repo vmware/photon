@@ -1,6 +1,8 @@
+%global debug_package %{nil}
+
 Name:           ddclient
 Version:        3.9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://sourceforge.net/p/ddclient/wiki/Home/
 Summary:        Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider
 Group:          Applications
@@ -57,6 +59,8 @@ EOF
 %dir /var/cache/ddclient
 
 %changelog
+* Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 3.9.1-3
+- Disable debuginfo package
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.9.1-2
 - Release bump for SRP compliance
 * Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 3.9.1-1
