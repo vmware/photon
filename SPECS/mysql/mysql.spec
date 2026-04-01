@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.4.7
-Release:        2%{?dist}
+Version:        8.4.8
+Release:        1%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -183,6 +183,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.8-1
+- Upgrade to v8.4.8 to fix CVEs
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 8.4.7-2
 - Add missing shadow dependency for user creation
 * Thu Oct 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.7-1

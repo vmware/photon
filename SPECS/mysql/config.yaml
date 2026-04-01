@@ -1,11 +1,11 @@
 sources:
-- archive: mysql-8.4.7.tar.gz
-  archive_sha512sum: d9596395b176490d5e58be307c2f82f55c9acd3206c1ba29bdb8c96c67438bbe5594621f601161ccb77f56c8262d00255ab6fd8aa62db61c80a1721e3d4e45a2
+- archive: mysql-8.4.8.tar.gz
+  archive_sha512sum: 4e95db1a1c2bf99240d846e690784616b15fb3137b4512072ad71a40911c5bb72c0b0354cc588aab7cd5d396e1d1c709a63d9cd09ae664d8fe6ed0f7683e4cf6
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - mysql-8.4.7/LICENSE
-    sha256sum: 2ac7df5239e0c0da9241c7b022863feacbf58163efe1c5a2537fa93dab85c2db
+    - mysql-8.4.8/LICENSE
+    sha256sum: af8310c81652fb98b26ed960c5db4a14b49408fe9e83e6edf5f8fbcc19211594
     spdx_exp: GPL-2.0-only AND (GPL-2.0-only WITH Universal-FOSS-exception-1.0 AND
       GPL-2.0-only AND GPL-1.0-or-later) AND GPL-2.0-only WITH Universal-FOSS-exception-1.0
       AND BSL-1.0 AND curl AND BSD-Attribution-HPND-disclaimer AND RSA-MD AND dtoa
@@ -20,8 +20,8 @@ sources:
       OR GPL-2.0-only) AND BSD-3-Clause)
   # we do not build kerberos auth plugin
   - file_paths:
-    - mysql-8.4.7/router/LICENSE.router
-    sha256sum: 3963e7c9d1b24e7e23292f8d4b450cb0f9956f11b89bbfe81d496aef73934038
+    - mysql-8.4.8/router/LICENSE.router
+    sha256sum: 8524653bed649c3ed95e633c73de7279546487bfc61444bd93d5d2f869fa2613
     spdx_exp: ''
   # we build with DWITH_ROUTER=OFF so this is not applicable
   spdx:
