@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.2.0136
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -16,6 +16,8 @@ Source1: vimrc
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: vim-CVE-2026-33412.patch
 
 BuildRequires:  ncurses-devel
 
@@ -182,6 +184,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Apr 01 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-2
+- Fix CVE-2026-33412
 * Wed Mar 11 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-1
 - Upgrade to 9.2.0136 to fix multiple CVEs
 * Mon Feb 23 2026 Dweep Advani <dweep.advani@broadcom.com> 9.1.1898-2
