@@ -1,0 +1,157 @@
+From 7dd293f11fa5955e6c1af7b33b101a3890d36df3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 25 Mar 2026 21:55:08 +0530
+Subject: [PATCH] system auth fix
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ defaults/main.yml     |  2 ++
+ tasks/photon.yml      | 62 ++++++++++++++++++++++++++++++++++++++-----
+ templates/system-auth | 10 ++++---
+ 3 files changed, 64 insertions(+), 10 deletions(-)
+
+diff --git a/defaults/main.yml b/defaults/main.yml
+index 7afd6d7..d5433b8 100644
+--- a/defaults/main.yml
++++ b/defaults/main.yml
+@@ -205,3 +205,5 @@ run_systemd_tmp_mount: true
+ run_kernel_fs_suid_dumpable: true
+ # PHTN-50-000247
+ run_pam_remove_nullok: true
++# PHTN-50-000267
++run_pam_add_deny_so: true
+diff --git a/tasks/photon.yml b/tasks/photon.yml
+index 3191d19..54e92ee 100644
+--- a/tasks/photon.yml
++++ b/tasks/photon.yml
+@@ -1293,7 +1293,10 @@
+ ###################################################################################################################################
+ - name: PHTN-50-000192 - Configure system-auth pam_faillock.so module
+   tags: [PHTN-50-000192]
+-  when: run_pam_add_faillock_so | bool
++  when:
++    - run_pam_add_faillock_so | bool
++    - run_pam_add_faildelay_so | bool
++    - run_pam_add_deny_so | bool
+   block:
+     - name: 'PHTN-50-000192 - Get current contents of {{ var_pam_system_auth_file }}'
+       ansible.builtin.slurp:
+@@ -1306,11 +1309,11 @@
+ 
+     - name: 'PHTN-50-000192 - Check to see if pam_faillock.so preauth rule exists in {{ var_pam_system_auth_file }} and is before the pam_unix.so rule'
+       ansible.builtin.set_fact:
+-        preauthsearch: "{{ systemauthcontent | regex_search('^auth\\s+(required|requisite)\\s+pam_faillock\\.so\\spreauth$\\nauth\\s+(required|requisite)\\s+pam_unix\\.so.*$', multiline=True) }}"
++        preauthsearch: "{{ systemauthcontent | regex_search('^auth\\s+(required|requisite)\\s+pam_faillock\\.so\\spreauth$\\nauth\\s+(sufficient)\\s+pam_unix\\.so.*$', multiline=True) }}"
+ 
+     - name: 'PHTN-50-000192 - Check to see if pam_faillock.so authfail rule exists in {{ var_pam_system_auth_file }} and is after the pam_unix.so rule'
+       ansible.builtin.set_fact:
+-        authfailsearch: "{{ systemauthcontent | regex_search('^auth\\s+(required|requisite)\\s+pam_unix\\.so.*$\\nauth\\s+(required|requisite|\\[default=die\\])\\s+pam_faillock\\.so\\sauthfail$', multiline=True) }}"
++        authfailsearch: "{{ systemauthcontent | regex_search('^auth\\s+(sufficient)\\s+pam_unix\\.so.*$\\nauth\\s+(required|requisite|\\[default=die\\])\\s+pam_faillock\\.so\\sauthfail$', multiline=True) }}"
+ 
+     - name: 'PHTN-50-000192 - Remove existing pam_faillock.so rules in {{ var_pam_system_auth_file }} if one not found or incorrect'
+       ansible.builtin.lineinfile:
+@@ -1320,11 +1323,19 @@
+       when:
+         - preauthsearch == "" or authfailsearch == ""
+ 
++    - name: Ensure pam_unix.so auth control is 'sufficient' in system-auth if it is 'required'
++      ansible.builtin.replace:
++        path: "{{ var_pam_system_auth_file }}"
++        regexp: '^(auth\s+)\brequired\b(\s+pam_unix\.so\b.*)$'
++        replace: '\1sufficient\2'
++      register: replaced_system_auth
++      changed_when: replaced_system_auth.changed
++
+     - name: PHTN-50-000192 - Add pam_faillock.so preauth to system-auth if it doesn't exist
+       community.general.pamd:
+         name: system-auth
+         type: auth
+-        control: required
++        control: sufficient
+         module_path: pam_unix.so
+         new_type: auth
+         new_control: required
+@@ -1336,7 +1347,7 @@
+       community.general.pamd:
+         name: system-auth
+         type: auth
+-        control: required
++        control: sufficient
+         module_path: pam_unix.so
+         new_type: auth
+         new_control: required
+@@ -1537,7 +1548,10 @@
+ ###################################################################################################################################
+ - name: PHTN-50-000206 - Configure system-auth pam_faildelay.so module
+   tags: [PHTN-50-000206]
+-  when: run_pam_add_faildelay_so | bool
++  when:
++    - run_pam_add_faillock_so | bool
++    - run_pam_add_faildelay_so | bool
++    - run_pam_add_deny_so | bool
+   block:
+     - name: PHTN-50-000206 - Check to see if pam_faildelay.so rule exists
+       ansible.builtin.shell: |
+@@ -1566,6 +1580,42 @@
+         line: auth       optional pam_faildelay.so delay=4000000
+         insertafter: '^auth\s+(required|requisite|\[default=die\])\s+pam_faillock\.so\s+authfail$'
+ 
++###################################################################################################################################
++- name: PHTN-50-000267 - Configure system-auth pam_deny.so module
++  tags: [PHTN-50-000267]
++  when:
++    - run_pam_add_faillock_so | bool
++    - run_pam_add_faildelay_so | bool
++    - run_pam_add_deny_so | bool
++  block:
++    - name: PHTN-50-000267 - Check to see if pam_deny.so rule exists
++      ansible.builtin.shell: |
++        set -o pipefail
++        grep -E '^auth\s+(required|requisite)\s+pam_deny\.so\b.*$' /etc/pam.d/system-auth
++      register: sysauthpamdeny
++      failed_when: sysauthpamdeny.rc == 2
++      changed_when: false
++
++    - name: PHTN-50-000267 - Remove existing pam_deny.so rule in system-auth if it is incorrect
++      community.general.pamd:
++        name: system-auth
++        type: auth
++        control: required
++        module_path: pam_deny.so
++        state: absent
++      when:
++        - sysauthpamdeny.stdout == ""
++
++    # Need to use lininfile instead of pam because of the placement this needs to go can't be dealt with by the ansible pam module
++    # This needs to be the last line
++    - name: PHTN-50-000267 - Add pam_deny.so to system-auth if it doesn't exist
++      ansible.builtin.lineinfile:
++        path: '{{ var_pam_system_auth_file }}'
++        state: present
++        regexp: '^#?\s*auth\s+(required|requisite|optional)\s+pam_deny\.so\b.*$'
++        line: auth       required pam_deny.so
++        insertafter: '^auth\s+(required|requisite|optional)\s+pam_faildelay\.so\b.*$'
++
+ ###################################################################################################################################
+ - name: PHTN-50-000207 - Configure sshd PermitEmptyPasswords
+   tags: [PHTN-50-000207, sshd]
+diff --git a/templates/system-auth b/templates/system-auth
+index 120c27e..d576877 100644
+--- a/templates/system-auth
++++ b/templates/system-auth
+@@ -1,5 +1,7 @@
+ # Begin /etc/pam.d/system-auth
+-
+-auth      required    pam_unix.so
+-
+-# End /etc/pam.d/system-auth
+\ No newline at end of file
++auth    required      pam_faillock.so preauth
++auth    sufficient    pam_unix.so                        # Exit if returns success
++auth    required      pam_faillock.so authfail           # Else, record failure
++auth    optional      pam_faildelay.so delay=4000000
++auth    required      pam_deny.so                        # For failed auths/pam_unix, convert pam_faillock's return value of ignore to login failed.
++# End /etc/pam.d/system-auth
+-- 
+2.53.0
+

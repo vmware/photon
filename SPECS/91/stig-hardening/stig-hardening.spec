@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        2.1
-Release:        6%{?dist}
+Release:        5.1%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -22,9 +22,8 @@ Source1: license.txt
 
 Patch0: fix-some-value-checks.patch
 Patch1: system-auth-fix.patch
-Patch2: fix-photon.yml-for-latest-audit-and-ansible.patch
 
-Requires: ansible >= 2.20.1
+Requires: ansible >= 2.14.2
 Requires: ansible-community-general
 Requires: ansible-posix
 Requires: sshpass
@@ -44,8 +43,8 @@ cp -a %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{nam
 %{_datadir}/ansible/
 
 %changelog
-* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-6
-- Fix conditions for ansible-2.20 and audit-4.x
+* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-5.1
+- Bump after moving to SPECS/91
 * Wed Mar 25 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-5
 - Fix system auth rules
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-4

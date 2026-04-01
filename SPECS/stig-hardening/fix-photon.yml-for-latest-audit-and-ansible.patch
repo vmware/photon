@@ -1,0 +1,45 @@
+From 1d71823d0e250192c732c81ca328cba2d25a010f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 1 Apr 2026 08:41:27 +0000
+Subject: [PATCH] fix photon.yml for latest audit and ansible
+
+autrace is removed in audit-4.x
+ansibel-2.20 has strict condition check valuation
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ tasks/photon.yml | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/tasks/photon.yml b/tasks/photon.yml
+index 54e92ee..2e7c18d 100644
+--- a/tasks/photon.yml
++++ b/tasks/photon.yml
+@@ -628,14 +628,14 @@
+       register: output
+       changed_when: output.rc == 0
+       when:
+-        - telnetinstalled.stdout | regex_search("netkit-telnet-0")
++        - telnetinstalled.stdout | regex_search("netkit-telnet-0") is not none
+ 
+     - name: PHTN-50-000040 - Remove telnet server
+       ansible.builtin.command: tdnf -y remove netkit-telnet-server
+       register: output
+       changed_when: output.rc == 0
+       when:
+-        - telnetinstalled.stdout | regex_search("netkit-telnet-server")
++        - telnetinstalled.stdout | regex_search("netkit-telnet-server") is not none
+ 
+ ###################################################################################################################################
+ - name: PHTN-50-000041 - Configure login.defs PASS_MIN_DAYS
+@@ -915,7 +915,6 @@
+         - {file: '/usr/sbin/auditd'}
+         - {file: '/usr/sbin/aureport'}
+         - {file: '/usr/sbin/ausearch'}
+-        - {file: '/usr/sbin/autrace'}
+       when:
+         - auditdinstalled.stdout != ""
+ 
+-- 
+2.43.7
+
