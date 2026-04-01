@@ -1,0 +1,34 @@
+sources:
+- archive: net-snmp-5.9.5.2.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 0a62a1d263437409cf50e20da7f82132cc3df9a7ecf9e1d57ac00285199617b168636e4a042cd564fcb1b8417883e618238ca252066b9e6e77c4c9030026ff30
+  skip_validation: false
+  version: "5.9.5.2"
+  name: net-snmp-5.9.5.2
+  url: https://github.com/net-snmp/net-snmp/archive/refs/tags/v5.9.5.2.tar.gz
+  repo_url: https://github.com/net-snmp/net-snmp
+  commit_id: 319bbd0bb36547992c0e1302fef278c6f49d0c80
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Net-SNMP is a suite of applications used to implement
+        SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. '
+      home_page: http://net-snmp.sourceforge.net
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND SSLeay-standalone
+        AND OpenSSL-standalone AND ISC AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND BSD-4-Clause-Shortened AND MIT-CMU AND MIT AND
+        BSD-3-Clause AND snprintf AND GPL-3.0-or-later WITH Libtool-exception AND
+        GPL-3.0-or-later AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND APSL-1.1 AND X11
+        AND OpenSSL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND SSLeay-standalone
+        AND OpenSSL-standalone AND ISC AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later
+        WITH Libtool-exception AND BSD-4-Clause-Shortened AND MIT-CMU AND MIT AND
+        BSD-3-Clause AND snprintf AND GPL-3.0-or-later WITH Libtool-exception AND
+        GPL-3.0-or-later AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND APSL-1.1 AND X11
+        AND OpenSSL
+      short_summary: Net-SNMP is a suite of applications used to implement SNMP v1,
+        SNMP v2c and SNMP v3 using both IPv4 and IPv6.
+      supplier: 'Organization: Broadcom, Inc.'

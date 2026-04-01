@@ -3,7 +3,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.6
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -126,6 +126,8 @@ Python bindings.
 %{python3_sitelib}
 
 %changelog
+* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-17
+- Bump version as a part of rpm upgrade
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.3.6-16
 - Add python3-setuptools in BuildRequires for python3.14
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-15

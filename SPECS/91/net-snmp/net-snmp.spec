@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %global __requires_exclude perl\\(.*\\)
 
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.9.5.2
-Release:        2%{?dist}
+Release:        1.1%{?dist}
 URL:            http://net-snmp.sourceforge.net
 Group:          Productivity/Networking/Other
 Vendor:         VMware, Inc.
@@ -132,8 +132,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
-* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.9.5.2-2
-- Bump version as a part of rpm upgrade
+* Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.9.5.2-1.1
+- Split after moving to SPECS/91
 * Tue Dec 30 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.9.5.2-1
 - Update to 5.9.5.2, fixes CVE-2025-68615
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 5.9.3-4
