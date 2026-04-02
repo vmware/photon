@@ -1,11 +1,12 @@
 %global build_if %{photon_subrelease} <= 91
+%global security_hardening nofortify3
 
 %global __requires_exclude perl\\(.*\\)
 
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.9.5.2
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 URL:            http://net-snmp.sourceforge.net
 Group:          Productivity/Networking/Other
 Vendor:         VMware, Inc.
@@ -132,6 +133,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Thu Apr 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.9.5.2-1.2
+- Disable fortify3 gcc hardening
 * Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.9.5.2-1.1
 - Split after moving to SPECS/91
 * Tue Dec 30 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.9.5.2-1
