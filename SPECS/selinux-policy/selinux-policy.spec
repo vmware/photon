@@ -5,7 +5,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        36.5
-Release:        14%{?dist}
+Release:        15%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -63,6 +63,10 @@ Patch34: 0035-allow-alg_socket-for-sshd.patch
 Patch35: 0036-authlogin.te-fix-pwhistory-denial.patch
 Patch36: 0037-systemd-init_t-denial.patch
 Patch37: 0038-Add-motd-rules-to-fix-denials.patch
+Patch38: 0039-selinuxutil-restorecon-setfiles_mac_t-transition-for-unconfined_t.patch
+Patch39: 0040-ssh-sshd_t-chkpwd_t-noatsecure-rlimitinh-siginh.patch
+Patch40: 0041-corenetwork-syslog_tls-add-tcp-1514.patch
+Patch41: 0042-domain-use-openssl-alg-socket-interface.patch
 
 BuildRequires: checkpolicy
 BuildRequires: python3-devel
@@ -143,6 +147,12 @@ exit 0
 %{_datadir}/selinux
 
 %changelog
+* Mon Apr 06 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 36.5-15
+- Fix restorecon/fixfiles mac_admin denial: domain transition unconfined_t->setfiles_mac_t
+  with range_transition s0 and system_r role association outside optional_policy
+- Fix sshd_t -> chkpwd_t process transition: add noatsecure/rlimitinh/siginh
+- Add a macro to allow IF_ALG to jitterentropy via openssl library
+- Add tcp port 1514 to syslog_tls_port_t (for vCenter)
 * Tue Mar 24 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 36.5-14
 - Add requires: rpm-plugin-selinux
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 36.5-13

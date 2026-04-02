@@ -1,0 +1,34 @@
+From a03df65a6bb75e37b7ec6b020e76f3f2e57dfe36 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Mon, 6 Apr 2026 19:48:33 +0000
+Subject: [PATCH] corenetwork: label TCP 1514 as syslog_tls port
+
+vCenter rsyslog may listen on TCP 1514 for TLS syslog.  Without a portcon
+the port stays unreserved_port_t and syslogd_t is denied name_bind:
+
+  avc: denied { name_bind } comm="rsyslogd" src=1514
+    scontext=syslogd_t tcontext=unreserved_port_t tclass=tcp_socket
+
+Add tcp,1514 to the syslog_tls network_port definition (same type as
+6514/tcp used for syslog over TLS).
+
+---
+ policy/modules/kernel/corenetwork.te.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/policy/modules/kernel/corenetwork.te.in b/policy/modules/kernel/corenetwork.te.in
+index f873191..e2de475 100644
+--- a/policy/modules/kernel/corenetwork.te.in
++++ b/policy/modules/kernel/corenetwork.te.in
+@@ -354,7 +354,7 @@ network_port(swat, tcp,901,s0)
+ network_port(swift, tcp,6200-6203,s0)
+ network_port(sype_transport, tcp,9911,s0, udp,9911,s0)
+ network_port(syslogd, udp,514,s0, udp,601,s0, tcp,601,s0, tcp,20514,s0, udp,20514,s0)
+-network_port(syslog_tls, tcp,6514,s0, udp,6514,s0, tcp,10514,s0, udp,10514,s0)
++network_port(syslog_tls, tcp,1514,s0, tcp,6514,s0, udp,6514,s0, tcp,10514,s0, udp,10514,s0)
+ network_port(statsd, udp,8125,s0)
+ network_port(tangd, tcp,7406,s0)
+ network_port(tcs, tcp, 30003, s0)
+-- 
+2.43.7
+

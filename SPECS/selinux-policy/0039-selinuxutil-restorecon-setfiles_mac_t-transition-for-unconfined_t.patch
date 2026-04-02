@@ -1,0 +1,96 @@
+From de04e982acc238f87fae34b9e96bfbc9b6781e60 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Fri, 3 Apr 2026 00:01:19 +0000
+Subject: [PATCH] unconfineduser: add setfiles_mac_t domain transition for
+ unconfined_t on Photon OS
+
+On Photon OS restorecon/fixfiles/setfiles need mac_admin (CAP_MAC_ADMIN,
+capability2 bit 33) to write the security.selinux xattr when relabeling
+files.  Without the domain transition the process stays in unconfined_t,
+which lacks mac_admin, and every setxattr(2) call is denied:
+
+  avc: denied { mac_admin } for comm="restorecon" capability=33
+    scontext=system_u:system_r:unconfined_t:s0-s0:c0.c1023
+    tcontext=system_u:system_r:unconfined_t:s0-s0:c0.c1023
+    tclass=capability2 permissive=0
+
+Add seutil_domtrans_setfiles_mac(unconfined_t) so that executing
+setfiles_exec_t transitions unconfined_t into setfiles_mac_t, which
+already carries mac_admin.
+
+Also add range_transition to force the new domain to run at s0.
+unconfined_t runs at s0-s0:c0.c1023 and the kernel rejects the naively
+computed context setfiles_mac_t:s0-s0:c0.c1023 as invalid under the MCS
+constraints.  Forcing the range to s0 yields the valid context
+setfiles_mac_t:s0.  setfiles_mac_t carries domain_obj_id_change_exemption
+so it can relabel files at any MCS level despite running at s0.
+
+Also associate system_r with setfiles_mac_t outside optional_policy{}.
+The role$2types statement inside optional_policy{} is silently dropped
+by some checkpolicy versions, so the association must be declared at the
+top-level of the module to be reliably compiled in.  Without it the
+kernel rejects the computed context system_u:system_r:setfiles_mac_t:s0
+as invalid, causing execve() to fail with EACCES:
+  op=security_compute_sid
+  invalid_context="system_u:system_r:setfiles_mac_t:s0"
+
+Made-with: Cursor
+---
+ policy/modules/roles/unconfineduser.te | 41 ++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/policy/modules/roles/unconfineduser.te b/policy/modules/roles/unconfineduser.te
+index 0f3f0ad..18dc8fc 100644
+--- a/policy/modules/roles/unconfineduser.te
++++ b/policy/modules/roles/unconfineduser.te
+@@ -201,6 +201,47 @@ ifdef(`distro_gentoo',`
+ 	seutil_init_script_run_runinit(unconfined_t, unconfined_r)
+ ')
+ 
++ifdef(`distro_photon',`
++	# On Photon OS, root interactive sessions run in unconfined_t (no role
++	# switching to sysadm_t is required).  Add the domain transition so that
++	# restorecon/fixfiles/setfiles enters setfiles_mac_t, which holds
++	# mac_admin (CAP_MAC_ADMIN, capability2 bit 33) needed to write the
++	# security.selinux xattr during a full relabel.
++	#
++	# Without this transition the process stays in unconfined_t, which lacks
++	# mac_admin, and every setxattr(2) call is denied:
++	#   avc: denied { mac_admin } for comm="restorecon" capability=33
++	#     scontext=system_u:system_r:unconfined_t:s0-s0:c0.c1023
++	#     tcontext=system_u:system_r:unconfined_t:s0-s0:c0.c1023
++	#     tclass=capability2 permissive=0
++	#
++	# seutil_run_setfiles_mac() extends seutil_domtrans_setfiles_mac() by
++	# also associating system_r with setfiles_mac_t.  Without the role
++	# association the kernel rejects the computed context as invalid even
++	# with the correct type and MCS level:
++	#   op=security_compute_sid
++	#   invalid_context="system_u:system_r:setfiles_mac_t:s0"
++	#
++	# Note: role $2 types ... inside optional_policy{} is silently dropped
++	# by some checkpolicy versions.  The role association must be declared
++	# outside optional_policy to be reliably compiled into the module.
++	#
++	# range_transition is also required: unconfined_t runs at the full MCS
++	# range s0-s0:c0.c1023 and without it the kernel computes the context
++	# setfiles_mac_t:s0-s0:c0.c1023 which is invalid under the MCS
++	# constraints.  Forcing the range to s0 yields setfiles_mac_t:s0.
++	# setfiles_mac_t carries domain_obj_id_change_exemption so it can
++	# relabel files at any MCS level despite running at s0.
++	optional_policy(`
++		seutil_domtrans_setfiles_mac(unconfined_t)
++		range_transition unconfined_t setfiles_exec_t:process s0;
++	')
++	gen_require(`
++		type setfiles_mac_t;
++	')
++	role system_r types setfiles_mac_t;
++')
++
+ optional_policy(`
+ 	accountsd_dbus_chat(unconfined_t)
+ ')
+-- 
+2.43.7
+
