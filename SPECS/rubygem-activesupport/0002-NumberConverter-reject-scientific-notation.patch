@@ -1,0 +1,36 @@
+From 54868a2941147cca4c61526defa43fb0fb6a58c0 Mon Sep 17 00:00:00 2001
+From: Jean Boussier <jean.boussier@gmail.com>
+Date: Wed, 11 Jun 2025 17:48:31 +0200
+Subject: [PATCH 2/2] NumberConverter: reject scientific notation
+
+BigDecimal support scientific notation, which allow expressing
+extremly large numbers with just a few bytes of input.
+
+This could be exploited to DOS a service if somehow user input is
+passed to number converter.
+
+[CVE-2026-33176]
+[GHSA-2j26-frm8-cmj9]
+
+[Shivani: Removed test file changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ lib/active_support/number_helper/number_converter.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/active_support/number_helper/number_converter.rb b/lib/active_support/number_helper/number_converter.rb
+index 3f955b5..74d81de 100644
+--- a/lib/active_support/number_helper/number_converter.rb
++++ b/lib/active_support/number_helper/number_converter.rb
+@@ -180,7 +180,7 @@ module ActiveSupport
+           when Float, Rational
+             number.to_d(0)
+           else
+-            BigDecimal(number, exception: false)
++            BigDecimal(number, exception: false) unless number.to_s.match?(/[de]/i)
+           end
+         end
+     end
+-- 
+2.43.7
+

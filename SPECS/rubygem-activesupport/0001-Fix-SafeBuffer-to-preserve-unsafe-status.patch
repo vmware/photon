@@ -1,0 +1,34 @@
+From fef1915fd848e59c1753b1d297cfd767df60c3e3 Mon Sep 17 00:00:00 2001
+From: Jean Boussier <jean.boussier@gmail.com>
+Date: Wed, 4 Mar 2026 10:02:24 +0100
+Subject: [PATCH] Fix `SafeBuffer#%` to preserve unsafe status
+
+Formatting an unsafe buffer should produce an unsafe buffer.
+
+[CVE-2026-33170]
+[GHSA-89vf-4333-qx8v]
+
+[Shivani: Removed test file changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ lib/active_support/core_ext/string/output_safety.rb | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/lib/active_support/core_ext/string/output_safety.rb b/lib/active_support/core_ext/string/output_safety.rb
+index 74b187e..baf3f8b 100644
+--- a/lib/active_support/core_ext/string/output_safety.rb
++++ b/lib/active_support/core_ext/string/output_safety.rb
+@@ -262,7 +262,9 @@ module ActiveSupport # :nodoc:
+         escaped_args = Array(args).map { |arg| explicit_html_escape_interpolated_argument(arg) }
+       end
+ 
+-      self.class.new(super(escaped_args))
++      new_safe_buffer = self.class.new(super(escaped_args))
++      new_safe_buffer.instance_variable_set(:@html_safe, @html_safe)
++      new_safe_buffer
+     end
+ 
+     def html_safe?
+-- 
+2.43.7
+

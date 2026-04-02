@@ -4,7 +4,7 @@
 
 Name: rubygem-activesupport
 Version:        7.0.8.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -15,6 +15,14 @@ Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# Fix CVE-2026-33169
+Patch0:         0001-Improve-performance-of-NumberToDelimitedConverter.patch
+# Fix CVE-2026-33170
+Patch1:         0001-Fix-SafeBuffer-to-preserve-unsafe-status.patch
+# Fix CVE-2026-33176
+Patch2:         0001-NumberHelper-handle-very-large-numbers.patch
+Patch3:         0002-NumberConverter-reject-scientific-notation.patch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-concurrent-ruby
@@ -33,6 +41,7 @@ time zones, and testing.
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -45,6 +54,8 @@ time zones, and testing.
 %{gemdir}
 
 %changelog
+* Wed Apr 01 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.7-2
+- Fix CVE-2026-33176, CVE-2026-33170 and CVE-2026-33169
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.7-1
 - Upgrade to 7.0.8.7
 * Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.5-1
