@@ -1,0 +1,19 @@
+From 8e181bfca6c5c79056a6a10a2bab7ce22fca7b62 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Thu, 26 Mar 2026 18:24:27 -0500
+Subject: [PATCH 69/69] Linux 6.1.167-rt62 REBASE
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 8cdeb45db6e2..40d81d8e61b6 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt59
++-rt62
+--
+2.53.0

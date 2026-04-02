@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.166
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.167
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -167,8 +167,6 @@ Patch8: 6.0-Discard-.note.gnu.property-sections-in-generic-NOTES.patch
 Patch9:  0001-kbuild-Makefile-Introduce-macros-to-distinguish-Phot.patch
 Patch10: 0002-linux-Makefile-Add-kernel-flavor-info-to-the-generat.patch
 
-# ttyXRUSB support
-Patch11: usb-acm-exclude-exar-usb-serial-ports-nxt.patch
 #HyperV patches
 Patch12: vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
@@ -354,17 +352,9 @@ Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
 # Fix CVE-2025-37750
 Patch187: 0001-smb-client-fix-UAF-in-decryption-with-multichannel.patch
 
-# Fix CVE-2025-40135
-Patch190: 0001-ipv6-use-RCU-in-ip6_xmit.patch
-
 # Fix CVE-2025-2312
 Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
 
-#Fix CVE-2025-38201
-Patch192: 0001-netfilter-nft_set_pipapo-do-not-rely-on-ZERO_SIZE_PT.patch
-
-# fix CVE-2025-38704
-Patch195: 0001-rcu-nocb-Fix-possible-invalid-rdp-s-nocb_cb_kthread-.patch
 # Fix CVE-2025-39744
 Patch196: 0001-rcu-Fix-rcu_read_unlock-deadloop-due-to-IRQ-work.patch
 Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
@@ -407,8 +397,6 @@ Patch217: 0001-smb-client-fix-potential-UAF-in-smb2_close_cached_fi.patch
 Patch218: 0001-cifs-fix-memory-leak-in-smb3_fs_context_parse_param-.patch
 # CVE-2025-71068
 Patch220: 0001-svcrdma-bound-check-rq_pages-index-in-inline-path.patch
-# CVE-2023-53510
-Patch224: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
 # Fix CVE-2025-68353
 Patch225: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 # CVE-2023-54271
@@ -429,8 +417,7 @@ Patch233: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 
 # Fix CVE-2026-23268
 Patch234: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
-# Fix CVE-2026-23277
-Patch235: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
+
 # CVE-2026-23407
 Patch236: 0001-apparmor-fix-missing-bounds-check-on-DEFAULT-table-in-verify.patch
 # CVE-2026-23410
@@ -1195,6 +1182,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Apr 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-1
+- Update to version 6.1.167
+- Drop usb-acm-exclude-exar-usb-serial-ports-nxt.patch,
+- cdc-acm will handle the device as a fallback
+- Drop CVE-2025-40135, CVE-2025-38201, CVE-2025-38704, CVE-2023-53510,
+- CVE-2026-23277: addressed in upstream 6.1.167
 * Sat Apr 04 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.166-3
 - Security fixes: CVE-2026-23407, CVE-2026-23408, CVE-2026-23410
 - CVE-2026-23411

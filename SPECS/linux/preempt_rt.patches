@@ -67,4 +67,4 @@ Patch365: 0065-net-fix-mis-merge-from-stable-in-drivers-net-vrf.c.patch
 Patch366: 0066-Linux-6.1.134-rt51-REBASE.patch
 Patch367: 0067-Linux-6.1.163-rt59-REBASE.patch
 Patch368: 0068-ipv6-fix-a-BUG-in-rt6_get_pcpu_route-under-PREEMPT_R.patch
-Patch369: 0069-Linux-6.1.166-rt61-REBASE.patch
+Patch370: 0069-Linux-6.1.167-rt62-REBASE.patch

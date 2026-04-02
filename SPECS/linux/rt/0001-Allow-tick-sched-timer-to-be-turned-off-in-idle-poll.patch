@@ -1,6 +1,6 @@
 From e42af578d6af4bf790be3174f0b3adb17e68918a Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
-Date: Wed, 26 May 2021 19:09:32 -0700
+Date: Wed, 26 May 2021 19:09:32 -070
 Subject: [PATCH] Allow tick sched timer to be turned off in idle poll
 
 If the tick timer is enabled in idle poll, it is possible that the
@@ -11,10 +11,10 @@ This scenario can be very cosly in a virtualized environment.
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
-index 44a17366c8ec..bb71391164c2 100644
+index f8d32e166..abd4afe6b 100644
 --- a/kernel/sched/idle.c
 +++ b/kernel/sched/idle.c
-@@ -256,9 +256,12 @@ static void do_idle(void)
+@@ -316,9 +316,12 @@ static void do_idle(void)
  		 * broadcast device expired for us, we don't want to go deep
  		 * idle as we know that the IPI is going to arrive right away.
  		 */
@@ -26,8 +26,8 @@ index 44a17366c8ec..bb71391164c2 100644
 +			tick_nohz_idle_stop_tick();
 +			cpu_idle_poll();
  		} else {
- 			cpuidle_idle_call();
+ 			cpuidle_idle_call(got_tick);
  		}
---
-2.17.1
+-- 
+2.43.7
 
