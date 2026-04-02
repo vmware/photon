@@ -1,3 +1,6 @@
+# Let perl pick its default fotify level
+%global security_hardening nofortify
+
 %global __provides_exclude %{?__provides_exclude:%__provides_exclude|}^perl\\((VMS|Win32|BSD::|DB\\)$)
 # unicore::Name - it's needed by perl, maybe problem of rpm
 # FCGI is external dependency after install of perl-CGI, remove it during RC releases
@@ -9,7 +12,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.40.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -106,6 +109,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Thu Apr 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.40.2-2
+- Disable gcc fortify
 * Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 5.40.2-1
 - Upgrade perl to 5.40.2
 * Wed Oct 08 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 5.36.0-11
