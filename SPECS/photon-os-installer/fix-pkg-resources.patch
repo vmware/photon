@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+Date: Mon, 30 Mar 2026 20:00:00 +0200
+Subject: [PATCH] Replace deprecated pkg_resources with importlib.metadata
+
+Python 3.14 deprecates pkg_resources. Use importlib.metadata.version()
+instead, matching the fix already present in upstream master.
+
+---
+ photon_installer/__init__.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/photon_installer/__init__.py b/photon_installer/__init__.py
+--- a/photon_installer/__init__.py
++++ b/photon_installer/__init__.py
+@@ -5,7 +5,7 @@
+ 
+ import sys
+ import glob
+-import pkg_resources
++from importlib.metadata import version as _get_version
+ from os.path import dirname, basename, isfile, join
+ 
+ 
+@@ -13,4 +13,4 @@ modules = glob.glob(join(dirname(__file__), "*.py"))
+ __all__ = [ basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')]
+ sys.path.append(dirname(__file__))
+ 
+-__version__ = pkg_resources.get_distribution(__name__).version
++__version__ = _get_version(__name__)
