@@ -10,7 +10,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       3.9.1
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -28,6 +28,7 @@ Source3: license.txt
 Source4:       gradle-wrapper-8.10.2-jar.tar.gz
 
 Patch0:     0001-Use-proxy-if-available.patch
+Patch1:     CVE-2024-29371-bump-jose4j.patch
 
 Provides:   kafka
 Provides:   kafka-server
@@ -131,6 +132,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Fri Apr 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.9.1-7
+- Fixes CVE-2024-29371,bump jose4j to 0.9.6
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.9.1-6
 - Add missing shadow dependency for user creation
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.1-5
