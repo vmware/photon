@@ -2,8 +2,8 @@
 
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        24.14.0
-Release:        2%{?dist}
+Version:        24.14.1
+Release:        1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -105,6 +105,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Fri Apr 03 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.14.1-1
+- Upgrade to 24.14.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.14.0-2
 - Bump version as a part of python3.14 upgrade
 * Thu Mar 05 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.14.0-1
