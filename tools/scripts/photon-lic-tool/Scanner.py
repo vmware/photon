@@ -530,9 +530,17 @@ class Scanner:
                 err_exit(f"ERROR: Extraction of {input_file} failed!")
 
             if os.path.exists(f"{input_file}-extract"):
-                scan_dir = (
-                    f"{common.ph_scan_dir}/{os.path.basename(input_file)}-extract"
-                )
+                # For .gem files, file_paths in config.yaml are expressed
+                # relative to the parent of the gem-extract directory (e.g.
+                # "nokogiri-1.18.8.gem-extract/data.tar.gz-extract/..."),
+                # so keep scan_dir as ph_scan_dir rather than descending
+                # into the gem-extract subdirectory.
+                if path.endswith(".gem"):
+                    scan_dir = common.ph_scan_dir
+                else:
+                    scan_dir = (
+                        f"{common.ph_scan_dir}/{os.path.basename(input_file)}-extract"
+                    )
             else:
                 # if not an archive, just use the whole default scan dir
                 scan_dir = common.ph_scan_dir
