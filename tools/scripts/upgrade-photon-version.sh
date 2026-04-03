@@ -34,12 +34,6 @@ for specFile in ${SPECS[@]}; do
   ./tools/scripts/lazyspec.pl --message "Update to v${NEW_VER}" $fn
 done
 
-fn="SPECS/rpm-ostree/mkostreerepo"
-echo -e "\nUpdating $fn ..."
-sed -i "s/PHOTON_VERSION=.*/PHOTON_VERSION=\"${NEW_VER}\"/g" $fn
-fn="SPECS/rpm-ostree/rpm-ostree.spec"
-./tools/scripts/lazyspec.pl --message "Update dist tag" $fn
-
 echo -e "\nUpdating dockerfiles under support/dockerfiles/k8s-docker-images ..."
 sed -i "s/k8s-base-image:${OLD_VER}/k8s-base-image:${NEW_VER}/g" support/dockerfiles/k8s-docker-images/Dockerfile.*
 

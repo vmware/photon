@@ -62,7 +62,6 @@ targetDict = {
         "core-toolchain",
         "tool-chain",
         "check-packages",
-        "ostree-repo",
         "generate-yaml-files",
         "create-repo",
         "distributed-build",
@@ -694,37 +693,6 @@ class RpmBuildTarget:
             ]
         )
 
-    @staticmethod
-    def ostree_repo():
-        if check_prerequesite["ostree-repo"]:
-            return
-
-        ph_docker_img = configdict["photon-build-param"]["photon-docker-image"]
-        if not os.path.isfile(
-            os.path.join(Build_Config.stagePath, "ostree-repo.tar.gz")
-        ):
-            print("Creating OSTree repo from local RPMs in ostree-repo.tar.gz...")
-            RpmBuildTarget.create_repo()
-            runCmd(
-                [
-                    os.path.join(
-                        photonDir,
-                        "support",
-                        "image-builder",
-                        "ostree-tools",
-                        "make-ostree-image.sh",
-                    ),
-                    photonDir,
-                    Build_Config.stagePath,
-                    constants.releaseVersion,
-                    ph_docker_img,
-                ]
-            )
-        else:
-            print("OSTree repo already exists...")
-
-        check_prerequesite["ostree-repo"] = True
-
     def packages(self):
         if check_prerequesite["packages"]:
             return
@@ -1251,8 +1219,6 @@ class BuildImage:
 
         RpmBuildTarget.create_repo()
 
-        if self.img_name not in ["minimal-iso", "basic-iso"]:
-            RpmBuildTarget.ostree_repo()
         self.generated_data_path = Build_Config.generatedDataPath
 
         print("Building Full ISO...")
@@ -1266,11 +1232,6 @@ class BuildImage:
             return
 
         BuildEnvironmentSetup.photon_stage()
-
-        local_build = not configdict["photon-build-param"]["start-scheduler-server"]
-
-        if local_build:
-            RpmBuildTarget.ostree_repo()
 
         print(f"Building {self.img_name} image")
         self.run_poi()
