@@ -70,6 +70,10 @@ else
   expected_pkg_list+=(libcap)
 fi
 
+if rpm --root "${SYSROOT}" -q bash-bin; then
+  expected_pkg_list+=(bash-bin)
+fi
+
 actual_pkg_count=${#actual_pkg_list[@]}
 expected_pkg_count=${#expected_pkg_list[@]}
 
