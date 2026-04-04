@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.166
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -431,6 +431,14 @@ Patch233: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 Patch234: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
 # Fix CVE-2026-23277
 Patch235: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
+# CVE-2026-23407
+Patch236: 0001-apparmor-fix-missing-bounds-check-on-DEFAULT-table-in-verify.patch
+# CVE-2026-23410
+Patch237: 0001-apparmor-fix-race-on-rawdata-dereference.patch
+# CVE-2026-23408
+Patch238: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
+# CVE-2026-23411
+Patch239: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1187,6 +1195,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Apr 04 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.166-3
+- Security fixes: CVE-2026-23407, CVE-2026-23408, CVE-2026-23410
+- CVE-2026-23411
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.166-2
 - Fix CVE-2026-23268, CVE-2026-23277
 * Tue Mar 10 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.166-1
