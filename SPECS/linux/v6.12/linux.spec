@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.78
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -261,6 +261,27 @@ Patch213: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
 Patch221: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
 Patch222: 0002-perf-record-add-options-to-off-cpu.patch
 Patch223: 0003-perf-display-off-cpu-samples.patch
+
+# tools: fix for new glibc
+Patch230: 0001-perf-disasm-Constify-variables-storing-the-result-of.patch
+Patch231: 0002-perf-metricgroup-Constify-variables-storing-the-resu.patch
+Patch232: 0003-perf-strlist-Don-t-write-to-const-memory.patch
+Patch233: 0004-perf-session-Don-t-write-to-memory-pointed-to-a-cons.patch
+Patch234: 0005-perf-trace-event-Constify-variables-storing-the-resu.patch
+Patch235: 0006-perf-units-Constify-variables-storing-the-result-of-.patch
+Patch236: 0007-perf-time-utils-Constify-variables-storing-the-resul.patch
+Patch237: 0008-perf-demangle-java-Constify-variables-storing-the-re.patch
+Patch238: 0009-perf-bpf-event-Constify-variables-storing-the-result.patch
+Patch239: 0010-perf-jitdump-Constify-variables-storing-the-result-o.patch
+Patch240: 0011-perf-list-Remove-unused-sep-variable.patch
+Patch241: 0012-perf-diff-Constify-strchr-return-variables.patch
+Patch242: 0013-perf-tools-Use-const-for-variables-receiving-str-str.patch
+Patch243: 0014-perf-trace-Don-t-change-const-char-strings.patch
+Patch244: 0015-perf-list-Don-t-write-to-const-memory.patch
+Patch245: 0016-perf-trace-Deal-with-compiler-const-checks.patch
+Patch246: 0017-perf-print-events-Fix-compiler-issues-with-newer-gil.patch
+Patch247: 0018-perf-list-Signal-changing-const-memory-is-ok.patch
+Patch248: 0019-perf-tools-Remove-unused-color_fwrite_lines.patch
 
 %ifarch x86_64
 # AWS: [300..339]
@@ -573,7 +594,7 @@ The kernel fips-canister
 %autopatch -p1 -m200 -M219
 %endif
 
-%autopatch -p1 -m221 -M223
+%autopatch -p1 -m221 -M248
 
 %ifarch x86_64
 # AWS x86
@@ -952,6 +973,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sun Apr 05 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.78-2
+- Fix linux-tools build with newer glibc
 * Thu Mar 26 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.78-1
 - Update to version 6.12.78
 * Mon Mar 16 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.69-7
