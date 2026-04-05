@@ -1,0 +1,42 @@
+From c15fe01340729c9aaf55a581d6ef170113a9e6d4 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Sun, 5 Apr 2026 17:27:43 +0000
+Subject: [PATCH 11/19] perf list: Remove unused 'sep' variable
+
+It is just being set to the return of strchr() but never used, just
+ditch it and with it get rid of a warning about it not being const on
+fedora 44.
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Link: https://lore.kernel.org/r/20251211221756.96294-2-acme@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ tools/perf/builtin-list.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/perf/builtin-list.c b/tools/perf/builtin-list.c
+index c5331721d..c39edcb81 100644
+--- a/tools/perf/builtin-list.c
++++ b/tools/perf/builtin-list.c
+@@ -604,7 +604,7 @@ int cmd_list(int argc, const char **argv)
+ 	}
+ 
+ 	for (i = 0; i < argc; ++i) {
+-		char *sep, *s;
++		char *s;
+ 
+ 		if (strcmp(argv[i], "tracepoint") == 0)
+ 			print_tracepoint_events(&print_cb, ps);
+@@ -638,7 +638,7 @@ int cmd_list(int argc, const char **argv)
+ 		else if (strcmp(argv[i], "pfm") == 0)
+ 			print_libpfm_events(&print_cb, ps);
+ #endif
+-		else if ((sep = strchr(argv[i], ':')) != NULL) {
++		else if ((strchr(argv[i], ':')) != NULL) {
+ 			char *old_pmu_glob = default_ps.pmu_glob;
+ 
+ 			default_ps.event_glob = strdup(argv[i]);
+-- 
+2.43.7
+
