@@ -1,22 +1,29 @@
 sources:
-- archive: c-ares-1.19.1.tar.gz
-  archive_sha512sum: 466a94efda626e815a6ef7a890637056339f883d549ea6055e289fd8cd2391130e5682c905c0fb3bd7e955af7f6deb793562c170eb0ee066a4a62085a82ba470
-  skip_validation: true
+- archive: c-ares-1.34.6.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 826eecdb40942caf75da982b9ca57fbe7c3e7c23af43a908683c7c1523c46b06ebac68405c26db8bf4c8b0774ca415666866249a3bde663a71c278f4ec7b1827
+  name: c-ares-1.34.6
+  version: 1.34.6
+  url: https://github.com/c-ares/c-ares/releases/download/v1.34.6/c-ares-1.34.6.tar.gz
+  repo_url: https://github.com/c-ares/c-ares
+  commit_id: c6ada90a042e2cf150a3885aef80dd039d01b460
+  skip_list: []
+  missing: ['appveyor.yml', 'ltversion.m4', 'libtool.m4', 'RELEASE-PROCEDURE.md', '.gitignore', 'README.md', 'Makefile.in', 'GIT-INFO', '.cirrus.yml', 'LICENSES', 'ltsugar.m4', 'lt~obsolete.m4', 'update_autoconf_archive.sh', 'ares_build.h.dist', 'FUZZING.md', 'sonar-project.properties', 'aminclude_static.am', 'ares_build.h', 'ltoptions.m4', '.gitattributes', 'configure', 'FEATURES.md', '.clang-format', '.reuse', 'config', '.github', 'ci', 'aclocal.m4', 'ax_cxx_compile_stdcxx_14.m4', 'ares_config.h.in']
   spdx:
     package:
       detailed_description: 'c-ares is a C library that performs DNS requests and
         name resolves asynchronously. c-ares is a fork of the library named ''ares'',
         written by Greg Hudson at MIT. '
-      home_page: http://c-ares.haxx.se/
-      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND MIT AND
-        FSFULLR AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.1-or-later
-        AND ISC AND FSFUL AND X11 AND FSFULLRWD
-      license_declared: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND MIT AND FSFULLR
-        AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-2.0-only AND LGPL-2.1-or-later
-        AND ISC AND FSFUL AND X11 AND FSFULLRWD
+      home_page: https://c-ares.org/
+      license_concluded: MIT AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-3-Clause AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND FSFAP AND NTP AND LGPL-2.1-or-later AND FSFUL AND GPL-2.0-or-later AND
+        FSFULLR AND FSFULLRWD AND GPL-2.0-only
+      license_declared: MIT AND X11 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND BSD-3-Clause AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Libtool-exception AND GPL-3.0-or-later WITH Autoconf-exception-2.0
+        AND FSFAP AND NTP AND LGPL-2.1-or-later AND FSFUL AND GPL-2.0-or-later AND
+        FSFULLR AND FSFULLRWD AND GPL-2.0-only
       short_summary: A library that performs asynchronous DNS operations
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,20 +1,22 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
-Version:        1.34.6
-Release:        1%{?dist}
+Version:        1.19.1
+Release:        3.1%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            https://c-ares.org/
-Source0:        https://github.com/c-ares/c-ares/releases/download/v%{version}/%{name}-%{version}.tar.gz
+URL:            http://c-ares.haxx.se/
+Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+Patch0:         CVE-2024-25629.patch
 
-BuildRequires:  cmake
-BuildRequires:  ninja-build
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
 
 %description
 c-ares is a C library that performs DNS requests and name resolves
@@ -31,28 +33,29 @@ Requires: pkg-config
 This package contains the header files and libraries needed to
 compile applications or shared objects that use c-ares.
 
-%package doc
-Summary: Doc amd man page files for c-ares
-Conflicts: %{name} < 1.34.6-1
-
-%description doc
-This package contains doc files and man pages for c-ares.
-
 %prep
 %autosetup -p1
+f=CHANGES ; iconv -f iso-8859-1 -t utf-8 $f -o $f.utf8 ; mv $f.utf8 $f
 
 %build
-%{cmake} -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCARES_SHARED=ON \
-    -DCARES_STATIC=OFF \
-    -DCARES_BUILD_TESTS=OFF \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir}
-
-%{cmake_build}
+autoreconf -if
+%configure \
+  --enable-shared \
+  --disable-static \
+  --disable-dependency-tracking
+%{__make} %{?_smp_mflags}
 
 %install
-%{cmake_install}
+rm -rf %{buildroot}
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
+rm -f %{buildroot}/%{_libdir}/libcares.la
+
+%check
+pushd
+  # few of the Live and Mock Tests are network setup dependent, can be skipped
+  # source: https://github.com/c-ares/c-ares/tree/main/test
+  ./arestest --gtest_filter=-*MockChannelTest*
+popd
 
 %clean
 rm -rf %{buildroot}
@@ -61,8 +64,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
-%{_bindir}/adig
-%{_bindir}/ahost
+%doc README.md README.msvc README.cares CHANGES NEWS
 %{_libdir}/*.so.*
 
 %files devel
@@ -70,24 +72,16 @@ rm -rf %{buildroot}
 %{_includedir}/ares.h
 %{_includedir}/ares_build.h
 %{_includedir}/ares_dns.h
-%{_includedir}/ares_dns_record.h
 %{_includedir}/ares_nameser.h
+%{_includedir}/ares_rules.h
 %{_includedir}/ares_version.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/libcares.pc
-%dir %{_libdir}/cmake/c-ares
-%{_libdir}/cmake/c-ares/*
-
-%files doc
-%defattr(-, root, root, 0755)
-%doc README.md README.msvc RELEASE-NOTES.md
 %{_mandir}/man3/ares_*
-%{_mandir}/man1/adig.1*
-%{_mandir}/man1/ahost.1*
 
 %changelog
-* Mon Apr 6 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.34.6-1
-- Upgrade to 1.34.6, switch to CMake build system
+* Mon Apr 06 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 1.19.1-3.1
+- Bump after moving to SPECS/91
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.19.1-3
 - Release bump for SRP compliance
 * Wed Feb 28 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.19.1-2
