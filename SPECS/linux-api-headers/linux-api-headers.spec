@@ -3,7 +3,7 @@
 Summary:        Linux API header files
 Name:           linux-api-headers
 Version:        6.1.79
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -26,9 +26,12 @@ The Linux API Headers expose the kernel's API for use by Glibc.
 make %{?_smp_mflags} mrproper
 
 %install
-[ "%{_arch}" = "x86_64" ] && ARCH=x86_64
-[ "%{_arch}" = "aarch64" ] && ARCH=arm64
-[ "%{_arch}" = "i686" ] && ARCH=i386
+# Detect actual host architecture because %{_arch} is forced to "noarch"
+if [ "%{_host_cpu}" = "x86_64" ]; then
+    ARCH=x86_64
+elif [ "%{_host_cpu}" = "aarch64" ]; then
+    ARCH=arm64
+fi
 cd %{_builddir}/linux-%{version}
 # 'make headers_install' needs rsync, but we would prefer not to add
 # that dependency to linux-api-headers. So prepare the headers and
@@ -47,6 +50,8 @@ find %{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -del
 %{_includedir}/*
 
 %changelog
+* Mon Apr 6 2026 Michelle Wang <michelle.wang@broadcom.com> 6.1.79-6
+- Detect actual host architecture because %{_arch} is forced to "noarch"
 * Thu Aug 14 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.79-5
 - linux-api-headers: Update license
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.79-4
