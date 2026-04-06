@@ -1,14 +1,19 @@
 sources:
-- archive: Python-3.11.13.tar.xz
-  archive_sha512sum: 70f57464d548eac4fe0d0c7f85a14b0e549a4e25ef66de4fc36b06ce72a3efe87dadfcd56ee275c10483cf802fbc9d73b61f9fb2941a46e2f92f075aeb1afe85
+- archive: Python-3.11.15.tar.xz
+  archive_sha512sum: 1667f4839acfd23d05917a12993983b7dc3ab4438a37c72496fd040ac6981f4dea9dc95461ca701a6862beedb56c423fb83398b8b18e39e1efe12f539fced1c1
   archive_type: upstream
   skip_validation: false
-  name: Python-3.11.13
-  version: "3.11.13"
-  url: https://www.python.org/ftp/python/3.11.13/Python-3.11.13.tar.xz
+  name: Python-3.11.15
+  version: "3.11.15"
+  url: https://www.python.org/ftp/python/3.11.15/Python-3.11.15.tar.xz
   repo_url: https://github.com/python/cpython
-  commit_id: 498b971ea3673012a1d4b21860b229d55fc6e575
+  commit_id: 2340a037f7450e70fccfe411e6531afb4d57a312
   missing: ['.gitignore', 'NEWS', 'NEWS.d', '.github', '.gitattributes', '.azure-pipelines']
+  license_manual_review:
+  - file_paths:
+    - Python-3.11.15/Lib/ensurepip/_bundled/setuptools-79.0.1-py3-none-any.whl-extract/setuptools/tests/test_core_metadata.py
+    sha256sum: bdb549e7f2ecc7f86c3bf19d07a9d01172518c0db2771ebfa926ebe4ba617800
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'The Python 3 package contains a new version of Python
