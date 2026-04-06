@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.169
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -766,6 +766,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Apr 29 2026 Mounesh Badiger <mounesh.badiger@broadcom.com> 6.1.169-2
+- viomem: Add IOCTL to re-size the viomem memory
 * Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
 - Update to version 6.1.169
 * Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.167-3
