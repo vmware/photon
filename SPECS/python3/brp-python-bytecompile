@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# This script is modified according to PhotonOS needs
+
+errors_terminate=$1
+
+compileall_flags="$2"
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
+  exit 0
+fi
+
+# This function now implements Python byte-compilation in three different ways:
+# Python >= 3.4 and < 3.9 uses a new module compileall2 - https://github.com/fedora-python/compileall2
+# In Python >= 3.9, compileall2 was merged back to standard library (compileall) so we can use it directly again.
+# Python < 3.4 (inc. Python 2) uses compileall module from stdlib with some hacks
+python_bytecompile() {
+  local options=$1
+  local python_binary=$2
+  local exclude=$3
+  local python_libdir="$4"
+  local compileall_flags="$5"
+  local python_version=""
+
+  python_version=$($python_binary -c "import sys; sys.stdout.write('{0.major}{0.minor}'.format(sys.version_info))")
+
+  # We compile all opt levels in one go: only when $options is empty.
+  if [ -n "$options" ]; then
+    return
+  fi
+
+  local compileall_module=compileall
+  local invalidation_option=--invalidation-mode=timestamp
+
+  [ -n "$exclude" ] && exclude="-x '$exclude'"
+
+  # PYTHONPATH is needed for compileall2, but doesn't hurt for the stdlib
+  # -o 0 -o 1 are the optimization levels
+  # -q disables verbose output
+  # -f forces the process to overwrite existing compiled files
+  # -x excludes paths defined by regex
+  # -e excludes symbolic links pointing outside the build root
+  # -x and -e together implements the same functionality as the Filter class below
+  # -s strips $RPM_BUILD_ROOT from the path
+  # -p prepends the leading slash to the path to make it absolute
+  $python_binary -B -m $compileall_module $compileall_flags -o 0 -o 1 -o 2 -q -f $exclude -s "$RPM_BUILD_ROOT" -p / --hardlink-dupes $invalidation_option -e "$RPM_BUILD_ROOT" "$python_libdir"
+}
+
+# .pyc/.pyo files embed a "magic" value, identifying the ABI version of Python
+# bytecode that they are for.
+#
+# The files below RPM_BUILD_ROOT could be targeting multiple versions of
+# python (e.g. a single build that emits several subpackages e.g. a
+# python26-foo subpackage, a python31-foo subpackage etc)
+#
+# Support this by assuming that below each /usr/lib/python$VERSION/, all
+# .pyc/.pyo files are to be compiled for /usr/bin/python$VERSION.
+#
+# For example, below /usr/lib/python2.6/, we're targeting /usr/bin/python2.6
+# and below /usr/lib/python3.1/, we're targeting /usr/bin/python3.1
+
+# Disable Python hash seed randomization
+# This should help with byte-compilation reproducibility: https://bugzilla.redhat.com/show_bug.cgi?id=1686078
+# Python 3.11+ no longer needs this: https://github.com/python/cpython/pull/27926 (but we support older Pythons as well)
+export PYTHONHASHSEED=0
+
+shopt -s nullglob
+
+find "$RPM_BUILD_ROOT" -type d -print0 | grep -z -E "/(usr|app)/lib(64)?/python[0-9]\.[0-9]+$" | while read -d "" python_libdir; do
+  python_binary=$(basename "$python_libdir")
+  echo "Bytecompiling .py files below $python_libdir using $python_binary"
+
+  # Generate normal (.pyc) byte-compiled files.
+  python_bytecompile "" "$python_binary" "" "$python_libdir" "$compileall_flags"
+  if [ $? -ne 0 ] && [ 0$errors_terminate -ne 0 ]; then
+    # One or more of the files had a syntax error
+    exit 1
+  fi
+
+  # Generate optimized (.pyo) byte-compiled files.
+  # N.B. For Python 3.4+, this call does nothing
+  python_bytecompile "-O" "$python_binary" "" "$python_libdir" "$compileall_flags"
+  if [ $? -ne 0 ] && [ 0$errors_terminate -ne 0 ]; then
+    # One or more of the files had a syntax error
+    exit 1
+  fi
+done

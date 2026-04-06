@@ -3,7 +3,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -93,8 +93,12 @@ make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" BINDIR="%{_bi
 
 mkdir -p %{buildroot}%{_tmpfilesdir} %{buildroot}/var/run/setrans
 echo "d /var/run/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/libselinux.conf
+
 # do not package ru man pages
-rm -rf %{buildroot}%{_mandir}/ru
+rm -r %{buildroot}%{_mandir}/ru \
+       %{buildroot}%{_libdir}/libselinux.a
+
+%{py_byte_compile_and_ghost}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -117,14 +121,15 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_libdir}/pkgconfig
 %dir %{_includedir}/selinux
 %{_includedir}/selinux/*
-%{_libdir}/libselinux.a
 %{_mandir}/man3/*
 
-%files python3
+%files python3 -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-3
+- Bytecompile python files
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-2
 - Fix offline build error
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1

@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -22,6 +22,12 @@ Source2: pip-wheel.ph5-1.0-1.tar.xz
 
 Source3: license.txt
 %include %{SOURCE3}
+
+# Following sources are from:
+# https://src.fedoraproject.org/rpms/python-rpm-macros
+Source4: brp-python-bytecompile
+Source5: python_ghost_pyc.sh
+Source6: macros.bytecompile.python
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -102,9 +108,6 @@ Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel >= 2.6.0
 Requires:       %{name}-macros = %{version}-%{release}
-# Needed here because of the migration of Makefile from -devel to the main
-# package
-Conflicts: %{name} < %{version}-%{release}
 
 %description    devel
 The Python programming language's interpreter can be extended with
@@ -129,6 +132,7 @@ test.support is used to enhance your tests while test.regrtest drives the testin
 Summary:        Macros for Python packages.
 Group:          Development/Tools
 BuildArch:      noarch
+Requires:       diffutils
 
 %description    macros
 This package contains the unversioned Python RPM macros, that most
@@ -178,20 +182,61 @@ find %{buildroot}%{_libdir} \( -type f -name '*.pyc' -or \
                                -type f -name '*.pyo' \
                                -type f -name '*.o' \
                                -type f -name '*__pycache__' \) -delete
+
 mkdir -p %{buildroot}%{_rpmmacrodir}
 install -m 644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}
+install -m 644 %{SOURCE6} %{buildroot}%{_rpmmacrodir}
+install -m 755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}
+install -m 755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}
 
 %if 0%{?__debug_package}
-%if 0%{?with_gdb_hooks}
   DirHoldingGdbPy=%{_libdir}/debug%{_libdir}
   mkdir -p %{buildroot}$DirHoldingGdbPy
   PathOfGdbPy=$DirHoldingGdbPy/libpython%{VER}.so.1.0-%{version}-%{release}.%{_arch}.debug-gdb.py
   cp Tools/gdb/libpython.py %{buildroot}$PathOfGdbPy
 %endif
-%endif
 
+byteCompileScript="%{SOURCE4}"
+ghostGen="%{SOURCE5}"
+
+# We skip byte compiling test files, test files have some non utf8 bits
+# which fails byte compilation
+mv %{buildroot}%{_libdir}/python%{VER}/test %{_builddir}/test.1
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
+export PATH=$PATH:%{buildroot}%{_bindir}
+
+chmod +x "${byteCompileScript}" "${ghostGen}"
+
+${byteCompileScript} "1" "-j%{_smp_build_ncpus}"
+
+# for libs
+for d in \
+  __pycache__ asyncio collections concurrent config ctypes dbm distutils \
+  email encodings ensurepip html http idlelib importlib json logging \
+  multiprocessing pydoc_data re sqlite3 tkinter tomllib turtledemo \
+  unittest venv wsgiref xmlrpc zoneinfo; do
+    ${ghostGen} ${d}.list %{buildroot}%{_libdir}/python%{VER}/${d}
+    cat ${d}.list >> ghost_pyc_libs.list
+done
+
+cat ghost_pyc_libs.list
+
+for d in xml curses; do
+  ${ghostGen} ghost_pyc_${d}.list %{buildroot}%{_libdir}/python%{VER}/${d}
+done
+
+${ghostGen} ghost_pyc_tools.list %{buildroot}%{_libdir}/python%{VER}/lib2to3
+
+mv %{_builddir}/test.1 %{buildroot}%{_libdir}/python%{VER}/test
+
+find %{buildroot} -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
+find %{buildroot} -type d -name '__pycache__' -empty -delete
+
+%if 0%{?with_check}
 %check
 %make_build test
+%endif
 
 %post
 ln -sfrv %{_bindir}/%{name} %{_bindir}/python
@@ -227,7 +272,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python%{VER}/test
 %exclude %{_libdir}/python%{VER}/lib-dynload/_ctypes_test.*.so
 
-%files libs
+%files libs -f ghost_pyc_libs.list
 %defattr(-, root, root)
 %{_libdir}/python%{VER}
 %exclude %{_libdir}/python%{VER}/site-packages/
@@ -239,12 +284,12 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python%{VER}/curses
 %exclude %{_libdir}/python%{VER}/lib-dynload/_curses*.so
 
-%files  xml
+%files xml -f ghost_pyc_xml.list
 %defattr(-, root, root, 755)
 %{_libdir}/python%{VER}/xml/*
 %{_libdir}/python%{VER}/lib-dynload/pyexpat*.so
 
-%files  curses
+%files curses -f ghost_pyc_curses.list
 %defattr(-, root, root, 755)
 %{_libdir}/python%{VER}/curses/*
 %{_libdir}/python%{VER}/lib-dynload/_curses*.so
@@ -267,9 +312,13 @@ rm -rf %{buildroot}/*
 
 %files macros
 %defattr(-, root, root, 755)
-%{_rpmmacrodir}/macros.python
+%{_rpmmacrodir}/macros.*
+%{_rpmconfigdir}/brp-python-bytecompile
+%{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-2
+- Add byte compilation helper scripts and macros
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.1-1
 - Update to 3.14
 - Removed python3-tools as 2to3 tool is deprecated
