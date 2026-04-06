@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -31,6 +31,13 @@ Patch0014: 0004-Check-return-code-of-UTF8_putc.patch
 Patch0015: 0005-Verify-ASN1-object-s-types-before-attempting-to-acce.patch
 Patch0016: 0006-Add-NULL-check-to-PKCS12_item_decrypt_d2i_ex.patch
 Patch0017: 0007-Ensure-ASN1-types-are-checked-before-use.patch
+
+Patch0018: 0001-dane_match_cert-should-X509_free-on-mcert-instead-of.patch
+Patch0019: 0002-Fix-NULL-Dereference-When-Delta-CRL-Lacks-CRL-Number.patch
+Patch0020: 0003-Fix-NULL-deref-in-ec-dh_cms_set_shared_info.patch
+Patch0021: 0004-Fix-NULL-deref-in-rsa_cms_decrypt.patch
+Patch0022: 0005-Avoid-possible-buffer-overflow-in-buf2hex-conversion.patch
+Patch0023: 0006-rsa_kem-validate-RSA_public_encrypt-result-in-RSASVE.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -177,6 +184,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Apr 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-3
+- Fix multiple CVEs
+- CVE-2026-28386 CVE-2026-28387 CVE-2026-28388 CVE-2026-28389
+- CVE-2026-28390 CVE-2026-31789 CVE-2026-31790
 * Thu Jan 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-2
 - Multiple CVE fixes
 * Tue Oct 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.18-1
