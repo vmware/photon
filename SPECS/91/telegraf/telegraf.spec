@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define network_required    1
 %define debug_package       %{nil}
 %define branch              %{version}-%{release}
 %define tag                 %{version}
-%define commit              2a6d13155d
+%define commit              467473bdb7
 
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
-Version:          1.37.3
-Release:          1%{?dist}
+Version:          1.36.4
+Release:          2.1%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -102,8 +102,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
-* Tue Mar 31 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.37.3-1
-- Upgrade to 1.37.3
+* Mon Apr 06 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.36.4-2.1
+- Bump after moving to SPECS/91
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.36.4-2
 - Bump version as a part of go upgrade
 * Fri Dec 05 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.36.4-1
