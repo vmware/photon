@@ -1,0 +1,42 @@
+From 5c8fe1e3e97b4595f290f55b494424e2e1b3998d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 7 Apr 2026 12:25:22 +0530
+Subject: [PATCH] Treat scriptlet failures as non fatal by default
+
+Use _fail_on_scriptlet_errors macro to change this behaviour.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/transaction.cc | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/lib/transaction.cc b/lib/transaction.cc
+index ad124a42b..3af598aef 100644
+--- a/lib/transaction.cc
++++ b/lib/transaction.cc
+@@ -1899,7 +1899,21 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+ 	runTransScripts(ts, PKG_TRANSFILETRIGGERIN);
+     }
+     /* Final exit code */
+-    rc = (nfailed || ts->scriptError) ? -1 : 0;
++    rc = nfailed ? -1 : 0;
++    if (rc == 0) {
++        /* If this boolean macro is set, scriptlet failures are fatal */
++        const char *macro = "%{_fail_on_scriptlet_errors}";
++        if (rpmExpandNumeric(macro)) {
++            if (ts->scriptError) {
++                rpmlog(RPMLOG_ERR, "Scriptlet errors observed, failing the transaction\n");
++                rc = -1;
++            }
++        }
++    } else {
++        if (ts->scriptError) {
++            rpmlog(RPMLOG_DEBUG, "Scriptlet errors observed but not considering them as fatal\n");
++        }
++    }
+ 
+ exit:
+     /* Run post transaction hook for all plugins */
+-- 
+2.53.0
+

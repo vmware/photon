@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.0.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -31,6 +31,7 @@ Patch7: 0008-fix-host.patch
 Patch8: 0009-rpm-6.0-rpmformat.patch
 Patch9: 0010-rpm-6.0-vfylevel.patch
 Patch10: 0011-dilute-user-group-requires.patch
+Patch11: 0012-Treat-scriptlet-failures-as-non-fatal-by-default.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -351,6 +352,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Tue Apr 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-3
+- Don't consider scriptlet errors as fatal
 * Wed Apr 01 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.0.1-2
 - Enable selinux plugin
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-1
