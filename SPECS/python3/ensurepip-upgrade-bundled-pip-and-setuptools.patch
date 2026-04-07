@@ -18,7 +18,7 @@ index c628828..1c2927c 100644
  
  __all__ = ["version", "bootstrap"]
  _PACKAGE_NAMES = ('setuptools', 'pip')
--_SETUPTOOLS_VERSION = "65.5.0"
+-_SETUPTOOLS_VERSION = "79.0.1"
 -_PIP_VERSION = "23.0.1"
 +_SETUPTOOLS_VERSION = "65.5.1"
 +_PIP_VERSION = "23.3.2"

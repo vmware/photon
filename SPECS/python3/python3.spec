@@ -3,8 +3,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.10.18
-Release:        6%{?dist}
+Version:        3.10.20
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha512 Python=2c444f024cd15babd156964b50aa0245020a17c0c600250ffcf112e91594a3d6e1fb87c9b87a57cb7a802dae90004d801ed95a3103d79aefb8ed714279997708
+%define sha512 Python=591d3acf7ef47307b8c58fec9516731b374bcdf6eb21883410f67402f823a183f1abffec1116583e394610730f414d5a98b4c3437ea5174a4d2adbb99b8f6e5b
 
 Source1: macros.python
 
@@ -24,10 +24,11 @@ Source2: setuptools-pip-wheels%{?dist}-3.0.tar.xz
 Patch0:         cgi3.patch
 Patch1:         use-HMAC-SHA256-in-FIPS-mode.patch
 Patch2:         ensurepip-upgrade-bundled-pip-and-setuptools.patch
-Patch3:         CVE-2025-8194.patch
-Patch4:         CVE-2025-13836.patch
-Patch5:         CVE-2026-4519.patch
-Patch6:         CVE-2026-3479.patch
+Patch3:         CVE-2026-4519.patch
+Patch4:         CVE-2026-3479.patch
+Patch5:         CVE-2026-3644.patch
+Patch6:         CVE-2026-4786.patch
+Patch7:         CVE-2026-4224.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -304,6 +305,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon May 04 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.20-1
+- Update to 3.10.20, Fixes multiple CVEs
 * Mon Apr 27 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-6
 - Use updated python3-pip whl
 * Tue Mar 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.10.18-5
