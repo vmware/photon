@@ -5,7 +5,7 @@
 
 Name:           rubygem-fluentd
 Version:        1.19.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -63,6 +63,7 @@ Requires: rubygem-concurrent-ruby
 Requires: rubygem-async-http
 Requires: ruby
 
+BuildArch: noarch
 Provides: rubygem(%{gem_name}) = %{version}-%{release}
 
 %description
@@ -84,6 +85,8 @@ It can collect, process and ship many kinds of data in near real-time.
 %{gemdir}
 
 %changelog
+* Tue Apr 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.19.1-2
+- Fix BuildArch issue
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.19.1-1
 - Update to version 1.19.1
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.18.0-1
