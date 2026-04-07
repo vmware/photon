@@ -5,7 +5,7 @@
 
 Name: rubygem-connection_pool
 Version:        3.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Generic connection pool for Ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -19,6 +19,8 @@ Source1: license.txt
 BuildRequires: ruby-devel
 
 Requires: ruby
+
+Obsoletes:      ruby < 4.0
 
 %description
 Generic connection pool for Ruby.
@@ -38,5 +40,7 @@ Provides a thread-safe connection pooling mechanism for any type of connection.
 %{gemdir}
 
 %changelog
+* Tue Apr 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.2-2
+- Adding obsolete so that it will ignore ruby-3.4.7 embedded rubygem-connection_pool
 * Tue Jan 27 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.2-1
 - Initial build for activesupport dependency
