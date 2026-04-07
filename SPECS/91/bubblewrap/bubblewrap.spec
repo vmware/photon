@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        setuid implementation of a subset of user namespaces.
 Name:           bubblewrap
 Version:        0.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/projectatomic/bubblewrap
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -49,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_bwrap
 
 %changelog
+*   Tue Apr 07 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.7.0-3
+-   Move spec to SPECS/91; build only for photon_subrelease <= 91
 *   Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.7.0-2
 -   Release bump for SRP compliance
 *   Thu Dec 15 2022 Gerrit Photon <photon-checkins@vmware.com> 0.7.0-1

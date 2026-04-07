@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:    C++ port of Junit test framework
 Name:       cppunit
 Version:    1.12.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://sourceforge.net/projects/cppunit
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -59,6 +61,8 @@ This contains headers and libs for development with cppunit.
 %{_datadir}/*
 
 %changelog
+* Tue Apr 07 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.12.1-4
+- Move spec to SPECS/91; build only for photon_subrelease <= 91
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.12.1-3
 - Release bump for SRP compliance
 * Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-2

@@ -1,7 +1,7 @@
 Summary:       Photon theme for grub2
 Name:          grub2-theme
 Version:       5.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         System Environment/Base
 URL:           https://vmware.github.io/photon/
 Vendor:        VMware, Inc.
@@ -11,16 +11,10 @@ Source0:       %{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 BuildArch:     noarch
+Conflicts: %{name}-ostree < 5.0-3
 
 %description
 grub2-theme provides content of /boot/grub2/themes/photon plus ascii font.
-
-%package ostree
-Summary: GRUB fonts for Ostree
-Group: System Environment/Base
-Requires: %{name} = %{version}-%{release}
-%description ostree
-GRUB fonts required by Ostree
 
 %prep
 %autosetup -p1
@@ -34,6 +28,8 @@ ln -s grub2 %{buildroot}/boot/grub
 %defattr(-,root,root,-)
 /boot/grub
 /boot/grub2/fonts/ascii.pf2
+/boot/grub2/fonts/unicode.pf2
+/boot/grub2/fonts/unifont.pf2
 %dir /boot/grub2/themes
 %dir /boot/grub2/themes/photon
 /boot/grub2/themes/photon/photon.png
@@ -48,12 +44,9 @@ ln -s grub2 %{buildroot}/boot/grub
 /boot/grub2/themes/photon/terminal_w.tga
 /boot/grub2/themes/photon/theme.txt
 
-%files ostree
-%defattr(-,root,root,-)
-/boot/grub2/fonts/unicode.pf2
-/boot/grub2/fonts/unifont.pf2
-
 %changelog
+* Tue Apr 07 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.0-3
+- Fold grub2-theme-ostree fonts into main package; drop ostree subpackage
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.0-2
 - Release bump for SRP compliance
 * Wed Jan 18 2023 Piyush Gupta <gpiyush@vmware.com> 5.0-1
