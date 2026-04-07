@@ -1,0 +1,96 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Tue, 8 Apr 2026 00:00:00 +0000
+Subject: [PATCH] Drop xserver module: userdom, staff, ssh, systemd hooks
+
+Photon does not ship an X server package. Building without the xserver
+policy module requires:
+- Dropping direct xserver.if calls from staff.te and ssh.te (optional_policy
+  still expands gen_require at m4 time).
+- Removing xserver_restricted_role() from userdom_restricted_xwindows_user_template;
+  otherwise staff/unprivuser modules reference xauth_t/iceauth_t only defined
+  in the xserver module and semodule fails with "Failed to resolve roletype".
+- Removing the xserver_xdm_ioctl_log optional block for the same reason.
+- Removing unconditional xserver_* uses from systemd.te (logind dbus, localed
+  config dirs) so the systemd module does not reference xserver types at link.
+
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+---
+ policy/modules/roles/staff.te           |  5 -----
+ policy/modules/services/ssh.te          |  5 -----
+ policy/modules/system/systemd.te        |  4 ---
+ policy/modules/system/userdomain.if     |  5 -----
+ 4 files changed, 19 deletions(-)
+
+diff --git a/policy/modules/roles/staff.te b/policy/modules/roles/staff.te
+--- a/policy/modules/roles/staff.te
++++ b/policy/modules/roles/staff.te
+@@ -410,11 +410,6 @@
+     wireshark_rw_shm(staff_t)
+ ')
+ 
+-optional_policy(`
+-	xserver_read_log(staff_t)
+-	xserver_run(staff_t, staff_r)
+-')
+-
+ tunable_policy(`selinuxuser_execmod',`
+ 	userdom_execmod_user_home_files(staff_t)
+ ')
+diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
+--- a/policy/modules/services/ssh.te
++++ b/policy/modules/services/ssh.te
+@@ -899,11 +899,6 @@
+ 	gnome_manage_generic_cache_files(ssh_agent_type)
+ ')
+ 
+-optional_policy(`
+-	xserver_use_xdm_fds(ssh_agent_type)
+-	xserver_rw_xdm_pipes(ssh_agent_type)
+-')
+-
+ allow sshd_t var_log_t:file { create open read write };
+ allow sshd_t var_log_t:file { setattr };
+ 
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -488,7 +488,6 @@
+ userdom_manage_user_tmp_blk_files(systemd_logind_t)
+ userdom_manage_user_tmp_chr_files(systemd_logind_t)
+ 
+-xserver_dbus_chat(systemd_logind_t)
+ 
+ optional_policy(`
+ 	apache_read_tmp_files(systemd_logind_t)
+@@ -1040,8 +1039,6 @@
+ 
+ userdom_dbus_send_all_users(systemd_localed_t)
+ 
+-xserver_create_config_dirs(systemd_localed_t)
+-xserver_manage_config(systemd_localed_t)
+ 
+ optional_policy(`
+ 	dbus_connect_system_bus(systemd_localed_t)
+diff --git a/policy/modules/system/userdomain.if b/policy/modules/system/userdomain.if
+--- a/policy/modules/system/userdomain.if
++++ b/policy/modules/system/userdomain.if
+@@ -1381,7 +1381,6 @@
+ 	seutil_read_file_contexts($1_t)
+ 	seutil_read_default_contexts($1_t)
+ 
+-	xserver_restricted_role($1_r, $1_t)
+ 
+ 	optional_policy(`
+ 		alsa_read_rw_config($1_usertype)
+@@ -1470,10 +1469,6 @@
+ 	optional_policy(`
+ 		udev_read_db($1_usertype)
+ 	')
+-
+-	optional_policy(`
+-		xserver_xdm_ioctl_log($1_t)
+-	')
+ ')
+ 
+ #######################################

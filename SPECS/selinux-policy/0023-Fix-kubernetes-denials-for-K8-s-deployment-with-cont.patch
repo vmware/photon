@@ -1,0 +1,55 @@
+From e4524a0d83e4dedc9dad9391d0e444410531f489 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivania2@vmware.com>
+Date: Fri, 9 Sep 2022 14:16:15 +0000
+Subject: [PATCH] Fix kubernetes denials for K8's deployment with containerd
+ (rebased for 43.6)
+
+Changes are added to resolve following kubernetes  denials
+
+avc:  denied  { read } for  pid=6084 comm="kube-controller"
+path="/etc/kubernetes/pki/front-proxy-ca.crt" dev="sda3" ino=1049304
+scontext=system_u:system_r:container_t:s0:c221,c620
+tcontext=system_u:object_r:kubernetes_file_t:s0 tclass=file permissive=0
+---
+ policy/modules/contrib/container.if | 19 +++++++++++++++++++
+ policy/modules/contrib/container.te |  2 ++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/policy/modules/contrib/container.if b/policy/modules/contrib/container.if
+--- a/policy/modules/contrib/container.if
++++ b/policy/modules/contrib/container.if
+@@ -207,6 +207,25 @@
+ 
+ ########################################
+ ## <summary>
++##      Read container runtime kubernetes files.
++## </summary>
++## <param name="domain">
++##      <summary>
++##      Domain allowed access.
++##      </summary>
++## </param>
++#
++interface(`container_runtime_read_kubernetes_files',`
++        gen_require(`
++                type kubernetes_file_t;
++        ')
++
++        files_search_var_lib($1)
++        read_files_pattern($1, kubernetes_file_t, kubernetes_file_t)
++')
++
++########################################
++## <summary>
+ ##	Manage container share files.
+ ## </summary>
+ ## <param name="domain">
+diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
+--- a/policy/modules/contrib/container.te
++++ b/policy/modules/contrib/container.te
+@@ -1703,3 +1703,5 @@
+ # netavark needs to write to /run/sysctl.d and needs the right label for systemd to read it.
+ # https://issues.redhat.com/browse/RHEL-91380
+ files_pid_filetrans(container_runtime_t, system_conf_t, dir, "sysctl.d")
++
++container_runtime_read_kubernetes_files(container_t)

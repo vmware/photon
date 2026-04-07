@@ -1,0 +1,132 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Tue, 8 Apr 2026 00:00:00 +0000
+Subject: [PATCH] container: optional install_t/data_home_t; drop redundant device_node
+
+Photon modules.conf omits anaconda and gnome. Wrap anaconda_domtrans_install()
+and the install_t process2 allow in optional_policy so install_t is not
+required at link time.
+
+Optional_policy for data_home_t in container_filetrans_named_content when
+gnome (data_home_t) is not built.
+
+Remove unconditional allow * device_node:chr_file for container_device_t,
+container_device_plugin_t, and container_device_plugin_init_t: those types
+are container_domain members, so container_use_devices already governs
+device_node access via allow container_domain device_node:...; the extra
+rules duplicated that for semodule's neverallow check on the true branch.
+
+---
+ policy/modules/contrib/container.if | 17 ++++++++++++++---
+ policy/modules/contrib/container.te | 27 +++++++++++++++++++++------
+ 2 files changed, 35 insertions(+), 9 deletions(-)
+
+diff --git a/policy/modules/contrib/container.if b/policy/modules/contrib/container.if
+--- a/policy/modules/contrib/container.if
++++ b/policy/modules/contrib/container.if
+@@ -683,7 +683,6 @@
+ 	type kubernetes_file_t;
+ 	type container_runtime_tmpfs_t;
+ 	type container_kvm_var_run_t;
+-	type data_home_t;
+     ')
+ 
+     files_pid_filetrans($1, container_var_run_t, file, "container.pid")
+@@ -748,6 +747,10 @@
+     # Third-party snapshotters
+     filetrans_pattern($1, container_var_lib_t, container_ro_file_t, dir, "containerd-soci")
+ 
++    optional_policy(`
++	gen_require(`
++		type data_home_t;
++	')
+     filetrans_pattern($1, data_home_t, container_ro_file_t, dir, "ramalama")
+     filetrans_pattern($1, data_home_t, container_ro_file_t, dir, "artifacts")
+     filetrans_pattern($1, data_home_t, container_ro_file_t, dir, "overlay")
+@@ -758,11 +761,17 @@
+     filetrans_pattern($1, data_home_t, container_ro_file_t, dir, "overlay2-images")
+     filetrans_pattern($1, data_home_t, container_ro_file_t, dir, "overlay2-layers")
+     filetrans_pattern($1, data_home_t, container_ro_file_t, dir, "overlay2-containers")
++    ')
+ 
+     filetrans_pattern($1, container_var_lib_t, container_ro_file_t, dir, "atomic")
+     userdom_admin_home_dir_filetrans($1, container_home_t, dir, ".container")
+     filetrans_pattern($1, container_var_lib_t, container_ro_file_t, dir, "kata-containers")
++    optional_policy(`
++	gen_require(`
++		type data_home_t;
++	')
+     filetrans_pattern($1, data_home_t, container_ro_file_t, dir, "kata-containers")
++    ')
+     filetrans_pattern($1, container_var_run_t, container_runtime_tmpfs_t, dir, "shm")
+     files_etc_filetrans($1, kubernetes_file_t, dir, "kubernetes")
+ ')
+diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
+--- a/policy/modules/contrib/container.te
++++ b/policy/modules/contrib/container.te
+@@ -384,7 +384,13 @@
+ 
+ userdom_map_tmp_files(container_runtime_domain)
+ 
+-anaconda_domtrans_install(container_runtime_domain)
++optional_policy(`
++	gen_require(`
++		type install_t;
++		type install_exec_t;
++	')
++	anaconda_domtrans_install(container_runtime_domain)
++')
+ 
+ optional_policy(`
+ 	gnome_map_generic_data_home_files(container_runtime_domain)
+@@ -837,7 +843,13 @@
+ 
+ domain_transition_all(spc_t)
+ 
+-anaconda_domtrans_install(spc_t)
++optional_policy(`
++	gen_require(`
++		type install_t;
++		type install_exec_t;
++	')
++	anaconda_domtrans_install(spc_t)
++')
+ 
+ optional_policy(`
+ 	dbus_chat_system_bus(spc_t)
+@@ -1606,13 +1618,11 @@
+ 
+ # Standard container which needs to be allowed to use any device
+ container_domain_template(container_device, container)
+-allow container_device_t device_node:chr_file rw_chr_file_perms;
+ 
+ # Standard container which needs to be allowed to use any device and
+ # communicate with kubelet
+ container_domain_template(container_device_plugin, container)
+ typeattribute container_device_plugin_t container_net_domain;
+-allow container_device_plugin_t device_node:chr_file rw_chr_file_perms;
+ dev_rw_sysfs(container_device_plugin_t)
+ kernel_read_debugfs(container_device_plugin_t)
+ container_kubelet_stream_connect(container_device_plugin_t)
+@@ -1621,7 +1631,6 @@
+ # Standard container which needs to be allowed to use any device and
+ # modify kubelet configuration
+ container_domain_template(container_device_plugin_init, container)
+-allow container_device_plugin_init_t device_node:chr_file rw_chr_file_perms;
+ dev_rw_sysfs(container_device_plugin_init_t)
+ manage_dirs_pattern(container_device_plugin_init_t, kubernetes_file_t, kubernetes_file_t)
+ manage_files_pattern(container_device_plugin_init_t, kubernetes_file_t, kubernetes_file_t)
+@@ -1689,7 +1698,12 @@
+ allow container_domain container_var_lib_t:file entrypoint;
+ allow container_domain fusefs_t:file { append create entrypoint execmod execute execute_no_trans getattr ioctl link lock map mounton open read rename setattr unlink watch watch_reads write };
+ 
+-allow install_t container_runtime_t:process2 { nnp_transition nosuid_transition };
++optional_policy(`
++	gen_require(`
++		type install_t;
++	')
++	allow install_t container_runtime_t:process2 { nnp_transition nosuid_transition };
++')
+ 
+ corecmd_entrypoint_all_executables(container_kvm_t)
+ allow svirt_sandbox_domain exec_type:file { entrypoint execute execute_no_trans getattr ioctl lock map open read };

@@ -1,0 +1,126 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Mon, 6 Apr 2026 00:00:00 +0000
+Subject: [PATCH] domain: add domain_use_openssl_alg_socket for AF_ALG (FIPS)
+
+Introduce attribute openssl_alg_socket_domain and interface
+domain_use_openssl_alg_socket() so OpenSSL-using daemons (FIPS
+jitterentropy via AF_ALG) share one allow rule instead of per-domain
+allows.
+
+Use it for syslogd_t (rsyslog TLS), sshd_t, and ssh_keygen_t. Replaces
+direct alg_socket allows from 0034-allow-alg_socket-for-sshd.patch for
+ssh; the redundant second sshd_t alg_socket allow at the end of ssh.te
+is removed (single domain_use_openssl_alg_socket(sshd_t) earlier).
+
+Rebased for refpolicy 43.6: domain.te places the common allow after
+self:shm and before kernel_userfaultfd_domtrans(); domain.if anchor is
+after domain_rw_perf_event_all_domains.
+
+---
+ policy/modules/kernel/domain.if     | 26 ++++++++++++++++++++++++++
+ policy/modules/kernel/domain.te     |  8 ++++++++
+ policy/modules/services/ssh.te      |  3 +++
+ policy/modules/system/init.te       |  2 ++
+ policy/modules/system/logging.te    |  2 ++
+ 5 files changed, 41 insertions(+), 0 deletions(-)
+
+diff --git a/policy/modules/kernel/domain.if b/policy/modules/kernel/domain.if
+--- a/policy/modules/kernel/domain.if
++++ b/policy/modules/kernel/domain.if
+@@ -1943,3 +1943,29 @@
+ 
+ 	allow $1 domain:perf_event rw_inherited_perf_event_perms;
+ ')
++
++########################################
++## <summary>
++##	Allow domain to use AF_ALG sockets (OpenSSL FIPS / jitterentropy).
++## </summary>
++## <desc>
++##	<p>
++##	On Photon OS with FIPS enabled, OpenSSL may use the kernel AF_ALG
++##	interface (e.g. jitterentropy).  Assign the process type to attribute
++##	openssl_alg_socket_domain so it receives the common self:alg_socket
++##	allow rule defined in domain.te.
++##	</p>
++## </desc>
++## <param name="domain">
++##	<summary>
++##	Domain type allowed access (e.g. syslogd_t, sshd_t).
++##	</summary>
++## </param>
++#
++interface(`domain_use_openssl_alg_socket',`
++	gen_require(`
++		attribute openssl_alg_socket_domain;
++	')
++
++	typeattribute $1 openssl_alg_socket_domain;
++')
+diff --git a/policy/modules/kernel/domain.te b/policy/modules/kernel/domain.te
+--- a/policy/modules/kernel/domain.te
++++ b/policy/modules/kernel/domain.te
+@@ -55,6 +55,9 @@
+ attribute domain;
+ attribute named_filetrans_domain;
+ 
++# Domains that use OpenSSL with AF_ALG (FIPS jitterentropy on Photon, etc.)
++attribute openssl_alg_socket_domain;
++
+ # Transitions only allowed from domains to other domains
+ neverallow domain ~domain:process { transition dyntransition };
+ 
+@@ -129,6 +132,8 @@
+ allow domain self:sem create_sem_perms;
+ allow domain self:shm create_shm_perms;
+ 
++allow openssl_alg_socket_domain self:alg_socket { create bind accept read write getattr setopt };
++
+ kernel_userfaultfd_domtrans(domain)
+ kernel_io_uring_domtrans(domain)
+ kernel_secretmem_domtrans(domain)
+diff --git a/policy/modules/services/ssh.te b/policy/modules/services/ssh.te
+--- a/policy/modules/services/ssh.te
++++ b/policy/modules/services/ssh.te
+@@ -49,6 +49,8 @@
+ type ssh_keygen_exec_t;
+ init_system_domain(ssh_keygen_t, ssh_keygen_exec_t)
+ 
++domain_use_openssl_alg_socket(ssh_keygen_t)
++
+ type ssh_keygen_tmp_t;
+ files_tmp_file(ssh_keygen_tmp_t)
+ 
+@@ -484,6 +484,7 @@
+ term_relabelto_all_ptys(sshd_t)
+ term_use_ptmx(sshd_t)
+ 
++domain_use_openssl_alg_socket(sshd_t)
+ motdgen_exec(sshd_t);
+ 
+ # for X forwarding
+diff --git a/policy/modules/system/init.te b/policy/modules/system/init.te
+--- a/policy/modules/system/init.te
++++ b/policy/modules/system/init.te
+@@ -100,6 +100,8 @@
+ init_initrc_domain(init_t)
+ corecmd_shell_entry_type(init_t)
+ 
++domain_use_openssl_alg_socket(init_t)
++
+ #
+ # init_tmp_t is the type for content in /tmp directory
+ #
+diff --git a/policy/modules/system/logging.te b/policy/modules/system/logging.te
+--- a/policy/modules/system/logging.te
++++ b/policy/modules/system/logging.te
+@@ -118,6 +118,8 @@
+ init_nnp_daemon_domain(syslogd_t)
+ mls_trusted_object(syslogd_t)
+ 
++domain_use_openssl_alg_socket(syslogd_t)
++
+ libs_read_lib_files(syslogd_t)
+ 
+ type syslogd_initrc_exec_t;

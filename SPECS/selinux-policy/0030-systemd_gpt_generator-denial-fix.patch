@@ -1,0 +1,29 @@
+From 35b16d40c786fb47a337d32ce6bda137e2b989d9 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 17 May 2024 23:05:16 +0530
+Subject: [PATCH] systemd_gpt_generator denial fix (rebased for 43.6)
+
+This fixes following denial. Happens at early boot, started happening
+with recent versions of systemd.
+
+type=AVC msg=audit(1716303092.468:18): avc:  denied  { write } for  pid=564 comm="systemd-gpt-aut" name="generator.late" dev="tmpfs" ino=472 scontext=system_u:system_r:systemd_gpt_generator_t:s0 tcontext=system_u:object_r:init_var_run_t:s0 tclass=dir permissive=0
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/system/systemd.te | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/policy/modules/system/systemd.te b/policy/modules/system/systemd.te
+--- a/policy/modules/system/systemd.te
++++ b/policy/modules/system/systemd.te
+@@ -1555,6 +1555,10 @@ optional_policy(`
+ 	udev_read_pid_files(systemd_gpt_generator_t)
+ ')
+ 
++allow systemd_gpt_generator_t init_var_run_t:lnk_file create;
++allow systemd_gpt_generator_t init_var_run_t:file { write create read };
++allow systemd_gpt_generator_t init_var_run_t:dir { write create read add_name remove_name };
++
+ ### kdump-dep generator
+ corecmd_exec_shell(systemd_kdump_dep_generator_t)
+ 

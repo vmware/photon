@@ -1,11 +1,11 @@
 %global build_if %{photon_subrelease} >= 92
 
-%define container_selinux_ver   2.181.0
+%define container_selinux_ver   2.247.0
 
 Summary:        SELinux policy
 Name:           selinux-policy
-Version:        36.5
-Release:        15%{?dist}
+Version:        43.6
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -13,9 +13,11 @@ Distribution:   Photon
 
 BuildArch:      noarch
 
-Source0: https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/%{name}-%{version}.tar.gz
+# Upstream GitHub tags use a leading v; the URL fragment after #/ sets the
+# basename saved under SOURCES (selinux-policy-VERSION.tar.gz, etc.).
+Source0: https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
-Source1: https://github.com/containers/container-selinux/archive/container-selinux-%{container_selinux_ver}.tar.gz
+Source1: https://github.com/containers/container-selinux/archive/refs/tags/v%{container_selinux_ver}.tar.gz#/container-selinux-%{container_selinux_ver}.tar.gz
 
 Source2:        build.conf
 Source3:        modules.conf
@@ -27,46 +29,45 @@ Source6: license.txt
 
 Patch0: 0001-contrib-container.patch
 Patch1: 0002-contrib-cron.patch
-Patch2: 0003-contrib-dbus.patch
-Patch3: 0004-contrib-virt.patch
-Patch4: 0005-kernel-storage.patch
-Patch5: 0006-roles-staff.patch
-Patch6: 0007-roles-unprivuser.patch
-Patch7: 0008-motd_t-new-domain-for-motdgen.patch
-Patch8: 0009-system-getty.patch
-Patch9: 0010-system-init.patch
-Patch10: 0011-system-logging.patch
-Patch11: 0012-system-modutils.patch
-Patch12: 0013-system-systemd.patch
-Patch13: 0014-system-sysnetwork.patch
-Patch14: 0015-system-udev.patch
-Patch15: 0016-system-userdomain.patch
-Patch16: 0017-admin_usermanage.patch
-Patch17: 0018-system-fstool.patch
-Patch18: 0019-iptables-allow-kernel_t-fifo_files.patch
-Patch19: 0020-authlogin.if-add-transition-rules-for-shadow-group-p.patch
-Patch20: 0021-allow-lvm_t-to-transit-to-unconfined_t.patch
-Patch21: 0022-fix-fc-conflicts.patch
-Patch22: 0023-Fix-AVC-denials-based-on-package-test-results.patch
-Patch23: 0024-Fix-kubernetes-denials-for-K8-s-deployment-with-cont.patch
-Patch24: 0025-Fix-bin-denials-for-K8-s-deployment-with-containerd.patch
-Patch25: 0026-Fix-etcd-denials-for-K8-s-deployment-with-containerd.patch
-Patch26: 0027-Fix-systemd-gpt-denials-for-K8-s-deployment.patch
-Patch27: 0028-Fix-kubernetes-watch-denials-for-K8-deployment.patch.patch
-Patch28: 0029-ssh-denial-fix.patch
-Patch29: 0030-syslog-denial-fix.patch
-Patch30: 0031-systemd_gpt_generator-denial-fix.patch
-Patch31: 0032-systemd_userdbd-denial-fix.patch
-Patch32: 0033-fix-getty_t-denial.patch
-Patch33: 0034-fix-local_login_t-denial.patch
-Patch34: 0035-allow-alg_socket-for-sshd.patch
-Patch35: 0036-authlogin.te-fix-pwhistory-denial.patch
-Patch36: 0037-systemd-init_t-denial.patch
-Patch37: 0038-Add-motd-rules-to-fix-denials.patch
-Patch38: 0039-selinuxutil-restorecon-setfiles_mac_t-transition-for-unconfined_t.patch
-Patch39: 0040-ssh-sshd_t-chkpwd_t-noatsecure-rlimitinh-siginh.patch
-Patch40: 0041-corenetwork-syslog_tls-add-tcp-1514.patch
-Patch41: 0042-domain-use-openssl-alg-socket-interface.patch
+Patch2: 0003-contrib-virt.patch
+Patch3: 0004-kernel-storage.patch
+Patch4: 0005-roles-staff.patch
+Patch5: 0006-roles-unprivuser.patch
+Patch6: 0007-motd_t-new-domain-for-motdgen.patch
+Patch7: 0008-system-getty.patch
+Patch8: 0009-system-init.patch
+Patch9: 0010-system-logging.patch
+Patch10: 0011-system-modutils.patch
+Patch11: 0012-system-systemd.patch
+Patch12: 0013-system-sysnetwork.patch
+Patch13: 0014-system-udev.patch
+Patch14: 0015-system-userdomain.patch
+Patch15: 0016-admin_usermanage.patch
+Patch16: 0017-system-fstool.patch
+Patch17: 0018-iptables-allow-kernel_t-fifo_files.patch
+Patch18: 0019-authlogin.if-add-transition-rules-for-shadow-group-p.patch
+Patch19: 0020-allow-lvm_t-to-transit-to-unconfined_t.patch
+Patch20: 0021-fix-fc-conflicts.patch
+Patch21: 0022-Fix-AVC-denials-based-on-package-test-results.patch
+Patch22: 0023-Fix-kubernetes-denials-for-K8-s-deployment-with-cont.patch
+Patch23: 0024-Fix-bin-denials-for-K8-s-deployment-with-containerd.patch
+Patch24: 0025-Fix-etcd-denials-for-K8-s-deployment-with-containerd.patch
+Patch25: 0026-Fix-systemd-gpt-denials-for-K8-s-deployment.patch
+Patch26: 0027-Fix-kubernetes-watch-denials-for-K8-deployment.patch.patch
+Patch27: 0028-ssh-denial-fix.patch
+Patch28: 0029-syslog-denial-fix.patch
+Patch29: 0030-systemd_gpt_generator-denial-fix.patch
+Patch30: 0031-fix-getty_t-denial.patch
+Patch31: 0032-fix-local_login_t-denial.patch
+Patch32: 0033-domain-use-openssl-alg-socket-interface.patch
+Patch33: 0034-authlogin.te-fix-pwhistory-denial.patch
+Patch34: 0035-systemd-init_t-denial.patch
+Patch35: 0036-Add-motd-rules-to-fix-denials.patch
+Patch36: 0037-selinuxutil-restorecon-setfiles_mac_t-transition-for-unconfined_t.patch
+Patch37: 0038-ssh-sshd_t-chkpwd_t-noatsecure-rlimitinh-siginh.patch
+Patch38: 0039-corenetwork-syslog_tls-add-tcp-1514.patch
+Patch39: 0040-drop-xserver-module.patch
+Patch40: 0041-container-install_t-optional.patch
 
 BuildRequires: checkpolicy
 BuildRequires: python3-devel
@@ -130,6 +131,11 @@ sed -i "s@SELINUXSTOREPATH@%{_sharedstatedir}/selinux@" %{buildroot}%{_rpmmacrod
 
 %posttrans
 if [ $1 -ge 0 ]; then
+  # Load the policy we just installed before setfiles; otherwise the kernel
+  # still has the old policy and new file_contexts types (e.g. kubelet_exec_t)
+  # are rejected as invalid.
+  # selinuxenabled handles offline and sandboxed environments.
+  %{_sbindir}/selinuxenabled && %{_sbindir}/load_policy || :
   %{_sbindir}/setfiles %{_sysconfdir}/selinux/default/contexts/files/file_contexts /
 fi
 exit 0
@@ -147,6 +153,10 @@ exit 0
 %{_datadir}/selinux
 
 %changelog
+* Mon Apr 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 43.6-1
+- Upgrade to fedora-selinux/selinux-policy v43.6 and container-selinux v2.247.0
+- Run load_policy in %%posttrans before setfiles
+- Remove xserver policy module from modules.conf
 * Mon Apr 06 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 36.5-15
 - Fix restorecon/fixfiles mac_admin denial: domain transition unconfined_t->setfiles_mac_t
   with range_transition s0 and system_r role association outside optional_policy
