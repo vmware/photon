@@ -7,7 +7,7 @@
 Summary:    Apache Ant
 Name:       apache-ant
 Version:    1.10.12
-Release:    7%{?dist}
+Release:    8%{?dist}
 URL:        http://ant.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -22,7 +22,7 @@ Source2: license.txt
 
 BuildRequires: openjdk11
 
-Requires: (openjdk11 or openjdk17 or openjdk21)
+Requires: (openjdk11 or openjdk17 or openjdk21 or openjdk25)
 
 BuildArch:      noarch
 
@@ -129,6 +129,8 @@ rm -rf %{buildroot}
 %{ant_bindir}/runant.pl
 
 %changelog
+* Mon Apr 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.10.12-8
+- Added openjdk21 and openjdk25 to requires
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.12-7
 - Update URL to packages.broadcom.com
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.12-6

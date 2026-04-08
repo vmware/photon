@@ -4,7 +4,7 @@
 Summary:    Apache Maven
 Name:       apache-maven
 Version:    3.9.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://maven.apache.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -19,7 +19,7 @@ BuildRequires: openjdk11
 BuildRequires: apache-ant
 BuildRequires: wget
 
-Requires: (openjdk11 or openjdk17)
+Requires: (openjdk11 or openjdk17 or openjdk21 or openjdk25)
 Requires: /usr/bin/which
 
 %define ExtraBuildRequires apache-maven
@@ -79,6 +79,8 @@ rm -rf %{buildroot}
 %exclude %{maven_libdir}/jansi-native
 
 %changelog
+* Mon Apr 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.9.0-6
+- Added openjdk21 and openjdk25 to requires
 * Tue Jan 07 2025 Vamsi Krishna Brahmajosuyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.9.0-5
 - Include additional inputs for SRP
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 3.9.0-4

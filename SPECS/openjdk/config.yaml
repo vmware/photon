@@ -175,3 +175,60 @@ sources:
       license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
       short_summary: OpenJDK
       supplier: 'Organization: Broadcom, Inc.'
+- archive: jdk-25.0.2-ga.tar.gz
+  archive_sha512sum: a1435cf8493c9498abfa98ac4ef4c5dc67892b95010c167cbda03b7ceb154f466d84ea3daf4242102f71b74233930e880f422768660a30f48658321255483907
+  archive_type: upstream
+  name: jdk25u-jdk-25.0.2-ga
+  version: 25.0.2
+  url: https://github.com/openjdk/jdk25u/archive/refs/tags/jdk-25.0.2-ga.tar.gz
+  repo_url: https://github.com/openjdk/jdk25u
+  commit_id: 405a5699ebd097464ed3fc9345414b0774a2edc9
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'The OpenJDK package installs java class library and javac java compiler.'
+      home_page: https://github.com/openjdk/jdk25u
+      license_concluded: (FTL OR GPL-2.0-only) AND (BSD-3-Clause OR Apache-2.0) AND
+        (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-1.0-or-later)
+        AND W3C-19980720 AND HPND-export2-US AND CC0-1.0 AND Libpng AND MIT-Modern-Variant
+        AND MIT-open-group AND UPL-1.0 AND MPL-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND IJG AND BSD-2-Clause AND Unicode-TOU AND GPL-2.0-only
+        AND Apache-2.0 AND ICU AND Apache-1.1 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND Unicode-DFS-2016 AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only
+        AND FTL AND NAIST-2003 AND Unicode-3.0 AND SunPro AND ISC AND SMLNJ AND W3C
+        AND MIT AND SAX-PD AND Zlib AND softSurfer
+      license_declared: (FTL OR GPL-2.0-only) AND (BSD-3-Clause OR Apache-2.0) AND
+        (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (MIT OR GPL-1.0-or-later)
+        AND W3C-19980720 AND HPND-export2-US AND CC0-1.0 AND Libpng AND MIT-Modern-Variant
+        AND MIT-open-group AND UPL-1.0 AND MPL-2.0 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND BSD-3-Clause AND IJG AND BSD-2-Clause AND Unicode-TOU AND GPL-2.0-only
+        AND Apache-2.0 AND ICU AND Apache-1.1 AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND Unicode-DFS-2016 AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only
+        AND FTL AND NAIST-2003 AND Unicode-3.0 AND SunPro AND ISC AND SMLNJ AND W3C
+        AND MIT AND SAX-PD AND Zlib AND softSurfer
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: openjdk-25.0.2_linux-x64_bin.tar.gz
+  archive_sha512sum: 5c66d76feff754ba669ca8fb60301f78a0082100aa60b5bc7f1e7e742b7dfa94d44897ba7d53623c998191cc1d5e521a4d42e4af5f5fadeaa3a89915ada1128b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK25 Bootstrap SDK source'
+      home_page: https://jdk.java.net/archive/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: openjdk-25.0.2_linux-aarch64_bin.tar.gz
+  archive_sha512sum: 66b41c156f5849ecd59c34896d485796f00bd7fb8cae9730715f707fd9589692c12a392050675ab11cd5131154e0c3bfde1910e75db0e3719c69e19319b3cd5e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'JDK25 Bootstrap SDK source'
+      home_page: https://jdk.java.net/archive/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0) AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND Bitstream-Vera AND CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-3.0-only AND HPND AND HPND-export2-US AND ICU AND IJG AND LGPL-2.1-only AND LGPL-2.1-or-later AND Libpng AND MIT AND MIT-open-group AND MPL-2.0 AND SAX-PD AND SMLNJ AND Unicode-3.0 AND Unicode-TOU AND W3C AND XFree86-1.1 AND Zlib
+      short_summary: OpenJDK
+      supplier: 'Organization: Broadcom, Inc.'
