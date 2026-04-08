@@ -5,7 +5,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.26.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -24,6 +24,11 @@ Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tag
 Source3: %{name}.service
 
 Patch0: CVE-2025-53859.patch
+Patch1: CVE-2026-27654.patch
+Patch2: CVE-2026-32647.patch
+Patch3: CVE-2026-27651.patch
+Patch4: CVE-2026-27784.patch
+Patch5: CVE-2026-1642.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -125,6 +130,9 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Wed Apr 08 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.3-2
+- Fix CVE-2026-27654, CVE-2026-32647, CVE-2026-27651,
+- CVE-2026-27784, CVE-2026-1642
 * Mon Aug 18 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.3-1
 - Upgrade to v1.26.3, fixes CVE-2025-53859
 * Mon Aug 19 2024 Nitesh Kumar <nitesh-nk.kumar@broadcom.com> 1.26.2-1
