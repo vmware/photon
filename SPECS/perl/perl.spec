@@ -12,7 +12,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.40.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -31,6 +31,7 @@ Patch1:         make-check-failure2.patch
 %endif
 
 Patch2:         0001-Remove-libdb-support.patch
+Patch3:         perl-CVE-2026-4176.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -109,6 +110,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Wed Apr 08 2026 Dweep Advani <dweep.advani@broadcom.com> 5.40.2-3
+- Fix CVE-2026-4176
 * Thu Apr 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.40.2-2
 - Disable gcc fortify
 * Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 5.40.2-1
