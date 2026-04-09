@@ -2,7 +2,7 @@
 
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        22.22.0
+Version:        22.22.2
 Release:        1.1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -105,6 +105,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Thu Apr 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.22.2-1.1
+- Fix CVE-2026-21710, CVE-2026-21714, CVE-2026-21717, CVE-2026-21715, CVE-2026-21713, CVE-2026-21716
 * Thu Mar 05 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.22.0-1.1
 - Bump after moving to SPECS/91
 * Mon Feb 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.22.0-1
