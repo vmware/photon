@@ -1,15 +1,13 @@
 %global build_if %{photon_subrelease} >= 92
 
 %define hist_db_dir     %{_libdir}/sysimage/%{name}
-%define history_db_fn   %{hist_db_dir}/history.db
-%define history_util    %{_libexecdir}/%{name}/%{name}-history-util
 %define _tdnfpluginsdir %{_libdir}/%{name}-plugins
 %global automatic_services %{name}-automatic.timer %{name}-automatic-notifyonly.timer %{name}-automatic-install.timer
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.6.3
-Release:        5%{?buildtag}%{?dist}
+Release:        6%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -173,13 +171,6 @@ mkdir -p %{_rundir}/user/$(id -u)
 %postun
 /sbin/ldconfig
 
-%posttrans
-# must be postrans because we read the rpm db
-# cannot use tdnf because that is still running even in postrans
-[ -d %{hist_db_dir} ] || mkdir -p %{hist_db_dir}
-[ -f %{history_db_fn} ] || %{history_util} init
-exit 0
-
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
 if [ $1 -eq 2 ]; then
@@ -194,6 +185,7 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 
 %post cli-libs
 /sbin/ldconfig
+[ -d %{hist_db_dir} ] || mkdir -p %{hist_db_dir}
 
 %postun cli-libs
 /sbin/ldconfig
@@ -264,6 +256,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Apr 09 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.3-6
+- Remove posttrans action to avoid deadlock with rpm 6
 * Wed Mar 25 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-5
 - Bump version as a part of rpm upgrade
 * Tue Mar 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-4
