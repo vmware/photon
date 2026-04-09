@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.18
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -18,8 +18,8 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels%{?dist}-2.0.tar.xz
-%define sha512 setuptools-pip-wheels=3949a17915c9040efce6eb5743553bffcc9ec1befe0daa2e3f15c0b7f116f13fd65015af99144d2f39d43c9caab4c73246346b9959ef245843356e85785a13c3
+Source2: setuptools-pip-wheels%{?dist}-3.0.tar.xz
+%define sha512 setuptools-pip-wheels=ec91d8945a7c1444b1695a15279a1598adefd7b70f474dc515c4fd923fc9cfe72c41e40945343ddb4f20bd522e334ff7ee6f1ad59395656689ecb4453f0b6eaf
 
 Patch0:         cgi3.patch
 Patch1:         use-HMAC-SHA256-in-FIPS-mode.patch
@@ -39,6 +39,7 @@ BuildRequires:  expat-devel >= 2.1.0
 BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  util-linux-devel
+BuildRequires:  ca-certificates
 
 # cross compilation requires native python3 installed for ensurepip
 %define BuildRequiresNative %{name}-xml
@@ -303,6 +304,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Mon Apr 27 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-6
+- Use updated python3-pip whl
 * Tue Mar 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.10.18-5
 - Fix CVE-2026-3479
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.10.18-4
