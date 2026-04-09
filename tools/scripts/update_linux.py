@@ -71,7 +71,7 @@ class Git:
         if result.returncode:
             if result.stdout:
                 print(f"STDOUT: {result.stdout}")
-            die(f"STDERR: {result.stderr.strip() if result.stderr else "Unknown error"}")
+            die("STDERR: " + result.stderr.strip() if result.stderr else "Unknown error")
         return result.stdout.strip() if capture else ""
 
     def run(self, *args):
