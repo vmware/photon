@@ -1,0 +1,27 @@
+From 4516138b633823b4705bbffc786f98e91b21f91d Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Thu, 12 Mar 2026 15:31:20 -0700
+Subject: [PATCH] makefile: only install alternatives
+
+---
+ Makefile | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index b01563e..8ad2253 100644
+--- a/Makefile
++++ b/Makefile
+@@ -58,10 +58,6 @@ install:
+ 	[ -d $(DESTDIR)/$(ALTDATADIR) ] || mkdir -p -m 755 $(DESTDIR)/$(ALTDATADIR)
+ 	[ -d $(DESTDIR)/$(SYSTEMDUTILDIR) ] || mkdir -p -m 755 $(DESTDIR)/$(SYSTEMDUTILDIR)
+ 
+-	install -m 755 $(PROG) $(DESTDIR)/$(SBINDIR)/$(PROG)
+-	ln -s ../../..$(SBINDIR)/$(PROG) $(DESTDIR)/$(SYSTEMDUTILDIR)/systemd-sysv-install
+-
+-	install -m 755 ntsysv $(DESTDIR)/$(SBINDIR)/ntsysv
+ 	install -m 755 alternatives $(DESTDIR)/$(SBINDIR)/alternatives
+ 	ln -s alternatives $(DESTDIR)/$(SBINDIR)/update-alternatives
+ 
+-- 
+2.43.7
+

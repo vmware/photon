@@ -15,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql17
 Version:        17.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -102,8 +102,8 @@ Group:      Applications/Databases
 Requires:   krb5
 Requires:   openldap
 Requires:   openssl
-Requires:   chkconfig
-Requires(postun): chkconfig
+Requires:   alternatives
+Requires(postun): alternatives
 
 %description libs
 The postgresql-libs package provides the essential shared libraries for any
@@ -747,6 +747,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.9-3
+- Require alternatives instead of chkconfig
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 17.9-2
 - Bump version as a part of python3.14 upgrade
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.9-1

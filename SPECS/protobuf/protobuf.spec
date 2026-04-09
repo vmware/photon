@@ -6,7 +6,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -27,7 +27,7 @@ BuildRequires: unzip
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
-BuildRequires: chkconfig
+BuildRequires: alternatives
 BuildRequires: openjdk11
 BuildRequires: apache-maven
 BuildRequires: cmake
@@ -157,6 +157,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.23.3-7
+- Require alternatives instead of chkconfig
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.23.3-6
 - Bump version as a part of python3.14 upgrade
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.23.3-5

@@ -26,7 +26,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        18%{?dist}
+Release:        19%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -156,8 +156,8 @@ Requires: libsss_nss_idmap = %{version}-%{release}
 Requires: libsss_idmap = %{version}-%{release}
 Requires: e2fsprogs-libs
 Requires: Linux-PAM
-Requires(post):  chkconfig
-Requires(preun): chkconfig
+Requires(post):  alternatives
+Requires(preun): alternatives
 
 %description client
 Provides the libraries needed by the PAM and NSS stacks to connect to the SSSD
@@ -1033,6 +1033,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-19
+- Swap chkconfig for alternatives in requires
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-18
 - Bump version as a part of python3.14 upgrade
 * Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-17

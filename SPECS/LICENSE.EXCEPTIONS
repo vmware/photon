@@ -23,7 +23,8 @@ python-iniparse
  
 SPEC files that are derived from Fedora SPEC files: 
 c-ares
-chkconfig : 
+chkconfig :
+alternatives : 
 initscripts :
 openvswitch :
 oniguruma : 

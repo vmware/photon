@@ -3,7 +3,7 @@
 Name:           p11-kit
 Summary:        Library for loading and sharing PKCS11 modules
 Version:        0.24.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Libraries
@@ -23,7 +23,6 @@ BuildRequires: gettext
 BuildRequires: gtk-doc
 BuildRequires: meson
 BuildRequires: systemd-devel
-BuildRequires: chkconfig
 BuildRequires: gnupg
 
 Requires: libffi
@@ -47,8 +46,6 @@ Summary:            System trust module from %{name}
 Requires:           %{name} = %{version}-%{release}
 Requires:           libtasn1
 Requires:           nspr
-Requires(post):     chkconfig
-Requires(postun):   chkconfig
 
 %description trust
 The %{name}-trust package contains a system trust PKCS#11 module which
@@ -161,6 +158,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/update-ca-trust
 
 %changelog
+* Fri Mar 13 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.24.1-6
+- Remove stale chkconfig dependency
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.24.1-5
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.24.1-4

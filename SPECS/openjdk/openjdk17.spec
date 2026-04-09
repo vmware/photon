@@ -12,7 +12,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.18
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -39,7 +39,6 @@ BuildRequires: zip
 BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
-BuildRequires: chkconfig
 BuildRequires: fontconfig-devel
 BuildRequires: freetype2-devel
 BuildRequires: glib-devel
@@ -57,8 +56,8 @@ BuildRequires: cups-devel
 %define ExtraBuildRequires openjdk17
 %endif
 
-Requires: chkconfig
-Requires(postun): chkconfig
+Requires: alternatives
+Requires(postun): alternatives
 
 Requires: %{name}-jre = %{version}-%{release}
 
@@ -71,8 +70,8 @@ The OpenJDK package installs java class library and javac java compiler.
 
 %package        jre
 Summary:        JRE subset files from jdk17
-Requires:       chkconfig
-Requires(postun): chkconfig
+Requires:       alternatives
+Requires(postun): alternatives
 Requires:       alsa-lib
 Requires:       freetype2
 Requires:       libstdc++
@@ -267,6 +266,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.18-3
+- Require alternatives instead of chkconfig
 * Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-2
 - Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
 * Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-1

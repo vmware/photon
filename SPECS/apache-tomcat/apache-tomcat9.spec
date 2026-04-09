@@ -11,7 +11,7 @@
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
 Version:        9.0.116
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -42,8 +42,8 @@ BuildRequires: apache-ant
 
 Requires:         jre >= 8.0
 Requires:         apache-ant
-Requires:         chkconfig
-Requires(postun): chkconfig
+Requires:         alternatives
+Requires(postun): alternatives
 
 %description
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
@@ -147,6 +147,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.0.116-3
+- Require alternatives instead of chkconfig
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.116-2
 - Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
 * Mon Mar 23 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.116-1

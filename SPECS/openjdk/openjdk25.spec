@@ -14,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk25
 Version:    25.0.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://github.com/openjdk/jdk25u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -41,7 +41,7 @@ BuildRequires: zip
 BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
-BuildRequires: chkconfig
+BuildRequires: alternatives
 BuildRequires: fontconfig-devel
 BuildRequires: freetype2-devel
 BuildRequires: glib-devel
@@ -59,8 +59,8 @@ BuildRequires: cups-devel
 %define ExtraBuildRequires openjdk25
 %endif
 
-Requires: chkconfig
-Requires(postun): chkconfig
+Requires: alternatives
+Requires(postun): alternatives
 
 Requires: %{name}-jre = %{version}-%{release}
 
@@ -71,8 +71,8 @@ OpenJDK package installs javac and JDK tools.
 
 %package        jre
 Summary:        JRE subset files from jdk25
-Requires:       chkconfig
-Requires(postun): chkconfig
+Requires:       alternatives
+Requires(postun): alternatives
 Requires:       alsa-lib
 Requires:       freetype2
 Requires:       libstdc++
@@ -260,5 +260,7 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Apr 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.0.2-2
+- Require alternatives instead of chkconfig
 * Wed Apr 01 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 25.0.2-1
 - Initial build. First version of openjdk25.

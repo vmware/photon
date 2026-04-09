@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} <= 91
 Summary:    A system tool for maintaining the /etc/rc*.d hierarchy
 Name:       chkconfig
 Version:    1.21
-Release:    3%{?dist}
+Release:    3.1%{?dist}
 Group:      System Environment/Base
 URL:        https://git.fedorahosted.org/git/chkconfig.git
 Vendor:     VMware, Inc.
@@ -29,6 +30,8 @@ BuildRequires: newt-devel
 BuildRequires: gettext
 BuildRequires: popt-devel
 BuildRequires: libselinux-devel
+
+Provides: alternatives
 
 Conflicts: initscripts <= 5.30-1
 
@@ -101,6 +104,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.21-3.1
+- Bump release after moving to 91 subrelease
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.21-3
 - Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.21-2

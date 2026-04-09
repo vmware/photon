@@ -15,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.23
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -99,8 +99,8 @@ Group:      Applications/Databases
 Requires:   krb5
 Requires:   openldap
 Requires:   openssl
-Requires:   chkconfig
-Requires(postun): chkconfig
+Requires:   alternatives
+Requires(postun): alternatives
 
 %description libs
 The postgresql13-libs package provides the essential shared libraries for any
@@ -729,6 +729,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 13.23-4
+- Require alternatives instead of chkconfig
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 13.23-3
 - Bump version as a part of python3.14 upgrade
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 13.23-2

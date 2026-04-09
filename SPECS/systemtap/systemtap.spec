@@ -10,7 +10,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       16%{?dist}
+Release:       17%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -78,6 +78,7 @@ Group:         System/Tools
 Summary:       Systemtap Initscript
 Requires:      %{name}-runtime = %{version}-%{release}
 Requires:      initscripts
+Requires(post): systemd-rpm-macros
 
 %description initscript
 Initscript for Systemtap scripts.
@@ -107,6 +108,7 @@ Requires:      (coreutils or coreutils-selinux)
 Requires:      nss
 Requires:      unzip
 Requires:      gzip
+Requires(post): systemd-rpm-macros
 
 %description server
 SystemTap server is the server component of an instrumentation system for systems running Linux.
@@ -242,41 +244,24 @@ if [ $1 -eq 1 ]; then
     %{_bindir}/stap-authorize-server-cert ~stap-server/.%{name}/ssl/server/stap.cert
     %{_bindir}/stap-authorize-signing-cert ~stap-server/.%{name}/ssl/server/stap.cert
   fi
-  /sbin/chkconfig --add stap-server
+  %systemd_post stap-server.service
   exit 0
 fi
 
 %preun server
-if [ $1 = 0 ]; then
-  /sbin/service stap-server stop >/dev/null 2>&1
-  /sbin/chkconfig --del stap-server
-fi
-exit 0
+%systemd_preun stap-server.service
 
 %postun server
-if [ "$1" -ge "1" ]; then
-  /sbin/service stap-server condrestart >/dev/null 2>&1 || :
-fi
-exit 0
+%systemd_postun_with_restart stap-server.service
 
 %post initscript
-if [ $1 -eq 1 ]; then
-  /sbin/chkconfig --add %{name}
-  exit 0
-fi
+%systemd_post %{name}
 
 %preun initscript
-if [ $1 = 0 ]; then
-  /sbin/service %{name} stop >/dev/null 2>&1
-  /sbin/chkconfig --del %{name}
-fi
-exit 0
+%systemd_preun %{name}
 
 %postun initscript
-if [ "$1" -ge "1" ]; then
-  /sbin/service %{name} condrestart >/dev/null 2>&1 || :
-fi
-exit 0
+%systemd_postun_with_restart stap-server.service
 
 %post
 if [ $1 -eq 1 ]; then
@@ -393,6 +378,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.8-17
+- Replace chkconfig with systemctl in scriptlets
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.8-16
 - Bump version as a part of python3.14 upgrade
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.8-15
