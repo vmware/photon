@@ -5,7 +5,7 @@
 
 Name: rubygem-ronn
 Version:        0.7.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        manual authoring tool
 Group:          Development/Languages
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
@@ -44,6 +44,8 @@ Ronn converts textfiles to standard roff-formatted UNIX manpages or HTML
 %{gemdir}
 
 %changelog
+* Thu Apr 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.7.3-7
+- bump version with rubygem-rdiscount upgrade
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.7.3-6
 - bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.7.3-5

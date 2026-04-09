@@ -4,18 +4,21 @@
 
 Name: rubygem-rdiscount
 Version:        2.2.7.3
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 Summary:        Fast Implementation of Gruber's Markdown in C
 Group:          Development/Languages
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 BuildRequires:  ruby-devel
 Requires:       ruby
+
+Patch0:         CVE-2026-35201.patch
 
 %description
 RDiscount converts documents in Markdown syntax to HTML.
@@ -24,6 +27,7 @@ and thereby inherits Discount’s numerous useful extensions to the Markdown lan
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -36,6 +40,8 @@ and thereby inherits Discount’s numerous useful extensions to the Markdown lan
 %{gem_base}
 
 %changelog
+* Thu Apr 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7.3-1.2
+- Fix CVE-2026-35201
 * Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7.3-1.1
 - Bump after moving to SPECS/91
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7.3-1

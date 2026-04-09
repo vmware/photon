@@ -1,6 +1,6 @@
 sources:
-- archive: rdiscount-2.2.7.3.gem
-  archive_sha512sum: 525791f2be10e118f556676a1645d2805ba6ad920e4f4c8761362c5aa09cf1f773f0216f7b6c2e1f78acbc1de1ac85c6088cc85729af70a28f537fdff3434786
+- archive: rdiscount-2.2.7.4.gem
+  archive_sha512sum: 83108dad15cca3bad30fe40442aaadd4cdfc9bc9872309be3ce0c6cdc8efd9d73617bfcf66abac12218772c633bee38761aed631f9c45b6115a31a3f75070e51
   skip_validation: true
   spdx:
     package:
