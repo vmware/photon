@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.13
-Release:        6.3%{?dist}
+Release:        6.4%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: setuptools-pip-wheels.ph5-1.0-3.tar.xz
+Source2: setuptools-pip-wheels.ph5-1.0-4.tar.xz
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -309,6 +309,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Fri Apr 24 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.13-6.4
+- Use updated python3-pip whl
 * Tue Mar 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.13-6.3
 - Fix CVE-2026-3479
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.13-6.2
