@@ -1,7 +1,15 @@
 sources:
 - archive: libsemanage-3.10.tar.gz
   archive_sha512sum: e07cb1d7e145b3baa2fb857c043c8ede7581d29fbb6a59709ebbee73097c12768e8b77eab35b4394efc0a655f3d266cdf7b08ac69759d6989d41e4213fe8aafd
-  skip_validation: true
+  archive_type: upstream
+  skip_validation: false
+  name: libsemanage-3.10
+  version: '3.10'
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.10/libsemanage-3.10.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux/
+  commit_id: ca10fc4204ed60540d41d2499127c18ad0643f9e
+  missing: ['.circleci', '.clang-format', '.editorconfig', '.fmf', '.github', '.travis.yml', 'CONTRIBUTING.md', 'CleanSpec.mk', 'README.md', 'SECURITY.md', 'checkpolicy', 'dbus', 'example', 'gui', 'include', 'lgtm.yml', 'libselinux', 'libsemanage', 'libsepol', 'man', 'mcstrans', 'policycoreutils', 'python', 'restorecond', 'sandbox', 'scripts', 'secilc', 'semodule-utils', 'src', 'tests', 'tmt', 'utils']
+  skip_list: ['.gitignore', 'LICENSE', 'Makefile']
   spdx:
     package:
       detailed_description: 'Security-enhanced Linux is a feature of the Linux® kernel
@@ -14,6 +22,6 @@ sources:
         Access Control, and Multi-level Security. '
       home_page: https://github.com/SELinuxProject/selinux/wiki
       license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later
-      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later 
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later
       short_summary: SELinux policy management libraries
       supplier: 'Organization: Broadcom, Inc.'

@@ -2,10 +2,19 @@ sources:
 - archive: selinux-python-3.10.tar.gz
   archive_sha512sum: 
     07ee5d1b612dd2679deca31049de7e9cc79cd16d86a46458f76af0d781022db515246c112804381ba045a0ceffe620af53c8b280553d555b2e3ab6b7ac177ebe
-  skip_validation: true
+  archive_type: upstream
+  skip_validation: false
+  name: selinux-python-3.10
+  version: '3.10'
+  url: 
+    https://github.com/SELinuxProject/selinux/releases/download/3.10/selinux-python-3.10.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: ca10fc4204ed60540d41d2499127c18ad0643f9e
+  missing: ['.circleci', '.clang-format', '.editorconfig', '.fmf', '.github', '.gitignore', '.travis.yml', 'CONTRIBUTING.md', 'CleanSpec.mk', 'README.md', 'SECURITY.md', 'audit2allow', 'chcat', 'checkpolicy', 'dbus', 'gui', 'lgtm.yml', 'libselinux', 'libsemanage', 'libsepol', 'mcstrans', 'po', 'policycoreutils', 'python', 'restorecond', 'sandbox', 'scripts', 'secilc', 'semanage', 'semodule-utils', 'sepolgen', 'sepolicy', 'tmt']
+  skip_list: ['LICENSE', 'Makefile']
   spdx:
     package:
-      detailed_description: 'The %{name} package contains the management tools use
+      detailed_description: 'The selinux-python package contains the management tools use
         to manage an SELinux environment. '
       home_page: https://github.com/SELinuxProject/selinux/wiki
       license_concluded: BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later

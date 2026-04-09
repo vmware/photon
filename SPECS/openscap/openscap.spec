@@ -2,8 +2,8 @@
 
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.3.6
-Release:        17%{?dist}
+Version:        1.3.14
+Release:        1%{?dist}
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -13,8 +13,6 @@ Source0: https://github.com/OpenSCAP/openscap/releases/download/%{version}/opens
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: use-correct-includes.patch
 
 BuildRequires:  xmlsec1-devel
 BuildRequires:  swig
@@ -94,6 +92,8 @@ Python bindings.
 %install
 %cmake_install
 
+%{py_byte_compile_and_ghost}
+
 %if 0%{?_with_check}
 %check
 %ctest
@@ -121,11 +121,13 @@ Python bindings.
 %defattr(-,root,root)
 %{_libdir}/perl5/*
 
-%files python3
+%files python3 -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}
 
 %changelog
+* Wed Apr 29 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.14-1
+- Update to 1.3.14
 * Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-17
 - Bump version as a part of rpm upgrade
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.3.6-16

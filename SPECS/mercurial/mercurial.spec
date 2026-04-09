@@ -2,7 +2,7 @@
 
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        7.2
+Version:        7.2.1
 Release:        1%{?dist}
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
@@ -13,8 +13,10 @@ Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
-BuildRequires:  python3-pip
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
 BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-vcs-versioning
 
 Requires:       python3
 
@@ -26,12 +28,12 @@ Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 %autosetup
 
 %build
-%{pyproject_wheel}
+%py3_build_wheel
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p %{buildroot}/%{_bindir}
-%{pyproject_install}
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
@@ -52,7 +54,7 @@ make %{?_smp_mflags} check
 %clean
 rm -rf %{buildroot}/*
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 /.hgrc
 %{_bindir}/hg
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_hg
 
 %changelog
+* Fri Apr 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.1-1
+- Update to 7.2.1
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2-1
 - Upgrade to 7.2 to compile with python3.14
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 6.3.1-2

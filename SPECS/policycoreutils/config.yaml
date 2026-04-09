@@ -2,13 +2,21 @@ sources:
 - archive: policycoreutils-3.10.tar.gz
   archive_sha512sum: 
     80e7cdd0c27c010c05758fcbe7da15cc112d9328eec726ae7a0d45d42b88b60aad2ebbe589062c84569a981ed7008832706ca4e538d1d97d31496f4333450e2f
-  skip_validation: true
+  archive_type: upstream
+  skip_validation: false
+  name: policycoreutils-3.10
+  version: '3.10'
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.10/policycoreutils-3.10.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: ca10fc4204ed60540d41d2499127c18ad0643f9e
+  missing: ['.circleci', '.clang-format', '.editorconfig', '.fmf', '.github', '.travis.yml', 'CONTRIBUTING.md', 'CleanSpec.mk', 'Lindent', 'Makefile', 'README.md', 'SECURITY.md', 'checkpolicy', 'ci', 'dbus', 'env_use_destdir', 'fixfiles', 'fixfiles.8', 'gui', 'hll', 'lgtm.yml', 'libselinux', 'libsemanage', 'libsepol', 'load_policy', 'make-update', 'man', 'mcstrans', 'newrole', 'oss-fuzz.sh', 'po', 'policycoreutils', 'python', 'release', 'restorecond', 'ru', 'run-flake8', 'run-scan-build', 'run_init', 'sandbox', 'scripts/Makefile', 'scripts/env_use_destdir', 'scripts/fixfiles', 'scripts/fixfiles.8', 'scripts/make-update', 'scripts/oss-fuzz.sh', 'scripts/release', 'scripts/run-flake8', 'scripts/run-scan-build', 'secilc', 'secon', 'semodule', 'semodule-utils', 'sestatus', 'setfiles', 'setsebool', 'tmt', 'unsetfiles','.tx']
+  skip_list: ['.gitignore', 'LICENSE', 'Makefile']
   spdx:
     package:
       detailed_description: 'policycoreutils contains the policy core utilities that
         are required for basic operation of a SELinux system. '
       home_page: https://github.com/SELinuxProject/selinux/wiki
       license_concluded: GPL-2.0-only AND GPL-2.0-or-later
-      license_declared: GPL-2.0-only AND GPL-2.0-or-later 
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later
       short_summary: SELinux policy core utilities
       supplier: 'Organization: Broadcom, Inc.'

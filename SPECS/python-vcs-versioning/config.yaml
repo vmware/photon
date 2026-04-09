@@ -1,0 +1,20 @@
+sources:
+- archive: vcs-versioning-v1.1.1.tar.gz
+  archive_sha512sum: 9809c0ae047bf7d7f65447291347e80f09ecbd0a5585e6df6daa522677f680cf15198eb06c0dbbcb89cb2661fc882e3a50faaf53cc446d9125ac1ef90b7e27a3
+  archive_type: upstream
+  name: setuptools-scm-vcs-versioning-v1.1.1
+  version: 1.1.1
+  url: https://github.com/pypa/setuptools-scm/archive/refs/tags/vcs-versioning-v1.1.1.tar.gz
+  repo_url: https://github.com/pypa/setuptools-scm
+  skip_validation: false
+  skip_list: []
+  missing: ['LICENSE.txt', 'CONTRIBUTING.md', 'testing_vcs', 'docs', 'setuptools-scm', 'setup.cfg', 'CHANGELOG.md', 'MANIFEST.in', '.gitattributes', 'vcs_versioning', 'TESTING.md', 'PKG-INFO', 'CLAUDE.md', 'vcs_versioning.egg-info', 'uv.lock', '.pre-commit-config.yaml', '.gitignore', 'vcs-versioning', '.github', '.readthedocs.yaml', 'RELEASE_SYSTEM.md', '.serena', '.git_archival.txt', 'setup.py', 'mkdocs.yml', 'vcs_versioning_workspace']
+  commit_id: 81fef309b77b6db86203f4476383cd930942a9f0
+  spdx:
+    package:
+      detailed_description: VCS metadata integration for setuptools-scm.
+      home_page: https://github.com/pypa/setuptools-scm
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: setuptools-scm VCS versioning backend
+      supplier: 'Organization: Broadcom, Inc.'

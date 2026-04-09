@@ -1,7 +1,20 @@
 sources:
-- archive: meson-1.4.2.tar.gz
-  archive_sha512sum: 4aed1a5f133de2c6839bab361a0e911dd5697f5dac2a8f100df69d43a8880a810dcfa1aa6402cdfb9c5e14fdceec76925f0496c301c31ba733a32618c403eaf0
-  skip_validation: true
+- archive: meson-1.10.2.tar.gz
+  archive_type: upstream
+  archive_sha512sum: baa5cfbb0a1d870183a19afb7d96214258a4df8b18a4b4c4ca28d3b829d20c56f17eb0579e59367d5f303bc3e107f35e2ff4337471273745c8fc5e8232a02427
+  skip_validation: false
+  name: meson-1.10.2
+  version: 1.10.2
+  url: https://github.com/mesonbuild/meson/archive/1.10.2/meson-1.10.2.tar.gz
+  repo_url: https://github.com/mesonbuild/meson
+  commit_id: d4b7efc83b925cbe0f35ce0972baadaad9147431
+  skip_list: []
+  missing: ['.gitattributes', '.gitignore']
+  license_manual_review:
+  - file_paths:
+    - meson-1.10.2/docs/markdown/legal.md
+    sha256sum: 78b49c95035c716b9c7fe979a6a2f4910c4cb23dbb96cc7773761591d03e6681
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'Meson is an open source build system meant to be both
@@ -10,11 +23,13 @@ sources:
         or debugging build definitions is a second wasted. So is every second spent
         waiting for the build system to actually start compiling code. '
       home_page: https://mesonbuild.com
-      license_concluded: Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND CC-BY-SA-4.0
-        AND CC0-1.0 AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        AND MIT AND Vim
-      license_declared: Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND CC-BY-SA-4.0 AND
-        CC0-1.0 AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
-        AND MIT AND Vim
+      license_concluded: (0BSD OR Apache-2.0 OR CC0-1.0 OR LGPL-2.0-or-later OR
+        WTFPL) AND Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND CC-BY-SA-4.0 AND
+        CC0-1.0 AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-or-later AND GPL-3.0-only AND MIT AND Vim
+      license_declared: (0BSD OR Apache-2.0 OR CC0-1.0 OR LGPL-2.0-or-later OR
+        WTFPL) AND Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND CC-BY-SA-4.0 AND
+        CC0-1.0 AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-2.0-or-later AND GPL-3.0-only AND MIT AND Vim
       short_summary: Extremely fast and user friendly build system
       supplier: 'Organization: Broadcom, Inc.'

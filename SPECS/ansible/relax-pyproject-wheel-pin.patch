@@ -1,0 +1,24 @@
+From 8439cb4f7572062dbac4c2837f793225eeacb90a Mon Sep 17 00:00:00 2001
+From: Mukul Sikka <mukul.sikka@broadcom.com>
+Date: Tue, 21 Apr 2026 08:52:15 +0000
+Subject: [PATCH] Relax pyproject.toml wheel pin for distro PEP 517 builds
+
+Upstream pins wheel==0.45.1; Photon ships python3-wheel newer than that,
+which breaks %py3_build_wheel (PEP 517 build-system dependency check).
+---
+ pyproject.toml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 8ca13e2..bc9c1ac 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools >= 66.1.0, <= 82.0.1", "wheel == 0.45.1"]  # lower bound to support controller Python versions, upper bound for latest version tested at release
++requires = ["setuptools >= 66.1.0, <= 82.0.1", "wheel >= 0.45.1"]  # lower bound to support controller Python versions, upper bound for latest version tested at release
+ build-backend = "setuptools.build_meta"
+
+ [project]
+--
+2.43.7

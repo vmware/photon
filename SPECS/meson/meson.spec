@@ -3,8 +3,8 @@
 Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
-Version:        1.4.2
-Release:        2%{?dist}
+Version:        1.10.2
+Release:        1%{?dist}
 URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,8 +19,12 @@ Source1: license.txt
 BuildRequires:  gcc
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-wheel
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
 BuildRequires:  ninja-build
 BuildRequires:  gtest-devel
+BuildRequires:  python3-packaging
 BuildRequires:  gmock-devel
 BuildRequires:  gettext
 
@@ -39,10 +43,11 @@ the build system to actually start compiling code.
 %autosetup -p1
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 install -Dpm0644 data/macros.%{name} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
@@ -50,12 +55,12 @@ install -Dpm0644 data/macros.%{name} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 export MESON_PRINT_TEST_OUTPUT=1
 python3 ./run_tests.py
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %license COPYING
 %{_bindir}/%{name}
 %{python3_sitelib}/mesonbuild/*
-%{python3_sitelib}/%{name}-*.egg-info/
+%{python3_sitelib}/%{name}-*.dist-info/
 %{_mandir}/man1/%{name}.1*
 %{_rpmmacrodir}/macros.%{name}
 %dir %{_datadir}/polkit-1
@@ -63,6 +68,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.2-1
+- Update to 1.10.2
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-2
 - Fix config.yaml manual license review entry
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-1

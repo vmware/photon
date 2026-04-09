@@ -1,13 +1,14 @@
 sources:
-- archive: cython-3.2.2.tar.gz
-  archive_sha512sum: 50cd07e4a89e11a902745a41455cdf4e7522c54c220881d523630b06961da7d39af78ce05180ba3e27839b458920fe2a23554350e33b9c16e80bc70dab19b975
+- archive: cython-3.2.4.tar.gz
+  archive_sha512sum: 5ab8e39739a79debbe89b2ff5b6d88e1b7aafd5ad34460f14f3fc2bd90c10bdc9d6aa5b5844a48e30402dde9790cb9abcba3dc2b4e8cde24c4eeee818a180099
   archive_type: upstream
-  name: cython-3.2.2
-  version: "3.2.2"
-  url: https://github.com/cython/cython/archive/refs/tags/3.2.2.tar.gz
+  skip_validation: false
+  name: cython-3.2.4
+  version: 3.2.4
+  url: https://github.com/cython/cython/archive/refs/tags/3.2.4.tar.gz
   repo_url: https://github.com/cython/cython
-  commit_id: 2a8ee41263f6bc898a32c75a9156071bee5e8788
-  missing: ['CONTRIBUTING.md', 'BUILD.bazel', 'windows_bugs_39.txt', 'ipython-COPYING.rst', 'limited_api_bugs_38.txt', 'memoryview_tests.txt', 'PKG-INFO', '.editorconfig', '.hgtags', '.gitrev', '.github', '.hgignore', 'locking', '.codespellrc', 'pyproject.toml', 'Doc', '.gitignore', 'runcodestyle.py', 'README.rst', '.readthedocs.yaml', '.mailmap']
+  commit_id: 21bda420d583bcf464fb9efb932b09c5f3db1efd
+  missing: ['.codespellrc', '.editorconfig', '.github', '.gitignore', '.hgignore', '.hgtags', '.mailmap', '.readthedocs.yaml', 'BUILD.bazel', 'CONTRIBUTING.md', 'Doc', 'LICENSE', 'Makefile', 'PKG-INFO', 'README.rst', 'ipython-COPYING.rst', 'limited_api_bugs_38.txt', 'locking', 'memoryview_tests.txt', 'pyproject.toml', 'runcodestyle.py', 'windows_bugs_39.txt']
   skip_list: []
   spdx:
     package:
@@ -16,9 +17,9 @@ sources:
         (based on Pyrex). It makes writing C extensions for Python as easy as Python
         itself. '
       home_page: http://cython.org/
-      license_concluded: Apache-2.0 AND MIT AND LGPL-2.0-or-later AND LGPL-2.0-only
-        AND Python-2.0 AND BSD-3-Clause
-      license_declared: Apache-2.0 AND MIT AND LGPL-2.0-or-later AND LGPL-2.0-only
-        AND Python-2.0 AND BSD-3-Clause
+      license_concluded: Apache-2.0 AND BSD-3-Clause AND LGPL-2.0-only AND
+        LGPL-2.0-or-later AND MIT AND Python-2.0
+      license_declared: Apache-2.0 AND BSD-3-Clause AND LGPL-2.0-only AND
+        LGPL-2.0-or-later AND MIT AND Python-2.0
       short_summary: C extensions for Python3
       supplier: 'Organization: Broadcom, Inc.'

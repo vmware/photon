@@ -1,13 +1,13 @@
 %global build_if %{photon_subrelease} >= 92
 
 Name:           dbus-python3
-Version:        1.3.2
-Release:        4%{?dist}
+Version:        1.4.0
+Release:        1%{?dist}
 Summary:        Python bindings for D-Bus
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
 
-Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/d/dbus-python/dbus-python-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -20,6 +20,10 @@ BuildRequires:  dbus-devel
 BuildRequires:  glib-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  systemd-devel
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  autoconf-archive
+BuildRequires:  libtool
 
 Requires:       python3-xml
 Requires:       dbus
@@ -40,6 +44,7 @@ Developer files for Python bindings for D-Bus.
 %autosetup -n dbus-python-%{version}
 
 %build
+NOCONFIGURE=1 ./autogen.sh
 %configure PYTHON="%{__python3}"
 %make_build %{?_smp_mflags}
 
@@ -47,11 +52,12 @@ Developer files for Python bindings for D-Bus.
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 cp -r dbus_python*egg-info %{buildroot}%{python3_sitelib}
 rm -f %{buildroot}%{python3_sitelib}/*.la
+%{py_byte_compile_and_ghost}
 
 %check
 make check %{?_smp_mflags}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %doc NEWS
 %license COPYING
@@ -66,6 +72,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-1
+- Update to 1.4.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.3.2-4
 - Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.3.2-3

@@ -3,7 +3,7 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.20.1
+Version:        2.20.4
 Release:        1%{?dist}
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -19,13 +19,18 @@ Source3: ansible_collection.py
 Source4: license.txt
 %include %{SOURCE4}
 
+# Upstream pins wheel==0.45.1; distro python3-wheel is newer — relax for offline PEP517 build.
+Patch0: relax-pyproject-wheel-pin.patch
+
 BuildArch: noarch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-packaging
 BuildRequires: python3-resolvelib
-BuildRequires: python3-pip
 BuildRequires: python3-wheel
+BuildRequires: python3-build
+BuildRequires: python3-installer
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
@@ -58,16 +63,17 @@ Development files for ansible packages
 cp -vp %{SOURCE1} lib/%{name}/modules/
 
 %build
-%pyproject_wheel
+%py3_build_wheel
 
 %install
-%pyproject_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 touch -r %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 install -Dpm0744 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-, root, root)
 %{_bindir}/*
 %{python3_sitelib}/*
@@ -78,6 +84,8 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.20.4-1
+- Update to 2.20.4
 * Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.20.1-1
 - Update to 2.20.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.18.6-2

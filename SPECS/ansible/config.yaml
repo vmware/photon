@@ -1,15 +1,15 @@
 sources:
-- archive: ansible-2.20.1.tar.gz
-  archive_sha512sum: fa0a4836e3548cd4e432e87b241beb6fb556765699c25b1f3b1c47111a1c44d5ba3244aeb8793408e72ab63564d6e848148becbfb550bd965e466752d7f78229
+- archive: ansible-2.20.4.tar.gz
+  archive_sha512sum: 45d66b208f4c49f2fc3c04c1cc317cb26a8571ede3f84daf4f6818e0404d5c1d5a50178be610f03b972119eb944395981d1253cfbbde0472efc553b82ac8c82c
   skip_validation: false
   archive_type: upstream
-  name: ansible-2.20.1
-  version: 2.20.1
-  url: https://github.com/ansible/ansible/archive/refs/tags/v2.20.1.tar.gz
+  name: ansible-2.20.4
+  version: 2.20.4
+  url: https://github.com/ansible/ansible/archive/refs/tags/v2.20.4.tar.gz
   repo_url: https://github.com/ansible/ansible
-  commit_id: 55ee8acd65cd94a110ce5eb5a3668c320b26f7d8
+  commit_id: 4c777317e90223843c775f75cadb6f37d4ec27e8
   skip_list: []
-  missing: ['.github']
+  missing: [.github]
   spdx:
     package:
       detailed_description: 'Ansible is a radically simple IT automation system. It
@@ -17,12 +17,14 @@ sources:
         ad-hoc task-execution, and multinode orchestration - including trivializing
         things like zero downtime rolling updates with load balancers. '
       home_page: https://www.ansible.com
-      license_concluded: (MIT OR GPL-1.0-or-later) AND MIT-0 AND GPL-3.0-or-later
-        AND GPL-1.0-or-later AND LGPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause
-        AND GPL-2.0-or-later AND MIT AND Python-2.0 AND Apache-2.0 AND GPL-3.0-only
-      license_declared: (MIT OR GPL-1.0-or-later) AND MIT-0 AND GPL-3.0-or-later AND
-        GPL-1.0-or-later AND LGPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND
-        GPL-2.0-or-later AND MIT AND Python-2.0 AND Apache-2.0 AND GPL-3.0-only
-      short_summary: Configuration-management, application deployment, cloud provisioning
-        system
+      license_concluded: (GPL-1.0-or-later OR MIT) AND Apache-2.0 AND
+        BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND GPL-1.0-or-later AND
+        GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND JSON AND
+        MIT AND MIT-0 AND Python-2.0
+      license_declared: (GPL-1.0-or-later OR MIT) AND Apache-2.0 AND
+        BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND GPL-1.0-or-later AND
+        GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND JSON AND
+        MIT AND MIT-0 AND Python-2.0
+      short_summary: Configuration-management, application deployment, cloud
+        provisioning system
       supplier: 'Organization: Broadcom, Inc.'

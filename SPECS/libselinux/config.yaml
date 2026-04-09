@@ -1,8 +1,49 @@
 sources:
 - archive: libselinux-3.10.tar.gz
-  archive_sha512sum: 
-    5783f737675eb94e0bdff082013589e5bddfa0669a357df185eb89f4f88cec8b90779e86c4b17b58f5c248175da0208c80cc2642046e348c7384dd799f1ba4c1
-  skip_validation: true
+  archive_type: upstream
+  archive_sha512sum: 5783f737675eb94e0bdff082013589e5bddfa0669a357df185eb89f4f88cec8b90779e86c4b17b58f5c248175da0208c80cc2642046e348c7384dd799f1ba4c1
+  skip_validation: false
+  version: '3.10'
+  name: libselinux-3.10
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.10/libselinux-3.10.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: ca10fc4204ed60540d41d2499127c18ad0643f9e
+  skip_list:
+  - LICENSE
+  - Makefile
+  missing:
+  - .circleci
+  - .clang-format
+  - .editorconfig
+  - .fmf
+  - .github
+  - .gitignore
+  - .travis.yml
+  - CONTRIBUTING.md
+  - CleanSpec.mk
+  - README.md
+  - SECURITY.md
+  - checkpolicy
+  - dbus
+  - fuzz
+  - gui
+  - include
+  - lgtm.yml
+  - libselinux
+  - libsemanage
+  - libsepol
+  - man
+  - mcstrans
+  - policycoreutils
+  - python
+  - restorecond
+  - sandbox
+  - scripts
+  - secilc
+  - semodule-utils
+  - src
+  - tmt
+  - utils
   spdx:
     package:
       detailed_description: 'Security-enhanced Linux is a feature of the Linux® kernel

@@ -4,20 +4,23 @@
 
 Summary:        C extensions for Python3
 Name:           cython3
-Version:        3.2.2
+Version:        3.2.4
 Release:        1%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://cython.org/
 
-Source0:        https://github.com/cython/cython/archive/cython-%{version}.tar.gz
+Source0:        https://github.com/cython/cython/archive/refs/tags/cython-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-pip
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 
 Requires:       python3
 
@@ -30,13 +33,15 @@ It makes writing C extensions for Python as easy as Python itself.
 %autosetup -p1 -n cython-%{version}
 
 %build
-%{pyproject_wheel}
+%py3_build_wheel
 
 %install
-%{pyproject_install}
+%py3_install_wheel
 mv %{buildroot}%{_bindir}/cython %{buildroot}%{_bindir}/cython3
 mv %{buildroot}%{_bindir}/cythonize %{buildroot}%{_bindir}/cythonize3
 mv %{buildroot}%{_bindir}/cygdb %{buildroot}%{_bindir}/cygdb3
+
+%{py_byte_compile_and_ghost}
 
 %check
 sed -i 's/PYTHON?=python/PYTHON?=python3/g' Makefile
@@ -45,16 +50,17 @@ make %{?_smp_mflags} test
 %clean
 rm -rf %{buildroot}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{python3_sitelib}/%{srcname}-%{version}.dist-info/
 %{python3_sitelib}/Cython/*
 %{python3_sitelib}/cython.py*
 %{python3_sitelib}/pyximport/*
-%{python3_sitelib}/__pycache__/*
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.4-1
+- Update to 3.2.4
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-1
 - Update to 3.2.2, as part of python3 upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.29.32-4

@@ -1,0 +1,12 @@
+sources:
+- archive: calver-2025.10.20.tar.gz
+  archive_sha512sum: 7fd26bc607328ee62b4bc8f19eb356c2b5f3d604c4ed7ea7a345b48e452e4cb3c64db9100ed8087c00e03b0cb0bee7aa69b93cca0f1ed9fa1dc1150a63799743
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Setuptools extension for CalVer package versions.
+      home_page: https://github.com/di/calver
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Setuptools CalVer versioning plugin
+      supplier: 'Organization: Broadcom, Inc.'

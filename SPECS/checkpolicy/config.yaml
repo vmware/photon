@@ -1,7 +1,15 @@
 sources:
 - archive: checkpolicy-3.10.tar.gz
   archive_sha512sum: b5e18d4664ba96d33f2b74b89972e056680e3cc0ede8327599f8b0972ac031eed1ff8e219ad90fb3537e29d711dd51cbdde73db589ca35ec27b7c63bc72c7afd
-  skip_validation: true
+  archive_type: upstream
+  skip_validation: false
+  name: checkpolicy-3.10
+  version: '3.10'
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.10/checkpolicy-3.10.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: ca10fc4204ed60540d41d2499127c18ad0643f9e
+  skip_list: ['.gitignore', 'LICENSE', 'Makefile']
+  missing: ['.circleci', '.clang-format', '.editorconfig', '.fmf', '.github', '.travis.yml', 'CONTRIBUTING.md', 'CleanSpec.mk', 'README.md', 'SECURITY.md', 'checkmodule.8', 'checkmodule.c', 'checkpolicy', 'checkpolicy.8', 'checkpolicy.c', 'checkpolicy.h', 'dbus', 'fuzz', 'gui', 'lgtm.yml', 'libselinux', 'libsemanage', 'libsepol', 'mcstrans', 'module_compiler.c', 'module_compiler.h', 'parse_util.c', 'parse_util.h', 'policy_define.c', 'policy_define.h', 'policy_parse.y', 'policy_scan.l', 'policycoreutils', 'python', 'queue.c', 'queue.h', 'restorecond', 'ru', 'sandbox', 'scripts', 'secilc', 'semodule-utils', 'test', 'tests', 'tmt','.tx']
   spdx:
     package:
       detailed_description: 'checkpolicy is a program that checks and compiles a SELinux

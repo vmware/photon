@@ -1,7 +1,15 @@
 sources:
 - archive: libsepol-3.10.tar.gz
+  archive_type: upstream
   archive_sha512sum: 95a12779a41577d02a13922d1a484954a6b041b3be9a76836e179ab3a4e4b83b90df63e3a3f32b0862466ed8748280fa9b820f8dc96a3887bcdde081947e7450
-  skip_validation: true
+  skip_validation: false
+  version: '3.10'
+  name: libsepol-3.10
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.10/libsepol-3.10.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: ca10fc4204ed60540d41d2499127c18ad0643f9e
+  skip_list: ['.gitignore', 'LICENSE', 'Makefile']
+  missing: ['.circleci', '.clang-format', '.editorconfig', '.fmf', '.github', '.travis.yml', 'CONTRIBUTING.md', 'CleanSpec.mk', 'README.md', 'SECURITY.md', 'checkpolicy', 'cil', 'dbus', 'fuzz', 'gui', 'include', 'lgtm.yml', 'libselinux', 'libsemanage', 'libsepol', 'man', 'mcstrans', 'policycoreutils', 'python', 'restorecond', 'sandbox', 'scripts', 'secilc', 'semodule-utils', 'src', 'tests', 'tmt', 'utils']
   spdx:
     package:
       detailed_description: 'Security-enhanced Linux is a feature of the Linux® kernel
@@ -17,7 +25,9 @@ sources:
         need to perform specific transformations on binary policies such as customizing
         policy boolean settings. '
       home_page: http://www.selinuxproject.org
-      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND BSD-2-Clause-Views AND Zlib AND GPL-2.0-or-later
-      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later AND BSD-2-Clause-Views AND Zlib AND GPL-2.0-or-later
+      license_concluded: BSD-2-Clause-Views AND GPL-2.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later AND Zlib
+      license_declared: BSD-2-Clause-Views AND GPL-2.0-or-later AND
+        LGPL-2.1-only AND LGPL-2.1-or-later AND Zlib
       short_summary: SELinux binary policy manipulation library
       supplier: 'Organization: Broadcom, Inc.'

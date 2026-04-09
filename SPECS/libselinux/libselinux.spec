@@ -94,6 +94,7 @@ make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" BINDIR="%{_bi
 mkdir -p %{buildroot}%{_tmpfilesdir} %{buildroot}/var/run/setrans
 echo "d /var/run/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/libselinux.conf
 
+# do not package ru man pages
 rm -r %{buildroot}%{_libdir}/libselinux.a
 
 %{py_byte_compile_and_ghost}

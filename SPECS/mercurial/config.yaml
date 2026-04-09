@@ -1,20 +1,19 @@
 sources:
-- archive: mercurial-7.2.tar.gz
-  archive_sha512sum: 716203e038959e6641fdd8ed4bbcff8774f0d525f1709a20f51fe4faf0545bdbef1c567b382378b7bc07a3f08c620ea6a600ada2bb5a99d8da69be0155be1f7e
+- archive: mercurial-7.2.1.tar.gz
+  archive_sha512sum: 196045832717d3f7b4e08fee97d093249a8334105dff55691309ac93dcbcd7d9f3f53326a8295be9e837572b99338003756b343e350a711ee4b17f549031a8d3
   skip_validation: true
+  url: https://www.mercurial-scm.org/release/mercurial-7.2.1.tar.gz
   spdx:
     package:
       detailed_description: 'Mercurial is a distributed source control management
         tool similar to Git and Bazaar. Mercurial is written in Python and is used
         by projects such as Mozilla and Vim. '
       home_page: https://www.mercurial-scm.org
-      license_concluded: GPL-2.0-or-later AND MPL-2.0 AND BSD-3-Clause AND BSD-2-Clause
-        AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND Python-2.0 AND Apache-2.0
-        WITH LLVM-exception AND Apache-2.0 AND MIT AND GPL-1.0-or-later AND LGPL-2.1-or-later
-        AND ZPL-2.1
-      license_declared: GPL-2.0-or-later AND MPL-2.0 AND BSD-3-Clause AND BSD-2-Clause
-        AND GPL-2.0-only AND (BSD-3-Clause OR GPL-2.0-only) AND Python-2.0 AND Apache-2.0
-        WITH LLVM-exception AND Apache-2.0 AND MIT AND GPL-1.0-or-later AND LGPL-2.1-or-later
-        AND ZPL-2.1
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND Apache-2.0 AND
+        BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
+        AND LGPL-2.1-or-later MIT AND MPL-2.0 AND Python-2.0
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND Apache-2.0 AND
+        BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
+        AND LGPL-2.1-or-later AND MIT AND MPL-2.0 AND Python-2.0
       short_summary: A free, distributed source control management tool.
       supplier: 'Organization: Broadcom, Inc.'

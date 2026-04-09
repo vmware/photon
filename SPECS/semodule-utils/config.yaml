@@ -1,7 +1,15 @@
 sources:
 - archive: semodule-utils-3.10.tar.gz
   archive_sha512sum: e1b8e5ef566bd5d7d346447788e40066403e8943dd4ad4638707b2d85155e57596a79b6777dfcdc39b49cac569020b1dc48663de821c67fb48846f9000df20a3
-  skip_validation: true
+  archive_type: upstream
+  skip_validation: false
+  name: semodule-utils-3.10
+  version: '3.10'
+  url: https://github.com/SELinuxProject/selinux/releases/download/3.10/semodule-utils-3.10.tar.gz
+  repo_url: https://github.com/SELinuxProject/selinux
+  commit_id: ca10fc4204ed60540d41d2499127c18ad0643f9e
+  missing: ['.circleci', '.clang-format', '.editorconfig', '.fmf', '.github', '.travis.yml', 'CONTRIBUTING.md', 'CleanSpec.mk', 'README.md', 'SECURITY.md', 'checkpolicy', 'dbus', 'gui', 'lgtm.yml', 'libselinux', 'libsemanage', 'libsepol', 'mcstrans', 'policycoreutils', 'python', 'restorecond', 'sandbox', 'scripts', 'secilc', 'semodule-utils', 'semodule_expand', 'semodule_link', 'semodule_package', 'tmt']
+  skip_list: ['.gitignore', 'LICENSE', 'Makefile']
   spdx:
     package:
       detailed_description: 'semodule-utils is set of tools for SELinux policy module manipulations.'
