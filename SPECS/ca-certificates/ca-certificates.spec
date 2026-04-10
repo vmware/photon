@@ -4,8 +4,8 @@
 
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
-Version:        20230315
-Release:        2%{?dist}
+Version:        20260409
+Release:        1%{?dist}
 License:        Custom
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
@@ -98,6 +98,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Fri Apr 10 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 20260409-1
+- Update certdata to revision 20260409
 * Thu Nov 28 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-2
 - Rehash ca-certs post upgrade
 * Thu Nov 21 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20230315-1
