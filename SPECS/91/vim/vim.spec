@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define debug_package %{nil}
 %global maj_ver vim92
@@ -6,7 +6,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.2.0136
-Release:        3%{?dist}
+Release:        2.1%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -32,19 +32,10 @@ Group:      Applications/Editors
 Requires:   tcsh
 Requires:   python3
 Requires:   %{name} = %{version}-%{release}
-Requires:   xxd = %{version}-%{release}
 Conflicts:  toybox < 0.8.2-2
 
 %description extra
 The vim extra package contains a extra files for powerful text editor.
-
-%package -n xxd
-Summary: A hex dump utility
-Conflicts: %{name}-extra < 9.2.0136-3
-
-%description -n xxd
-xxd creates a hex dump of a given file or standard input. It can also convert
-a hex dump back to its original binary form.
 
 %prep
 %autosetup -p1
@@ -79,31 +70,10 @@ if ! sed -n -e '0,/[[:space:]]*call[[:space:]]\+system\>/p' %{_sysconfdir}/vimrc
   sed -i -e 's#^\([[:space:]]*\)\(call[[:space:]]\+system.*\)$#\1set shell=/bin/bash\n\1\2#g' %{_sysconfdir}/vimrc
 fi
 
-%files
-%defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/vimrc
-%{_datadir}/vim/vim*/colors/desert.vim
-%{_datadir}/vim/vim*/colors/lists/default.vim
-%{_datadir}/vim/vim*/defaults.vim
-%{_datadir}/vim/vim*/filetype.vim
-%{_datadir}/vim/%{maj_ver}/syntax/nosyntax.vim
-%{_datadir}/vim/%{maj_ver}/syntax/syntax.vim
-%{_datadir}/vim/%{maj_ver}/autoload/dist/ft.vim
-%{_bindir}/ex
-%{_bindir}/vi
-%{_bindir}/view
-%{_bindir}/rvim
-%{_bindir}/rview
-%{_bindir}/vim
-%{_bindir}/vimdiff
-
-%files -n xxd
-%defattr(-,root,root)
-%{_bindir}/xxd
-
 %files extra
 %defattr(-,root,root)
 %{_bindir}/vimtutor
+%{_bindir}/xxd
 %{_mandir}/*/*
 %doc %{_datadir}/vim/vim*/doc/*
 %{_datadir}/vim/vim*/autoload/*
@@ -197,9 +167,27 @@ fi
 %lang(uk.cp1251)  %{_datadir}/vim/vim*/lang/uk.cp1251/LC_MESSAGES/vim.mo
 %lang(zh_CN.cp936) %{_datadir}/vim/vim*/lang/zh_CN.cp936/LC_MESSAGES/vim.mo
 
+%files
+%defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/vimrc
+%{_datadir}/vim/vim*/colors/desert.vim
+%{_datadir}/vim/vim*/colors/lists/default.vim
+%{_datadir}/vim/vim*/defaults.vim
+%{_datadir}/vim/vim*/filetype.vim
+%{_datadir}/vim/%{maj_ver}/syntax/nosyntax.vim
+%{_datadir}/vim/%{maj_ver}/syntax/syntax.vim
+%{_datadir}/vim/%{maj_ver}/autoload/dist/ft.vim
+%{_bindir}/ex
+%{_bindir}/vi
+%{_bindir}/view
+%{_bindir}/rvim
+%{_bindir}/rview
+%{_bindir}/vim
+%{_bindir}/vimdiff
+
 %changelog
-* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.2.0136-3
-- Introduce xxd sub package
+* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.2.0136-2.1
+- Bump after moving to SPECS/91
 * Wed Apr 01 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-2
 - Fix CVE-2026-33412
 * Wed Mar 11 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-1
