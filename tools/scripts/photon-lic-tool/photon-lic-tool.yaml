@@ -692,6 +692,7 @@ srp_known_licenses:
     - libtiff
     - lsof
     - mailprio
+    - man2html
     - metamail
     - mif-exception
     - mplus
