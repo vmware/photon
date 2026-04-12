@@ -113,7 +113,7 @@ index 20ab05c..a18ba72 100644
  	.owner		= THIS_MODULE,
  	.name		= "ptp_vmw",
 -	.max_adj	= 0,
-+	.max_adj	= 999999999,
++	.max_adj	= 500000,
  	.adjtime	= ptp_vmw_adjtime,
  	.adjfine	= ptp_vmw_adjfine,
  	.gettime64	= ptp_vmw_gettime,
