@@ -5,7 +5,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        6.12
-Release:        5.1%{?dist}
+Release:        5.2%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -25,6 +25,9 @@ Source8: license.txt
 
 Patch0: CVE-2025-62168.patch
 Patch1: CVE-2025-59362.patch
+Patch2: squid-CVE-2026-33526-icp-double-escape.patch
+Patch3: squid-CVE-2026-33515-icp-validation.patch
+Patch4: squid-CVE-2026-32748-icp-v3-lifetime.patch
 
 BuildRequires: Linux-PAM-devel
 BuildRequires: ed
@@ -242,6 +245,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Mon Apr 06 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.12-5.2
+- Fix CVE-2026-33526, CVE-2026-33515, CVE-2026-32748
 * Tue Mar 10 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12-5.1
 - Bump version after moving to SPECS/91
 * Thu Nov 20 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.12-5
