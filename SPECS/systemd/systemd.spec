@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -31,6 +31,11 @@ Patch5:         network-attempt-to-trigger-kernel-IPv6LL-address-gen.patch
 Patch6:         sd-netlink-make-default-timeout-configurable.patch
 Patch7:         CVE-2023-7008.patch
 Patch8:         CVE-2025-4598.patch
+Patch9:         CVE-2026-29111-prep.patch
+Patch10:        CVE-2026-29111-1.patch
+Patch11:        CVE-2026-29111-2.patch
+Patch12:        CVE-2026-29111-3.patch
+Patch13:        CVE-2026-29111-4.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -671,6 +676,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-19
+- Fix CVE-2026-29111
 * Fri Sep 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-18
 - Fix a missed out change in sd-netlink: make the default timeout configurable
 * Thu Aug 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-17
