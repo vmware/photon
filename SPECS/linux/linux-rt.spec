@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.167
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -354,6 +354,9 @@ Patch235: 0001-apparmor-fix-race-on-rawdata-dereference.patch
 Patch236: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
 # CVE-2026-23411
 Patch237: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
+
+# CVE-2026-23171
+Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -729,6 +732,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-2
+- Fix for CVE-2026-23171
 * Tue Apr 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-1
 - Update to version 6.1.167, -rt62
 - Drop usb-acm-exclude-exar-usb-serial-ports-nxt.patch,

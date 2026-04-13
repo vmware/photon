@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.167
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -426,6 +426,9 @@ Patch237: 0001-apparmor-fix-race-on-rawdata-dereference.patch
 Patch238: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
 # CVE-2026-23411
 Patch239: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
+
+# CVE-2026-23171
+Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1182,6 +1185,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-2
+- Fix CVE-2026-23171
 * Tue Apr 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-1
 - Update to version 6.1.167
 - Drop usb-acm-exclude-exar-usb-serial-ports-nxt.patch,

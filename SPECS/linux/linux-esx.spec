@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.167
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -397,6 +397,9 @@ Patch234: 0001-apparmor-fix-race-on-rawdata-dereference.patch
 Patch235: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
 # CVE-2026-23411
 Patch236: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
+
+# CVE-2026-23171
+Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
 
 # aarch64 [250..260]
 %ifarch aarch64
@@ -771,6 +774,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-2
+- Fix CVE-2026-23171
 * Tue Apr 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-1
 - Update to version 6.1.167
 - Drop CVE-2025-40135, CVE-2025-38201, CVE-2025-38704, CVE-2023-53510,
