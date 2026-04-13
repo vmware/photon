@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.252
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -228,6 +228,12 @@ Patch125: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
 
 # Fix CVE-2025-38512
 Patch126: 0001-wifi-prevent-A-MSDU-attacks-in-mesh-networks.patch
+
+# Fix CVE-2026-31405
+Patch127: 0001-media-dvb-net-fix-OOB-access-in-ULE-extension-header.patch
+
+# Fix CVE-2026-31392
+Patch128: 0001-smb-client-fix-krb5-mount-with-username-option.patch
 
 # Fix CVE-2024-26718
 Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
@@ -1277,6 +1283,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Apr 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-5
+- Fix CVE-2026-31405, CVE-2026-31392
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-4
 - Fix CVE-2026-23268, CVE-2026-23277
 * Mon Mar 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-3

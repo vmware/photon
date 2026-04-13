@@ -1,0 +1,74 @@
+From a484b12f06fdc2af6b1afdc4a90181b3e4bcf68b Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 13 Apr 2026 06:19:37 +0000
+Subject: [PATCH] smb: client: fix krb5 mount with username option
+
+From: Paulo Alcantara <pc@manguebit.org>
+
+commit 12b4c5d98cd7ca46d5035a57bcd995df614c14e1 upstream.
+
+Customer reported that some of their krb5 mounts were failing against
+a single server as the client was trying to mount the shares with
+wrong credentials.  It turned out the client was reusing SMB session
+from first mount to try mounting the other shares, even though a
+different username= option had been specified to the other mounts.
+
+By using username mount option along with sec=krb5 to search for
+principals from keytab is supported by cifs.upcall(8) since
+cifs-utils-4.8.  So fix this by matching username mount option in
+match_session() even with Kerberos.
+
+For example, the second mount below should fail with -ENOKEY as there
+is no 'foobar' principal in keytab (/etc/krb5.keytab).  The client
+ends up reusing SMB session from first mount to perform the second
+one, which is wrong.
+
+```
+$ ktutil
+ktutil:  add_entry -password -p testuser -k 1 -e aes256-cts
+Password for testuser@ZELDA.TEST:
+ktutil:  write_kt /etc/krb5.keytab
+ktutil:  quit
+$ klist -ke
+Keytab name: FILE:/etc/krb5.keytab
+KVNO Principal
+ ---- ----------------------------------------------------------------
+   1 testuser@ZELDA.TEST (aes256-cts-hmac-sha1-96)
+$ mount.cifs //w22-root2/scratch /mnt/1 -o sec=krb5,username=testuser
+$ mount.cifs //w22-root2/scratch /mnt/2 -o sec=krb5,username=foobar
+$ mount -t cifs | grep -Po 'username=\K\w+'
+testuser
+testuser
+```
+
+Reported-by: Oscar Santos <ossantos@redhat.com>
+Signed-off-by: Paulo Alcantara (Red Hat) <pc@manguebit.org>
+Cc: David Howells <dhowells@redhat.com>
+Cc: linux-cifs@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Ajay: Modified to apply on v5.10.y ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ fs/cifs/connect.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 658ea91fd..27397e8d1 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -2710,6 +2710,10 @@ static int match_session(struct cifs_ses *ses, struct smb_vol *vol)
+ 	case Kerberos:
+ 		if (!uid_eq(vol->cred_uid, ses->cred_uid))
+ 			return 0;
++		if (strncmp(ses->user_name ?: "",
++			    vol->username ?: "",
++			    CIFS_MAX_USERNAME_LEN))
++			return 0;
+ 		break;
+ 	default:
+ 		/* NULL username means anonymous session */
+-- 
+2.40.4
+

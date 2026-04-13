@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.252
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -184,6 +184,12 @@ Patch123: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
 
 # Fix CVE-2025-21863
 Patch125: 0001-io_uring-prevent-opcode-speculation.patch
+
+# Fix CVE-2026-31405
+Patch126: 0001-media-dvb-net-fix-OOB-access-in-ULE-extension-header.patch
+
+# Fix CVE-2026-31392
+Patch127: 0001-smb-client-fix-krb5-mount-with-username-option.patch
 
 # Fix CVE-2024-26718
 Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
@@ -781,6 +787,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-5
+- Fix CVE-2026-31405, CVE-2026-31392
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-4
 - Fix CVE-2026-23268, CVE-2026-23277
 * Mon Mar 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-3
