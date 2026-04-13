@@ -1,7 +1,7 @@
 From 381eb87af65deb72eb2eec3cdd3cc566d00f7494 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Sun, 4 Jan 2026 02:28:11 +0530
-Subject: [PATCH] Add support for mac-flapping and long mac-flapping prevention
+Subject: [PATCH 06/15] Add support for mac-flapping and long mac-flapping prevention
 
 Add fields to the bridge so that it can track when macs
 move from one bridge port to another. If that happens

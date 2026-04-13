@@ -1,7 +1,7 @@
 From 94688f27a1c2c30a5aa845c62a9d951dd93fb9be Mon Sep 17 00:00:00 2001
 From: Harinadh D <hdommaraju@vmware.com>
 Date: Wed, 7 Jan 2026 17:07:42 +0530
-Subject: [PATCH 14/19] iptunnel mark xfrm multi parts
+Subject: [PATCH 10/15] iptunnel mark xfrm multi parts
 
 This patch modifies several places for HCX specific purpose.
 

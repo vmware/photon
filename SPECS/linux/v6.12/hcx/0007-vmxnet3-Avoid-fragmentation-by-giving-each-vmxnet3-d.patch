@@ -1,7 +1,7 @@
 From 284ac6ca71e16bec085daa8605aa02ad29eec2be Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Sun, 4 Jan 2026 18:48:00 +0530
-Subject: [PATCH 09/19] vmxnet3: Avoid fragmentation by giving each vmxnet3
+Subject: [PATCH 07/15] vmxnet3: Avoid fragmentation by giving each vmxnet3
  device a per-rx-queue page
 
 Linux network stack uses an allocation page cache for skbs.  The

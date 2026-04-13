@@ -1,7 +1,7 @@
 From 49bc6d4d0c8ff8b62c0772828b5a92f827f53f19 Mon Sep 17 00:00:00 2001
 From: Jonathan Shao <sjonathan@vmware.com>
 Date: Wed, 15 Jun 2022 18:02:38 -0700
-Subject: [PATCH 15/19] disable pskb_inet_may_pull in tunnel
+Subject: [PATCH 11/15] disable pskb_inet_may_pull in tunnel
 
 pskb_inet_may_pull is not needed for HCX in tunnel code paths
 

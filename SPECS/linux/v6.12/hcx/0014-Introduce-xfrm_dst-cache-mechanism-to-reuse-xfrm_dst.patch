@@ -1,7 +1,7 @@
 From df88407c737430b5caf04a139ed820d2c4cc2e6e Mon Sep 17 00:00:00 2001
 From: Jonathan Shao <jonathan.shao@broadcom.com>
 Date: Thu, 22 Jan 2026 20:22:00 +0530
-Subject: [PATCH] Introduce xfrm_dst cache mechanism to reuse xfrm_dst in
+Subject: [PATCH 14/15] Introduce xfrm_dst cache mechanism to reuse xfrm_dst in
  xfrm_bundle_create()
 
 The xfrm policy (xfrm_dst) cache was introduced in 4.14.

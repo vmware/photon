@@ -1,7 +1,7 @@
 From 2981145f02557cba571e3ae4768f9d3b5e11dc0d Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 24 Dec 2025 18:29:26 +0530
-Subject: [PATCH 04/19] De-cap fou traffic into correct tunnel device(s)
+Subject: [PATCH 04/15] De-cap fou traffic into correct tunnel device(s)
 
 Default fou device doesn't allow multiple fou tunnels
 between one pair of IPs. Previous patch has been working

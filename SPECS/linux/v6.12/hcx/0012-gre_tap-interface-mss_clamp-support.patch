@@ -1,7 +1,7 @@
 From e726a9174a1804b54b1ce5679b0ba12e95fdb1ac Mon Sep 17 00:00:00 2001
 From: Kevin Wang <wxianzhao@vmware.com>
 Date: Sat, 25 Jun 2022 01:13:35 +0000
-Subject: [PATCH 16/19] gre_tap interface mss_clamp support
+Subject: [PATCH 12/15] gre_tap interface mss_clamp support
 
 Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
 ---

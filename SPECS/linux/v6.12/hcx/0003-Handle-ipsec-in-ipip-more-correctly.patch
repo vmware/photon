@@ -1,7 +1,7 @@
 From bbc9043b25dbcaaa2338ff514f7d35381cfe931c Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 18 Jun 2021 09:09:34 +0000
-Subject: [PATCH 03/19] Handle ipsec in ipip more correctly
+Subject: [PATCH 03/15] Handle ipsec in ipip more correctly
 
 If there is already encapsulation present, ipip tries to
 use the inner-most header for things like copying ttl and
