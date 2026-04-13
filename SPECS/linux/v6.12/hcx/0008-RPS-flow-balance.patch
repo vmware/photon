@@ -1,7 +1,7 @@
 From 16a12aca89a34cf01fc0d83349322ab8de02c8a7 Mon Sep 17 00:00:00 2001
 From: Jonathan Shao <jonathan.shao@broadcom.com>
 Date: Mon, 5 Jan 2026 18:37:36 +0530
-Subject: [PATCH 10/19] RPS flow balance
+Subject: [PATCH 08/15] RPS flow balance
 
 Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
 ---

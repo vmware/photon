@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.78
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -318,20 +318,16 @@ Patch702: 0002-Skip-IP_ECN_decapsulate-for-gretap-devices.patch
 Patch703: 0003-Handle-ipsec-in-ipip-more-correctly.patch
 Patch704: 0004-De-cap-fou-traffic-into-correct-tunnel-device-s.patch
 Patch705: 0005-Add-unknown-fou-tracking-to-kernel.patch
-Patch706: 0006-Add-initial-support-for-vxlan-trunk-to-cgw-kernel-wi.patch
-Patch707: 0007-Changes-for-bridge-vlan-arp-filtering-to-work-right.patch
-Patch708: 0008-Add-support-for-mac-flapping-and-long-mac-flapping-p.patch
-Patch709: 0009-vmxnet3-Avoid-fragmentation-by-giving-each-vmxnet3-d.patch
-Patch710: 0010-RPS-flow-balance.patch
-Patch711: 0011-add-mss-clamp-support-to-gretap-baseimage.patch
-Patch712: 0012-set-max_mtu-as-IP_MAX_MTU-for-type-vxlantrunk.patch
-Patch713: 0013-set-max_mtu-as-IP_MAX_MTU-for-vlan_trunk.patch
-Patch714: 0014-iptunnel-mark-xfrm-multi-parts.patch
-Patch715: 0015-disable-pskb_inet_may_pull-in-tunnel.patch
-Patch716: 0016-gre_tap-interface-mss_clamp-support.patch
-Patch717: 0017-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
-Patch718: 0018-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
-Patch719: 0019-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
+Patch706: 0006-Add-support-for-mac-flapping-and-long-mac-flapping-p.patch
+Patch707: 0007-vmxnet3-Avoid-fragmentation-by-giving-each-vmxnet3-d.patch
+Patch708: 0008-RPS-flow-balance.patch
+Patch709: 0009-add-mss-clamp-support-to-gretap-baseimage.patch
+Patch710: 0010-iptunnel-mark-xfrm-multi-parts.patch
+Patch711: 0011-disable-pskb_inet_may_pull-in-tunnel.patch
+Patch712: 0012-gre_tap-interface-mss_clamp-support.patch
+Patch713: 0013-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
+Patch714: 0014-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
+Patch715: 0015-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
 
 # Patches for efa [1400..1409]
 Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
@@ -601,7 +597,7 @@ The kernel fips-canister
 %autopatch -p1 -m300 -M339
 %endif
 
-%autopatch -p1 -m701 -M720
+%autopatch -p1 -m701 -M715
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -973,6 +969,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Apr 10 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.78-3
+- Drop unused HCX patches
 * Sun Apr 05 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.78-2
 - Fix linux-tools build with newer glibc
 * Thu Mar 26 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.78-1

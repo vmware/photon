@@ -1,7 +1,7 @@
 From ac2ead42770bd7550aabdd9af1e2073fc39facd7 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Wed, 7 Jan 2026 16:45:50 +0530
-Subject: [PATCH 11/19] add mss clamp support to gretap - baseimage
+Subject: [PATCH 09/15] add mss clamp support to gretap - baseimage
 
 Add mss_clamp support to gretap devices. This lets the gretap device
 limit the mss value TCP is able to get through to the peer, which

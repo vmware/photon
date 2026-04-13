@@ -1,7 +1,7 @@
 From ebff6232e683d0de020498b864b318854e748292 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Wed, 7 Jan 2026 17:33:43 +0530
-Subject: [PATCH 17/19] rps_cpus: skip receive packets queuing to only
+Subject: [PATCH 13/15] rps_cpus: skip receive packets queuing to only
  housekeeping CPUs
 
 Revert the logic of restricting receive packets queueing to only

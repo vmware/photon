@@ -1,7 +1,7 @@
 From 96c9d8e55c76a354a2b8a4aad0e2ecdb2c26e8c6 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 19 Dec 2025 18:49:04 +0530
-Subject: [PATCH 02/19] Skip IP_ECN_decapsulate for gretap devices
+Subject: [PATCH 02/15] Skip IP_ECN_decapsulate for gretap devices
 
 ip_tunnel decap code includes a call to do nested ECN processing.
 This code doesn't work correctly when the tunnel device

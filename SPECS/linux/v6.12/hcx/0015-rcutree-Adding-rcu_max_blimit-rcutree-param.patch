@@ -1,7 +1,7 @@
 From a5050b1b4dccce4f17c2bed8bd8a5d967fa45baf Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankit-aj.jain@broadcom.com>
 Date: Mon, 11 Nov 2024 08:54:27 +0000
-Subject: [PATCH 19/19] rcutree: Adding "rcu_max_blimit" rcutree param
+Subject: [PATCH 15/15] rcutree: Adding "rcu_max_blimit" rcutree param
 
 - In usecase, where rcu callbacks are more than 10K
  and responsible for freeing some objects.
