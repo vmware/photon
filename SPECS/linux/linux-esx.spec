@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.252
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -554,8 +554,17 @@ Patch320: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
 
 # CVE-2026-23268
 Patch321: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
+# CVE-2026-23407
+Patch322: 0001-apparmor-fix-missing-bounds-check-on-DEFAULT-table-in-verify.patch
+# CVE-2026-23408
+Patch323: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
+# CVE-2026-23410
+Patch324: 0001-apparmor-fix-race-on-rawdata-dereference.patch
+# CVE-2026-23411
+Patch325: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
+
 # Fix CVE-2026-23277
-Patch322: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
+Patch326: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
 #Patches for ptp_vmw
 Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -944,6 +953,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Apr 13 2026 Bo Gan <bo.gan@broadcom.com> 5.10.252-6
+- Fix CVE-2026-23407, CVE-2026-23408, CVE-2026-23410, CVE-2026-23411
 * Mon Apr 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-5
 - Fix CVE-2026-31405, CVE-2026-31392
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-4

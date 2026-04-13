@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.252
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -589,8 +589,17 @@ Patch324: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
 
 # CVE-2026-23268
 Patch325: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
+# CVE-2026-23407
+Patch326: 0001-apparmor-fix-missing-bounds-check-on-DEFAULT-table-in-verify.patch
+# CVE-2026-23408
+Patch327: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
+# CVE-2026-23410
+Patch328: 0001-apparmor-fix-race-on-rawdata-dereference.patch
+# CVE-2026-23411
+Patch329: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
+
 # Fix CVE-2026-23277
-Patch326: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
+Patch330: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1283,6 +1292,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Apr 13 2026 Bo Gan <bo.gan@broadcom.com> 5.10.252-6
+- Fix CVE-2026-23407, CVE-2026-23408, CVE-2026-23410, CVE-2026-23411
 * Mon Apr 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-5
 - Fix CVE-2026-31405, CVE-2026-31392
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.252-4
