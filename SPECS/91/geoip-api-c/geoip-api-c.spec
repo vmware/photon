@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        Library to find geographical and network information of an IP address
 Name:           geoip-api-c
 Version:        1.6.12
-Release:        5%{?dist}
+Release:        5.1%{?dist}
 URL:            https://github.com/maxmind/geoip-api-c
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -73,6 +75,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/geoip.pc
 
 %changelog
+* Mon Apr 13 2026 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.12-5.1
+- Sub branch for 9.1
 * Thu Jul 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.12-5
 - Remove references to GeoLite Legacy
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.12-4
