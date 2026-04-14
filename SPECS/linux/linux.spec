@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.252
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -600,6 +600,12 @@ Patch329: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
 
 # Fix CVE-2026-23277
 Patch330: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
+
+# CVE-2026-23442
+Patch331: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
+
+# CVE-2026-23444
+Patch332: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1292,6 +1298,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-7
+- Fix CVE-2026-23442, CVE-2026-23444
 * Mon Apr 13 2026 Bo Gan <bo.gan@broadcom.com> 5.10.252-6
 - Fix CVE-2026-23407, CVE-2026-23408, CVE-2026-23410, CVE-2026-23411
 * Mon Apr 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-5

@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.252
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -531,6 +531,12 @@ Patch327: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
 # Fix CVE-2026-23277
 Patch328: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
+# CVE-2026-23442
+Patch329: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
+
+# CVE-2026-23444
+Patch330: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
+
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch500: crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
@@ -796,6 +802,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-7
+- Fix CVE-2026-23442, CVE-2026-23444
 * Mon Apr 13 2026 Bo Gan <bo.gan@broadcom.com> 5.10.252-6
 - Fix CVE-2026-23407, CVE-2026-23408, CVE-2026-23410, CVE-2026-23411
 * Mon Apr 13 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-5

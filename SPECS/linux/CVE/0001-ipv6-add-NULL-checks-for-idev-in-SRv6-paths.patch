@@ -1,0 +1,59 @@
+From 2555bf03b74c88e19debef397ca1d48630ec20cb Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 13 Apr 2026 10:47:57 +0000
+Subject: [PATCH] ipv6: add NULL checks for idev in SRv6 paths
+
+From: Minhong He <heminhong@kylinos.cn>
+[ Upstream commit 06413793526251870e20402c39930804f14d59c0 ]
+
+__in6_dev_get() can return NULL when the device has no IPv6 configuration
+(e.g. MTU < IPV6_MIN_MTU or after NETDEV_UNREGISTER).
+
+Add NULL checks for idev returned by __in6_dev_get() in both
+seg6_hmac_validate_skb() and ipv6_srh_rcv() to prevent potential NULL
+pointer dereferences.
+
+Fixes: 1ababeba4a21 ("ipv6: implement dataplane support for rthdr type 4 (Segment Routing Header)")
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Signed-off-by: Minhong He <heminhong@kylinos.cn>
+Reviewed-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Link: https://patch.msgid.link/20260316073301.106643-1-heminhong@kylinos.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/ipv6/exthdrs.c   | 4 ++++
+ net/ipv6/seg6_hmac.c | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index cdad9019c..dfa0fb3d6 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -361,6 +361,10 @@ static int ipv6_srh_rcv(struct sk_buff *skb)
+ 	hdr = (struct ipv6_sr_hdr *)skb_transport_header(skb);
+ 
+ 	idev = __in6_dev_get(skb->dev);
++	if (!idev) {
++		kfree_skb(skb);
++		return -1;
++	}
+ 
+ 	accept_seg6 = net->ipv6.devconf_all->seg6_enabled;
+ 	if (accept_seg6 > idev->cnf.seg6_enabled)
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index f82fcd890..b52985c86 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -245,6 +245,8 @@ bool seg6_hmac_validate_skb(struct sk_buff *skb)
+ 	struct inet6_dev *idev;
+ 
+ 	idev = __in6_dev_get(skb->dev);
++	if (!idev)
++		return false;
+ 
+ 	srh = (struct ipv6_sr_hdr *)skb_transport_header(skb);
+ 
+-- 
+2.40.4
+
