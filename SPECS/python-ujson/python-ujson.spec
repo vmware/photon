@@ -3,7 +3,7 @@
 Summary:        Ultra fast JSON encoder and decoder written in pure C
 Name:           python3-ujson
 Version:        5.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 License:        BSD
 Vendor:         VMware, Inc.
@@ -12,6 +12,9 @@ URL:            https://pypi.org/project/ujson
 
 Source0:        https://files.pythonhosted.org/packages/fb/94/44fbbb059fe5d295f1f73e731a0b9c2e1b5073c2c6b58bb9c068715e9b72/ujson-%{version}.tar.gz
 %define sha512  ujson=9622e872391d5467455b32e324d7b680487664ca486bfc56ba8c3969853e5db94725cd45e81b535dca80af4a3c718af171ce7adb6dcb9b98a37a8068824f89c6
+
+Patch0: CVE-2026-32874.patch
+Patch1: CVE-2026-32875.patch
 
 BuildRequires:  double-conversion-devel
 BuildRequires:  python3-devel
@@ -51,5 +54,7 @@ rm -rf %{buildroot}
 %{python3_sitearch}/ujson*.so
 
 %changelog
+* Tue Apr 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-2
+- Fix CVE-2026-32874, CVE-2026-32875
 * Wed Oct 12 2022 Nitesh Kumar <kunitesh@vmware.com> 5.4.0-1
 - Initial version, Needed by python3-pydantic
