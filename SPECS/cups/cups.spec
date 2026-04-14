@@ -1,9 +1,7 @@
-%global build_if %{photon_subrelease} >= 92
-
 Summary:        The Common UNIX Printing System
 Name:           cups
-Version:        2.4.14
-Release:        2%{?dist}
+Version:        2.4.18
+Release:        1%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -14,12 +12,6 @@ Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{versio
 Source1: license.txt
 %include %{SOURCE1}
 
-# Fix CVE-2025-61915
-Patch1:  0001-Fix-various-issues-in-cupsd.patch
-
-# Fix CVE-2025-58436
-Patch2: 0001-Fix-unresponsive-cupsd-process-caused-by-a-slow-client.patch
-
 BuildRequires:  automake
 BuildRequires:  dbus-devel
 BuildRequires:  pkg-config
@@ -28,6 +20,7 @@ BuildRequires:  shadow
 BuildRequires:  krb5-devel
 BuildRequires:  libusb-devel
 BuildRequires:  openssl-devel
+BuildRequires:  systemd-devel
 
 Requires:       libusb
 Requires:       dbus
@@ -105,6 +98,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Tue Apr 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.18-1
+- Update to 2.4.18
+- Fix CVE-2026-27447, CVE-2026-34978, CVE-2026-34979, CVE-2026-34980, CVE-2026-34990, CVE-2026-39314
 * Thu Jan 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.14-2
 - Fix build with newer dbus
 * Tue Nov 25 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.14-1
