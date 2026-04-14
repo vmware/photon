@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -464,6 +464,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.19.3-10
+- Bump version as a part of libarchive upgrade
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.3-9
 - Remove BuildRequires: xmlto; confirmed xmlto not used in samba 4.19.3 build system
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.19.3-8

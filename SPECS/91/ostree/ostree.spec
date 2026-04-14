@@ -3,7 +3,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2025.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -170,6 +170,8 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2025.2-4
+- Bump version as a part of libarchive upgrade
 * Tue Apr 07 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2025.2-3
 - Move spec to SPECS/91; build only for photon_subrelease <= 91
 * Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2025.2-2
