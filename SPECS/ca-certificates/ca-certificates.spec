@@ -4,8 +4,8 @@
 
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
-Version:        20250612
-Release:        2%{?dist}
+Version:        20260414
+Release:        1%{?dist}
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -97,6 +97,8 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Tue Apr 14 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 20260414-1
+- Update certdata to revision 20260414
 * Thu Apr 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250612-2
 - Fix requires
 * Tue Jun 17 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 20250612-1
