@@ -1,13 +1,18 @@
 sources:
-- archive: git-2.43.7.tar.xz
+- archive: git-2.53.0.tar.gz
   skip_validation: false
-  archive_sha512sum: b6d912e70eb4e8bb899c1243b0b2b9b18d9d861ae2a18e85714658385f194407dc83e717827fd902c024e0492e8eb3a37b09ebf1e9048258eb4ba43e55c9e833
+  archive_sha512sum: bb68811f80926294327c09f4abd4650234c7caa256e2e870b80e3617fee1fd62a88b24fb370a28624505c62a8f426f46ff97f7dcc9f8a446e39cfb2610094d75
   archive_type: upstream
-  name: git-2.43.7
-  version: 2.43.7
+  name: git-2.53.0
+  version: 2.53.0
   repo_url: https://github.com/git/git/
-  commit_id: 7a1903ad46b5cc7524c0734a5034dccaec07209b
-  url: https://www.kernel.org/pub/software/scm/git/git-2.43.7.tar.gz
+  commit_id: 67ad42147a7acc2af6074753ebd03d904476118f
+  url: https://www.kernel.org/pub/software/scm/git/git-2.53.0.tar.gz
+  license_manual_review:
+  - file_paths:
+    - git-2.53.0/Documentation/technical/large-object-promisors.adoc
+    sha256sum: b76baff2c662164b423673ce3f7a663c96181f84998a7e71ada39bd650594e2f
+    spdx_exp: ''
   skip_list:
   - RCS
   - CVS

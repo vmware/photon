@@ -2,14 +2,14 @@
 
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.43.7
-Release:        2%{?dist}
+Version:        2.53.0
+Release:        1%{?dist}
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
+Source0: https://www.kernel.org/pub/software/scm/git/git-2.53.0.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -140,6 +140,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri Apr 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.53.0-1
+- Version upgrade
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.43.7-2
 - Bump version as a part of python3.14 upgrade
 * Wed Aug 06 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.43.7-1
