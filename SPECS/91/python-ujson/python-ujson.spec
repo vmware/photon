@@ -5,7 +5,7 @@
 Summary:        Ultra fast JSON encoder and decoder written in pure C
 Name:           python3-ujson
 Version:        5.4.0
-Release:        3.1%{?dist}
+Release:        3.2%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +15,9 @@ Source0:        https://files.pythonhosted.org/packages/fb/94/44fbbb059fe5d295f1
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-32874.patch
+Patch1: CVE-2026-32875.patch
 
 BuildRequires:  double-conversion-devel
 BuildRequires:  python3-devel
@@ -57,6 +60,8 @@ rm -rf %{buildroot}
 %{python3_sitearch}/ujson*.so
 
 %changelog
+* Tue Apr 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcomc.com> 5.4.0-3.2
+- Fix CVE-2026-32874, CVE-2026-32875
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3.1
 - Bump after moving to SPECS/91
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3
