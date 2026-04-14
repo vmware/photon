@@ -2,7 +2,7 @@
 
 Name:           python3-pyasn1
 Version:        0.4.8
-Release:        3.2%{?dist}
+Release:        3.3%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -20,6 +20,7 @@ BuildRequires:  python3-setuptools
 Requires:       python3
 
 Patch0: CVE-2026-30922.patch
+Patch1: CVE-2026-23490.patch
 
 BuildArch:      noarch
 
@@ -47,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Apr 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.8-3.3
+- Fix CVE-2026-23490
 * Tue Mar 31 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.4.8-3.2
 - Fix CVE-2026-30922
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.8-3.1
