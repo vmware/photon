@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.167
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -429,6 +429,10 @@ Patch239: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
 
 # CVE-2026-23171
 Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
+# CVE-2026-23442
+Patch241: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
+# CVE-2026-23444
+Patch242: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1185,6 +1189,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.167-3
+- Fix CVE-2026-23442, CVE-2026-23444
 * Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-2
 - Fix CVE-2026-23171
 * Tue Apr 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-1
