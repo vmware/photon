@@ -1,0 +1,65 @@
+From daa13ed0acd760f0c853e5521bfbfc050cc23574 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Wed, 11 Jan 2023 13:52:53 +0000
+Subject: [PATCH 150/175] AArch64: Optimize strlen
+
+Optimize strlen by unrolling the main loop.  Large strings are 64% faster on
+modern CPUs.
+
+Reviewed-by: Szabolcs Nagy <szabolcs.nagy@arm.com>
+(cherry picked from commit 03c8ce5000198947a4dd7b2c14e5131738fda62b)
+---
+ sysdeps/aarch64/strlen.S | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/sysdeps/aarch64/strlen.S b/sysdeps/aarch64/strlen.S
+index 3a5d0884077a97f0e7683a9f3618a3b51b550f3a..10b9ec07693bff0afd93b3c5bb324bc4bbf4ae7a 100644
+--- a/sysdeps/aarch64/strlen.S
++++ b/sysdeps/aarch64/strlen.S
+@@ -43,12 +43,9 @@
+ #define dend		d2
+ 
+ /* Core algorithm:
+-
+-   For each 16-byte chunk we calculate a 64-bit nibble mask value with four bits
+-   per byte. We take 4 bits of every comparison byte with shift right and narrow
+-   by 4 instruction. Since the bits in the nibble mask reflect the order in
+-   which things occur in the original string, counting trailing zeros identifies
+-   exactly which byte matched.  */
++   Process the string in 16-byte aligned chunks. Compute a 64-bit mask with
++   four bits per byte using the shrn instruction. A count trailing zeros then
++   identifies the first zero byte.  */
+ 
+ ENTRY (STRLEN)
+ 	PTR_ARG (0)
+@@ -68,18 +65,25 @@ ENTRY (STRLEN)
+ 
+ 	.p2align 5
+ L(loop):
+-	ldr	data, [src, 16]!
++	ldr	data, [src, 16]
++	cmeq	vhas_nul.16b, vdata.16b, 0
++	umaxp	vend.16b, vhas_nul.16b, vhas_nul.16b
++	fmov	synd, dend
++	cbnz	synd, L(loop_end)
++	ldr	data, [src, 32]!
+ 	cmeq	vhas_nul.16b, vdata.16b, 0
+ 	umaxp	vend.16b, vhas_nul.16b, vhas_nul.16b
+ 	fmov	synd, dend
+ 	cbz	synd, L(loop)
+-
++	sub	src, src, 16
++L(loop_end):
+ 	shrn	vend.8b, vhas_nul.8h, 4		/* 128->64 */
+ 	sub	result, src, srcin
+ 	fmov	synd, dend
+ #ifndef __AARCH64EB__
+ 	rbit	synd, synd
+ #endif
++	add	result, result, 16
+ 	clz	tmp, synd
+ 	add	result, result, tmp, lsr 2
+ 	ret
+-- 
+2.35.6
+

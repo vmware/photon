@@ -1,0 +1,42 @@
+From e24f8e6b35ee0242312cb0f1a9fb5a76403e724e Mon Sep 17 00:00:00 2001
+From: Paul Eggert <eggert@cs.ucla.edu>
+Date: Wed, 19 Jul 2023 14:09:26 -0700
+Subject: [PATCH 137/175] =?UTF-8?q?make=20=E2=80=98struct=20pthread?=
+ =?UTF-8?q?=E2=80=99=20a=20complete=20type?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+* nptl/descr.h (struct pthread): Remove end_padding member, which
+made this type incomplete.
+(PTHREAD_STRUCT_END_PADDING): Stop using end_padding.
+
+Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+(cherry picked from commit 3edc4ff2ceff4a59587ebecb94148d3bcfa1df62)
+---
+ nptl/descr.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/nptl/descr.h b/nptl/descr.h
+index 5cacb286f35da5d2e252b6fd4e0fa0bf166d126d..70cf4b639a3437138f2f67c48df006e62cab568c 100644
+--- a/nptl/descr.h
++++ b/nptl/descr.h
+@@ -405,11 +405,11 @@ struct pthread
+   /* rseq area registered with the kernel.  */
+   struct rseq rseq_area;
+ 
+-  /* This member must be last.  */
+-  char end_padding[];
+-
++  /* Amount of end padding, if any, in this structure.
++     This definition relies on rseq_area being last.  */
+ #define PTHREAD_STRUCT_END_PADDING \
+-  (sizeof (struct pthread) - offsetof (struct pthread, end_padding))
++  (sizeof (struct pthread) - offsetof (struct pthread, rseq_area) \
++   + sizeof (struct rseq))
+ } __attribute ((aligned (TCB_ALIGNMENT)));
+ 
+ static inline bool
+-- 
+2.35.6
+

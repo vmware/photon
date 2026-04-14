@@ -1,0 +1,114 @@
+From da5f134f6d59701a3a6119309ae91c93c3fa5b51 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 20 Sep 2022 11:00:42 +0200
+Subject: [PATCH 042/175] elf: Implement force_first handling in
+ _dl_sort_maps_dfs (bug 28937)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The implementation in _dl_close_worker requires that the first
+element of l_initfini is always this very map (“We are always the
+zeroth entry, and since we don't include ourselves in the
+dependency analysis start at 1.”).  Rather than fixing that
+assumption, this commit adds an implementation of the force_first
+argument to the new dependency sorting algorithm.  This also means
+that the directly dlopen'ed shared object is always initialized last,
+which is the least surprising behavior in the presence of cycles.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 1df71d32fe5f5905ffd5d100e5e9ca8ad6210891)
+---
+ NEWS                     |  1 +
+ elf/dl-sort-maps.c       | 32 +++++++++++++++++++++++---------
+ elf/dso-sort-tests-1.def |  7 +++++++
+ 3 files changed, 31 insertions(+), 9 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 03281e3ab41c26cd21e822c44a50511f8e121e71..5b4753416f1f464fdf6773ac4e1b7c81d9982ce2 100644
+--- a/NEWS
++++ b/NEWS
+@@ -20,6 +20,7 @@ The following bugs are resolved with this release:
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
+   [29305] Conserve NSS buffer space during DNS packet parsing
+   [29415] nscd: Fix netlink cache invalidation if epoll is used
++  [28937] New DSO dependency sorter does not put new map first if in a cycle
+   [29446] _dlopen now ignores dl_caller argument in static mode
+   [29485] Linux: Terminate subprocess on late failure in tst-pidfd
+   [29490] alpha: New __brk_call implementation is broken
+diff --git a/elf/dl-sort-maps.c b/elf/dl-sort-maps.c
+index 5b550b1e9489f9ca8c0a759e0d98a676acc82890..3e2a6a584ec46f802a775ff088fdedb009014f0d 100644
+--- a/elf/dl-sort-maps.c
++++ b/elf/dl-sort-maps.c
+@@ -182,8 +182,9 @@ dfs_traversal (struct link_map ***rpo, struct link_map *map,
+ 
+ static void
+ _dl_sort_maps_dfs (struct link_map **maps, unsigned int nmaps,
+-		   bool force_first __attribute__ ((unused)), bool for_fini)
++		   bool force_first, bool for_fini)
+ {
++  struct link_map *first_map = maps[0];
+   for (int i = nmaps - 1; i >= 0; i--)
+     maps[i]->l_visited = 0;
+ 
+@@ -208,14 +209,6 @@ _dl_sort_maps_dfs (struct link_map **maps, unsigned int nmaps,
+      Adjusting the order so that maps[0] is last traversed naturally avoids
+      this problem.
+ 
+-     Further, the old "optimization" of skipping the main object at maps[0]
+-     from the call-site (i.e. _dl_sort_maps(maps+1,nmaps-1)) is in general
+-     no longer valid, since traversing along object dependency-links
+-     may "find" the main object even when it is not included in the initial
+-     order (e.g. a dlopen()'ed shared object can have circular dependencies
+-     linked back to itself). In such a case, traversing N-1 objects will
+-     create a N-object result, and raise problems.
+-
+      To summarize, just passing in the full list, and iterating from back
+      to front makes things much more straightforward.  */
+ 
+@@ -274,6 +267,27 @@ _dl_sort_maps_dfs (struct link_map **maps, unsigned int nmaps,
+     }
+ 
+   memcpy (maps, rpo, sizeof (struct link_map *) * nmaps);
++
++  /* Skipping the first object at maps[0] is not valid in general,
++     since traversing along object dependency-links may "find" that
++     first object even when it is not included in the initial order
++     (e.g., a dlopen'ed shared object can have circular dependencies
++     linked back to itself).  In such a case, traversing N-1 objects
++     will create a N-object result, and raise problems.  Instead,
++     force the object back into first place after sorting.  This naive
++     approach may introduce further dependency ordering violations
++     compared to rotating the cycle until the first map is again in
++     the first position, but as there is a cycle, at least one
++     violation is already present.  */
++  if (force_first && maps[0] != first_map)
++    {
++      int i;
++      for (i = 0; maps[i] != first_map; ++i)
++	;
++      assert (i < nmaps);
++      memmove (&maps[1], maps, i * sizeof (maps[0]));
++      maps[0] = first_map;
++    }
+ }
+ 
+ void
+diff --git a/elf/dso-sort-tests-1.def b/elf/dso-sort-tests-1.def
+index 5f7f18ef270bc12d8ef848f62c35b84bb1ddb41c..4bf9052db16fb3522375afad055f1ca0ba9f32f6 100644
+--- a/elf/dso-sort-tests-1.def
++++ b/elf/dso-sort-tests-1.def
+@@ -64,3 +64,10 @@ output: b>a>{}<a<b
+ tst-bz15311: {+a;+e;+f;+g;+d;%d;-d;-g;-f;-e;-a};a->b->c->d;d=>[ba];c=>a;b=>e=>a;c=>f=>b;d=>g=>c
+ output(glibc.rtld.dynamic_sort=1): {+a[d>c>b>a>];+e[e>];+f[f>];+g[g>];+d[];%d(b(e(a()))a()g(c(a()f(b(e(a()))))));-d[];-g[];-f[];-e[];-a[<a<c<d<g<f<b<e];}
+ output(glibc.rtld.dynamic_sort=2): {+a[d>c>b>a>];+e[e>];+f[f>];+g[g>];+d[];%d(b(e(a()))a()g(c(a()f(b(e(a()))))));-d[];-g[];-f[];-e[];-a[<g<f<a<b<c<d<e];}
++
++# Test that even in the presence of dependency loops involving dlopen'ed
++# object, that object is initialized last (and not unloaded prematurely).
++# Final destructor order is indeterminate due to the cycle.
++tst-bz28937: {+a;+b;-b;+c;%c};a->a1;a->a2;a2->a;b->b1;c->a1;c=>a1
++output(glibc.rtld.dynamic_sort=1): {+a[a2>a1>a>];+b[b1>b>];-b[<b<b1];+c[c>];%c(a1());}<a<a2<c<a1
++output(glibc.rtld.dynamic_sort=2): {+a[a2>a1>a>];+b[b1>b>];-b[<b<b1];+c[c>];%c(a1());}<a2<a<c<a1
+-- 
+2.35.6
+

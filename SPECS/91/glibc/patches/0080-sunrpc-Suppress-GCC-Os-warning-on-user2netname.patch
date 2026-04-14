@@ -1,0 +1,62 @@
+From 997d844a97b0478a3a7f9e7d7027c7431edbb51d Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>
+Date: Wed, 21 Sep 2022 10:51:07 -0300
+Subject: [PATCH 080/175] sunrpc: Suppress GCC -Os warning on user2netname
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+GCC with -Os warns that sprint might overflow:
+
+  netname.c: In function ‘user2netname’:
+  netname.c:51:28: error: ‘%s’ directive writing up to 255 bytes into a
+  region of size between 239 and 249 [-Werror=format-overflow=]
+     51 |   sprintf (netname, "%s.%d@%s", OPSYS, uid, dfltdom);
+        |                            ^~               ~~~~~~~
+  netname.c:51:3: note: ‘sprintf’ output between 8 and 273 bytes into a
+  destination of size 256
+     51 |   sprintf (netname, "%s.%d@%s", OPSYS, uid, dfltdom);
+        |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  cc1: all warnings being treated as errors
+
+However the code does test prior the sprintf call that dfltdom plus
+the required extra space for OPSYS, uid, and extra character will not
+overflow and return 0 instead.
+
+Checked on x86_64-linux-gnu and i686-linux-gnu.
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Tested-by: Carlos O'Donell <carlos@redhat.com>
+
+(cherry picked from commit 6128e82ebe973163d2dd614d31753c88c0c4d645)
+---
+ sunrpc/netname.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/sunrpc/netname.c b/sunrpc/netname.c
+index bf7f0b81c435f7dfb4d648e4f02ae2b0a74f082c..c1d1c43e502b7d65da7eb7f333aa24a17d9807c5 100644
+--- a/sunrpc/netname.c
++++ b/sunrpc/netname.c
+@@ -20,6 +20,7 @@
+ #include <string.h>
+ #include <rpc/rpc.h>
+ #include <shlib-compat.h>
++#include <libc-diag.h>
+ 
+ #include "nsswitch.h"
+ 
+@@ -48,7 +49,12 @@ user2netname (char netname[MAXNETNAMELEN + 1], const uid_t uid,
+   if ((strlen (dfltdom) + OPSYS_LEN + 3 + MAXIPRINT) > (size_t) MAXNETNAMELEN)
+     return 0;
+ 
++  /* GCC with -Os warns that sprint might overflow while handling dfltdom,
++     however the above test does check if an overflow would happen.  */
++  DIAG_PUSH_NEEDS_COMMENT;
++  DIAG_IGNORE_Os_NEEDS_COMMENT (8, "-Wformat-overflow");
+   sprintf (netname, "%s.%d@%s", OPSYS, uid, dfltdom);
++  DIAG_POP_NEEDS_COMMENT;
+   i = strlen (netname);
+   if (netname[i - 1] == '.')
+     netname[i - 1] = '\0';
+-- 
+2.35.6
+

@@ -1,0 +1,94 @@
+From 2d8ef784bd6a784496a6fd460de6b6f57c70a501 Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 3 Oct 2022 23:46:11 +0200
+Subject: [PATCH 056/175] x86-64: Require BMI1/BMI2 for AVX2 strrchr and
+ wcsrchr implementations
+
+The AVX2 strrchr and wcsrchr implementation uses the 'blsmsk'
+instruction which belongs to the BMI1 CPU feature and the 'shrx'
+instruction, which belongs to the BMI2 CPU feature.
+
+Fixes: df7e295d18ff ("x86: Optimize {str|wcs}rchr-avx2")
+Partially resolves: BZ #29611
+
+Reviewed-by: Noah Goldstein  <goldstein.w.n@gmail.com>
+(cherry picked from commit 7e8283170c5d6805b609a040801d819e362a6292)
+---
+ sysdeps/x86/isa-level.h                    |  1 +
+ sysdeps/x86_64/multiarch/ifunc-avx2.h      |  1 +
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 17 ++++++++++++++---
+ 3 files changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/sysdeps/x86/isa-level.h b/sysdeps/x86/isa-level.h
+index bbb90f5c5e97960102caae3d0ff7a42b681757a2..06f6c9663e76d4a48efb8fbfdb707cc5045f47dc 100644
+--- a/sysdeps/x86/isa-level.h
++++ b/sysdeps/x86/isa-level.h
+@@ -79,6 +79,7 @@
+ /* ISA level >= 3 guaranteed includes.  */
+ #define AVX_X86_ISA_LEVEL 3
+ #define AVX2_X86_ISA_LEVEL 3
++#define BMI1_X86_ISA_LEVEL 3
+ #define BMI2_X86_ISA_LEVEL 3
+ #define LZCNT_X86_ISA_LEVEL 3
+ #define MOVBE_X86_ISA_LEVEL 3
+diff --git a/sysdeps/x86_64/multiarch/ifunc-avx2.h b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+index f1741083fdeb0d29cf4aff03cc72e6464479d3db..f2f5e8a2119e8f060da125589daa90dd2dd008b3 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-avx2.h
++++ b/sysdeps/x86_64/multiarch/ifunc-avx2.h
+@@ -36,6 +36,7 @@ IFUNC_SELECTOR (void)
+   const struct cpu_features *cpu_features = __get_cpu_features ();
+ 
+   if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++      && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, BMI1)
+       && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, BMI2)
+       && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, LZCNT)
+       && X86_ISA_CPU_FEATURES_ARCH_P (cpu_features,
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index ec1c5b55fb7cf3d2f0b6769a6652a9f7eb84a65e..00a91123d36743838728fed4599466ad27e23417 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -578,13 +578,19 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+   IFUNC_IMPL (i, name, strrchr,
+ 	      X86_IFUNC_IMPL_ADD_V4 (array, i, strrchr,
+ 				     (CPU_FEATURE_USABLE (AVX512VL)
+-				      && CPU_FEATURE_USABLE (AVX512BW)),
++				      && CPU_FEATURE_USABLE (AVX512BW)
++				      && CPU_FEATURE_USABLE (BMI1)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strrchr_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strrchr,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI1)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strrchr_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strrchr,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI1)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __strrchr_avx2_rtm)
+ 	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
+@@ -797,13 +803,18 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      X86_IFUNC_IMPL_ADD_V4 (array, i, wcsrchr,
+ 				     (CPU_FEATURE_USABLE (AVX512VL)
+ 				      && CPU_FEATURE_USABLE (AVX512BW)
++				      && CPU_FEATURE_USABLE (BMI1)
+ 				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __wcsrchr_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, wcsrchr,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI1)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __wcsrchr_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, wcsrchr,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI1)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __wcsrchr_avx2_rtm)
+ 	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
+-- 
+2.35.6
+

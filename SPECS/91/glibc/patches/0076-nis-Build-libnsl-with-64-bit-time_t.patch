@@ -1,0 +1,79 @@
+From fdcd20a55bf88f79f6457d36a93aee69f9bed971 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>
+Date: Wed, 26 Oct 2022 16:04:23 -0300
+Subject: [PATCH 076/175] nis: Build libnsl with 64 bit time_t
+
+And remove the usage of glibc reserved names.
+Reviewed-by: DJ Delorie <dj@redhat.com>
+
+(cherry picked from commit 545eefc2f5da61801ba82b7a32ca2589b769ec90)
+---
+ Makeconfig     |  2 +-
+ nis/nis_call.c | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/Makeconfig b/Makeconfig
+index 2bbcabd8f9218d5caba616412c03ea2720222d26..9dd058e04bdf7e706442a4721eb5f4cb06778812 100644
+--- a/Makeconfig
++++ b/Makeconfig
+@@ -884,7 +884,7 @@ endif
+ # Use 64 bit time_t support for installed programs
+ installed-modules = nonlib nscd lddlibc4 ldconfig locale_programs \
+ 		    iconvprogs libnss_files libnss_compat libnss_db libnss_hesiod \
+-		    libutil libpcprofile libSegFault
++		    libutil libpcprofile libSegFault libnsl
+ +extra-time-flags = $(if $(filter $(installed-modules),\
+                            $(in-module)),-D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64)
+ 
+diff --git a/nis/nis_call.c b/nis/nis_call.c
+index 90187e30b13b1a349ac20ba7c734103116e610f1..5b9dd50151299d60463d8fa9a7772be6ad2024f6 100644
+--- a/nis/nis_call.c
++++ b/nis/nis_call.c
+@@ -574,7 +574,7 @@ static struct nis_server_cache
+   unsigned int size;
+   unsigned int server_used;
+   unsigned int current_ep;
+-  __time64_t expires;
++  time_t expires;
+   char name[];
+ } *nis_server_cache[16];
+ static time_t nis_cold_start_mtime;
+@@ -583,7 +583,7 @@ __libc_lock_define_initialized (static, nis_server_cache_lock)
+ static directory_obj *
+ nis_server_cache_search (const_nis_name name, int search_parent,
+ 			 unsigned int *server_used, unsigned int *current_ep,
+-			 struct __timespec64 *now)
++			 struct timespec *now)
+ {
+   directory_obj *ret = NULL;
+   int i;
+@@ -641,7 +641,7 @@ nis_server_cache_search (const_nis_name name, int search_parent,
+ static void
+ nis_server_cache_add (const_nis_name name, int search_parent,
+ 		      directory_obj *dir, unsigned int server_used,
+-		      unsigned int current_ep, struct __timespec64 *now)
++		      unsigned int current_ep, struct timespec *now)
+ {
+   struct nis_server_cache **loc;
+   struct nis_server_cache *new;
+@@ -707,7 +707,7 @@ __nisfind_server (const_nis_name name, int search_parent,
+   nis_error result = NIS_SUCCESS;
+   nis_error status;
+   directory_obj *obj;
+-  struct __timespec64 ts;
++  struct timespec ts;
+   unsigned int server_used = ~0;
+   unsigned int current_ep = ~0;
+ 
+@@ -717,7 +717,7 @@ __nisfind_server (const_nis_name name, int search_parent,
+   if (*dir != NULL)
+     return NIS_SUCCESS;
+ 
+-  __clock_gettime64 (CLOCK_REALTIME, &ts);
++  clock_gettime (CLOCK_REALTIME, &ts);
+ 
+   if ((flags & NO_CACHE) == 0)
+     *dir = nis_server_cache_search (name, search_parent, &server_used,
+-- 
+2.35.6
+

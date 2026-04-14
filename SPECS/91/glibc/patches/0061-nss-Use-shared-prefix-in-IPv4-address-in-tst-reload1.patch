@@ -1,0 +1,52 @@
+From 908454129d21126bf7fc58f2a520b1f304dc5f02 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 23 Sep 2022 19:30:57 +0200
+Subject: [PATCH 061/175] nss: Use shared prefix in IPv4 address in tst-reload1
+
+Otherwise, sorting based on the longest-matching prefix in
+getaddrinfo can reorder the addresses in ways the test does not
+expect, depending on the IPv4 address of the host.
+
+Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+(cherry picked from commit c02e29a0ba47d636281e1a026444a1a0a254aa12)
+---
+ nss/tst-reload1.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/nss/tst-reload1.c b/nss/tst-reload1.c
+index fdc5bdd65b24bc3c7e485eee20f8855837236e7e..bc32bb132aa0a8da9d850ac8e10259c3038ef85f 100644
+--- a/nss/tst-reload1.c
++++ b/nss/tst-reload1.c
+@@ -43,12 +43,12 @@ static struct passwd pwd_table_1[] = {
+ 
+ static const char *hostaddr_5[] =
+   {
+-   "ABCD", "abcd", "1234", NULL
++   "ABCd", "ABCD", "ABC4", NULL
+   };
+ 
+ static const char *hostaddr_15[] =
+   {
+-   "4321", "ghij", NULL
++   "4321", "4322", NULL
+   };
+ 
+ static const char *hostaddr_25[] =
+@@ -86,12 +86,12 @@ static const char *hostaddr_6[] =
+ 
+ static const char *hostaddr_16[] =
+   {
+-   "7890", "a1b2", NULL
++   "7890", "7891", NULL
+   };
+ 
+ static const char *hostaddr_26[] =
+   {
+-   "qwer", "tyui", NULL
++   "qwer", "qweR", NULL
+   };
+ 
+ static struct hostent host_table_2[] = {
+-- 
+2.35.6
+

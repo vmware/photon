@@ -1,0 +1,115 @@
+From 93967a2a7bbdcedb73e0b246713580c7c84d001e Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Wed, 14 Dec 2022 10:52:10 -0800
+Subject: [PATCH 084/175] x86: Prevent SIGSEGV in memcmp-sse2 when data is
+ concurrently modified [BZ #29863]
+
+In the case of INCORRECT usage of `memcmp(a, b, N)` where `a` and `b`
+are concurrently modified as `memcmp` runs, there can be a SIGSEGV
+in `L(ret_nonzero_vec_end_0)` because the sequential logic
+assumes that `(rdx - 32 + rax)` is a positive 32-bit integer.
+
+To be clear, this change does not mean the usage of `memcmp` is
+supported.  The program behaviour is undefined (UB) in the
+presence of data races, and `memcmp` is incorrect when the values
+of `a` and/or `b` are modified concurrently (data race). This UB
+may manifest itself as a SIGSEGV. That being said, if we can
+allow the idiomatic use cases, like those in yottadb with
+opportunistic concurrency control (OCC), to execute without a
+SIGSEGV, at no cost to regular use cases, then we can aim to
+minimize harm to those existing users.
+
+The fix replaces a 32-bit `addl %edx, %eax` with the 64-bit variant
+`addq %rdx, %rax`. The 1-extra byte of code size from using the
+64-bit instruction doesn't contribute to overall code size as the
+next target is aligned and has multiple bytes of `nop` padding
+before it. As well all the logic between the add and `ret` still
+fits in the same fetch block, so the cost of this change is
+basically zero.
+
+The relevant sequential logic can be seen in the following
+pseudo-code:
+```
+    /*
+     * rsi = a
+     * rdi = b
+     * rdx = len - 32
+     */
+    /* cmp a[0:15] and b[0:15]. Since length is known to be [17, 32]
+    in this case, this check is also assumed to cover a[0:(31 - len)]
+    and b[0:(31 - len)].  */
+    movups  (%rsi), %xmm0
+    movups  (%rdi), %xmm1
+    PCMPEQ  %xmm0, %xmm1
+    pmovmskb %xmm1, %eax
+    subl    %ecx, %eax
+    jnz L(END_NEQ)
+
+    /* cmp a[len-16:len-1] and b[len-16:len-1].  */
+    movups  16(%rsi, %rdx), %xmm0
+    movups  16(%rdi, %rdx), %xmm1
+    PCMPEQ  %xmm0, %xmm1
+    pmovmskb %xmm1, %eax
+    subl    %ecx, %eax
+    jnz L(END_NEQ2)
+    ret
+
+L(END2):
+    /* Position first mismatch.  */
+    bsfl    %eax, %eax
+
+    /* The sequential version is able to assume this value is a
+    positive 32-bit value because the first check included bytes in
+    range a[0:(31 - len)] and b[0:(31 - len)] so `eax` must be
+    greater than `31 - len` so the minimum value of `edx` + `eax` is
+    `(len - 32) + (32 - len) >= 0`. In the concurrent case, however,
+    `a` or `b` could have been changed so a mismatch in `eax` less or
+    equal than `(31 - len)` is possible (the new low bound is `(16 -
+    len)`. This can result in a negative 32-bit signed integer, which
+    when zero extended to 64-bits is a random large value this out
+    out of bounds. */
+    addl %edx, %eax
+
+    /* Crash here because 32-bit negative number in `eax` zero
+    extends to out of bounds 64-bit offset.  */
+    movzbl  16(%rdi, %rax), %ecx
+    movzbl  16(%rsi, %rax), %eax
+```
+
+This fix is quite simple, just make the `addl %edx, %eax` 64 bit (i.e
+`addq %rdx, %rax`). This prevents the 32-bit zero extension
+and since `eax` is still a low bound of `16 - len` the `rdx + rax`
+is bound by `(len - 32) - (16 - len) >= -16`. Since we have a
+fixed offset of `16` in the memory access this must be in bounds.
+
+(cherry picked from commit b712be52645282c706a5faa038242504feb06db5)
+---
+ sysdeps/x86_64/multiarch/memcmp-sse2.S | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/sysdeps/x86_64/multiarch/memcmp-sse2.S b/sysdeps/x86_64/multiarch/memcmp-sse2.S
+index afd450d0206d6633da9fbc4607a7fa6aeb4e137c..51bc9344f0698b7c9c56b2fb8da3d5badd4ef0a6 100644
+--- a/sysdeps/x86_64/multiarch/memcmp-sse2.S
++++ b/sysdeps/x86_64/multiarch/memcmp-sse2.S
+@@ -308,7 +308,17 @@ L(ret_nonzero_vec_end_0):
+ 	setg	%dl
+ 	leal	-1(%rdx, %rdx), %eax
+ #  else
+-	addl	%edx, %eax
++	/* Use `addq` instead of `addl` here so that even if `rax` + `rdx`
++       is negative value of the sum will be usable as a 64-bit offset
++       (negative 32-bit numbers zero-extend to a large and often
++       out-of-bounds 64-bit offsets).  Note that `rax` + `rdx` >= 0 is
++       an invariant when `memcmp` is used correctly, but if the input
++       strings `rsi`/`rdi` are concurrently modified as the function
++       runs (there is a Data-Race) it is possible for `rax` + `rdx` to
++       be negative.  Given that there is virtually no extra to cost
++       using `addq` instead of `addl` we may as well protect the
++       data-race case.  */
++	addq	%rdx, %rax
+ 	movzbl	(VEC_SIZE * -1 + SIZE_OFFSET)(%rsi, %rax), %ecx
+ 	movzbl	(VEC_SIZE * -1 + SIZE_OFFSET)(%rdi, %rax), %eax
+ 	subl	%ecx, %eax
+-- 
+2.35.6
+

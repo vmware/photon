@@ -1,0 +1,106 @@
+From 8e99cc76a26a88589aaa4e54c1ae48fa27be26b7 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Wed, 11 Oct 2023 13:43:56 -0300
+Subject: [PATCH 135/175] malloc: Use __get_nprocs on arena_get2 (BZ 30945)
+
+This restore the 2.33 semantic for arena_get2.  It was changed by
+11a02b035b46 to avoid arena_get2 call malloc (back when __get_nproc
+was refactored to use an scratch_buffer - 903bc7dcc2acafc).  The
+__get_nproc was refactored over then and now it also avoid to call
+malloc.
+
+The 11a02b035b46 did not take in consideration any performance
+implication, which should have been discussed properly.  The
+__get_nprocs_sched is still used as a fallback mechanism if procfs
+and sysfs is not acessible.
+
+Checked on x86_64-linux-gnu.
+Reviewed-by: DJ Delorie <dj@redhat.com>
+
+(cherry picked from commit 472894d2cfee5751b44c0aaa71ed87df81c8e62e)
+---
+ include/sys/sysinfo.h                 | 4 ----
+ malloc/arena.c                        | 2 +-
+ misc/getsysstats.c                    | 6 ------
+ sysdeps/mach/getsysstats.c            | 6 ------
+ sysdeps/unix/sysv/linux/getsysstats.c | 2 +-
+ 5 files changed, 2 insertions(+), 18 deletions(-)
+
+diff --git a/include/sys/sysinfo.h b/include/sys/sysinfo.h
+index c490561581733038fa4ac0377143125bb133a8be..65742b10366590f053a97b77310316012d54d588 100644
+--- a/include/sys/sysinfo.h
++++ b/include/sys/sysinfo.h
+@@ -14,10 +14,6 @@ libc_hidden_proto (__get_nprocs_conf)
+ extern int __get_nprocs (void);
+ libc_hidden_proto (__get_nprocs)
+ 
+-/* Return the number of available processors which the process can
+-   be scheduled.  */
+-extern int __get_nprocs_sched (void) attribute_hidden;
+-
+ /* Return number of physical pages of memory in the system.  */
+ extern long int __get_phys_pages (void);
+ libc_hidden_proto (__get_phys_pages)
+diff --git a/malloc/arena.c b/malloc/arena.c
+index 0a684a720d9648953073bd7d35faca100762c031..a1ee7928d381b7ebb32267569875f8293e8d3344 100644
+--- a/malloc/arena.c
++++ b/malloc/arena.c
+@@ -937,7 +937,7 @@ arena_get2 (size_t size, mstate avoid_arena)
+             narenas_limit = mp_.arena_max;
+           else if (narenas > mp_.arena_test)
+             {
+-              int n = __get_nprocs_sched ();
++              int n = __get_nprocs ();
+ 
+               if (n >= 1)
+                 narenas_limit = NARENAS_FROM_NCORES (n);
+diff --git a/misc/getsysstats.c b/misc/getsysstats.c
+index e56aff0f375e6bf151610a9506fc2c591f3be13f..660f64eb8070c4bfd528687aa72b09b7d02c0647 100644
+--- a/misc/getsysstats.c
++++ b/misc/getsysstats.c
+@@ -44,12 +44,6 @@ weak_alias (__get_nprocs, get_nprocs)
+ link_warning (get_nprocs, "warning: get_nprocs will always return 1")
+ 
+ 
+-int
+-__get_nprocs_sched (void)
+-{
+-  return 1;
+-}
+-
+ long int
+ __get_phys_pages (void)
+ {
+diff --git a/sysdeps/mach/getsysstats.c b/sysdeps/mach/getsysstats.c
+index 37ea5e6a7a6405fdd5c0be003878ae27ede7d075..80ea7e17cb4e5ab15dcfd866f425018a41f10c62 100644
+--- a/sysdeps/mach/getsysstats.c
++++ b/sysdeps/mach/getsysstats.c
+@@ -62,12 +62,6 @@ __get_nprocs (void)
+ libc_hidden_def (__get_nprocs)
+ weak_alias (__get_nprocs, get_nprocs)
+ 
+-int
+-__get_nprocs_sched (void)
+-{
+-  return __get_nprocs ();
+-}
+-
+ /* Return the number of physical pages on the system. */
+ long int
+ __get_phys_pages (void)
+diff --git a/sysdeps/unix/sysv/linux/getsysstats.c b/sysdeps/unix/sysv/linux/getsysstats.c
+index 064eaa08ae2f79b6f5ffb580c7d77b318494a804..4d017861206798e9ac4bacb26a591c0349bf10f5 100644
+--- a/sysdeps/unix/sysv/linux/getsysstats.c
++++ b/sysdeps/unix/sysv/linux/getsysstats.c
+@@ -29,7 +29,7 @@
+ #include <sys/sysinfo.h>
+ #include <sysdep.h>
+ 
+-int
++static int
+ __get_nprocs_sched (void)
+ {
+   enum
+-- 
+2.35.6
+

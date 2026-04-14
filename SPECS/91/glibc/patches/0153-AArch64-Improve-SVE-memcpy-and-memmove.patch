@@ -1,0 +1,81 @@
+From f45608f6d74b95d0711c80c24b5eda07b60a7e50 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Wed, 1 Feb 2023 18:45:19 +0000
+Subject: [PATCH 153/175] AArch64: Improve SVE memcpy and memmove
+
+Improve SVE memcpy by copying 2 vectors if the size is small enough.
+This improves performance of random memcpy by ~9% on Neoverse V1, and
+33-64 byte copies are ~16% faster.
+
+Reviewed-by: Szabolcs Nagy <szabolcs.nagy@arm.com>
+(cherry picked from commit d2d3f3720ce627a4fe154d8dd14db716a32bcc6e)
+---
+ sysdeps/aarch64/multiarch/memcpy_sve.S | 34 +++++++++++---------------
+ 1 file changed, 14 insertions(+), 20 deletions(-)
+
+diff --git a/sysdeps/aarch64/multiarch/memcpy_sve.S b/sysdeps/aarch64/multiarch/memcpy_sve.S
+index a70907ec5595114e4da35c54e932279c22e53cc6..6bc8390fe8de2aa7c7843eeda762256c0565da35 100644
+--- a/sysdeps/aarch64/multiarch/memcpy_sve.S
++++ b/sysdeps/aarch64/multiarch/memcpy_sve.S
+@@ -67,14 +67,15 @@ ENTRY (__memcpy_sve)
+ 
+ 	cmp	count, 128
+ 	b.hi	L(copy_long)
+-	cmp	count, 32
++	cntb	vlen
++	cmp	count, vlen, lsl 1
+ 	b.hi	L(copy32_128)
+-
+ 	whilelo p0.b, xzr, count
+-	cntb	vlen
+-	tbnz	vlen, 4, L(vlen128)
+-	ld1b	z0.b, p0/z, [src]
+-	st1b	z0.b, p0, [dstin]
++	whilelo p1.b, vlen, count
++	ld1b	z0.b, p0/z, [src, 0, mul vl]
++	ld1b	z1.b, p1/z, [src, 1, mul vl]
++	st1b	z0.b, p0, [dstin, 0, mul vl]
++	st1b	z1.b, p1, [dstin, 1, mul vl]
+ 	ret
+ 
+ 	/* Medium copies: 33..128 bytes.  */
+@@ -102,14 +103,6 @@ L(copy96):
+ 	stp	C_q, D_q, [dstend, -32]
+ 	ret
+ 
+-L(vlen128):
+-	whilelo p1.b, vlen, count
+-	ld1b	z0.b, p0/z, [src, 0, mul vl]
+-	ld1b	z1.b, p1/z, [src, 1, mul vl]
+-	st1b	z0.b, p0, [dstin, 0, mul vl]
+-	st1b	z1.b, p1, [dstin, 1, mul vl]
+-	ret
+-
+ 	.p2align 4
+ 	/* Copy more than 128 bytes.  */
+ L(copy_long):
+@@ -158,14 +151,15 @@ ENTRY (__memmove_sve)
+ 
+ 	cmp	count, 128
+ 	b.hi	L(move_long)
+-	cmp	count, 32
++	cntb	vlen
++	cmp	count, vlen, lsl 1
+ 	b.hi	L(copy32_128)
+-
+ 	whilelo p0.b, xzr, count
+-	cntb	vlen
+-	tbnz	vlen, 4, L(vlen128)
+-	ld1b	z0.b, p0/z, [src]
+-	st1b	z0.b, p0, [dstin]
++	whilelo p1.b, vlen, count
++	ld1b	z0.b, p0/z, [src, 0, mul vl]
++	ld1b	z1.b, p1/z, [src, 1, mul vl]
++	st1b	z0.b, p0, [dstin, 0, mul vl]
++	st1b	z1.b, p1, [dstin, 1, mul vl]
+ 	ret
+ 
+ 	.p2align 4
+-- 
+2.35.6
+

@@ -1,0 +1,72 @@
+From c36912f08335ce28ccff963a60853a4035273b34 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 7 Jul 2023 10:11:26 +0200
+Subject: [PATCH 103/175] elf: _dl_find_object may return 1 during early
+ startup (bug 30515)
+
+Success is reported with a 0 return value, and failure is -1.
+Enhance the kitchen sink test elf/tst-audit28 to cover
+_dl_find_object as well.
+
+Fixes commit 5d28a8962dcb ("elf: Add _dl_find_object function")
+and bug 30515.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Tested-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 1bcfe0f732066ae5336b252295591ebe7e51c301)
+---
+ NEWS                 |  1 +
+ elf/dl-find_object.c |  2 +-
+ elf/tst-auditmod28.c | 11 +++++++++++
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/NEWS b/NEWS
+index 9f6b48b63d9d8a7388a7734a1b4d95151c06b3f9..82e868d73bcbd5d8ddf800f7fe1101267bb7665b 100644
+--- a/NEWS
++++ b/NEWS
+@@ -63,6 +63,7 @@ The following bugs are resolved with this release:
+   [30163] posix: Fix system blocks SIGCHLD erroneously
+   [30305] x86_64: Fix asm constraints in feraiseexcept
+   [30477] libc: [RISCV]: time64 does not work on riscv32
++  [30515] _dl_find_object incorrectly returns 1 during early startup
+ 
+ Version 2.36
+ 
+diff --git a/elf/dl-find_object.c b/elf/dl-find_object.c
+index 4d5831b6f4f0a755fbddd6fad09329cb316b068f..2e5b456c11347226a955fc59203416e9f6f9462a 100644
+--- a/elf/dl-find_object.c
++++ b/elf/dl-find_object.c
+@@ -46,7 +46,7 @@ _dl_find_object_slow (void *pc, struct dl_find_object *result)
+           struct dl_find_object_internal internal;
+           _dl_find_object_from_map (l, &internal);
+           _dl_find_object_to_external (&internal, result);
+-          return 1;
++          return 0;
+         }
+ 
+   /* Object not found.  */
+diff --git a/elf/tst-auditmod28.c b/elf/tst-auditmod28.c
+index db7ba95abec20f534f9cee3d2f64bc3fb8c1c4ca..9e0a122c389535d0580f2b020e29604643f045be 100644
+--- a/elf/tst-auditmod28.c
++++ b/elf/tst-auditmod28.c
+@@ -71,6 +71,17 @@ la_version (unsigned int current)
+   TEST_VERIFY (dladdr1 (&_exit, &info, &extra_info, RTLD_DL_LINKMAP) != 0);
+   TEST_VERIFY (extra_info == handle);
+ 
++  /* Check _dl_find_object.  */
++  struct dl_find_object dlfo;
++  TEST_COMPARE (_dl_find_object (__builtin_return_address (0), &dlfo), 0);
++  /* "ld.so" is seen with --enable-hardcoded-path-in-tests.  */
++  if (strcmp (basename (dlfo.dlfo_link_map->l_name), "ld.so") != 0)
++    TEST_COMPARE_STRING (basename (dlfo.dlfo_link_map->l_name), LD_SO);
++  TEST_COMPARE (_dl_find_object (dlsym (handle, "environ"), &dlfo), 0);
++  TEST_COMPARE_STRING (basename (dlfo.dlfo_link_map->l_name), LIBC_SO);
++  TEST_COMPARE (_dl_find_object ((void *) 1, &dlfo), -1);
++  TEST_COMPARE (_dl_find_object ((void *) -1, &dlfo), -1);
++
+   /* Verify that dlmopen creates a new namespace.  */
+   void *dlmopen_handle = xdlmopen (LM_ID_NEWLM, LIBC_SO, RTLD_NOW);
+   TEST_VERIFY (dlmopen_handle != handle);
+-- 
+2.35.6
+

@@ -1,0 +1,196 @@
+From d5aaece8a3528ff5f9cc0ceeb067da0e47436669 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Tue, 3 Jan 2023 09:56:28 -0300
+Subject: [PATCH 086/175] elf: Fix GL(dl_phdr) and GL(dl_phnum) for static
+ builds [BZ #29864]
+
+The 73fc4e28b9464f0e refactor did not add the GL(dl_phdr) and
+GL(dl_phnum) for static build, relying on the __ehdr_start symbol,
+which is always added by the static linker, to get the correct values.
+
+This is problematic in some ways:
+
+  - The segment may see its in-memory size differ from its in-file
+    size (or the binary may have holes).  The Linux has fixed is to
+    provide concise values for both AT_PHDR and AT_PHNUM (commit
+    0da1d5002745c - "fs/binfmt_elf: Fix AT_PHDR for unusual ELF files")
+
+  - Some archs (alpha for instance) the hidden weak reference is not
+    correctly pulled by the static linker and  __ehdr_start address
+    end up being 0, which makes GL(dl_phdr) and GL(dl_phnum) have both
+    invalid values (and triggering a segfault later on libc.so while
+    accessing TLS variables).
+
+The safer fix is to just restore the previous behavior to setup
+GL(dl_phdr) and GL(dl_phnum) for static based on kernel auxv.  The
+__ehdr_start fallback can also be simplified by not assuming weak
+linkage (as for PIE).
+
+The libc-static.c auxv init logic is moved to dl-support.c, since
+the later is build without SHARED and then GLRO macro is defined
+to access the variables directly.
+
+The _dl_phdr is also assumed to be always non NULL, since an invalid
+NULL values does not trigger TLS initialization (which is used in
+various libc systems).
+
+Checked on aarch64-linux-gnu, x86_64-linux-gnu, and i686-linux-gnu.
+
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit 7e31d166510ac4adbf53d5e8144c709a37dd8c7a)
+---
+ NEWS             |  2 ++
+ csu/libc-start.c | 21 ---------------------
+ csu/libc-tls.c   | 25 ++++++++++++-------------
+ elf/dl-support.c | 46 ++++++++++++++++++++++++++++++++--------------
+ 4 files changed, 46 insertions(+), 48 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 8c79e83b775cf960525d712f97274928b98b8f28..c5e142eb3a5da876664dc0f696bd4d9ba6604f9b 100644
+--- a/NEWS
++++ b/NEWS
+@@ -26,6 +26,8 @@ The following bugs are resolved with this release:
+   [12154] Do not fail DNS resolution for CNAMEs which are not host names
+   [24816] Fix tst-nss-files-hosts-long on single-stack hosts
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
++  [29864] libc: __libc_start_main() should obtain program headers
++    address (_dl_phdr) from the auxv, not the ELF header.
+   [29305] Conserve NSS buffer space during DNS packet parsing
+   [29402] nscd: nscd: No such file or directory
+   [29415] nscd: Fix netlink cache invalidation if epoll is used
+diff --git a/csu/libc-start.c b/csu/libc-start.c
+index 543560f36c33b07a1fbe1b7e4578374fe8007b1f..bfeee6d8513fba6fb283be2d9082fe5b6f94eb44 100644
+--- a/csu/libc-start.c
++++ b/csu/libc-start.c
+@@ -262,28 +262,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
+   }
+ #  endif
+   _dl_aux_init (auxvec);
+-  if (GL(dl_phdr) == NULL)
+ # endif
+-    {
+-      /* Starting from binutils-2.23, the linker will define the
+-         magic symbol __ehdr_start to point to our own ELF header
+-         if it is visible in a segment that also includes the phdrs.
+-         So we can set up _dl_phdr and _dl_phnum even without any
+-         information from auxv.  */
+-
+-      extern const ElfW(Ehdr) __ehdr_start
+-# if BUILD_PIE_DEFAULT
+-	__attribute__ ((visibility ("hidden")));
+-# else
+-	__attribute__ ((weak, visibility ("hidden")));
+-      if (&__ehdr_start != NULL)
+-# endif
+-        {
+-          assert (__ehdr_start.e_phentsize == sizeof *GL(dl_phdr));
+-          GL(dl_phdr) = (const void *) &__ehdr_start + __ehdr_start.e_phoff;
+-          GL(dl_phnum) = __ehdr_start.e_phnum;
+-        }
+-    }
+ 
+   __tunables_init (__environ);
+ 
+diff --git a/csu/libc-tls.c b/csu/libc-tls.c
+index 0a216c550289058ecd408ec71bbcee3322e4f12a..7fdf7cd7a84da140fb45326bd1b1cae4b09ac16e 100644
+--- a/csu/libc-tls.c
++++ b/csu/libc-tls.c
+@@ -118,19 +118,18 @@ __libc_setup_tls (void)
+   __tls_pre_init_tp ();
+ 
+   /* Look through the TLS segment if there is any.  */
+-  if (_dl_phdr != NULL)
+-    for (phdr = _dl_phdr; phdr < &_dl_phdr[_dl_phnum]; ++phdr)
+-      if (phdr->p_type == PT_TLS)
+-	{
+-	  /* Remember the values we need.  */
+-	  memsz = phdr->p_memsz;
+-	  filesz = phdr->p_filesz;
+-	  initimage = (void *) phdr->p_vaddr + main_map->l_addr;
+-	  align = phdr->p_align;
+-	  if (phdr->p_align > max_align)
+-	    max_align = phdr->p_align;
+-	  break;
+-	}
++  for (phdr = _dl_phdr; phdr < &_dl_phdr[_dl_phnum]; ++phdr)
++    if (phdr->p_type == PT_TLS)
++      {
++	/* Remember the values we need.  */
++	memsz = phdr->p_memsz;
++	filesz = phdr->p_filesz;
++	initimage = (void *) phdr->p_vaddr + main_map->l_addr;
++	align = phdr->p_align;
++	if (phdr->p_align > max_align)
++	  max_align = phdr->p_align;
++	break;
++      }
+ 
+   /* Calculate the size of the static TLS surplus, with 0 auditors.  */
+   _dl_tls_static_surplus_init (0);
+diff --git a/elf/dl-support.c b/elf/dl-support.c
+index 4af0b5b2ce23a762bd78d29747f50b0e1210680d..f45b630ba5cf9146a841005c1410dc2d0f3a06e7 100644
+--- a/elf/dl-support.c
++++ b/elf/dl-support.c
+@@ -255,6 +255,25 @@ _dl_aux_init (ElfW(auxv_t) *av)
+   for (int i = 0; i < array_length (auxv_values); ++i)
+     auxv_values[i] = 0;
+   _dl_parse_auxv (av, auxv_values);
++
++  _dl_phdr = (void*) auxv_values[AT_PHDR];
++  _dl_phnum = auxv_values[AT_PHNUM];
++
++  if (_dl_phdr == NULL)
++    {
++      /* Starting from binutils-2.23, the linker will define the
++         magic symbol __ehdr_start to point to our own ELF header
++         if it is visible in a segment that also includes the phdrs.
++         So we can set up _dl_phdr and _dl_phnum even without any
++         information from auxv.  */
++
++      extern const ElfW(Ehdr) __ehdr_start attribute_hidden;
++      assert (__ehdr_start.e_phentsize == sizeof *GL(dl_phdr));
++      _dl_phdr = (const void *) &__ehdr_start + __ehdr_start.e_phoff;
++      _dl_phnum = __ehdr_start.e_phnum;
++    }
++
++  assert (_dl_phdr != NULL);
+ }
+ #endif
+ 
+@@ -323,20 +342,19 @@ _dl_non_dynamic_init (void)
+   if (_dl_platform != NULL)
+     _dl_platformlen = strlen (_dl_platform);
+ 
+-  if (_dl_phdr != NULL)
+-    for (const ElfW(Phdr) *ph = _dl_phdr; ph < &_dl_phdr[_dl_phnum]; ++ph)
+-      switch (ph->p_type)
+-	{
+-	/* Check if the stack is nonexecutable.  */
+-	case PT_GNU_STACK:
+-	  _dl_stack_flags = ph->p_flags;
+-	  break;
+-
+-	case PT_GNU_RELRO:
+-	  _dl_main_map.l_relro_addr = ph->p_vaddr;
+-	  _dl_main_map.l_relro_size = ph->p_memsz;
+-	  break;
+-	}
++  for (const ElfW(Phdr) *ph = _dl_phdr; ph < &_dl_phdr[_dl_phnum]; ++ph)
++    switch (ph->p_type)
++      {
++      /* Check if the stack is nonexecutable.  */
++      case PT_GNU_STACK:
++	_dl_stack_flags = ph->p_flags;
++	break;
++
++      case PT_GNU_RELRO:
++	_dl_main_map.l_relro_addr = ph->p_vaddr;
++	_dl_main_map.l_relro_size = ph->p_memsz;
++	break;
++      }
+ 
+   call_function_static_weak (_dl_find_object_init);
+ 
+-- 
+2.35.6
+

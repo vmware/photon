@@ -1,0 +1,54 @@
+From 4444be051cae74fed390d4bc1a15ed730cc07b02 Mon Sep 17 00:00:00 2001
+From: Martin Jansa <Martin.Jansa@gmail.com>
+Date: Wed, 21 Sep 2022 10:51:03 -0300
+Subject: [PATCH 079/175] locale: prevent maybe-uninitialized errors with -Os
+ [BZ #19444]
+
+Fixes following error when building  with -Os:
+| In file included from strcoll_l.c:43:
+| strcoll_l.c: In function '__strcoll_l':
+| ../locale/weight.h:31:26: error: 'seq2.back_us' may be used
+uninitialized in this function [-Werror=maybe-uninitialized]
+|    int_fast32_t i = table[*(*cpp)++];
+|                           ^~~~~~~~~
+| strcoll_l.c:304:18: note: 'seq2.back_us' was declared here
+|    coll_seq seq1, seq2;
+|                   ^~~~
+| In file included from strcoll_l.c:43:
+| ../locale/weight.h:31:26: error: 'seq1.back_us' may be used
+uninitialized in this function [-Werror=maybe-uninitialized]
+|    int_fast32_t i = table[*(*cpp)++];
+|                           ^~~~~~~~~
+| strcoll_l.c:304:12: note: 'seq1.back_us' was declared here
+|    coll_seq seq1, seq2;
+|             ^~~~
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Tested-by: Carlos O'Donell <carlos@redhat.com>
+
+(cherry picked from commit c651f9da530320e9939e6cbad57b87695eeba41c)
+---
+ locale/weight.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/locale/weight.h b/locale/weight.h
+index 8be2d220f814fbbcb85c506a0911d4215324203c..4a4d5aa6b261ab4e3bc116efc85ce0e49721a38b 100644
+--- a/locale/weight.h
++++ b/locale/weight.h
+@@ -27,7 +27,14 @@ findidx (const int32_t *table,
+ 	 const unsigned char *extra,
+ 	 const unsigned char **cpp, size_t len)
+ {
++  /* With GCC 8 when compiling with -Os the compiler warns that
++     seq1.back_us and seq2.back_us might be used uninitialized.
++     This uninitialized use is impossible for the same reason
++     as described in comments in locale/weightwc.h.  */
++  DIAG_PUSH_NEEDS_COMMENT;
++  DIAG_IGNORE_Os_NEEDS_COMMENT (8, "-Wmaybe-uninitialized");
+   int32_t i = table[*(*cpp)++];
++  DIAG_POP_NEEDS_COMMENT;
+   const unsigned char *cp;
+   const unsigned char *usrc;
+ 
+-- 
+2.35.6
+

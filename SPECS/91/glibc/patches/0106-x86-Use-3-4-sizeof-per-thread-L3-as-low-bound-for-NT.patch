@@ -1,0 +1,48 @@
+From 64b184fd80e4441b5fd97987fabecf0b54f20cae Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Tue, 18 Jul 2023 10:27:59 -0500
+Subject: [PATCH 106/175] x86: Use `3/4*sizeof(per-thread-L3)` as low bound for
+ NT threshold.
+
+On some machines we end up with incomplete cache information. This can
+make the new calculation of `sizeof(total-L3)/custom-divisor` end up
+lower than intended (and lower than the prior value). So reintroduce
+the old bound as a lower bound to avoid potentially regressing code
+where we don't have complete information to make the decision.
+Reviewed-by: DJ Delorie <dj@redhat.com>
+
+(cherry picked from commit 8b9a0af8ca012217bf90d1dc0694f85b49ae09da)
+---
+ sysdeps/x86/dl-cacheinfo.h | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/sysdeps/x86/dl-cacheinfo.h b/sysdeps/x86/dl-cacheinfo.h
+index 79fb8cc5e37394622abda1bedae5ff5f5761b9a6..627cf57efe4ced9a8e33ea16f928c26598277da7 100644
+--- a/sysdeps/x86/dl-cacheinfo.h
++++ b/sysdeps/x86/dl-cacheinfo.h
+@@ -872,12 +872,21 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
+      provides proper LRU hints so that the maximum thrashing
+      capped at 1/associativity. */
+   unsigned long int non_temporal_threshold = shared / 4;
++
++  /* If the computed non_temporal_threshold <= 3/4 * per-thread L3, we most
++     likely have incorrect/incomplete cache info in which case, default to
++     3/4 * per-thread L3 to avoid regressions.  */
++  unsigned long int non_temporal_threshold_lowbound
++      = shared_per_thread * 3 / 4;
++  if (non_temporal_threshold < non_temporal_threshold_lowbound)
++    non_temporal_threshold = non_temporal_threshold_lowbound;
++
+   /* If no ERMS, we use the per-thread L3 chunking. Normal cacheable stores run
+      a higher risk of actually thrashing the cache as they don't have a HW LRU
+      hint. As well, their performance in highly parallel situations is
+      noticeably worse.  */
+   if (!CPU_FEATURE_USABLE_P (cpu_features, ERMS))
+-    non_temporal_threshold = shared_per_thread * 3 / 4;
++    non_temporal_threshold = non_temporal_threshold_lowbound;
+   /* SIZE_MAX >> 4 because memmove-vec-unaligned-erms right-shifts the value of
+      'x86_non_temporal_threshold' by `LOG_4X_MEMCPY_THRESH` (4) and it is best
+      if that operation cannot overflow. Minimum of 0x4040 (16448) because the
+-- 
+2.35.6
+

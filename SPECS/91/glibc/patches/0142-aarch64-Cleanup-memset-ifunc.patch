@@ -1,0 +1,85 @@
+From 9627bbbc1c06dbc7d24f61639488d4146082a951 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wdijkstr@arm.com>
+Date: Wed, 26 Oct 2022 14:12:55 +0100
+Subject: [PATCH 142/175] aarch64: Cleanup memset ifunc
+
+Cleanup memset ifunc selectors. The A64FX memset relies on a ZVA size of
+256, so add an explicit check.
+
+(cherry picked from commit a8e72913fea0c6e2832c50523c60907ffa3b753b)
+---
+ sysdeps/aarch64/multiarch/ifunc-impl-list.c |  2 +-
+ sysdeps/aarch64/multiarch/memset.c          | 41 +++++++++++++--------
+ 2 files changed, 26 insertions(+), 17 deletions(-)
+
+diff --git a/sysdeps/aarch64/multiarch/ifunc-impl-list.c b/sysdeps/aarch64/multiarch/ifunc-impl-list.c
+index 4144615ab2198a97c76df40cec1056ea14300f56..c6fe149a7cb63056fcc519d51256e48785917277 100644
+--- a/sysdeps/aarch64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/aarch64/multiarch/ifunc-impl-list.c
+@@ -60,7 +60,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memset, (zva_size == 64), __memset_emag)
+ 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_kunpeng)
+ #if HAVE_AARCH64_SVE_ASM
+-	      IFUNC_IMPL_ADD (array, i, memset, sve, __memset_a64fx)
++	      IFUNC_IMPL_ADD (array, i, memset, sve && zva_size == 256, __memset_a64fx)
+ #endif
+ 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_generic))
+   IFUNC_IMPL (i, name, memchr,
+diff --git a/sysdeps/aarch64/multiarch/memset.c b/sysdeps/aarch64/multiarch/memset.c
+index c4008f346b34ec5b4b767a1433cf72692572a714..1e9ad2160c1d602ad0ba91927bec9870b35e23c2 100644
+--- a/sysdeps/aarch64/multiarch/memset.c
++++ b/sysdeps/aarch64/multiarch/memset.c
+@@ -31,25 +31,34 @@ extern __typeof (__redirect_memset) __libc_memset;
+ extern __typeof (__redirect_memset) __memset_falkor attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_emag attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_kunpeng attribute_hidden;
+-# if HAVE_AARCH64_SVE_ASM
+ extern __typeof (__redirect_memset) __memset_a64fx attribute_hidden;
+-# endif
+ extern __typeof (__redirect_memset) __memset_generic attribute_hidden;
+ 
+-libc_ifunc (__libc_memset,
+-	    IS_KUNPENG920 (midr)
+-	    ?__memset_kunpeng
+-	    : ((IS_FALKOR (midr) || IS_PHECDA (midr)) && zva_size == 64
+-	      ? __memset_falkor
+-	      : (IS_EMAG (midr) && zva_size == 64
+-		? __memset_emag
+-# if HAVE_AARCH64_SVE_ASM
+-		: (IS_A64FX (midr) && sve
+-		  ? __memset_a64fx
+-		  : __memset_generic))));
+-# else
+-		  : __memset_generic)));
+-# endif
++static inline __typeof (__redirect_memset) *
++select_memset_ifunc (void)
++{
++  INIT_ARCH ();
++
++  if (sve && HAVE_AARCH64_SVE_ASM)
++    {
++      if (IS_A64FX (midr) && zva_size == 256)
++	return __memset_a64fx;
++      return __memset_generic;
++    }
++
++  if (IS_KUNPENG920 (midr))
++    return __memset_kunpeng;
++
++  if ((IS_FALKOR (midr) || IS_PHECDA (midr)) && zva_size == 64)
++    return __memset_falkor;
++
++  if (IS_EMAG (midr) && zva_size == 64)
++    return __memset_emag;
++
++  return __memset_generic;
++}
++
++libc_ifunc (__libc_memset, select_memset_ifunc ());
+ 
+ # undef memset
+ strong_alias (__libc_memset, memset);
+-- 
+2.35.6
+

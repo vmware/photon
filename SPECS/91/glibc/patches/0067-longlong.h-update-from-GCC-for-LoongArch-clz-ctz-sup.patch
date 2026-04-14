@@ -1,0 +1,38 @@
+From 4c6a78addabbd6e1b69763e286768919e56dfe0a Mon Sep 17 00:00:00 2001
+From: Xi Ruoyao <xry111@xry111.site>
+Date: Sat, 15 Oct 2022 14:12:13 +0800
+Subject: [PATCH 067/175] longlong.h: update from GCC for LoongArch clz/ctz
+ support
+
+Update longlong.h to GCC r13-3269.  Keep our local change (prefer https
+for gnu.org URL).
+---
+ stdlib/longlong.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/stdlib/longlong.h b/stdlib/longlong.h
+index 9b89469ac21ed70562d99a8d1436dfecaeebd577..d8f76a43b50ffd45b5e7489eaf637bafe93843b3 100644
+--- a/stdlib/longlong.h
++++ b/stdlib/longlong.h
+@@ -593,6 +593,18 @@ extern UDItype __umulsidi3 (USItype, USItype);
+ #define UMUL_TIME 14
+ #endif
+ 
++#ifdef __loongarch__
++# if W_TYPE_SIZE == 32
++#  define count_leading_zeros(count, x)  ((count) = __builtin_clz (x))
++#  define count_trailing_zeros(count, x) ((count) = __builtin_ctz (x))
++#  define COUNT_LEADING_ZEROS_0 32
++# elif W_TYPE_SIZE == 64
++#  define count_leading_zeros(count, x)  ((count) = __builtin_clzll (x))
++#  define count_trailing_zeros(count, x) ((count) = __builtin_ctzll (x))
++#  define COUNT_LEADING_ZEROS_0 64
++# endif
++#endif
++
+ #if defined (__M32R__) && W_TYPE_SIZE == 32
+ #define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+   /* The cmp clears the condition bit.  */ \
+-- 
+2.35.6
+

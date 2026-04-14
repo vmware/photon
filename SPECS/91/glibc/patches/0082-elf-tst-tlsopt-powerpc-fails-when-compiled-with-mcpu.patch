@@ -1,0 +1,47 @@
+From dbd23eaca95eb0264b6325c7286a4b370a67404d Mon Sep 17 00:00:00 2001
+From: Alan Modra <amodra@gmail.com>
+Date: Sat, 12 Nov 2022 11:20:31 +1030
+Subject: [PATCH 082/175] elf/tst-tlsopt-powerpc fails when compiled with
+ -mcpu=power10 (BZ# 29776)
+
+Supports pcrel addressing of TLS GOT entry.  Also tweak the non-pcrel
+asm constraint to better reflect how the reg is used.
+
+(cherry picked from commit 94628de77888c3292fc103840731ff85f283368e)
+---
+ NEWS                                 | 1 +
+ sysdeps/powerpc/mod-tlsopt-powerpc.c | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/NEWS b/NEWS
+index fb2d73a6be4324fc73c282567ec7687e7e3bff1f..dbe2b2e301dfaa34309fa2df77a61da2a79db0c2 100644
+--- a/NEWS
++++ b/NEWS
+@@ -50,6 +50,7 @@ The following bugs are resolved with this release:
+     platforms
+   [29730] broken y2038 support in fstatat on MIPS N64
+   [29771] Restore IPC_64 support in sysvipc *ctl functions
++  [29776] elf/tst-tlsopt-powerpc fails when compiled with -mcpu=power10
+ 
+ Version 2.36
+ 
+diff --git a/sysdeps/powerpc/mod-tlsopt-powerpc.c b/sysdeps/powerpc/mod-tlsopt-powerpc.c
+index 2a82e53bafe9d0eb3e8df7cdf5bc17fb3df7dd88..d941024963fc7e6a65cc6388185f3a596ba6fb2f 100644
+--- a/sysdeps/powerpc/mod-tlsopt-powerpc.c
++++ b/sysdeps/powerpc/mod-tlsopt-powerpc.c
+@@ -22,7 +22,11 @@ tls_get_addr_opt_test (void)
+   tls_index *tls_arg;
+ #ifdef __powerpc64__
+   register unsigned long thread_pointer __asm__ ("r13");
+-  asm ("addi %0,2,foo@got@tlsgd" : "=r" (tls_arg));
++# ifdef __PCREL__
++  asm ("paddi %0,0,foo@got@tlsgd@pcrel,1" : "=b" (tls_arg));
++# else
++  asm ("addi %0,2,foo@got@tlsgd" : "=b" (tls_arg));
++# endif
+ #else
+   register unsigned long thread_pointer __asm__ ("r2");
+   asm ("bcl 20,31,1f\n1:\t"
+-- 
+2.35.6
+

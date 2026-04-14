@@ -1,0 +1,50 @@
+From 42c266a18f1aa87813b138247f98d7b690c67f34 Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Mon, 17 Jul 2023 23:14:33 -0500
+Subject: [PATCH 105/175] x86: Fix slight bug in `shared_per_thread` cache size
+ calculation.
+
+After:
+```
+    commit af992e7abdc9049714da76cae1e5e18bc4838fb8
+    Author: Noah Goldstein <goldstein.w.n@gmail.com>
+    Date:   Wed Jun 7 13:18:01 2023 -0500
+
+        x86: Increase `non_temporal_threshold` to roughly `sizeof_L3 / 4`
+```
+
+Split `shared` (cumulative cache size) from `shared_per_thread` (cache
+size per socket), the `shared_per_thread` *can* be slightly off from
+the previous calculation.
+
+Previously we added `core` even if `threads_l2` was invalid, and only
+used `threads_l2` to divide `core` if it was present. The changed
+version only included `core` if `threads_l2` was valid.
+
+This change restores the old behavior if `threads_l2` is invalid by
+adding the entire value of `core`.
+Reviewed-by: DJ Delorie <dj@redhat.com>
+
+(cherry picked from commit 47f747217811db35854ea06741be3685e8bbd44d)
+---
+ sysdeps/x86/dl-cacheinfo.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/x86/dl-cacheinfo.h b/sysdeps/x86/dl-cacheinfo.h
+index 6e7d0197a7f1cc6d267ab140817753142cf14459..79fb8cc5e37394622abda1bedae5ff5f5761b9a6 100644
+--- a/sysdeps/x86/dl-cacheinfo.h
++++ b/sysdeps/x86/dl-cacheinfo.h
+@@ -685,8 +685,8 @@ get_common_cache_info (long int *shared_ptr, long int * shared_per_thread_ptr, u
+   /* Account for non-inclusive L2 and L3 caches.  */
+   if (!inclusive_cache)
+     {
+-      if (threads_l2 > 0)
+-	shared_per_thread += core / threads_l2;
++      long int core_per_thread = threads_l2 > 0 ? (core / threads_l2) : core;
++      shared_per_thread += core_per_thread;
+       shared += core;
+     }
+ 
+-- 
+2.35.6
+

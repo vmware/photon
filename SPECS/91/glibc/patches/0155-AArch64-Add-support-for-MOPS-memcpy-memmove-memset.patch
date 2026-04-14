@@ -1,0 +1,314 @@
+From 3bac018a985f202b36556dba9ae187cc8474342f Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Tue, 17 Oct 2023 16:54:21 +0100
+Subject: [PATCH 155/175] AArch64: Add support for MOPS memcpy/memmove/memset
+
+Add support for MOPS in cpu_features and INIT_ARCH.  Add ifuncs using MOPS for
+memcpy, memmove and memset (use .inst for now so it works with all binutils
+versions without needing complex configure and conditional compilation).
+
+Reviewed-by: Szabolcs Nagy <szabolcs.nagy@arm.com>
+(cherry picked from commit 2bd00179885928fd95fcabfafc50e7b5c6e660d2)
+---
+ sysdeps/aarch64/multiarch/Makefile            |  3 ++
+ sysdeps/aarch64/multiarch/ifunc-impl-list.c   |  3 ++
+ sysdeps/aarch64/multiarch/init-arch.h         |  4 +-
+ sysdeps/aarch64/multiarch/memcpy.c            |  4 ++
+ sysdeps/aarch64/multiarch/memcpy_mops.S       | 39 +++++++++++++++++++
+ sysdeps/aarch64/multiarch/memmove.c           |  4 ++
+ sysdeps/aarch64/multiarch/memmove_mops.S      | 39 +++++++++++++++++++
+ sysdeps/aarch64/multiarch/memset.c            |  4 ++
+ sysdeps/aarch64/multiarch/memset_mops.S       | 38 ++++++++++++++++++
+ .../unix/sysv/linux/aarch64/cpu-features.c    |  3 ++
+ .../unix/sysv/linux/aarch64/cpu-features.h    |  1 +
+ 11 files changed, 141 insertions(+), 1 deletion(-)
+ create mode 100644 sysdeps/aarch64/multiarch/memcpy_mops.S
+ create mode 100644 sysdeps/aarch64/multiarch/memmove_mops.S
+ create mode 100644 sysdeps/aarch64/multiarch/memset_mops.S
+
+diff --git a/sysdeps/aarch64/multiarch/Makefile b/sysdeps/aarch64/multiarch/Makefile
+index 223777d94e350fdfd1bb82a4b38eea4653d63057..e6099548b96b80b656f3f22cd8d5598634647360 100644
+--- a/sysdeps/aarch64/multiarch/Makefile
++++ b/sysdeps/aarch64/multiarch/Makefile
+@@ -5,14 +5,17 @@ sysdep_routines += \
+   memcpy_a64fx \
+   memcpy_falkor \
+   memcpy_generic \
++  memcpy_mops \
+   memcpy_sve \
+   memcpy_thunderx \
+   memcpy_thunderx2 \
++  memmove_mops \
+   memset_a64fx \
+   memset_emag \
+   memset_falkor \
+   memset_generic \
+   memset_kunpeng \
++  memset_mops \
+   strlen_asimd \
+   strlen_mte \
+ # sysdep_routines
+diff --git a/sysdeps/aarch64/multiarch/ifunc-impl-list.c b/sysdeps/aarch64/multiarch/ifunc-impl-list.c
+index ac8980288ebd22d10bfedb3d81a9fa647f137ca8..b34972303f36dac4c8c64052d58fabb25631270d 100644
+--- a/sysdeps/aarch64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/aarch64/multiarch/ifunc-impl-list.c
+@@ -41,6 +41,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_a64fx)
+ 	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_sve)
+ #endif
++	      IFUNC_IMPL_ADD (array, i, memcpy, mops, __memcpy_mops)
+ 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_generic))
+   IFUNC_IMPL (i, name, memmove,
+ 	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_thunderx)
+@@ -50,6 +51,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memmove, sve, __memmove_a64fx)
+ 	      IFUNC_IMPL_ADD (array, i, memmove, sve, __memmove_sve)
+ #endif
++	      IFUNC_IMPL_ADD (array, i, memmove, mops, __memmove_mops)
+ 	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_generic))
+   IFUNC_IMPL (i, name, memset,
+ 	      /* Enable this on non-falkor processors too so that other cores
+@@ -60,6 +62,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ #if HAVE_AARCH64_SVE_ASM
+ 	      IFUNC_IMPL_ADD (array, i, memset, sve && zva_size == 256, __memset_a64fx)
+ #endif
++	      IFUNC_IMPL_ADD (array, i, memset, mops, __memset_mops)
+ 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_generic))
+   IFUNC_IMPL (i, name, memchr,
+ 	      IFUNC_IMPL_ADD (array, i, memchr, !mte, __memchr_nosimd)
+diff --git a/sysdeps/aarch64/multiarch/init-arch.h b/sysdeps/aarch64/multiarch/init-arch.h
+index a4dcac0019204967c423092e975b27740ad640d3..5da1656954aa63b7479033fc665080a5dcaf0236 100644
+--- a/sysdeps/aarch64/multiarch/init-arch.h
++++ b/sysdeps/aarch64/multiarch/init-arch.h
+@@ -35,4 +35,6 @@
+   bool __attribute__((unused)) mte =					      \
+     MTE_ENABLED ();							      \
+   bool __attribute__((unused)) sve =					      \
+-    GLRO(dl_aarch64_cpu_features).sve;
++    GLRO(dl_aarch64_cpu_features).sve;					      \
++  bool __attribute__((unused)) mops =					      \
++    GLRO(dl_aarch64_cpu_features).mops;
+diff --git a/sysdeps/aarch64/multiarch/memcpy.c b/sysdeps/aarch64/multiarch/memcpy.c
+index 21d954e7f3b0071d02f407e7c5564780bfd4e896..2c279c254dcd854a6b85a4a7ef669f7224ea5146 100644
+--- a/sysdeps/aarch64/multiarch/memcpy.c
++++ b/sysdeps/aarch64/multiarch/memcpy.c
+@@ -34,12 +34,16 @@ extern __typeof (__redirect_memcpy) __memcpy_thunderx2 attribute_hidden;
+ extern __typeof (__redirect_memcpy) __memcpy_falkor attribute_hidden;
+ extern __typeof (__redirect_memcpy) __memcpy_a64fx attribute_hidden;
+ extern __typeof (__redirect_memcpy) __memcpy_sve attribute_hidden;
++extern __typeof (__redirect_memcpy) __memcpy_mops attribute_hidden;
+ 
+ static inline __typeof (__redirect_memcpy) *
+ select_memcpy_ifunc (void)
+ {
+   INIT_ARCH ();
+ 
++  if (mops)
++    return __memcpy_mops;
++
+   if (sve && HAVE_AARCH64_SVE_ASM)
+     {
+       if (IS_A64FX (midr))
+diff --git a/sysdeps/aarch64/multiarch/memcpy_mops.S b/sysdeps/aarch64/multiarch/memcpy_mops.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..46856296640267c7b8d9d7d8002296fe9404849d
+--- /dev/null
++++ b/sysdeps/aarch64/multiarch/memcpy_mops.S
+@@ -0,0 +1,39 @@
++/* Optimized memcpy for MOPS.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library.  If not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sysdep.h>
++
++/* Assumptions:
++ *
++ * AArch64, MOPS.
++ *
++ */
++
++ENTRY (__memcpy_mops)
++	PTR_ARG (0)
++	PTR_ARG (1)
++	SIZE_ARG (2)
++
++	mov	x3, x0
++	.inst	0x19010443	/* cpyfp   [x3]!, [x1]!, x2!  */
++	.inst	0x19410443	/* cpyfm   [x3]!, [x1]!, x2!  */
++	.inst	0x19810443	/* cpyfe   [x3]!, [x1]!, x2!  */
++	ret
++
++END (__memcpy_mops)
+diff --git a/sysdeps/aarch64/multiarch/memmove.c b/sysdeps/aarch64/multiarch/memmove.c
+index 70e8eaef7c5010e32e55c4036e8bc915fa69ddc8..6b19d0a560e3c1e7e0fa8825ec33aa4567e849bf 100644
+--- a/sysdeps/aarch64/multiarch/memmove.c
++++ b/sysdeps/aarch64/multiarch/memmove.c
+@@ -34,12 +34,16 @@ extern __typeof (__redirect_memmove) __memmove_thunderx2 attribute_hidden;
+ extern __typeof (__redirect_memmove) __memmove_falkor attribute_hidden;
+ extern __typeof (__redirect_memmove) __memmove_a64fx attribute_hidden;
+ extern __typeof (__redirect_memmove) __memmove_sve attribute_hidden;
++extern __typeof (__redirect_memmove) __memmove_mops attribute_hidden;
+ 
+ static inline __typeof (__redirect_memmove) *
+ select_memmove_ifunc (void)
+ {
+   INIT_ARCH ();
+ 
++  if (mops)
++    return __memmove_mops;
++
+   if (sve && HAVE_AARCH64_SVE_ASM)
+     {
+       if (IS_A64FX (midr))
+diff --git a/sysdeps/aarch64/multiarch/memmove_mops.S b/sysdeps/aarch64/multiarch/memmove_mops.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..c5ea66be3a081b18013c911acf3d4d493f3f2a8f
+--- /dev/null
++++ b/sysdeps/aarch64/multiarch/memmove_mops.S
+@@ -0,0 +1,39 @@
++/* Optimized memmove for MOPS.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library.  If not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sysdep.h>
++
++/* Assumptions:
++ *
++ * AArch64, MOPS.
++ *
++ */
++
++ENTRY (__memmove_mops)
++	PTR_ARG (0)
++	PTR_ARG (1)
++	SIZE_ARG (2)
++
++	mov	x3, x0
++	.inst	0x1d010443	/* cpyp    [x3]!, [x1]!, x2!  */
++	.inst	0x1d410443	/* cpym    [x3]!, [x1]!, x2!  */
++	.inst	0x1d810443	/* cpye    [x3]!, [x1]!, x2!  */
++	ret
++
++END (__memmove_mops)
+diff --git a/sysdeps/aarch64/multiarch/memset.c b/sysdeps/aarch64/multiarch/memset.c
+index 1e9ad2160c1d602ad0ba91927bec9870b35e23c2..32ded6372506055ebdfa08e7f959cb4aa73b8374 100644
+--- a/sysdeps/aarch64/multiarch/memset.c
++++ b/sysdeps/aarch64/multiarch/memset.c
+@@ -33,12 +33,16 @@ extern __typeof (__redirect_memset) __memset_emag attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_kunpeng attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_a64fx attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_generic attribute_hidden;
++extern __typeof (__redirect_memset) __memset_mops attribute_hidden;
+ 
+ static inline __typeof (__redirect_memset) *
+ select_memset_ifunc (void)
+ {
+   INIT_ARCH ();
+ 
++  if (mops)
++    return __memset_mops;
++
+   if (sve && HAVE_AARCH64_SVE_ASM)
+     {
+       if (IS_A64FX (midr) && zva_size == 256)
+diff --git a/sysdeps/aarch64/multiarch/memset_mops.S b/sysdeps/aarch64/multiarch/memset_mops.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..ca820b8636204e9a2c59f8786d9cf805719a5930
+--- /dev/null
++++ b/sysdeps/aarch64/multiarch/memset_mops.S
+@@ -0,0 +1,38 @@
++/* Optimized memset for MOPS.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library.  If not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sysdep.h>
++
++/* Assumptions:
++ *
++ * AArch64, MOPS.
++ *
++ */
++
++ENTRY (__memset_mops)
++	PTR_ARG (0)
++	SIZE_ARG (2)
++
++	mov     x3, x0
++	.inst   0x19c10443	/* setp    [x3]!, x2!, x1  */
++	.inst   0x19c14443	/* setm    [x3]!, x2!, x1  */
++	.inst   0x19c18443	/* sete    [x3]!, x2!, x1  */
++	ret
++
++END (__memset_mops)
+diff --git a/sysdeps/unix/sysv/linux/aarch64/cpu-features.c b/sysdeps/unix/sysv/linux/aarch64/cpu-features.c
+index d14c0f4e1f2905148ac55a4569fd3e12f9a1d7fe..77549b0bdfacb448b2570bff6f04dd2a8f3eb6a0 100644
+--- a/sysdeps/unix/sysv/linux/aarch64/cpu-features.c
++++ b/sysdeps/unix/sysv/linux/aarch64/cpu-features.c
+@@ -126,4 +126,7 @@ init_cpu_features (struct cpu_features *cpu_features)
+ 
+   /* Check if SVE is supported.  */
+   cpu_features->sve = GLRO (dl_hwcap) & HWCAP_SVE;
++
++  /* Check if MOPS is supported.  */
++  cpu_features->mops = GLRO (dl_hwcap2) & HWCAP2_MOPS;
+ }
+diff --git a/sysdeps/unix/sysv/linux/aarch64/cpu-features.h b/sysdeps/unix/sysv/linux/aarch64/cpu-features.h
+index 391165a99c20adf82f10c5b07d559ab304a893e2..7e18062aa22986dc5a791027c0837395c5e85794 100644
+--- a/sysdeps/unix/sysv/linux/aarch64/cpu-features.h
++++ b/sysdeps/unix/sysv/linux/aarch64/cpu-features.h
+@@ -76,6 +76,7 @@ struct cpu_features
+   /* Currently, the GLIBC memory tagging tunable only defines 8 bits.  */
+   uint8_t mte_state;
+   bool sve;
++  bool mops;
+ };
+ 
+ #endif /* _CPU_FEATURES_AARCH64_H  */
+-- 
+2.35.6
+

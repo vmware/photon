@@ -1,0 +1,243 @@
+From 0f90d6204d79223fd32248c774df0cb7f0e604de Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 8 Nov 2022 14:15:02 +0100
+Subject: [PATCH 072/175] Linux: Support __IPC_64 in sysvctl *ctl command
+ arguments (bug 29771)
+
+Old applications pass __IPC_64 as part of the command argument because
+old glibc did not check for unknown commands, and passed through the
+arguments directly to the kernel, without adding __IPC_64.
+Applications need to continue doing that for old glibc compatibility,
+so this commit enables this approach in current glibc.
+
+For msgctl and shmctl, if no translation is required, make
+direct system calls, as we did before the time64 changes.  If
+translation is required, mask __IPC_64 from the command argument.
+
+For semctl, the union-in-vararg argument handling means that
+translation is needed on all architectures.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 22a46dee24351fd5f4f188ad80554cad79c82524)
+---
+ NEWS                               |  1 +
+ sysdeps/unix/sysv/linux/ipc_priv.h |  6 +++++
+ sysdeps/unix/sysv/linux/msgctl.c   | 38 ++++++++++++++++++++----------
+ sysdeps/unix/sysv/linux/semctl.c   |  7 ++++++
+ sysdeps/unix/sysv/linux/shmctl.c   | 38 ++++++++++++++++++++----------
+ 5 files changed, 64 insertions(+), 26 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index e92d547e2c4eefe5d400acc7acc99c3118cf9e3f..9f8edea5db9a302c60683336645e9cbe7ed57d2d 100644
+--- a/NEWS
++++ b/NEWS
+@@ -46,6 +46,7 @@ The following bugs are resolved with this release:
+   [29657] libc: Incorrect struct stat for 64-bit time on linux/generic
+     platforms
+   [29730] broken y2038 support in fstatat on MIPS N64
++  [29771] Restore IPC_64 support in sysvipc *ctl functions
+ 
+ Version 2.36
+ 
+diff --git a/sysdeps/unix/sysv/linux/ipc_priv.h b/sysdeps/unix/sysv/linux/ipc_priv.h
+index 87893a675749579b9886ada759ec1d5dcde99f28..2f50c31a8e92162563d67e6fa7723a47adc7c42e 100644
+--- a/sysdeps/unix/sysv/linux/ipc_priv.h
++++ b/sysdeps/unix/sysv/linux/ipc_priv.h
+@@ -63,4 +63,10 @@ struct __old_ipc_perm
+ # define __IPC_TIME64 0
+ #endif
+ 
++#if __IPC_TIME64 || defined __ASSUME_SYSVIPC_BROKEN_MODE_T
++# define IPC_CTL_NEED_TRANSLATION 1
++#else
++# define IPC_CTL_NEED_TRANSLATION 0
++#endif
++
+ #include <ipc_ops.h>
+diff --git a/sysdeps/unix/sysv/linux/msgctl.c b/sysdeps/unix/sysv/linux/msgctl.c
+index e824ebb09584f7d613471a07f838093d35424560..2072205252def23d310c0ecd73364641f35dc5a2 100644
+--- a/sysdeps/unix/sysv/linux/msgctl.c
++++ b/sysdeps/unix/sysv/linux/msgctl.c
+@@ -85,11 +85,19 @@ msgctl_syscall (int msqid, int cmd, msgctl_arg_t *buf)
+ int
+ __msgctl64 (int msqid, int cmd, struct __msqid64_ds *buf)
+ {
+-#if __IPC_TIME64
++#if IPC_CTL_NEED_TRANSLATION
++# if __IPC_TIME64
+   struct kernel_msqid64_ds ksemid, *arg = NULL;
+-#else
++# else
+   msgctl_arg_t *arg;
+-#endif
++# endif
++
++  /* Some applications pass the __IPC_64 flag in cmd, to invoke
++     previously unsupported commands back when there was no EINVAL
++     error checking in glibc.  Mask the flag for the switch statements
++     below.  msgctl_syscall adds back the __IPC_64 flag for the actual
++     system call.  */
++  cmd &= ~__IPC_64;
+ 
+   switch (cmd)
+     {
+@@ -101,19 +109,19 @@ __msgctl64 (int msqid, int cmd, struct __msqid64_ds *buf)
+     case IPC_STAT:
+     case MSG_STAT:
+     case MSG_STAT_ANY:
+-#if __IPC_TIME64
++# if __IPC_TIME64
+       if (buf != NULL)
+ 	{
+ 	  msqid64_to_kmsqid64 (buf, &ksemid);
+ 	  arg = &ksemid;
+ 	}
+-# ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
++#  ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
+       if (cmd == IPC_SET)
+ 	arg->msg_perm.mode *= 0x10000U;
+-# endif
+-#else
++#  endif
++# else
+       arg = buf;
+-#endif
++# endif
+       break;
+ 
+     case IPC_INFO:
+@@ -137,21 +145,25 @@ __msgctl64 (int msqid, int cmd, struct __msqid64_ds *buf)
+     case IPC_STAT:
+     case MSG_STAT:
+     case MSG_STAT_ANY:
+-#ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
++# ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
+       arg->msg_perm.mode >>= 16;
+-#else
++# else
+       /* Old Linux kernel versions might not clear the mode padding.  */
+       if (sizeof ((struct msqid_ds){0}.msg_perm.mode)
+           != sizeof (__kernel_mode_t))
+ 	arg->msg_perm.mode &= 0xFFFF;
+-#endif
++# endif
+ 
+-#if __IPC_TIME64
++# if __IPC_TIME64
+       kmsqid64_to_msqid64 (arg, buf);
+-#endif
++# endif
+     }
+ 
+   return ret;
++
++#else /* !IPC_CTL_NEED_TRANSLATION */
++  return msgctl_syscall (msqid, cmd, buf);
++#endif
+ }
+ #if __TIMESIZE != 64
+ libc_hidden_def (__msgctl64)
+diff --git a/sysdeps/unix/sysv/linux/semctl.c b/sysdeps/unix/sysv/linux/semctl.c
+index 77a8130c18b2cf76e8457791ce232db489f2ea9f..3458b018bc5b58f207df4b797e1130759745e62b 100644
+--- a/sysdeps/unix/sysv/linux/semctl.c
++++ b/sysdeps/unix/sysv/linux/semctl.c
+@@ -140,6 +140,13 @@ __semctl64 (int semid, int semnum, int cmd, ...)
+   union semun64 arg64 = { 0 };
+   va_list ap;
+ 
++  /* Some applications pass the __IPC_64 flag in cmd, to invoke
++     previously unsupported commands back when there was no EINVAL
++     error checking in glibc.  Mask the flag for the switch statements
++     below.  semctl_syscall adds back the __IPC_64 flag for the actual
++     system call.  */
++  cmd &= ~__IPC_64;
++
+   /* Get the argument only if required.  */
+   switch (cmd)
+     {
+diff --git a/sysdeps/unix/sysv/linux/shmctl.c b/sysdeps/unix/sysv/linux/shmctl.c
+index ea389354973edbe13533370eb7b766e9029fc965..f00817a6f62de8402a1c14320e326bd0dbd94b90 100644
+--- a/sysdeps/unix/sysv/linux/shmctl.c
++++ b/sysdeps/unix/sysv/linux/shmctl.c
+@@ -85,11 +85,19 @@ shmctl_syscall (int shmid, int cmd, shmctl_arg_t *buf)
+ int
+ __shmctl64 (int shmid, int cmd, struct __shmid64_ds *buf)
+ {
+-#if __IPC_TIME64
++#if IPC_CTL_NEED_TRANSLATION
++# if __IPC_TIME64
+   struct kernel_shmid64_ds kshmid, *arg = NULL;
+-#else
++# else
+   shmctl_arg_t *arg;
+-#endif
++# endif
++
++  /* Some applications pass the __IPC_64 flag in cmd, to invoke
++     previously unsupported commands back when there was no EINVAL
++     error checking in glibc.  Mask the flag for the switch statements
++     below.  shmctl_syscall adds back the __IPC_64 flag for the actual
++     system call.  */
++  cmd &= ~__IPC_64;
+ 
+   switch (cmd)
+     {
+@@ -103,19 +111,19 @@ __shmctl64 (int shmid, int cmd, struct __shmid64_ds *buf)
+     case IPC_STAT:
+     case SHM_STAT:
+     case SHM_STAT_ANY:
+-#if __IPC_TIME64
++# if __IPC_TIME64
+       if (buf != NULL)
+ 	{
+ 	  shmid64_to_kshmid64 (buf, &kshmid);
+ 	  arg = &kshmid;
+ 	}
+-# ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
++#  ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
+       if (cmd == IPC_SET)
+         arg->shm_perm.mode *= 0x10000U;
+-# endif
+-#else
++#  endif
++# else
+       arg = buf;
+-#endif
++# endif
+       break;
+ 
+     case IPC_INFO:
+@@ -140,21 +148,25 @@ __shmctl64 (int shmid, int cmd, struct __shmid64_ds *buf)
+       case IPC_STAT:
+       case SHM_STAT:
+       case SHM_STAT_ANY:
+-#ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
++# ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
+         arg->shm_perm.mode >>= 16;
+-#else
++# else
+       /* Old Linux kernel versions might not clear the mode padding.  */
+       if (sizeof ((struct shmid_ds){0}.shm_perm.mode)
+ 	  != sizeof (__kernel_mode_t))
+ 	arg->shm_perm.mode &= 0xFFFF;
+-#endif
++# endif
+ 
+-#if __IPC_TIME64
++# if __IPC_TIME64
+       kshmid64_to_shmid64 (arg, buf);
+-#endif
++# endif
+     }
+ 
+   return ret;
++
++#else /* !IPC_CTL_NEED_TRANSLATION */
++  return shmctl_syscall (shmid, cmd, buf);
++#endif
+ }
+ #if __TIMESIZE != 64
+ libc_hidden_def (__shmctl64)
+-- 
+2.35.6
+

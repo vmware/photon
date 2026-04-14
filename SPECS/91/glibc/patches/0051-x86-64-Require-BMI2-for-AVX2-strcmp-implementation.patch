@@ -1,0 +1,62 @@
+From 7afbd1e56acb721031bffd876f275dcb1af7e530 Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 3 Oct 2022 23:46:11 +0200
+Subject: [PATCH 051/175] x86-64: Require BMI2 for AVX2 strcmp implementation
+
+The AVX2 strcmp implementation uses the 'bzhi' instruction, which
+belongs to the BMI2 CPU feature.
+
+NB: It also uses the 'tzcnt' BMI1 instruction, but it is executed as BSF
+as BSF if the CPU doesn't support TZCNT, and produces the same result
+for non-zero input.
+
+Partially fixes: b77b06e0e296 ("x86: Optimize strcmp-avx2.S")
+Partially resolves: BZ #29611
+
+Reviewed-by: Noah Goldstein  <goldstein.w.n@gmail.com>
+(cherry picked from commit 4d64c6445735e9b34e2ac8e369312cbfc2f88e17)
+---
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 4 +++-
+ sysdeps/x86_64/multiarch/strcmp.c          | 4 ++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index d208fae4bfc57c3d09225b12668641cb8a8b6369..a42b0a4620b949912fef13666d7e24d5ffde25dd 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -591,10 +591,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strcmp_evex)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strcmp,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __strcmp_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, strcmp,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __strcmp_avx2_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V2 (array, i, strcmp,
+diff --git a/sysdeps/x86_64/multiarch/strcmp.c b/sysdeps/x86_64/multiarch/strcmp.c
+index fdd5afe3af16eb473e3cfb7a39eb59836af3883a..9d6c9f66ba9254d8ab8c1062698bb611bc889055 100644
+--- a/sysdeps/x86_64/multiarch/strcmp.c
++++ b/sysdeps/x86_64/multiarch/strcmp.c
+@@ -45,12 +45,12 @@ IFUNC_SELECTOR (void)
+   const struct cpu_features *cpu_features = __get_cpu_features ();
+ 
+   if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++      && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, BMI2)
+       && X86_ISA_CPU_FEATURES_ARCH_P (cpu_features,
+ 				      AVX_Fast_Unaligned_Load, ))
+     {
+       if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX512VL)
+-	  && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX512BW)
+-	  && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, BMI2))
++	  && X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX512BW))
+ 	return OPTIMIZE (evex);
+ 
+       if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
+-- 
+2.35.6
+

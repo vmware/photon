@@ -1,0 +1,55 @@
+From d31c4d38a34c609acef6e61cfd272b11a9b625eb Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 25 Apr 2024 08:06:52 -0700
+Subject: [PATCH 169/175] elf: Also compile dl-misc.os with
+ $(rtld-early-cflags)
+
+Also compile dl-misc.os with $(rtld-early-cflags) to avoid
+
+Program received signal SIGILL, Illegal instruction.
+0x00007ffff7fd36ea in _dl_strtoul (nptr=nptr@entry=0x7fffffffe2c9 "2",
+    endptr=endptr@entry=0x7fffffffd728) at dl-misc.c:156
+156	  bool positive = true;
+(gdb) bt
+ #0  0x00007ffff7fd36ea in _dl_strtoul (nptr=nptr@entry=0x7fffffffe2c9 "2",
+    endptr=endptr@entry=0x7fffffffd728) at dl-misc.c:156
+ #1  0x00007ffff7fdb1a9 in tunable_initialize (
+    cur=cur@entry=0x7ffff7ffbc00 <tunable_list+2176>,
+    strval=strval@entry=0x7fffffffe2c9 "2", len=len@entry=1)
+    at dl-tunables.c:131
+ #2  0x00007ffff7fdb3a2 in parse_tunables (valstring=<optimized out>)
+    at dl-tunables.c:258
+ #3  0x00007ffff7fdb5d9 in __GI___tunables_init (envp=0x7fffffffdd58)
+    at dl-tunables.c:288
+ #4  0x00007ffff7fe44c3 in _dl_sysdep_start (
+    start_argptr=start_argptr@entry=0x7fffffffdcb0,
+    dl_main=dl_main@entry=0x7ffff7fe5f80 <dl_main>)
+    at ../sysdeps/unix/sysv/linux/dl-sysdep.c:110
+ #5  0x00007ffff7fe5cae in _dl_start_final (arg=0x7fffffffdcb0) at rtld.c:494
+ #6  _dl_start (arg=0x7fffffffdcb0) at rtld.c:581
+ #7  0x00007ffff7fe4b38 in _start ()
+(gdb)
+
+when setting GLIBC_TUNABLES in glibc compiled with APX.
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+
+(cherry picked from commit 049b7684c912dd32b67b1b15b0f43bf07d5f512e)
+---
+ elf/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/elf/Makefile b/elf/Makefile
+index 30c9af1de978f9d6752dfc71613e3c1ae4ea57dc..cea9c1b29d92ac1ac13baae67130c74d6799ed4f 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -177,6 +177,7 @@ CFLAGS-.op += $(call elide-stack-protector,.op,$(elide-routines.os))
+ CFLAGS-.os += $(call elide-stack-protector,.os,$(all-rtld-routines))
+ 
+ # Add the requested compiler flags to the early startup code.
++CFLAGS-dl-misc.os += $(rtld-early-cflags)
+ CFLAGS-dl-printf.os += $(rtld-early-cflags)
+ CFLAGS-dl-setup_hash.os += $(rtld-early-cflags)
+ CFLAGS-dl-sysdep.os += $(rtld-early-cflags)
+-- 
+2.35.6
+

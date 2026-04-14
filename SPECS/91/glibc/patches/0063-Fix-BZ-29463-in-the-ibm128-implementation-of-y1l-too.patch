@@ -1,0 +1,37 @@
+From b357157361117182c7a68c90fda7ba431b64442c Mon Sep 17 00:00:00 2001
+From: Michael Hudson-Doyle <michael.hudson@canonical.com>
+Date: Mon, 22 Aug 2022 14:05:04 +1200
+Subject: [PATCH 063/175] Fix BZ #29463 in the ibm128 implementation of y1l too
+
+Avoid moving code across SET_RESTORE_ROUNDL in order to fix
+[BZ #29463].
+
+Tested-by: Aurelien Jarno <aurelien@aurel32.net>
+Reviewed-by: Aurelien Jarno <aurelien@aurel32.net>
+Reviewed-by: Tulio Magno Quites Machado Filho <tuliom@linux.ibm.com>
+(cherry picked from commit b6e37b7805b0182c3e25cdab39ebf5f001c04d05)
+---
+ sysdeps/ieee754/ldbl-128ibm/e_j1l.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sysdeps/ieee754/ldbl-128ibm/e_j1l.c b/sysdeps/ieee754/ldbl-128ibm/e_j1l.c
+index f85ba9446663d39d5fc6eaaea5a4a1f9a213c234..0a5fe68342fc974eec7ab3f528c7611d583cb391 100644
+--- a/sysdeps/ieee754/ldbl-128ibm/e_j1l.c
++++ b/sysdeps/ieee754/ldbl-128ibm/e_j1l.c
+@@ -792,10 +792,13 @@ __ieee754_y1l (long double x)
+     {
+       /* 0 <= x <= 2 */
+       SET_RESTORE_ROUNDL (FE_TONEAREST);
++      xx = math_opt_barrier (xx);
++      x = math_opt_barrier (x);
+       z = xx * xx;
+       p = xx * neval (z, Y0_2N, NY0_2N) / deval (z, Y0_2D, NY0_2D);
+       p = -TWOOPI / xx + p;
+       p = TWOOPI * __ieee754_logl (x) * __ieee754_j1l (x) + p;
++      math_force_eval (p);
+       return p;
+     }
+ 
+-- 
+2.35.6
+

@@ -1,0 +1,67 @@
+From d9196d4f3fa9997388655813ddd236426a16dd92 Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 3 Oct 2022 23:46:11 +0200
+Subject: [PATCH 054/175] x86-64: Require BMI2 for AVX2 (raw|w)memchr
+ implementations
+
+The AVX2 memchr, rawmemchr and wmemchr implementations use the 'bzhi'
+and 'sarx' instructions, which belongs to the BMI2 CPU feature.
+
+Fixes: acfd088a1963 ("x86: Optimize memchr-avx2.S")
+Partially resolves: BZ #29611
+
+Reviewed-by: Noah Goldstein  <goldstein.w.n@gmail.com>
+(cherry picked from commit e3e7fab7fe5186d18ca2046d99ba321c27db30ad)
+---
+ sysdeps/x86_64/multiarch/ifunc-impl-list.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/sysdeps/x86_64/multiarch/ifunc-impl-list.c b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+index fec8790c1156718656c1e87a89701fae5d74838f..7c84963d92ca08bca186956c697b6a06b7e872cb 100644
+--- a/sysdeps/x86_64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/x86_64/multiarch/ifunc-impl-list.c
+@@ -69,10 +69,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __memchr_evex_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memchr,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __memchr_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memchr,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __memchr_avx2_rtm)
+ 	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
+@@ -335,10 +337,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __rawmemchr_evex_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, rawmemchr,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __rawmemchr_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, rawmemchr,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __rawmemchr_avx2_rtm)
+ 	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
+@@ -927,10 +931,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __wmemchr_evex_rtm)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, wmemchr,
+-				     CPU_FEATURE_USABLE (AVX2),
++				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)),
+ 				     __wmemchr_avx2)
+ 	      X86_IFUNC_IMPL_ADD_V3 (array, i, wmemchr,
+ 				     (CPU_FEATURE_USABLE (AVX2)
++				      && CPU_FEATURE_USABLE (BMI2)
+ 				      && CPU_FEATURE_USABLE (RTM)),
+ 				     __wmemchr_avx2_rtm)
+ 	      /* ISA V2 wrapper for SSE2 implementation because the SSE2
+-- 
+2.35.6
+

@@ -1,0 +1,31 @@
+From 18bec23cbb4d530a2a8ce95353770661fabcd55f Mon Sep 17 00:00:00 2001
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Mon, 3 Oct 2022 23:46:11 +0200
+Subject: [PATCH 049/175] x86: include BMI1 and BMI2 in x86-64-v3 level
+
+The "System V Application Binary Interface AMD64 Architecture Processor
+Supplement" mandates the BMI1 and BMI2 CPU features for the x86-64-v3
+level.
+
+Reviewed-by: Noah Goldstein  <goldstein.w.n@gmail.com>
+(cherry picked from commit b80f16adbd979831bf25ea491e1261e81885c2b6)
+---
+ sysdeps/x86/get-isa-level.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sysdeps/x86/get-isa-level.h b/sysdeps/x86/get-isa-level.h
+index 1ade78ab73ed261fcaef776abe632c3bf755614e..5b4dd5f062283b12eab59ab173488170f9330291 100644
+--- a/sysdeps/x86/get-isa-level.h
++++ b/sysdeps/x86/get-isa-level.h
+@@ -47,6 +47,8 @@ get_isa_level (const struct cpu_features *cpu_features)
+ 	  isa_level |= GNU_PROPERTY_X86_ISA_1_V2;
+ 	  if (CPU_FEATURE_USABLE_P (cpu_features, AVX)
+ 	      && CPU_FEATURE_USABLE_P (cpu_features, AVX2)
++	      && CPU_FEATURE_USABLE_P (cpu_features, BMI1)
++	      && CPU_FEATURE_USABLE_P (cpu_features, BMI2)
+ 	      && CPU_FEATURE_USABLE_P (cpu_features, F16C)
+ 	      && CPU_FEATURE_USABLE_P (cpu_features, FMA)
+ 	      && CPU_FEATURE_USABLE_P (cpu_features, LZCNT)
+-- 
+2.35.6
+

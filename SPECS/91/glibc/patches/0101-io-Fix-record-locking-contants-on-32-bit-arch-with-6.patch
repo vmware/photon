@@ -1,0 +1,321 @@
+From 53b58a681d62ec3eadae331326ddcc71fdf1e32a Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Wed, 24 May 2023 16:24:19 -0300
+Subject: [PATCH 101/175] io: Fix record locking contants on 32 bit arch with
+ 64 bit default time_t (BZ#30477)
+
+For architecture with default 64 bit time_t support, the kernel
+does not provide LFS and non-LFS values for F_GETLK, F_GETLK, and
+F_GETLK (the default value used for 64 bit architecture are used).
+
+This is might be considered an ABI break, but the currenct exported
+values is bogus anyway.
+
+The POSIX lockf is not affected since it is aliased to lockf64,
+which already uses the LFS values.
+
+Checked on i686-linux-gnu and the new tests on a riscv32.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 4d0fe291aed3a476a3b59c4ecfae9d35ac0f15e8)
+---
+ NEWS                                       |  1 +
+ io/Makefile                                |  3 +-
+ io/tst-fcntl-lock.c                        | 97 ++++++++++++++++++++++
+ io/tst-lockf.c                             | 58 +++++++------
+ sysdeps/unix/sysv/linux/bits/fcntl-linux.h |  2 +-
+ 5 files changed, 135 insertions(+), 26 deletions(-)
+ create mode 100644 io/tst-fcntl-lock.c
+
+diff --git a/NEWS b/NEWS
+index 43f2deb49dfebaeb95c7d5ed9b1c184c38e01dd8..9f6b48b63d9d8a7388a7734a1b4d95151c06b3f9 100644
+--- a/NEWS
++++ b/NEWS
+@@ -62,6 +62,7 @@ The following bugs are resolved with this release:
+   [30151] gshadow: Matching sgetsgent, sgetsgent_r ERANGE handling
+   [30163] posix: Fix system blocks SIGCHLD erroneously
+   [30305] x86_64: Fix asm constraints in feraiseexcept
++  [30477] libc: [RISCV]: time64 does not work on riscv32
+ 
+ Version 2.36
+ 
+diff --git a/io/Makefile b/io/Makefile
+index b1710407d0be683a29dae4b8b3dc90e65e0b7710..fb363c612cd96acdc331d0121990feeaa69cefcf 100644
+--- a/io/Makefile
++++ b/io/Makefile
+@@ -80,7 +80,8 @@ tests		:= test-utime test-stat test-stat2 test-lfs tst-getcwd \
+ 		   tst-utimensat \
+ 		   tst-closefrom \
+ 		   tst-close_range \
+-		   tst-ftw-bz28126
++		   tst-ftw-bz28126 \
++		   tst-fcntl-lock
+ 
+ tests-time64 := \
+   tst-fcntl-time64 \
+diff --git a/io/tst-fcntl-lock.c b/io/tst-fcntl-lock.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..357c4b7b56e4da92f76cab7799d2698be197549a
+--- /dev/null
++++ b/io/tst-fcntl-lock.c
+@@ -0,0 +1,97 @@
++/* Test for advisory record locking.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++
++   This program is free software; you can redistribute it and/or
++   modify it under the terms of the GNU General Public License
++   as published by the Free Software Foundation; either version 2
++   of the License, or (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program; if not, see <https://www.gnu.org/licenses/>.
++*/
++
++#include <fcntl.h>
++#include <errno.h>
++#include <unistd.h>
++
++/* This is essentially the POSIX lockf.  */
++
++static int
++fcntl_lockf (int fd, int cmd, off_t len)
++{
++  struct flock fl = {
++    .l_type = F_WRLCK,
++    .l_whence = SEEK_CUR,
++    .l_len = len
++  };
++
++  switch (cmd)
++    {
++    case F_TEST:
++      fl.l_type = F_RDLCK;
++      if (fcntl (fd, F_GETLK, &fl) < 0)
++	return -1;
++      if (fl.l_type == F_UNLCK || fl.l_pid == getpid ())
++	return 0;
++      errno = EACCES;
++      return -1;
++
++    case F_ULOCK:
++      fl.l_type = F_UNLCK;
++      return fcntl (fd, F_SETLK, &fl);
++
++    case F_LOCK:
++      return fcntl (fd, F_SETLKW, &fl);
++
++    case F_TLOCK:
++      return fcntl (fd, F_SETLK, &fl);
++    }
++
++  errno = EINVAL;
++  return -1;
++}
++
++static int
++fcntl64_lockf (int fd, int cmd, off64_t len64)
++  {
++  struct flock64 fl64 = {
++    .l_type = F_WRLCK,
++    .l_whence = SEEK_CUR,
++    .l_len = len64
++  };
++
++  switch (cmd)
++    {
++    case F_TEST:
++      fl64.l_type = F_RDLCK;
++      if (fcntl64 (fd, F_GETLK64, &fl64) < 0)
++	return -1;
++      if (fl64.l_type == F_UNLCK || fl64.l_pid == getpid ())
++	return 0;
++      errno = EACCES;
++      return -1;
++
++    case F_ULOCK:
++      fl64.l_type = F_UNLCK;
++      return fcntl64 (fd, F_SETLK64, &fl64);
++
++    case F_LOCK:
++      return fcntl64 (fd, F_SETLKW64, &fl64);
++
++    case F_TLOCK:
++      return fcntl64 (fd, F_SETLK64, &fl64);
++    }
++
++  errno = EINVAL;
++  return -1;
++}
++
++#define TST_LOCKFD  "tst-fcntl-lock."
++#define LOCKF       fcntl_lockf
++#define LOCKF64     fcntl64_lockf
++#include "tst-lockf.c"
+diff --git a/io/tst-lockf.c b/io/tst-lockf.c
+index be92f33fd1bbcca6f8dffece4e6881be18923b75..5e41dc19df7ce6f50c21ff677079e326a476b59d 100644
+--- a/io/tst-lockf.c
++++ b/io/tst-lockf.c
+@@ -24,13 +24,23 @@
+ #include <support/capture_subprocess.h>
+ #include <support/check.h>
+ 
++#ifndef TST_LOCKFD
++# define TST_LOCKFD "tst-lockfd."
++#endif
++#ifndef LOCKF
++# define LOCKF lockf
++#endif
++#ifndef LOCKF64
++# define LOCKF64 lockf64
++#endif
++
+ static char *temp_filename;
+ static int temp_fd;
+ 
+ static void
+ do_prepare (int argc, char **argv)
+ {
+-  temp_fd = create_temp_file ("tst-lockfd.", &temp_filename);
++  temp_fd = create_temp_file (TST_LOCKFD, &temp_filename);
+   TEST_VERIFY_EXIT (temp_fd != -1);
+ }
+ #define PREPARE do_prepare
+@@ -40,22 +50,22 @@ do_test_child_lockf (void *closure)
+ {
+   /* Check if parent has [0, 1024) locked.  */
+   TEST_COMPARE (lseek (temp_fd, 0, SEEK_SET), 0);
+-  TEST_COMPARE (lockf (temp_fd, F_TLOCK, 1024), -1);
++  TEST_COMPARE (LOCKF (temp_fd, F_TLOCK, 1024), -1);
+   TEST_COMPARE (errno, EAGAIN);
+-  TEST_COMPARE (lockf (temp_fd, F_TEST, 1024), -1);
++  TEST_COMPARE (LOCKF (temp_fd, F_TEST, 1024), -1);
+   TEST_COMPARE (errno, EACCES);
+   /* Also Check if parent has last 1024 bytes locked.  */
+   TEST_COMPARE (lseek (temp_fd, INT32_MAX-1024, SEEK_SET), INT32_MAX-1024);
+-  TEST_COMPARE (lockf (temp_fd, F_TEST, 1024), -1);
++  TEST_COMPARE (LOCKF (temp_fd, F_TEST, 1024), -1);
+ 
+   /* And try to lock [1024, 2048).  */
+   TEST_COMPARE (lseek (temp_fd, 1024, SEEK_SET), 1024);
+-  TEST_COMPARE (lockf (temp_fd, F_LOCK, 1024), 0);
++  TEST_COMPARE (LOCKF (temp_fd, F_LOCK, 1024), 0);
+ 
+   /* Check if non-LFS interface cap access to 32-bif off_t.  */
+   TEST_COMPARE (lseek64 (temp_fd, (off64_t)INT32_MAX, SEEK_SET),
+ 		(off64_t)INT32_MAX);
+-  TEST_COMPARE (lockf64 (temp_fd, F_TEST, 1024), 0);
++  TEST_COMPARE (LOCKF64 (temp_fd, F_TEST, 1024), 0);
+ }
+ 
+ static void
+@@ -63,32 +73,32 @@ do_test_child_lockf64 (void *closure)
+ {
+   /* Check if parent has [0, 1024) locked.  */
+   TEST_COMPARE (lseek64 (temp_fd, 0, SEEK_SET), 0);
+-  TEST_COMPARE (lockf64 (temp_fd, F_TLOCK, 1024), -1);
++  TEST_COMPARE (LOCKF64 (temp_fd, F_TLOCK, 1024), -1);
+   TEST_COMPARE (errno, EAGAIN);
+-  TEST_COMPARE (lockf64 (temp_fd, F_TEST, 1024), -1);
++  TEST_COMPARE (LOCKF64 (temp_fd, F_TEST, 1024), -1);
+   TEST_COMPARE (errno, EACCES);
+   /* Also Check if parent has last 1024 bytes locked.  */
+   TEST_COMPARE (lseek64 (temp_fd, INT32_MAX-1024, SEEK_SET), INT32_MAX-1024);
+-  TEST_COMPARE (lockf64 (temp_fd, F_TEST, 1024), -1);
++  TEST_COMPARE (LOCKF64 (temp_fd, F_TEST, 1024), -1);
+ 
+   /* And try to lock [1024, 2048).  */
+   TEST_COMPARE (lseek64 (temp_fd, 1024, SEEK_SET), 1024);
+-  TEST_COMPARE (lockf64 (temp_fd, F_LOCK, 1024), 0);
++  TEST_COMPARE (LOCKF64 (temp_fd, F_LOCK, 1024), 0);
+ 
+   /* And also [INT32_MAX, INT32_MAX+1024).  */
+   {
+     off64_t off = (off64_t)INT32_MAX;
+     TEST_COMPARE (lseek64 (temp_fd, off, SEEK_SET), off);
+-    TEST_COMPARE (lockf64 (temp_fd, F_LOCK, 1024), 0);
++    TEST_COMPARE (LOCKF64 (temp_fd, F_LOCK, 1024), 0);
+   }
+ 
+   /* Check if [INT32_MAX+1024, INT64_MAX) is locked.  */
+   {
+     off64_t off = (off64_t)INT32_MAX+1024;
+     TEST_COMPARE (lseek64 (temp_fd, off, SEEK_SET), off);
+-    TEST_COMPARE (lockf64 (temp_fd, F_TLOCK, 1024), -1);
++    TEST_COMPARE (LOCKF64 (temp_fd, F_TLOCK, 1024), -1);
+     TEST_COMPARE (errno, EAGAIN);
+-    TEST_COMPARE (lockf64 (temp_fd, F_TEST, 1024), -1);
++    TEST_COMPARE (LOCKF64 (temp_fd, F_TEST, 1024), -1);
+     TEST_COMPARE (errno, EACCES);
+   }
+ }
+@@ -97,38 +107,38 @@ static int
+ do_test (void)
+ {
+   /* Basic tests to check if a lock can be obtained and checked.  */
+-  TEST_COMPARE (lockf (temp_fd, F_LOCK, 1024), 0);
+-  TEST_COMPARE (lockf (temp_fd, F_LOCK, INT32_MAX), 0);
+-  TEST_COMPARE (lockf (temp_fd, F_TLOCK, 1024), 0);
+-  TEST_COMPARE (lockf (temp_fd, F_TEST, 1024), 0);
++  TEST_COMPARE (LOCKF (temp_fd, F_LOCK, 1024), 0);
++  TEST_COMPARE (LOCKF (temp_fd, F_LOCK, INT32_MAX), 0);
++  TEST_COMPARE (LOCKF (temp_fd, F_TLOCK, 1024), 0);
++  TEST_COMPARE (LOCKF (temp_fd, F_TEST, 1024), 0);
+   TEST_COMPARE (lseek (temp_fd, 1024, SEEK_SET), 1024);
+-  TEST_COMPARE (lockf (temp_fd, F_ULOCK, 1024), 0);
++  TEST_COMPARE (LOCKF (temp_fd, F_ULOCK, 1024), 0);
+   /* Parent process should have ([0, 1024), [2048, INT32_MAX)) ranges locked.  */
+ 
+   {
+     struct support_capture_subprocess result;
+     result = support_capture_subprocess (do_test_child_lockf, NULL);
+-    support_capture_subprocess_check (&result, "lockf", 0, sc_allow_none);
++    support_capture_subprocess_check (&result, "LOCKF", 0, sc_allow_none);
+   }
+ 
+   if (sizeof (off_t) != sizeof (off64_t))
+     {
+       /* Check if previously locked regions with LFS symbol.  */
+       TEST_COMPARE (lseek (temp_fd, 0, SEEK_SET), 0);
+-      TEST_COMPARE (lockf64 (temp_fd, F_LOCK, 1024), 0);
+-      TEST_COMPARE (lockf64 (temp_fd, F_TLOCK, 1024), 0);
+-      TEST_COMPARE (lockf64 (temp_fd, F_TEST, 1024), 0);
++      TEST_COMPARE (LOCKF64 (temp_fd, F_LOCK, 1024), 0);
++      TEST_COMPARE (LOCKF64 (temp_fd, F_TLOCK, 1024), 0);
++      TEST_COMPARE (LOCKF64 (temp_fd, F_TEST, 1024), 0);
+       /* Lock region [INT32_MAX+1024, INT64_MAX).  */
+       off64_t off = (off64_t)INT32_MAX + 1024;
+       TEST_COMPARE (lseek64 (temp_fd, off, SEEK_SET), off);
+-      TEST_COMPARE (lockf64 (temp_fd, F_LOCK, 1024), 0);
++      TEST_COMPARE (LOCKF64 (temp_fd, F_LOCK, 1024), 0);
+       /* Parent process should have ([0, 1024), [2048, INT32_MAX),
+ 	 [INT32_MAX+1024, INT64_MAX)) ranges locked.  */
+ 
+       {
+ 	struct support_capture_subprocess result;
+ 	result = support_capture_subprocess (do_test_child_lockf64, NULL);
+-	support_capture_subprocess_check (&result, "lockf", 0, sc_allow_none);
++	support_capture_subprocess_check (&result, "LOCKF", 0, sc_allow_none);
+       }
+     }
+ 
+diff --git a/sysdeps/unix/sysv/linux/bits/fcntl-linux.h b/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
+index 33ff88ce59942945c63650598d29a3097b3f7010..bfc674235d60c423888eaa1bcc167eb40ef7a6bd 100644
+--- a/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
++++ b/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
+@@ -101,7 +101,7 @@
+ #endif
+ 
+ #ifndef F_GETLK
+-# ifndef __USE_FILE_OFFSET64
++# if !defined __USE_FILE_OFFSET64 && __TIMESIZE != 64
+ #  define F_GETLK	5	/* Get record locking info.  */
+ #  define F_SETLK	6	/* Set record locking info (non-blocking).  */
+ #  define F_SETLKW	7	/* Set record locking info (blocking).  */
+-- 
+2.35.6
+

@@ -1,0 +1,113 @@
+From 5176bc87e9e5ed8c0f2059506d0ddb12010875b9 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Thu, 5 Jan 2023 18:21:25 +0100
+Subject: [PATCH] time: Set daylight to 1 for matching DST/offset change (bug
+ 29951)
+
+The daylight variable is supposed to be set to 1 if DST is ever in
+use for the current time zone.  But __tzfile_read used to do this:
+
+  __daylight = rule_stdoff != rule_dstoff;
+
+This check can fail to set __daylight to 1 if the DST and non-DST
+offsets happen to be the same.
+
+(cherry picked from commit 35141f304e319109c322f797ae71c0b9420ccb05)
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+---
+ NEWS          |  1 +
+ time/tzfile.c | 41 ++++++++++++++++++++++-------------------
+ 2 files changed, 23 insertions(+), 19 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index dbe2b2e301dfaa34309fa2df77a61da2a79db0c2..8c79e83b775cf960525d712f97274928b98b8f28 100644
+--- a/NEWS
++++ b/NEWS
+@@ -51,6 +51,7 @@ The following bugs are resolved with this release:
+   [29730] broken y2038 support in fstatat on MIPS N64
+   [29771] Restore IPC_64 support in sysvipc *ctl functions
+   [29776] elf/tst-tlsopt-powerpc fails when compiled with -mcpu=power10
++  [29951] time: Set daylight to 1 for matching DST/offset change
+ 
+ Version 2.36
+ 
+diff --git a/time/tzfile.c b/time/tzfile.c
+index 394b098856da391e5b2b63098cb7e1ae5209d3ad..8bba4e5b8d3b3b5f0e62573d54a69eb47eae0e30 100644
+--- a/time/tzfile.c
++++ b/time/tzfile.c
+@@ -61,6 +61,10 @@ static size_t num_leaps;
+ static struct leap *leaps;
+ static char *tzspec;
+ 
++/* Used to restore the daylight variable during time conversion, as if
++   tzset had been called.  */
++static int daylight_saved;
++
+ #include <endian.h>
+ #include <byteswap.h>
+ 
+@@ -438,36 +442,35 @@ __tzfile_read (const char *file, size_t extra, char **extrap)
+   if (__tzname[1] == NULL)
+     __tzname[1] = __tzname[0];
+ 
++  daylight_saved = 0;
+   if (num_transitions == 0)
+     /* Use the first rule (which should also be the only one).  */
+     rule_stdoff = rule_dstoff = types[0].offset;
+   else
+     {
+-      int stdoff_set = 0, dstoff_set = 0;
+-      rule_stdoff = rule_dstoff = 0;
++      rule_stdoff = 0;
++
++      /* Search for the last rule with a standard time offset.  This
++	 will be used for the global timezone variable.  */
+       i = num_transitions - 1;
+       do
+-	{
+-	  if (!stdoff_set && !types[type_idxs[i]].isdst)
+-	    {
+-	      stdoff_set = 1;
+-	      rule_stdoff = types[type_idxs[i]].offset;
+-	    }
+-	  else if (!dstoff_set && types[type_idxs[i]].isdst)
+-	    {
+-	      dstoff_set = 1;
+-	      rule_dstoff = types[type_idxs[i]].offset;
+-	    }
+-	  if (stdoff_set && dstoff_set)
++	if (!types[type_idxs[i]].isdst)
++	  {
++	    rule_stdoff = types[type_idxs[i]].offset;
+ 	    break;
+-	}
++	  }
++	else
++	  daylight_saved = 1;
+       while (i-- > 0);
+ 
+-      if (!dstoff_set)
+-	rule_dstoff = rule_stdoff;
++      /* Keep searching to see if there is a DST rule.  This
++	 information will be used to set the global daylight
++	 variable.  */
++      while (i-- > 0 && !daylight_saved)
++	daylight_saved = types[type_idxs[i]].isdst;
+     }
+ 
+-  __daylight = rule_stdoff != rule_dstoff;
++  __daylight = daylight_saved;
+   __timezone = -rule_stdoff;
+ 
+  done:
+@@ -731,7 +734,7 @@ __tzfile_compute (__time64_t timer, int use_localtime,
+ 	}
+ 
+       struct ttinfo *info = &types[i];
+-      __daylight = rule_stdoff != rule_dstoff;
++      __daylight = daylight_saved;
+       __timezone = -rule_stdoff;
+ 
+       if (__tzname[0] == NULL)
+-- 
+2.41.0

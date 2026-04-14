@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %global security_hardening nonow
 %define glibc_target_cpu %{_build}
 %global __brp_elfperms  /bin/true
@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        24%{?dist}
+Release:        23.1%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -381,7 +381,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
-* Mon Apr 13 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-24
+* Mon Apr 13 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-23.1
+- Mark sub-release for prep to upgrade
 - Mitigate CVE-2026-4046
 * Sun Mar 29 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-23
 - Fix CVE-2026-4437, CVE-2026-4438

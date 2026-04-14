@@ -1,0 +1,86 @@
+From 7df9a276563e201fd5680c46f0d8c6f719ce1fc9 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 27 Apr 2023 13:06:15 -0700
+Subject: [PATCH 099/175] __check_pf: Add a cancellation cleanup handler [BZ
+ #20975]
+
+There are reports for hang in __check_pf:
+
+https://github.com/JoeDog/siege/issues/4
+
+It is reproducible only under specific configurations:
+
+1. Large number of cores (>= 64) and large number of threads (> 3X of
+the number of cores) with long lived socket connection.
+2. Low power (frequency) mode.
+3. Power management is enabled.
+
+While holding lock, __check_pf calls make_request which calls __sendto
+and __recvmsg.  Since __sendto and __recvmsg are cancellation points,
+lock held by __check_pf won't be released and can cause deadlock when
+thread cancellation happens in __sendto or __recvmsg.  Add a cancellation
+cleanup handler for __check_pf to unlock the lock when cancelled by
+another thread.  This fixes BZ #20975 and the siege hang issue.
+
+(cherry picked from commit a443bd3fb233186038b8b483959ecb7978d1abea)
+---
+ sysdeps/unix/sysv/linux/Makefile   |  2 ++
+ sysdeps/unix/sysv/linux/check_pf.c | 15 +++++++++++++++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
+index 3ceda9fdbfeec8c09cc2abe94108a8d67953044c..d5d9af4de2af79e1c7409dfa584f331eccf8b1cc 100644
+--- a/sysdeps/unix/sysv/linux/Makefile
++++ b/sysdeps/unix/sysv/linux/Makefile
+@@ -362,6 +362,8 @@ sysdep_headers += netinet/if_fddi.h netinet/if_tr.h \
+ 		  netrom/netrom.h netpacket/packet.h netrose/rose.h \
+ 		  neteconet/ec.h netiucv/iucv.h
+ sysdep_routines += netlink_assert_response
++
++CFLAGS-check_pf.c += -fexceptions
+ endif
+ 
+ # Don't compile the ctype glue code, since there is no old non-GNU C library.
+diff --git a/sysdeps/unix/sysv/linux/check_pf.c b/sysdeps/unix/sysv/linux/check_pf.c
+index fe73fe3ba84db02b1d7188de8f29d55019a69ff3..ca20043408a9472762cde6b1eb3279df22f2fd17 100644
+--- a/sysdeps/unix/sysv/linux/check_pf.c
++++ b/sysdeps/unix/sysv/linux/check_pf.c
+@@ -292,6 +292,14 @@ make_request (int fd, pid_t pid)
+   return NULL;
+ }
+ 
++#ifdef __EXCEPTIONS
++static void
++cancel_handler (void *arg __attribute__((unused)))
++{
++  /* Release the lock.  */
++  __libc_lock_unlock (lock);
++}
++#endif
+ 
+ void
+ attribute_hidden
+@@ -304,6 +312,10 @@ __check_pf (bool *seen_ipv4, bool *seen_ipv6,
+   struct cached_data *olddata = NULL;
+   struct cached_data *data = NULL;
+ 
++#ifdef __EXCEPTIONS
++  /* Make sure that lock is released when the thread is cancelled.  */
++  __libc_cleanup_push (cancel_handler, NULL);
++#endif
+   __libc_lock_lock (lock);
+ 
+   if (cache_valid_p ())
+@@ -338,6 +350,9 @@ __check_pf (bool *seen_ipv4, bool *seen_ipv6,
+ 	}
+     }
+ 
++#ifdef __EXCEPTIONS
++  __libc_cleanup_pop (0);
++#endif
+   __libc_lock_unlock (lock);
+ 
+   if (data != NULL)
+-- 
+2.35.6
+

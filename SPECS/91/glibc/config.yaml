@@ -1,0 +1,31 @@
+sources:
+- archive: glibc-2.36.tar.xz
+  archive_sha512sum: 
+    9ea0bbda32f83a85b7da0c34f169607fb8a102f0a11a914e6bf531be47d1bef4f5307128286cffa1e2dc5879f0e6ccaef527dd353486883fa332a0b44bde8b3e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This library provides the basic routines for allocating
+        memory, searching directories, opening and closing files, reading and writing
+        files, string handling, pattern matching, arithmetic, and so on. '
+      home_page: http://www.gnu.org/software/libc
+      license_concluded: (AFL-2.0 OR LGPL-2.0-or-later) AND BSD-3-Clause AND 
+        BSL-1.0 AND CMU-Mach AND FSFAP AND FSFUL AND GFDL-1.1-or-later AND 
+        GFDL-1.3-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH 
+        Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH 
+        GCC-exception-2.0 AND GPL-3.0-or-later WITH Texinfo-exception AND HPND 
+        AND ISC AND Inner-Net-2.0 AND LGPL-2.0-only AND LGPL-2.0-or-later AND 
+        LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-or-later AND MIT-CMU 
+        AND Spencer-94 AND SunPro AND Unicode-DFS-2015 AND Unlicense AND X11
+      license_declared: (AFL-2.0 OR LGPL-2.0-or-later) AND BSD-3-Clause AND 
+        BSL-1.0 AND CMU-Mach AND FSFAP AND FSFUL AND GFDL-1.1-or-later AND 
+        GFDL-1.3-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later
+        AND GPL-3.0-or-later AND GPL-3.0-or-later WITH 
+        Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH 
+        GCC-exception-2.0 AND GPL-3.0-or-later WITH Texinfo-exception AND HPND 
+        AND ISC AND Inner-Net-2.0 AND LGPL-2.0-only AND LGPL-2.0-or-later AND 
+        LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-or-later AND MIT-CMU 
+        AND Spencer-94 AND SunPro AND Unicode-DFS-2015 AND Unlicense AND X11
+      short_summary: Main C library
+      supplier: 'Organization: Broadcom, Inc.'

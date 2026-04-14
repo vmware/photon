@@ -1,0 +1,69 @@
+From 5dfafca33cf5db5ca88af43f4f764c29a69aff18 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Wed, 20 Dec 2023 19:42:12 -0800
+Subject: [PATCH 124/175] x86-64: Fix the tcb field load for x32 [BZ #31185]
+
+_dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic access the thread pointer
+via the tcb field in TCB:
+
+_dl_tlsdesc_undefweak:
+        _CET_ENDBR
+        movq    8(%rax), %rax
+        subq    %fs:0, %rax
+        ret
+
+_dl_tlsdesc_dynamic:
+	...
+        subq    %fs:0, %rax
+        movq    -8(%rsp), %rdi
+        ret
+
+Since the tcb field in TCB is a pointer, %fs:0 is a 32-bit location,
+not 64-bit. It should use "sub %fs:0, %RAX_LP" instead.  Since
+_dl_tlsdesc_undefweak returns ptrdiff_t and _dl_make_tlsdesc_dynamic
+returns void *, RAX_LP is appropriate here for x32 and x86-64.  This
+fixes BZ #31185.
+
+(cherry picked from commit 81be2a61dafc168327c1639e97b6dae128c7ccf3)
+---
+ NEWS                        | 1 +
+ sysdeps/x86_64/dl-tlsdesc.S | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 377660ece0f879d0b953d2fe66238f85f30f6447..8ac1be6cb9d23f11d27970f1223a38b2d3895996 100644
+--- a/NEWS
++++ b/NEWS
+@@ -88,6 +88,7 @@ The following bugs are resolved with this release:
+     -D_FILE_OFFSET_BITS=64
+   [30842] Stack read overflow in getaddrinfo in no-aaaa mode (CVE-2023-4527)
+   [31184] FAIL: elf/tst-tlsgap
++  [31185] Incorrect thread point access in _dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic
+ 
+ Version 2.36
+ 
+diff --git a/sysdeps/x86_64/dl-tlsdesc.S b/sysdeps/x86_64/dl-tlsdesc.S
+index 706856e095de6230e48055ff7b2b34cfcb4c63d8..7619e743e1be41bf5431081780e9ab58809b96cd 100644
+--- a/sysdeps/x86_64/dl-tlsdesc.S
++++ b/sysdeps/x86_64/dl-tlsdesc.S
+@@ -61,7 +61,7 @@ _dl_tlsdesc_return:
+ _dl_tlsdesc_undefweak:
+ 	_CET_ENDBR
+ 	movq	8(%rax), %rax
+-	subq	%fs:0, %rax
++	sub	%fs:0, %RAX_LP
+ 	ret
+ 	cfi_endproc
+ 	.size	_dl_tlsdesc_undefweak, .-_dl_tlsdesc_undefweak
+@@ -116,7 +116,7 @@ _dl_tlsdesc_dynamic:
+ 	addq	TLSDESC_MODOFF(%rdi), %rax
+ .Lret:
+ 	movq	-16(%rsp), %rsi
+-	subq	%fs:0, %rax
++	sub	%fs:0, %RAX_LP
+ 	movq	-8(%rsp), %rdi
+ 	ret
+ .Lslow:
+-- 
+2.35.6
+

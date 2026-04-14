@@ -1,0 +1,47 @@
+From a1dc0be03c9dd850b864bd7a9c03cf8e396eb7ca Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Tue, 25 Oct 2022 13:19:16 -0300
+Subject: [PATCH 066/175] elf: Reinstate on DL_DEBUG_BINDINGS
+ _dl_lookup_symbol_x
+
+The prelink removal done by 6628c742b2c16e wrongly removed the debug
+support.
+
+Checked on x86_64-linux-gnu.
+
+(cherry picked from commit 891a7958a28eac6d4af1517dd2896fef5e4951d4)
+---
+ elf/dl-lookup.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/elf/dl-lookup.c b/elf/dl-lookup.c
+index 4c86dc694e0eebb23421e08103ee7f3c0adaadf9..67fb2e31e2612a0ec8b1002efa7a3eb6ad3b84a7 100644
+--- a/elf/dl-lookup.c
++++ b/elf/dl-lookup.c
+@@ -854,6 +854,23 @@ _dl_lookup_symbol_x (const char *undef_name, struct link_map *undef_map,
+   if (__glibc_unlikely (current_value.m->l_used == 0))
+     current_value.m->l_used = 1;
+ 
++ if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_BINDINGS))
++   {
++      const char *reference_name = undef_map->l_name;
++
++      _dl_debug_printf ("binding file %s [%lu] to %s [%lu]: %s symbol `%s'",
++			DSO_FILENAME (reference_name),
++			undef_map->l_ns,
++			DSO_FILENAME (current_value.m->l_name),
++			current_value.m->l_ns,
++			protected ? "protected" : "normal", undef_name);
++      if (version)
++	_dl_debug_printf_c (" [%s]\n", version->name);
++      else
++	_dl_debug_printf_c ("\n");
++   }
++
++
+   *ref = current_value.s;
+   return LOOKUP_VALUE (current_value.m);
+ }
+-- 
+2.35.6
+

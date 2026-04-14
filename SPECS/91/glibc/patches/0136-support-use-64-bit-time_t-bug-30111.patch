@@ -1,0 +1,122 @@
+From 4d4ba8bae4bac5e0fd266c22517a3f16a1006bbe Mon Sep 17 00:00:00 2001
+From: Andreas Schwab <schwab@suse.de>
+Date: Tue, 28 Feb 2023 10:37:18 -0300
+Subject: [PATCH 136/175] support: use 64-bit time_t (bug 30111)
+
+Ensure to use 64-bit time_t in the test infrastructure.
+
+(cherry picked from commit 3bfdc4e2bceb601b90c81a9baa73c1904db58b2f)
+---
+ support/Makefile                            | 18 ++++++++++++++++++
+ support/shell-container.c                   |  2 --
+ support/support_can_chroot.c                |  4 ++--
+ support/support_copy_file.c                 |  2 +-
+ support/support_descriptor_supports_holes.c |  2 +-
+ support/test-container.c                    |  2 --
+ 6 files changed, 22 insertions(+), 8 deletions(-)
+
+diff --git a/support/Makefile b/support/Makefile
+index 2b661a7eb8e14a38509ea0f71d07978bdaa65ac4..75b96c35f5e4139e2093f3c7364bcc1902c15d6f 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -239,6 +239,24 @@ CFLAGS-support_paths.c = \
+ CFLAGS-timespec.c += -fexcess-precision=standard
+ CFLAGS-timespec-time64.c += -fexcess-precision=standard
+ 
++# Ensure that general support files use 64-bit time_t
++CFLAGS-delayed_exit.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-shell-container.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_can_chroot.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_copy_file.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_copy_file_range.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_descriptor_supports_holes.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_descriptors.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_process_state.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_stat_nanoseconds.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_subprocess.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-support_test_main.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-test-container.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++CFLAGS-xmkdirp.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++# This is required to get an mkstemp which can create large files on some
++# 32-bit platforms.
++CFLAGS-temp_file.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
++
+ ifeq (,$(CXX))
+ LINKS_DSO_PROGRAM = links-dso-program-c
+ else
+diff --git a/support/shell-container.c b/support/shell-container.c
+index 6698061b9bcb33efac3a055951656e35f99c8eb2..019a6c47d1af210897069cd75b3e94ca6203e546 100644
+--- a/support/shell-container.c
++++ b/support/shell-container.c
+@@ -16,8 +16,6 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
+-#define _FILE_OFFSET_BITS 64
+-
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+diff --git a/support/support_can_chroot.c b/support/support_can_chroot.c
+index ca0e5f7ef49c0804084dd53ab503fa8b844622a5..43979f7c3fb9f9eb251170e8f51a9c6254a12ed0 100644
+--- a/support/support_can_chroot.c
++++ b/support/support_can_chroot.c
+@@ -29,14 +29,14 @@ static void
+ callback (void *closure)
+ {
+   int *result = closure;
+-  struct stat64 before;
++  struct stat before;
+   xstat ("/dev", &before);
+   if (chroot ("/dev") != 0)
+     {
+       *result = errno;
+       return;
+     }
+-  struct stat64 after;
++  struct stat after;
+   xstat ("/", &after);
+   TEST_VERIFY (before.st_dev == after.st_dev);
+   TEST_VERIFY (before.st_ino == after.st_ino);
+diff --git a/support/support_copy_file.c b/support/support_copy_file.c
+index 9a936b37c77f0515c4ee6ab51faba8b8d3a70764..52ed90fae021ef51d7ce97b2500357ba6cb0b559 100644
+--- a/support/support_copy_file.c
++++ b/support/support_copy_file.c
+@@ -24,7 +24,7 @@
+ void
+ support_copy_file (const char *from, const char *to)
+ {
+-  struct stat64 st;
++  struct stat st;
+   xstat (from, &st);
+   int fd_from = xopen (from, O_RDONLY, 0);
+   mode_t mode = st.st_mode & 0777;
+diff --git a/support/support_descriptor_supports_holes.c b/support/support_descriptor_supports_holes.c
+index d9bcade1cfb640a2c571e922430ee6be64c8e3bd..83f02f7cf64ec38157e979f20f2e94ceb175c6a7 100644
+--- a/support/support_descriptor_supports_holes.c
++++ b/support/support_descriptor_supports_holes.c
+@@ -40,7 +40,7 @@ support_descriptor_supports_holes (int fd)
+       block_headroom = 32,
+     };
+ 
+-  struct stat64 st;
++  struct stat st;
+   xfstat (fd, &st);
+   if (!S_ISREG (st.st_mode))
+     FAIL_EXIT1 ("descriptor %d does not refer to a regular file", fd);
+diff --git a/support/test-container.c b/support/test-container.c
+index b6a1158ae17bf934576358a5a60e59dcd87f6f7d..2033985a677890a4c43f995c21d99015a7dec731 100644
+--- a/support/test-container.c
++++ b/support/test-container.c
+@@ -16,8 +16,6 @@
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
+-#define _FILE_OFFSET_BITS 64
+-
+ #include <array_length.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+-- 
+2.35.6
+

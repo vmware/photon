@@ -1,0 +1,58 @@
+From c1e080bc9521d2282a1f60c2ee19d80adae672ee Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>
+Date: Wed, 26 Oct 2022 16:04:24 -0300
+Subject: [PATCH 077/175] nscd: Use 64 bit time_t on libc nscd routines (BZ#
+ 29402)
+
+Although the nscd module is built with 64 bit time_t, the routines
+linked direct to libc.so need to use the internal symbols.
+Reviewed-by: DJ Delorie <dj@redhat.com>
+
+(cherry picked from commit fa4a19277842fd09a4815a986f70e0fe0903836f)
+---
+ NEWS                 | 1 +
+ nscd/nscd.h          | 2 +-
+ nscd/nscd_gethst_r.c | 2 +-
+ 3 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 9f8edea5db9a302c60683336645e9cbe7ed57d2d..c3df0c007da5c59448bbabda5d7676888c00e543 100644
+--- a/NEWS
++++ b/NEWS
+@@ -27,6 +27,7 @@ The following bugs are resolved with this release:
+   [24816] Fix tst-nss-files-hosts-long on single-stack hosts
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
+   [29305] Conserve NSS buffer space during DNS packet parsing
++  [29402] nscd: nscd: No such file or directory
+   [29415] nscd: Fix netlink cache invalidation if epoll is used
+   [28937] New DSO dependency sorter does not put new map first if in a cycle
+   [29446] _dlopen now ignores dl_caller argument in static mode
+diff --git a/nscd/nscd.h b/nscd/nscd.h
+index 368091aef8ec14392138f6ba87dc5e1aebc679fc..f15321585b379b1c494b5688578f22d11761408a 100644
+--- a/nscd/nscd.h
++++ b/nscd/nscd.h
+@@ -65,7 +65,7 @@ typedef enum
+ struct traced_file
+ {
+   /* Tracks the last modified time of the traced file.  */
+-  time_t mtime;
++  __time64_t mtime;
+   /* Support multiple registered files per database.  */
+   struct traced_file *next;
+   int call_res_init;
+diff --git a/nscd/nscd_gethst_r.c b/nscd/nscd_gethst_r.c
+index 9becb620335d14d7becebe6c29ad96cc4e7463ee..31c64275f0833d17e59afa9066f1b115fdf6af7a 100644
+--- a/nscd/nscd_gethst_r.c
++++ b/nscd/nscd_gethst_r.c
+@@ -112,7 +112,7 @@ __nscd_get_nl_timestamp (void)
+   if (map == NULL
+       || (map != NO_MAPPING
+ 	  && map->head->nscd_certainly_running == 0
+-	  && map->head->timestamp + MAPPING_TIMEOUT < time_now ()))
++	  && map->head->timestamp + MAPPING_TIMEOUT < time64_now ()))
+     map = __nscd_get_mapping (GETFDHST, "hosts", &__hst_map_handle.mapped);
+ 
+   if (map == NO_MAPPING)
+-- 
+2.35.6
+

@@ -1,0 +1,35 @@
+From 2fce85f67c56e46863db40b8ca75bbf0fa993053 Mon Sep 17 00:00:00 2001
+From: caiyinyu <caiyinyu@loongson.cn>
+Date: Wed, 12 Oct 2022 20:28:42 +0800
+Subject: [PATCH 069/175] LoongArch: Fix ABI related macros in elf.h to keep
+ consistent with binutils[1].
+
+[1]:
+https://sourceware.org/git/?p=binutils-gdb.git;a=commitdiff;h=c4a7e6b56218e1d5a858682186b542e2eae01a4a;hp=0d94a8735055432029237612a6eb9165db1ec9dd
+[2]:
+Reference: https://loongson.github.io/LoongArch-Documentation/LoongArch-ELF-ABI-EN.html#_e_flags_identifies_abi_type_and_version
+---
+ elf/elf.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/elf/elf.h b/elf/elf.h
+index 02a1b3f52fdfa3d8d92fd4e3008316ab0a23f26d..014393f3ccc7a628d34c63a192ed31147ae92805 100644
+--- a/elf/elf.h
++++ b/elf/elf.h
+@@ -4085,8 +4085,11 @@ enum
+ #define R_NDS32_TLS_DESC	119
+ 
+ /* LoongArch ELF Flags */
+-#define EF_LARCH_ABI    	0x07
+-#define EF_LARCH_ABI_LP64D	0x03
++#define EF_LARCH_ABI_MODIFIER_MASK  0x07
++#define EF_LARCH_ABI_SOFT_FLOAT     0x01
++#define EF_LARCH_ABI_SINGLE_FLOAT   0x02
++#define EF_LARCH_ABI_DOUBLE_FLOAT   0x03
++#define EF_LARCH_OBJABI_V1          0x40
+ 
+ /* LoongArch specific dynamic relocations */
+ #define R_LARCH_NONE		0
+-- 
+2.35.6
+

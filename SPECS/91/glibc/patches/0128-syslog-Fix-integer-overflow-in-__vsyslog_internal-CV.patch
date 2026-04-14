@@ -1,0 +1,41 @@
+From b9b7d6a27aa0632f334352fa400771115b3c69b7 Mon Sep 17 00:00:00 2001
+From: Arjun Shankar <arjun@redhat.com>
+Date: Mon, 15 Jan 2024 17:44:45 +0100
+Subject: [PATCH 128/175] syslog: Fix integer overflow in __vsyslog_internal
+ (CVE-2023-6780)
+
+__vsyslog_internal calculated a buffer size by adding two integers, but
+did not first check if the addition would overflow.  This commit fixes
+that.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Tested-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit ddf542da94caf97ff43cc2875c88749880b7259b)
+---
+ misc/syslog.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/misc/syslog.c b/misc/syslog.c
+index 3108ae913477a0fb99dfa88fb32f6d89aca21fae..9336036666aada3d65b7fdca4e5b68b275e2f3b7 100644
+--- a/misc/syslog.c
++++ b/misc/syslog.c
+@@ -41,6 +41,7 @@ static char sccsid[] = "@(#)syslog.c	8.4 (Berkeley) 3/18/94";
+ #include <sys/uio.h>
+ #include <sys/un.h>
+ #include <syslog.h>
++#include <limits.h>
+ 
+ static int LogType = SOCK_DGRAM;	/* type of socket connection */
+ static int LogFile = -1;		/* fd for log */
+@@ -217,7 +218,7 @@ __vsyslog_internal (int pri, const char *fmt, va_list ap,
+     vl = __vsnprintf_internal (pos, len, fmt, apc, mode_flags);
+     va_end (apc);
+ 
+-    if (vl < 0)
++    if (vl < 0 || vl >= INT_MAX - l)
+       goto out;
+ 
+     if (vl >= len)
+-- 
+2.35.6
+

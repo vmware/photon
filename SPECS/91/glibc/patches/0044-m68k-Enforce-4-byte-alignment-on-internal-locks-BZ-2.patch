@@ -1,0 +1,142 @@
+From 2628500f5dff1dd99c49a09b418b3b1ea3a6b5d3 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Tue, 30 Aug 2022 10:33:15 -0300
+Subject: [PATCH 044/175] m68k: Enforce 4-byte alignment on internal locks (BZ
+ #29537)
+
+A new internal definition, __LIBC_LOCK_ALIGNMENT, is used to force
+the 4-byte alignment only for m68k, other architecture keep the
+natural alignment of the type used internally (and hppa does not
+require 16-byte alignment for kernel-assisted CAS).
+
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit aeb4d2e9815d459e2640a31f5abb8ef803830107)
+---
+ NEWS                                          |  1 +
+ sysdeps/generic/libc-lock-arch.h              | 25 +++++++++++++++++++
+ sysdeps/nptl/libc-lock.h                      |  8 +++++-
+ sysdeps/nptl/libc-lockP.h                     |  3 ++-
+ sysdeps/unix/sysv/linux/m68k/libc-lock-arch.h | 25 +++++++++++++++++++
+ 5 files changed, 60 insertions(+), 2 deletions(-)
+ create mode 100644 sysdeps/generic/libc-lock-arch.h
+ create mode 100644 sysdeps/unix/sysv/linux/m68k/libc-lock-arch.h
+
+diff --git a/NEWS b/NEWS
+index eab882987bb9f19275a2861d88c11b8a4dd32e8c..1cc9a16bbfcb63babf980fcd81d465abb584f3e9 100644
+--- a/NEWS
++++ b/NEWS
+@@ -25,6 +25,7 @@ The following bugs are resolved with this release:
+   [29485] Linux: Terminate subprocess on late failure in tst-pidfd
+   [29490] alpha: New __brk_call implementation is broken
+   [29528] elf: Call __libc_early_init for reused namespaces
++  [29537] libc: [2.34 regression]: Alignment issue on m68k when using
+   [29539] libc: LD_TRACE_LOADED_OBJECTS changed how vDSO library are
+   [29583] Use 64-bit interfaces in gconv_parseconfdir
+ 
+diff --git a/sysdeps/generic/libc-lock-arch.h b/sysdeps/generic/libc-lock-arch.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..4713b30a8aee39ece31e5223ca40fd547ea24ca0
+--- /dev/null
++++ b/sysdeps/generic/libc-lock-arch.h
+@@ -0,0 +1,25 @@
++/* Private libc-internal arch-specific definitions.  Generic version.
++   Copyright (C) 2022 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public License as
++   published by the Free Software Foundation; either version 2.1 of the
++   License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; see the file COPYING.LIB.  If
++   not, see <https://www.gnu.org/licenses/>.  */
++
++#ifndef _LIBC_LOCK_ARCH_H
++#define _LIBC_LOCK_ARCH_H
++
++/* The default definition uses the natural alignment from the lock type.  */
++#define __LIBC_LOCK_ALIGNMENT
++
++#endif
+diff --git a/sysdeps/nptl/libc-lock.h b/sysdeps/nptl/libc-lock.h
+index 5af476c48b7f64fedd4cd9c29c45abe907b00f90..63b3f3d75ca16c890bc6bd29002ca562b07839ba 100644
+--- a/sysdeps/nptl/libc-lock.h
++++ b/sysdeps/nptl/libc-lock.h
+@@ -22,6 +22,7 @@
+ #include <pthread.h>
+ #define __need_NULL
+ #include <stddef.h>
++#include <libc-lock-arch.h>
+ 
+ 
+ /* Mutex type.  */
+@@ -29,7 +30,12 @@
+ # if (!IS_IN (libc) && !IS_IN (libpthread)) || !defined _LIBC
+ typedef struct { pthread_mutex_t mutex; } __libc_lock_recursive_t;
+ # else
+-typedef struct { int lock; int cnt; void *owner; } __libc_lock_recursive_t;
++typedef struct
++{
++  int lock __LIBC_LOCK_ALIGNMENT;
++  int cnt;
++  void *owner;
++} __libc_lock_recursive_t;
+ # endif
+ #else
+ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
+diff --git a/sysdeps/nptl/libc-lockP.h b/sysdeps/nptl/libc-lockP.h
+index d3a6837fd212f3f5dfd80f46d0e9ce365042ae0c..425f514c5c47409c004a7044e28e27f2b235bf55 100644
+--- a/sysdeps/nptl/libc-lockP.h
++++ b/sysdeps/nptl/libc-lockP.h
+@@ -32,9 +32,10 @@
+    ld.so might be used on old kernels with a different libc.so.  */
+ #include <lowlevellock.h>
+ #include <tls.h>
++#include <libc-lock-arch.h>
+ 
+ /* Mutex type.  */
+-typedef int __libc_lock_t;
++typedef int __libc_lock_t __LIBC_LOCK_ALIGNMENT;
+ typedef struct { pthread_mutex_t mutex; } __rtld_lock_recursive_t;
+ typedef pthread_rwlock_t __libc_rwlock_t;
+ 
+diff --git a/sysdeps/unix/sysv/linux/m68k/libc-lock-arch.h b/sysdeps/unix/sysv/linux/m68k/libc-lock-arch.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..1844bbaf6f5dd9f8691a03f22a31c00f7fa564d9
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/m68k/libc-lock-arch.h
+@@ -0,0 +1,25 @@
++/* Private libc-internal arch-specific definitions.  m68k version.
++   Copyright (C) 2022 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public License as
++   published by the Free Software Foundation; either version 2.1 of the
++   License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; see the file COPYING.LIB.  If
++   not, see <https://www.gnu.org/licenses/>.  */
++
++#ifndef _LIBC_LOCK_ARCH_H
++#define _LIBC_LOCK_ARCH_H
++
++/* Linux enforces 4-bytes alignment on futex inputs.  */
++#define __LIBC_LOCK_ALIGNMENT __attribute__ ((__aligned__ (4)))
++
++#endif
+-- 
+2.35.6
+

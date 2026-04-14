@@ -1,0 +1,44 @@
+From 7a3f8c8a7aeb41d4bbfeec07d0be1e92c3019919 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 6 Sep 2022 07:38:10 +0200
+Subject: [PATCH 040/175] scripts/dso-ordering-test.py: Generate program
+ run-time dependencies
+
+The main program needs to depend on all shared objects, even objects
+that have link-time dependencies among shared objects.  Filtering
+out shared objects that already have an link-time dependencies is not
+necessary here; make will do this automatically.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 183d99737298bb3200f0610fdcd1c7549c8ed560)
+---
+ scripts/dso-ordering-test.py | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/scripts/dso-ordering-test.py b/scripts/dso-ordering-test.py
+index 2dd6bfda183257a8a4c7bad4862f6d3171c1eaca..b87cf2f80996de25ea4686704ec7b28cb5eaa8ba 100644
+--- a/scripts/dso-ordering-test.py
++++ b/scripts/dso-ordering-test.py
+@@ -707,13 +707,12 @@ def process_testcase(t):
+                 "\t$(compile.c) $(OUTPUT_OPTION)\n")
+         makefile.write (rule)
+ 
+-        not_depended_objs = find_objs_not_depended_on(test_descr)
+-        if not_depended_objs:
+-            depstr = ""
+-            for dep in not_depended_objs:
+-                depstr += (" $(objpfx)" + test_subdir + "/"
+-                           + test_name + "-" + dep + ".so")
+-            makefile.write("$(objpfx)%s.out:%s\n" % (base_test_name, depstr))
++        # Ensure that all shared objects are built before running the
++        # test, whether there link-time dependencies or not.
++        depobjs = ["$(objpfx){}/{}-{}.so".format(test_subdir, test_name, dep)
++                   for dep in test_descr.objs]
++        makefile.write("$(objpfx){}.out: {}\n".format(
++            base_test_name, " ".join(depobjs)))
+ 
+         # Add main executable to test-srcs
+         makefile.write("test-srcs += %s/%s\n" % (test_subdir, test_name))
+-- 
+2.35.6
+

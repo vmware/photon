@@ -1,0 +1,73 @@
+From d1d8379bff34f02f86f82db2cef5bf66746d3560 Mon Sep 17 00:00:00 2001
+From: John David Anglin <danglin@gcc.gnu.org>
+Date: Sat, 1 Oct 2022 19:49:25 +0000
+Subject: [PATCH 047/175] hppa: Fix initialization of dp register [BZ 29635]
+
+After upgrading glibc to Debian 2.35-1, gdb faulted on
+startup and dropped core in a function call in the main
+application.  This was caused by not initializing the
+global dp register for the main application early enough.
+
+Restore the code to initialize dp in _dl_start_user.
+It was removed when code was added to initialize dp in
+elf_machine_runtime_setup.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+---
+ sysdeps/hppa/dl-machine.h | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/sysdeps/hppa/dl-machine.h b/sysdeps/hppa/dl-machine.h
+index c865713be1e3f8e0430bbb35c8db7ebe3e7a6abf..1d5194856601e025cb4355c94c2b49358fc81076 100644
+--- a/sysdeps/hppa/dl-machine.h
++++ b/sysdeps/hppa/dl-machine.h
+@@ -347,6 +347,16 @@ elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
+    its return value is the user program's entry point.  */
+ 
+ #define RTLD_START \
++/* Set up dp for any non-PIC lib constructors that may be called.  */	\
++static struct link_map * __attribute__((used))				\
++set_dp (struct link_map *map)						\
++{									\
++  register Elf32_Addr dp asm ("%r27");					\
++  dp = D_PTR (map, l_info[DT_PLTGOT]);					\
++  asm volatile ("" : : "r" (dp));					\
++  return map;								\
++}									\
++									\
+ asm (									\
+ "	.text\n"							\
+ "	.globl _start\n"						\
+@@ -426,6 +436,13 @@ asm (									\
+ 	   direct loader invocation.  Thus, argc and argv must be	\
+ 	   reloaded from from _dl_argc and _dl_argv.  */		\
+ 									\
++	/* Load main_map from _rtld_local and setup dp. */		\
++"	addil	LT'_rtld_local,%r19\n"					\
++"	ldw	RT'_rtld_local(%r1),%r26\n"				\
++"	bl	set_dp, %r2\n"						\
++"	ldw	0(%r26),%r26\n"						\
++"	copy	%ret0,%r26\n"						\
++									\
+ 	/* Load argc from _dl_argc.  */					\
+ "	addil	LT'_dl_argc,%r19\n"					\
+ "	ldw	RT'_dl_argc(%r1),%r20\n"				\
+@@ -438,13 +455,10 @@ asm (									\
+ "	ldw	0(%r20),%r24\n"						\
+ "	stw	%r24,-44(%sp)\n"					\
+ 									\
+-	/* Call _dl_init(main_map, argc, argv, envp). */		\
+-"	addil	LT'_rtld_local,%r19\n"					\
+-"	ldw	RT'_rtld_local(%r1),%r26\n"				\
+-"	ldw	0(%r26),%r26\n"						\
+-									\
+ 	/* envp = argv + argc + 1 */					\
+ "	sh2add	%r25,%r24,%r23\n"					\
++									\
++	/* Call _dl_init(main_map, argc, argv, envp). */		\
+ "	bl	_dl_init,%r2\n"						\
+ "	ldo	4(%r23),%r23\n"	/* delay slot */			\
+ 									\
+-- 
+2.35.6
+
