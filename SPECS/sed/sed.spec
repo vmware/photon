@@ -1,7 +1,7 @@
 Summary:    Stream editor
 Name:       sed
 Version:    4.8
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://www.gnu.org/software/sed
 Group:      Applications/Editors
 Vendor:     VMware, Inc.
@@ -15,6 +15,8 @@ Source1: license.txt
 BuildRequires:  libacl-devel
 
 Requires:       libacl
+
+Patch0: CVE-2026-5958.patch
 
 Conflicts:      toybox < 0.8.2-2
 
@@ -63,6 +65,8 @@ make check %{?_smp_mflags}
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.8-6
+- CVE-2026-5958
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.8-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.8-4
