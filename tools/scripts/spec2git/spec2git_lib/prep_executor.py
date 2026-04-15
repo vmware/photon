@@ -94,6 +94,25 @@ class PrepExecutor:
         self.git_roots = set()
         self.root_dirs = set()
 
+    def ensure_build_dir(self, prep_section_lines: []):
+        first_line = prep_section_lines[0]
+        if first_line.startswith('cd'):
+            build_dir = first_line.split()[1]
+            if not build_dir:
+                raise PrepExecutionError("cd cmd found but no directory passed!")
+
+            build_dir = build_dir.strip("'\"")
+
+            # As far as I can tell RPM will always inject an absolute path here...
+            # So this is pointless unless RPM behavior changes, which is possible
+            if not build_dir.startswith("/"):
+                raise PrepExecutionError(
+                        f"Found local path {build_dir} in first line of %prep section" +
+                         "- need absolute path"
+                    )
+
+            os.makedirs(build_dir)
+
     def execute_prep_section(self, prep_section: str, source0_git_info: Optional[Dict] = None,
                             rpmspec_build_dir: Optional[str] = None,
                             rpmspec_sources_dir: Optional[str] = None,
@@ -154,7 +173,10 @@ class PrepExecutor:
                     cwd_path = Path(resuming_state.current_cwd)
                     if not cwd_path.exists():
                         raise PrepExecutionError(f"Working directory not found: {cwd_path}")
-
+            else:
+                # RPM v6 injects only a CD to the build dir into the %prep script, so
+                # it will fail unless we create the build directory ourselves first
+                self.ensure_build_dir(lines)
 
             while i < len(lines):
                 line = lines[i]
