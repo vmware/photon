@@ -1,0 +1,2 @@
+Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
+Patch1:         0001-Fix-build-with-glibc-2.43.patch

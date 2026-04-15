@@ -3,7 +3,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -14,14 +14,13 @@ Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{ve
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
-Patch1:         0001-Fix-build-with-glibc-2.43.patch
+Source2: libselinux.patches
+%include %{SOURCE2}
 
 BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre2-devel
-BuildRequires:  swig
 
-%define ExtraBuildRequires systemd-rpm-macros python3-setuptools python3-pip python3-devel
+%define ExtraBuildRequires systemd-rpm-macros
 
 Requires:       pcre2-libs
 # libselinux optionally uses libsepol by dlopen it.
@@ -69,42 +68,35 @@ Provides:       pkgconfig(libselinux)
 The libselinux-devel package contains the libraries and header files
 needed for developing SELinux applications.
 
-%package        python3
-Summary:        SELinux python3 bindings for libselinux
-Group:          Development/Libraries
-Requires:       libselinux = %{version}-%{release}
-Requires:       python3
-Requires:       python3-libs
-
-%description    python3
-The libselinux-python package contains the python3 bindings for developing
-SELinux applications.
-
 %prep
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
-make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=%{_bindir}/python3 pywrap
+make %{?_smp_mflags} \
+  PREFIX=%{_prefix} \
+  LIBDIR=%{_libdir} \
+  SHLIBDIR=%{_lib}
 
 %install
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" BINDIR="%{_bindir}" \
-     SBINDIR="%{_sbindir}" PYTHON=%{_bindir}/python3 install install-pywrap %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make \
+  PREFIX=%{_prefix} \
+  LIBDIR=%{_libdir} \
+  SHLIBDIR=%{_lib} \
+  DESTDIR="%{buildroot}" \
+  install
 
-mkdir -p %{buildroot}%{_tmpfilesdir} %{buildroot}/var/run/setrans
-echo "d /var/run/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/libselinux.conf
+mkdir -p %{buildroot}%{_tmpfilesdir} %{buildroot}%{_rundir}/setrans
+echo "d %{_rundir}/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/libselinux.conf
 
-# do not package ru man pages
-rm -r %{buildroot}%{_libdir}/libselinux.a
-
-%{py_byte_compile_and_ghost}
+rm -f %{buildroot}%{_libdir}/libselinux.a
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
-%ghost /var/run/setrans
+%ghost %{_rundir}/setrans
 %{_libdir}/libselinux.so.1
 %{_tmpfilesdir}/libselinux.conf
 
@@ -122,11 +114,9 @@ rm -r %{buildroot}%{_libdir}/libselinux.a
 %{_includedir}/selinux/*
 %{_mandir}/man3/*
 
-%files python3 -f %{py_ghost_filelist}
-%defattr(-,root,root,-)
-%{python3_sitelib}/*
-
 %changelog
+* Wed Apr 29 2026 Bo Gan <bo.gan@broadcom.com> 3.10-2
+- Split python3 sub-package into separate .spec file
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
 - Update to 3.10
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-3
