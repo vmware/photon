@@ -1,4 +1,40 @@
 sources:
+- archive: apache-tomcat-11.0.21-src.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 8afa49fcefd07c9702bd95e4347ea7df5002ccc68e462ae7065641dcc9b504b32158ed05e506a426c2bc5cf09aca919d1eb9bbbf48995799b51907e4e9288607
+  name: apache-tomcat-11.0.21-src
+  version: 11.0.21
+  url: https://archive.apache.org/dist/tomcat/tomcat-11/v11.0.21/src/apache-tomcat-11.0.21-src.tar.gz
+  repo_url: https://github.com/apache/tomcat.git
+  commit_id: 1d6b501b493c11ee6fdebae911c67ca214e28c82
+  skip_list:
+  - RCS
+  - CVS
+  - tags
+  - .git
+  - .hg
+  - .bzr
+  - _darcs
+  - __pycache__
+  missing:
+  - owb
+  - stuffed
+  - cxf
+  spdx:
+    package:
+      detailed_description: 'The Apache Tomcat package contains binaries for the Apache
+        Tomcat servlet container. '
+      home_page: http://tomcat.apache.org
+      license_concluded: (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND LGPL-2.0-or-later
+        AND GPL-2.0-only AND bzip2-1.0.6 AND Zlib AND CPL-1.0 AND CDDL-1.0 AND EPL-2.0
+        AND EPL-1.0 AND CC0-1.0 AND Apache-2.0
+      license_declared: (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND
+        (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND LGPL-2.0-or-later
+        AND GPL-2.0-only AND bzip2-1.0.6 AND Zlib AND CPL-1.0 AND CDDL-1.0 AND EPL-2.0
+        AND EPL-1.0 AND CC0-1.0 AND Apache-2.0
+      short_summary: Apache Tomcat 10.1
+      supplier: 'Organization: Broadcom, Inc.'
 - archive: apache-tomcat-10.1.53-src.tar.gz
   archive_type: upstream
   archive_sha512sum: 4e4f24935bde3be23033ebfe67d98efb4084e7c8c78ccd4714728f555a0814642ef8f7ff7235b4fe476cb8e785f9e17265500274a4ff161a012ec2a65dfd3bac
@@ -68,6 +104,41 @@ sources:
         AND EPL-1.0 AND CC0-1.0 AND CDDL-1.0 AND Zlib
       short_summary: Apache Tomcat 9
       supplier: 'Organization: Broadcom, Inc.'
+- archive: base-for-apache-tomcat-11.0.21.tar.gz
+  archive_sha512sum: b21837ceac1aa58e7a053ae1a906bba89bc56301b15d7c1b5d525f2e1c15c551b56f2594dfeb6a0acd64635e7a46725111f109879f5c0b298edcd40ce2ee757f
+  skip_validation: true
+  license_manual_review:
+  # Icon uses cc-by-sa-4.0 license
+  - file_paths:
+    - base-for-apache-tomcat-11.0.21/nsis-3.11-src/Contrib/MakeLangId/MakeLangId.cpp
+    sha256sum: 1cb56a65d201465110930fde78929f0ef0881b30c64d6b14dc014d97ca0d5774
+    spdx_exp: ''
+  spdx:
+    package:
+      detailed_description: base-for-apache-tomcat is a cached -Dbase.path folder
+        after apache-tomcat build
+      home_page: https://github.com/vmware/photon
+      license_concluded: (Apache-2.0 OR EPL-2.0) AND Zlib AND FSFULLR AND OpenSSL
+        AND Bitstream-Vera AND GPL-3.0-or-later AND GPL-2.0-or-later AND CC-BY-SA-4.0
+        AND BSD-2-Clause-Views AND bzip2-1.0.6 AND FSFULLRWD AND EPL-2.0 AND CC0-1.0
+        AND MPL-2.0 AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT AND EPL-1.0 AND
+        BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        X11 AND CPL-1.0 AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND CDDL-1.0 AND LGPL-2.1-only AND FSFUL AND UPL-1.0 AND
+        GPL-2.0-only WITH Classpath-exception-2.0 AND LGPL-2.0-or-later WITH WxWindows-exception-3.1
+        AND Apache-2.0
+      license_declared: (Apache-2.0 OR EPL-2.0) AND Zlib AND FSFULLR AND OpenSSL AND
+        Bitstream-Vera AND GPL-3.0-or-later AND GPL-2.0-or-later AND CC-BY-SA-4.0
+        AND BSD-2-Clause-Views AND bzip2-1.0.6 AND FSFULLRWD AND EPL-2.0 AND CC0-1.0
+        AND MPL-2.0 AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT AND EPL-1.0 AND
+        BSD-2-Clause AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        X11 AND CPL-1.0 AND GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND CDDL-1.0 AND LGPL-2.1-only AND FSFUL AND UPL-1.0 AND
+        GPL-2.0-only WITH Classpath-exception-2.0 AND LGPL-2.0-or-later WITH WxWindows-exception-3.1
+        AND Apache-2.0
+      short_summary: Cached -Dbase.path folder of apache-tomcat build
+      supplier: 'Organization: Broadcom, Inc.'
+
 - archive: base-for-apache-tomcat-10.1.53.tar.gz
   archive_sha512sum: e0bb773c13e6391c74a46cec71ccde53e4f0ba462fd5cdb8147bc8707a3d7b1b40dcc16ca609a79be2cdb5a96f3079fd43ee939fde057cd4e71d617a5b266d1d
   skip_validation: true
