@@ -1,7 +1,7 @@
 Summary:    Stream editor
 Name:       sed
 Version:    4.8
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv3
 URL:        http://www.gnu.org/software/sed
 Group:      Applications/Editors
@@ -14,6 +14,8 @@ Source0: http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
 BuildRequires:  libacl-devel
 
 Requires:       libacl
+
+Patch0: CVE-2026-5958.patch
 
 Conflicts:      toybox < 0.8.2-2
 
@@ -62,6 +64,8 @@ make check %{?_smp_mflags}
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.8-4
+- Fix CVE-2026-5958
 * Wed Nov 08 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.8-3
 - Add libacl-devel to BuildRequires for ACL support
 * Thu May 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.8-2
