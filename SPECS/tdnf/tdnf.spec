@@ -6,8 +6,8 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.6.3
-Release:        6%{?buildtag}%{?dist}
+Version:        3.6.4
+Release:        1%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -22,10 +22,7 @@ Source1:        license.txt
 Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
-Patch1: 0002-filter-out-packages-from-pool-considered-in-three-pl.patch
-Patch2: 0003-connect-timeout.patch
-Patch3: 0004-fix-command-line-installs.patch
-Patch4: 0005-check-for-RPMTAG_OPENPGP.patch
+Patch1: 0002-check-for-RPMTAG_OPENPGP.patch
 
 Requires:       rpm-libs >= 6.0.1
 Requires:       curl-libs
@@ -256,6 +253,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Apr 16 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.4-1
+- update to 3.6.4
 * Thu Apr 09 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.3-6
 - Remove posttrans action to avoid deadlock with rpm 6
 * Wed Mar 25 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.3-5
