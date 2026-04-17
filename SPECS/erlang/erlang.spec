@@ -1,6 +1,6 @@
 Name:          erlang
 Summary:       erlang
-Version:       27.3.4.3
+Version:       27.3.4.10
 Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
@@ -9,7 +9,7 @@ License:       ASL2.0
 URL:           https://www.erlang.org
 
 Source0: https://github.com/erlang/otp/archive/refs/tags/OTP-%{version}.tar.gz
-%define sha512 OTP=3292e7d386b80693debd99d89bf7daa491b69f471514518b08b18d7fc9846986eb5f0bf8d182b842ae65035a294c12e873431241252f59e243d06bd06579e3a4
+%define sha512 OTP=4234947c74b0bd74f899b0026a6c6977da82d19bcd661e3fc66a3c0573490640f7e808fff7971ac6c5a30573647240b20af1b6958e5a4c2b237e9f15589e0931
 
 Requires:     ncurses-libs
 
@@ -46,6 +46,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Apr 17 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.10-1
+- Update to 27.3.4.10
 * Tue Nov 18 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 27.3.4.3-1
 - Update to 27.3.4.3
 * Tue Oct 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2.5.15-1

@@ -3,7 +3,7 @@
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
 Version:         1.17.3
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org
 Vendor:          VMware, Inc.
@@ -56,6 +56,8 @@ export LANG="en_US.UTF-8"
 %{_datadir}/%{name}
 
 %changelog
+* Fri Apr 24 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.17.3-2
+- Bump release for erlang update
 * Tue Nov 18 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.17.3-1
 - Update to 1.17.3
 * Tue Oct 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.3-4
