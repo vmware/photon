@@ -13,7 +13,6 @@
         "coreutils",
         "bc",
         "libtool",
-        "net-tools",
         "findutils",
         "xz",
         "iproute2",

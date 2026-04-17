@@ -1,0 +1,21 @@
+sources:
+- archive: hostname_3.25.tar.xz
+  archive_sha512sum: 57b8e741cd3d895112d93ca8a7cbec95f3ad1a90c5691377ab8b242906bdcb932fa3401159432ec86f24bbbfe24c078832792c70e62e8d65a2317ee05a5efc64
+  archive_type: upstream
+  name: hostname
+  version: 3.25
+  url: https://ftp.debian.org/debian/pool/main/h/hostname/hostname_3.25.tar.xz
+  repo_url: https://salsa.debian.org/meskes/hostname
+  commit_id: ff42baa88db079a5457444d0f79844ec281e17f1
+  skip_validation: false
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'This package provides commands which can be used to display
+        the system''s DNS name, and to display or set its hostname or NIS domain name.'
+      home_page: https://tracker.debian.org/pkg/hostname
+      license_concluded: GPL-2.0-or-later
+      license_declared: GPL-2.0-or-later
+      short_summary: Utility to set/show the host name or domain name
+      supplier: 'Organization: Broadcom, Inc.'

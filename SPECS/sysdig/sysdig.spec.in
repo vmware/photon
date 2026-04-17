@@ -12,7 +12,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.34.1
-Release:        11%{?kernelsubrelease}%{?dist}
+Release:        12%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -52,7 +52,6 @@ BuildRequires: jq-devel
 BuildRequires: c-ares-devel
 BuildRequires: protobuf-devel
 BuildRequires: git
-BuildRequires: net-tools
 BuildRequires: jsoncpp-devel
 BuildRequires: re2-devel
 BuildRequires: tinydir-devel
@@ -166,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.34.1-12
+- Remove deprecated net-tools from BuildRequires
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.34.1-11
 - Update URL to packages.broadcom.com
 * Tue Nov 04 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 0.34.1-10

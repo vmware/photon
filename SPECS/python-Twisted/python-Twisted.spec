@@ -6,7 +6,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        24.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -30,12 +30,12 @@ BuildRequires: python3-incremental
 BuildRequires: python3-packaging
 
 %if 0%{?with_check}
-BuildRequires: net-tools
 BuildRequires: sudo
 BuildRequires: shadow
 BuildRequires: curl-devel
 BuildRequires: python3-pip
 BuildRequires: python3-constantly
+BuildRequires: iproute2
 %endif
 
 Requires: python3
@@ -92,6 +92,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Mon Mar 23 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 24.7.0-3
+- Remove deprecated net-tools from check BuildRequires
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.0-2
 - Bump version as a part of python3.14 upgrade
 * Mon Oct 13 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.0-1

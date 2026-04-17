@@ -4,7 +4,7 @@
 
 Name:           cloud-init
 Version:        25.1.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -66,7 +66,6 @@ BuildRequires: shadow
 Requires: shadow
 Requires: iproute2
 Requires: systemd
-Requires: net-tools
 Requires: python3
 Requires: python3-configobj
 Requires: python3-prettytable
@@ -156,6 +155,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Tue Mar 31 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.1.3-7
+- Replace deprecated net-tools with iproute2 (already present)
 * Tue Mar 24 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 25.1.3-6
 - Requires libselinux-python3 for context handling support
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.1.3-5

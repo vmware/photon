@@ -8,7 +8,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -367,7 +367,7 @@ mktoy %{_sbindir}/httpd
 %{_mktoy_}
 mktoy %{_bindir}/iotop
 
-%triggerpostun -- iproute2
+%triggerpostun -- iproute2-ip
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
 mktoy %{_sbindir}/ip
@@ -397,14 +397,10 @@ mktoy %{_sbindir}/insmod \
 %{_mktoy_}
 mktoy %{_bindir}/netcat %{_bindir}/nc
 
-%triggerpostun -- net-tools
+%triggerpostun -- hostname
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
-mktoy %{_sbindir}/arp \
-      %{_bindir}/hostname \
-      %{_bindir}/netstat \
-      %{_bindir}/ifconfig \
-      %{_sbindir}/iptunnel
+mktoy %{_bindir}/hostname
 
 %triggerpostun -- parted
 [ $2 -eq 0 ] || exit 0
@@ -678,12 +674,8 @@ mktoy %{_bindir}/which
 %ghost %{_bindir}/netcat
 %ghost %{_bindir}/nc
 
-# net-tools
-%ghost %{_sbindir}/arp
+# hostname
 %ghost %{_bindir}/hostname
-%ghost %{_bindir}/netstat
-%ghost %{_bindir}/ifconfig
-%ghost %{_sbindir}/iptunnel
 
 # parted
 %ghost %{_sbindir}/partprobe
@@ -804,6 +796,10 @@ mktoy %{_bindir}/which
 %{_sbindir}/iplink
 %{_sbindir}/iproute
 %{_sbindir}/iprule
+%{_sbindir}/arp
+%{_bindir}/netstat
+%{_bindir}/ifconfig
+%{_sbindir}/iptunnel
 %{_bindir}/toysh
 %{toysh_secondary_path}
 
@@ -812,6 +808,9 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Wed Apr 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-13
+- Remove net-tools posttrigger (deprecated in >=92)
+- Add hostname posttrigger for new hostname package
 * Mon Apr 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.9-12
 - Fix toys creation post install
 * Tue Mar 31 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-11

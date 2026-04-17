@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %global debug_package %{nil}
 
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        7%{?dist}
+Release:        6.1%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ Source0: license.txt
 # Keep this list alphabetically sorted
 Requires: bash-completion
 Requires: bc
+Requires: bridge-utils
 Requires: bzip2
 Requires: cloud-init
 Requires: cpio
@@ -30,7 +31,6 @@ Requires: findutils
 Requires: gdbm
 Requires: grep
 Requires: grub2-efi-image >= 2.06-15
-Requires: hostname
 Requires: gzip
 Requires: iana-etc
 Requires: iproute2
@@ -38,6 +38,7 @@ Requires: iptables
 Requires: iputils
 Requires: Linux-PAM
 Requires: motd
+Requires: net-tools
 Requires: openssh
 Requires: open-vm-tools-gosc
 Requires: photon-release
@@ -67,8 +68,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
-* Fri Apr 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.0-7
-- Remove deprecated bridge-utils and net-tools from requires (iproute2 already present)
+* Tue Apr 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.0-6.1
+- Split to subrelease 91
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 5.0-6
 - Disable debuginfo package
 * Wed Dec 18 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-5

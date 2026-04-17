@@ -7,7 +7,7 @@
 %global pypi_name ethtool
 Name:           python3-ethtool
 Version:        0.15
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -29,7 +29,7 @@ BuildRequires:  docbook-xml
 BuildRequires: python3-defusedxml
 
 %if 0%{?with_check}
-BuildRequires: net-tools
+BuildRequires: iproute2
 BuildRequires: ethtool
 %endif
 
@@ -74,6 +74,8 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
+* Fri Apr 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.15-5
+- Remove deprecated net-tools from check BuildRequires
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.15-4
 - Remove BuildRequires: xmlto; part of xmlto deprecation from >= 92
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.15-3

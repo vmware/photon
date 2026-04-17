@@ -3,7 +3,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.1.10
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -30,8 +30,8 @@ Requires: systemd
 Requires: m4
 Requires: openldap
 Requires: /bin/sed
-Requires: net-tools
 Requires: gdbm
+Requires: iproute2
 
 %description
 Sendmail is widely used Mail Transport agent which helps in sending
@@ -192,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.18.1.10-3
+- Replace deprecated net-tools with iproute2
 * Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.1.10-2
 - Switch map backend to ndbm to remove dependency on tinycdb.
 * Fri Oct 03 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.18.1.10-1
