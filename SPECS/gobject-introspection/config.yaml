@@ -1,7 +1,14 @@
 sources:
-- archive: gobject-introspection-1.74.0.tar.xz
-  archive_sha512sum: decff5dda0ec5ec0afda4d6bcd3bdadcbf34289002c0d9c0c77ecf8c5d3f15d196b24d8035041545031006acbdfe76af47c42da061c40e200c87f2c74cd301f0
-  skip_validation: true
+- archive: gobject-introspection-1.86.0.tar.xz
+  archive_sha512sum: a9d2edbe1cea710e10ef1ea8059a45cf5689bace43b5d2a6861809e863a6de7114b4763db8df3916ad6202c9967f48f7997acd0810a86e5e88dea7e0be88b585
+  archive_type: upstream
+  name: gobject-introspection-1.86.0
+  version: 1.86.0
+  url: https://download.gnome.org/sources/gobject-introspection/1.86/gobject-introspection-1.86.0.tar.xz
+  repo_url: https://github.com/GNOME/gobject-introspection
+  commit_id: 0f1412500b7d9039510b7b36b07c9f8ba0809bfa
+  skip_list: []
+  missing: [LICENSES, docs, foo.c, .reuse, tools, drawable.c, regress.c, gimarshallingtests.c, gitestmacros.h, annotation.c, gimarshallingtestsextra.c, meson_options.txt, gimarshallingtests.h, regress-unix.c, regress-unix.h, utility.h, meson.build, annotation.h, .gitlab-ci.yml, warnlib.c, warnlib.h, gobject-introspection-tests.doap, .clang-format, drawable.h, foo.h, gimarshallingtestsextra.h, regressextra.c, README.md, .editorconfig, regressextra.h, utility.c, regress.h]
   spdx:
     package:
       detailed_description: 'GObject Introspection can scan C header and source files
@@ -9,11 +16,7 @@ sources:
         to examine typelib files, useful for creating language bindings among other
         things. '
       home_page: http://live.gnome.org/GObjectIntrospection
-      license_concluded: FSFAP-no-warranty-disclaimer AND LGPL-2.0-or-later AND CC-BY-SA-3.0
-        AND BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND
-        LGPL-2.1-or-later AND FSFULLR
-      license_declared: FSFAP-no-warranty-disclaimer AND LGPL-2.0-or-later AND CC-BY-SA-3.0
-        AND BSD-2-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND
-        LGPL-2.1-or-later AND FSFULLR
+      license_concluded: BSD-2-Clause AND CC0-1.0 AND FSFAP-no-warranty-disclaimer AND FSFULLR AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT
+      license_declared: BSD-2-Clause AND CC0-1.0 AND FSFAP-no-warranty-disclaimer AND FSFULLR AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT
       short_summary: Introspection system for GObject-based libraries
       supplier: 'Organization: Broadcom, Inc.'

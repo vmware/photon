@@ -1,0 +1,19 @@
+sources:
+- archive: markupsafe-3.0.3.tar.gz
+  archive_sha512sum: 8c4ed04b467244f6bf99cd2a60ed922bc0569581f00cc5a13d9edcd0a4bc8b97c404edc4576f6146c7aa543bbd37cf52e5312d3bdd27758264d8751fdc7a646c
+  archive_type: upstream
+  name: markupsafe-3.0.3
+  version: 3.0.3
+  url: https://github.com/pallets/markupsafe/releases/download/3.0.3/markupsafe-3.0.3.tar.gz
+  repo_url: https://github.com/pallets/markupsafe
+  commit_id: 297fc8e356e6836a62087949245d09a28e9f1b13
+  skip_list: []
+  missing: [bench.py, .github, .editorconfig, .gitignore, setup.cfg, PKG-INFO, .readthedocs.yaml, .devcontainer, .pre-commit-config.yaml, MarkupSafe.egg-info]
+  spdx:
+    package:
+      detailed_description: 'MarkupSafe implements a XML/HTML/XHTML Markup safe string for Python.'
+      home_page: https://github.com/pallets/markupsafe
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: A XML/HTML/XHTML Markup safe string for Python.
+      supplier: 'Organization: Broadcom, Inc.'

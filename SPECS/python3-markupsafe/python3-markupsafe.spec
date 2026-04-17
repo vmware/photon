@@ -2,8 +2,8 @@
 
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python3-markupsafe
-Version:        2.1.1
-Release:        5%{?dist}
+Version:        3.0.3
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,8 +15,10 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
+BuildRequires: python3-build
+BuildRequires: python3-installer
 BuildRequires: python3-setuptools
-BuildRequires: python3-xml
+BuildRequires: python3-packaging
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
@@ -31,11 +33,12 @@ MarkupSafe implements a XML/HTML/XHTML Markup safe string for Python.
 %autosetup -p1 -n markupsafe-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
 rm %{buildroot}%{python3_sitearch}/markupsafe/*.c
+%{py_byte_compile_and_ghost}
 
 %clean
 rm -rf %{buildroot}
@@ -45,11 +48,13 @@ rm -rf %{buildroot}
 %pytest
 %endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Sat Mar 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.3-1
+- Upgrade to v3.0.3
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.1.1-5
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.1.1-4

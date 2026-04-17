@@ -1,0 +1,26 @@
+sources:
+- archive: pygments-2.19.2.tar.gz
+  archive_sha512sum: 3ead3a1fa4c7d86b415287949099cb0e5667ea71f7f69aa3de359bbb5c2f234d90fa5a41ec9c74cb041593e465b934d54bbb7dc87669683f04b94dd3aa6ca03c
+  archive_type: upstream
+  name: pygments-2.19.2
+  version: 2.19.2
+  url: https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz
+  repo_url: https://github.com/pygments/pygments
+  commit_id: cfca62e6e95136e48a255e8cbffb0bbe1d98456c
+  skip_list: []
+  missing: [PKG-INFO]
+  spdx:
+    package:
+      detailed_description: 'Pygments is a syntax highlighting package written in
+        Python. It is a generic syntax highlighter suitable for use in code hosting,
+        forums, wikis or other applications that need to prettify source code. Highlights
+        are: a wide range of over 300 languages and other text formats is supported
+        special attention is paid to details, increasing quality by a fair amount
+        support for new languages and formats are added easily a number of output
+        formats, presently HTML, LaTeX, RTF, SVG, all image formats that PIL supports
+        and ANSI sequences it is usable as a command-line tool and as a library.'
+      home_page: https://pypi.python.org/pypi/Pygments
+      license_concluded: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND AFL-3.0 AND AGPL-3.0-only AND AGPL-3.0-or-later AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CPL-1.0 AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND MIT AND MIT-Modern-Variant AND MPL-2.0 AND PostgreSQL
+      license_declared: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND AFL-3.0 AND AGPL-3.0-only AND AGPL-3.0-or-later AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CPL-1.0 AND GPL-1.0-or-later AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND MIT AND MIT-Modern-Variant AND MPL-2.0 AND PostgreSQL
+      short_summary: Pygments is a syntax highlighting package written in Python.
+      supplier: 'Organization: Broadcom, Inc.'

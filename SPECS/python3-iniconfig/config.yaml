@@ -1,7 +1,14 @@
 sources:
-- archive: iniconfig-1.1.1.tar.gz
-  archive_sha512sum: c9341db7e3ec2204b6a674fca7824cbeb492e3576d5ac3f084b234c82842b28f2f6acbfdb812e183f4334a95b990551f942a4caf548f5ce7ef14885f931535ee
-  skip_validation: true
+- archive: iniconfig-2.3.0.tar.gz
+  archive_sha512sum: 65f9200c904fae6d4691823a8c1c7af7d80d91438db47a6fa84a7688d0b95c73b65702a9ada16383a6c2036438b657b9981d2fcffbe6bbb5ed744b54557094eb
+  archive_type: upstream
+  name: iniconfig-2.3.0
+  version: 2.3.0
+  url: https://github.com/pytest-dev/iniconfig/releases/download/v2.3.0/iniconfig-2.3.0.tar.gz
+  repo_url: https://github.com/pytest-dev/iniconfig
+  commit_id: 7faed13ae50bad7c5da3f5782f254a8a7736bb84
+  skip_list: []
+  missing: [setup.cfg, _version.py, PKG-INFO, iniconfig.egg-info]
   spdx:
     package:
       detailed_description: "iniconfig is a small and simple INI-file parser module\

@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -317,6 +317,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-3
+- Macro additions for build and install
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-2
 - Add byte compilation helper scripts and macros
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.1-1

@@ -2,8 +2,8 @@
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
-Version:        1.74.0
-Release:        22%{?dist}
+Version:        1.86.0
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/GObjectIntrospection
 Distribution:   Photon
@@ -14,18 +14,16 @@ Source0: https://gitlab.gnome.org/GNOME/gobject-introspection/-/archive/%{versio
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: giscanner-python314.patch
-
 BuildRequires:  gettext
 BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
-BuildRequires:  which
 BuildRequires:  glib-devel >= 2.58.0
 BuildRequires:  libffi-devel
 BuildRequires:  go
 BuildRequires:  autoconf-archive
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -44,6 +42,7 @@ Summary:        Python3 package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3-xml
+Requires:       python3-setuptools
 Requires:       python3
 
 %description -n python3-%{name}
@@ -79,10 +78,9 @@ rm -r docs/website/
 # Move the python3 modules to the correct location
 mkdir -p %{buildroot}%{python3_sitelib}
 mv %{buildroot}%{_libdir}/%{name}/giscanner %{buildroot}%{python3_sitelib}
-rm -rf %{buildroot}%{_datarootdir}/gtk-doc/html
 
-%check
 %if 0%{?with_check}
+%check
 %{meson_test}
 %endif
 
@@ -114,6 +112,8 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.86.0-1
+- Upgrade to v1.86.0
 * Wed Feb 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.74.0-22
 - Add patch to build with python3.14
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.74.0-21

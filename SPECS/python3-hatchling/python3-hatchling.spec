@@ -1,29 +1,36 @@
 %global build_if %{photon_subrelease} >= 92
 
+%define srcname hatchling
+
 Name:           python3-hatchling
-Version:        1.11.1
-Release:        3%{?dist}
+Version:        1.29.0
+Release:        1%{?dist}
 Summary:        The build backend used by Hatch
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.org/project/hatchling/
-Source0:        https://files.pythonhosted.org/packages/source/h/hatchling/hatchling-%{version}.tar.gz
+Url:            https://github.com/pypa/hatch
+
+BuildArch:      noarch
+
+Source0: https://github.com/pypa/hatch/releases/download/hatchling-v%{version}/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-pip
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
 BuildRequires:  python3-pathspec
 BuildRequires:  python3-packaging
 BuildRequires:  python3-pluggy
+BuildRequires:  python3-trove-classifiers
 
 Requires:       python3
 Requires:       python3-pluggy
 Requires:       python3-pathspec
 Requires:       python3-packaging
+Requires:       python3-trove-classifiers
 
 Provides:       python3dist(hatchling) = %{version}-%{release}
 
@@ -31,23 +38,29 @@ Provides:       python3dist(hatchling) = %{version}-%{release}
 This is the extensible, standards compliant build backend used by Hatch.
 
 %prep
-%autosetup -n hatchling-%{version}
+%autosetup -n %{srcname}-%{version}
 
 %build
-%{pyproject_wheel}
+%py3_build_wheel
 
 %install
-%{pyproject_install}
+%py3_install_wheel
 
+%{py_byte_compile_and_ghost}
+
+%if 0%{?with_check}
 %check
 python3 setup.py test
+%endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{_bindir}/hatchling
 %{python3_sitelib}/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.29.0-1
+- Upgrade to v1.29.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.11.1-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.11.1-2

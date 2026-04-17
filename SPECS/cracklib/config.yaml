@@ -1,7 +1,14 @@
 sources:
-- archive: cracklib-2.9.8.tar.gz
-  archive_sha512sum: 03b97e3ab3bd73e4a5673254622d542e5ad5cae642183afe1c84f17b174284a0d618de71aa09e858b924018665bc5107cedaaa73ae2e289c0b0d1d89eed618e7
-  skip_validation: true
+- archive: cracklib-2.10.3.tar.xz
+  archive_sha512sum: 5a86116b888dd324d17495c3ccefb061bfc6b31a7dcebc394324d87878dec5dec268591f9d7ef30cf60f70df9ff3bbf3d891c60efc198dba80f83cc43a08273c
+  archive_type: upstream
+  name: cracklib-2.10.3
+  version: 2.10.3
+  url: https://github.com/cracklib/cracklib/releases/download/v2.10.3/cracklib-2.10.3.tar.xz
+  repo_url: https://github.com/cracklib/cracklib
+  commit_id: e73d5db1789d198b5f9ec44b68b9c775c3e6c042
+  skip_list: []
+  missing: [test-driver, Makefile.am, test-data, missing, COPYING.LIB, AUTHORS, ChangeLog, compile, configure.ac, doc, README-WORDS, dicts, lib, NEWS, config.h.in, README-LICENSE, README.release.md, python, cracklib.spec.in, words, po, src, historical-tags-before-cleanup.txt, Makefile.in, README, configure, depcomp, ltmain.sh, aclocal.m4, .gitignore, .github, config.rpath, util, install-sh, README.md, INSTALL, m4, ABOUT-NLS, py-compile, config.guess, README-DAWG, config.sub]
   spdx:
     package:
       detailed_description: 'CrackLib tests passwords to determine whether they match
@@ -15,7 +22,7 @@ sources:
         it must be used in conjunction with an existing passwd program.  Install the
         cracklib package if you need a program to check users'' passwords to see if
         they are at least minimally secure. If you install CrackLib, you''ll also
-        want to install the cracklib-dicts package. '
+        want to install the cracklib-dicts package.'
       home_page: https://github.com/cracklib/cracklib
       license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND Artistic-2.0 AND
         GPL-2.0-only AND GPL-2.0-or-later AND GPL-1.0-or-later AND LGPL-2.0-or-later
@@ -23,9 +30,18 @@ sources:
         AND GPL-2.0-or-later AND GPL-1.0-or-later AND LGPL-2.0-or-later
       short_summary: A password strength-checking library.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: cracklib-words-2.9.8.gz
-  archive_sha512sum: 1700c56b9776b7ae4684b9ab1e784dd7707550bce2149301f662618a4f00a2eb0ba2d1a206c09aac22f7d95bc561544d412d2fdac5008fc3aabc4872e8a74afc
+
+- archive: cracklib-words-2.10.3.gz
+  archive_sha512sum: 4959918989eb925fc63d22891e71f8cbf6f0b8cdf4f11094444704cbeac467f6c67dbb644932e45e349849b682b3b563f33e1ecacfd141485ddda1a6cc37bbaa
+  # TODO: Source verification script doesn't handle .gz
   skip_validation: true
+  name: cracklib-words-2.10.3
+  version: 2.10.3
+  url: https://github.com/cracklib/cracklib/releases/download/v2.10.3/cracklib-words-2.10.3.gz
+  repo_url: https://github.com/cracklib/cracklib
+  commit_id: e73d5db1789d198b5f9ec44b68b9c775c3e6c042
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: scripts and content to build a full size password dictionary.

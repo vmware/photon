@@ -1,0 +1,19 @@
+sources:
+- archive: hatchling-1.29.0.tar.gz
+  archive_sha512sum: d1cbd677b2e507b89344fa69c82f45fbe18a3634dac4d7014d76ef852d478932095df009d2bd31c7aa03d594084bc163870e0b145c563962589f53ab82cca1e2
+  archive_type: upstream
+  name: hatchling-1.29.0
+  version: 1.29.0
+  url: https://github.com/pypa/hatch/releases/download/hatchling-v1.29.0/hatchling-1.29.0.tar.gz
+  repo_url: https://github.com/pypa/hatch
+  commit_id: 1a74daa6f554e2ec89f2641288e44ed39e5507cc
+  skip_list: [LICENSE.txt, README.md, pyproject.toml]
+  missing: [backend, pyoxidizer.bzl, hatch, .linkcheckerrc, mkdocs.yml, docs, downstream, cli, hatch.toml, conftest.py, env, config, publish, utils, python, index, scripts, helpers, .github, workspaces, dep, release, ruff.toml, mkdocs.insiders.yml, PKG-INFO, ruff_defaults.toml, project, hatchling, .gitattributes, venv]
+  spdx:
+    package:
+      detailed_description: 'This is the extensible, standards compliant build backend used by Hatch.'
+      home_page: https://pypi.org/project/hatchling/
+      license_concluded: BSD-3-Clause AND MIT
+      license_declared: BSD-3-Clause AND MIT
+      short_summary: The build backend used by Hatch
+      supplier: 'Organization: Broadcom, Inc.'

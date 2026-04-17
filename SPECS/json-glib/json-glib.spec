@@ -2,14 +2,14 @@
 
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
-Version:        1.6.6
-Release:        6%{?dist}
+Version:        1.10.8
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.6/%{name}-%{version}.tar.xz
+Source0: https://download.gnome.org/sources/json-glib/1.10/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -22,8 +22,8 @@ BuildRequires:  glib-devel
 BuildRequires:  libtool
 BuildRequires:  which
 BuildRequires:  meson
+BuildRequires:  cmake
 BuildRequires:  python3
-BuildRequires:  python3-libs
 BuildRequires:  gtk-doc
 
 Requires:       glib
@@ -47,18 +47,20 @@ Header files for the json-glib library.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
-rm -r subprojects/gi-docgen/
 
 %build
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-meson build --prefix=/usr
-ninja -C build
+
+%meson \
+  -Dgtk_doc=disabled
+
+%meson_build
 
 %install
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-DESTDIR=%{buildroot} ninja -C build install
+%meson_install
 
 %find_lang json-glib-1.0
 
@@ -73,7 +75,7 @@ rm -rf %{buildroot}
 %postun -p /sbin/ldconfig
 
 %files -f json-glib-1.0.lang
-#%%defattr(-, root, root)
+%defattr(-, root, root)
 %doc NEWS
 %attr(755,root,root) %{_bindir}/json-glib-format
 %attr(755,root,root) %{_bindir}/json-glib-validate
@@ -81,7 +83,7 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_libdir}/libjson-glib-1.0.so.*.*.*
 
 %files devel
-#%%defattr(-, root, root)
+%defattr(-, root, root)
 %{_libdir}/libjson-glib-1.0.so
 %{_includedir}/json-glib-1.0
 %{_libdir}/pkgconfig/json-glib-1.0.pc
@@ -91,6 +93,8 @@ rm -rf %{buildroot}
 %{_datadir}/installed-tests/*
 
 %changelog
+* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.8-1
+- Upgrade to v1.10.8
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.6.6-6
 - Bump version as a part of python3.14 upgrade
 * Fri Aug 08 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.6-5

@@ -1,15 +1,19 @@
 %global build_if %{photon_subrelease} >= 92
 
+%define srcname pygments
+
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
-Version:        2.13.0
-Release:        6%{?dist}
+Version:        2.19.2
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Pygments
 
-Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
+BuildArch:      noarch
+
+Source0: https://github.com/pygments/pygments/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -17,18 +21,11 @@ Source1: license.txt
 # Note: If you are fixing a CVE here, please check for the same in python3-pip
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-
-%if 0%{?with_check}
-BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
-%endif
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-hatchling
 
 Requires:       python3
-Requires:       python3-setuptools
-
-BuildArch:      noarch
 
 %description
 Pygments is a syntax highlighting package written in Python.
@@ -40,28 +37,27 @@ a number of output formats, presently HTML, LaTeX, RTF, SVG, all image formats t
 it is usable as a command-line tool and as a library.
 
 %prep
-%autosetup -n Pygments-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
+%if 0%{?with_check} == 0
+rm -r tests/examplefiles
+%endif
 
 %build
-%{py3_build}
+%py3_build_wheel
 
 %install
-%{py3_install}
+%py3_install_wheel
 
-%check
-#pushd ../p3dir
-#easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-#$easy_install_3 nose
-#PYTHON=python3 make test
-#popd
-#test incompatible with python3.7
+%{py_byte_compile_and_ghost}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 %{_bindir}/*
 
 %changelog
+* Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.19.2-1
+- Upgrade to v2.19.2
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.13.0-6
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.13.0-5

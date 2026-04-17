@@ -2,14 +2,14 @@
 
 Summary:          A password strength-checking library.
 Name:             cracklib
-Version:          2.9.8
-Release:          4%{?dist}
+Version:          2.10.3
+Release:          1%{?dist}
 Group:            System Environment/Libraries
 URL:              https://github.com/cracklib/cracklib
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-%{version}.tar.gz
+Source0: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
 Source1: https://github.com/cracklib/cracklib/releases/download/v%{version}/%{name}-words-%{version}.gz
 
@@ -76,7 +76,6 @@ Summary:    The cracklib python module
 Group:      Development/Languages/Python
 Requires:   %{name} = %{version}-%{release}
 Requires:   python3
-Requires:   python3-libs
 
 %description -n python3-%{name}
 The cracklib python3 module
@@ -89,58 +88,36 @@ Group:      System Environment/Libraries
 The CrackLib language pack.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 chmod -R og+rX .
 mkdir -p src/dicts
 install %{SOURCE1} src/dicts/
 
 %build
-if [ %{_host} != %{_build} ]; then
-  export PYTHONXCPREFIX=/target-%{_arch}/usr
-  export CC=%{_host}-gcc
-  export LDSHARED='%{_host}-gcc -shared'
-  export LDFLAGS='-L/target-%{_arch}/usr/lib'
-fi
-
 export CFLAGS="%{optflags}"
-
-pushd src
-
-./autogen.sh
 
 %configure \
   --disable-static \
-  --without-python
+  --with-python
 
 %make_build
 
-pushd python
-%py3_build
-popd
-popd
-
 %install
-pushd src
 %make_install %{?_smp_mflags}
-rm -f %{buildroot}%{_libdir}/*.la
+rm %{buildroot}%{_libdir}/*.la
 
 chmod 755 ./util/%{name}-format \
           ./util/%{name}-packer
 
-if [ %{_host} = %{_build} ]; then
-  export PATH=./util:$PATH
-fi
+export PATH=$PWD/util:$PATH
 
 %{name}-format dicts/%{name}* | %{name}-packer %{buildroot}%{_datadir}/%{name}/words
 echo password | %{name}-packer %{buildroot}%{_datadir}/%{name}/empty
-rm -f %{buildroot}%{_datadir}/%{name}/%{name}-small
+rm %{buildroot}%{_datadir}/%{name}/%{name}-small
 ln -sv %{name}-format %{buildroot}%{_sbindir}/mkdict
 ln -sv %{name}-packer %{buildroot}%{_sbindir}/packer
 
-pushd python
-%py3_install
-popd
-popd
+%{py_byte_compile_and_ghost}
 
 %if 0%{?with_check}
 %check
@@ -191,8 +168,10 @@ rm -f %{_datadir}/%{name}/pw_dict.hwm \
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/libcrack.so
+%{_mandir}/man8/*.gz
+%{_mandir}/man3/*.gz
 
-%files -n python3-%{name}
+%files -n python3-%{name} -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
@@ -206,6 +185,8 @@ rm -f %{_datadir}/%{name}/pw_dict.hwm \
 %{_datadir}/locale/*
 
 %changelog
+* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.10.3-1
+- Upgrade to v2.10.3
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.8-4
 - Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.9.8-3

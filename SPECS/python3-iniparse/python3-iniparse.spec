@@ -1,29 +1,34 @@
 %global build_if %{photon_subrelease} >= 92
 
 Name:           python3-iniparse
-Version:        0.5
-Release:        4%{?dist}
+Version:        0.5.1
+Release:        1%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 URL:            http://code.google.com/p/iniparse/
-Source0:        http://iniparse.googlecode.com/files/iniparse-%{version}.tar.gz
-
-Source1: license.txt
-%include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 BuildArch:      noarch
 
+Source0:        http://iniparse.googlecode.com/files/iniparse-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
 BuildRequires:  python3-devel
-BuildRequires:  python3-test
-BuildRequires:  python3-devel
-BuildRequires:  python3-six
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
+
+%if 0%{?with_check}
+BuildRequires:  python3-pytest
+BuildRequires:  python3-test
+%endif
+
 Requires:       python3
-Requires:       python3-libs
 Requires:       python3-pycparser
-Requires:       python3-six
 
 %description
 iniparse is an INI parser for Python which is API compatible
@@ -33,26 +38,29 @@ lines are preserved when data is updated), and is more convenient to
 use.
 
 %prep
-%autosetup -n iniparse-%{version}
+%autosetup -p1 -n python-iniparse-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
-# fixes
-chmod 644 %{buildroot}/usr/share/doc/iniparse-%{version}/index.html
-mv %{buildroot}/usr/share/doc/iniparse-%{version} %{buildroot}/usr/share/doc/python-iniparse-%{version}
+%{py3_install_wheel}
+rm -r %{buildroot}%{_docdir}
+%{py_byte_compile_and_ghost}
 
+%if 0%{?with_check}
 %check
-python3 runtests.py
+rm tests/test_multiprocessing.py
+%pytest
+%endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
-%doc  %{_docdir}/python-iniparse-%{version}/*
 %{python3_sitelib}/*
 
 %changelog
+* Sat Mar 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.5.1-1
+- Upgrade to v0.5.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5-3

@@ -9,11 +9,13 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        80.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/setuptools
+
+BuildArch:      noarch
 
 Source0: https://files.pythonhosted.org/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/%{srcname}-%{version}.tar.gz
 
@@ -27,7 +29,7 @@ Requires:       python3
 Requires:       python3-xml
 Requires(post): findutils
 
-BuildArch:      noarch
+%define ExtraBuildRequires python3-pip
 
 Provides:       python%{python3_version}dist(setuptools)
 
@@ -50,13 +52,14 @@ rm -r setuptools/tests/
 %endif
 
 %build
-%{python3} setup.py bdist_wheel
+%pyproject_wheel
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot} --skip-build
+%pyproject_install -- --force-reinstall
 find %{buildroot}%{python3_sitelib} -name '*.exe' -delete
 mkdir -p %{buildroot}%{python_wheel_dir}
-install -p dist/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
+install -p pyproject-wheeldir/%{python_wheel_name} -t %{buildroot}%{python_wheel_dir}
+%{py_byte_compile_and_ghost}
 
 %if 0%{?with_check}
 %check
@@ -69,7 +72,7 @@ find %{python3_sitelib}/%{srcname}-* -type d -empty -delete
 %clean
 rm -rf %{buildroot}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,755)
 %{python3_sitelib}/*
 
@@ -79,6 +82,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 80.9.0-3
+- Build using pyproject_wheel
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 80.9.0-2
 - Remove test dir while building
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 80.9.0-1

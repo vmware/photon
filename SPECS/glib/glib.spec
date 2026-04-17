@@ -1,9 +1,11 @@
 %global build_if %{photon_subrelease} >= 92
 
+%define bootstrap   1
+
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.88.0
-Release:      2%{?dist}
+Release:      3%{?dist}
 URL:          https://developer.gnome.org/glib
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -11,17 +13,21 @@ Distribution: Photon
 
 Source0:  https://download.gnome.org/sources/glib/%{version}/glib-%{version}.tar.xz
 
-Source1: license.txt
-%include %{SOURCE1}
+%if 0%{?bootstrap}
+%define introspection_version     1.86.0
+
+Source1: gobject-introspection-%{introspection_version}.tar.xz
+%endif
+
+Source2: license.txt
+%include %{SOURCE2}
 
 BuildRequires:  cmake
 BuildRequires:  pcre-devel
 BuildRequires:  libffi-devel
 BuildRequires:  pkg-config
-BuildRequires:  which
 BuildRequires:  python3-xml
-BuildRequires:  python3
-BuildRequires:  python3-libs
+BuildRequires:  python3-devel
 BuildRequires:  util-linux-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  meson
@@ -29,6 +35,17 @@ BuildRequires:  ninja-build
 BuildRequires:  libselinux-devel
 BuildRequires:  gtk-doc
 BuildRequires:  zlib-devel
+
+%if 0%{?bootstrap} == 0
+%define ExtraBuildRequires gobject-introspection-devel
+%else
+BuildRequires:  gettext
+BuildRequires:  intltool
+BuildRequires:  flex
+BuildRequires:  bison
+BuildRequires:  autoconf-archive
+%define ExtraBuildRequires glib-devel
+%endif
 
 Requires: elfutils-libelf
 Requires: pcre-libs
@@ -50,8 +67,7 @@ dynamic loading and an object system. Development libs and headers are in glib-d
 
 %package  devel
 Summary:  Header files for the glib library
-Group:    Development/Libraries
-Requires: glib = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 Requires: python3-xml
 Requires: pcre-devel
 Requires: util-linux-devel
@@ -65,30 +81,44 @@ Static libraries and header files for the support library for the glib library
 
 %package  schemas
 Summary:  gsettings schemas compiling tool
-Group:    Development/Libraries
-Requires: glib
+Requires: %{name} = %{version}-%{release}
 
 %description schemas
 Gsettings schemas compiling tool
 
 %prep
-%autosetup -p1
+# Using autosetup is not feasible
+%setup -q
 rm docs/reference/glib/*.svg \
    LICENSES/CC-BY-SA-3.0.txt
 
 %build
+%if 0%{?bootstrap}
+tar xf %{SOURCE1}
+
+pushd gobject-introspection-%{introspection_version}
+%{meson} \
+  -Dpython=%{python3} \
+  -Dcairo=disabled \
+  -Ddoctool=disabled
+
+%{meson_build}
+DESTDIR=/ meson install -C %{_vpath_builddir} --no-rebuild
+popd
+%endif
+
 CONFIGURE_OPTS=(
     -Ddocumentation=false
     -Dlibelf=disabled
-    -Dgtk_doc=false
+    -Ddocumentation=false
     -Dtests=false
     -Dinstalled_tests=false
     -Ddefault_library=both
     -Ddtrace=disabled
     -Dsystemtap=disabled
-    -Dintrospection=disabled
     -Dsysprof=disabled
     -Dman-pages=disabled
+    -Dintrospection=enabled
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -108,6 +138,7 @@ CONFIGURE_OPTS=(
 %{_libdir}/libgobject-*.so.*
 %{_libexecdir}/gio-launch-desktop
 %{_libdir}/libgirepository-*.so.*
+%{_libdir}/girepository-1.0/*.typelib
 
 %files devel
 %defattr(-, root, root)
@@ -129,6 +160,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-3
+- Enable introspection
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-2
 - Remove unused docs dir
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-1
