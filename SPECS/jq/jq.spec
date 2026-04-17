@@ -1,13 +1,21 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
 Version:       1.8.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/stedolan/jq
 Distribution:  Photon
 
 Source0: https://github.com/stedolan/jq/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+
+# Security patches
+Patch1: CVE-2026-32316.patch
+Patch2: CVE-2026-33947.patch
+Patch3: CVE-2026-33948.patch
+Patch4: CVE-2026-39956.patch
+Patch5: CVE-2026-39979.patch
+Patch6: CVE-2026-40164.patch
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -66,6 +74,9 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Fri Apr 17 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.1-2
+- Fix CVE-2024-23337, CVE-2026-32316, CVE-2026-33947, CVE-2026-33948,
+- CVE-2026-39956, CVE-2026-39979, CVE-2026-40164
 * Fri Jul 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.1-1
 - Upgrade to 1.8.1
 - Fix CVE-2025-48060 and CVE-2024-23337
