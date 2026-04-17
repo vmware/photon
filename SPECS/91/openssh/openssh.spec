@@ -7,7 +7,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        19%{?dist}
+Release:        20%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -32,7 +32,7 @@ Patch0: 0001-hardened-sshd-config.patch
 %endif
 
 %if 0%{?STIG_HARDEN} == 0
-patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
+Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 %endif
 
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
@@ -46,6 +46,10 @@ Patch8: CVE-2025-61984-prep.patch
 Patch9: CVE-2025-61984.patch
 Patch10: CVE-2025-61985-prep.patch
 Patch11: CVE-2025-61985.patch
+Patch12: CVE-2026-35385.patch
+Patch13: CVE-2026-35386.patch
+Patch14: CVE-2026-35388.patch
+Patch15: CVE-2026-35414.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -240,6 +244,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Apr 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-20
+- Fix CVE-2026-{35385,35386,35388,35414}
 * Fri Nov 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-19
 - Fix User arg parsing issue which was introduced by CVE-2025-61984-prep.patch
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-18
