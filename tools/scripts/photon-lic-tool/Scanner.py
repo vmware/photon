@@ -751,9 +751,9 @@ class Scanner:
                 print(f"yaml output can be found at {yaml_out}")
             return
 
-        if not path.endswith("config.yaml"):
+        if not path.endswith(".yaml"):
             common.err_exit(
-                f"--config_yaml requires `config.yaml` not {os.path.basename(path)}"
+                f"--config_yaml requires `.yaml` file not {os.path.basename(path)}"
             )
 
         if yaml_out:
