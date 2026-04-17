@@ -2,7 +2,7 @@
 
 Name:           python3-tornado
 Version:        6.2
-Release:        7.1%{?dist}
+Release:        7.2%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/tornado
@@ -14,6 +14,8 @@ Source1: license.txt
 Patch0: CVE-2024-52804.patch
 Patch1: CVE-2025-47287.patch
 Patch2: CVE-2025-67725-67726.patch
+Patch3: CVE-2026-31958.patch
+Patch4: CVE-2026-35536.patch
 
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +46,8 @@ sh runtests.sh
 %{python3_sitelib}/*
 
 %changelog
+* Wed Apr 15 2026 Prashant S Chauhan <prashant.singh-chuahan@broadcom.com> 6.2-7.2
+- Fix CVE-2026-31958 & CVE-2026-35536
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.2-7.1
 - Bump after moving to SPECS/91
 * Tue Jan 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.2-7
