@@ -504,6 +504,8 @@ class Scanner:
 
             with open(config_yaml_path, "r") as config_yaml_f:
                 self._config_yaml = yaml.load(config_yaml_f, Loader=yaml.SafeLoader)
+                # yaml may contain a single entry with a shared source
+                self._config_yaml.setdefault('sources', [])
 
             if "shared_sources" in self._config_yaml:
                 for shared_cfg in self._config_yaml['shared_sources']:
@@ -770,6 +772,8 @@ class Scanner:
         ruamel_yaml = YAML()
         with open(path, "r") as cfg_yaml_f:
             self._config_yaml = ruamel_yaml.load(cfg_yaml_f)
+            # yaml may contain a single entry with a shared source
+            self._config_yaml.setdefault('sources', [])
 
         if not os.path.exists(common.ph_srcs_dir):
             os.makedirs(common.ph_srcs_dir)
