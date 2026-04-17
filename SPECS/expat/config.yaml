@@ -1,12 +1,12 @@
 sources:
-- archive: expat-2.7.4.tar.xz
+- archive: expat-2.7.5.tar.xz
   archive_type: upstream
-  archive_sha512sum: a5533b99b1e0b73adcbe1f1b4816ce04e963fb6b734e6018c823597297a367a0524f31e040e3320122398833371f3f7caf4f9bf3cb91594a38151b2672edfa8f
-  name: "expat-2.7.4"
-  version: 2.7.4
-  url: https://github.com/libexpat/libexpat/releases/download/R_2_7_4/expat-2.7.4.tar.xz
+  archive_sha512sum: d287fdc83d967ce6d04f96a22b544bd7820bb73504b187a8b467e281e7bd20d330c897c6ca8e3a8a2172ecce98f044b569e2b71d0b90fd1175727c13e77e61f4
+  name: "expat-2.7.5"
+  version: 2.7.5
+  url: https://github.com/libexpat/libexpat/releases/download/R_2_7_5/expat-2.7.5.tar.xz
   repo_url: https://github.com/libexpat/libexpat.git
-  commit_id: f5c2890d8ff91f88a018173d293a9bd02f76389e
+  commit_id: f31adfd584b7f6c50bbf4d22eb928538ffc9145a
   skip_list: [AUTHORS, CMake.README, CMakeLists.txt, Changes, ConfigureChecks.cmake, Makefile.am, Makefile.in, acinclude.m4, aclocal.m4, buildconf.sh, cmake, configure, configure.ac, conftools, doc, examples, expat.pc.cmake, expat.pc.in, expat_config.h, expat_config.h.cmake, expat_config.h.in, fix-xmltest-log.sh, fuzz, lib, m4, run.sh.in, test-driver-wrapper.sh, tests, win32, xmlwf, CONTRIBUTING.md, pull_request_template.md]
   missing: [cmake, test-driver-wrapper.sh, expat_config.h.in, run.sh.in, xmlwf, fuzz, testdata, .ci.sh, AUTHORS, examples, SECURITY.md, expat, buildconf.sh, win32, .mailmap, Changes, expat.pc.cmake, configure.ac, Brewfile, m4, ConfigureChecks.cmake, configure, tests, expat_config.h.cmake, Makefile.in, .github, expat.pc.in, .gitignore, aclocal.m4, CMake.README, CMakeLists.txt, expat_config.h, fix-xmltest-log.sh, conftools, acinclude.m4, lib, Makefile.am, doc, .gitattributes]
   spdx:
