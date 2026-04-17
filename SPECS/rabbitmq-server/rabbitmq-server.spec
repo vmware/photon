@@ -22,7 +22,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       4.1.4
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -157,6 +157,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.1.4-4
+- Bump release for updating erlang
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.1.4-3
 - Remove stale BuildRequires: xmlto; Erlang build does not use xmlto
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.1.4-2
