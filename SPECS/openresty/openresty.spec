@@ -10,7 +10,7 @@
 Summary:        A Fast and Scalable Web Platform by Extending NGINX with Lua
 Name:           openresty
 Version:        1.21.4.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://openresty.org/en
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -27,8 +27,6 @@ Source4: license.txt
 Patch0:         CVE-2022-41741-and-CVE-2022-41742-nginx.patch
 
 AutoReqProv:    no
-
-Conflicts:      nginx
 
 BuildRequires:  gcc
 BuildRequires:  openssl-devel
@@ -149,8 +147,8 @@ perl ./configure \
 %install
 %make_install %{?_smp_mflags}
 
-rm -rf %{buildroot}%{orprefix}/luajit/share/man \
-       %{buildroot}%{orprefix}/luajit/lib/libluajit-5.1.a
+rm -r %{buildroot}%{orprefix}/luajit/share/man \
+      %{buildroot}%{orprefix}/luajit/lib/libluajit-5.1.a
 
 mkdir -p %{buildroot}%{_bindir}
 ln -sfv %{orprefix}/bin/resty %{buildroot}%{_bindir}
@@ -225,6 +223,8 @@ rm -rf %{buildroot}
 %{orprefix}/resty.index
 
 %changelog
+* Fri Apr 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.21.4.3-6
+- Remove conflicts: nginx
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.21.4.3-5
 - Fix requires on doc sub package
 * Thu Jul 31 2025 Ajay Kaher <ajay.kaher@broadcom.com> 1.21.4.3-4
