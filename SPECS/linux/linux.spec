@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.252
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.253
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=d6061953a2516b40ea6a34f10b08a11f6771b7ab827eb96c14caad1d7a1114db26842da5fe378186e2cc800eea294773fa1a49e92710a1404601b75aa5eb62cd
+%define sha512 linux=2a226ec449ea2500abe88d7bc637a965d3dca906a9d58f137f34521b12dcd3c698d269f9da52f8a2463f00420b8e45de18458bf6b455a8c4ea4461913116384e
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -228,9 +228,6 @@ Patch125: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
 
 # Fix CVE-2025-38512
 Patch126: 0001-wifi-prevent-A-MSDU-attacks-in-mesh-networks.patch
-
-# Fix CVE-2026-31405
-Patch127: 0001-media-dvb-net-fix-OOB-access-in-ULE-extension-header.patch
 
 # Fix CVE-2026-31392
 Patch128: 0001-smb-client-fix-krb5-mount-with-username-option.patch
@@ -586,20 +583,6 @@ Patch322: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
 # CVE-2026-23231
 Patch323: 0001-netfilter-nf_tables-register-hooks-last-when-adding-.patch
 Patch324: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
-
-# CVE-2026-23268
-Patch325: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
-# CVE-2026-23407
-Patch326: 0001-apparmor-fix-missing-bounds-check-on-DEFAULT-table-in-verify.patch
-# CVE-2026-23408
-Patch327: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
-# CVE-2026-23410
-Patch328: 0001-apparmor-fix-race-on-rawdata-dereference.patch
-# CVE-2026-23411
-Patch329: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
-
-# Fix CVE-2026-23277
-Patch330: 0001-net-sched-teql-fix-NULL-pointer-dereference-in-iptun.patch
 
 # CVE-2026-23442
 Patch331: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
@@ -1298,6 +1281,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Sun Apr 19 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.253-1
+- Update to version 5.10.253
 * Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-7
 - Fix CVE-2026-23442, CVE-2026-23444
 * Mon Apr 13 2026 Bo Gan <bo.gan@broadcom.com> 5.10.252-6

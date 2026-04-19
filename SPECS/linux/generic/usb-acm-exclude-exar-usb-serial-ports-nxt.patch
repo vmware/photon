@@ -1,19 +1,22 @@
-From fd97f0f45ae85eddc1a1ec36849be0a9d80fd235 Mon Sep 17 00:00:00 2001
+From ebb5d41d8ba4b8d21be0c311a2176a2b2956c390 Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
-Date: Fri, 20 Mar 2020 17:54:18 -0700
+Date: Sun, 19 Apr 2026 16:50:15 +0000
 Subject: [PATCH 10/23] usb-acm-exclude-exar-usb-serial-ports
 
 ---
  drivers/usb/class/cdc-acm.c | 14 ++++++++++++++
  1 file changed, 14 insertions(+)
 
+Signed-off-by: Bo Gan <bo.gan@broadcom.com>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+
 diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 2f4e5174e78c..72c239f65f13 100644
+index ff02753..8b10e3e 100644
 --- a/drivers/usb/class/cdc-acm.c
 +++ b/drivers/usb/class/cdc-acm.c
-@@ -1934,6 +1934,20 @@ static const struct usb_device_id acm_ids[] = {
- 	.driver_info = IGNORE_DEVICE,
- 	},
+@@ -2004,6 +2004,20 @@ static const struct usb_device_id acm_ids[] = {
+ 	/* CH343 supports CAP_BRK, but doesn't advertise it */
+ 	{ USB_DEVICE(0x1a86, 0x55d3), .driver_info = MISSING_CAP_BRK, },
  
 +	/* Exclude Exar USB serial ports */
 +	{ USB_DEVICE(0x04e2, 0x1400), .driver_info = IGNORE_DEVICE, },
@@ -33,5 +36,5 @@ index 2f4e5174e78c..72c239f65f13 100644
  	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ACM,
  		USB_CDC_PROTO_NONE) },
 -- 
-2.17.1
+2.40.4
 
