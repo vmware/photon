@@ -1,6 +1,6 @@
 Name:           python3-tornado
 Version:        6.0.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 License:        PSFL
 Group:          Development/Languages/Python
@@ -14,6 +14,8 @@ Source0: https://pypi.python.org/packages/fa/14/52e2072197dd0e63589e875ebf5984c9
 Patch0: CVE-2024-52804.patch
 Patch1: CVE-2025-47287.patch
 Patch2: CVE-2025-67725-67726.patch
+Patch3: CVE-2026-31958.patch
+Patch4: CVE-2026-35536.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -38,6 +40,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Apr 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.4-7
+- Fix CVE-2026-31958 & CVE-2026-35536
 * Tue Jan 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.4-6
 - Fix CVE-2025-67725-67726
 * Mon Aug 18 2025 Prashant S Chauhan <prashant.singh-chauhan@bradcom.com> 6.0.4-5
