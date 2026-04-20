@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.167
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.169
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -414,18 +414,6 @@ Patch232: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
 
 # Fix CVE-2025-38081
 Patch233: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
-
-# Fix CVE-2026-23268
-Patch234: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
-
-# CVE-2026-23407
-Patch236: 0001-apparmor-fix-missing-bounds-check-on-DEFAULT-table-in-verify.patch
-# CVE-2026-23410
-Patch237: 0001-apparmor-fix-race-on-rawdata-dereference.patch
-# CVE-2026-23408
-Patch238: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
-# CVE-2026-23411
-Patch239: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
 
 # CVE-2026-23171
 Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
@@ -1189,6 +1177,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
+- Update to version 6.1.169
 * Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.167-3
 - Fix CVE-2026-23442, CVE-2026-23444
 * Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-2

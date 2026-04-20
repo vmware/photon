@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.167
-Release:        3%{?dist}
+Version:        6.1.169
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -343,17 +343,6 @@ Patch230: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
 # Fix CVE-2025-71184
 Patch231: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
 
-# Fix CVE-2026-23268
-Patch232: 0001-apparmor-fix-unprivileged-local-user-can-do-privileg.patch
-
-# CVE-2026-23407
-Patch234: 0001-apparmor-fix-missing-bounds-check-on-DEFAULT-table-in-verify.patch
-# CVE-2026-23410
-Patch235: 0001-apparmor-fix-race-on-rawdata-dereference.patch
-# CVE-2026-23408
-Patch236: 0001-apparmor-Fix-double-free-of-ns_name-in-aa_replace_profiles.patch
-# CVE-2026-23411
-Patch237: 0001-apparmor-fix-race-between-freeing-data-and-fs-accessing-it.patch
 # CVE-2026-23442
 Patch238: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
 # CVE-2026-23444
@@ -735,6 +724,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
+- Update to version 6.1.169
 * Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.167-3
 - Fix CVE-2026-23442, CVE-2026-23444
 * Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.1.167-2
