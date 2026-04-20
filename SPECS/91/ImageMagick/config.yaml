@@ -1,17 +1,17 @@
 sources:
-  - archive: ImageMagick-7.1.2-18.tar.gz
-    archive_sha512sum: 168326e62c2ca5608a660e030b9777c7200458f9eb128854867e9bf20e1aa3d603a819aa3095fb3cf13133ceb9a9c9859374b7ce872bebb179c3afdf943ec831
+  - archive: ImageMagick-7.1.2-19.tar.gz
+    archive_sha512sum: be9d35e64828f727b6005f5c02740d85f25e1b3dee45403f0a19e702b00e418dcedf8fc159f03764ef251dcaa1dcd38fd04b41c356b30555a6c9f2f95486a9cb
     archive_type: upstream
-    name: ImageMagick-7.1.2-18
-    version: 7.1.2-18
-    url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-18.tar.gz
+    name: ImageMagick-7.1.2-19
+    version: 7.1.2-19
+    url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-19.tar.gz
     repo_url: https://github.com/ImageMagick/ImageMagick
-    commit_id: d4e4b2b35a573fb7d96bc64ff1a417415bbe0f4c
+    commit_id: 9fbd2b79450e930edb95e8158d412e57a7b27e83
     skip_list: []
     missing: []
     license_manual_review:
     - file_paths:
-      - ImageMagick-7.1.2-18/MagickCore/nt-base.c
+      - ImageMagick-7.1.2-19/MagickCore/nt-base.c
       sha256sum: 076aed9955e303213e2ccc1ba6a11ff62bd8a88b299d3daecc941e2cc239bec1
       spdx_exp: ""
     spdx:
