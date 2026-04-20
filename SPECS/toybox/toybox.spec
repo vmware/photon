@@ -4,9 +4,11 @@
 %define coreutils_present           %{_sharedstatedir}/rpm-state/coreutils
 %define coreutils_selinux_present   %{_sharedstatedir}/rpm-state/coreutils-selinux
 
+%define toysh_secondary_path        %{_datadir}/%{name}/toysh
+
 Name:           toybox
 Version:        0.8.9
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -35,6 +37,7 @@ Requires(post): libxcrypt
 Provides:       /bin/grep
 Provides:       /bin/sh
 Provides:       /bin/bash
+Provides:       %{toysh_secondary_path}
 
 %description
 Toybox combines common Linux command line utilities together into a single
@@ -56,17 +59,25 @@ The package contains %{name} doc files.
 %build
 cp %{SOURCE1} .config
 # If we make NOSTRIP=0, toybox debuginfo rpm will be useless
-NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g" %{?_smp_mflags}
+NOSTRIP=1 \
+  CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g" \
+  make %{?_smp_mflags}
 
 %install
 install -d %{buildroot}{%{_bindir},%{_sbindir}}
-PREFIX=%{buildroot} make install %{?_smp_mflags}
+
+PREFIX=%{buildroot} \
+  make install %{?_smp_mflags}
+
 mv %{buildroot}/bin/* %{buildroot}%{_bindir}
 mv %{buildroot}/sbin/* %{buildroot}%{_sbindir}
 mv %{buildroot}%{_sbindir}/{ifconfig,lspci} %{buildroot}%{_bindir}
 mv %{buildroot}%{_bindir}/httpd %{buildroot}%{_sbindir}
 chmod 755 %{buildroot}%{_bindir}/%{name}
 install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}-toys
+
+mkdir -p %{buildroot}%{_datadir}/%{name}
+ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{toysh_secondary_path}
 
 %if 0%{?with_check}
 %check
@@ -87,13 +98,15 @@ mktoy() { \
   done \
 }
 
-%post -p %{_bindir}/toysh
-export opt="--install"
-toysh %{_bindir}/%{name}-toys -- $opt
+# these scriptlets should work even in the absence of bash
+%post -p %{toysh_secondary_path}
+%{toysh_secondary_path} %{_bindir}/%{name}-toys -- --install
 
-%preun -p %{_bindir}/toysh
-export opt="--uninstall"
-toysh %{_bindir}/%{name}-toys -- $opt
+%posttrans -p %{toysh_secondary_path}
+%{toysh_secondary_path} %{_bindir}/%{name}-toys -- --install
+
+%preun -p %{toysh_secondary_path}
+%{toysh_secondary_path} %{_bindir}/%{name}-toys -- --uninstall
 
 %triggerpostun -- dos2unix
 [ $2 -eq 0 ] || exit 0
@@ -495,7 +508,7 @@ mktoy %{_bindir}/dmesg \
       %{_sbindir}/fsfreeze \
       %{_sbindir}/rfkill
 
-%triggerpostun -- vim-extra
+%triggerpostun -- xxd
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
 mktoy %{_bindir}/xxd
@@ -792,12 +805,15 @@ mktoy %{_bindir}/which
 %{_sbindir}/iproute
 %{_sbindir}/iprule
 %{_bindir}/toysh
+%{toysh_secondary_path}
 
 %files docs
 %defattr(-,root,root)
 %doc README LICENSE
 
 %changelog
+* Mon Apr 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.9-12
+- Fix toys creation post install
 * Tue Mar 31 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-11
 - Fix paths for arp and iotop to match real packages
 - Explicitly note that toybox provides a shell, use our shell to install
