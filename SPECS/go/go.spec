@@ -1,4 +1,4 @@
-%define build_if %{photon_subrelease} >=92
+%global build_if %{photon_subrelease} >=92
 
 %global goroot          %{_libdir}/golang
 %global gopath          %{_datadir}/gocode
