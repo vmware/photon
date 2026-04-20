@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -28,6 +28,8 @@ Source3: license.txt
 Source4: brp-python-bytecompile
 Source5: python_ghost_pyc.sh
 Source6: macros.bytecompile.python
+
+Patch0: 0001-Disallow-md5-usage-when-usedforsecurity-is-set-and-op.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -147,13 +149,6 @@ rm -r Doc/library/hashlib.rst \
 
 %build
 export OPT="${CFLAGS}"
-if [ %{_host} != %{_build} ]; then
-  ln -sfv %{name} %{_bindir}/python
-  export ac_cv_buggy_getaddrinfo=no
-  export ac_cv_file__dev_ptmx=yes
-  export ac_cv_file__dev_ptc=no
-fi
-
 rm -v Lib/ensurepip/_bundled/pip*.whl
 
 pushd pip-wheel/%{_arch}
@@ -169,7 +164,7 @@ popd
     --enable-optimizations \
     --with-dbmliborder=gdbm:ndbm \
     --with-ssl-default-suites=openssl \
-    --with-builtin-hashlib-hashes=blake2
+    --with-builtin-hashlib-hashes=blake2,md5
 
 %make_build
 
@@ -317,6 +312,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Mon Apr 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-4
+- Use builtin md5 and disallow md5 usage when fips is enabled and usedforsecurity is set
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-3
 - Macro additions for build and install
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-2
