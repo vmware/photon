@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:    Syslog event logger library
 Name:       eventlog
 Version:    0.2.12
-Release:    5%{?dist}
+Release:    5.1%{?dist}
 URL:        https://www.balabit.com
 Group:      System Environment/Daemons
 Vendor:     VMware, Inc.
@@ -63,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/eventlog.pc
 
 %changelog
+* Mon Apr 20 2026 Tapas Kundu <tapas.kundu@broadcom.com> 0.2.12-5.1
+- Sub branch for 9.1
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.2.12-5
 - Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.2.12-4
