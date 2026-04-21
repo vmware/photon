@@ -44,34 +44,32 @@ from common import err_exit, pr_err, SignalContext, safe_print
 
 
 def scan(args):
-    scanner = Scanner()
-
     timeout = args.scancode_timeout
     if args.scancode_timeout:
         timeout = int(timeout)
 
+    scanner = Scanner(
+        docker=args.docker,
+        alt_src_url=args.alt_src_url,
+        extra_repo_urls=args.extra_repo_urls
+    )
+
     if not args.config_yaml:
         scanner.scan(
             build_spec=args.build_spec,
+            path=args.path,
             score=args.score,
             yaml_out=args.yaml,
             cpus=args.cpus,
-            docker=args.docker,
-            path=args.path,
-            alt_src_url=args.alt_src_url,
-            extra_repo_urls=args.extra_repo_urls,
             timeout=timeout
         )
     else:
         scanner.scan_config_yaml(
             build_spec=args.build_spec,
+            path=args.path,
             score=args.score,
             yaml_out=args.yaml,
             cpus=args.cpus,
-            docker=args.docker,
-            path=args.path,
-            alt_src_url=args.alt_src_url,
-            extra_repo_urls=args.extra_repo_urls,
             config_yaml=args.config_yaml,
             timeout=timeout
         )

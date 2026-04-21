@@ -28,6 +28,7 @@ RUN tdnf install --nogpgcheck -y --refresh \
     && rm -r /var/cache/tdnf
 
 RUN pip3 install \
+    binaryornot==0.4.4 \
     scancode-toolkit==32.4.1 \
     requests==2.32.5 \
     charset-normalizer==3.4.4 \

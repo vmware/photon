@@ -63,6 +63,8 @@ spdx_license_list_ext = "refs/heads/main/json/licenses.json"
 spdx_exceptions_list_ext = "refs/heads/main/json/exceptions.json"
 
 default_lic_score = 90
+
+chksum_type = "sha256"
 """ ################################################################# """
 
 """ ################ Globals from config yaml ####################### """
@@ -300,6 +302,12 @@ def strip_license_id(lic_id=None):
 def cleanup_license_expression(ignore_list=None, exception_list=None, license_exp=None):
     if not license_exp:
         return None
+    
+    # Avoid mutable default argument issues
+    if ignore_list is None:
+        ignore_list = []
+    if exception_list is None:
+        exception_list = []
 
     try:
         import license_expression
@@ -555,3 +563,4 @@ def check_scancode_ver():
     fileutils.delete(scancode_config.scancode_temp_dir)
 
     print("scancode-toolkit up to date")
+    return True

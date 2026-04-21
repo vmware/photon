@@ -16,6 +16,7 @@ from common import (
     strip_license_id,
     cleanup_license_expression,
     pr_err,
+    chksum_type,
 )
 
 
@@ -33,22 +34,89 @@ class CacheUtil:
             host=redis_host, port=redis_port, decode_responses=True
         )
 
-    # Convert file path to key (checksum)
-    def _conv_filepath_to_key(self, file_path=None):
         import scancode_config
 
-        sc_version = scancode_config.__version__
+        self._sc_version = scancode_config.__version__
+
+    # Convert file path to key (checksum)
+    def _conv_filepath_to_key(self, file_path=None, config_yaml=None):
         checksum = None
 
-        # compute checksum
-        with open(file_path, "rb") as f_to_check:
-            checksum = hashlib.file_digest(f_to_check, "sha256").hexdigest()
+        # Compute signature
+        if common.is_extractable(file_path):
+            checksum = self.create_archive_signature(file_path, config_yaml)
+        else:
+            with open(file_path, "rb") as f_to_check:
+                checksum = hashlib.file_digest(f_to_check, chksum_type).hexdigest()
 
         # Key for known failures should not be returned
         if checksum in common.known_failures:
             return None
 
-        return f"{sc_version}-{checksum}"
+        return f"{self._sc_version}-{checksum}"
+
+    def get_cached_spdx(self, path=None, config_yaml=None):
+        if not path:
+            return None
+
+        key = self._conv_filepath_to_key(file_path=path, config_yaml=config_yaml)
+        spdx_exp = self._redis_cache.get(key)
+
+        if spdx_exp:
+            spdx_exp = spdx_exp.replace(",", "AND")
+            return cleanup_license_expression(license_exp=spdx_exp)
+
+        return None
+
+
+    def create_archive_signature(self, archive_path=None, config_yaml=None):
+        """
+        Create a unique signature for archives based on manual review entries.
+
+        Archives get a unique signature based on the manual review entries in the config.yaml
+        file. This is because we need to rescan the archive every time the manual review entries
+        change.
+
+        Args:
+            archive_path (str): Path to the archive file
+            config_yaml (dict): Configuration YAML containing manual review entries
+
+        Returns:
+            str: Archive signature hash or None if inputs are invalid
+        """
+
+        if not archive_path:
+            common.err_exit("Archive path is required for creating archive signature")
+
+        checksum = None
+        with open(archive_path, "rb") as archive_f:
+            checksum = hashlib.file_digest(archive_f, chksum_type).hexdigest()
+
+        if not config_yaml:
+            return checksum
+
+        archive_cfg_entry = None
+        for archive_entry in config_yaml['sources']:
+            if archive_entry['archive'] == os.path.basename(archive_path):
+                archive_cfg_entry = archive_entry
+                break
+
+        if not archive_cfg_entry or not archive_cfg_entry.get('license_manual_review', []):
+            return checksum
+
+        # Basically just concatenate all the manual review entries into a single string
+        long_str = checksum
+        for manual_review in archive_cfg_entry['license_manual_review']:
+            entry_info = []
+            for file_path in manual_review['file_paths']:
+                entry_info.append(file_path)
+            entry_info.append(manual_review['sha256sum'])
+            entry_info.append(manual_review['spdx_exp'])
+
+            long_str += "".join(entry_info)
+
+        # Hash the string to get a unique signature
+        return hashlib.sha256(long_str.encode()).hexdigest()
 
     # multithreaded job which checks if the file is in the db already,
     # and if so, removes it from the scan dir
@@ -121,32 +189,58 @@ class CacheUtil:
                     if exp != "NO-LICENSE":
                         thread_cached_spdx_ids[lic_id] = 1
 
-    # after successful scan completion, update the database
-    # with the data for these files
-    def _add_scan_result_to_db(self, redis_pipeline=None, spdx_id=None, filepath=None):
-        if not redis_pipeline or not filepath:
-            return
+    # Adds a single scan result to the database. Can be called with or without a redis pipeline.
+    def add_scan_result_to_db(self, redis_pipeline=None, spdx_id=None, filepath=None, chksum=None):
+        """
+        Add a single scan result to the Redis cache and update local cached info.
 
-        filepath = os.path.abspath(filepath)
-        if not os.path.exists(filepath):
-            return
-
-        key = self._conv_filepath_to_key(file_path=filepath)
+        Args:
+            redis_pipeline: Optional Redis pipeline for batch operations
+            spdx_id (str): SPDX license expression for the file
+            filepath (str): Path to the scanned file
+            chksum (str): Optional checksum if already computed
+        """
+        if not chksum:
+            filepath = os.path.abspath(filepath)
+            if not os.path.exists(filepath):
+                return
+            key = self._conv_filepath_to_key(file_path=filepath)
+        else:
+            key = f"{self._sc_version}-{chksum}"
 
         # Redis doesn't like 'None'
         if not spdx_id:
             spdx_id = "NO-LICENSE"
 
-        redis_pipeline.set(key, spdx_id, ex=self.redis_ttl)
+        # Add to Redis cache
+        if redis_pipeline:
+            redis_pipeline.set(key, spdx_id, ex=self.redis_ttl)
+        else:
+            self._redis_cache.set(key, spdx_id, ex=self.redis_ttl)
+
+        # Update local cached licenses info object
+        if filepath and spdx_id:
+            if spdx_id not in self.cached_licenses_info:
+                self.cached_licenses_info[spdx_id] = []
+
+            # Only add if not already present to avoid duplicates
+            if filepath not in self.cached_licenses_info[spdx_id]:
+                self.cached_licenses_info[spdx_id].append(filepath)
 
     def add_all_scan_results_to_cache(
-        self, scan_dir=None, yaml_fp=None, exceptions_list=[]
+        self, scan_dir=None, yaml_fp=None, exceptions_list=None, uncached_archive_info=None
     ):
+
+        if exceptions_list is None:
+            exceptions_list = []
+        if uncached_archive_info is None:
+            uncached_archive_info = []
 
         redis_pipeline = None
         scancode_yaml = None
         cached_cleaned_results = {}
         spdx_exp = None
+        archives = {}
 
         if not yaml_fp:
             return
@@ -197,7 +291,26 @@ class CacheUtil:
             # license_detections section above, which causes compatibility issues.
             spdx_exp = ",".join(file_detections)
 
-            self._add_scan_result_to_db(redis_pipeline, spdx_exp, file_path)
+            self.add_scan_result_to_db(redis_pipeline, spdx_exp, file_path)
+
+            for archive_path, archive_chksum in uncached_archive_info:
+                if file_path.startswith(archive_path):
+                    if archive_path not in archives:
+                        archives[archive_path] = []
+                    archives[archive_path].append(spdx_exp)
+
+        for archive_path, archive_chksum in uncached_archive_info:
+            try:
+                spdx_exp = ",".join(archives[archive_path])
+                self.add_scan_result_to_db(
+                    redis_pipeline=redis_pipeline,
+                    spdx_id=spdx_exp,
+                    filepath=None,
+                    chksum=archive_chksum
+                )
+            except KeyError:
+                common.pr_err(f"Archive {archive_path} has no scanned files?")
+                continue
 
         redis_pipeline.execute()
 
