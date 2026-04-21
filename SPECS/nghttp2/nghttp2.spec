@@ -1,7 +1,7 @@
 Summary:    nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
 Name:       nghttp2
 Version:    1.57.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    MIT
 URL:        https://nghttp2.org
 Group:      Applications/System
@@ -11,6 +11,7 @@ Source0:    https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{n
 %define sha512 nghttp2=d914eb48afd1ea182c1b2a454bf5e7963a7e28165f1d6d29bb83dd61a1b611c8c469e72a7a22daf23b8037f6e5ae9d4e791150b7d135746c1a5ec71ceb777f92
 
 Patch0: CVE-2024-28182.patch
+Patch1: CVE-2026-27135.patch
 
 BuildRequires: c-ares-devel
 BuildRequires: openssl-devel
@@ -60,21 +61,23 @@ autoreconf -i
 %{_mandir}/man1/*
 
 %changelog
-*   Fri Apr 05 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.57.0-2
--   Fix for CVE-2024-28182
-*   Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.57.0-1
--   Upgrade to version 1.57.0
-*   Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.41.0-4
--   Bump version as a part of libevent upgrade
-*   Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 1.41.0-3
--   Version bump up to use c-ares
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.41.0-2
--   openssl 1.1.1
-*   Tue Jul 07 2020 Gerrit Photon <photon-checkins@vmware.com> 1.41.0-1
--   Automatic Version Bump
-*   Wed Jun 24 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.33.0-2
--   Used configure macro
-*   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.33.0-1
--   Upgrade to version 1.33.0
-*   Tue Jun 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.23.1-1
--   First version
+* Tue Apr 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.57.0-3
+- Fix CVE-2026-27135
+* Fri Apr 05 2024 Harinadh D <harinadh.dommaraju@broadcom.com> 1.57.0-2
+- Fix for CVE-2024-28182
+* Mon Oct 23 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.57.0-1
+- Upgrade to version 1.57.0
+* Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.41.0-4
+- Bump version as a part of libevent upgrade
+* Wed Mar 15 2023 Anmol Jain <anmolja@vmware.com> 1.41.0-3
+- Version bump up to use c-ares
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.41.0-2
+- openssl 1.1.1
+* Tue Jul 07 2020 Gerrit Photon <photon-checkins@vmware.com> 1.41.0-1
+- Automatic Version Bump
+* Wed Jun 24 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.33.0-2
+- Used configure macro
+* Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.33.0-1
+- Upgrade to version 1.33.0
+* Tue Jun 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.23.1-1
+- First version
