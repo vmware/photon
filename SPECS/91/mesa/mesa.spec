@@ -3,7 +3,7 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        25.1.4
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -14,7 +14,10 @@ Source0:        https://archive.mesa3d.org/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0:         0001-Remove-Nouveau-from-vulkan-drivers-and-gallium-drive.patch
+Patch0: 0001-Remove-Nouveau-from-vulkan-drivers-and-gallium-drive.patch
+Patch1: CVE-2026-40393-prep.patch
+Patch2: CVE-2026-40393-1.patch
+Patch3: CVE-2026-40393-2.patch
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -225,6 +228,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libgallium-*.so
 
 %changelog
+* Tue Apr 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 25.1.4-2.2
+- Fix for CVE-2026-40393
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.1.4-2.1
 - Bump after moving to SPECS/91
 * Thu Oct 30 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 25.1.4-2
