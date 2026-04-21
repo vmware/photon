@@ -3,7 +3,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        24.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -60,6 +60,11 @@ rm -r deps/v8/third_party/glibc \
        deps/v8/third_party/markupsafe
 
 %build
+# v8 segfaults when Identical Code Folding is enabled
+# - https://github.com/nodejs/node/issues/47865
+export CFLAGS="${CFLAGS} -fno-ipa-icf"
+export CXXFLAGS="${CXXFLAGS} -fno-ipa-icf"
+
 %{python3} configure.py \
   --ninja \
   --enable-lto \
@@ -105,6 +110,9 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Apr 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.14.1-2
+- Build with -fno-ipa-icf
+- https://github.com/nodejs/node/issues/47865
 * Fri Apr 03 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.14.1-1
 - Upgrade to 24.14.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.14.0-2
