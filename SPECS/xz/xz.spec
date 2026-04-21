@@ -1,7 +1,7 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
 Version:        5.4.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://tukaani.org/xz
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ Patch0: 0001-liblzma-mt-dec-Fix-a-comment.patch
 Patch1: 0002-liblzma-mt-dec-Simplify-by-removing-the-THR_STOP-sta.patch
 Patch2: 0003-liblzma-mt-dec-Don-t-free-the-input-buffer-too-early.patch
 Patch3: 0004-liblzma-mt-dec-Don-t-modify-thr-in_size-in-the-worke.patch
+Patch4: CVE-2026-34743.patch
 
 Requires:       xz-libs = %{version}-%{release}
 
@@ -112,6 +113,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 21 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 5.4.0-6
+- Fix CVE-2026-34743
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.4.0-5
 - Release bump for aarch64 SRP compliance
 * Thu Apr 03 2025 Ajay Kaher <ajay.kaher@broadcom.com> 5.4.0-4
