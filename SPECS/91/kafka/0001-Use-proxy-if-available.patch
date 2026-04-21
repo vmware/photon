@@ -5,13 +5,21 @@ Subject: [PATCH] Use proxy if available
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Signed-off-by: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
-[backport changes to kafka 4.1.2]
-Signed-off-by: Harinadh.Dommaraju <harinadh.dommaraju@broadcom.com>
-diff -ruN kafka-4.1.2-pristine/build.gradle kafka-4.1.2-patched/build.gradle
---- kafka-4.1.2-pristine/build.gradle	2026-02-24 14:14:42.000000000 +0000
-+++ kafka-4.1.2-patched/build.gradle	2026-04-06 11:40:21.365044303 +0000
-@@ -18,7 +18,12 @@
+
+---
+ build.gradle    | 15 +++++++++++++--
+ settings.gradle | 18 ++++++++++++++++++
+ 2 files changed, 31 insertions(+), 2 deletions(-)
+
+diff --git a/build.gradle b/build.gradle
+index 388a85a..b833686 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -18,9 +18,15 @@ import org.gradle.api.JavaVersion
  
+ import java.nio.charset.StandardCharsets
+ 
++
  buildscript {
    repositories {
 -    mavenCentral()
@@ -24,7 +32,7 @@ diff -ruN kafka-4.1.2-pristine/build.gradle kafka-4.1.2-patched/build.gradle
    }
    apply from: "$rootDir/gradle/dependencies.gradle"
  
-@@ -163,7 +168,12 @@
+@@ -167,7 +173,12 @@ ext {
  allprojects {
  
    repositories {
@@ -38,9 +46,10 @@ diff -ruN kafka-4.1.2-pristine/build.gradle kafka-4.1.2-patched/build.gradle
    }
  
    dependencyUpdates {
-diff -ruN kafka-4.1.2-pristine/settings.gradle kafka-4.1.2-patched/settings.gradle
---- kafka-4.1.2-pristine/settings.gradle	2026-02-24 14:14:42.000000000 +0000
-+++ kafka-4.1.2-patched/settings.gradle	2026-04-06 11:40:21.389044305 +0000
+diff --git a/settings.gradle b/settings.gradle
+index a81ffb6..4b0a6ee 100644
+--- a/settings.gradle
++++ b/settings.gradle
 @@ -13,6 +13,23 @@
  // See the License for the specific language governing permissions and
  // limitations under the License.
@@ -63,5 +72,5 @@ diff -ruN kafka-4.1.2-pristine/settings.gradle kafka-4.1.2-patched/settings.grad
 +}
 +
  plugins {
-     id 'com.gradle.develocity' version '3.19'
-     id 'com.gradle.common-custom-user-data-gradle-plugin' version '2.0.2'
+     id 'com.gradle.enterprise' version '3.14.1'
+     id 'com.gradle.common-custom-user-data-gradle-plugin' version '1.11.1'

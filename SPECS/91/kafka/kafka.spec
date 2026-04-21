@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define network_required 1
 %define debug_package %{nil}
@@ -7,11 +7,12 @@
 %define _data_dir     %{_sharedstatedir}/%{name}
 %define _lib_dir      %{_prefix}/%{name}/libs
 %define _scalaver     2.13
+%define dep_libs_ver  %{_scalaver}.15
 
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
-Version:       4.1.2
-Release:       1%{?dist}
+Version:       3.9.1
+Release:       7.1%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -26,9 +27,10 @@ Source3: license.txt
 %include %{SOURCE3}
 
 #Download https://raw.githubusercontent.com/gradle/gradle/v8.10.2/gradle/wrapper/gradle-wrapper.jar
-Source4:       gradle-wrapper-8.14.1-jar.tar.gz
+Source4:       gradle-wrapper-8.10.2-jar.tar.gz
 
 Patch0:     0001-Use-proxy-if-available.patch
+Patch1:     CVE-2024-29371-bump-jose4j.patch
 
 Provides:   kafka
 Provides:   kafka-server
@@ -37,11 +39,11 @@ BuildRequires: systemd-devel
 BuildRequires: systemd-rpm-macros
 BuildRequires: curl
 BuildRequires: zookeeper
-BuildRequires: openjdk17
+BuildRequires: openjdk11
 
 Requires: zookeeper
 Requires: systemd-rpm-macros
-Requires: jre >= 17.0
+Requires: jre >= 11.0
 Requires(pre): shadow
 Requires(post): (coreutils or coreutils-selinux)
 
@@ -52,13 +54,12 @@ Kafka is designed to allow a single cluster to serve as the central data backbon
 It can be elastically and transparently expanded without downtime.
 Data streams are partitioned and spread over a cluster of machines to allow data streams larger than the capability of any single machine and to allow clusters of co-ordinated consumers.
 Messages are persisted on disk and replicated within the cluster to prevent data loss.
-This release requires Java 17 or later at build and runtime.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}-src -a4
 
 %build
-export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-17*)
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
 # Use system proxy (if enabled) for gradle
 JAVA_HTTP_PROXY_OPTS="$(echo "$HTTP_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttp.proxyHost=\1 -Dhttp.proxyPort=\2|p')"
 JAVA_HTTPS_PROXY_OPTS="$(echo "$HTTPS_PROXY" | sed -ne 's|^http://\(.*\):\(.*\)|-Dhttps.proxyHost=\1 -Dhttps.proxyPort=\2|p')"
@@ -71,10 +72,10 @@ if [ -n "${GRADLE_PROXY_URL}" ]; then
   sed -i "s|\(distributionUrl=\).*/\(gradle-.*.zip\)|\1${GRADLE_DISTRIBUTION_URL}/\2|" "$PROP_FILE"
 fi
 
-./gradlew --no-daemon :core:releaseTarGz
+./gradlew --no-daemon compileJava compileScala releaseTargz
 
 %install
-export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-17*)
+export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
 
 mkdir -p %{buildroot}/%{_prefix}/%{name}/{libs,bin,config} \
          %{buildroot}/%{_log_dir} \
@@ -88,7 +89,8 @@ tar -xf "core/build/distributions/%{name}_%{_scalaver}-%{version}.tgz" --strip 1
 cp -pr dist/config/* %{buildroot}/%{_prefix}/%{name}/config
 
 install -p -D -m 644 dist/config/server.properties %{buildroot}/%{_conf_dir}/
-install -p -D -m 644 dist/config/log4j2.yaml %{buildroot}/%{_conf_dir}/
+install -p -D -m 644 dist/config/zookeeper.properties %{buildroot}/%{_conf_dir}/
+install -p -D -m 644 dist/config/log4j.properties %{buildroot}/%{_conf_dir}/
 install -p -D -m 755 dist/bin/*.sh %{buildroot}/%{_prefix}/%{name}/bin
 install -p -D -m 755 dist/libs/* %{buildroot}%{_lib_dir}
 install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
@@ -132,8 +134,8 @@ fi
 %doc LICENSE
 
 %changelog
-* Mon Apr 20 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.2-1
-- Update to 4.1.2
+* Tue Apr 21 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.9.1-7.1
+- Bump after moving to SPECS/91
 * Fri Apr 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.9.1-7
 - Fixes CVE-2024-29371,bump jose4j to 0.9.6
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.9.1-6
