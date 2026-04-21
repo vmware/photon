@@ -1,6 +1,6 @@
 Name:           python3-mako
 Version:        1.1.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
@@ -23,6 +23,7 @@ Requires:       python3
 Requires:       python3-libs
 
 Patch0: CVE-2022-40023.patch
+Patch1: CVE-2026-41205.patch
 
 BuildArch:      noarch
 
@@ -48,6 +49,8 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
+* Tue Apr 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-5
+- Fix CVE-2026-41205
 * Mon May 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-4
 - Fix CVE-2022-40023
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.3-3
