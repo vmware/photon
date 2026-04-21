@@ -1,0 +1,78 @@
+From 58bd6ecb613b6884273cebf1e2e18920c02cef6f Mon Sep 17 00:00:00 2001
+From: Martin Wilck <mwilck@suse.com>
+Date: Tue, 21 Apr 2026 04:19:07 +0000
+Subject: [PATCH] multipath-tools: Fix ISO C23 errors with strchr()
+
+In ISO C23, memchr, strchr, strpbrk, strrchr and strstr become
+const-preserving macros [1], meaning that the return value
+inherits the const qualifier from the function argument.
+
+This has turned up a few glitches in our code.
+
+[1] https://gustedt.gitlabpages.inria.fr/c23-library/#memchr
+
+Signed-off-by: Martin Wilck <mwilck@suse.com>
+Reviewed-by: Benjamin Marzinski <bmarzins@redhat.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ libmpathutil/parser.c | 2 +-
+ libmpathutil/util.c   | 2 +-
+ libmultipath/prkey.c  | 2 +-
+ libmultipath/prkey.h  | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/libmpathutil/parser.c b/libmpathutil/parser.c
+index 29b212c..527e44a 100644
+--- a/libmpathutil/parser.c
++++ b/libmpathutil/parser.c
+@@ -153,7 +153,7 @@ snprint_keyword(struct strbuf *buff, const char *fmt, struct keyword *kw,
+ 		const void *data)
+ {
+ 	int r = 0;
+-	char *f;
++	const char *f;
+ 	struct config *conf;
+ 	STRBUF_ON_STACK(sbuf);
+ 
+diff --git a/libmpathutil/util.c b/libmpathutil/util.c
+index 9662e1e..ea270d2 100644
+--- a/libmpathutil/util.c
++++ b/libmpathutil/util.c
+@@ -39,7 +39,7 @@ strchop(char *str)
+  */
+ static const char *__basename(const char *filename)
+ {
+-	char *p = strrchr(filename, '/');
++	const char *p = strrchr(filename, '/');
+ 	return p ? p + 1 : filename;
+ }
+ #define basename(x) __basename(x)
+diff --git a/libmultipath/prkey.c b/libmultipath/prkey.c
+index a215499..457f8dc 100644
+--- a/libmultipath/prkey.c
++++ b/libmultipath/prkey.c
+@@ -50,7 +50,7 @@ static int parse_prkey(const char *ptr, uint64_t *prkey)
+ 	return 0;
+ }
+ 
+-int parse_prkey_flags(const char *ptr, uint64_t *prkey, uint8_t *flags)
++int parse_prkey_flags(char *ptr, uint64_t *prkey, uint8_t *flags)
+ {
+ 	char *flagstr;
+ 
+diff --git a/libmultipath/prkey.h b/libmultipath/prkey.h
+index a16de10..af51df2 100644
+--- a/libmultipath/prkey.h
++++ b/libmultipath/prkey.h
+@@ -15,7 +15,7 @@
+ 
+ int print_reservation_key(struct strbuf *buff,
+ 			  struct be64 key, uint8_t flags, int source);
+-int parse_prkey_flags(const char *ptr, uint64_t *prkey, uint8_t *flags);
++int parse_prkey_flags(char *ptr, uint64_t *prkey, uint8_t *flags);
+ int set_prkey(struct config *conf, struct multipath *mpp, uint64_t prkey,
+ 	      uint8_t sa_flags);
+ int get_prkey(struct config *conf, struct multipath *mpp, uint64_t *prkey,
+-- 
+2.43.7
+

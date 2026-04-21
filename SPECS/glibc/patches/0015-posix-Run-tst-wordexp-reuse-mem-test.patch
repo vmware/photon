@@ -1,0 +1,32 @@
+From 2be6cf2e75d091f2aef606af4ddd876855b77abb Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Mon, 26 Jan 2026 17:12:37 +0100
+Subject: [PATCH 15/22] posix: Run tst-wordexp-reuse-mem test
+
+The test was not properly scheduled for execution with a Makefile
+dependency.
+
+Fixes commit 80cc58ea2de214f85b0a1d902a3b668ad2ecb302 ("posix: Reset
+wordexp_t fields with WRDE_REUSE (CVE-2025-15281 / BZ 33814").
+
+(cherry picked from commit bed2db02f3183e93f21d506786c5f884a1dec9e7)
+---
+ posix/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/posix/Makefile b/posix/Makefile
+index 71a19061686600b73c9bd24e934ffd96998e0647..f37794846287ff2318b290a5d25419c0375d1dd0 100644
+--- a/posix/Makefile
++++ b/posix/Makefile
+@@ -499,7 +499,7 @@ tests-special += \
+   $(objpfx)tst-pcre-mem.out \
+   $(objpfx)tst-rxspencer-no-utf8-mem.out \
+   $(objpfx)tst-vfork3-mem.out \
+-  $(objpfx)tst-wordexp-reuse.out \
++  $(objpfx)tst-wordexp-reuse-mem.out \
+   # tests-special
+ endif
+ endif
+-- 
+2.43.7
+

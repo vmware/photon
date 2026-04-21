@@ -1,0 +1,566 @@
+From 305ce0b58809869295e62c3caa7eda4c8e41134f Mon Sep 17 00:00:00 2001
+From: Yury Khrustalev <yury.khrustalev@arm.com>
+Date: Tue, 3 Feb 2026 15:51:11 +0000
+Subject: [PATCH 14/22] aarch64: Tests for locking GCS
+
+Check that GCS is locked properly based on the value of the
+glibc.cpu.aarch64_gcs tunable.
+
+Test tst-gcs-execv checks that a child process can be spawned correctly
+when GCS is locked for the parent process.
+
+Test tst-gcs-fork checks that if GCS is not locked for the parent
+process, the forked child can disable GCS.
+
+Tests tst-gcs-lock and tst-gcs-lock-static check that GCS is locked
+for dynamic and static executables when run with aarch64_gcs=1.
+
+Tests tst-gcs-unlock and tst-gcs-unlock-static check that GCS is not
+locked for dynamic and static executables when run with aarch64_gcs=0.
+
+Test tst-gcs-lock-ptrace checks via ptrace that when GCS is locked,
+all GCS features are locked.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit ad9784419e274cef9ba7152d7cd2490d291f837b)
+---
+ sysdeps/unix/sysv/linux/aarch64/Makefile      |  25 +++
+ .../unix/sysv/linux/aarch64/tst-gcs-execv.c   |  91 ++++++++++
+ .../unix/sysv/linux/aarch64/tst-gcs-fork.c    |  75 ++++++++
+ .../unix/sysv/linux/aarch64/tst-gcs-helper.h  |   8 +-
+ .../sysv/linux/aarch64/tst-gcs-lock-ptrace.c  | 166 ++++++++++++++++++
+ .../sysv/linux/aarch64/tst-gcs-lock-static.c  |   1 +
+ .../unix/sysv/linux/aarch64/tst-gcs-lock.c    |  58 ++++++
+ .../linux/aarch64/tst-gcs-unlock-static.c     |   2 +
+ .../unix/sysv/linux/aarch64/tst-gcs-unlock.c  |   2 +
+ 9 files changed, 427 insertions(+), 1 deletion(-)
+ create mode 100644 sysdeps/unix/sysv/linux/aarch64/tst-gcs-execv.c
+ create mode 100644 sysdeps/unix/sysv/linux/aarch64/tst-gcs-fork.c
+ create mode 100644 sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-ptrace.c
+ create mode 100644 sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-static.c
+ create mode 100644 sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock.c
+ create mode 100644 sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock-static.c
+ create mode 100644 sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock.c
+
+diff --git a/sysdeps/unix/sysv/linux/aarch64/Makefile b/sysdeps/unix/sysv/linux/aarch64/Makefile
+index b8eb9c07522bdd77316208e1419dc928e69027f4..89a02faed1d750ff3d5345ea758af5af58785021 100644
+--- a/sysdeps/unix/sysv/linux/aarch64/Makefile
++++ b/sysdeps/unix/sysv/linux/aarch64/Makefile
+@@ -32,10 +32,14 @@ gcs-tests-dynamic = \
+   tst-gcs-dlopen-override \
+   tst-gcs-enforced \
+   tst-gcs-enforced-abort \
++  tst-gcs-execv \
++  tst-gcs-fork \
+   tst-gcs-ld-debug-both \
+   tst-gcs-ld-debug-dlopen \
+   tst-gcs-ld-debug-exe \
+   tst-gcs-ld-debug-shared \
++  tst-gcs-lock \
++  tst-gcs-lock-ptrace \
+   tst-gcs-noreturn \
+   tst-gcs-optional-off \
+   tst-gcs-optional-on \
+@@ -48,15 +52,18 @@ gcs-tests-dynamic = \
+   tst-gcs-shared-enforced-abort \
+   tst-gcs-shared-optional \
+   tst-gcs-shared-override \
++  tst-gcs-unlock \
+   # gcs-tests-dynamic
+ 
+ gcs-tests-static = \
+   tst-gcs-disabled-static \
+   tst-gcs-enforced-static \
+   tst-gcs-enforced-static-abort \
++  tst-gcs-lock-static \
+   tst-gcs-optional-static-off \
+   tst-gcs-optional-static-on \
+   tst-gcs-override-static \
++  tst-gcs-unlock-static \
+   # gcs-tests-static
+ 
+ tests += \
+@@ -106,6 +113,24 @@ tst-gcs-optional-static-on-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
+ tst-gcs-optional-static-off-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
+ tst-gcs-override-static-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=3
+ 
++LDFLAGS-tst-gcs-execv += -Wl,-z,gcs=always
++tst-gcs-execv-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
++tst-gcs-execv-ARGS = -- $(host-test-program-cmd)
++LDFLAGS-tst-gcs-fork += -Wl,-z,gcs=always
++tst-gcs-fork-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
++
++LDFLAGS-tst-gcs-lock += -Wl,-z,gcs=always
++tst-gcs-lock-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
++LDFLAGS-tst-gcs-lock-ptrace += -Wl,-z,gcs=always
++tst-gcs-lock-ptrace-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
++tst-gcs-lock-ptrace-ARGS = -- $(host-test-program-cmd)
++LDFLAGS-tst-gcs-lock-static += -Wl,-z,gcs=always
++tst-gcs-lock-static-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
++LDFLAGS-tst-gcs-unlock += -Wl,-z,gcs=always
++tst-gcs-unlock-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
++LDFLAGS-tst-gcs-unlock-static += -Wl,-z,gcs=always
++tst-gcs-unlock-static-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
++
+ # force one of the dependencies to be unmarked
+ LDFLAGS-tst-gcs-mod2.so += -Wl,-z,gcs=never
+ 
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-execv.c b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-execv.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..91053a472626a3846f29a0cf734f7cf15cac210c
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-execv.c
+@@ -0,0 +1,91 @@
++/* AArch64 test for GCS for creating child process.
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include "tst-gcs-helper.h"
++
++#include <sys/prctl.h>
++#include <unistd.h>
++#include <errno.h>
++#include <string.h>
++
++static int
++target (void)
++{
++  /* In child.  */
++  printf ("in child: %u\n", getpid ());
++  TEST_VERIFY (__check_gcs_status ());
++
++  /* Try disabling GCS (should fail with EBUSY).  */
++  int res = prctl (PR_SET_SHADOW_STACK_STATUS, 0, 0, 0, 0);
++  TEST_COMPARE (res, -1);
++  TEST_COMPARE (errno, EBUSY);
++  return 0;
++}
++
++int main(int argc, char *argv[])
++{
++  /* Check if GCS could possible by enabled.  */
++  if (!(getauxval (AT_HWCAP) & HWCAP_GCS))
++    FAIL_UNSUPPORTED ("kernel or CPU does not support GCS");
++
++  /* GCS should be enabled for this test at the start.  */
++  TEST_VERIFY (__check_gcs_status ());
++
++  /* If last argument is 'target', we just run target code.  */
++  if (strcmp (argv[argc - 1], "target") == 0)
++    return target ();
++
++  /* In parent, we should at least have 3 arguments.  */
++  if (argc < 3)
++    FAIL_EXIT1 ("wrong number of arguments: %d", argc);
++
++  char *child_args[] = { NULL, NULL, NULL, NULL, NULL, NULL };
++
++  /* Check command line arguments to construct child command.  */
++  if (strcmp (argv[0], argv[2]) == 0)
++    {
++      /* Command looks like
++	 /path/to/test -- /path/to/test  */
++      /* /path/to/test  */
++      child_args[0] = argv[0];
++      /* Extra argument for the child process.  */
++      child_args[1] = (char *)"target";
++    }
++  else
++    {
++      /* Command looks like
++	 /path/to/test -- /path/to/ld.so ...  */
++      TEST_VERIFY_EXIT (argc > 5);
++      TEST_COMPARE_STRING (argv[3], "--library-path");
++      /* /path/to/ld-linux-aarch64.so.1  */
++      child_args[0] = argv[2];
++      /* --library-path  */
++      child_args[1] = argv[3];
++      /* Library path...  */
++      child_args[2] = argv[4];
++      /* /path/to/test  */
++      child_args[3] = argv[5];
++      /* Extra argument for the child process.  */
++      child_args[4] = (char *)"target";
++    }
++
++  printf ("in parent: %u\n", getpid ());
++  /* Spawn child process.  */
++  execv (child_args[0], child_args);
++  FAIL_EXIT1 ("execv: %m");
++}
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-fork.c b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-fork.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..365807a56274a1bea2529adeb9b19560d2966424
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-fork.c
+@@ -0,0 +1,75 @@
++/* AArch64 test for GCS for creating child process using fork.
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include "tst-gcs-helper.h"
++
++#include <support/xunistd.h>
++#include <sys/ptrace.h>
++#include <sys/prctl.h>
++#include <sys/wait.h>
++#include <sys/uio.h>
++#include <unistd.h>
++#include <errno.h>
++
++static int
++do_test (void)
++{
++  /* Check if GCS could possible by enabled.  */
++  if (!(getauxval (AT_HWCAP) & HWCAP_GCS))
++    FAIL_UNSUPPORTED ("kernel or CPU does not support GCS");
++
++  /* GCS should be enabled for this test at the start.  */
++  TEST_VERIFY (__check_gcs_status ());
++
++  pid_t pid = xfork ();
++  const char *name;
++  if (pid == 0)
++    name = "child";
++  else
++    name = "parent";
++
++  /* Both parent and child should initially have GCS enabled.  */
++  TEST_VERIFY (__check_gcs_status ());
++  uint64_t data;
++  if (prctl (PR_GET_SHADOW_STACK_STATUS, &data, 0, 0, 0))
++    FAIL_EXIT1 ("prctl: %m");
++  printf ("in %s: gcs status: %016lx\n", name, data);
++
++  if (pid)
++    {
++      int status;
++      xwaitpid (pid, &status, 0);
++      printf ("in %s: child exited with code %u\n", name, WEXITSTATUS(status));
++    }
++  else
++    {
++      /* Try disabling GCS for the child
++	 (should succeed because of the tunable).  */
++      if (prctl (PR_SET_SHADOW_STACK_STATUS, 0, 0, 0, 0))
++	FAIL_EXIT1 ("prctl: %m");
++      /* GCS should be disabled.  */
++      TEST_VERIFY (!__check_gcs_status ());
++      if (prctl (PR_GET_SHADOW_STACK_STATUS, &data, 0, 0, 0))
++	FAIL_EXIT1 ("prctl: %m");
++      printf ("in %s: gcs status: %016lx\n", name, data);
++    }
++
++  return 0;
++}
++
++#include <support/test-driver.c>
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-helper.h b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-helper.h
+index 35ce0036ec4230a8a3aab77600f650bcc381087c..c075fdc205e22131cb0d2632509de2b218982890 100644
+--- a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-helper.h
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-helper.h
+@@ -26,7 +26,13 @@
+ #include <stdio.h>
+ #include <sys/auxv.h>
+ 
+-static bool __check_gcs_status (void)
++#ifndef PR_SET_SHADOW_STACK_STATUS
++# define PR_GET_SHADOW_STACK_STATUS 74
++# define PR_SET_SHADOW_STACK_STATUS 75
++#endif
++
++static bool
++__check_gcs_status (void)
+ {
+   register unsigned long x16 asm ("x16");
+   asm volatile (
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-ptrace.c b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-ptrace.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..27fa1d3deaa19eb204a88c7eaafd0d989665514d
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-ptrace.c
+@@ -0,0 +1,166 @@
++/* AArch64 test for GCS for creating child process using fork
++   with ptrace to check locked GCS operations.
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include "tst-gcs-helper.h"
++
++#include <support/xunistd.h>
++#include <support/xsignal.h>
++#include <sys/ptrace.h>
++#include <sys/prctl.h>
++#include <sys/wait.h>
++#include <sys/uio.h>
++#include <unistd.h>
++#include <string.h>
++#include <errno.h>
++
++/* Uapi struct for PTRACE_GETREGSET with NT_ARM_GCS.  */
++struct user_gcs
++{
++  uint64_t enabled;
++  uint64_t locked;
++  uint64_t gcspr_el0;
++};
++
++static int
++target (void)
++{
++  /* This signal is raised after the process has started
++     and has been initialised so we can ptrace it at this
++     point and obtain GCS locked features.  */
++  xraise (SIGUSR1);
++  return 0;
++}
++
++static void
++fork_target (char *args[], uint64_t aarch64_gcs)
++{
++  /* Currently kernel returns only lower 32 bits of locked
++     features so we only compare them.  */
++  bool lock_gcs = aarch64_gcs != 0 && aarch64_gcs != 2;
++  uint64_t expected_locked = lock_gcs ? 0xfffffffful : 0ul;
++  pid_t pid = xfork ();
++  if (pid == 0)
++    {
++      char tunables[90];
++      snprintf (tunables, sizeof (tunables), "GLIBC_TUNABLES="
++		"glibc.cpu.aarch64_gcs=0x%016lx", aarch64_gcs);
++      char *envp[] = { tunables, NULL };
++      /* We need to ptrace child process to use PTRACE_GETREGSET
++	 with NT_ARM_GCS after it has started.  */
++      int res = ptrace (PTRACE_TRACEME, 0, NULL, NULL);
++      if (res != 0)
++	FAIL_EXIT1 ("ptrace: %m");
++      execve (args[0], args, envp);
++      FAIL_EXIT1 ("execve: %m");
++    }
++  bool checked = false;
++  while (true)
++    {
++      int status;
++      xwaitpid (pid, &status, 0);
++      if (WIFSTOPPED (status))
++	{
++	  /* Child stopped by signal.  */
++	  int sig = WSTOPSIG (status);
++	  if (sig == SIGUSR1)
++	    {
++	      struct user_gcs ugcs = {};
++	      struct iovec io;
++	      io.iov_base = &ugcs;
++	      io.iov_len = sizeof (struct user_gcs);
++	      if (ptrace (PTRACE_GETREGSET, pid, NT_ARM_GCS, &io))
++		FAIL_EXIT1 ("ptrace (PTRACE_GETREGSET): %m");
++	      printf ("expected vs locked: %016lx %016lx\n",
++		      expected_locked, ugcs.locked);
++	      if (lock_gcs)
++		TEST_VERIFY_EXIT (ugcs.enabled);
++	      TEST_VERIFY_EXIT (ugcs.locked == expected_locked);
++	      if (aarch64_gcs != 0)
++		TEST_VERIFY_EXIT ((void *) ugcs.gcspr_el0 != NULL);
++	      checked = true;
++	    }
++        }
++      else if (WIFSIGNALED (status))
++	{
++	  /* Child terminated by signal.  */
++	  break;
++	}
++      else if (WIFEXITED (status))
++	{
++          /* Child terminated by normally.  */
++	  break;
++	}
++      ptrace (PTRACE_CONT, pid, 0, 0);
++    }
++  /* If child process hasn't run correctly, this will remain false.  */
++  TEST_VERIFY_EXIT (checked);
++}
++
++int main(int argc, char *argv[])
++{
++  /* Check if GCS could possible by enabled.  */
++  if (!(getauxval (AT_HWCAP) & HWCAP_GCS))
++    FAIL_UNSUPPORTED ("kernel or CPU does not support GCS");
++
++  /* GCS should be enabled for this test.  */
++  TEST_VERIFY (__check_gcs_status ());
++
++  /* If last argument is 'target', we just run target code.  */
++  if (strcmp (argv[argc - 1], "target") == 0)
++    return target ();
++
++  /* In parent, we should at least have 3 arguments.  */
++  if (argc < 3)
++    FAIL_EXIT1 ("wrong number of arguments: %d", argc);
++
++  char *child_args[] = { NULL, NULL, NULL, NULL, NULL , NULL };
++
++  /* Check command line arguments to construct child command.  */
++  if (strcmp (argv[0], argv[2]) == 0)
++    {
++      /* Command looks like
++	 /path/to/test -- /path/to/test  */
++      /* /path/to/test  */
++      child_args[0] = argv[0];
++      /* Extra argument for the child process.  */
++      child_args[1] = (char *)"target";
++    }
++  else
++    {
++      /* Command looks like
++	 /path/to/test -- /path/to/ld.so ...  */
++      TEST_VERIFY_EXIT (argc > 5);
++      TEST_COMPARE_STRING (argv[3], "--library-path");
++      /* /path/to/ld-linux-aarch64.so.1  */
++      child_args[0] = argv[2];
++      /* --library-path  */
++      child_args[1] = argv[3];
++      /* Library path...  */
++      child_args[2] = argv[4];
++      /* /path/to/test  */
++      child_args[3] = argv[5];
++      /* Extra argument for the child process.  */
++      child_args[4] = (char *)"target";
++    }
++
++  /* Check all 4 values for the aarch64_gcs tunable.  */
++  for (uint64_t aarch64_gcs = 0; aarch64_gcs < 4; aarch64_gcs++)
++    fork_target (child_args, aarch64_gcs);
++  return 0;
++}
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-static.c b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-static.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..b80e2f70e8b32ea562b3570e6ce7284ac6e5313e
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock-static.c
+@@ -0,0 +1 @@
++#include "tst-gcs-lock.c"
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock.c b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..9a17ef514d31a7e9114d7634d0f7cb9dcfe73bd7
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-lock.c
+@@ -0,0 +1,58 @@
++/* AArch64 test for GCS locking.
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include "tst-gcs-helper.h"
++
++#include <linux/prctl.h>
++#include <sys/prctl.h>
++#include <errno.h>
++
++static int
++do_test (void)
++{
++  /* Check if GCS could possible by enabled.  */
++  if (!(getauxval (AT_HWCAP) & HWCAP_GCS))
++    FAIL_UNSUPPORTED ("kernel or CPU does not support GCS");
++
++  TEST_VERIFY (__check_gcs_status ());
++
++  /* Try disabling GCS.  */
++  int res = prctl (PR_SET_SHADOW_STACK_STATUS, 0, 0, 0, 0);
++  if (res)
++    {
++      TEST_COMPARE (errno, EBUSY);
++#ifdef GCS_SHOULD_UNLOCK
++      FAIL_EXIT1 ("GCS was not unlocked (was supposed to): %m");
++#else
++      TEST_VERIFY (__check_gcs_status ());
++#endif
++    }
++  else
++    {
++#ifdef GCS_SHOULD_UNLOCK
++      TEST_VERIFY (!__check_gcs_status ());
++      puts ("GCS unlocked successfully");
++#else
++      FAIL_EXIT1 ("GCS was unlocked (was not supposed to)");
++#endif
++    }
++
++  return 0;
++}
++
++#include <support/test-driver.c>
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock-static.c b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock-static.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..7e028200315f5aac985dad7e417beee24ad8de65
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock-static.c
+@@ -0,0 +1,2 @@
++#define GCS_SHOULD_UNLOCK
++#include "tst-gcs-lock.c"
+diff --git a/sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock.c b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..7e028200315f5aac985dad7e417beee24ad8de65
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/aarch64/tst-gcs-unlock.c
+@@ -0,0 +1,2 @@
++#define GCS_SHOULD_UNLOCK
++#include "tst-gcs-lock.c"
+-- 
+2.43.7
+

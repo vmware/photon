@@ -1,67 +1,63 @@
 sources:
-- archive: qemu-7.2.0.tar.xz
-  archive_sha512sum: f3cfa00da739ba819a218d7e6e95c77fb79a8e0f487b024ddd281602e785249b81144595e3f8c746c32a4f5c4d1a88c6aebae3c162603edfbb50ae3722d7ed13
+- archive: qemu-10.2.2.tar.xz
+  archive_sha512sum: c5409530505c2d1e69a80f1750e377261cea8fee42516a0a89d0343b19d55f9d33579cef181d7cc04d51519e50a55dff1b89175e7685bb803468c8ce03929591
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - qemu-7.2.0/block/copy-on-read.c
-    sha256sum: dd25c604eeb86e2de8a94e422cee17679ca12ed4503f1cfc72c8736a1cf0766f
+    - qemu-10.2.2/block/copy-on-read.c
+    sha256sum: c9445e7769c8c11ca0af3a5d0fcb15d4c0681b0dcd9705b71074cfcdf4a4fac8
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/block/throttle-groups.c
-    sha256sum: cf3d3ff414a78d4c73103c5a8fd586b5994f74e98aed34c0021da3f69bc60476
+    - qemu-10.2.2/block/throttle-groups.c
+    sha256sum: 93f7272dd553e71ad7095c7acc9bcf8df1e13877211d191fc93cd533b41f871f
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/block/throttle.c
-    sha256sum: cc7cd9e02f7ecc87f549e8c54af18a405ef67920ee07bfd1b3df8b61de91a03a
+    - qemu-10.2.2/block/throttle.c
+    sha256sum: 8e688f06c0f7d6d9b58b2f6ef2b56317e87d6bd5d0c51b5251aef5a8cab41b7e
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/include/block/throttle-groups.h
-    sha256sum: fd6193addc346d4342d8751fcc26f81e2d9cd9724194a99246ac0472abbcefca
+    - qemu-10.2.2/include/block/throttle-groups.h
+    sha256sum: 37d9c930c72dd3b75a8efc57d5b72c7f09955edfd6dcc4207b53744df29a8f45
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/include/qemu/throttle.h
-    sha256sum: bcac02ccaece13f05363ebc702af1e8d08ad8707cb8453aeb191ae0b2b9de6d1
+    - qemu-10.2.2/include/qemu/throttle.h
+    sha256sum: 53c091ddb55e16ff16d2e21af763ec6abb7f0f58e316d0005276260c60d7bf9d
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/include/ui/qemu-spice-module.h
+    - qemu-10.2.2/include/ui/qemu-spice-module.h
     sha256sum: e2bb1bba94478673777e34bcea197cfc5104177bc5188d42a742109fccd2fa3c
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/include/ui/qemu-spice.h
-    sha256sum: b82315dedcd7cd5aae01d7887c985ebbaeab8886a49453ba9801d889016929c1
+    - qemu-10.2.2/include/ui/qemu-spice.h
+    sha256sum: 983b306c807fbfeba2558de7f870c88930f61bac1b95a8a0670c5b8ecb4d7d75
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/tests/unit/socket-helpers.h
+    - qemu-10.2.2/tests/unit/socket-helpers.h
     sha256sum: a2c9ec342f38e3b3fcabeccd87a4275fa13f693e0a9ed04865f42e0d12ed339d
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/ui/spice-module.c
+    - qemu-10.2.2/ui/spice-module.c
     sha256sum: e5cfb5df402015207b9ad5eb0ede68c3bfcbb79d4d20012e062a854215754733
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/ui/vnc-ws.c
-    sha256sum: 7627740241c7da0be8ed241c5c9c256b4e5e905c351b2db52fd3819f903c7301
+    - qemu-10.2.2/ui/vnc-ws.c
+    sha256sum: 3c3759aadce9e573ec37e1799129867afbbdca3393b1e56e4c4b4ca9e4233865
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/ui/vnc-ws.h
+    - qemu-10.2.2/ui/vnc-ws.h
     sha256sum: 4320fbcc9baf06938809f6db03828b0eb2ea6754f62ee12ae3525a56e042e8ae
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/util/throttle.c
-    sha256sum: 951b5d3a57350ee9caaeaf304c1fc34292c1d967468125ee56e9363c6dda2769
+    - qemu-10.2.2/util/throttle.c
+    sha256sum: c93c7413179e570b4c678af59fd92a87fc5926e0e50fbbb31ef9d707c6defba8
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/meson/docs/markdown/legal.md
-    sha256sum: 78b49c95035c716b9c7fe979a6a2f4910c4cb23dbb96cc7773761591d03e6681
-    spdx_exp: ''
-  - file_paths:
-    - qemu-7.2.0/roms/u-boot/arch/arm/mach-mvebu/serdes/axp/board_env_spec.h
+    - qemu-10.2.2/roms/u-boot/arch/arm/mach-mvebu/serdes/axp/board_env_spec.h
     sha256sum: 2f6b5fd264ce7985027860137b52a526c23dbb6c613d044c6699a6c104b18be0
     spdx_exp: GPL-2.0-or-later
   - file_paths:
-    - qemu-7.2.0/target/i386/hvf/x86_task.h
-    sha256sum: 9b6fcfc9465f113864a6149220b341d9b4844cdd05fe5ca53f54d6d31e8b9833
+    - qemu-10.2.2/target/i386/hvf/x86_task.h
+    sha256sum: 26d5db64aabe6ac551f0aa4ff223bdec1e1c0a75da8f4e509c2a355f1622cd62
     spdx_exp: GPL-2.0-or-later
   spdx:
     package:

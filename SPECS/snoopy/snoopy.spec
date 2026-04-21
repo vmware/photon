@@ -1,7 +1,7 @@
 Summary:        snoopy is a tiny library that logs all executed commands
 Name:           snoopy
 Version:        2.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/a2o/snoopy/archive/snoopy-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 
@@ -16,11 +16,15 @@ BuildRequires:  git
 BuildRequires:  socat
 BuildRequires:  gzip
 
+%if 0%{photon_subrelease} >= 92
+Patch0: 0001-Fix-fail-to-build-with-glibc-2.43.patch
+%endif
+
 %description
 Snoopy is a tiny library that logs all executed commands (+ arguments) on your system.
 
 %prep
-%autosetup -n %{name}-%{name}-%{version}
+%autosetup -n %{name}-%{name}-%{version} -p1
 
 %build
 mkdir -p build/m4
@@ -52,6 +56,8 @@ fi
 %config(noreplace) %{_sysconfdir}/snoopy.ini
 
 %changelog
+*   Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.5.1-3
+-   Fix build with newer glibc
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.5.1-2
 -   Release bump for SRP compliance
 *   Tue Nov 01 2022 Gerrit Photon <photon-checkins@vmware.com> 2.5.1-1

@@ -1,0 +1,42 @@
+From 856c426a753450b8c6861a5b994a564f4fc16d4b Mon Sep 17 00:00:00 2001
+From: Andreas Schwab <schwab@suse.de>
+Date: Tue, 3 Feb 2026 12:41:23 +0100
+Subject: [PATCH 05/22] Don't include <bits/openat2.h> directly (bug 33848)
+
+Headers from bits directories should never be included directly, only via
+the official headers.
+
+(cherry picked from commit 0e47414ce87f3b088ff454fc6c7d1129ff9617ec)
+---
+ NEWS                              | 2 ++
+ sysdeps/unix/sysv/linux/openat2.c | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/NEWS b/NEWS
+index b9953e988870309828e837237d010b5a2b2c38b3..1f07633e578493cd67c20f278a4c16889536bab8 100644
+--- a/NEWS
++++ b/NEWS
+@@ -11,6 +11,8 @@ The following bugs are resolved with this release:
+ 
+  [33623] [ldbl-128ibm] roundl, ceill, truncl, floorl bad sign of zero
+    results
++ [33848] build: Build fails at openat2.h, redefinition of 'struct
++    open_how'
+ 
+ Version 2.43
+ 
+diff --git a/sysdeps/unix/sysv/linux/openat2.c b/sysdeps/unix/sysv/linux/openat2.c
+index 7587dd577a4862046740b3b2ae8fe51eaf2ad617..ac7b70584e8a17f85bb60632ee329f62989557a0 100644
+--- a/sysdeps/unix/sysv/linux/openat2.c
++++ b/sysdeps/unix/sysv/linux/openat2.c
+@@ -17,7 +17,6 @@
+    <https://www.gnu.org/licenses/>.  */
+ 
+ #include <fcntl.h>
+-#include <bits/openat2.h>
+ #include <sysdep-cancel.h>
+ 
+ int
+-- 
+2.43.7
+

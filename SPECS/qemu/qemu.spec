@@ -12,8 +12,8 @@
 
 Summary:        QEMU utilities and emulators
 Name:           qemu
-Version:        7.2.0
-Release:        8%{?dist}
+Version:        10.2.2
+Release:        1%{?dist}
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -71,7 +71,6 @@ rm roms/u-boot/tools/logos/u-boot_logo.svg
         --disable-gnutls \\\
         --disable-gtk \\\
         --disable-guest-agent \\\
-        --disable-blobs \\\
         --disable-bochs \\\
         --disable-brlapi \\\
         --disable-bsd-user \\\
@@ -79,7 +78,6 @@ rm roms/u-boot/tools/logos/u-boot_logo.svg
         --disable-guest-agent-msi \\\
         --disable-attr \\\
         --disable-auth-pam \\\
-        --disable-avx2 \\\
         --disable-cap-ng \\\
         --disable-capstone \\\
         --disable-cloop \\\
@@ -87,7 +85,6 @@ rm roms/u-boot/tools/logos/u-boot_logo.svg
         --disable-curses \\\
         --disable-debug-info \\\
         --disable-debug-mutex \\\
-        --disable-live-block-migration \\\
         --disable-lzfse \\\
         --disable-lzo \\\
         --disable-membarrier \\\
@@ -97,7 +94,6 @@ rm roms/u-boot/tools/logos/u-boot_logo.svg
         --disable-debug-tcg \\\
         --disable-dmg \\\
         --disable-fdt \\\
-        --disable-hax \\\
         --disable-hvf \\\
         --disable-iconv \\\
         --disable-kvm \\\
@@ -120,7 +116,6 @@ rm roms/u-boot/tools/logos/u-boot_logo.svg
         --disable-libusb \\\
         --disable-linux-aio \\\
         --disable-parallels \\\
-        --disable-pvrdma \\\
         --disable-qcow1 \\\
         --disable-qed \\\
         --disable-spice \\\
@@ -239,6 +234,7 @@ make %{?_smp_mflags} check
 %{_bindir}/qemu-nbd
 %{_bindir}/qemu-storage-daemon
 %{_bindir}/qemu-pr-helper
+%{_bindir}/qemu-vmsr-helper
 %{_datadir}/qemu
 %{_libexecdir}/qemu-bridge-helper
 
@@ -248,6 +244,8 @@ make %{?_smp_mflags} check
 %{_libdir}/binfmt.d/qemu-%{targetArch}-static.conf
 
 %changelog
+* Tue Apr 14 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.2.2-1
+- Upgrade to 10.2.2
 * Wed Feb 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.0-8
 - Bump up release as part of python3 upgrade
 * Tue Dec 23 2025 Oliver Kurth <oliver.kurth@broadcom.com> 7.2.0-7

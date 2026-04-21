@@ -2,7 +2,7 @@
 
 Summary:        SELinux policy management libraries
 Name:           libsemanage
-Version:        3.5
+Version:        3.10
 Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -13,6 +13,8 @@ Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{ve
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-Fix-build-with-glibc-2.43.patch
 
 BuildRequires:  libselinux-devel = %{version}
 BuildRequires:  libsepol-devel = %{version}
@@ -75,6 +77,8 @@ make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" \
 # do not package ru man pages
 rm -rf %{buildroot}%{_mandir}/ru
 
+%{py_byte_compile_and_ghost}
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -93,12 +97,14 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_libdir}/libsemanage.a
 %{_mandir}/man3/*
 
-%files python3
+%files python3 -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{_libexecdir}/selinux/semanage_migrate_store
 %{python3_sitelib}/*
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
+- Update to 3.10
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
 - Update to 3.5 as part of libselinux upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.4-4

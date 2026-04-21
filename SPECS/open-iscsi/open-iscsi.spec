@@ -1,7 +1,7 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
 Version:        2.1.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +10,11 @@ Source0:        %{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+%if 0%{photon_subrelease} >= 92
+Patch0: 0001-fix-build-with-newer-glibc.patch
+%endif
+
 BuildRequires:  open-isns-devel
 BuildRequires:  openssl-devel
 BuildRequires:  kmod-devel
@@ -32,7 +37,7 @@ Requires:       %{name} = %{version}-%{release}
 Header files for doing development with open-iscsi
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 sed -i 's/lib64/lib/g' libopeniscsiusr/Makefile
@@ -86,6 +91,8 @@ make DESTDIR=%{buildroot} install_systemd %{?_smp_mflags}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Mon Apr 20 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1.6-5
+- Fix build with newer glibc
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.1.6-4
 - Bump-up to build with kmod-34.1
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.6-3

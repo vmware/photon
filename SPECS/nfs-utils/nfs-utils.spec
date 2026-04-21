@@ -2,8 +2,8 @@
 
 Summary:          NFS client utils
 Name:             nfs-utils
-Version:          2.6.2
-Release:          12%{?dist}
+Version:          2.9.1
+Release:          1%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -36,12 +36,16 @@ BuildRequires:    sqlite-devel
 BuildRequires:    libgssglue-devel
 BuildRequires:    e2fsprogs-devel
 BuildRequires:    rpcsvc-proto-devel
+BuildRequires:    libnl-devel
+BuildRequires:    libxml2-devel
 
 Requires:         libtirpc
+Requires:         libnl
 Requires:         rpcbind
 Requires:         shadow
 Requires:         libnfsidmap
 Requires:         python3-libs
+Requires:         libxml2
 Requires(pre):    systemd-rpm-macros
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 
@@ -155,7 +159,6 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/nfsrahead
 %{_presetdir}/50-nfs-server.preset
 %{_udevrulesdir}/99-nfs.rules
-%attr(0600,root,root) %config(noreplace) %{_libdir}/modprobe.d/50-nfs.conf
 %{_sysusersdir}/%{name}.conf
 
 %files devel
@@ -178,6 +181,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libnfsidmap.so
 
 %changelog
+* Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.1-1
+- Fix build with newer glibc
+- Upgrade to 2.9.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.6.2-12
 - Bump version as a part of python3.14 upgrade
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.6.2-11

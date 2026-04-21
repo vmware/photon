@@ -1,19 +1,10 @@
 sources:
-- archive: semodule-utils-3.5.tar.gz
-  archive_sha512sum: 7c32f425ae71745040d1c6a6585149a1efb319913aa9d4c8bf185b0a4216dc66378fa38595b171614ee3ae4ade997d3ae56a060346e334faec55c419a87d71dd
-  archive_type: upstream
-  skip_validation: false
-  name: semodule-utils-3.5
-  version: "3.5"
-  url: https://github.com/SELinuxProject/selinux/releases/download/3.5/semodule-utils-3.5.tar.gz
-  repo_url: https://github.com/SELinuxProject/selinux
-  commit_id: d6e96c5929a3f1aa1dce93505edd9f0158757ac2
-  missing: ['.circleci', 'SECURITY.md', 'sandbox', 'dbus', 'semodule_expand', 'CONTRIBUTING.md', 'policycoreutils', 'semodule_package', 'checkpolicy', 'scripts', 'CleanSpec.mk', 'mcstrans', 'semodule-utils', 'secilc', 'libselinux', '.github', 'python', 'lgtm.yml', 'libsemanage', 'README.md', '.travis.yml', 'libsepol', 'restorecond', 'gui', 'semodule_link']
-  skip_list: ['LICENSE', 'Makefile', '.gitignore']
+- archive: semodule-utils-3.10.tar.gz
+  archive_sha512sum: e1b8e5ef566bd5d7d346447788e40066403e8943dd4ad4638707b2d85155e57596a79b6777dfcdc39b49cac569020b1dc48663de821c67fb48846f9000df20a3
+  skip_validation: true
   spdx:
     package:
-      detailed_description: 'semodule-utils is set of tools for SELinux policy module
-        manipulations. '
+      detailed_description: 'semodule-utils is set of tools for SELinux policy module manipulations.'
       home_page: https://github.com/SELinuxProject/selinux/wiki
       license_concluded: GPL-2.0-only
       license_declared: GPL-2.0-only

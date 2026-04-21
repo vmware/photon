@@ -1,23 +1,23 @@
-From d143b9757d87318c65140a5f9434be3325afd84d Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Thu, 18 Aug 2022 19:32:40 +0530
+From 1f97ad0ed195833fb61ddb2da828df8bb08da109 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Sun, 1 Mar 2026 10:10:13 +0000
 Subject: [PATCH] malloc arena fix
 
-Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  elf/dl-tunables.list |  5 ++++
- malloc/arena.c       | 62 ++++++++++++++++++++++++++++++++++++++++++++
- malloc/malloc.c      | 31 ++++++++++++++++++++++
+ malloc/arena.c       | 55 ++++++++++++++++++++++++++++++++++++++++++++
+ malloc/malloc.c      | 31 +++++++++++++++++++++++++
  malloc/malloc.h      |  1 +
- 4 files changed, 99 insertions(+)
+ 4 files changed, 92 insertions(+)
 
 diff --git a/elf/dl-tunables.list b/elf/dl-tunables.list
-index e6a56b30..31e6ea1f 100644
+index 5bc5f037..a4ebfd48 100644
 --- a/elf/dl-tunables.list
 +++ b/elf/dl-tunables.list
-@@ -78,6 +78,11 @@ glibc {
+@@ -65,6 +65,11 @@ glibc {
+       env_alias: MALLOC_ARENA_TEST
        minval: 1
-       security_level: SXID_IGNORE
      }
 +    arena_stickiness {
 +      type: SIZE_T
@@ -28,10 +28,10 @@ index e6a56b30..31e6ea1f 100644
        type: SIZE_T
      }
 diff --git a/malloc/arena.c b/malloc/arena.c
-index 0a684a72..8b225f2e 100644
+index 5bfcd7f9..cd0b711b 100644
 --- a/malloc/arena.c
 +++ b/malloc/arena.c
-@@ -86,6 +86,12 @@ typedef struct _heap_info
+@@ -78,6 +78,12 @@ typedef struct _heap_info
    char pad[-3 * SIZE_SZ & MALLOC_ALIGN_MASK];
  } heap_info;
  
@@ -44,7 +44,7 @@ index 0a684a72..8b225f2e 100644
  /* Get a compile-time error if the heap_info padding is not correct
     to make alignment work as expected in sYSMALLOc.  */
  extern int sanity_check_heap_info_alignment[(sizeof (heap_info)
-@@ -96,6 +102,8 @@ extern int sanity_check_heap_info_alignment[(sizeof (heap_info)
+@@ -88,6 +94,8 @@ extern int sanity_check_heap_info_alignment[(sizeof (heap_info)
  
  static __thread mstate thread_arena attribute_tls_model_ie;
  
@@ -53,7 +53,7 @@ index 0a684a72..8b225f2e 100644
  /* Arena free list.  free_list_lock synchronizes access to the
     free_list variable below, and the next_free and attached_threads
     members of struct malloc_state objects.  No other locks must be
-@@ -256,6 +264,7 @@ TUNABLE_CALLBACK_FNDECL (set_perturb_byte, int32_t)
+@@ -235,6 +243,7 @@ TUNABLE_CALLBACK_FNDECL (set_perturb_byte, int32_t)
  TUNABLE_CALLBACK_FNDECL (set_trim_threshold, size_t)
  TUNABLE_CALLBACK_FNDECL (set_arena_max, size_t)
  TUNABLE_CALLBACK_FNDECL (set_arena_test, size_t)
@@ -61,7 +61,7 @@ index 0a684a72..8b225f2e 100644
  #if USE_TCACHE
  TUNABLE_CALLBACK_FNDECL (set_tcache_max, size_t)
  TUNABLE_CALLBACK_FNDECL (set_tcache_count, size_t)
-@@ -356,6 +365,7 @@ ptmalloc_init (void)
+@@ -287,6 +296,7 @@ __ptmalloc_init (void)
    TUNABLE_GET (mmap_max, int32_t, TUNABLE_CALLBACK (set_mmaps_max));
    TUNABLE_GET (arena_max, size_t, TUNABLE_CALLBACK (set_arena_max));
    TUNABLE_GET (arena_test, size_t, TUNABLE_CALLBACK (set_arena_test));
@@ -69,21 +69,7 @@ index 0a684a72..8b225f2e 100644
  # if USE_TCACHE
    TUNABLE_GET (tcache_max, size_t, TUNABLE_CALLBACK (set_tcache_max));
    TUNABLE_GET (tcache_count, size_t, TUNABLE_CALLBACK (set_tcache_count));
-@@ -421,6 +431,13 @@ ptmalloc_init (void)
-                     __libc_mallopt (M_MMAP_THRESHOLD, atoi (&envline[16]));
-                 }
-               break;
-+            case 16:
-+              if (!__builtin_expect (__libc_enable_secure, 0))
-+                {
-+                  if (memcmp (envline, "ARENA_STICKINESS", 16) == 0)
-+                    __libc_mallopt (M_ARENA_STICKINESS, atoi (&envline[17]));
-+                }
-+              break;
-             default:
-               break;
-             }
-@@ -994,6 +1011,51 @@ arena_get_retry (mstate ar_ptr, size_t bytes)
+@@ -877,6 +887,51 @@ arena_get_retry (mstate ar_ptr, size_t bytes)
  }
  #endif
  
@@ -136,26 +122,26 @@ index 0a684a72..8b225f2e 100644
  __malloc_arena_thread_freeres (void)
  {
 diff --git a/malloc/malloc.c b/malloc/malloc.c
-index bd3c76ed..30b00ac5 100644
+index a49e2119..30228c0d 100644
 --- a/malloc/malloc.c
 +++ b/malloc/malloc.c
-@@ -1873,6 +1873,7 @@ struct malloc_par
+@@ -1766,6 +1766,7 @@ struct malloc_par
    INTERNAL_SIZE_T mmap_threshold;
    INTERNAL_SIZE_T arena_test;
    INTERNAL_SIZE_T arena_max;
 +  INTERNAL_SIZE_T arena_stickiness;
  
- #if HAVE_TUNABLES
    /* Transparent Large Page support.  */
-@@ -1933,6 +1934,7 @@ static struct malloc_par mp_ =
+   enum malloc_thp_mode_t thp_mode;
+@@ -1825,6 +1826,7 @@ static struct malloc_par mp_ =
    .mmap_threshold = DEFAULT_MMAP_THRESHOLD,
    .trim_threshold = DEFAULT_TRIM_THRESHOLD,
  #define NARENAS_FROM_NCORES(n) ((n) * (sizeof (long) == 4 ? 2 : 8))
 +  .arena_stickiness = 0,
-   .arena_test = NARENAS_FROM_NCORES (1)
+   .arena_test = NARENAS_FROM_NCORES (1),
+   .thp_mode = malloc_thp_mode_not_supported
  #if USE_TCACHE
-   ,
-@@ -3337,6 +3339,10 @@ __libc_malloc (size_t bytes)
+@@ -3293,6 +3295,10 @@ __libc_malloc2 (size_t bytes)
  
    assert (!victim || chunk_is_mmapped (mem2chunk (victim)) ||
            ar_ptr == arena_for_chunk (mem2chunk (victim)));
@@ -165,18 +151,18 @@ index bd3c76ed..30b00ac5 100644
 +
    return victim;
  }
- libc_hidden_def (__libc_malloc)
-@@ -3381,6 +3387,9 @@ __libc_free (void *mem)
-       /* Mark the chunk as belonging to the library again.  */
-       (void)tag_region (chunk2mem (p), memsize (p));
  
-+      if (mp_.arena_stickiness > 0)
-+        arena_stickiness_track_free (p);
+@@ -3350,6 +3356,9 @@ __libc_free (void *mem)
+   /* Mark the chunk as belonging to the library again.  */
+   tag_region (chunk2mem (p), memsize (p));
+ 
++  if (mp_.arena_stickiness > 0)
++    arena_stickiness_track_free (p);
 +
-       ar_ptr = arena_for_chunk (p);
-       _int_free (ar_ptr, p, 0);
-     }
-@@ -3484,6 +3493,8 @@ __libc_realloc (void *oldmem, size_t bytes)
+   INTERNAL_SIZE_T size = chunksize (p);
+ 
+   if (__glibc_unlikely (misaligned_chunk (p)))
+@@ -3493,6 +3502,8 @@ __libc_realloc (void *oldmem, size_t bytes)
        return newp;
      }
  
@@ -185,7 +171,7 @@ index bd3c76ed..30b00ac5 100644
    __libc_lock_lock (ar_ptr->mutex);
  
    newp = _int_realloc (ar_ptr, oldp, oldsize, nb);
-@@ -3492,6 +3503,9 @@ __libc_realloc (void *oldmem, size_t bytes)
+@@ -3501,6 +3512,9 @@ __libc_realloc (void *oldmem, size_t bytes)
    assert (!newp || chunk_is_mmapped (mem2chunk (newp)) ||
            ar_ptr == arena_for_chunk (mem2chunk (newp)));
  
@@ -195,7 +181,7 @@ index bd3c76ed..30b00ac5 100644
    if (newp == NULL)
      {
        /* Try harder to allocate memory in other arenas.  */
-@@ -3712,6 +3726,9 @@ __libc_calloc (size_t n, size_t elem_size)
+@@ -3740,6 +3754,9 @@ __libc_calloc2 (size_t sz)
        return mem;
      }
  
@@ -205,7 +191,7 @@ index bd3c76ed..30b00ac5 100644
  #if MORECORE_CLEARS
    if (perturb_byte == 0 && (p == oldtop && csz > oldtopsize))
      {
-@@ -5374,6 +5391,15 @@ do_set_arena_max (size_t value)
+@@ -5076,6 +5093,15 @@ do_set_arena_max (size_t value)
    return 1;
  }
  
@@ -221,7 +207,7 @@ index bd3c76ed..30b00ac5 100644
  #if USE_TCACHE
  static __always_inline int
  do_set_tcache_max (size_t value)
-@@ -5503,6 +5529,11 @@ __libc_mallopt (int param_number, int value)
+@@ -5202,6 +5228,11 @@ __libc_mallopt (int param_number, int value)
        if (value > 0)
  	res = do_set_arena_max (value);
        break;
@@ -234,7 +220,7 @@ index bd3c76ed..30b00ac5 100644
    __libc_lock_unlock (av->mutex);
    return res;
 diff --git a/malloc/malloc.h b/malloc/malloc.h
-index 60a23e16..77dc31cb 100644
+index c0de7451..8b2916c4 100644
 --- a/malloc/malloc.h
 +++ b/malloc/malloc.h
 @@ -139,6 +139,7 @@ extern struct mallinfo2 mallinfo2 (void) __THROW;
@@ -246,5 +232,5 @@ index 60a23e16..77dc31cb 100644
  /* General SVID/XPG interface to tunable parameters. */
  extern int mallopt (int __param, int __val) __THROW;
 -- 
-2.37.2
+2.43.7
 

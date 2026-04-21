@@ -2,8 +2,8 @@
 
 Summary:        SELinux policy core utilities
 Name:           selinux-python
-Version:        3.5
-Release:        2%{?dist}
+Version:        3.10
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -46,11 +46,12 @@ The %{name} package contains the management tools use to manage an SELinux envir
 
 rm -rf %{buildroot}%{_mandir}/ru
 %find_lang %{name}
+%{py_byte_compile_and_ghost}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-%files -f %{name}.lang
+%files -f %{name}.lang -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_sbindir}/*
@@ -61,6 +62,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %exclude %{_sharedstatedir}/sepolgen/perm_map
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
+- Update to 3.10
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-2
 - Fix build error
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1

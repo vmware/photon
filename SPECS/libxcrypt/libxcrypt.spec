@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} >= 92
 Name:           libxcrypt
 Summary:        Extended crypt library for DES, MD5, Blowfish and others
-Version:        4.4.36
-Release:        4%{?dist}
+Version:        4.5.2
+Release:        1%{?dist}
 URL:            https://github.com/besser82/%{name}
 Distribution:   Photon
 Group:          System Environment/Security
@@ -13,6 +14,8 @@ Source0: %{url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-fix-Werror-discarded-qualifiers.patch
 
 Conflicts: glibc < 2.36-5
 Conflicts: glibc-libs < 2.36-15
@@ -81,6 +84,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.2-1
+- Upgrade to 4.5.2
 * Thu Apr 02 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.4.36-4
 - Don't require shell for post scripts
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.4.36-3

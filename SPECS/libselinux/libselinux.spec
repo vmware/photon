@@ -2,8 +2,8 @@
 
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.5
-Release:        3%{?dist}
+Version:        3.10
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -15,7 +15,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:         Add-Wno-error-stringop-truncation-to-EXTRA_CFLAGS.patch
-Patch1:         0001-libselinux-src-Makefile-build-python-module-without-.patch
+Patch1:         0001-Fix-build-with-glibc-2.43.patch
 
 BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre2-devel
@@ -94,9 +94,7 @@ make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="%{_lib}" BINDIR="%{_bi
 mkdir -p %{buildroot}%{_tmpfilesdir} %{buildroot}/var/run/setrans
 echo "d /var/run/setrans 0755 root root" > %{buildroot}%{_tmpfilesdir}/libselinux.conf
 
-# do not package ru man pages
-rm -r %{buildroot}%{_mandir}/ru \
-       %{buildroot}%{_libdir}/libselinux.a
+rm -r %{buildroot}%{_libdir}/libselinux.a
 
 %{py_byte_compile_and_ghost}
 
@@ -128,6 +126,8 @@ rm -r %{buildroot}%{_mandir}/ru \
 %{python3_sitelib}/*
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
+- Update to 3.10
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-3
 - Bytecompile python files
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-2

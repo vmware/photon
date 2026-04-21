@@ -1,0 +1,65 @@
+From 2f0dc1fdbf259813acb335b592b642e763bced96 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Thu, 23 Apr 2026 07:24:33 +0000
+Subject: [PATCH] Fix build with glibc 2.43
+
+---
+ src/direct_api.c | 4 ++--
+ src/utilities.c  | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/direct_api.c b/src/direct_api.c
+index 8f909a3..3a81500 100644
+--- a/src/direct_api.c
++++ b/src/direct_api.c
+@@ -1778,7 +1778,7 @@ static int semanage_direct_install_file(semanage_handle_t * sh,
+ 	filename = basename(path);
+ 
+ 	if (contents.compressed) {
+-		separator = strrchr(filename, '.');
++		separator = (char *)strrchr(filename, '.');
+ 		if (separator == NULL) {
+ 			ERR(sh, "Compressed module does not have a valid extension.");
+ 			retval = -1;
+@@ -1788,7 +1788,7 @@ static int semanage_direct_install_file(semanage_handle_t * sh,
+ 		lang_ext = separator + 1;
+ 	}
+ 
+-	separator = strrchr(filename, '.');
++	separator = (char *)strrchr(filename, '.');
+ 	if (separator == NULL) {
+ 		if (lang_ext == NULL) {
+ 			ERR(sh, "Module does not have a valid extension.");
+diff --git a/src/utilities.c b/src/utilities.c
+index 004ffb6..f45dbd1 100644
+--- a/src/utilities.c
++++ b/src/utilities.c
+@@ -245,7 +245,7 @@ char *semanage_str_replace(const char *search, const char *replace,
+ 		return NULL;
+ 
+ 	/* Count the occurrences of search in src and compute the new size */
+-	for (p = strstr(src, search); p != NULL; p = strstr(p + slen, search)) {
++	for (p = (char *)strstr(src, search); p != NULL; p = (char *)strstr(p + slen, search)) {
+ 		count++;
+ 		if (lim && count >= lim)
+ 			break;
+@@ -262,7 +262,7 @@ char *semanage_str_replace(const char *search, const char *replace,
+ 	/* Fill the result */
+ 	psrc = src;
+ 	pres = result;
+-	for (p = strstr(src, search); p != NULL; p = strstr(psrc, search)) {
++	for (p = (char *)strstr(src, search); p != NULL; p = (char *)strstr(psrc, search)) {
+ 		/* Copy the part which has not been modified */
+ 		if (p != psrc) {
+ 			size_t length = (size_t)(p - psrc);
+@@ -355,6 +355,6 @@ __attribute__((nonnull))
+ #endif
+ char *semanage_basename(const char *filename)
+ {
+-	char *p = strrchr(filename, '/');
++	char *p = (char *)strrchr(filename, '/');
+ 	return p ? p + 1 : (char *)filename;
+ }
+-- 
+2.43.7
+

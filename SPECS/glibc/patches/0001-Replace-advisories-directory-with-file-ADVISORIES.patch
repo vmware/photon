@@ -1,0 +1,784 @@
+From f02515d8a6963158e0e4be8034b96c658e1b9a32 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andreas=20K=2E=20H=C3=BCttel?= <dilfridge@gentoo.org>
+Date: Fri, 23 Jan 2026 23:59:36 +0100
+Subject: [PATCH 01/22] Replace advisories directory with file ADVISORIES
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Andreas K. Hüttel <dilfridge@gentoo.org>
+---
+ ADVISORIES                    |  2 +
+ advisories/GLIBC-SA-2023-0001 | 14 -------
+ advisories/GLIBC-SA-2023-0002 | 15 -------
+ advisories/GLIBC-SA-2023-0003 | 15 -------
+ advisories/GLIBC-SA-2023-0004 | 16 --------
+ advisories/GLIBC-SA-2023-0005 | 18 --------
+ advisories/GLIBC-SA-2024-0001 | 15 -------
+ advisories/GLIBC-SA-2024-0002 | 15 -------
+ advisories/GLIBC-SA-2024-0003 | 13 ------
+ advisories/GLIBC-SA-2024-0004 | 28 -------------
+ advisories/GLIBC-SA-2024-0005 | 22 ----------
+ advisories/GLIBC-SA-2024-0006 | 32 ---------------
+ advisories/GLIBC-SA-2024-0007 | 28 -------------
+ advisories/GLIBC-SA-2024-0008 | 26 ------------
+ advisories/GLIBC-SA-2025-0001 | 40 ------------------
+ advisories/GLIBC-SA-2025-0002 | 23 -----------
+ advisories/GLIBC-SA-2025-0003 | 30 --------------
+ advisories/GLIBC-SA-2025-0004 | 29 -------------
+ advisories/GLIBC-SA-2025-0005 | 14 -------
+ advisories/GLIBC-SA-2026-0001 | 41 -------------------
+ advisories/GLIBC-SA-2026-0002 | 36 ----------------
+ advisories/GLIBC-SA-2026-0003 | 36 ----------------
+ advisories/README             | 77 -----------------------------------
+ 23 files changed, 2 insertions(+), 583 deletions(-)
+ create mode 100644 ADVISORIES
+ delete mode 100644 advisories/GLIBC-SA-2023-0001
+ delete mode 100644 advisories/GLIBC-SA-2023-0002
+ delete mode 100644 advisories/GLIBC-SA-2023-0003
+ delete mode 100644 advisories/GLIBC-SA-2023-0004
+ delete mode 100644 advisories/GLIBC-SA-2023-0005
+ delete mode 100644 advisories/GLIBC-SA-2024-0001
+ delete mode 100644 advisories/GLIBC-SA-2024-0002
+ delete mode 100644 advisories/GLIBC-SA-2024-0003
+ delete mode 100644 advisories/GLIBC-SA-2024-0004
+ delete mode 100644 advisories/GLIBC-SA-2024-0005
+ delete mode 100644 advisories/GLIBC-SA-2024-0006
+ delete mode 100644 advisories/GLIBC-SA-2024-0007
+ delete mode 100644 advisories/GLIBC-SA-2024-0008
+ delete mode 100644 advisories/GLIBC-SA-2025-0001
+ delete mode 100644 advisories/GLIBC-SA-2025-0002
+ delete mode 100644 advisories/GLIBC-SA-2025-0003
+ delete mode 100644 advisories/GLIBC-SA-2025-0004
+ delete mode 100644 advisories/GLIBC-SA-2025-0005
+ delete mode 100644 advisories/GLIBC-SA-2026-0001
+ delete mode 100644 advisories/GLIBC-SA-2026-0002
+ delete mode 100644 advisories/GLIBC-SA-2026-0003
+ delete mode 100644 advisories/README
+
+diff --git a/ADVISORIES b/ADVISORIES
+new file mode 100644
+index 0000000000000000000000000000000000000000..d4e33f2df3d74cd8b66bc2d8dc7c8f82e873b277
+--- /dev/null
++++ b/ADVISORIES
+@@ -0,0 +1,2 @@
++For the GNU C Library Security Advisories, see the git master branch:
++https://sourceware.org/git/?p=glibc.git;a=tree;f=advisories;hb=HEAD
+diff --git a/advisories/GLIBC-SA-2023-0001 b/advisories/GLIBC-SA-2023-0001
+deleted file mode 100644
+index 3d19c91b6a676ffd35938e337de7babc24ebc297..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2023-0001
++++ /dev/null
+@@ -1,14 +0,0 @@
+-printf: incorrect output for integers with thousands separator and width field
+-
+-When the printf family of functions is called with a format specifier
+-that uses an <apostrophe> (enable grouping) and a minimum width
+-specifier, the resulting output could be larger than reasonably expected
+-by a caller that computed a tight bound on the buffer size.  The
+-resulting larger than expected output could result in a buffer overflow
+-in the printf family of functions.
+-
+-CVE-Id: CVE-2023-25139
+-Public-Date: 2023-02-02
+-Vulnerable-Commit: e88b9f0e5cc50cab57a299dc7efe1a4eb385161d (2.37)
+-Fix-Commit: c980549cc6a1c03c23cc2fe3e7b0fe626a0364b0 (2.38)
+-Fix-Commit: 07b9521fc6369d000216b96562ff7c0ed32a16c4 (2.37-4)
+diff --git a/advisories/GLIBC-SA-2023-0002 b/advisories/GLIBC-SA-2023-0002
+deleted file mode 100644
+index 5122669a6451f8030f222a6cbd6d87469414771f..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2023-0002
++++ /dev/null
+@@ -1,15 +0,0 @@
+-getaddrinfo: Stack read overflow in no-aaaa mode
+-
+-If the system is configured in no-aaaa mode via /etc/resolv.conf,
+-getaddrinfo is called for the AF_UNSPEC address family, and a DNS
+-response is received over TCP that is larger than 2048 bytes,
+-getaddrinfo may potentially disclose stack contents via the returned
+-address data, or crash.
+-
+-CVE-Id: CVE-2023-4527
+-Public-Date: 2023-09-12
+-Vulnerable-Commit: f282cdbe7f436c75864e5640a409a10485e9abb2 (2.36)
+-Fix-Commit: bd77dd7e73e3530203be1c52c8a29d08270cb25d (2.39)
+-Fix-Commit: 4ea972b7edd7e36610e8cde18bf7a8149d7bac4f (2.36-113)
+-Fix-Commit: b7529346025a130fee483d42178b5c118da971bb (2.37-38)
+-Fix-Commit: b25508dd774b617f99419bdc3cf2ace4560cd2d6 (2.38-19)
+diff --git a/advisories/GLIBC-SA-2023-0003 b/advisories/GLIBC-SA-2023-0003
+deleted file mode 100644
+index d3aef803480bc2987e71cd0bbd37f6f57b77ff0d..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2023-0003
++++ /dev/null
+@@ -1,15 +0,0 @@
+-getaddrinfo: Potential use-after-free
+-
+-When an NSS plugin only implements the _gethostbyname2_r and
+-_getcanonname_r callbacks, getaddrinfo could use memory that was freed
+-during buffer resizing, potentially causing a crash or read or write to
+-arbitrary memory.
+-
+-CVE-Id: CVE-2023-4806
+-Public-Date: 2023-09-12
+-Fix-Commit: 973fe93a5675c42798b2161c6f29c01b0e243994 (2.39)
+-Fix-Commit: e09ee267c03e3150c2c9ba28625ab130705a485e (2.34-420)
+-Fix-Commit: e3ccb230a961b4797510e6a1f5f21fd9021853e7 (2.35-270)
+-Fix-Commit: a9728f798ec7f05454c95637ee6581afaa9b487d (2.36-115)
+-Fix-Commit: 6529a7466c935f36e9006b854d6f4e1d4876f942 (2.37-39)
+-Fix-Commit: 00ae4f10b504bc4564e9f22f00907093f1ab9338 (2.38-20)
+diff --git a/advisories/GLIBC-SA-2023-0004 b/advisories/GLIBC-SA-2023-0004
+deleted file mode 100644
+index 5286a7aa545cd942b9fa7e2899593da2f0ae278b..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2023-0004
++++ /dev/null
+@@ -1,16 +0,0 @@
+-tunables: local privilege escalation through buffer overflow
+-
+-If a tunable of the form NAME=NAME=VAL is passed in the environment of a
+-setuid program and NAME is valid, it may result in a buffer overflow,
+-which could be exploited to achieve escalated privileges.  This flaw was
+-introduced in glibc 2.34.
+-
+-CVE-Id: CVE-2023-4911
+-Public-Date: 2023-10-03
+-Vulnerable-Commit: 2ed18c5b534d9e92fc006202a5af0df6b72e7aca (2.34)
+-Fix-Commit: 1056e5b4c3f2d90ed2b4a55f96add28da2f4c8fa (2.39)
+-Fix-Commit: dcc367f148bc92e7f3778a125f7a416b093964d9 (2.34-423)
+-Fix-Commit: c84018a05aec80f5ee6f682db0da1130b0196aef (2.35-274)
+-Fix-Commit: 22955ad85186ee05834e47e665056148ca07699c (2.36-118)
+-Fix-Commit: b4e23c75aea756b4bddc4abcf27a1c6dca8b6bd3 (2.37-45)
+-Fix-Commit: 750a45a783906a19591fb8ff6b7841470f1f5701 (2.38-27)
+diff --git a/advisories/GLIBC-SA-2023-0005 b/advisories/GLIBC-SA-2023-0005
+deleted file mode 100644
+index cc4eb90b8283dc143eac33827ec4eda1247fb288..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2023-0005
++++ /dev/null
+@@ -1,18 +0,0 @@
+-getaddrinfo: DoS due to memory leak
+-
+-The fix for CVE-2023-4806 introduced a memory leak when an application
+-calls getaddrinfo for AF_INET6 with AI_CANONNAME, AI_ALL and AI_V4MAPPED
+-flags set.
+-
+-CVE-Id: CVE-2023-5156
+-Public-Date: 2023-09-25
+-Vulnerable-Commit: e09ee267c03e3150c2c9ba28625ab130705a485e (2.34-420)
+-Vulnerable-Commit: e3ccb230a961b4797510e6a1f5f21fd9021853e7 (2.35-270)
+-Vulnerable-Commit: a9728f798ec7f05454c95637ee6581afaa9b487d (2.36-115)
+-Vulnerable-Commit: 6529a7466c935f36e9006b854d6f4e1d4876f942 (2.37-39)
+-Vulnerable-Commit: 00ae4f10b504bc4564e9f22f00907093f1ab9338 (2.38-20)
+-Fix-Commit: 8006457ab7e1cd556b919f477348a96fe88f2e49 (2.34-421)
+-Fix-Commit: 17092c0311f954e6f3c010f73ce3a78c24ac279a (2.35-272)
+-Fix-Commit: 856bac55f98dc840e7c27cfa82262b933385de90 (2.36-116)
+-Fix-Commit: 4473d1b87d04b25cdd0e0354814eeaa421328268 (2.37-42)
+-Fix-Commit: 5ee59ca371b99984232d7584fe2b1a758b4421d3 (2.38-24)
+diff --git a/advisories/GLIBC-SA-2024-0001 b/advisories/GLIBC-SA-2024-0001
+deleted file mode 100644
+index 28931c75ae018cc398344af80e6be6ab6e1874b7..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0001
++++ /dev/null
+@@ -1,15 +0,0 @@
+-syslog: Heap buffer overflow in __vsyslog_internal
+-
+-__vsyslog_internal did not handle a case where printing a SYSLOG_HEADER
+-containing a long program name failed to update the required buffer
+-size, leading to the allocation and overflow of a too-small buffer on
+-the heap.
+-
+-CVE-Id: CVE-2023-6246
+-Public-Date: 2024-01-30
+-Vulnerable-Commit: 52a5be0df411ef3ff45c10c7c308cb92993d15b1 (2.37)
+-Fix-Commit: 6bd0e4efcc78f3c0115e5ea9739a1642807450da (2.39)
+-Fix-Commit: 23514c72b780f3da097ecf33a793b7ba9c2070d2 (2.38-42)
+-Fix-Commit: 97a4292aa4a2642e251472b878d0ec4c46a0e59a (2.37-57)
+-Vulnerable-Commit: b0e7888d1fa2dbd2d9e1645ec8c796abf78880b9 (2.36-16)
+-Fix-Commit: d1a83b6767f68b3cb5b4b4ea2617254acd040c82 (2.36-126)
+diff --git a/advisories/GLIBC-SA-2024-0002 b/advisories/GLIBC-SA-2024-0002
+deleted file mode 100644
+index 940bfcf2fcb760505ec59d84b94250aaf49c3be9..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0002
++++ /dev/null
+@@ -1,15 +0,0 @@
+-syslog: Heap buffer overflow in __vsyslog_internal
+-
+-__vsyslog_internal used the return value of snprintf/vsnprintf to
+-calculate buffer sizes for memory allocation.  If these functions (for
+-any reason) failed and returned -1, the resulting buffer would be too
+-small to hold output.
+-
+-CVE-Id: CVE-2023-6779
+-Public-Date: 2024-01-30
+-Vulnerable-Commit: 52a5be0df411ef3ff45c10c7c308cb92993d15b1 (2.37)
+-Fix-Commit: 7e5a0c286da33159d47d0122007aac016f3e02cd (2.39)
+-Fix-Commit: d0338312aace5bbfef85e03055e1212dd0e49578 (2.38-43)
+-Fix-Commit: 67062eccd9a65d7fda9976a56aeaaf6c25a80214 (2.37-58)
+-Vulnerable-Commit: b0e7888d1fa2dbd2d9e1645ec8c796abf78880b9 (2.36-16)
+-Fix-Commit: 2bc9d7c002bdac38b5c2a3f11b78e309d7765b83 (2.36-127)
+diff --git a/advisories/GLIBC-SA-2024-0003 b/advisories/GLIBC-SA-2024-0003
+deleted file mode 100644
+index b43a5150ab1b0cc4ef2cabf5bf792428389f5e37..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0003
++++ /dev/null
+@@ -1,13 +0,0 @@
+-syslog: Integer overflow in __vsyslog_internal
+-
+-__vsyslog_internal calculated a buffer size by adding two integers, but
+-did not first check if the addition would overflow.
+-
+-CVE-Id: CVE-2023-6780
+-Public-Date: 2024-01-30
+-Vulnerable-Commit: 52a5be0df411ef3ff45c10c7c308cb92993d15b1 (2.37)
+-Fix-Commit: ddf542da94caf97ff43cc2875c88749880b7259b (2.39)
+-Fix-Commit: d37c2b20a4787463d192b32041c3406c2bd91de0 (2.38-44)
+-Fix-Commit: 2b58cba076e912961ceaa5fa58588e4b10f791c0 (2.37-59)
+-Vulnerable-Commit: b0e7888d1fa2dbd2d9e1645ec8c796abf78880b9 (2.36-16)
+-Fix-Commit: b9b7d6a27aa0632f334352fa400771115b3c69b7 (2.36-128)
+diff --git a/advisories/GLIBC-SA-2024-0004 b/advisories/GLIBC-SA-2024-0004
+deleted file mode 100644
+index 08df2b3118fafaffe7c469d1c3707c53762cf67a..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0004
++++ /dev/null
+@@ -1,28 +0,0 @@
+-ISO-2022-CN-EXT: fix out-of-bound writes when writing escape sequence
+-
+-The iconv() function in the GNU C Library versions 2.39 and older may 
+-overflow the output buffer passed to it by up to 4 bytes when converting 
+-strings to the ISO-2022-CN-EXT character set, which may be used to 
+-crash an application or overwrite a neighbouring variable.
+-
+-ISO-2022-CN-EXT uses escape sequences to indicate character set changes
+-(as specified by RFC 1922).  While the SOdesignation has the expected
+-bounds checks, neither SS2designation nor SS3designation have its;
+-allowing a write overflow of 1, 2, or 3 bytes with fixed values:
+-'$+I', '$+J', '$+K', '$+L', '$+M', or '$*H'.
+-
+-CVE-Id: CVE-2024-2961
+-Public-Date: 2024-04-17
+-Vulnerable-Commit: 755104edc75c53f4a0e7440334e944ad3c6b32fc (2.1.93-169)
+-Fix-Commit: f9dc609e06b1136bb0408be9605ce7973a767ada (2.40)
+-Fix-Commit: 31da30f23cddd36db29d5b6a1c7619361b271fb4 (2.39-31)
+-Fix-Commit: e1135387deded5d73924f6ca20c72a35dc8e1bda (2.38-66)
+-Fix-Commit: 89ce64b269a897a7780e4c73a7412016381c6ecf (2.37-89)
+-Fix-Commit: 4ed98540a7fd19f458287e783ae59c41e64df7b5 (2.36-164)
+-Fix-Commit: 36280d1ce5e245aabefb877fe4d3c6cff95dabfa (2.35-315)
+-Fix-Commit: a8b0561db4b9847ebfbfec20075697d5492a363c (2.34-459)
+-Fix-Commit: ed4f16ff6bed3037266f1fa682ebd32a18fce29c (2.33-263)
+-Fix-Commit: 682ad4c8623e611a971839990ceef00346289cc9 (2.32-140)
+-Fix-Commit: 3703c32a8d304c1ee12126134ce69be965f38000 (2.31-154)
+-
+-Reported-By: Charles Fol
+diff --git a/advisories/GLIBC-SA-2024-0005 b/advisories/GLIBC-SA-2024-0005
+deleted file mode 100644
+index a59596610a0ea74d905a2452fc50283dad58e115..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0005
++++ /dev/null
+@@ -1,22 +0,0 @@
+-nscd: Stack-based buffer overflow in netgroup cache
+-
+-If the Name Service Cache Daemon's (nscd) fixed size cache is exhausted
+-by client requests then a subsequent client request for netgroup data
+-may result in a stack-based buffer overflow.  This flaw was introduced
+-in glibc 2.15 when the cache was added to nscd.
+-
+-This vulnerability is only present in the nscd binary.
+-
+-CVE-Id: CVE-2024-33599
+-Public-Date: 2024-04-23
+-Vulnerable-Commit: 684ae515993269277448150a1ca70db3b94aa5bd (2.15)
+-Fix-Commit: 69c58d5ef9f584ea198bd00f7964d364d0e6b921 (2.31-155)
+-Fix-Commit: a77064893bfe8a701770e2f53a4d33805bc47a5a (2.32-141)
+-Fix-Commit: 5c75001a96abcd50cbdb74df24c3f013188d076e (2.33-264)
+-Fix-Commit: 52f73e5c4e29b14e79167272297977f360ae1e97 (2.34-460)
+-Fix-Commit: 7a95873543ce225376faf13bb71c43dea6d24f86 (2.35-316)
+-Fix-Commit: caa3151ca460bdd9330adeedd68c3112d97bffe4 (2.36-165)
+-Fix-Commit: f75c298e747b2b8b41b1c2f551c011a52c41bfd1 (2.37-91)
+-Fix-Commit: 5968aebb86164034b8f8421b4abab2f837a5bdaf (2.38-72)
+-Fix-Commit: 1263d583d2e28afb8be53f8d6922f0842036f35d (2.39-35)
+-Fix-Commit: 87801a8fd06db1d654eea3e4f7626ff476a9bdaa (2.40)
+diff --git a/advisories/GLIBC-SA-2024-0006 b/advisories/GLIBC-SA-2024-0006
+deleted file mode 100644
+index d44148d3d97bddac42450649032ebbd96b59062e..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0006
++++ /dev/null
+@@ -1,32 +0,0 @@
+-nscd: Null pointer crash after notfound response
+-
+-If the Name Service Cache Daemon's (nscd) cache fails to add a not-found
+-netgroup response to the cache, the client request can result in a null
+-pointer dereference.  This flaw was introduced in glibc 2.15 when the
+-cache was added to nscd.
+-
+-This vulnerability is only present in the nscd binary.
+-
+-CVE-Id: CVE-2024-33600
+-Public-Date: 2024-04-24
+-Vulnerable-Commit: 684ae515993269277448150a1ca70db3b94aa5bd (2.15)
+-Fix-Commit: b048a482f088e53144d26a61c390bed0210f49f2 (2.40)
+-Fix-Commit: 7835b00dbce53c3c87bbbb1754a95fb5e58187aa (2.40)
+-Fix-Commit: c99f886de54446cd4447db6b44be93dabbdc2f8b (2.39-37)
+-Fix-Commit: 5a508e0b508c8ad53bd0d2fb48fd71b242626341 (2.39-36)
+-Fix-Commit: 2ae9446c1b7a3064743b4a51c0bbae668ee43e4c (2.38-74)
+-Fix-Commit: 541ea5172aa658c4bd5c6c6d6fd13903c3d5bb0a (2.38-73)
+-Fix-Commit: a8070b31043c7585c36ba68a74298c4f7af075c3 (2.37-93)
+-Fix-Commit: 5eea50c4402e39588de98aa1d4469a79774703d4 (2.37-92)
+-Fix-Commit: f205b3af56740e3b014915b1bd3b162afe3407ef (2.36-167)
+-Fix-Commit: c34f470a615b136170abd16142da5dd0c024f7d1 (2.36-166)
+-Fix-Commit: bafadc589fbe21ae330e8c2af74db9da44a17660 (2.35-318)
+-Fix-Commit: 4370bef52b0f3f3652c6aa13d7a9bb3ac079746d (2.35-317)
+-Fix-Commit: 1f94122289a9bf7dba573f5d60327aaa2b85cf2e (2.34-462)
+-Fix-Commit: 966d6ac9e40222b84bb21674cc4f83c8d72a5a26 (2.34-461)
+-Fix-Commit: e3eef1b8fbdd3a7917af466ca9c4b7477251ca79 (2.33-266)
+-Fix-Commit: f20a8d696b13c6261b52a6434899121f8b19d5a7 (2.33-265)
+-Fix-Commit: be602180146de37582a3da3a0caa4b719645de9c (2.32-143)
+-Fix-Commit: 394eae338199078b7961b051c191539870742d7b (2.32-142)
+-Fix-Commit: 8d7949183760170c61e55def723c1d8050187874 (2.31-157)
+-Fix-Commit: 304ce5fe466c4762b21b36c26926a4657b59b53e (2.31-156)
+diff --git a/advisories/GLIBC-SA-2024-0007 b/advisories/GLIBC-SA-2024-0007
+deleted file mode 100644
+index b6928fa27a69e325624b1a395ecb1bbba537ad80..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0007
++++ /dev/null
+@@ -1,28 +0,0 @@
+-nscd: netgroup cache may terminate daemon on memory allocation failure
+-
+-The Name Service Cache Daemon's (nscd) netgroup cache uses xmalloc or
+-xrealloc and these functions may terminate the process due to a memory
+-allocation failure resulting in a denial of service to the clients.  The
+-flaw was introduced in glibc 2.15 when the cache was added to nscd.
+-
+-This vulnerability is only present in the nscd binary.
+-
+-Subsequent refactoring of the netgroup cache only added more uses of
+-xmalloc and xrealloc. Uses of xmalloc and xrealloc in other parts of
+-nscd only occur during startup of the daemon and so are not affected by
+-client requests that could trigger an out of memory followed by
+-termination.
+-
+-CVE-Id: CVE-2024-33601
+-Public-Date: 2024-04-24
+-Vulnerable-Commit: 684ae515993269277448150a1ca70db3b94aa5bd (2.15)
+-Fix-Commit: c04a21e050d64a1193a6daab872bca2528bda44b (2.40)
+-Fix-Commit: a9a8d3eebb145779a18d90e3966009a1daa63cd8 (2.39-38)
+-Fix-Commit: 71af8ca864345d39b746d5cee84b94b430fad5db (2.38-75)
+-Fix-Commit: 6e106dc214d6a033a4e945d1c6cf58061f1c5f1f (2.37-94)
+-Fix-Commit: b6742463694b1dfdd5120b91ee21cf05d15ec2e2 (2.36-168)
+-Fix-Commit: 7a5864cac60e06000394128a5a2817b03542f5a3 (2.35-319)
+-Fix-Commit: 86f1d5f4129c373ac6fb6df5bcf38273838843cb (2.34-463)
+-Fix-Commit: 4d27d4b9a188786fc6a56745506cec2acfc51f83 (2.33-267)
+-Fix-Commit: 3ed195a8ec89da281e3c4bf887a13d281b72d8f4 (2.32-144)
+-Fix-Commit: bbf5a58ccb55679217f94de706164d15372fbbc0 (2.31-158)
+diff --git a/advisories/GLIBC-SA-2024-0008 b/advisories/GLIBC-SA-2024-0008
+deleted file mode 100644
+index d93e2a6f0bf084df419efadee2d1a48c4f9003d7..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2024-0008
++++ /dev/null
+@@ -1,26 +0,0 @@
+-nscd: netgroup cache assumes NSS callback uses in-buffer strings
+-
+-The Name Service Cache Daemon's (nscd) netgroup cache can corrupt memory
+-when the NSS callback does not store all strings in the provided buffer.
+-The flaw was introduced in glibc 2.15 when the cache was added to nscd.
+-
+-This vulnerability is only present in the nscd binary.
+-
+-There is no guarantee from the NSS callback API that the returned
+-strings are all within the buffer. However, the netgroup cache code
+-assumes that the NSS callback uses in-buffer strings and if it doesn't
+-the buffer resizing logic could lead to potential memory corruption.
+-
+-CVE-Id: CVE-2024-33602
+-Public-Date: 2024-04-24
+-Vulnerable-Commit: 684ae515993269277448150a1ca70db3b94aa5bd (2.15)
+-Fix-Commit: c04a21e050d64a1193a6daab872bca2528bda44b (2.40)
+-Fix-Commit: a9a8d3eebb145779a18d90e3966009a1daa63cd8 (2.39-38)
+-Fix-Commit: 71af8ca864345d39b746d5cee84b94b430fad5db (2.38-75)
+-Fix-Commit: 6e106dc214d6a033a4e945d1c6cf58061f1c5f1f (2.37-94)
+-Fix-Commit: b6742463694b1dfdd5120b91ee21cf05d15ec2e2 (2.36-168)
+-Fix-Commit: 7a5864cac60e06000394128a5a2817b03542f5a3 (2.35-319)
+-Fix-Commit: 86f1d5f4129c373ac6fb6df5bcf38273838843cb (2.34-463)
+-Fix-Commit: 4d27d4b9a188786fc6a56745506cec2acfc51f83 (2.33-267)
+-Fix-Commit: 3ed195a8ec89da281e3c4bf887a13d281b72d8f4 (2.32-144)
+-Fix-Commit: bbf5a58ccb55679217f94de706164d15372fbbc0 (2.31-158)
+diff --git a/advisories/GLIBC-SA-2025-0001 b/advisories/GLIBC-SA-2025-0001
+deleted file mode 100644
+index b053d32e91b16a8c7f169efd3ef2a13789a29c01..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2025-0001
++++ /dev/null
+@@ -1,40 +0,0 @@
+-assert: Buffer overflow when printing assertion failure message
+-
+-When the assert() function fails, it does not allocate enough space for the
+-assertion failure message string and size information, which may lead to a
+-buffer overflow if the message string size aligns to page size.
+-
+-This bug can be triggered when an assertion in a program fails.  The assertion
+-failure message is allocated to allow developers to see this failure in core
+-dumps and it typically includes, in addition to the invariant assertion
+-string and function name, the name of the program.  If the name of the failing
+-program is user controlled, for example on a local system, this could allow an
+-attacker to control the assertion failure to trigger this buffer overflow.
+-
+-The only viable vector for exploitation of this bug is local, if a setuid
+-program exists that has an existing bug that results in an assertion failure.
+-No such program has been discovered at the time of publishing this advisory,
+-but the presence of custom setuid programs, although strongly discouraged as a
+-security practice, cannot be discounted.
+-
+-CVE-Id: CVE-2025-0395
+-Public-Date: 2025-01-22
+-Vulnerable-Commit: f8a3b5bf8fa1d0c43d2458e03cc109a04fdef194 (2.13-175)
+-Fix-Commit: 68ee0f704cb81e9ad0a78c644a83e1e9cd2ee578 (2.41)
+-Fix-Commit: cdb9ba84191ce72e86346fb8b1d906e7cd930ea2 (2.42)
+-Fix-Commit: 69fda28279b497bd405fdd442a6d8e4d3d5f681b (2.41-7)
+-Fix-Commit: 7d4b6bcae91f29d7b4daf15bab06b66cf1d2217c (2.40-66)
+-Fix-Commit: d6c156c326999f144cb5b73d29982108d549ad8a (2.40-71)
+-Fix-Commit: 808a84a8b81468b517a4d721fdc62069cb8c211f (2.39-146)
+-Fix-Commit: f6d48470aef9264d2d56f4c4533eb76db7f9c2e4 (2.39-150)
+-Fix-Commit: c32fd59314c343db88c3ea4a203870481d33c3d2 (2.38-122)
+-Fix-Commit: f984e2d7e8299726891a1a497a3c36cd5542a0bf (2.38-124)
+-Fix-Commit: a3d7865b098a3a67c44f7812208d9ce4718873ba (2.37-143)
+-Fix-Commit: b989519fe1683c204ac24ec92830e3fe3bfaccad (2.37-146)
+-Fix-Commit: 7971add7ee4171fdd8dfd17e7c04c4ed77a18845 (2.36-216)
+-Fix-Commit: 0487893d5c5bc6710d83d7c3152d888a0339559e (2.36-219)
+-Fix-Commit: 8b5d4be762419c4f6176261c6fea40ac559b88dc (2.35-370)
+-Fix-Commit: 8b3d09dc0d350191985f9d291cc30ce96f034b49 (2.35-373)
+-Fix-Commit: df4e1f4a5096b385c9bcc94424cf2eaa227b3761 (2.34-500)
+-Fix-Commit: 31eb872cb21449832ab47ad5db83281d240e1d03 (2.34-503)
+-Reported-By: Qualys Security Advisory
+diff --git a/advisories/GLIBC-SA-2025-0002 b/advisories/GLIBC-SA-2025-0002
+deleted file mode 100644
+index 161da13dd463fb4413fa4b5356cf639e8fcdbd6a..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2025-0002
++++ /dev/null
+@@ -1,23 +0,0 @@
+-elf: static setuid binary dlopen may incorrectly search LD_LIBRARY_PATH
+-
+-A statically linked setuid binary that calls dlopen (including internal
+-dlopen calls after setlocale or calls to NSS functions such as getaddrinfo)
+-may incorrectly search LD_LIBRARY_PATH to determine which library to load,
+-leading to the execution of library code that is attacker controlled.
+-
+-The only viable vector for exploitation of this bug is local, if a static
+-setuid program exists, and that program calls dlopen, then it may search
+-LD_LIBRARY_PATH to locate the SONAME to load. No such program has been
+-discovered at the time of publishing this advisory, but the presence of
+-custom setuid programs, although strongly discouraged as a security
+-practice, cannot be discounted.
+-
+-CVE-Id: CVE-2025-4802
+-Public-Date: 2025-05-16
+-Vulnerable-Commit: 10e93d968716ab82931d593bada121c17c0a4b93 (2.27)
+-Fix-Commit: 5451fa962cd0a90a0e2ec1d8910a559ace02bba0 (2.39)
+-Fix-Commit: 3be3728df2f1912c80abd3288bc6e3a25ad679e4 (2.38-132)
+-Fix-Commit: 7403ede2d7752e59e0c47d5d33d73c2bf850e7be (2.37-154)
+-Fix-Commit: 2ef7850279b2931caf6d6d6743ebaa91839e1cf7 (2.36-227)
+-Fix-Commit: 621c65ccf12ddd415ceeb2234423bd1acd0fabb3 (2.35-387)
+-Fix-Commit: 35018c0fd20eac9ceaf60060fed2745b3177359d (2.34-517)
+diff --git a/advisories/GLIBC-SA-2025-0003 b/advisories/GLIBC-SA-2025-0003
+deleted file mode 100644
+index 2adeb3ce0062bcec6f23afdbe617e3501e9a74a2..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2025-0003
++++ /dev/null
+@@ -1,30 +0,0 @@
+-power10: strcmp fails to save and restore nonvolatile vector registers
+-
+-The Power 10 implementation of strcmp in
+-sysdeps/powerpc/powerpc64/le/power10/strcmp.S failed to save/restore
+-nonvolatile vector registers in the 32-byte aligned loop path.  This
+-results in callers reading content from those registers in a different
+-context, potentially altering program logic.
+-
+-There could be a program context where a user controlled string could
+-leak through strcmp into program code, thus altering its logic.  There
+-is also a potential for sensitive strings passed into strcmp leaking
+-through the clobbered registers into parts of the calling program that
+-should otherwise not have had access to those strings.
+-
+-The impact of this flaw is limited to applications running on Power 10
+-hardware that use the nonvolatile vector registers, i.e. v20 to v31
+-assuming that they have been treated in accordance with the OpenPower
+-psABI.  It is possible to work around the issue for those specific
+-applications by setting the glibc.cpu.hwcaps tunable to "-arch_3_1" like
+-so:
+-
+-    export GLIBC_TUNABLES=glibc.cpu.hwcaps=-arch_3_1
+-
+-CVE-Id: CVE-2025-5702
+-Public-Date: 2025-06-04
+-Vulnerable-Commit: 3367d8e180848030d1646f088759f02b8dfe0d6f (2.39)
+-Fix-Commit: 15808c77b35319e67ee0dc8f984a9a1a434701bc (2.42)
+-Fix-Commit: 0c76c951620f9e12df2a89b2c684878b55bb6795 (2.41-60)
+-Fix-Commit: 7e12550b8e3a11764a4a9090ce6bd3fc23fc8a8e (2.40-139)
+-Fix-Commit: 06a70769fd0b2e1f2a3085ad50ab620282bd77b3 (2.39-209)
+diff --git a/advisories/GLIBC-SA-2025-0004 b/advisories/GLIBC-SA-2025-0004
+deleted file mode 100644
+index 9409ca27c40d420db7d010cf17ab1b74dd294121..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2025-0004
++++ /dev/null
+@@ -1,29 +0,0 @@
+-power10: strncmp fails to save and restore nonvolatile vector registers
+-
+-The Power 10 implementation of strncmp in
+-sysdeps/powerpc/powerpc64/le/power10/strncmp.S failed to save/restore
+-nonvolatile vector registers in the 32-byte aligned loop path.  This
+-results in callers reading content from those registers in a different
+-context, potentially altering program logic.
+-
+-There could be a program context where a user controlled string could
+-leak through strncmp into program code, thus altering its logic.  There
+-is also a potential for sensitive strings passed into strncmp leaking
+-through the clobbered registers into parts of the calling program that
+-should otherwise not have had access to those strings.
+-
+-The impact of this flaw is limited to applications running on Power 10
+-hardware that use the nonvolatile vector registers, i.e. v20 to v31
+-assuming that they have been treated in accordance with the OpenPower
+-psABI.  It is possible to work around the issue for those specific
+-applications by setting the glibc.cpu.hwcaps tunable to "-arch_3_1" like
+-so:
+-
+-    export GLIBC_TUNABLES=glibc.cpu.hwcaps=-arch_3_1
+-
+-CVE-Id: CVE-2025-5745
+-Public-Date: 2025-06-05
+-Vulnerable-Commit: 23f0d81608d0ca6379894ef81670cf30af7fd081 (2.40)
+-Fix-Commit: 63c60101ce7c5eac42be90f698ba02099b41b965 (2.42)
+-Fix-Commit: 84bdbf8a6f2fdafd3661489dbb7f79835a52da82 (2.41-57)
+-Fix-Commit: 42a5a940c974d02540c8da26d6374c744d148cb9 (2.40-136)
+diff --git a/advisories/GLIBC-SA-2025-0005 b/advisories/GLIBC-SA-2025-0005
+deleted file mode 100644
+index 8bcccc59a546800624576e3a835b759d9ad1f1e0..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2025-0005
++++ /dev/null
+@@ -1,14 +0,0 @@
+-posix: Fix double-free after allocation failure in regcomp
+-
+-The regcomp function in the GNU C library version from 2.4 to 2.41 is
+-subject to a double free if some previous allocation fails. It can be
+-accomplished either by a malloc failure or by using an interposed
+-malloc that injects random malloc failures. The double free can allow
+-buffer manipulation depending of how the regex is constructed.
+-This issue affects all architectures and ABIs supported by the GNU C
+-library.
+-
+-CVE-Id: CVE-2025-8058
+-Public-Date: 2025-07-22
+-Vulnerable-Commit: 963d8d782fc98fb6dc3a66f0068795f9920c269d (2.3.3-1596)
+-Fix-Commit: 7ea06e994093fa0bcca0d0ee2c1db271d8d7885d (2.42)
+diff --git a/advisories/GLIBC-SA-2026-0001 b/advisories/GLIBC-SA-2026-0001
+deleted file mode 100644
+index 3e0ee3b3f43f2dd04a4860a0aa8656c10a33b46b..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2026-0001
++++ /dev/null
+@@ -1,41 +0,0 @@
+-Integer overflow in memalign leads to heap corruption
+-
+-Passing too large an alignment to the memalign suite of functions
+-(memalign, posix_memalign, aligned_alloc) in the GNU C Library version
+-2.30 to 2.42 may result in an integer overflow, which could consequently
+-result in a heap corruption.
+-
+-Note that the attacker must have control over both, the size as well as
+-the alignment arguments of the memalign function to be able to exploit
+-this.  The size parameter must be close enough to PTRDIFF_MAX so as to
+-overflow size_t along with the large alignment argument.  This limits
+-the malicious inputs for the alignment for memalign to the range [1<<62
+-+ 1, 1<<63] and exactly 1<<63 for posix_memalign and aligned_alloc.
+-
+-Typically the alignment argument passed to such functions is a known
+-constrained quantity (e.g. page size, block size, struct sizes) and is
+-not attacker controlled, because of which this may not be easily
+-exploitable in practice.  An application bug could potentially result in
+-the input alignment being too large, e.g. due to a different buffer
+-overflow or integer overflow in the application or its dependent
+-libraries, but that is again an uncommon usage pattern given typical
+-sources of alignments.
+-
+-CVE-Id: CVE-2026-0861
+-Public-Date: 2026-01-14
+-Vulnerable-Commit: 9bf8e29ca136094f73f69f725f15c51facc97206 (2.30)
+-Fix-Commit: c9188d333717d3ceb7e3020011651f424f749f93 (2.43)
+-Fix-Commit: 7f19ef14fbce095d4c77395e258320cad2ea2b28 (2.30-153)
+-Fix-Commit: f18446d7b4a423090ee5e328c36b3c2a0f26041c (2.31-166)
+-Fix-Commit: 8aef9e7a7af9565c0324b4ecb38b30dfa3782fd8 (2.32-151)
+-Fix-Commit: 011293b4fd748cdd6f95874ba2b6aba9a3df8bff (2.33-275)
+-Fix-Commit: 2c77e52108a58956c9f674b36e1f59a4e3fdcf4d (2.34-525)
+-Fix-Commit: 499d1ccafccfe64df1b88deea2fa84d8180e8e8f (2.35-399)
+-Fix-Commit: fb6b8822175769b5794fb6ea04f2895483a29b61 (2.36-244)
+-Fix-Commit: 7b913d41a07836def826f2164c52541a9835f324 (2.37-172)
+-Fix-Commit: 744b63026a29f7eedbbc8e3a01a7f48a6eb0a085 (2.38-212)
+-Fix-Commit: fb22fd3f5b415dd4cd6f7b5741c2f0412374e242 (2.39-286)
+-Fix-Commit: bfc4dd9e526eacf3017dd8864ba0848e9d045dd4 (2.40-216)
+-Fix-Commit: 1e2c1ea4307197ccece0cda574bcfebf9080894c (2.41-121)
+-Fix-Commit: b0ec8fb689df862171f0f78994a3bdeb51313545 (2.42-49)
+-Reported-by: Igor Morgenstern, Aisle Research
+diff --git a/advisories/GLIBC-SA-2026-0002 b/advisories/GLIBC-SA-2026-0002
+deleted file mode 100644
+index f10d8362f627fc8b86864a9d8c303c0878c25bae..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2026-0002
++++ /dev/null
+@@ -1,36 +0,0 @@
+-getnetbyaddr and getnetbyaddr_r leak stack contents to DNS resovler
+-
+-Calling getnetbyaddr or getnetbyaddr_r with a configured nsswitch.conf
+-that specifies the library's DNS backend for networks and queries for a
+-zero-valued network in the GNU C Library version 2.0 to version 2.42
+-can leak stack contents to the configured DNS resolver.
+-
+-A defect in the _nss_dns_getnetbyaddr_r function which implements
+-getnetbyaddr and getnetbyaddr_r in the dns-based network database can
+-pass stack contents unmodified to the configured DNS resolver as part of
+-the network DNS query when the network queried is the default network
+-i.e. net == 0x0.  This stack contents leaking in the query is considered
+-a loss of confidentiality for the host making the query.  Typically it
+-is rare to call these APIs with a net value of zero, and if an attacker
+-can control the net value it can only leak adjacent stack, and so loss
+-of confidentiality is spatially limited.  The leak might be used to
+-accelerate an ASLR bypass by knowing pointer values, but also requires
+-network adjacent access to snoop between the application and the
+-DNS server; making the attack complexity higher.
+-
+-CVE-Id: CVE-2026-0915
+-Public-Date: 2026-01-15
+-Vulnerable-Commit: 5f0e6fc702296840d2daa39f83f6cb1e40073d58 (1.92-1)
+-Fix-Commit: e56ff82d5034ec66c6a78f517af6faa427f65b0b (2.43)
+-Fix-Commit: 453e6b8dbab935257eb0802b0c97bca6b67ba30e (2.42-50)
+-Fix-Commit: 15c9839a0b853f552b4ed9047841b6223f3c104d (2.41-122)
+-Fix-Commit: 329c775788b2c9ff3da774ccf59fba7b6b8ff08e (2.40-217)
+-Fix-Commit: 831f63b94ceb92fb14c0d1a7ddad35a0d1404c71 (2.39-287)
+-Fix-Commit: 49125ffc8e1674dc2a100dfdc5b78796f22e16f2 (2.38-213)
+-Fix-Commit: ddcaed5dfb05b2c1a6ea842fd6b643501365450a (2.37-173)
+-Fix-Commit: a6bf47887f24b2b394acb301a3189fda04bd4d4d (2.36-245)
+-Fix-Commit: 66f0cb057c9b4fb1249a5fec6ef4a63511a37899 (2.35-400)
+-Fix-Commit: 96863dee262225cfb79f9fe45e06fd188319c7b8 (2.34-526)
+-Fix-Commit: d210011f1536c8322157cbb4fe4229b35c834c08 (2.33-276)
+-Fix-Commit: 1bc1832cfc74c2a601220969f36e789a5e9f0ebe (2.32-152)
+-Reported-by: Igor Morgenstern, Aisle Research
+diff --git a/advisories/GLIBC-SA-2026-0003 b/advisories/GLIBC-SA-2026-0003
+deleted file mode 100644
+index b7a6e83a1096b20e50613581f6de148302752ff3..0000000000000000000000000000000000000000
+--- a/advisories/GLIBC-SA-2026-0003
++++ /dev/null
+@@ -1,36 +0,0 @@
+-wordexp with WRDE_REUSE and WRDE_APPEND may return uninitialized memory
+-
+-Calling wordexp with WRDE_REUSE in conjunction with WRDE_APPEND in the
+-GNU C Library version 2.0 to version 2.42 may cause the interface to
+-return uninitialized memory in the we_wordv member, which on subsequent
+-calls to wordfree may abort the process.
+-
+-The implementation of WRDE_REUSE in conjunction with WRDE_APPEND fails
+-to clear the we_wordc member of the structure, and as such, when new
+-words are added internally, a leading we_wordc count number of entries
+-are skipped since they are assumed initialized.  These skipped entries
+-are not initialized, but are the contents of a realloc-expanded array of
+-pointers.  If the caller inspects the we_wordv array, it will
+-dereference invalid pointers and crash. If the caller calls wordfree,
+-the malloc implementation may detect the invalid pointers and abort the
+-process.  Calls to wordexp using WRDE_REUSE and WRDE_APPEND have never
+-worked correctly and thus the existence of applications that make use of
+-this feature is unlikely.
+-
+-CVE-Id: CVE-2025-15281
+-Public-Date: 2026-01-20
+-Vulnerable-Commit: 8f2ece695d8822e9ecc63ecd157e90bf17a6fe65 (1.93-260)
+-Fix-Commit: 80cc58ea2de214f85b0a1d902a3b668ad2ecb302 (2.43)
+-Fix-Commit: cbf39c26b25801e9bc88499b4fd361ac172d4125 (2.42-51)
+-Fix-Commit: fb4db64a04ad6c96cd1fbb7e02eb59323b1f2ac2 (2.41-123)
+-Fix-Commit: 9fe8576664d43b87ca19401fb6a975e217e47623 (2.40-218)
+-Fix-Commit: ce65d944e38a20cb70af2a48a4b8aa5d8fabe1cc (2.39-288)
+-Fix-Commit: d5409a1be010699794264162c551ba60f05ee6c3 (2.38-214)
+-Fix-Commit: ff2b172803f6bbd897755d2ce83ec4323a1a15b3 (2.37-174)
+-Fix-Commit: e97cfe2293ed097eb3d0b4c18274d22855e65130 (2.36-246)
+-Fix-Commit: bb59339d02faebac534a87eea50c83c948f35b77 (2.35-401)
+-Fix-Commit: 2b656ff94d72f93c84d8da2e7c76456c1994f02e (2.34-527)
+-Fix-Commit: 1d8ed2067a8a5d162a07670d0d063429679f17a0 (2.33-277)
+-Fix-Commit: 3a56c4ee4ea49b8f2391a2d8d6220013c4160a79 (2.32-153)
+-Fix-Commit: 28eb5caf895ced5d895cb02757e109004a2d33e5 (2.31-167)
+-Reported-by: Vitaly Simonovich
+diff --git a/advisories/README b/advisories/README
+deleted file mode 100644
+index b8f8a829ca5ca54d34d0ac562e0dc9a5e99e02d7..0000000000000000000000000000000000000000
+--- a/advisories/README
++++ /dev/null
+@@ -1,77 +0,0 @@
+-GNU C Library Security Advisory Format
+-======================================
+-
+-Security advisories in this directory follow a simple git commit log
+-format, with a heading and free-format description augmented with tags
+-to allow parsing key information.  References to code changes are
+-specific to the glibc repository and follow a specific format:
+-
+-  Tag-name: <commit-ref> (release-version)
+-
+-The <commit-ref> indicates a specific commit in the repository.  The
+-release-version indicates the publicly consumable release in which this
+-commit is known to exist.  The release-version is derived from the
+-git-describe format, (i.e. stripped out from glibc-2.34.NNN-gxxxx) and
+-is of the form 2.34-NNN.  If the -NNN suffix is absent, it means that
+-the change is in that release tarball, otherwise the change is on the
+-release/2.YY/master branch and not in any released tarball.
+-
+-The following tags are currently being used:
+-
+-CVE-Id:
+-This is the CVE-Id assigned under the CVE Program
+-(https://www.cve.org/).
+-
+-Public-Date:
+-The date this issue became publicly known.
+-
+-Vulnerable-Commit:
+-The commit that introduced this vulnerability.  There could be multiple
+-entries, one for each release branch in the glibc repository; the
+-release-version portion of this tag should tell you which branch this is
+-on.
+-
+-Fix-Commit:
+-The commit that fixed this vulnerability.  There could be multiple
+-entries for each release branch in the glibc repository, indicating that
+-all of those commits contributed to fixing that issue in each of those
+-branches.
+-
+-Reported-By:
+-The entity that reported this issue. There could be multiple entries, one for
+-each reporter.
+-
+-Adding an Advisory
+-------------------
+-
+-An advisory for a CVE needs to be added on the master branch in two steps:
+-
+-1. Add the text of the advisory without any Fix-Commit tags along with
+-   the fix for the CVE.  Add the Vulnerable-Commit tag, if applicable.
+-   The advisories directory does not exist in release branches, so keep
+-   the advisory text commit distinct from the code changes, to ease
+-   backports.  Ask for the GLIBC-SA advisory number from the security
+-   team.
+-
+-2. Finish all backports on release branches and then back on the msater
+-   branch, add all commit refs to the advisory using the Fix-Commit
+-   tags.  Don't bother adding the release-version subscript since the
+-   next step will overwrite it.
+-
+-3. Run the process-advisories.sh script in the scripts directory on the
+-   advisory:
+-
+-     scripts/process-advisories.sh update GLIBC-SA-YYYY-NNNN
+-
+-   (replace YYYY-NNNN with the actual advisory number).
+-
+-4. Verify the updated advisory and push the result.
+-
+-Getting a NEWS snippet from advisories
+---------------------------------------
+-
+-Run:
+-
+-  scripts/process-advisories.sh news
+-
+-and copy the content into the NEWS file.
+-- 
+2.43.7
+

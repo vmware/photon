@@ -3,7 +3,7 @@
 
 Name:         distcc
 Version:      3.4
-Release:      5%{?dist}
+Release:      6%{?dist}
 Summary:      Distributed C/C++ compilation
 URL:          https://github.com/distcc/distcc
 Group:        Applications/File
@@ -53,7 +53,7 @@ This package contains the compilation server needed to use %{name}.
 
 %build
 sh ./autogen.sh
-%{configure} --with-auth
+%{configure} --with-auth --disable-Werror
 make %{?_smp_mflags}
 
 %install
@@ -108,6 +108,8 @@ rm -rf %{buildroot}%{_docdir}/*
 %dir /usr/lib/gcc-cross
 
 %changelog
+* Sun Apr 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4-6
+- Fix build with newer glibc
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.4-5
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.4-4

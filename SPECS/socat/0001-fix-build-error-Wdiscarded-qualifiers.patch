@@ -1,0 +1,39 @@
+From a7a09f384445d3ca897d309bb75c135a2691cee3 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Sun, 19 Apr 2026 05:57:05 +0000
+Subject: [PATCH] fix build error -Wdiscarded-qualifiers
+
+---
+ filan.c   | 2 +-
+ xio-ip6.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/filan.c b/filan.c
+index dbc54f0..7d36986 100644
+--- a/filan.c
++++ b/filan.c
+@@ -1046,7 +1046,7 @@ const char *getfiletypestring(int st_mode) {
+ }
+ 
+ static int printtime(FILE *outfile, time_t time) {
+-   const char *s;
++   char *s;
+ 
+    if (filan_rawoutput) {
+       fprintf(outfile, "\t"F_time, time);
+diff --git a/xio-ip6.c b/xio-ip6.c
+index 8754198..636c22b 100644
+--- a/xio-ip6.c
++++ b/xio-ip6.c
+@@ -102,7 +102,7 @@ int xioip6_pton(const char *src, struct in6_addr *dst) {
+ }
+ 
+ int xioparsenetwork_ip6(const char *rangename, struct xiorange *range) {
+-   char *delimpos;	/* absolute address of delimiter */
++   const char *delimpos;/* absolute address of delimiter */
+    size_t delimind;	/* index of delimiter in string */
+    unsigned int bits;	/* netmask bits */
+    char *endptr;
+-- 
+2.43.7
+

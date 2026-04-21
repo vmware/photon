@@ -5,8 +5,8 @@
 
 Summary:        Main C library
 Name:           glibc
-Version:        2.36
-Release:        24%{?dist}
+Version:        2.43
+Release:        1%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -16,7 +16,7 @@ Source0: http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
-Source3:        v2.36.patches
+Source3:        v2.43.patches
 Source4:        license.txt
 %include        %{SOURCE4}
 
@@ -27,24 +27,6 @@ Patch1:         0002-malloc-arena-fix.patch
 #release branch patches
 #generate using ./tools/scripts/generate-glibc-release-patches.sh %{version}
 %include %{SOURCE3}
-
-# CVE-2025-4802 (skipped tests)
-Patch501: 0001-elf-Ignore-LD_LIBRARY_PATH-and-debug-env-var-for-set.patch
-Patch502: 0002-support-Use-const-char-argument-in-support_capture_s.patch
-Patch503: 0003-support-Add-support_record_failure_barrier.patch
-Patch504: 0004-support-Don-t-fail-on-fchown-when-spawning-sgid-proc.patch
-Patch505: 0005-support-Pick-group-in-support_capture_subprogram_sel.patch
-
-# CVE-2025-8058
-Patch506: 0001-posix-Fix-double-free-after-allocation-failure-in-re.patch
-Patch507: CVE-2025-0395.patch
-
-Patch508: 0001-memalign-reinstate-alignment-overflow-check-CVE-2026.patch
-Patch509: 0002-resolv-Fix-NSS-DNS-backend-for-getnetbyaddr-CVE-2026.patch
-Patch510: 0003-posix-Reset-wordexp_t-fields-with-WRDE_REUSE-CVE-202.patch
-
-Patch511: resolv-Count-records-correctly-CVE-2026-4437.patch
-Patch512: resolv-Check-hostname-for-validity-CVE-2026-4438.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -335,9 +317,6 @@ fi
 %{_libdir}/gconv/*
 %{_bindir}/iconv
 %{_sbindir}/iconvconfig
-# Mitigate CVE-2026-4046
-%exclude %{_libdir}/gconv/IBM1390.so
-%exclude %{_libdir}/gconv/IBM1399.so
 
 %files tools
 %defattr(-,root,root)
@@ -381,6 +360,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 27 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-1
+- Upgrade to glibc 2.43
 * Mon Apr 13 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-24
 - Mitigate CVE-2026-4046
 * Sun Mar 29 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-23

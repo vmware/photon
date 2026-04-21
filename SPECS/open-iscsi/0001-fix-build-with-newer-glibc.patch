@@ -1,0 +1,25 @@
+From 60ee158402d4136e86c3c314f1e0d42deda5f664 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Mon, 20 Apr 2026 08:16:34 +0000
+Subject: [PATCH] fix build with newer glibc
+
+---
+ usr/auth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/usr/auth.c b/usr/auth.c
+index 46c328e..fb79792 100644
+--- a/usr/auth.c
++++ b/usr/auth.c
+@@ -257,7 +257,7 @@ acl_chk_string(const char *s, unsigned int max_len, unsigned int *out_len)
+ static int
+ acl_str_index(const char *s, int c)
+ {
+-	char *str = strchr(s, c);
++	const char *str = strchr(s, c);
+ 
+ 	if (str)
+ 		return (str - s);
+-- 
+2.43.7
+

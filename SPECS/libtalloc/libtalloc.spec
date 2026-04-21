@@ -2,8 +2,8 @@
 
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
-Version:    2.4.1
-Release:    3%{?dist}
+Version:    2.4.4
+Release:    1%{?dist}
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -13,6 +13,8 @@ Source0: https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-Replace-memset_s-with-memset_explicit.patch
 
 BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
@@ -91,6 +93,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/pytalloc-util.cpython-314*linux-gnu.pc
 
 %changelog
+* Mon Apr 20 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.4-1
+- Upgrade and fix build with new glibc
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.1-3
 - Bump version as a part of python3.14 upgrade
 * Tue Jul 01 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.1-2

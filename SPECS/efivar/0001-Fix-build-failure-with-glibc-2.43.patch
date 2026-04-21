@@ -1,0 +1,158 @@
+From f521cd7f584c95d8308659ab9d89d750e2bd76da Mon Sep 17 00:00:00 2001
+From: Xi Ruoyao <xry111@xry111.site>
+Date: Sat, 14 Feb 2026 02:06:51 +0800
+Subject: [PATCH] Fix build failure with glibc 2.43
+
+In glibc 2.43, some _Generic macros have been added to preserve the
+constness of pointers.  They are following C23 but also available when
+_GNU_SOURCE is defined (as we are doing).  The preserved constness can
+trigger some -Wdiscarded-qualifiers warnings, which are turned to errors
+with -Werror (that we enable by default).
+
+The find_parent_devpath function really modifies the buffer so we have
+to drop the const qualifer for it.  For other cases, simply add the
+missed const qualifer.
+
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+---
+ src/guid.c            | 12 ++++++------
+ src/linux-acpi-root.c |  2 +-
+ src/linux-ata.c       |  4 ++--
+ src/linux-i2o.c       |  2 +-
+ src/linux.c           |  2 +-
+ src/linux.h           |  2 +-
+ 6 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/src/guid.c b/src/guid.c
+index f999fc4..1f4a660 100644
+--- a/src/guid.c
++++ b/src/guid.c
+@@ -78,13 +78,13 @@ cmpnamep(const void *p1, const void *p2)
+ }
+ 
+ static int NONNULL(1, 2)
+-_get_common_guidname(const efi_guid_t *guid, struct efivar_guidname **result)
++_get_common_guidname(const efi_guid_t *guid, const struct efivar_guidname **result)
+ {
+ 	struct efivar_guidname key;
+ 	memset(&key, '\0', sizeof(key));
+ 	memcpy(&key.guid, guid, sizeof(*guid));
+ 
+-	struct efivar_guidname *tmp;
++	const struct efivar_guidname *tmp;
+ 	tmp = bsearch(&key,
+ 		      &efi_well_known_guids[0],
+ 		      efi_n_well_known_guids,
+@@ -104,7 +104,7 @@ _get_common_guidname(const efi_guid_t *guid, struct efivar_guidname **result)
+ int NONNULL(1, 2) PUBLIC
+ efi_guid_to_name(efi_guid_t *guid, char **name)
+ {
+-	struct efivar_guidname *result;
++	const struct efivar_guidname *result;
+ 	int rc = _get_common_guidname(guid, &result);
+ 	if (rc >= 0) {
+ 		*name = strndup(result->name, sizeof(result->name) -1);
+@@ -119,7 +119,7 @@ efi_guid_to_name(efi_guid_t *guid, char **name)
+ int NONNULL(1, 2) PUBLIC
+ efi_guid_to_symbol(efi_guid_t *guid, char **symbol)
+ {
+-	struct efivar_guidname *result;
++	const struct efivar_guidname *result;
+ 	int rc = _get_common_guidname(guid, &result);
+ 	if (rc >= 0) {
+ 		*symbol = strndup(result->symbol, sizeof(result->symbol) -1);
+@@ -133,7 +133,7 @@ efi_guid_to_symbol(efi_guid_t *guid, char **symbol)
+ int NONNULL(1) PUBLIC
+ efi_guid_to_id_guid(const efi_guid_t *guid, char **sp)
+ {
+-	struct efivar_guidname *result = NULL;
++	const struct efivar_guidname *result = NULL;
+ 	char *ret = NULL;
+ 	int rc;
+ 
+@@ -201,7 +201,7 @@ efi_name_to_guid(const char *name, efi_guid_t *guid)
+ 
+ 	key.name[sizeof(key.name) - 1] = '\0';
+ 
+-	struct efivar_guidname *result;
++	const struct efivar_guidname *result;
+ 	result = bsearch(&key,
+ 			 &efi_well_known_names[0],
+ 			 efi_n_well_known_names,
+diff --git a/src/linux-acpi-root.c b/src/linux-acpi-root.c
+index c4c00e7..a45f0c9 100644
+--- a/src/linux-acpi-root.c
++++ b/src/linux-acpi-root.c
+@@ -35,7 +35,7 @@ parse_acpi_root(struct device *dev, const char *path, const char *root UNUSED)
+ 	uint16_t pad0;
+ 	uint8_t pad1;
+ 	char *acpi_header = NULL;
+-	char *colon;
++	const char *colon;
+ 
+ 	debug("entry");
+ 
+diff --git a/src/linux-ata.c b/src/linux-ata.c
+index 064a424..d8c9806 100644
+--- a/src/linux-ata.c
++++ b/src/linux-ata.c
+@@ -95,7 +95,7 @@ parse_ata(struct device *dev, const char *path, const char *root UNUSED)
+ 		return 0;
+ 	}
+ 
+-	char *host = strstr(path, "/host");
++	const char *host = strstr(path, "/host");
+ 	if (!host)
+ 		return -1;
+ 
+@@ -113,7 +113,7 @@ parse_ata(struct device *dev, const char *path, const char *root UNUSED)
+ 	dev->ata_info.scsi_target = scsi_target;
+ 	dev->ata_info.scsi_lun = scsi_lun;
+ 
+-	char *block = strstr(current, "/block/");
++	const char *block = strstr(current, "/block/");
+ 	if (block)
+ 		current += block + 1 - current;
+ 	debug("current:'%s' sz:%zd", current, current - path);
+diff --git a/src/linux-i2o.c b/src/linux-i2o.c
+index 3aea7d3..2cd1b48 100644
+--- a/src/linux-i2o.c
++++ b/src/linux-i2o.c
+@@ -32,7 +32,7 @@ parse_i2o(struct device *dev, const char *current, const char *root UNUSED)
+ 	        return 0;
+ 	}
+ 
+-	char *block = strstr(current, "/block/");
++	const char *block = strstr(current, "/block/");
+ 	ssize_t sz = block ? block + 1 - current : -1;
+ 	debug("current:'%s' sz:%zd", current, sz);
+ 	return sz;
+diff --git a/src/linux.c b/src/linux.c
+index 4344986..a0a0407 100644
+--- a/src/linux.c
++++ b/src/linux.c
+@@ -31,7 +31,7 @@
+ #include "efiboot.h"
+ 
+ int HIDDEN
+-find_parent_devpath(const char * const child, char **parent)
++find_parent_devpath(char * const child, char **parent)
+ {
+ 	int ret;
+ 	char *node;
+diff --git a/src/linux.h b/src/linux.h
+index 3489e9c..de3b5b0 100644
+--- a/src/linux.h
++++ b/src/linux.h
+@@ -161,7 +161,7 @@ extern int HIDDEN eb_nvme_ns_id(int fd, uint32_t *ns_id);
+ 
+ int HIDDEN get_sector_size(int filedes);
+ 
+-extern int HIDDEN find_parent_devpath(const char * const child,
++extern int HIDDEN find_parent_devpath(char * const child,
+ 				      char **parent);
+ 
+ extern ssize_t HIDDEN make_mac_path(uint8_t *buf, ssize_t size,
+-- 
+2.43.7
+

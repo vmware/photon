@@ -1,0 +1,32 @@
+From e8f7d4c7c57c1a1cf88654e58cc6d752417dbb19 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Sun, 12 Apr 2026 09:41:15 +0000
+Subject: [PATCH] Fix build with newer glibc
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Build fails with
+
+initialization discards ‘const’ qualifier from pointer target type
+[-Werror=discarded-qualifiers]
+---
+ src/selinux_config.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/selinux_config.c b/src/selinux_config.c
+index d2e49ee..261062f 100644
+--- a/src/selinux_config.c
++++ b/src/selinux_config.c
+@@ -283,7 +283,7 @@ const char *selinux_policy_root(void)
+ int selinux_set_policy_root(const char *path)
+ {
+ 	int i;
+-	char *policy_type = strrchr(path, '/');
++	const char *policy_type = strrchr(path, '/');
+ 	if (!policy_type) {
+ 		errno = EINVAL;
+ 		return -1;
+-- 
+2.43.7
+

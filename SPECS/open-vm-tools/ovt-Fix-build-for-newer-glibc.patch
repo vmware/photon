@@ -1,0 +1,146 @@
+From 6514cf40225162e34c8abea2312811eb9c77ee9e Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Thu, 23 Apr 2026 16:44:32 +0000
+Subject: [PATCH] ovt: Fix build for newer glibc
+
+Original patch from archlinux package
+open-vm-tools-gcc16.patch
+---
+ open-vm-tools/lib/hgfs/hgfsEscape.c            | 8 ++++----
+ open-vm-tools/lib/hgfsServer/hgfsServerLinux.c | 2 +-
+ open-vm-tools/lib/misc/strutil.c               | 4 ++--
+ open-vm-tools/lib/nicInfo/nicInfoPosix.c       | 2 +-
+ open-vm-tools/lib/rpcChannel/glib_stubs.c      | 4 ++++
+ open-vm-tools/libvmtools/i18n.c                | 2 +-
+ open-vm-tools/services/plugins/vix/vixTools.c  | 2 +-
+ 7 files changed, 14 insertions(+), 10 deletions(-)
+
+diff --git a/open-vm-tools/lib/hgfs/hgfsEscape.c b/open-vm-tools/lib/hgfs/hgfsEscape.c
+index c4d39b1..4baa264 100644
+--- a/open-vm-tools/lib/hgfs/hgfsEscape.c
++++ b/open-vm-tools/lib/hgfs/hgfsEscape.c
+@@ -198,7 +198,7 @@ HgfsAddEscapeCharacter(char const * bufIn,      // IN: input name
+       if (outputSpace < 2) {
+          return FALSE;
+       }
+-      illegal = strchr(HGFS_ILLEGAL_CHARS, bufIn[escapeContext->processedOffset]);
++      illegal = (char *)strchr(HGFS_ILLEGAL_CHARS, bufIn[escapeContext->processedOffset]);
+       escapeContext->processedOffset++;  // Skip illegal input character
+       ASSERT(illegal != NULL);
+       escapeContext->outputBuffer[escapeContext->outputOffset] =
+@@ -583,12 +583,12 @@ HgfsIsEscapeSequence(char const *bufIn,   // IN: input name
+          if (bufIn[offset - 2] == HGFS_ESCAPE_SUBSTITUE_CHAR) {
+             return TRUE;
+          }
+-         substitute = strchr(HGFS_SUBSTITUTE_CHARS, bufIn[offset - 2]);
++         substitute = (char *)strchr(HGFS_SUBSTITUTE_CHARS, bufIn[offset - 2]);
+          if (substitute != NULL) {
+             return TRUE;
+          }
+       }
+-      substitute = strchr(HGFS_SUBSTITUTE_CHARS, bufIn[offset - 1]);
++      substitute = (char *)strchr(HGFS_SUBSTITUTE_CHARS, bufIn[offset - 1]);
+       if (substitute != NULL) {
+          return TRUE;
+       }
+@@ -887,7 +887,7 @@ HgfsEscapeUndoComponent(char   *bufIn,             // IN: Characters to be unesc
+       size_t offset = escapePointer - bufIn;
+ 
+       if (HgfsIsEscapeSequence(bufIn, offset, sizeIn)) {
+-         char* substitute = strchr(HGFS_SUBSTITUTE_CHARS, bufIn[offset - 1]);
++         char* substitute = (char *)strchr(HGFS_SUBSTITUTE_CHARS, bufIn[offset - 1]);
+          if (substitute != NULL) {
+             bufIn[offset - 1] = HGFS_ILLEGAL_CHARS[substitute - HGFS_SUBSTITUTE_CHARS];
+          } else if (bufIn[offset - 1] == HGFS_ESCAPE_SUBSTITUE_CHAR) {
+diff --git a/open-vm-tools/lib/hgfsServer/hgfsServerLinux.c b/open-vm-tools/lib/hgfsServer/hgfsServerLinux.c
+index 4a0bc93..aa7c0c9 100644
+--- a/open-vm-tools/lib/hgfsServer/hgfsServerLinux.c
++++ b/open-vm-tools/lib/hgfsServer/hgfsServerLinux.c
+@@ -1369,7 +1369,7 @@ HgfsGetHiddenAttr(char const *fileName,         // IN:  Input filename
+    ASSERT(fileName);
+    ASSERT(attr);
+ 
+-   baseName = strrchr(fileName, DIRSEPC);
++   baseName = (char *)strrchr(fileName, DIRSEPC);
+ 
+    if ((baseName != NULL) &&
+        (baseName[1] == '.') &&
+diff --git a/open-vm-tools/lib/misc/strutil.c b/open-vm-tools/lib/misc/strutil.c
+index 4fc6502..451945a 100644
+--- a/open-vm-tools/lib/misc/strutil.c
++++ b/open-vm-tools/lib/misc/strutil.c
+@@ -1467,7 +1467,7 @@ StrUtil_ReplaceAll(const char *orig, // IN
+     lenWith = strlen(with);
+ 
+     current = orig;
+-    while ((tmp = strstr(current, what)) != NULL) {
++    while ((tmp = (char *)strstr(current, what)) != NULL) {
+        current = tmp + lenWhat;
+        ++occurrences;
+     }
+@@ -1705,7 +1705,7 @@ StrUtilHasListItem(char const *list,                               // IN:
+    do {
+       int tokenLen;
+ 
+-      foundDelim = strchr(list, delim);
++      foundDelim = (char *)strchr(list, delim);
+       if (foundDelim == NULL) { // either single or last element
+          tokenLen = strlen(list);
+       } else { // ! last element
+diff --git a/open-vm-tools/lib/nicInfo/nicInfoPosix.c b/open-vm-tools/lib/nicInfo/nicInfoPosix.c
+index 0135e6a..fd72ab3 100644
+--- a/open-vm-tools/lib/nicInfo/nicInfoPosix.c
++++ b/open-vm-tools/lib/nicInfo/nicInfoPosix.c
+@@ -266,7 +266,7 @@ IpEntryMatchesDevice(const char *devName,
+    char *p;
+    size_t n;
+ 
+-   if ((p = strchr(label, ':')) != NULL) {
++   if ((p = (char *)strchr(label, ':')) != NULL) {
+       n = p - label;
+    } else {
+       n = strlen(label);
+diff --git a/open-vm-tools/lib/rpcChannel/glib_stubs.c b/open-vm-tools/lib/rpcChannel/glib_stubs.c
+index c32deb0..47bb29f 100644
+--- a/open-vm-tools/lib/rpcChannel/glib_stubs.c
++++ b/open-vm-tools/lib/rpcChannel/glib_stubs.c
+@@ -33,6 +33,10 @@
+ #error "This file should be compiled for RPCI-only channel!"
+ #endif
+ 
++#undef g_malloc0
++#undef g_malloc0_n
++#undef g_free
++
+ void *g_malloc0(size_t s) { return Util_SafeCalloc(1, s); }
+ void *g_malloc0_n(size_t n, size_t s) { return Util_SafeCalloc(n, s); }
+ void g_free(void *p) { free(p); }
+diff --git a/open-vm-tools/libvmtools/i18n.c b/open-vm-tools/libvmtools/i18n.c
+index 3085f72..02e7a3d 100644
+--- a/open-vm-tools/libvmtools/i18n.c
++++ b/open-vm-tools/libvmtools/i18n.c
+@@ -698,7 +698,7 @@ VMTools_BindTextDomain(const char *domain,
+        * If we couldn't find the catalog file for the user's language, see if
+        * we can find a more generic language (e.g., for "en_US", also try "en").
+        */
+-      char *sep = Str_Strrchr(lang, '_');
++      char *sep = (char *)Str_Strrchr(lang, '_');
+       if (sep != NULL) {
+          if (usrlang == NULL) {
+             usrlang = Util_SafeStrdup(lang);
+diff --git a/open-vm-tools/services/plugins/vix/vixTools.c b/open-vm-tools/services/plugins/vix/vixTools.c
+index 46fb837..109bfe2 100644
+--- a/open-vm-tools/services/plugins/vix/vixTools.c
++++ b/open-vm-tools/services/plugins/vix/vixTools.c
+@@ -933,7 +933,7 @@ VixToolsBuildUserEnvironmentTable(const char * const *envp)   // IN: optional
+       char *whereToSplit;
+       size_t nameLen;
+ 
+-      whereToSplit = strchr(*envp, '=');
++      whereToSplit = (char *)strchr(*envp, '=');
+       if (NULL == whereToSplit) {
+          /* Our code generated this list, so this shouldn't happen. */
+          ASSERT(0);
+-- 
+2.43.7
+

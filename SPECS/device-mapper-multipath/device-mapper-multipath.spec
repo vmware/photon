@@ -1,7 +1,7 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
 Version:    0.9.4
-Release:    5%{?dist}
+Release:    6%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://christophe.varoqui.free.fr
@@ -11,6 +11,10 @@ Source0: https://github.com/opensvc/multipath-tools/archive/refs/tags/multipath-
 
 Source1: license.txt
 %include %{SOURCE1}
+
+%if 0%{photon_subrelease} >= 92
+Patch0: 0001-multipath-tools-Fix-ISO-C23-errors-with-strchr.patch
+%endif
 
 BuildRequires: userspace-rcu-devel
 BuildRequires: libaio-devel
@@ -100,6 +104,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+* Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.9.4-6
+- Fix build with newer glibc
 * Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.4-5
 - Bump for building with updated libaio
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.4-4

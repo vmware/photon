@@ -2,7 +2,7 @@
 
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
-Version:        3.5
+Version:        3.10
 Release:        1%{?dist}
 Group:          System Environment/Libraries
 URL:            http://www.selinuxproject.org
@@ -94,6 +94,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
+- Update to 3.10
 * Mon Dec 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
 - Update as part of libselinux update
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.4-4

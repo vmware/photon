@@ -1,0 +1,300 @@
+From d4575fbc7d1b855aee80d002c50da8b701237a43 Mon Sep 17 00:00:00 2001
+From: Andreas Schwab <schwab@suse.de>
+Date: Sun, 12 Apr 2026 15:19:43 +0000
+Subject: [PATCH] Fix const-correctness issues
+
+These were uncovered by the C23 const-preserving library macros.
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ debuginfod/debuginfod-client.c |  2 +-
+ libcpu/riscv_disasm.c          | 52 +++++++++++++++++-----------------
+ libdw/dwarf_getsrclines.c      |  6 ++--
+ src/readelf.c                  |  8 +++---
+ 4 files changed, 34 insertions(+), 34 deletions(-)
+
+diff --git a/debuginfod/debuginfod-client.c b/debuginfod/debuginfod-client.c
+index ef4d47e..cf86b66 100644
+--- a/debuginfod/debuginfod-client.c
++++ b/debuginfod/debuginfod-client.c
+@@ -1986,7 +1986,7 @@ int debuginfod_add_http_header (debuginfod_client *client, const char* header)
+   /* Sanity check header value is of the form Header: Value.
+      It should contain at least one colon that isn't the first or
+      last character.  */
+-  char *colon = strchr (header, ':'); /* first colon */
++  const char *colon = strchr (header, ':'); /* first colon */
+   if (colon == NULL /* present */
+       || colon == header /* not at beginning - i.e., have a header name */
+       || *(colon + 1) == '\0') /* not at end - i.e., have a value */
+diff --git a/libcpu/riscv_disasm.c b/libcpu/riscv_disasm.c
+index 823fe9c..33658a0 100644
+--- a/libcpu/riscv_disasm.c
++++ b/libcpu/riscv_disasm.c
+@@ -77,7 +77,7 @@ static const char *regnames[32] =
+     "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+     "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+   };
+-#define REG(nr) ((char *) regnames[nr])
++#define REG(nr) regnames[nr]
+ #define REGP(nr) REG (8 + (nr))
+ 
+ 
+@@ -88,7 +88,7 @@ static const char *fregnames[32] =
+     "fa6", "fa7", "fs2", "fs3", "fs4", "fs5", "fs6", "fs7",
+     "fs8", "fs9", "fs10", "fs11", "ft8", "ft9", "ft10", "ft11"
+   };
+-#define FREG(nr) ((char *) fregnames[nr])
++#define FREG(nr) fregnames[nr]
+ #define FREGP(nr) FREG (8 + (nr))
+ 
+ 
+@@ -163,9 +163,9 @@ riscv_disasm (Ebl *ebl,
+ 	  break;
+ 	}
+ 
+-      char *mne = NULL;
++      const char *mne = NULL;
+       char mnebuf[32];
+-      char *op[5] = { NULL, NULL, NULL, NULL, NULL };
++      const char *op[5] = { NULL, NULL, NULL, NULL, NULL };
+       char immbuf[32];
+       size_t len;
+       char *strp = NULL;
+@@ -397,7 +397,7 @@ riscv_disasm (Ebl *ebl,
+ 		    {
+ 		      "sub", "xor", "or", "and", "subw", "addw", NULL, NULL
+ 		    };
+-		  mne = (char *) arithmne[((first >> 10) & 0x4) | ((first >> 5) & 0x3)];
++		  mne = arithmne[((first >> 10) & 0x4) | ((first >> 5) & 0x3)];
+ 		}
+ 		op[0] = op[1] = REGP ((first >> 7) & 0x7);
+ 	      break;
+@@ -569,7 +569,7 @@ riscv_disasm (Ebl *ebl,
+ 		{
+ 		  NULL, NULL, "flw", "fld", "flq", NULL, NULL, NULL
+ 		};
+-	      mne = (char *) (idx == 0x00 ? loadmne[func] : floadmne[func]);
++	      mne = idx == 0x00 ? loadmne[func] : floadmne[func];
+ 	      break;
+ 	    case 0x03:
+ 	      // MISC-MEM
+@@ -592,8 +592,8 @@ riscv_disasm (Ebl *ebl,
+ 		  uint32_t succ = (word >> 24) & 0xf;
+ 		  if (pred != 0xf || succ != 0xf)
+ 		    {
+-		      op[0] = (char *) order[succ];
+-		      op[1] = (char *) order[pred];
++		      op[0] = order[succ];
++		      op[1] = order[pred];
+ 		     }
+ 		   mne = "fence";
+ 		}
+@@ -611,7 +611,7 @@ riscv_disasm (Ebl *ebl,
+ 		  "addi", NULL, "slti", "sltiu", "xori", NULL, "ori", "andi"
+ 		};
+ 	      func = (word >> 12) & 0x7;
+-	      mne = (char *) opimmmne[func];
++	      mne = opimmmne[func];
+ 	      if (mne == NULL)
+ 		{
+ 		  const uint64_t shiftmask = ebl->class == ELFCLASS32 ? 0x1f : 0x3f;
+@@ -694,7 +694,7 @@ riscv_disasm (Ebl *ebl,
+ 		{
+ 		  NULL, NULL, "fsw", "fsd", "fsq", NULL, NULL, NULL
+ 		};
+-	      mne = (char *) (idx == 0x08 ? storemne[func] : fstoremne[func]);
++	      mne = idx == 0x08 ? storemne[func] : fstoremne[func];
+ 	      break;
+ 	    case 0x0b:
+ 	      // AMO
+@@ -775,7 +775,7 @@ riscv_disasm (Ebl *ebl,
+ 		    }
+ 		  else
+ 		    {
+-		      mne = (char *) (idx == 0x0c ? arithmne2[func] : arithmne3[func]);
++		      mne = idx == 0x0c ? arithmne2[func] : arithmne3[func];
+ 		      op[1] = REG (rs1);
+ 		      op[2] = REG (rs2);
+ 		    }
+@@ -808,7 +808,7 @@ riscv_disasm (Ebl *ebl,
+ 		  op[2] = FREG (rs2);
+ 		  op[3] = FREG (rs3);
+ 		  if (rm != 0x7)
+-		    op[4] = (char *) rndmode[rm];
++		    op[4] = rndmode[rm];
+ 		}
+ 	      break;
+ 	    case 0x14:
+@@ -836,7 +836,7 @@ riscv_disasm (Ebl *ebl,
+ 		      op[1] = FREG (rs1);
+ 		      op[2] = FREG (rs2);
+ 		      if (rm != 0x7)
+-			op[3] = (char *) rndmode[rm];
++			op[3] = rndmode[rm];
+ 		    }
+ 		  else if (func == 0x1c && width != 2 && rs2 == 0 && rm <= 1)
+ 		    {
+@@ -947,7 +947,7 @@ riscv_disasm (Ebl *ebl,
+ 			}
+ 		      mne = mnebuf;
+ 		      if (rm != 0x7 && (func == 0x18 || width == 0 || rs2 >= 2))
+-			op[2] = (char *) rndmode[rm];
++			op[2] = rndmode[rm];
+ 		    }
+ 		  else if (func == 0x0b && rs2 == 0)
+ 		    {
+@@ -958,7 +958,7 @@ riscv_disasm (Ebl *ebl,
+ 		      *cp = '\0';
+ 		      mne = mnebuf;
+ 		      if (rm != 0x7)
+-			op[2] = (char *) rndmode[rm];
++			op[2] = rndmode[rm];
+ 		    }
+ 		  else if (func == 0x05 && rm < 2)
+ 		    {
+@@ -1004,7 +1004,7 @@ riscv_disasm (Ebl *ebl,
+ 		  "beq", "bne", NULL, NULL, "blt", "bge", "bltu", "bgeu"
+ 		};
+ 	      func = (word >> 12) & 0x7;
+-	      mne = (char *) branchmne[func];
++	      mne = branchmne[func];
+ 	      if (rs1 == 0 && func == 5)
+ 		{
+ 		  op[0] = op[1];
+@@ -1032,7 +1032,7 @@ riscv_disasm (Ebl *ebl,
+ 	      else if (func == 5 || func == 7)
+ 		{
+ 		  // binutils use these opcodes and the reverse parameter order
+-		  char *tmp = op[0];
++		  const char *tmp = op[0];
+ 		  op[0] = op[1];
+ 		  op[1] = tmp;
+ 		  mne = func == 5 ? "ble" : "bleu";
+@@ -1100,7 +1100,7 @@ riscv_disasm (Ebl *ebl,
+ 			{
+ 			  NULL, "frflags", "frrm", "frsr",
+ 			};
+-		      mne = (char *) unprivrw[csr - 0x000];
++		      mne = unprivrw[csr - 0x000];
+ 		    }
+ 		  else if (csr >= 0xc00 && csr <= 0xc03)
+ 		    {
+@@ -1108,7 +1108,7 @@ riscv_disasm (Ebl *ebl,
+ 			{
+ 			  "rdcycle", "rdtime", "rdinstret"
+ 			};
+-		      mne = (char *) unprivrolow[csr - 0xc00];
++		      mne = unprivrolow[csr - 0xc00];
+ 		    }
+ 		  op[0] = REG ((word >> 7) & 0x1f);
+ 		}
+@@ -1125,7 +1125,7 @@ riscv_disasm (Ebl *ebl,
+ 			{
+ 			  NULL, "fsflagsi", "fsrmi", NULL
+ 			};
+-		      mne = (char *) ((word & 0x4000) == 0 ? unprivrs : unprivrsi)[csr - 0x000];
++		      mne = ((word & 0x4000) == 0 ? unprivrs : unprivrsi)[csr - 0x000];
+ 
+ 		      if ((word & 0x4000) == 0)
+ 			op[0] = REG ((word >> 15) & 0x1f);
+@@ -1256,12 +1256,12 @@ riscv_disasm (Ebl *ebl,
+ 		  if (rd != 0)
+ 		    op[last++] = REG (rd);
+ 		  struct known_csrs key = { csr, NULL };
+-		  struct known_csrs *found = bsearch (&key, known,
+-						      sizeof (known) / sizeof (known[0]),
+-						      sizeof (known[0]),
+-						      compare_csr);
++		  const struct known_csrs *found = bsearch (&key, known,
++							    sizeof (known) / sizeof (known[0]),
++							    sizeof (known[0]),
++							    compare_csr);
+ 		  if (found)
+-		    op[last] = (char *) found->name;
++		    op[last] = found->name;
+ 		  else
+ 		    {
+ 		      snprintf (addrbuf, sizeof (addrbuf), "0x%" PRIx32, csr);
+@@ -1286,7 +1286,7 @@ riscv_disasm (Ebl *ebl,
+ 		  else if (instr == 3 && rd == 0)
+ 		    mne = "csrc";
+ 		  else
+-		    mne = (char *) mnecsr[instr];
++		    mne = mnecsr[instr];
+ 		}
+ 	      break;
+ 	    default:
+diff --git a/libdw/dwarf_getsrclines.c b/libdw/dwarf_getsrclines.c
+index df003c5..eafd68f 100644
+--- a/libdw/dwarf_getsrclines.c
++++ b/libdw/dwarf_getsrclines.c
+@@ -323,7 +323,7 @@ read_srclines (Dwarf *dbg,
+       const unsigned char *dirp = linep;
+       while (dirp < lineendp && *dirp != 0)
+ 	{
+-	  uint8_t *endp = memchr (dirp, '\0', lineendp - dirp);
++	  const uint8_t *endp = memchr (dirp, '\0', lineendp - dirp);
+ 	  if (endp == NULL)
+ 	    goto invalid_data;
+ 	  ++ndirs;
+@@ -399,7 +399,7 @@ read_srclines (Dwarf *dbg,
+       for (unsigned int n = 1; n < ndirlist; n++)
+ 	{
+ 	  dirarray[n].dir = (char *) linep;
+-	  uint8_t *endp = memchr (linep, '\0', lineendp - linep);
++	  const uint8_t *endp = memchr (linep, '\0', lineendp - linep);
+ 	  assert (endp != NULL); // Checked above when calculating ndirlist.
+ 	  dirarray[n].len = endp - linep;
+ 	  linep = endp + 1;
+@@ -787,7 +787,7 @@ read_srclines (Dwarf *dbg,
+ 	    case DW_LNE_define_file:
+ 	      {
+ 		char *fname = (char *) linep;
+-		uint8_t *endp = memchr (linep, '\0', lineendp - linep);
++		const uint8_t *endp = memchr (linep, '\0', lineendp - linep);
+ 		if (endp == NULL)
+ 		  goto invalid_data;
+ 		size_t fnamelen = endp - linep;
+diff --git a/src/readelf.c b/src/readelf.c
+index 3baaa63..d67d989 100644
+--- a/src/readelf.c
++++ b/src/readelf.c
+@@ -7614,7 +7614,7 @@ attr_callback (Dwarf_Attribute *attrp, void *arg)
+ 		    valuestr = dwarf_filesrc (files, num, NULL, NULL);
+ 		    if (valuestr != NULL)
+ 		      {
+-			char *filename = strrchr (valuestr, '/');
++			const char *filename = strrchr (valuestr, '/');
+ 			if (filename != NULL)
+ 			  valuestr = filename + 1;
+ 		      }
+@@ -8368,7 +8368,7 @@ print_form_data (Dwarf *dbg, int form, const unsigned char *readp,
+ 		 Dwarf_Off str_offsets_base)
+ {
+   Dwarf_Word val;
+-  unsigned char *endp;
++  const unsigned char *endp;
+   Elf_Data *data;
+   char *str;
+   switch (form)
+@@ -8860,7 +8860,7 @@ print_debug_line_section (Dwfl_Module *dwflmod, Ebl *ebl, GElf_Ehdr *ehdr,
+ 	{
+ 	  while (linep < lineendp && *linep != 0)
+ 	    {
+-	      unsigned char *endp = memchr (linep, '\0', lineendp - linep);
++	      const unsigned char *endp = memchr (linep, '\0', lineendp - linep);
+ 	      if (unlikely (endp == NULL))
+ 		goto invalid_unit;
+ 
+@@ -9094,7 +9094,7 @@ print_debug_line_section (Dwfl_Module *dwflmod, Ebl *ebl, GElf_Ehdr *ehdr,
+ 		case DW_LNE_define_file:
+ 		  {
+ 		    char *fname = (char *) linep;
+-		    unsigned char *endp = memchr (linep, '\0',
++		    const unsigned char *endp = memchr (linep, '\0',
+ 						  lineendp - linep);
+ 		    if (unlikely (endp == NULL))
+ 		      goto invalid_unit;
+-- 
+2.43.7
+

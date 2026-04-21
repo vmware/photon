@@ -1,0 +1,58 @@
+From ce1013a197eb4a3b8ff2b07e0672f4d0b976ce7c Mon Sep 17 00:00:00 2001
+From: Michael Jeanson <mjeanson@efficios.com>
+Date: Fri, 20 Feb 2026 11:01:00 -0500
+Subject: [PATCH 21/22] tests: fix tst-rseq with Linux 7.0
+
+A sub-test of tst-rseq is to validate the return code and errno of the
+rseq syscall when attempting to register the exact same rseq area as was
+done in the dynamic loader.
+
+This involves finding the rseq area address by adding the
+'__rseq_offset' to the thread pointer and calculating the area size from
+the AT_RSEQ_FEATURE_SIZE auxiliary vector. However the test currently
+calculates the size of the rseq area allocation in the TLS block which
+must be a multiple of AT_RSEQ_ALIGN.
+
+Up until now that happened to be the same value since the feature size
+and alignment exposed by the kernel were below the minimum ABI size of
+32. Starting with Linux 7.0 the feature size has reached 33 while the
+alignment is now 64.
+
+This results in the test trying to re-register the rseq area with a
+different size and thus not getting the expected errno value.
+
+Signed-off-by: Michael Jeanson <mjeanson@efficios.com>
+Reviewed-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+(cherry picked from commit 67f303b47dc584f204e3f2441b9832082415eebc)
+---
+ sysdeps/unix/sysv/linux/tst-rseq.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/sysdeps/unix/sysv/linux/tst-rseq.c b/sysdeps/unix/sysv/linux/tst-rseq.c
+index 11371dc6c57901d13054c7edbe551fa242bade9b..ba93d390f4617eaff4c3649f7057d8560a1b0596 100644
+--- a/sysdeps/unix/sysv/linux/tst-rseq.c
++++ b/sysdeps/unix/sysv/linux/tst-rseq.c
+@@ -48,8 +48,7 @@ do_rseq_main_test (void)
+   size_t rseq_align = MAX (getauxval (AT_RSEQ_ALIGN), RSEQ_MIN_ALIGN);
+   size_t rseq_feature_size = MAX (getauxval (AT_RSEQ_FEATURE_SIZE),
+                                   RSEQ_AREA_SIZE_INITIAL_USED);
+-  size_t rseq_alloc_size = roundup (MAX (rseq_feature_size,
+-                                    RSEQ_AREA_SIZE_INITIAL_USED), rseq_align);
++  size_t rseq_reg_size = MAX (rseq_feature_size, RSEQ_AREA_SIZE_INITIAL);
+   struct rseq *rseq_abi = __thread_pointer () + __rseq_offset;
+ 
+   TEST_VERIFY_EXIT (rseq_thread_registered ());
+@@ -89,8 +88,8 @@ do_rseq_main_test (void)
+   /* Test a rseq registration with the same arguments as the internal
+      registration which should fail with errno == EBUSY.  */
+   TEST_VERIFY (((unsigned long) rseq_abi % rseq_align) == 0);
+-  TEST_VERIFY (__rseq_size <= rseq_alloc_size);
+-  int ret = syscall (__NR_rseq, rseq_abi, rseq_alloc_size, 0, RSEQ_SIG);
++  TEST_VERIFY (__rseq_size <= rseq_reg_size);
++  int ret = syscall (__NR_rseq, rseq_abi, rseq_reg_size, 0, RSEQ_SIG);
+   TEST_VERIFY (ret != 0);
+   TEST_COMPARE (errno, EBUSY);
+ }
+-- 
+2.43.7
+

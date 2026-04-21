@@ -1,19 +1,19 @@
 sources:
-- archive: tevent-0.15.0.tar.gz
-  archive_sha512sum: 470cc4489255a4f122ba1d680669589ba375d4081ff46631dd56f5104202d175bfb13356820eb9108a6b768b3837b2f5d26cc7b0acc3071c4787fb070df3cbab
+- archive: tevent-0.17.1.tar.gz
+  archive_sha512sum: 781f8aced9ad135e64ce3953a013434feb84a6945ccfbce58a6ff21cb3da48af1e32324a5a950a55256a02545c2e1808a4cd8b209a3f970375347c8b390df258
   skip_validation: true
   archive_type: None
-  name: tevent-0.15.0
-  version: 0.15.0
-  url: https://download.samba.org/pub/tevent/tevent-0.15.0.tar.gz
-  repo_url: https://gitlab.com/samba-team/samba/-/tree/master/lib/tevent
-  commit_id: 6a80d170bca0c938f78ab12e37481b52792a9d83
+  name: tevent-0.17.1
+  version: 0.17.1
+  url: https://download.samba.org/pub/tevent/tevent-0.17.1.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba/
+  commit_id: ebf4c4773733d2aae14c96f70681211ae40c1c18
   skip_list: []
   missing: []
   license_manual_review:
   - file_paths:
-    - tevent-0.15.0/lib/talloc/man/talloc.3.xml
-    sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
+    - tevent-0.17.1/lib/talloc/man/talloc.3.xml
+    sha256sum: 8e5ca81cdafeb321224f9a26ab41c58c336c248f333d9957267f674cd25a1184
     spdx_exp: LGPL-3.0-or-later
   spdx:
     package:

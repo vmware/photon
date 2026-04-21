@@ -1,27 +1,19 @@
 sources:
-- archive: libsemanage-3.5.tar.gz
-  archive_sha512sum: 959fbd0d6bc6849da6caa13dc41c3f8818cbbd29f04b5d2ac7246c4b395b4f370f113a04cc9cfcb52be2afebfa636013ac4ad4011384c58c7ce066a45cae2751
-  archive_type: upstream
-  skip_validation: false
-  name: libsemanage-3.5
-  version: "3.5"
-  url: https://github.com/SELinuxProject/selinux/releases/download/3.5/libsemanage-3.5.tar.gz
-  repo_url: https://github.com/SELinuxProject/selinux/
-  commit_id: d6e96c5929a3f1aa1dce93505edd9f0158757ac2
-  missing: ['README.md', '.travis.yml', 'mcstrans', 'example', 'CONTRIBUTING.md', 'gui', 'scripts', 'libsepol', 'policycoreutils', 'libsemanage', 'secilc', 'SECURITY.md', 'CleanSpec.mk', 'include', 'man', 'restorecond', '.circleci', 'src', '.github', 'lgtm.yml', 'semodule-utils', 'dbus', 'tests', 'checkpolicy', 'utils', 'sandbox', 'python', 'libselinux']
-  skip_list: ['.gitignore', 'Makefile', 'LICENSE']
+- archive: libsemanage-3.10.tar.gz
+  archive_sha512sum: e07cb1d7e145b3baa2fb857c043c8ede7581d29fbb6a59709ebbee73097c12768e8b77eab35b4394efc0a655f3d266cdf7b08ac69759d6989d41e4213fe8aafd
+  skip_validation: true
   spdx:
     package:
-      detailed_description: "Security-enhanced Linux is a feature of the Linux\xAE\
-        \ kernel and a number of utilities with enhanced security functionality designed\
-        \ to add mandatory access controls to Linux.  The Security-enhanced Linux\
-        \ kernel contains new architectural components originally developed to improve\
-        \ the security of the Flask operating system. These architectural components\
-        \ provide general support for the enforcement of many kinds of mandatory access\
-        \ control policies, including those based on the concepts of Type Enforcement\xAE\
-        , Role-based Access Control, and Multi-level Security. "
+      detailed_description: 'Security-enhanced Linux is a feature of the Linux® kernel
+        and a number of utilities with enhanced security functionality designed to
+        add mandatory access controls to Linux.  The Security-enhanced Linux kernel
+        contains new architectural components originally developed to improve the
+        security of the Flask operating system. These architectural components provide
+        general support for the enforcement of many kinds of mandatory access control
+        policies, including those based on the concepts of Type Enforcement®, Role-based
+        Access Control, and Multi-level Security. '
       home_page: https://github.com/SELinuxProject/selinux/wiki
       license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later
-      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later 
       short_summary: SELinux policy management libraries
       supplier: 'Organization: Broadcom, Inc.'

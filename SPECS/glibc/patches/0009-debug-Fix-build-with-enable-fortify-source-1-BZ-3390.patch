@@ -1,0 +1,34 @@
+From 911bd469f80c6378da9319fe7508d012f95fc20c Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Thu, 26 Feb 2026 09:49:19 -0300
+Subject: [PATCH 09/22] debug: Fix build with --enable-fortify-source=1 (BZ
+ 33904)
+
+The libio/bits/stdio2-decl.h only defined the prototypes for
+__vasprintf_chk and __vfprintf_chk for __USE_FORTIFY_LEVEL > 1.
+Also defined them for the internal header regardless.
+
+Checked with a build with --enable-fortify-source=1 and
+--enable-fortify-source=2 for all afftected ABIs.
+
+(cherry picked from commit f96e9bd2fecce3f0284479a5c0dac6989736c8c8)
+---
+ include/bits/stdio2-decl.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/bits/stdio2-decl.h b/include/bits/stdio2-decl.h
+index 9758bf4b557e77ab97386ae5f1802b5c76f1d906..97c2236f2485c0b0199db7430c3d8a72f923afe2 100644
+--- a/include/bits/stdio2-decl.h
++++ b/include/bits/stdio2-decl.h
+@@ -3,6 +3,8 @@
+ #ifndef _ISOMAC
+ libc_hidden_proto (__fgets_unlocked_chk)
+ libc_hidden_ldbl_proto (vfprintf)
++extern int __vasprintf_chk (char **, int, const char *, __gnuc_va_list) __THROW;
+ libc_hidden_ldbl_proto (__vasprintf_chk)
++extern int __vfprintf_chk (FILE *, int, const char *, __gnuc_va_list);
+ libc_hidden_ldbl_proto (__vfprintf_chk)
+ #endif
+-- 
+2.43.7
+

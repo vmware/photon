@@ -1,6 +1,6 @@
 sources:
-- archive: nfs-utils-2.6.2.tar.xz
-  archive_sha512sum: 60ef0dc1842fe751c142313d41e3494a0d2bd8db4b859e970456b711688a606938273f3b43fe66ba9725e0b4e7dc7301e7358504b2f1d2da60cbd3b9f171c103
+- archive: nfs-utils-2.9.1.tar.xz
+  archive_sha512sum: 9bec0f8f2670c6f255de1f4b323ddd79a11f20b54d643bdae15d136a4e283bfc1ad0789a0e72a48fca905a7ad203d0540e429c24be23e4137987f9833c73f79e
   skip_validation: true
   spdx:
     package:

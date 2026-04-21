@@ -2,7 +2,7 @@
 
 Summary:        SELinux policy core utilities
 Name:           policycoreutils
-Version:        3.5
+Version:        3.10
 Release:        1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -50,6 +50,8 @@ rm -rf %{buildroot}%{_datadir}/locale \
 %{_mandir}/man8/*
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
+- Update to 3.10
 * Thu Dec 18 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1
 - Update to 3.5 as part of libselinux & python3 update
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-2

@@ -1,0 +1,133 @@
+From 26953143787bf2f7e9a0bf88749f547efe029e67 Mon Sep 17 00:00:00 2001
+From: Xi Ruoyao <xry111@xry111.site>
+Date: Tue, 3 Feb 2026 16:20:12 +0800
+Subject: [PATCH 18/22] elf: parse /proc/self/maps as the last resort to find
+ the gap for tst-link-map-contiguous-ldso
+
+The initialization process of libc.so calls mmap() several times and the
+kernel may lay the maps into the gap.  If all pages in the gap are
+occupied, the test would not be able to find the gap with mmap() and the
+test would fail.
+
+The failure reproduces most frequently on LoongArch because with the
+commonly used page size (16 KiB) the gap only contains 4 pages and the
+probability they are all occupied is not near to zero.
+
+With the changes in the patch, a test run may output:
+
+    info: ld.so link map is not contiguous
+    info: object "/dev/zero" found at 0x7ffff1fe0000 - 0x7ffff1fe4000
+    info: anonymous mapping found at 0x7ffff1fe4000 - 0x7ffff1fec000
+
+Also take the chance to fix a mistake in the "object found at" message
+which has puzzled me during the initial debug session.
+
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit aed8390a6a22e5751fc12704c0c5f2a8271fc286)
+---
+ elf/tst-link-map-contiguous-ldso.c | 64 +++++++++++++++++++++++++++++-
+ 1 file changed, 62 insertions(+), 2 deletions(-)
+
+diff --git a/elf/tst-link-map-contiguous-ldso.c b/elf/tst-link-map-contiguous-ldso.c
+index 9f97b8b95a26f4f3a3ebe577cc7ad9e4aae90b34..4d04d37581c3b6a6fc48ae3a2d00a08b0d5f38bc 100644
+--- a/elf/tst-link-map-contiguous-ldso.c
++++ b/elf/tst-link-map-contiguous-ldso.c
+@@ -18,15 +18,73 @@
+ 
+ #include <dlfcn.h>
+ #include <gnu/lib-names.h>
++#include <inttypes.h>
+ #include <link.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <support/check.h>
++#include <support/support.h>
+ #include <support/xdlfcn.h>
+ #include <support/xunistd.h>
++#include <support/xstdio.h>
+ #include <sys/mman.h>
+ #include <unistd.h>
+ 
++/* Slow path in case we cannot find a gap with mmap (when the runtime has
++   mapped all the pages in the gap for some reason).  */
++static bool
++find_gap_with_proc_self_map (const struct link_map *l)
++{
++  int pagesize = getpagesize ();
++
++  support_need_proc ("Reads /proc/self/maps to find gap in ld.so mapping");
++
++  /* Parse /proc/self/maps and find all the mappings in the ld.so range
++     but not from ld.so.  */
++  FILE *f = xfopen ("/proc/self/maps", "r");
++  char *line = NULL, *path_ldso = NULL;
++  size_t len;
++  bool found = false;
++  while (xgetline (&line, &len, f))
++    {
++      uintptr_t from, to;
++      char *path = NULL;
++      int r = sscanf (line, "%" SCNxPTR "-%" SCNxPTR "%*s%*s%*s%*s%ms",
++                      &from, &to, &path);
++
++      TEST_VERIFY (r == 2 || r == 3);
++      TEST_COMPARE (from % pagesize, 0);
++      TEST_COMPARE (to % pagesize, 0);
++
++      if (path_ldso == NULL && l->l_map_start == from)
++        {
++          TEST_COMPARE (r, 3);
++          path_ldso = path;
++          continue;
++        }
++
++      if (from > l->l_map_start && to < l->l_map_end
++          && (r == 2 || (path_ldso != NULL && strcmp (path, path_ldso))))
++        {
++          if (r == 2)
++            printf ("info: anonymous mapping found at 0x%" PRIxPTR " - 0x%"
++                    PRIxPTR "\n", from, to);
++          else
++            printf ("info: object \"%s\" found at 0x%" PRIxPTR " - 0x%"
++                    PRIxPTR "\n", path, from, to);
++
++          found = true;
++        }
++
++      free (path);
++    }
++
++  free (path_ldso);
++  free (line);
++  xfclose (f);
++  return found;
++}
++
+ static int
+ do_test (void)
+ {
+@@ -64,16 +122,18 @@ do_test (void)
+               if ((void *) dlfo.dlfo_link_map != (void *) l)
+                 {
+                   printf ("info: object \"%s\" found at %p\n",
+-                          dlfo.dlfo_link_map->l_name, ptr);
++                          dlfo.dlfo_link_map->l_name, expected);
+                   gap_found = true;
+                 }
+             }
+           else
+             TEST_COMPARE (dlfo_ret, -1);
++
+           xmunmap (ptr, 1);
+           addr += pagesize;
+         }
+-      if (!gap_found)
++
++      if (!gap_found && !find_gap_with_proc_self_map (l))
+         FAIL ("no ld.so gap found");
+     }
+   else
+-- 
+2.43.7
+

@@ -1,0 +1,62 @@
+From 13068a7e0659e38e7304d3db439ad0f805dd962a Mon Sep 17 00:00:00 2001
+From: Sven Geuer <68420948@users.noreply.github.com>
+Date: Wed, 25 Feb 2026 21:14:05 +0100
+Subject: [PATCH] Fix fail to build with glibc 2.43
+
+Glibc 2.43 comes with '#define _XOPEN_SOURCE 800' which causes the
+following errors:
+
+In file included from utmp.c:31:
+../../src/snoopy.h:31:10: error: '_XOPEN_SOURCE' redefined [-Werror]
+   31 | #define  _XOPEN_SOURCE   700
+      |          ^~~~~~~~~~~~~
+In file included from /usr/include/utmp.h:21,
+                 from utmp-snoopy.h:27,
+                 from utmp.c:26:
+/usr/include/features.h:234:10: note: this is the location of the previous definition
+  234 | # define _XOPEN_SOURCE  800
+      |          ^~~~~~~~~~~~~
+
+domain.c: In function 'snoopy_datasource_domain':
+domain.c:126:17: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+  126 |         hashPtr = strchr(linePtr, '#');
+      |                 ^
+
+This patch guards the '#define  _XOPEN_SOURCE   700' in snoopy.h and
+drops the 'const' qualifier from the variable 'linePtr' resulting in
+building snoopy successfully using glibc 2.43.
+---
+ src/datasource/domain.c | 2 +-
+ src/snoopy.h            | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/datasource/domain.c b/src/datasource/domain.c
+index 2ac830c..4be12bb 100644
+--- a/src/datasource/domain.c
++++ b/src/datasource/domain.c
+@@ -114,7 +114,7 @@ int snoopy_datasource_domain (char * const result, __attribute__((unused)) char
+ 
+ 
+     /* Read line by line */
+-    const char *linePtr;
++    char *linePtr;
+     char *hashPtr;
+     char *lineEntryPtr;
+     char *savePtr;
+diff --git a/src/snoopy.h b/src/snoopy.h
+index 68d461d..321fcb7 100644
+--- a/src/snoopy.h
++++ b/src/snoopy.h
+@@ -28,7 +28,9 @@
+  * - prevents GCC from complaining about not using strerror_r return value
+  * - enables strdup() presence
+  */
++#ifndef  _XOPEN_SOURCE
+ #define  _XOPEN_SOURCE   700
++#endif
+ 
+ 
+ 
+-- 
+2.43.7
+

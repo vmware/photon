@@ -7,7 +7,7 @@
 
 Name:           libldb
 Version:        2.8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A schema-less, ldap like, API and database
 Distribution:   Photon
 Vendor:         VMware, Inc.
@@ -18,6 +18,8 @@ Source0: https://www.samba.org/ftp/ldb/ldb-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-fix-memset_explicit-usage-for-newer-glibc.patch
 
 BuildRequires: cmocka-devel >= %{cmocka_version}
 BuildRequires: gcc
@@ -157,6 +159,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Fri Apr 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.2-4
+- Fix build with latest glibc
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.2-3
 - Bump version as a part of python3.14 upgrade
 * Tue Jul 01 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-2

@@ -1,33 +1,23 @@
 sources:
-- archive: libsepol-3.5.tar.gz
-  archive_type: "upstream"
-  archive_sha512sum: 66f45a9f4951589855961955db686b006b4c0cddead6ac49ad238a0e4a34775905bd10fb8cf0c0ff2ab64f9b7d8366b97fcd5b19c382dec39971a2835cc765c8
-  skip_validation: false
-  version: "3.5"
-  name: libsepol-3.5
-  url: https://github.com/SELinuxProject/selinux/releases/download/3.5/libsepol-3.5.tar.gz
-  repo_url: https://github.com/SELinuxProject/selinux
-  commit_id: d6e96c5929a3f1aa1dce93505edd9f0158757ac2
-  skip_list: ['LICENSE', 'Makefile', '.gitignore']
-  missing: ['semodule-utils', 'lgtm.yml', 'cil', '.travis.yml', 'tests', 'mcstrans', 'fuzz', 'libselinux', 'include', '.circleci', 'README.md', 'CleanSpec.mk', 'man', '.github', 'libsemanage', 'secilc', 'CONTRIBUTING.md', 'sandbox', 'dbus', 'SECURITY.md', 'gui', 'libsepol', 'python', 'src', 'utils', 'scripts', 'policycoreutils', 'restorecond', 'checkpolicy']
+- archive: libsepol-3.10.tar.gz
+  archive_sha512sum: 95a12779a41577d02a13922d1a484954a6b041b3be9a76836e179ab3a4e4b83b90df63e3a3f32b0862466ed8748280fa9b820f8dc96a3887bcdde081947e7450
+  skip_validation: true
   spdx:
     package:
-      detailed_description: "Security-enhanced Linux is a feature of the Linux\xAE\
-        \ kernel and a number of utilities with enhanced security functionality designed\
-        \ to add mandatory access controls to Linux.  The Security-enhanced Linux\
-        \ kernel contains new architectural components originally developed to improve\
-        \ the security of the Flask operating system. These architectural components\
-        \ provide general support for the enforcement of many kinds of mandatory access\
-        \ control policies, including those based on the concepts of Type Enforcement\xAE\
-        , Role-based Access Control, and Multi-level Security.  libsepol provides\
-        \ an API for the manipulation of SELinux binary policies. It is used by checkpolicy\
-        \ (the policy compiler) and similar tools, as well as by programs like load_policy\
-        \ that need to perform specific transformations on binary policies such as\
-        \ customizing policy boolean settings. "
+      detailed_description: 'Security-enhanced Linux is a feature of the Linux® kernel
+        and a number of utilities with enhanced security functionality designed to
+        add mandatory access controls to Linux.  The Security-enhanced Linux kernel
+        contains new architectural components originally developed to improve the
+        security of the Flask operating system. These architectural components provide
+        general support for the enforcement of many kinds of mandatory access control
+        policies, including those based on the concepts of Type Enforcement®, Role-based
+        Access Control, and Multi-level Security.  libsepol provides an API for the
+        manipulation of SELinux binary policies. It is used by checkpolicy (the policy
+        compiler) and similar tools, as well as by programs like load_policy that
+        need to perform specific transformations on binary policies such as customizing
+        policy boolean settings. '
       home_page: http://www.selinuxproject.org
-      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND BSD-2-Clause-Views
-        AND Zlib AND GPL-2.0-or-later
-      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later AND BSD-2-Clause-Views
-        AND Zlib AND GPL-2.0-or-later
+      license_concluded: LGPL-2.1-only AND LGPL-2.1-or-later AND BSD-2-Clause-Views AND Zlib AND GPL-2.0-or-later
+      license_declared: LGPL-2.1-only AND LGPL-2.1-or-later AND BSD-2-Clause-Views AND Zlib AND GPL-2.0-or-later
       short_summary: SELinux binary policy manipulation library
       supplier: 'Organization: Broadcom, Inc.'

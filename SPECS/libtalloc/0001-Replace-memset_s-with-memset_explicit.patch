@@ -1,0 +1,102 @@
+From db9c73341057189ac169699f53762ddb1c368a35 Mon Sep 17 00:00:00 2001
+From: Andreas Schneider <asn@samba.org>
+Date: Mon, 20 Apr 2026 16:41:06 +0000
+Subject: [PATCH] Replace memset_s() with memset_explicit()
+
+Signed-off-by: Andreas Schneider <asn@samba.org>
+Reviewed-by: Douglas Bagnall <douglas.bagnall@catalyst.net.nz>
+[vamsi: Modified to suit talloc]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ lib/replace/replace.h | 18 +++++++++---------
+ talloc.c              |  2 +-
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/lib/replace/replace.h b/lib/replace/replace.h
+index 4923e1f..5625614 100644
+--- a/lib/replace/replace.h
++++ b/lib/replace/replace.h
+@@ -811,50 +811,50 @@ typedef unsigned long long ptrdiff_t ;
+ /**
+  * Zero a structure.
+  */
+-#define ZERO_STRUCT(x) memset_s((char *)&(x), sizeof(x), 0, sizeof(x))
++#define ZERO_STRUCT(x) memset_explicit((char *)&(x), 0, sizeof(x))
+ 
+ /**
+  * Zero a structure given a pointer to the structure.
+  */
+ #define ZERO_STRUCTP(x) do { \
+ 	if ((x) != NULL) { \
+-		memset_s((char *)(x), sizeof(*(x)), 0, sizeof(*(x))); \
++		memset_explicit((char *)(x), 0, sizeof(*(x))); \
+ 	} \
+ } while(0)
+ 
+ /**
+  * Zero a structure given a pointer to the structure - no zero check
+  */
+-#define ZERO_STRUCTPN(x) memset_s((char *)(x), sizeof(*(x)), 0, sizeof(*(x)))
++#define ZERO_STRUCTPN(x) memset_explicit((char *)(x), 0, sizeof(*(x)))
+ 
+ /**
+  * Zero an array - note that sizeof(array) must work - ie. it must not be a
+  * pointer
+  */
+-#define ZERO_ARRAY(x) memset_s((char *)(x), sizeof(x), 0, sizeof(x))
++#define ZERO_ARRAY(x) memset_explicit((char *)(x), 0, sizeof(x))
+ 
+ /**
+  * Zero a given len of an array
+  */
+-#define ZERO_ARRAY_LEN(x, l) memset_s((char *)(x), (l), 0, (l))
++#define ZERO_ARRAY_LEN(x, l) memset_explicit((char *)(x), 0, (l))
+ 
+ /**
+  * Explicitly zero data from memory. This is guaranteed to be not optimized
+  * away.
+  */
+-#define BURN_DATA(x) memset_s((char *)&(x), sizeof(x), 0, sizeof(x))
++#define BURN_DATA(x) memset_explicit((char *)&(x), 0, sizeof(x))
+ 
+ /**
+  * Explicitly zero data from memory. This is guaranteed to be not optimized
+  * away.
+  */
+-#define BURN_DATA_SIZE(x, s) memset_s((char *)&(x), (s), 0, (s))
++#define BURN_DATA_SIZE(x, s) memset_explicit((char *)&(x), 0, (s))
+ 
+ /**
+  * Explicitly zero data from memory. This is guaranteed to be not optimized
+  * away.
+  */
+-#define BURN_PTR_SIZE(x, s) memset_s((x), (s), 0, (s))
++#define BURN_PTR_SIZE(x, s) memset_explicit((x), 0, (s))
+ 
+ /**
+  * Explicitly zero data in string. This is guaranteed to be not optimized
+@@ -863,7 +863,7 @@ typedef unsigned long long ptrdiff_t ;
+ #define BURN_STR(x)	do { \
+ 				if ((x) != NULL) { \
+ 					size_t s = strlen(x); \
+-					memset_s((x), s, 0, s); \
++					memset_explicit((x), 0, s); \
+ 				} \
+ 			} while(0)
+ 
+diff --git a/talloc.c b/talloc.c
+index ac3d26f..2f13a2c 100644
+--- a/talloc.c
++++ b/talloc.c
+@@ -2837,7 +2837,7 @@ _PUBLIC_ void *_talloc_realloc_array_zero(const void *ctx,
+ 
+ 	if (newsize > existing) {
+ 		size_t to_zero = newsize - existing;
+-		memset_s(((char *)newptr) + existing, to_zero, 0, to_zero);
++		memset_explicit(((char *)newptr) + existing, 0, to_zero);
+ 	}
+ 
+ 	return newptr;
+-- 
+2.43.7
+

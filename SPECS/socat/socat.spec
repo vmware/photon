@@ -1,7 +1,7 @@
 Summary:          Multipurpose relay (SOcket CAT)
 Name:             socat
 Version:          1.7.4.4
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              http://www.dest-unreach.org/socat
 Group:            Applications/Internet
 Vendor:           VMware, Inc.
@@ -11,6 +11,10 @@ Source0: http://www.dest-unreach.org/socat/download/%{name}-%{version}.tar.bz2
 
 Source1: license.txt
 %include %{SOURCE1}
+
+%if 0%{photon_subrelease} >= 92
+Patch0: 0001-fix-build-error-Wdiscarded-qualifiers.patch
+%endif
 
 %description
 Socat is a command line based utility that establishes two bidirectional byte streams and transfers data between them. Because the streams can be constructed from a large set of different types of data sinks and sources (see address types), and because lots of address options may be applied to the streams, socat can be used for many different purposes.
@@ -38,6 +42,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.4.4-4
+- Fix build with newer glibc
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.7.4.4-3
 - Release bump for SRP compliance
 * Thu Dec 22 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.7.4.4-2
