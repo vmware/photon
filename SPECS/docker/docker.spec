@@ -13,8 +13,8 @@
 
 Summary:        Docker
 Name:           docker
-Version:        29.2.1
-Release:        4%{?dist}
+Version:        29.4.1
+Release:        1%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -30,8 +30,6 @@ Source5:       default-disable.preset
 
 Source6: license.txt
 %include %{SOURCE6}
-
-Patch0: CVE-2026-33186.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  device-mapper-devel
@@ -299,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Apr 21 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.4.1-1
+- Version upgrade
 * Tue Apr 14 2026 Mukul Sikka <mukul.sikka@broadcom.com> 29.2.1-4
 - Fix CVE-2026-33186
 * Sat Apr 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.2.1-3
