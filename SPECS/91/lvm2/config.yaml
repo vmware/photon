@@ -1,6 +1,6 @@
 sources:
-- archive: LVM2.2.03.39.tgz
-  archive_sha512sum: 7d00f676af77f4921b10182b0c87420e196c1ec7ec6faad46fc475566b921c62b838ca29b06cddc907e6a4a1033f6ae5020abe64566fa11872eb836af6869988
+- archive: LVM2.2.03.16.tgz
+  archive_sha512sum: 084ba4080537359458db936637fc7f83bb9bfcf2de9f3660882551b5c31c7e9900c7d381b238ce1bb7629942c740c121f0dea5e404c302d31ed028b5c65efaa5
   skip_validation: true
   spdx:
     package:

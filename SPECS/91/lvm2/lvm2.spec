@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define lvm2_services       blk-availability.service lvm2-monitor.service
 %define dm_event_units      dm-event.service dm-event.socket
 
 Summary:        Userland logical volume management tools
 Name:           lvm2
-Version:        2.03.39
-Release:        1%{?dist}
+Version:        2.03.16
+Release:        8.1%{?dist}
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
@@ -229,9 +229,6 @@ fi
 %{_mandir}/man8/vg*
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-*
-%{_unitdir}/lvm-devices-import.path
-%{_unitdir}/lvm-devices-import.service
-%{_libexecdir}/lvresize_fs_helper
 %{_presetdir}/50-lvm2.preset
 %{_libdir}/tmpfiles.d/lvm2.conf
 %dir %{_sysconfdir}/lvm
@@ -301,8 +298,8 @@ fi
 %{_libdir}/pkgconfig/devmapper-event.pc
 
 %changelog
-* Fri Apr 17 2026 Harinadh Dommaraju <Harinadh.Dommaraju@vmware.com> 2.03.39-1
-- Upgrade LVM2 to 2.03.39
+* Tue Apr 21 2026 Harinadh Dommaraju <ankit-aj.jain@broadcom.com> 2.03.16-8.1
+- Bump after moving to SPECS/91
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.03.16-8
 - Fix BuildRequires
 * Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.03.16-7

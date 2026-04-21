@@ -1,0 +1,26 @@
+From afcc923520e47e0a2d2cd2d5881383b71617ba19 Mon Sep 17 00:00:00 2001
+From: HArinadhD <hdommaraju@vmware.com>
+Date: Tue, 18 Apr 2023 12:48:41 +0000
+Subject: [PATCH] lvm2: add preffered names for lvm devices
+
+Signed-off-by: HarinadhD <hdommaraju@vmware.com>
+---
+ conf/example.conf.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/conf/example.conf.in b/conf/example.conf.in
+index 94f7a23..fffd93f 100644
+--- a/conf/example.conf.in
++++ b/conf/example.conf.in
+@@ -115,7 +115,7 @@ devices {
+ 	# Prefer the path with least value in lexicographical order.
+ 	#
+ 	# Example
+-	# preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
++	preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
+ 	#
+ 	# This configuration option does not have a default value defined.
+ 
+-- 
+2.39.0
+
