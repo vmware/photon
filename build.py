@@ -683,6 +683,9 @@ class RpmBuildTarget:
 
     @staticmethod
     def create_repo():
+        if not os.path.isdir(constants.rpmPath):
+            return
+
         runCmd(
             [
                 "createrepo_c",
