@@ -5,7 +5,7 @@
 
 Name: rubygem-addressable
 Version:        2.8.7
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -16,6 +16,10 @@ Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:         CVE-2026-35611-1.patch
+Patch1:         CVE-2026-35611-2.patch
+Patch2:         CVE-2026-35611-3.patch
 
 BuildArch: noarch
 
@@ -31,6 +35,7 @@ It more closely conforms to the relevant RFCs and adds support for IRIs and URI 
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -43,6 +48,8 @@ It more closely conforms to the relevant RFCs and adds support for IRIs and URI 
 %{gemdir}
 
 %changelog
+* Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.8.7-1.2
+- Fix CVE-2026-35611
 * Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.7-1.1
 - Bump after moving to SPECS/91
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.7-1
