@@ -90,7 +90,7 @@ rm -rf %{buildroot}/*
 
 %changelog
 * Tue Mar 31 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.9-1
-- Version upgrade to 3.5.9
+- Version upgrade to 3.6.9
 * Mon Mar 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.5-4
 - Fixes CVE-2026-33413 and CVE-2026-33343
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.5-3
