@@ -3,7 +3,7 @@
 Summary:    Maintain symbolic links determining default commands
 Name:       alternatives
 Version:    1.32
-Release:    1%{?dist}
+Release:    2%{?dist}
 Group:      System Environment/Base
 URL:        https://git.fedorahosted.org/git/chkconfig
 Vendor:     VMware, Inc.
@@ -30,8 +30,7 @@ BuildRequires: popt-devel
 BuildRequires: libselinux-devel
 
 Conflicts: initscripts <= 5.30-1
-#TODO: uncomment below when possible
-#Obsoletes: chkconfig
+Conflicts: chkconfig
 
 %description
 alternatives creates, removes, maintains and displays information about the
@@ -80,5 +79,7 @@ rm -rf %{buildroot}
 %exclude %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Wed Apr 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.32-2
+- Conflict chkconfig
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.32-1
 - Deprecate chkconfig and ntsysv packages. Only package alternatives from now on.
