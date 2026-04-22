@@ -6,7 +6,7 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        10.2p1
+Version:        10.3p1
 Release:        1%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -242,6 +242,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Apr 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.3p1-1
+- Upgrade to 10.3p1, contains security fixes
 * Wed Apr 08 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 10.2p1-1
 - Upgrade openssh to version 10.2-P1
 * Fri Nov 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-19
