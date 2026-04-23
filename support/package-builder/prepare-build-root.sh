@@ -27,6 +27,10 @@ fi
 # This logic is moved to Sandbox.py now, works based on network_required flag in spec
 #cp /etc/resolv.conf ${BUILDROOT}/etc/
 
+if [ -s /etc/pip.conf ]; then
+  cp /etc/pip.conf ${BUILDROOT}/etc/
+fi
+
 if [ ${EUID} -eq 0 ]; then
   # Ommited in the filesystem.spec file - not needed for booting
   [ -e ${BUILDROOT}/dev/console ] || mknod -m 600 ${BUILDROOT}/dev/console c 5 1
