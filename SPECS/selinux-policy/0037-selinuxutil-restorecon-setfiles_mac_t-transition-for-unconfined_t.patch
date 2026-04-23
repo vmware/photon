@@ -25,25 +25,30 @@ constraints.  Forcing the range to s0 yields the valid context
 setfiles_mac_t:s0.  setfiles_mac_t carries domain_obj_id_change_exemption
 so it can relabel files at any MCS level despite running at s0.
 
-Also associate system_r with setfiles_mac_t outside optional_policy{}.
-The role$2types statement inside optional_policy{} is silently dropped
-by some checkpolicy versions, so the association must be declared at the
-top-level of the module to be reliably compiled in.  Without it the
-kernel rejects the computed context system_u:system_r:setfiles_mac_t:s0
-as invalid, causing execve() to fail with EACCES:
+Also associate system_r and unconfined_r with setfiles_mac_t outside
+optional_policy{}.  The role$2types statement inside optional_policy{}
+is silently dropped by some checkpolicy versions, so the association
+must be declared at the top-level of the module to be reliably compiled
+in.  Without system_r the kernel rejects the computed context
+system_u:system_r:setfiles_mac_t:s0 as invalid, causing execve() to fail
+with EACCES:
   op=security_compute_sid
   invalid_context="system_u:system_r:setfiles_mac_t:s0"
 
+Interactive logins use unconfined_u:unconfined_r:unconfined_t.  Without
+unconfined_r types setfiles_mac_t the transition target is still invalid:
+  invalid_context="unconfined_u:unconfined_r:setfiles_mac_t:s0"
+
 Made-with: Cursor
 ---
- policy/modules/roles/unconfineduser.te | 41 ++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ policy/modules/roles/unconfineduser.te | 43 ++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
 diff --git a/policy/modules/roles/unconfineduser.te b/policy/modules/roles/unconfineduser.te
 index 0f3f0ad..18dc8fc 100644
 --- a/policy/modules/roles/unconfineduser.te
 +++ b/policy/modules/roles/unconfineduser.te
-@@ -201,6 +201,47 @@ ifdef(`distro_gentoo',`
+@@ -201,6 +201,49 @@ ifdef(`distro_gentoo',`
  	seutil_init_script_run_runinit(unconfined_t, unconfined_r)
  ')
  
@@ -62,11 +67,12 @@ index 0f3f0ad..18dc8fc 100644
 +	#     tclass=capability2 permissive=0
 +	#
 +	# seutil_run_setfiles_mac() extends seutil_domtrans_setfiles_mac() by
-+	# also associating system_r with setfiles_mac_t.  Without the role
-+	# association the kernel rejects the computed context as invalid even
++	# also associating roles with setfiles_mac_t.  Without those role
++	# associations the kernel rejects the computed context as invalid even
 +	# with the correct type and MCS level:
 +	#   op=security_compute_sid
 +	#   invalid_context="system_u:system_r:setfiles_mac_t:s0"
++	#   invalid_context="unconfined_u:unconfined_r:setfiles_mac_t:s0"
 +	#
 +	# Note: role $2 types ... inside optional_policy{} is silently dropped
 +	# by some checkpolicy versions.  The role association must be declared
@@ -86,6 +92,7 @@ index 0f3f0ad..18dc8fc 100644
 +		type setfiles_mac_t;
 +	')
 +	role system_r types setfiles_mac_t;
++	role unconfined_r types setfiles_mac_t;
 +')
 +
  optional_policy(`

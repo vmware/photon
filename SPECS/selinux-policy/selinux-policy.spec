@@ -5,7 +5,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        43.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -68,6 +68,7 @@ Patch37: 0038-ssh-sshd_t-chkpwd_t-noatsecure-rlimitinh-siginh.patch
 Patch38: 0039-corenetwork-syslog_tls-add-tcp-1514.patch
 Patch39: 0040-drop-xserver-module.patch
 Patch40: 0041-container-install_t-optional.patch
+Patch41: 0042-mount-unconfined_r-mount_roles.patch
 
 BuildRequires: checkpolicy
 BuildRequires: python3-devel
@@ -153,6 +154,9 @@ exit 0
 %{_datadir}/selinux
 
 %changelog
+* Thu Apr 23 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 43.6-2
+- Allow file labeling from interactive shell (unconfined domain)
+- mount: roleattribute unconfined_r mount_roles (rootless containerd mount exec)
 * Mon Apr 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 43.6-1
 - Upgrade to fedora-selinux/selinux-policy v43.6 and container-selinux v2.247.0
 - Run load_policy in %%posttrans before setfiles
