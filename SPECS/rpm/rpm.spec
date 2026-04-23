@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.0.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -352,6 +352,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-4
+- Fix a patch mishap
 * Tue Apr 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-3
 - Don't consider scriptlet errors as fatal
 * Wed Apr 01 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.0.1-2
