@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.4.3
-Release:    12%{?dist}
+Release:    13%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -27,6 +27,8 @@ Patch3:         libarchive-CVE-2022-36227.patch
 Patch4:         libarchive-CVE-2022-26280.patch
 Patch5:         libarchive-CVE-2025-25724.patch
 Patch6:         libarchive-CVE-2025-5914.patch
+Patch7:         libarchive-CVE-2026-4111.patch
+Patch8:         libarchive-CVE-2026-5121-CVE-2026-4426.patch
 
 %description
 Multi-format archive and compression library
@@ -70,6 +72,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Apr 27 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.4.3-13
+- Fix CVE-2026-4111,CVE-2026-4426,CVE-2026-5121
 * Mon Jun 30 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.4.3-12
 - Fix CVE-2025-5914
 * Wed Mar 12 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.4.3-11
