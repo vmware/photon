@@ -24,11 +24,11 @@ class PackageBuilder(object):
         self.mapPackageToCycles = mapPackageToCycles
         self.logName = f"build-{pkg}"
         self.logPath = os.path.join(constants.logPath, pkg)
-        self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
-        self.srp = SRP(pkg, self.logger)
 
         shutil.rmtree(self.logPath, ignore_errors=True)
         os.makedirs(self.logPath, exist_ok=True)
+        self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
+        self.srp = SRP(pkg, self.logger)
 
         self.sandbox = init_sandbox(
             name=pkg,
