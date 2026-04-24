@@ -1,7 +1,15 @@
 sources:
-- archive: docker-6.0.0.tar.gz
-  archive_sha512sum: 09edf7b058d38d34d0fe0432b336d6fc494648c0e41cf4ae7f7bbf3db158143ca8fbea87e51d3b354c5f40bd7f1481e003e4b55f879ef562e91f19b62143c271
-  skip_validation: true
+- archive: docker-7.1.0.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 8c3e7ff724b22e668ed3e3636511edba7dd1d05bdd5fa7c349f35a3ab54ef4bf6092c85f9bd92fb0ec04145647fe575180b5105a1efc6680601d0bc3d56dcf72
+  skip_validation: false
+  name: docker-7.1.0
+  version: 7.1.0
+  url: https://github.com/docker/docker-py/releases/download/7.1.0/docker-7.1.0.tar.gz
+  repo_url: https://github.com/docker/docker-py
+  commit_id: a3652028b1ead708bd9191efb286f909ba6c2a49
+  skip_list: []
+  missing: ['.coveragerc', '.dockerignore', '.editorconfig', '.readthedocs.yml', '.github', 'CONTRIBUTING.md', 'Dockerfile', 'Dockerfile-docs', 'MAINTAINERS', 'Makefile', 'PKG-INFO', 'docker/_version.py', 'docs', 'pytest.ini', 'scripts', 'tests', 'testsnit/api_build_test.py', '_version.py', 'tox.ini']
   spdx:
     package:
       detailed_description: 'Python API for docker '

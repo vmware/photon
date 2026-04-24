@@ -2,8 +2,8 @@
 %global debug_package %{nil}
 
 Name:           docker-py3
-Version:        6.0.0
-Release:        8%{?dist}
+Version:        7.1.0
+Release:        1%{?dist}
 Summary:        Python API for docker
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,16 +15,12 @@ Source0: https://github.com/docker/docker-py/releases/download/%{version}/docker
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: fix-for-requests.patch
-
 BuildRequires: python3-devel
-BuildRequires: python3-ipaddress
-BuildRequires: python3-pip
-BuildRequires: python3-requests
-BuildRequires: python3-setuptools
+BuildRequires: python3-build
+BuildRequires: python3-installer
+BuildRequires: python3-hatchling
+BuildRequires: python3-hatch-vcs
 BuildRequires: python3-setuptools_scm
-BuildRequires: python3-six
-BuildRequires: python3-typing-extensions
 BuildRequires: python3-xml
 BuildRequires: python3-macros
 
@@ -35,12 +31,8 @@ BuildRequires: python3-paramiko
 %endif
 
 Requires: python3
-Requires: docker-pycreds3
-Requires: python3-backports.ssl_match_hostname
-Requires: python3-ipaddress
-Requires: python3-requests >= 2.28.1-7
-Requires: python3-six
-Requires: python3-websocket-client
+Requires: python3-requests >= 2.26.0
+Requires: python3-urllib3 >= 1.26.0
 
 BuildArch: noarch
 
@@ -48,13 +40,15 @@ BuildArch: noarch
 Python API for docker
 
 %prep
-%autosetup -p1 -n docker-%{version}
+%autosetup -n docker-%{version}
 
 %build
-%{py3_build}
+%py3_build_wheel
 
 %install
-%{py3_install}
+%py3_install_wheel
+
+%{py_byte_compile_and_ghost}
 
 %if 0%{?with_check}
 %check
@@ -64,11 +58,13 @@ Python API for docker
 %clean
 rm -rf %{buildroot}/*
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 7.1.0-1
+- Update to 7.1.0
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 6.0.0-8
 - Disable debuginfo package
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-7
