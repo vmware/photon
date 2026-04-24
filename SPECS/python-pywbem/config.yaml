@@ -1,7 +1,14 @@
 sources:
-- archive: pywbem-1.4.1.tar.gz
-  archive_sha512sum: a39a2200ec9c831b5d21768d91cab7f16e8d4b351881c27bdcf195ac3704b1ebea0355c259a7c9a9ba055999df50025a03d787a1033130de764d183af512c3c8
-  skip_validation: true
+- archive: pywbem-1.9.0.tar.gz
+  archive_sha512sum: 2e2e870588e7587da2558c79c4037736c1362195d8dbfc83a5dff6d0a287a0fbf93f9d3aeb26a50395f723b62f232bb589c65fbbb854a0e1e79a7859a3f6e2d6
+  archive_type: upstream
+  skip_validation: false
+  name: pywbem-1.9.0
+  version: "1.9.0"
+  url: https://github.com/pywbem/pywbem/archive/refs/tags/1.9.0.tar.gz
+  repo_url: https://github.com/pywbem/pywbem
+  commit_id: 50b9ae780cc5a74f35fa9b205540cc35b2cdd697
+  missing: []
   spdx:
     package:
       detailed_description: 'PyWBEM is a Python library for making CIM operations

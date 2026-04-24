@@ -1,8 +1,8 @@
 %global build_if %{photon_subrelease} >= 92
 
 Name:           python3-pywbem
-Version:        1.4.1
-Release:        4%{?dist}
+Version:        1.9.0
+Release:        1%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
 URL:            http://pywbem.sourceforge.net
@@ -15,22 +15,21 @@ Distribution:   Photon
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-pip
-BuildRequires:  python3-xml
+BuildRequires:  python3-build
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-pbr
+BuildRequires:  python3-packaging
 BuildRequires:  python3-wheel
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-installer
 Requires:       python3
 Requires:       python3-six
 Requires:       python3-xml
 Requires:       python3-M2Crypto
 Requires:       python3-PyYAML
 Requires:       python3-ply
-Requires:       python3-mock
-Requires:       python3-nocasedict
-Requires:       python3-nocaselist
 Requires:       python3-requests
 Requires:       python3-yamlloader
+Requires:       python3-typing-extensions
 
 Provides:       python%{python3_version}dist(pywbem)
 
@@ -44,11 +43,12 @@ at http://www.dmtf.org/standards/wbem.
 %autosetup -n pywbem-%{version}
 
 %build
-CFLAGS="%{optflags}" %py3_build
+export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
+%{py3_build_wheel}
 
 %install
-rm -rf %{buildroot}
-python3 setup.py install -O1 --prefix=%{_prefix} --skip-build --root=%{buildroot}
+%{py3_install_wheel}
+%{py_byte_compile_and_ghost}
 mv %{buildroot}%{_bindir}/* %{buildroot}%{python3_sitelib}/pywbem/
 
 %post
@@ -68,11 +68,13 @@ fi
 %clean
 rm -rf %{buildroot}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Tue Apr 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.9.0-1
+- Upgrade to 1.9.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-3

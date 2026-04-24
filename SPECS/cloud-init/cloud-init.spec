@@ -57,7 +57,6 @@ BuildRequires: python3-jsonpatch
 BuildRequires: python3-pytest
 BuildRequires: python3-jsonschema
 BuildRequires: python3-pyserial
-BuildRequires: python3-mock
 BuildRequires: python3-attrs
 BuildRequires: python3-iniconfig
 BuildRequires: python3-netifaces

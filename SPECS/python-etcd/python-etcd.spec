@@ -23,7 +23,6 @@ BuildRequires: python3-setuptools
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
-BuildRequires: python3-mock
 BuildRequires: python3-dnspython
 BuildRequires: python3-urllib3
 BuildRequires: python3-pyOpenSSL
