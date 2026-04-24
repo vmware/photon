@@ -1,7 +1,7 @@
 Summary:        Utility to send ICMP echo probes to network hosts
 Name:           fping
 Version:        5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,12 +13,14 @@ Source1: license.txt
 BuildRequires:  autoconf
 BuildRequires:  automake
 
+Requires: iana-etc
+
 %description
 fping is a ping like program which uses the Internet Control Message Protocol
 (ICMP) echo request to determine if a target host is responding.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
@@ -40,6 +42,8 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man8/fping.8*
 
 %changelog
+* Fri Apr 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1-3
+- Add iana-etc to Requires
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.1-2
 - Release bump for SRP compliance
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 5.1-1

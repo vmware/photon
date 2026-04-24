@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.0
-Release:          9%{?dist}
+Release:          10%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
@@ -23,6 +23,7 @@ BuildRequires:    pcre2-devel
 
 Requires:         systemd
 Requires:         pcre2-libs
+Requires:         iana-etc
 Requires(pre):    systemd-rpm-macros
 Requires(pre):    shadow
 
@@ -117,6 +118,8 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Fri Apr 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-10
+- Add iana-etc to Requires
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.8.0-9
 - Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.0-8
