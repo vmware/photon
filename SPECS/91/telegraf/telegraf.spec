@@ -9,7 +9,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.36.4
-Release:          2.2%{?dist}
+Release:          2.3%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -25,6 +25,7 @@ Source4: license.txt
 %include %{SOURCE4}
 
 Patch0: CVE-2026-33186.patch
+Patch1: 0001-Upgrade-nats-server-for-multiple-CVEs.patch
 
 BuildRequires:    go
 BuildRequires:    systemd-devel
@@ -104,6 +105,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Apr 24 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.36.4-2.3
+- Upgrade bundled nats-server module for multiple CVEs
 * Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.36.4-2.2
 - Fix CVE-2026-33186
 * Mon Apr 06 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.36.4-2.1
