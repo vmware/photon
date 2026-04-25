@@ -1,0 +1,12 @@
+[Unit]
+Description=dhcpcd on %I
+Wants=network.target
+Before=network.target
+BindsTo=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
+
+[Service]
+ExecStart=/usr/sbin/dhcpcd -q --nobackground %I
+
+[Install]
+WantedBy=multi-user.target

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
 Version:      4.4.3
-Release:      5%{?dist}
+Release:      5.1%{?dist}
 Url:          http://isc.org/products/DHCP/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -172,6 +174,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Mon Apr 20 2026 Bo Gan <bo.gan@broadcom.com> 4.4.3-5.1
+- Bump after moving to SPECS/91
 * Tue Feb 25 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.3-5
 - Fix license
 * Thu Feb 13 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.4.3-4

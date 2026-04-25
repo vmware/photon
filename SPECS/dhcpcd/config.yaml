@@ -1,0 +1,20 @@
+sources:
+- archive: dhcpcd-10.2.4.tar.xz
+  archive_type: upstream
+  archive_sha512sum: e6c0caccd590b8c90efe8c60743b6ca4b6cd0c2c170abd8ea940be48f1b75f6767ccbd17eac42a4f1eba8349197dbdfc923696765baab79d49916c8e674f30c8
+  name: dhcpcd-10.2.4
+  version: 10.2.4
+  url: https://github.com/NetworkConfiguration/dhcpcd/releases/download/v10.2.4/dhcpcd-10.2.4.tar.xz
+  repo_url: https://github.com/NetworkConfiguration/dhcpcd
+  commit_id: 93df2b254caf9639f9ffb66e0fe2b584eeba6220
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: >
+        dhcpcd is a DHCP and a DHCPv6 client. It's also an IPv4LL (aka ZeroConf) client. In layperson's terms, dhcpcd runs on your machine and silently configures your computer to work on the attached networks without trouble and mostly without configuration.
+      home_page: https://roy.marples.name/projects/dhcpcd
+      license_concluded: BSD-2-Clause
+      license_declared: BSD-2-Clause
+      short_summary: dhcpcd is a DHCP and a DHCPv6 client
+      supplier: 'Organization: Broadcom, Inc.'

@@ -4,7 +4,7 @@
 
 Name:           cloud-init
 Version:        25.1.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -81,7 +81,7 @@ Requires: python3-xml
 Requires: python3-jsonschema
 Requires: python3-netifaces
 Requires: python3-pyserial
-Requires: dhcp-client
+Requires: dhcpcd
 Requires: openssl-c_rehash
 Requires: libselinux-python3
 
@@ -155,6 +155,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Mon Apr 20 2026 Bo Gan <bo.gan@broadcom.com> 25.1.3-8
+- Depends on dhcpcd as dhcp-client is deprecated
 * Tue Mar 31 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.1.3-7
 - Replace deprecated net-tools with iproute2 (already present)
 * Tue Mar 24 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 25.1.3-6
