@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.169
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -140,6 +140,10 @@ Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 Patch25: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
+
+# Patches for ptp_vmw
+Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
+Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
 # VMW: [55..60]
 Patch55: 6.0-x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -724,6 +728,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Apr 24 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.169-2
+- Add ptp_vmw patch
 * Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
 - Update to version 6.1.169
 * Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.167-3
