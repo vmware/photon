@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.78
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -184,6 +184,8 @@ Patch14: 0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch15: 0002-apparmor-af_unix-mediation.patch
 
 Patch16: Performance-over-security-model.patch
+
+Patch17: 0001-mm-add-provision-to-disable-CONFIG_PER_VMA_LOCK.patch
 
 # VMware-specific patch to enable turbostat to work on ESXi
 Patch19: 0001-tools-power-turbostat-Skip-some-CPUID-checks-if-runn.patch
@@ -969,6 +971,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Apr 27 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.78-4
+- Disable CONFIG_PER_VMA_LOCK
 * Fri Apr 10 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.78-3
 - Drop unused HCX patches
 * Sun Apr 05 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.78-2
