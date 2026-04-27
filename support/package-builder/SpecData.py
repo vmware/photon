@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import glob
 import os
 import re
 import copy
@@ -557,19 +558,18 @@ class SPECS(object):
     def initialize(self):
         defPkg = None
 
-        # linux.spec can live under SPECS/linux/ or SPECS/<subrelease>/linux/.
+        # linux.spec can live under SPECS/linux/ or SPECS/<dir>/linux/
+        # (e.g. SPECS/91/linux/ for kernels pinned to older subreleases).
         # The active one is the first that is not skipped (via build_if).
         for specDir in constants.specPaths:
             if defPkg:
                 break
-            linuxDirs = [f"{specDir}/linux"]
-            if constants.subreleaseVersion:
-                linuxDirs.append(f"{specDir}/{constants.subreleaseVersion}/linux")
+            linuxDirs = sorted(
+                glob.glob(f"{specDir}/linux") + glob.glob(f"{specDir}/*/linux")
+            )
             for linuxDir in linuxDirs:
                 if defPkg:
                     break
-                if not os.path.isdir(linuxDir):
-                    continue
                 for root, _, files in os.walk(linuxDir):
                     if "linux.spec" in files:
                         spec = SpecParser(f"{root}/linux.spec", constants.buildArch)
