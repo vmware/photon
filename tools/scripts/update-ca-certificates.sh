@@ -97,7 +97,9 @@ if [ "$UPDATED" = true ]; then
         mv "$TEMP" "$LOCAL_FILE"
     fi
 
+    # Update Version and reset Release to 1
     sed -i "s/^Version:.*/Version:        $NEW_VER/" "$SPEC"
+    sed -i 's/^Release:.*/Release:        1%{?dist}/' "$SPEC"
 
     ENTRY="* $DATE_STR $USER <$EMAIL> $NEW_VER-1"
     MSG="- Update certdata to revision $NEW_VER"
