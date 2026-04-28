@@ -1,0 +1,46 @@
+From c4bea46a2e02c4abc7634ba580838d4c043e7dca Mon Sep 17 00:00:00 2001
+From: Dweep Advani <dweep.advani@broadcom.com>
+Date: Sun, 31 May 2026 23:58:15 +0000
+Subject: [PATCH] perl-Crypt-SSLeay - fix to avoid use of SSLv23 context
+ methods
+
+Instead use corresponding TLS methods.
+---
+ SSLeay.xs | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/SSLeay.xs b/SSLeay.xs
+index 1560604..735d16e 100644
+--- a/SSLeay.xs
++++ b/SSLeay.xs
+@@ -47,7 +47,7 @@ extern "C" {
+ 
+ 
+ #if SSLEAY_VERSION_NUMBER >= 0x0900
+-#define CRYPT_SSL_CLIENT_METHOD SSLv3_client_method()
++#define CRYPT_SSL_CLIENT_METHOD TLS_client_method()
+ #else
+ #define CRYPT_SSL_CLIENT_METHOD SSLv2_client_method()
+ #endif
+@@ -149,15 +149,15 @@ SSL_CTX_new(packname, ssl_version)
+             ctx = SSL_CTX_new(SSLv23_client_method());
+         }
+         else if(ssl_version == 3) {
+-            ctx = SSL_CTX_new(SSLv3_client_method());
++            ctx = SSL_CTX_new(TLS_client_method());
+         }
+         else {
+-#ifndef OPENSSL_NO_SSL2
++#if !defined OPENSSL_NO_SSL2 && OPENSSL_VERSION_NUMBER < 0x10100000L
+             /* v2 is the default */
+             ctx = SSL_CTX_new(SSLv2_client_method());
+ #else
+             /* v3 is the default */
+-            ctx = SSL_CTX_new(SSLv3_client_method());
++            ctx = SSL_CTX_new(TLS_client_method());
+ #endif
+         }
+ 
+-- 
+2.43.7
+

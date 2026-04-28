@@ -1,0 +1,14 @@
+sources:
+- archive: JSON-XS-4.03.tar.gz
+  archive_sha512sum: 7d2c20302b0f98bd69e692b61d272b58c13a79741f3e2e44ee0530e21dd239526477f8b02e4afbfe41ee83cb69ab1c5247bf0be355f3f09e9cfe31b2ea4a5155
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module converts Perl data structures to JSON and
+        vice versa. Its primary goal is to be correct and its secondary goal is to
+        be fast. To reach the latter goal it was written in C. '
+      home_page: http://search.cpan.org/dist/JSON-XS/
+      license_concluded: Artistic-1.0-Perl OR GPL-1.0-or-later
+      license_declared: Artistic-1.0-Perl OR GPL-1.0-or-later
+      short_summary: JSON serializing/deserializing, done correctly and fast
+      supplier: 'Organization: Broadcom, Inc.'

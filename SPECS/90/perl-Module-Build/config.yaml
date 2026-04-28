@@ -1,0 +1,19 @@
+sources:
+- archive: Module-Build-0.4234.tar.gz
+  archive_sha512sum: e2bbdd64f98b424ea7fd20e2ba301d34b77c9f2ecec28e3191fda63a056a12c0fb1cab1496419e9e9b8054db1a8d3fe92e1f033cdcdf021e1a086c8859905eca
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Module::Build is a system for building, testing, and
+        installing Perl modules. It is meant to be an alternative to ExtUtils::MakeMaker. '
+      home_page: http://search.cpan.org/dist/Module-Build/
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
+        OR Artistic-1.0) AND (GPL-1.0-or-later OR Artistic-1.0-Perl) AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND MPL-1.0 AND GPL-1.0-only AND Artistic-1.0-Perl AND
+        Apache-2.0 AND MPL-1.1 AND Artistic-2.0 AND Apache-1.1 AND Artistic-1.0
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
+        OR Artistic-1.0) AND (GPL-1.0-or-later OR Artistic-1.0-Perl) AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND MPL-1.0 AND GPL-1.0-only AND Artistic-1.0-Perl AND
+        Apache-2.0 AND MPL-1.1 AND Artistic-2.0 AND Apache-1.1 AND Artistic-1.0
+      short_summary: Build and install Perl modules
+      supplier: 'Organization: Broadcom, Inc.'

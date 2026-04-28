@@ -1,0 +1,17 @@
+sources:
+- archive: Module-Install-1.21.tar.gz
+  archive_sha512sum: f3dd1dfcae81704f1aa9ac409abd22c9e0d5d66c048adac13da19ab88559d717427b5471b7a065db8312d4d44e829afea52567cd0993e4016df0e10c760ada85
+  license_manual_review:
+  - file_paths:
+    - Module-Install-1.21/lib/Module/Install/Metadata.pm
+    sha256sum: b151fb69780a247662b1aa465098cb39a6b5085cac68a0cd1b79fd39df8baed9
+    spdx_exp: GPL-1.0-or-later
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Module::Install is a package for writing installers for CPAN (or CPAN-like) distributions that are clean, simple, minimalist, act in a strictly correct manner with ExtUtils::MakeMaker, and will run on any Perl installation version 5.005 or newer. '
+      home_page: http://search.cpan.org/dist/Module-Install/
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND AGPL-3.0-or-later AND Apache-1.1 AND Apache-2.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-3-Clause AND GFDL-1.1-or-later AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND MIT AND MPL-1.0 AND MPL-1.1 AND OpenSSL AND Zlib
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND AGPL-3.0-or-later AND Apache-1.1 AND Apache-2.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-3-Clause AND GFDL-1.1-or-later AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND MIT AND MPL-1.0 AND MPL-1.1 AND OpenSSL AND Zlib
+      short_summary: Standalone, extensible Perl module installer
+      supplier: 'Organization: Broadcom, Inc.'

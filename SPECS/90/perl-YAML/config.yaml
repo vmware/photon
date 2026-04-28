@@ -1,0 +1,19 @@
+sources:
+- archive: YAML-1.31.tar.gz
+  archive_sha512sum: 7f6af46348c4288541b611cb0d0f6d63a3d671417cadb3e9d60fed1c2c7664b35202b3ee8d15ef68400758604a3b2cb8a04c11b3e9badfd6f9222cf24f4a9edc
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The YAML.pm module implements a YAML Loader and Dumper
+        based on the YAML 1.0 specification. http://www.yaml.org/spec/ YAML is a generic
+        data serialization language that is optimized for human readability. It can
+        be used to express the data structures of most modern programming languages,
+        including Perl. For information on the YAML syntax, please refer to the YAML
+        specification. '
+      home_page: http://search.cpan.org/dist/YAML/
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Artistic-1.0
+        AND GPL-1.0-only
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Artistic-1.0 AND
+        GPL-1.0-only
+      short_summary: YAML Ain't Markup Language (tm)
+      supplier: 'Organization: Broadcom, Inc.'

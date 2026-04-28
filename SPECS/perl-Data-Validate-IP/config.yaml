@@ -1,7 +1,15 @@
 sources:
 - archive: Data-Validate-IP-0.31.tar.gz
   archive_sha512sum: 22ea6a8673fa07d405cb2f8645bd019265abf4104057c73d0399951a837549cedb97737f50b2e9e605202679c85ae5a7b7a24dd8d9fd8736624551b0b41fd6d8
-  skip_validation: true
+  archive_type: upstream
+  name: Data-Validate-IP-0.31
+  version: 0.31
+  url: https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Data-Validate-IP-0.31.tar.gz
+  repo_url: https://github.com/houseabsolute/Data-Validate-IP.git
+  commit_id: 5070d393685a6ae54c9475ddacfc86bc75ce5113
+  skip_validation: false
+  skip_list: ['IP.pm']
+  missing: ['.git', '.gitignore', '.mailmap', 'INSTALL', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'xt', '00-report-prereqs.dd', '00-report-prereqs.t', 't', 'xt', 'Changes', 'CODE_OF_CONDUCT.md', 'CONTRIBUTING.md']
   spdx:
     package:
       detailed_description: 'This module provides a number IP address validation subs

@@ -1,0 +1,28 @@
+sources:
+- archive: ExtUtils-Config-0.010.tar.gz
+  archive_sha512sum: 64fdbe069388c4ae080622ea06ed6b3d8bd2d71e1af91dcdb53e9a99337212071d7758f9d1a1d4e032afdf5efa26b83374919c6d6a7bbc26bde75dcb7b81046a
+  archive_type: upstream
+  name: ExtUtils-Config-0.010
+  version: 0.010
+  url: https://cpan.metacpan.org/authors/id/L/LE/LEONT/ExtUtils-Config-0.010.tar.gz
+  repo_url: https://github.com/Perl-Toolchain-Gang/extutils-config.git
+  commit_id: e3ba2a840c8ea7e225e6f9b81e3c58c189ca8c64
+  skip_validation: false
+  skip_list: ['Config.pm', 'MakeMaker.pm']
+  missing: ['INSTALL', 'LICENSE', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'README', 'xt', 'Changes', '.git', '.gitignore', '00-compile.t'] 
+  spdx:
+    package:
+      detailed_description: ExtUtils::Config is an abstraction around the %Config hash.
+        By itself it is not a particularly interesting module by any measure, however
+        it ties together a family of modern toolchain modules.
+      home_page: https://metacpan.org/pod/ExtUtils::InstallPaths
+      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND
+                         (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+                         Artistic-1.0 AND Artistic-1.0-Perl AND
+                         GPL-1.0-only AND GPL-1.0-or-later
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND
+                        (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+                        Artistic-1.0 AND Artistic-1.0-Perl AND
+                        GPL-1.0-only AND GPL-1.0-or-later
+      short_summary: ExtUtils::Config - A wrapper for perl's configuration
+      supplier: 'Organization: Broadcom, Inc.'

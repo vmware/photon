@@ -1,7 +1,16 @@
 sources:
 - archive: File-Which-1.27.tar.gz
   archive_sha512sum: 8a6164c4af915e93924b1d62864e492b1c5067856e505c50b9a5cce0600d73bdcda5f7e35a9f37134d9e89949b45bbd0a5426cb56121604aea1a3cfe48d55e5c
-  skip_validation: true
+  archive_type: upstream
+  name: File-Which-1.27
+  version: 1.27
+  url: https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-1.27.tar.gz
+  repo_url: https://github.com/uperl/File-Which.git
+  commit_id: c4169f6a29b2a4a0068326694fdaae75eac74673
+  skip_validation: false
+  # The Which.pm has VERSION set in the url link but not in github tag
+  skip_list: ['Which.pm']
+  missing: ['Changes', 'INSTALL', 't', 'xt', '.git', '.github', '.gitignore', 'README.md', 'INSTALL', 'LICENSE', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'README', 'release', 'eol.t', 'no_tabs.t', 'pod.t', 'pod_coverage.t', 'pod_spelling_common.t', 'pod_spelling_system.t', 'strict.t', 'version.t']
   spdx:
     package:
       detailed_description: File::Which finds the full or relative paths to executable

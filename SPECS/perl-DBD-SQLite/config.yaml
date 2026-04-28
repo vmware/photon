@@ -1,18 +1,24 @@
 sources:
-- archive: DBD-SQLite-1.76.tar.gz
-  archive_sha512sum: 3c2d9f2dc9a544b03474913d416e09a3aa5ce74c9359603211dfd6ad7dfa91fd9920480ab3e1572ba8bea486372477214471a8859b9d88f384a1edfebc3ff926
-  skip_validation: true
+- archive: DBD-SQLite-1.78.tar.gz
+  archive_sha512sum: 27f529fb11bce76b7fef4522213a2f784cf44074b0c0ef36793b31a4716493ae35f1c21a90d2e2c85438271235a2af94579c825cbe4c3e35a13703102ded68fb
+  archive_type: upstream
+  name: DBD-SQLite-1.78
+  version: 1.78
+  url: https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/DBD-SQLite-1.78.tar.gz
+  repo_url: https://github.com/DBD-SQLite/DBD-SQLite.git
+  commit_id: a6c00fcd533ed0f32a18960ecbbcba996f6a1867
+  skip_validation: false
+  skip_list: ['MANIFEST']
+  missing: ['.dir-locals.el', '.git', '.github', '.gitignore', 'cpanfile', 'util', 'META.json', 'META.yml', '67_txn_state.t', '68_upgraded_no_unicode.t', '.travis.yml', 'Changes', 't', 'xt']
   spdx:
     package:
       detailed_description: 'SQLite is a public domain RDBMS database engine that
         you can find at http://www.hwaci.com/sw/sqlite/.  This module provides a SQLite
         RDBMS module that uses the system SQLite libraries. '
       home_page: http://search.cpan.org/dist/DBD-SQLite/
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
-        OR Artistic-1.0-Perl) AND GPL-1.0-or-later AND GPL-2.0-only AND Apache-2.0
-        AND blessing AND Artistic-1.0
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (GPL-1.0-or-later
-        OR Artistic-1.0-Perl) AND GPL-1.0-or-later AND GPL-2.0-only AND Apache-2.0
-        AND blessing AND Artistic-1.0
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 AND
+        Artistic-1.0 AND GPL-1.0-or-later AND GPL-2.0-only
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 AND 
+        Artistic-1.0 AND GPL-1.0-or-later AND GPL-2.0-only
       short_summary: SQLite DBI Driver
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        A Perl module implementing URI parsing and manipulation
 Name:           perl-URI
-Version:        5.32
+Version:        5.34
 Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/URI
@@ -11,11 +13,10 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  make
-BuildRequires:  perl-Module-Install
 
-Requires:       perl
+Requires:       perl >= 5.42.2
 
 %description
 This module implements the URI class. Objects of this class represent
@@ -26,6 +27,12 @@ This module implements the URI class. Objects of this class represent
 
 %prep
 %autosetup -n URI-%{version}
+%if 0%{?with_check} == 0
+  for f in t xt; do
+    sed -i -E "/^$f\\/.*$/d" MANIFEST
+    rm -rf "$f"
+  done
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=true NO_PERLLOCAL=true
@@ -43,6 +50,8 @@ make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+* Thu Apr 09 2026 Dweep Advani <dweep.advani@broadcom.com> 5.34-1
+- Upgrade to 5.34
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 5.32-1
 - Upgrade to 5.32
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 5.17-2

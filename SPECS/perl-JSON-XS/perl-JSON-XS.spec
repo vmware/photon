@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:        JSON serializing/deserializing, done correctly and fast
 Name:           perl-JSON-XS
 Epoch:          1
-Version:        4.03
-Release:        4%{?dist}
+Version:        4.04
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/JSON-XS/
 Source0:        https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-%{version}.tar.gz
@@ -11,15 +13,13 @@ Source0:        https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-%{ver
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2025-40928-r1.patch
-
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  perl-Canary-Stability
 BuildRequires:  perl-Types-Serialiser
 BuildRequires:  perl-common-sense
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       perl-Canary-Stability
 Requires:       perl-Types-Serialiser
 Requires:       perl-common-sense
@@ -55,6 +55,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man[13]/*
 
 %changelog
+* Fri Apr 10 2026 Dweep Advani <dweep.advani@broadcom.com> 4.04-1
+- Upgrade to 4.04
 * Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 4.03-4
 - Release bump for perl 5.40.2
 * Thu Sep 18 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.03-3

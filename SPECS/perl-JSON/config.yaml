@@ -1,7 +1,15 @@
 sources:
-- archive: JSON-4.10.tar.gz
-  archive_sha512sum: 2aa0c40fbff23d3df84cfa729d00a32a69e06ea83d082b25b7223f90cb157fa3c2e72342fadcd2ebe09b5848a0e3a7d2caec6d1753e95952a56e3e9367f343e3
-  skip_validation: true
+- archive: JSON-4.11.tar.gz
+  archive_sha512sum: 45ff2c020074e9279f6f98da819af4079ce2dec07c4e908ccd9af9f66b38e451dfa3edec30ef00d43c00b926e304380e602979acf8becb73ac3f7e9497276558
+  archive_type: upstream
+  name: JSON-4.11
+  version: 4.11
+  url: https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/JSON-4.11.tar.gz
+  repo_url: https://github.com/makamaka/JSON.git
+  commit_id: 2e2812bb38a143ef2e0a553104c0a58a693f8ca7
+  skip_validation: false
+  skip_list: ['MANIFEST']
+  missing: ['Changes', 't', '.git', '.github', '.gitignore', '.travis.yml', 'MANIFEST.SKIP', 'author', 'xt', 'META.json', 'META.yml', '121_reentrant.t', '99_binary.pl', '99_binary00.t', '99_binary01.t', '99_binary02.t', '99_binary03.t', '99_binary04.t', '99_binary05.t', '99_binary06.t', '99_binary07.t', '99_binary08.t', '99_binary09.t', '99_binary10.t', '99_binary11.t', '99_binary12.t', '99_binary13.t', '99_binary14.t', '99_binary15.t', 'core_bools.t', 'gh_54_context_sensitive_read_file.t', 'gh_89_space_after_comma.t']
   spdx:
     package:
       detailed_description: 'This module is a thin wrapper for JSON::XS-compatible

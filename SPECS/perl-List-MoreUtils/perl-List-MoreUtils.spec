@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:       Provide the stuff missing in List::Util
 Name:          perl-List-MoreUtils
 Version:       0.430
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/List-MoreUtils/
 Source0:       https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
@@ -12,8 +14,8 @@ Source1: license.txt
 Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildArch:     noarch
-BuildRequires: perl
-Requires:      perl
+BuildRequires: perl >= 5.42.2
+Requires:      perl >= 5.42.2
 BuildRequires: perl-Exporter-Tiny
 Requires:      perl-Exporter-Tiny
 
@@ -23,6 +25,9 @@ on lists that is not going to go into List::Util.
 
 %prep
 %autosetup -n List-MoreUtils-%{version}
+%if 0%{?with_check} == 0
+  rm -rf t/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PERLLOCAL=1 NO_PACKLIST=1
@@ -47,6 +52,8 @@ make  %{?_smp_mflags} test
 %{_mandir}/man3/List::MoreUtils::Contributing.3.gz
 
 %changelog
+* Mon Apr 13 2026 Dweep Advani <dweep.advani@broadcom.com> 0.430-4
+- Release bump for perl 5.42.2
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.430-3
 - Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.430-2

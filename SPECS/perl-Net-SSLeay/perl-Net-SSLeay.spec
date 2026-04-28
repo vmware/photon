@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
-Version:        1.94
+Version:        1.96
 Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/pod/Net::SSLeay
@@ -12,10 +14,10 @@ Source0:        https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-%{ve
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       openssl
 
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  openssl-devel
 
 %description
@@ -29,6 +31,10 @@ Net::SSLeay module basically comprise of:
 
 %prep
 %autosetup -p1 -n Net-SSLeay-%{version}
+rm -f Credits README.OSX README.VMS README.Win32
+%if 0%{?with_check} == 0
+  rm -rf examples/ helper_script/ inc/Test/ t/
+%endif
 
 %build
 env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -54,6 +60,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
+* Tue Apr 14 2026 Dweep Advani <dweep.advani@broadcom.com> 1.96-1
+- Upgrade to 1.96
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.94-1
 - Upgrade to 1.94
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.92-2

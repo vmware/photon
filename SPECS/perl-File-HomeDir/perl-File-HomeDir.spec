@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        File-HomeDir
 Name:           perl-File-HomeDir
 Version:        1.006
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-HomeDir/
 Source0:        https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-HomeDir-%{version}.tar.gz
@@ -11,11 +13,11 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 %if 0%{?with_check}
 BuildRequires:  perl-File-Which
 %endif
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       perl-File-Which
 
 %description
@@ -23,6 +25,10 @@ File::HomeDir is a module for locating the directories that are "owned" by a use
 
 %prep
 %autosetup -n File-HomeDir-%{version}
+rm -f Changes README.md
+%if 0%{?with_check} == 0
+  rm -rf t/ xt/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
@@ -59,6 +65,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/File::HomeDir::Windows.3.gz
 
 %changelog
+* Wed Apr 08 2026 Dweep Advani <dweep.advani@broadcom.com> 1.006-4
+- Release bump for perl 5.42.2
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.006-3
 - Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.006-2

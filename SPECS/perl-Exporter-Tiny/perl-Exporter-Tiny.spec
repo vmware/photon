@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:       An exporter with the features of Sub::Exporter but only core dependencies
 Name:          perl-Exporter-Tiny
-Version:       1.006002
+Version:       1.006003
 Release:       1%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/Exporter-Tiny/
@@ -12,8 +14,8 @@ Source1: license.txt
 Vendor:        VMware, Inc.
 Distribution:  Photon
 BuildArch:     noarch
-BuildRequires: perl
-Requires:      perl
+BuildRequires: perl >= 5.42.2
+Requires:      perl >= 5.42.2
 
 %description
 Exporter::Tiny supports many of Sub::Exporter's external-facing features
@@ -32,6 +34,10 @@ overridden to provide interesting behavior.
 
 %prep
 %autosetup -n Exporter-Tiny-%{version}
+rm -f Changes CREDITS INSTALL NEWS TODO
+%if 0%{?with_check} == 0
+  rm -rf t/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor
@@ -56,19 +62,21 @@ rm -rf %{buildroot}
 %{_mandir}/man3/Exporter::Tiny::Manual*
 
 %changelog
-*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.006002-1
--   Upgrade to 1.006002
-*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.004004-2
--   Release bump for SRP compliance
-*   Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.004004-1
--   Automatic Version Bump
-*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.002002-1
--   Automatic Version Bump
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.002001-1
--   Update to version 1.002001
-*   Wed Mar 29 2017 Robert Qi <qij@vmware.com> 0.044-1
--   Upgraded to 0.044.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.042-2
--   GA - Bump release of all rpms
-*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.042-1
--   Initial version.
+* Wed Apr 08 2026 Dweep Advani <dweep.advani@broadcom.com> 1.006003-1
+- Upgrade to 1.006003
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.006002-1
+- Upgrade to 1.006002
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.004004-2
+- Release bump for SRP compliance
+* Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.004004-1
+- Automatic Version Bump
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.002002-1
+- Automatic Version Bump
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.002001-1
+- Update to version 1.002001
+* Wed Mar 29 2017 Robert Qi <qij@vmware.com> 0.044-1
+- Upgraded to 0.044.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.042-2
+- GA - Bump release of all rpms
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.042-1
+- Initial version.

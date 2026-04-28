@@ -1,7 +1,15 @@
 sources:
 - archive: Try-Tiny-0.32.tar.gz
   archive_sha512sum: 18610525e1b754760f41a5d9a836a4e78c22ba1b008f7ac16b2796916ef688b03c7cc3002cfc61b274492455a906e75dbe0e2a06ead4e08b33e1c6a0a8569c4e
-  skip_validation: true
+  archive_type: upstream
+  name: Try-Tiny-0.32
+  version: 0.32
+  url: https://cpan.metacpan.org/authors/id/E/ET/ETHER/Try-Tiny-0.32.tar.gz
+  repo_url: https://github.com/p5sagit/Try-Tiny.git
+  commit_id: 53dc90c99e908b6c12f60fa13b860bc72d8fa7db
+  skip_validation: false
+  skip_list: ['Tiny.pm']
+  missing: ['Changes', 'CONTRIBUTING', 'INSTALL', 't', 'xt', '.git', '.gitignore', '.mailmap', '.travis.yml', 'README.pod', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'README', 'xt', '00-report-prereqs.dd', '00-report-prereqs.t', 'zzz-check-breaks.t']
   spdx:
     package:
       detailed_description: 'This module provides bare bones try/catch/finally statements

@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
 Version:        1.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
 Source0:        https://cpan.metacpan.org/authors/id/I/IN/INGY/YAML-%{version}.tar.gz
@@ -12,8 +14,8 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 
 # Filter private provides:
 # perl(yaml_mapping) perl(yaml_scalar) perl(yaml_sequence)
@@ -30,6 +32,16 @@ specification.
 
 %prep
 %autosetup -n YAML-%{version}
+%if 0%{?with_check} == 0
+  for f in  Changes CONTRIBUTING; do
+    sed -i -E "/^$f$/d" MANIFEST
+    rm -f "$f"
+  done
+  for f in t xt; do
+    sed -i -E "/^$f\\/.*$/d" MANIFEST
+    rm -rf "$f"
+  done
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
@@ -84,25 +96,27 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
-*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.31-1
--   Upgrade to 1.31
-*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.30-3
--   Release bump for SRP compliance
-*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.30-2
--   Perl version upgrade to 5.36.0
-*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.30-1
--   Automatic Version Bump
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.26-1
--   Update to version 1.26
-*   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.23-1
--   Update version to 1.23
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.15-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.15-2
--   GA - Bump release of all rpms
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.15-1
--   Updated to version 1.15
-*   Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 1.14-2
--   Fix for multithreaded perl
-*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
--   Initial version.
+* Mon Apr 20 2026 Dweep Advani <dweep.advani@broadcom.com> 1.31-2
+- Bump for perl 5.42.2
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.31-1
+- Upgrade to 1.31
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.30-3
+- Release bump for SRP compliance
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.30-2
+- Perl version upgrade to 5.36.0
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.30-1
+- Automatic Version Bump
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.26-1
+- Update to version 1.26
+* Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.23-1
+- Update version to 1.23
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.15-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.15-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.15-1
+- Updated to version 1.15
+* Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 1.14-2
+- Fix for multithreaded perl
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
+- Initial version.

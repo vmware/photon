@@ -1,0 +1,98 @@
+%global build_if %{photon_subrelease} <= 90
+
+# Got the intial spec from Fedora and modified it
+%global __provides_exclude %{?__provides_exclude:%__provides_exclude|}^perl\\((VMS|Win32|BSD::|DB\\)$)
+# unicore::Name - it's needed by perl, maybe problem of rpm
+# FCGI is external dependency after install of perl-CGI, remove it during RC releases
+%global __requires_exclude %{?__requires_exclude:%__requires_exclude|}^perl\\((VMS|BSD::|Win32|Tk|Mac::|Your::Module::Here|unicore::Name|FCGI)
+
+Summary:        Perl extension interface for libcurl
+Name:           perl-WWW-Curl
+Version:        4.17
+Release:        12.1.1%{?dist}
+Group:          Development/Libraries
+URL:            http://search.cpan.org/dist/WWW-Curl/
+Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+Vendor:         VMware, Inc.
+Distribution:   Photon
+# Fix Build issue with curl-7.72 version
+Patch0:         perl-www-curl-curl-7.66.0-compatibility.patch
+Patch1:         Define-CURL-as-void.patch
+Patch2:         Skip-preprocessor-symbol-only-CURL_STRICTER.patch
+Patch3:         Adapt-to-changes-in-cURL.patch
+Patch4:         WWW-Curl-4.17-Adapt-to-curl-8.0.1.patch
+Patch5:         perl-compatibility-8-16-0.patch
+
+BuildRequires:  perl >= 5.40.2
+BuildRequires:  perl-Module-Install
+BuildRequires:  perl-YAML-Tiny
+BuildRequires:  curl-devel
+Requires:       perl >= 5.40.2
+Requires:       curl
+%description
+WWW::Curl is a Perl extension interface for libcurl.
+
+%prep
+%autosetup -p1 -n WWW-Curl-%{version}
+rm -rf inc && sed -i -e '/^inc\//d' MANIFEST
+
+%build
+perl Makefile.PL INSTALLDIRS=vendor
+make %{?_smp_mflags}
+
+%install
+make %{?_smp_mflags} pure_install DESTDIR=%{buildroot}
+find %{buildroot} -type f -name .packlist -exec rm -f {} \;
+find %{buildroot} -type f -name '*.bs' -size 0 -exec rm -f {} \;
+%{_fixperms} %{buildroot}/*
+
+%check
+# These tests require network, use "--with network_tests" to execute them
+%{?!_with_network_tests: rm t/01basic.t }
+%{?!_with_network_tests: rm t/02callbacks.t }
+%{?!_with_network_tests: rm t/04abort-test.t }
+%{?!_with_network_tests: rm t/05progress.t }
+%{?!_with_network_tests: rm t/08ssl.t }
+%{?!_with_network_tests: rm t/09times.t }
+%{?!_with_network_tests: rm t/14duphandle.t }
+%{?!_with_network_tests: rm t/15duphandle-callback.t }
+%{?!_with_network_tests: rm t/18twinhandles.t }
+%{?!_with_network_tests: rm t/19multi.t }
+%{?!_with_network_tests: rm t/21write-to-scalar.t }
+make %{?_smp_mflags} test
+
+%files
+%{perl_vendorarch}/auto/*
+%{perl_vendorarch}/WWW*
+%{_mandir}/man3/*
+
+%changelog
+* Tue Jun 09 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.17-12.1.1
+- Built for subrelease <= 90
+* Mon Oct 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.17-12
+- Build with curl 8.16.0
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.17-11
+- Release bump for perl 5.40.2
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.17-10
+- Release bump for SRP compliance
+* Thu Apr 13 2023 Harinadh D <hdommaraju@vmware.com> 4.17-9
+- version bump to use curl 8.0.1
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 4.17-8
+- Perl version upgrade to 5.36.0
+* Mon Sep 21 2020 Dweep Advani <dadvani@vmware.com> 4.17-7
+- Rebuilding for perl 5.30.1
+* Wed Sep 02 2020 Ankit Jain <ankitja@vmware.com> 4.17-6
+- Fix Build issue with curl-7.72.0 version
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 4.17-5
+- Consuming perl version upgrade of 5.28.0
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.17-4
+- BuildRequires curl-devel.
+* Thu Sep 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.17-3
+- Build WWW-Curl with curl 7.50.3
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.17-2
+- GA - Bump release of all rpms
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.17-1
+- Initial version.

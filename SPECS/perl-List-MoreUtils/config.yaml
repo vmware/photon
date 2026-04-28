@@ -1,7 +1,15 @@
 sources:
 - archive: List-MoreUtils-0.430.tar.gz
   archive_sha512sum: bc9ff033c12251a6f0899a96da0ec8fc314ddb8d6cdf18c37fe1fdcfc38a4c95ed6f8e006bb124e77d07241ae6754f429bc2041f7772b4acfce9378a21283469
-  skip_validation: true
+  archive_type: upstream
+  name: List-MoreUtils-0.430
+  version: 0.430
+  url: https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-0.430.tar.gz
+  repo_url: https://github.com/perl5-utils/List-MoreUtils.git
+  commit_id: ab13f6fb6a2c2b3bef6ea8c29e9c30b3a34dac13
+  skip_validation: false
+  skip_list: []
+  missing: ['.git', '.gitignore', '.gitmodules', '.travis.yml', 'Sandbox', 'xt', 'MANIFEST', 'META.json', 'META.yml', 'inc_Capture-Tiny', 'inc_Config-AutoConf', 'latest', 'latest.pm', '.perltidyrc', 'LICENSE', 'inline', 'lib', 'pureperl', 't', 'xs']
   spdx:
     package:
       detailed_description: 'List::MoreUtils provides some trivial but commonly needed

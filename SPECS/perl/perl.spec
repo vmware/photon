@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Let perl pick its default fotify level
 %global security_hardening nofortify
 
@@ -11,16 +13,16 @@
 
 Summary:        Practical Extraction and Report Language
 Name:           perl
-Version:        5.40.2
-Release:        3%{?dist}
+Version:        5.42.2
+Release:        1%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.xz
+Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
 
-Source1:    https://github.com/arsv/perl-cross/raw/releases/perl-cross-1.6.2.tar.gz
+Source1:        https://github.com/arsv/perl-cross/releases/download/1.6.3/perl-cross-1.6.3.tar.gz
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -31,7 +33,6 @@ Patch1:         make-check-failure2.patch
 %endif
 
 Patch2:         0001-Remove-libdb-support.patch
-Patch3:         perl-CVE-2026-4176.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -110,6 +111,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Thu Apr 09 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-1
+- Upgrade perl to 5.42.2
 * Wed Apr 08 2026 Dweep Advani <dweep.advani@broadcom.com> 5.40.2-3
 - Fix CVE-2026-4176
 * Thu Apr 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.40.2-2

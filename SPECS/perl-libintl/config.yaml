@@ -1,7 +1,15 @@
 sources:
-- archive: libintl-perl-1.35.tar.gz
-  archive_sha512sum: 2952a0cfb8bc84307208d71b974777fd7883266f595309cf7f38f7f640a20c1a3852c6daf4b02e758dc94d37cc84fc23ef9a51a892b3de50b4eaf28ee253ac77
-  skip_validation: true
+- archive: libintl-perl-1.37.tar.gz
+  archive_sha512sum: 86591b61b05a54a9cbfdd0f040afb0f5a80b0d80fb5953298b764019a153ff7966a2d5479be9d43bd3b4d5797572da93faa738f730a59824cee300bd8f65153a
+  archive_type: upstream
+  name: libintl-perl-1.37
+  version: 1.37
+  repo_url: https://github.com/gflohr/libintl-perl.git
+  url: https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-1.37.tar.gz
+  commit_id: eea2c47a4124a115a119c63414932e2a4f8e5df3
+  skip_validation: false
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__']
+  missing: ['COPYING', 'Changes', 'Credits', 'FAQ', 'MANIFEST', 'MANIFEST.SKIP', 'META.json', 'META.yml', 'Makefile.PL', 'MyInstall.pm', 'NEWS', 'README', 'README-oldversions', 'README.md', 'README.solaris', 'README.win32', 'REFERENCES', 'THANKS', 'TODO', 'gettext_xs', 'lib', 'sample', 'test.pl', 'tests', '.git', '.gitignore', '.travis.yml']
   spdx:
     package:
       detailed_description: 'The package libintl-perl is an internationalization library
@@ -12,3 +20,32 @@ sources:
       license_declared: GPL-3.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-only
       short_summary: Internationalization library for Perl, compatible with gettext
       supplier: 'Organization: Broadcom, Inc.'
+  license_manual_review:
+  - file_paths:
+    - libintl-perl-1.37/MANIFEST
+    sha256sum: 50285eb413c75e894d42e31ec5c85887c2a33366fe1e463564924ab4a0bdd6fc
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - libintl-perl-1.37/MANIFEST.SKIP
+    sha256sum: be23d8fd0165b7e749dac791a5f323dfe61496b908119cf036e4f2230ebc57f0
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - libintl-perl-1.37/META.json
+    sha256sum: 170e396da479ee6f8b38a5f39c71f684119d555fdf30a88185d73e549a6887aa
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - libintl-perl-1.37/META.yml
+    sha256sum: 98686282ae3e6840604bd337f1952bdcbf7bd9ca5ad5d8c2a80e5444834960ca
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - libintl-perl-1.37/MyInstall.pm
+    sha256sum: 3100a12446dbb57768a043b2e2428571c9cf3106c7cb35ba41aec9d194ece512
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - libintl-perl-1.37/README
+    sha256sum: 2b209653c571b31de6639aec2db23d161e155720c10a29df19ee20d4f49efc93
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - libintl-perl-1.37/README.md
+    sha256sum: 2b209653c571b31de6639aec2db23d161e155720c10a29df19ee20d4f49efc93
+    spdx_exp: GPL-3.0-or-later

@@ -1,7 +1,15 @@
 sources:
-- archive: Net-SSLeay-1.94.tar.gz
-  archive_sha512sum: f1461667269f3da56ff7e1724b5511b95c34582250f8336e9f93d30f3b30d4a5360eb27622b9730bba11df75e00d717c7f0cea2120d20206723db136a8509375
-  skip_validation: true
+- archive: Net-SSLeay-1.96.tar.gz
+  archive_sha512sum: c8218159b9392aaebc996e4db51e0d3799d395289cb84d7ce4de807698ebed178b9b129b1e6e6a379c1f8247ee85f770e3266ea1f865378e559b37d75748665c
+  archive_type: upstream
+  name: Net-SSLeay-1.96
+  version: 1.96
+  url: https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-1.96.tar.gz
+  repo_url: https://github.com/radiator-software/p5-net-ssleay.git
+  commit_id: 006e139250692a04e2c66c122b572d3833199444
+  skip_validation: false
+  skip_list: ['MANIFEST']
+  missing: ['.appveyor.yml', '.git', '.github', '.gitignore', 'MANIFEST.SKIP', 'README.md', 'TODO', 'META.json', 'META.yml', 'Credits', 'inc', 'Test', 'examples', 'helper_script', 'README.OSX', 'README.VMS', 'README.Win32', 't', 'xt']
   spdx:
     package:
       detailed_description: 'Net::SSLeay module contains perl bindings to openssl

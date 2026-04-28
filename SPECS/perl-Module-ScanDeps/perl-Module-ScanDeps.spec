@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:        Recursively scan Perl code for dependencies
 Name:           perl-Module-ScanDeps
 Version:        1.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 Source0:        https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz
 
@@ -12,8 +14,8 @@ URL:            http://search.cpan.org/dist/Module-ScanDeps/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 
 %description
 This module scans potential modules used by perl programs and returns a
@@ -22,6 +24,10 @@ Test/More.pm).  The values are hash references.
 
 %prep
 %autosetup -n Module-ScanDeps-%{version}
+rm -f AUTHORS Changes
+%if 0%{?with_check} == 0
+  rm -rf t/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
@@ -45,6 +51,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Tue Apr 14 2026 Dweep Advani <dweep.advani@broadcom.com> 1.37-2
+- Bump for perl 5.42.2
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.37-1
 - Upgrade to 1.37
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.31-2

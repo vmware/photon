@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
+
 Name:          perl-TermReadKey
 Version:       2.38
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       TermReadKey Perl module
 Group:         Development/Perl
 Vendor:        VMware, Inc.
@@ -10,9 +12,9 @@ Source0:       https://cpan.metacpan.org/authors/id/J/JS/JSTOWE/TermReadKey-%{ve
 
 Source1: license.txt
 %include %{SOURCE1}
-BuildRequires: perl
+BuildRequires: perl >= 5.42.2
 BuildRequires: perl-List-MoreUtils
-Requires:      perl
+Requires:      perl >= 5.42.2
 
 %description
 TermReadKey module provides ioctl control for terminals so the input modes
@@ -22,9 +24,19 @@ of the screen size, and retrieval/modification of the control characters
 
 %prep
 %autosetup -n TermReadKey-%{version}
-perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
+%if 0%{?with_check} == 0
+  for f in Changes; do
+    sed -i -E "/^$f$/d" MANIFEST
+    rm -f "$f"
+  done
+  for f in example t; do
+    sed -i -E "/^$f\\/.*$/d" MANIFEST
+    rm -rf "$f"
+  done
+%endif
 
 %build
+perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
 %make_build
 
 %install
@@ -37,6 +49,8 @@ perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 NO_PERLLOCAL=1
 %{_mandir}/man3/*
 
 %changelog
+* Fri Apr 17 2026  Dweep Advani <dweep.advani@broadcom.com> 2.38-5
+- Release bump for perl 5.42.2
 * Wed Jun 11 2025  Dweep Advani <dweep.advani@broadcom.com> 2.38-4
 - Release bump for perl 5.40.2
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.38-3

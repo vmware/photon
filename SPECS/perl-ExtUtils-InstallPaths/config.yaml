@@ -1,0 +1,27 @@
+sources:
+- archive: ExtUtils-InstallPaths-0.015.tar.gz
+  archive_sha512sum: becfa766c0ba61d2e04e20a808f5de3ae9cd7747d347ce9b8b9851214f93d71e8fc411e4a4fe7c43d7ba6bb734b0d239eced50870c359c14aed58b96c1253ed3
+  archive_type: upstream
+  name: ExtUtils-InstallPaths-0.015
+  version: 0.015
+  url: https://cpan.metacpan.org/authors/id/L/LE/LEONT/ExtUtils-InstallPaths-0.015.tar.gz
+  repo_url: https://github.com/Perl-Toolchain-Gang/extutils-installpaths.git
+  commit_id: f615406c27b13475ce465adf773290bf5864573b
+  skip_validation: false
+  skip_list: ['Changes', 'InstallPaths.pm']
+  missing: ['INSTALL', 'LICENSE', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'README', 'xt', '.git', '.gitignore']
+  spdx:
+    package:
+      detailed_description: This module tries to make install path resolution
+                            as easy as possible.
+      home_page: https://metacpan.org/pod/ExtUtils::InstallPaths
+      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND
+                         (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+                         Artistic-1.0 AND Artistic-1.0-Perl AND
+                         GPL-1.0-only AND GPL-1.0-or-later
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND
+                        (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+                        Artistic-1.0 AND Artistic-1.0-Perl AND
+                        GPL-1.0-only AND GPL-1.0-or-later
+      short_summary: ExtUtils::InstallPaths - Build.PL install path logic made easy
+      supplier: 'Organization: Broadcom, Inc.'

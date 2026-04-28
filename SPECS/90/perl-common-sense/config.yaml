@@ -1,0 +1,20 @@
+sources:
+- archive: common-sense-3.75.tar.gz
+  archive_sha512sum: cb6034d9ff721a4122e0215db8ad5279ec4b189c3364593d427d70a1e84a1583a0e1447e276aa9a4fcaeb2f9d47a465a5bc4c0f842c803d3ddf91755311f4af4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module implements some sane defaults for Perl programs,
+        as defined by two typical (or not so typical - use your common sense) specimens
+        of Perl coders:  It''s supposed to be mostly the same, with much lower memory
+        usage, as:  use utf8; use strict qw(vars subs); use feature qw(say state switch);
+        use feature qw(unicode_strings unicode_eval current_sub fc evalbytes); no
+        feature qw(array_base); no warnings; use warnings qw(FATAL closed threads
+        internal debugging pack portable prototype inplace io pipe unpack malloc deprecated
+        glob digit printf layer reserved taint closure semicolon); no warnings qw(exec
+        newline unopened); '
+      home_page: http://search.cpan.org/dist/common-sense
+      license_concluded: Artistic-1.0-Perl OR GPL-1.0-or-later
+      license_declared: Artistic-1.0-Perl OR GPL-1.0-or-later
+      short_summary: '"Common sense" Perl defaults'
+      supplier: 'Organization: Broadcom, Inc.'

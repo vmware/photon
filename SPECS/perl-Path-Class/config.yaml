@@ -1,7 +1,16 @@
 sources:
 - archive: Path-Class-0.37.tar.gz
   archive_sha512sum: 044d86f85eebff96bdff8fc11e97884eb4e06d56ecd2d3bfdc045135da6f08c40e644e0e5c1a779a8ef5d6c7c04e159e47721b4e637a92fed7d298b5f798ef83
-  skip_validation: true
+  archive_type: upstream
+  name: Path-Class-0.37
+  version: 0.37
+  url: http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/Path-Class-0.37.tar.gz
+  repo_url: https://github.com/kenahoo/Path-Class.git
+  commit_id: ccfd76f358f074e449507e40fb4572b3e7b09339
+  skip_validation: false
+  # This files mentioned below in the skip_list have VERSION variable missing
+  skip_list: ['Class.pm', 'Dir.pm', 'Entity.pm', 'File.pm']
+  missing: ['Build.PL', 'INSTALL', 'LICENSE', 'Changes', 't', 'MANIFEST', 'META.yml', 'Makefile.PL', 'README', 'SIGNATURE', '.git', '.gitignore', '.travis.yml', 'author-critic.t']
   spdx:
     package:
       detailed_description: 'Path::Class is a module for manipulation of file and

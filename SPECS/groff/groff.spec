@@ -1,7 +1,7 @@
 Summary:    Programs for processing and formatting text
 Name:       groff
 Version:    1.22.4
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://www.gnu.org/software/groff
 Group:      Applications/Text
 Vendor:     VMware, Inc.
@@ -15,9 +15,6 @@ Provides: perl(main_subs.pl)
 Provides: perl(man.pl)
 Provides: perl(subs.pl)
 Requires: perl
-Requires: perl-DBI
-Requires: perl-DBIx-Simple
-Requires: perl-DBD-SQLite
 Requires: perl-File-HomeDir
 %define BuildRequiresNative groff
 %description
@@ -46,6 +43,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+* Fri Jun 05 2026 Dweep Advani <dweep.advani@broadcom.com> 1.22.4-3
+- Deprecate perl-DBIx-Simple
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.4-2
 - Release bump for SRP compliance
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.22.4-1

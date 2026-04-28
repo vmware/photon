@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:       XML-Parser perl module
 Name:          XML-Parser
-Version:       2.47
+Version:       2.57
 Release:       1%{?dist}
 URL:           http://search.cpan.org/~toddr/%{name}-%{version}/
 Group:         Development/Tools
@@ -13,10 +15,12 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: expat-devel
-BuildRequires: perl
+BuildRequires: perl >= 5.42.2
+BuildRequires: perl-File-ShareDir-Install
 
 Requires:      expat
-Requires:      perl
+Requires:      perl >= 5.42.2
+Requires:      perl-File-ShareDir
 
 %description
 The XML::Parser module is a Perl extension interface to James Clark's XML parser, expat
@@ -42,7 +46,7 @@ make %{?_smp_mflags}
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
-%define __perl_version 5.40.2
+%define __perl_version 5.42.2
 rm %{buildroot}/%{_libdir}/perl5/%{__perl_version}/*/perllocal.pod
 
 %check
@@ -54,6 +58,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Tue Apr 21 2026 Dweep Advani <dweep.advani@broadcom.com> 2.57-1
+- Upgrade to 2.57
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 2.47-1
 - Upgrade to 2.47
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.46-6

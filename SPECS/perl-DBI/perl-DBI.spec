@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 # Filter unwanted dependencies
 %global __requires_exclude %{?__requires_exclude|%__requires_exclude|}^perl\\(RPC::\\)
@@ -13,7 +15,7 @@
 Summary:        A database access API for perl
 Name:           perl-DBI
 Version:        1.647
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://dbi.perl.org/
 # The source tarball must be repackaged to remove the DBI/FAQ.pm, since the
@@ -24,8 +26,8 @@ Source1: license.txt
 %include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 
 %description
 DBI is a database access Application Programming Interface (API) for
@@ -63,6 +65,14 @@ for F in lib/DBI/W32ODBC.pm lib/Win32/DBIODBC.pm; do
     rm "$F"
     sed -i -e '\|^'"$F"'|d' MANIFEST
 done
+rm -f INSTALL README.md
+# Without t/ folder %build will fail with:
+# Can't read 't' directory: No such file or directory at lib/DBI/DBD.pm line 3400.
+# error: Bad exit status from /var/tmp/rpm-tmp.UKbbdZ (%build)
+#
+#%if 0%{?with_check} == 0
+#  rm -rf t/
+#%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor AR=%{_host}-ar CC=%{_host}-gcc LD=%{_host}-gcc OPTIMIZE="%{optflags}"
@@ -95,23 +105,25 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*.3*
 
 %changelog
-*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.647-1
--   Upgrade to 1.647
-*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.643-3
--   Release bump for SRP compliance
-*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.643-2
--   Perl version uprade to 5.36.0
-*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.643-1
--   Automatic Version Bump
-*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.641-2
--   Cross compilation support
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.641-1
--   Update to version 1.641
-*   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 1.636-1
--   Upgraded to 1.636
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.634-2
--   GA - Bump release of all rpms
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.634-1
--   Upgrade version
-*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.633-1
--   Initial version.
+* Mon Apr 06 2026 Dweep Advani <dweep.advani@broadcom.com> 1.647-2
+- Spec bump for perl version upgrade to 5.42.2
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.647-1
+- Upgrade to 1.647
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.643-3
+- Release bump for SRP compliance
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.643-2
+- Perl version uprade to 5.36.0
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.643-1
+- Automatic Version Bump
+* Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.641-2
+- Cross compilation support
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.641-1
+- Update to version 1.641
+* Mon Apr 3 2017 Robert Qi <qij@vmware.com> 1.636-1
+- Upgraded to 1.636
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.634-2
+- GA - Bump release of all rpms
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.634-1
+- Upgrade version
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.633-1
+- Initial version.

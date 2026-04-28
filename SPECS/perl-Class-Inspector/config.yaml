@@ -1,0 +1,98 @@
+sources:
+- archive: Class-Inspector-1.36.tar.gz
+  archive_sha512sum: 488fcdbc9d135ed833331b0d5feb452997f35400b185341be69996438c278961eeb543648a629940765e779ca5cc87c5c3aa2c61a7fac12d2ecf6c599b68715a
+  archive_type: upstream
+  name: Class-Inspector-1.36
+  version: 1.27
+  url: https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Class-Inspector-1.36.tar.gz
+  repo_url: https://github.com/uperl/Class-Inspector.git
+  commit_id: ae180de40e81ab0f2623e47344085f30dd625e93
+  skip_validation: false
+  skip_list: ['Changes', 'Inspector.pm', 'Functions.pm']
+  missing: ['.git', '.gitattributes', '.gitignore', '.travis.yml', 'README.md', 'INSTALL', 'LICENSE', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'README', 'release', 'eol.t', 'no_tabs.t', 'pod.t', 'pod_coverage.t', 'pod_spelling_common.t', 'strict.t', 'version.t']
+  spdx:
+    package:
+      detailed_description: Class::Inspector allows you to get information about a loaded class.
+        Most or all of this information can be found in other ways, but they
+        aren't always very friendly, and usually involve a relatively high
+        level of Perl wizardry, or strange and unusual looking code.
+        Class::Inspector attempts to provide an easier, more friendly interface
+        to this information.
+      home_page: https://metacpan.org/pod/Class::Inspector
+      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND
+                         (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+                         Artistic-1.0 AND GPL-1.0-only
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND 
+                         (Artistic-1.0-Perl OR GPL-1.0-or-later) AND 
+                         Artistic-1.0 AND GPL-1.0-only
+      short_summary: Class::Inspector - Get information about a class and its structure
+      supplier: 'Organization: Broadcom, Inc.'
+  license_manual_review:
+  - file_paths:
+    - Class-Inspector-1.36/MANIFEST
+    sha256sum: 1c700ec110a5e9ed9416284c27e48dd54e37a308265c0123b00656b40f744ff3
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/perlcriticrc
+    sha256sum: 9f5a711bda1d5673f70b144ac55657ff4c0df1642d942fadb893fc0853f80358
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/maint/cip-before-install
+    sha256sum: 3f2924f93b584868dbba8bb3b589f56361c59f63b89d267c7f9d43303861e743
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/maint/cip-test
+    sha256sum: b6aeb5bd254d8a745d7f0d60b688bc12c54f60c2909b3b1adfbae4b62f8fa589
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/t/00_diag.t
+    sha256sum: cac5074abc54352e1a10a5225c6435eb4daa4c9f7c38f75cee2d8856ce2f8da8
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/t/01_use.t
+    sha256sum: 32c37889fb966a1d4381195786dc3ebe175e842d28cf2ff638f1744d26ee7695
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/t/class_inspector.t
+    sha256sum: a5dbe160c19c8069f3cef014a32995f34678316edffe9609a996190e8d375264
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/t/class_inspector__devel_hide.t
+    sha256sum: cd390334807f26bf5e30570307137d6ff308989476176b698f87031c353304df
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/t/class_inspector__inc_to_local.t
+    sha256sum: 484390a8d9fc37d02d0d71750543f3145884e92ef9ba51d044c8ac3c7a2be317
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/t/class_inspector_functions.t
+    sha256sum: bc33d01c0f1d67fc826c35233d049bf7e92b2b16c5ebe86f71150ae3641c1cd2
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/xt/author/no_tabs.t
+    sha256sum: 6c276918fc93a7c08c7eaa379c370076ca80867bf889d1a95ddcaf4c0a55e12d
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/xt/author/pod.t
+    sha256sum: 382b5d8dd79698b60ed37e5a6e8e9ed52c416b38ba9fbc90781e910aa63a867c
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/xt/author/pod_coverage.t
+    sha256sum: 07ea6d8d2048d550c32ad21678e4670b6b20c544e2660c3eb9e336a857fc62e8
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/xt/author/pod_spelling_common.t
+    sha256sum: f336da463434f6f3d25e88ea08f5a0482fd0789f20ccab078476e6e94d8f9b2c
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/xt/author/strict.t
+    sha256sum: f358e30e03c455a8cecd14b55ab52151ab86d7217c521a2fc9fd74a5f5eb8684
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/xt/author/version.t
+    sha256sum: 8c7ef928498e04e97806fd1da94bdb7218ecca425320b2b778991708ded73681
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus
+  - file_paths:
+    - Class-Inspector-1.36/xt/release/fixme.t
+    sha256sum: 35852fd74e0f1461afc469b039518026ba5c59df219b36aa7af8557539612dc3
+    spdx_exp: artistic-perl-1.0 OR gpl-1.0-plus

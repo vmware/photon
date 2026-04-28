@@ -1,7 +1,15 @@
 sources:
 - archive: YAML-1.31.tar.gz
   archive_sha512sum: 7f6af46348c4288541b611cb0d0f6d63a3d671417cadb3e9d60fed1c2c7664b35202b3ee8d15ef68400758604a3b2cb8a04c11b3e9badfd6f9222cf24f4a9edc
-  skip_validation: true
+  archive_type: upstream
+  name: YAML-1.31
+  version: 1.31
+  url: https://cpan.metacpan.org/authors/id/I/IN/INGY/YAML-1.31.tar.gz
+  repo_url: https://github.com/ingydotnet/yaml-pm.git
+  commit_id: e40694198951a8c5e0e7a179b795a662103e8e68
+  skip_validation: false
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__']
+  missing: ['.git', '.github', 'Meta', 'ReadMe.pod', 'doc', 'test', 'Changes', 'CONTRIBUTING', 'LICENSE', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'README', 't', 'xt', 'YAML.pod', 'Any.pod', 'Dumper.pod', 'Error.pod', 'Loader.pod', 'Marshall.pod', 'Node.pod', 'Tag.pod', 'Types.pod', 'Base.pod']
   spdx:
     package:
       detailed_description: 'The YAML.pm module implements a YAML Loader and Dumper

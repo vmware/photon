@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
 Version:        3.000003
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Config-IniFiles/
 Source0:        https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
@@ -12,8 +14,8 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 BuildRequires:  perl-List-MoreUtils
 BuildRequires:  perl-Module-Build
 Requires:       perl-List-MoreUtils
@@ -26,6 +28,10 @@ from a tied hash.
 
 %prep
 %autosetup -n Config-IniFiles-%{version}
+rm -f Changes OLD-Changes.txt
+%if 0%{?with_check} == 0
+  rm -rf t/ xt/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor
@@ -51,6 +57,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Apr 08 2026 Dweep Advani <dweep.advani@broadcom.com> 3.000003-5
+- Release bump for perl 5.42.2 version upgrade
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 3.000003-4
 - Release bump for perl 5.40.2 version upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.000003-3

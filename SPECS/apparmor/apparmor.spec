@@ -1,7 +1,7 @@
 %global build_if %{photon_subrelease} >= 91
 Name:           apparmor
 Version:        4.1.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 URL:            https://launchpad.net/apparmor
 Vendor:         VMware, Inc.
@@ -16,7 +16,7 @@ Source1: license.txt
 Patch0: 0001-apparmor-profile-fix-for-sbin.syslog-ng.patch
 Patch1: 0001-abi-4.0-adjust-for-kernel-6.12-feature-support.patch
 
-BuildRequires: perl
+BuildRequires: perl >= 5.42.2
 BuildRequires: python3-devel
 BuildRequires: swig
 BuildRequires: build-essential
@@ -144,6 +144,7 @@ applications interfacing with AppArmor.
 Summary:        AppArmor module for perl.
 Group:          Development/Libraries/Perl
 Requires:       libapparmor = %{version}-%{release}
+Requires:       perl >= 5.42.2
 
 %description -n perl-%{name}
 This package contains the AppArmor module for perl.
@@ -331,6 +332,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Wed May 27 2026 Dweep Advani <dweep.advani@broadcom.com> 4.1.6-4
+- Release bump for perl 5.42.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.6-3
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.1.6-2

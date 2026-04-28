@@ -1,7 +1,15 @@
 sources:
 - archive: TermReadKey-2.38.tar.gz
   archive_sha512sum: fb09f013f9f0d8a4397e39f6f3db7a6d023259219af8f76744094e396437a01b19141b3cdb39a158d3b518903fb010088bc37406763bfbeb3fcab810bb0bb157
-  skip_validation: true
+  archive_type: upstream
+  name: TermReadKey-2.38
+  version: 2.38
+  url: https://cpan.metacpan.org/authors/id/J/JS/JSTOWE/TermReadKey-2.38.tar.gz
+  repo_url: https://github.com/jonathanstowe/TermReadKey.git
+  commit_id: 26d79f57e583ee817369123fef4d9934ddc028cd
+  skip_validation: false
+  skip_list: ['MANIFEST']
+  missing: ['Changes', 'README', 'example', 't', 'META.json', 'META.yml', 'SIGNATURE', '.git', '.gitignore', '.travis.yml']
   spdx:
     package:
       detailed_description: 'TermReadKey module provides ioctl control for terminals

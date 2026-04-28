@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        SSL sockets with IO::Socket interface
 Name:           perl-IO-Socket-SSL
-Version:        2.090
+Version:        2.098
 Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/SSL.pod
@@ -14,10 +16,10 @@ Source1: license.txt
 
 BuildArch:      noarch
 
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       perl-Net-SSLeay
 
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  perl-Net-SSLeay
 
 %description
@@ -25,6 +27,10 @@ IO::Socket::SSL makes using SSL/TLS much easier by wrapping the necessary functi
 
 %prep
 %autosetup -p1 -n IO-Socket-SSL-%{version}
+rm -f Changes
+%if 0%{?with_check} == 0
+  rm -rf t/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -47,6 +53,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
+* Wed Apr 15 2026 Dweep Advani <dweep.advani@broadcom.com> 2.098-1
+- Upgrade to version 2.098
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 2.090-1
 - Upgrade to version 2.090
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.075-2

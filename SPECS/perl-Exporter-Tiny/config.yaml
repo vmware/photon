@@ -1,7 +1,15 @@
 sources:
-- archive: Exporter-Tiny-1.006002.tar.gz
-  archive_sha512sum: 684dc97d854686910928f413bd84df3e2d2b351c2304116d5c567ec74eb7384f4085881f2bdeaf96dcf9ade2a959076ebd2bde3977dd5b876f75daaf6ca9d763
-  skip_validation: true
+- archive: Exporter-Tiny-1.006003.tar.gz
+  archive_sha512sum: bed019dae6cca43b35eea37daf46e62100f1325de679ab8eab89a24cf9822f889586789428e11bcd182ae0fc8dbed5ef181a22830c7fd00723d14534eb1b6d97
+  archive_type: upstream
+  name: Exporter-Tiny-1.006003
+  version: 1.006003
+  url: https://cpan.metacpan.org/authors/id/T/TO/TOBYINK/Exporter-Tiny-1.006003.tar.gz
+  repo_url: https://github.com/tobyink/p5-exporter-tiny.git
+  commit_id: b37d9d3db007810c1a785caaf11be2c736f82072
+  skip_validation: false
+  skip_list: []
+  missing: ['.git', '.github', '.hgtags', 'meta', 'COPYRIGHT', 'CREDITS', 'Changes', 'INSTALL', 'LICENSE', 'TODO', 't', 'MANIFEST', 'META.json', 'META.yml', 'Makefile.PL', 'README', 'SIGNATURE', 'doap.ttl']
   spdx:
     package:
       detailed_description: 'Exporter::Tiny supports many of Sub::Exporter''s external-facing
@@ -16,12 +24,12 @@ sources:
         as method calls, which means they can be overridden to provide interesting
         behavior. '
       home_page: http://search.cpan.org/dist/Exporter-Tiny/
-      license_concluded: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
-        OR GPL-1.0-or-later) AND Artistic-1.0 AND GPL-1.0-only AND GPL-1.0-or-later
-        AND MIT
-      license_declared: (GPL-1.0-or-later OR Artistic-1.0) AND (Artistic-1.0-Perl
-        OR GPL-1.0-or-later) AND Artistic-1.0 AND GPL-1.0-only AND GPL-1.0-or-later
-        AND MIT
+      license_concluded:  (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR
+        GPL-1.0-or-later) AND Artistic-1.0 AND Artistic-1.0-Perl AND GPL-1.0-only AND
+        GPL-1.0-or-later AND MIT
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR
+        GPL-1.0-or-later) AND Artistic-1.0 AND Artistic-1.0-Perl AND GPL-1.0-only AND
+        GPL-1.0-or-later AND MIT
       short_summary: An exporter with the features of Sub::Exporter but only core
         dependencies
       supplier: 'Organization: Broadcom, Inc.'

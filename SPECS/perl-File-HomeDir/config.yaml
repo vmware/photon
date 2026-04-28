@@ -1,7 +1,15 @@
 sources:
 - archive: File-HomeDir-1.006.tar.gz
   archive_sha512sum: 1ea90d68ed059ef5e890f6afb1280673dd5a597956f282c4ae8b4471c1751aa3cb2fcbe9caa6b2976937d11fd7233aa85a2dea611f87c79e0ddd1a501ceb890d
-  skip_validation: true
+  archive_type: upstream
+  name: File-HomeDir-1.006
+  version: 1.006
+  url: https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-HomeDir-1.006.tar.gz
+  repo_url: https://github.com/perl5-utils/File-HomeDir.git
+  commit_id: 96cf6521d6046b36bc205b5e1c64de5f914f8864
+  skip_validation: false
+  skip_list: []
+  missing: ['Changes', 'README.md', 't', '.git', '.gitignore', '.travis.yml', 'xt', 'MANIFEST', 'META.json', 'META.yml']
   spdx:
     package:
       detailed_description: 'File::HomeDir is a module for locating the directories

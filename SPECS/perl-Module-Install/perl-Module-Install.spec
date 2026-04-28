@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 # Remove under-specified dependencies
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}^perl\\((Devel::PPPort|ExtUtils::MakeMaker|File::Remove|File::Spec|YAML::Tiny)\\)$
@@ -5,7 +7,7 @@
 Summary:        Standalone, extensible Perl module installer
 Name:           perl-Module-Install
 Version:        1.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/Module-Install-%{version}.tar.gz
@@ -15,10 +17,10 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  perl-YAML-Tiny
+Requires:       perl >= 5.42.2
 Requires:       perl-YAML-Tiny
-Requires:       perl
 
 %description
 Module::Install is a package for writing installers for CPAN (or CPAN-like)
@@ -50,6 +52,8 @@ make %{?_smp_mflags} test AUTOMATED_TESTING=1
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jun 09 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.21-2
+- Built for subrelease >= 91
 * Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 1.21-1
 - Upgrade to 1.21
 * Thu Jul 31 2025 Dweep Advani <dweep.advani@broadcom.com> 1.19-5

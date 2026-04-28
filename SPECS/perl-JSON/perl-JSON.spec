@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Perl wrapper for JSON. Provides JSON.pm
 Name:           perl-JSON
-Version:        4.10
-Release:        3%{?dist}
+Version:        4.11
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/pod/JSON
 Vendor:         VMware, Inc.
@@ -13,8 +15,8 @@ Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/JSON-%{versio
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires:       perl >= 5.28.0
-BuildRequires:  perl >= 5.28.0
+Requires:       perl >= 5.42.2
+BuildRequires:  perl >= 5.42.2
 
 # otherwise tdnf fails to install
 Provides:  perl(JSON::backportPP::Boolean)
@@ -26,6 +28,10 @@ All these backend modules have slight incompatibilities between them, including 
 
 %prep
 %autosetup -n JSON-%{version}
+rm -f Changes
+%if 0%{?with_check} == 0
+  rm -rf t/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -44,6 +50,8 @@ make test %{?_smp_mflags}
 %exclude %{_mandir}/man?/*
 
 %changelog
+*   Mon Apr 13 2026 Dweep Advani <dweep.advani@broadcom.com> 4.11-1
+-   Upgrade to 4.11
 *   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.10-3
 -   Release bump for perl 5.40.2
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.10-2

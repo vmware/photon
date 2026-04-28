@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Minimal try/catch with proper preservation of $@
 Name:           perl-Try-Tiny
 Version:        0.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://search.cpan.org/~ether/Try-Tiny-0.28/
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,8 +14,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildArch:      noarch
-Requires:       perl
-BuildRequires:  perl
+Requires:       perl >= 5.42.2
+BuildRequires:  perl >= 5.42.2
 
 %description
 This module provides bare bones try/catch/finally statements that are designed to minimize common mistakes with eval blocks, and NOTHING else.
@@ -22,6 +24,16 @@ This is unlike TryCatch which provides a nice syntax and avoids adding another c
 
 %prep
 %autosetup -n Try-Tiny-%{version}
+%if 0%{?with_check} == 0
+  for f in Changes CONTRIBUTING INSTALL; do
+    sed -i -E "/^$f$/d" MANIFEST
+    rm -f "$f"
+  done
+  for f in t xt; do
+    sed -i -E "/^$f\\/.*$/d" MANIFEST
+    rm -rf "$f"
+  done
+%endif
 
 %build
 env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -39,6 +51,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Fri Apr 17 2026 Dweep Advani <dweep.advani@broadcom.com> 0.32-2
+- Bump for perl 5.42.2
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.32-1
 - Upgrade to 0.32
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.31-2

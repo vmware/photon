@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:        Read/Write YAML files with as little code as possible
 Name:           perl-YAML-Tiny
 Version:        1.76
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML-Tiny/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/YAML-Tiny-%{version}.tar.gz
@@ -12,8 +14,8 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 %description
 YAML::Tiny is a Perl class for reading and writing YAML-style files,
 written with as little code as possible, reducing load time and
@@ -21,6 +23,16 @@ memory overhead.
 
 %prep
 %autosetup -n YAML-Tiny-%{version}
+%if 0%{?with_check} == 0
+  for f in Changes CONTRIBUTING INSTALL ; do
+    sed -i -E "/^$f$/d" MANIFEST
+    rm -f "$f"
+  done
+  for f in t xt; do
+    sed -i -E "/^$f\\/.*$/d" MANIFEST
+    rm -rf "$f"
+  done
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor
@@ -39,6 +51,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Tiny.3*
 
 %changelog
+* Mon Apr 20 2026 Dweep Advani <dweep.advani@broadcom.com> 1.76-2
+- Bump for perl 5.42.2
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.76-1
 - Upgrade to 1.76
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.73-4

@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define perl_vendorarchdir %(test %{_host} == %{_build} && echo %{perl_vendorarch} || echo %{perl_vendorarch} | sed 's/x86_64-linux-thread-multi/%{_arch}-linux/')
 
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
-Version:        1.76
+Version:        1.78
 Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -14,10 +16,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         use-system-sqlite.patch
 BuildRequires:  sqlite-devel
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  perl-DBI
 Requires:       perl-DBI
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       sqlite-libs
 
 %description
@@ -30,6 +32,10 @@ libraries.
 %prep
 %autosetup -n DBD-SQLite-%{version}
 rm sqlite*
+rm -f .travis.yml Changes
+%if 0%{?with_check} == 0
+  rm -rf t/ xt/
+%endif
 
 %build
 CFLAGS="%{optflags}" perl Makefile.PL INSTALLDIRS=vendor AR=%{_host}-ar CC=%{_host}-gcc LD=%{_host}-gcc OPTIMIZE="%{optflags}"
@@ -55,6 +61,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Apr 06 2026 Dweep Advani <dweep.advani@broadcom.com> 1.78-1
+- Version upgrade 1.78
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.76-1
 - Version upgrade 1.76
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.72-4

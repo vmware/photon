@@ -3,7 +3,7 @@
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
 Version:        60.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
 Vendor:         VMware, Inc.
@@ -107,7 +107,7 @@ is functionally similar to an ARP cache.
 
 %package -n infiniband-diags
 Summary:        InfiniBand Diagnostic Tools
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       libibnetdisc
 Provides:       perl(IBswcountlimits)
 
@@ -526,6 +526,8 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Wed May 27 2026 Dweep Advani <dweep.advani@broadcom.com> 60.1-3
+- Bump for perl 5.42.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 60.1-2
 - Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 60.1-1

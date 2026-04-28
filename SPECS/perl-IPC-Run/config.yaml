@@ -1,7 +1,15 @@
 sources:
-- archive: IPC-Run-20231003.0.tar.gz
-  archive_sha512sum: 81b94715e61f2a302ba4cfbd03f6af14ab66d438dfdf58187ccf8b0f7ff562fd343ef560ad48dad8118342dd493530560ac89beca6de2818663d556d18feff90
-  skip_validation: true
+- archive: IPC-Run-20260402.0.tar.gz
+  archive_sha512sum: 0954ac1c6fc8cc51647e01518d7bc87d4060de352b86d915a63036494088bb5558775d79e2093dd2809c2e8b43a74d5e253c88b4d1ae9820766abcf74ad17d55
+  archive_type: upstream
+  name: IPC-Run-20260402.0
+  version: 20260402.0
+  url: https://cpan.metacpan.org/authors/id/T/TO/TODDR/IPC-Run-20260402.0.tar.gz
+  repo_url: https://github.com/cpan-authors/IPC-Run.git
+  commit_id: a8232b0a3e0e713696bf6bb8f970c561d0fe3d8f
+  skip_validation: false
+  skip_list: ['MANIFEST']
+  missing: ['t', '.git', '.github', '.gitignore', '.perltidyrc', 'CLAUDE.md', 'cpanfile', 'META.json', 'META.yml']
   spdx:
     package:
       detailed_description: 'IPC::Run allows you to run and interact with child processes

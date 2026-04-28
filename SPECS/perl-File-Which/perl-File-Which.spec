@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        File-Which
 Name:           perl-File-Which
 Version:        1.27
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
 Source0:        https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-%{version}.tar.gz
@@ -11,8 +13,8 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 
 %description
 File::Which finds the full or relative paths to executable programs on
@@ -34,6 +36,11 @@ File::Which finds the full or relative paths to executable programs on
     interface to this API.
 %prep
 %autosetup -n File-Which-%{version}
+rm -f Changes INSTALL
+%if 0%{?with_check} == 0
+  sed -i -E '/^corpus\/test-bin-\w+\/.*/d' MANIFEST
+  rm -rf t xt
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
@@ -52,17 +59,19 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/File::Which.3.gz
 
 %changelog
-*  Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.27-3
--  Release bump for perl 5.40.2
-*  Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.27-2
--  Release bump for SRP compliance
-*  Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27-1
--  Automatic Version Bump
-*  Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.23-1
--  Automatic Version Bump
-*  Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.22-1
--  Update to version 1.22
-*  Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
--  GA - Bump release of all rpms
-*  Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
--  Initial version.
+* Thu Apr 30 2026 Dweep Advani <dweep.advani@broadcom.com> 1.27-4
+- Release bump for perl 5.42.2
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.27-3
+- Release bump for perl 5.40.2
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.27-2
+- Release bump for SRP compliance
+* Thu Dec 08 2022 Gerrit Photon <photon-checkins@vmware.com> 1.27-1
+- Automatic Version Bump
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.23-1
+- Automatic Version Bump
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.22-1
+- Update to version 1.22
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
+- GA - Bump release of all rpms
+* Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
+- Initial version.

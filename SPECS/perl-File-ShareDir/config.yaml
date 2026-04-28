@@ -1,0 +1,51 @@
+sources:
+- archive: File-ShareDir-1.118.tar.gz
+  archive_sha512sum: 890f33e96333f7b07707d722e59e7da9a287112062814ef294594ac67f2f7349f905c009e6cd70d3af3a4de85335b074ec5a61194f9b0495f3e793d6ca635853
+  archive_type: upstream
+  name: File-ShareDir-1.118
+  version: 1.118
+  url: https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-ShareDir-1.118.tar.gz
+  repo_url: https://github.com/perl5-utils/File-ShareDir.git
+  commit_id: ecfd86404a58c1aa4efe4f30ab75ce1c0a5e06f2
+  skip_validation: false
+  skip_list: []
+  missing: ['.git', '.gitignore', '.travis.yml', 'xt', 'MANIFEST', 'META.json', 'META.yml', 'inc']
+  spdx:
+    package:
+      detailed_description: The File::ShareDir provides a companion to Class::Inspector and
+        File::HomeDir modules to make easy to have access to a large amount of read-only
+        data that is stored on the file-system at run-time.
+      home_page: https://metacpan.org/pod/File::ShareDir
+      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND
+                         (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+                         Artistic-1.0 AND GPL-1.0-only
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND 
+                         (Artistic-1.0-Perl OR GPL-1.0-or-later) AND 
+                         Artistic-1.0 AND GPL-1.0-only
+      short_summary: File::ShareDir - Locate per-dist and per-module shared files
+      supplier: 'Organization: Broadcom, Inc.'
+  license_manual_review:
+  - file_paths:
+    - File-ShareDir-1.118/.perltidyrc
+    sha256sum: 4f1271439fb6a93c925c88e6423ef19c42d8b9af428f1a4b459010801ff7ced0
+    spdx_exp: GPL-1.0-or-later OR Artistic-1.0
+  - file_paths:
+    - File-ShareDir-1.118/MANIFEST
+    sha256sum: 5382c274213184b3930a5252a6af33dd8474c8b977a910f9d0d111f4a5409f4b
+    spdx_exp: GPL-1.0-or-later OR Artistic-1.0
+  - file_paths:
+    - File-ShareDir-1.118/MANIFEST.SKIP
+    sha256sum: 595451fac947d26caa17a09504837735ca9410918d771ae446fe5bc31edcba21
+    spdx_exp: GPL-1.0-or-later OR Artistic-1.0
+  - file_paths:
+    - File-ShareDir-1.118/README.md
+    sha256sum: 22e1e5b99d9e2b6021a245154126ad8de26cdadfd26d17465a92da79e0158507
+    spdx_exp: GPL-1.0-or-later OR Artistic-1.0
+  - file_paths:
+    - File-ShareDir-1.118/inc/latest.pm
+    sha256sum: 5a2e237f62ae2116876ad0ef242ee0b1f2b1930c3ae0f1d7bdac6d8b1f8e038b
+    spdx_exp: GPL-1.0-or-later OR Artistic-1.0
+  - file_paths:
+    - File-ShareDir-1.118/lib/File/ShareDir.pm
+    sha256sum: f9114d159c52e63a7c996a4dbb72a933f7d9048421b929129b7a8a377dad1904
+    spdx_exp: GPL-1.0-or-later OR Artistic-1.0

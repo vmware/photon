@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 %global __provides_exclude %{?__provides_exclude:%__provides_exclude|}^perl\\((VMS|Win32|BSD::|DB\\)$)
 # unicore::Name - it's needed by perl, maybe problem of rpm
@@ -7,7 +9,7 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        12%{?dist}
+Release:        13%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
@@ -24,11 +26,11 @@ Patch3:         Adapt-to-changes-in-cURL.patch
 Patch4:         WWW-Curl-4.17-Adapt-to-curl-8.0.1.patch
 Patch5:         perl-compatibility-8-16-0.patch
 
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  perl-Module-Install
 BuildRequires:  perl-YAML-Tiny
 BuildRequires:  curl-devel
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       curl
 %description
 WWW::Curl is a Perl extension interface for libcurl.
@@ -68,6 +70,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Tue Jun 09 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.17-13
+- Built for subrelease >= 91
 * Mon Oct 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.17-12
 - Build with curl 8.16.0
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.17-11

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Cross-platform path specification manipulation for Perl
 Name:           perl-Path-Class
 Version:        0.37
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://search.cpan.org/~kwilliams/Path-Class-0.37/
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,8 +14,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildArch:      noarch
-Requires:       perl
-BuildRequires:  perl
+Requires:       perl >= 5.42.2
+BuildRequires:  perl >= 5.42.2
 
 %description
 Path::Class is a module for manipulation of file and directory specifications (strings describing their locations, like '/home/ken/foo.txt' or 'C:\Windows\Foo.txt') in a cross-platform manner. It supports pretty much every platform Perl runs on, including Unix, Windows, Mac, VMS, Epoc, Cygwin, OS/2, and NetWare.
@@ -22,6 +24,9 @@ The well-known module File::Spec also provides this service, but it's sort of aw
 
 %prep
 %autosetup -n Path-Class-%{version}
+%if 0%{?with_check} == 0
+  rm -rf Changes INSTALL t/
+%endif
 
 %build
 env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -39,6 +44,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Thu Apr 16 2026 Dweep Advani <dweep.advani@broadcom.com> 0.37-8
+- Release bump for perl 5.42.2 upgrade
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.37-7
 - Release bump for perl 5.40.2 upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.37-6

@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 # This arch-specific package has no binaries and generates no debuginfo
 %global debug_package %{nil}
@@ -5,7 +7,7 @@
 Summary:       "Common sense" Perl defaults
 Name:          perl-common-sense
 Version:       3.75
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/common-sense
 Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
@@ -14,8 +16,8 @@ Source1: license.txt
 %include %{SOURCE1}
 Vendor:        VMware, Inc.
 Distribution:  Photon
-BuildRequires: perl
-Requires:      perl
+BuildRequires: perl >= 5.42.2
+Requires:      perl >= 5.42.2
 Patch1:        common-sense-3.71-podenc.patch
 
 %description
@@ -66,6 +68,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/common::sense.3*
 
 %changelog
+* Wed Apr 08 2026 Dweep Advani <dweep.advani@broadcom.com> 3.75-5
+- Release bump for perl 5.42.2 upgrade
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 3.75-4
 - Release bump for perl 5.40.2 upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 3.75-3

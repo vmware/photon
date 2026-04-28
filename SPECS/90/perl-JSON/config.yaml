@@ -1,0 +1,24 @@
+sources:
+- archive: JSON-4.10.tar.gz
+  archive_sha512sum: 2aa0c40fbff23d3df84cfa729d00a32a69e06ea83d082b25b7223f90cb157fa3c2e72342fadcd2ebe09b5848a0e3a7d2caec6d1753e95952a56e3e9367f343e3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This module is a thin wrapper for JSON::XS-compatible
+        modules with a few additional features. All the backend modules convert a
+        Perl data structure to a JSON text and vice versa. This module uses JSON::XS
+        by default, and when JSON::XS is not available, falls back on JSON::PP, which
+        is in the Perl core since 5.14. If JSON::PP is not available either, this
+        module then falls back on JSON::backportPP (which is actually JSON::PP in
+        a different .pm file) bundled in the same distribution as this module. You
+        can also explicitly specify to use Cpanel::JSON::XS, a fork of JSON::XS by
+        Reini Urban.  All these backend modules have slight incompatibilities between
+        them, including extra features that other modules don''t support, but as long
+        as you use only common features (most important ones are described below),
+        migration from backend to backend should be reasonably easy. For details,
+        see each backend module you use. '
+      home_page: https://metacpan.org/pod/JSON
+      license_concluded: Artistic-1.0-Perl OR GPL-1.0-or-later
+      license_declared: Artistic-1.0-Perl OR GPL-1.0-or-later
+      short_summary: Perl wrapper for JSON. Provides JSON.pm
+      supplier: 'Organization: Broadcom, Inc.'

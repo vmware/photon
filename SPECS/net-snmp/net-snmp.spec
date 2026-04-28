@@ -6,7 +6,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.9.5.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://net-snmp.sourceforge.net
 Group:          Productivity/Networking/Other
 Vendor:         VMware, Inc.
@@ -20,13 +20,13 @@ Source3: license.txt
 %include %{SOURCE3}
 
 BuildRequires:  openssl-devel
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  systemd
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  rpm
 
 Requires:       rpm-libs
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       systemd
 
 %description
@@ -44,7 +44,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 Group:      System Environment/Libraries
 Summary:    The Perl modules provided with Net-SNMP
 Requires:   %{name} = %{version}-%{release}
-Requires:   perl
+Requires:   perl >= 5.42.2
 Provides:   perl(Net::SNMP)
 
 %description perl
@@ -135,6 +135,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Thu May 28 2026 Dweep Advani <dweep.advani@broadcom.com> 5.9.5.2-6
+- Spec bump for perl 5.42.2 upgrade
 * Wed May 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.9.5.2-5
 - Fix build_if condition
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.9.5.2-4

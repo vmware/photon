@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        IPv4 and IPv6 validation methods
 Name:           perl-Data-Validate-IP
 Version:        0.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/Data-Validate-IP
 Source0:        https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Data-Validate-IP-%{version}.tar.gz
@@ -11,8 +13,8 @@ Source1: license.txt
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 BuildRequires:  perl-NetAddr-IP
 Requires:       perl-NetAddr-IP
 
@@ -25,6 +27,10 @@ or private (reserved).
 
 %prep
 %autosetup -n Data-Validate-IP-%{version}
+rm -f Changes CODE_OF_CONDUCT.md  CONTRIBUTING.md INSTALL
+%if 0%{?with_check} == 0
+  rm -rf t/ xt/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1 OPTIMIZE="%{optflags}"
@@ -46,6 +52,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Apr 01 2026 Dweep Advani <dweep.advani@broadcom.com> 0.31-2
+- Bump for upgrading perl to 5.42.2
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.31-1
 - Upgrade to 0.31
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.30-2

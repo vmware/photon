@@ -1,0 +1,27 @@
+From 2680c38e251a3fafdc931657f955433eb6b85f6a Mon Sep 17 00:00:00 2001
+From: Dweep Advani <dweep.advani@broadcom.com>
+Date: Tue, 5 May 2026 01:39:37 +0000
+Subject: [PATCH] Use the system provided File::ShareDir::Install
+
+Instead of using bundled File::ShareDir::Install, use the the system
+provided library.
+---
+ Makefile.PL | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.PL b/Makefile.PL
+index b738fa1..1780047 100644
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -15,7 +15,7 @@ BEGIN
+     }
+ }
+ 
+-use inc::latest 'File::ShareDir::Install';
++use File::ShareDir::Install;
+ File::ShareDir::Install->import('0.03', 'install_share');
+ 
+ if (inc::latest->can("write"))
+-- 
+2.43.7
+

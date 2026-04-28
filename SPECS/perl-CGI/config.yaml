@@ -1,7 +1,15 @@
 sources:
-- archive: CGI-4.69.tar.gz
-  archive_sha512sum: d8dbb476fdfb43bac1d7674c25e046eabaf15dcf582c453e1810367cb2ed435b7fcc597ecaab32692832997e16d04152928cc145502781f8c6698bfdefcc4407
-  skip_validation: true
+- archive: CGI-4.71.tar.gz
+  archive_sha512sum: 6e8c4c0fa95062cc515c6bae44e57235e430b93fcf5b5196e3e731d4def152ba3eb9f946b40ae058845216345f285e24c6df1eea89cbfab1df7838c5080eb889
+  skip_validation: false
+  url: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-4.71.tar.gz
+  name: CGI-4.71
+  version: 4.71
+  commit_id: a1940af56ffbec89ff66bd6c13da1389ef689696
+  archive_type: upstream
+  repo_url: https://github.com/leejo/CGI.pm.git
+  skip_list: ['MANIFEST']
+  missing: ['.git', '.github', '.gitignore', '.travis.yml', 'CONTRIBUTING.md', 'get_ds_deps', 'xt', 'META.json', 'META.yml', 'any.t', 'examples.t', 'export.t', 'gh-176_self_url.t', 'issue-251.t', 'upload_duplicate_files.t', 'upload_post_text_duplicate_files.txt', 'examples', 't']
   spdx:
     package:
       detailed_description: 'CGI.pm is a stable, complete and mature solution for
@@ -16,3 +24,32 @@ sources:
       license_declared: Artistic-2.0
       short_summary: Handle Common Gateway Interface requests and responses
       supplier: 'Organization: Broadcom, Inc.'
+  license_manual_review:
+  - file_paths:
+    - CGI-4.71/lib/CGI/File/Temp.pm
+    sha256sum: c1122e39eabdcca1c2584d3ac51338995dac00200b8b61e265489cd9f3a33d0b
+    spdx_exp: Artistic-2.0
+  - file_paths:
+    - CGI-4.71/lib/CGI/HTML/Functions.pm
+    sha256sum: 2b2a3d25940d4e388754e41bb8acdf6325987df546932d057f2f5e9bbd7eab5f
+    spdx_exp: Artistic-2.0
+  - file_paths:
+    - CGI-4.71/lib/CGI/HTML/Functions.pod
+    sha256sum: 93f5d295710bc38bde7b332cdf8736af4b9e1756eee8da08f99edd412c05f982
+    spdx_exp: Artistic-2.0
+  - file_paths:
+    - CGI-4.71/lib/CGI.pm
+    sha256sum: 1aeaa78d4827fd86aca1b0d770df779800f9486029897ce0cdb2f798b207b060
+    spdx_exp: Artistic-2.0
+  - file_paths:
+    - CGI-4.71/lib/CGI/Pretty.pm
+    sha256sum: e7aecbea1801a8655a3e65a8cb7885a3df5c69e44be998915d4d88a5de53a10d
+    spdx_exp: Artistic-2.0
+  - file_paths:
+    - CGI-4.71/lib/Fh.pm
+    sha256sum: 03a6e03bdb18a6782ec48f7bf33eed9e18ea36abeab59e0151027c181e04f571
+    spdx_exp: Artistic-2.0
+  - file_paths:
+    - CGI-4.71/MANIFEST
+    sha256sum: 3530814ff794056f090aa61ce52fea439323c6341a0fb1d230725432df23f621
+    spdx_exp: Artistic-2.0

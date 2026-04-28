@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 Summary:       Internationalization library for Perl, compatible with gettext
 Name:          perl-libintl
-Version:       1.35
-Release:       2%{?dist}
+Version:       1.37
+Release:       1%{?dist}
 Group:         Development/Libraries
 URL:           http://search.cpan.org/dist/libintl-perl/
 Source0:       https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
@@ -11,9 +13,9 @@ Source1: license.txt
 %include %{SOURCE1}
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Requires:      perl >= 5.40.2
+Requires:      perl >= 5.42.2
 Provides:      perl-libintl-perl = %{version}-%{release}
-BuildRequires: perl >= 5.40.2
+BuildRequires: perl >= 5.42.2
 
 %description
 The package libintl-perl is an internationalization library for Perl that
@@ -25,6 +27,10 @@ implemented for example in GNU gettext.
 find -type f -exec chmod -x {} \;
 find lib/Locale gettext_xs \( -name '*.pm' -o -name '*.pod' \) \
     -exec sed -i -e '/^#! \/bin\/false/d' {} \;
+rm -f Credits FAQ README-oldversions README.solaris README.win32 REFERENCES THANKS TODO
+%if 0%{?with_check} == 0
+  rm -rf sample/ tests/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -45,25 +51,27 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
-*   Fri Jun 05 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.35-2
--   Relax perl dependency from strict "=" to ">="
-*   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.35-1
--   Upgrade to 1.35
-*   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.32-3
--   Release bump for SRP compliance
-*   Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.32-2
--   Rebuild for perl version upgrade to 5.36.0
-*   Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.32-1
--   Automatic Version Bump
-*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
--   Automatic Version Bump
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.29-1
--   Update to version 1.29
-*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 1.26-1
--   upgrade for 2.0
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.24-2
--   GA - Bump release of all rpms
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.24-1
--   Upgraded to version 1.24
-*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.23-1
--   Initial version.
+* Fri Jun 05 2026 Dweep Advani <dweep.advani@broadcom.com> 1.37-1
+- Upgrade to 1.37
+* Fri Jun 05 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.35-2
+- Relax perl dependency from strict "=" to ">="
+* Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.35-1
+- Upgrade to 1.35
+* Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.32-3
+- Release bump for SRP compliance
+* Thu Dec 08 2022 Dweep Advani <dadvani@vmware.com> 1.32-2
+- Rebuild for perl version upgrade to 5.36.0
+* Wed Aug 17 2022 Gerrit Photon <photon-checkins@vmware.com> 1.32-1
+- Automatic Version Bump
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
+- Automatic Version Bump
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.29-1
+- Update to version 1.29
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 1.26-1
+- upgrade for 2.0
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.24-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.24-1
+- Upgraded to version 1.24
+* Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.23-1
+- Initial version.

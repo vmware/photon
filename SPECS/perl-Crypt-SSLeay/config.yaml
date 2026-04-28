@@ -1,7 +1,15 @@
 sources:
 - archive: Crypt-SSLeay-0.72.tar.gz
   archive_sha512sum: af7a2878df94e116e9aad9a0f028f2e4f89074aaf31672915162f86e55211632d65c1cb00f3ebd25644d77adf8eecdd244dba6a004d93ab90289ab34fe4caaf4
-  skip_validation: true
+  archive_type: upstream
+  name: Crypt-SSLeay-0.72
+  version: 0.72
+  url: https://cpan.metacpan.org/authors/id/N/NA/NANIS/Crypt-SSLeay-0.72.tar.gz
+  repo_url: https://github.com/nanis/Crypt-SSLeay.git
+  commit_id: b97ed6319448c8b97e34a75ed36eb4813b8e7480
+  skip_validation: false
+  skip_list: ['MANIFEST', 'META.yml']
+  missing: ['.git', '.gitattributes', 'TODO', '.travis.yml', 'META.json', 't']
   spdx:
     package:
       detailed_description: 'This Perl module provides support for the HTTPS protocol

@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        system() and background procs w/ piping, redirs, ptys (Unix, Win32)
 Name:           perl-IPC-Run
-Version:        20231003.0
+Version:        20260402.0
 Release:        1%{?dist}
 URL:            https://metacpan.org/pod/IPC::Run
 Group:          Development/Libraries
@@ -12,8 +14,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildArch:      noarch
-Requires:       perl
-BuildRequires:  perl
+Requires:       perl >= 5.42.2
+BuildRequires:  perl >= 5.42.2
 
 %description
 IPC::Run allows you to run and interact with child processes using files,
@@ -23,6 +25,9 @@ both supported and may be mixed.
 
 %prep
 %autosetup -n IPC-Run-%{version}
+%if 0%{?with_check} == 0
+  rm -rf t/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
@@ -49,6 +54,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/IPC::Run::Timer.3.gz
 
 %changelog
+* Fri Apr 10 2026 Dweep Advani <dweep.advani@broadcom.com> 20260402.0-1
+- Upgrade to 20260402.0
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 20231003.0-1
 - Upgrade to 20231003.0
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 20220807.0-2

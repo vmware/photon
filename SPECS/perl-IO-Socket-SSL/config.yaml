@@ -1,7 +1,15 @@
 sources:
-- archive: IO-Socket-SSL-2.090.tar.gz
-  archive_sha512sum: d75d3fff50045f41c5ccfe6bbd80149f5d06845423a9149d7c2e9631cbe5cc68b1d9edc5e05a802609928b05ef4648ff645cc4d7cb8f46f194ec2a441aef7428
-  skip_validation: true
+- archive: IO-Socket-SSL-2.098.tar.gz
+  archive_sha512sum: a0bf942073cd1fd08752694629f7c5552f3b9cc6a0db3d6473da734a79b37a444236f3a2ff48c92b4186774cc83cb53a9d695c53d27eacf49ad02874fdbc2cab
+  archive_type: upstream
+  name: IO-Socket-SSL-2.098
+  version: 2.098
+  url: https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-2.098.tar.gz
+  repo_url: https://github.com/noxxi/p5-io-socket-ssl.git
+  commit_id: a589993ec972126fb9e9f93a137833b025f3b885
+  skip_validation: false
+  skip_list: []
+  missing: ['Changes', 't', 'MANIFEST', '.git', '.github', '.gitignore', 'MANIFEST.SKIP', 'tls_fingerprint', 'META.json', 'META.yml', 'sni_verify_old.t', 'c.pem']
   spdx:
     package:
       detailed_description: 'IO::Socket::SSL makes using SSL/TLS much easier by wrapping

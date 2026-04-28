@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
@@ -41,7 +43,7 @@ subversion-devel package contains header files, libraries.
 
 %package        perl
 Summary:        Allows Perl scripts to directly use Subversion repositories.
-Requires:       perl
+Requires:       perl >= 5.42.2
 Requires:       %{name} = %{version}-%{release}
 
 %description    perl
@@ -97,11 +99,13 @@ userdel test -r -f
 %files perl
 %defattr(-,root,root)
 %{_libdir}/libsvn_swig_perl*so*
-%{_libdir}/perl5/*
+%{perl_sitelib}/*/*
 %{_mandir}/man3/SVN*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Thu Jun 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.14.5-2
+- Release bump for perl 5.42.2
 * Wed Jun 03 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.14.5-1
 - Upgrade to v1.14.5; CVE-2024-46901 fix included upstream
 * Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 1.14.2-15

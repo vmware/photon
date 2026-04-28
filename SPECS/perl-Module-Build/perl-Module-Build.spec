@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Got the intial spec from Fedora and modified it
 # Remove under-specified dependencies
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}^perl\\((ExtUtils::Install|File::Spec|Module::Build|Module::Metadata|Perl::OSType)\\)$
@@ -5,26 +7,28 @@
 
 Summary:        Build and install Perl modules
 Name:           perl-Module-Build
-Version:        0.4234
+Version:        0.4235
 Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Build/
-Source0:        https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-%{version}.tar.gz
+Source0:        https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-0.42_35.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+BuildRequires:  perl-ExtUtils-InstallPaths
+Requires:       perl >= 5.42.2
+Requires:       perl-ExtUtils-InstallPaths
 
 %description
 Module::Build is a system for building, testing, and installing Perl
 modules. It is meant to be an alternative to ExtUtils::MakeMaker.
 
 %prep
-%autosetup -n Module-Build-%{version}
+%autosetup -n Module-Build-0.42_35
 
 %build
 perl Build.PL installdirs=vendor
@@ -46,6 +50,8 @@ LANG=C TEST_SIGNATURE=1 MB_TEST_EXPERIMENTAL=1 ./Build test
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Apr 13 2026 Dweep Advani <dweep.advani@broadcom.com> 0.4235-1
+-   Upgrade to 0.42_35
 *   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.4234-1
 -   Upgrade to 0.4234
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.4231-3

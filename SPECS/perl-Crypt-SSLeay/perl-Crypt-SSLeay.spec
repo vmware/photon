@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Crypt::SSLeay - OpenSSL support for LWP
 Name:           perl-Crypt-SSLeay
 Version:        0.72
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://search.cpan.org/dist/Crypt-SSLeay/
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -11,9 +13,11 @@ Source0:        http://search.cpan.org/CPAN/authors/id/N/NA/NANIS/Crypt-SSLeay-%
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires:       perl
+Patch0:         perl-Crypt-SSLeay-use-TLS-instead-of-SSLv23-methods.patch
+
+Requires:       perl >= 5.42.2
 Requires:       openssl
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  openssl-devel
 BuildRequires:  perl-Path-Class
 BuildRequires:  perl-Try-Tiny
@@ -32,6 +36,10 @@ Work on Crypt::SSLeay has been continued only to provide https support for the L
 
 %prep
 %autosetup -n Crypt-SSLeay-%{version}
+rm -f TODO
+%if 0%{?with_check} == 0
+  rm -rf t/
+%endif
 
 %build
 PERL5LIB=$(pwd) env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -51,6 +59,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man?/*
 
 %changelog
+* Thu Apr 02 2026 Dweep Advani <dweep.advani@broadcom.com> 0.72-11
+- Release bump for perl 5.42.2 upgrade
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 0.72-10
 - Release bump for perl 5.40.2 upgrade
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 0.72-9

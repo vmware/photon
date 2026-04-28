@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Manages IPv4 and IPv6 addresses and subnets
 Name:           perl-NetAddr-IP
 Version:        4.079
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/NetAddr-IP
 Source0:        https://cpan.metacpan.org/authors/id/M/MI/MIKER/NetAddr-IP-%{version}.tar.gz
@@ -10,8 +12,8 @@ Source1: license.txt
 %include %{SOURCE1}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  perl
-Requires:       perl
+BuildRequires:  perl >= 5.42.2
+Requires:       perl >= 5.42.2
 
 %description
 This module provides an object-oriented abstraction on top of IP
@@ -36,6 +38,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Apr 14 2026 Dweep Advani <dweep.advani@broadcom.com> 4.079-6
+-   Release bump for perl 5.42.2
 *   Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.079-5
 -   Release bump for perl 5.40.2
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.079-4

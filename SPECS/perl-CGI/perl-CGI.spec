@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Handle Common Gateway Interface requests and responses
 Name:           perl-CGI
-Version:        4.69
+Version:        4.71
 Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/CGI
@@ -14,13 +16,13 @@ Source1: license.txt
 
 BuildArch:      noarch
 
-BuildRequires:  perl
+BuildRequires:  perl >= 5.42.2
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  findutils
 BuildRequires:  make
 BuildRequires:  sed
 
-Requires:       perl
+Requires:       perl >= 5.42.2
 
 %{?perl_default_filter}
 # Remove under-specified dependencies
@@ -45,7 +47,9 @@ with built-in support for mod_perl and mod_perl2 as well as FastCGI.
 iconv -f iso8859-1 -t utf-8 < Changes > Changes.1
 mv Changes.1 Changes
 sed -i 's?usr/bin perl?usr/bin/perl?' t/init.t
-chmod -c -x examples/*
+%if 0%{?with_check} == 0
+  rm -rf examples/ t/
+%endif
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor
@@ -73,6 +77,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*.3*
 
 %changelog
+* Thu Apr 09 2026 Dweep Advani <dweep.advani@broadcom.com> 4.71-1
+- Upgrade to 4.71
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 4.69-1
 - Upgrade to 4.69
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.54-3
