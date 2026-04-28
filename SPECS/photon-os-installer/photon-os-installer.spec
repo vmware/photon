@@ -4,8 +4,8 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.7
-Release:       5%{?dist}
+Version:       2.8
+Release:       1%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -16,6 +16,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: 0001-Use-mkpasswd-to-generate-password-hash.patch
+Patch1: 0002-fix-up-old-public_key-syntax-for-backward-compatibil.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -39,7 +40,7 @@ Requires: zlib
 Requires: cdrkit
 Requires: findutils
 # needed for --rpmdefine option
-Requires: tdnf >= 3.5.6
+Requires: tdnf >= 3.6.4-1
 
 Requires: python3-pyOpenSSL
 Requires: python3-requests
@@ -70,6 +71,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Tue Apr 28 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.8-1
+- Upgrade to v2.8
 * Tue Mar 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7-5
 - Use mkpasswd to generate password
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.7-4

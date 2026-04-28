@@ -1,0 +1,28 @@
+From d85306668160793aed5e333769712c72a3468abc Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Wed, 28 Jan 2026 23:41:47 +0000
+Subject: [PATCH 2/2] fix up old public_key syntax for backward compatibility
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ photon_installer/installer.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 6cec185..91f782f 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -543,6 +543,10 @@ class Installer(object):
+                 script = os.path.join(self.cwd, script)
+             self.user_grub_cfg_fn = script
+ 
++        # backward compatibility for public_key
++        if 'public_key' in install_config and type(install_config['public_key']) is str:
++            install_config['public_key'] = {'key': install_config['public_key'], 'reason': 'unknown'}
++
+     def _check_install_config(self, install_config):
+         """
+         Sanity check of install_config before its execution.
+-- 
+2.53.0
+

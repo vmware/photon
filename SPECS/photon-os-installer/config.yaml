@@ -1,12 +1,54 @@
 sources:
-- archive: photon-os-installer-2.7.tar.gz
-  archive_sha512sum: 9c2b6df1e9136e94db1451064b51a286b2894849b309dde9539cb9df4fc82e807c74ccb0f7795d7d1d5b2c1ea856dfb38623e1c08e94c567696a637ca6f75fe8
-  skip_validation: true
+- archive: photon-os-installer-2.8.tar.gz
+  archive_sha512sum: 023e58799ed8c71cd9dc420c57337bef27b95c2926aff53253e6c8294d75711d27a49f9a9c12578b3b9e7a7efcf858638ad8559f0734e142b13bc00b011c47ab
+  archive_type: upstream
+  name: photon-os-installer-2.8
+  version: 2.8
+  url: https://github.com/vmware/photon-os-installer/archive/refs/tags/v2.8.tar.gz
+  repo_url: https://github.com/vmware/photon-os-installer
+  commit_id: 8b63bb56db64746021c3b98d56ea9b858bdaa048
+  skip_list: []
+  missing: []
+  license_manual_review:
+  # Ignore standalone Apache-2.0 and GPL-2.0-only licenses, to ensure we only get
+  # Apache-2.0 OR GPL-2.0-only
+  - file_paths:
+    - photon-os-installer-2.8/LICENSE-Apachev2
+    sha256sum: 76de58b4bfb164a4e2243d798af4473baab2d4dad58adc0ebfd689e507d259f3
+    spdx_exp: ''
+  - file_paths:
+    - photon-os-installer-2.8/LICENSE-GPL2.0
+    sha256sum: 536cc4aabf01ed675648fdd3e5d3f0e7c2cbe6c4ec6ef1d1265249ef15e669a2
+    spdx_exp: ''
+  - file_paths:
+    - photon-os-installer-2.8/NOTICE-Apachev2
+    sha256sum: 2d226247cb1af7c76b5b6b97d14687d91567e41925ea70d9cdd0706880f0eb3c
+    spdx_exp: ''
+  - file_paths:
+    - photon-os-installer-2.8/NOTICE-GPL2.0
+    sha256sum: 9587baa5e649eac92c00567c15a4e4062d5bc3c8114392623ed9459dfe7fe572
+    spdx_exp: ''
+  - file_paths:
+    - photon-os-installer-2.8/README.md
+    sha256sum: 49e5cd0d0ec73f8ff6eb1ec3142c09e711677ae68f26fc7e4caa1ec5e72c5ab1
+    spdx_exp: Apache-2.0 OR GPL-2.0-only
+  - file_paths:
+    - photon-os-installer-2.8/docker/README.md
+    sha256sum: 8fb12b6ddc043b39c3767fc81ad4136779ee9d899d51973ea7e356a77975740c
+    spdx_exp: Apache-2.0 OR GPL-2.0-only
+  - file_paths:
+    - photon-os-installer-2.8/examples/iso/iso.yaml
+    sha256sum: 6a76e3103277e21a9098f87f304d65c4f836a4bdfdd58abab8fe5ecadd7dafad
+    spdx_exp: Apache-2.0 OR GPL-2.0-only
+  - file_paths:
+    - photon-os-installer-2.8/photon-os-installer.spec
+    sha256sum: 983c839fa0fd7c3b6c7458a707eadf0c83a8d73c5c6060d7db28d2954b5d7926
+    spdx_exp: Apache-2.0 OR GPL-2.0-only
   spdx:
     package:
-      detailed_description: 'Installer to build Photon images '
+      detailed_description: 'Installer to build Photon images'
       home_page: https://github.com/vmware/photon-os-installer
-      license_concluded: Apache-2.0 AND (Apache-2.0 OR GPL-2.0-only) AND GPL-2.0-only
-      license_declared: Apache-2.0 AND (Apache-2.0 OR GPL-2.0-only) AND GPL-2.0-only
+      license_concluded: Apache-2.0 OR GPL-2.0-only
+      license_declared: Apache-2.0 OR GPL-2.0-only
       short_summary: Photon OS Installer
       supplier: 'Organization: Broadcom, Inc.'
