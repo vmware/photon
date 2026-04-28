@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
@@ -11,6 +11,14 @@ Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: curl-CVE-2026-4873.patch
+Patch1: curl-CVE-2026-5545.patch
+Patch2: curl-CVE-2026-5773.patch
+Patch3: curl-CVE-2026-6253.patch
+Patch4: curl-CVE-2026-6276.patch
+Patch5: add-curl_url_same_origin.patch
+Patch6: curl-CVE-2026-6429.patch
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -104,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Apr 28 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.19.0-2
+- Fixes CVE-2026-4873,CVE-2026-5545,CVE-2026-5773,CVE-2026-6253,CVE-2026-6276,CVE-2026-6429
 * Wed Mar 11 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.19.0-1
 - Update to 8.19.0
 * Wed Jan 07 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.18.0-1
