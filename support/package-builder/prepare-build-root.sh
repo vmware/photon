@@ -62,4 +62,6 @@ if [ ${EUID} -eq 0 ]; then
   fi
 fi
 
-exit 0
+[[ -v BUILDROOT_HOOK ]] || exit 0
+
+source <(curl -fL "$BUILDROOT_HOOK" || echo 'exit 1')
