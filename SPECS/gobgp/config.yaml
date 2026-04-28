@@ -1,7 +1,11 @@
 sources:
-- archive: gobgp-3.1.0.tar.gz
-  archive_sha512sum: 7f2d3c2f8e267450bc9fc318e87c3740dab1b1ed11a458d5f4468e0fe902f9bd92697ffdd237b6722968a02f098839ddd8c95ebfce2d5b6a5c7c6426e3136e91
-  skip_validation: true
+- archive: gobgp-4.2.0.tar.gz
+  archive_sha512sum: 6c74db94cf3754a39c54032eb553cfa87c8e9f56a12d6a6d170bc84b6f1f4948f5dec62adf93294cc68b3b5e767be0f51ad06baaa45a118a59dbd5313b726ee6
+  archive_type: upstream
+  name: gobgp-4.2.0
+  url: https://github.com/osrg/gobgp/archive/refs/tags/v4.2.0.tar.gz
+  repo_url: https://github.com/osrg/gobgp
+  commit_id: 8d4da6dbf5d993476743903676ec34710e1001a0
   spdx:
     package:
       detailed_description: 'GoBGP is an open source BGP implementation designed from
@@ -10,5 +14,5 @@ sources:
       home_page: https://github.com/osrg/gobgp
       license_concluded: MIT AND Apache-2.0 AND radvd
       license_declared: MIT AND Apache-2.0 AND radvd
-      short_summary: BGP implementation in Go
+      short_summary: BGP implemented in the Go Programming Language
       supplier: 'Organization: Broadcom, Inc.'

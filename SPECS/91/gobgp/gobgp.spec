@@ -1,20 +1,27 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define network_required 1
-%define gopath_comp_gobgp github.com/osrg/%{name}
 %define debug_package %{nil}
 Summary:       BGP implementation in Go
 Name:          gobgp
-Version:       4.2.0
-Release:       1%{?dist}
+Version:       3.1.0
+Release:       21.1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/osrg/gobgp
-Distribution:  Photon
 Source0:       https://github.com/osrg/gobgp/archive/refs/tags/%{name}-%{version}.tar.gz
-Source1:       license.txt
-%include %{SOURCE1}
 
+# CVE-2025-43970Add commentMore actions
+Patch0:        0001-pkg-packet-mrt-fix-parser-to-check-the-input-length.patch
+# CVE-2025-43972
+Patch1:        0001-pkg-packet-bgp-fix-flowspec-parser-to-check-the-inpu.patch
+# CVE-2025-43973
+Patch2:        0001-pkg-packet-rtr-fix-parser-to-check-the-input-length.patch
+
+Source1: license.txt
+%include %{SOURCE1}
+Distribution:  Photon
+BuildRequires: git
 BuildRequires: go
 
 %description
@@ -22,40 +29,37 @@ GoBGP is an open source BGP implementation designed from scratch for modern envi
 and implemented in a modern programming language, the Go Programming Language.
 
 %prep
-# Using autosetup is not feasible
-%setup -q -c
-
-mkdir -p "$(dirname src/%{gopath_comp_gobgp})"
-mv %{name}-%{version} src/%{gopath_comp_gobgp}
+%autosetup -p1
 
 %build
-export GO111MODULE=auto
-export GOPATH="${PWD}"
-pushd src/%{gopath_comp_gobgp}
-go clean ./...
-go install -ldflags="-s -w" ./...
+mkdir -p ${GOPATH}/src/github.com/osrg/gobgp
+cp -r * ${GOPATH}/src/github.com/osrg/gobgp/.
+pushd ${GOPATH}/src/github.com/osrg/gobgp
+go mod download
+mkdir -p dist
+pushd cmd/gobgp
+go build -v -o ../../dist/gobgp -ldflags "-X main.VERSION=%{version} -s -w"
 popd
-
-%check
-export GO111MODULE=auto
-export GOPATH="${PWD}"
-pushd src/%{gopath_comp_gobgp}
-go test -v ./...
+pushd cmd/gobgpd
+go build -v -o ../../dist/gobgpd -ldflags "-X main.VERSION=%{version} -s -w"
+popd
 popd
 
 %install
-install -v -m755 -D -t %{buildroot}%{_bindir} bin/gobgp bin/gobgpd
+pushd ${GOPATH}/src/github.com/osrg/gobgp
+install -vdm 755 %{buildroot}%{_bindir}
+install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgp %{buildroot}%{_bindir}/
+install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 
 %files
 %defattr(-,root,root)
 %{_bindir}/gobgp
 %{_bindir}/gobgpd
-%doc src/%{gopath_comp_gobgp}/README.md
-%license src/%{gopath_comp_gobgp}/LICENSE
+%doc LICENSE README.md
 
 %changelog
-* Thu Apr 23 2026 Bo Gan <bo.gan@broadcom.com> 4.2.0-1
-- Upgrade to 4.2.0
+* Thu Apr 23 2026 Bo Gan <bo.gan@broadcom.com> 3.1.0-21.1
+- Bump after moving to SPECS/91
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.0-21
 - Bump version as a part of go upgrade
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.0-20
