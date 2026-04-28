@@ -1,10 +1,17 @@
-%global ps_native_ver 7.2.0
-%global libmi_tag 1.6.9-0
+# powershell's make files use -D_FORTIFY_SOURCE=2, which conflicts
+# with =3 from adjust-gcc-specs.sh, failing the build with error:
+# `"_FORTIFY_SOURCE" redefined [-Werror]`
+# Use `nofortify` until powershell move to =3.
+%global security_hardening nofortify
+
+%global ps_native_ver   7.4.0
+%global libmi_tag       1.9.0-0
+%global gen_nuget_deps  0
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.2.24
-Release:        2%{?dist}
+Version:        7.4.15
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -17,47 +24,50 @@ BuildArch:      x86_64
 # Checkout to desired tag & create tarball from that branch
 #
 # For example:
-# git clone https://github.com/PowerShell/PowerShell.git
-# mv PowerShell PowerShell-7.2.0 && cd PowerShell-7.2.0
-# git checkout -b v7.2.0 tags/v7.2.0
-# cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
+# v="7.4.11"; tag=v${v}
+# git clone --branch $tag --depth 1 https://github.com/PowerShell/PowerShell.git
+# cd PowerShell && git checkout -b $tag
+# cd ..; mv PowerShell PowerShell-$v
+# tar czf powershell-$v.tar.gz PowerShell-$v
 Source0: %{name}-%{version}.tar.gz
-%define sha512 %{name}=7ceaec1cfddab2c25fa474a391730b98eea7527ab3174a58ae87903bcd866fad32c80571a51bfe853abbfceec786a10687e8eef47fc581940b9dac52648c25d9
+%define sha512 %{name}=dd046eab73beb5f814d039084c09a8ade607b3a330f5d2906da1666d8a36c81848927186f17059cf77f2f15e9958f0d5ab5407e2d8d66795b38b69ac1a686e32
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
 # PowerShell-Native uses googletest submodule in it, we need that as well
 Source1: %{name}-native-%{ps_native_ver}.tar.gz
-%define sha512 %{name}-native=872d8c88e6825a06bc664a36aec864e7ca2a639457a0129aa8d2a12296ebb5c3e0d38ee593c08bbfba0678354123e914cb1096a92c09cd48964618225a1c2836
+%define sha512 %{name}-native=6f00c3b7bc45307530bd04065138c4d0f613dcae3cca6bfbca3544c1cf4012b195f230a1b3d1968c1cf7f62fa1850ca6325ab81c668932886fc22fb7284e4370
 
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}-%{version}-linux=0a5fc2b976a39cd051f738c85413d93a925d15fe1905a1713237bf97ecfcf21ffe661e887536a385da9cf72185513f025f1cff65a9fd667fa445f45b584613c1
+%define sha512 %{name}-%{version}-linux=ba135fda6b61f17d66764cc002171a2bd812e0c6e108d7b8d4e8eabf833b6deea2c6c235d8549836b100bbe050a6d332ed3ffe85b326a8b1836cef480fcc6290
 
 Source3: build.sh
 Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
 # The default libmi.so file that comes with powershell (for example powershell-7.1.5-linux-x64.tar.gz)
-# needs libcrypto.1.0.0, we need it to be linked with openssl-1.1.1 (what's present in Photon)
+# needs libcrypto.1.0.0, we need it to be linked with openssl-3.x (what's present in Photon)
 # Hence we need to re-build it.
 # https://github.com/microsoft/omi/archive/refs/tags/v1.6.9-0.tar.gz
 Source5: omi-%{libmi_tag}.tar.gz
-%define sha512 omi-%{libmi_tag}=97dbd968bd4a3075b534af9ebfe03c7003e3dfa07b0cc3923842fe6aecfbebff29fd2537195eb2ee27ff8e8e7a3779a4ba26156b7029a916c4a5eba4024d8009
+%define sha512 omi-%{libmi_tag}=73b60237173079707de8dbab29c3225643a8bf262348911724d542409b674f0a6593b046b87801e6998b0aad50b8dfe14748a2a6de115564e129bbb035b76759
 
 # After extracting Powershell original archive (Source0 in this spec), run:
 # dotnet restore .
 # Then archive $HOME/.nuget directory
 # mv $HOME/.nuget <NAME>-<VERSION>-nuget-deps
-# tar czf <NAME>-<VERSION>-nuget-deps.tar.gz <NAME>-<VERSION>-nuget-deps
-Source6: %{name}-%{version}-nuget-deps.tar.gz
-%define sha512 %{name}-%{version}-nuget-deps=ba7d9893da9355260ac296819cc1851ca9fee32a30ebea3adb62f1c8ffdd6aa9173e3467c001d3d9e8cc4c94f6c1fe05ccfe53b54dabb4c4dd45c0593b8973af
+# tar cJf <NAME>-<VERSION>-nuget-deps.tar.xz <NAME>-<VERSION>-nuget-deps
+%if 0%{?gen_nuget_deps} == 0
+Source6: %{name}-%{version}-nuget-deps.tar.xz
+%define sha512 %{name}-%{version}-nuget-deps=064d743352655dff62910f71a5aa3c03fa59d1c872bee0b6260862b31ae57d896b45a97c26af4e8964f6fc89e754c4514f73a1e55a1d11c4af5f01414cbf8f91
+%endif
 
 Patch0: fix-nuget-url.patch
 
-BuildRequires:  dotnet-sdk = 6.0.428
-BuildRequires:  dotnet-runtime = 6.0.36
+BuildRequires:  dotnet-sdk
+BuildRequires:  dotnet-runtime
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -65,17 +75,19 @@ BuildRequires:  git
 BuildRequires:  photon-release
 BuildRequires:  build-essential
 BuildRequires:  openssl-devel
-BuildRequires:  wget
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  which
 BuildRequires:  icu-devel
 BuildRequires:  zlib-devel
+%if 0%{?gen_nuget_deps}
+BuildRequires:  wget
+%endif
 
-Requires: icu >= 70.1
-Requires: zlib
-Requires: dotnet-sdk = 6.0.428
+Requires:       icu >= 70.1
+Requires:       zlib
+Requires:       dotnet-sdk = 8.0.420
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -92,62 +104,68 @@ It consists of a cross-platform command-line shell and associated scripting lang
 %setup -qcTDa 5 -n omi
 
 pushd %{_builddir}/PowerShell-%{version}
+
 %patch -p1 0
-popd
 
+%if 0%{?gen_nuget_deps} == 0
 tar xf %{SOURCE6}
-rm -rf ${HOME}/.nuget
+[ -d ${HOME}/.nuget ] && rm -r ${HOME}/.nuget
 mv %{name}-%{version}-nuget-deps ${HOME}/.nuget
+%else
+dotnet restore .
+mv $HOME/.nuget %{name}-%{version}-nuget-deps
+tar cJf %{name}-%{version}-nuget-deps.tar.xz %{name}-%{version}-nuget-deps
+echo "$PWD/%{name}-%{version}-nuget-deps.tar.xz is ready ..."
+echo "You can get the archive from chroot now ..."
+echo "Aborting build now ..."
+exit 1
+%endif
 
-# to fix dubious ownership error by git
-chown -R $(whoami) %{_builddir}
+popd
 
 %build
 # Build libmi
-cd %{_builddir}/omi/omi-%{libmi_tag}/Unix && \
-  ./configure && \
-  make %{?_smp_mflags}
+pushd %{_builddir}/omi/omi-%{libmi_tag}/Unix
+sh ./configure
+%make_build
+mv ./output/lib/libmi.so %{_builddir}/%{name}-linux-%{version}
+popd
 
-mv ./output/lib/libmi.so %{_builddir}/powershell-linux-%{version}
-
-cd %{_builddir}/PowerShell-%{version}
+pushd %{_builddir}/PowerShell-%{version}
 cp %{SOURCE3} .
 cp %{SOURCE4} src
 bash -x build.sh
-cd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}
+popd
 
+pushd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}
 pushd src/libpsl-native
-%{__cmake} -DCMAKE_BUILD_TYPE=Debug .
+%{__cmake} -DCMAKE_BUILD_TYPE=Debug
 %make_build
+popd
 popd
 
 %install
-cd %{_builddir}/PowerShell-%{version}
-rm -rf src/%{name}-unix/bin/{Debug,Linux}
-
 mkdir -p %{buildroot}%{_libdir}/%{name} \
-         %{buildroot}%{_docdir}/%{name}
+         %{buildroot}%{_docdir}/%{name} \
+         %{buildroot}%{_bindir} \
+         %{buildroot}%{_libdir}/%{name}/ref
 
+cd %{_builddir}/PowerShell-%{version}
 mv bin/ThirdPartyNotices.txt bin/LICENSE.txt %{buildroot}%{_docdir}/%{name}
-
 cp -a bin/* %{buildroot}%{_libdir}/%{name}
-
 rm -f %{buildroot}%{_libdir}/%{name}/libpsl-native.so
 
 cp -a %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/%{name}-unix/libpsl-native.so \
-  %{buildroot}%{_libdir}/%{name}
-
-mkdir -p %{buildroot}%{_bindir} \
-         %{buildroot}%{_libdir}/%{name}/ref
+        %{buildroot}%{_libdir}/%{name}
 
 chmod 755 %{buildroot}%{_libdir}/%{name}/pwsh
-ln -sfrv %{_libdir}/%{name}/pwsh %{buildroot}%{_bindir}/pwsh
+ln -srv %{buildroot}%{_libdir}/%{name}/pwsh %{buildroot}%{_bindir}/pwsh
 
-cp -a %{_builddir}/%{name}-linux-%{version}/ref/* %{buildroot}%{_libdir}/%{name}/ref
-cp -a %{_builddir}/%{name}-linux-%{version}/libmi.so %{buildroot}%{_libdir}/%{name}/
+cp %{_builddir}/%{name}-linux-%{version}/ref/* %{buildroot}%{_libdir}/%{name}/ref
+cp %{_builddir}/%{name}-linux-%{version}/libmi.so %{buildroot}%{_libdir}/%{name}/
 
 cp -a %{_builddir}/%{name}-linux-%{version}/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
-  %{buildroot}%{_libdir}/%{name}/Modules
+      %{buildroot}%{_libdir}/%{name}/Modules
 
 %if 0%{?with_check}
 %check
@@ -155,27 +173,24 @@ cd %{_builddir}/PowerShell-%{version}/test/xUnit
 dotnet test
 export LANG=en_US.UTF-8
 cd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/libpsl-native
-make test %{?_smp_mflags}
+%make_build test
 %endif
 
 %post
-/sbin/ldconfig
 #in case of upgrade, delete the soft links
-if [ $1 -eq 2 ] ; then
+if [ $1 -eq 2 ]; then
   pushd %{_libdir}/%{name}/ref
   find -type l -exec unlink {} \;
   popd
 fi
 
-grep -qF /usr/bin/pwsh /etc/shells || echo "/usr/bin/pwsh" >> /etc/shells
-
-%postun
-/sbin/ldconfig
+grep -qF %{_bindir}/pwsh %{_sysconfdir}/shells || \
+  echo "%{_bindir}/pwsh" >> %{_sysconfdir}/shells
 
 %preun
 #remove on uninstall
 if [ $1 -eq 0 ]; then
-  sed -i '\/usr\/bin\/pwsh/d' /etc/shells
+  sed -i '\/usr\/bin\/pwsh/d' %{_sysconfdir}/shells
 fi
 
 %files
@@ -186,6 +201,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.15-1
+- Upgrade to v7.4.15
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.24-2
 - Rebuild with clang shared libs
 * Fri May 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.24-1

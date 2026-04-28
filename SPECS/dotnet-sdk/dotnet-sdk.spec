@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        6.0.428
+Version:        8.0.420
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,7 +10,7 @@ License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 
-BuildArch:      x86_64
+BuildArch: x86_64
 
 # Download source tarball from the links provided in:
 # https://github.com/dotnet/core/tree/main/release-notes
@@ -19,9 +19,9 @@ BuildArch:      x86_64
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=04395f991ab50e4755ce1ae53e23592a7420b71b82160883bae3194dd1dfd5dcaed78743e4e0b4dd51ea43c49ec84b5643630707b3854f1471265dc98490d2f9
+%define sha512 %{name}=36c68c1be9d5c6f24cd8e6bd4b6d36bfd7ab724ac7e3499fb13e42e70a9003310e5ee5759ed19ced1f0ecd3d26a55f135c7e72d6f788e7d44f5f0eaa72ad9a07
 
-Requires: dotnet-runtime = 6.0.36
+Requires: dotnet-runtime = 8.0.26
 Requires: icu >= 70.1
 
 %description
@@ -29,32 +29,25 @@ Requires: icu >= 70.1
 applications, microservices and modern websites.
 
 %prep
-%autosetup -c sdk-%{version} -p1
+%autosetup -p1 -c %{name}-%{version} -p1
 
 %build
 
 %install
 mkdir -p %{buildroot}%{_libdir}/dotnet/sdk \
-         %{buildroot}%{_docdir}/%{name}-%{version}
+         %{buildroot}%{_sysconfdir}/dotnet
 
 cp -a sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
-cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/%{name}-%{version}
-
-%post
-/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
-
-%clean
-rm -rf %{buildroot}/*
+echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 
 %files
 %defattr(-,root,root,0755)
 %{_libdir}/*
-%{_docdir}/*
+%{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-1
+- Upgrade to v8.0.420
 * Fri May 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.428-1
 - Upgrade to v6.0.428
 * Mon Jan 22 2024 Anmol Jain <anmolja@vmware.com> 6.0.418-1

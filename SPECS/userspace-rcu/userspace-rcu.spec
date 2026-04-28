@@ -1,14 +1,15 @@
 Summary:        user space RCU (read-copy-update)
 Name:           userspace-rcu
-Version:        0.12.1
+Version:        0.13.2
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/urcu/userspace-rcu/releases
-Source:         %{name}-%{version}.tar.gz
-%define         sha1 userspace-rcu=20bc93b4b1aecf1e69fe5d205899ee2270148d9e
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0: %{name}-%{version}.tar.gz
+%define sha512 %{name}=a59daf9908acad3bd21e36d90c831ec2df8259d29743fb86066a82433a4a228ae79ca3b66e12120c0e6cad651a1007e77d6ac23ab083c55ab9b283b7d36a3ddc
 
 BuildRequires:  libxml2-devel
 BuildRequires:  nss-devel
@@ -20,33 +21,33 @@ BuildRequires:  popt-devel
 This data synchronization library provides read-side access which scales linearly with the number of cores.
 
 %package devel
-Summary: Development Libraries for openssl
-Group: Development/Libraries
-Requires: userspace-rcu = %{version}-%{release}
+Summary:    Development Libraries for openssl
+Requires:   %{name} = %{version}-%{release}
+
 %description devel
 Library files for doing development with userspace-rcu.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -fiv
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --disable-static
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
+%endif
 
 %files
-%{_lib}/*.so.*
-%{_includedir}/*
+%{_libdir}/*.so.*
 %{_datadir}/*
 
 %files devel
@@ -55,8 +56,9 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_includedir}/*
 
-
 %changelog
+*   Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.13.2-1
+-   Upgrade to v0.13.2
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.12.1-1
 -   Automatic Version Bump
 *   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.10.1-1

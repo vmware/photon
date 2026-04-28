@@ -1,25 +1,25 @@
-Summary: LTTng is an open source tracing framework for Linux.
-Name:    lttng-tools
-Version: 2.12.2
-Release: 3%{?dist}
-License: GPLv2 and LGPLv2
-URL: https://lttng.org/download
-Group:      Development/Tools
-Vendor:     VMware, Inc.
+Summary:       LTTng is an open source tracing framework for Linux.
+Name:          lttng-tools
+Version:       2.13.8
+Release:       1%{?dist}
+License:       GPLv2 and LGPLv2
+URL:           https://lttng.org/download
+Group:         Development/Tools
+Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: %{name}-%{version}.tar.bz2
-%define sha1 %{name}=a459c3e248b23aa2ed826f52c6a4a26fd277ada0
+%define sha512 %{name}=6daafb1fd458cfbaa7e19b3a8aaafa958116bb836f389febf7ac4035e5d7884d308a9fdefb4e9063329cb7d837853a79ddae0e263d3b58db1f87519bba2dcb3b
 
-BuildRequires: libxml2-devel >= 2.7.6
+BuildRequires: libxml2-devel
 BuildRequires: nss-devel
 BuildRequires: m4
 BuildRequires: elfutils-devel
 BuildRequires: popt-devel
-BuildRequires: userspace-rcu-devel >= 0.8.0
-BuildRequires: lttng-ust-devel >= 2.9.0
+BuildRequires: userspace-rcu-devel
+BuildRequires: lttng-ust-devel
 
-Requires:      userspace-rcu
+Requires:      userspace-rcu >= 0.13.2
 Requires:      elfutils
 Requires:      nss
 Requires:      libxml2
@@ -32,15 +32,15 @@ LTTng is an open source tracing framework for Linux.
 
 %build
 autoreconf -fiv
-%configure
-
-make %{?_smp_mflags}
+%configure --disable-static
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %files
+%defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/*
 %{_libdir}/liblttng*
@@ -50,6 +50,8 @@ find %{buildroot} -name '*.la' -delete
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.8-1
+- Upgrade to v2.13.8
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.12.2-3
 - Exclude debug symbols properly
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 2.12.2-2

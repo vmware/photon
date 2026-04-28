@@ -1,20 +1,25 @@
-Summary: LTTng-UST is an Userspace Tracer library
-Name:    lttng-ust
-Version: 2.12.0
-Release: 1%{?dist}
-License: GPLv2, LGPLv2.1 and MIT
-URL: https://lttng.org/download/
-Source: https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
-%define sha1 lttng-ust=617589def976bb54b591ea7657b804e2726525de
-Group:      Development/Libraries
-Vendor:     VMware, Inc.
+Summary:       LTTng-UST is an Userspace Tracer library
+Name:          lttng-ust
+Version:       2.13.5
+Release:       1%{?dist}
+License:       GPLv2, LGPLv2.1 and MIT
+URL:           https://lttng.org/download/
+Group:         Development/Libraries
+Vendor:        VMware, Inc.
 Distribution:  Photon
 
+Source0: https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=3bf969e9deb6ce05a1ae30ad48676ae8ff63a73198583e98ce083d52b78e9fc2d171a6e3890c201abfa364600d4471d1ee8b1ee23de3faeec1f0ca84e0f0acd4
+
 BuildRequires: userspace-rcu-devel
-%if %{with_check}
+
+%if 0%{?with_check}
 BuildRequires: perl
 %endif
+
 Requires:      userspace-rcu
+Provides:      liblttng-ust.so.0()(64bit)
+
 %description
 This library may be used by user-space applications to generate
 trace-points using LTTng.
@@ -22,27 +27,30 @@ trace-points using LTTng.
 %package devel
 Summary:    The libraries and header files needed for LTTng-UST development.
 Requires:   %{name} = %{version}-%{release}
+Requires:   userspace-rcu-devel
 
 %description devel
 The libraries and header files needed for LTTng-UST development.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
-	--docdir=%{_docdir}/%{name} \
-	--disable-static \
-	--disable-numa
+    --docdir=%{_docdir}/%{name} \
+    --disable-static \
+    --disable-numa
 
-make %{?_smp_mflags}
-
-%check
-make %{?_smp_mflags} check
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install
-rm -vf %{buildroot}%{_libdir}/*.la
+%make_install %{?_smp_mflags}
+rm -v %{buildroot}%{_libdir}/*.la
+
+%if 0%{?with_check}
+%check
+%make_build check
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -60,6 +68,8 @@ rm -vf %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.5-1
+- Upgrade to v2.13.5
 * Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 2.12.0-1
 - Automatic Version Bump
 * Tue Mar 24 2020 Alexey Makhalov <amakhalov@vmware.com> 2.10.2-3

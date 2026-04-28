@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        6.0.36
+Version:        8.0.26
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,7 +10,7 @@ License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 
-BuildArch:      x86_64
+BuildArch: x86_64
 
 # Download source tarball from the links provided in:
 # https://github.com/dotnet/core/tree/main/release-notes
@@ -19,19 +19,21 @@ BuildArch:      x86_64
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=afb6018fcabec468ccd7ae2f1131d8c9de7f4de7645b8f0c223efbbdbfdc515fb0642a399ebfe372c02044416c4cae463c9c802cd156b9da4181efff0e33ee94
+%define sha512 %{name}=af0ac3aea50162aff62612883ab5ecba3c0dfe7cc0c50fba70342fe076c1cab242081cf84d1d130a4613ea8b4867139a3234433f42a66b1d86e4d4c174ef0751
 
-Requires:       curl
-Requires:       libunwind
-Requires:       krb5
-Requires:       lttng-ust
+BuildRequires: lttng-ust-devel
+
+Requires: curl
+Requires: libunwind
+Requires: krb5
+Requires: lttng-ust
 
 %description
 .NET Core is a development platform that you can use to build command-line
 applications, microservices and modern websites.
 
 %prep
-%autosetup -c %{name}-%{version} -p1
+%autosetup -p1 -c %{name}-%{version}
 
 %build
 
@@ -40,27 +42,25 @@ mkdir -p %{buildroot}%{_libdir}/dotnet \
          %{buildroot}%{_docdir}/%{name}-%{version} \
          %{buildroot}%{_bindir}
 
-cp -a * %{buildroot}%{_libdir}/dotnet
-cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/%{name}-%{version}
-ln -sfrv %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
+cp -pr * %{buildroot}%{_libdir}/dotnet
+ln -sfrv %{buildroot}%{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 
-%post
-/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,0755)
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_docdir}/*
 %{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.26-1
+- Upgrade to v8.0.26
 * Fri May 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.36-1
 - Upgrade to v6.0.36
 * Mon Jan 22 2024 Anmol Jain <anmolja@vmware.com> 6.0.26-1
