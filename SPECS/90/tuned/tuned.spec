@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Name:           tuned
 Version:        2.21.0
-Release:        5.2%{?dist}
+Release:        5.2.1%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
@@ -166,6 +166,8 @@ fi
 %{_datadir}/doc
 
 %changelog
+* Wed Jun 03 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.21.0-5.2.1
+- Bump after moving to SPECS/90
 * Thu May 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.21.0-5.2
 - Drop requirement on python3-ethtool
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.21.0-5.1
