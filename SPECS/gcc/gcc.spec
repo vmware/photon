@@ -4,7 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,6 +17,8 @@ Source1: license.txt
 
 Patch0:         PLUGIN_TYPE_CAST.patch
 Patch1:         0001-gcc-add-plugin-callback-before-struct-layout.patch
+Patch2:         0001-libsanitizer-Fix-build-with-glibc-2.42.patch
+Patch3:         0001-sanitizer_common-Remove-reference-to-obsolete-termio.patch
 
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
@@ -254,6 +256,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Wed Apr 29 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-12
+- Fix build with new glibc
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.2.0-11
 - Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
 * Thu Mar 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-10
