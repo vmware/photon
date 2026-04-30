@@ -7,7 +7,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.59.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://grpc.io
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -26,6 +26,8 @@ Source4: https://github.com/cncf/xds/archive/%{xds_commit}/xds-%{xds_commit}.tar
 Source5: license.txt
 %include %{SOURCE5}
 
+Patch0: CVE-2024-11407.patch
+
 BuildRequires:  build-essential
 BuildRequires:  which
 BuildRequires:  c-ares-devel
@@ -38,13 +40,11 @@ BuildRequires:  abseil-cpp-devel
 
 Requires:       protobuf >= 3.6.0
 Requires:       protobuf-c
-Requires:       c-ares-devel
-Requires:       zlib-devel
-Requires:       openssl-devel
+Requires:       c-ares
+Requires:       zlib
+Requires:       openssl
 Requires:       re2
 Requires:       abseil-cpp
-
-Patch0: CVE-2024-11407.patch
 
 %description
 Remote Procedure Calls (RPCs) provide a useful abstraction for building
@@ -56,10 +56,13 @@ combination of the supported languages.
 %package        devel
 Summary:        Development files for grpc
 Group:          Development/Libraries
-Requires:       grpc = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       protobuf-devel >= 3.6.0
 Requires:       re2-devel
 Requires:       abseil-cpp-devel
+Requires:       zlib-devel
+Requires:       openssl-devel
+Requires:       c-ares-devel
 
 %description    devel
 The grpc-devel package contains libraries and header files for
@@ -93,8 +96,6 @@ mv %{_builddir}/xds-%{xds_commit} %{_builddir}/%{name}-%{version}/third_party/xd
 
 %install
 %{cmake_install}
-# remove libre2 duplicates.
-rm -rf %{buildroot}%{_lib64dir}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -113,6 +114,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Thu Apr 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.59.5-4
+- Fix requires
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.5-3
 - Fix CVE-2024-11407
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.59.5-2

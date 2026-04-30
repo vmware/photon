@@ -4,7 +4,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.11.712
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/aws/aws-sdk-cpp
@@ -23,9 +23,9 @@ Source0: https://github.com/aws/aws-sdk-cpp/archive/refs/tags/%{name}-%{version}
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires: openssl-devel
-Requires: curl-devel
-Requires: zlib-devel
+Requires: openssl
+Requires: curl
+Requires: zlib
 Requires: aws-sdk-core = %{version}-%{release}
 Requires: aws-sdk-kinesis = %{version}-%{release}
 Requires: aws-sdk-s3 = %{version}-%{release}
@@ -52,9 +52,9 @@ aws sdk cpp core
 %package -n     aws-core-libs
 Summary:        aws core libs
 Group:          Development/Libraries
-Requires:       openssl-devel
-Requires:       curl-devel
-Requires:       zlib-devel
+Requires:       openssl
+Requires:       curl
+Requires:       zlib
 
 %description -n aws-core-libs
 aws core libs
@@ -212,6 +212,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libs2n.so.*
 
 %changelog
+* Thu Apr 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.712-2
+- Fix requires
 * Mon Jan 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.712-1
 - Upgraade to v1.11.712, fixes CVE-2025-14760
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.11.117-3
