@@ -180,8 +180,8 @@ class SpecDependencyGenerator(object):
                     and SPECS.getData(arch).getBuildArch(base_package, version) == arch
                 ):
                     filename = os.path.join(
-                        buildarch,
-                        f"{base_package}-debuginfo-{version}.{buildarch}.rpm",
+                        arch,
+                        f"{base_package}-debuginfo-{version}.{arch}.rpm",
                     )
                     output.append(filename)
 
