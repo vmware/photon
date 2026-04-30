@@ -25,7 +25,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.253
+Version:        5.10.254
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=2a226ec449ea2500abe88d7bc637a965d3dca906a9d58f137f34521b12dcd3c698d269f9da52f8a2463f00420b8e45de18458bf6b455a8c4ea4461913116384e
+%define sha512 linux=337cf44bda45815291471451ae4f4530b8637e589a16016e42bc1642ecc5872297e79aa78b375bcb8fa00adee369c92896f6516b0691bea6cb4e20715cafc47e
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -1281,6 +1281,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Apr 30 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.254-1
+- Update to version 5.10.254
 * Sun Apr 19 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.253-1
 - Update to version 5.10.253
 * Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.252-7
