@@ -6,7 +6,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.59.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -28,6 +28,8 @@ Source3: https://github.com/census-instrumentation/opencensus-proto/archive/v%{o
 Source4: https://github.com/cncf/xds/archive/%{xds_commit}/xds-%{xds_commit}.tar.gz
 %define sha512 xds=eb5878764503872c18b8750b20e2c2e2224e73d9601197752cea7e1e4171899474ad4f39aacc80d6c1b57a50b2161d39f219df64ffb250d045af482dae01ea79
 
+Patch0: CVE-2024-11407.patch
+
 BuildRequires:  build-essential
 BuildRequires:  which
 BuildRequires:  c-ares-devel
@@ -40,13 +42,11 @@ BuildRequires:  abseil-cpp-devel
 
 Requires:       protobuf >= 3.6.0
 Requires:       protobuf-c
-Requires:       c-ares-devel
-Requires:       zlib-devel
-Requires:       openssl-devel
+Requires:       c-ares
+Requires:       zlib
+Requires:       openssl
 Requires:       re2
 Requires:       abseil-cpp
-
-Patch0: CVE-2024-11407.patch
 
 %description
 Remote Procedure Calls (RPCs) provide a useful abstraction for building
@@ -62,6 +62,9 @@ Requires:       grpc = %{version}-%{release}
 Requires:       protobuf-devel >= 3.6.0
 Requires:       re2-devel
 Requires:       abseil-cpp-devel
+Requires:       openssl-devel
+Requires:       zlib-devel
+Requires:       c-ares-devel
 
 %description    devel
 The grpc-devel package contains libraries and header files for
@@ -115,6 +118,8 @@ rm -rf %{buildroot}%{_lib64dir}
 %{_libdir}/*.so
 
 %changelog
+* Thu Apr 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.59.3-3
+- Fix requires
 * Mon Jan 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.3-2
 - Fix CVE-2024-11407
 * Tue Nov 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.59.3-1
