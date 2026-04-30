@@ -1,7 +1,7 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        23.0.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org/
 Group:          System Environment/Libraries
@@ -10,6 +10,10 @@ Distribution:   Photon
 
 Source0:        http://ftp.freedesktop.org/pub/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha512  %{name}=79e115c2e21198b61353d98f2eb44093ff7247e2793163b17bb00b6f30125253dc64761c3290bfb456df6de7b5dba9b7b7e9cc503aa0ff28516483f2f26f00ba
+
+Patch0: CVE-2026-40393-prep.patch
+Patch1: CVE-2026-40393-1.patch
+Patch2: CVE-2026-40393-2.patch
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -137,6 +141,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/gbm.pc
 
 %changelog
+* Thu Apr 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 23.0.0-7
+- Fix for CVE-2026-40393
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 23.0.0-6
 - Rebuild with llvm shared libs
 * Mon May 05 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 23.0.0-5
