@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.169
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -232,6 +232,9 @@ Patch157: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
 
 # Fix CVE-2024-27042
 Patch158: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
+
+# Fix CVE-2026-31431 (Copy.Fail) - algif_aead in-place revert
+Patch130: 0001-crypto-algif_aead-CVE-2026-31431-Revert-to-out-of-place.patch
 
 # Fix CVE-2024-26669
 Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
@@ -724,6 +727,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Thu Apr 30 2026 Claude AI bot <noreply@anthropic.com> 6.1.169-2
+- Fix CVE-2026-31431: crypto: algif_aead - Revert to operating out-of-place
 * Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
 - Update to version 6.1.169
 * Tue Apr 14 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.167-3

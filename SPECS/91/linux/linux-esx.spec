@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.169
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -274,6 +274,9 @@ Patch157: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
 
 # Fix CVE-2024-27042
 Patch158: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
+
+# Fix CVE-2026-31431 (Copy.Fail) - algif_aead in-place revert
+Patch130: 0001-crypto-algif_aead-CVE-2026-31431-Revert-to-out-of-place.patch
 
 # Fix CVE-2024-26669
 Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
@@ -766,6 +769,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Apr 30 2026 Claude AI bot <noreply@anthropic.com> 6.1.169-3
+- Fix CVE-2026-31431: crypto: algif_aead - Revert to operating out-of-place
 * Wed Apr 29 2026 Mounesh Badiger <mounesh.badiger@broadcom.com> 6.1.169-2
 - viomem: Add IOCTL to re-size the viomem memory
 * Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
