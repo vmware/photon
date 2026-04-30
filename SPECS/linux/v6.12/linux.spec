@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.78
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -239,6 +239,8 @@ Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+# Fix CVE-2026-31431 (Copy.Fail) - algif_aead in-place revert
+Patch130: 0001-crypto-algif_aead-CVE-2026-31431-Revert-to-out-of-place.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -971,6 +973,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Apr 30 2026 Claude AI bot <noreply@anthropic.com> 6.12.78-5
+- Fix CVE-2026-31431: crypto: algif_aead - Revert to operating out-of-place
 * Mon Apr 27 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.78-4
 - Disable CONFIG_PER_VMA_LOCK
 * Fri Apr 10 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.78-3
