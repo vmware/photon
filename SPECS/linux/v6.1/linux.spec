@@ -36,7 +36,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.83
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -207,6 +207,9 @@ Patch133: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patc
 
 # Fix CVE-2024-26643
 Patch134: 0001-netfilter-nf_tables-mark-set-as-dead-when-unbinding.patch
+
+# Fix CVE-2026-31431 (Copy.Fail) - algif_aead in-place revert
+Patch135: 0001-crypto-algif_aead-CVE-2026-31431-Revert-to-out-of-place.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -483,7 +486,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M135
 
 %ifarch aarch64
 # aarch64 patches
@@ -859,6 +862,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Apr 30 2026 Claude AI bot <noreply@anthropic.com> 6.1.83-10
+- Fix CVE-2026-31431: crypto: algif_aead - Revert to operating out-of-place
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.83-9
 - Require coreutils and remove xml-security-c-devel from build requires
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.83-8

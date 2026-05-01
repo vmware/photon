@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.83
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -191,6 +191,9 @@ Patch133: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 # Fix CVE-2024-26642
 Patch134: 0001-netfilter-nf_tables-disallow-anonymous-set-with-timeout-flag.patch
 
+# Fix CVE-2026-31431 (Copy.Fail) - algif_aead in-place revert
+Patch135: 0001-crypto-algif_aead-CVE-2026-31431-Revert-to-out-of-place.patch
+
 # aarch64 [200..219]
 %ifarch aarch64
 Patch200: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -323,7 +326,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m60 -M89
 
 # CVE
-%autopatch -p1 -m100 -M134
+%autopatch -p1 -m100 -M135
 
 %ifarch aarch64
 # aarch64 patches
@@ -483,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Apr 30 2026 Claude AI bot <noreply@anthropic.com> 6.1.83-5
+- Fix CVE-2026-31431: crypto: algif_aead - Revert to operating out-of-place
 * Sat May 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.83-4
 - Require coreutils and remove xml-security-c-devel from build requires
 * Thu Mar 13 2025 Mukul Sikka <mukul.sikka@broadcom.com> 6.1.83-3
