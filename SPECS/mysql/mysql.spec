@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.4.8
+Version:        8.4.9
 Release:        1%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -183,6 +183,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Mon May 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.9-1
+- Upgrade to v8.4.9 to fix CVEs
 * Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.8-1
 - Upgrade to v8.4.8 to fix CVEs
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 8.4.7-2
