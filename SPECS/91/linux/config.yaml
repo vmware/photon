@@ -1,224 +1,224 @@
 shared_sources:
 - 91/stalld/config.yaml
 sources:
-- archive: linux-6.1.169.tar.xz
+- archive: linux-6.1.170.tar.xz
   archive_type: upstream
-  version: 6.1.169
-  name: linux-6.1.169
-  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.169.tar.xz
+  version: 6.1.170
+  name: linux-6.1.170
+  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.170.tar.xz
   repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-  commit_id: 7c87defbd336df289c8c0280f019647864ff70c6
+  commit_id: 4931e0e1673d2592ba7ab7365a25d1248b6a41b8
   skip_list: []
   missing: []
-  archive_sha512sum: 'b10da7239a30d2c9247dc7958268f0e29507272f65942540bdcd8a0be10fddd62f5d53b42034cf04972cbb2d6e118674ce93538bd91b4488f70b07742912ddfb'
+  archive_sha512sum: 'c49bca145a57d42fcf4b89b7500868f829910059195b07648de95afeb2d7ca5b080adcb4acc5eda4dc711ff2e914727cb010da87d266106ce006f4014adfdd3d'
   skip_validation: false
   license_manual_review:
   # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
   - file_paths:
-    - linux-6.1.169/drivers/pci/controller/pci-mvebu.c
+    - linux-6.1.170/drivers/pci/controller/pci-mvebu.c
     sha256sum: f2ed59ce938e92a0dff71c849860cafb5a5d2a78b34e5c0aa974288d98cccfcc
     spdx_exp: GPL-2.0-only
   # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
   - file_paths:
-    - linux-6.1.169/Documentation/process/kernel-docs.rst
+    - linux-6.1.170/Documentation/process/kernel-docs.rst
     sha256sum: 6e641499dcde7927e30dcdea64a6be9f53234d7036f4069ec47bdf5490005166
     spdx_exp: ''
   spdx:
     package:
       detailed_description: The Linux package contains the Linux kernel.
       home_page: http://www.kernel.org
-      license_concluded: (Apache-2.0 OR CC0-1.0 OR OpenSSL) AND (Apache-2.0 OR
+      license_concluded: (Apache-2.0 OR CC0-1.0 OR OpenSSL) AND (Apache-2.0 OR 
         GPL-2.0-only) AND (Apache-2.0 OR MIT) AND (Artistic-2.0 OR GPL-2.0-only)
-        AND (BSD-2-Clause OR GPL-2.0-only OR Linux-OpenIB) AND (BSD-2-Clause OR
+        AND (BSD-2-Clause OR GPL-2.0-only OR Linux-OpenIB) AND (BSD-2-Clause OR 
         GPL-2.0-only WITH Linux-syscall-note) AND (BSD-2-Clause OR GPL-2.0-only)
-        AND (BSD-2-Clause OR GPL-2.0-or-later) AND (BSD-2-Clause OR
-        GPL-2.0-or-later) AND (BSD-2-Clause OR LGPL-2.0-or-later) AND
+        AND (BSD-2-Clause OR GPL-2.0-or-later) AND (BSD-2-Clause OR 
+        GPL-2.0-or-later) AND (BSD-2-Clause OR LGPL-2.0-or-later) AND 
         (BSD-2-Clause OR LGPL-2.1-only) AND (BSD-3-Clause OR GPL-1.0-or-later OR
-        OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR
-        GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-2.0-only WITH
+        OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR 
+        GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-2.0-only WITH 
         Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-3-Clause
-        OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-or-later WITH
-        Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-or-later) AND
-        (BSD-3-Clause OR GPL-2.0-or-later) AND (BSD-3-Clause OR OpenSSL) AND
-        (BSD-3-Clause-acpica OR GPL-2.0-only) AND (CC-BY-4.0 OR
+        OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-or-later WITH 
+        Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-or-later) AND 
+        (BSD-3-Clause OR GPL-2.0-or-later) AND (BSD-3-Clause OR OpenSSL) AND 
+        (BSD-3-Clause-acpica OR GPL-2.0-only) AND (CC-BY-4.0 OR 
         GPL-2.0-or-later) AND (CDDL-1.0 OR GPL-2.0-only WITH Linux-syscall-note)
-        AND (CDDL-1.0 OR GPL-2.0-only) AND (GFDL-1.1-no-invariants-only OR
-        GPL-2.0-only) AND (GFDL-1.1-no-invariants-or-later OR GPL-2.0-only) AND
-        (GFDL-1.2-no-invariants-only OR GPL-2.0-only) AND
-        (GFDL-1.2-no-invariants-or-later OR GPL-2.0-only) AND (GFDL-1.2-only OR
-        GPL-2.0-only) AND (GPL-1.0-only OR GPL-2.0-only) AND (GPL-1.0-or-later
+        AND (CDDL-1.0 OR GPL-2.0-only) AND (GFDL-1.1-no-invariants-only OR 
+        GPL-2.0-only) AND (GFDL-1.1-no-invariants-or-later OR GPL-2.0-only) AND 
+        (GFDL-1.2-no-invariants-only OR GPL-2.0-only) AND 
+        (GFDL-1.2-no-invariants-or-later OR GPL-2.0-only) AND (GFDL-1.2-only OR 
+        GPL-2.0-only) AND (GPL-1.0-only OR GPL-2.0-only) AND (GPL-1.0-or-later 
         OR MIT) AND (GPL-2.0-only OR GPL-3.0-only) AND (GPL-2.0-only OR ICU) AND
-        (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND
+        (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND 
         (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MPL-1.1) AND (GPL-2.0-only OR
         MPL-1.1) AND (GPL-2.0-only OR MPL-2.0) AND (GPL-2.0-only OR OSL-1.1) AND
-        (GPL-2.0-only OR X11) AND (GPL-2.0-only OR XFree86-1.1) AND
+        (GPL-2.0-only OR X11) AND (GPL-2.0-only OR XFree86-1.1) AND 
         (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND (GPL-2.0-only
-        WITH Linux-syscall-note OR MIT) AND (GPL-2.0-or-later OR
-        LGPL-3.0-or-later) AND (GPL-2.0-or-later OR MIT) AND (GPL-2.0-or-later
-        OR MIT) AND (GPL-2.0-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR X11)
+        WITH Linux-syscall-note OR MIT) AND (GPL-2.0-or-later OR 
+        LGPL-3.0-or-later) AND (GPL-2.0-or-later OR MIT) AND (GPL-2.0-or-later 
+        OR MIT) AND (GPL-2.0-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR X11) 
         AND (GPL-2.0-or-later OR copyleft-next-0.3.1) AND (GPL-2.0-or-later WITH
         Linux-syscall-note OR MIT) AND (LGPL-2.1-only OR MIT) AND Apache-2.0 AND
-        BSD-2-Clause AND BSD-3-Clause AND BSD-3-Clause-Clear AND
-        BSD-3-Clause-acpica AND BSD-4-Clause-UC AND BSD-4.3TAHOE AND
-        BSD-Source-beginning-file AND CC-BY-3.0 AND CC-BY-4.0 AND CC-BY-SA-2.0
-        AND CC0-1.0 AND CDDL-1.0 AND CMU-Mach-nodoc AND FSFUL AND
-        GFDL-1.1-no-invariants-only AND GFDL-1.1-no-invariants-or-later AND
-        GFDL-1.1-only AND GFDL-1.1-or-later AND GFDL-1.2-no-invariants-only AND
-        GFDL-1.2-no-invariants-or-later AND GFDL-1.2-only AND GFDL-1.2-or-later
-        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH
-        Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH
-        Linux-syscall-note AND GPL-2.0-only WITH mif-exception AND
-        GPL-2.0-or-later AND GPL-2.0-or-later WITH GCC-exception-2.0 AND
-        GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later WITH
+        BSD-2-Clause AND BSD-3-Clause AND BSD-3-Clause-Clear AND 
+        BSD-3-Clause-acpica AND BSD-4-Clause-UC AND BSD-4.3TAHOE AND 
+        BSD-Source-beginning-file AND CC-BY-3.0 AND CC-BY-4.0 AND CC-BY-SA-2.0 
+        AND CC0-1.0 AND CDDL-1.0 AND CMU-Mach-nodoc AND FSFUL AND 
+        GFDL-1.1-no-invariants-only AND GFDL-1.1-no-invariants-or-later AND 
+        GFDL-1.1-only AND GFDL-1.1-or-later AND GFDL-1.2-no-invariants-only AND 
+        GFDL-1.2-no-invariants-or-later AND GFDL-1.2-only AND GFDL-1.2-or-later 
+        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH 
+        Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH 
+        Linux-syscall-note AND GPL-2.0-only WITH mif-exception AND 
+        GPL-2.0-or-later AND GPL-2.0-or-later WITH GCC-exception-2.0 AND 
+        GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later WITH 
         mif-exception AND GPL-3.0-only AND GPL-3.0-or-later AND HPND-Pbmplus AND
-        HPND-export-US-modify AND HPND-export2-US AND HPND-sell-variant AND ISC
-        AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.0-or-later WITH
-        Linux-syscall-note AND LGPL-2.1-only AND LGPL-2.1-only WITH
-        Linux-syscall-note AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH
+        HPND-export-US-modify AND HPND-export2-US AND HPND-sell-variant AND ISC 
+        AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.0-or-later WITH 
+        Linux-syscall-note AND LGPL-2.1-only AND LGPL-2.1-only WITH 
+        Linux-syscall-note AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH 
         Linux-syscall-note AND Linux-OpenIB AND Linux-man-pages-copyleft AND MIT
         AND MPL-1.0 AND MPL-1.1 AND MS-LPL AND NTP AND Parity-7.0.0 AND SSPL-1.0
         AND Unicode-3.0 AND Unlicense AND X11 AND Zlib AND pkgconf
-      license_declared: (Apache-2.0 OR CC0-1.0 OR OpenSSL) AND (Apache-2.0 OR
+      license_declared: (Apache-2.0 OR CC0-1.0 OR OpenSSL) AND (Apache-2.0 OR 
         GPL-2.0-only) AND (Apache-2.0 OR MIT) AND (Artistic-2.0 OR GPL-2.0-only)
-        AND (BSD-2-Clause OR GPL-2.0-only OR Linux-OpenIB) AND (BSD-2-Clause OR
+        AND (BSD-2-Clause OR GPL-2.0-only OR Linux-OpenIB) AND (BSD-2-Clause OR 
         GPL-2.0-only WITH Linux-syscall-note) AND (BSD-2-Clause OR GPL-2.0-only)
-        AND (BSD-2-Clause OR GPL-2.0-or-later) AND (BSD-2-Clause OR
-        GPL-2.0-or-later) AND (BSD-2-Clause OR LGPL-2.0-or-later) AND
+        AND (BSD-2-Clause OR GPL-2.0-or-later) AND (BSD-2-Clause OR 
+        GPL-2.0-or-later) AND (BSD-2-Clause OR LGPL-2.0-or-later) AND 
         (BSD-2-Clause OR LGPL-2.1-only) AND (BSD-3-Clause OR GPL-1.0-or-later OR
-        OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR
-        GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-2.0-only WITH
+        OpenSSL) AND (BSD-3-Clause OR GPL-1.0-or-later) AND (BSD-3-Clause OR 
+        GPL-1.0-or-later) AND (BSD-3-Clause OR GPL-2.0-only WITH 
         Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-3-Clause
-        OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-or-later WITH
-        Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-or-later) AND
-        (BSD-3-Clause OR GPL-2.0-or-later) AND (BSD-3-Clause OR OpenSSL) AND
-        (BSD-3-Clause-acpica OR GPL-2.0-only) AND (CC-BY-4.0 OR
+        OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-or-later WITH 
+        Linux-syscall-note) AND (BSD-3-Clause OR GPL-2.0-or-later) AND 
+        (BSD-3-Clause OR GPL-2.0-or-later) AND (BSD-3-Clause OR OpenSSL) AND 
+        (BSD-3-Clause-acpica OR GPL-2.0-only) AND (CC-BY-4.0 OR 
         GPL-2.0-or-later) AND (CDDL-1.0 OR GPL-2.0-only WITH Linux-syscall-note)
-        AND (CDDL-1.0 OR GPL-2.0-only) AND (GFDL-1.1-no-invariants-only OR
-        GPL-2.0-only) AND (GFDL-1.1-no-invariants-or-later OR GPL-2.0-only) AND
-        (GFDL-1.2-no-invariants-only OR GPL-2.0-only) AND
-        (GFDL-1.2-no-invariants-or-later OR GPL-2.0-only) AND (GFDL-1.2-only OR
-        GPL-2.0-only) AND (GPL-1.0-only OR GPL-2.0-only) AND (GPL-1.0-or-later
+        AND (CDDL-1.0 OR GPL-2.0-only) AND (GFDL-1.1-no-invariants-only OR 
+        GPL-2.0-only) AND (GFDL-1.1-no-invariants-or-later OR GPL-2.0-only) AND 
+        (GFDL-1.2-no-invariants-only OR GPL-2.0-only) AND 
+        (GFDL-1.2-no-invariants-or-later OR GPL-2.0-only) AND (GFDL-1.2-only OR 
+        GPL-2.0-only) AND (GPL-1.0-only OR GPL-2.0-only) AND (GPL-1.0-or-later 
         OR MIT) AND (GPL-2.0-only OR GPL-3.0-only) AND (GPL-2.0-only OR ICU) AND
-        (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND
+        (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND 
         (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR MPL-1.1) AND (GPL-2.0-only OR
         MPL-1.1) AND (GPL-2.0-only OR MPL-2.0) AND (GPL-2.0-only OR OSL-1.1) AND
-        (GPL-2.0-only OR X11) AND (GPL-2.0-only OR XFree86-1.1) AND
+        (GPL-2.0-only OR X11) AND (GPL-2.0-only OR XFree86-1.1) AND 
         (GPL-2.0-only WITH Linux-syscall-note OR Linux-OpenIB) AND (GPL-2.0-only
-        WITH Linux-syscall-note OR MIT) AND (GPL-2.0-or-later OR
-        LGPL-3.0-or-later) AND (GPL-2.0-or-later OR MIT) AND (GPL-2.0-or-later
-        OR MIT) AND (GPL-2.0-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR X11)
+        WITH Linux-syscall-note OR MIT) AND (GPL-2.0-or-later OR 
+        LGPL-3.0-or-later) AND (GPL-2.0-or-later OR MIT) AND (GPL-2.0-or-later 
+        OR MIT) AND (GPL-2.0-or-later OR MPL-1.1) AND (GPL-2.0-or-later OR X11) 
         AND (GPL-2.0-or-later OR copyleft-next-0.3.1) AND (GPL-2.0-or-later WITH
         Linux-syscall-note OR MIT) AND (LGPL-2.1-only OR MIT) AND Apache-2.0 AND
-        BSD-2-Clause AND BSD-3-Clause AND BSD-3-Clause-Clear AND
-        BSD-3-Clause-acpica AND BSD-4-Clause-UC AND BSD-4.3TAHOE AND
-        BSD-Source-beginning-file AND CC-BY-3.0 AND CC-BY-4.0 AND CC-BY-SA-2.0
-        AND CC0-1.0 AND CDDL-1.0 AND CMU-Mach-nodoc AND FSFUL AND
-        GFDL-1.1-no-invariants-only AND GFDL-1.1-no-invariants-or-later AND
-        GFDL-1.1-only AND GFDL-1.1-or-later AND GFDL-1.2-no-invariants-only AND
-        GFDL-1.2-no-invariants-or-later AND GFDL-1.2-only AND GFDL-1.2-or-later
-        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH
-        Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH
-        Linux-syscall-note AND GPL-2.0-only WITH mif-exception AND
-        GPL-2.0-or-later AND GPL-2.0-or-later WITH GCC-exception-2.0 AND
-        GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later WITH
+        BSD-2-Clause AND BSD-3-Clause AND BSD-3-Clause-Clear AND 
+        BSD-3-Clause-acpica AND BSD-4-Clause-UC AND BSD-4.3TAHOE AND 
+        BSD-Source-beginning-file AND CC-BY-3.0 AND CC-BY-4.0 AND CC-BY-SA-2.0 
+        AND CC0-1.0 AND CDDL-1.0 AND CMU-Mach-nodoc AND FSFUL AND 
+        GFDL-1.1-no-invariants-only AND GFDL-1.1-no-invariants-or-later AND 
+        GFDL-1.1-only AND GFDL-1.1-or-later AND GFDL-1.2-no-invariants-only AND 
+        GFDL-1.2-no-invariants-or-later AND GFDL-1.2-only AND GFDL-1.2-or-later 
+        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-1.0-or-later WITH 
+        Linux-syscall-note AND GPL-2.0-only AND GPL-2.0-only WITH 
+        Linux-syscall-note AND GPL-2.0-only WITH mif-exception AND 
+        GPL-2.0-or-later AND GPL-2.0-or-later WITH GCC-exception-2.0 AND 
+        GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later WITH 
         mif-exception AND GPL-3.0-only AND GPL-3.0-or-later AND HPND-Pbmplus AND
-        HPND-export-US-modify AND HPND-export2-US AND HPND-sell-variant AND ISC
-        AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.0-or-later WITH
-        Linux-syscall-note AND LGPL-2.1-only AND LGPL-2.1-only WITH
-        Linux-syscall-note AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH
+        HPND-export-US-modify AND HPND-export2-US AND HPND-sell-variant AND ISC 
+        AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.0-or-later WITH 
+        Linux-syscall-note AND LGPL-2.1-only AND LGPL-2.1-only WITH 
+        Linux-syscall-note AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH 
         Linux-syscall-note AND Linux-OpenIB AND Linux-man-pages-copyleft AND MIT
         AND MPL-1.0 AND MPL-1.1 AND MS-LPL AND NTP AND Parity-7.0.0 AND SSPL-1.0
         AND Unicode-3.0 AND Unlicense AND X11 AND Zlib AND pkgconf
       short_summary: Kernel
       supplier: 'Organization: Broadcom, Inc.'
 - archive: jitterentropy-3.4.1-4.tar.bz2
-  archive_sha512sum:
+  archive_sha512sum: 
     37a9380b14d5e56eb3a16b8e46649bc5182813aadb5ec627c31910e4cc622269dfd29359789cb4c13112182f4f8d3c084a6b9c576df06dae9689da44e4735dd2
   skip_validation: true
   spdx:
     package:
-      detailed_description: A JitterEntropy is a software-based random number
-        generator that derives entropy from the unpredictable fluctuations
-        (jitter) in a system's timing or clock signals. The RNG is based on a
-        high-resolution timer like the x86 RDTSC instruction. The generated
-        random bit stream does not show any statistical significant patterns.
-        The output of the random number generator passes all standard
+      detailed_description: A JitterEntropy is a software-based random number 
+        generator that derives entropy from the unpredictable fluctuations 
+        (jitter) in a system's timing or clock signals. The RNG is based on a 
+        high-resolution timer like the x86 RDTSC instruction. The generated 
+        random bit stream does not show any statistical significant patterns. 
+        The output of the random number generator passes all standard 
         statistical tools analyzing the quality of a random data stream.
       home_page: https://github.com/vmware/photon
       license_concluded: GPL-2.0-or-later
       license_declared: GPL-2.0-or-later
       short_summary: A JitterEntropy is a reliable, software based random number
-        generator that uses the randomness of CPU jitter to produce
-        cryptographically secure random numbers, ensuring robust security in
-        systems that rely on high-quality entropy for encryption and other
+        generator that uses the randomness of CPU jitter to produce 
+        cryptographically secure random numbers, ensuring robust security in 
+        systems that rely on high-quality entropy for encryption and other 
         sensitive operations.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: fips-canister-5.0.0-6.1.75-2.ph5-secure.tar.bz2
-  archive_sha512sum:
+  archive_sha512sum: 
     ddbe5d163f9313209434bf5b2adf711d4b23546012ad08ad869b96c40c94e781bcd13ec1839efc95060038a1d18b2f298e6d7c10584c0335dda445ea1363473b
   skip_validation: true
   spdx:
     package:
-      detailed_description: A FIPS (Federal Information Processing Standards)
+      detailed_description: A FIPS (Federal Information Processing Standards) 
         canister is a binary blob of cryptographic algorithms designed to store,
-        manage, and protect cryptographic keys, tokens, or other sensitive data
-        in accordance with FIPS security standards. These canisters are
-        typically used in environments that require high levels of data
-        protection and compliance with governmental or industry-specific
-        security guidelines. FIPS canisters are engineered to prevent
+        manage, and protect cryptographic keys, tokens, or other sensitive data 
+        in accordance with FIPS security standards. These canisters are 
+        typically used in environments that require high levels of data 
+        protection and compliance with governmental or industry-specific 
+        security guidelines. FIPS canisters are engineered to prevent 
         unauthorized access, tampering, and data breaches.
       home_page: https://github.com/vmware/photon
       license_concluded: GPL-2.0-only AND GPL-1.0-or-later
       license_declared: GPL-2.0-only AND GPL-1.0-or-later
-      short_summary: A FIPS canister serves as a critical component consists of
-        binary blob of cryptographic algorithms which helps in secure
-        information handling, ensuring that cryptographic operations and
-        sensitive data storage comply with strict security and regulatory
+      short_summary: A FIPS canister serves as a critical component consists of 
+        binary blob of cryptographic algorithms which helps in secure 
+        information handling, ensuring that cryptographic operations and 
+        sensitive data storage comply with strict security and regulatory 
         standards.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: efa_linux_2.1.1.tar.gz
-  archive_sha512sum:
+  archive_sha512sum: 
     2ceb5a4011a6b5f69d0a389e3d6f188d29cb87373202b42fe6c1f29ac2a310d1180a9ffad3e362680b675edc8007850b541e477b918781ef406afc55ca0d1c6e
   skip_validation: true
   spdx:
     package:
-      detailed_description: AWS Linux kernel drivers for Elastic Fabric
-        Adapter(EFA). Elastic Fabric Adapter (EFA) is a network device that
-        provides reliable userspace communication and kernel bypass
-        capabilities, targeting more consistent latency and higher throughput
+      detailed_description: AWS Linux kernel drivers for Elastic Fabric 
+        Adapter(EFA). Elastic Fabric Adapter (EFA) is a network device that 
+        provides reliable userspace communication and kernel bypass 
+        capabilities, targeting more consistent latency and higher throughput 
         than traditional TCP-based communication.
       home_page: https://github.com/amzn/amzn-drivers
-      license_concluded: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note)
-        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only)
+      license_concluded: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note) 
+        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) 
         AND (GPL-2.0-only OR Linux-OpenIB) AND BSD-2-Clause AND BSD-3-Clause AND
         GPL-2.0-only AND GPL-2.0-or-later AND Linux-OpenIB AND MIT
-      license_declared: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note)
-        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only)
+      license_declared: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note) 
+        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) 
         AND (GPL-2.0-only OR Linux-OpenIB) AND BSD-2-Clause AND BSD-3-Clause AND
         GPL-2.0-only AND GPL-2.0-or-later AND Linux-OpenIB AND MIT
-      short_summary: The open source linux kernel drivers for devices(EFA) used
+      short_summary: The open source linux kernel drivers for devices(EFA) used 
         on AWS platforms.
       supplier: 'Organization: Broadcom, Inc.'
 - archive: ena_linux_2.8.3.tar.gz
-  archive_sha512sum:
+  archive_sha512sum: 
     173435137b6fe47d110db376c4c3eff8da7a10803dde5f41f694d04e74319861c16398f257a1c917a4fc05477c86e6e7b42e6a63e2f42de7ea9166f77ba9b01d
   skip_validation: true
   spdx:
     package:
-      detailed_description: AWS Linux kernel drivers for Elastic Network
+      detailed_description: AWS Linux kernel drivers for Elastic Network 
         Adapter(ENA). ENA is a networking interface designed to make good use of
-        modern CPU features and system architectures. The ENA device exposes a
-        lightweight management interface with a minimal set of memory mapped
+        modern CPU features and system architectures. The ENA device exposes a 
+        lightweight management interface with a minimal set of memory mapped 
         registers and extendible command set through an Admin Queue.
       home_page: https://github.com/amzn/amzn-drivers
-      license_concluded: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note)
-        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only)
+      license_concluded: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note) 
+        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) 
         AND (GPL-2.0-only OR Linux-OpenIB) AND BSD-2-Clause AND BSD-3-Clause AND
         GPL-2.0-only AND GPL-2.0-or-later AND Linux-OpenIB AND MIT
-      license_declared: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note)
-        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only)
+      license_declared: (BSD-2-Clause OR GPL-2.0-only WITH Linux-syscall-note) 
+        AND (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) 
         AND (GPL-2.0-only OR Linux-OpenIB) AND BSD-2-Clause AND BSD-3-Clause AND
         GPL-2.0-only AND GPL-2.0-or-later AND Linux-OpenIB AND MIT
-      short_summary: The open source linux kernel drivers for devices(ENA) used
+      short_summary: The open source linux kernel drivers for devices(ENA) used 
         on AWS platforms.
       supplier: 'Organization: Broadcom, Inc.'

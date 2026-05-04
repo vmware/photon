@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.169
-Release:        2%{?dist}
+Version:        6.1.170
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -728,6 +728,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon May 04 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.170-1
+- Update to version 6.1.170
 * Fri Apr 24 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.169-2
 - Add ptp_vmw patch
 * Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
