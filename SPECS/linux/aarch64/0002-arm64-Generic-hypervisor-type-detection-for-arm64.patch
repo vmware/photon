@@ -1,0 +1,164 @@
+From 6fafb399a88dd41e784abc105ed3f3b2c392ec81 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 25 May 2022 12:31:05 +0000
+Subject: [PATCH 2/6] arm64: Generic hypervisor type detection for arm64
+
+Implement hypervisor type detection framework for the arm64
+architecture, enabled with the HYPERVISOR_GUEST config option.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ MAINTAINERS                         |  9 +++++
+ arch/arm64/Kconfig                  | 10 ++++++
+ arch/arm64/include/asm/hypervisor.h | 23 +++++++++++++
+ arch/arm64/kernel/Makefile          |  1 +
+ arch/arm64/kernel/hypervisor.c      | 52 +++++++++++++++++++++++++++++
+ 5 files changed, 95 insertions(+)
+ create mode 100644 arch/arm64/kernel/hypervisor.c
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b878ddc99..eb18f3383 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -24730,6 +24730,15 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/vmware
+ F:	arch/x86/include/asm/vmware.h
+ F:	arch/x86/kernel/cpu/vmware.c
+ 
++VMWARE ARM64 HYPERVISOR INTERFACE
++M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
++M:	Keerthana K <keerthanak@vmware.com>
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
++L:	virtualization@lists.linux-foundation.org
++F:	arch/arm64/include/asm/hypervisor.h
++F:	arch/arm64/kernel/hypervisor.c
++F:	arch/arm64/kernel/vmware.c
++
+ VMWARE PVRDMA DRIVER
+ M:	Bryan Tan <bryan-bt.tan@broadcom.com>
+ M:	Vishnu Dasa <vishnu.dasa@broadcom.com>
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 22f8a7bca..6e6fee606 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -1586,6 +1586,16 @@ config TRANS_TABLE
+ 	def_bool y
+ 	depends on HIBERNATION || KEXEC_CORE
+ 
++menuconfig HYPERVISOR_GUEST
++	bool "Linux guest support"
++	help
++	  Say Y here to enable options for running Linux under various hyper-
++	  visors. This option enables basic hypervisor detection and platform
++	  setup.
++
++	  If you say N, all options in this submenu will be skipped and
++	  disabled, and Linux guest support won't be built in.
++
+ config XEN_DOM0
+ 	def_bool y
+ 	depends on XEN
+diff --git a/arch/arm64/include/asm/hypervisor.h b/arch/arm64/include/asm/hypervisor.h
+index 409e23983..1783d3515 100644
+--- a/arch/arm64/include/asm/hypervisor.h
++++ b/arch/arm64/include/asm/hypervisor.h
+@@ -18,4 +18,27 @@ static inline void kvm_arch_init_hyp_services(void)
+ 	pkvm_init_hyp_services();
+ };
+ 
++#ifdef CONFIG_HYPERVISOR_GUEST
++
++#include <linux/hypervisor.h>
++
++struct arm64_hyper_init {
++	void (*init_platform)(void);
++};
++
++struct hypervisor_arm64 {
++	/* Hypervisor name */
++	const char	*name;
++
++	/* Detection routine - returns a priority (highest wins) */
++	uint32_t	(*detect)(void);
++
++	/* Hypervisor type */
++	enum arch_hypervisor_type type;
++
++	/* init time callbacks */
++	struct arm64_hyper_init init;
++};
++
++#endif /* CONFIG_HYPERVISOR_GUEST */
+ #endif
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index 2b112f3b7..156a47036 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -70,6 +70,7 @@ obj-$(CONFIG_ARM64_PTR_AUTH)		+= pointer_auth.o
+ obj-$(CONFIG_ARM64_MTE)			+= mte.o
+ obj-y					+= vdso-wrap.o
+ obj-$(CONFIG_COMPAT_VDSO)		+= vdso32-wrap.o
++obj-$(CONFIG_HYPERVISOR_GUEST)		+= hypervisor.o
+ 
+ # Force dependency (vdso*-wrap.S includes vdso.so through incbin)
+ $(obj)/vdso-wrap.o: $(obj)/vdso/vdso.so
+diff --git a/arch/arm64/kernel/hypervisor.c b/arch/arm64/kernel/hypervisor.c
+new file mode 100644
+index 000000000..dbf0170ed
+--- /dev/null
++++ b/arch/arm64/kernel/hypervisor.c
+@@ -0,0 +1,52 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Common hypervisor code
++ *
++ * Copyright (C) 2021, VMware, Inc.
++ */
++
++#include <linux/init.h>
++#include <linux/export.h>
++#include <asm/hypervisor.h>
++
++static const __initconst struct hypervisor_arm64 * const hypervisors[] = {
++};
++
++enum arch_hypervisor_type hyper_type;
++EXPORT_SYMBOL(hyper_type);
++
++static inline const struct hypervisor_arm64 * __init
++detect_hypervisor_vendor(void)
++{
++	const struct hypervisor_arm64 *h = NULL, * const *p;
++	u32 pri, max_pri = 0;
++
++	for (p = hypervisors; p < hypervisors + ARRAY_SIZE(hypervisors); p++) {
++		pri = (*p)->detect();
++		if (pri > max_pri) {
++			max_pri = pri;
++			h = *p;
++		}
++	}
++
++	if (h)
++		pr_info("Hypervisor detected: %s\n", h->name);
++
++	return h;
++}
++
++static int __init init_hypervisor_platform(void)
++{
++	const struct hypervisor_arm64 *h;
++
++	h = detect_hypervisor_vendor();
++
++	if (!h)
++		return -EINVAL;
++	hyper_type = h->type;
++
++	if (h->init.init_platform)
++		h->init.init_platform();
++	return 0;
++}
++arch_initcall(init_hypervisor_platform);
+-- 
+2.40.4
+

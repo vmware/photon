@@ -1,0 +1,1579 @@
+From 0c41d7a1638466d60ca55cdab828d8f35564c8b0 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 18 Jul 2025 17:48:37 +0000
+Subject: [PATCH 4/4] FIPS Canister Plugins: Add self tests
+
+Self tests for FIPS canister GCC plugins.
+
+Under pad_canister_structs/match_canister_structs,
+run ./self-test.sh. Or, from the main self-test directory,
+run ./run_tests.sh.
+
+Common functions are in self-test-lib.sh.
+
+Mostly validates GCC/pahole output against
+expected output.
+
+When changing ANY code in either FIPS canister
+plugin, please run this test suite, and add any
+new test cases which are needed.
+
+Note: In order to run self tests, you must first
+edit CANISTER_LOC in dwarf_debuginfo_parser.c
+(for match_canister_struct) to be the absolute path
+to the FIPS canister .o file. (and rebuild the plugin).
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ .../match_canister/add-multiple-new-fields.c  |  36 +++
+ .../add-multiple-new-fields.expected          |  28 +++
+ .../self_tests/match_canister/add-new-field.c |  30 +++
+ .../match_canister/add-new-field.expected     |  26 ++
+ .../match_canister/add-too-many-fields.c      |  27 ++
+ .../add-too-many-fields.expected              |   4 +
+ .../self_tests/match_canister/bad-cast.c      |  13 +
+ .../match_canister/bad-cast.expected          |   8 +
+ .../match_canister/bad-cast.gcc.expected      |   5 +
+ .../match_canister/designated-init.c          |  12 +
+ .../match_canister/designated-init.expected   |  12 +
+ .../match_canister/field-size-change.c        |  20 ++
+ .../match_canister/field-size-change.expected |  12 +
+ .../self_tests/match_canister/flexible-init.c |  28 +++
+ .../match_canister/flexible-init.expected     |  16 ++
+ .../match_canister/functional-flexible.c      |  52 ++++
+ .../functional-flexible.expected              |  10 +
+ .../self_tests/match_canister/functional.c    |  36 +++
+ .../match_canister/functional.expected        |   8 +
+ .../self_tests/match_canister/no-change.c     |  35 +++
+ .../match_canister/no-change.expected         |  32 +++
+ .../self_tests/match_canister/remove-field.c  |  19 ++
+ .../match_canister/remove-field.expected      |   3 +
+ .../match_canister/reorder-fields.c           |  23 ++
+ .../self_tests/match_canister/self-test.sh    |  17 ++
+ .../match_canister/struct-assignment.c        |  28 +++
+ .../match_canister/struct-assignment.expected |  29 +++
+ .../match_canister/unnamed-struct-init.c      |  11 +
+ .../unnamed-struct-init.expected              |   9 +
+ .../self_tests/pad_canister/bad-cast.c        |  13 +
+ .../self_tests/pad_canister/bad-cast.expected |   9 +
+ .../pad_canister/bad-cast.gcc.expected        |   5 +
+ .../self_tests/pad_canister/flexible-init.c   |  32 +++
+ .../pad_canister/flexible-init.expected       |  16 ++
+ .../pad_canister/functional-flexible.c        |  49 ++++
+ .../pad_canister/functional-flexible.expected |   9 +
+ .../self_tests/pad_canister/functional.c      |  26 ++
+ .../pad_canister/functional.expected          |   5 +
+ .../pad_canister/pad-flexible-array.c         |  20 ++
+ .../pad_canister/pad-flexible-array.expected  |  17 ++
+ .../self_tests/pad_canister/self-test.sh      |  12 +
+ .../self_tests/pad_canister/simple-pad.c      |  19 ++
+ .../pad_canister/simple-pad.expected          |  16 ++
+ .../pad_canister/struct-assignment.c          |  28 +++
+ .../pad_canister/struct-assignment.expected   |  25 ++
+ .../pad_canister/unnamed-struct-init.c        |  11 +
+ .../pad_canister/unnamed-struct-init.expected |   9 +
+ .../self_tests/run_tests.sh                   |  13 +
+ .../self_tests/self-test-lib.sh               | 231 ++++++++++++++++++
+ 49 files changed, 1154 insertions(+)
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.gcc.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/reorder-fields.c
+ create mode 100755 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.gcc.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.expected
+ create mode 100755 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/self-test.sh
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.expected
+ create mode 100755 scripts/gcc-plugins/fips_canister_plugins/self_tests/run_tests.sh
+ create mode 100755 scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
+new file mode 100644
+index 000000000..e4b970b8b
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
+@@ -0,0 +1,36 @@
++/* Add new_field to crypto_tfm */
++struct crypto_tfm {
++	char refcnt[4];
++
++	int crt_flags;
++
++	int new_field;
++
++	int new_field1;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++/* Add new field to ecdh, allowing some space for padding */
++struct ecdh {
++	char new_field[3];
++
++	char *key;
++	unsigned short key_size;
++
++	char new_flexible_array[];
++};
++
++int main()
++{
++	struct crypto_tfm tfm;
++	struct ecdh ecdh;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
+new file mode 100644
+index 000000000..573a7cada
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
+@@ -0,0 +1,28 @@
++struct crypto_tfm {
++	char                       refcnt[4];            /*     0     4 */
++	int                        crt_flags;            /*     4     4 */
++	int                        node;                 /*     8     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	void                       (*exit)(struct crypto_tfm *); /*    16     8 */
++	void *                     __crt_alg;            /*    24     8 */
++	int                        new_field;            /*    32     4 */
++	int                        new_field1;           /*    36     4 */
++	void *                     __crt_ctx[] __attribute__((__aligned__(8))); /*    40     0 */
++
++	/* size: 40, cachelines: 1, members: 8 */
++	/* sum members: 36, holes: 1, sum holes: 4 */
++	/* forced alignments: 1 */
++	/* last cacheline: 40 bytes */
++} __attribute__((__aligned__(8)));
++struct ecdh {
++	char *                     key;                  /*     0     8 */
++	short unsigned int         key_size;             /*     8     2 */
++	char                       new_field[3];         /*    10     3 */
++	char                       __fips_canister_padding[11]; /*    13    11 */
++	char                       new_flexible_array[]; /*    24     0 */
++
++	/* size: 24, cachelines: 1, members: 5 */
++	/* last cacheline: 24 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
+new file mode 100644
+index 000000000..198206c42
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
+@@ -0,0 +1,30 @@
++/* Add new_field to crypto_tfm */
++struct crypto_tfm {
++	char refcnt[4];
++
++	int crt_flags;
++
++	long int new_field;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++struct ecdh {
++	char new_field[5];
++	char *key;
++	unsigned short key_size;
++};
++
++int main()
++{
++	struct crypto_tfm tfm;
++	struct ecdh ecdh;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
+new file mode 100644
+index 000000000..6b00439d3
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
+@@ -0,0 +1,26 @@
++struct crypto_tfm {
++	char                       refcnt[4];            /*     0     4 */
++	int                        crt_flags;            /*     4     4 */
++	int                        node;                 /*     8     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	void                       (*exit)(struct crypto_tfm *); /*    16     8 */
++	void *                     __crt_alg;            /*    24     8 */
++	long int                   new_field;            /*    32     8 */
++	void *                     __crt_ctx[] __attribute__((__aligned__(8))); /*    40     0 */
++
++	/* size: 40, cachelines: 1, members: 7 */
++	/* sum members: 36, holes: 1, sum holes: 4 */
++	/* forced alignments: 1 */
++	/* last cacheline: 40 bytes */
++} __attribute__((__aligned__(8)));
++struct ecdh {
++	char *                     key;                  /*     0     8 */
++	short unsigned int         key_size;             /*     8     2 */
++	char                       new_field[5];         /*    10     5 */
++	char                       __fips_canister_padding[9]; /*    15     9 */
++
++	/* size: 24, cachelines: 1, members: 4 */
++	/* last cacheline: 24 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
+new file mode 100644
+index 000000000..8cbe70647
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
+@@ -0,0 +1,27 @@
++/* Expected failure: Overflowing padding before flexible array member */
++struct crypto_tfm {
++	char refcnt[4];
++
++	int crt_flags;
++
++	int new_field;
++
++	int new_field1;
++
++	int new_field2;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[];
++};
++
++int main()
++{
++	struct crypto_tfm tfm;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
+new file mode 100644
+index 000000000..7a690ca1d
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
+@@ -0,0 +1,4 @@
++add-too-many-fields.c:20:1: error: struct 'crypto_tfm': kernel size 48 != canister size 40
++
++   20 | };
++      | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.c
+new file mode 100644
+index 000000000..3e77a6ae5
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.c
+@@ -0,0 +1,13 @@
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++int main()
++{
++	struct ecdh ecdh;
++
++	char *h = (char *)&ecdh;
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
+new file mode 100644
+index 000000000..0d813b0e0
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
+@@ -0,0 +1,8 @@
++struct ecdh {
++	char *                     key;                  /*     0     8 */
++	short unsigned int         key_size;             /*     8     2 */
++	char                       __fips_canister_padding[14]; /*    10    14 */
++
++	/* size: 24, cachelines: 1, members: 3 */
++	/* last cacheline: 24 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.gcc.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.gcc.expected
+new file mode 100644
+index 000000000..931acedc3
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.gcc.expected
+@@ -0,0 +1,5 @@
++bad-cast.c: In function ‘main’:
++bad-cast.c:11:15: note: fips canister plugin: casting modified canister structure pointer type (op0): ‘char’ and ‘struct ecdh’
++
++   11 |         char *h = (char *)&ecdh;
++      |               ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.c
+new file mode 100644
+index 000000000..6031af3f9
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.c
+@@ -0,0 +1,12 @@
++
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++int main() {
++	struct ecdh ecdh = {1, 2};
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.expected
+new file mode 100644
+index 000000000..14af6e9b2
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/designated-init.expected
+@@ -0,0 +1,12 @@
++designated-init.c: In function ‘main’:
++designated-init.c:9:29: error: positional initialization of field in ‘struct’ declared with ‘designated_init’ attribute [-Werror=designated-init]
++    9 |         struct ecdh ecdh = {1, 2};
++      |                             ^
++designated-init.c:9:29: note: (near initialization for ‘ecdh’)
++designated-init.c:9:29: warning: initialization of ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
++designated-init.c:9:29: note: (near initialization for ‘ecdh.key’)
++designated-init.c:9:32: error: positional initialization of field in ‘struct’ declared with ‘designated_init’ attribute [-Werror=designated-init]
++    9 |         struct ecdh ecdh = {1, 2};
++      |                                ^
++designated-init.c:9:32: note: (near initialization for ‘ecdh’)
++cc1: some warnings being treated as errors
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
+new file mode 100644
+index 000000000..f08f54a72
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
+@@ -0,0 +1,20 @@
++/* Field size change */
++struct crypto_tfm {
++	char refcnt[24];
++
++	int crt_flags;
++
++	long int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++int main() {
++    struct crypto_tfm tfm;
++
++    return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
+new file mode 100644
+index 000000000..55499de81
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
+@@ -0,0 +1,12 @@
++field-size-change.c:3:14: note: struct 'crypto_tfm': field 'refcnt' size mismatch: kernel: (char[24]) 24 != canister: (refcount_t) 4
++
++    3 |         char refcnt[24];
++      |              ^~~~~~
++field-size-change.c:7:18: note: struct 'crypto_tfm': field 'node' size mismatch: kernel: (long int) 8 != canister: (int) 4
++
++    7 |         long int node;
++      |                  ^~~~
++field-size-change.c:14:1: error: struct 'crypto_tfm': field 'crt_flags', kernel offset 24 != canister offset 4
++
++   14 | };
++      | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
+new file mode 100644
+index 000000000..74061f8fd
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
+@@ -0,0 +1,28 @@
++/* Struct padded in canister, with flexible array member */
++struct crypto_tfm {
++	char refcnt[4];
++
++	int crt_flags;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	char __crt_ctx[];
++};
++
++const struct crypto_tfm tfm_var = {
++	.refcnt = {0},
++	.crt_flags = 1,
++	.node = 2,
++	.exit = 0,
++	.__crt_alg = 0,
++	// Alloc 8 bytes for the flexible array size
++	.__crt_ctx = {0, 1, 2, 3, 4, 5, 6, 7}
++};
++
++int main() {
++    return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
+new file mode 100644
+index 000000000..d5875707d
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
+@@ -0,0 +1,16 @@
++struct crypto_tfm {
++	char                       refcnt[4];            /*     0     4 */
++	int                        crt_flags;            /*     4     4 */
++	int                        node;                 /*     8     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	void                       (*exit)(struct crypto_tfm *); /*    16     8 */
++	void *                     __crt_alg;            /*    24     8 */
++	char                       __fips_canister_padding[8]; /*    32     8 */
++	char                       __crt_ctx[];          /*    40     0 */
++
++	/* size: 40, cachelines: 1, members: 7 */
++	/* sum members: 36, holes: 1, sum holes: 4 */
++	/* last cacheline: 40 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
+new file mode 100644
+index 000000000..a1a64d504
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
+@@ -0,0 +1,52 @@
++#include <stdio.h>
++#include <stddef.h>
++#include <stdlib.h>
++#include <string.h>
++
++struct crypto_tfm {
++        char refcnt[4];
++
++        int crt_flags;
++
++        long int new_field;
++
++        int node;
++
++        void (*exit)(struct crypto_tfm *tfm);
++
++        void *__crt_alg;
++
++        void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++int main() {
++	struct crypto_tfm *func_tfm = calloc(1, sizeof(struct crypto_tfm) + 8);
++	if(!func_tfm) {
++		perror("Couldn't alloc memory for crypto_tfm");
++		return -1;
++	}
++
++	char bytes[8] = "8 bytes.";
++
++	strncpy((char *) func_tfm->__crt_ctx, bytes, sizeof(bytes));
++
++	printf("__crt_ctx: %s\n\n", (char *) func_tfm->__crt_ctx);
++
++	printf("new_field offset: %d\n", offsetof(struct crypto_tfm, new_field));
++	printf("refcnt offset: %d\n", offsetof(struct crypto_tfm, refcnt));
++	printf("crt_flags offset: %d\n", offsetof(struct crypto_tfm, crt_flags));
++	printf("node offset: %d\n", offsetof(struct crypto_tfm, node));
++	printf("exit offset: %d\n", offsetof(struct crypto_tfm, exit));
++	printf("__crt_alg offset: %d\n", offsetof(struct crypto_tfm, __crt_alg));
++	printf("__crt__ctx offset: %d\n", offsetof(struct crypto_tfm, __crt_ctx));
++
++	// test explicitly writing to offset
++	int *node = (int*) (((long int) func_tfm) + 8);
++	*node = 75439;
++
++	printf("Explicit offset write: crypto_tfm->node = %d\n", func_tfm->node);
++
++	free(func_tfm);
++	return 0;
++}
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
+new file mode 100644
+index 000000000..9ae2783db
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
+@@ -0,0 +1,10 @@
++__crt_ctx: 8 bytes.
++
++new_field offset: 32
++refcnt offset: 0
++crt_flags offset: 4
++node offset: 8
++exit offset: 16
++__crt_alg offset: 24
++__crt__ctx offset: 40
++Explicit offset write: crypto_tfm->node = 75439
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.c
+new file mode 100644
+index 000000000..1c40a6f02
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.c
+@@ -0,0 +1,36 @@
++#include <stdio.h>
++#include <stddef.h>
++
++struct ecdh {
++	char new_field[5];
++	char *key;
++	unsigned short key_size;
++};
++
++int main()
++{
++	struct ecdh ecdh;
++	size_t key_offset = offsetof(struct ecdh, key);
++	size_t key_size_offset = offsetof(struct ecdh, key_size);
++	size_t new_field_offset = offsetof(struct ecdh, new_field);
++
++	ecdh.new_field[0] = 1;
++	ecdh.key_size = sizeof(ecdh.new_field);
++
++	printf("ecdh.key_size = %d\n", ecdh.key_size);
++	printf("ecdh.new_field[0] + ecdh.key_size = %d\n",
++		ecdh.new_field[0] + ecdh.key_size);
++
++	// test offsets
++	printf("Offsets:\n");
++	printf("offsetof(ecdh.new_field) = %d\n", new_field_offset);
++	printf("offsetof(ecdh.key) = %d\n", key_offset);
++	printf("offsetof(ecdh.key_size) = %d\n", key_size_offset);
++
++
++	unsigned short *key_sz = (unsigned short *) (((char* ) &ecdh) + 8);
++	*key_sz = 53;
++	printf("\necdh->key_sz = %d\n", (int) ecdh.key_size);
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.expected
+new file mode 100644
+index 000000000..44dcb0a39
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional.expected
+@@ -0,0 +1,8 @@
++ecdh.key_size = 5
++ecdh.new_field[0] + ecdh.key_size = 6
++Offsets:
++offsetof(ecdh.new_field) = 10
++offsetof(ecdh.key) = 0
++offsetof(ecdh.key_size) = 8
++
++ecdh->key_sz = 53
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
+new file mode 100644
+index 000000000..09964b512
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
+@@ -0,0 +1,35 @@
++
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++/* Struct padded in canster, with flexible array member */
++struct crypto_tfm {
++	char refcnt[4];
++
++	int crt_flags;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++
++/* This can be a struct which is not padded in the canister */
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++int main() {
++	struct ecdh ecdh;
++	struct list_head list;
++	struct crypto_tfm tfm;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
+new file mode 100644
+index 000000000..814dcb7a9
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
+@@ -0,0 +1,32 @@
++struct ecdh {
++	char *                     key;                  /*     0     8 */
++	short unsigned int         key_size;             /*     8     2 */
++	char                       __fips_canister_padding[14]; /*    10    14 */
++
++	/* size: 24, cachelines: 1, members: 3 */
++	/* last cacheline: 24 bytes */
++};
++struct crypto_tfm {
++	char                       refcnt[4];            /*     0     4 */
++	int                        crt_flags;            /*     4     4 */
++	int                        node;                 /*     8     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	void                       (*exit)(struct crypto_tfm *); /*    16     8 */
++	void *                     __crt_alg;            /*    24     8 */
++	char                       __fips_canister_padding[8]; /*    32     8 */
++	void *                     __crt_ctx[] __attribute__((__aligned__(8))); /*    40     0 */
++
++	/* size: 40, cachelines: 1, members: 7 */
++	/* sum members: 36, holes: 1, sum holes: 4 */
++	/* forced alignments: 1 */
++	/* last cacheline: 40 bytes */
++} __attribute__((__aligned__(8)));
++struct list_head {
++	struct list_head *         next;                 /*     0     8 */
++	struct list_head *         prev;                 /*     8     8 */
++
++	/* size: 16, cachelines: 1, members: 2 */
++	/* last cacheline: 16 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
+new file mode 100644
+index 000000000..f7f435d58
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
+@@ -0,0 +1,19 @@
++/* Remove field from crypto_tfm */
++struct crypto_tfm {
++	char refcnt[4];
++
++	int crt_flags;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++int main()
++{
++	struct crypto_tfm tfm;
++
++	return 0;
++}
+\ No newline at end of file
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
+new file mode 100644
+index 000000000..4ca5ba886
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
+@@ -0,0 +1,3 @@
++remove-field.c:12:1: error: struct crypto_tfm: found canister member 'node' which is not present in kernel
++   12 | };
++      | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/reorder-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/reorder-fields.c
+new file mode 100644
+index 000000000..3f5e90aae
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/reorder-fields.c
+@@ -0,0 +1,23 @@
++/*
++ * Reordering of fields in kernel - plugin should order these
++ * according to the canister order.
++ */
++struct crypto_tfm {
++	int crt_flags;
++
++	char refcnt[4];
++
++	int node;
++
++	void *__crt_alg;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++int main() {
++	struct crypto_tfm tfm;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
+new file mode 100755
+index 000000000..2a765a24e
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
+@@ -0,0 +1,17 @@
++source ../self-test-lib.sh
++match_canister_plugin_path="../../../match_canister_structs.so"
++
++test_case "no-change" "$match_canister_plugin_path"
++test_case "add-new-field" "$match_canister_plugin_path"
++test_case "add-multiple-new-fields" "$match_canister_plugin_path"
++test_case "struct-assignment" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "remove-field" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "field-size-change" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "add-too-many-fields" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "designated-init" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "unnamed-struct-init" "$match_canister_plugin_path"
++test_case_gcc_warning "bad-cast" "$match_canister_plugin_path"
++test_flexible_array_init "flexible-init" "$match_canister_plugin_path" 8 "tfm_var"
++test_case_functional "functional" "$match_canister_plugin_path"
++test_case_functional "functional-flexible" "$match_canister_plugin_path"
++exit_return_code
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.c
+new file mode 100644
+index 000000000..1feeffee6
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.c
+@@ -0,0 +1,28 @@
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++struct swait_queue_head {
++	unsigned char		lock[4];
++	struct list_head	task_list;
++};
++
++struct completion {
++	unsigned int done;
++	struct swait_queue_head wait;
++};
++
++int main() {
++	struct swait_queue_head swait = {
++		.lock = 0,
++		.task_list = {0, 0}
++	};
++
++	struct completion completion = {
++		.done = 1,
++		.wait = swait
++	};
++
++	return 0;
++}
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.expected
+new file mode 100644
+index 000000000..cfdd3e224
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/struct-assignment.expected
+@@ -0,0 +1,29 @@
++struct list_head {
++	struct list_head *         next;                 /*     0     8 */
++	struct list_head *         prev;                 /*     8     8 */
++
++	/* size: 16, cachelines: 1, members: 2 */
++	/* last cacheline: 16 bytes */
++};
++struct swait_queue_head {
++	unsigned char              lock[4];              /*     0     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	struct list_head           task_list;            /*     8    16 */
++
++	/* size: 24, cachelines: 1, members: 2 */
++	/* sum members: 20, holes: 1, sum holes: 4 */
++	/* last cacheline: 24 bytes */
++};
++struct completion {
++	unsigned int               done;                 /*     0     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	struct swait_queue_head    wait;                 /*     8    24 */
++
++	/* size: 32, cachelines: 1, members: 2 */
++	/* sum members: 28, holes: 1, sum holes: 4 */
++	/* last cacheline: 32 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.c
+new file mode 100644
+index 000000000..b8bee9068
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.c
+@@ -0,0 +1,11 @@
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++} ecdh = { (char*) 1, 2 };
++
++
++int main() {
++	struct ecdh ecdh;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.expected
+new file mode 100644
+index 000000000..a59936d57
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/unnamed-struct-init.expected
+@@ -0,0 +1,9 @@
++unnamed-struct-init.c:4:12: error: positional initialization of field in ‘struct’ declared with ‘designated_init’ attribute [-Werror=designated-init]
++    4 | } ecdh = { (char*) 1, 2 };
++      |            ^
++unnamed-struct-init.c:4:12: note: (near initialization for ‘ecdh’)
++unnamed-struct-init.c:4:23: error: positional initialization of field in ‘struct’ declared with ‘designated_init’ attribute [-Werror=designated-init]
++    4 | } ecdh = { (char*) 1, 2 };
++      |                       ^
++unnamed-struct-init.c:4:23: note: (near initialization for ‘ecdh’)
++cc1: some warnings being treated as errors
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.c
+new file mode 100644
+index 000000000..3e77a6ae5
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.c
+@@ -0,0 +1,13 @@
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++int main()
++{
++	struct ecdh ecdh;
++
++	char *h = (char *)&ecdh;
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.expected
+new file mode 100644
+index 000000000..7f235c032
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.expected
+@@ -0,0 +1,9 @@
++struct ecdh {
++	char *                     key;                  /*     0     8 */
++	short unsigned int         key_size;             /*     8     2 */
++	char                       __fips_canister_padding[8]; /*    10     8 */
++
++	/* size: 24, cachelines: 1, members: 3 */
++	/* padding: 6 */
++	/* last cacheline: 24 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.gcc.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.gcc.expected
+new file mode 100644
+index 000000000..931acedc3
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/bad-cast.gcc.expected
+@@ -0,0 +1,5 @@
++bad-cast.c: In function ‘main’:
++bad-cast.c:11:15: note: fips canister plugin: casting modified canister structure pointer type (op0): ‘char’ and ‘struct ecdh’
++
++   11 |         char *h = (char *)&ecdh;
++      |               ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.c
+new file mode 100644
+index 000000000..080d0c811
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.c
+@@ -0,0 +1,32 @@
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++
++/* Struct padded in canister, with flexible array member */
++struct crypto_tfm {
++	char refcnt[12];
++
++	int crt_flags;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	char __crt_ctx[];
++};
++
++const struct crypto_tfm tfm_var = {
++	.refcnt = {0},
++	.crt_flags = 1,
++	.node = 2,
++	.exit = NULL,
++	.__crt_alg = NULL,
++	// Alloc 8 bytes for the flexible array size
++	.__crt_ctx = {0, 1, 2, 3, 4, 5, 6, 7}
++};
++
++int main() {
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.expected
+new file mode 100644
+index 000000000..6a92a74d1
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/flexible-init.expected
+@@ -0,0 +1,16 @@
++struct crypto_tfm {
++	char                       refcnt[12];           /*     0    12 */
++	int                        crt_flags;            /*    12     4 */
++	int                        node;                 /*    16     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	void                       (*exit)(struct crypto_tfm *); /*    24     8 */
++	void *                     __crt_alg;            /*    32     8 */
++	char                       __fips_canister_padding[8]; /*    40     8 */
++	char                       __crt_ctx[];          /*    48     0 */
++
++	/* size: 48, cachelines: 1, members: 7 */
++	/* sum members: 44, holes: 1, sum holes: 4 */
++	/* last cacheline: 48 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.c
+new file mode 100644
+index 000000000..a0f011947
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.c
+@@ -0,0 +1,49 @@
++#include <stdio.h>
++#include <stddef.h>
++#include <stdlib.h>
++#include <string.h>
++
++struct crypto_tfm {
++        char refcnt[4];
++
++        int crt_flags;
++
++        int node;
++
++        void (*exit)(struct crypto_tfm *tfm);
++
++        void *__crt_alg;
++
++        void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++int main() {
++	struct crypto_tfm *func_tfm = calloc(1, sizeof(struct crypto_tfm) + 8);
++	if(!func_tfm) {
++		perror("Couldn't alloc memory for crypto_tfm");
++		return -1;
++	}
++
++	char bytes[8] = "8 bytes.";
++
++	strncpy((char *) func_tfm->__crt_ctx, bytes, sizeof(bytes));
++
++	printf("__crt_ctx: %s\n\n", (char *) func_tfm->__crt_ctx);
++
++	printf("refcnt offset: %d\n", offsetof(struct crypto_tfm, refcnt));
++	printf("crt_flags offset: %d\n", offsetof(struct crypto_tfm, crt_flags));
++	printf("node offset: %d\n", offsetof(struct crypto_tfm, node));
++	printf("exit offset: %d\n", offsetof(struct crypto_tfm, exit));
++	printf("__crt_alg offset: %d\n", offsetof(struct crypto_tfm, __crt_alg));
++	printf("__crt__ctx offset: %d\n", offsetof(struct crypto_tfm, __crt_ctx));
++
++	// test explicitly writing to offset
++	char *__crt_ctx = (char*) func_tfm + 40;
++	strcpy(__crt_ctx, "hello");
++
++	printf("Explicit offset write: crypto_tfm->__crt_ctx = %s\n", func_tfm->__crt_ctx);
++
++	free(func_tfm);
++	return 0;
++}
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.expected
+new file mode 100644
+index 000000000..19fdd0b74
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional-flexible.expected
+@@ -0,0 +1,9 @@
++__crt_ctx: 8 bytes.
++
++refcnt offset: 0
++crt_flags offset: 4
++node offset: 8
++exit offset: 16
++__crt_alg offset: 24
++__crt__ctx offset: 40
++Explicit offset write: crypto_tfm->__crt_ctx = hello
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.c
+new file mode 100644
+index 000000000..53119fc01
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.c
+@@ -0,0 +1,26 @@
++#include <stdio.h>
++#include <stddef.h>
++
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++int main()
++{
++	struct ecdh ecdh;
++	size_t key_offset = offsetof(struct ecdh, key);
++	size_t key_size_offset = offsetof(struct ecdh, key_size);
++
++	// test offsets
++	printf("Offsets:\n");
++	printf("offsetof(ecdh.key) = %d\n", key_offset);
++	printf("offsetof(ecdh.key_size) = %d\n", key_size_offset);
++
++
++	unsigned short *key_sz = (unsigned short *) (((char* ) &ecdh) + 8);
++	*key_sz = 53;
++	printf("\necdh->key_sz = %d\n", ecdh.key_size);
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.expected
+new file mode 100644
+index 000000000..2a55c986a
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/functional.expected
+@@ -0,0 +1,5 @@
++Offsets:
++offsetof(ecdh.key) = 0
++offsetof(ecdh.key_size) = 8
++
++ecdh->key_sz = 53
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.c
+new file mode 100644
+index 000000000..c88b7c3fb
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.c
+@@ -0,0 +1,20 @@
++/* Struct padded in canster, with flexible array member */
++struct crypto_tfm {
++	char refcnt[12];
++
++	int crt_flags;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++int main() {
++	struct crypto_tfm tfm;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.expected
+new file mode 100644
+index 000000000..d41bd844a
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/pad-flexible-array.expected
+@@ -0,0 +1,17 @@
++struct crypto_tfm {
++	char                       refcnt[12];           /*     0    12 */
++	int                        crt_flags;            /*    12     4 */
++	int                        node;                 /*    16     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	void                       (*exit)(struct crypto_tfm *); /*    24     8 */
++	void *                     __crt_alg;            /*    32     8 */
++	char                       __fips_canister_padding[8]; /*    40     8 */
++	void *                     __crt_ctx[] __attribute__((__aligned__(8))); /*    48     0 */
++
++	/* size: 48, cachelines: 1, members: 7 */
++	/* sum members: 44, holes: 1, sum holes: 4 */
++	/* forced alignments: 1 */
++	/* last cacheline: 48 bytes */
++} __attribute__((__aligned__(8)));
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/self-test.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/self-test.sh
+new file mode 100755
+index 000000000..4f2f5f5bb
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/self-test.sh
+@@ -0,0 +1,12 @@
++source ../self-test-lib.sh
++pad_canister_plugin_path="../../../pad_canister_structs.so"
++
++test_case "simple-pad" "$pad_canister_plugin_path"
++test_case "pad-flexible-array" "$pad_canister_plugin_path"
++test_case "struct-assignment" "$pad_canister_plugin_path"
++test_case_expect_gcc_failure "unnamed-struct-init" "$pad_canister_plugin_path"
++test_case_gcc_warning "bad-cast" "$pad_canister_plugin_path"
++test_flexible_array_init "flexible-init" "$pad_canister_plugin_path" 8 "tfm_var"
++test_case_functional "functional" "$pad_canister_plugin_path"
++test_case_functional "functional-flexible" "$pad_canister_plugin_path"
++exit_return_code
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.c
+new file mode 100644
+index 000000000..3f4fc15e1
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.c
+@@ -0,0 +1,19 @@
++
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++/* This can be a struct which is not padded in the canister */
++struct list_head {
++	struct list_head *prev, *next;
++};
++
++int main()
++{
++	struct ecdh ecdh;
++	struct list_head list;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.expected
+new file mode 100644
+index 000000000..662667277
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/simple-pad.expected
+@@ -0,0 +1,16 @@
++struct ecdh {
++	char *                     key;                  /*     0     8 */
++	short unsigned int         key_size;             /*     8     2 */
++	char                       __fips_canister_padding[8]; /*    10     8 */
++
++	/* size: 24, cachelines: 1, members: 3 */
++	/* padding: 6 */
++	/* last cacheline: 24 bytes */
++};
++struct list_head {
++	struct list_head *         prev;                 /*     0     8 */
++	struct list_head *         next;                 /*     8     8 */
++
++	/* size: 16, cachelines: 1, members: 2 */
++	/* last cacheline: 16 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.c
+new file mode 100644
+index 000000000..4d004277f
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.c
+@@ -0,0 +1,28 @@
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++struct swait_queue_head {
++	void *			lock;
++	struct list_head	task_list;
++};
++
++struct completion {
++	unsigned int done;
++	struct swait_queue_head wait;
++};
++
++int main() {
++	struct swait_queue_head swait = {
++		.lock = 0,
++		.task_list = {0, 0}
++	};
++
++	struct completion completion = {
++		.done = 1,
++		.wait = swait
++	};
++
++	return 0;
++}
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.expected
+new file mode 100644
+index 000000000..fbc659660
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/struct-assignment.expected
+@@ -0,0 +1,25 @@
++struct list_head {
++	struct list_head *         next;                 /*     0     8 */
++	struct list_head *         prev;                 /*     8     8 */
++
++	/* size: 16, cachelines: 1, members: 2 */
++	/* last cacheline: 16 bytes */
++};
++struct swait_queue_head {
++	void *                     lock;                 /*     0     8 */
++	struct list_head           task_list;            /*     8    16 */
++
++	/* size: 24, cachelines: 1, members: 2 */
++	/* last cacheline: 24 bytes */
++};
++struct completion {
++	unsigned int               done;                 /*     0     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	struct swait_queue_head    wait;                 /*     8    24 */
++
++	/* size: 32, cachelines: 1, members: 2 */
++	/* sum members: 28, holes: 1, sum holes: 4 */
++	/* last cacheline: 32 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.c
+new file mode 100644
+index 000000000..b8bee9068
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.c
+@@ -0,0 +1,11 @@
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++} ecdh = { (char*) 1, 2 };
++
++
++int main() {
++	struct ecdh ecdh;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.expected
+new file mode 100644
+index 000000000..a59936d57
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/pad_canister/unnamed-struct-init.expected
+@@ -0,0 +1,9 @@
++unnamed-struct-init.c:4:12: error: positional initialization of field in ‘struct’ declared with ‘designated_init’ attribute [-Werror=designated-init]
++    4 | } ecdh = { (char*) 1, 2 };
++      |            ^
++unnamed-struct-init.c:4:12: note: (near initialization for ‘ecdh’)
++unnamed-struct-init.c:4:23: error: positional initialization of field in ‘struct’ declared with ‘designated_init’ attribute [-Werror=designated-init]
++    4 | } ecdh = { (char*) 1, 2 };
++      |                       ^
++unnamed-struct-init.c:4:23: note: (near initialization for ‘ecdh’)
++cc1: some warnings being treated as errors
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/run_tests.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/run_tests.sh
+new file mode 100755
+index 000000000..f7a24ea02
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/run_tests.sh
+@@ -0,0 +1,13 @@
++#!/bin/bash
++source "self-test-lib.sh"
++
++for dir in */; do
++    if [[ -f "${dir}/self-test.sh" ]]; then
++        echo -e "\n\n ***** Running tests for $(basename "${dir}") *****"
++        pushd "$dir" || exit 1
++        ./self-test.sh || _TEST_FAILURE=1
++        popd || exit 1
++    fi
++done
++
++exit_return_code
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
+new file mode 100755
+index 000000000..e596a4287
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
+@@ -0,0 +1,231 @@
++#!/bin/bash
++_TEST_FAILURE=0
++
++cleanup_files() {
++        local test_name="$1"
++
++        rm -f "${test_name}.output" \
++                "${test_name}.diff" \
++                "${test_name}.o"
++}
++
++failure() {
++        local test_name="$1"
++        local err_type="$2"
++
++        echo -e "\n********************** TEST FAIL: $test_name ************************"
++        if [[ "$err_type" = "gcc" ]]; then
++                echo "Failed to test ${test_name}.c"
++                cat "${test_name}.output"
++        elif [[ "$err_type" = "pahole" ]]; then
++                echo "pahole found difference between output and expected output:"
++                cat "${test_name}.diff"
++	elif [[ "$err_type" = "functional" ]]; then
++		echo "Functional test failure, see output diff below:"
++		cat "${test_name}.diff"
++        elif [[ "$err_type" = "expected_gcc" ]]; then
++                echo "Difference between GCC output and expected GCC output:"
++                cat "${test_name}.diff"
++        elif [[ "$err_type" = "expected_gcc_failure" ]]; then
++                echo "gcc passed unexpectedly: ${test_name}.c"
++        else
++                echo "INTERNAL TEST SUITE ERROR: failure() requires an err_type"
++        fi
++        echo "************************ END TEST: $test_name ********************"
++
++        cleanup_files "$test_name"
++        _TEST_FAILURE=1
++}
++
++test_flexible_array_init() {
++        local test_name="$1"
++        local plugin_path="$2"
++        local flex_array_size="$3"
++        local struct_var_name="$4"
++        local base_size=
++        local var_size=
++
++        echo "Test: ${test_name}"
++        gcc -c "${test_name}".c -O0 -ggdb -fplugin="${plugin_path}" -Werror=designated-init &> "${test_name}.output"
++        if [[ $? -ne 0 ]]; then
++                failure "$test_name" "gcc"
++                return
++        fi
++
++        if [[ -f "${test_name}.gcc.expected" ]]; then
++                diff -U 3 "${test_name}.gcc.expected" "${test_name}.output" &> "${test_name}.diff"
++        elif [[ -f "${test_name}.output" ]]; then
++                mv "${test_name}.output" "${test_name}.diff"
++        else
++                touch "${test_name}.diff"
++        fi
++
++        if [[ -s "${test_name}.diff" ]]; then
++                failure "$test_name" "expected_gcc"
++                return
++        fi
++
++        pahole "${test_name}".o &> "${test_name}.output"
++
++        diff -U 3 "${test_name}.expected" "${test_name}.output" &> "${test_name}.diff"
++
++        if [[ -s "${test_name}.diff" ]]; then
++                failure "$test_name" "pahole"
++                return
++        fi
++
++        base_size=$(grep -Eo "size: [0-9]+" "${test_name}.output")
++        base_size=$(cut -d " " -f 2 <<< "$base_size")
++
++        var_size=$(readelf -s "${test_name}.o" | grep "$struct_var_name" | awk '{print $3}')
++
++        cleanup_files "$test_name"
++
++        if [[ $var_size -ne $((base_size + flex_array_size)) ]]; then
++                echo -e "\n********************** TEST FAIL: $test_name ************************"
++                echo "Expected variable size for $struct_var_name: $((base_size + flex_array_size))"
++                echo "Found variable size: $var_size instead"
++                echo "************************ END TEST: $test_name ********************"
++                _TEST_FAILURE=1
++                return
++        fi
++
++        echo -e "${test_name}: Test passed successfully\n"
++}
++
++test_case () {
++    local test_name="$1"
++    local plugin_path="$2"
++
++    echo "Test: ${test_name}"
++    gcc -c "${test_name}".c -O0 -ggdb -fplugin="${plugin_path}" -Werror=designated-init &> "${test_name}.output"
++    if [[ $? -ne 0 ]]; then
++        failure "$test_name" "gcc"
++        return
++    fi
++
++    if [[ -f "${test_name}.gcc.expected" ]]; then
++        diff -U 3 "${test_name}.gcc.expected" "${test_name}.output" &> "${test_name}.diff"
++    elif [[ -f "${test_name}.output" ]]; then
++        mv "${test_name}.output" "${test_name}.diff"
++    else
++        touch "${test_name}.diff"
++    fi
++
++    if [[ -s "${test_name}.diff" ]]; then
++        failure "$test_name" "expected_gcc"
++        return
++    fi
++
++    pahole "${test_name}".o &> "${test_name}.output"
++
++    diff -U 3 "${test_name}.expected" "${test_name}.output" &> "${test_name}.diff"
++
++    if [[ -s "${test_name}.diff" ]]; then
++        failure "$test_name" "pahole"
++        return
++    fi
++
++    echo -e "$test_name: Test passed successfully\n"
++    cleanup_files "$test_name"
++}
++
++test_case_gcc_warning() {
++    local test_name="$1"
++    local plugin_path="$2"
++
++    echo "Test: ${test_name}"
++    gcc -c "${test_name}".c -O0 -ggdb -fplugin="${plugin_path}" -Werror=designated-init &> "${test_name}.output"
++    if [[ $? -ne 0 ]]; then
++        failure "$test_name" "gcc"
++        return
++    fi
++
++    diff -U 3 "${test_name}.gcc.expected" "${test_name}.output" &> "${test_name}.diff"
++
++    if [[ -s "${test_name}.diff" ]]; then
++        failure "$test_name" "expected_gcc"
++        return
++    fi
++
++    pahole "${test_name}".o &> "${test_name}.output"
++
++    diff -U 3 "${test_name}.expected" "${test_name}.output" &> "${test_name}.diff"
++
++    if [[ -s "${test_name}.diff" ]]; then
++        failure "$test_name" "pahole"
++        return
++    fi
++
++    echo -e "$test_name: Test passed successfully\n"
++        cleanup_files "$test_name"
++}
++
++test_case_expect_gcc_failure() {
++    local test_name="$1"
++    local plugin_path="$2"
++
++    echo "Test: ${test_name}"
++    gcc -c "${test_name}".c -O0 -ggdb -fplugin="${plugin_path}" -Werror=designated-init &> "${test_name}.output"
++    if [[ $? -eq 0 ]]; then
++        echo "************************ END TEST: $test_name ********************"
++        rm "${test_name}.output" "${test_name}.o"
++        _TEST_FAILURE=1
++        return
++    fi
++
++    diff -U 3 "${test_name}.expected" "${test_name}.output" &> "${test_name}.diff"
++
++    if [[ -s "${test_name}.diff" ]]; then
++        failure "$test_name" "expected_gcc"
++        return
++    fi
++
++    echo -e "$test_name: Test passed successfully\n"
++    cleanup_files "$test_name"
++}
++
++test_case_functional() {
++    local test_name="$1"
++    local plugin_path="$2"
++
++    echo "Test: ${test_name}"
++    gcc -o "$test_name.o" "${test_name}".c -O0 -ggdb -fplugin="${plugin_path}" -Werror=designated-init &> "${test_name}.output"
++    if [[ $? -ne 0 ]]; then
++	failure "$test_name" "gcc"
++	return
++    fi
++
++    if [[ -f "${test_name}.gcc.expected" ]]; then
++	diff -U 3 "${test_name}.gcc.expected" "${test_name}.output" &> "${test_name}.diff"
++    elif [[ -f "${test_name}.output" ]]; then
++	mv "${test_name}.output" "${test_name}.diff"
++    else
++	touch "${test_name}.diff"
++    fi
++
++    if [[ -s "${test_name}.diff" ]]; then
++	failure "$test_name" "expected_gcc"
++        return
++    fi
++
++    "./${test_name}.o" &> "${test_name}.output"
++    diff -U 3 "${test_name}.expected" "${test_name}.output" &> "${test_name}.diff"
++    if [[ -s "${test_name}.diff" ]]; then
++        failure "$test_name" "functional"
++        return
++    fi
++
++    echo -e "${test_name}: Test passed successfully\n"
++    cleanup_files "$test_name"
++}
++
++exit_return_code() {
++    if [[ "$_TEST_FAILURE" -ne 0 ]]; then
++        echo "SOME TESTS FAILED"
++    else
++        echo "ALL TESTS SUCCESSFUL"
++    fi
++
++    exit $_TEST_FAILURE
++}
+--
+2.40.4
+

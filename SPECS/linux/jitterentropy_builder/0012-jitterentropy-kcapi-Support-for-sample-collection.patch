@@ -1,0 +1,449 @@
+From cf8f4e570dc1a3ceb07236753829fae765ca6123 Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Wed, 25 Jun 2025 09:03:43 +0000
+Subject: [PATCH] jitterentropy-kcapi: Support-for-sample-collection
+
+  -  Add support for jitterentropy sample collection
+     which will be enabled under ACVP build.
+     This patch enables functions which can capture 300 million
+     raw data samples & 1000 restart samples.
+     one raw data sample consists of a u64 value of high resolution
+     time delta between two successive jent measurements.
+     Modify sample write functions to only collect lower bound
+     raw values i.e. raw data with no conditioning from jitterentropy.
+
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ photon-jitterentropy-v6.12/jitterentropy-kcapi.c | 290 +++++++++++++++++++++++++++++++++++++++++-
+ photon-jitterentropy-v6.12/jitterentropy.c       |  65 +++++++++-
+ photon-jitterentropy-v6.12/jitterentropy.h       |   6 +
+ 3 files changed, 358 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
+index dceadb7..8cfc77e 100644
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
+@@ -44,6 +44,13 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/time.h>
++#include <linux/sched.h>
++#include <linux/stat.h>
++#include <linux/namei.h>
++#include <linux/string.h>
++#include <linux/fs.h>
++#include <asm/uaccess.h>
++#include <linux/vmalloc.h>
+ #include <crypto/internal/rng.h>
+ 
+ #include "photon-jitterentropy-v6.12/jitterentropy.h"
+@@ -57,13 +64,38 @@ module_param_string(mem_access_type, mem_access_method,
+                                         ARRAY_SIZE(mem_access_method), 0444);
+ MODULE_PARM_DESC(mem_access_type, "jent Mem Block Access default=random");
+ 
++/*
++ * We need to collect 300 million samples for ESV certification. However,
++ * Max file size in linux is limited by FILE_MAX which is around 2.3GB.
++ * The Total size of 300 million samples will be around 5GB, we need
++ * 3 files to collect 300 million samples in total
++ */
++#define NUM_SAMPLE_FILES 3
++
++struct sample_file_param {
++	struct file *fp;
++	char name[224];
++	bool full;
++};
++
++int jent_hash_time(void *hash_state, __u64 time, u8 *addtl,
++		unsigned int addtl_len, __u64 hash_loop_cnt,
++		unsigned int stuck);
++
++int check_stat_and_fetch_fp(struct sample_file_param *sampl,
++					loff_t *ppos, struct file **fp);
++int jitterentropy_kcapi_write_sample_file(const char *sample_file_name,
++							unsigned long rounds);
++int jitterentropy_kcapi_write_restart_files(const char *sample_file_name,
++							unsigned long rounds);
++
+ /***************************************************************************
+  * Helper function
+  ***************************************************************************/
+ bool is_jent_mem_access_method_random(void)
+ {
+ 	if (strlen(mem_access_method) == 0) {
+-		jcw_printk(KERN_ERR"MEM access method not set %s\n",__func__);
++		jcw_printk("MEM access method not set %s\n",__func__);
+ 		return true;
+ 	}
+ 	if (!jcw_strncasecmp(mem_access_method, "sequential",
+@@ -100,6 +132,256 @@ void jent_get_nstime(__u64 *out)
+ 	jent_raw_hires_entropy_store(tmp);
+ }
+ 
++int check_stat_and_fetch_fp(struct sample_file_param *sampl,
++                                        loff_t *ppos, struct file **fp)
++{
++	int ret = 0, i = 0;
++	struct path path;
++	struct kstat stat;
++
++	for (i = 0; i < NUM_SAMPLE_FILES; i++) {
++		memset(&stat, 0, sizeof(struct kstat));
++		if (sampl[i].full == true)
++			continue;
++		ret = kern_path(sampl[i].name, 0, &path);
++		if (ret) {
++			jcw_printk("kernel path error %s\n",sampl[i].name);
++			return ret;
++		}
++		ret = vfs_getattr(&path, &stat, STATX_SIZE, 0);
++		if (ret) {
++			jcw_printk("vfs_getattr file stats Error\n");
++			path_put(&path);
++			return ret;
++		}
++		if (stat.size >= MAX_RW_COUNT || *ppos >= MAX_RW_COUNT) {
++			jcw_printk("File size exceeded\n");
++			sampl[i].full = true;
++			*ppos = 0;
++			path_put(&path);
++			continue;
++		}
++		if (sampl[i].full == false) {
++			*fp = sampl[i].fp;
++			ret = 0;
++			break;
++		} else
++			ret = -EFBIG;
++	}
++	return ret;
++}
++
++int jitterentropy_kcapi_write_sample_file(const char *sample_file_name,
++							unsigned long rounds)
++{
++	struct file *wr_fp = NULL;
++	/*
++	 * One sample is collected as a u64 value. To express the MAX Value
++	 * of a u64 in terms of char bytes will required 20 bytes. Accounting
++	 * for new line character, allocate a char array of 24 to hold one
++	 * sample.
++	 */
++	char tmp_rdata[24] = {0};
++	struct sample_file_param smp_files[NUM_SAMPLE_FILES] = {0};
++	loff_t ppos = 0;
++	int wr_siz = 0;
++	__u64 *duration = NULL;
++
++	unsigned int health_test_result = 0;
++	int ret = 0, indx = 0, i = 0;
++
++	struct rand_data *ec = NULL;
++
++	struct crypto_shash *tfm;
++	SHASH_DESC_ON_STACK(f_desc, tfm);
++
++	snprintf(smp_files[0].name, sizeof(smp_files[0].name), "%s-%.4u", sample_file_name, 1);
++	snprintf(smp_files[1].name, sizeof(smp_files[1].name), "%s-%.4u", sample_file_name, 2);
++	snprintf(smp_files[2].name, sizeof(smp_files[2].name), "%s-%.4u", sample_file_name, 3);
++
++	tfm = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
++	if (IS_ERR(tfm))
++		return PTR_ERR(tfm);
++
++	f_desc->tfm = tfm;
++	crypto_shash_init(f_desc);
++
++	ec = jent_entropy_collector_alloc(CONFIG_CRYPTO_JITTERENTROPY_OSR,
++							0, f_desc);
++	if (!ec) {
++		pr_err("Failed to allocate jitter entropy rng for sample\n");
++		goto out_2;
++	}
++	ret = jent_entropy_init(CONFIG_CRYPTO_JITTERENTROPY_OSR,
++							0, f_desc, ec);
++	if (ret || !ec) {
++		pr_err("\n Failed to initialize jitterentropy \n");
++		goto out_2;
++	}
++	for (i = 0; i < NUM_SAMPLE_FILES; i++) {
++		smp_files[i].fp = filp_open(smp_files[i].name,
++			O_CREAT | O_WRONLY | O_CLOEXEC,
++			S_IRUSR | S_IWUSR);
++
++		if ( IS_ERR_OR_NULL(smp_files[i].fp)) {
++			pr_err("JENT: Failed to open fp for writing\n");
++			goto out;
++		}
++	}
++	/* Prime the EC */
++	for (i = 0; i < 1024; i++)
++		jent_sample_collect(ec, 0, NULL);
++
++	duration = (__u64 *)kzalloc(sizeof(__u64)*1, GFP_KERNEL);
++	if (IS_ERR_OR_NULL(duration)) {
++		pr_err("\n Failed to allocate memory for duration\n");
++		goto out;
++	}
++	/*
++	 * TODO: Read one sample from jent_collect_sample() & write it
++	 * immediately into the file. It doesn't matter if the file write takes
++	 * some additional cpu cycles. Keep writing to the file till the file
++	 * size reaches FILE_MAX. After that open the second file & keep
++	 * dumping the data into second file till 300 million samples are
++	 * collected.
++	 */
++	do {
++		jcw_memzero_explicit(duration, sizeof(__u64));
++		/* Disregard stuck indicator*/
++		jent_sample_collect(ec, 0, duration);
++		ret = check_stat_and_fetch_fp(smp_files, &ppos, &wr_fp);
++		if (ret) {
++			jcw_printk("Error as all files are full %d\n", ret);
++			goto out;
++		}
++		memset(tmp_rdata, 0 ,sizeof(tmp_rdata));
++		wr_siz = snprintf(tmp_rdata, sizeof(tmp_rdata),
++					"%llu\n", *duration);
++		kernel_write(wr_fp, tmp_rdata, wr_siz, &ppos);
++		ppos += wr_siz;
++		indx++;
++	} while (indx <= rounds);
++
++	if ((health_test_result = jent_health_failure(ec))) {
++		jcw_printk("jent collector health test failure(s):\n");
++		if(health_test_result & 1)
++			jcw_printk(" RCT ");
++		if(health_test_result & 2)
++			jcw_printk(" APT ");
++		if(health_test_result & 4)
++			jcw_printk(" Lag ");
++		jcw_printk("\n");
++	}
++
++out:
++	for (i = 0; i < NUM_SAMPLE_FILES; i++) {
++		if (!IS_ERR_OR_NULL(smp_files[i].fp))
++			filp_close(smp_files[i].fp, NULL);
++	}
++	if (duration)
++		kfree(duration);
++out_2:
++	if (ec)
++		jent_entropy_collector_free(ec);
++	if (f_desc)
++		shash_desc_zero(f_desc);
++	if (tfm)
++		crypto_free_shash(tfm);
++
++	return ret;
++}
++EXPORT_SYMBOL(jitterentropy_kcapi_write_sample_file);
++
++int jitterentropy_kcapi_write_restart_files(const char *sample_file_name,
++						unsigned long rounds)
++{
++	struct file *fp = NULL;
++	char tmp_rdata[24] = {0}; /* 24 char bytes to hold u64 MAX value */
++	loff_t ppos = 0;
++	int wr_siz = 0;
++	__u64 *duration = NULL;
++	__u64 size = 0;
++
++	unsigned int health_test_result = 0;
++	int ret = 0;
++
++	struct rand_data *ec = NULL;
++
++	struct crypto_shash *tfm;
++	SHASH_DESC_ON_STACK(f_desc, tfm);
++
++	tfm = crypto_alloc_shash(JENT_CONDITIONING_HASH, 0, 0);
++	if (IS_ERR(tfm))
++		return PTR_ERR(tfm);
++
++	f_desc->tfm = tfm;
++	crypto_shash_init(f_desc);
++
++	ec = jent_entropy_collector_alloc(CONFIG_CRYPTO_JITTERENTROPY_OSR,
++							0, f_desc);
++	if (!ec) {
++		pr_err("Failed to allocate jitter entropy rng for sample\n");
++		goto out_2;
++	}
++	ret = jent_entropy_init(CONFIG_CRYPTO_JITTERENTROPY_OSR,
++							0, f_desc, ec);
++	if (ret || !ec) {
++		pr_err("\n Failed to initialize first jitterentropy \n");
++		goto out_2;
++	}
++	duration = (__u64 *)vzalloc(sizeof(__u64)*rounds);
++	if (IS_ERR_OR_NULL(duration)) {
++		pr_err("\n Failed to allocate memory for duration\n");
++		goto out;
++	}
++	/* Prime the test */
++	jent_sample_collect(ec, 0, NULL);
++	for (size = 0; size < rounds; size++) {
++		/* Disregard stuck indicator*/
++		jent_sample_collect(ec, 0, &duration[size]);
++	}
++	fp = filp_open(sample_file_name,
++			O_CREAT | O_WRONLY | O_CLOEXEC, S_IRUSR | S_IWUSR);
++	if (IS_ERR_OR_NULL(fp)) {
++		pr_err("JENT: Failed to open fp for writing\n");
++		goto out;
++	}
++	for (size = 0; size < rounds; size++) {
++		memset(tmp_rdata, 0 ,sizeof(tmp_rdata));
++		wr_siz = snprintf(tmp_rdata, sizeof(tmp_rdata), "%llu\n",
++					duration[size]);
++		kernel_write(fp, tmp_rdata, wr_siz, &ppos);
++
++		/* Increment the file position after 1000 samples */
++		ppos += wr_siz;
++	}
++	if ((health_test_result = jent_health_failure(ec))) {
++		jcw_printk("ent collector health test failure(s):\n");
++		if(health_test_result & 1)
++			jcw_printk(" RCT ");
++		if(health_test_result & 2)
++			jcw_printk(" APT ");
++		if(health_test_result & 4)
++			jcw_printk(" Lag ");
++		jcw_printk("\n");
++	}
++out:
++	if (!IS_ERR_OR_NULL(fp))
++		filp_close(fp, NULL);
++	if (duration)
++		vfree(duration);
++out_2:
++	if (ec)
++		jent_entropy_collector_free(ec);
++	if (f_desc)
++		shash_desc_zero(f_desc);
++	if (tfm)
++		crypto_free_shash(tfm);
++
++	return ret;
++}
++EXPORT_SYMBOL(jitterentropy_kcapi_write_restart_files);
++
+ int jent_hash_time(void *hash_state, __u64 time, u8 *addtl,
+ 		   unsigned int addtl_len, __u64 hash_loop_cnt,
+ 		   unsigned int stuck)
+@@ -138,7 +420,11 @@ int jent_hash_time(void *hash_state, __u64 time, u8 *addtl,
+ 		if (ret)
+ 			goto err;
+ 	}
+-
++	/* Before the next operation, In case if the loop count was zero,
++	 * It is neccessary to instantiate crypto descriptor.
++	 */
++	if (hash_loop_cnt <= 0)
++		ret = crypto_shash_init(desc);
+ 	/*
+ 	 * Inject the data from the previous loop into the pool. This data is
+ 	 * not considered to contain any entropy, but it stirs the pool a bit.
+diff --git a/crypto/photon-jitterentropy-v6.12/jitterentropy.c b/crypto/photon-jitterentropy-v6.12/jitterentropy.c
+index ddfe1ed..e30908f 100644
+--- a/crypto/photon-jitterentropy-v6.12/jitterentropy.c
++++ b/crypto/photon-jitterentropy-v6.12/jitterentropy.c
+@@ -562,7 +562,7 @@ static int jent_stuck(struct rand_data *ec, __u64 current_delta)
+  *	1<<JENT_PERMANENT_FAILURE_SHIFT RCT permanent failure
+  *	2<<JENT_PERMANENT_FAILURE_SHIFT APT permanent failure
+  */
+-static unsigned int jent_health_failure(struct rand_data *ec)
++unsigned int jent_health_failure(struct rand_data *ec)
+ {
+ 	/* Test is only enabled in FIPS mode */
+ 	if (!jcw_fips_enabled())
+@@ -730,6 +730,69 @@ static void jent_memaccess_sequential(struct rand_data *ec, __u64 loop_cnt)
+  *
+  * @return result of stuck test
+  */
++
++int jent_sample_collect(struct rand_data *ec,
++                                int loop_cnt,
++                                __u64 *ret_current_delta)
++{
++	__u64 time = 0;
++	__u64 current_delta = 0;
++	int stuck;
++
++	struct {
++		int rct_count;
++		unsigned int apt_observations;
++		unsigned int apt_count;
++		unsigned int apt_base;
++	} addtl = {
++		ec->rct_count,
++		ec->apt_observations,
++		ec->apt_count,
++		ec->apt_base
++	};
++	if (!ec) {
++		jcw_printk("IN %s, ec is NULL\n", __func__);
++		return -1;
++	}
++	/* Invoke one noise source before time measurement to add variations */
++
++	if (is_jent_mem_access_method_random())
++		jent_memaccess_random(ec, 0);
++	else
++		jent_memaccess_sequential(ec, 0);
++
++	/*
++	 * Get time stamp and calculate time delta to previous
++	 * invocation to measure the timing variations
++	 */
++	jent_get_nstime(&time);
++	if (ec->gcd != GCD_READY) {
++		ec->gcd = 1;
++	}
++	current_delta = jent_delta(ec->prev_time, time) / ec->gcd;
++	ec->prev_time = time;
++
++	/* Check whether we have a stuck measurement. */
++	stuck = jent_stuck(ec, current_delta);
++
++	/* Now call the next noise sources which also injects the data */
++	if (ec->hash_state == NULL) {
++		jcw_printk("In %s ec->hash_state is NULL\n", __func__);
++		return -1;
++	}
++	if (loop_cnt) {
++		if (jent_hash_time(ec->hash_state, time, (u8 *)&addtl,
++					sizeof(addtl), loop_cnt, stuck))
++			stuck = 1;
++	}
++
++	/* return the raw entropy value */
++	if (ret_current_delta)
++		*ret_current_delta = current_delta;
++
++	return stuck;
++}
++
+ static int jent_measure_jitter(struct rand_data *ec, __u64 *ret_current_delta)
+ {
+ 	__u64 time = 0;
+diff --git a/crypto/photon-jitterentropy-v6.12/jitterentropy.h b/crypto/photon-jitterentropy-v6.12/jitterentropy.h
+index 95f4ce6..78fd109 100644
+--- a/crypto/photon-jitterentropy-v6.12/jitterentropy.h
++++ b/crypto/photon-jitterentropy-v6.12/jitterentropy.h
+@@ -37,3 +37,9 @@ static inline int jent_raw_hires_entropy_store(__u32 value) { return 0; }
+ static inline void jent_testing_init(void) { }
+ static inline void jent_testing_exit(void) { }
+ #endif /* CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE */
++
++extern int jent_sample_collect(struct rand_data *ec,
++				int loop_cnt,
++				__u64 *ret_current_delta);
++
++extern unsigned int jent_health_failure(struct rand_data *ec);
+-- 
+2.35.6
+

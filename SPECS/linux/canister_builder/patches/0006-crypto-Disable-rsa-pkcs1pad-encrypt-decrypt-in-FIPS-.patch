@@ -1,0 +1,130 @@
+From 61573e075f8fef1e6748dcb3fe79772da603994d Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Mon, 13 Oct 2025 08:37:40 +0000
+Subject: [PATCH] crypto: Disable rsa-pkcs1pad encrypt/decrypt in FIPS mode
+
+FIPS 186-5 does not allow rsa pkcs1pad encrypt/decrypt, therefore
+move the methods out of canister and fail when fips is enabled.
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ crypto/rsa-pkcs1pad.c | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
+index cd501195f..bae137b18 100644
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -15,7 +15,9 @@
+ #include <linux/module.h>
+ #include <linux/random.h>
+ #include <linux/scatterlist.h>
++#include <linux/fips.h>
+ 
++#ifdef FIPS_CANISTER
+ /*
+  * Hash algorithm OIDs plus ASN.1 DER wrappings [RFC4880 sec 5.2.2].
+  */
+@@ -110,16 +112,19 @@ static const struct rsa_asn1_template *rsa_lookup_asn1(const char *name)
+ 			return p;
+ 	return NULL;
+ }
++#endif /* FIPS_CANISTER */
+ 
+ struct pkcs1pad_ctx {
+ 	struct crypto_akcipher *child;
+ 	unsigned int key_size;
+ };
+ 
++#ifdef FIPS_CANISTER
+ struct pkcs1pad_inst_ctx {
+ 	struct crypto_akcipher_spawn spawn;
+ 	const struct rsa_asn1_template *digest_info;
+ };
++#endif /* FIPS_CANISTER */
+ 
+ struct pkcs1pad_request {
+ 	struct scatterlist in_sg[2], out_sg[1];
+@@ -127,6 +132,10 @@ struct pkcs1pad_request {
+ 	struct akcipher_request child_req;
+ };
+ 
++#ifdef FIPS_CANISTER
++extern int pkcs1pad_encrypt(struct akcipher_request *req);
++extern int pkcs1pad_decrypt(struct akcipher_request *req);
++
+ static int pkcs1pad_set_pub_key(struct crypto_akcipher *tfm, const void *key,
+ 		unsigned int keylen)
+ {
+@@ -181,6 +190,7 @@ static unsigned int pkcs1pad_get_max_size(struct crypto_akcipher *tfm)
+ 
+ 	return ctx->key_size;
+ }
++#endif /* FIPS_CANISTER */
+ 
+ static void pkcs1pad_sg_set_buf(struct scatterlist *sg, void *buf, size_t len,
+ 		struct scatterlist *next)
+@@ -246,7 +256,11 @@ static void pkcs1pad_encrypt_sign_complete_cb(void *data, int err)
+ 	akcipher_request_complete(req, err);
+ }
+ 
+-static int pkcs1pad_encrypt(struct akcipher_request *req)
++#ifndef FIPS_CANISTER
++int pkcs1pad_encrypt(struct akcipher_request *req);
++int pkcs1pad_decrypt(struct akcipher_request *req);
++
++int pkcs1pad_encrypt(struct akcipher_request *req)
+ {
+ 	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+ 	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
+@@ -254,6 +268,12 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
+ 	int err;
+ 	unsigned int i, ps_end;
+ 
++
++	if (fips_enabled) {
++		pr_warn_once("rsa pkcs1pad encrypt is not allowed in fips mode.\n");
++		return -EINVAL;
++	}
++
+ 	if (!ctx->key_size)
+ 		return -EINVAL;
+ 
+@@ -361,13 +381,18 @@ static void pkcs1pad_decrypt_complete_cb(void *data, int err)
+ 	akcipher_request_complete(req, err);
+ }
+ 
+-static int pkcs1pad_decrypt(struct akcipher_request *req)
++int pkcs1pad_decrypt(struct akcipher_request *req)
+ {
+ 	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+ 	struct pkcs1pad_ctx *ctx = akcipher_tfm_ctx(tfm);
+ 	struct pkcs1pad_request *req_ctx = akcipher_request_ctx(req);
+ 	int err;
+ 
++	if (fips_enabled) {
++		pr_warn_once("rsa pkcs1pad decrypt is not allowed in fips mode.\n");
++		return -EINVAL;
++	}
++
+ 	if (!ctx->key_size || req->src_len != ctx->key_size)
+ 		return -EINVAL;
+ 
+@@ -393,7 +418,9 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
+ 
+ 	return err;
+ }
++#endif /* !FIPS_CANISTER */
+ 
++#ifdef FIPS_CANISTER
+ static int pkcs1pad_sign(struct akcipher_request *req)
+ {
+ 	struct crypto_akcipher *tfm = crypto_akcipher_reqtfm(req);
+@@ -712,3 +739,4 @@ struct crypto_template rsa_pkcs1pad_tmpl = {
+ };
+ 
+ MODULE_ALIAS_CRYPTO("pkcs1pad");
++#endif /* FIPS_CANISTER */
+-- 
+2.40.4
+

@@ -1,0 +1,43 @@
+From 6a1e6e02ecb372edbc7e44f1f98c08f1612f354c Mon Sep 17 00:00:00 2001
+From: Bryan Tan <bryantan@vmware.com>
+Date: Fri, 12 Jan 2024 11:51:56 +0000
+Subject: [PATCH] vmw_vsock/vmci_transport: Report error when receiving RESET
+ packet
+
+When waiting for an OFFER packet, the vmw_vsock_vmci_transport
+should report an error if a RESET packet is received. Otherwise,
+vmci_transport_recv_connecting_server will decrement the refcount
+in anticipation of the socket being cleaned up, but
+vmci_transport_recv_listen will not remove the socket from the
+pending list, causing vsock_pending_work to handle the removal
+from the pending list and triggering an unnecessary refcount
+decrement, resulting in a refcount underflow.
+
+Testing Done: Manually set packet type to RESET in
+vmci_transport_recv_connecting_server, see a refcount underflow.
+Together with this change, no refcount underflow is seen, and the
+connect fails as expected. Connect succeeds without issue after
+removing the code to set packet type to RESET.
+
+Signed-off-by: Bryan Tan <bryantan@vmware.com>
+---
+ net/vmw_vsock/vmci_transport.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+index a3eb0b838..8be7cae84 100644
+--- a/net/vmw_vsock/vmci_transport.c
++++ b/net/vmw_vsock/vmci_transport.c
+@@ -1177,7 +1177,7 @@ vmci_transport_recv_connecting_server(struct sock *listener,
+ 		/* Close and cleanup the connection. */
+ 		vmci_transport_send_reset(pending, pkt);
+ 		skerr = EPROTO;
+-		err = pkt->type == VMCI_TRANSPORT_PACKET_TYPE_RST ? 0 : -EINVAL;
++		err = -EINVAL;
+ 		goto destroy;
+ 	}
+ 
+-- 
+2.39.0
+
+

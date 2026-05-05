@@ -1,0 +1,36 @@
+From a666b331d08a524f6caaf41f57342311e91c5610 Mon Sep 17 00:00:00 2001
+From: Daniel Mueller <danielmuller@vmware.com>
+Date: Thu, 25 Jul 2019 10:15:06 -0700
+Subject: [PATCH] Remove OOM_SCORE_ADJ_MAX limit check
+
+This patch removes the OOM_SCORE_ADJ_MAX limit check. By removing this
+check we are able to adjust the OOM score beyond OOM_SCORE_ADJ_MAX
+(1000), which provides us with more confidence that the OOM killer will
+actually choose the target process to be killed before interfering with
+others. That is useful in certain Photon VM based setups where we want
+to have a "canary" process that, upon being killed by the OOM, would
+inform an agent in the VM that we are under memory pressure, and trigger
+a clean shut down of the VM.
+With the check in place, the kernel would still favor processes that had
+a high score (1000 and above) based on actual memory consumption,
+rendering our approach useless.
+---
+ fs/proc/base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index f999e8..089ec0 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -1188,7 +1188,7 @@ static ssize_t oom_score_adj_write(struct file *file, const char __user *buf,
+ 	if (err)
+ 		goto out;
+ 	if (oom_score_adj < OOM_SCORE_ADJ_MIN ||
+-			oom_score_adj > OOM_SCORE_ADJ_MAX) {
++			oom_score_adj > SHRT_MAX) {
+ 		err = -EINVAL;
+ 		goto out;
+ 	}
+-- 
+2.21.0
+

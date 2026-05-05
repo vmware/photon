@@ -1,0 +1,909 @@
+From cfbc5e140531e8f371898103294fd48cf2e71323 Mon Sep 17 00:00:00 2001
+From: Satish Ramachandran <satish.ramachandran@broadcom.com>
+Date: Thu, 15 Jan 2026 17:31:06 -0800
+Subject: [PATCH] linux-esx: Add SBX DTLS kernel module.
+
+This kernel driver is for the SBX DTLS virtual device. This driver
+helps the userspace applications (like SDP) to communicate with the
+SBX device which facilitates the sharing of memory between the workload
+VMs and the SCRX.
+
+Signed-off-by: Satish Ramachandran <satish.ramachandran@broadcom.com>
+---
+ drivers/misc/Kconfig                       |   1 +
+ drivers/misc/Makefile                      |   1 +
+ drivers/misc/vmw_sbx_dtls/Kconfig          |  12 +
+ drivers/misc/vmw_sbx_dtls/Makefile         |   6 +
+ drivers/misc/vmw_sbx_dtls/sbx_dtls.c       | 600 +++++++++++++++++++++
+ drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h |  76 +++
+ drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h   | 134 +++++
+ 7 files changed, 830 insertions(+)
+ create mode 100644 drivers/misc/vmw_sbx_dtls/Kconfig
+ create mode 100644 drivers/misc/vmw_sbx_dtls/Makefile
+ create mode 100644 drivers/misc/vmw_sbx_dtls/sbx_dtls.c
+ create mode 100644 drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h
+ create mode 100644 drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h
+
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 83b2a4b18..dcfe77b30 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -630,4 +630,5 @@ source "drivers/misc/mchp_pci1xxxx/Kconfig"
+ source "drivers/misc/keba/Kconfig"
+ source "drivers/misc/vmw_extcfg/Kconfig"
+ source "drivers/misc/vmw_sbx/Kconfig"
++source "drivers/misc/vmw_sbx_dtls/Kconfig"
+ endmenu
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index 9ed76f7fa..e4f21eccc 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -71,6 +71,7 @@ obj-$(CONFIG_TPS6594_ESM)	+= tps6594-esm.o
+ obj-$(CONFIG_TPS6594_PFSM)	+= tps6594-pfsm.o
+ obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
+ obj-$(CONFIG_SBX)		+= vmw_sbx/
++obj-$(CONFIG_SBX_DTLS)		+= vmw_sbx_dtls/
+ obj-$(CONFIG_NSM)		+= nsm.o
+ obj-$(CONFIG_MARVELL_CN10K_DPI)	+= mrvl_cn10k_dpi.o
+ obj-y				+= keba/
+diff --git a/drivers/misc/vmw_sbx_dtls/Kconfig b/drivers/misc/vmw_sbx_dtls/Kconfig
+new file mode 100644
+index 000000000..29498c8aa
+--- /dev/null
++++ b/drivers/misc/vmw_sbx_dtls/Kconfig
+@@ -0,0 +1,12 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++menuconfig SBX_DTLS
++	tristate "VMware SBX DTLS Virtual Device Support"
++	help
++	  VMware SBX DTLS Virtual Device Support.
++
++	  Enable the driver for the VMware SBX Virtual Device for DTLS. This
++	  driver handles communication between the user space DBX device that
++	  facilitates memory sharing between the SCRX and customer workload VMs
++	  on ESXi.
++
++	  If unsure, say no.
+diff --git a/drivers/misc/vmw_sbx_dtls/Makefile b/drivers/misc/vmw_sbx_dtls/Makefile
+new file mode 100644
+index 000000000..7c586305b
+--- /dev/null
++++ b/drivers/misc/vmw_sbx_dtls/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++#
++# Makefile for the VMware sbx dtls virtual device driver
++#
++
++obj-$(CONFIG_SBX_DTLS)		+= sbx_dtls.o
+diff --git a/drivers/misc/vmw_sbx_dtls/sbx_dtls.c b/drivers/misc/vmw_sbx_dtls/sbx_dtls.c
+new file mode 100644
+index 000000000..dd9ebd000
+--- /dev/null
++++ b/drivers/misc/vmw_sbx_dtls/sbx_dtls.c
+@@ -0,0 +1,600 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sub license, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial portions
++ * of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
++ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
++ * USE OR OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/kernel.h>
++#include <linux/version.h>
++#include <linux/spinlock.h>
++#include <linux/slab.h>
++#include <linux/fs.h>
++#include <linux/errno.h>
++#include <linux/types.h>
++#include <linux/fcntl.h>
++#include <linux/cdev.h>
++#include <linux/uaccess.h>
++#include <linux/wait.h>
++#include <linux/stat.h>
++#include <linux/poll.h>
++#include <linux/pci_ids.h>
++#include "sbx_dtls_reg.h"
++#include "sbx_dtls_ioctl.h"
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Broadcom, Inc.");
++MODULE_DESCRIPTION("SBX DTLS driver");
++
++#define SBX_DEVICE_VERSION          1
++
++#define SBX_NAME "sbxdtls"
++#define SBX_MINOR 0
++
++#define SBX_CMD_BAR     0
++#define SBX_SHM_BAR     2
++
++struct sbx_dev {
++	struct cdev sbx_cdev;
++	dev_t devno;
++	struct class *class;
++	char *cmd_remap;
++	char *cmd_dbg_ctrs_addr;
++	char *cmd_connection_map_addr;
++	char *shm_remap;
++	unsigned int irq;
++	resource_size_t shm_addr;
++	wait_queue_head_t launch_waitq;
++	atomic_t launch_ready;
++
++	bool avail;
++	/* This spinlock locks the sbx device. */
++	spinlock_t lock;
++};
++
++static struct sbx_dev *sbx_device;
++
++static unsigned long long sbx_read_reg(unsigned long reg)
++{
++	char *addr;
++
++	addr = sbx_device->cmd_remap;
++	return readq(addr + (reg * 8));
++}
++
++static void sbx_write_reg(unsigned long reg, unsigned long long value)
++{
++	char *addr;
++
++	addr = sbx_device->cmd_remap;
++	writeq(value, addr + (reg * 8));
++}
++
++static int sbx_open(struct inode *inode, struct file *filp)
++{
++	int result;
++
++	spin_lock(&sbx_device->lock);
++
++	if (!sbx_device->avail) {
++		result = -EBUSY;
++		spin_unlock(&sbx_device->lock);
++		pr_err("sbx open: pid %i (%s) busy fail\n",
++		       current->pid, current->comm);
++		return result;
++	}
++
++	sbx_device->avail = false;
++	spin_unlock(&sbx_device->lock);
++
++	pr_debug("sbx open: pid %i (%s)\n", current->pid, current->comm);
++
++	return 0;
++}
++
++static int sbx_release(struct inode *inode, struct file *filp)
++{
++	spin_lock(&sbx_device->lock);
++
++	WARN_ON(sbx_device->avail);
++
++	sbx_device->avail = true;
++	spin_unlock(&sbx_device->lock);
++
++	pr_debug("sbx release: pid %i (%s)\n", current->pid, current->comm);
++
++	return 0;
++}
++
++static int sbx_ioctl_connection_info(unsigned long arg)
++{
++	sbx_connection_info_msg_t msg;
++	unsigned long connection_chunk;
++	unsigned long connection_mpns;
++
++	if (copy_from_user(&msg, (void *)arg, sizeof(msg)) != 0) {
++		pr_err("sbx connection info ioctl: failed to copy msg\n");
++		return -EFAULT;
++	}
++
++	pr_debug("sbx get connection info: connection_id=%lu\n", msg.connection_id);
++
++	spin_lock(&sbx_device->lock);
++	/* Write the connection ID to the connection register */
++	sbx_write_reg(SBX_DTLS_REG_CONNECTION_ID, msg.connection_id);
++	/* Read the data from the chunk and MPNs registers */
++	connection_chunk = sbx_read_reg(SBX_DTLS_REG_CONNECTION_CHUNK);
++	connection_mpns = sbx_read_reg(SBX_DTLS_REG_CONNECTION_MPNS);
++	spin_unlock(&sbx_device->lock);
++
++	pr_debug("sbx get connection info: connection_chunk=%lu connection_mpns=%lu\n",
++		connection_chunk, connection_mpns);
++
++	msg.connection_chunk = connection_chunk;
++	msg.connection_mpns = connection_mpns;
++
++	if (copy_to_user((void *)arg, &msg, sizeof(msg)) != 0) {
++		pr_err("sbx connection info ioctl: failed to copy msg back to user\n");
++		return -EFAULT;
++	}
++
++	return 0;
++}
++
++static int sbx_ioctl_connection_map(unsigned long arg)
++{
++	sbx_connection_map_t connection_map;
++	char __user *user_ptr;
++
++	spin_lock(&sbx_device->lock);
++	/* Read from mapped connection map space */
++	memcpy_fromio(&connection_map, sbx_device->cmd_connection_map_addr,
++		      sizeof(connection_map));
++	spin_unlock(&sbx_device->lock);
++
++	/* Calculate the address of the connection_map field in the user structure */
++	user_ptr = (char __user *)arg +
++		   offsetof(sbx_connection_map_msg_t, connection_map);
++
++	/* Copy the connection map to the connection_map field in user structure */
++	if (copy_to_user(user_ptr, &connection_map, sizeof(connection_map)) != 0) {
++		pr_err("sbx connection map ioctl: failed to copy connection map back to user\n");
++		return -EFAULT;
++	}
++
++	return 0;
++}
++
++static int sbx_ioctl_dbg_ctrs(unsigned long arg)
++{
++	sbx_dbg_ctrs_t dbg_ctrs;
++	char __user *user_ptr;
++
++	spin_lock(&sbx_device->lock);
++	/* Read from mapped debug counters space */
++	memcpy_fromio(&dbg_ctrs, sbx_device->cmd_dbg_ctrs_addr, sizeof(dbg_ctrs));
++	spin_unlock(&sbx_device->lock);
++
++	/* Calculate the address of the dbg_ctrs field in the user structure */
++	user_ptr = (char __user *)arg + offsetof(sbx_dbg_ctrs_msg_t, dbg_ctrs);
++
++	/* Copy the debug counters to the dbg_ctrs field in the user structure */
++	if (copy_to_user(user_ptr, &dbg_ctrs, sizeof(dbg_ctrs)) != 0) {
++		pr_err("sbx dbg ctrs ioctl: failed to copy debug counters back to user\n");
++		return -EFAULT;
++	}
++
++	return 0;
++}
++
++static int sbx_ioctl_clear_connection(unsigned long arg)
++{
++	sbx_connection_clear_msg_t msg;
++
++	if (copy_from_user(&msg, (void *)arg, sizeof(msg)) != 0) {
++		pr_err("sbx clear connection ioctl: failed to copy msg\n");
++		return -EFAULT;
++	}
++
++	pr_debug("sbx clear connection: connection_id=%lu\n", msg.connection_id);
++
++	spin_lock(&sbx_device->lock);
++	/* Write the connection ID to the clear connection register */
++	sbx_write_reg(SBX_DTLS_REG_CLEAR_CONNECTION, msg.connection_id);
++	spin_unlock(&sbx_device->lock);
++
++	return 0;
++}
++
++static int sbx_ioctl_accept_connections(unsigned long arg)
++{
++	sbx_accept_connections_msg_t msg;
++
++	if (copy_from_user(&msg, (void *)arg, sizeof(msg)) != 0) {
++		pr_err("sbx accept connections ioctl: failed to copy msg\n");
++		return -EFAULT;
++	}
++
++	/* Ensure the value is only 0 or 1 */
++	if (msg.accept > 1) {
++		pr_err("sbx accept connections ioctl: invalid value %u (must be 0 or 1)\n",
++		       msg.accept);
++		return -EINVAL;
++	}
++
++	pr_debug("sbx accept connections: %s\n",
++		msg.accept ? "enabled" : "disabled");
++
++	spin_lock(&sbx_device->lock);
++	/* Write the accept connections value to the register */
++	sbx_write_reg(SBX_DTLS_REG_ACCEPT_CONNECTIONS, msg.accept);
++	spin_unlock(&sbx_device->lock);
++
++	return 0;
++}
++
++static long sbx_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
++{
++	switch (cmd) {
++	case SBX_DTLS_IOCTL_CONNECTION_INFO:
++		return sbx_ioctl_connection_info(arg);
++	case SBX_DTLS_IOCTL_CONNECTION_MAP:
++		return sbx_ioctl_connection_map(arg);
++	case SBX_DTLS_IOCTL_CLEAR_CONNECTION:
++		return sbx_ioctl_clear_connection(arg);
++	case SBX_DTLS_IOCTL_ACCEPT_CONNECTIONS:
++		return sbx_ioctl_accept_connections(arg);
++	case SBX_DTLS_IOCTL_FETCH_DEBUG_CTRS:
++		return sbx_ioctl_dbg_ctrs(arg);
++	default:
++		pr_err("sbx ioctl: pid %i (%s) invalid cmd(%u)\n",
++		       current->pid, current->comm, cmd);
++		return -EINVAL;
++	}
++}
++
++static int sbx_mmap(struct file *filp, struct vm_area_struct *vma)
++{
++	unsigned long len = vma->vm_end - vma->vm_start;
++	unsigned long pfn = (sbx_device->shm_addr >> PAGE_SHIFT) + vma->vm_pgoff;
++
++	if (remap_pfn_range(vma, vma->vm_start, pfn, len, vma->vm_page_prot)) {
++		pr_err("sbx mmap: remap_pfn_range fail\n");
++		return -EAGAIN;
++	}
++
++	pr_debug("sbx mmap: pid %i (%s)\n", current->pid, current->comm);
++
++	return 0;
++}
++
++static irqreturn_t sbx_irq_handler(int irq, void *dev_id)
++{
++	struct sbx_dev *sbx = (struct sbx_dev *)dev_id;
++
++	atomic_inc(&sbx->launch_ready);
++	wake_up_interruptible(&sbx->launch_waitq);
++
++	return IRQ_HANDLED;
++}
++
++static __poll_t sbx_poll(struct file *filp, struct poll_table_struct *wait)
++{
++	__poll_t mask = 0;
++	int pending;
++
++	poll_wait(filp, &sbx_device->launch_waitq, wait);
++
++	pending = atomic_xchg(&sbx_device->launch_ready, 0);
++	pr_debug("sbx poll: launch_ready=%d\n", pending);
++
++	if (pending > 0)
++		mask |= POLLIN;
++
++	return mask;
++}
++
++static const struct file_operations sbx_fops = {
++	.owner =          THIS_MODULE,
++	.open =           sbx_open,
++	.mmap =           sbx_mmap,
++	.release =        sbx_release,
++	.unlocked_ioctl = sbx_ioctl,
++	.poll =           sbx_poll,
++};
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0)
++static char *sbx_devnode(const struct device *dev, umode_t *mode)
++#else
++static char *sbx_devnode(struct device *dev, umode_t *mode)
++#endif
++{
++	if (mode)
++		*mode = 0600;
++	return NULL;
++}
++
++static int sbx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++{
++	int irq;
++	int result;
++	char *addr;
++	dev_t devno_sbx;
++	unsigned long flags;
++	unsigned int dword = 0;
++	const unsigned int BUS_MASTER = 0x4;
++	const unsigned int CMD_REG_OFFSET = 4;
++	resource_size_t cmd_addr;
++	resource_size_t cmd_len;
++	unsigned long cmd_flags;
++	resource_size_t shm_len;
++	unsigned long shm_flags;
++	struct device *d;
++
++	if (sbx_device) {
++		pr_err("sbx: unexpected probe\n");
++		return -EPERM;
++	}
++
++	pci_read_config_dword(pdev, CMD_REG_OFFSET, &dword);
++	if (!(dword & BUS_MASTER)) {
++		pci_write_config_dword(pdev, CMD_REG_OFFSET, dword | BUS_MASTER);
++		pci_read_config_dword(pdev, CMD_REG_OFFSET, &dword);
++		if (dword & BUS_MASTER) {
++			pr_debug("sbx probe: bus master enabled\n");
++		} else {
++			pr_err("sbx probe: bus master enable fail\n");
++			return -EPERM;
++		}
++	}
++
++	result = alloc_chrdev_region(&devno_sbx, SBX_MINOR, 1, SBX_NAME);
++	if (result != 0) {
++		pr_err("sbx probe: alloc major number with minor %d fail error=%d\n",
++		       SBX_MINOR, result);
++		return result;
++	}
++
++	sbx_device = kzalloc(sizeof(*sbx_device), GFP_KERNEL);
++	if (!sbx_device) {
++		result = -ENOMEM;
++		pr_err("sbx probe: kzalloc fail error=%d\n", result);
++		goto fail_kzalloc_sbx;
++	}
++	spin_lock_init(&sbx_device->lock);
++	sbx_device->devno = devno_sbx;
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
++	sbx_device->class = class_create(SBX_NAME "drv");
++#else
++	sbx_device->class = class_create(THIS_MODULE, SBX_NAME "drv");
++#endif
++	if (IS_ERR(sbx_device->class)) {
++		result = PTR_ERR(sbx_device->class);
++		pr_err("sbx probe: class create fail error=%d\n", result);
++		goto fail_class_create;
++	}
++
++	sbx_device->class->devnode = sbx_devnode;
++	d = device_create(sbx_device->class, NULL, devno_sbx,
++			  NULL, SBX_NAME "0");
++	if (IS_ERR(d)) {
++		result = PTR_ERR(d);
++		pr_err("sbx probe: sbx device create fail error=%d\n", result);
++		goto fail_device_create_sbx;
++	}
++
++	cdev_init(&sbx_device->sbx_cdev, &sbx_fops);
++	sbx_device->sbx_cdev.owner = THIS_MODULE;
++	result = cdev_add(&sbx_device->sbx_cdev, devno_sbx, 1);
++	if (result != 0) {
++		pr_err("sbx probe: add sbx fail error=%d\n", result);
++		goto fail_cdev_add_sbx;
++	}
++
++	result = pci_enable_device(pdev);
++	if (result != 0) {
++		pr_err("sbx probe: pci enable device fail error=%d\n", result);
++		goto fail_pci_enable_device;
++	}
++
++	result = pci_request_region(pdev, SBX_CMD_BAR, "sbx-cmd-bar");
++	if (result != 0) {
++		pr_err("sbx probe: cmd bar request fail error=%d\n", result);
++		goto fail_pci_request_region_cmd;
++	}
++	cmd_addr = pci_resource_start(pdev, SBX_CMD_BAR);
++	cmd_len = pci_resource_len(pdev, SBX_CMD_BAR);
++	cmd_flags = pci_resource_flags(pdev, SBX_CMD_BAR);
++	pr_debug("sbx probe: cmd bar start=%pa len=%pa flags=%#lx\n",
++		&cmd_addr, &cmd_len, cmd_flags);
++	flags = IORESOURCE_MEM;
++	if ((cmd_flags & flags) != flags) {
++		pr_err("sbx probe: cmd bar flags must be %#lx fail\n", flags);
++		result = -EINVAL;
++		goto fail_pci_request_region_cmd_resource;
++	}
++
++	result = pci_request_region(pdev, SBX_SHM_BAR, "sbx-shm-bar");
++	if (result != 0) {
++		pr_err("sbx probe: shm bar request fail error=%d\n", result);
++		goto fail_pci_request_region_cmd_resource;
++	}
++	sbx_device->shm_addr = pci_resource_start(pdev, SBX_SHM_BAR);
++	shm_len = pci_resource_len(pdev, SBX_SHM_BAR);
++	shm_flags = pci_resource_flags(pdev, SBX_SHM_BAR);
++	pr_debug("sbx probe: shm bar start=%pa len=%pa flags=%#lx\n",
++		&sbx_device->shm_addr, &shm_len, shm_flags);
++	flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
++	if ((shm_flags & flags) != flags) {
++		pr_err("sbx probe: shm bar flags must be %#lx fail\n", flags);
++		result = -EINVAL;
++		goto fail_pci_request_region_shm_resource;
++	}
++
++	result = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI);
++	if (result < 1) {
++		pr_err("sbx probe: pci alloc irq vectors fail error=%d\n",
++		       result);
++		goto fail_pci_request_region_shm_resource;
++	}
++
++	init_waitqueue_head(&sbx_device->launch_waitq);
++	irq = pci_irq_vector(pdev, 0);
++	result = request_irq(irq, sbx_irq_handler, 0, SBX_NAME, sbx_device);
++	if (result != 0) {
++		pr_err("sbx probe: request irq fail irq=%d error=%d\n",
++		       irq, result);
++		goto fail_request_irq;
++	}
++	sbx_device->irq = irq;
++
++	sbx_device->cmd_remap = ioremap(cmd_addr, cmd_len);
++	if (!sbx_device->cmd_remap) {
++		pr_err("sbx probe: ioremap cmd bar fail\n");
++		result = -ENOMEM;
++		goto fail_ioremap_cmd;
++	}
++
++	sbx_device->shm_remap = ioremap(sbx_device->shm_addr, shm_len);
++	if (!sbx_device->shm_remap) {
++		pr_err("sbx probe: ioremap shm bar fail\n");
++		result = -ENOMEM;
++		goto fail_ioremap_shm;
++	}
++
++	addr = sbx_device->cmd_remap;
++	sbx_device->cmd_dbg_ctrs_addr = addr + SBX_DTLS_OFFSET_DBG_CTRS;
++	sbx_device->cmd_connection_map_addr =
++		addr + SBX_DTLS_OFFSET_CONNECTION_MAP;
++
++	sbx_device->avail = true;
++
++	sbx_write_reg(SBX_DTLS_REG_VERSION, SBX_DEVICE_VERSION);
++	if (sbx_read_reg(SBX_DTLS_REG_VERSION) != SBX_DEVICE_VERSION) {
++		pr_err("sbx probe: version check failed\n");
++		result = -EINVAL;
++		goto fail_version_check;
++	}
++
++	return 0;
++
++fail_version_check:
++	iounmap(sbx_device->shm_remap);
++
++fail_ioremap_shm:
++	iounmap(sbx_device->cmd_remap);
++
++fail_ioremap_cmd:
++	free_irq(sbx_device->irq, sbx_device);
++
++fail_request_irq:
++	pci_free_irq_vectors(pdev);
++
++fail_pci_request_region_shm_resource:
++	pci_release_region(pdev, SBX_SHM_BAR);
++
++fail_pci_request_region_cmd_resource:
++	pci_release_region(pdev, SBX_CMD_BAR);
++
++fail_pci_request_region_cmd:
++	pci_disable_device(pdev);
++
++fail_pci_enable_device:
++	cdev_del(&sbx_device->sbx_cdev);
++
++fail_cdev_add_sbx:
++	device_destroy(sbx_device->class, sbx_device->devno);
++
++fail_device_create_sbx:
++	class_destroy(sbx_device->class);
++
++fail_class_create:
++	kfree(sbx_device);
++	sbx_device = NULL;
++
++fail_kzalloc_sbx:
++	unregister_chrdev_region(devno_sbx, 1);
++
++	return result;
++}
++
++static void sbx_remove(struct pci_dev *pdev)
++{
++	if (sbx_device) {
++		iounmap(sbx_device->cmd_remap);
++		iounmap(sbx_device->shm_remap);
++		free_irq(sbx_device->irq, sbx_device);
++		pci_free_irq_vectors(pdev);
++		pci_release_region(pdev, SBX_SHM_BAR);
++		pci_release_region(pdev, SBX_CMD_BAR);
++		pci_disable_device(pdev);
++		cdev_del(&sbx_device->sbx_cdev);
++		device_destroy(sbx_device->class, sbx_device->devno);
++		class_destroy(sbx_device->class);
++		unregister_chrdev_region(sbx_device->devno, 1);
++		kfree(sbx_device);
++		sbx_device = NULL;
++	}
++}
++
++static struct pci_device_id sbx_ids[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_VMWARE, 0x420), },
++	{ 0, }
++};
++
++static struct pci_driver sbx_driver = {
++	.name     = SBX_NAME,
++	.probe    = sbx_probe,
++	.remove   = sbx_remove,
++	.id_table = sbx_ids,
++};
++
++MODULE_DEVICE_TABLE(pci, sbx_ids);
++
++static int __init sbx_init_module(void)
++{
++	int ret = pci_register_driver(&sbx_driver);
++
++	if (ret < 0) {
++		pr_err("sbx init module: pci_register_driver fail\n");
++		return ret;
++	}
++
++	if (!sbx_device) {
++		pr_err("sbx init module: sbx_probe fail\n");
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++static void __exit sbx_exit_module(void)
++{
++	pci_unregister_driver(&sbx_driver);
++}
++
++module_init(sbx_init_module);
++module_exit(sbx_exit_module);
+diff --git a/drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h b/drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h
+new file mode 100644
+index 000000000..d34eac3bf
+--- /dev/null
++++ b/drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h
+@@ -0,0 +1,76 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sub license, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial portions
++ * of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
++ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
++ * USE OR OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++#ifndef _SBX_DTLS_IOCTL_H_
++#define _SBX_DTLS_IOCTL_H_
++
++#define SBX_DTLS_MAGIC                0xb3
++
++/* Include register definitions for connection map size */
++#include "sbx_dtls_reg.h"
++
++typedef unsigned long long sbx_connection_map_t[SBX_DTLS_CONNECTION_MAP_WORDS];
++typedef unsigned long long sbx_dbg_ctrs_t[SBX_DTLS_DBG_CTRS_COUNT];
++
++/* SBX Connection Info message */
++typedef struct sbx_connection_info_msg {
++	unsigned long connection_id;
++	unsigned long connection_chunk;
++	unsigned long connection_mpns;
++} sbx_connection_info_msg_t;
++
++/* Connection map response message */
++typedef struct sbx_connection_map_msg {
++	sbx_connection_map_t connection_map;
++} sbx_connection_map_msg_t;
++
++/* Debug counters response message */
++typedef struct sbx_dbg_ctrs_msg {
++	sbx_dbg_ctrs_t dbg_ctrs;
++} sbx_dbg_ctrs_msg_t;
++
++/* Clear connection message */
++typedef struct sbx_connection_clear_msg {
++	unsigned long connection_id;
++} sbx_connection_clear_msg_t;
++
++/* Accept connections message */
++typedef struct sbx_accept_connections_msg {
++	unsigned int accept;
++} sbx_accept_connections_msg_t;
++
++#define SBX_DTLS_IOCTL_CONNECTION_INFO \
++	_IOWR(SBX_DTLS_MAGIC, 20, struct sbx_connection_info_msg)
++#define SBX_DTLS_IOCTL_CONNECTION_MAP \
++	_IOWR(SBX_DTLS_MAGIC, 21, struct sbx_connection_map_msg)
++#define SBX_DTLS_IOCTL_CLEAR_CONNECTION \
++	_IOW(SBX_DTLS_MAGIC, 22, struct sbx_connection_clear_msg)
++#define SBX_DTLS_IOCTL_ACCEPT_CONNECTIONS \
++	_IOW(SBX_DTLS_MAGIC, 23, struct sbx_accept_connections_msg)
++#define SBX_DTLS_IOCTL_FETCH_DEBUG_CTRS \
++	_IOR(SBX_DTLS_MAGIC, 24, struct sbx_dbg_ctrs_msg)
++
++#endif
+diff --git a/drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h b/drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h
+new file mode 100644
+index 000000000..44ab4aa68
+--- /dev/null
++++ b/drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h
+@@ -0,0 +1,134 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sub license, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial portions
++ * of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
++ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
++ * USE OR OTHER DEALINGS IN THE SOFTWARE.
++ */
++/*
++ * sbx_dtls_reg.h --
++ * Register definitions for the SBX DTLS device.
++ */
++
++ #ifndef _SBX_DTLS_REG_H_
++ #define _SBX_DTLS_REG_H_
++
++/*
++ * SBX_DTLS_CONNECTION_ID -
++ * Written by the kernel driver, to set the connection context in the SBX code.
++ */
++#define SBX_DTLS_REG_CONNECTION_ID        0
++
++/*
++ * SBX_DTLS_CONNECTION_CHUNK -
++ * Written by the SBX code, read by the kernel driver. This has the starting
++ * chunk number for the connection in the context.
++ */
++#define SBX_DTLS_REG_CONNECTION_CHUNK     1
++
++/*
++ * SBX_DTLS_CONNECTION_MPNS
++ * Written by the SBX code, read by the kernel driver. This has the number of
++ * MPNs setup for this connection.
++ */
++#define SBX_DTLS_REG_CONNECTION_MPNS      2
++
++/*
++ * SBX_DTLS_REG_VERSION
++ * SBX version
++ */
++#define SBX_DTLS_REG_VERSION              3
++
++/*
++ * SBX_DTLS_REG_CLEAR_CONNECTION
++ * Set by the userspace to indicate the SBX code to cleanup a connection
++ */
++#define SBX_DTLS_REG_CLEAR_CONNECTION     4
++
++/*
++ * SBX_DTLS_REG_ACCEPT_CONNECTIONS
++ * Set by the userspace to indicate to the SBX device to accept workload
++ * connections.
++ */
++#define SBX_DTLS_REG_ACCEPT_CONNECTIONS   5
++
++#define SBX_DTLS_REGISTERS_MAX            32
++/*
++ * SBX_DTLS_CONNECTION_MAP_SIZE
++ * The size of the connection bitmap. This space is sufficient to maintain
++ * 2048 connections.
++ * 256 Bytes
++ */
++#define SBX_DTLS_CONNECTION_MAP_SIZE   256
++
++#define SBX_DTLS_CONNECTION_MAP_WORDS  (SBX_DTLS_CONNECTION_MAP_SIZE / 8)
++
++
++/*
++ * SBX_DTLS_DBG_CTRS_COUNT
++ * A set of counters for debuggability
++ */
++#define SBX_DTLS_DBG_CTRS_COUNT        64
++
++/*
++ * SBX_DTLS_CMD_BAR_LEN
++ * Size of the command BAR length. Needs to be a power of 2.
++ */
++#define SBX_DTLS_CMD_BAR_LEN           32768
++
++/*
++ * Command BAR Memory Layout:
++ *
++ *  Offset Range (end exclusive)   Region
++ *  +-------------------+---------------------------+
++ *  | [0x000 - 0x100)   | Command Registers (32x8B) |
++ *  +-------------------+---------------------------+
++ *  | [0x100 - 0x300)   | Debug Counters (64x8B)    |
++ *  +-------------------+---------------------------+
++ *  | [0x300 - 0x400)   | Connection Map (256B)     |
++ *  +-------------------+---------------------------+
++ *  | [0x400 - 0x8000)  | Reserved                  |
++ *  +-------------------+---------------------------+
++ */
++
++/* Command Registers: offset 0x000 - 0x100 (exclusive) */
++#define SBX_DTLS_OFFSET_CMD_REGS       0
++#define SBX_DTLS_OFFSET_CMD_REGS_END   (SBX_DTLS_REGISTERS_MAX * 8)
++
++/* Debug Counters: offset 0x100 - 0x300 (exclusive) */
++#define SBX_DTLS_OFFSET_DBG_CTRS       SBX_DTLS_OFFSET_CMD_REGS_END
++#define SBX_DTLS_OFFSET_DBG_CTRS_END   (SBX_DTLS_OFFSET_DBG_CTRS + SBX_DTLS_DBG_CTRS_COUNT * 8)
++
++/* Connection Map: offset 0x300 - 0x400 (exclusive) */
++#define SBX_DTLS_OFFSET_CONNECTION_MAP SBX_DTLS_OFFSET_DBG_CTRS_END
++#define SBX_DTLS_OFFSET_CONNECTION_MAP_END (SBX_DTLS_OFFSET_CONNECTION_MAP + SBX_DTLS_CONNECTION_MAP_SIZE)
++
++/* Offset range check macros */
++#define OFFSET_IS_CMD_REG(offset) \
++   ((offset) >= SBX_DTLS_OFFSET_CMD_REGS && (offset) < SBX_DTLS_OFFSET_CMD_REGS_END)
++
++#define OFFSET_IS_DBG_CTR(offset) \
++   ((offset) >= SBX_DTLS_OFFSET_DBG_CTRS && (offset) < SBX_DTLS_OFFSET_DBG_CTRS_END)
++
++#define OFFSET_IS_CONNECTION_MAP(offset) \
++	(offset >= SBX_DTLS_OFFSET_CONNECTION_MAP && offset < SBX_DTLS_OFFSET_CONNECTION_MAP_END)
++
++#endif
+-- 
+2.52.0
+
