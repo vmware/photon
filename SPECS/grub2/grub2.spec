@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.12
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -188,7 +188,7 @@ sed -e "s,@@VERSION@@,%{version},g" \
     -e "s,@@GRUB_PH_GEN@@,%{grub_photon_generation},g" \
     %{SOURCE2} > grub-sbat.csv
 
-%define builtin_efi_modules fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm gcry_sha512 password_pbkdf2 pbkdf2
+%define builtin_efi_modules fat gzio xzio iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm gcry_sha512 password_pbkdf2 pbkdf2 squash4
 
 %ifarch x86_64
 ./install-for-efi/%{_bindir}/%{name}-mkimage -d ./install-for-efi/%{_libdir}/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/%{name} -O x86_64-efi --sbat=grub-sbat.csv %{builtin_efi_modules} efi_uga
@@ -273,6 +273,8 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Tue May 05 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.12-5
+- grub2-efi: add gzio, xzio and squash4 modules
 * Thu Feb 19 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.12-4
 - Fix aarch64 build
 * Tue Feb 10 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.12-3
