@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.78
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -546,6 +546,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue May 05 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.78-4
+- Moved SPECS/linux/v6.12(common branch) to SPECS/linux(5.0 branch)
+- Used merge commit to keep the history in 5.0 itself
 * Mon Apr 13 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.78-3
 - Enable AMD AI compute module.
 * Fri Apr 10 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.78-2

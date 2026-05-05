@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.78
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -971,6 +971,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue May 05 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.78-5
+- Moved SPECS/linux/v6.12(common branch) to SPECS/linux(5.0 branch)
+- Used merge commit to keep the history in 5.0 itself
 * Mon Apr 27 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.78-4
 - Disable CONFIG_PER_VMA_LOCK
 * Fri Apr 10 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.78-3
