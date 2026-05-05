@@ -7,7 +7,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.6.4
-Release:        1%{?buildtag}%{?dist}
+Release:        2%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -23,6 +23,9 @@ Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
 Patch1: 0002-check-for-RPMTAG_OPENPGP.patch
+Patch2: 0003-ensure-history-db-directory-exists.patch
+Patch3: 0004-check-for-history-db-errors.patch
+Patch4: 0005-fix-const-qualifier-warning.patch
 
 Requires:       rpm-libs >= 6.0.1
 Requires:       curl-libs
@@ -253,6 +256,10 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue May 05 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.4-2
+- ensure history db directory exists
+- check for history db errors (SQLITE_BUSY)
+- fix 'assignment discards const qualifier' warning
 * Thu Apr 16 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.4-1
 - update to 3.6.4
 * Thu Apr 09 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.3-6
