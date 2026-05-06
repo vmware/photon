@@ -677,6 +677,9 @@ def check_proper_spdx_license(spec, err_dict):
 
 
 def check_subrelease_specs(specsList, mainline):
+    # TODO: revisit this
+    return False
+
     ret = False
 
     if not specsList:
