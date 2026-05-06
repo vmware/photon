@@ -1,42 +1,35 @@
 sources:
-- archive: dotnet-sdk-8.0.411-linux-x64.tar.gz
-  archive_sha512sum: e7304c3798c3ad3278a23cfac7e3f873a760d6bfe0719eaafdf6a9666afeff8f2730e7c84f7ff597d34b5e26d1bccb08ecc6e23c7ef4376564c4ed568d6d2430
+- archive: dotnet-sdk-8.0.420-linux-x64.tar.gz
+  archive_sha512sum: 36c68c1be9d5c6f24cd8e6bd4b6d36bfd7ab724ac7e3499fb13e42e70a9003310e5ee5759ed19ced1f0ecd3d26a55f135c7e72d6f788e7d44f5f0eaa72ad9a07
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - sdk/8.0.411/Containers/tasks/net8.0/NuGet.Packaging.dll
-    - sdk/8.0.411/NuGet.Packaging.dll
-    sha256sum: 5be664349d79037c6aefd29df91bf18c61dca31bc7195c022e58316ed1ab722f
+    - sdk/8.0.420/Containers/tasks/net8.0/NuGet.Packaging.dll
+    - sdk/8.0.420/NuGet.Packaging.dll
+    sha256sum: 8b27cac1ac080c769d91c076247bd6fc109e794fc91488150f118ac5aa859069
     spdx_exp: ''
   - file_paths:
-    - sdk/8.0.411/Containers/containerize/NuGet.Packaging.dll
-    sha256sum: cfb5f07068e73ef0262ed3f5b9d1145d2d315314bdb51657ab918b57032f0859
+    - sdk/8.0.420/Containers/containerize/NuGet.Packaging.dll
+    sha256sum: 5421eb8f73535f24582e47b57eb75b5b7840ef7740b3123f87a59ca30b4b5943
     spdx_exp: ''
   - file_paths:
-    - sdk/8.0.411/Containers/tasks/net472/NuGet.Packaging.dll
-    - sdk/8.0.411/Sdks/Microsoft.NET.Sdk/tools/net472/NuGet.Packaging.dll
-    sha256sum: cae3caa5087a13e9a1b0630d5d62dbf711f6cdace08c4c3ab4eccd6d36fa47f3
+    - sdk/8.0.420/Containers/tasks/net472/NuGet.Packaging.dll
+    - sdk/8.0.420/Sdks/Microsoft.NET.Sdk/tools/net472/NuGet.Packaging.dll
+    sha256sum: aa467e19ce0036847bce86a16aca47e21303c7e547f3917f6da01576c422adb3
     spdx_exp: ''
   - file_paths:
-    - sdk/8.0.411/Sdks/NuGet.Build.Tasks.Pack/CoreCLR/NuGet.Build.Tasks.Pack.dll
-    sha256sum: 2f27e0f1ae3c7b1263a44b3b6f0a7cc301f4925b6ceead6d171a6dea38054365
+    - sdk/8.0.420/Sdks/NuGet.Build.Tasks.Pack/CoreCLR/NuGet.Build.Tasks.Pack.dll
+    sha256sum: 3118c4115f308ecfd87dac1c79eb0503e4e6911b2b99f7e77abc7dba9d2602b0
     spdx_exp: ''
   - file_paths:
-    - sdk/8.0.411/Sdks/NuGet.Build.Tasks.Pack/Desktop/NuGet.Build.Tasks.Pack.dll
-    sha256sum: a153f2d4e922c63cf80f30ef987012eda872b266a38fec408089377e7998c554
+    - sdk/8.0.420/Sdks/NuGet.Build.Tasks.Pack/Desktop/NuGet.Build.Tasks.Pack.dll
+    sha256sum: 5468044a94eea74cc7365d0e956948aec4115fb99ce1134d583fa334bb124471
     spdx_exp: ''
   spdx:
     package:
-      detailed_description: '.NET Core is a development platform that you can use
-        to build command-line applications, microservices and modern websites. '
+      detailed_description: '.NET Core is a development platform that you can use to build command-line applications, microservices and modern websites.'
       home_page: https://github.com/dotnet/core
-      license_concluded: LZMA-SDK-9.22 AND Parity-7.0.0 AND CC0-1.0 AND ICU AND CC-BY-SA-2.0
-        AND BSD-3-Clause AND Python-2.0 AND bzip2-1.0.6 AND BSD-2-Clause AND MS-LPL
-        AND Apache-2.0 AND Zlib AND Parity-6.0.0 AND SAX-PD AND Unicode-3.0 AND BSD-4-Clause-UC
-        AND Apache-1.1 AND NCSA AND HP-1989 AND W3C-20150513 AND MIT
-      license_declared: LZMA-SDK-9.22 AND Parity-7.0.0 AND CC0-1.0 AND ICU AND CC-BY-SA-2.0
-        AND BSD-3-Clause AND Python-2.0 AND bzip2-1.0.6 AND BSD-2-Clause AND MS-LPL
-        AND Apache-2.0 AND Zlib AND Parity-6.0.0 AND SAX-PD AND Unicode-3.0 AND BSD-4-Clause-UC
-        AND Apache-1.1 AND NCSA AND HP-1989 AND W3C-20150513 AND MIT
+      license_concluded: LZMA-SDK-9.22 AND Parity-7.0.0 AND CC0-1.0 AND ICU AND CC-BY-SA-2.0 AND BSD-3-Clause AND Python-2.0 AND bzip2-1.0.6 AND BSD-2-Clause AND MS-LPL AND Apache-2.0 AND Zlib AND Parity-6.0.0 AND SAX-PD AND Unicode-3.0 AND BSD-4-Clause-UC AND Apache-1.1 AND NCSA AND HP-1989 AND W3C-20150513 AND MIT
+      license_declared: LZMA-SDK-9.22 AND Parity-7.0.0 AND CC0-1.0 AND ICU AND CC-BY-SA-2.0 AND BSD-3-Clause AND Python-2.0 AND bzip2-1.0.6 AND BSD-2-Clause AND MS-LPL AND Apache-2.0 AND Zlib AND Parity-6.0.0 AND SAX-PD AND Unicode-3.0 AND BSD-4-Clause-UC AND Apache-1.1 AND NCSA AND HP-1989 AND W3C-20150513 AND MIT
       short_summary: Microsoft .NET Core SDK
       supplier: 'Organization: Broadcom, Inc.'

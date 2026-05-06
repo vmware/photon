@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        8.0.24
+Version:        8.0.26
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.26-1
+- Update to v8.0.26
 * Wed Feb 25 2026 Mukul Sikka <mukul.sikka@broadcom.com> 8.0.24-1
 - Upgrade to 8.0.24
 * Thu Jun 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.17-1

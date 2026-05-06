@@ -1,12 +1,12 @@
 sources:
-- archive: dotnet-runtime-8.0.24-linux-x64.tar.gz
-  archive_sha512sum: a1dcea409fc297675d6c30ac3baf5d67e93cd89c92fd99305115652c49e448c56eef959b60e870de6b3c0d2da0bd3f42afe089b5f5cb3b06884d3b2294326912
+- archive: dotnet-runtime-8.0.26-linux-x64.tar.gz
+  archive_sha512sum: af0ac3aea50162aff62612883ab5ecba3c0dfe7cc0c50fba70342fe076c1cab242081cf84d1d130a4613ea8b4867139a3234433f42a66b1d86e4d4c174ef0751
   skip_validation: true
   url: https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.24/dotnet-runtime-8.0.24-linux-x64.tar.gz
   spdx:
     package:
       detailed_description: '.NET Core is a development platform that you can use
-        to build command-line applications, microservices and modern websites. '
+        to build command-line applications, microservices and modern websites.'
       home_page: https://github.com/dotnet/core
       license_concluded: BSD-3-Clause AND Zlib AND BSD-4-Clause-UC AND CC0-1.0 AND
         W3C-20150513 AND HP-1989 AND Unicode-3.0 AND NCSA AND LZMA-SDK-9.22 AND Apache-2.0

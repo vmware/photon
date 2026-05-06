@@ -13,8 +13,9 @@ sources:
       short_summary: OMI provides production quality implementation of the DMTF CIM/WBEM
         standards.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: powershell-7.4.11-linux-x64.tar.gz
-  archive_sha512sum: 46839371f415aff1cf4183449da2dfb570b0d57cb52e0f65e08114e27aa55d4f0f89c2293556b9b33ccba216ce265ddf43e56cd89e37bd1bd1775a1d6ee2a261
+
+- archive: powershell-7.4.15-linux-x64.tar.gz
+  archive_sha512sum: ba135fda6b61f17d66764cc002171a2bd812e0c6e108d7b8d4e8eabf833b6deea2c6c235d8549836b100bbe050a6d332ed3ffe85b326a8b1836cef480fcc6290
   skip_validation: true
   license_manual_review:
   - file_paths:
@@ -35,8 +36,9 @@ sources:
         AND MIT AND Parity-6.0.0 AND Parity-7.0.0
       short_summary: A cross-platform automation tool/framework.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: powershell-7.4.11-nuget-deps.tar.xz
-  archive_sha512sum: 50c74ee85e25cc19c74e1e532aa4d6402bbf50ca43b01d00456cf2c4eee7efdafda09b648bb4c0365d304766808c59e0de54ad3f1f55fe0ea88601c632bcb484
+
+- archive: powershell-7.4.15-nuget-deps.tar.xz
+  archive_sha512sum: 064d743352655dff62910f71a5aa3c03fa59d1c872bee0b6260862b31ae57d896b45a97c26af4e8964f6fc89e754c4514f73a1e55a1d11c4af5f01414cbf8f91
   skip_validation: true
   spdx:
     package:
@@ -52,8 +54,9 @@ sources:
       short_summary: Powershell extension for NuGet which is a package manager for
         .NET.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: powershell-7.4.11.tar.gz
-  archive_sha512sum: 6153ce1ea14497c6ad2fbc4dc6e287d130d2ed7e8573a6dccd6ce039453e6a9d33c1ed16f28d52d41b36557945d7b694ea7df852ddc5f13e0a3d2c1c7136d721
+
+- archive: powershell-7.4.15.tar.gz
+  archive_sha512sum: dd046eab73beb5f814d039084c09a8ade607b3a330f5d2906da1666d8a36c81848927186f17059cf77f2f15e9958f0d5ab5407e2d8d66795b38b69ac1a686e32
   skip_validation: true
   spdx:
     package:
@@ -67,6 +70,7 @@ sources:
         LGPL-2.1-or-later AND BSD-3-Clause
       short_summary: PowerShell is an automation and configuration management platform.
       supplier: 'Organization: Broadcom, Inc.'
+
 - archive: powershell-native-7.4.0.tar.gz
   archive_sha512sum: 6f00c3b7bc45307530bd04065138c4d0f613dcae3cca6bfbca3544c1cf4012b195f230a1b3d1968c1cf7f62fa1850ca6325ab81c668932886fc22fb7284e4370
   skip_validation: true

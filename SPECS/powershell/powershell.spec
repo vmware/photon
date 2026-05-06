@@ -10,8 +10,8 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.4.11
-Release:        4%{?dist}
+Version:        7.4.15
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -84,7 +84,7 @@ BuildRequires:  wget
 
 Requires:       icu >= 70.1
 Requires:       zlib
-Requires:       dotnet-sdk = 8.0.411
+Requires:       dotnet-sdk = 8.0.420
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -106,7 +106,7 @@ pushd %{_builddir}/PowerShell-%{version}
 
 %if 0%{?gen_nuget_deps} == 0
 tar xf %{SOURCE6}
-rm -rf ${HOME}/.nuget
+[ -d ${HOME}/.nuget ] && rm -r ${HOME}/.nuget
 mv %{name}-%{version}-nuget-deps ${HOME}/.nuget
 %else
 dotnet restore .
@@ -148,7 +148,6 @@ mkdir -p %{buildroot}%{_libdir}/%{name} \
          %{buildroot}%{_libdir}/%{name}/ref
 
 cd %{_builddir}/PowerShell-%{version}
-rm -rf src/%{name}-unix/bin/{Debug,Linux}
 mv bin/ThirdPartyNotices.txt bin/LICENSE.txt %{buildroot}%{_docdir}/%{name}
 cp -a bin/* %{buildroot}%{_libdir}/%{name}
 rm -f %{buildroot}%{_libdir}/%{name}/libpsl-native.so
@@ -199,6 +198,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.15-1
+- Upgrade to v7.4.15
 * Tue Mar 10 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 7.4.11-4
 - Set security_hardening nofortify
 * Wed Feb 25 2026 Mukul Sikka <mukul.sikka@broadcom.com> 7.4.11-3
