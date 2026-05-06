@@ -1,0 +1,737 @@
+commit 6bbae9e96d6741a6d379d1c620660721eb6da829
+Author: Rishi Chhibber <rishi.chhibber@broadcom.com>
+Date:   Thu May 7 22:26:51 2026 -0700
+
+    linux-esx: Add DTLS Zero Copy kernel module
+
+    This kernel driver is for the DTLS Zero Copy virtual device. This driver
+    helps the userspace applications to communicate with the VDSM
+    device which facilitates the sharing of memory between the workload
+    VMs and the SCRX
+
+    Signed-off-by: Rishi Chhibber <rishi.chhibber@broadcom.com>
+
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index dcfe77b30bd5..6445a878ffdb 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -631,4 +631,5 @@ source "drivers/misc/keba/Kconfig"
+ source "drivers/misc/vmw_extcfg/Kconfig"
+ source "drivers/misc/vmw_sbx/Kconfig"
+ source "drivers/misc/vmw_sbx_dtls/Kconfig"
++source "drivers/misc/vmw_zerocopy/Kconfig"
+ endmenu
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index e4f21eccc994..c2b14169d9ed 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -72,6 +72,7 @@ obj-$(CONFIG_TPS6594_PFSM)	+= tps6594-pfsm.o
+ obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
+ obj-$(CONFIG_SBX)		+= vmw_sbx/
+ obj-$(CONFIG_SBX_DTLS)		+= vmw_sbx_dtls/
++obj-$(CONFIG_VMW_ZC)		+= vmw_zerocopy/
+ obj-$(CONFIG_NSM)		+= nsm.o
+ obj-$(CONFIG_MARVELL_CN10K_DPI)	+= mrvl_cn10k_dpi.o
+ obj-y				+= keba/
+diff --git a/drivers/misc/vmw_zerocopy/Kconfig b/drivers/misc/vmw_zerocopy/Kconfig
+new file mode 100644
+index 000000000000..3aa616ba1466
+--- /dev/null
++++ b/drivers/misc/vmw_zerocopy/Kconfig
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++config VMW_ZC
++	tristate "VMware zero-copy buffer sharing device"
++	depends on VMWARE_VMCI
++	help
++	  Character device that shares pinned user buffers with a peer using
++	  the VMCI datagram interface.
++
++	  If unsure, say N.
+diff --git a/drivers/misc/vmw_zerocopy/Makefile b/drivers/misc/vmw_zerocopy/Makefile
+new file mode 100644
+index 000000000000..aea6f4c987c6
+--- /dev/null
++++ b/drivers/misc/vmw_zerocopy/Makefile
+@@ -0,0 +1,17 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++#
++# Makefile for the VMware Zero Copy Virtual Device driver
++#
++
++ccflags-y			+= -I$(src)
++
++# "make M=drivers/misc/vmw_zerocopy modules" sets KBUILD_EXTMOD and skips
++# syncconfig, so include/config/auto.conf may not list new CONFIG_* symbols
++# even when they are present in .config — then obj-$(CONFIG_...) adds nothing.
++ifneq ($(KBUILD_EXTMOD),)
++obj-m += vmw_zerocopy.o
++else
++obj-$(CONFIG_VMW_ZC) += vmw_zerocopy.o
++endif
++
++vmw_zerocopy-y := vmw_zerocopy_driver.o
+diff --git a/drivers/misc/vmw_zerocopy/vmw_zerocopy_driver.c b/drivers/misc/vmw_zerocopy/vmw_zerocopy_driver.c
+new file mode 100644
+index 000000000000..63b4b45f0bd8
+--- /dev/null
++++ b/drivers/misc/vmw_zerocopy/vmw_zerocopy_driver.c
+@@ -0,0 +1,515 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sub license, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial portions
++ * of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
++ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
++ * USE OR OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++#include <linux/cdev.h>
++#include <linux/mm.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/uaccess.h>
++#include <linux/version.h>
++#include <linux/vmalloc.h>
++#include <linux/vmw_vmci_api.h>
++#include <linux/vmw_zerocopy_ioctl_common.h>
++
++#include "vmw_zerocopy_driver.h"
++
++#define VMW_ZC_CLASS_NAME	VMW_ZC_DEVICE_NAME
++#define LGPFX			"vmw_zc: "
++
++struct vmw_zc_context {
++	int major;
++	struct class *class;
++	struct cdev cdev;
++	struct vmci_handle dst_hdl;
++	struct vmci_handle src_hdl;
++	atomic_t peer_configured;
++};
++
++static struct vmw_zc_context vmw_zc_ctx;
++
++static int vmw_zc_open(struct inode *inode, struct file *file);
++static int vmw_zc_release(struct inode *inode, struct file *file);
++static long vmw_zc_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
++
++static const struct file_operations vmw_zc_fops = {
++	.owner = THIS_MODULE,
++	.open = vmw_zc_open,
++	.release = vmw_zc_release,
++	.unlocked_ioctl = vmw_zc_ioctl,
++};
++
++static int vmw_zc_dgram_cb(void *cookie, struct vmci_datagram *dg)
++{
++	pr_debug(LGPFX "datagram callback\n");
++	return 0;
++}
++
++static void vmw_zc_unpin_user_pages(struct page **pages, int num_pages)
++{
++	int i;
++
++	if (!pages)
++		return;
++
++	for (i = 0; i < num_pages; i++) {
++		if (pages[i])
++			put_page(pages[i]);
++	}
++	kfree(pages);
++}
++
++static int vmw_zc_pin_user_pages(void __user *user_buf, size_t size,
++				 struct page ***pages, int *num_pages)
++{
++	unsigned long start_addr = (unsigned long)user_buf;
++	unsigned long end_addr = start_addr + size;
++	int nr_pages;
++	int ret;
++
++	nr_pages = (PAGE_ALIGN(end_addr) - (start_addr & PAGE_MASK)) >> PAGE_SHIFT;
++
++	if (nr_pages > VMW_ZC_MAX_PAGES) {
++		pr_err(LGPFX "buffer spans too many pages: %d > %lu\n",
++		       nr_pages, VMW_ZC_MAX_PAGES);
++		return -EINVAL;
++	}
++
++	pr_debug(LGPFX "pinning %d pages for size %zu\n", nr_pages, size);
++
++	*pages = kmalloc_array(nr_pages, sizeof(struct page *), GFP_KERNEL);
++	if (!*pages) {
++		pr_err(LGPFX "failed to allocate page pointer array\n");
++		return -ENOMEM;
++	}
++
++	ret = get_user_pages_fast(start_addr & PAGE_MASK, nr_pages, FOLL_WRITE,
++				  *pages);
++
++	if (ret < 0) {
++		pr_err(LGPFX "get_user_pages_fast failed: %d\n", ret);
++		kfree(*pages);
++		*pages = NULL;
++		return ret;
++	}
++
++	if (ret != nr_pages) {
++		pr_err(LGPFX "only pinned %d of %d pages\n", ret, nr_pages);
++		vmw_zc_unpin_user_pages(*pages, ret);
++		*pages = NULL;
++		return -EFAULT;
++	}
++
++	*num_pages = nr_pages;
++	return 0;
++}
++
++static int vmw_zc_send_datagram(struct vmw_zc_host_message *msg, size_t msg_size)
++{
++	int ret;
++	struct vmci_datagram *dgram;
++	size_t dgram_size;
++
++	if (!atomic_read(&vmw_zc_ctx.peer_configured)) {
++		pr_err(LGPFX "peer not configured; send init first\n");
++		return -ENODEV;
++	}
++	/* Pairs with smp_wmb() after writing dst_hdl before atomic_set(1). */
++	smp_rmb();
++
++	dgram_size = VMCI_DG_HEADERSIZE + msg_size;
++	dgram = kzalloc(dgram_size, GFP_KERNEL);
++	if (!dgram) {
++		pr_err(LGPFX "failed to allocate datagram buffer\n");
++		return -ENOMEM;
++	}
++
++	dgram->dst = vmw_zc_ctx.dst_hdl;
++	dgram->src = vmw_zc_ctx.src_hdl;
++	dgram->payload_size = msg_size;
++	memcpy(VMCI_DG_PAYLOAD(dgram), msg, msg_size);
++
++	ret = vmci_datagram_send(dgram);
++	kfree(dgram);
++	return ret;
++}
++
++static void vmw_zc_clean_pinned(struct page **pages, int num_pages,
++				struct page **metadata_pages,
++				int num_metadata_pages,
++				struct vmw_zc_host_message *msg)
++{
++	if (pages)
++		vmw_zc_unpin_user_pages(pages, num_pages);
++	if (metadata_pages)
++		vmw_zc_unpin_user_pages(metadata_pages, num_metadata_pages);
++	kfree(msg);
++}
++
++/*
++ * Pin @buffer (and optional @metadata) and send PFN layout to the peer
++ * as @msg_type (expected VMW_ZC_MSG_USER_BUFFER).
++ */
++static int vmw_zc_send_user_buffer_msg(void __user *buffer, u32 buffer_len,
++				     void __user *metadata, u32 metadata_len,
++				     u8 msg_type)
++{
++	int ret;
++	int i;
++	struct vmw_zc_host_message *msg = NULL;
++	struct page **pages = NULL;
++	struct page **metadata_pages = NULL;
++	int num_pages = 0;
++	int num_metadata_pages = 0;
++	unsigned long buf_start = (unsigned long)buffer;
++	unsigned long buf_page_off = buf_start & ~PAGE_MASK;
++	const bool has_metadata = (msg_type == VMW_ZC_MSG_USER_BUFFER);
++
++	if (msg_type != VMW_ZC_MSG_USER_BUFFER) {
++		pr_err(LGPFX "invalid message type for user buffer path: %u\n",
++		       msg_type);
++		return -EINVAL;
++	}
++
++	if (buffer_len == 0 || buffer_len > VMW_ZC_MAX_BUFFER_SIZE) {
++		pr_err(LGPFX "invalid buffer size: %u (max %lu)\n",
++		       buffer_len, (unsigned long)VMW_ZC_MAX_BUFFER_SIZE);
++		return -EINVAL;
++	}
++
++	if (has_metadata) {
++		if (!metadata || metadata_len == 0 ||
++		    metadata_len > VMW_ZC_MAX_METADATA_SIZE) {
++			pr_err(LGPFX "invalid metadata size: %u (max %u)\n",
++			       metadata_len, VMW_ZC_MAX_METADATA_SIZE);
++			return -EINVAL;
++		}
++	} else if (metadata || metadata_len != 0) {
++		pr_err(LGPFX "unexpected metadata (ptr=%p len=%u)\n",
++		       metadata, metadata_len);
++		return -EINVAL;
++	}
++
++	ret = vmw_zc_pin_user_pages(buffer, buffer_len, &pages, &num_pages);
++	if (ret) {
++		pr_err(LGPFX "failed to pin buffer pages: %d\n", ret);
++		return ret;
++	}
++
++	if (has_metadata) {
++		ret = vmw_zc_pin_user_pages(metadata, metadata_len, &metadata_pages,
++					    &num_metadata_pages);
++		if (ret) {
++			vmw_zc_clean_pinned(pages, num_pages, metadata_pages,
++					    num_metadata_pages, msg);
++			pr_err(LGPFX "failed to pin metadata pages: %d\n", ret);
++			return ret;
++		}
++	}
++
++	msg = kzalloc(sizeof(*msg), GFP_KERNEL);
++	if (!msg) {
++		vmw_zc_clean_pinned(pages, num_pages, metadata_pages,
++				    num_metadata_pages, msg);
++		return -ENOMEM;
++	}
++
++	msg->message_type = msg_type;
++	msg->body.user_buf.data.offset = (__u32)buf_page_off;
++	msg->body.user_buf.data.length = buffer_len;
++	msg->body.user_buf.data.num_pages = (__u32)num_pages;
++	msg->body.user_buf.data.padding1 = 0;
++
++	if (has_metadata) {
++		unsigned long meta_start = (unsigned long)metadata;
++		unsigned long meta_page_off = meta_start & ~PAGE_MASK;
++
++		msg->body.user_buf.metadata.offset = (__u32)meta_page_off;
++		msg->body.user_buf.metadata.length = metadata_len;
++		msg->body.user_buf.metadata.num_pages = (__u32)num_metadata_pages;
++		msg->body.user_buf.metadata.padding1 = 0;
++	} else {
++		memset(&msg->body.user_buf.metadata, 0,
++		       sizeof(msg->body.user_buf.metadata));
++	}
++
++	for (i = 0; i < num_pages; i++)
++		msg->body.user_buf.data.page_pfns[i] =
++			(__u64)page_to_pfn(pages[i]);
++
++	if (has_metadata) {
++		for (i = 0; i < num_metadata_pages; i++)
++			msg->body.user_buf.metadata.page_pfns[i] =
++				(__u64)page_to_pfn(metadata_pages[i]);
++	}
++
++	ret = vmw_zc_send_datagram(msg, sizeof(*msg));
++	if (ret)
++		pr_err(LGPFX "failed to send user-buffer message: %d\n", ret);
++
++	vmw_zc_clean_pinned(pages, num_pages, metadata_pages,
++			    num_metadata_pages, msg);
++	return ret;
++}
++
++static int vmw_zc_send_raw_msg(const u8 *raw, u32 raw_len)
++{
++	int ret;
++	struct vmw_zc_host_message *host_msg;
++
++	if (raw_len == 0 || raw_len > MAX_RAW_BUFFER_LEN) {
++		pr_err(LGPFX "invalid raw size: %u (max %u)\n",
++		       raw_len, MAX_RAW_BUFFER_LEN);
++		return -EINVAL;
++	}
++
++	host_msg = kzalloc(sizeof(*host_msg), GFP_KERNEL);
++	if (!host_msg)
++		return -ENOMEM;
++
++	host_msg->message_type = VMW_ZC_MSG_RAW;
++	memcpy(host_msg->body.raw.raw, raw, raw_len);
++
++	ret = vmw_zc_send_datagram(host_msg, sizeof(*host_msg));
++	if (ret)
++		pr_err(LGPFX "failed to send raw message: %d\n", ret);
++
++	kfree(host_msg);
++	return ret;
++}
++
++static const char *vmw_zc_msg_type_str(u8 msg_type)
++{
++	switch (msg_type) {
++	case VMW_ZC_MSG_INIT:
++		return "INIT";
++	case VMW_ZC_MSG_USER_BUFFER:
++		return "USER_BUFFER";
++	case VMW_ZC_MSG_RAW:
++		return "RAW";
++	default:
++		return "INVALID";
++	}
++}
++
++static int vmw_zc_apply_peer_config(const struct vmw_zc_ioctl_config *cfg)
++{
++	if (cfg->vmci_resource_id == VMCI_INVALID_ID) {
++		pr_err(LGPFX "invalid resource id\n");
++		return -EINVAL;
++	}
++
++	if (atomic_cmpxchg(&vmw_zc_ctx.peer_configured, 0, 1) != 0) {
++		pr_err(LGPFX "peer already configured\n");
++		return -EBUSY;
++	}
++
++	vmw_zc_ctx.dst_hdl.context = VMCI_HYPERVISOR_CONTEXT_ID;
++	vmw_zc_ctx.dst_hdl.resource = cfg->vmci_resource_id;
++	smp_wmb();
++
++	pr_debug(LGPFX "peer resource id set to %u\n", cfg->vmci_resource_id);
++	return 0;
++}
++
++static long vmw_zc_ioctl(struct file *file, unsigned int cmd,
++			 unsigned long arg)
++{
++	int ret = 0;
++	struct vmw_zc_guest_message guest_msg;
++
++	if (cmd != VMW_ZC_IOCTL_MSG)
++		return -ENOTTY;
++
++	if (copy_from_user(&guest_msg, (void __user *)arg, sizeof(guest_msg)))
++		return -EFAULT;
++
++	pr_debug(LGPFX "message type: %s\n",
++		 vmw_zc_msg_type_str(guest_msg.message_type));
++
++	switch (guest_msg.message_type) {
++	case VMW_ZC_MSG_INIT:
++		ret = vmw_zc_apply_peer_config(&guest_msg.u.config);
++		break;
++
++	case VMW_ZC_MSG_USER_BUFFER:
++		if (!atomic_read(&vmw_zc_ctx.peer_configured)) {
++			pr_err(LGPFX "user buffer before init\n");
++			return -ENODEV;
++		}
++		ret = vmw_zc_send_user_buffer_msg(
++			(void __user *)guest_msg.u.data.buffer,
++			guest_msg.u.data.buffer_length,
++			(void __user *)guest_msg.u.data.metadata,
++			guest_msg.u.data.metadata_length,
++			guest_msg.message_type);
++		break;
++
++	case VMW_ZC_MSG_RAW:
++		if (!atomic_read(&vmw_zc_ctx.peer_configured)) {
++			pr_err(LGPFX "raw message before init\n");
++			return -ENODEV;
++		}
++		ret = vmw_zc_send_raw_msg(
++			guest_msg.u.raw_buffer.raw_buffer,
++			sizeof(guest_msg.u.raw_buffer.raw_buffer));
++		break;
++
++	default:
++		pr_err(LGPFX "unknown message type: %s\n",
++		       vmw_zc_msg_type_str(guest_msg.message_type));
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++static int vmw_zc_open(struct inode *inode, struct file *file)
++{
++	pr_debug(LGPFX "open\n");
++	return 0;
++}
++
++static int vmw_zc_release(struct inode *inode, struct file *file)
++{
++	pr_debug(LGPFX "release\n");
++	return 0;
++}
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0)
++static char *vmw_zc_devnode(const struct device *dev, umode_t *mode)
++#else
++static char *vmw_zc_devnode(struct device *dev, umode_t *mode)
++#endif
++{
++	if (mode)
++		*mode = 0644;
++	return NULL;
++}
++
++static int __init vmw_zc_init(void)
++{
++	dev_t dev;
++	int ret;
++	struct device *mydev;
++
++	pr_info(LGPFX "loading\n");
++
++	ret = alloc_chrdev_region(&dev, 0, 1, VMW_ZC_DEVICE_NAME);
++	if (ret) {
++		pr_err(LGPFX "alloc_chrdev_region failed: %d\n", ret);
++		return ret;
++	}
++
++	vmw_zc_ctx.major = MAJOR(dev);
++	vmw_zc_ctx.dst_hdl.context = VMCI_INVALID_ID;
++	vmw_zc_ctx.dst_hdl.resource = VMCI_INVALID_ID;
++	atomic_set(&vmw_zc_ctx.peer_configured, 0);
++	vmw_zc_ctx.src_hdl.context = VMCI_INVALID_ID;
++	vmw_zc_ctx.src_hdl.resource = VMCI_INVALID_ID;
++
++	cdev_init(&vmw_zc_ctx.cdev, &vmw_zc_fops);
++	vmw_zc_ctx.cdev.owner = THIS_MODULE;
++
++	ret = cdev_add(&vmw_zc_ctx.cdev, dev, 1);
++	if (ret) {
++		pr_err(LGPFX "cdev_add failed: %d\n", ret);
++		unregister_chrdev_region(dev, 1);
++		return ret;
++	}
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
++	vmw_zc_ctx.class = class_create(VMW_ZC_CLASS_NAME);
++#else
++	vmw_zc_ctx.class = class_create(THIS_MODULE, VMW_ZC_CLASS_NAME);
++#endif
++	if (IS_ERR(vmw_zc_ctx.class)) {
++		ret = PTR_ERR(vmw_zc_ctx.class);
++		pr_err(LGPFX "class_create failed: %d\n", ret);
++		cdev_del(&vmw_zc_ctx.cdev);
++		unregister_chrdev_region(dev, 1);
++		return ret;
++	}
++
++	vmw_zc_ctx.class->devnode = vmw_zc_devnode;
++
++	mydev = device_create(vmw_zc_ctx.class, NULL, dev, NULL,
++			      VMW_ZC_DEVICE_NAME);
++	if (IS_ERR(mydev)) {
++		ret = PTR_ERR(mydev);
++		pr_err(LGPFX "device_create failed: %d\n", ret);
++		class_destroy(vmw_zc_ctx.class);
++		cdev_del(&vmw_zc_ctx.cdev);
++		unregister_chrdev_region(dev, 1);
++		return ret;
++	}
++
++	ret = vmci_datagram_create_handle(VMCI_INVALID_ID, 0, vmw_zc_dgram_cb,
++					  NULL, &vmw_zc_ctx.src_hdl);
++	if (ret != VMCI_SUCCESS) {
++		pr_err(LGPFX "vmci_datagram_create_handle failed: %d\n", ret);
++		device_destroy(vmw_zc_ctx.class, MKDEV(vmw_zc_ctx.major, 0));
++		class_destroy(vmw_zc_ctx.class);
++		cdev_del(&vmw_zc_ctx.cdev);
++		unregister_chrdev_region(dev, 1);
++		return ret;
++	}
++
++	pr_info(LGPFX "ready\n");
++	return 0;
++}
++
++static void __exit vmw_zc_exit(void)
++{
++	int result;
++
++	device_destroy(vmw_zc_ctx.class, MKDEV(vmw_zc_ctx.major, 0));
++	class_destroy(vmw_zc_ctx.class);
++	cdev_del(&vmw_zc_ctx.cdev);
++	unregister_chrdev_region(MKDEV(vmw_zc_ctx.major, 0), 1);
++
++	atomic_set(&vmw_zc_ctx.peer_configured, 0);
++	smp_mb();
++	vmw_zc_ctx.dst_hdl.context = VMCI_INVALID_ID;
++	vmw_zc_ctx.dst_hdl.resource = VMCI_INVALID_ID;
++
++	if (vmw_zc_ctx.src_hdl.context != VMCI_INVALID_ID) {
++		result = vmci_datagram_destroy_handle(vmw_zc_ctx.src_hdl);
++		if (result != VMCI_SUCCESS)
++			pr_err(LGPFX "vmci_datagram_destroy_handle failed: %d\n",
++			       result);
++	}
++	vmw_zc_ctx.src_hdl.context = VMCI_INVALID_ID;
++
++	pr_info(LGPFX "unloaded\n");
++}
++
++module_init(vmw_zc_init);
++module_exit(vmw_zc_exit);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Broadcom Corporation, Inc.");
++MODULE_DESCRIPTION("VMware zero-copy buffer sharing (VMCI)");
+diff --git a/drivers/misc/vmw_zerocopy/vmw_zerocopy_driver.h b/drivers/misc/vmw_zerocopy/vmw_zerocopy_driver.h
+new file mode 100644
+index 000000000000..ca07f86e0ea7
+--- /dev/null
++++ b/drivers/misc/vmw_zerocopy/vmw_zerocopy_driver.h
+@@ -0,0 +1,51 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ *
++ * Wire-format messages sent to the peer over VMCI (driver private).
++ * Limits and raw size must stay in sync with include/linux/vmw_zerocopy_ioctl_common.h
++ */
++
++#ifndef _VMW_ZC_HOST_H
++#define _VMW_ZC_HOST_H
++
++#include <linux/mm.h>
++#include <linux/types.h>
++
++#include <linux/vmw_zerocopy_ioctl_common.h>
++
++#define VMW_ZC_MAX_METADATA_SIZE	1024
++#define VMW_ZC_MAX_BUFFER_SIZE		(64 * 1024UL)
++#define VMW_ZC_MAX_PAGES \
++	(((VMW_ZC_MAX_BUFFER_SIZE) + (PAGE_SIZE - 1)) / PAGE_SIZE + 1)
++
++struct vmw_zc_msg_unit {
++	__u32 offset;
++	__u32 length;
++	__u32 num_pages;
++	__u32 padding1;
++	__u64 page_pfns[VMW_ZC_MAX_PAGES];
++} __packed;
++
++struct vmw_zc_user_buffer_pair {
++	struct vmw_zc_msg_unit data;
++	struct vmw_zc_msg_unit metadata;
++} __packed;
++
++struct vmw_zc_host_raw {
++	__u8 raw[MAX_RAW_BUFFER_LEN];
++} __packed;
++
++union vmw_zc_host_body {
++	struct vmw_zc_user_buffer_pair user_buf;
++	struct vmw_zc_host_raw raw;
++} __packed;
++
++struct vmw_zc_host_message {
++	__u32 message_type;
++	__u32 padding1;
++	union vmw_zc_host_body body;
++} __packed;
++
++#endif /* _VMW_ZC_HOST_H */
+diff --git a/include/linux/vmw_zerocopy_ioctl_common.h b/include/linux/vmw_zerocopy_ioctl_common.h
+new file mode 100644
+index 000000000000..74ebbfa6710a
+--- /dev/null
++++ b/include/linux/vmw_zerocopy_ioctl_common.h
+@@ -0,0 +1,80 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sub license, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial portions
++ * of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
++ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
++ * USE OR OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++#ifndef _VMW_ZC_IOCTL_COMMON_H_
++#define _VMW_ZC_IOCTL_COMMON_H_
++
++#include <linux/ioctl.h>
++#include <linux/types.h>
++
++#define VMW_ZC_DEVICE_NAME		"vmw_zc"
++#define VMW_ZC_IOCTL_MAGIC		0xDC
++#define MAX_RAW_BUFFER_LEN		32
++
++/*
++ * Used for sending user buffer.
++ * Either is optional but not both.
++ */
++struct vmw_zc_guest_data {
++	__user void *buffer;
++	__u32 buffer_length;
++	__user void *metadata;
++	__u32 metadata_length;
++} __packed;
++
++struct vmw_zc_guest_raw_buffer {
++	__user __u8 raw_buffer[MAX_RAW_BUFFER_LEN];
++} __packed;
++
++/* VMCI datagram destination resource ID (hypervisor context). */
++struct vmw_zc_ioctl_config {
++	__u32 vmci_resource_id;
++} __packed;
++
++/*
++ * @message_type: numeric values (see below). INIT uses @u.config;
++ * user-buffer transfer uses @u.data; small inline payload uses @u.raw_buffer.
++ */
++#define VMW_ZC_MSG_INIT			1u
++#define VMW_ZC_MSG_USER_BUFFER		2u
++#define VMW_ZC_MSG_RAW			3u
++
++struct vmw_zc_guest_message {
++	__u8 message_type;
++	__u64 reserved;
++	union {
++		struct vmw_zc_guest_data data;
++		struct vmw_zc_guest_raw_buffer raw_buffer;
++		struct vmw_zc_ioctl_config config;
++	} u;
++} __packed;
++
++#define VMW_ZC_MESSAGE			0x01
++
++#define VMW_ZC_IOCTL_MSG \
++	_IOW(VMW_ZC_IOCTL_MAGIC, VMW_ZC_MESSAGE, struct vmw_zc_guest_message)
++
++#endif /* _VMW_ZC_IOCTL_COMMON_H_ */

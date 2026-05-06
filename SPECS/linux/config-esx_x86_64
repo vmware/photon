@@ -1865,6 +1865,7 @@ CONFIG_VMWARE_VMCI=y
 CONFIG_VMWARE_EXTCFG=y
 CONFIG_SBX=m
 CONFIG_SBX_DTLS=m
+CONFIG_VMW_ZC=m
 # end of Misc devices
 
 # SCSI device support

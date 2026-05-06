@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.87
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -184,6 +184,8 @@ Patch85: 0001-Adding-SBX-kernel-driver.patch
 %ifarch x86_64
 #SBX DTLS driver
 Patch86: 0001-linux-esx-Add-SBX-DTLS-kernel-module.patch
+# D-TLS ZERO COPY driver
+Patch88: 0001-Adding-DTLS-Zero-Copy-Driver.patch
 %endif
 
 # Backward compatibility
@@ -545,6 +547,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu May 14 2026 Rishi Chhibber <rishi.chhibber@broadcom.com> 6.12.87-3
+- Add D-TLS Zero Copy Driver
 * Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.87-2
 - Remove libdnet BuildReuires dependency
 * Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-1
