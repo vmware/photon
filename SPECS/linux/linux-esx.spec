@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.78
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -546,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 06 2026 Satish Ramachandran <satish.ramachandran@broadcom.com> 6.12.78-5
+- Update SBX DTLS patch to provide workload VM UUID
 * Tue May 05 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.78-4
 - Moved SPECS/linux/v6.12(common branch) to SPECS/linux(5.0 branch)
 - Used merge commit to keep the history in 5.0 itself

@@ -1,7 +1,7 @@
-From cfbc5e140531e8f371898103294fd48cf2e71323 Mon Sep 17 00:00:00 2001
+From cff726abfe875f94a2ec9c2be00289d3461467e6 Mon Sep 17 00:00:00 2001
 From: Satish Ramachandran <satish.ramachandran@broadcom.com>
 Date: Thu, 15 Jan 2026 17:31:06 -0800
-Subject: [PATCH] linux-esx: Add SBX DTLS kernel module.
+Subject: [PATCH 01/12] linux-esx: Add SBX DTLS kernel module.
 
 This kernel driver is for the SBX DTLS virtual device. This driver
 helps the userspace applications (like SDP) to communicate with the
@@ -14,10 +14,10 @@ Signed-off-by: Satish Ramachandran <satish.ramachandran@broadcom.com>
  drivers/misc/Makefile                      |   1 +
  drivers/misc/vmw_sbx_dtls/Kconfig          |  12 +
  drivers/misc/vmw_sbx_dtls/Makefile         |   6 +
- drivers/misc/vmw_sbx_dtls/sbx_dtls.c       | 600 +++++++++++++++++++++
- drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h |  76 +++
- drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h   | 134 +++++
- 7 files changed, 830 insertions(+)
+ drivers/misc/vmw_sbx_dtls/sbx_dtls.c       | 611 +++++++++++++++++++++
+ drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h |  79 +++
+ drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h   | 148 +++++
+ 7 files changed, 858 insertions(+)
  create mode 100644 drivers/misc/vmw_sbx_dtls/Kconfig
  create mode 100644 drivers/misc/vmw_sbx_dtls/Makefile
  create mode 100644 drivers/misc/vmw_sbx_dtls/sbx_dtls.c
@@ -78,10 +78,10 @@ index 000000000..7c586305b
 +obj-$(CONFIG_SBX_DTLS)		+= sbx_dtls.o
 diff --git a/drivers/misc/vmw_sbx_dtls/sbx_dtls.c b/drivers/misc/vmw_sbx_dtls/sbx_dtls.c
 new file mode 100644
-index 000000000..dd9ebd000
+index 000000000..f17157556
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx_dtls/sbx_dtls.c
-@@ -0,0 +1,600 @@
+@@ -0,0 +1,611 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/*
 + * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
@@ -215,8 +215,10 @@ index 000000000..dd9ebd000
 +static int sbx_ioctl_connection_info(unsigned long arg)
 +{
 +	sbx_connection_info_msg_t msg;
-+	unsigned long connection_chunk;
-+	unsigned long connection_mpns;
++	u64 connection_chunk;
++	u64 connection_mpns;
++	u64 connection_uuid_low8;
++	u64 connection_uuid_high8;
 +
 +	if (copy_from_user(&msg, (void *)arg, sizeof(msg)) != 0) {
 +		pr_err("sbx connection info ioctl: failed to copy msg\n");
@@ -231,10 +233,19 @@ index 000000000..dd9ebd000
 +	/* Read the data from the chunk and MPNs registers */
 +	connection_chunk = sbx_read_reg(SBX_DTLS_REG_CONNECTION_CHUNK);
 +	connection_mpns = sbx_read_reg(SBX_DTLS_REG_CONNECTION_MPNS);
++	connection_uuid_low8 = sbx_read_reg(SBX_DTLS_REG_CONNECTION_UUID_LOW8);
++	connection_uuid_high8 = sbx_read_reg(SBX_DTLS_REG_CONNECTION_UUID_HIGH8);
 +	spin_unlock(&sbx_device->lock);
 +
-+	pr_debug("sbx get connection info: connection_chunk=%lu connection_mpns=%lu\n",
-+		connection_chunk, connection_mpns);
++	/* Pack the two 64-bit register reads into the 16-byte UUID byte array.
++	 * Low 8 bytes occupy uuid[0..7], high 8 bytes occupy uuid[8..15], matching
++	 * the layout: low8 == *(u64 *)uuid, high8 == *(u64 *)(uuid + 8).
++	 */
++	memcpy(&msg.workload_vm_uuid[0], &connection_uuid_low8, sizeof(connection_uuid_low8));
++	memcpy(&msg.workload_vm_uuid[8], &connection_uuid_high8, sizeof(connection_uuid_high8));
++
++	pr_debug("sbx get connection info: connection_chunk=%llu connection_mpns=%llu workload_vm_uuid=%*phN\n",
++		connection_chunk, connection_mpns, UUID_LEN, msg.workload_vm_uuid);
 +
 +	msg.connection_chunk = connection_chunk;
 +	msg.connection_mpns = connection_mpns;
@@ -684,10 +695,10 @@ index 000000000..dd9ebd000
 +module_exit(sbx_exit_module);
 diff --git a/drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h b/drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h
 new file mode 100644
-index 000000000..d34eac3bf
+index 000000000..1eb452f60
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx_dtls/sbx_dtls_ioctl.h
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,79 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/*
 + * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
@@ -722,6 +733,8 @@ index 000000000..d34eac3bf
 +/* Include register definitions for connection map size */
 +#include "sbx_dtls_reg.h"
 +
++#define UUID_LEN 16
++
 +typedef unsigned long long sbx_connection_map_t[SBX_DTLS_CONNECTION_MAP_WORDS];
 +typedef unsigned long long sbx_dbg_ctrs_t[SBX_DTLS_DBG_CTRS_COUNT];
 +
@@ -730,6 +743,7 @@ index 000000000..d34eac3bf
 +	unsigned long connection_id;
 +	unsigned long connection_chunk;
 +	unsigned long connection_mpns;
++	unsigned char workload_vm_uuid[UUID_LEN];
 +} sbx_connection_info_msg_t;
 +
 +/* Connection map response message */
@@ -766,10 +780,10 @@ index 000000000..d34eac3bf
 +#endif
 diff --git a/drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h b/drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h
 new file mode 100644
-index 000000000..44ab4aa68
+index 000000000..5cb7d8ceb
 --- /dev/null
 +++ b/drivers/misc/vmw_sbx_dtls/sbx_dtls_reg.h
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,148 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/*
 + * Copyright (c) 2026 Broadcom. All Rights Reserved. The term
@@ -842,6 +856,20 @@ index 000000000..44ab4aa68
 + */
 +#define SBX_DTLS_REG_ACCEPT_CONNECTIONS   5
 +
++/*
++ * SBX_DTLS_REG_CONNECTION_UUID_LOW8
++ * Written by the SBX code, read by the kernel driver. This has the low 8 bytes
++ * of the VM UUID for the connection in the context.
++ */
++#define SBX_DTLS_REG_CONNECTION_UUID_LOW8  6
++
++/*
++ * SBX_DTLS_REG_CONNECTION_UUID_HIGH8
++ * Written by the SBX code, read by the kernel driver. This has the high 8 bytes
++ * of the VM UUID for the connection in the context.
++ */
++#define SBX_DTLS_REG_CONNECTION_UUID_HIGH8 7
++ 
 +#define SBX_DTLS_REGISTERS_MAX            32
 +/*
 + * SBX_DTLS_CONNECTION_MAP_SIZE
@@ -905,5 +933,5 @@ index 000000000..44ab4aa68
 +
 +#endif
 -- 
-2.52.0
+2.51.0
 
