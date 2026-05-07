@@ -76,8 +76,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.78
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.87
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -971,6 +971,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-1
+- Update to version 6.12.87
 * Tue May 05 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.78-5
 - Moved SPECS/linux/v6.12(common branch) to SPECS/linux(5.0 branch)
 - Used merge commit to keep the history in 5.0 itself

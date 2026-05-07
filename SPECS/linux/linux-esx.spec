@@ -28,8 +28,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.78
-Release:        5%{?dist}
+Version:        6.12.87
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -546,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-1
+- Update to version 6.12.87
 * Wed May 06 2026 Satish Ramachandran <satish.ramachandran@broadcom.com> 6.12.78-5
 - Update SBX DTLS patch to provide workload VM UUID
 * Tue May 05 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.78-4

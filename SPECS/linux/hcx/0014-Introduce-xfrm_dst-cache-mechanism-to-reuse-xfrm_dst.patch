@@ -1,8 +1,7 @@
-From df88407c737430b5caf04a139ed820d2c4cc2e6e Mon Sep 17 00:00:00 2001
+From 7f9311bca2000f95bea9c066b9b453089bf6df3d Mon Sep 17 00:00:00 2001
 From: Jonathan Shao <jonathan.shao@broadcom.com>
 Date: Thu, 22 Jan 2026 20:22:00 +0530
-Subject: [PATCH 14/15] Introduce xfrm_dst cache mechanism to reuse xfrm_dst in
- xfrm_bundle_create()
+Subject: [PATCH] Introduce xfrm_dst cache mechanism to reuse xfrm_dst in
 
 The xfrm policy (xfrm_dst) cache was introduced in 4.14.
 It is removed at 4.19 (e4db5b61c572475bbbcf63e3c8a2606bfccf2c9d),
@@ -43,10 +42,10 @@ Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
  6 files changed, 364 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index c4433ce54..e7f463120 100644
+index 660754efe..1a894b9e3 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -3256,6 +3256,16 @@ struct softnet_data {
+@@ -3254,6 +3254,16 @@ struct softnet_data {
  	unsigned int		user_def_rps_skip;
  	unsigned int		user_def_rps_proc;
  #endif
@@ -63,7 +62,7 @@ index c4433ce54..e7f463120 100644
  	struct sk_buff_head	input_pkt_queue;
  	struct napi_struct	backlog;
  
-@@ -4948,6 +4958,9 @@ extern int		netdev_mice_trigger;
+@@ -4979,6 +4989,9 @@ extern int		netdev_mice_trigger;
  extern int		netdev_better_threshold;
  extern int		netdev_flowlim_threshold;
  extern int		netdev_dbg_hash;
@@ -86,10 +85,10 @@ index b6fff506b..2a27db94c 100644
  
  struct xfrm_tmpl;
 diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index 0c87e1376..16a251bb4 100644
+index 1e47184f7..d71dccf3a 100644
 --- a/net/core/net-procfs.c
 +++ b/net/core/net-procfs.c
-@@ -227,6 +227,51 @@ static const struct proc_ops softnet_rps_seq_proc_ops = {
+@@ -232,6 +232,51 @@ static const struct proc_ops softnet_rps_seq_proc_ops = {
  };
  
  
@@ -140,8 +139,8 @@ index 0c87e1376..16a251bb4 100644
 +
  static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
  {
- 	struct list_head *ptype_list = NULL;
-@@ -359,10 +404,15 @@ static int __net_init dev_proc_net_init(struct net *net)
+ 	struct ptype_iter_state *iter = seq->private;
+@@ -376,10 +421,15 @@ static int __net_init dev_proc_net_init(struct net *net)
  		goto out_dev;
  	if (!proc_create("softnet_rps_stat", S_IRUGO, net->proc_net,
  			 &softnet_rps_seq_proc_ops))
@@ -153,13 +152,13 @@ index 0c87e1376..16a251bb4 100644
 +		goto out_softnet_rps;
 +#endif
  	if (!proc_create_net("ptype", 0444, net->proc_net, &ptype_seq_ops,
- 			sizeof(struct seq_net_private)))
+ 			sizeof(struct ptype_iter_state)))
 -		goto out_softnet;
 +		goto out_xfrm_stat;
  
  	if (wext_proc_init(net))
  		goto out_ptype;
-@@ -371,6 +421,12 @@ static int __net_init dev_proc_net_init(struct net *net)
+@@ -388,6 +438,12 @@ static int __net_init dev_proc_net_init(struct net *net)
  	return rc;
  out_ptype:
  	remove_proc_entry("ptype", net->proc_net);
@@ -173,7 +172,7 @@ index 0c87e1376..16a251bb4 100644
  	remove_proc_entry("softnet_stat", net->proc_net);
  out_dev:
 diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 32ad8f3fc..570ef7cda 100644
+index 7744ed8e4..859c9fcd1 100644
 --- a/net/xfrm/xfrm_device.c
 +++ b/net/xfrm/xfrm_device.c
 @@ -514,6 +514,10 @@ static int xfrm_dev_down(struct net_device *dev)
@@ -188,7 +187,7 @@ index 32ad8f3fc..570ef7cda 100644
  }
  
 diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 2c42d83fb..54bd0d8c4 100644
+index fca07f8e6..c80014d81 100644
 --- a/net/xfrm/xfrm_policy.c
 +++ b/net/xfrm/xfrm_policy.c
 @@ -2847,8 +2847,229 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
@@ -525,7 +524,7 @@ index 2c42d83fb..54bd0d8c4 100644
  			if (IS_ERR(xdst)) {
  				xfrm_pols_put(pols, num_pols);
 diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index c927560a7..710f1dffe 100644
+index a55c88b43..d69054632 100644
 --- a/net/xfrm/xfrm_state.c
 +++ b/net/xfrm/xfrm_state.c
 @@ -855,6 +855,7 @@ xfrm_dev_state_flush_secctx_check(struct net *net, struct net_device *dev, bool
@@ -551,5 +550,5 @@ index c927560a7..710f1dffe 100644
  }
  EXPORT_SYMBOL(xfrm_state_flush);
 -- 
-2.43.7
+2.53.0
 
