@@ -236,15 +236,56 @@ def cleanup():
 
 
 def download_file(input_url, output_path, retries=5, allow_failure=False):
+    user_agent = (
+        "Wget/1.21.4"
+    )
+
+    headers = {
+        "User-Agent": user_agent,
+        "Accept": "*/*",
+        "Accept-Encoding": "identity",
+        "Connection": "close"
+    }
+
+    tmp_path = f"{output_path}.part"
+
+    session = requests.Session()
+    session.trust_env = False
+
     while retries > 0:
         try:
-            response = requests.get(input_url, stream=True)
-        except requests.RequestException as e:
-            pr_err(f"Request to {input_url} failed: {e}")
-            response = None
+            response = session.get(
+                input_url,
+                stream=True,
+                headers=headers,
+                timeout=(10, 120),
+                allow_redirects=True
+            )
+            response.raise_for_status()
 
-        if not response or response.status_code != 200:
+            response.raw.decode_content = False
+
+            with open(tmp_path, "wb") as out_f:
+                shutil.copyfileobj(response.raw, out_f)
+
+            response.close()
+            os.replace(tmp_path, output_path)
+
+            return 0
+        except (
+            requests.RequestException,
+            RuntimeError,
+            OSError
+        ) as e:
+            pr_err(f"Download failed for {input_url}: {e}")
+
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
             retries -= 1
+
             if retries > 0:
                 pr_err(f"{input_url} failed, retrying after delay...")
                 time.sleep(5)
@@ -258,11 +299,7 @@ def download_file(input_url, output_path, retries=5, allow_failure=False):
                 f"Last status: {response.status_code if response else 'no response'}"
             )
 
-        with open(output_path, "wb") as out_f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    out_f.write(chunk)
-        return 0
+    return -1
 
 
 def strip_license_id(lic_id=None):

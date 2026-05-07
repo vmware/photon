@@ -307,17 +307,18 @@ class Scanner:
                 print(f"LOCAL: Found {archive} at {local_path}, copying...")
                 shutil.copy2(local_path, output_path)
             elif not os.path.exists(output_path):
+                rc = 0
                 if alt_src_url:
                     print(f"Trying to download from {alt_src_url} first...")
 
                     src_url = f"{alt_src_url}/{archive}"
                     rc = common.download_file(src_url, output_path, allow_failure=True)
-
-                if rc < 0 or not alt_src_url:
-                    pr_err(
-                        f"Failed to download {src_url}, trying published..."
-                    )
-
+                    if rc < 0:
+                        pr_err(
+                            f"Failed to download from {alt_src_url}, trying published..."
+                        )
+                else:
+                    print("Trying download from public mirror ...")
                     rc = common.download_file(pub_src_url, output_path, allow_failure=True)
 
                 # Finally, try downloading from the outside URL
