@@ -1,0 +1,95 @@
+From aa7fa63364fe10625e462a4eced567652f9d4191 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 21 Jan 2026 12:44:29 +0530
+Subject: [PATCH 1/2] Check for RPMTAG_OPENPGP when detecting unsigned packages
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ CMakeLists.txt    | 6 ++++++
+ client/gpgcheck.c | 3 +++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 402632e9..44934862 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -67,6 +67,12 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/" DESTINATION "${CMAKE_IN
+ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/pytests/tests/" DESTINATION "${CMAKE_INSTALL_DATADIR}/tdnf/pytests/tests")
+ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/pytests/repo/" DESTINATION "${CMAKE_INSTALL_DATADIR}/tdnf/pytests/repo")
+ 
++option(BUILD_WITH_RPM_6X "Build with RPM 6.x support" OFF)
++
++if(BUILD_WITH_RPM_6X)
++    add_compile_definitions(BUILD_WITH_RPM_6X)
++endif()
++
+ set(LIB_TDNF "tdnf")
+ set(LIB_TDNF_SOLV "tdnfsolv")
+ set(LIB_TDNF_COMMON "common")
+diff --git a/client/gpgcheck.c b/client/gpgcheck.c
+index 333881a8..ce42df83 100644
+--- a/client/gpgcheck.c
++++ b/client/gpgcheck.c
+@@ -266,6 +266,9 @@ TDNFGPGCheckPackage(
+         if (((pszTmp = headerGetAsString(rpmHeader, RPMTAG_SIGPGP)) == NULL) &&
+             ((pszTmp = headerGetAsString(rpmHeader, RPMTAG_SIGGPG)) == NULL) &&
+             ((pszTmp = headerGetAsString(rpmHeader, RPMTAG_DSAHEADER)) == NULL) &&
++#ifdef BUILD_WITH_RPM_6X
++            ((pszTmp = headerGetAsString(rpmHeader, RPMTAG_OPENPGP)) == NULL) &&
++#endif
+             ((pszTmp = headerGetAsString(rpmHeader, RPMTAG_RSAHEADER)) == NULL))
+         {
+             dwError = ERROR_TDNF_RPM_UNSIGNED;
+
+From a807cfa25609e10bce1c3a8342a650e1803d71bf Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 21 Jan 2026 16:11:19 +0530
+Subject: [PATCH 2/2] pytests/tests/test_signature.py: make tests work with
+ rpm-sequoia gpg backend
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ pytests/repo/setup-repo.sh      | 13 +++++++++++++
+ pytests/tests/test_signature.py |  4 +++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/pytests/repo/setup-repo.sh b/pytests/repo/setup-repo.sh
+index a05515ca..c0ce167c 100755
+--- a/pytests/repo/setup-repo.sh
++++ b/pytests/repo/setup-repo.sh
+@@ -108,6 +108,19 @@ cp -r ${BUILD_PATH}/RPMS ${PUBLISH_SHA512_PATH}
+ mkdir -p ${PUBLISH_PATH}/keys
+ gpg --armor --export tdnftest@tdnf.test > ${PUBLISH_PATH}/keys/pubkey.asc
+ 
++gpg --batch --generate-key <<EOF
++Key-Type: RSA
++Key-Length: 4096
++Name-Real: tdnf test wrong
++Name-Email: tdnftest@tdnf.wrong
++Expire-Date: 0
++%no-protection
++%commit
++EOF
++
++WRONG_FPR=$(gpg --list-keys --with-colons tdnftest@tdnf.wrong | awk -F: '/^fpr:/ {print $10; exit}')
++gpg --armor --export "${WRONG_FPR}" > ${PUBLISH_PATH}/keys/pubkey.wrong.asc
++
+ createrepo ${PUBLISH_PATH}
+ createrepo ${PUBLISH_SRC_PATH}
+ createrepo -s sha512 ${PUBLISH_SHA512_PATH}
+diff --git a/pytests/tests/test_signature.py b/pytests/tests/test_signature.py
+index e118e1db..eb29dafc 100644
+--- a/pytests/tests/test_signature.py
++++ b/pytests/tests/test_signature.py
+@@ -212,8 +212,10 @@ def test_install_nokey(utils):
+ # 'wrong' key in repo config, expect fail
+ def test_install_nokey1(utils):
+     set_gpgcheck(utils, True)
+-    set_repo_key(utils, DEFAULT_KEY)
++    keypath = os.path.join(utils.config['repo_path'], 'photon-test', 'keys', 'pubkey.wrong.asc')
++    set_repo_key(utils, f"file://{keypath}")
+     pkgname = utils.config["sglversion_pkgname"]
++    utils.run(['rpm', '--import', keypath])
+     ret = utils.run(['tdnf', 'install', '-y', pkgname])
+     assert ret['retval'] == 1514
+     assert not utils.check_package(pkgname)

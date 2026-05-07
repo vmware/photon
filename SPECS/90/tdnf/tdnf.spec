@@ -1,59 +1,55 @@
-%global build_if %{photon_subrelease} == 91
+%global build_if %{photon_subrelease} <= 90
 
 %define hist_db_dir     %{_libdir}/sysimage/%{name}
+%define history_db_fn   %{hist_db_dir}/history.db
+%define history_autoins %{_sharedstatedir}/%{name}/autoinstalled
+%define history_util    %{_libdir}/%{name}/%{name}-history-util
 %define _tdnfpluginsdir %{_libdir}/%{name}-plugins
+
 %global automatic_services %{name}-automatic.timer %{name}-automatic-notifyonly.timer %{name}-automatic-install.timer
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.6.4
-Release:        1.1%{?buildtag}%{?dist}
+Version:        3.5.16
+Release:        1.4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
-
 Group:          Applications/RPM
 
-Source0:        https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
-
-Source1:        license.txt
+Source0: https://github.com/vmware/tdnf/archive/refs/tags/%{name}-%{version}.tar.gz
+Source1: license.txt
 %include %{SOURCE1}
-
 Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
-Patch1: 0002-check-for-RPMTAG_OPENPGP.patch
-Patch2: 0003-ensure-history-db-directory-exists.patch
-Patch3: 0004-check-for-history-db-errors.patch
-Patch4: 0005-fix-const-qualifier-warning.patch
+Patch1: 0001-filter-out-packages-from-pool-considered-in-three-pl.patch
+Patch2: 0002-connect-timeout.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
-Requires:       expat-libs
 Requires:       %{name}-cli-libs = %{version}-%{release}
 Requires:       libsolv
 Requires:       zlib
+Requires:       openssl-libs
 
+BuildRequires:  curl-devel
+BuildRequires:  libsolv-devel
+BuildRequires:  openssl-devel
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
-BuildRequires:  openssl-devel
-BuildRequires:  libsolv-devel
-BuildRequires:  curl-devel
-BuildRequires:  expat-devel
 BuildRequires:  sqlite-devel
-BuildRequires:  zlib-devel
 BuildRequires:  systemd
-BuildRequires:  systemd-rpm-macros
+BuildRequires:  zlib-devel
 
 #metalink plugin
-BuildRequires:  expat-devel
-
+BuildRequires:  libxml2-devel
 #repogpgcheck plugin
 BuildRequires:  gpgme-devel
 
-BuildRequires:  gcc
-BuildRequires:  make
 BuildRequires:  cmake
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 %if 0%{?with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
@@ -64,14 +60,17 @@ BuildRequires:  python3-requests
 BuildRequires:  python3-urllib3
 BuildRequires:  python3-pyOpenSSL
 BuildRequires:  python3-pytest
-BuildRequires:  sudo
 %endif
+
+Obsoletes:      yum
+Provides:       yum
 
 %description
 %{name} is a yum/dnf equivalent which uses libsolv and libcurl
 
 %package    devel
-Summary:    A Library providing a C API for %{name}
+Summary:    A Library providing C API for %{name}
+Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires:   libsolv-devel
 
@@ -80,10 +79,12 @@ Development files for %{name}
 
 %package    pytests
 Summary:    Test suite for %{name}
+Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires:   %{name}-automatic = %{version}-%{release}
 Requires:   %{name}-plugin-repogpgcheck = %{version}-%{release}
 Requires:   %{name}-plugin-metalink = %{version}-%{release}
+Requires:   %{name}-python = %{version}-%{release}
 Requires:   python3-pytest
 Requires:   python3-requests
 Requires:   rpm-build
@@ -100,27 +101,42 @@ Test suite for %{name}
 
 %package    cli-libs
 Summary:    Library providing cli libs for %{name} like clients
+Group:      Applications/RPM
 
 %description cli-libs
 Library providing cli libs for %{name} like clients.
 
 %package    plugin-metalink
 Summary:    tdnf plugin providing metalink functionality for repo configurations
-Requires:   gpgme
+Group:      Applications/RPM
+Requires:   %{name} = %{version}-%{release}
+Requires:   libxml2
 
 %description plugin-metalink
 tdnf plugin providing metalink functionality for repo configurations
 
 %package    plugin-repogpgcheck
 Summary:    %{name} plugin providing gpg verification for repository metadata
+Group:      Applications/RPM
+Requires:   %{name} = %{version}-%{release}
 Requires:   gpgme
 
 %description plugin-repogpgcheck
 %{name} plugin providing gpg verification for repository metadata
 
+%package    python
+Summary:    python bindings for %{name}
+Group:      Development/Libraries
+Requires:   python3
+
+%description python
+python bindings for %{name}
+
 %package automatic
 Summary:   %{name} - automated upgrades
+Group:     Applications/RPM
 Requires:  %{name} = %{version}-%{release}
+Requires:  which
 %{?systemd_requires}
 
 %description automatic
@@ -130,62 +146,82 @@ Systemd units that can periodically download package upgrades and apply them.
 %autosetup -p1
 
 %build
-# set BUILD_WITH_RPM_6X=ON if you are using v6 rpm format
-# Check SPECS/rpm/0009-rpm-6.0-rpmformat.patch
 %{cmake} \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-  -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
   -DSYSTEMD_DIR=%{_unitdir} \
-  -DHISTORY_DB_DIR=%{hist_db_dir} \
-  -DBUILD_WITH_RPM_6X=OFF
+  -DHISTORY_DB_DIR=%{hist_db_dir}
 
 %{cmake_build}
+
+%make_build -C %{__cmake_builddir} python
 
 %install
 %{cmake_install}
 
-mkdir -p %{buildroot}{%{_var}/cache/%{name},%{_unitdir}}
-ln -sv %{name} %{buildroot}%{_bindir}/tyum
-ln -sv %{name} %{buildroot}%{_bindir}/yum
-ln -sv %{name} %{buildroot}%{_bindir}/tdnfj
+protected_dir="%{_sysconfdir}/%{name}/protected.d"
+
+mkdir -p %{buildroot}%{_var}/cache/%{name} \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{hist_db_dir} \
+         %{buildroot}${protected_dir}
+
+ln -sfv %{name} %{buildroot}%{_bindir}/tyum
+ln -sfv %{name} %{buildroot}%{_bindir}/yum
+ln -sfv %{name} %{buildroot}%{_bindir}/tdnfj
 
 install -vm 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}
+echo %{name} > %{buildroot}${protected_dir}/%{name}.conf
 
-mkdir -p %{buildroot}%{_sysconfdir}/%{name}/protected.d && \
-    echo %{name} > %{buildroot}%{_sysconfdir}/%{name}/protected.d/%{name}.conf
+pushd %{__cmake_builddir}/python
+%py3_install
+popd
 
-find %{buildroot} -name '*.a' -delete
+find %{buildroot} \( -name '*.a' -o -name '*.pyc' \) -delete
+
+rm %{buildroot}%{_unitdir}/%{name}-cache-updateinfo.{timer,service}
 
 %if 0%{?with_check}
 %check
-%define _make_output_sync %{nil}
 pip3 install flake8
-mkdir -p %{_rundir}/user/$(id -u)
 %make_build -C %{__cmake_builddir} check
 %endif
 
 %post
 /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%posttrans
+# Convert the auto installed info from the old file /var/lib/tdnf/autoinstalled
+# to the new db.
+# must be postrans because we read the rpm db
+# cannot use tdnf because that is still running even in postrans
+[ -d %{hist_db_dir} ] || mkdir -p %{hist_db_dir}
+[ -f %{history_db_fn} ] || %{history_util} init
+if [ -f %{history_autoins} ]; then
+  %{history_util} mark remove $(cat %{history_autoins}) && \
+  rm %{history_autoins}
+fi
+exit 0
 
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
 if [ $1 -eq 2 ]; then
   echo "detected upgrade of %{name}, daemon-reload" >&2
-  systemctl daemon-reload &>/dev/null || :
+  systemctl daemon-reload >/dev/null 2>&1 || :
 fi
-exit 0
 
+%preun
 %triggerun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] && exit 0
+echo "detected uninstall of %{name}/motd" >&2
 rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
+
+%postun
+/sbin/ldconfig
 
 %post cli-libs
 /sbin/ldconfig
-[ -d %{hist_db_dir} ] || mkdir -p %{hist_db_dir}
 
 %postun cli-libs
 /sbin/ldconfig
@@ -205,19 +241,15 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_bindir}/tyum
 %{_bindir}/yum
 %{_bindir}/tdnfj
-%{_bindir}/%{name}-config
+%{_bindir}/tdnf-config
 %{_libdir}/libtdnf.so.*
-%{_libexecdir}/%{name}/%{name}-history-util
+%{_libdir}/tdnf/tdnf-history-util
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/%{name}/protected.d/%{name}.conf
-%config %{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
+%{_sysconfdir}/motdgen.d/02-%{name}-updateinfo.sh
 %dir %{_var}/cache/%{name}
+%dir %{hist_db_dir}
 %{_datadir}/bash-completion/completions/%{name}
-
-%files pytests
-%defattr(-,root,root)
-%{_datadir}/%{name}/pytests/
-%{_bindir}/jsondumptest
 
 %files devel
 %defattr(-,root,root)
@@ -225,8 +257,13 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_libdir}/libtdnf.so
 %{_libdir}/libtdnfcli.so
 %exclude %dir %{_libdir}/debug
-%{_libdir}/pkgconfig/%{name}.pc
-%{_libdir}/pkgconfig/%{name}-cli-libs.pc
+%{_libdir}/pkgconfig/tdnf.pc
+%{_libdir}/pkgconfig/tdnf-cli-libs.pc
+
+%files pytests
+%defattr(-,root,root)
+%{_datadir}/tdnf/pytests/
+%{_bindir}/jsondumptest
 
 %files cli-libs
 %defattr(-,root,root)
@@ -234,8 +271,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 
 %files plugin-metalink
 %defattr(-,root,root)
-%dir %{_sysconfdir}/%{name}/pluginconf.d
-%config(noreplace) %{_sysconfdir}/%{name}/pluginconf.d/tdnfmetalink.conf
+%dir %{_sysconfdir}/tdnf/pluginconf.d
+%config(noreplace) %{_sysconfdir}/tdnf/pluginconf.d/tdnfmetalink.conf
 %{_tdnfpluginsdir}/libtdnfmetalink.so
 
 %files plugin-repogpgcheck
@@ -243,6 +280,10 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %dir %{_sysconfdir}/%{name}/pluginconf.d
 %config(noreplace) %{_sysconfdir}/%{name}/pluginconf.d/tdnfrepogpgcheck.conf
 %{_tdnfpluginsdir}/libtdnfrepogpgcheck.so
+
+%files python
+%defattr(-,root,root)
+%{python3_sitelib}/*
 
 %files automatic
 %defattr(-,root,root,0755)
@@ -256,8 +297,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
-* Thu May 07 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.4-1.1
-- update to 3.6.4
+* Thu May 07 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.16-1.4
+- bump after moving to SPECS/90
 * Fri Mar 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.16-1.3
 - Add connect timeout patch
 * Thu Mar 12 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.5.16-1.2
