@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Utilities for creating and managing EROFS filesystems
 Name:           erofs-utils
