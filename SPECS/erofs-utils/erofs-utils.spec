@@ -3,7 +3,7 @@
 Summary:        Utilities for creating and managing EROFS filesystems
 Name:           erofs-utils
 Version:        1.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/erofs/erofs-utils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -91,5 +91,7 @@ This package provides documentation and man pages for erofs-utils.
 %{_mandir}/man1/erofsfuse.1*
 
 %changelog
+* Thu May 7 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.9.1-2
+- Make erofs-utils build for 91
 * Wed Apr 15 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.9.1-1
 - Initial build of erofs-utils
