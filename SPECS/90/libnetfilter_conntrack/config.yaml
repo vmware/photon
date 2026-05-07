@@ -1,14 +1,7 @@
 sources:
-- archive: libnetfilter_conntrack-1.1.1.tar.xz
-  archive_type: upstream
-  archive_sha512sum: 47b7e1c187c9d1ec52777ba08d636a8178f811816b7d5eae28ef7680e2d4516428445572e655a2b60e8f3af1c6788268cfa16532e4a2ba761f8ba55bb3969870
-  version: "1.1.1"
-  name: libnetfilter_conntrack-1.1.1
-  url: https://www.netfilter.org/projects/libnetfilter_conntrack/files/libnetfilter_conntrack-1.1.1.tar.xz
-  repo_url: https://git.netfilter.org/libnetfilter_conntrack/
-  commit_id: cf50fa4dd12f8b7e3567ec944ab61a51f9408311
-  skip_list: []
-  missing: ['nssocket_env.sh', 'lt~obsolete.m4', 'config.h.in', 'Makefile.in', 'build-aux', 'ltoptions.m4', 'ct_mark_filter.c', 'ct_mark_filter.sh', 'libtool.m4', 'ct_echo_event.sh', 'ct_echo_event.c', '.gitignore', 'aclocal.m4', 'ltversion.m4', 'nssocket.c', 'configure', 'autogen.sh', 'nssocket.h', 'ltsugar.m4', 'inetd.conf']
+- archive: libnetfilter_conntrack-1.0.9.tar.bz2
+  archive_sha512sum: e8b03425aaba3b72e6034c215656c34176d0550c08e0455aaeb1365d9141505d0c4feaa8978c8ccf2b7af9db6c9e874ceb866347e533b41cb03a189884f4004c
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'libnetfilter_conntrack is a userspace library providing

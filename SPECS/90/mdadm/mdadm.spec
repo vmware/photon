@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:    The mdadm program controls Linux md devices (software RAID arrays)
 Name:       mdadm
-Version:    4.6
-Release:    1%{?dist}
+Version:    4.4
+Release:    1.1%{?dist}
 URL:        https://git.kernel.org/pub/scm/utils/mdadm/mdadm.git/about
 Group:      Applications/Utilities
 Vendor:     VMware, Inc.
@@ -13,6 +13,8 @@ Source0: https://www.kernel.org/pub/linux/utils/raid/mdadm/%{name}-%{version}.ta
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: build-fix.patch
 
 BuildRequires: systemd-devel
 
@@ -57,7 +59,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/*
 
 %changelog
-* Wed May 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.6-1
-- Update to v4.6
+* Wed May 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.4-1.1
+- Release bump for 9.1
 * Wed Feb 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4-1
 - Initial version.

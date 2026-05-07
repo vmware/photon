@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       Netfilter conntrack userspace library
 Name:          libnetfilter_conntrack
-Version:       1.1.1
-Release:       1%{?dist}
+Version:       1.0.9
+Release:       3.1%{?dist}
 URL:           http://www.netfilter.org/projects/libnetfilter_conntrack/index.html
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.xz
+Source0:       http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -60,8 +60,8 @@ developing applications that use %{name}.
 %{_libdir}/*.so
 
 %changelog
-* Tue May 05 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.1.1-1
-- Update to version 1.1.1
+* Wed May 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.0.9-3.1
+- Release bump for 9.1
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.9-3
 - Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.9-2

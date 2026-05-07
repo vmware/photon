@@ -1,7 +1,7 @@
 Summary:        Connection tracking userspace tools for Linux.
 Name:           conntrack-tools
 Version:        1.4.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://conntrack-tools.netfilter.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -88,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Wed May 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.4.7-5
+- Bump for libnetfilter_conntrack upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.4.7-4
 - Release bump for SRP compliance
 * Fri Jun 14 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.7-3

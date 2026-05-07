@@ -1,19 +1,19 @@
 sources:
-- archive: mdadm-4.4.tar.gz
+- archive: mdadm-4.6.tar.gz
   archive_type: upstream
-  archive_sha512sum: 08682b27f41a230f188d3b61e22e95ff8808b36c8fc2cba1dff443d39a72b35ba2eaf29ed64c7e5583c177fe6b71df983ec9a80a4128d8f07d58b7435d4700f6
-  version: "4.4"
-  name: mdadm-4.4
-  url: https://git.kernel.org/pub/scm/utils/mdadm/mdadm.git/snapshot/mdadm-4.4.tar.gz
+  archive_sha512sum: d11eefdffedefecea0786f7ec034305339b7d93d75916eb9501726de0a296dc668c8d0091d1c130805a5d47122ad6d944e46bd723430c15414a360c35d8b06be
+  version: "4.6"
+  name: mdadm-4.6
+  url: https://git.kernel.org/pub/scm/utils/mdadm/mdadm.git/snapshot/mdadm-4.6.tar.gz
   repo_url: https://git.kernel.org/pub/scm/utils/mdadm/mdadm.git
-  commit_id: 4fbb2b5e445fa77783bf5fc10841a534d44a295e
+  commit_id: 8b414a0d4753693d67b9a5822994e5f0c91b0b0a
   skip_list: []
   missing: []
   spdx:
     package:
       detailed_description: 'The mdadm program controls Linux md devices (software RAID arrays)'
       home_page: https://git.kernel.org/pub/scm/utils/mdadm/mdadm.git/about
-      license_concluded: GPL-2.0-or-later
-      license_declared: GPL-2.0-or-later
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND Zlib
+      license_declared: GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND Zlib
       short_summary: The mdadm program controls Linux md devices (software RAID arrays)
       supplier: 'Organization: Broadcom, Inc.'
