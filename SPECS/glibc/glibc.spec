@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        22%{?dist}
+Release:        23%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -45,14 +45,9 @@ Patch304:     CVE-2025-4802.patch
 
 # CVE-2025-0395
 Patch305:     0001-Fix-underallocation-of-abort_msg_s-struct-CVE-2025-0.patch
-# CVE-2025-8058
-Patch306:     0001-posix-Fix-double-free-after-allocation-failure-in-re.patch
-# CVE-2025-15281
-Patch307:     0001-posix-Reset-wordexp_t-fields-with-WRDE_REUSE-CVE-202.patch
-# CVE-2026-0915
-Patch308:     0001-resolv-Fix-NSS-DNS-backend-for-getnetbyaddr-CVE-2026.patch
-# CVE-2026-0861
-Patch309:     0001-memalign-reinstate-alignment-overflow-check-CVE-2026.patch
+
+Patch306:     CVE-2026-5450.patch
+Patch307:     CVE-2026-5928.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -115,7 +110,7 @@ Name Service Cache Daemon
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %autopatch -p1 -m0 -M19
 # Release branch patches
-%autopatch -p1 -m101 -M247
+%autopatch -p1 -m101 -M253
 
 # Additional patches
 %autopatch -p1 -m300 -M309
@@ -338,6 +333,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri May 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-23
+- Fix misc CVEs
 * Tue Mar 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-22
 - Multiple CVE fixes
 * Thu Jun 26 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32-21

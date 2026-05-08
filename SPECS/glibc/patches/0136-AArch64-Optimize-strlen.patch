@@ -1,7 +1,7 @@
 From e059e458b86f99498c321c199d113cf6a195a119 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:52:53 +0000
-Subject: [PATCH 136/147] AArch64: Optimize strlen
+Subject: [PATCH 136/153] AArch64: Optimize strlen
 
 Optimize strlen by unrolling the main loop.  Large strings are 64% faster on
 modern CPUs.
@@ -61,5 +61,5 @@ index a4f75d8c500b2cd6b10a62f254528a7cf7c49148..8071e80b5297e48378c5011680ca89e6
  	add	result, result, tmp, lsr 2
  	ret
 -- 
-2.35.6
+2.53.0
 

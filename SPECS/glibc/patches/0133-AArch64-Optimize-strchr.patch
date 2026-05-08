@@ -1,7 +1,7 @@
 From 196458764fad98ef7cba120b2d871646def7c89f Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:52:08 +0000
-Subject: [PATCH 133/147] AArch64: Optimize strchr
+Subject: [PATCH 133/153] AArch64: Optimize strchr
 
 Simplify calculation of the mask using shrn.  Unroll the main loop.
 Small strings are 20% faster on modern CPUs.
@@ -119,5 +119,5 @@ index 5d21ca793864d3b5da9e4ee9a01cfef94d5151ce..c44714ff341ffab746883f8f7996d06e
  	add	result, src, tmp1, lsr 2
  	csel	result, result, xzr, eq
 -- 
-2.35.6
+2.53.0
 

@@ -1,7 +1,7 @@
 From 91680682e59a855e5315586bae0b5c228a785aac Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:50:59 +0000
-Subject: [PATCH 130/147] AArch64: Optimize memchr
+Subject: [PATCH 130/153] AArch64: Optimize memchr
 
 Optimize the main loop - large strings are 40% faster on modern CPUs.
 
@@ -81,5 +81,5 @@ index e11546fa7c85a457ede8656b29109a079ed07b06..9547efc09eb754936877eb776ffba688
  	rbit	synd, synd
  #endif
 -- 
-2.35.6
+2.53.0
 

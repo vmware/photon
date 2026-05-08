@@ -1,7 +1,7 @@
 From 2a4c4043d03c79e05047f36b128aa3cdee36e254 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:51:48 +0000
-Subject: [PATCH 132/147] AArch64: Improve strlen_asimd
+Subject: [PATCH 132/153] AArch64: Improve strlen_asimd
 
 Use shrn for the mask, merge tst+bne into cbnz, and tweak code alignment.
 Performance improves slightly as a result.
@@ -79,5 +79,5 @@ index e8902dd27f0142aa68e78e4f6df0a704d380549a..4206b4ac51e1e6a7ad1da39be02dfc62
  	bic	src, srcin, 31
  	mov	tmpw, 0x0c03
 -- 
-2.35.6
+2.53.0
 

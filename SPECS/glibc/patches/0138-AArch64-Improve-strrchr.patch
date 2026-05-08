@@ -1,7 +1,7 @@
 From af3cbeec36aa371d4c8242f3e961cc05a6da66f6 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:53:19 +0000
-Subject: [PATCH 138/147] AArch64: Improve strrchr
+Subject: [PATCH 138/153] AArch64: Improve strrchr
 
 Use shrn for narrowing the mask which simplifies code and speeds up small
 strings.  Unroll the first search loop to improve performance on large
@@ -139,5 +139,5 @@ index 878fa16b21f63f12d321b68fc33cb4dd447cc317..1cf869fc06ab76b4a89bf829d0ec761a
  	cmp	synd, 0
  	csel	src_match, src, src_match, ne
 -- 
-2.35.6
+2.53.0
 

@@ -1,7 +1,7 @@
 From 682ad4c8623e611a971839990ceef00346289cc9 Mon Sep 17 00:00:00 2001
 From: Charles Fol <folcharles@gmail.com>
 Date: Thu, 28 Mar 2024 12:25:38 -0300
-Subject: [PATCH 140/147] iconv: ISO-2022-CN-EXT: fix out-of-bound writes when
+Subject: [PATCH 140/153] iconv: ISO-2022-CN-EXT: fix out-of-bound writes when
  writing escape sequence (CVE-2024-2961)
 
 ISO-2022-CN-EXT uses escape sequences to indicate character set changes
@@ -212,5 +212,5 @@ index 0000000000000000000000000000000000000000..96a8765fd5369681a84bf70713d801d9
 +
 +#include <support/test-driver.c>
 -- 
-2.35.6
+2.53.0
 

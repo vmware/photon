@@ -145,3 +145,9 @@ Patch244: 0144-CVE-2024-33601-CVE-2024-33602-nscd-netgroup-Use-two-.patch
 Patch245: 0145-nscd-Use-time_t-for-return-type-of-addgetnetgrentX.patch
 Patch246: 0146-elf-Disable-some-subtests-of-ifuncmain1-ifuncmain5-f.patch
 Patch247: 0147-Force-DT_RPATH-for-enable-hardcoded-path-in-tests.patch
+Patch248: 0148-s390x-Fix-segfault-in-wcsncmp-BZ-31934.patch
+Patch249: 0149-posix-Fix-double-free-after-allocation-failure-in-re.patch
+Patch250: 0150-nptl-Optimize-trylock-for-high-cache-contention-work.patch
+Patch251: 0151-memalign-reinstate-alignment-overflow-check-CVE-2026.patch
+Patch252: 0152-resolv-Fix-NSS-DNS-backend-for-getnetbyaddr-CVE-2026.patch
+Patch253: 0153-posix-Reset-wordexp_t-fields-with-WRDE_REUSE-CVE-202.patch

@@ -1,7 +1,7 @@
 From 405dd5b536dc1b7e83fd7a977cd2986712b5ea17 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Thu, 1 Jul 2021 15:30:42 +0100
-Subject: [PATCH 127/147] AArch64: Improve strnlen performance
+Subject: [PATCH 127/153] AArch64: Improve strnlen performance
 
 Optimize strnlen by avoiding UMINV which is slow on most cores. On Neoverse N1
 large strings are 1.8x faster than the current version, and bench-strnlen is
@@ -305,5 +305,5 @@ index 5699105e955ec3fb015cf23915288597a9d2162b..11c6882ab3136e5d9b94f6d94a6ac736
  libc_hidden_def (__strnlen)
  weak_alias (__strnlen, strnlen)
 -- 
-2.35.6
+2.53.0
 

@@ -1,7 +1,7 @@
 From d30d8bb5caa38e551e5c5efc566a674c4cccadb6 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wdijkstr@arm.com>
 Date: Thu, 2 Dec 2021 18:30:55 +0000
-Subject: [PATCH 128/147] AArch64: Optimize memcmp
+Subject: [PATCH 128/153] AArch64: Optimize memcmp
 
 Rewrite memcmp to improve performance. On small and medium inputs performance
 is 10-20% better. Large inputs use a SIMD loop processing 64 bytes per
@@ -304,5 +304,5 @@ index 5176aeac8dc199d5fc3df5b278dade8fd50b8e8d..d80aabbb5b1b460db5868c529afc0dfb
  
  END (memcmp)
 -- 
-2.35.6
+2.53.0
 

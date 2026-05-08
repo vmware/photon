@@ -1,0 +1,50 @@
+From 7b7a7a48dc01373f79d74d4b79fd8a8c9a35a08a Mon Sep 17 00:00:00 2001
+From: Sunil K Pandey <sunil.k.pandey@intel.com>
+Date: Tue, 9 Dec 2025 08:57:44 -0800
+Subject: [PATCH 150/153] nptl: Optimize trylock for high cache contention
+ workloads (BZ #33704)
+
+Check lock availability before acquisition to reduce cache line
+bouncing.  Significantly improves trylock throughput on multi-core
+systems under heavy contention.
+
+Tested on x86_64.
+
+Fixes BZ #33704.
+
+Co-authored-by: Alex M Wells <alex.m.wells@intel.com>
+Reviewed-by: Wilco Dijkstra  <Wilco.Dijkstra@arm.com>
+(cherry picked from commit 63716823dbad9482e09972907ae98e9cb00f9b86)
+---
+ nptl/pthread_mutex_trylock.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/nptl/pthread_mutex_trylock.c b/nptl/pthread_mutex_trylock.c
+index 2130f5252959373fe065d0fa38b72099b566f371..94cfd9a85d7a2fe602aceca1f5dc3632fb814d35 100644
+--- a/nptl/pthread_mutex_trylock.c
++++ b/nptl/pthread_mutex_trylock.c
+@@ -57,7 +57,8 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	  return 0;
+ 	}
+ 
+-      if (lll_trylock (mutex->__data.__lock) == 0)
++      if (atomic_load_relaxed (&(mutex->__data.__lock)) == 0
++	  && lll_trylock (mutex->__data.__lock) == 0)
+ 	{
+ 	  /* Record the ownership.  */
+ 	  mutex->__data.__owner = id;
+@@ -80,7 +81,10 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+       /*FALL THROUGH*/
+     case PTHREAD_MUTEX_ADAPTIVE_NP:
+     case PTHREAD_MUTEX_ERRORCHECK_NP:
+-      if (lll_trylock (mutex->__data.__lock) != 0)
++      /* Mutex type is already loaded, lock check overhead should
++         be minimal.  */
++      if (atomic_load_relaxed (&(mutex->__data.__lock)) != 0
++	  || lll_trylock (mutex->__data.__lock) != 0)
+ 	break;
+ 
+       /* Record the ownership.  */
+-- 
+2.53.0
+

@@ -1,7 +1,7 @@
 From ce9a4f6a3ce8306f5af9f45165dca6df3c4e90e9 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:52:39 +0000
-Subject: [PATCH 135/147] AArch64: Optimize strcpy
+Subject: [PATCH 135/153] AArch64: Optimize strcpy
 
 Unroll the main loop.  Large strings are around 20% faster on modern CPUs.
 
@@ -104,5 +104,5 @@ index edb4c161bcacad7725150769d3872cea34f0b81a..a8b753777c9bc9ba48ccc6c7a0d02792
  
  END (STRCPY)
 -- 
-2.35.6
+2.53.0
 

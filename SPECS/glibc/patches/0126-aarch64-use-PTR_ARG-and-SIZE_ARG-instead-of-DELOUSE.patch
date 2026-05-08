@@ -1,7 +1,7 @@
 From 0dc9ac6d5cc1c68461cbaff1e0c55e79ebadad92 Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Thu, 17 Dec 2020 10:03:05 +0000
-Subject: [PATCH 126/147] aarch64: use PTR_ARG and SIZE_ARG instead of DELOUSE
+Subject: [PATCH 126/153] aarch64: use PTR_ARG and SIZE_ARG instead of DELOUSE
 
 DELOUSE was added to asm code to make them compatible with non-LP64
 ABIs, but it is an unfortunate name and the code was not compatible
@@ -559,5 +559,5 @@ index f8c66f0ef0aec61cec909dee61a0fd4119c8fb3a..2c1a4af855edb5376f7ee3e806540b4e
  	   And set up x1 to become the return address of the caller, so we
  	   can return there with a normal RET instead of an indirect jump.  */
 -- 
-2.35.6
+2.53.0
 

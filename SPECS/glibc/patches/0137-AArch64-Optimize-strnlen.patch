@@ -1,7 +1,7 @@
 From 83cb4f50261ecc1110944cc662872efa0f017002 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:53:05 +0000
-Subject: [PATCH 137/147] AArch64: Optimize strnlen
+Subject: [PATCH 137/153] AArch64: Optimize strnlen
 
 Optimize strnlen using the shrn instruction and improve the main loop.
 Small strings are around 10% faster, large strings are 40% faster on
@@ -104,5 +104,5 @@ index c8d09a1612fea2ab752ac08a4a79082e84ab24a4..da3a73791657d361e94842fc2557dce3
  libc_hidden_def (__strnlen)
  weak_alias (__strnlen, strnlen)
 -- 
-2.35.6
+2.53.0
 

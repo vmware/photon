@@ -1,7 +1,7 @@
 From e213c2205eda08ddd4682fef77cd301cdb846794 Mon Sep 17 00:00:00 2001
 From: Danila Kutenin <danilak@google.com>
 Date: Mon, 27 Jun 2022 16:12:13 +0000
-Subject: [PATCH 129/147] aarch64: Optimize string functions with shrn
+Subject: [PATCH 129/153] aarch64: Optimize string functions with shrn
  instruction
 
 We found that string functions were using AND+ADDP
@@ -409,5 +409,5 @@ index 11c6882ab3136e5d9b94f6d94a6ac7364ea0391b..c8d09a1612fea2ab752ac08a4a79082e
  	mov	synd, vend.d[0]
  	sub	result, src, srcin
 -- 
-2.35.6
+2.53.0
 

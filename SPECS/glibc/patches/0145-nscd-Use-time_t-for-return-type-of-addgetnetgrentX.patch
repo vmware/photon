@@ -1,7 +1,7 @@
 From 4ab74e9ba7a5e4129bd47ef1c208a9de95649558 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Thu, 2 May 2024 17:06:19 +0200
-Subject: [PATCH 145/147] nscd: Use time_t for return type of addgetnetgrentX
+Subject: [PATCH 145/153] nscd: Use time_t for return type of addgetnetgrentX
 
 Using int may give false results for future dates (timeouts after the
 year 2028).
@@ -32,5 +32,5 @@ index 40275652026b7d064978b12e29bd119ea4372f40..799298ad845f4e5f0adf864b6eb7ef24
      timeout = 0;
    return timeout;
 -- 
-2.35.6
+2.53.0
 

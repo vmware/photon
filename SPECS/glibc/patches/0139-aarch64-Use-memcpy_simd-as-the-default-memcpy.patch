@@ -1,7 +1,7 @@
 From 9d5c6d007e83db9f298d6a28361a23b66f2cfcfb Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wdijkstr@arm.com>
 Date: Wed, 26 Oct 2022 14:16:50 +0100
-Subject: [PATCH 139/147] aarch64: Use memcpy_simd as the default memcpy
+Subject: [PATCH 139/153] aarch64: Use memcpy_simd as the default memcpy
 
 Since __memcpy_simd is the fastest memcpy on almost all cores, replace
 the generic memcpy with it.
@@ -652,5 +652,5 @@ index 46a4cb3a54c73c7c64d26ff8d022947e485d82b7..ed5a47f6f83e7b0afcec60cb9fa0f099
  # undef memmove
  strong_alias (__libc_memmove, memmove);
 -- 
-2.35.6
+2.53.0
 
