@@ -3,7 +3,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        247.13
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -36,6 +36,9 @@ Patch10:        CVE-2026-29111-1.patch
 Patch11:        CVE-2026-29111-2.patch
 Patch12:        CVE-2026-29111-3.patch
 Patch13:        CVE-2026-29111-4.patch
+Patch14:        CVE-2026-40225.patch
+Patch15:        CVE-2026-40226-1.patch
+Patch16:        CVE-2026-40226-2.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -676,6 +679,8 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 
 %changelog
+* Fri May 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-20
+- Fix CVE-2026-40225, CVE-2026-40226
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-19
 - Fix CVE-2026-29111
 * Fri Sep 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 247.13-18
