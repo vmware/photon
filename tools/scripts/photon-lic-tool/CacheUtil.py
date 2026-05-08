@@ -6,6 +6,7 @@ import os
 import hashlib
 import pathlib
 import multiprocessing
+import threading
 import yaml
 import shutil
 import redis
@@ -353,7 +354,7 @@ class CacheUtil:
                 i += 1
 
         for f_list in file_lists:
-            p = multiprocessing.Process(
+            p = threading.Thread(
                 target=self._db_cache_clear_job,
                 args=(
                     manager,

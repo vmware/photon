@@ -132,7 +132,7 @@ class Scanner:
         license_exps.update(self.cached_spdx_ids)
 
         for exp in license_exps:
-            if exp is None or exp == "":
+            if exp is None or exp == "" or exp == "NO-LICENSE":
                 continue
 
             # Add parantheses now, then we can flatten the expression later
@@ -576,6 +576,7 @@ class Scanner:
         for archive_path in archives:
             spdx_exp = self.cache_util.get_cached_spdx(archive_path, self._config_yaml)
             if spdx_exp is None:
+                print(f"Archive {archive_path} not cached, need to unpack it")
                 # Not cached, do nothing
                 result.append(None)
             else:
@@ -584,7 +585,9 @@ class Scanner:
                     f"found cached SPDX expression: {spdx_exp}"
                 )
                 os.remove(archive_path)
-                result.append(spdx_exp)
+
+                if spdx_exp != "NO-LICENSE":
+                    result.append(spdx_exp)
 
         return result
 
@@ -917,7 +920,7 @@ class Scanner:
                 err_exit("")
 
     def _export_yaml(
-        self, sc_yaml_out_path="", user_yaml_path=None, cache_util=None, cwd=""
+        self, sc_yaml_out_path="", user_yaml_path=None, cwd=""
     ):
         if not user_yaml_path:
             return
@@ -932,8 +935,8 @@ class Scanner:
         print(f"Detailed scan yaml produced at: {yaml_output_path}")
 
         # also produce a yaml for the cached results
-        if cache_util:
-            cache_util.report_cache_results(
+        if self.cache_util:
+            self.cache_util.report_cache_results(
                 yaml_output_dir=os.path.dirname(yaml_output_path)
             )
 
@@ -1130,6 +1133,9 @@ class Scanner:
             for file in files:
                 file_sizes.append(os.path.getsize(os.path.join(root, file)))
 
+        if not file_sizes:
+            return 1
+
         file_sizes.sort(reverse=True)
 
         available_memory = self.__find_available_memory()
@@ -1172,7 +1178,6 @@ class Scanner:
             ):
 
         lic_db = None
-        cache_util = None
         yaml_tmp_path = f"{tempfile.mkdtemp()}/scan-results.yaml"
         cwd = os.getcwd()
 
@@ -1212,8 +1217,8 @@ class Scanner:
                 err_exit()
 
         # if redis cache, use it
-        if cache_util:
-            scan_dir = cache_util.populate_scan_dir(scan_dir)
+        if self.cache_util:
+            scan_dir = self.cache_util.populate_scan_dir(scan_dir)
 
         self._check_for_unencodeable(scan_dir)
 
@@ -1251,7 +1256,6 @@ class Scanner:
             if os.path.exists(yaml_tmp_path):
                 self._export_yaml(
                     user_yaml_path=yaml_out,
-                    cache_util=cache_util,
                     cwd=cwd,
                     sc_yaml_out_path=yaml_tmp_path,
                 )
@@ -1266,11 +1270,16 @@ class Scanner:
 
         exceptions_list = common.get_exceptions_list()
 
-        if cache_util:
-            cache_util.add_all_scan_results_to_cache(
+        if self.cache_util:
+            print(f"Adding all scan results to cache")
+            self.cache_util.add_all_scan_results_to_cache(
                 scan_dir, yaml_tmp_path, exceptions_list, self.uncached_archive_info
             )
-            self.cached_spdx_ids = cache_util.cached_spdx_ids
+            # Sync these two, so that cache_util.cached_spdx_ids is accurate when we produce
+            # cached.yaml, and self.cached_spdx_ids is accurate with the results from the cache
+            # from populate_scan_dir()
+            self.cached_spdx_ids.update(self.cache_util.cached_spdx_ids)
+            self.cache_util.cached_spdx_ids.update(self.cached_spdx_ids)
 
         # Produce full SPDX expression using scancode output results
         spdx_exp = self._parse_scan_yaml(
@@ -1280,7 +1289,6 @@ class Scanner:
 
         self._export_yaml(
             user_yaml_path=yaml_out,
-            cache_util=cache_util,
             cwd=cwd,
             sc_yaml_out_path=yaml_tmp_path,
         )
@@ -1354,6 +1362,9 @@ class Scanner:
         if self.cache_util:
             spdx_exp = self.cache_util.get_cached_spdx(path, self._config_yaml)
             if spdx_exp:
+                if spdx_exp == "NO-LICENSE":
+                    spdx_exp = None
+
                 print(f"Found cached SPDX expression: {spdx_exp} for {path}")
                 common.emit_spdx(spdx_exp)
                 return spdx_exp
