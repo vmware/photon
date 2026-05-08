@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -23,6 +23,24 @@ Patch8: CVE-2025-32989.patch
 Patch9: CVE-2025-32990.patch
 Patch10: CVE-2025-6395.patch
 Patch11: gnutls-CVE-2025-9820.patch
+# Context patch for several lib/buffers.c CVEs
+Patch12: 0001-buffers-shorten-merge_handshake_packet-using-recv_bu.patch
+Patch13: CVE-2026-33846.patch
+Patch14: CVE-2026-42009-00.patch
+Patch15: CVE-2026-42009-1.patch
+Patch16: CVE-2026-42009-2.patch
+Patch17: CVE-2026-33845-00.patch
+Patch18: CVE-2026-33845-01.patch
+Patch19: CVE-2026-33845-02.patch
+Patch20: CVE-2026-3833-00.patch
+Patch21: CVE-2026-3833-01.patch
+Patch22: CVE-2026-42010.patch
+Patch23: CVE-2026-42011.patch
+Patch24: CVE-2026-42012-00.patch
+Patch25: CVE-2026-42012-01.patch
+Patch26: CVE-2026-42012-02.patch
+Patch27: CVE-2026-42012-03.patch
+Patch28: CVE-2026-5419.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -31,6 +49,7 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
+BuildRequires:  texinfo
 
 Requires:       nettle
 Requires:       autogen-libopts
@@ -111,6 +130,9 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Fri May 08 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-7
+- Fix - CVE-2026-33846, CVE-2026-42009, CVE-2026-33845
+- CVE-2026-3833, CVE-2026-42010, CVE-2026-42011, CVE-2026-42012, CVE-2026-5419
 * Wed Feb 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.7.10-6
 - Fixes CVE-2025-9820
 * Mon Jul 14 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-5
