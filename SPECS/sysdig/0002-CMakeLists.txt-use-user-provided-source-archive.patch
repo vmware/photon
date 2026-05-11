@@ -1,0 +1,34 @@
+From 216801e4cd1f4cb70409d015d90c5e62108c2855 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 22:11:56 +0530
+Subject: [PATCH 2/8] CMakeLists.txt: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/falcosecurity-libs-repo/CMakeLists.txt | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/falcosecurity-libs-repo/CMakeLists.txt b/cmake/modules/falcosecurity-libs-repo/CMakeLists.txt
+index 946cf5d2..54348f5a 100644
+--- a/cmake/modules/falcosecurity-libs-repo/CMakeLists.txt
++++ b/cmake/modules/falcosecurity-libs-repo/CMakeLists.txt
+@@ -23,10 +23,14 @@ project(falcosecurity-libs-repo NONE)
+ include(ExternalProject)
+ message(STATUS "Libs version: ${FALCOSECURITY_LIBS_VERSION}")
+ 
++set(FALCOSECURITY_LIBS_URL
++  "https://github.com/falcosecurity/libs/archive/${FALCOSECURITY_LIBS_VERSION}.tar.gz"
++  CACHE STRING "Falcosecurity libs URL or local path"
++)
++
+ ExternalProject_Add(
+   falcosecurity-libs
+-  URL "https://github.com/falcosecurity/libs/archive/${FALCOSECURITY_LIBS_VERSION}.tar.gz"
+-  URL_HASH "${FALCOSECURITY_LIBS_CHECKSUM}"
++  URL "${FALCOSECURITY_LIBS_URL}"
+   CONFIGURE_COMMAND ""
+   BUILD_COMMAND ""
+   INSTALL_COMMAND ""
+-- 
+2.54.0
+

@@ -1,0 +1,38 @@
+From 93718c5de57bad21dfbea6f2c8e534383054f733 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 21:12:59 +0530
+Subject: [PATCH 7/8] tbb.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/tbb.cmake | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/modules/tbb.cmake b/cmake/modules/tbb.cmake
+index 6e8fa0a..5d334f8 100644
+--- a/cmake/modules/tbb.cmake
++++ b/cmake/modules/tbb.cmake
+@@ -15,6 +15,11 @@
+ 
+ option(USE_BUNDLED_TBB "Enable building of the bundled tbb" ${USE_BUNDLED_DEPS})
+ 
++set(TBB_SRC_URL
++  "https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2022.0.0.tar.gz"
++  CACHE STRING "TBB source URL or local path"
++)
++
+ if(TBB_INCLUDE_DIR)
+ 	# we already have tbb
+ elseif(NOT USE_BUNDLED_TBB)
+@@ -58,7 +63,7 @@ else()
+ 
+ 	if(NOT TARGET tbb)
+ 		message(STATUS "Using bundled tbb in '${TBB_SRC}'")
+-		set(TBB_SRC_URL "https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2022.0.0.tar.gz")
++		set(TBB_SRC_URL "${TBB_SRC_URL}")
+ 		set(TBB_SRC_URL_HASH
+ 			"SHA256=e8e89c9c345415b17b30a2db3095ba9d47647611662073f7fbf54ad48b7f3c2a"
+ 		)
+-- 
+2.54.0
+

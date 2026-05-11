@@ -1,32 +1,31 @@
 %global build_if %{photon_subrelease} >= 92
+
 %define network_required    1
 %global security_hardening  none
 %define uname_r             %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define _modulesdir         /lib/modules/%{uname_r}
-%define uthash_path         %{falcosecurity_libs}/userspace/libscap
-%define falcosecurity_libs_prefix_src %{__cmake_builddir}/falcosecurity-libs-repo/falcosecurity-libs-prefix/src
-%define falcosecurity_libs  %{falcosecurity_libs_prefix_src}/falcosecurity-libs
-%define falcosecurity_src   %{falcosecurity_libs_prefix_src}/0.13.4.tar.gz
 
 # check the release bundle & use the right version, example:
 # https://https://github.com/falcosecurity/falco/archive/refs/tags/0.39.2/cmake/modules/falcosecurity-libs.cmake
 %define falcosecurity_libs_ver  0.19.0
-%define nlohman_json_ver  3.3.0
-%define tbb_ver  2022.0.0
-%define valijson_ver  1.0.2
-%define cpp_httplib_ver  0.15.3
-%define cxxopts_ver  3.0.0
-%define falcoctl_ver  0.10.1
-%define falco_rules_ver  3.2.0
+%define nlohman_json_ver        3.11.3
+%define tbb_ver                 2022.0.0
+%define valijson_ver            1.0.2
+%define cpp_httplib_ver         0.15.3
+%define cxxopts_ver             3.0.0
+%define falcoctl_ver            0.10.1
+%define falco_rules_ver         3.2.0
 
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.39.2
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch: x86_64
 
 Source0: https://github.com/falcosecurity/falco/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -56,61 +55,47 @@ Source10: spec_install_post.inc
 Source11: license.txt
 %include %{SOURCE11}
 
-Patch1: 0001-Set-local-path-njson.patch
-Patch2: 0002-Set-local-path-cpp-httplib.patch
-Patch3: 0003-Set-local-path-cxxopts.patch
-Patch4: 0004-Set-local-path-rules.patch
-Patch5: 0005-Set-local-path-falcoctl.patch
-Patch6: 0001-falco-use-local-falcosecurity-libs-source.patch
+Patch0: 0001-cpp-httplib.cmake-use-user-provided-source-archive.patch
+Patch1: 0002-cxxopts.cmake-use-user-provided-source-archive.patch
+Patch2: 0003-falcoctl.cmake-use-user-provided-source-archive.patch
+Patch3: 0004-falcosecurity-libs.cmake-use-user-provided-source-ar.patch
+Patch4: 0005-njson.cmake-use-user-provided-source-archive.patch
+Patch5: 0006-rules.cmake-use-user-provided-source-archive.patch
+Patch6: 0007-Default-engine-kind-to-kmod.patch
+Patch7: 0008-tbb.cmake-use-user-provided-source-archive.patch
+Patch8: 0009-valijson.cmake-use-user-provided-source-archive.patch
+Patch9: 0010-falcolib-Add-prototype-for-nsec_to_clock.patch
 
-Patch7: 0006-oneAPI-Threading-Building-Block.patch
-Patch8: 0007-Local-path-for-Validation-libJSON.patch
-
-Patch9: 0009-Default-engine-kind-to-kmod.patch
-
-BuildArch: x86_64
-
-BuildRequires: cmake
-BuildRequires: openssl-devel
-BuildRequires: curl-devel
-BuildRequires: zlib-devel
-BuildRequires: ncurses-devel
-BuildRequires: linux-devel = %{uname_r}
-BuildRequires: elfutils-devel
-BuildRequires: jq-devel
-BuildRequires: jsoncpp-devel
-BuildRequires: lua-devel
-BuildRequires: jsoncpp-devel
-BuildRequires: libyaml-devel
-BuildRequires: linux-api-headers
-BuildRequires: grpc-devel
 BuildRequires: c-ares-devel
-BuildRequires: protobuf-devel
+BuildRequires: cmake
+BuildRequires: curl-devel
+BuildRequires: elfutils-devel
 BuildRequires: go
+BuildRequires: grpc-devel
+BuildRequires: jsoncpp-devel
+BuildRequires: linux-api-headers
+BuildRequires: linux-devel = %{uname_r}
+BuildRequires: openssl-devel
+BuildRequires: protobuf-devel
 BuildRequires: re2-devel
 BuildRequires: yaml-cpp-devel
+
 # Requirements for signing artifacts
 %if "%{?signing_script}" != ""
-%define network_required 1
 BuildRequires:  ca-certificates-pki
 BuildRequires:  python3-requests
 %endif
 
-Requires: linux = %{uname_r}
-Requires: zlib
-Requires: ncurses
-Requires: openssl
-Requires: curl
-Requires: libyaml
-Requires: lua
-Requires: sysdig
-Requires: dkms
-Requires: jsoncpp
-Requires: grpc
-Requires: jq
-Requires: protobuf
 Requires: c-ares
+Requires: curl
+Requires: dkms
+Requires: grpc
+Requires: jsoncpp
+Requires: linux = %{uname_r}
+Requires: openssl
 Requires: re2
+Requires: sysdig
+Requires: protobuf
 Requires: yaml-cpp
 
 %description
@@ -118,65 +103,70 @@ Sysdig %{name} is an open source, behavioral activity monitor designed to detect
 Falco lets you continuously monitor and detect container, application, host, and network activity; all in one place, from one source of data, with one set of customizable rules.
 
 %package    devel
-Summary:    falco
-Group:      Development/Libraries
+Summary:    Development files for %{name}
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
-Development files for %{name}
+%{summary}
 
 %prep
 %autosetup -a0 -a1 -N
 
 pushd %{_builddir}/%{name}-%{version}
-%autopatch -p1 -m1 -M6
-%autopatch -p1 -m9 -M9
+%autopatch -p1 -m0 -M6
 popd
 
 pushd %{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}
-%autopatch -p1 -m7 -M8
+%autopatch -p1 -m7 -M9
 popd
 
-touch %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} %{SOURCE7} %{SOURCE8}
-
 %build
-export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
-
 %{cmake} \
     -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
     -DUSE_BUNDLED_DEPS:BOOL=OFF \
     -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
-    -DUSE_BUNDLED_JQ:BOOL=OFF \
     -DUSE_BUNDLED_YAMLCPP:BOOL=OFF \
     -DUSE_BUNDLED_JSONCPP=OFF \
     -DUSE_BUNDLED_RE2=OFF \
     -DBUILD_SHARED_LIBS:BOOL=OFF \
     -DUSE_BUNDLED_LIBELF=OFF \
-    -DLIBELF_LIB=%{_libdir}/libelf.so \
-    -DCMAKE_INSTALL_LIBDIR=%{_lib} \
-    -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
     -DUSE_BUNDLED_UTHASH=OFF \
-    -DUTHASH_INCLUDE="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/userspace/libscap" \
-    -DBUILD_DRIVER:BOOL=ON \
-    -DDRIVER_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver" \
-    -DFALCOSECURITY_LIBS_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}" \
     -DBUILD_BPF=OFF \
     -DUSE_BUNDLED_JSONCPP=OFF \
     -DUSE_BUNDLED_CXXOPTS=TRUE \
     -DUSE_BUNDLED_NLOHMANN_JSON=TRUE \
-    -DUSE_BUNDLED_CPPHTTPLIB=TRUE \
     -DBUILD_LIBSCAP_EXAMPLES=OFF \
     -DBUILD_LIBSCAP_MODERN_BPF=OFF \
     -DBUILD_LIBSINSP_EXAMPLES=OFF  \
     -DUSE_BUNDLED_RE2=OFF \
-    -DBUILD_TESTING=OFF
+    -DBUILD_TESTING=OFF \
+    -DUSE_BUNDLED_CPPHTTPLIB=TRUE \
+    -DBUILD_DRIVER:BOOL=ON \
+    -DUTHASH_INCLUDE="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/userspace/libscap" \
+    -DDRIVER_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver" \
+    -DFALCOSECURITY_LIBS_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}" \
+    -DFALCOSECURITY_LIBS_LOCAL_VERSION="%{falcosecurity_libs_ver}" \
+    -DNLOHMANN_JSON_URL="%{SOURCE2}" \
+    -DTBB_SRC_URL="%{SOURCE3}" \
+    -DVALIJSON_URL="%{SOURCE4}" \
+    -DCPPHTTPLIB_URL="%{SOURCE5}" \
+    -DCXXOPTS_URL="%{SOURCE6}" \
+    -DFALCOCTL_URL="%{SOURCE7}" \
+    -DFALCOSECURITY_RULES_FALCO_URL="%{SOURCE8}"
 
 cp %{SOURCE9} libs-%{falcosecurity_libs_ver}/userspace/libscap/
 cp %{SOURCE9} %{__cmake_builddir}/libscap/
+
 export KERNELDIR="%{_modulesdir}/build"
 %{cmake_build}
-cp %{__cmake_builddir}/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/rules/falco_rules.yaml %{__cmake_builddir}/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/
-cp -r %{__cmake_builddir}/scripts/falcoctl/ %{__cmake_builddir}/falcoctl-prefix/src/falcoctl/
+
+pushd %{__cmake_builddir}/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco
+cp -a rules/falco_rules.yaml .
+popd
+
+cp -a %{__cmake_builddir}/scripts/falcoctl/ %{__cmake_builddir}/falcoctl-prefix/src/falcoctl/
 
 pushd %{__cmake_builddir}/falcoctl-prefix/src/falcoctl
 GO111MODULE=on CGO_ENABLED=0 go build -trimpath -o falcoctl.bin .
@@ -185,8 +175,7 @@ popd
 %install
 export KERNELDIR="%{_modulesdir}/build"
 %{cmake_install}
-mkdir -p %{buildroot}%{_modulesdir}/extra
-install -vm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra
+install -Dvm 644 %{__cmake_builddir}/driver/%{name}.ko %{buildroot}%{_modulesdir}/extra/%{name}.ko
 find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 
 # Replace the bogus %{_bindir}/falcoctl directory left behind by cmake's
@@ -222,11 +211,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/falcosecurity/*
 %{_includedir}/falcosecurity/*
-%{_libdir}/cmake/
-%{_includedir}/nlohmann/json.hpp
-%{_includedir}/httplib.h
+%exclude %{_libdir}/cmake/
+%exclude %{_includedir}/httplib.h
 
 %changelog
+* Sun May 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.39.2-2
+- Patch cmake files to properly use source archives from localhost
 * Thu Jan 29 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.39.2-1
 - Forward porting for linux v6.12
 - Srinidhi Rao: Upgrade to version 0.39.2

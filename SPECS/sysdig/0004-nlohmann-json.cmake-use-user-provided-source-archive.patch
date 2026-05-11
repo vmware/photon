@@ -1,0 +1,39 @@
+From a76430967a5f7edfed8602b6cabedaf3baa8fb31 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 22:12:21 +0530
+Subject: [PATCH 4/8] nlohmann-json.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/nlohmann-json.cmake | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/nlohmann-json.cmake b/cmake/modules/nlohmann-json.cmake
+index feb0f071..8918e515 100644
+--- a/cmake/modules/nlohmann-json.cmake
++++ b/cmake/modules/nlohmann-json.cmake
+@@ -16,6 +16,11 @@
+ # limitations under the License.
+ #
+ 
++set(NJSON_URL
++  "https://github.com/nlohmann/json/archive/v3.3.0.tar.gz"
++  CACHE STRING "nlohmann-json source URL or local path"
++)
++
+ if(NOT USE_BUNDLED_DEPS)
+   find_path(NJSON_INCLUDE_DIR NAMES nlohmann/json.hpp)
+   if(NJSON_INCLUDE_DIR)
+@@ -29,8 +34,7 @@ else()
+   set(NJSON_INCLUDE_DIR "${NJSON_SRC}/single_include")
+   ExternalProject_Add(
+     njson
+-    URL "https://github.com/nlohmann/json/archive/v3.3.0.tar.gz"
+-    URL_HASH "SHA256=2fd1d207b4669a7843296c41d3b6ac5b23d00dec48dba507ba051d14564aa801"
++    URL "${NJSON_URL}"
+     CONFIGURE_COMMAND ""
+     BUILD_COMMAND ""
+     INSTALL_COMMAND "")
+-- 
+2.54.0
+

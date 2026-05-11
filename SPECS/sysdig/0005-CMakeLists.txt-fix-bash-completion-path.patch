@@ -1,0 +1,36 @@
+From c99733aca4f482904548b3a84b76ab36847ce1cd Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 22:19:15 +0530
+Subject: [PATCH 5/8] CMakeLists.txt: fix bash completion path
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ scripts/CMakeLists.txt | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/CMakeLists.txt b/scripts/CMakeLists.txt
+index 74bf5914..341335f2 100644
+--- a/scripts/CMakeLists.txt
++++ b/scripts/CMakeLists.txt
+@@ -24,8 +24,16 @@ configure_file(rpm/preuninstall.in rpm/preuninstall)
+ 
+ configure_file(scap-driver-loader.in scap-driver-loader @ONLY)
+ 
+-install(FILES completions/bash/sysdig
+-	DESTINATION "${DIR_ETC}/bash_completion.d" COMPONENT "${SYSDIG_COMPONENT_NAME}")
++set(BASH_COMPLETION_DIR
++  "${DIR_ETC}/bash_completion.d"
++  CACHE STRING "Bash completion install directory"
++)
++
++install(
++  FILES completions/bash/sysdig
++  DESTINATION "${BASH_COMPLETION_DIR}"
++  COMPONENT "${SYSDIG_COMPONENT_NAME}"
++)
+ 
+ install(FILES completions/zsh/_sysdig
+ 	DESTINATION share/zsh/vendor-completions COMPONENT "${SYSDIG_COMPONENT_NAME}")
+-- 
+2.54.0
+

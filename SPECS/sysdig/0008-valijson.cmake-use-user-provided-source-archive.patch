@@ -1,0 +1,39 @@
+From 2f53498c33b8f20f4e6e71763401c6c36564a884 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 22:19:36 +0530
+Subject: [PATCH 8/8] valijson.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/valijson.cmake | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/valijson.cmake b/cmake/modules/valijson.cmake
+index e2a26fcf..c9dbbff6 100644
+--- a/cmake/modules/valijson.cmake
++++ b/cmake/modules/valijson.cmake
+@@ -19,6 +19,11 @@
+ 
+ option(USE_BUNDLED_VALIJSON "Enable building of the bundled valijson" ${USE_BUNDLED_DEPS})
+ 
++set(VALIJSON_URL
++  "https://github.com/tristanpenman/valijson/archive/refs/tags/v1.0.2.tar.gz"
++  CACHE STRING "valijson source URL or local path"
++)
++
+ if(VALIJSON_INCLUDE)
+ 	# we already have valijson
+ elseif(NOT USE_BUNDLED_VALIJSON)
+@@ -32,8 +37,7 @@ else()
+ 	ExternalProject_Add(
+ 		valijson
+ 		PREFIX "${PROJECT_BINARY_DIR}/valijson-prefix"
+-		URL "https://github.com/tristanpenman/valijson/archive/refs/tags/v1.0.2.tar.gz"
+-		URL_HASH "SHA256=35d86e54fc727f1265226434dc996e33000a570f833537a25c8b702b0b824431"
++		URL "${VALIJSON_URL}"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""
+ 		INSTALL_COMMAND ""
+-- 
+2.54.0
+

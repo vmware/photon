@@ -1,0 +1,43 @@
+From 256bae57c9e3239364b1e6f121635ac18286ec8d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 21:15:09 +0530
+Subject: [PATCH 6/8] rules.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/rules.cmake | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/cmake/modules/rules.cmake b/cmake/modules/rules.cmake
+index 566cf2a..046a71d 100644
+--- a/cmake/modules/rules.cmake
++++ b/cmake/modules/rules.cmake
+@@ -17,18 +17,20 @@ include(GNUInstallDirs)
+ include(ExternalProject)
+ 
+ if(NOT DEFINED FALCOSECURITY_RULES_FALCO_PATH)
+-	# falco_rules.yaml
+ 	set(FALCOSECURITY_RULES_FALCO_VERSION "falco-rules-3.2.0")
+-	set(FALCOSECURITY_RULES_FALCO_CHECKSUM
+-		"SHA256=b3990bf0209cfbf6a903b361e458a1f5851a9a5aeee808ad26a5ddbe1377157d"
++
++    set(FALCOSECURITY_RULES_FALCO_URL
++	    "https://download.falco.org/rules/${FALCOSECURITY_RULES_FALCO_VERSION}.tar.gz"
++	    CACHE STRING "Falco rules archive URL or local path"
+ 	)
++
++	# falco_rules.yaml
+ 	set(FALCOSECURITY_RULES_FALCO_PATH
+ 		"${PROJECT_BINARY_DIR}/falcosecurity-rules-falco-prefix/src/falcosecurity-rules-falco/falco_rules.yaml"
+ 	)
+ 	ExternalProject_Add(
+ 		falcosecurity-rules-falco
+-		URL "https://download.falco.org/rules/${FALCOSECURITY_RULES_FALCO_VERSION}.tar.gz"
+-		URL_HASH "${FALCOSECURITY_RULES_FALCO_CHECKSUM}"
++		URL "${FALCOSECURITY_RULES_FALCO_URL}"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""
+ 		INSTALL_COMMAND ""
+-- 
+2.54.0
+

@@ -1,0 +1,39 @@
+From 5d4ac0ef57a363b02668671b5a895e9f774e8903 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 21:14:16 +0530
+Subject: [PATCH 3/8] falcoctl.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/falcoctl.cmake | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/falcoctl.cmake b/cmake/modules/falcoctl.cmake
+index d8b3170..64cfbb8 100644
+--- a/cmake/modules/falcoctl.cmake
++++ b/cmake/modules/falcoctl.cmake
+@@ -17,6 +17,11 @@ include(ExternalProject)
+ 
+ option(ADD_FALCOCTL_DEPENDENCY "Add falcoctl dependency while building falco" ON)
+ 
++set(FALCOCTL_URL
++  "https://github.com/falcosecurity/falcoctl/archive/refs/tags/v${FALCOCTL_VERSION}.tar.gz"
++  CACHE STRING "falcoctl source URL or local path"
++)
++
+ if(ADD_FALCOCTL_DEPENDENCY)
+ 	string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} FALCOCTL_SYSTEM_NAME)
+ 
+@@ -34,8 +39,7 @@ if(ADD_FALCOCTL_DEPENDENCY)
+ 
+ 	ExternalProject_Add(
+ 		falcoctl
+-		URL "https://github.com/falcosecurity/falcoctl/releases/download/v${FALCOCTL_VERSION}/falcoctl_${FALCOCTL_VERSION}_${FALCOCTL_SYSTEM_NAME}_${FALCOCTL_SYSTEM_PROC_GO}.tar.gz"
+-		URL_HASH "SHA256=${FALCOCTL_HASH}"
++        URL "${FALCOCTL_URL}"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""
+ 		INSTALL_COMMAND ""
+-- 
+2.54.0
+

@@ -1,0 +1,35 @@
+From 48b8e06be9ddf65cafc291ebbca5fe87288c2c54 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 21:15:00 +0530
+Subject: [PATCH 5/8] njson.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/njson.cmake | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/modules/njson.cmake b/cmake/modules/njson.cmake
+index 7e29b8e..248662d 100644
+--- a/cmake/modules/njson.cmake
++++ b/cmake/modules/njson.cmake
+@@ -15,11 +15,16 @@
+ 
+ option(USE_BUNDLED_NLOHMANN_JSON "Enable building of the bundled nlohmann-json" ${USE_BUNDLED_DEPS})
+ 
++set(NLOHMANN_JSON_URL
++  "https://github.com/nlohmann/json/archive/v3.11.3.tar.gz"
++  CACHE STRING "nlohmann-json source URL or local path"
++)
++
+ if(USE_BUNDLED_NLOHMANN_JSON)
+ 	include(FetchContent)
+ 	FetchContent_Declare(
+ 		nlohmann_json
+-		URL https://github.com/nlohmann/json/archive/v3.11.3.tar.gz
++		URL "${NLOHMANN_JSON_URL}"
+ 		URL_HASH SHA256=0d8ef5af7f9794e3263480193c491549b2ba6cc74bb018906202ada498a79406
+ 	)
+ 	FetchContent_MakeAvailable(nlohmann_json)
+-- 
+2.54.0
+

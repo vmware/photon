@@ -1,0 +1,38 @@
+From daafc275e4e203642e6eba6d3e0545b45cf3a400 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 21:14:00 +0530
+Subject: [PATCH 2/8] cxxopts.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/cxxopts.cmake | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/modules/cxxopts.cmake b/cmake/modules/cxxopts.cmake
+index 4515a72..31b7690 100644
+--- a/cmake/modules/cxxopts.cmake
++++ b/cmake/modules/cxxopts.cmake
+@@ -19,6 +19,11 @@
+ 
+ option(USE_BUNDLED_CXXOPTS "Enable building of the bundled cxxopts" ${USE_BUNDLED_DEPS})
+ 
++set(CXXOPTS_URL
++  "https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.0.0.tar.gz"
++  CACHE STRING "cxxopts source URL or local path"
++)
++
+ if(CXXOPTS_INCLUDE_DIR)
+ 	# we already have cxxopts
+ elseif(NOT USE_BUNDLED_CXXOPTS)
+@@ -32,7 +37,7 @@ else()
+ 
+ 	ExternalProject_Add(
+ 		cxxopts
+-		URL "https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.0.0.tar.gz"
++		URL "${CXXOPTS_URL}"
+ 		URL_HASH "SHA256=36f41fa2a46b3c1466613b63f3fa73dc24d912bc90d667147f1e43215a8c6d00"
+ 		CONFIGURE_COMMAND ""
+ 		BUILD_COMMAND ""
+-- 
+2.54.0
+

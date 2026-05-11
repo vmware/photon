@@ -1,4 +1,5 @@
 %global build_if %{photon_subrelease} >= 92
+
 %global security_hardening      none
 %define uname_r                 %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %define _modulesdir             /lib/modules/%{uname_r}
@@ -6,19 +7,21 @@
 # check the release bundle & use the right version, example:
 # https://github.com/draios/sysdig/blob/0.30.2/cmake/modules/falcosecurity-libs.cmake#L35
 %define falcosecurity_libs_ver  0.19.0
-%define nlohman_json_ver  3.3.0
-%define uthash_ver  1.9.8
-%define tbb_ver  2022.0.0
-%define valijson_ver  1.0.2
+%define nlohman_json_ver        3.3.0
+%define uthash_ver              1.9.8
+%define tbb_ver                 2022.0.0
+%define valijson_ver            1.0.2
 
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.39.0
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch: x86_64
 
 Source0: https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 
@@ -37,48 +40,29 @@ Source6: license.txt
 
 Source7: spec_install_post.inc
 
-Patch0: get-googletest-sources-from-photonstage.patch
-Patch1: falcosecurity-libs-nodownload.patch
-Patch2: bashcomp-location.patch
-Patch3: 0001-sysdig-Modify-path-for-local-falco-lib.patch
-Patch4: 0001-sysdig-deps-Set-Lohman-src-to-local.patch
-Patch5: 0001-falcolib-Add-prototype-for-nsec_to_clock.patch
-
-Patch6: 0001-Set-local-path-for-troy.patch
-Patch7: 0002-Modify-local-path.patch
-Patch8: 0003-oneAPI-Threading-Building-Block.patch
-Patch9: 0004-Local-path-for-Validation-libJSON.patch
+Patch0: 0001-CMakeListsGtestInclude.cmake-use-user-provided-sourc.patch
+Patch1: 0002-CMakeLists.txt-use-user-provided-source-archive.patch
+Patch2: 0003-falcosecurity-libs.cmake-use-user-provided-source-ar.patch
+Patch3: 0004-nlohmann-json.cmake-use-user-provided-source-archive.patch
+Patch4: 0005-CMakeLists.txt-fix-bash-completion-path.patch
+Patch5: 0006-tbb.cmake-use-user-provided-source-archive.patch
+Patch6: 0007-uthash.cmake-use-user-provided-source-archive.patch
+Patch7: 0008-valijson.cmake-use-user-provided-source-archive.patch
+Patch8: 0009-falcolib-Add-prototype-for-nsec_to_clock.patch
 
 # Fix for scap module
-Patch10: 0001-sysdig-Fix-signature-of-probe-as-per-upstream-kernel.patch
-
-BuildArch: x86_64
+Patch9: 0001-sysdig-Fix-signature-of-probe-as-per-upstream-kernel.patch
 
 BuildRequires: cmake
-BuildRequires: linux-devel = %{uname_r}
-BuildRequires: clang-devel
+BuildRequires: jsoncpp-devel
+BuildRequires: c-ares-devel
+BuildRequires: grpc-devel
+BuildRequires: re2-devel
 BuildRequires: openssl-devel
 BuildRequires: curl-devel
-BuildRequires: zlib-devel
-BuildRequires: ncurses-devel
-BuildRequires: wget
-BuildRequires: which
-BuildRequires: grpc-devel
-BuildRequires: jq-devel
-BuildRequires: c-ares-devel
-BuildRequires: protobuf-devel
-BuildRequires: git
-BuildRequires: jsoncpp-devel
-BuildRequires: re2-devel
-BuildRequires: tinydir-devel
-BuildRequires: elfutils-devel
-BuildRequires: abseil-cpp-devel
-BuildRequires: docker
-BuildRequires: lua-devel
-BuildRequires: zlib-devel
-BuildRequires: ncurses-devel
 BuildRequires: yaml-cpp-devel
-BuildRequires: re2-devel
+BuildRequires: elfutils-devel
+BuildRequires: linux-devel = %{uname_r}
 
 # Requirements for signing artifacts
 %if "%{?signing_script}" != ""
@@ -87,23 +71,14 @@ BuildRequires:  ca-certificates-pki
 BuildRequires:  python3-requests
 %endif
 
-Requires: linux = %{uname_r}
-Requires: zlib
-Requires: ncurses
-Requires: openssl
-Requires: curl
-Requires: grpc
-Requires: jq
 Requires: c-ares
-Requires: protobuf
-Requires: jsoncpp
-Requires: re2
+Requires: curl
 Requires: elfutils-libelf
-Requires: docker-engine
-Requires: abseil-cpp
-Requires: lua
-Requires: zlib
-Requires: ncurses
+Requires: grpc
+Requires: jsoncpp
+Requires: openssl
+Requires: re2
+Requires: linux = %{uname_r}
 Requires: yaml-cpp
 
 %description
@@ -120,39 +95,11 @@ pushd %{_builddir}/%{name}-%{version}
 popd
 
 pushd %{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}
-%autopatch -p1 -m5 -M9
+%autopatch -p1 -m5 -M8
 popd
 
-touch %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5}
 %build
-export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
-
 %{cmake} \
-    -DUSE_BUNDLED_OPENSSL=OFF \
-    -DCMAKE_CXX_STANDARD=17 \
-    -DUSE_BUNDLED_CURL=OFF \
-    -DUSE_BUNDLED_ZLIB=OFF \
-    -DUSE_BUNDLED_CARES=OFF \
-    -DUSE_BUNDLED_PROTOBUF=OFF \
-    -DUSE_BUNDLED_GRPC=OFF \
-    -DUSE_BUNDLED_JQ=OFF \
-    -DUSE_BUNDLED_JSONCPP=OFF \
-    -DUSE_BUNDLED_LUAJIT=OFF \
-    -DUSE_BUNDLED_NJSON=OFF \
-    -DUSE_BUNDLED_NCURSES=OFF \
-    -DUSE_BUNDLED_YAMLCPP=OFF \
-    -DUSE_BUNDLED_RE2=OFF \
-    -DUSE_BUNDLED_LIBELF=OFF \
-    -DLIBELF_LIB=%{_libdir}/libelf.so \
-    -DNJSON_SRC=%{_builddir}/%{name}-%{version}/json-%{nlohman_json_ver} \
-    -DBUILD_DRIVER=ON \
-    -DDRIVER_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver \
-    -DBUILD_BPF=OFF \
-    -DBUILD_LIBSCAP_EXAMPLES=OFF \
-    -DBUILD_LIBSCAP_MODERN_BPF=OFF \
-    -DBUILD_LIBSINSP_EXAMPLES=OFF \
-    -DFALCOSECURITY_LIBS_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver} \
-    -DFALCOSECURITY_LIBS_VERSION=%{falcosecurity_libs_ver} \
     -DCMAKE_INSTALL_BINDIR:PATH=%{_bindir} \
     -DCMAKE_INSTALL_SBINDIR:PATH=%{_sbindir} \
     -DCMAKE_INSTALL_LIBDIR:PATH=%{_lib} \
@@ -163,11 +110,41 @@ export CFLAGS="-Wno-error=misleading-indentation -Wno-dev"
     -DCMAKE_INSTALL_INFODIR:PATH=%{_infodir} \
     -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
     -DBUILD_SHARED_LIBS:BOOL=OFF \
-    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_BUILD_TYPE=Release \
+    -DUSE_BUNDLED_OPENSSL=OFF \
+    -DCMAKE_CXX_STANDARD=17 \
+    -DUSE_BUNDLED_CURL=OFF \
+    -DUSE_BUNDLED_ZLIB=OFF \
+    -DUSE_BUNDLED_CARES=OFF \
+    -DUSE_BUNDLED_PROTOBUF=OFF \
+    -DUSE_BUNDLED_GRPC=OFF \
+    -DUSE_BUNDLED_JSONCPP=OFF \
+    -DUSE_BUNDLED_LUAJIT=OFF \
+    -DUSE_BUNDLED_NCURSES=OFF \
+    -DUSE_BUNDLED_YAMLCPP=OFF \
+    -DUSE_BUNDLED_RE2=OFF \
+    -DUSE_BUNDLED_LIBELF=OFF \
+    -DBUILD_BPF=OFF \
+    -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSCAP_MODERN_BPF=OFF \
+    -DBUILD_LIBSINSP_EXAMPLES=OFF \
+    -DBUILD_DRIVER=ON \
+    -DFALCOSECURITY_LIBS_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver} \
+    -DDRIVER_SOURCE_DIR=%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}/driver \
+    -DFALCOSECURITY_LIBS_VERSION=%{falcosecurity_libs_ver} \
+    -DBASH_COMPLETION_DIR="share/bash-completion/completions" \
+    -DFALCOSECURITY_LIBS_CMAKE_SOURCE_DIR="%{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}" \
+    -DFALCOSECURITY_LIBS_CMAKE_WORKING_DIR="%{__cmake_builddir}/libs-%{falcosecurity_libs_ver}" \
+    -DUTHASH_DOWNLOAD_URL="%{_builddir}/%{name}-%{version}/uthash-%{uthash_ver}" \
+    -DNJSON_URL="%{SOURCE2}" \
+    -DUTHASH_ARCHIVE_URL="%{SOURCE3}" \
+    -DRE2_INCLUDE="%{_includedir}" \
+    -DTBB_SRC_URL="%{SOURCE4}" \
+    -DVALIJSON_URL="%{SOURCE5}"
 
 # Fix for scap module
 pushd %{__cmake_builddir}
-%autopatch -p1 -m10 -M10
+%autopatch -p1 -m9 -M9
 popd
 export KERNELDIR="%{_modulesdir}/build"
 
@@ -205,6 +182,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Sun May 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.39.0-2
+- Patch cmake files to properly use source archives from localhost
 * Mon May 04 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.39.0-1
 - Forward porting for linux v6.12
 - Srinidhi: Upgrade to version 0.39.0

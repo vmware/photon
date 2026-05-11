@@ -1,0 +1,35 @@
+From 22e354509323a8469e285bd76305c80714240987 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 21:18:56 +0530
+Subject: [PATCH 1/8] cpp-httplib.cmake: use user provided source archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/cpp-httplib.cmake | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/modules/cpp-httplib.cmake b/cmake/modules/cpp-httplib.cmake
+index 28c9de8..718120e 100644
+--- a/cmake/modules/cpp-httplib.cmake
++++ b/cmake/modules/cpp-httplib.cmake
+@@ -15,11 +15,16 @@
+ 
+ option(USE_BUNDLED_CPPHTTPLIB "Enable building of the bundled cpp-httplib" ${USE_BUNDLED_DEPS})
+ 
++set(CPPHTTPLIB_URL
++  "https://github.com/yhirose/cpp-httplib/archive/refs/tags/v0.15.3.tar.gz"
++  CACHE STRING "cpp-httplib source URL or local path"
++)
++
+ if(USE_BUNDLED_CPPHTTPLIB)
+ 	include(FetchContent)
+ 	FetchContent_Declare(
+ 		cpp-httplib
+-		URL https://github.com/yhirose/cpp-httplib/archive/refs/tags/v0.15.3.tar.gz
++		URL "${CPPHTTPLIB_URL}"
+ 		URL_HASH SHA256=2121bbf38871bb2aafb5f7f2b9b94705366170909f434428352187cb0216124e
+ 	)
+ 	FetchContent_MakeAvailable(cpp-httplib)
+-- 
+2.54.0
+

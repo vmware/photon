@@ -1,0 +1,30 @@
+From bcb7a5ff61967f1019d4e191bf5f3680490ee403 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 21:14:48 +0530
+Subject: [PATCH 4/8] falcosecurity-libs.cmake: use user provided source
+ archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/falcosecurity-libs.cmake | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/cmake/modules/falcosecurity-libs.cmake b/cmake/modules/falcosecurity-libs.cmake
+index 14703eb..f7d3feb 100644
+--- a/cmake/modules/falcosecurity-libs.cmake
++++ b/cmake/modules/falcosecurity-libs.cmake
+@@ -26,6 +26,11 @@ set(USE_BUNDLED_DRIVER
+ 	CACHE BOOL ""
+ )
+ 
++set(FALCOSECURITY_LIBS_LOCAL_VERSION
++  "0.0.0-local"
++  CACHE STRING "Version string to use with local falcosecurity/libs"
++)
++
+ if(FALCOSECURITY_LIBS_SOURCE_DIR)
+ 	set(FALCOSECURITY_LIBS_VERSION "0.0.0-local")
+ 	message(STATUS "Using local version of falcosecurity/libs: '${FALCOSECURITY_LIBS_SOURCE_DIR}'")
+-- 
+2.54.0
+

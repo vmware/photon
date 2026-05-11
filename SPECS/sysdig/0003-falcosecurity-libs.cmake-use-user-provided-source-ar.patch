@@ -1,0 +1,36 @@
+From b3857c9189137fc30d8344d918010dd169e14c2d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 10 May 2026 22:12:07 +0530
+Subject: [PATCH 3/8] falcosecurity-libs.cmake: use user provided source
+ archive
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cmake/modules/falcosecurity-libs.cmake | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/falcosecurity-libs.cmake b/cmake/modules/falcosecurity-libs.cmake
+index 1cfe37a8..3e02f150 100644
+--- a/cmake/modules/falcosecurity-libs.cmake
++++ b/cmake/modules/falcosecurity-libs.cmake
+@@ -16,8 +16,15 @@
+ # limitations under the License.
+ #
+ 
+-set(FALCOSECURITY_LIBS_CMAKE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/falcosecurity-libs-repo")
+-set(FALCOSECURITY_LIBS_CMAKE_WORKING_DIR "${CMAKE_BINARY_DIR}/falcosecurity-libs-repo")
++set(FALCOSECURITY_LIBS_CMAKE_SOURCE_DIR
++  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/falcosecurity-libs-repo"
++  CACHE PATH "Falcosecurity libs source directory"
++)
++
++set(FALCOSECURITY_LIBS_CMAKE_WORKING_DIR
++  "${CMAKE_BINARY_DIR}/falcosecurity-libs-repo"
++  CACHE PATH "Falcosecurity libs working directory"
++)
+ 
+ file(MAKE_DIRECTORY ${FALCOSECURITY_LIBS_CMAKE_WORKING_DIR})
+ 
+-- 
+2.54.0
+
