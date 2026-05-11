@@ -49,7 +49,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.170
+Version:        6.1.172
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -1177,6 +1177,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-1
+- Update to version 6.1.172
 * Mon May 04 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.170-1
 - Update to version 6.1.170
 * Wed Apr 22 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.169-1
