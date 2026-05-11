@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.4.3
-Release:        8%{?dist}
+Release:        7.1%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 URL:            https://gitlab.com/cryptsetup/cryptsetup
@@ -22,6 +22,7 @@ BuildRequires: gcc
 BuildRequires: make
 BuildRequires: json-c-devel
 BuildRequires: libpwquality-devel
+BuildRequires: libargon2-devel
 BuildRequires: libssh-devel
 
 Requires: cryptsetup-libs = %{version}-%{release}
@@ -47,6 +48,7 @@ Headers and Libraries for integrating with Cryptsetup
 Summary:        Shared Libraries for Cryptsetup
 Group:          Development/Libraries
 Requires:       util-linux-libs
+Requires:       libargon2
 Requires:       json-c
 Requires:       openssl
 Requires:       device-mapper-libs
@@ -97,7 +99,7 @@ The package contains cryptsetup doc files.
 
 %build
 bash ./autogen.sh
-%configure --enable-fips --enable-pwquality --enable-internal-sse-argon2
+%configure --enable-fips --enable-pwquality --enable-libargon2
 %make_build
 
 %install
@@ -163,9 +165,8 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %doc AUTHORS FAQ docs/*ReleaseNotes docs/examples/*
 
 %changelog
-* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.4.3-8
-- Switch from libargon2 to internal (slow) argon2 implementation
-- Enable SSE optimized argon2 implementation
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.4.3-7.1
+- Microbranch to /90
 * Wed Aug 20 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.3-7
 - Fix conflicts on doc sub package
 * Mon Aug 18 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.3-6

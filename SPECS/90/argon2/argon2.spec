@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 90
+
 %global libname libargon2
 %global soname  1
 Summary:        Tools for password hashing
 Name:           argon2
 Version:        20190702
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -73,6 +75,8 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{libname}.pc
 
 %changelog
+*   Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 20190702-3.1
+-   Move to /90
 *   Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 20190702-3
 -   Release bump for SRP compliance
 *   Thu Jul 29 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-2
