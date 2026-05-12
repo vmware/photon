@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 90
+
 %global security_hardening none
 
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet
 Version:        0.17
-Release:        8%{?dist}
+Release:        8.1%{?dist}
 URL:            http://rpm5.org/files/popt
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -73,6 +75,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/in.telnetd.8.gz
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.17-8.1
+- Move to /90
 * Fri Oct 31 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.17-8
 - Fix CVE-2004-0911 and CVE-2020-10188
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17-7
