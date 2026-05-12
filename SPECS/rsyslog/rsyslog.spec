@@ -4,7 +4,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2602.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -126,6 +126,8 @@ make %{?_smp_mflags} check
 %{_libdir}/rsyslog/mmnormalize.so
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 8.2602.0-2
+- Version bump due to gnutls update
 * Mon Mar 30 2026 Tapas Kundu <tapas.kundu@broadcom.com> 8.2602.0-1
 - Enable mmnormalize
 - Update to 8.2602.0

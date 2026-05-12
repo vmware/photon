@@ -1,7 +1,7 @@
 Name:           libmicrohttpd
 Summary:        Lightweight library for embedding a webserver in applications
 Version:        0.9.76
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/libmicrohttpd/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -f %{buildroot}%{_libdir}/*.la \
 %{_datadir}/man/man3/libmicrohttpd.3.gz
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 0.9.76-5
+- Version bump due to gnutls update
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.9.76-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.9.76-3

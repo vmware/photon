@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        30.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -75,6 +75,8 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 30.1-4
+- Version bump due to gnutls update
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 30.1-3
 - Bump version as a part of ncurses upgrade
 * Tue Aug 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 30.1-2

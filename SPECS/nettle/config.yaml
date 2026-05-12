@@ -1,7 +1,20 @@
 sources:
-- archive: nettle-3.8.1.tar.gz
-  archive_sha512sum: a405da3438d185d96917b03b00abb9ab43e04f58f770f657f716c25d64bb258ee170a71328e74736caa7121f50c0c89d3cc840c1201d2a92cfaf1357d24bdc6a
-  skip_validation: true
+- archive: nettle-3.10.2.tar.gz
+  archive_type: upstream
+  archive_sha512sum: bf37ddd7dca8e78488da2a5286dcf16761d527d620572b42f2ad27bb8ee8c12999d92b0272e06f53766e7155a3f4a1ab7ad9c4b1c3caec47c031878b6b1772fb
+  name: nettle-3.10.2
+  version: 3.10.2
+  url: https://ftp.gnu.org/gnu/nettle/nettle-3.10.2.tar.gz
+  repo_url: https://git.lysator.liu.se/nettle/nettle
+  commit_id: d9e983c664772f8cbacba9fa084bc079978e3c98
+  missing: ['shake.awk', '.gitlab-ci.yml', 'stamp-h.in', 'sha1-compress.nlms', 'index.html', 'aes-test.out', 'desdata.stamp', 'list-obj-sizes.awk', 'test-rules.stamp', '.gdbinit', 'config.h.in', 'nettle.info', '.gitignore', '.c-style', 'misc', 'sha1-f2.nlms', 'sha1-f1-noexp.nlms', 'nettle.html', '.gitattributes', 'configure', 'keymap.h', 'yarrow-test.out', 'eccparams.c', 'nettle.pdf', 'rotors.h']
+  skip_validation: false
+  license_manual_review:
+  - file_paths:
+    - nettle-3.10.2/nettle.pdf
+    sha256sum: 6fb9ba6d29a0dacc065e004a3cdbfbf635cea54542283d2ed3742a082b608e27
+    # Public domain, no license
+    spdx_exp:
   spdx:
     package:
       detailed_description: 'GNettle is a cryptographic library that is designed to

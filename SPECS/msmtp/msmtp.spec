@@ -2,7 +2,7 @@
 
 Name:           msmtp
 Version:        1.8.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides msmtp client and server
 URL:            https://marlam.de/msmtp/
 Group:          Email/Server/Library
@@ -56,5 +56,7 @@ cp -r scripts/msmtpq scripts/msmtpqueue %{buildroot}%{_datadir}/%{name}
 %doc doc/msmtprc-system.example doc/msmtprc-user.example
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 1.8.32-2
+- Version bump due to gnutls update
 * Wed Mar 25 2026 Dweep Advani <dweep.advani@broadcom.com> 1.8.32-1
 - Add msmtp package

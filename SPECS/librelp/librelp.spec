@@ -1,7 +1,7 @@
 Summary:    RELP Library
 Name:       librelp
 Version:    1.10.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://www.librelp.com
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -74,6 +74,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 1.10.0-7
+- Version bump due to gnutls update
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.0-6
 - Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.10.0-5

@@ -1,7 +1,7 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.1.0
-Release:        17%{?dist}
+Release:        18%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/gssapi/gss-ntlmssp
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 1.1.0-18
+- Version bump due to gnutls update
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.1.0-17
 - Bump up to build with latest jansson
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.1.0-16

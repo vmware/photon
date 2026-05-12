@@ -1,7 +1,7 @@
 Summary:    Low level cryptographic libraries
 Name:       nettle
-Version:    3.8.1
-Release:    3%{?dist}
+Version:    3.10.2
+Release:    1%{?dist}
 URL:        http://www.lysator.liu.se/~nisse/nettle
 Group:      Development/Libraries
 Vendor:     VMware, Inc.
@@ -28,7 +28,7 @@ kernel space.
 
 %package    devel
 Summary:    Development libraries and header files for nettle
-Requires:   nettle
+Requires:   nettle = %{version}-%{release}
 Provides:   pkgconfig(hogweed)
 Provides:   pkgconfig(nettle)
 
@@ -67,6 +67,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon May 04 2026 Brennan Lamoreaux <brennan.lamoreaux> 3.10.2-1
+- Update to the latest 3.x release to build latest gnutls
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 3.8.1-3
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8.1-2

@@ -7,7 +7,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        257.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -681,6 +681,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Fri May 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 257.13-3
+- Version bump due to gnutls update
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-2
 - Build with subrelease >= 91
 * Sun Mar 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-1

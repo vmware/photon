@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
 Version:        4.2.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -101,6 +101,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 4.2.12-4
+- Version bump due to gnutls update
 * Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.12-3
 - Fix CVE-2025-13499
 * Tue Jul 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 4.2.12-2

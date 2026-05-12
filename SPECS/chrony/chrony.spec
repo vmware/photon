@@ -1,6 +1,6 @@
 Name:           chrony
 Version:        4.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An NTP client/server
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -116,6 +116,8 @@ rm -rf %{buildroot}
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 4.3-3
+- Version bump due to nettle update
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4.3-2
 - Release bump for SRP compliance
 * Fri Oct 28 2022 Gerrit Photon <photon-checkins@vmware.com> 4.3-1

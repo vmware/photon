@@ -7,7 +7,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -244,6 +244,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 7.4-2
+- Version bump due to nettle update
 * Thu Mar 12 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.4-1
 - Upgrade to version 7.4
 - Remove deprecated SMB and SMB_LM auth helpers from configure flags
