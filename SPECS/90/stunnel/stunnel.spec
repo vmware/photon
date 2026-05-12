@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} <= 90
+
 Name:           stunnel
 Version:        5.72
-Release:        5%{?dist}
+Release:        5.1%{?dist}
 Summary:        A TLS-encrypting socket wrapper
 Group:          System Environment/Libraries
 URL:            https://www.stunnel.org
@@ -55,6 +57,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 5.72-5.1
+- Move to /90
 * Tue Mar 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.72-5
 - Drop runtime dependency on rpcsvc-proto
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 5.72-4
