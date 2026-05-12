@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.8
-Release:          6%{?dist}
+Release:          7%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
@@ -25,6 +25,13 @@ Patch5: CVE-2023-26463.patch
 Patch6: CVE-2023-41913.patch
 Patch7: BDSA-2025-14741.patch
 Patch8: CVE-2026-25075.patch
+Patch9: CVE-2026-35328.patch
+Patch10: CVE-2026-35329.patch
+Patch11: CVE-2026-35330.patch
+Patch12: CVE-2026-35331.patch
+Patch13: CVE-2026-35332.patch
+Patch14: CVE-2026-35333.patch
+Patch15: CVE-2026-35334.patch
 
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
@@ -95,6 +102,9 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Tue May 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.9.8-7
+- Fixes CVE-2026-35328, CVE-2026-35329, CVE-2026-35330, CVE-2026-35331, CVE-2026-35332
+- CVE-2026-35333, CVE-2026-35334
 * Mon Apr 13 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.9.8-6
 - Fix CVE-2026-25075
 * Thu Oct 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.9.8-5
