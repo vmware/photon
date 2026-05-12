@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:      Lightweight C library that eases the writing of UNIX daemons
 Name:         libdaemon
 Version:      0.14
-Release:      4%{?dist}
+Release:      4.1%{?dist}
 URL:          http://0pointer.de/lennart/projects/libdaemon
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
@@ -50,6 +52,8 @@ developing applications that use libdaemon.
 %{_libdir}/*.so
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.14-4.1
+- Move to /90
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.14-4
 - Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.14-3

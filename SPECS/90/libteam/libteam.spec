@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:       Team driver
 Name:          libteam
 Version:       1.31
-Release:       6%{?dist}
+Release:       6.1%{?dist}
 URL:           http://www.libteam.org
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
@@ -126,6 +128,8 @@ install -Dm 644 teamd/dbus/teamd.conf \
 %{_datadir}/teamd/*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.31-6.1
+- Move to /90
 * Sat Nov 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.31-6
 - Add systemd-rpm-macros to build requires
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.31-5
