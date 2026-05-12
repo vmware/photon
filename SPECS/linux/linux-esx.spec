@@ -197,6 +197,9 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Fix CVE-2025-38685
+Patch105: 0001-fbdev-Fix-vmalloc-out-of-bounds-write-in-fast_imageb.patch
+
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
@@ -255,6 +258,9 @@ Patch141: 0001-Bluetooth-RFCOMM-avoid-leaving-dangling-sk-pointer-i.patch
 
 # Fix CVE-2024-26584
 Patch146: 0001-tls-rx-simplify-async-wait.patch
+Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
+Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+
 # Fix CVE-2022-49444
 Patch150: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
 

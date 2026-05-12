@@ -188,6 +188,9 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Fix CVE-2025-38685
+Patch105: 0001-fbdev-Fix-vmalloc-out-of-bounds-write-in-fast_imageb.patch
+
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
@@ -223,6 +226,9 @@ Patch124: 0001-io_uring-prevent-opcode-speculation.patch
 # Fix CVE-2024-35937
 Patch125: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
 
+# Fix CVE-2025-38512
+Patch126: 0001-wifi-prevent-A-MSDU-attacks-in-mesh-networks.patch
+
 # Fix CVE-2026-31392
 Patch128: 0001-smb-client-fix-krb5-mount-with-username-option.patch
 
@@ -250,6 +256,9 @@ Patch140: 0001-Bluetooth-RFCOMM-avoid-leaving-dangling-sk-pointer-i.patch
 
 # Fix CVE-2024-26584
 Patch143: 0001-tls-rx-simplify-async-wait.patch
+Patch144: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
+Patch145: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
+
 # Fix CVE-2024-26583
 Patch147: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
 
@@ -261,6 +270,9 @@ Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 
 # Fix CVE-2022-49444
 Patch150: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
+
+# Fix CVE-2024-58240
+Patch151: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
 
 # Fix CVE-2024-41071
 Patch155: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
