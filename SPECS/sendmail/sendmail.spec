@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.1.10
-Release:          3%{?dist}
+Release:          4%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -192,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.18.1.10-4
+- Build for subrelease >= 91
 * Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.18.1.10-3
 - Replace deprecated net-tools with iproute2
 * Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.1.10-2

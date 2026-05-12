@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.1.10
-Release:          1.1%{?dist}
+Release:          1.1.1%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -192,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.18.1.10-1.1.1
+- Move to /90
 * Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.18.1.10-1.1
 - Bump after moving to SPECS/91
 * Fri Oct 03 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.18.1.10-1
