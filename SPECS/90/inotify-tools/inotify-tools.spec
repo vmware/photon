@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        Command line utility for i-node notifications and management.
 Name:           inotify-tools
 Version:        3.13
-Release:        4%{?dist}
+Release:        4.1%{?dist}
 URL:            http://sourceforge.net/projects/inotify-tools
 Group:          Applications/Systems
 Vendor:         VMware, Inc.
@@ -64,6 +66,8 @@ rm -rf %{buildroot}
 %exclude %{_libdir}/libinotifytools.la
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.13-4.1
+- Move to /90
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.13-4
 - Release bump for SRP compliance
 * Wed Jun 15 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.13-3
