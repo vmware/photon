@@ -3,27 +3,31 @@
 Summary:       Linux Containers File System
 Name:          lxcfs
 Version:       5.0.3
-Release:       5%{?dist}
+Release:       6%{?dist}
 URL:           https://linuxcontainers.org/lxcfs/downloads/
-Source0:       %{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
+Source0:       %{name}-%{version}.tar.gz
+
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires: gcc meson python3-jinja2
+Patch0: 0001-lxcfs-meson_build-Fix-service.patch
+
+BuildRequires: gcc
+BuildRequires: meson
+BuildRequires: python3-jinja2
 BuildRequires: libtool
-BuildRequires: fuse-devel
 BuildRequires: systemd-devel
 BuildRequires: help2man
-Requires:      fuse
+BuildRequires: fuse3-devel
+
+Requires:         fuse3
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
-
-Patch0: 0001-lxcfs-meson_build-Fix-service.patch
 
 %description
 LXCFS is a simple userspace filesystem designed to work around some current limitations of the Linux kernel.
@@ -62,6 +66,8 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/%{name}
 
 %changelog
+* Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0.3-6
+- Build with fuse3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0.3-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.3-4

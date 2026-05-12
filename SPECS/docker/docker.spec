@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        29.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -92,7 +92,7 @@ Documentation and vimfiles for docker
 Summary:    Rootless support for Docker
 Requires:   slirp4netns
 Requires:   libslirp
-Requires:   fuse
+Requires:   fuse3
 Requires:   rootlesskit
 Requires:   %{name} = %{version}-%{release}
 Requires:   dbus-user-session
@@ -297,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.4.1-3
+- Build docker-rootless with fuse3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 29.4.1-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 21 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.4.1-1

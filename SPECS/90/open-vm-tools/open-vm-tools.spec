@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %global gosc_scripts    gosc-scripts
 %define gosc_ver        1.3.2
@@ -6,7 +6,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        13.0.0
-Release:        6%{?dist}
+Release:        5.0.1%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -30,9 +30,6 @@ Patch2: gosc-change-order-of-args-to-cloud-init-in-Ph4-and-above.patch
 
 # Fix CVE-2025-41244
 Patch3: CVE-2025-41244.patch
-%if 0%{photon_subrelease} >= 91
-Patch4: ovt-Fix-build-for-newer-glibc.patch
-%endif
 
 BuildRequires: glib-devel
 BuildRequires: libxml2-devel
@@ -42,12 +39,12 @@ BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
-BuildRequires: fuse3-devel
+BuildRequires: fuse-devel
 BuildRequires: systemd-devel
 BuildRequires: rpcsvc-proto-devel
 BuildRequires: libtirpc-devel
 
-Requires: fuse3
+Requires: fuse
 Requires: libmspack
 Requires: glib
 Requires: openssl
@@ -182,8 +179,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
-* Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-6
-- Build with fuse3
+* Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-5.0.1
+- Bump after moving to SPECS/90
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.0.0-5
 - version bump after glibc is upgraded in 91
 * Sun Apr 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.0.0-4

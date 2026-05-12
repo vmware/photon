@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        s3fs allows Linux, macOS, and FreeBSD to mount an S3 bucket via FUSE
 Name:           s3fs-fuse
-Version:        1.97
-Release:        1%{?dist}
+Version:        1.94
+Release:        2.0.1%{?dist}
 Group:          Development/Tools
 URL:            https://github.com/s3fs-fuse/s3fs-fuse
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+Source0: https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-v%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -23,7 +23,7 @@ BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  pkg-config
-BuildRequires:  fuse3-devel
+BuildRequires:  fuse-devel
 
 %if 0%{?with_check}
 BuildRequires:  openjdk11
@@ -31,7 +31,7 @@ BuildRequires:  python3-pip
 BuildRequires:  attr-devel
 %endif
 
-Requires:       fuse3
+Requires:       fuse >= 2.8.4
 Requires:       curl-libs
 Requires:       openssl
 Requires:       libxml2
@@ -70,8 +70,8 @@ rm -rf %{buildroot}
 %doc COPYING AUTHORS README.md ChangeLog
 
 %changelog
-* Mon May 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.97-1
-- Upgrade to v1.97, build with fuse3
+* Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.94-2.0.1
+- Bump after moving to SPECS/90
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.94-2
 - Release bump for SRP compliance
 * Thu Oct 03 2024 Tapas Kundu <tapas.kundu@broadom.com> 1.94-1

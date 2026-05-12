@@ -3,7 +3,7 @@
 Summary:        Utilities for creating and managing EROFS filesystems
 Name:           erofs-utils
 Version:        1.9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/erofs/erofs-utils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -23,7 +23,7 @@ BuildRequires:  xz-devel
 BuildRequires:  zstd-devel
 BuildRequires:  zlib-devel
 BuildRequires:  util-linux-devel
-BuildRequires:  fuse-devel
+BuildRequires:  fuse3-devel
 
 Requires:       lz4
 Requires:       xz-libs
@@ -41,7 +41,7 @@ high-performance read-only requirements.
 Summary:        FUSE support for EROFS filesystems
 Group:          System Environment/Base
 Requires:       %{name} = %{version}-%{release}
-Requires:       fuse
+Requires:       fuse3-libs
 
 %description    fuse
 This package provides erofsfuse, a FUSE-based utility for mounting
@@ -91,6 +91,8 @@ This package provides documentation and man pages for erofs-utils.
 %{_mandir}/man1/erofsfuse.1*
 
 %changelog
+* Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.9.1-3
+- Build with fuse3
 * Thu May 7 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.9.1-2
 - Make erofs-utils build for 91
 * Wed Apr 15 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.9.1-1

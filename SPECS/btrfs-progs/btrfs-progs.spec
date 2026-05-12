@@ -1,17 +1,18 @@
 %global build_if %{photon_subrelease} >= 91
 
 Name:           btrfs-progs
-Version:        6.1.3
-Release:        6%{?dist}
+Version:        7.0
+Release:        1%{?dist}
 Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
-Vendor:         VMware, Inc.
-Distribution:   Photon
 
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  libacl-devel
@@ -30,7 +31,7 @@ check, modify and correct any inconsistencies in the btrfs filesystem.
 %package        devel
 Summary:        btrfs filesystem-specific libraries and headers
 Group:          Development/Libraries
-Requires:       btrfs-progs = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 btrfs-progs-devel contains the libraries and header files needed to
@@ -52,11 +53,18 @@ sh ./autogen.sh
 make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
-#disabled the documentation
-make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir} install DESTDIR=%{buildroot} %{?_smp_mflags}
+make %{?_smp_mflags} \
+     DISABLE_DOCUMENTATION=1 \
+     mandir=%{_mandir} \
+     bindir=%{_sbindir} \
+     libdir=%{_libdir} \
+     incdir=%{_includedir} \
+     DESTDIR=%{buildroot} \
+     install
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}
 
@@ -87,6 +95,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
+* Tue May 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0-1
+- Upgrade to v7.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.3-6
 - Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 6.1.3-5

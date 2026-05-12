@@ -1,0 +1,17 @@
+sources:
+- archive: s3fs-fuse-v1.94.tar.gz
+  archive_sha512sum: 1a29d4f0b73f844ea1d4ad6e0b36d601fb7ab5818af0a90564b77182564c04fbef308362a9a749038b17f28f07f79b6debb661610f69c039a405b931361abe9c
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 's3fs is a FUSE filesystem that allows you to mount an
+        Amazon S3 bucket as a local filesystem. It stores files natively and transparently
+        in S3 (i.e., you can use other programs to access the same files). '
+      home_page: https://github.com/s3fs-fuse/s3fs-fuse
+      license_concluded: GPL-2.0-or-later AND FSFAP AND GPL-2.0-only AND GPL-3.0-or-later
+        AND GPL-1.0-or-later
+      license_declared: GPL-2.0-or-later AND FSFAP AND GPL-2.0-only AND GPL-3.0-or-later
+        AND GPL-1.0-or-later
+      short_summary: s3fs allows Linux, macOS, and FreeBSD to mount an S3 bucket via
+        FUSE
+      supplier: 'Organization: Broadcom, Inc.'

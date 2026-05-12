@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.9
-Release:        5%{?dist}
+Release:        4.0.1%{?dist}
 URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -72,8 +72,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/fuse.pc
 
 %changelog
-* Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.9-5
-- Bump to keep version higher than 90
+* Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.9-4.0.1
+- Bump after moving to SPECS/90
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.9.9-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.9-3

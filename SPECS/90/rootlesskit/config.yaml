@@ -1,0 +1,15 @@
+sources:
+- archive: rootlesskit-1.1.0.tar.gz
+  archive_sha512sum: e9ac0211a93806a85943c8a30b3fae07cc3cca69608da50db8ac3da4b5d209f4c1eea00eb12cb21fe59e74e41c70ca6cdd89042711235b3e30c3db282aea8f9e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'RootlessKit is a Linux-native implementation of "fake
+        root" using user_namespaces(7). The purpose of RootlessKit is to run Docker
+        and Kubernetes as an unprivileged user (known as "Rootless mode"), so as to
+        protect the real root on the host from potential container-breakout attacks. '
+      home_page: https://github.com/rootless-containers/rootlesskit
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Linux-native fakeroot using user namespaces
+      supplier: 'Organization: Broadcom, Inc.'

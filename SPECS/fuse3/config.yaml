@@ -1,0 +1,20 @@
+sources:
+- archive: fuse-3.18.2.tar.gz
+  archive_sha512sum: b2ca702b74788230981d05dc85458ee3582970dcb1526e7eda8f46e23d0373b361ef1438874a7caa46aaf02a5b84f7e5341fbe61e856cfbce849d1209b4aabbe
+  archive_type: upstream
+  name: fuse-3.18.2
+  version: 3.18.2
+  url: https://github.com/libfuse/libfuse/releases/download/fuse-3.18.2/fuse-3.18.2.tar.gz
+  repo_url: https://github.com/libfuse/libfuse
+  commit_id: 033844748010a3b8265bf1c90b9ae8ffe4cd9ca7
+  skip_list: []
+  missing: [.github, html, make_release_tarball.sh, .gitignore, .cirrus.yml]
+  spdx:
+    package:
+      detailed_description: 'With FUSE3 it is possible to implement a fully functional
+        filesystem in a userspace program.'
+      home_page: https://github.com/libfuse/libfuse
+      license_concluded: (BSD-2-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-2-Clause AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only AND MIT
+      license_declared: (BSD-2-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-2-Clause AND BSD-3-Clause AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only AND MIT
+      short_summary: File System in Userspace (FUSE) utilities
+      supplier: 'Organization: Broadcom, Inc.'

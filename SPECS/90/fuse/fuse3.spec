@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.12.0
-Release:        5%{?dist}
+Release:        5.0.1%{?dist}
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -90,6 +92,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-5.0.1
+-   Bump version after moving to SPECS/90
 *   Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-5
 -   Remove python3-atomicwrites from build requires during package self check
 *   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.12.0-4

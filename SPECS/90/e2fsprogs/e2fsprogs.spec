@@ -1,18 +1,20 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
-Version:        1.47.4
-Release:        1%{?dist}
+Version:        1.46.5
+Release:        5.0.1%{?dist}
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v%{version}/%{name}-%{version}.tar.xz
+Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:         CVE-2022-1304.patch
 
 Requires:       %{name}-libs = %{version}-%{release}
 
@@ -108,9 +110,6 @@ make %{?_smp_mflags} check
 %{_libdir}/libext2fs.so.2
 %{_libdir}/libe2p.so
 %{_libdir}/libext2fs.so
-#%{_unitdir}/*
-#%{_udevrulesdir}/*
-#%{_libexecdir}/%{name}
 
 %files libs
 %{_libdir}/libss.so
@@ -149,8 +148,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-* Mon May 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.47.4-1
-- Upgrade to v1.47.4
+* Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.46.5-5.0.1
+- Bump after moving to SPECS/90
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.46.5-5
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.46.5-4

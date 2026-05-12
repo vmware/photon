@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define network_required 1
 
 Summary:    Linux-native fakeroot using user namespaces
 Name:       rootlesskit
 Version:    1.1.0
-Release:    17%{?dist}
+Release:    16.0.1%{?dist}
 Group:      Tools/Docker
 URL:        https://github.com/rootless-containers/rootlesskit
 Vendor:     VMware, Inc.
@@ -21,7 +21,7 @@ BuildRequires: git
 
 Requires: slirp4netns
 Requires: libslirp
-Requires: fuse3
+Requires: fuse
 
 Conflicts: docker-rootless < 20.10.14-3
 
@@ -47,8 +47,8 @@ export BINDIR=%{_bindir}
 %{_bindir}/rootlessctl
 
 %changelog
-* Wed May 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-17
-- Use fuse3
+* Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-16.0.1
+- Bump after moving to SPECS/90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-16
 - Bump version as a part of go upgrade
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-15

@@ -1,0 +1,35 @@
+sources:
+- archive: open-vm-tools-stable-13.0.0.tar.gz
+  archive_sha512sum: 22e0e12b9b033f4934b99ef92d39d3c96f2e551676231c57c8da8e70cc94826a1ae1bfe10c70005b59d7464de89c95ae9c8fb3d445e6c51cf2b9a4ef413dce9a
+  skip_validation: false
+  archive_type: upstream
+  name: "open-vm-tools-stable-13.0.0"
+  version: 13.0.0
+  url: https://github.com/vmware/open-vm-tools/archive/refs/tags/stable-13.0.0.tar.gz
+  repo_url: https://github.com/vmware/open-vm-tools
+  commit_id: 3c28b6f4d9af2df2027a9df9c82e2f0196bd8bf7
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'VMware virtualization user mode tools '
+      home_page: https://github.com/vmware/open-vm-tools
+      license_concluded: LGPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND
+        BSD-2-Clause AND ICU AND OLDAP-2.8 AND ISC AND W3C-19980720 AND X11 AND LGPL-2.1-only
+        AND MIT AND CDDL-1.0 AND BSD-3-Clause
+      license_declared: LGPL-2.0-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND
+        BSD-2-Clause AND ICU AND OLDAP-2.8 AND ISC AND W3C-19980720 AND X11 AND LGPL-2.1-only
+        AND MIT AND CDDL-1.0 AND BSD-3-Clause
+      short_summary: Usermode tools for VMware virts
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: gosc-scripts-1.3.2.tar.gz
+  archive_sha512sum: b88d46d480edf169f1e12b4a760d2b00d705dc428b3b5ec614cc9d323871ea501f7ebce2885a2e9aaf4a60662481c62d2504b471e58a7f6d0482fe9cfe76c4ec
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: GOSC scripts
+      home_page: https://packages-prod.broadcom.com/photon/photon_sources/1.0
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: GOSC scripts
+      supplier: 'Organization: Broadcom, Inc.'

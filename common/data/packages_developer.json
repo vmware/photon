@@ -14,7 +14,7 @@
         "device-mapper",
         "kpartx",
         "openssl-devel",
-        "fuse-devel",
+        "fuse3-devel",
         "python3-pip",
         "createrepo_c",
         "texinfo",
