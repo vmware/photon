@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        RNG deamon and tools
 Name:           rng-tools
 Version:        5
-Release:        4%{?dist}
+Release:        4.1%{?dist}
 URL:            https://sourceforge.net/projects/gkernel/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -51,6 +53,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+*       Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 5-4.1
+-       Move to /90
 *       Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5-4
 -       Release bump for SRP compliance
 *       Wed Dec 22 2021 Keerthana K <keerthanak@vmware.com> 5-3
