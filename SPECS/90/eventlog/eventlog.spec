@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:    Syslog event logger library
 Name:       eventlog
 Version:    0.2.12
-Release:    5.1%{?dist}
+Release:    5.1.1%{?dist}
 URL:        https://www.balabit.com
 Group:      System Environment/Daemons
 Vendor:     VMware, Inc.
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/eventlog.pc
 
 %changelog
+* Tue May 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.2.12-5.1.1
+- Move to 90 subrelease
 * Mon Apr 20 2026 Tapas Kundu <tapas.kundu@broadcom.com> 0.2.12-5.1
 - Sub branch for 9.1
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.2.12-5
