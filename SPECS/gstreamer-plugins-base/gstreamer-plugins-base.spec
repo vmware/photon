@@ -1,6 +1,6 @@
 Summary:        GStreamer streaming media framework plug-ins
 Name:           gstreamer-plugins-base
-Version:        1.25.1
+Version:        1.26.11
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://gstreamer.freedesktop.org
@@ -9,9 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-%{version}.tar.xz
-%define sha512 gst-plugins-base=8644542e34499d140c5dcf65a33d1c9df6738a45844d508f1adae03f9023bea1d25541bbb3d89cd919434fff70965f3ab105f26443f6e383a819fb1eedc8b554
+%define sha512 gst-plugins-base=7cac1bcd3f7af056062026aafcbcd43ed9a2f7cf828ee2e8ed2112816f95e770c27065dfbbf83d90831111f17e4550652ccc849a68e71334b24cd86845183d8d
 
-BuildRequires:  meson
+BuildRequires:  meson >= 1.4.0
 BuildRequires:  cmake
 BuildRequires:  gstreamer-devel
 BuildRequires:  pango-devel
@@ -92,6 +92,8 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*   Tue May 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.26.11-1
+-   Version upgrade
 *   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.25.1-1
 -   update to 1.25.1
 *   Tue Jun 18 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.22.7-2

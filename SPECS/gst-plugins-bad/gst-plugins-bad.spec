@@ -1,7 +1,7 @@
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
-Version:        1.25.1
-Release:        3%{?dist}
+Version:        1.26.11
+Release:        1%{?dist}
 License:        LGPLv2
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
@@ -9,14 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=51a11258d3c3c58ba3860da3f1a85138fa60f5094259cd874fd4ca8bc17bb5df066e7e3cbebdcd1fbf384d13df4aaf168fe5503d302016936a2ac54d029d2063
+%define sha512 %{name}=6a105d1b9f0d51c7c157b259e408b2f23aa44b74f3c60708c8024d7790e2fb2ee65884ae709a9dbb31a84d6b16447b127bc85153a3fe33082c0cc9a73eb950ef
 
-Patch0:  0001-CVE-2025-3887-1.patch
-Patch1:  0002-CVE-2025-3887-2.patch
-Patch2:  0003-CVE-2026-3082.patch
-Patch3:  0004-CVE-2026-3084.patch
-
-BuildRequires:  meson
+BuildRequires:  meson >= 1.4.0
 BuildRequires:  cmake
 BuildRequires:  gstreamer-plugins-base-devel
 
@@ -74,6 +69,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Tue May 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.26.11-1
+- Version upgrade to 1.26.11
 * Fri Mar 27 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.25.1-3
 - Fix CVE-2026-3084 and CVE-2026-3082
 * Mon Jan 05 2026 Tapas Kundu <tapas.kundu@broadcom.com> 1.25.1-2
