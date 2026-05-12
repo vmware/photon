@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary: Network traffic statics utility for Solaris and Linux
 Name:    nicstat
 Version: 1.95
-Release: 4%{?dist}
+Release: 4.1%{?dist}
 URL:            http://sourceforge.net/projects/%{name}
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Group:      Development/Tools
@@ -29,6 +31,8 @@ install -p -m644 -D  %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %{_mandir}/man1/*
 
 %changelog
+*   Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.95-4.1
+-   Move to /90
 *   Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.95-4
 -   Release bump for SRP compliance
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.95-3
