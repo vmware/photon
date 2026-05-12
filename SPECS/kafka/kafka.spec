@@ -6,8 +6,8 @@
 
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
-Version:       3.9.1
-Release:       2%{?dist}
+Version:       3.9.2
+Release:       1%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -15,12 +15,12 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 
 Source0: %{name}-%{version}-src.tgz
-%define sha512 %{name}=28b3066cb554e573428ef69d366cd344b0e7114a560eb57b2d3dda0507d266e6e804389457e8788f27b9c8f1dab027698a448bd82ca1d38b788e2874683e8019
+%define sha512 %{name}=3deb2ec0598a95d21b60cb5282a89dc839260de55f8e1b3f8eb22b2598d008e8f895702df9d3ca891f7009588741ad3d7dc63cda732c10f56f6daba92c276ae7
 
 Source1: %{name}.service
 
 Source2: %{name}-build-jars-%{version}.tar.gz
-%define sha512 %{name}-build-jars=09032ff06f9486fab237047b31ed6b7290a63d9398548cd71c757192dd06ddba50dcae574fcfdf0903c3c6368d442794afbe579fb4a80160d5121717bfd0f698
+%define sha512 %{name}-build-jars=24bf01fb44859f233c4d80af496785839ceecd0bbb75949aa2a8ead1f47d36510347e397403196b113c8539e04bc582d0cb5635fb9c2fb2e099fed433d8142ce
 
 Provides: %{name}-server = %{version}-%{release}
 
@@ -123,6 +123,8 @@ fi
 %attr(0700,kafka,kafka) %dir %{_data_dir}
 
 %changelog
+* Tue May 12 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.9.2-1
+- Update to 3.9.2, fixes CVE-2026-35554, CVE-2026-33558, CVE-2024-56128, CVE-2024-31141
 * Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.1-2
 - Add jdk21 to requires list
 * Thu May 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.9.1-1
