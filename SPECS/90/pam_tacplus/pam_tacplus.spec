@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        PAM Tacacs+ module
 Name:           pam_tacplus
 Version:        1.6.1
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 URL:            http://tacplus.sourceforge.net/
 Group:          System
 Vendor:         VMware, Inc.
@@ -71,6 +73,8 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.6.1-3.1
+- Move to /90
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.1-3
 - Release bump for SRP compliance
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.1-2
