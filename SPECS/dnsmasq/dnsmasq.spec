@@ -2,7 +2,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.92rel2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -98,6 +98,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Thu May 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.92rel2-2
+- Bump version as a part of nettle upgrade
 * Wed May 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.92rel2-1
 - Update to v2.92rel2
 - Fixes multiple critical CVEs

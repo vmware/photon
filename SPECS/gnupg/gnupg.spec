@@ -1,7 +1,7 @@
 Summary:        OpenPGP standard implementation used for encrypted communication and data storage.
 Name:           gnupg
 Version:        2.2.23
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3+
 URL:            https://gnupg.org/index.html
 Group:          Applications/Cryptography.
@@ -70,6 +70,8 @@ make %{?_smp_mflags} check
 %exclude %{_docdir}/*
 
 %changelog
+* Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.2.23-6
+- Bump version as a part of gnutls upgrade
 * Mon Jan 12 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.23-5
 - Fix CVE-2025-68973
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 2.2.23-4

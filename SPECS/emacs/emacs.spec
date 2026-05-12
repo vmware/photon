@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        30.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
@@ -76,6 +76,8 @@ rm %{buildroot}%{_datadir}/applications/emacsclient.desktop
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
+* Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 30.1-2
+- Bump version as a part of gnutls upgrade
 *  Tue Apr 29 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 30.1-1
 -  Version upgrade
 *  Thu Feb 13 2025 Harinadh D <Harinadh.Dommaraju@broadcom.com> 29.4-1

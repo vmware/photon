@@ -1,46 +1,17 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.7.10
-Release:        7%{?dist}
+Version:        3.8.13
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha512 %{name}=23e0890abd00c433f11c2d4ceb328fe4ac0a0b765de89dff52f16e7d20694a7c61a6acb084d9f58f15c1a9609d70efdac489ac4759963c0ff1d1b8bb7183269e
+Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/%{name}-%{version}.tar.xz
+%define sha512 %{name}=71bf189a836fd18d58b9e995d4bfcecdb0aae6129dfd44247b98422b2f127dd868f9905d28fad2ca05afd919a0e6b3c8eebb6b95804067d3a8dab31ebdc72453
 
 Patch0: default-priority.patch
-Patch1: CVE-2023-5981.patch
-Patch2: CVE-2024-0553.patch
-Patch3: CVE-2024-0567.patch
-Patch4: CVE-2024-28835.patch
-Patch5: CVE-2024-28834.patch
-Patch6: CVE-2024-12243.patch
-Patch7: CVE-2025-32988.patch
-Patch8: CVE-2025-32989.patch
-Patch9: CVE-2025-32990.patch
-Patch10: CVE-2025-6395.patch
-Patch11: gnutls-CVE-2025-9820.patch
-# Context patch for several lib/buffers.c CVEs
-Patch12: 0001-buffers-shorten-merge_handshake_packet-using-recv_bu.patch
-Patch13: CVE-2026-33846.patch
-Patch14: CVE-2026-42009-00.patch
-Patch15: CVE-2026-42009-1.patch
-Patch16: CVE-2026-42009-2.patch
-Patch17: CVE-2026-33845-00.patch
-Patch18: CVE-2026-33845-01.patch
-Patch19: CVE-2026-33845-02.patch
-Patch20: CVE-2026-3833-00.patch
-Patch21: CVE-2026-3833-01.patch
-Patch22: CVE-2026-42010.patch
-Patch23: CVE-2026-42011.patch
-Patch24: CVE-2026-42012-00.patch
-Patch25: CVE-2026-42012-01.patch
-Patch26: CVE-2026-42012-02.patch
-Patch27: CVE-2026-42012-03.patch
-Patch28: CVE-2026-5419.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
@@ -117,9 +88,6 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man1/*
 %{_datadir}/locale/*
 %{_docdir}/%{name}/*.png
-%{_libdir}/guile/2.0/extensions/*.so*
-%{_libdir}/guile/2.0/site-ccache/%{name}*
-%{_datadir}/guile/site/2.0/%{name}*
 %config(noreplace) %{_sysconfdir}/%{name}/default-priorities
 
 %files devel
@@ -130,6 +98,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.13-1
+- Version upgrade to v3.8.13
 * Fri May 08 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-7
 - Fix - CVE-2026-33846, CVE-2026-42009, CVE-2026-33845
 - CVE-2026-3833, CVE-2026-42010, CVE-2026-42011, CVE-2026-42012, CVE-2026-5419

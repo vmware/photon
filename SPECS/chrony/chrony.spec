@@ -1,6 +1,6 @@
 Name:           chrony
 Version:        4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        An NTP client/server
 License:        GPLv2
 Vendor:         VMware, Inc.
@@ -106,6 +106,8 @@ make quickcheck %{?_smp_mflags}
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
+* Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.0-5
+- Bump version as a part of nettle upgrade
 *  Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0-4
 -  Bump version as a part of nettle upgrade
 *  Wed Jul 07 2021 Tapas Kundu <tkundu@vmware.com> 4.0-3

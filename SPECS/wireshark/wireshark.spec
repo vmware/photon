@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
 Version:        4.2.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -101,6 +101,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Thu May 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.2.12-4
+- Bump version as a part of gnutls upgrade
 * Wed May 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.2.12-3
 - Fix CVE-2026-6519
 * Tue Nov 25 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.12-2

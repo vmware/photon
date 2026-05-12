@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.11.16
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -441,6 +441,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/errmsg-utf8.txt
 
 %changelog
+* Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 10.11.16-2
+- Bump version as a part of gnutls upgrade
 * Mon Mar 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.16-1
 - Upgrade to v10.11.16
 * Tue Dec 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.11.15-1

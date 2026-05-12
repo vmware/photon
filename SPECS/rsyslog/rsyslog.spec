@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2306.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
@@ -100,6 +100,8 @@ make %{?_smp_mflags} check
 %dir %{_sharedstatedir}/rsyslog
 
 %changelog
+* Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.2306.0-5
+- Bump version as a part of gnutls upgrade
 * Mon May 05 2025 Tapas Kundu <tapas.kundu@broadcom.com> 8.2306.0-4
 - Add imjournal.state file in conf to store the position in the journal
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 8.2306.0-3

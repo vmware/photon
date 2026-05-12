@@ -1,12 +1,12 @@
 Summary:    Low level cryptographic libraries
 Name:       nettle
-Version:    3.7.3
+Version:    3.10.2
 Release:    1%{?dist}
 License:    LGPLv3+ or GPLv2+
 URL:        http://www.lysator.liu.se/~nisse/nettle
 
 Source0:    https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 %{name}=9adfadd4ae4104c8aceb38bf16064d65d7edbcce
+%define sha512 %{name}=bf37ddd7dca8e78488da2a5286dcf16761d527d620572b42f2ad27bb8ee8c12999d92b0272e06f53766e7155a3f4a1ab7ad9c4b1c3caec47c031878b6b1772fb
 
 Group:      Development/Libraries
 Vendor:     VMware, Inc.
@@ -66,6 +66,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.10.2-1
+-   Version upgrade to v3.10.2
 *   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.3-1
 -   Bump to version 3.7.3 to fix CVE-2021-3580
 *   Mon Apr 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-1

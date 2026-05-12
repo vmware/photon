@@ -1,7 +1,7 @@
 Summary:    RELP Library
 Name:       librelp
 Version:    1.8.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv3+
 URL:        http://www.librelp.com
 Group:      System Environment/Libraries
@@ -71,6 +71,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.8.0-6
+- Bump version as a part of gnutls upgrade
 * Tue Nov 28 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-5
 - Bump version as a part of gnutls upgrade
 * Sun Oct 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-4
