@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:    The GNU portable thread library.
 Name:       pth
 Version:    2.0.7
-Release:    2%{?dist}
+Release:    2.1%{?dist}
 URL:        http://www.gnu.org/software/pth/
 Group:      System Environment/Libraries.
 Vendor:     VMware, Inc.
@@ -60,6 +62,8 @@ make
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.0.7-2.1
+- Move to /90
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.7-2
 - Release bump for SRP compliance
 * Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.7-1
