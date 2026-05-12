@@ -13,7 +13,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.254
+Version:        5.10.255
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
@@ -27,7 +27,7 @@ BuildArch:      x86_64
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=337cf44bda45815291471451ae4f4530b8637e589a16016e42bc1642ecc5872297e79aa78b375bcb8fa00adee369c92896f6516b0691bea6cb4e20715cafc47e
+%define sha512 linux=13fba407c99a493c73e517a0a2ee619210eb40e8e30a5af9bad8c436df20941aa8acbaabc87b1fcc4f37e95c262b418b3e14f0f53a03c0c29eac32f52b38e512
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -151,9 +151,6 @@ Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
 # Fix for CVE-2021-4204
 Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
-# Fix CVE-2025-38685
-Patch105: 0001-fbdev-Fix-vmalloc-out-of-bounds-write-in-fast_imageb.patch
-
 # Fix for CVE-2022-3522
 Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
 Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
@@ -212,9 +209,6 @@ Patch141: 0001-Bluetooth-RFCOMM-avoid-leaving-dangling-sk-pointer-i.patch
 
 # Fix CVE-2024-26584
 Patch146: 0001-tls-rx-simplify-async-wait.patch
-Patch147: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
-Patch148: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-
 # Fix CVE-2022-49444
 Patch150: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
 
@@ -470,9 +464,6 @@ Patch297: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
 Patch299: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 # CVE-2025-68283
 Patch300: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
-
-# Fix CVE-2024-58240
-Patch301: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
 
 # CVE-2023-53510
 Patch302: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
@@ -785,6 +776,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-1
+- Update to version 5.10.255
 * Thu Apr 30 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.254-1
 - Update to version 5.10.254
 * Sun Apr 19 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.253-1
