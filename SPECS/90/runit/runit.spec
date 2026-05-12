@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} <= 90
+
 %global security_hardening none
 Summary:        A UNIX init scheme with service supervision
 Name:           runit
 Version:        2.1.2
-Release:        6%{?dist}
+Release:        6.1%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +60,8 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/service
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.1.2-6.1
+- Move to /90
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.2-6
 - Release bump for SRP compliance
 * Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 2.1.2-5
