@@ -1,10 +1,10 @@
 # Build this spec if subrelease is 91 or less
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.18.12
-Release:        3.1%{?dist}
+Release:        3.1.1%{?dist}
 URL:            https://www.freedesktop.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -107,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/connection.available.d/*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.18.12-3.1.1
+- Move to /90
 * Tue Feb 17 2026 Tapas Kundu <tapas.kundu@broadcom.com> 1.18.12-3.1
 - Bump after moving to SPECS/91
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.18.12-3
