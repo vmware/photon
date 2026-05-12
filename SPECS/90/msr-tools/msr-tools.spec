@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary: Tools to read/write MSR (Model Specific Registers)
 Name:    msr-tools
 Version: 1.3
-Release: 3%{?dist}
+Release: 3.1%{?dist}
 URL: https://01.org/msr-tools/downloads
 Source0: %{name}-%{version}.zip
 Group:      Development/Tools
@@ -36,6 +38,8 @@ install -D cpuid %{buildroot}%{_sbindir}/msr-cpuid
 %{_sbindir}/*
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.3-3.1
+- Move to /90
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.3-3
 - Release bump for SRP compliance
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3-2
