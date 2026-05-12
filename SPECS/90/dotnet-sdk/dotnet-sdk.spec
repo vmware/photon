@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 90
+
 %define debug_package %{nil}
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        8.0.420
-Release:        1%{?dist}
+Release:        1.1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -47,6 +49,8 @@ echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.0.420-1.1
+- Move to /90
 * Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-1
 - Upgrade to v8.0.420
 * Wed Feb 25 2026 Mukul Sikka <mukul.sikka@broadcom.com> 8.0.411-2
