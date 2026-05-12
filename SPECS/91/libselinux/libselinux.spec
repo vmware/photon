@@ -3,7 +3,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.4
-Release:        6.2%{?dist}
+Release:        6.3%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -117,6 +117,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man3/*
 
 %changelog
+* Mon May 11 2026 Bo Gan <bo.gan@broadcom.com> 3.4-6.3
+- Bump up version to match libselinux-python3
 * Tue Apr 14 2026 Bo Gan <bo.gan@broadcom.com> 3.4-6.2
 - Split python3 sub-package into separate .spec file
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.4-6.1

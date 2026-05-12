@@ -3,7 +3,7 @@
 Summary:        SELinux python3 bindings for libselinux
 Name:           libselinux-python3
 Version:        3.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ Source1: license.txt
 Source2: libselinux.patches
 %include %{SOURCE2}
 
+BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  libselinux = %{version}-%{release}
 BuildRequires:  pcre2-devel
 BuildRequires:  swig
@@ -57,5 +58,7 @@ make \
 %{python3_sitelib}/*
 
 %changelog
+* Mon May 11 2026 Bo Gan <bo.gan@broadcom.com> 3.10-3
+- Add missing libsepol-devel build dependency
 * Wed Apr 29 2026 Bo Gan <bo.gan@broadcom.com> 3.10-2
 - Split python3 sub-package into separate .spec file
