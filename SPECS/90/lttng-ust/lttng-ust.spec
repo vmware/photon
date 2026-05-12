@@ -1,7 +1,7 @@
 Summary:       LTTng-UST is an Userspace Tracer library
 Name:          lttng-ust
 Version:       2.13.5
-Release:       2%{?dist}
+Release:       2.1%{?dist}
 URL:           https://lttng.org/download/
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
@@ -65,6 +65,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+* Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.5-2.1
+- Bump after moving to SPECS/90
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.13.5-2
 - Release bump for SRP compliance
 * Tue Jan 31 2023 Gerrit Photon <photon-checkins@vmware.com> 2.13.5-1
