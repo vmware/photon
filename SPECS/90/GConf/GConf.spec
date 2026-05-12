@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        configuration database system used by many GNOME applications
 Name:           GConf
 Version:        3.2.6
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 URL:            http://gnome.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -90,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_datadir}
 
 %changelog
+*   Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.2.6-3.1
+-   Move to /90
 *   Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.2.6-3
 -   Release bump for SRP compliance
 *   Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 3.2.6-2
