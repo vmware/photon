@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Name:           gpsd
 Version:        3.25
-Release:        7.1%{?dist}
+Release:        7.1.1%{?dist}
 Summary:        Service daemon for mediating access to a GPS
 Group:          System Environment
 Vendor:         VMware, Inc.
@@ -244,6 +244,8 @@ rm -rf INSTALL.adoc TODO %{buildroot}%{_datadir}/doc %{buildroot}/%{_mandir}/man
 %exclude %{_datadir}/%{name}/gpsd-logo.png
 
 %changelog
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.25-7.1.1
+- Move to /90
 * Fri Feb 13 2026 Tapas Kundu <tapas.kundu@broadcom.com> 3.25-7.1
 - Bump after moving to SPECS/91
 * Wed Jan 14 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.25-7
