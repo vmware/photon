@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.19.0
-Release:        2%{?dist}
+Version:        8.20.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,15 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=ee97faaf588b255428000599293c47a2f648af11d1a0b7b823db6aec151e2090f5c7b921745ddb2c3818d92b16e0a4c15d7a9b3d1ff45df1f35438504bd16574
-
-Patch0: curl-CVE-2026-4873.patch
-Patch1: curl-CVE-2026-5545.patch
-Patch2: curl-CVE-2026-5773.patch
-Patch3: curl-CVE-2026-6253.patch
-Patch4: curl-CVE-2026-6276.patch
-Patch5: add-curl_url_same_origin.patch
-Patch6: curl-CVE-2026-6429.patch
+%define sha512 %{name}=edfa5882aaeefcf2226fe03b19246151c0377c3656f9c8cc385bdaf34565e1354e762005b58780917a6d98039ae34085e4a4bcb44255c77e3b0e1d94090c010b
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -115,6 +107,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue May 05 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.20.0-1
+- Upgrade to 8.20.0
+- Fixes CVE-2026-4873, CVE-2026-5545, CVE-2026-5773, CVE-2026-6253,
+  CVE-2026-6276, CVE-2026-6429, CVE-2026-7009, CVE-2026-7168
 * Tue Apr 28 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.19.0-2
 - Fixes CVE-2026-4873,CVE-2026-5545,CVE-2026-5773,CVE-2026-6253,CVE-2026-6276,CVE-2026-6429
 * Wed Mar 11 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.19.0-1
