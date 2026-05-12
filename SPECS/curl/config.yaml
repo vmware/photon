@@ -1,12 +1,12 @@
 sources:
-- archive: curl-8.19.0.tar.xz
+- archive: curl-8.20.0.tar.xz
   archive_type: upstream
-  archive_sha512sum: ee97faaf588b255428000599293c47a2f648af11d1a0b7b823db6aec151e2090f5c7b921745ddb2c3818d92b16e0a4c15d7a9b3d1ff45df1f35438504bd16574
-  name: curl-8.19.0
-  version: 8.19.0
-  url: https://curl.se/download/curl-8.19.0.tar.xz
+  archive_sha512sum: edfa5882aaeefcf2226fe03b19246151c0377c3656f9c8cc385bdaf34565e1354e762005b58780917a6d98039ae34085e4a4bcb44255c77e3b0e1d94090c010b
+  name: curl-8.20.0
+  version: 8.20.0
+  url: https://curl.se/download/curl-8.20.0.tar.xz
   repo_url: https://github.com/curl/curl
-  commit_id: 8c908d2d0a6d32abdedda2c52e90bd56ec76c24d
+  commit_id: a05f34973e6c4bb629d018f7cb51487be1c904d8
   skip_list: [tool_version.h, curlver.h]
   missing: [.dir-locals.el, cijobs.pl, renovate.json, THANKS-filter, adddocsref.pl, tool_hugehelp.c, SECURITY.md, compile, delta, .circleci, lt~obsolete.m4, buildconf, config.sub, aclocal.m4, libtool.m4, singleuse.pl, libtests.c, .gitignore, contributors.sh, .gitattributes, REUSE.toml, GIT-INFO.md, configure, config.guess, missing, appveyor.yml, .mailmap, depcomp, .git-blame-ignore-revs, installcheck.sh, RELEASE-TOOLS.md, contrithanks.sh, LICENSES, servers.c, ltmain.sh, release-notes.pl, README.md, ltoptions.m4, ltsugar.m4, Windows, tunits.c, Makefile.in, ltversion.m4, units.c, appveyor.sh, install-sh, curl_config.h.in, .github, libcurl-symbols.md, ciconfig.pl, CI.md]
   spdx:
