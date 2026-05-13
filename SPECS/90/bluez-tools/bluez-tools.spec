@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       A set of tools to manage bluetooth devices for linux
 Name:          bluez-tools
 Version:       0.2.0.20140808
-Release:       7.1%{?dist}
+Release:       7.1.1%{?dist}
 Group:         Applications/Communication
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -51,6 +51,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %doc AUTHORS COPYING
 
 %changelog
+* Wed May 13 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.2.0.20140808-7.1.1
+- Move to subrelease <= 90
 * Wed Apr 01 2026 Tapas Kundu <tapas.kundu@broadcom.com> 0.2.0.20140808-7.1
 - Sub branch bluez-tools
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.2.0.20140808-7
