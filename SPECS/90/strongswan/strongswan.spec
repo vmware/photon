@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
-Version:          6.0.6
-Release:          1%{?dist}
+Version:          5.9.8
+Release:          7.1%{?dist}
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
@@ -22,6 +22,10 @@ Patch1: 0001-HCX-custom-remote-natt-port.patch
 Patch2: 0002-ipsec-Add-clear_df-flag.patch
 Patch3: 0003-reiniate-conn-on-failure.patch
 Patch4: 0004-Add-new-configs-min_spi-and-max_spi.patch
+Patch5: CVE-2023-26463.patch
+Patch6: CVE-2023-41913.patch
+Patch7: BDSA-2025-14741.patch
+Patch8: CVE-2026-25075.patch
 
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
@@ -80,18 +84,21 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/*.conf
 %config(noreplace) %{_sysconfdir}/%{name}.d/*.conf
 %config(noreplace) %{_sysconfdir}/%{name}.d/charon/*.conf
+%config(noreplace) %{_sysconfdir}/ipsec.secrets
 %{_sysconfdir}/swanctl/*
+%{_sysconfdir}/ipsec.d/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/ipsec/*
 %{_libexecdir}/*
 %{_mandir}/man[158]/*
 %{_datadir}/%{name}/*
+%{_unitdir}/%{name}-starter.service
 %{_unitdir}/%{name}.service
 
 %changelog
-* Tue May 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.0.6-1
-- Update to v6.0.6
+* Fri May 15 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.9.8-7.1
+- Release bump for 90 subrelease
 * Fri Mar 27 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.9.8-7
 - Fix CVE-2026-25075
 * Thu Oct 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.9.8-6
