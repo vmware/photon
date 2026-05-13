@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        Libraries for the public client interface for NIS(YP) and NIS+.
 Name:           libnsl
 Version:        2.0.0
-Release:        5%{?dist}
+Release:        5.1%{?dist}
 Group:          System Environment/Libraries
 URL:            https://github.com/thkukuk/libnsl
 Vendor:         VMware, Inc.
@@ -59,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.a
 
 %changelog
+* Wed May 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.0-5.1
+- Move to SPECS/90
 * Tue Mar 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.0.0-5
 - Remove rpcsvc-proto as a dependency
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.0-4

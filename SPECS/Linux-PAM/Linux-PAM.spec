@@ -5,7 +5,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -33,9 +33,7 @@ Patch1: 0002-faillock-open-tally-file-in-O_CLOEXEC-mode.patch
 BuildRequires:  libselinux-devel
 BuildRequires:  libxcrypt-devel
 BuildRequires:  meson
-BuildRequires:  libnsl-devel
 
-Requires: libnsl
 Requires: libselinux
 Requires: libxcrypt
 
@@ -74,6 +72,7 @@ for developing applications that use Linux-PAM.
   -Dlogind=disabled \
   -Dopenssl=enabled \
   -Dpam_userdb=disabled \
+  -Dnis=disabled \
   -Dselinux=enabled \
   -Dvendordir='' \
   -Ddocs=disabled \
@@ -151,6 +150,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu May 21 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.2-3
+- Remove libnsl depndency
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.2-2
 - Build for subrelease >= 91
 * Thu Feb 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.2-1
