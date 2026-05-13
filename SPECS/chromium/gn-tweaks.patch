@@ -4,24 +4,38 @@ Date: Fri, 27 Feb 2026 06:30:17 -0600
 Subject: [PATCH] gn patches
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
----
- BUILD.gn                         | 39 +-------------------------------
- third_party/swiftshader/BUILD.gn | 18 ---------------
- 2 files changed, 1 insertion(+), 56 deletions(-)
 
 diff --git a/BUILD.gn b/BUILD.gn
-index 6c30a84bff..d66fd32298 100644
+index 32a2ff5978..549d828c46 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -1148,7 +1148,6 @@ if (use_blink && !is_cronet_build) {
+@@ -316,9 +316,6 @@ group("gn_all") {
+     if (toolkit_views) {
+       deps += [
+         "//ui/views:views_unittests",
+-        "//ui/views/examples:views_examples",
+-        "//ui/views/examples:views_examples_unittests",
+-        "//ui/views/examples:views_examples_with_content",
+       ]
+     }
+ 
+@@ -337,7 +334,6 @@ group("gn_all") {
+     if (!is_android && !is_ios && !is_fuchsia) {
+       deps += [
+         "//components/sync:sync_full_proto_unittests",
+-        "//ui/webui/examples:webui_examples",
+       ]
+     }
+ 
+@@ -1161,7 +1157,6 @@ if (use_blink && !is_cronet_build) {
          "//chrome",
          "//chrome/test/chromedriver:chromedriver_server",
          "//third_party/blink/tools:wpt_tests_isolate",
 -        "//third_party/blink/web_tests:wpt_tests",
        ]
      }
-
-@@ -1164,7 +1163,6 @@ if (use_blink && !is_cronet_build) {
+ 
+@@ -1177,7 +1172,6 @@ if (use_blink && !is_cronet_build) {
          "//chrome/test/chromedriver:chromedriver_server",
          "//headless:headless_shell",
          "//third_party/blink/tools:wpt_tests_isolate",
@@ -29,7 +43,7 @@ index 6c30a84bff..d66fd32298 100644
        ]
        if (is_mac || is_linux) {
          data_deps += [ "//third_party/hyphenation-patterns:bundle_hyphen_data" ]
-@@ -1259,9 +1257,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1272,9 +1266,6 @@ if (use_blink && !is_cronet_build) {
        "//testing/scripts/run_isolated_script_test.py",
        "//testing/xvfb.py",
        "//third_party/blink/tools/",
@@ -39,39 +53,39 @@ index 6c30a84bff..d66fd32298 100644
        "//third_party/pywebsocket3/src/mod_pywebsocket/",
        "//third_party/test_fonts/test_fonts/",
        "//third_party/wpt_tools/",
-@@ -1351,7 +1346,6 @@ if (use_blink && !is_cronet_build) {
-
+@@ -1364,7 +1355,6 @@ if (use_blink && !is_cronet_build) {
+ 
      data_deps = [
        ":blink_web_tests_support_data",
 -      "//third_party/blink/web_tests",
      ]
      data = [ "//third_party/blink/perf_tests/" ]
    }
-@@ -1362,7 +1356,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1375,7 +1365,6 @@ if (use_blink && !is_cronet_build) {
    # this target.
    group("blink_web_tests_expectations") {
      testonly = true
 -    data_deps = [ "//third_party/blink/web_tests:expectations" ]
    }
-
+ 
    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
-@@ -1386,7 +1379,6 @@ if (use_blink && !is_cronet_build) {
-
+@@ -1399,7 +1388,6 @@ if (use_blink && !is_cronet_build) {
+ 
      data_deps = [
        ":blink_web_tests_support_data",
 -      "//third_party/blink/web_tests:wpt_tests",
      ]
      data = [ "//third_party/blink/perf_tests/" ]
    }
-@@ -1411,7 +1403,6 @@ if (use_blink && !is_cronet_build) {
-
+@@ -1424,7 +1412,6 @@ if (use_blink && !is_cronet_build) {
+ 
      data_deps = [
        ":blink_web_tests_support_data",
 -      "//third_party/blink/web_tests:webgpu_web_tests",
        "//third_party/webgpu-cts",
      ]
      data = [ "//third_party/webgpu-cts/scripts/" ]
-@@ -1462,35 +1453,7 @@ if (use_blink && !is_cronet_build) {
+@@ -1475,35 +1462,7 @@ if (use_blink && !is_cronet_build) {
        "//testing/flake_suppressor_common/",
        "//third_party/blink/renderer/bindings/scripts/",
        "//third_party/blink/renderer/build/scripts/",
@@ -105,9 +119,54 @@ index 6c30a84bff..d66fd32298 100644
 -      data += [ "//third_party/blink/web_tests/IOSTestExpectations" ]
 -    }
 +      "//third_party/blink/tools/"]
-
+ 
      data_deps = [ "//ui/base:goldctl" ]
    }
+diff --git a/chrome/browser/enterprise/watermark/BUILD.gn b/chrome/browser/enterprise/watermark/BUILD.gn
+index b19538c9f1..b45b3c4550 100644
+--- a/chrome/browser/enterprise/watermark/BUILD.gn
++++ b/chrome/browser/enterprise/watermark/BUILD.gn
+@@ -46,8 +46,6 @@ executable("watermark_app") {
+     "//ui/gfx",
+     "//ui/resources:ui_test_pak",
+     "//ui/views",
+-    "//ui/views/examples:views_examples_lib",
+-    "//ui/views/examples:views_examples_proc",
+   ]
+ 
+   defines = [ "VIEWS_EXAMPLES_IMPLEMENTATION" ]
+diff --git a/chrome/browser/ui/browser_window/BUILD.gn b/chrome/browser/ui/browser_window/BUILD.gn
+index 0494a03994..6abdc26ee7 100644
+--- a/chrome/browser/ui/browser_window/BUILD.gn
++++ b/chrome/browser/ui/browser_window/BUILD.gn
+@@ -64,7 +64,6 @@ if (!is_android) {
+         "//base",
+         "//base/test:test_support",
+         "//chrome/browser/ui",
+-        "//chrome/browser/ui/browser_window/test:test_support",
+         "//chrome/test:test_support",
+         "//content/test:test_support",
+         "//testing/gtest",
+@@ -86,7 +85,6 @@ if (!is_android || is_desktop_android) {
+       "//base",
+       "//base/test:test_support",
+       "//chrome/browser/ui",
+-      "//chrome/browser/ui/browser_window/test:test_support",
+       "//chrome/test:test_support",
+       "//content/test:test_support",
+       "//testing/gtest",
+diff --git a/chrome/test/BUILD.gn b/chrome/test/BUILD.gn
+index 5870101f9e..42aa2179e0 100644
+--- a/chrome/test/BUILD.gn
++++ b/chrome/test/BUILD.gn
+@@ -6414,7 +6414,6 @@ template("performance_test_suite_template_base") {
+       data_deps += [
+         "//chrome/test:load_library_perf_tests",
+         "//components/tracing:tracing_perftests",
+-        "//components/variations/test_data/cipd:single_group_per_study_prefer_existing_behavior_seed",
+         "//testing:run_perf_test",
+         "//ui/views:views_perftests",
+       ]
 diff --git a/third_party/swiftshader/BUILD.gn b/third_party/swiftshader/BUILD.gn
 index cec2b68d5b..19c9bd5517 100644
 --- a/third_party/swiftshader/BUILD.gn
@@ -134,5 +193,3 @@ index cec2b68d5b..19c9bd5517 100644
 -    }
 -  }
 -}
---
-2.43.7

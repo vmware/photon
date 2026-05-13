@@ -1,24 +1,26 @@
 %global debug_package       %{nil}
 %define chromium_path       %{_libdir}/%{name}-browser
-%define builddir            out/headless
+%define output_dir          out/headless
 %define _jobs               %(echo $(( ($(nproc)+1) / 2 )))
 
 Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        145.0.7632.155
+Version:        148.0.7778.165
 Release:        1%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
+BuildArch: x86_64
+
 # Generated using tools/scripts/fetch-chromium-source.sh
 # Contact Shreenidhi Shedi for cleanup related info.
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.xz
 
-Source1: depot_tools-044f01a.tar.xz
+Source1: depot_tools-7b46edb.tar.xz
 
 Source2: headless.gn
 
@@ -38,9 +40,6 @@ BuildRequires: gperf
 BuildRequires: python3
 BuildRequires: python3-PyYAML
 
-# TODO: need to revisit for aarch64
-BuildArch: x86_64
-
 Requires: glibc
 Requires: nspr
 Requires: nss-libs
@@ -53,17 +52,17 @@ Chromium is an open-source browser project that aims to build a safer, faster, a
 %autosetup -a0 -a1 -p1 -n src
 
 %build
-mkdir -p %{builddir}
-cp %{SOURCE2} %{builddir}/args.gn
+mkdir -p %{output_dir}
+cp %{SOURCE2} %{output_dir}/args.gn
 
 py_path="$(realpath -s --relative-to=$PWD/depot_tools %{_bindir})"
 echo "${py_path}" > depot_tools/python3_bin_reldir.txt
 
-%{_builddir}/src/depot_tools/gn gen %{builddir}
+%{_builddir}/src/depot_tools/gn gen %{output_dir}
 
 # sometimes build breaks with OOM
 for i in 1 2 3; do
-  if ninja -C %{builddir} headless_shell -j %{_jobs}; then
+  if ninja -C %{output_dir} headless_shell -j %{_jobs}; then
     break
   fi
   echo "Warning: chromium build failed, retry ($i)" >&2
@@ -71,14 +70,14 @@ done
 
 %install
 mkdir -p %{buildroot}%{chromium_path}
-cp -a  %{builddir}/headless_lib_data.pak \
-       %{builddir}/headless_lib_strings.pak \
-       %{builddir}/headless_shell \
-       %{builddir}/libvk_swiftshader.so* \
-       %{builddir}/libvulkan.so* \
-       %{builddir}/libEGL.so* \
-       %{builddir}/libGLESv2.so* \
-       %{builddir}/vk_swiftshader_icd.json \
+cp -a  %{output_dir}/headless_lib_data.pak \
+       %{output_dir}/headless_lib_strings.pak \
+       %{output_dir}/headless_shell \
+       %{output_dir}/libvk_swiftshader.so* \
+       %{output_dir}/libvulkan.so* \
+       %{output_dir}/libEGL.so* \
+       %{output_dir}/libGLESv2.so* \
+       %{output_dir}/vk_swiftshader_icd.json \
        %{buildroot}%{chromium_path}
 
 > %{SOURCE0}
@@ -88,6 +87,8 @@ cp -a  %{builddir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Mon May 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 148.0.7778.165-1
+- Upgrade to v148.0.7778.165
 * Sat Feb 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 145.0.7632.155-1
 - Upgrade to v145.0.7632.155
 * Mon Dec 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 142.0.7444.175-1
