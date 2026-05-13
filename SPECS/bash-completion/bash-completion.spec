@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Programmable completion for Bash
 Name:           bash-completion
 Version:        2.17.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/scop/bash-completion
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -75,6 +75,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed May 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.17.0-3
+- Build for subrelease >= 91
 * Tue Mar 10 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.17.0-2
 - Add missing build_if
 * Thu Mar 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.17.0-1
