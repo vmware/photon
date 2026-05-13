@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.87
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -273,7 +273,6 @@ BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
 BuildRequires: glib-devel
-BuildRequires: xerces-c-devel
 BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
@@ -547,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.87-4
+- Removed xerces-c-devel from BuildRequires
 * Thu May 14 2026 Rishi Chhibber <rishi.chhibber@broadcom.com> 6.12.87-3
 - Add D-TLS Zero Copy Driver
 * Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.87-2

@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.172
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -476,7 +476,6 @@ BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
 BuildRequires: glib-devel
-BuildRequires: xerces-c-devel
 BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
@@ -767,6 +766,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.172-4
+- Removed xerces-c-devel from BuildRequires
 * Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-3
 - Fix CVE-2026-31685
 * Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.172-2

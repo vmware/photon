@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.172
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -426,7 +426,6 @@ BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
-BuildRequires:  xerces-c-devel
 BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -734,6 +733,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.172-5
+- Removed xerces-c-devel from BuildRequires
 * Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.172-4
 - Fix build with glibc-2.43
 - Moving to Sub Release 90 as there are no consumer of RT kernel

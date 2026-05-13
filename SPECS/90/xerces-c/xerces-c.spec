@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 90
+
 %define xerces_c_maj_ver 3.3
 
 Summary:        C++ xml parser.
 Name:           xerces-c
 Version:        3.3.0
-Release:        1%{?dist}
+Release:        1.1%{?dist}
 URL:            http://xerces.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -59,6 +61,8 @@ This package contains development headers and static library for xml parser.
 %{_libdir}/lib%{name}.so
 
 %changelog
+* Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.3.0-1.1
+- Move to 90
 * Wed Feb 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.3.0-1
 - Upgrade to v3.3.0
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.2.4-2
