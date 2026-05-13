@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Minimalistic C client library for Redis
 Name:           hiredis
 Version:        1.1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Productivity/Databases/Clients
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -62,6 +62,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue May 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.0-7
+- Move to subrelease >=91
 * Thu Mar 05 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.0-6
 - hiredis builds standalone (valkey only needed for optional make check)
 * Thu Oct 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.1.0-5

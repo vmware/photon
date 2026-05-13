@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:       advanced key-value store (Redis-compatible)
 Name:          valkey
 Version:       9.0.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 URL:           https://valkey.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -92,5 +92,7 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue May 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.0.3-2
+- Move to subrelease >=91
 * Thu Mar 05 2026 Packager <packager@broadcom.com> 9.0.3-1
 - Initial Valkey package (Redis-compatible)

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       advanced key-value store
 Name:          redis
 Version:       7.2.11
-Release:       1.1%{?dist}
+Release:       1.1.1%{?dist}
 URL:           http://redis.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -93,6 +93,8 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue May 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.2.11-1.1.1
+- Move to subrelease 90
 * Fri Mar 06 2026 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.11-1.1
 - Bump after moving to SPECS/91
 * Thu Oct 16 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 7.2.11-1
