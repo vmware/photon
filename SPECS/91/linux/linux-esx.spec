@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.172
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -475,7 +475,6 @@ BuildRequires: kbd
 BuildRequires: kmod-devel
 BuildRequires: glib-devel
 BuildRequires: xerces-c-devel
-BuildRequires: libdnet-devel
 BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
@@ -766,6 +765,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.172-2
+- Remove libdnet BuildReuires dependency.
 * Mon May 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-1
 - Update to version 6.1.172
 * Mon May 04 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.170-1

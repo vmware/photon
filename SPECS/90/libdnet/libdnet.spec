@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        A simplified, portable interface to several low-level networking routines
 Name:           libdnet
 Version:        1.11
-Release:        8%{?dist}
+Release:        8.1%{?dist}
 URL:            http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -53,6 +55,8 @@ make  %{?_smp_mflags} check
 %{_libdir}/libdnet.a
 
 %changelog
+* Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.11-8.1
+- Move to Sub-Release <= 90
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11-8
 - Release bump for SRP compliance
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.11-7
