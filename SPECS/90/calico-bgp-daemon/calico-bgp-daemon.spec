@@ -1,5 +1,4 @@
-# Build this spec if subrelease is 91 or less
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define debug_package %{nil}
 %define gopath_comp_bgp_daemon github.com/projectcalico/%{name}
@@ -7,7 +6,7 @@
 Summary:        GoBGP based Calico BGP Daemon
 Name:           calico-bgp-daemon
 Version:        0.2.2
-Release:        25.1%{?dist}
+Release:        25.1.1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 URL:            https://github.com/projectcalico/calico-bgp-daemon
@@ -70,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Wed May 13 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.2.2-25.1.1
+- Move to subrelease <= 90
 * Wed Feb 18 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-25.1
 - Deprecate calico-bgp-daemon to build only with subrelease 91 or less
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.2.2-25
