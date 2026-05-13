@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 90
+
 %define ant_prefix %{_var}/opt/ant-contrib
 
 Summary:    Ant contrib
 Name:       ant-contrib
 Version:    1.0b3
-Release:    21%{?dist}
+Release:    21.1%{?dist}
 URL:        http://ant-contrib.sourceforget.net
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -59,6 +61,8 @@ rm -rf %{buildroot}
 %{ant_prefix}/lib/*.jar
 
 %changelog
+* Wed May 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0b3-21.1
+- Move to 90
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0b3-21
 - Update URL to packages.broadcom.com
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0b3-20
