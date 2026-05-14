@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define dracutlibdir        %{_libdir}/%{name}
 %global __requires_exclude  pkg-config
@@ -6,7 +6,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        059
-Release:        11.1%{?dist}
+Release:        11.1.1%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+; except install/* which is LGPLv2+
 URL:            https://github.com/dracutdevs/dracut/wiki
@@ -162,6 +162,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 059-11.1.1
+- Bump after moving to SPECS/90
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 059-11.1
 - Bump after moving to SPECS/91
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 059-11

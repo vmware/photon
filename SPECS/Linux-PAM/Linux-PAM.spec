@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define STIG_HARDEN 0
 
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -151,6 +151,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.2-2
+- Build for subrelease >= 91
 * Thu Feb 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.2-1
 - Upgrade to v1.7.2
 * Fri Nov 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-11

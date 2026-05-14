@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 %global debug_package %{nil}
 
 Summary:        Libcap
 Name:           libcap
 Version:        2.66
-Release:        4.1%{?dist}
+Release:        4.1.1%{?dist}
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -79,6 +79,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.66-4.1.1
+-   Bump after moving to SPECS/90
 *   Mon Feb 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.66-4.1
 -   Release bump for 2.66-4.1 version
 *   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 2.66-4

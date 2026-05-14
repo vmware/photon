@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.14.0
-Release:        9.1%{?dist}
+Release:        9.1.1%{?dist}
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.14.0-9.1.1
+- Bump after moving to SPECS/90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.14.0-9.1
 - Bump after moving to SPECS/91
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.14.0-9

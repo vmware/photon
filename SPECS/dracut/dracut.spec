@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define dracutlibdir        %{_libdir}/%{name}
 %global __requires_exclude  pkg-config
@@ -6,7 +6,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        109
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Base
 URL:            https://github.com/dracut-ng/dracut-ng
 Vendor:         VMware, Inc.
@@ -160,6 +160,8 @@ rm -rf -- %{buildroot}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 109-2
+- Build for subrelease >= 91
 * Thu Mar 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 109-1
 - Upgrade to v109
 * Thu Mar 20 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 059-11

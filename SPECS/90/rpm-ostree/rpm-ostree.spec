@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2025.8
-Release:        3.2%{?dist}
+Release:        3.2.1%{?dist}
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -170,6 +170,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2025.8-3.2.1
+- Bump after moving to SPECS/90
 * Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2025.8-3.2
 - Bump version as a part of libarchive upgrade
 * Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2025.8-3.1

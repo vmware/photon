@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define STIG_HARDEN 0
 
@@ -7,7 +7,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        257.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -681,6 +681,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-2
+- Build with subrelease >= 91
 * Sun Mar 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-1
 - Upgrade to v257.13
 * Wed Nov 19 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 
 Summary:        Libcap
 Name:           libcap
 Version:        2.77
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -121,6 +121,8 @@ chmod -v 755 %{buildroot}%{_libdir}/%{name}.so
 %{_mandir}/man8/*
 
 %changelog
+*   Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.77-3
+-   Build for subrelease >= 91
 *   Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.77-2
 -   Fix aarch64 build, cleanup spec
 *   Mon Feb 09 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.77-1

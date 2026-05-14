@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define STIG_HARDEN 0
 
@@ -7,7 +7,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        17.2%{?dist}
+Release:        17.2.1%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -700,6 +700,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.1
+- Bump after moving to SPECS/90
 * Mon Mar 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2
 - Fix CVE-2026-29111
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.1
