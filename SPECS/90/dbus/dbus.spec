@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.4
-Release:        8.1%{?dist}
+Release:        8.1.1%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -107,6 +107,8 @@ make %{?_smp_mflags} check
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8.1.1
+- Bump after moving to SPECS/90
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8.1
 - Bump after moving to SPECS/91
 * Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8

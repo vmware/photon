@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.16.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -138,6 +138,8 @@ install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.2-3
+- Build for subrelease >= 91
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.16.2-2
 - Add missing shadow dependency for user creation
 * Thu Jan 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.2-1
