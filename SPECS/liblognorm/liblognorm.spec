@@ -2,7 +2,7 @@
 
 Name:           liblognorm
 Version:        2.0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Fast samples-based log normalization library
 URL:            http://www.liblognorm.com
 Group:          System Environment/Base
@@ -13,7 +13,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  gcc
-BuildRequires:  chrpath
 BuildRequires:  libfastjson-devel
 BuildRequires:  libestr-devel
 BuildRequires:  pcre2-devel
@@ -38,7 +37,6 @@ the logs you want to normalize.
 %package libs
 Summary: libs for programs using liblognorm library
 
-Requires:  chrpath
 Requires:  libfastjson
 Requires:  libestr
 Requires:  pcre2
@@ -98,6 +96,8 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/lognorm.pc
 
 %changelog
+* Thu May 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.0.9-3
+- Remove unsed dep of chrpath
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.9-2
 - Extended to build for subrelease 91 and above
 * Fri Mar 13 2026 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.9-1

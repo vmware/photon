@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:    Change rpath of binaries
 Name:       chrpath
 Version:    0.16
-Release:    2%{?dist}
+Release:    2.1%{?dist}
 URL:        https://chrpath.alioth.debian.org/
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -34,6 +36,8 @@ rm -rf %{buildroot}/usr/doc
 %{_mandir}/man1/chrpath.1*
 
 %changelog
+* Wed May 13 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.16-2.1
+- Move to Sub-Release <= 90
 *   Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.16-2
 -   Release bump for SRP compliance
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 0.16-1
