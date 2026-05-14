@@ -1,0 +1,114 @@
+From ec9fdbeafedcd115784f6a4a6de8161d228d3665 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 22 Jan 2026 12:20:45 +0530
+Subject: [PATCH] Make default compression method configurable at build time
+
+Add CMake option DEFAULT_COMPRESSION_METHOD (default: zstd) to
+configure the default compression method. Updates code to use
+CR_DEFAULT_COMPRESSION macro instead of hardcoded values.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ CMakeLists.txt            | 24 ++++++++++++++++++++++++
+ src/compression_wrapper.h |  5 +++++
+ src/createrepo_c.c        |  4 ++--
+ src/mergerepo_c.h         |  2 +-
+ src/modifyrepo_shared.c   |  2 +-
+ 5 files changed, 33 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c4bf525..a1cc0c0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -116,6 +116,30 @@ IF (ENABLE_THREADED_XZ_ENCODER)
+     ADD_DEFINITIONS("-DENABLE_THREADED_XZ_ENCODER=1")
+ ENDIF (ENABLE_THREADED_XZ_ENCODER)
+ 
++# Default compression method
++SET(DEFAULT_COMPRESSION_METHOD "zstd" CACHE STRING "Default compression method (zstd, gz, bz2, xz, zck)")
++SET_PROPERTY(CACHE DEFAULT_COMPRESSION_METHOD PROPERTY STRINGS "zstd" "gz" "bz2" "xz" "zck")
++STRING(TOLOWER "${DEFAULT_COMPRESSION_METHOD}" DEFAULT_COMPRESSION_METHOD_LOWER)
++IF (DEFAULT_COMPRESSION_METHOD_LOWER STREQUAL "zstd")
++    SET(CR_DEFAULT_COMPRESSION_VALUE "CR_CW_ZSTD_COMPRESSION")
++ELSEIF (DEFAULT_COMPRESSION_METHOD_LOWER STREQUAL "gz")
++    SET(CR_DEFAULT_COMPRESSION_VALUE "CR_CW_GZ_COMPRESSION")
++ELSEIF (DEFAULT_COMPRESSION_METHOD_LOWER STREQUAL "bz2")
++    SET(CR_DEFAULT_COMPRESSION_VALUE "CR_CW_BZ2_COMPRESSION")
++ELSEIF (DEFAULT_COMPRESSION_METHOD_LOWER STREQUAL "xz")
++    SET(CR_DEFAULT_COMPRESSION_VALUE "CR_CW_XZ_COMPRESSION")
++ELSEIF (DEFAULT_COMPRESSION_METHOD_LOWER STREQUAL "zck")
++    IF (WITH_ZCHUNK)
++        SET(CR_DEFAULT_COMPRESSION_VALUE "CR_CW_ZCK_COMPRESSION")
++    ELSE (WITH_ZCHUNK)
++        MESSAGE(FATAL_ERROR "zck compression requires WITH_ZCHUNK to be enabled")
++    ENDIF (WITH_ZCHUNK)
++ELSE (DEFAULT_COMPRESSION_METHOD_LOWER STREQUAL "zstd")
++    MESSAGE(FATAL_ERROR "Invalid DEFAULT_COMPRESSION_METHOD: ${DEFAULT_COMPRESSION_METHOD}. Valid options are: zstd, gz, bz2, xz, zck")
++ENDIF (DEFAULT_COMPRESSION_METHOD_LOWER STREQUAL "zstd")
++ADD_DEFINITIONS("-DCR_DEFAULT_COMPRESSION=${CR_DEFAULT_COMPRESSION_VALUE}")
++MESSAGE(STATUS "Default compression method: ${DEFAULT_COMPRESSION_METHOD} (${CR_DEFAULT_COMPRESSION_VALUE})")
++
+ # Get package version
+ INCLUDE (${CMAKE_SOURCE_DIR}/VERSION.cmake)
+ SET (VERSION "${CR_MAJOR}.${CR_MINOR}.${CR_PATCH}")
+diff --git a/src/compression_wrapper.h b/src/compression_wrapper.h
+index c33efd8..9c27c51 100644
+--- a/src/compression_wrapper.h
++++ b/src/compression_wrapper.h
+@@ -46,6 +46,11 @@ typedef enum {
+     CR_CW_COMPRESSION_SENTINEL,       /*!< Sentinel of the list */
+ } cr_CompressionType;
+ 
++/* Default compression method (configurable at build time) */
++#ifndef CR_DEFAULT_COMPRESSION
++#define CR_DEFAULT_COMPRESSION CR_CW_ZSTD_COMPRESSION
++#endif
++
+ /** Open modes.
+  */
+ typedef enum {
+diff --git a/src/createrepo_c.c b/src/createrepo_c.c
+index 2faeb00..2523d74 100644
+--- a/src/createrepo_c.c
++++ b/src/createrepo_c.c
+@@ -827,9 +827,9 @@ main(int argc, char **argv)
+     const char *xml_compression_suffix = NULL;
+     const char *sqlite_compression_suffix = NULL;
+     const char *compression_suffix = NULL;
+-    cr_CompressionType xml_compression = CR_CW_ZSTD_COMPRESSION;
++    cr_CompressionType xml_compression = CR_DEFAULT_COMPRESSION;
+     cr_CompressionType sqlite_compression = CR_CW_BZ2_COMPRESSION;
+-    cr_CompressionType compression = CR_CW_ZSTD_COMPRESSION;
++    cr_CompressionType compression = CR_DEFAULT_COMPRESSION;
+ 
+     if (cmd_options->compatibility) {
+         xml_compression    = CR_CW_GZ_COMPRESSION;
+diff --git a/src/mergerepo_c.h b/src/mergerepo_c.h
+index bc54855..96fc147 100644
+--- a/src/mergerepo_c.h
++++ b/src/mergerepo_c.h
+@@ -28,7 +28,7 @@ extern "C" {
+ #include "compression_wrapper.h"
+ 
+ #define DEFAULT_DB_COMPRESSION_TYPE             CR_CW_BZ2_COMPRESSION
+-#define DEFAULT_COMPRESSION_TYPE                CR_CW_ZSTD_COMPRESSION
++#define DEFAULT_COMPRESSION_TYPE                CR_DEFAULT_COMPRESSION
+ 
+ typedef enum {
+     MM_DEFAULT,
+diff --git a/src/modifyrepo_shared.c b/src/modifyrepo_shared.c
+index 233bb03..2c3869c 100644
+--- a/src/modifyrepo_shared.c
++++ b/src/modifyrepo_shared.c
+@@ -31,7 +31,7 @@
+ #include "xml_dump.h"
+ 
+ #define ERR_DOMAIN              CREATEREPO_C_ERROR
+-#define DEFAULT_COMPRESSION     CR_CW_ZSTD_COMPRESSION
++#define DEFAULT_COMPRESSION     CR_DEFAULT_COMPRESSION
+ #define DEFAULT_CHECKSUM        CR_CHECKSUM_SHA256
+ 
+ cr_ModifyRepoTask *
+-- 
+2.52.0
+

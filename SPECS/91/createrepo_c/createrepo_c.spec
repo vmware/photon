@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        1.2.2
-Release:        3%{?dist}
+Release:        2.1%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -107,8 +107,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
-* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.2-3
-- Keep version higher than 91
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.2-2.1
+- Keep 91 version separate, this needs rpm-libs
 * Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.2.2-2
 - Build for subrelease >= 91
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.2-1
