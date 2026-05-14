@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        12%{?dist}
+Release:        6.1.1%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,7 +15,6 @@ Source2: license.txt
 %include %{SOURCE2}
 
 Patch0:         ntpstats_path.patch
-Patch1:         0001-ntpsec-Load-default-provider-before-fetching-MD5-ctx.patch
 
 BuildRequires:  binutils
 BuildRequires:  bison
@@ -34,26 +33,13 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       glibc
 Requires:       openssl
 Requires:       libevent
-Requires:       libcap-libs
 Requires:       systemd
-Requires:       %{name}-minimal = %{version}-%{release}
 
-Provides: ntp
+Conflicts:      ntp
 
 %description
 NTPsec is a more secure and improved implementation of the Network Time
 Protocol derived from the original NTP project.
-
-%package        minimal
-Summary:        Minimal NTPsec utilities
-Group:          System Environment/NetworkingPrograms
-Requires:       libcap-libs
-Conflicts:      %{name} < 1.2.3-7
-
-%description    minimal
-Minimal NTPsec utilities package containing ntptime binary.
-This is a lightweight package for systems that only need
-basic NTP time adjustment capabilities.
 
 %package -n python3-ntp
 Summary:        Python ntpsec bindings
@@ -126,7 +112,6 @@ rm -rf %{buildroot}/*
 %attr(0750, root, root) %config(noreplace) %{_sysconfdir}/ntp.conf
 %attr(0750, root, root) %config(noreplace) %{_sysconfdir}/logrotate.d/ntpsec.conf
 %attr(644,ntp,ntp) %{_sharedstatedir}/ntp/ntp.drift
-%exclude %{_bindir}/ntptime
 %{_bindir}/ntp*
 %{_sbindir}/ntp*
 %{_unitdir}/ntp*.service
@@ -137,27 +122,15 @@ rm -rf %{buildroot}/*
 %dir %attr(-,ntp,ntp) %{_localstatedir}/log/ntpstats
 %{_sysusersdir}/%{name}.conf
 
-%files minimal
-%defattr(-,root,root)
-%{_bindir}/ntptime
-
 %files -n python3-ntp
 %defattr(-,root,root)
 %{python3_sitearch}/ntp*
 
 %changelog
-* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-12
-- Bump to keep version higher than 91
-* Wed Apr 08 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.2.3-11
-- Fix MD5 issue when openssl FIPS mode is enabled.
-* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.3-10
-- Bump version as a part of python3.14 upgrade
-* Mon Mar 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-9
-- Remove requires gcc
-* Sat Mar 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-8
-- Remove obsoletes: ntp to keep 91 stable
-* Tue Feb 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-7
-- Split ntptime binary to new ntpsec-minimal subpackage
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-6.1.1
+- Bump after moving to SPECS/90
+* Tue Feb 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.3-6.1
+- Bump after moving to SPECS/91
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.2.3-6
 - Rebuild with shared clang libraries
 * Thu Oct 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.2.3-5

@@ -1,1 +1,1 @@
-License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause AND Beerware AND CC-BY-4.0 AND GPL-1.0-or-later AND ISC AND MIT AND NTP AND NTP-0
+License: BSD-2-Clause AND MIT AND NTP-0 AND BSD-3-Clause AND ISC AND Apache-2.0 AND NTP AND CC-BY-4.0 AND BSD-4-Clause AND GPL-1.0-or-later AND Beerware
