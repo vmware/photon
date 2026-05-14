@@ -3,7 +3,7 @@
 Summary:        Python binding for libudev
 Name:           python3-pyudev
 Version:        0.23.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
@@ -28,7 +28,6 @@ BuildRequires:  python3-six
 BuildRequires:  python3-py
 BuildRequires:  python3-pytest
 BuildRequires:  python3-attrs
-BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-docutils
 %endif
 
@@ -60,6 +59,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.23.2-5
+- Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-4
 - Bump version as a part of python3.14 upgrade
 * Tue Feb 04 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.23.2-3

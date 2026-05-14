@@ -3,7 +3,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
 Version:        3.0.3
-Release:        3.1%{?dist}
+Release:        3.2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -30,7 +30,6 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-prompt_toolkit
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
-BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-attrs
 BuildRequires:  python3-xml
 BuildRequires:  python3-pip
@@ -66,6 +65,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+* Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.3-3.2
+- Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.3-3.1
 - Bump after moving to SPECS/91
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.3-3

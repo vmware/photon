@@ -3,7 +3,7 @@
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
 Version:        4.8.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,7 +19,6 @@ BuildRequires:  python3-setuptools
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  man-db
-BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-pytest
 BuildRequires:  python3-attrs
 BuildRequires:  python3-ptyprocess
@@ -57,6 +56,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.8.0-6
+- Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.8.0-5
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.8.0-4

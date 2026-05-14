@@ -3,7 +3,7 @@
 Summary:        Run a subprocess in a pseudo terminal.
 Name:           python3-ptyprocess
 Version:        0.7.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://github.com/pexpect/ptyprocess
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,7 +19,6 @@ BuildRequires:  python3-setuptools
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-pytest
-BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-attrs
 BuildRequires:  python3-xml
 BuildRequires:  python3-pip
@@ -51,6 +50,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.0-5
+- Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.0-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.0-3

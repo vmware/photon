@@ -5,7 +5,7 @@
 Summary:        YAML parser/emitter.
 Name:           python3-ruamel-yaml
 Version:        0.19.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,7 +21,6 @@ BuildRequires:  python3-xml
 %if 0%{?with_check}
 BuildRequires:  python3-attrs
 BuildRequires:  python3-six
-BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pip
 %endif
@@ -55,6 +54,8 @@ find %{buildroot} -name '*.pyc' -delete
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.19.1-2
+- Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.19.1-1
 - Upragde to 0.19.1, as part of python3 upgrade
 * Wed May 07 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.17.21-3

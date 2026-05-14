@@ -3,7 +3,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.28.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -33,7 +33,6 @@ BuildRequires:  python3-charset-normalizer
 %if 0%{?with_check}
 BuildRequires:  ca-certificates
 BuildRequires:  curl-devel
-BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-pytest
 BuildRequires:  python3-attrs
 BuildRequires:  python3-urllib3
@@ -98,6 +97,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.28.1-10
+- Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.28.1-9
 - Bump version as a part of python3.14 upgrade
 * Tue Sep 23 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.28.1-8

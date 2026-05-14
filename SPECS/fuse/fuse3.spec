@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.12.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -24,7 +24,6 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-six
 BuildRequires:  python3-attrs
 BuildRequires:  python3-pip
-BuildRequires:  python3-atomicwrites
 BuildRequires:  which
 %endif
 
@@ -91,6 +90,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-5
+-   Remove python3-atomicwrites from build requires during package self check
 *   Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.12.0-4
 -   Bump version as a part of meson upgrade
 *   Mon Dec 16 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.12.0-3

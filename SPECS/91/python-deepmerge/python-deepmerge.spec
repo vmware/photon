@@ -2,7 +2,7 @@
 
 Name:           python3-deepmerge
 Version:        1.1.0
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 URL:            https://pypi.org/project/deepmerge
@@ -24,7 +24,6 @@ BuildRequires:  python3-wheel
 
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
-BuildRequires:  python3-atomicwrites
 BuildRequires:  python3-attrs
 BuildRequires:  python3-six
 BuildRequires:  python3-requests
@@ -62,6 +61,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-2.2
+- Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-2.1
 - Bump after moving to SPECS/91
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-2
