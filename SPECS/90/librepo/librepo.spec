@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.5
-Release:        6.1%{?dist}
+Release:        6.1.1%{?dist}
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.14.5-6.1.1
+- Bump after moving to SPECS/90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.14.5-6.1
 - Bump after moving to SPECS/91
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.5-6

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.6.5
-Release:         3.1%{?dist}
+Release:         3.1.1%{?dist}
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
@@ -109,6 +109,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.5-3.1.1
+- Bump after moving to SPECS/90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.6.5-3.1
 - Bump after moving to SPECS/91
 * Mon Oct 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.5-3
