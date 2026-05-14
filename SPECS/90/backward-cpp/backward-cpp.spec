@@ -1,9 +1,10 @@
+%global build_if %{photon_subrelease} <=90
 %global debug_package %{nil}
 
 Summary:        Pretty stack trace printer for C++.
 Name:           backward-cpp
 Version:        1.6
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 URL:            https://github.com/bombela/backward-cpp
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -57,6 +58,8 @@ make test %{?_smp_mflags}
 %{_libdir}/libbackward.so
 
 %changelog
+* Thu May 14 2026 Michelle Wang <michelle.wang@broadcom.com> 1.6-3.1
+- backward-cpp only in subrelease <=90
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.6-3
 - Release bump for SRP compliance
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6-2
