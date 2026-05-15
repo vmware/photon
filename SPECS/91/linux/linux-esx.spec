@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.172
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -392,6 +392,8 @@ Patch237: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
 Patch238: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
 # CVE-2026-23171
 Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
+# Fix CVE-2026-31685
+Patch241: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-a.patch
 
 # aarch64 [250..260]
 %ifarch aarch64
@@ -765,6 +767,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-3
+- Fix CVE-2026-31685
 * Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.172-2
 - Remove libdnet BuildReuires dependency.
 * Mon May 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-1

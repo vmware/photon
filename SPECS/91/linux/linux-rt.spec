@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.172
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -353,6 +353,8 @@ Patch238: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
 Patch239: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
 # CVE-2026-23171
 Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
+# Fix CVE-2026-31685
+Patch241: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-a.patch
 
 # Real-Time kernel (PREEMPT_RT patches) [300..399]
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/6.1/
@@ -727,6 +729,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-3
+- Fix CVE-2026-31685
 * Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.172-2
 - Remove libdnet BuildReuires dependency
 * Mon May 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-1

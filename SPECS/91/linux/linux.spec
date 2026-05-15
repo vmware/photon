@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.172
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -421,6 +421,8 @@ Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-
 Patch241: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
 # CVE-2026-23444
 Patch242: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
+# Fix CVE-2026-31685
+Patch243: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-a.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1177,6 +1179,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-2
+- Fix CVE-2026-31685
 * Mon May 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-1
 - Update to version 6.1.172
 * Mon May 04 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.170-1
