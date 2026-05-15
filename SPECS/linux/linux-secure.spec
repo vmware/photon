@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.255
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -518,6 +518,12 @@ Patch329: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
 
 # CVE-2026-23444
 Patch330: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
+# Fix CVE-2026-43114
+Patch331: 0001-netfilter-nft_set_pipapo_avx2-don-t-return-non-match.patch
+# Fix CVE-2026-43117
+Patch332: 0001-btrfs-tracepoints-get-correct-superblock-from-dentry.patch
+# Fix CVE-2026-43304
+Patch333: 0001-libceph-define-and-enforce-CEPH_MAX_KEY_LEN.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -784,6 +790,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.255-2
+- Fix CVE-2026-43114, CVE-2026-43117, CVE-2026-43304
 * Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-1
 - Update to version 5.10.255
 * Thu Apr 30 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.254-1

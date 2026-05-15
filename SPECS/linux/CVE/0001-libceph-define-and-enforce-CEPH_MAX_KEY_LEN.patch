@@ -1,0 +1,63 @@
+From ac431d597a9bdfc2ba6b314813f29a6ef2b4a3bf Mon Sep 17 00:00:00 2001
+From: Ilya Dryomov <idryomov@gmail.com>
+Date: Fri, 04 Jul 2025 16:30:50 +0200
+Subject: [PATCH] libceph: define and enforce CEPH_MAX_KEY_LEN
+
+[ Upstream commit ac431d597a9bdfc2ba6b314813f29a6ef2b4a3bf ]
+
+When decoding the key, verify that the key material would fit into
+a fixed-size buffer in process_auth_done() and generally has a sane
+length.
+
+The new CEPH_MAX_KEY_LEN check replaces the existing check for a key
+with no key material which is a) not universal since CEPH_CRYPTO_NONE
+has to be excluded and b) doesn't provide much value since a smaller
+than needed key is just as invalid as no key -- this has to be handled
+elsewhere anyway.
+
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+[Ankit: Backported for v5.10.255]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/ceph/crypto.c | 7 +++++--
+ net/ceph/crypto.h | 2 ++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/net/ceph/crypto.h b/net/ceph/crypto.h
+index ..100644
+--- a/net/ceph/crypto.h
++++ b/net/ceph/crypto.h
+@@ -5,6 +5,8 @@
+ #include <linux/ceph/types.h>
+ #include <linux/ceph/buffer.h>
+ 
++#define CEPH_MAX_KEY_LEN		16
++
+ /*
+  * cryptographic secret
+  */
+diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
+index ..100644
+--- a/net/ceph/crypto.c
++++ b/net/ceph/crypto.c
+@@ -37,9 +37,6 @@
+ 		return -ENOTSUPP;
+ 	}
+ 
+-	if (!key->len)
+-		return -EINVAL;
+-
+ 	key->key = kmemdup(buf, key->len, GFP_NOIO);
+ 	if (!key->key) {
+ 		ret = -ENOMEM;
+@@ -95,6 +92,10 @@
+ 	ceph_decode_copy(p, &key->created, sizeof(key->created));
+ 	key->len = ceph_decode_16(p);
+ 	ceph_decode_need(p, end, key->len, bad);
++	if (key->len > CEPH_MAX_KEY_LEN) {
++		pr_err("secret too big %d\n", key->len);
++		return -EINVAL;
++	}
+ 	ret = set_secret(key, *p);
+ 	*p += key->len;
+ 	return ret;

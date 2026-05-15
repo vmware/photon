@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.255
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -589,6 +589,12 @@ Patch331: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
 
 # CVE-2026-23444
 Patch332: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
+# Fix CVE-2026-43114
+Patch333: 0001-netfilter-nft_set_pipapo_avx2-don-t-return-non-match.patch
+# Fix CVE-2026-43117
+Patch334: 0001-btrfs-tracepoints-get-correct-superblock-from-dentry.patch
+# Fix CVE-2026-43304
+Patch335: 0001-libceph-define-and-enforce-CEPH_MAX_KEY_LEN.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1281,6 +1287,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.255-2
+- Fix CVE-2026-43114, CVE-2026-43117, CVE-2026-43304
 * Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-1
 - Update to version 5.10.255
 * Thu Apr 30 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.254-1

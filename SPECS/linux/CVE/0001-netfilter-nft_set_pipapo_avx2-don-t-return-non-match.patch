@@ -1,0 +1,157 @@
+From fa4f1f52528c73989d820f32bfca06bec5afeece Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Wed, 25 Mar 2026 14:10:55 +0100
+Subject: [PATCH] netfilter: nft_set_pipapo_avx2: don't return non-matching
+ entry on expiry
+
+[ Upstream commit d3c0037ffe1273fa1961e779ff6906234d6cf53c ]
+
+New test case fails unexpectedly when avx2 matching functions are used.
+
+The test first loads a ranomly generated pipapo set
+with 'ipv4 . port' key, i.e.  nft -f foo.
+
+This works.  Then, it reloads the set after a flush:
+(echo flush set t s; cat foo) | nft -f -
+
+This is expected to work, because its the same set after all and it was
+already loaded once.
+
+But with avx2, this fails: nft reports a clashing element.
+
+The reported clash is of following form:
+
+    We successfully re-inserted
+      a . b
+      c . d
+
+Then we try to insert a . d
+
+avx2 finds the already existing a . d, which (due to 'flush set') is marked
+as invalid in the new generation.  It skips the element and moves to next.
+
+Due to incorrect masking, the skip-step finds the next matching
+element *only considering the first field*,
+
+i.e. we return the already reinserted "a . b", even though the
+last field is different and the entry should not have been matched.
+
+No such error is reported for the generic c implementation (no avx2) or when
+the last field has to use the 'nft_pipapo_avx2_lookup_slow' fallback.
+
+Bisection points to
+7711f4bb4b36 ("netfilter: nft_set_pipapo: fix range overlap detection")
+but that fix merely uncovers this bug.
+
+Before this commit, the wrong element is returned, but erronously
+reported as a full, identical duplicate.
+
+The root-cause is too early return in the avx2 match functions.
+When we process the last field, we should continue to process data
+until the entire input size has been consumed to make sure no stale
+bits remain in the map.
+
+Link: https://lore.kernel.org/netfilter-devel/20260321152506.037f68c0@elisabeth/
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[Ankit: Backported for v5.10.255]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/netfilter/nft_set_pipapo_avx2.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/net/netfilter/nft_set_pipapo_avx2.c b/net/netfilter/nft_set_pipapo_avx2.c
+index ..100644
+--- a/net/netfilter/nft_set_pipapo_avx2.c
++++ b/net/netfilter/nft_set_pipapo_avx2.c
+@@ -242,7 +242,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -318,7 +318,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -412,7 +412,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -502,7 +502,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -637,7 +637,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -694,7 +694,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -758,7 +758,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -832,7 +832,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -917,7 +917,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
+@@ -1010,7 +1010,7 @@
+ 
+ 		b = nft_pipapo_avx2_refill(i_ul, &map[i_ul], fill, f->mt, last);
+ 		if (last)
+-			return b;
++			ret = b;
+ 
+ 		if (unlikely(ret == -1))
+ 			ret = b / XSAVE_YMM_SIZE;
