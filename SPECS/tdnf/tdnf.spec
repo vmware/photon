@@ -7,7 +7,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.6.4
-Release:        2%{?buildtag}%{?dist}
+Release:        3%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -26,6 +26,8 @@ Patch1: 0002-check-for-RPMTAG_OPENPGP.patch
 Patch2: 0003-ensure-history-db-directory-exists.patch
 Patch3: 0004-check-for-history-db-errors.patch
 Patch4: 0005-fix-const-qualifier-warning.patch
+Patch5: 0006-ignore-history-absent-error-if-a-package-is-already-.patch
+Patch6: 0007-add-a-test-for-history-db-not-existing-error-when-pa.patch
 
 Requires:       rpm-libs >= 6.0.1
 Requires:       curl-libs
@@ -256,6 +258,9 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri May 15 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.4-3
+- ignore history absent error if a package is already installed
+- add a test for history db not existing error when package is installed
 * Tue May 05 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.4-2
 - ensure history db directory exists
 - check for history db errors (SQLITE_BUSY)
