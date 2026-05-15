@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.255
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -304,6 +304,9 @@ Patch196: 0001-nouveau-lock-the-client-object-tree.patch
 # Fix CVE-2024-26915
 Patch198: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
 
+# Fix CVE-2026-43071
+Patch199: 0001-dcache-Limit-the-minimal-number-of-bucket-to-two.patch
+
 # Fix CVE-2024-35863
 Patch200: smb-client-fix-potential-UAF-in-is_valid_oplock_brea.patch
 
@@ -328,6 +331,12 @@ Patch208: 0001-wifi-iwlwifi-mvm-Fix-a-memory-corruption-issue.patch
 
 # Fix CVE-2024-49991
 Patch209: 0002-drm-amdkfd-amdkfd_free_gtt_mem-clear-the-correct-poi.patch
+
+# Fix CVE-2026-43125
+Patch210: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
+
+# Fix CVE-2026-43198
+Patch211: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
 
 # Fix CVE-2023-52621
 Patch212: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
@@ -805,6 +814,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu May 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-4
+- Fix CVE-2026-43071, CVE-2026-43125, CVE-2026-43198
 * Fri May 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-3
 - Fix CVE-2026-31407, CVE-2026-43456, CVE-2026-43091, CVE-2026-43281
 - Fix CVE-2026-31694, CVE-2026-31673, CVE-2026-31685

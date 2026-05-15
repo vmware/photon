@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.255
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -354,6 +354,9 @@ Patch199: smb-client-fix-potential-UAF-in-smb2_is_valid_lease_.patch
 # Fix CVE-2024-35865
 Patch200: smb-client-fix-potential-UAF-in-smb2_is_valid_oplock.patch
 
+# Fix CVE-2026-43071
+Patch201: 0001-dcache-Limit-the-minimal-number-of-bucket-to-two.patch
+
 # Fix CVE-2024-35868
 Patch202: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
 
@@ -373,11 +376,17 @@ Patch207: 0002-drm-amdkfd-amdkfd_free_gtt_mem-clear-the-correct-poi.patch
 # Fix CVE-2023-52621
 Patch210: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
 
+# Fix CVE-2026-43125
+Patch211: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
+
 # Fix CVE-2024-35839
 Patch212: 0001-netfilter-nfnetlink_log-use-proper-helper-for-fetchi.patch
 Patch213: 0002-netfilter-nf_queue-remove-excess-nf_bridge-variable.patch
 Patch214: 0003-netfilter-propagate-net-to-nf_bridge_get_physindev.patch
 Patch215: 0004-netfilter-bridge-replace-physindev-with-physinif-in-.patch
+
+# Fix CVE-2026-43198
+Patch216: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
 
 # Fix CVE-2022-49651
 Patch218: 0001-srcu-Tighten-cleanup_srcu_struct-GP-checks.patch
@@ -963,6 +972,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu May 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-4
+- Fix CVE-2026-43071, CVE-2026-43125, CVE-2026-43198
 * Fri May 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-3
 - Fix CVE-2026-31407, CVE-2026-43456, CVE-2026-43091, CVE-2026-43281
 - Fix CVE-2026-31694, CVE-2026-31673, CVE-2026-31685

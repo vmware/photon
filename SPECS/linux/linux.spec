@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.255
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -361,6 +361,9 @@ Patch198: smb-client-fix-potential-UAF-in-smb2_is_valid_lease_.patch
 # Fix CVE-2024-35865
 Patch199: smb-client-fix-potential-UAF-in-smb2_is_valid_oplock.patch
 
+# Fix CVE-2026-43071
+Patch200: 0001-dcache-Limit-the-minimal-number-of-bucket-to-two.patch
+
 # Fix CVE-2024-35868
 Patch201: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
 
@@ -380,6 +383,12 @@ Patch207: 0001-wifi-iwlwifi-mvm-Fix-a-memory-corruption-issue.patch
 
 # Fix CVE-2024-49991
 Patch208: 0002-drm-amdkfd-amdkfd_free_gtt_mem-clear-the-correct-poi.patch
+
+# Fix CVE-2026-43125
+Patch209: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
+
+# Fix CVE-2026-43198
+Patch210: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
 
 # Fix CVE-2023-52621
 Patch211: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
@@ -1302,6 +1311,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu May 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-4
+- Fix CVE-2026-43071, CVE-2026-43125, CVE-2026-43198
 * Fri May 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-3
 - Fix CVE-2026-31407, CVE-2026-43456, CVE-2026-43091, CVE-2026-43281
 - Fix CVE-2026-31694, CVE-2026-31673, CVE-2026-31685
