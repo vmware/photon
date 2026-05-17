@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        SELinux policy compiler
 Name:           checkpolicy
 Version:        3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/checkmodule.8.gz
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.10-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
 - Update to 3.10
 * Fri Dec 19 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1

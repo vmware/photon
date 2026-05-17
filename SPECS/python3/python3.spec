@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global VER 3.14
 %global with_gdb_hooks 1
@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -312,6 +312,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.14.1-5
+- Extended to build for subrelease 91 and above
 * Mon Apr 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-4
 - Use builtin md5 and disallow md5 usage when fips is enabled and usedforsecurity is set
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.1-3

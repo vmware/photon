@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name yajl-ruby
 
 Name:           rubygem-yajl-ruby
 Version:        1.4.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Ruby C bindings to the excellent Yajl JSON stream-based parser library.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ Ruby C bindings to the excellent Yajl JSON stream-based parser library.
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.3-7
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.3-6
 - bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.3-5

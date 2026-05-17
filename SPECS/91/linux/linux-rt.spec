@@ -2,8 +2,7 @@
 # ensure kpatch-build in kpatch is updated accordingly.
 %global security_hardening none
 
-# Skip this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1
@@ -26,7 +25,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.172
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -124,6 +123,9 @@ Patch12: 6.1-0001-fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUS.patch
 # Out-of-tree patches from AppArmor:
 Patch13: 6.0-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14: 6.0-0002-apparmor-af_unix-mediation.patch
+
+# glibc-2.43 build error fix
+Patch15: 0001-libbpf-Fix-Wdiscarded-qualifiers-under-C23.patch
 
 # Allow PCI resets to be disabled from vfio_pci_core module
 Patch21: 6.1-0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -590,7 +592,11 @@ sed -e "s,@@NAME@@,%{name},g" \
 %include %{SOURCE5}
 
 %build
-%make_build KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{?arch}
+# to fix build with glibc-2.43 -Wno-error=discarded-qualifiers is used
+%make_build \
+  KBUILD_BUILD_VERSION="1-photon" \
+  KBUILD_BUILD_HOST="photon" \
+  ARCH=%{?arch}
 
 bldroot="${PWD}"
 
@@ -607,7 +613,6 @@ popd
 rm -rf %{struct_comp_dir}
 %endif
 
-# build bpftool
 %make_build -C tools/bpf/bpftool
 
 # build stalld eBPF plugin
@@ -729,10 +734,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.172-4
+- Fix build with glibc-2.43
+- Moving to Sub Release 90 as there are no consumer of RT kernel
 * Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-3
 - Fix CVE-2026-31685
 * Wed May 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.1.172-2
-- Remove libdnet BuildReuires dependency
+- Remove libdnet BuildRequires dependency
 * Mon May 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-1
 - Update to version 6.1.172
 * Mon May 04 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.170-1

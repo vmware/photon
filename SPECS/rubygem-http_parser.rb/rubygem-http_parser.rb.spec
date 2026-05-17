@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name http_parser.rb
 
 Name: rubygem-http_parser.rb
 Version:        0.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides ruby bindings to http parser
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ Provides ruby bindings to http parser.
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.8.1-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.1-1
 - Update to version 0.8.1
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.0-6

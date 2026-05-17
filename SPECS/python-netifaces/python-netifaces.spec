@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 Name:           python3-netifaces
 Version:        0.11.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python library to retrieve information about network interfaces
 Group:          Development/Libraries
 URL:            http://alastairs-place.net/netifaces/
@@ -41,6 +41,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.11.0-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.11.0-3
 - Bump version as a part of python3.14 upgrade
 *  Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.11.0-2

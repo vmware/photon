@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name mime-types-data
 
 Name: rubygem-mime-types-data
 Version:        3.2026.0113
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides a registry for information about MIME media type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ MIME type definitions.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2026.0113-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2026.0113-1
 - Update to version 3.2026.0113
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2025.0507-1

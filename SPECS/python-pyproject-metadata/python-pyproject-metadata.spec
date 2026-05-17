@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname pyproject_metadata
 
 Summary:        PEP 621 metadata parsing
 Name:           python3-pyproject-metadata
 Version:        0.11.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.org/project/pyproject-metadata/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -44,5 +44,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.11.0-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.11.0-1
 - Initial packaging for Photon

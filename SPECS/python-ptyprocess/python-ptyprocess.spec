@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Run a subprocess in a pseudo terminal.
 Name:           python3-ptyprocess
 Version:        0.7.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Url:            https://github.com/pexpect/ptyprocess
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,6 +50,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.7.0-6
+- Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.0-5
 - Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.0-4

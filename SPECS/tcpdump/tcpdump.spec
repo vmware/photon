@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.99.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.tcpdump.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ make %{?_smp_mflags} check
 %{_bindir}/tcpdump
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.99.4-5
+- Extended to build for subrelease 91 and above
 * Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 4.99.4-4
 - Introduce -bin subpackage for users demanding smaller footprint.
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 4.99.4-3

@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name http-accept
 
 Name:           rubygem-http-accept
 Version:        1.7.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Parse Accept and Accept-Language HTTP headers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ Parse Accept and Accept-Language HTTP headers.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.0-6
+- Extended to build for subrelease 91 and above
 * Wed Jan 21 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-5
 - Release bump for ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.0-4

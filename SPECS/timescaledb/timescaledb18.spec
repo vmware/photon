@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname         timescaledb
 %global pgmajorversion  18
@@ -9,7 +9,7 @@
 Summary:        A PostgreSQL extension for high-performance real-time analytics
 Name:           timescaledb18
 Version:        2.25.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.timescale.com
 Group:          Productivity/Databases/Tools
 Vendor:         VMware, Inc.
@@ -66,5 +66,7 @@ rm -rf %{buildroot}/*
 %exclude %{_pglibdir}/pgxs/src/test/perl/
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.25.0-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.25.0-1
 - Initial version

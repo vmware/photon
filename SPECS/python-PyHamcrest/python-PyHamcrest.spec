@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-PyHamcrest
 Version:        2.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python Hamcrest framework for matcher objects
 Group:          Development/Libraries
 URL:            https://pypi.org/project/PyHamcrest
@@ -44,6 +44,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.2-5
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.2-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.2-3

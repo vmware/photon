@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define debug_package %{nil}
 
 Summary:        The code coverage tool for Python
 Name:           python3-coverage
 Version:        6.4.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,6 +51,8 @@ LANG=en_US.UTF-8 tox -e py36
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.4.4-5
+- Extended to build for subrelease 91 and above
 *   Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.4.4-4
 -   Disable debuginfo package
 *   Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-3

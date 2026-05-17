@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-pluggy
 Version:        1.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The plugin manager stripped of pytest specific details
 Group:          Development/Libraries
 URL:            https://pypi.org/project/pluggy/
@@ -46,6 +46,8 @@ The plugin manager stripped of pytest specific details.
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.0-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.0-1
 - Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.0-3

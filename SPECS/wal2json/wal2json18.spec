@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname         wal2json
 %define main_version    2_6
@@ -9,7 +9,7 @@
 Summary:        JSON output plugin for changeset extraction
 Name:           wal2json18
 Version:        2.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/eulerto/wal2json
 Group:          Productivity/Databases/Tools
 Vendor:         VMware, Inc.
@@ -53,5 +53,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.6-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6-1
 - Initial build

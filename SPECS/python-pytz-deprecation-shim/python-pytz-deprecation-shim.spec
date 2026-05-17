@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname pytz-deprecation-shim
 
 Name:       python3-pytz-deprecation-shim
 Version:    0.1.0.post0
-Release:    3%{?dist}
+Release:    4%{?dist}
 Summary:    Shims to help you safely remove pytz
 Group:      Development/Languages/Python
 URL:        https://github.com/pganssle/pytz-deprecation-shim
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.1.0.post0-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.1.0.post0-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.1.0.post0-2

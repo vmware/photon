@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name unicode-display_width
@@ -6,7 +6,7 @@
 Summary:        Unicode::DisplayWidth.
 Name:           rubygem-unicode-display_width
 Version:        3.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +44,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.0-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.0-1
 - Update to version 3.2.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.4-1

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name signet
@@ -6,7 +6,7 @@
 Summary:        Signet is an OAuth 1.0 / OAuth 2.0 implementation.
 Name:           rubygem-signet
 Version:        0.21.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.21.0-2
+- Extended to build for subrelease 91 and above
 * Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.21.0-1
 - Update to version 0.21.0
 * Thu Feb 12 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.20.0-2

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname             pip
 %define python_wheel_dir    %{_datadir}/python-wheels
@@ -9,7 +9,7 @@ Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        25.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -88,6 +88,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.3-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.3-1
 - Update to 25.3, as part of python3 upgrade
 * Wed Nov 19 2025 Mukul Sikka <mukul.sikka@broadcom.com> 24.3.1-5

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define debug_package %{nil}
 
 Name:           python3-PyYAML
 Version:        6.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.0.3-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.3-1
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.1-3

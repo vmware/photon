@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A project for generating C bindings from Rust code
 Name:           cbindgen
 Version:        0.29.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Rust
 URL:            https://github.com/mozilla/cbindgen
 Vendor:         VMware, Inc.
@@ -40,5 +40,7 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.29.2-2
+- Extended to build for subrelease 91 and above
 * Mon Feb 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.29.2-1
 - Initial version

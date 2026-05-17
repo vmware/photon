@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} == 91
 
 Name:       rpmdevtools
 Version:    9.6
-Release:    1.1%{?dist}
+Release:    1.2%{?dist}
 Summary:    RPM Development Tools
 URL:        https://pagure.io/rpmdevtools
 Vendor:         VMware, Inc.
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/*
 
 %changelog
+* Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.6-1.2
+- Bump to keep verison higher than 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 9.6-1.1
 - Bump after moving to SPECS/91
 * Mon Sep 22 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.6-1

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name oj
 
 Name: rubygem-oj
 Version:        3.16.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The fastest JSON parser and object serializer.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ The fastest JSON parser and object serializer.
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.16.13-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.13-1
 - Update to version 3.16.13
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.1-1

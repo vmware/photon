@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname versioneer
 
 Summary:        version-string management for VCS-controlled trees
 Name:           python3-versioneer
 Version:        0.29
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.org/project/versioneer/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -45,5 +45,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.29-2
+- Extended to build for subrelease 91 and above
 * Thu Feb 12 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.29-1
 - Initial packaging for Photon

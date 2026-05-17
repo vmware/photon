@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 
 Summary:    Versatile resource statistics tool
 Name:       dool
 Version:    1.2.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://github.com/scottchiefbaker/dool
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -60,6 +60,8 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.0-5
+- Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 1.2.0-4
 - Disable debuginfo package
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.0-3

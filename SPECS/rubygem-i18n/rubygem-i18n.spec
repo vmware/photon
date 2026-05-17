@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name i18n
 
 Name: rubygem-i18n
 Version:        1.14.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Support for ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ New wave Internationalization support for Ruby.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.14.8-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.14.8-1
 - Update to version 1.14.8
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.14.7-1

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.4.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -93,6 +93,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/pytalloc-util.cpython-314*linux-gnu.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.4-2
+- Extended to build for subrelease 91 and above
 * Mon Apr 20 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.4-1
 - Upgrade and fix build with new glibc
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.1-3

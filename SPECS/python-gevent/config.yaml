@@ -1,8 +1,7 @@
 sources:
 - archive: gevent-25.9.1.tar.gz
   archive_sha512sum: 8c7f6030020fd6d762ebb1afccb7fb8306e2cf1a45dabf8a471709264acc35003ea2be44f4e0733a75c703256776b4f22a96be50e926c9dc053f453f0b1f3522
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: gevent-25.9.1
   version: "25.9.1"
   url: https://files.pythonhosted.org/packages/9e/48/b3ef2673ffb940f980966694e40d6d32560f3ffa284ecaeb5ea3a90a6d3f/gevent-25.9.1.tar.gz

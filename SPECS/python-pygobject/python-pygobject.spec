@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-pygobject
 Version:        3.56.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.56.1-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.56.1-1
 - Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.42.2-3

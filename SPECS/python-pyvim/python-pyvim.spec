@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
 Version:        3.0.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,6 +65,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.3-6
+- Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.3-5
 - Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.3-4

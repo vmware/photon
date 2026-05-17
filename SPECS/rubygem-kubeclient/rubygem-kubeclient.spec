@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name kubeclient
 
 Name:           rubygem-kubeclient
 Version:        4.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A client for Kubernetes REST api.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -53,6 +53,8 @@ A client for Kubernetes REST api.
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.13.0-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.13.0-1
 - Update to version 4.13.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.12.0-1

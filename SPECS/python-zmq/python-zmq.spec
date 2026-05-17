@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Software library for fast, message-based applications
 Name:           python3-zmq
 Version:        23.2.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -43,6 +43,8 @@ python bindings for zeromq
 %{python3_sitelib}/zmq
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 23.2.1-6
+- Extended to build for subrelease 91 and above
 * Mon Apr 20 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 23.2.1-5
 - Use photon specific libzmq
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.2.1-4

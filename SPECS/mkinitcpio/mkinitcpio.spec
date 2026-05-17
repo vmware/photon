@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:       Modular initramfs image creation utility
 Name:          mkinitcpio
 Version:       34
-Release:       5%{?dist}
+Release:       6%{?dist}
 URL:           https://projects.archlinux.org/mkinitcpio.git/
 Group:         System Environment/Development
 Vendor:        VMware, Inc.
@@ -54,6 +54,8 @@ sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 %{_datadir}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 34-6
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 34-5
 - Bump version as a part of python3.14 upgrade
 * Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 34-4

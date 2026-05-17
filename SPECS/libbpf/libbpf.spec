@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Libbpf library
 Name:           libbpf
 Version:        1.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %attr(0644,-,-) %{_libdir}/pkgconfig/libbpf.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.0-2
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.7.0-1
 - Bump to build with updated bpftrace
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.2-2

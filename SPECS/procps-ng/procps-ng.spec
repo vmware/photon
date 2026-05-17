@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        4.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -119,6 +119,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.6-2
+- Extended to build for subrelease 91 and above
 * Thu Feb 26 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.0.6-1
 - Version upgrade to procps-ng 4.0.6
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.0.4-4

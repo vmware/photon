@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-ply
 Version:        3.11
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Python Lex & Yacc
 Group:          Development/Languages/Python
 Url:            http://www.dabeaz.com/ply/
@@ -59,6 +59,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.11-9
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11-8
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11-7

@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name ronn
 
 Name: rubygem-ronn
 Version:        0.7.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        manual authoring tool
 Group:          Development/Languages
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
@@ -44,6 +44,8 @@ Ronn converts textfiles to standard roff-formatted UNIX manpages or HTML
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.7.3-8
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.7.3-7
 - bump version with rubygem-rdiscount upgrade
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.7.3-6

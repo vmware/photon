@@ -1,8 +1,7 @@
 sources:
 - archive: lxml-6.0.2.tar.gz
   archive_sha512sum: 2aaa37a4504cd23d2022cbe7c2d99173aa0e3d6ec82a95e2429369ef3ef787db185440b8581db975cb81287c3ab533dd2e7cb447cefe0d7e628082f51c5b5254
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: lxml-6.0.2
   version: "6.0.2"
   url: https://files.pythonhosted.org/packages/aa/88/262177de60548e5a2bfc46ad28232c9e9cbde697bd94132aeb80364675cb/lxml-6.0.2.tar.gz

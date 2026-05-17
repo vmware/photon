@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname trove-classifiers
 
 Name:           python3-trove-classifiers
 Version:        2026.1.14.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Canonical source for classifiers on PyPI (pypi.org)
 URL:            https://github.com/pypa/trove-classifiers
 Group:          Development/Languages/Python
@@ -63,5 +63,7 @@ sed -i 's@{BINDIR}/@@' tests/test_cli.py
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2026.1.14.14-2
+- Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2026.1.14.14-1
 - Initial version, needed by hatchling

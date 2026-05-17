@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname pyproject-hooks
 
 Name:           python3-pyproject_hooks
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Wrappers to call pyproject.toml-based build backend hooks
 URL:            https://pypi.org/project/pyproject_hooks
 Group:          Development/Languages/Python
@@ -60,5 +60,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.0-2
+- Extended to build for subrelease 91 and above
 * Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.0-1
 - Initial build.

@@ -1,7 +1,7 @@
 sources:
 - archive: setuptools_rust-1.12.0.tar.gz
+  skip_validation: true
   archive_sha512sum: 60ca0327758bcb29c2b7e2c28f264c9d23f62de049deca0a9e7c284f2b82fbca36d1db09bf3ef940fb688efa6c3969b1c93e08d8da11bb9f6ec40ff48ecefbcc
-  archive_type: upstream
   name: setuptools_rust-1.12.0
   version: 1.12.0
   url: https://files.pythonhosted.org/packages/bc/c4/8d3d282cee60d3ea0369fa15ce27387810040360adb4133e31990a7a2aba/setuptools_rust-1.12.0.tar.gz

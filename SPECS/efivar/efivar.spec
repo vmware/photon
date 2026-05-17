@@ -1,7 +1,7 @@
 Summary:       Tools and libraries to manipulate EFI variables
 Name:          efivar
 Version:       38
-Release:       3%{?dist}
+Release:       4%{?dist}
 URL:           https://github.com/rhboot/efivar
 Group:         System Environment/System Utilities
 Vendor:        VMware, Inc.
@@ -15,7 +15,7 @@ Source1:       efisecdb.1
 Source2: license.txt
 %include %{SOURCE2}
 
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch0: 0001-Fix-build-failure-with-glibc-2.43.patch
 %endif
 
@@ -66,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 38-4
+- version bump after glibc is upgraded in 91
 * Sat Apr 18 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 38-3
 - Fix build with newer glibc
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 38-2

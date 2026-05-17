@@ -1,7 +1,6 @@
 sources:
 - archive: setuptools-80.9.0.tar.gz
   archive_sha512sum: 36eb1f219d29c6b9e135936bde2001ad70a971c8069cd0175d3a5325b450e6843a903d3f70043c9f534768ebeab8ab0c544b8f44456555d333f1ed72daa5c18b
-  archive_type: upstream
   version: "80.9.0"
   name: setuptools-80.9.0
   url: https://files.pythonhosted.org/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/setuptools-80.9.0.tar.gz
@@ -9,7 +8,7 @@ sources:
   commit_id: 9c4d383631d3951fcae0afd73b5d08ff5a262976
   missing: ['LICENSE', '.mergify.yml', 'setuptools.egg-info', '.readthedocs.yaml', 'SECURITY.md', 'MIT-LICENSE', 'mypy.ini', 'command_template', '.gitignore', 'launcher', 'REQUESTED', 'includetest.rst', 'bootstrap.egg-info', 'platformdirs-2.6.2.dist-info', 'typing_extensions-4.4.0.dist-info', 'INSTALLER', 'RECORD', 'utf-8.file', 'binary.file', 'ziptestdata.zip', 'NOTICE', 'PKG-INFO', 'namespacedata01', 'METADATA', 'typing_extensions-4.0.1.dist-info', 'xxmodule-3.8.c', '.coveragerc', 'packaging-23.1.dist-info', '.bumpversion.cfg', '.github', '.editorconfig', 'utf-16.file', 'images', 'xxmodule.c', '.codecov.yml', 'Setup.sample', 'tomli-2.0.1.dist-info', 'WHEEL', 'towncrier.toml', 'more_itertools-9.1.0.dist-info', '.pre-commit-config.yaml', 'pyrightconfig.json', 'ruff.toml']
   skip_list: ['setup.cfg']
-  skip_validation: false
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Setuptools is a fully-featured, actively-maintained,

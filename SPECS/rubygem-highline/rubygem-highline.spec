@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name highline
 
 Name:           rubygem-highline
 Version:        3.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A high-level IO library that provides validation, type conversion, and more for command-line interfaces
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ LANG=en_US.UTF-8  rake test
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.2-3
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.2-2
 - bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.2-1

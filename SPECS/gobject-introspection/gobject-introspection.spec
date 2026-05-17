@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.86.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/GObjectIntrospection
 Distribution:   Photon
@@ -112,6 +112,8 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.86.0-2
+- Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.86.0-1
 - Upgrade to v1.86.0
 * Wed Feb 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.74.0-22

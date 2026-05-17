@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name connection_pool
 
 Name: rubygem-connection_pool
 Version:        3.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Generic connection pool for Ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ Provides a thread-safe connection pooling mechanism for any type of connection.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.2-3
+- Extended to build for subrelease 91 and above
 * Tue Apr 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.0.2-2
 - Adding obsolete so that it will ignore ruby-3.4.7 embedded rubygem-connection_pool
 * Tue Jan 27 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.2-1

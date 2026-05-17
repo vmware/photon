@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname             setuptools
 %define python_wheel_dir    %{_datadir}/python-wheels
@@ -9,7 +9,7 @@ Name:           python3-setuptools
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        80.9.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,8 +28,6 @@ BuildRequires: python3-xml
 Requires:       python3
 Requires:       python3-xml
 Requires(post): findutils
-
-%define ExtraBuildRequires python3-pip
 
 Provides:       python%{python3_version}dist(setuptools)
 
@@ -52,6 +50,7 @@ rm -r setuptools/tests/
 %endif
 
 %build
+python3 -m ensurepip --default-pip
 %pyproject_wheel
 
 %install
@@ -82,6 +81,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 80.9.0-4
+- Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 80.9.0-3
 - Build using pyproject_wheel
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 80.9.0-2

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name fluent-plugin-kubernetes_metadata_filter
 
 Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
 Version:        3.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ proper log isolation.
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.8.0-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.8.0-1
 - Update to version 3.8.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.6.0-1

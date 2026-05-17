@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        SELinux policy core utilities
 Name:           selinux-python
 Version:        3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -62,6 +62,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %exclude %{_sharedstatedir}/sepolgen/perm_map
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.10-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
 - Update to 3.10
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5-2

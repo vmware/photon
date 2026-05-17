@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name syslog_protocol
@@ -6,7 +6,7 @@
 Name:           rubygem-syslog_protocol
 Summary:        Syslog Protocol
 Version:        0.9.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,6 +39,8 @@ Syslog protocol parser and generator
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.9.2-7
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.9.2-6
 - bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.9.2-5

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Module to simplify usage of decorators
 Name:           python3-decorator
 Version:        5.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/decorator
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2.1-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2.1-1
 - Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.1.1-2

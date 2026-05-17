@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname installer
 
 Name:           python3-installer
 Version:        0.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A library for installing Python wheels
 URL:            https://github.com/pypa/installer
 Group:          Development/Languages/Python
@@ -61,5 +61,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.7.0-2
+- Extended to build for subrelease 91 and above
 * Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.0-1
 - Initial version.

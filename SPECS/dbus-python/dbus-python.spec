@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           dbus-python3
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python bindings for D-Bus
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
@@ -72,6 +72,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.0-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-1
 - Update to 1.4.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.3.2-4

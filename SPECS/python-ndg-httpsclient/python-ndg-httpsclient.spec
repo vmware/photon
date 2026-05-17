@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-ndg-httpsclient
 Version:        0.5.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/ndg-httpsclient
@@ -78,6 +78,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.5.1-8
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5.1-7
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5.1-6

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-alabaster
 Version:        0.7.12
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A configurable sidebar-enabled Sphinx theme
 Group:          Development/Languages/Python
 Url:            https://github.com/bitprophet/alabaster
@@ -41,6 +41,8 @@ Alabaster is a visually (c)lean, responsive, configurable theme for the Sphinx d
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.7.12-5
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.12-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.12-3

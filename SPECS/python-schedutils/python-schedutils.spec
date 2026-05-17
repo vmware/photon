@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-schedutils
 Summary:        Linux scheduler python bindings
 Version:        0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -43,6 +43,8 @@ python3 setup.py install --skip-build --root %{buildroot}
 %{python3_sitearch}/*.egg-info
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.6-6
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6-5
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6-4

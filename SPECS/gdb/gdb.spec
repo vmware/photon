@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global build_minimal_gdb 1
 
 Summary:        C debugger
 Name:           gdb
 Version:        17.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -181,6 +181,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.1-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 17.1-1
 - Update to GDB 17.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 13.2-7

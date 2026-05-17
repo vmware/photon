@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name mime-types
 
 Name: rubygem-mime-types
 Version:        3.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The mime-types library provides a library and registry for information about MIME content type definitions.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ There are a number of other smaller changes described in the History file.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.7.0-3
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.7.0-2
 - bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.7.0-1

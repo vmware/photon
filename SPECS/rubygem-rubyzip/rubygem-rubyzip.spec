@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name rubyzip
 
 Name:           rubygem-rubyzip
 Version:        3.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Ruby library for reading and writing Zip files
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -45,6 +45,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.2-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.2-1
 - Update to version 3.2.2
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.4.1-1

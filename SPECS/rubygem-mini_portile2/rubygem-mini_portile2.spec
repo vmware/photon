@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name mini_portile2
@@ -6,7 +6,7 @@
 Summary:        Simplistic port-like solution for developers
 Name:           rubygem-mini_portile2
 Version:        2.8.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,6 +39,8 @@ Simplistic port-like solution for developers. It provides a standard and simplif
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.9-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.9-1
 - Update to version 2.8.9
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.8-1

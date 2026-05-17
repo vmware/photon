@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global srcname vcs-versioning
 
 Summary:        setuptools-scm VCS versioning backend
 Name:           python3-vcs-versioning
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/pypa/setuptools-scm
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -55,5 +55,7 @@ cd %{srcname}
 %{_bindir}/vcs-versioning
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.1-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-1
 - Initial packaging for offline setuptools-scm

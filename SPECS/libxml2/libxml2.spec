@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.10
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12.10-10
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.10-9
 - Bump version as a part of python3.14 upgrade
 * Wed Nov 05 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.12.10-8

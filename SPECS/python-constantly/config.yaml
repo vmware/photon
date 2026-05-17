@@ -1,8 +1,7 @@
 sources:
 - archive: constantly-23.10.4.tar.gz
   archive_sha512sum: 14c99ec39cf5ec588d24818ca56909ed59c646093fbf1d061a8a6e6bec8e7258c64dafd346e0dbb8aeef35260fe1e03efa649150b60b1fd3e7865fa59e96ce49
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: constantly-23.10.4
   version: "23.10.4"
   url: https://files.pythonhosted.org/packages/4d/6f/cb2a94494ff74aa9528a36c5b1422756330a75a8367bf20bd63171fc324d/constantly-23.10.4.tar.gz

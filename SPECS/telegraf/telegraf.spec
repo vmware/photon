@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define network_required    1
 %define debug_package       %{nil}
@@ -9,7 +9,7 @@
 Summary:          agent for collecting, processing, aggregating, and writing metrics.
 Name:             telegraf
 Version:          1.37.3
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              https://github.com/influxdata/telegraf
 Group:            Development/Tools
 Vendor:           VMware, Inc.
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.37.3-3
+- Extended to build for subrelease 91 and above
 * Tue Apr 14 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.37.3-2
 - Fix CVE-2026-33186
 * Tue Mar 31 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.37.3-1

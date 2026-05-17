@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define network_required 1
 %global debug_package   %{nil}
@@ -7,7 +7,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        22.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -379,6 +379,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/LLVMSPIRVLib.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 22.1.0-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 22.1.0-1
 - Update llvm to 22.1.0 to build latest version of rust-1.93.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 18.1.8-3

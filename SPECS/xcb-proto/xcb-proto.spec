@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 Summary:        provides the XML-XCB protocol descriptions.
 Name:           xcb-proto
 Version:        1.15.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://xcb.freedesktop.org/
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ rm -rf %{buildroot}/*
 %{_prefix}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.15.2-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.15.2-3
 - Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.15.2-2

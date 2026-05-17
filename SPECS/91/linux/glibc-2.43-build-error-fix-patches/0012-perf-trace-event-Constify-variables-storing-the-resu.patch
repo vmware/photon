@@ -1,0 +1,30 @@
+From 2090e209a858f0ef2318e7f72b0dd45aa6760aa2 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Tue, 27 Jan 2026 01:15:47 -0300
+Subject: [PATCH 12/18] perf trace-event: Constify variables storing the result
+ of strchr() on const tables
+
+As newer glibcs will propagate the const attribute of the searched table
+to its return.
+
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/util/trace-event-info.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/util/trace-event-info.c b/tools/perf/util/trace-event-info.c
+index 892c323b4ac9..5a6dec2dc0d8 100644
+--- a/tools/perf/util/trace-event-info.c
++++ b/tools/perf/util/trace-event-info.c
+@@ -477,7 +477,7 @@ static struct tracepoint_path *tracepoint_id_to_path(u64 config)
+ static struct tracepoint_path *tracepoint_name_to_path(const char *name)
+ {
+ 	struct tracepoint_path *path = zalloc(sizeof(*path));
+-	char *str = strchr(name, ':');
++	const char *str = strchr(name, ':');
+ 
+ 	if (path == NULL || str == NULL) {
+ 		free(path);
+-- 
+2.54.0
+

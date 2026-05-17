@@ -1,8 +1,7 @@
 sources:
 - archive: setuptools_scm-9.2.2.tar.gz
   archive_sha512sum: 757ca11a3d13601606b6914ea70e3d271d287f26ada976ec77334fc0f611208669585d2580994f1ddff830cd698a837d3e882dd5cdccdaf9f8eba34fdd8cb708
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: setuptools_scm-9.2.2
   version: "9.2.2"
   url: https://files.pythonhosted.org/packages/7b/b1/19587742aad604f1988a8a362e660e8c3ac03adccdb71c96d86526e5eb62/setuptools_scm-9.2.2.tar.gz

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.33
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            https://sourceforge.net/projects/openipmi
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -181,6 +181,8 @@ echo "disable ipmi.service" > %{buildroot}%{_presetdir}/50-ipmi.preset
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.33-10
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.33-9
 - Bump version as a part of python3.14 upgrade
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.0.33-8

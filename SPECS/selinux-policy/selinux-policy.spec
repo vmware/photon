@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define container_selinux_ver   2.247.0
 
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        43.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -80,6 +80,7 @@ BuildRequires: policycoreutils
 Requires: policycoreutils
 Requires: coreutils-selinux
 Requires: libselinux-utils
+
 # For automatic file labeling during an RPM transaction
 Requires: rpm-plugin-selinux
 
@@ -154,6 +155,8 @@ exit 0
 %{_datadir}/selinux
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 43.6-3
+- Extended to build for subrelease 91 and above
 * Thu Apr 23 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 43.6-2
 - Allow file labeling from interactive shell (unconfined domain)
 - mount: roleattribute unconfined_r mount_roles (rootless containerd mount exec)

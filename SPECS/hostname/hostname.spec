@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Utility to set/show the host name or domain name
 Name:           hostname
 Version:        3.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://tracker.debian.org/pkg/hostname
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -55,5 +55,7 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.25-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.25-1
 - Initial packaging for Photon

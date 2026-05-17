@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        EDID and DisplayID library
 Name:           libdisplay-info
 Version:        0.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Libraries
@@ -54,5 +54,7 @@ developing applications that use %{name}.
 %{_libdir}/pkgconfig/libdisplay-info.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.3.0-2
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.3.0-1
 - Initial build for Mesa 25.3.x compatibility

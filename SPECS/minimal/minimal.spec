@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -67,6 +67,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0-8
+- Extended to build for subrelease 91 and above
 * Fri Apr 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.0-7
 - Remove deprecated bridge-utils and net-tools from requires (iproute2 already present)
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 5.0-6

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        6.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.0-2
+- Extended to build for subrelease 91 and above
 * Fri Mar 13 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.0-1
 - Update to v6.12.0 and fix UAPI enums in HCX patches
 * Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 6.0.0-3

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define src_name chkconfig
 Summary:    Maintain symbolic links determining default commands
 Name:       alternatives
 Version:    1.32
-Release:    2%{?dist}
+Release:    3%{?dist}
 Group:      System Environment/Base
 URL:        https://git.fedorahosted.org/git/chkconfig
 Vendor:     VMware, Inc.
@@ -79,6 +79,8 @@ rm -rf %{buildroot}
 %exclude %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.32-3
+- Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.32-2
 - Conflict chkconfig
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.32-1

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-imagesize
 Version:        1.4.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 Group:          Development/Languages/Python
 Url:            https://github.com/shibukawa/imagesize_py
@@ -45,6 +45,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.1-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-2

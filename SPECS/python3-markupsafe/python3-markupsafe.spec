@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python3-markupsafe
 Version:        3.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -53,6 +53,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.3-2
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.3-1
 - Upgrade to v3.0.3
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.1.1-5

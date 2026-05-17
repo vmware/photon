@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name concurrent-ruby
 
 Name: rubygem-concurrent-ruby
 Version:        1.3.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Modern concurrency tools for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -43,6 +43,8 @@ classic concurrency patterns.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.6-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.6-1
 - Update to version 1.3.6
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.4-1

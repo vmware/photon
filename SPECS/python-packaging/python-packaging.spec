@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
 Version:        25.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.0-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.0-2
 - Bump version as a part of python3.14 upgrade
 * Wed Sep 24 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.0-1

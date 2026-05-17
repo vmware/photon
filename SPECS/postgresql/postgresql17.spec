@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname         postgresql
 %global pgmajorversion  17
@@ -15,7 +15,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql17
 Version:        17.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -747,6 +747,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.9-4
+- Extended to build for subrelease 91 and above
 * Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.9-3
 - Require alternatives instead of chkconfig
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 17.9-2

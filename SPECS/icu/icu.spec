@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        International Components for Unicode
 Name:           icu
 Version:        76.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.icu-project.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -52,6 +52,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 76.1-2
+- Extended to build for subrelease 91 and above
 * Mon Feb 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 76.1-1
 - Upgrade as required by mozjs
 * Mon Aug 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 72.1-3

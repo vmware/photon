@@ -1,0 +1,16 @@
+sources:
+- archive: gdk-pixbuf-2.42.0.tar.xz
+  archive_sha512sum: c9962d42e5bf13514091234342e259be1e06b2c4dea2936e16104a3b58f0b6837f070224c04be9541d75f5ea34d1da398f178a1eed1f9059f6429faf5c223e34
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The Gdk Pixbuf is a toolkit for image loading and pixel
+        buffer manipulation. It is used by GTK+ 2 and GTK+ 3 to load and manipulate
+        images. '
+      home_page: http://www.gt.org
+      license_concluded: TCL AND GPL-2.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND GPL-1.0-or-later AND LGPL-2.1-or-later
+      license_declared: TCL AND GPL-2.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND GPL-1.0-or-later AND LGPL-2.1-or-later
+      short_summary: toolkit for image loading and pixel buffer manipulation.
+      supplier: 'Organization: Broadcom, Inc.'

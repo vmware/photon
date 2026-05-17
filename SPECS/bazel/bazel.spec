@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 %define __os_install_post %{nil}
@@ -6,7 +6,7 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        5.3.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,6 +63,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.3.2-10
+- Extended to build for subrelease 91 and above
 * Mon Apr 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.3.2-9
 - Added openjdk21 and openjdk25 to requires
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.3.2-8

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.8.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -77,6 +77,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.8.3-6
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.8.3-5
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.3-4

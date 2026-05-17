@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define bootstrap   1
 
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.88.0
-Release:      3%{?dist}
+Release:      4%{?dist}
 URL:          https://developer.gnome.org/glib
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -93,9 +93,34 @@ rm docs/reference/glib/*.svg \
    LICENSES/CC-BY-SA-3.0.txt
 
 %build
+CONFIGURE_OPTS=(
+    -Ddocumentation=false
+    -Dlibelf=disabled
+    -Dtests=false
+    -Dinstalled_tests=false
+    -Ddefault_library=both
+    -Ddtrace=disabled
+    -Dsystemtap=disabled
+    -Dsysprof=disabled
+    -Dman-pages=disabled
+    -Dintrospection=enabled
+)
+
 %if 0%{?bootstrap}
 tar xf %{SOURCE1}
 
+# Phase 1: build glib without introspection and install into the sandbox so
+# gobject-introspection finds glib 2.88.0 (headers, .pc, .so) instead of
+# the older system version (glib-devel is not in ExtraBuildRequires).
+%set_build_flags
+meson setup "${CONFIGURE_OPTS[@]/-Ddefault_library=both/-Ddefault_library=shared}" \
+    -Dintrospection=disabled \
+    --prefix /usr \
+    . _build_bootstrap
+ninja -C _build_bootstrap
+DESTDIR=/ meson install -C _build_bootstrap --no-rebuild
+
+# Phase 2: build gobject-introspection against the freshly-installed glib
 pushd gobject-introspection-%{introspection_version}
 %{meson} \
   -Dpython=%{python3} \
@@ -106,20 +131,6 @@ pushd gobject-introspection-%{introspection_version}
 DESTDIR=/ meson install -C %{_vpath_builddir} --no-rebuild
 popd
 %endif
-
-CONFIGURE_OPTS=(
-    -Ddocumentation=false
-    -Dlibelf=disabled
-    -Ddocumentation=false
-    -Dtests=false
-    -Dinstalled_tests=false
-    -Ddefault_library=both
-    -Ddtrace=disabled
-    -Dsystemtap=disabled
-    -Dsysprof=disabled
-    -Dman-pages=disabled
-    -Dintrospection=enabled
-)
 
 %meson "${CONFIGURE_OPTS[@]}"
 %meson_build
@@ -160,6 +171,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Tue May 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.88.0-4
+- Enable for 91 subrlease
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-3
 - Enable introspection
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.88.0-2

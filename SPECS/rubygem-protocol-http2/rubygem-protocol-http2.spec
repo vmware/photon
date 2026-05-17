@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name protocol-http2
 
 Name:           rubygem-protocol-http2
 Version:        0.24.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A low level implementation of the HTTP/2 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ Provides a low-level implementation of the HTTP/2 protocol.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.24.0-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.24.0-1
 - Update to version 0.24.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.22.1-1

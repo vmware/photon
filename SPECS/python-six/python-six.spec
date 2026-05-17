@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-six
 Version:        1.16.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -49,6 +49,8 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.16.0-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.16.0-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.16.0-2

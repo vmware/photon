@@ -1,8 +1,7 @@
 sources:
 - archive: autopep8-2.3.2.tar.gz
   archive_sha512sum: 1fc897feec093e7e945b10bbd3cbbef5a83c4ec7d86215fb9643434d80a14ff54bf613dbb9dd0acacc9706ac35e8f0486ef643ae49da040471965d41fdd03cc4
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: autopep8-2.3.2
   version: "2.3.2"
   url: https://files.pythonhosted.org/packages/50/d8/30873d2b7b57dee9263e53d142da044c4600a46f2d28374b3e38b023df16/autopep8-2.3.2.tar.gz

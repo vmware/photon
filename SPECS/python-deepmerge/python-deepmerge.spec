@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-deepmerge
 Version:        1.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 URL:            https://pypi.org/project/deepmerge
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.0-5
+- Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-4
 - Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-3

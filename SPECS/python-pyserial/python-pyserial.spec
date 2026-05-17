@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:    Python serial port access library
 Name:       python3-pyserial
 Version:    3.5
-Release:    3%{?dist}
+Release:    4%{?dist}
 Vendor:     VMware, Inc.
 Group:      Development/Libraries
 Distribution: Photon
@@ -50,6 +50,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{_bindir}/pyserial-ports
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-2

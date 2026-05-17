@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname build
 
 Name:           python3-build
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A simple, correct PEP517 package builder
 URL:            https://github.com/pypa/build
 Group:          Development/Languages/Python
@@ -95,5 +95,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.0-2
+- Extended to build for subrelease 91 and above
 * Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.0-1
 - Initial version.

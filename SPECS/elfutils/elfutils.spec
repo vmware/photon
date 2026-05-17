@@ -4,7 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.189
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Vendor:         VMware, Inc.
@@ -20,7 +20,7 @@ Patch1: CVE-2025-1365.patch
 Patch2: CVE-2025-1372.patch
 Patch3: CVE-2025-1376.patch
 Patch4: CVE-2025-1377.patch
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch5: 0001-Fix-const-correctness-issues.patch
 %endif
 
@@ -209,6 +209,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-10
+- version bump after glibc is upgraded in 91
 * Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-9
 - Fix build with newer glibc
 * Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.189-8

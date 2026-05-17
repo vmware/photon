@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname wheel
 
 Name:           python3-wheel
 Version:        0.46.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A built-package format for Python
 URL:            https://pypi.org/project/wheel
 Group:          Development/Languages/Python
@@ -22,8 +22,6 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-flit-core
 BuildRequires:  python3-setuptools
 
-%define ExtraBuildRequires python3-pip
-
 Requires:       python3
 Provides:       python%{python3_version}dist(wheel) = %{version}-%{release}
 
@@ -36,6 +34,7 @@ Secondly, a command line tool for working with wheel files
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
+python3 -m ensurepip --default-pip
 %pyproject_wheel
 
 %install
@@ -54,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.46.3-2
+- Extended to build for subrelease 91 and above
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.46.3-1
 - Upgrade to v0.46.3
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.37.1-5

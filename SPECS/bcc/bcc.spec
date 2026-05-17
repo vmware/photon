@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.35.0
-Release:         4%{?dist}
+Release:         5%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -142,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.35.0-5
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.35.0-4
 - Bump to build with updated llvm
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.35.0-3

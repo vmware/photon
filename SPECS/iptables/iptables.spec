@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -180,6 +180,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.13-3
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.8.13-2
 - Require alternatives instead of chkconfig
 * Wed Mar 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.13-1

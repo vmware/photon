@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Interface to the X Window System protocol.
 Name:           libxcb
 Version:        1.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.15-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.15-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.15-2

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname setuptools_rust
 
 Name:           python3-setuptools-rust
 Version:        1.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Setuptools plugin for Rust support
 Group:          Development/Languages/Python
 Url:            https://github.com/PyO3/setuptools-rust
@@ -63,6 +63,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.12.0-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.0-1
 - Upgrade to v1.12.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.5.2-4

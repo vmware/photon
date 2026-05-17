@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname gcovr
 
 Summary:    The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:       python3-gcovr
 Version:    5.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://gcovr.com
 Vendor:     VMware, Inc.
 Group:      Development/Tools
@@ -63,6 +63,8 @@ python3 -m nox
 %{python3_sitelib}*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-6
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-5
 - Bump version as a part of python3.14 upgrade
 * Tue Oct 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.2-4

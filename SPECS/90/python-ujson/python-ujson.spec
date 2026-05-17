@@ -1,0 +1,74 @@
+%global build_if %{photon_subrelease} <= 90
+
+%global debug_package %{nil}
+
+Summary:        Ultra fast JSON encoder and decoder written in pure C
+Name:           python3-ujson
+Version:        5.4.0
+Release:        3.2.1%{?dist}
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+URL:            https://pypi.org/project/ujson
+
+Source0:        https://files.pythonhosted.org/packages/fb/94/44fbbb059fe5d295f1f73e731a0b9c2e1b5073c2c6b58bb9c068715e9b72/ujson-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0: CVE-2026-32874.patch
+Patch1: CVE-2026-32875.patch
+
+BuildRequires:  double-conversion-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-packaging
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
+%if 0%{?with_check}
+BuildRequires:  python3-pytest
+%endif
+
+Requires:       python3
+
+%description
+UltraJSON is an ultra fast JSON encoder and decoder written in pure C with bindings for Python.
+
+%prep
+%autosetup -p1 -n ujson-%{version}
+
+%build
+%pyproject_wheel
+
+%install
+%pyproject_install
+
+%if 0%{?with_check}
+%check
+%pytest -v
+%endif
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root)
+%license LICENSE.txt
+%doc README.md
+%{python3_sitearch}/ujson-%{version}.dist-info/
+%{python3_sitearch}/ujson*.so
+
+%changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.4.0-3.2.1
+- Adjusted to build for subrelease 90
+* Tue Apr 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcomc.com> 5.4.0-3.2
+- Fix CVE-2026-32874, CVE-2026-32875
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3.1
+- Bump after moving to SPECS/91
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3
+- Release bump for SRP compliance
+* Mon Jun 03 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-2
+- Use system provided packages to do offline build
+* Wed Oct 12 2022 Nitesh Kumar <kunitesh@vmware.com> 5.4.0-1
+- Initial version, Needed by python3-pydantic

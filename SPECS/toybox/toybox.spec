@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 # also defined in coreutils.spec and coreutils-selinux.spec
 %define coreutils_present           %{_sharedstatedir}/rpm-state/coreutils
@@ -8,7 +8,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -808,6 +808,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.8.9-14
+- Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-13
 - Remove net-tools posttrigger (deprecated in >=92)
 - Add hostname posttrigger for new hostname package

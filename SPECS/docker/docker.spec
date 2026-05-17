@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define network_required 1
 %define debug_package %{nil}
@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        29.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -297,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 29.4.1-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 21 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.4.1-1
 - Version upgrade
 * Tue Apr 14 2026 Mukul Sikka <mukul.sikka@broadcom.com> 29.2.1-4

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           pycurl3
 Version:        7.45.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 URL:            http://pycurl.sourceforge.net
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.45.7-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.45.7-1
 - Version upgrade
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.45.1-4

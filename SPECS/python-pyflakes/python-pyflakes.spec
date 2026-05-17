@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-pyflakes
 Version:        2.5.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A simple program which checks Python source files for errors
 Group:          Development/Languages/Python
 Url:            https://github.com/PyCQA/pyflakes/archive/refs/tags/%{version}.tar.gz
@@ -45,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.5.0-5
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.5.0-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.5.0-3

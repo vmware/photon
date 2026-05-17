@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           btrfs-progs
 Version:        6.1.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Userspace programs for btrfs
 Group:          System Environment/Base
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
@@ -87,6 +87,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.3-6
+- Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 6.1.3-5
 - Version bump for removing lzo support in btrfs-progs
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.3-4

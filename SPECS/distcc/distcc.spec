@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global security_hardening nofortify3
 
 Name:         distcc
 Version:      3.4
-Release:      6%{?dist}
+Release:      7%{?dist}
 Summary:      Distributed C/C++ compilation
 URL:          https://github.com/distcc/distcc
 Group:        Applications/File
@@ -108,6 +108,8 @@ rm -rf %{buildroot}%{_docdir}/*
 %dir /usr/lib/gcc-cross
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4-7
+- Extended to build for subrelease 91 and above
 * Sun Apr 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4-6
 - Fix build with newer glibc
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.4-5

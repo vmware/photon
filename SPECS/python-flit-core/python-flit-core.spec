@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname flit_core
 
 Name:           python3-flit-core
 Version:        3.12.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The build backend used by Hatch
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -47,6 +47,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.12.0-3
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-2
 - Fix BuildRequires
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.12.0-1

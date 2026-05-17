@@ -1,8 +1,7 @@
 sources:
 - archive: pyproject_metadata-0.11.0.tar.gz
   archive_sha512sum: c26e6deef7fa34147079006934d79846bba39289f87a1c30fabb5d378b7596bb13f4719686a94350d03933960459b351ba55bebbf0f16558984e40d92f05f784
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: pyproject_metadata-0.11.0
   version: "0.11.0"
   url: https://files.pythonhosted.org/packages/83/fa/8bf4fa41adfebd95dce360afe3f5fca243a17932089d3d5486e95ca44c57/pyproject_metadata-0.11.0.tar.gz

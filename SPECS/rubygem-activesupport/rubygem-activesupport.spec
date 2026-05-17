@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name activesupport
 
 Name: rubygem-activesupport
 Version:        8.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ time zones, and testing.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.1.3-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.1.3-1
 - Update to version 8.1.3
 * Wed Apr 01 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.0.8.7-2

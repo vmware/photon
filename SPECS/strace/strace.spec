@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:       Tracks system calls that are made by a running process
 Name:          strace
 Version:       6.18
-Release:       1%{?dist}
+Release:       2%{?dist}
 URL:           https://strace.io/
 Group:         Development/Debuggers
 Vendor:        VMware, Inc.
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/strace
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.18-2
+- Extended to build for subrelease 91 and above
 * Tue Feb 10 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.18-1
 - Update to v6.18 and split into subpackage
 * Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 6.1-4

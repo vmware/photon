@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname tomli
 
 Name:       python3-tomli
 Version:    2.4.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    A little TOML parser for Python
 URL:        https://pypi.org/project/tomli
 Group:      Development/Languages/Python
@@ -56,5 +56,7 @@ rm -rf %{buidlroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.0-2
+- Extended to build for subrelease 91 and above
 * Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.0-1
 - Initial version. Needed by setuptools-rust.

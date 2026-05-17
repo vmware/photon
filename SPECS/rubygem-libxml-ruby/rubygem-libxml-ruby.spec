@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %define gem_name libxml-ruby
 
 Name:           rubygem-libxml-ruby
 Version:        5.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -65,6 +65,8 @@ rake test
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0.5-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.5-1
 - Update to version 5.0.5
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.0.2-6

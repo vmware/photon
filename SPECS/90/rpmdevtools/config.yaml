@@ -1,0 +1,19 @@
+sources:
+- archive: rpmdevtools-9.6.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 691fec8944029dbe60cb3eab0200d1201f5aa3dd11cd49e8313ee7c1fe998237217ea9c5ae7b4a70f61f3c998093f23d26266b23f41607ddca3148d5f6b6ae06
+  name: rpmdevtools-9.6
+  version: "9.6"
+  url:  https://releases.pagure.org/rpmdevtools/rpmdevtools-9.6.tar.xz
+  repo_url: https://pagure.io/rpmdevtools.git
+  commit_id: 9618627bddadea244b4b0d5e240326cf2093b03f
+  skip_list: []
+  missing: ['.editorconfig', 'setup.cfg', 'pyproject.toml', 'install-sh', 'aclocal.m4', 'missing', 'Makefile.in', 'configure', '.gitignore']
+  spdx:
+    package:
+      detailed_description: 'This package contains scripts to help in development of RPM packages.'
+      home_page: https://pagure.io/rpmdevtools
+      license_concluded: DOC AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.0-or-later AND X11
+      license_declared: DOC AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND LGPL-2.0-or-later AND X11
+      short_summary: 'This package contains scripts to help in development of RPM packages.'
+      supplier: 'Organization: Broadcom, Inc.'

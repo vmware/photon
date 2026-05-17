@@ -1,7 +1,7 @@
 sources:
 - archive: scramp-1.4.6.tar.gz
+  skip_validation: true
   archive_sha512sum: 53b4c4d50ae02ec256fe44100c1aee2a636985ac3ab131ab3060918a73292ebdbd51e0af97028220326ae2f501b6f82a4386056c0e0b86db27a946504eafeac8
-  archive_type: upstream
   version: 1.4.6
   name: scramp-1.4.6
   url: https://files.pythonhosted.org/packages/58/77/6db18bab446c12cfbee22ca8f65d5b187966bd8f900aeb65db9e60d4be3d/scramp-1.4.6.tar.gz

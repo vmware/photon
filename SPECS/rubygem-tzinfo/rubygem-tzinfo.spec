@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name tzinfo
 
 Name: rubygem-tzinfo
 Version:        2.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Timezone related support for Ruby.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -45,6 +45,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.6-3
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.6-2
 - bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.6-1

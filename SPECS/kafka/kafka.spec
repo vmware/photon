@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define network_required 1
 %define debug_package %{nil}
@@ -11,7 +11,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       4.1.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -132,6 +132,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.2-2
+- Extended to build for subrelease 91 and above
 * Mon Apr 20 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.2-1
 - Update to 4.1.2
 * Fri Apr 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.9.1-7

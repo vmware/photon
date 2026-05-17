@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           tuna
 Version:        0.18
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Application tuning command line utility
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -68,6 +68,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.18-6
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18-5
 - Bump up release as part of python3 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.18-4

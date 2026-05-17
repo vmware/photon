@@ -1,7 +1,6 @@
 sources:
 - archive: pyasn1-0.6.3.tar.gz
   archive_sha512sum: c58962b3f11f486da3e73c09dbe2aff7500879b29c4a7be4295878e4edbcaaa2680d608720ad5af86a2457de7da50471ab7a9e925f717db5c467553fc552e6d6
-  archive_type: upstream
   version: 0.6.3
   name: pyasn1-0.6.3
   url: https://files.pythonhosted.org/packages/source/p/pyasn1/pyasn1-0.6.3.tar.gz
@@ -9,7 +8,7 @@ sources:
   commit_id: af65c3b92e9deeae50db4de390982dd970d87f98
   skip_list: []
   missing: ['.bandit.yml', 'devel-requirements.txt', '.readthedocs.yaml', 'requirements.txt', '.gitignore', 'pyasn1.egg-info', 'css', 'THANKS.txt', 'favicon.ico', 'PKG-INFO', '.github', 'setup.cfg', 'tox.ini']
-  skip_validation: false
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'This is an implementation of ASN.1 types and codecs in

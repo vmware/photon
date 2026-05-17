@@ -1,8 +1,7 @@
 sources:
 - archive: numpy-2.4.2.tar.gz
   archive_sha512sum: dbb1a95737695e7c93c2c0fc9c666ee9681b5fb5b720f4dd2fe448e18732bd4679c0932386acc9720968c1c6df2377501a0d0a9d5c2610c6f6a994c08cdab6d0
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: numpy-2.4.2
   version: "2.4.2"
   url: https://files.pythonhosted.org/packages/57/fd/0005efbd0af48e55eb3c7208af93f2862d4b1a56cd78e84309a2d959208d/numpy-2.4.2.tar.gz

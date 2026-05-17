@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name zstd-ruby
 
 Name: rubygem-zstd-ruby
 Version:        1.5.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Ruby binding for zstd compression algorithm
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -41,5 +41,7 @@ See https://github.com/facebook/zstd
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.5.7.1-2
+- Extended to build for subrelease 91 and above
 * Tue Jan 27 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.5.7.1-1
 - Initial build for fluentd dependency

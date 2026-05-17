@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
 Name:           iotop
 Version:        0.6
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://guichaz.free.fr/iotop/
 Group:          System/Monitoring
 Vendor:         VMware, Inc.
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.6-11
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6-10
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 0.6-9

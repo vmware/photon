@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define debug_package %{nil}
 %global maj_ver vim92
@@ -6,7 +6,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        9.2.0136
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -198,6 +198,8 @@ fi
 %lang(zh_CN.cp936) %{_datadir}/vim/vim*/lang/zh_CN.cp936/LC_MESSAGES/vim.mo
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.2.0136-4
+- Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.2.0136-3
 - Introduce xxd sub package
 * Wed Apr 01 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-2

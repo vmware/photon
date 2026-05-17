@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Setuptools extension for CalVer package versions
 Name:           python3-calver
 Version:        2025.10.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/di/calver
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -48,5 +48,7 @@ build trove-classifiers from source.
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2025.10.20-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2025.10.20-1
 - Initial build

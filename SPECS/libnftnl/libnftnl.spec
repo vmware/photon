@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Summary:        Library for low-level netlink programming interface to the in-kernel nf_tables subsystem
 Name:           libnftnl
 Version:        1.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 URL:            http://netfilter.org/projects/libnftnl/
@@ -54,6 +54,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-1
 - Upgrade version to support new iptables version
 * Fri Jul 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.2.4-3

@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname cython
 
 Summary:        C extensions for Python3
 Name:           cython3
 Version:        3.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -59,6 +59,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/pyximport/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.4-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.4-1
 - Update to 3.2.4
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.2-1

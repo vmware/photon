@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.10.3
-Release:          1%{?dist}
+Release:          2%{?dist}
 Group:            System Environment/Libraries
 URL:              https://github.com/cracklib/cracklib
 Vendor:           VMware, Inc.
@@ -185,6 +185,8 @@ rm -f %{_datadir}/%{name}/pw_dict.hwm \
 %{_datadir}/locale/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.10.3-2
+- Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.10.3-1
 - Upgrade to v2.10.3
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.8-4

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname babel
 
 Name:           python3-babel
 Version:        2.18.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
 Group:          Development/Languages/Python
 Url:            http://babel.pocoo.org
@@ -65,6 +65,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.18.0-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.18.0-1
 - Update to 2.18.0 as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.10.3-3

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-appdirs
 Version:        1.4.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.4-6
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.4-5
 - Bump up release as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.4-4

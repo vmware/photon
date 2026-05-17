@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-iniparse
 Version:        0.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 URL:            http://code.google.com/p/iniparse/
@@ -59,6 +59,8 @@ rm tests/test_multiprocessing.py
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.5.1-2
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.5.1-1
 - Upgrade to v0.5.1
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.5-4

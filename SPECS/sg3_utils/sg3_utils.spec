@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Tools and Utilities for interaction with SCSI devices.
 Name:           sg3_utils
 Version:        1.48
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/doug-gilbert/sg3_utils
 Group:          System/Tools.
 Vendor:         VMware, Inc.
@@ -56,6 +56,8 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.48-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.48-1
 - Update to v1.48
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.47-3

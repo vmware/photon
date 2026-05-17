@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -235,6 +235,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.31-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.31-1
 - Upgrade to 2.0.31 as part of python3 upgrade
 * Mon Oct 27 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.0.21-23

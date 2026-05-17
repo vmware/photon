@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        12%{?dist}
+Release:        13%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -146,6 +146,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.3-13
+- Extended to build for subrelease 91 and above
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-12
 - Bump to keep version higher than 91
 * Wed Apr 08 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.2.3-11

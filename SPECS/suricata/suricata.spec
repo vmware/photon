@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Intrusion Detection System
 Name:           suricata
 Version:        7.0.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://suricata.io
@@ -176,6 +176,8 @@ install -m 0644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 %{_datadir}/%{name}/rules
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.0.6-7
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.0.6-6
 - Bump version as a part of python3.14 upgrade
 * Mon Oct 27 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 7.0.6-5

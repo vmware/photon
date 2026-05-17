@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        SELinux python3 bindings for libselinux
 Name:           libselinux-python3
 Version:        3.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ make \
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.10-4
+- Extended to build for subrelease 91 and above
 * Mon May 11 2026 Bo Gan <bo.gan@broadcom.com> 3.10-3
 - Add missing libsepol-devel build dependency
 * Wed Apr 29 2026 Bo Gan <bo.gan@broadcom.com> 3.10-2

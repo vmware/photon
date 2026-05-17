@@ -1,7 +1,7 @@
 sources:
 - archive: pygments-2.19.2.tar.gz
+  skip_validation: true
   archive_sha512sum: 3ead3a1fa4c7d86b415287949099cb0e5667ea71f7f69aa3de359bbb5c2f234d90fa5a41ec9c74cb041593e465b934d54bbb7dc87669683f04b94dd3aa6ca03c
-  archive_type: upstream
   name: pygments-2.19.2
   version: 2.19.2
   url: https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-pywbem
 Version:        1.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
 URL:            http://pywbem.sourceforge.net
@@ -73,6 +73,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.9.0-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.9.0-1
 - Upgrade to 1.9.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.1-4

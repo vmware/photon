@@ -1,0 +1,58 @@
+%global build_if %{photon_subrelease} <= 90
+%global debug_package %{nil}
+%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
+%global gem_name ffi-compiler
+
+Name:           rubygem-ffi-compiler
+Version:        1.3.2
+Release:        1.1.1%{?dist}
+Summary:        An easy-to-use client library for making requests from Ruby.
+Group:          Development/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+URL:            https://rubygems.org/gems/%{gem_name}
+
+Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildArch: noarch
+
+BuildRequires: ruby-devel
+BuildRequires: rubygem-ffi
+
+Requires: rubygem-ffi
+Requires: ruby
+
+%description
+An easy-to-use client library for making requests from Ruby. It uses a simple
+method chaining system for building requests, similar to Python's Requests.
+
+%prep
+%gem_unpack %{SOURCE0}
+
+%build
+%gem_build
+
+%install
+%gem_install
+
+%files
+%defattr(-,root,root,-)
+%{gemdir}
+
+%changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.2-1.1.1
+- Adjusted to build for subrelease 90
+* Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.2-1.1
+- Bump after moving to SPECS/91
+* Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.2-1
+- Upgrade to 1.3.2
+* Mon Mar 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.1-3
+- Build gems properly
+* Wed Dec 11 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.1-2
+- Release bump for SRP compliance
+* Fri Dec 15 2023 Shivani Agarwal <shivania2@vmware.com> 1.0.1-1
+- Initial version.
+- Needed by rubygem-http-parser.

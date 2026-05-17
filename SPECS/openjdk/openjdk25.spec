@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define bootstrap           1
 %global security_hardening  none
@@ -14,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk25
 Version:    25.0.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/openjdk/jdk25u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -260,6 +260,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.0.2-3
+- Extended to build for subrelease 91 and above
 * Tue Apr 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.0.2-2
 - Require alternatives instead of chkconfig
 * Wed Apr 01 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 25.0.2-1

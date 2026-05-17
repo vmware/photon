@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        iniconfig: brain-dead simple config-ini parsing
 Name:           python3-iniconfig
 Version:        2.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://github.com/RonnyPfannschmidt/iniconfig
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -66,6 +66,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/iniconfig*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.0-2
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.0-1
 - Upgrade to v2.1.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.1-5

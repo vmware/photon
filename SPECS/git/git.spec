@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.53.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -140,6 +140,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.53.0-2
+- Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.53.0-1
 - Version upgrade
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.43.7-2

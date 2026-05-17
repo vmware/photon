@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname zope.interface
 
 Name:           python3-zope.interface
 Version:        8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 Group:          Development/Languages/Python
@@ -60,6 +60,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.2-2
+- Extended to build for subrelease 91 and above
 * Thu Mar 05 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.2-1
 - Upgrade to 8.2, as part of python3 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-3

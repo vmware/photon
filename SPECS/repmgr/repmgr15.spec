@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define srcname repmgr
 
 %define _pgbasedir    %{_usr}/pgsql/15
@@ -5,7 +7,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr15
 Version:        5.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -65,6 +67,8 @@ rm -rf %{buildroot}
 %{_pgbasedir}/share/*
 
 %changelog
+* Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.5.0-2
+- Bump version to keep version higher than 90
 * Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.5.0-1
 - Upgrade to v5.5.0
 * Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.3-5

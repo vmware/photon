@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:         Multithreaded IO generation tool
 Name:            fio
 Version:         3.33
-Release:         7%{?dist}
+Release:         8%{?dist}
 Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -87,6 +87,8 @@ sh ./configure --disable-optimizations --dynamic-libengines
 %{_mandir}/man1/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.33-8
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.33-7
 - Bump version as a part of python3.14 upgrade
 * Mon Apr 28 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.33-6

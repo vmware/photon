@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Standard Linux utility for controlling network drivers and hardware
 Name:           ethtool
 Version:        6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.kernel.org/pub/software/network/ethtool
 Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_sbindir}/ethtool
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1-4
+- Extended to build for subrelease 91 and above
 * Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 6.1-3
 - Introduce -bin subpackage for users demanding smaller footprint.
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1-2

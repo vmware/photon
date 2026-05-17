@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:          crun
 Version:       1.8
-Release:       11%{?dist}
+Release:       12%{?dist}
 Summary:       OCI runtime in C
 Group:         Development/Other
 Vendor:        VMware, Inc.
@@ -60,6 +60,8 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8-12
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8-11
 - Bump version as a part of python3.14 upgrade
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8-10

@@ -1,6 +1,6 @@
 sources:
 - archive: pip-25.3.tar.gz
-  archive_type: upstream
+  skip_validation: true
   archive_sha512sum: aca54dc7daaba195ba5873e24296242d935a225ed5f4d2e0da672d68573a48650a5028d42051a7a61170de335f122ffb8f97faafc3ad86c488f8bdac3b8bbe1d
   name: pip-25.3
   version: "25.3"

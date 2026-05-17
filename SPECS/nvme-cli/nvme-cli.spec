@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:          nvme-cli
 Summary:       NVM-Express user space tooling for Linux
 Version:       2.16
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -57,6 +57,8 @@ rm -r %{buildroot}%{_datadir}/zsh
 %{_datadir}/bash-completion/completions/nvme
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.16-2
+- Extended to build for subrelease 91 and above
 * Fri Feb 13 2026 Prashnt S Chauhan <prashant.singh-chauhan@broadcom.com> 2.16-1
 - Upgrade to 2.16 as part of libnvme update
 * Mon Oct 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3-5

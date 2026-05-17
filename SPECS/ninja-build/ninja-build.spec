@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           ninja-build
 Summary:        Small build system with focus on speed
 Version:        1.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://ninja-build.org
 Vendor:         VMware, Inc.
 Group:          Development/Tools
@@ -52,6 +52,8 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.12.0-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.12.0-1
 - Update to 1.12.0 as python 'pipes' module deprecated
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.11.1-3

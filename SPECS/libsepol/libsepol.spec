@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
 Version:        3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
@@ -94,6 +94,8 @@ rm -rf %{buildroot}%{_mandir}/ru \
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.10-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.10-1
 - Update to 3.10
 * Mon Dec 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5-1

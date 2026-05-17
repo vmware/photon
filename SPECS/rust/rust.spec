@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define toolchain_prefix 2025-12-11
 %define bootstrap_toolchain_ver 1.92.0
 
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.93.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -134,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.93.1-2
+- Extended to build for subrelease 91 and above
 * Thu Mar 05 2026 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.93.1-1
 - Update to v1.93.1
 * Fri Oct 24 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.87.0-3

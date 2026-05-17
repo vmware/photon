@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.41.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -148,6 +148,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.41.4-2
+- Extended to build for subrelease 91 and above
 * Fri Apr 03 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.41.4-1
 - Update to v2.41.4
 * Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.38-10

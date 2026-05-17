@@ -1,0 +1,66 @@
+%global build_if %{photon_subrelease} <= 90
+
+%define debug_package %{nil}
+
+Summary:        Distro - an OS platform information API
+Name:           python3-distro
+Version:        1.7.0
+Release:        2.1.1%{?dist}
+Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Url:            https://pypi.python.org/pypi/distro
+Source0:        https://files.pythonhosted.org/packages/ca/e3/78443d739d7efeea86cbbe0216511d29b2f5ca8dbf51a6f2898432738987/distro-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+# Note: If you are fixing a CVE here, please check for the same in python3-pip
+
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if 0%{?with_check}
+BuildRequires:  python3-pip
+%endif
+Requires:       photon-release
+Requires:       python3
+BuildArch:      noarch
+%description
+Distro provides information about the OS distribution it runs on, such as a reliable machine-readable ID, or version information.
+
+%prep
+%autosetup -n distro-%{version}
+
+%build
+%{py3_build}
+
+%install
+%{py3_install}
+
+%check
+pip3 install tox
+tox
+
+%files
+%defattr(-,root,root,-)
+%{python3_sitelib}/*
+%doc CHANGELOG.md CONTRIBUTORS.md README.md
+%license LICENSE
+/usr/bin/*
+
+%changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.0-2.1.1
+- Adjusted to build for subrelease 90
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.7.0-2.1
+- Bump after moving to SPECS/91
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.7.0-2
+- Release bump for SRP compliance
+* Sun Aug 21 2022 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.0-1
+- Automatic Version Bump
+* Wed Jul 24 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-3
+- Obsolete python-distro
+* Thu Jul 11 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-2
+- Separate spec file for python3-distro package in Photon

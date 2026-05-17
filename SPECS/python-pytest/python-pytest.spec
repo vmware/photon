@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-pytest
 Version:        9.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 Group:          Development/Languages/Python
 URL:            https://docs.pytest.org
@@ -61,6 +61,8 @@ make %{_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.0.2-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.2-1
 - Verison upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.1.2-3

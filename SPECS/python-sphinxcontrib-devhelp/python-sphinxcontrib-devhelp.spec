@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname sphinxcontrib_devhelp
 
 Name:           python3-sphinxcontrib-devhelp
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Sphinx extension for Devhelp documents
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -45,6 +45,8 @@ sphinxcontrib-devhelp is a sphinx extension which outputs Devhelp document.
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.0-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.0-1
 - Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.2-4

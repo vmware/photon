@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.172
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -148,6 +148,9 @@ Source53: config_x86_64_acvp
 Source54: check_for_acvp_config_applicability.inc
 %endif
 
+# glibc-2.43 build error fixes
+Source55: glibc-2.43-build-error-fix.patches
+
 Source100: Makefile.viomem
 Source101: viomem.c
 
@@ -194,6 +197,9 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
 
 Patch25: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
+
+# glibc-2.43 build error fixes
+Patch26: 0001-libbpf-Fix-Wdiscarded-qualifiers-under-C23.patch
 
 %ifarch x86_64
 Patch49: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
@@ -441,11 +447,6 @@ Patch259: 6.0-0005-vmw_balloon-add-arm64-support.patch
 Patch260: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 %endif
 
-# perf: off-cpu sample
-Patch271: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
-Patch272: 0002-perf-record-add-options-to-off-cpu.patch
-Patch273: 0003-perf-display-off-cpu-samples.patch
-
 %ifarch x86_64
 # AWS: [300..339]
 Patch301: 6.0-0001-scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -606,8 +607,6 @@ BuildRequires:  elfutils-libelf-devel
 BuildRequires:  binutils-devel
 BuildRequires:  xz-devel
 BuildRequires:  slang-devel
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
 BuildRequires:  cmake
 BuildRequires:  bison
 BuildRequires:  dwarves-devel
@@ -652,7 +651,8 @@ This kernel is FIPS certified.
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-Requires:       python3 gawk
+Requires:       python3
+Requires:       gawk
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -677,40 +677,6 @@ Requires:       python3
 Requires:       %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
-
-%package tools
-Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
-Group:          System/Tools
-Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-rt = %{version})
-Requires:       audit elfutils-libelf binutils-libs
-Requires:       xz-libs
-Requires:       slang
-Requires:       python3
-Requires:       traceevent-plugins
-%ifarch x86_64
-Requires:       pciutils
-%endif
-%description tools
-This package contains kernel tools like perf, turbostat and cpupower.
-
-%package python3-perf
-Summary:        Python bindings for applications that will manipulate perf events.
-Group:          Development/Libraries
-Requires:       linux-tools = %{version}-%{release}
-Requires:       python3
-
-%description python3-perf
-This package provides a module that permits applications written in the
-Python programming language to use the interface to manipulate perf events.
-
-%package -n bpftool
-Summary:    Inspection and simple manipulation of eBPF programs and maps
-Group:      Development/Libraries
-Requires:   linux-tools = %{version}-%{release}
-
-%description -n bpftool
-This package contains the bpftool, which allows inspection and simple
-manipulation of eBPF programs and maps.
 
 %if 0%{?canister_build}
 %package fips-canister
@@ -751,9 +717,6 @@ The kernel fips-canister
 #Secure
 %autopatch -p1 -m61 -M63
 
-#Secure
-%autopatch -p1 -m64 -M64
-
 # CVE
 %autopatch -p1 -m100 -M249
 
@@ -761,8 +724,6 @@ The kernel fips-canister
 # aarch64 patches
 %autopatch -p1 -m250 -M260
 %endif
-
-%autopatch -p1 -m271 -M273
 
 %ifarch x86_64
 # AWS x86
@@ -897,8 +858,10 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 %build
-%make_build KBUILD_BUILD_VERSION="1-photon" \
-    KBUILD_BUILD_HOST="photon" ARCH=%{arch}
+%make_build \
+  KBUILD_BUILD_VERSION="1-photon" \
+  KBUILD_BUILD_HOST="photon" \
+  ARCH=%{arch}
 
 bldroot="${PWD}"
 
@@ -913,20 +876,6 @@ gcc -Wall -Werror -o %{struct_comparator} %{SOURCE9} -ldwarves
 popd
 
 rm -rf %{struct_comp_dir}
-%endif
-
-%ifarch aarch64
-ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
-%endif
-ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
-%make_build ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
-# verify perf has no dependency on libunwind
-tools/perf/perf -vv | grep libunwind | grep OFF
-tools/perf/perf -vv | grep dwarf | grep on
-
-%ifarch x86_64
-#build turbostat and cpupower
-%make_build ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 %endif
 
 # build ENA module
@@ -1062,23 +1011,6 @@ cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manual
 ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
-%ifarch aarch64
-ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
-%endif
-
-%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
-     prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
-
-%make_build -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
-     prefix=%{_prefix} PYTHON=python3 install-python_ext
-
-%ifarch x86_64
-%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
-      prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
-%endif
-
-%make_build install -C tools/bpf/bpftool prefix=%{_prefix} DESTDIR=%{buildroot}
-
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE19} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
@@ -1116,9 +1048,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %files docs
 %defattr(-,root,root)
 %{_docdir}/linux-%{uname_r}/*
-%ifarch x86_64
-%{_mandir}/*
-%endif
 
 %files devel
 %defattr(-,root,root)
@@ -1136,42 +1065,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_modulesdir}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
 
-%files tools
-%defattr(-,root,root)
-%ifarch x86_64
-%exclude %{_lib64}/traceevent
-%endif
-%ifarch aarch64
-%exclude %{_libdir}/traceevent
-%endif
-%{_bindir}
-%{_sysconfdir}/bash_completion.d/perf
-%{_libexecdir}/perf-core
-%{_datadir}/perf-core
-%{_docdir}/perf-tip
-%{_libdir}/perf/examples/bpf/*
-%{_libdir}/perf/include/bpf/*
-%{_includedir}/perf/*
-%ifarch x86_64
-%{_includedir}/cpufreq.h
-%{_includedir}/cpuidle.h
-%{_lib64dir}/libcpupower.so*
-%{_docdir}/packages/cpupower
-%{_datadir}/bash-completion/completions/cpupower
-%config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
-%{_sbindir}/cpufreq-bench
-%{_datadir}/locale/*/LC_MESSAGES/cpupower.mo
-%endif
-
-%files python3-perf
-%defattr(-,root,root)
-%{python3_sitelib}/*
-
-%files -n bpftool
-%defattr(-,root,root)
-%{_sbindir}/bpftool
-%{_datadir}/bash-completion/completions/bpftool
-
 %if 0%{?canister_build}
 %files fips-canister
 %defattr(-,root,root)
@@ -1179,6 +1072,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.172-3
+- Fix build with glibc-2.43
+- Move linux-tools out to a different spec
 * Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-2
 - Fix CVE-2026-31685
 * Mon May 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-1

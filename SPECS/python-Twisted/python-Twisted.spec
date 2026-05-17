@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package   %{nil}
 %define srcname         Twisted
@@ -6,7 +6,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        24.7.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -92,6 +92,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.7.0-4
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 24.7.0-3
 - Remove deprecated net-tools from check BuildRequires
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.0-2

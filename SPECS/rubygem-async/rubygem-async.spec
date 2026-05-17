@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name async
 
 Name: rubygem-async
 Version:        2.35.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Async provides a modern asynchronous I/O framework for Ruby, based on nio4r.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -53,6 +53,8 @@ It implements the reactor pattern, providing both IO and timer based events.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.35.3-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.35.3-1
 - Update to version 2.35.3
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.24.0-1

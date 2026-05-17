@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-M2Crypto
 Version:        0.47.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.47.0-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 25 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 0.47.0-2
 - Rename deprecated __fds_bits to fds_bits.
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.47.0-1

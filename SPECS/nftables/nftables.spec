@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        1.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -152,6 +152,8 @@ chmod 700 %{buildroot}%{_sysconfdir}/%{name}
 %{python3_sitelib}/%{name}/
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.6-2
+- Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.6-1
 - Upgrade to 1.1.6
 - Fix build after iptables upgrade

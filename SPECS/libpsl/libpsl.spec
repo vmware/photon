@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        libpsl - C library to handle the Public Suffix List
 Name:           libpsl
 Version:        0.21.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            https://github.com/rockdaboot/libpsl
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
@@ -99,6 +99,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.21.1-10
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.21.1-9
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.21.1-8

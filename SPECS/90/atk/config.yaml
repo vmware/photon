@@ -1,0 +1,15 @@
+sources:
+- archive: atk-2.38.0.tar.xz
+  archive_sha512sum: dffd0a0814a9183027c38a985d86cb6544858e9e7d655843e153440467957d6bc1abd9c9479a57078aea018053410438a30a9befb7414dc79020b223cd2c774b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'ATK provides the set of accessibility interfaces that
+        are implemented by other toolkits and applications. Using the ATK interfaces,
+        accessibility tools have full access to view and control running applications. '
+      home_page: http://www.gnome.org
+      license_concluded: LGPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-or-later
+      license_declared: LGPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-or-later
+      short_summary: Accessibility interfaces to have full access to view and control
+        running applications.
+      supplier: 'Organization: Broadcom, Inc.'

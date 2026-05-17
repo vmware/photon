@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 #
 # spec file for package python3-ethtool
@@ -7,7 +7,7 @@
 %global pypi_name ethtool
 Name:           python3-ethtool
 Version:        0.15
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.15-6
+- Extended to build for subrelease 91 and above
 * Fri Apr 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.15-5
 - Remove deprecated net-tools from check BuildRequires
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.15-4

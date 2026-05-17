@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define apuver 1
 
 Summary:      The Apache Portable Runtime Utility Library
 Name:         apr-util
 Version:      1.6.3
-Release:      8%{?dist}
+Release:      10%{?dist}
 URL:          https://apr.apache.org
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
@@ -58,7 +58,7 @@ This package provides the LDAP support for the %{name}.
 Group:      Development/Libraries
 Summary:    APR utility library PostgreSQL DBD driver
 Requires:   %{name} = %{version}-%{release}
-Requires:   (postgresql18 or postgresql17 or postgresql16 or postgresql15 or postgresql14 or postgresql13)
+Requires:   (postgresql18 or postgresql17 or postgresql16 or postgresql15)
 
 %description pgsql
 This package provides the PostgreSQL driver for the %{name} DBD (database abstraction) interface.
@@ -130,6 +130,10 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-10
+- Remove postgresql v13, 14 support
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.3-9
+- Extended to build for subrelease 91 and above
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-8
 - Build with pgsql18
 * Fri Aug 29 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-7

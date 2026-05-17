@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-pyasn1
 Version:        0.6.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -47,6 +47,8 @@ python3 -m pytest tests/
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.6.3-2
+- Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.3-1
 - Update to 0.6.3
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.8-4

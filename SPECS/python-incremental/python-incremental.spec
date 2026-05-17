@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Incremental is a small library that versions your Python projects.
 Name:           python3-incremental
 Version:        24.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,6 +41,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.7.2-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.2-2
 - Bump version as a part of python3.14 upgrade
 * Fri Oct 17 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 24.7.2-1

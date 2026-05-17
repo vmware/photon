@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >=92
+%global build_if %{photon_subrelease} >= 91
 
 %global goroot          %{_libdir}/golang
 %global gopath          %{_datadir}/gocode
@@ -16,7 +16,7 @@
 Summary:        Go
 Name:           go
 Version:        1.26.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -120,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.26.1-2
+- Extended to build for subrelease 91 and above
 * Thu Mar 12 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.1-1
 - Upgrade to v1.26.1
 * Wed Mar 11 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2

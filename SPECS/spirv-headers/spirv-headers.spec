@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Summary:        Header files from the SPIR-V registry
 Name:           spirv-headers
 Version:        1.4.341.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Headers/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/spirv/
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.341.0-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.4.341.0-1
 - Update to 1.4.341.0
 * Thu Jun 26 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.313.0-1

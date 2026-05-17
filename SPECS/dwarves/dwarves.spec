@@ -1,7 +1,7 @@
 Name:          dwarves
 Summary:       Debugging Information Manipulation Tools (pahole & friends)
 Version:       1.24
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -16,7 +16,7 @@ Patch2: 0001-btf_encoder-Store-the-CU-being-processed-to-avoid-ch.patch
 Patch3: 0001-core-Record-if-a-CU-has-a-DW_TAG_unspecified_type.patch
 Patch4: 0001-btf_encoder-Encode-DW_TAG_unspecified_type-returning.patch
 Patch5: 0001-dwarves-Zero-initialize-struct-cu-in-cu__new-to-prev.patch
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch6: 0001-pahole-Fix-discarded-qualifiers-for-strchr-strstr.patch
 %endif
 BuildRequires: gcc
@@ -107,6 +107,8 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.24-5
+- version bump after glibc is upgraded in 91
 *  Tue Apr 14 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.24-4
 -  Fix build with newer glibc
 *  Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.24-3

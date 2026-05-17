@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.3.2
-Release:      3%{?dist}
+Release:      4%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -118,6 +118,8 @@ sed -i 's/ pty1 / /' test/Makefile
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.3.2-4
+- Extended to build for subrelease 91 and above
 * Fri Mar 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-3
 - Remove extras sub package, unnecessary
 * Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.3.2-2

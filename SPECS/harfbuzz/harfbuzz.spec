@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        7.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Tue May 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.0.1-5
+- Enable for 91 subrlease
 * Tue Jan 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.0.1-4
 - Add python3-setuptools in BuildRequires for python3.14
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 7.0.1-3

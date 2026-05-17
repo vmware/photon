@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} == 91
 %define rpmhome %{_libdir}/%{name}
 
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.2%{?dist}
+Release:    8.3%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -52,6 +52,7 @@ BuildRequires:  sqlite-devel
 BuildRequires:  debugedit
 BuildRequires:  dwz
 BuildRequires:  python3-setuptools
+BuildRequires:  libselinux-devel
 
 %define ExtraBuildRequires pandoc-bin
 
@@ -160,6 +161,15 @@ Requires: systemd
 This plugin blocks systemd from entering idle, sleep or shutdown while an rpm
 transaction is running using the systemd-inhibit mechanism.
 
+%package plugin-selinux
+Summary:  Rpm plugin for selinux functionality
+Requires: %{name}-libs = %{version}-%{release}
+Requires: libselinux
+
+%description plugin-selinux
+This plugin automatically sets the correct SELinux security contexts for
+installed files and executed scriptlets during RPM transactions
+
 %prep
 %autosetup -p1
 
@@ -185,7 +195,8 @@ sh autogen.sh --noconfigure
     --enable-bdb-ro \
     --enable-plugins \
     --with-crypto=openssl \
-    --enable-nls
+    --enable-nls \
+    --with-selinux
 
 %make_build
 
@@ -333,7 +344,15 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-plugins/systemd_inhibit.so
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
+%files plugin-selinux
+%defattr(-,root,root)
+%{_libdir}/%{name}-plugins/selinux.so
+%{_mandir}/man8/%{name}-plugin-selinux.8.gz
+
 %changelog
+* Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.3
+- Bump to keep version higher than 90
+- Enable selinux plugin
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.2
 - Bump as a part of libcap upgrade
 * Mon Feb 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.18.2-8.1

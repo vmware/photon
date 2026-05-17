@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global security_hardening nonow
 %define glibc_target_cpu %{_build}
 %global __brp_elfperms  /bin/true
@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.43
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -360,6 +360,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-2
+- Extended to build for subrelease 91 and above
 * Mon Apr 27 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-1
 - Upgrade to glibc 2.43
 * Mon Apr 13 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-24

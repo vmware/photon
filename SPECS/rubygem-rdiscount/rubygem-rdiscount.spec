@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name rdiscount
 
 Name: rubygem-rdiscount
 Version:        2.2.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast Implementation of Gruber's Markdown in C
 Group:          Development/Languages
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
@@ -36,6 +36,8 @@ and thereby inherits Discount’s numerous useful extensions to the Markdown lan
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.2.7.4-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7.4-1
 - Upgrade to 2.2.7.3 to fix CVE-2026-35201
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.7.3-2

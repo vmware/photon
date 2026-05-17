@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name strptime
 
 Name: rubygem-strptime
 Version:        0.2.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        a fast strptime/strftime engine which uses VM
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -36,6 +36,8 @@ A fast strptime/strftime engine which uses VM
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.2.5-8
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-7
 - bump version with ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.2.5-6

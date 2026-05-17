@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define _confdir %{_sysconfdir}
 %define _squiddatadir %{_datadir}/%{name}
 %define upstream_name SQUID
@@ -7,7 +7,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        7.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -244,7 +244,9 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
-* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 7.4-2
+* Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4-3
+- Extended to build for subrelease 91 and above
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 7.4-2
 - Version bump due to nettle update
 * Thu Mar 12 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.4-1
 - Upgrade to version 7.4

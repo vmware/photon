@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        1.10.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://mesonbuild.com
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -68,6 +68,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.2-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.2-1
 - Update to 1.10.2
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.2-2

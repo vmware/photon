@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-docopt
 Version:        0.6.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Pythonic argument parser to create command line interfaces.
 Group:          Development/Languages/Python
 URL:            https://pypi.python.org/pypi/docopt
@@ -48,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.6.2-7
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6.2-6
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6.2-5

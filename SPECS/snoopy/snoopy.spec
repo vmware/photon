@@ -1,7 +1,7 @@
 Summary:        snoopy is a tiny library that logs all executed commands
 Name:           snoopy
 Version:        2.5.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/a2o/snoopy/archive/snoopy-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 
@@ -16,7 +16,7 @@ BuildRequires:  git
 BuildRequires:  socat
 BuildRequires:  gzip
 
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch0: 0001-Fix-fail-to-build-with-glibc-2.43.patch
 %endif
 
@@ -56,6 +56,8 @@ fi
 %config(noreplace) %{_sysconfdir}/snoopy.ini
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.5.1-4
+- version bump after glibc is upgraded in 91
 *   Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.5.1-3
 -   Fix build with newer glibc
 *   Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 2.5.1-2

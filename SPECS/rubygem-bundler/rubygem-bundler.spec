@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name bundler
 
 Name:           rubygem-bundler
 Version:        4.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        manages an application's dependencies
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ across many machines, systematically and repeatably.
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.4-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.4-1
 - Update to version 4.0.4
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.6.8-1

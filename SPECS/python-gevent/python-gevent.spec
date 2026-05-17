@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname gevent
 
 Summary:        Coroutine-based network library
 Name:           python3-gevent
 Version:        25.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -68,6 +68,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.9.1-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.9.1-1
 - Bump up release as part of python3 upgrade
 * Tue May 06 2025 Tapas Kundu <tapas.kundu@broadcom.com> 23.9.1-2

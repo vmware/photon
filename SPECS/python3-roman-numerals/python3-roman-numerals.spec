@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-roman-numerals
 Version:        4.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Manipulate well-formed Roman numerals
 URL:            https://github.com/AA-Turner/roman-numerals
 Group:          Development/Languages/Python
@@ -39,5 +39,7 @@ in various programming languages.
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.0-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.1.0-1
 - Initial version, needed by sphinx-9.x

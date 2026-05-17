@@ -1,7 +1,7 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Name:           apparmor
 Version:        4.1.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 URL:            https://launchpad.net/apparmor
 Vendor:         VMware, Inc.
@@ -331,6 +331,8 @@ rm -rf %{buildroot}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.6-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.1.6-2
 - Bump version as a part of python3.14 upgrade
 * Fri Feb 27 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.1.6-1

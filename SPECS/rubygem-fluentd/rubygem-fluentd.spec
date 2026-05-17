@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name fluentd
 
 Name:           rubygem-fluentd
 Version:        1.19.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -85,6 +85,8 @@ It can collect, process and ship many kinds of data in near real-time.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.19.1-3
+- Extended to build for subrelease 91 and above
 * Tue Apr 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.19.1-2
 - Fix BuildArch issue
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.19.1-1

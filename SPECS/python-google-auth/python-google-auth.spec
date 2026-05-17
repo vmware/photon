@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname google_auth
 
 Summary:    Google Auth Python Library
 Name:       python3-google-auth
 Version:    2.32.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://github.com/googleapis/google-auth-library-python
 Group:      Development/Languages/Python
 Vendor:     VMware, Inc.
@@ -69,6 +69,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/google_auth-%{version}.dist-info/
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32.0-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.32.0-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.32.0-2

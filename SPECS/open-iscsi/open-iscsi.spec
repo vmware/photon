@@ -11,7 +11,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch0: 0001-fix-build-with-newer-glibc.patch
 %endif
 

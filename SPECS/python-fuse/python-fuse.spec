@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-fuse
 Version:        1.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python interface to libfuse
 Group:          Development/Languages/Python
 Url:            https://github.com/libfuse/%{name}/archive/%{version}.tar.gz
@@ -40,6 +40,8 @@ find %{buildroot}%{_libdir} -name '*.pyc' -delete
 %{python3_sitelib}/fuse*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.9-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.9-1
 - Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.5-2

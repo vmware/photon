@@ -1,1 +1,0 @@
-License: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND 0BSD AND Apache-2.0 AND BSD-3-Clause AND GFDL-1.1-or-later AND GPL-1.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0

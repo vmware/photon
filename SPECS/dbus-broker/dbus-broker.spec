@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           dbus-broker
 Version:        33
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Linux D-Bus Message Broker
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -84,6 +84,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 33-6
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 33-5
 - Bump version as a part of python3.14 upgrade
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 33-4

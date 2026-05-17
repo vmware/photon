@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define network_required 1
 Name:           python3-typing-extensions
 Version:        4.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backported and Experimental Type Hints for Python 3.7+
 Group:          Development/Tools
 Url:            https://pypi.org/project/typing-extensions
@@ -54,6 +54,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.15.0-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.15.0-1
 - Version upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.0-4

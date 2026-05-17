@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.8
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 28 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.8-1
 - Upgrade to v2.8
 * Tue Mar 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7-5

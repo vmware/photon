@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:    This package contains programs to find files
 Name:       findutils
 Version:    4.9.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://www.gnu.org/software/findutils
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -92,6 +92,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.9.0-6
+- Extended to build for subrelease 91 and above
 * Wed Mar 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.9.0-5
 - Enable selinux support
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.9.0-4

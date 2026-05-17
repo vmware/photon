@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define STIG_HARDEN 0
 
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.4
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -102,6 +102,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitearch}/*.so
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.4-9
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.4-8
 - Bump up release as part of python3 upgrade
 * Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-7

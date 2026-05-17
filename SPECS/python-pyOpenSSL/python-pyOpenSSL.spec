@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
 Version:        23.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ pip3 install pretend flaky tomli
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 23.3.0-5
+- Extended to build for subrelease 91 and above
 * Fri Mar 27 2026 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.0-4
 - Fix CVE-2026-27459
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.3.0-3

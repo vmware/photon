@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define debug_package %{nil}
 
 Summary:        PyInstaller hooks contrib is a required module during pyinstaller installation.
 Name:           python3-pyinstaller-hooks-contrib
 Version:        2025.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.org/project/pyinstaller-hooks-contrib
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ Pyinstaller contrib hooks consist of  hooks for many packages, and allows PyInst
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2025.8-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2025.8-2
 - Bump version as a part of python3.14 upgrade
 * Wed Sep 24 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2025.8-1

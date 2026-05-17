@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           glslang
 Version:        16.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        OpenGL and OpenGL ES shader front end and validator
 URL:            https://github.com/KhronosGroup/glslang
 Group:          Development/Tools
@@ -82,6 +82,8 @@ The %{name}-libs package contains shared libraries for %{name}
 %{_libdir}/libglslang-default-resource-limits.so.*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 16.2.0-2
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 16.2.0-1
 - Bump to build with updated mesa
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 11.13.0-4

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           liblognorm
 Version:        2.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast samples-based log normalization library
 URL:            http://www.liblognorm.com
 Group:          System Environment/Base
@@ -98,5 +98,7 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/lognorm.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.9-2
+- Extended to build for subrelease 91 and above
 * Fri Mar 13 2026 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.9-1
 - Initial version

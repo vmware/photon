@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Hardware identification and configuration data
 Name:           hwdata
 Version:        0.405
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Base
@@ -50,5 +50,7 @@ The %{name}-devel package contains the pkgconfig file for %{name}.
 %{_datadir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.405-2
+- Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.405-1
 - Initial build to support libdisplay-info

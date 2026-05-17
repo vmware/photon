@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define debug_package %{nil}
 
 Summary:        AsciiDoc is a human readable text document format
 Name:           asciidoc3
 Version:        3.2.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://gitlab.com/asciidoc3/asciidoc3
 Group:          System Environment/Development
 Vendor:         VMware, Inc.
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.3-7
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.3-6
 - Bump version as a part of python3.14 upgrade
 * Tue Jan 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.3-5

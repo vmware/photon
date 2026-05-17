@@ -1,12 +1,12 @@
 # Generated from backports-2.5.1.gem by gem2rpm -*- rpm-spec -*-
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name backports
 
 Name: rubygem-backports
 Version:        3.25.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.25.3-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.25.3-1
 - Update to version 3.25.3
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.25.1-1

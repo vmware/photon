@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 
 Name:           docker-pycreds3
 Version:        0.4.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python API for docker credentials store
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,6 +50,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.4.0-6
+- Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 0.4.0-5
 - Disable debuginfo package
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.0-4

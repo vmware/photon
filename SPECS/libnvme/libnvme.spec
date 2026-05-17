@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:          libnvme
 Summary:       Linux-native nvme device management library
 Version:       1.16.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -84,6 +84,8 @@ This package contains Python bindings for libnvme.
 %{python3_sitearch}/%{name}/
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.16.1-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.16.1-1
 - Bump up release as part of python3 upgrade
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.3-3

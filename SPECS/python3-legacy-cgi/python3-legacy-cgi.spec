@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-legacy-cgi
 Version:        2.6.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fork of the standard library cgi and cgitb modules
 URL:            https://github.com/jackrosenthal/python-cgi
 Group:          Development/Languages/Python
@@ -43,5 +43,7 @@ sed -i '1s|^#!.*|#!/usr/bin/env python3|' cgi.py
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.6.4-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.6.4-1
 - Initial version, needed by python3-webob

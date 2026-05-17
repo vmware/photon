@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname repmgr
 %define _pgbasedir    %{_usr}/pgsql/18
@@ -6,7 +6,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr18
 Version:        5.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://repmgr.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -66,5 +66,7 @@ rm -rf %{buildroot}
 %{_pgbasedir}/share/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.5.0-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.5.0-1
 - Initial version

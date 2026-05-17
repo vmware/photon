@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Policy analysis tools for SELinux
 Name:           setools
 Version:        4.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man1/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.1-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.5.1-1
 - Upgrade to v4.5.1 to compile with python 3.14
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.4.0-3

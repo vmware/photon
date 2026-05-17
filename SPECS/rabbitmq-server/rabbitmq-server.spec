@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define erlang_minver       26.2
 %define erlang_maxver       28.0
@@ -22,7 +22,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       4.1.4
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -157,6 +157,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.4-5
+- Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.1.4-4
 - Bump release for updating erlang
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.1.4-3

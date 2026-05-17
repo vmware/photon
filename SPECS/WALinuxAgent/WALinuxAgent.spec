@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.15.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Vendor:         VMware, Inc.
@@ -85,6 +85,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.15.0.1-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.15.0.1-1
 - Upgrade to 2.15.0.1 as part of python3 upgrade
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.9.1.1-2

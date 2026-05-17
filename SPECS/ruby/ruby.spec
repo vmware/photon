@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Ruby
 Name:           ruby
 Version:        4.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -108,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.1-2
+- Extended to build for subrelease 91 and above
 * Thu Feb 26 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.1-1
 - Upgrade to ruby 4.0.1
 * Thu Feb 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4.7-3

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name hpricot
 
 Name: rubygem-hpricot
 Version:        0.8.6
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        a swift, liberal HTML parser with a fantastic library
 Group:          Development/Library
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
@@ -39,6 +39,8 @@ very accommodating and to have a very helpful library
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.8.6-9
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.6-8
 - bump version with ruby upgrade
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.8.6-7

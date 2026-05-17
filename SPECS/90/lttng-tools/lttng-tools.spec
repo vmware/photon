@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} == 90
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       LTTng is an open source tracing framework for Linux.
 Name:          lttng-tools

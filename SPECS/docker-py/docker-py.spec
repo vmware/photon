@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 
 Name:           docker-py3
 Version:        7.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API for docker
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.1.0-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 7.1.0-1
 - Update to 7.1.0
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 6.0.0-8

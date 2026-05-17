@@ -1,7 +1,7 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
 Version:    0.9.4
-Release:    6%{?dist}
+Release:    7%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://christophe.varoqui.free.fr
@@ -12,7 +12,7 @@ Source0: https://github.com/opensvc/multipath-tools/archive/refs/tags/multipath-
 Source1: license.txt
 %include %{SOURCE1}
 
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch0: 0001-multipath-tools-Fix-ISO-C23-errors-with-strchr.patch
 %endif
 
@@ -104,6 +104,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.9.4-7
+- version bump after glibc is upgraded in 91
 * Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.9.4-6
 - Fix build with newer glibc
 * Mon Sep 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.4-5

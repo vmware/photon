@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define srcname         pgaudit
 %global pgmajorversion  15
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
@@ -6,7 +8,7 @@
 
 Name:       pgaudit15
 Version:    1.7.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 Summary:    PostgreSQL Audit Extension
 URL:        http://pgaudit.org
 Group:      Applications/Databases
@@ -68,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-6
+- Bump version to keep version higher than 90
 * Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-5
 - Fix directory ownership during file packaging
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.0-4

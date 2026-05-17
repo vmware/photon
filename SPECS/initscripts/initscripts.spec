@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Scripts to bring up network interfaces and legacy utilities
 Name:           initscripts
 Version:        10.17
 Group:          System Environment/Base
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/fedora-sysv/initscripts
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -186,6 +186,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/{rwtab.d,statetab.d} \
 %{_unitdir}/readonly-root.service
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.17-6
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 10.17-5
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 10.17-4

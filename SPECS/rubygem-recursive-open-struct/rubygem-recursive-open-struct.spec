@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name recursive-open-struct
 
 Name: rubygem-recursive-open-struct
 Version:        1.1.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A subclass of OpenStruct that allows nested hashes to be treated in a recursive fashion
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -40,6 +40,8 @@ in that it allows nested hashes to be treated in a recursive fashion.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.3-6
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.3-5
 - Release bump for ruby upgrade
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.3-4

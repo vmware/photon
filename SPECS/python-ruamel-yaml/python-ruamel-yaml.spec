@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define debug_package %{nil}
 
 Summary:        YAML parser/emitter.
 Name:           python3-ruamel-yaml
 Version:        0.19.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -54,6 +54,8 @@ find %{buildroot} -name '*.pyc' -delete
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.19.1-3
+- Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.19.1-2
 - Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.19.1-1

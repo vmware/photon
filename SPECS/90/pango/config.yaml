@@ -1,0 +1,17 @@
+sources:
+- archive: pango-1.50.11.tar.gz
+  archive_sha512sum: 695b6d11dcb72918f699ea6441d67f4f9a9fa930131c6079b0aa689ee6910903a79cd308c5054fd3ccdd8efd390b3b56f1d0cbf27eaef7247315db2fe9710b7a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Pango is a library for laying out and rendering of text,
+        with an emphasis on internationalization. Pango can be used anywhere that
+        text layout is needed, though most of the work on Pango so far has been done
+        in the context of the GTK+ widget toolkit. '
+      home_page: http://pango.org
+      license_concluded: LGPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-or-later
+        AND BSD-3-Clause AND OFL-1.1 AND ICU AND TCL AND Bitstream-Vera
+      license_declared: LGPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-or-later
+        AND BSD-3-Clause AND OFL-1.1 AND ICU AND TCL AND Bitstream-Vera
+      short_summary: library for laying out and rendering of text.
+      supplier: 'Organization: Broadcom, Inc.'

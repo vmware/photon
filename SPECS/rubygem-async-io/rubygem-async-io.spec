@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           rubygem-async-io
 Summary:        Metapackage to install rubygem-async-io
 Version:        1.34.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          Development/Libraries
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -31,6 +31,8 @@ To support seamless upgrades, this metapackage ensures both replacement packages
 %files
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34.0-9
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-8
 - bump version with ruby upgrade
 * Fri Jun 20 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.34.0-7

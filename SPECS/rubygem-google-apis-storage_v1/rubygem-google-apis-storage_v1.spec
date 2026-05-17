@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name google-apis-storage_v1
@@ -6,7 +6,7 @@
 Summary:        This is a simple REST client for Cloud Storage JSON API V1
 Name:           rubygem-google-apis-storage_v1
 Version:        0.59.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.59.0-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.59.0-1
 - Update to version 0.59.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.49.0-2

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        IPv6 diagnostic tools
 Name:           ndisc6
 Version:        1.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.remlab.net/ndisc6/
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -75,5 +75,7 @@ AUTHORS, NEWS, MAN pages and README.
 %{_mandir}/man8/tracert6.8*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.8-2
+- Extended to build for subrelease 91 and above
 * Tue Mar 24 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.8-1
 - Initial build.

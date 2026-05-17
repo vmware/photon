@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} == 90
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       LTTng-UST is an Userspace Tracer library
 Name:          lttng-ust

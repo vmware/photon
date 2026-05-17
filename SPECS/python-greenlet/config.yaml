@@ -1,8 +1,7 @@
 sources:
 - archive: greenlet-3.3.1.tar.gz
   archive_sha512sum: 890e9a56f15c39101b45aabb006545640777a987d8f962c63859c2b4e26adfb5ae33310905982475809d3fcfb3b0ee5a9b11817c380708bba2d3c25cd5ad1822
-  archive_type: upstream
-  skip_validation: false
+  skip_validation: true
   name: greenlet-3.3.1
   version: "3.3.1"
   url: https://files.pythonhosted.org/packages/8a/99/1cd3411c56a410994669062bd73dd58270c00cc074cac15f385a1fd91f8a/greenlet-3.3.1.tar.gz

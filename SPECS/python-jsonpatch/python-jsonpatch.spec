@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-jsonpatch
 Version:        1.32
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Applying JSON Patches in Python
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ python3 ext_tests.py && python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.32-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.32-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.32-2

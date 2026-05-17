@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname python-daemon
 
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python3-daemon
 Version:        2.3.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://pypi.org/project/python-daemon
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -59,6 +59,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.2-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3.2-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3.2-2

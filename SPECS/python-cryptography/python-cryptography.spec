@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        41.0.7
-Release:        8%{?dist}
+Release:        9%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -86,6 +86,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 41.0.7-9
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-8
 - Bump version as a part of python3.14 upgrade
 * Wed Jun 18 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 41.0.7-7

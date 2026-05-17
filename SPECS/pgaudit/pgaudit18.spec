@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname         pgaudit
 %global pgmajorversion  18
@@ -8,7 +8,7 @@
 
 Name:       pgaudit18
 Version:    18.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    PostgreSQL Audit Extension
 URL:        http://pgaudit.org
 Group:      Applications/Databases
@@ -70,5 +70,7 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/bitcode/%{srcname}/%{srcname}.bc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 18.0-2
+- Extended to build for subrelease 91 and above
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 18.0-1
 - Initial version

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Data validation using Python type hinting
 Name:           python3-pydantic
 Version:        1.10.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,6 +57,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.26-2
+- Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.26-1
 - Version upgrade
 * Tue Apr 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.10.1-3

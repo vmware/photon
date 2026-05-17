@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        autopep8 automatically formats Python code
 Name:           python3-autopep8
 Version:        2.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/python-autopep8/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -52,6 +52,8 @@ formatted.
 %{_bindir}/autopep8
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.2-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3.2-1
 - Upgrade to 2.3.2 as part of python3 upgrade to build with py3.14
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-3

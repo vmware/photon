@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python3-prompt_toolkit
 Version:        3.0.30
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -54,6 +54,8 @@ prompt_toolkit is a library for building powerful interactive command lines and 
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.30-5
+- Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.30-4
 - Remove python3-atomicwrites from build requires during package self check
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.30-3

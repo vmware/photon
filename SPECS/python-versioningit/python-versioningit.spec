@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 %define srcname versioningit
 
 Name:           python3-versioningit
 Version:        3.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Versioning It with your Version In Git
 URL:            https://pypi.org/project/versioningit
 Group:          Development/Languages/Python
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.0-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.0-2
 - Bump version as a part of python3.14 upgrade
 * Fri Aug 29 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.0-1

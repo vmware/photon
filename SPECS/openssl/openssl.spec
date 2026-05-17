@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -201,6 +201,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.6-3
+- Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.5.6-2
 - Convert libs post-script to lua instead of bash
 - Change the dependency from zlib-dynamic back to zlib.

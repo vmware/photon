@@ -1,0 +1,189 @@
+%global build_if %{photon_subrelease} <= 90
+
+%global goroot          %{_libdir}/golang
+%global gopath          %{_datadir}/gocode
+%define debug_package   %{nil}
+%define __strip         /bin/true
+%global __requires_exclude_from ^/.*$
+%global __provides_exclude_from ^/.*$
+
+%ifarch aarch64
+%global gohostarch      arm64
+%else
+%global gohostarch      amd64
+%endif
+
+Summary:        Go
+Name:           go
+Version:        1.24.13
+Release:        2.2.1%{?dist}
+URL:            https://golang.org
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+%ifarch aarch64
+Source0: https://go.dev/dl/%{name}%{version}.linux-arm64.tar.gz
+%endif
+
+%ifarch x86_64
+Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
+%endif
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Requires: glibc
+Requires: gcc
+
+Patch0: CVE-2026-27142.patch
+Patch1: CVE-2026-32289.patch
+Patch2: CVE-2026-27144.patch
+Patch3: CVE-2026-32288.patch
+Patch4: CVE-2026-27143.patch
+
+%description
+Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
+
+%prep
+%autosetup -p1 -n %{name}
+
+mkdir -p %{goroot}
+test -e bin/go && mv bin %{goroot} || :
+
+%if 0%{?with_check} == 0
+find . -type d -name "testdata" -exec rm -rf {} +
+%endif
+
+%build
+export GOHOSTOS=linux
+export GOHOSTARCH=%{gohostarch}
+export GOROOT_BOOTSTRAP=%{goroot}
+export GOROOT="$PWD"
+export GOPATH=%{gopath}
+export GOROOT_FINAL=%{_bindir}/go
+
+cp -a api doc lib pkg src misc VERSION go.env $GOROOT_BOOTSTRAP
+
+pushd src
+bash make.bash -v
+popd
+
+%install
+mkdir -p %{buildroot}%{_bindir} \
+         %{buildroot}%{goroot}
+
+cp -a api bin doc lib pkg src misc VERSION go.env %{buildroot}%{goroot}
+
+# put binaries to bindir, linked to the arch we're building,
+# leave the arch independent pieces in %{goroot}
+mkdir -p %{buildroot}%{goroot}/bin/linux_%{gohostarch}
+ln -sfv ../go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
+ln -sfv ../gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
+ln -sfrv %{buildroot}%{goroot}/bin/gofmt %{buildroot}%{_bindir}/gofmt
+ln -sfrv %{buildroot}%{goroot}/bin/go %{buildroot}%{_bindir}/go
+
+# ensure these exist and are owned
+mkdir -p %{buildroot}%{gopath}/src/github.com/ \
+         %{buildroot}%{gopath}/src/bitbucket.org/ \
+         %{buildroot}%{gopath}/src/code.google.com/ \
+         %{buildroot}%{gopath}/src/code.google.com/p/
+
+install -vdm755 %{buildroot}%{_sysconfdir}/profile.d
+
+cat > %{buildroot}%{_sysconfdir}/profile.d/go-exports.sh <<- "EOF"
+export GOROOT=%{goroot}
+export GOPATH=%{_datadir}/gocode
+export GOHOSTOS=linux
+export GOHOSTARCH=%{gohostarch}
+export GOOS=linux
+EOF
+
+%post -p /sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+if [ $1 -eq 0 ]; then
+  #This is uninstall
+  rm -rf %{_sysconfdir}/profile.d/go-exports.sh \
+         /opt/%{name}
+  exit 0
+fi
+
+%clean
+rm -rf %{buildroot}/*
+
+%files
+%defattr(-,root,root)
+%exclude %{goroot}/src/*.rc
+%{_sysconfdir}/profile.d/go-exports.sh
+%{goroot}/*
+%{gopath}/src
+%ifarch aarch64
+%exclude %dir %{goroot}/src/debug/dwarf/testdata
+%exclude %dir %{goroot}/src/debug/elf/testdata
+%endif
+%{_bindir}/*
+
+%changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.24.13-2.2.1
+- Adjusted to build for subrelease 90
+* Mon Apr 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2.2
+- Fix CVE-2026-32289, CVE-2026-27144, CVE-2026-32288, CVE-2026-27143
+* Fri Mar 13 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2.1
+- Bump after moving to SPECS/91
+* Wed Mar 11 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2
+- Fix CVE-2026-27142
+* Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.13-1
+- Upgrade to v 1.24.13, fixes several CVEs
+* Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.24.5-1
+- Upgrade to v1.24.5
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.21.13-2
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <msikka@vmware.com> 1.21.13-1
+- Upgrade to 1.21.13
+- Fix CVE-2024-34156 and CVE-2024-34158
+* Fri Jul 12 2024 Mukul Sikka <msikka@vmware.com> 1.21.12-1
+- Upgrade to 1.21.12
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.21.11-1
+- Upgrade to 1.21.11
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-2
+- Fix for CVE-2023-45288
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.21.7-1
+- Upgrade to 1.21.7
+* Fri Dec 15 2023 Mukul Sikka <msikka@vmware.com> 1.20.12-1
+- Upgrade to 1.20.12.
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.10-1
+- Upgrade to 1.20.10.
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.8-1
+- Upgrade to 1.20.8.
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.7-1
+- Upgrade to 1.20.7
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.5-1
+- Upgrade to 1.20.5
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.4-1
+- Upgrade to 1.20.4
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.20.2-1
+- Upgrade to 1.20.2
+* Fri Jan 20 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.19.3-2
+- Remove requires on libc.so.6
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.3-1
+- Upgrade to 1.19.3
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.19.2-1
+- Upgrade to 1.19.2
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.19-1
+- Upgrade to 1.19
+* Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.5-2
+- Fix binary path
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.5-1
+- Update to 1.16.5
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.15.8-1
+- Update to 1.15.8
+* Fri Jan 15 2021 Piyush Gupta <gpiyush@vmware.com> 1.15.6-1
+- Update to 1.15.6
+* Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.8-2
+- Fix glibc dependency on aarch64
+* Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 1.14.8-1
+- Update to 1.14.8
+* Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
+- Initial build for 1.14

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname distlib
 
 Name:           python3-distlib
 Version:        0.3.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Low-level components of distutils2/packaging, augmented with higher-level APIs
 URL:            https://pypi.org/project/distlib
 Group:          Development/Languages/Python
@@ -62,6 +62,8 @@ export PYTHONHASHSEED=0
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.3.6-5
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.6-4
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.3.6-3

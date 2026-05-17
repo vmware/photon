@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname pygments
 
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
 Version:        2.19.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -56,6 +56,8 @@ rm -r tests/examplefiles
 %{_bindir}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.19.2-2
+- Extended to build for subrelease 91 and above
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.19.2-1
 - Upgrade to v2.19.2
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.13.0-6

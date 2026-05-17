@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-mako
 Version:        1.2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python templating language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.4-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.4-2
 - Bump version as a part of python3.14 upgrade
 * Tue Apr 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.4-1

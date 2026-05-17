@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           hyperscan
 Version:        5.4.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        High-performance regular expression matching library
 URL:            https://www.hyperscan.io
 Group:          System Environment/Libraries
@@ -107,6 +107,8 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/examples/*.c
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.4.0-7
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.4.0-6
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.4.0-5

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-tornado
 Version:        6.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/tornado
@@ -44,6 +44,8 @@ sh runtests.sh
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2-9
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.2-8
 - Bump version as a part of python3.14 upgrade
 * Tue Jan 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.2-7

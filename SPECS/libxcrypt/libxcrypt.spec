@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Name:           libxcrypt
 Summary:        Extended crypt library for DES, MD5, Blowfish and others
 Version:        4.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/besser82/%{name}
 Distribution:   Photon
 Group:          System Environment/Security
@@ -84,6 +84,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.2-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.2-1
 - Upgrade to 4.5.2
 * Thu Apr 02 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.4.36-4

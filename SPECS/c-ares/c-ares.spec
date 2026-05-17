@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
 Version:        1.34.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/ahost.1*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34.6-2
+- Extended to build for subrelease 91 and above
 * Mon Apr 6 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.34.6-1
 - Upgrade to 1.34.6, switch to CMake build system
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.19.1-3

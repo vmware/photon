@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 
@@ -13,7 +13,7 @@
 Summary:        QEMU utilities and emulators
 Name:           qemu
 Version:        10.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -244,6 +244,8 @@ make %{?_smp_mflags} check
 %{_libdir}/binfmt.d/qemu-%{targetArch}-static.conf
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.2.2-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 14 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.2.2-1
 - Upgrade to 10.2.2
 * Wed Feb 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.0-8

@@ -1,10 +1,10 @@
 #Build this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        FSArchiver - Filesystem Archiver for Linux
 Name:           fsarchiver
 Version:        0.8.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.fsarchiver.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -59,6 +59,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man8/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.8.6-5
+- Extended to build for subrelease 91 and above
 * Thu Mar 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.8.6-4
 - Remove deprecated lzo dependency
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.8.6-3

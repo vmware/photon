@@ -1,0 +1,138 @@
+%global build_if %{photon_subrelease} <= 90
+
+%define debug_package %{nil}
+Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
+Name:           python3-pyinstaller
+Version:        6.16.0
+Release:        1.1.1%{?dist}
+Url:            https://pypi.python.org/pypi/PyInstaller
+Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://files.pythonhosted.org/packages/1e/d7/214b25c912d5f7d9c31d266821a8be6a35df80535056fe83997688721927/pyinstaller-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:         0001-classifiers.patch
+
+BuildRequires:  cmocka-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-wheel
+BuildRequires:  python3-xml
+BuildRequires:  zlib-devel
+BuildRequires:  dos2unix
+BuildRequires:  python3-hatchling
+BuildRequires:  python3-pip
+BuildRequires:  python3-pathspec
+BuildRequires:  python3-pluggy
+BuildRequires:  python3-packaging
+
+%if 0%{?with_check}
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+%endif
+
+Requires:       python3
+Requires:       python3-libs
+Requires:       zlib
+Requires:       python3-setuptools
+Requires:       python3-xml
+Requires:       python3-pyinstaller-hooks-contrib
+Requires:       python3-altgraph
+Requires:       python3-packaging
+Requires:       binutils
+
+%description
+PyInstaller bundles a Python application and all its dependencies into a single package. The user can run the packaged app without installing a Python interpreter or any modules.
+PyInstaller reads a Python script written by you. It analyzes your code to discover every other module and library your script needs in order to execute.
+Then it collects copies of all those files – including the active Python interpreter! – and puts them with your script in a single folder, or optionally in a single executable file.
+PyInstaller is tested against Windows, Mac OS X, and Linux. However, it is not a cross-compiler: to make a Windows app you run PyInstaller in Windows;
+to make a Linux app you run it in Linux, etc. PyInstaller has been used successfully with AIX, Solaris, and FreeBSD, but is not tested against them.
+
+%prep
+# Using autosetup is not feasible
+%setup -n pyinstaller-%{version}
+
+# Convert all files to Unix line endings
+# otherwise patches created on Linux
+# will not apply
+for file in $(find . -type f); do
+    dos2unix $file
+done
+
+%autopatch -p1
+
+%build
+pushd bootloader
+python3 ./waf distclean all
+popd
+%pyproject_wheel
+
+%install
+%pyproject_install
+
+%check
+# Skip python3 make check, as python3.6 is not supported by 3.2.1
+
+%files
+%defattr(-,root,root)
+%{_bindir}/pyi-archive_viewer
+%{_bindir}/pyi-bindepend
+%{_bindir}/pyi-grab_version
+%{_bindir}/pyi-makespec
+%{_bindir}/pyi-set_version
+%{_bindir}/pyinstaller
+%{python3_sitelib}/*
+%exclude %{python3_sitelib}/PyInstaller/bootloader/Darwin-64bit
+%exclude %{python3_sitelib}/PyInstaller/bootloader/Linux-32bit
+%ifarch aarch64
+%exclude %{python3_sitelib}/PyInstaller/bootloader/Linux-64bit
+%endif
+%exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-32bit
+%exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
+
+%changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.16.0-1.1.1
+- Adjusted to build for subrelease 90
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.16.0-1.1
+- Bump after moving to SPECS/91
+* Fri Sep 19 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.16.0-1
+- Upgrade to latest
+* Thu Jan 30 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.5-4
+- Fix PyInstaller for Python >= 3.11.4
+* Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.5-3
+- Release bump for SRP compliance
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 5.5-2
+- Bump version as a part of zlib upgrade
+* Wed Nov 30 2022 Prashant S Chauhan <psinghchauha@vmware.com> 5.5-1
+- Update to 5.5
+* Tue Nov 29 2022 Ankit Jain <ankitja@vmware.com> 4.0-5
+- Release Bump-up to build with updated pyOpenSSL version
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 4.0-4
+- GCC-10 support.
+* Wed Oct 14 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-3
+- Added Requires pyinstaller-hooks-contrib and altgraph
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.0-2
+- openssl 1.1.1
+* Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0-1
+- Automatic Version Bump
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6-1
+- Automatic Version Bump
+* Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 3.4-4
+- Mass removal python2
+* Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.4-3
+- Fix compilation issue with gcc-8.4.0
+* Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 3.4-2
+- Fix makecheck.
+* Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.4-1
+- Updated to release 3.4
+* Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.1-1
+- Version update. Build bootloader from sources
+* Mon Sep 25 2017 Bo Gan <ganb@vmware.com> 3.2.1-2
+- Fix make check issues.
+* Tue Feb 14 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
+- Initial packaging for Photon

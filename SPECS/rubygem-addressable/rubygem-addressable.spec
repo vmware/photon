@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name addressable
 
 Name: rubygem-addressable
 Version:        2.8.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ It more closely conforms to the relevant RFCs and adds support for IRIs and URI 
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.8-3
+- Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.8.8-2
 - Fix CVE-2026-35611
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.8.8-1

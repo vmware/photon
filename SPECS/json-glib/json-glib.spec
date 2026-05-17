@@ -1,9 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
+
+%define disable_introspection 0
 
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.10.8
-Release:        1%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
@@ -52,8 +54,14 @@ Header files for the json-glib library.
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-%meson \
-  -Dgtk_doc=disabled
+CONFIGURE_OPTS=(-Dgtk_doc=disabled)
+%if 0%{?disable_introspection}
+CONFIGURE_OPTS+=(-Dintrospection=disabled)
+%else
+CONFIGURE_OPTS+=(-Dintrospection=enabled)
+%endif
+
+%meson "${CONFIGURE_OPTS[@]}"
 
 %meson_build
 
@@ -87,12 +95,20 @@ rm -rf %{buildroot}
 %{_libdir}/libjson-glib-1.0.so
 %{_includedir}/json-glib-1.0
 %{_libdir}/pkgconfig/json-glib-1.0.pc
+
+%if 0%{?disable_introspection} == 0
 %{_datadir}/gir-1.0/Json-1.0.gir
 %{_libdir}/girepository-1.0/Json-1.0.typelib
+%endif
+
 %{_libexecdir}/installed-tests/*
 %{_datadir}/installed-tests/*
 
 %changelog
+* Tue May 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.8-3
+- Enable for 91 subrlease
+* Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.8-2
+- Bump to keep version higher than 91
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.8-1
 - Upgrade to v1.10.8
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.6.6-6

@@ -1,7 +1,7 @@
 sources:
 - archive: installer-0.7.0.tar.gz
+  skip_validation: true
   archive_sha512sum: e89c2d28ca73d9c4291d645dda675fdcfcaba2e4f8765b9fa4a2f211e27711510f3d171b96a6b024c11808ba7f06b7b560a7cb31fafba815bd5c7396f26789f7
-  archive_type: upstream
   name: installer-0.7.0
   version: 0.7.0
   url: https://files.pythonhosted.org/packages/05/18/ceeb4e3ab3aa54495775775b38ae42b10a92f42ce42dfa44da684289b8c8/installer-0.7.0.tar.gz

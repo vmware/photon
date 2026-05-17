@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A pathlib-compatible Zipfile object wrapper.
 Name:           python3-zipp
 Version:        3.19.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.org/project/zipp/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.19.1-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.19.1-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.19.1-2

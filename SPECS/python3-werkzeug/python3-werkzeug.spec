@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define srcname werkzeug
 
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
 Version:        3.1.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,6 +65,8 @@ rm tests/middleware/test_http_proxy.py \
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.7-2
+- Extended to build for subrelease 91 and above
 * Thu Mar 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.7-1
 - Upgrade to v3.1.7
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.2-5

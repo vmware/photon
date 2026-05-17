@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
 Version:        20240802.183
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/kgoldman/ibmswtpm2/releases
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ EOF
 %{_unitdir}/ibmtpm_server.service
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 20240802.183-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 25 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 20240802.183-1
 - Upgrade ibmtpm to 20240802.183 due to openssl upgrade.
 * Fri Feb 21 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1682-3

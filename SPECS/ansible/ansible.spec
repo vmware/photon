@@ -1,10 +1,10 @@
 # Build this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.20.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -84,6 +84,8 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.20.4-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.20.4-1
 - Update to 2.20.4
 * Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.20.1-1

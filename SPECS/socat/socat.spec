@@ -1,7 +1,7 @@
 Summary:          Multipurpose relay (SOcket CAT)
 Name:             socat
 Version:          1.7.4.4
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://www.dest-unreach.org/socat
 Group:            Applications/Internet
 Vendor:           VMware, Inc.
@@ -12,7 +12,7 @@ Source0: http://www.dest-unreach.org/socat/download/%{name}-%{version}.tar.bz2
 Source1: license.txt
 %include %{SOURCE1}
 
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch0: 0001-fix-build-error-Wdiscarded-qualifiers.patch
 %endif
 
@@ -42,6 +42,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.4.4-5
+- version bump after glibc is upgraded in 91
 * Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.4.4-4
 - Fix build with newer glibc
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 1.7.4.4-3

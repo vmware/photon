@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 
 %define srcname     buildx
@@ -8,7 +8,7 @@
 Name:       docker-buildx
 Summary:    Docker CLI plugin for extended build capabilities with BuildKit
 Version:    0.32.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/docker/buildx
 Group:      Applications
 Vendor:     VMware, Inc.
@@ -64,6 +64,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.32.0-3
+- Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 0.32.0-2
 - Disable debuginfo package
 * Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.32.0-1

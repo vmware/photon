@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name http-cookie
 
 Name: rubygem-http-cookie
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        HTTP::Cookie is a Ruby library to handle HTTP Cookies based on RFC 6265.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ to add support for a new backend store.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.0-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.0-1
 - Update to version 1.1.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.0.8-1

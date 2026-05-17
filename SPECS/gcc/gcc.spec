@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global security_hardening nofortify
 
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -256,6 +256,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-13
+- Extended to build for subrelease 91 and above
 * Wed Apr 29 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-12
 - Fix build with new glibc
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.2.0-11

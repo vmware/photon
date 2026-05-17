@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 %define srcname scramp
 
 Name:           python3-scramp
 Version:        1.4.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python implementation of the SCRAM protocol
 URL:            https://pypi.org/project/scramp
 Group:          Development/Languages/Python
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.6-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.6-2
 - Bump version as a part of python3.14 upgrade
 * Fri Aug 29 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.6-1

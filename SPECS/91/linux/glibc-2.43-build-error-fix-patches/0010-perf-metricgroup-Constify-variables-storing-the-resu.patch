@@ -1,0 +1,34 @@
+From aa7076824fc49a3eacec0097c7905a7b5c5cc2ad Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Tue, 27 Jan 2026 01:15:47 -0300
+Subject: [PATCH 10/18] perf metricgroup: Constify variables storing the result
+ of strchr() on const tables
+
+As newer glibcs will propagate the const attribute of the searched table
+to its return.
+
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/util/metricgroup.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
+index 4c98ac29ee13..664045fa0c8e 100644
+--- a/tools/perf/util/metricgroup.c
++++ b/tools/perf/util/metricgroup.c
+@@ -644,11 +644,10 @@ static const char *code_characters = ",-=@";
+ 
+ static int encode_metric_id(struct strbuf *sb, const char *x)
+ {
+-	char *c;
+ 	int ret = 0;
+ 
+ 	for (; *x; x++) {
+-		c = strchr(code_characters, *x);
++		const char *c = strchr(code_characters, *x);
+ 		if (c) {
+ 			ret = strbuf_addch(sb, '!');
+ 			if (ret)
+-- 
+2.54.0
+

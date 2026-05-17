@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define srcname         timescaledb
 %global pgmajorversion  15
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
@@ -7,7 +9,7 @@
 Summary:        A PostgreSQL extension for high-performance real-time analytics
 Name:           timescaledb15
 Version:        2.20.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.timescale.com
 Group:          Productivity/Databases/Tools
 Vendor:         VMware, Inc.
@@ -63,6 +65,8 @@ rm -rf %{buildroot}/*
 %exclude %{_pglibdir}/pgxs/src/test/perl/TimescaleNode.pm
 
 %changelog
+* Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.20.2-3
+- Bump version to keep version higher than 90
 * Fri Aug 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.20.2-2
 - Fix directory ownership during file packaging
 * Thu Jun 05 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.20.2-1

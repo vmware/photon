@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name aws-partitions
 
 Name: rubygem-aws-partitions
 Version:        1.1206.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides interfaces to enumerate AWS partitions, regions & services.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -37,6 +37,8 @@ Provides interfaces to enumerate AWS partitions, regions, and services.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1206.0-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1206.0-1
 - Update to version 1.1206.0
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1098.0-1

@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname concurrent-log-handler
 
 Name:           python3-ConcurrentLogHandler
 Version:        0.9.20
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 Group:          Development/Languages/Python
 URL:            https://github.com/Preston-Landers/concurrent-log-handler
@@ -47,6 +47,8 @@ ConcurrentLogHandler is a module that provides an additional log handler for Pyt
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.9.20-6
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.20-5
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.20-4

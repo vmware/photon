@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A library that provides compression and decompression of file formats used by Microsoft
 Name:           libmspack
 Version:        0.11alpha
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.cabextract.org.uk/libmspack
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -53,6 +53,8 @@ cd test
 %{_libdir}/*.so
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.11alpha-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.11alpha-1
 - Update package to 0.11alpha
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 0.10.1alpha-3

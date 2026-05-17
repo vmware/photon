@@ -1,0 +1,53 @@
+From d8dbbe2589ab704721e8b1e4c573a8677736f8e5 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Date: Thu, 11 Dec 2025 19:17:55 -0300
+Subject: [PATCH 06/18] perf tools: Use const for variables receiving
+ str{str,r?chr}() returns
+
+Newer glibc versions return const char for str{str,chr}() where the
+haystack/s is const so to avoid warnings like these on fedora 44 change
+some variables to const:
+
+  36     8.17 fedora:44                     : FAIL gcc version 15.2.1 20251111 (Red Hat 15.2.1-4) (GCC)
+    libbpf.c: In function 'kallsyms_cb':
+    libbpf.c:8489:13: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+     8489 |         res = strstr(sym_name, ".llvm.");
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Link: https://lore.kernel.org/r/20251211221756.96294-4-acme@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/jvmti/libjvmti.c | 2 +-
+ tools/perf/util/evlist.c    | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/tools/perf/jvmti/libjvmti.c b/tools/perf/jvmti/libjvmti.c
+index fcca275e5bf9..d6b04d0fd35a 100644
+--- a/tools/perf/jvmti/libjvmti.c
++++ b/tools/perf/jvmti/libjvmti.c
+@@ -142,7 +142,7 @@ copy_class_filename(const char * class_sign, const char * file_name, char * resu
+ 	*/
+ 	if (*class_sign == 'L') {
+ 		int j, i = 0;
+-		char *p = strrchr(class_sign, '/');
++		const char *p = strrchr(class_sign, '/');
+ 		if (p) {
+ 			/* drop the 'L' prefix and copy up to the final '/' */
+ 			for (i = 0; i < (p - class_sign); i++)
+diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
+index 41bbe6f85b0d..391a694ae2af 100644
+--- a/tools/perf/util/evlist.c
++++ b/tools/perf/util/evlist.c
+@@ -1885,7 +1885,8 @@ static int evlist__parse_control_fifo(const char *str, int *ctl_fd, int *ctl_fd_
+ 
+ int evlist__parse_control(const char *str, int *ctl_fd, int *ctl_fd_ack, bool *ctl_fd_close)
+ {
+-	char *comma = NULL, *endptr = NULL;
++	const char *comma = NULL;
++	char *endptr = NULL;
+ 
+ 	*ctl_fd_close = false;
+ 
+-- 
+2.54.0
+

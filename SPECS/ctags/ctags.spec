@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define upstreamversion 20251102.0
 
 Summary:        A C programming language indexing and/or cross-reference tool
 Name:           ctags
 Version:        6.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://ctags.io/
 Source0:        https://github.com/universal-ctags/ctags/archive/%{name}-p%{version}.%{upstreamversion}.tar.gz
 
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.2-2
 - Bump version as a part of python3.14 upgrade
 * Thu Nov 06 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.2-1

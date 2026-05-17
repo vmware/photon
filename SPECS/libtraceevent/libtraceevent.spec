@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Linux kernel trace event library
 Name:           libtraceevent
 Version:        1.8.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -rf %{buildroot}
 %{_libdir}/traceevent/plugins/*.so
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.7-2
+- Extended to build for subrelease 91 and above
 * Tue Feb 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.7-1
 - Upgrade as part of trace-cmd upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.3-2

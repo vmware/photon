@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.9.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -181,6 +181,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libnfsidmap.so
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.1-2
+- Extended to build for subrelease 91 and above
 * Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.1-1
 - Fix build with newer glibc
 - Upgrade to 2.9.1

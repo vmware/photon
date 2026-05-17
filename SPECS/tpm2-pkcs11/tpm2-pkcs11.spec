@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:           tpm2-pkcs11
 Version:        1.8.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            https://github.com/tpm2-software/tpm2-pkcs11
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -107,6 +107,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.0-9
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.0-8
 - Bump version as a part of python3.14 upgrade
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.8.0-7

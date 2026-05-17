@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -115,6 +115,8 @@ rm -f %{buildroot}%{_libdir}/libselinux.a
 %{_mandir}/man3/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.10-4
+- Extended to build for subrelease 91 and above
 * Mon May 11 2026 Bo Gan <bo.gan@broadcom.com> 3.10-3
 - Bump up version to match libselinux-python3
 * Wed Apr 29 2026 Bo Gan <bo.gan@broadcom.com> 3.10-2

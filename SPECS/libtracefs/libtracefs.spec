@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Linux kernel trace file system library
 Name:           libtracefs
 Version:        1.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.3-2
+- Extended to build for subrelease 91 and above
 * Tue Feb 17 2026 Prashtn S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.3-1
 - Upgrade for trace-cmd
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.0-2

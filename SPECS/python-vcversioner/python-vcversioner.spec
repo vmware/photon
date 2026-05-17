@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-vcversioner
 Version:        2.16.0.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python version extractor
 Group:          Development/Languages/Python
 Url:            https://github.com/habnabit/vcversioner
@@ -40,6 +40,8 @@ python3 setup test
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.16.0.0-6
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.16.0.0-5
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.16.0.0-4

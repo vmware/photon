@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gem_name io-event
 
 Name:           rubygem-io-event
 Version:        1.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An event loop.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ event loops, with support for select, kqueue, epoll and io_uring.
 %{gem_base}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.14.2-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.14.2-1
 - Update to version 1.14.2
 * Tue May 06 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.10.0-1

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        4.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Security
 URL:            https://github.com/linux-audit/audit-userspace
 Vendor:         VMware, Inc.
@@ -204,6 +204,8 @@ systemctl daemon-reload
 %{python3_sitearch}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.3-2
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.1.3-1
 - Update to version 4.1.3
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.9-28

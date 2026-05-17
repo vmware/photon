@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global _samba_modules  pdb_tdbsam,pdb_ldap,pdb_smbpasswd,pdb_wbc_sam,pdb_samba4
 %define maj_ver         4.0
@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        12%{?dist}
+Release:        13%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -465,6 +465,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-13
+- Extended to build for subrelease 91 and above
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 4.19.3-12
 - Version bump due to gnutls update
 * Fri Apr 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.19.3-11

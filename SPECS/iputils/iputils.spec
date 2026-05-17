@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20250605
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
@@ -67,6 +67,8 @@ ln -sf tracepath %{buildroot}%{_bindir}/tracepath6
 %attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/arping
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 20250605-3
+- Extended to build for subrelease 91 and above
 * Mon Mar 09 2026 Bo Gan <bo.gan@broadcom.com> 20250605-2
 - Introduce -arping for users demanding smaller footprint.
 * Wed Oct 29 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 20250605-1

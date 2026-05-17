@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-pika
 Version:        1.2.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Pika is a RabbitMQ (AMQP 0-9-1) client library for Python.
 Group:          Development/Languages/Python
 URL:            https://github.com/pika/pika
@@ -39,6 +39,8 @@ Pika is a pure-Python implementation of the AMQP 0-9-1 protocol including Rabbit
 %doc README.rst
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.1-4
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-3
 - Bump version as a part of python3.14 upgrade
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.1-2

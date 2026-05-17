@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        API and commands for processing SPIR-V modules
 Name:           spirv-tools
 Version:        1.4.341.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Tools/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libSPIRV-Tools-shared.so
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.341.0-2
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.4.341.0-1
 - Update to 1.4.341.0
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.313.0-2

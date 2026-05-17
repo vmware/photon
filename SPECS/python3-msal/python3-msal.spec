@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global full_name microsoft-authentication-library-for-python
 
 Name:           python3-msal
 Version:        1.36.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Microsoft Authentication Library (MSAL) for Python
 Group:          Development/Libraries/Python
 Vendor:         VMware, Inc.
@@ -61,5 +61,7 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/msal-*.dist-info
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.36.0-2
+- Extended to build for subrelease 91 and above
 * Mon Apr 27 2026 Dweep Advani <dweep.advani@broadcom.com> 1.36.0-1
 - Initial release

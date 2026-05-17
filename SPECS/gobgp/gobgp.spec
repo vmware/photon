@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define network_required 1
 %define gopath_comp_gobgp github.com/osrg/%{name}
@@ -6,7 +6,7 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       4.2.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/osrg/gobgp
@@ -54,6 +54,8 @@ install -v -m755 -D -t %{buildroot}%{_bindir} bin/gobgp bin/gobgpd
 %license src/%{gopath_comp_gobgp}/LICENSE
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.2.0-2
+- Extended to build for subrelease 91 and above
 * Thu Apr 23 2026 Bo Gan <bo.gan@broadcom.com> 4.2.0-1
 - Upgrade to 4.2.0
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.0-21

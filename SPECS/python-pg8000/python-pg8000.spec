@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 %define srcname pg8000
 
 Name:           python3-pg8000
 Version:        1.31.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Pure-Python PostgreSQL Driver
 URL:            http://pgaudit.org
 Group:          Applications/Databases
@@ -53,6 +53,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.31.5-3
+- Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.31.5-2
 - Bump version as a part of python3.14 upgrade
 * Mon Jan 12 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.31.5-1

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
 Version:        60.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
 Vendor:         VMware, Inc.
@@ -526,6 +526,8 @@ cd %{__cmake_builddir} && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 60.1-2
+- Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 60.1-1
 - Upgrade to 60.1 as part of python3 upgrade
 * Wed Oct 29 2025 Dweep Advani <dweep.advani@broadcom.com> 42.0-5

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
 Version:        7.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/zsh/site-functions/_hg
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.2.1-2
+- Extended to build for subrelease 91 and above
 * Fri Apr 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 7.2.1-1
 - Update to 7.2.1
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2-1

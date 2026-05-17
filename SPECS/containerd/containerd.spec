@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define debug_package %{nil}
 %define __os_install_post %{nil}
@@ -7,7 +7,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        2.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -142,6 +142,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.2.1-3
+- Extended to build for subrelease 91 and above
 * Thu Mar 12 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 2.2.1-2
 - Version bump for removing lzo support in containerd
 * Fri Feb 13 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 2.2.1-1

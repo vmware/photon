@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        13.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -28,7 +28,7 @@ Patch2: gosc-change-order-of-args-to-cloud-init-in-Ph4-and-above.patch
 
 # Fix CVE-2025-41244
 Patch3: CVE-2025-41244.patch
-%if 0%{photon_subrelease} >= 92
+%if 0%{photon_subrelease} >= 91
 Patch4: ovt-Fix-build-for-newer-glibc.patch
 %endif
 
@@ -180,6 +180,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.0.0-5
+- version bump after glibc is upgraded in 91
 * Sun Apr 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.0.0-4
 - Fix build with newer glibc
 * Mon Mar 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 13.0.0-3

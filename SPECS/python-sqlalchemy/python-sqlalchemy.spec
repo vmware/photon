@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 %define srcname sqlalchemy
@@ -6,7 +6,7 @@
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python3-sqlalchemy
 Version:        2.0.48
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            http://www.sqlalchemy.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,6 +43,8 @@ tox -e py311-sqlite
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.48-3
+- Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.48-2
 - Fix config.yaml
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.48-1

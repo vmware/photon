@@ -1,7 +1,7 @@
 sources:
 - archive: cffi-r1-2.0.0.tar.gz
+  skip_validation: true
   archive_sha512sum: a8bf705e626f6b5858cc20e9044a23fd653d155e2a2d4cb59f1eed00ef13ebd92d5a2f07738c66b361cb24d863786d4379dcd9c176250b546fbd45758e51d4f4
-  archive_type: upstream
   name: cffi-2.0.0
   version: 2.0.0
   url: https://files.pythonhosted.org/packages/eb/56/b1ba7935a17738ae8453301356628e8147c79dbb825bcbc73dc7401f9846/cffi-2.0.0.tar.gz

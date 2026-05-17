@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        29%{?dist}
+Release:        30%{?dist}
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ cp -pr ./dist/amd64/locale_conf.json ./dist/amd64/public \
 /opt/k8dashboard/public/*
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.7.0-30
+- Extended to build for subrelease 91 and above
 * Fri Apr 03 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-29
 - Bump version as a part of nodejs upgrade
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 2.7.0-28

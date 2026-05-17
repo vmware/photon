@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define lvm2_services       blk-availability.service lvm2-monitor.service
 %define dm_event_units      dm-event.service dm-event.socket
@@ -6,7 +6,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.39
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
@@ -301,6 +301,8 @@ fi
 %{_libdir}/pkgconfig/devmapper-event.pc
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.03.39-2
+- Extended to build for subrelease 91 and above
 * Fri Apr 17 2026 Harinadh Dommaraju <Harinadh.Dommaraju@vmware.com> 2.03.39-1
 - Upgrade LVM2 to 2.03.39
 * Thu Oct 09 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 2.03.16-8

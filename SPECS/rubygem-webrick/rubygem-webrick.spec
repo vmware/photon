@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name webrick
 
 Name:           rubygem-webrick
 Version:        1.9.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        HTTP server toolkit
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ a proxy server, and a virtual-host server.
 %{gemdir}
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.9.2-2
+- Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.9.2-1
 - Update to version 1.9.2
 * Wed Oct 15 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.9.1-1

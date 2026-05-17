@@ -1,0 +1,34 @@
+From 3d19cc9b5a5113e1ab0172c178fff8d1eb518612 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Tue, 20 Jan 2026 17:57:43 -0300
+Subject: [PATCH 05/18] perf trace: Deal with compiler const checks
+
+The strchr() function these days return const/non-const based on the arg
+it receives, and sometimes we need to use casts when we're dealing with
+variables that are used in code that needs to safely change the returned
+value and sometimes not (as it points to really const areas).
+
+Tweak one such case.
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/builtin-trace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+index 441655e659c2..313eb0929324 100644
+--- a/tools/perf/builtin-trace.c
++++ b/tools/perf/builtin-trace.c
+@@ -4622,7 +4622,7 @@ static int trace__parse_events_option(const struct option *opt, const char *str,
+ 	}
+ 
+ 	while (1) {
+-		if ((sep = strchr(s, ',')) != NULL)
++		if ((sep = strchr((char *)s, ',')) != NULL)
+ 			*sep = '\0';
+ 
+ 		list = 0;
+-- 
+2.54.0
+

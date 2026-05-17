@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           msmtp
 Version:        1.8.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Provides msmtp client and server
 URL:            https://marlam.de/msmtp/
 Group:          Email/Server/Library
@@ -56,7 +56,9 @@ cp -r scripts/msmtpq scripts/msmtpqueue %{buildroot}%{_datadir}/%{name}
 %doc doc/msmtprc-system.example doc/msmtprc-user.example
 
 %changelog
-* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 1.8.32-2
+* Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.32-3
+- Extended to build for subrelease 91 and above
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.8.32-2
 - Version bump due to gnutls update
 * Wed Mar 25 2026 Dweep Advani <dweep.advani@broadcom.com> 1.8.32-1
 - Add msmtp package

@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global frr_libdir %{_libexecdir}/%{name}
 
 Summary:        Internet Routing Protocol
 Name:           frr
 Version:        10.5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://frrouting.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -220,6 +220,8 @@ fi
 %{frr_libdir}/*.py
 
 %changelog
+* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.5.0-4
+- Extended to build for subrelease 91 and above
 * Fri Feb 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 10.5.0-3
 - Bump up as part of python3-sphinx update
 * Fri Jan 02 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 10.5.0-2
