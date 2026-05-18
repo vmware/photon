@@ -1,9 +1,16 @@
 #! /bin/bash
 
-BUILD_SCRIPT_VERSION=1.2
+BUILD_SCRIPT_VERSION=1.3
 
 # Target to Photon OS version
-VERSION=5.0
+VERSION="5.0"
+
+# Subrelease
+SUBRELEASE=""
+
+# Target Photon OS docker image (if different than `photon:<version>`)
+DKR_IMG=""
+[[ -z "$DKR_IMG" ]] && DKR_IMG="photon:$VERSION"
 
 # Keep running container instance alive?
 KEEP_SANDBOX_AFTER_FAILURE=1
@@ -73,7 +80,12 @@ PH_ROOT=$(find_ph_root)
 STAGE_DIR="$(realpath ${PH_ROOT})/stage"
 STAGE_SOURCES="$(realpath ${STAGE_DIR})/SOURCES"
 STAGE_RPMS="$STAGE_DIR/RPMS"
-CONTAINER_IMG="photon_build_spec:$VERSION"
+if [[ -n "$SUBRELEASE" ]]; then
+  CONTAINER_IMG="photon_build_spec:$VERSION-$SUBRELEASE"
+else
+  CONTAINER_IMG="photon_build_spec:$VERSION"
+fi
+
 DIST=".ph$(echo $VERSION | cut -d. -f1)"
 
 if [ -z "$2" ]; then
@@ -180,7 +192,7 @@ create_sandbox() {
     -v $LOCAL_STAGE/SRPMS:$TOPDIR/SRPMS \
     -v $STAGE_RPMS:$TOPDIR/LOCAL_RPMS \
     --privileged -d --name $CONTAINER --network="host" \
-    photon:$VERSION tail -f /dev/null
+    "$DKR_IMG" tail -f /dev/null
 
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
@@ -201,6 +213,9 @@ create_sandbox() {
 prepare_buildenv() {
   local file=
   local url=
+  local enable_photon=
+
+  [[ -z "$SUBRELEASE" ]] && enable_photon="--enablerepo photon"
 
   in_sandbox mkdir -p $SRCDIR
 
@@ -231,9 +246,9 @@ prepare_buildenv() {
   run "makecache" in_sandbox "tdnf makecache --refresh"
 
   local br
-  br=$(in_sandbox rpmspec ${RPM_MACROS[@]} -P $SRCDIR/"$SPECFILE" | sed -n 's/BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
+  br=$(in_sandbox rpmspec ${RPM_MACROS[@]} -P $SRCDIR/"$SPECFILE" | sed -n 's/^BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
   if [ -n "$br" ]; then
-    run "Install build requirements" in_sandbox tdnf install -y --enablerepo photon --refresh $br
+    run "Install build requirements" in_sandbox tdnf install -y $enable_photon --refresh $br
   fi
 }
 
