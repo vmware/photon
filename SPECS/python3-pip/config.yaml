@@ -1,13 +1,18 @@
 sources:
-- archive: pip-25.3.tar.gz
-  skip_validation: true
-  archive_sha512sum: aca54dc7daaba195ba5873e24296242d935a225ed5f4d2e0da672d68573a48650a5028d42051a7a61170de335f122ffb8f97faafc3ad86c488f8bdac3b8bbe1d
-  name: pip-25.3
-  version: "25.3"
+- archive: pip-26.1.1.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 777fab14b5e7e7edeffbc7ae86f4e6061e9f7cf43adcaebcb4d099c184c4f2ad6a63019a70d95b98b631821c3472713c9545fb8d65b684da67cfc31ee9293054
+  name: pip-26.1.1
+  version: "26.1.1"
   repo_url: https://github.com/pypa/pip.git
-  url: https://files.pythonhosted.org/packages/fe/6e/74a3f0179a4a73a53d66ce57fdb4de0080a8baa1de0063de206d6167acc2/pip-25.3.tar.gz
-  commit_id: a52069365063ea813fe3a3f8bac90397c9426d35
-  missing: [urllib3.pyi, setup.cfg, reporters.pyi, .github, pkg_resources.pyi, resolvers.pyi, requests.pyi, news, tests, structs.pyi, .pre-commit-config.yaml, collections_abc.pyi, msgpack.pyi, __init__.pyi, tools, .readthedocs-custom-redirects.yml, pyproject_hooks.pyi, .mailmap, .gitattributes, typing_extensions.pyi, providers.pyi, pygments.pyi, .readthedocs.yml, PKG-INFO, .git-blame-ignore-revs, .gitignore, noxfile.py, distlib.pyi, pip.egg-info]
+  url: https://github.com/pypa/pip/archive/refs/tags/26.1.1.tar.gz
+  commit_id: 4432a371c6471e6a93c3eb39b3e9ab2b876b13b9
+  missing: []
+  license_manual_review:
+  - file_paths:
+    - pip-26.1.1/tests/data/pypi_packages/trove_classifiers-2025.12.1.14.tar.gz-extract/trove_classifiers-2025.12.1.14/src/trove_classifiers/__init__.py
+    sha256sum: 35ddc94dbfd21e1fea402e97549e41260bb5859413884b57e1c73d1fbecf8468
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'Pip is the package installer for Python. You can use
