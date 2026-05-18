@@ -1,6 +1,6 @@
 sources:
-- archive: xtrans-1.6.0.tar.gz
-  archive_sha512sum: 1165faf7e62ba3a1eb449867b7e626d21f4191a8980ab411ef4bae3875d60333739bb843559b9a1c7e01f7175e18fc9590cd340608d2939a7588989063cecb5f
+- archive: xtrans-1.4.0.tar.bz2
+  archive_sha512sum: 4fea89a3455c0e13321cbefa43340016dbb59bdd0dbdb5b796c1a6d2a6b1fd63cf1327b769ab426286b9c54b32ec764a50cd2b46228e4e43b841bda6b94de214
   skip_validation: true
   spdx:
     package:

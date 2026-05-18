@@ -1,16 +1,16 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Abstract network code for X.
 Name:           xtrans
-Version:        1.6.0
-Release:        1%{?dist}
+Version:        1.4.0
+Release:        2.1%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 
-Source0:        https://ftp.x.org/pub/individual/lib/xtrans-1.6.0.tar.gz
+Source0:        https://ftp.x.org/pub/individual/lib/xtrans-1.4.0.tar.bz2
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -40,8 +40,8 @@ rm -rf %{buildroot}/*
 %{_includedir}
 
 %changelog
-* Mon May 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.6.0-1
-- Upgrade to 1.6.0
+* Mon May 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.0-2.1
+- Move to SPECS/90
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.4.0-2
 - Release bump for SRP compliance
 * Tue Jul 12 2022 Shivani Agarwal <shivania2@vmware.com> 1.4.0-1

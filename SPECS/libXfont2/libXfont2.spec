@@ -1,7 +1,7 @@
 Summary:        X11 Xfont2 runtime library.
 Name:           libXfont2
 Version:        2.0.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.x.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -56,6 +56,8 @@ It contains the libraries and header files to create applications
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon May 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.0.3-4
+- Release bump for xtrans upgrade
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 2.0.3-3
 - Release bump for SRP compliance
 * Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.0.3-2

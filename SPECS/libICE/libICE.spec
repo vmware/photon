@@ -1,7 +1,7 @@
 Summary:        X11 ICE runtime library.
 Name:           libICE
 Version:        1.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -52,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Mon May 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.1-3
+-   Release bump for xtrans upgrade
 *   Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.1-2
 -   Release bump for SRP compliance
 *   Sun Feb 12 2023 Shivani Agarwal <shivania2@vmware.com> 1.1.1-1

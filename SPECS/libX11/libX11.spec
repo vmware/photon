@@ -1,7 +1,7 @@
 Summary:        Core X11 protocol client library.
 Name:           libX11
 Version:        1.8.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -69,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/
 
 %changelog
+* Mon May 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.8.5-4
+- Release bump for xtrans upgrade
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.8.5-3
 - Release bump for SRP compliance
 * Mon Oct 09 2023 Shivani Agarwal <shivania2@vmware.com> 1.8.5-2
