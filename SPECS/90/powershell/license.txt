@@ -1,1 +1,0 @@
-License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND HPND-export-US-modify AND JSON AND LGPL-2.1-or-later AND MIT AND MS-PL

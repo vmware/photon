@@ -9,6 +9,10 @@ sources:
     sha256sum: 8b27cac1ac080c769d91c076247bd6fc109e794fc91488150f118ac5aa859069
     spdx_exp: ''
   - file_paths:
+    - sdk/8.0.420/Sdks/NuGet.Build.Tasks.Pack/NOTICES.txt
+    sha256sum: 722c0c58efe78219970ccce71e58657fdd24ab49bd32987f7f5c6935f9dcdd69
+    spdx_exp: ''
+  - file_paths:
     - sdk/8.0.420/Containers/containerize/NuGet.Packaging.dll
     sha256sum: 5421eb8f73535f24582e47b57eb75b5b7840ef7740b3123f87a59ca30b4b5943
     spdx_exp: ''
