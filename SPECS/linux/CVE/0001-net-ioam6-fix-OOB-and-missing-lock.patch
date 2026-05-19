@@ -1,0 +1,64 @@
+From 05a7d5fca507d14a0122591b0a4e7622039acbdf Mon Sep 17 00:00:00 2001
+From: Justin Iurman <justin.iurman@gmail.com>
+Date: Sat, 4 Apr 2026 15:41:37 +0200
+Subject: [PATCH] net: ioam6: fix OOB and missing lock
+
+[ Upstream commit b30b1675aa2bcf0491fd3830b051df4e08a7c8ca ]
+
+When trace->type.bit6 is set:
+
+    if (trace->type.bit6) {
+        ...
+        queue = skb_get_tx_queue(dev, skb);
+        qdisc = rcu_dereference(queue->qdisc);
+
+This code can lead to an out-of-bounds access of the dev->_tx[] array
+when is_input is true. In such a case, the packet is on the RX path and
+skb->queue_mapping contains the RX queue index of the ingress device. If
+the ingress device has more RX queues than the egress device (dev) has
+TX queues, skb_get_queue_mapping(skb) will exceed dev->num_tx_queues.
+Add a check to avoid this situation since skb_get_tx_queue() does not
+clamp the index. This issue has also revealed that per queue visibility
+cannot be accurate and will be replaced later as a new feature.
+
+While at it, add missing lock around qdisc_qstats_qlen_backlog(). The
+function __ioam6_fill_trace_data() is called from both softirq and
+process contexts, hence the use of spin_lock_bh() here.
+
+Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Closes: https://lore.kernel.org/netdev/20260403214418.2233266-2-kuba@kernel.org/
+Signed-off-by: Justin Iurman <justin.iurman@gmail.com>
+Link: https://patch.msgid.link/20260404134137.24553-1-justin.iurman@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/ipv6/ioam6.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+index 868a25c57b92..12f765114ba0 100644
+--- a/net/ipv6/ioam6.c
++++ b/net/ipv6/ioam6.c
+@@ -801,12 +801,16 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+ 		struct Qdisc *qdisc;
+ 		__u32 qlen, backlog;
+ 
+-		if (skb_dst(skb)->dev->flags & IFF_LOOPBACK) {
++		if (skb_dst(skb)->dev->flags & IFF_LOOPBACK ||
++		    skb_get_queue_mapping(skb) >= skb_dst(skb)->dev->num_tx_queues) {
+ 			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+ 		} else {
+ 			queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
+ 			qdisc = rcu_dereference(queue->qdisc);
++
++			spin_lock_bh(qdisc_lock(qdisc));
+ 			qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
++			spin_unlock_bh(qdisc_lock(qdisc));
+ 
+ 			*(__be32 *)data = cpu_to_be32(backlog);
+ 		}
+-- 
+2.53.0
+

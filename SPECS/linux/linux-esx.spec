@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.87
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -196,6 +196,8 @@ Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+# Fix CVE-2026-43083
+Patch102: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -546,6 +548,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed May 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-5
+- Fix CVE-2026-43083
 * Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.87-4
 - Removed xerces-c-devel from BuildRequires
 * Thu May 14 2026 Rishi Chhibber <rishi.chhibber@broadcom.com> 6.12.87-3

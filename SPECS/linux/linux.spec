@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.87
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -239,6 +239,8 @@ Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 # CVE: [100..199]
 # Fix CVE-2017-1000252
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+# Fix CVE-2026-43083
+Patch102: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -971,6 +973,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue May 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-2
+- Fix CVE-2026-43083
 * Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-1
 - Update to version 6.12.87
 * Tue May 05 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.78-5
