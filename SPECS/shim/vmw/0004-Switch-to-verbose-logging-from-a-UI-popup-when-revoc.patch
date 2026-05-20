@@ -1,0 +1,36 @@
+From 1cdb3047f17d6229f9db36764470b37f27c6420d Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Mon, 18 May 2026 23:17:50 +0000
+Subject: [PATCH] Switch to verbose logging, from a UI popup, when
+ revocations.efi fails to load
+
+Use the built-in verbose logging to fallback to debug console temporarily,
+alternate solution was to introduce a silent flag right through the call chain
+and write to the console instead of the ncurses like UI.
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ shim.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/shim.c b/shim.c
+index db9a9b2..0111a85 100644
+--- a/shim.c
++++ b/shim.c
+@@ -651,8 +651,12 @@ load_revocations_file(EFI_HANDLE image_handle, CHAR16 *FileName, CHAR16 *PathNam
+ 	efi_status = read_image(image_handle, FileName, &PathName,
+ 				&data, &datasize,
+ 				SUPPRESS_NETBOOT_OPEN_FAILURE_NOISE);
+-	if (!EFI_ERROR(efi_status))
++	if (!EFI_ERROR(efi_status)) {
++		UINT32 saved_verbose = verbose;
++		verbose = 1;
+ 		efi_status = verify_image(data, datasize, shim_li, &context);
++		verbose = saved_verbose;
++	}
+ 
+ 	if (EFI_ERROR(efi_status)) {
+ 		dprint(L"revocations failed to verify\n");
+-- 
+2.53.0
+

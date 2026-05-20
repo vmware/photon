@@ -1,0 +1,102 @@
+From b5756b1293a7a16ced7bfa6e1bda58cfe5bcafd6 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Mon, 18 May 2026 22:33:36 +0000
+Subject: [PATCH] Add provision to disable netboot and httpboot in shim
+
+Allow headers to use macros and types
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ Make.defaults | 4 ++++
+ Makefile      | 9 +++++++--
+ shim.c        | 7 +++++++
+ 3 files changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/Make.defaults b/Make.defaults
+index c5fa32b..c6f54ac 100644
+--- a/Make.defaults
++++ b/Make.defaults
+@@ -153,6 +153,10 @@ ifneq ($(origin DISABLE_REMOVABLE_LOAD_OPTIONS), undefined)
+ 	DEFINES  += -DDISABLE_REMOVABLE_LOAD_OPTIONS
+ endif
+ 
++ifneq ($(origin DISABLE_REMOTE_BOOT), undefined)
++	DEFINES  += -DDISABLE_REMOTE_BOOT
++endif
++
+ LIB_GCC		= $(shell $(CC) $(ARCH_CFLAGS) -print-libgcc-file-name)
+ EFI_LIBS	= -lefi -lgnuefi --start-group Cryptlib/libcryptlib.a Cryptlib/OpenSSL/libopenssl.a --end-group $(LIB_GCC)
+ FORMAT		?= --target efi-app-$(ARCH)
+diff --git a/Makefile b/Makefile
+index 9a39cd1..7099928 100644
+--- a/Makefile
++++ b/Makefile
+@@ -38,15 +38,20 @@ CFLAGS += -DENABLE_SHIM_CERT
+ else
+ TARGETS += $(MMNAME) $(FBNAME)
+ endif
+-OBJS	= shim.o globals.o memattrs.o mok.o netboot.o cert.o dp.o loader-proto.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o httpboot.o csv.o load-options.o utils.o verify.o
++OBJS	= shim.o globals.o memattrs.o mok.o cert.o dp.o loader-proto.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o csv.o load-options.o utils.o verify.o
+ KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
+-ORIG_SOURCES	= shim.c globals.c memattrs.c mok.c netboot.c dp.c loader-proto.c tpm.c errlog.c sbat.c pe.c pe-relocate.c httpboot.c verify.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
++ORIG_SOURCES	= shim.c globals.c memattrs.c mok.c dp.c loader-proto.c tpm.c errlog.c sbat.c pe.c pe-relocate.c httpboot.c verify.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
+ MOK_OBJS = MokManager.o PasswordCrypt.o crypt_blowfish.o errlog.o sbat_data.o globals.o dp.o
+ ORIG_MOK_SOURCES = MokManager.c PasswordCrypt.c crypt_blowfish.c shim.h $(wildcard include/*.h)
+ FALLBACK_OBJS = fallback.o tpm.o errlog.o sbat_data.o globals.o utils.o
+ ORIG_FALLBACK_SRCS = fallback.c
+ SBATPATH = $(TOPDIR)/data/sbat.csv
+ 
++ifeq ($(origin DISABLE_REMOTE_BOOT), undefined)
++       OBJS += httpboot.o netboot.o
++       ORIG_SOURCES += httpboot.c netboot.c
++endif
++
+ ifeq ($(SOURCE_DATE_EPOCH),)
+ 	UNAME=$(shell uname -s -m -p -i -o)
+ else
+diff --git a/shim.c b/shim.c
+index b62042e..db9a9b2 100644
+--- a/shim.c
++++ b/shim.c
+@@ -283,9 +283,12 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 		      int flags)
+ {
+ 	EFI_STATUS efi_status;
++
++#if !defined(DISABLE_REMOTE_BOOT)
+ 	void *sourcebuffer = NULL;
+ 	UINT64 sourcesize = 0;
+ 	CHAR8 *netbootname;
++#endif
+ 
+ 	/*
+ 	 * We need to refer to the loaded image protocol on the running
+@@ -308,6 +311,7 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 		return efi_status;
+ 	}
+ 
++#if !defined(DISABLE_REMOTE_BOOT)
+ 	if (findNetboot(shim_li->DeviceHandle)) {
+ 		str16_to_str8(ImagePath, &netbootname);
+ 		efi_status = parseNetbootinfo(image_handle, netbootname);
+@@ -341,6 +345,7 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 		*data = sourcebuffer;
+ 		*datasize = sourcesize;
+ 	} else {
++#endif
+ 		/*
+ 		 * Read the new executable off disk
+ 		 */
+@@ -352,7 +357,9 @@ EFI_STATUS read_image(EFI_HANDLE image_handle, CHAR16 *ImagePath,
+ 			ClearErrors();
+ 			return efi_status;
+ 		}
++#if !defined(DISABLE_REMOTE_BOOT)
+ 	}
++#endif
+ 
+ 	if (*datasize < 0)
+ 		efi_status = EFI_INVALID_PARAMETER;
+-- 
+2.53.0
+

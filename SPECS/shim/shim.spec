@@ -1,6 +1,8 @@
 %define debug_package %{nil}
+%global security_hardening none
 
-%define shim_generation 1
+# bump up generation of 'shim.photon' to mark dual compatibility target
+%define shim_generation 2
 
 %ifarch x86_64
 %define efiarch x64
@@ -12,8 +14,8 @@
 
 Summary:       UEFI shim loader
 Name:          shim
-Version:       15.8
-Release:       2%{?dist}
+Version:       16.1
+Release:       1%{?dist}
 Group:         System/Boot
 URL:           https://github.com/rhboot/shim
 Vendor:        VMware, Inc.
@@ -27,16 +29,20 @@ Source2:       sbat.photon.csv.in
 Source3: license.txt
 %include %{SOURCE3}
 
-# No need to bump up generation of 'shim.photon' as our previous shim
-# has already been revoked by upstream 'shim' generation bump 1 -> 4
-Patch100:      0001-Enforce-SBAT-presence-in-every-image.patch
-
+Patch100: 0001-Enforce-SBAT-presence-in-every-image.patch
 # Add support to disable netboot and httpboot during build
-Patch101:      0001-Add-provision-to-disable-netboot-and-httpboot-in-shi.patch
+Patch101: 0002-Add-provision-to-disable-netboot-and-httpboot-in-shi.patch
 # Support to build revocations efi stub,
 # .sbata and .sbatl would be added later when revocation data changes.
 # To be signed by Vendor key
-Patch102:      0001-Introduce-support-for-revocations-build.patch
+Patch102: 0003-Introduce-support-for-revocations-build.patch
+# Support to build revocations efi stub,
+# .sbata and .sbatl would be added later when revocation data changes.
+# To be signed by Vendor key
+Patch103: 0004-Switch-to-verbose-logging-from-a-UI-popup-when-revoc.patch
+
+Patch150: 0001-Fix-build-with-binutils-2.46.patch
+Patch151: 0002-Remove-Werror-from-build-flags.patch
 
 BuildRequires: dos2unix
 
@@ -79,6 +85,8 @@ make %{?_smp_mflags} test
 %{_datadir}/%{name}/revocations.efi
 
 %changelog
+* Mon May 18 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 16.1-1
+- Update to 16.1
 * Thu Dec 12 2024 Dweep Advani <dweep.advani@broadcom.com> 15.8-2
 - Release bump for SRP compliance
 * Sat Jan 27 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 15.8-1

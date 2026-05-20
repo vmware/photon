@@ -1,4 +1,4 @@
-From 27394e21ddb59f3006a47c18af492115a4750ebc Mon Sep 17 00:00:00 2001
+From 0cbab2c0196e9159e42fd6b8d830d93fe489f785 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 19 Sep 2023 15:01:30 -0700
 Subject: [PATCH] Enforce SBAT presence in every image
@@ -17,10 +17,10 @@ Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/pe.c b/pe.c
-index 3305601..f7f3689 100644
+index 22ad0fe..814beb2 100644
 --- a/pe.c
 +++ b/pe.c
-@@ -342,19 +342,19 @@ verify_sbat_section(char *SBATBase, size_t SBATSize)
+@@ -483,19 +483,19 @@ verify_sbat_section(char *SBATBase, size_t SBATSize)
  	char *sbat_data;
  	size_t sbat_size;
  
@@ -46,5 +46,5 @@ index 3305601..f7f3689 100644
  		dprint(L"SBATSize + 1 would overflow\n");
  		return EFI_SECURITY_VIOLATION;
 -- 
-2.43.0
+2.53.0
 

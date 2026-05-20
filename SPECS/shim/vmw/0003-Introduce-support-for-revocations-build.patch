@@ -1,8 +1,9 @@
-From 81fab3ad3993ff965adfcfc14e0fa1705050fa38 Mon Sep 17 00:00:00 2001
+From 11f42cd615f6d12c3043da6080a6aa391278d0cb Mon Sep 17 00:00:00 2001
 From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
-Date: Fri, 5 Apr 2024 03:11:56 -0500
+Date: Mon, 18 May 2026 22:44:34 +0000
 Subject: [PATCH] Introduce support for revocations build
 
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
 ---
  Make.defaults | 3 +++
  Makefile      | 6 ++++++
@@ -11,10 +12,10 @@ Subject: [PATCH] Introduce support for revocations build
  create mode 100644 revocations.c
 
 diff --git a/Make.defaults b/Make.defaults
-index ecb4ee4..fe298c0 100644
+index c6f54ac..c2c6491 100644
 --- a/Make.defaults
 +++ b/Make.defaults
-@@ -179,6 +179,9 @@ SHIMSONAME	= $(SHIMSTEM).so
+@@ -175,6 +175,9 @@ SHIMSONAME	= $(SHIMSTEM).so
  SHIMHASHNAME	= $(SHIMSTEM).hash
  BOOTEFINAME	?= BOOT$(ARCH_SUFFIX_UPPER).EFI
  BOOTCSVNAME	?= BOOT$(ARCH_SUFFIX_UPPER).CSV
@@ -25,7 +26,7 @@ index ecb4ee4..fe298c0 100644
  DEFINES		+= -DEFI_ARCH='L"$(ARCH_SUFFIX)"' \
  		   -DDEBUGDIR='L"/usr/lib/debug/usr/share/shim/$(ARCH_SUFFIX)-$(VERSION)$(DASHRELEASE)/"'
 diff --git a/Makefile b/Makefile
-index 9fa1989..5160f5d 100644
+index 7099928..7705705 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -38,6 +38,7 @@ CFLAGS += -DENABLE_SHIM_CERT
@@ -33,18 +34,18 @@ index 9fa1989..5160f5d 100644
  TARGETS += $(MMNAME) $(FBNAME)
  endif
 +TARGETS += $(REVOCNAME)
- OBJS	= shim.o globals.o mok.o cert.o replacements.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o csv.o load-options.o
+ OBJS	= shim.o globals.o memattrs.o mok.o cert.o dp.o loader-proto.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o csv.o load-options.o utils.o verify.o
  KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
- ORIG_SOURCES	= shim.c globals.c mok.c replacements.c tpm.c errlog.c sbat.c pe.c pe-relocate.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
+ ORIG_SOURCES	= shim.c globals.c memattrs.c mok.c dp.c loader-proto.c tpm.c errlog.c sbat.c pe.c pe-relocate.c httpboot.c verify.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
 @@ -45,6 +46,7 @@ MOK_OBJS = MokManager.o PasswordCrypt.o crypt_blowfish.o errlog.o sbat_data.o gl
  ORIG_MOK_SOURCES = MokManager.c PasswordCrypt.c crypt_blowfish.c shim.h $(wildcard include/*.h)
- FALLBACK_OBJS = fallback.o tpm.o errlog.o sbat_data.o globals.o
+ FALLBACK_OBJS = fallback.o tpm.o errlog.o sbat_data.o globals.o utils.o
  ORIG_FALLBACK_SRCS = fallback.c
 +REVOC_OBJS	= revocations.o sbat_data.o
  SBATPATH = $(TOPDIR)/data/sbat.csv
  
- ifeq ($(SOURCE_DATE_EPOCH),)
-@@ -137,6 +139,7 @@ sbat_data.o : /dev/null
+ ifeq ($(origin DISABLE_REMOTE_BOOT), undefined)
+@@ -150,6 +152,7 @@ sbat_data.o : /dev/null
  $(SHIMNAME) : $(SHIMSONAME) post-process-pe
  $(MMNAME) : $(MMSONAME) post-process-pe
  $(FBNAME) : $(FBSONAME) post-process-pe
@@ -52,7 +53,7 @@ index 9fa1989..5160f5d 100644
  $(SHIMNAME) $(MMNAME) $(FBNAME) : | post-process-pe
  
  LIBS = Cryptlib/libcryptlib.a \
-@@ -158,6 +161,9 @@ MokManager.o: $(MOK_SOURCES)
+@@ -171,6 +174,9 @@ MokManager.o: $(MOK_SOURCES)
  $(MMSONAME): $(MOK_OBJS) $(LIBS)
  	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
  
@@ -79,5 +80,5 @@ index 0000000..93d6903
 +}
 \ No newline at end of file
 -- 
-2.44.0
+2.53.0
 

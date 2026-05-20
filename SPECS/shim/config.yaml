@@ -1,6 +1,12 @@
 sources:
-- archive: shim-15.8.tar.bz2
-  archive_sha512sum: 30b3390ae935121ea6fe728d8f59d37ded7b918ad81bea06e213464298b4bdabbca881b30817965bd397facc596db1ad0b8462a84c87896ce6c1204b19371cd1
+- archive: shim-16.1.tar.bz2
+  archive_sha512sum: ca5f80e82f3b80b622028f03ef23105c98ee1b6a25f52a59c823080a3202dd4b9962266489296e99f955eb92e36ce13e0b1d57f688350006bba45f2718f159fb
+  archive_type: upstream
+  name: shim-16.1
+  version: '16.1'
+  url: https://github.com/rhboot/shim/releases/download/16.1/shim-16.1.tar.bz2
+  repo_url: https://github.com/rhboot/shim
+  commit_id: afc49558b34548644c1cd0ad1b6526a9470182ed
   skip_validation: true
   spdx:
     package:

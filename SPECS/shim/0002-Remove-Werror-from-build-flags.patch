@@ -1,0 +1,35 @@
+From 838152a4ac1f6cc0aad3cd6865844b9202bb0718 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Fri, 22 May 2026 06:55:00 +0000
+Subject: [PATCH] Remove -Werror from build flags
+
+Fixes:
+shim.c: In function 'read_image':
+shim.c:283:27: error: unused parameter 'flags' [-Werror=unused-parameter]
+  283 |                       int flags)
+      |                       ~~~~^~~~~
+cc1: all warnings being treated as errors
+make: *** [<builtin>: shim.o] Error 1
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ Make.defaults | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/Make.defaults b/Make.defaults
+index b92442d..cd18b66 100644
+--- a/Make.defaults
++++ b/Make.defaults
+@@ -126,8 +126,7 @@ override DEFAULT_WARNFLAGS = \
+ 		-Wno-missing-field-initializers
+ $(call update-variable,WARNFLAGS)
+ 
+-override DEFAULT_WERRFLAGS = \
+-		-Werror
++override DEFAULT_WERRFLAGS =
+ $(call update-variable,WERRFLAGS)
+ 
+ CFLAGS		= $(FEATUREFLAGS) \
+-- 
+2.40.4
+
