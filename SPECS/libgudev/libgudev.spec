@@ -1,7 +1,7 @@
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
 Version:        237
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
 
@@ -13,7 +13,6 @@ Distribution:   Photon
 
 BuildRequires:  glib >= 2.22.0
 BuildRequires:  glib-devel
-BuildRequires:  gnome-common
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  gtk-doc
 BuildRequires:  pkg-config
@@ -63,6 +62,8 @@ libgudev-devel package contains header files for building gudev applications.
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
+* Wed May 20 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 237-4
+- Remove gnome-common BuildRequires dependency.
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 237-3
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 237-2

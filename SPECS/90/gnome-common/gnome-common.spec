@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        Common development macros for GNOME
 Name:           gnome-common
 Version:        3.18.0
-Release:        5%{?dist}
+Release:        5.1%{?dist}
 URL:            https://www.gnome.org/
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{version}/%{name}-%{version}.tar.xz
 
@@ -45,6 +47,8 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/*.m4
 
 %changelog
+*   Wed May 20 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.18.0-5.1
+-   Move to Sub-Release <= 90
 *   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.18.0-5
 -   Release bump for SRP compliance
 *   Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 3.18.0-4

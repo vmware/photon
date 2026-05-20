@@ -1,7 +1,7 @@
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.74.0
-Release:      6%{?dist}
+Release:      7%{?dist}
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
 Vendor:       VMware, Inc.
@@ -24,7 +24,6 @@ BuildRequires: intltool
 BuildRequires: glib-devel
 BuildRequires: glib-schemas
 BuildRequires: meson
-BuildRequires: gnome-common
 BuildRequires: ninja-build
 BuildRequires: systemd-rpm-macros
 
@@ -81,6 +80,8 @@ CONFIGURE_OPTS=(
 %defattr(-,root,root)
 
 %changelog
+* Wed May 20 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> - 2.74.0-7
+- Remove gnome-common BuildRequires dependency.
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 2.74.0-6
 - Version bump due to nettle and gnutls update
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.74.0-5
