@@ -1,8 +1,8 @@
 %global _default_patch_fuzz 1
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
-Version:        2.90
-Release:        2%{?dist}
+Version:        2.92rel2
+Release:        1%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -10,10 +10,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://thekelleys.org.uk/dnsmasq/%{name}-%{version}.tar.xz
-%define sha512  %{name}=e169de1892f935e219b0f49d90107f95cba42b40bca20bd3c973313c2cd4df58b929af6628cd988419051d81c3b4ccf8e9f816274df7d0840e79f5bf49602442
+%define sha512  %{name}=607abf33d6eac24eafdff9cd291d84b065354303d5e1d9514d79085b247fb3861ac57851ca1dfc4a5cddd314f8b970d17e93b987b1576e9f6ba1d6bffd42fff1
 
 Patch0:         enable_dnssec.patch
-Patch1:         0001-Fix-bounds-checking-in-check_ia.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  systemd-rpm-macros
@@ -99,6 +98,9 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Wed May 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.92rel2-1
+- Update to v2.92rel2
+- Fixes multiple critical CVEs
 * Tue Jan 27 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.90-2
 - Add patch to fix OOB issue CVE-2025-54318
 * Tue Feb 20 2024 Srish Srinivasan <srish.srinivasan@broadcom.com> 2.90-1
