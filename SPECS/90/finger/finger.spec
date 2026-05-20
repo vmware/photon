@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        The finger client
 Name:           finger
 Version:        0.17
-Release:        4%{?dist}
+Release:        4.1%{?dist}
 URL:            https://github.com/Distrotech/bsd-finger
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -87,6 +89,8 @@ make -k check %{_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/fingerd.8*
 
 %changelog
+* Tue May 19 2026 Tapas Kundu <tapas.kundu@broadcom.com> 0.17-4.1
+- Move to /90
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.17-4
 - Release bump for SRP compliance
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.17-3
