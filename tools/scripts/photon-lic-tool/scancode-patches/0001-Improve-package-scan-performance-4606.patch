@@ -1,0 +1,129 @@
+From fa63f1a7d8d39a8704785a8827d6deeba89fbb67 Mon Sep 17 00:00:00 2001
+From: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+Date: Mon, 12 Jan 2026 17:15:45 +0530
+Subject: [PATCH] Improve package scan performance (#4606)
+
+* Simplify GemfileHandler path patterns
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Add multiregex as a dependency
+
+Reference: https://github.com/Quantco/multiregex
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Add initial multiregex implementation
+
+Use multiregex to use a cached regex path patterns and
+datafile handlers mapping to detect package datafiles faster.
+
+Reference: https://github.com/aboutcode-org/scancode-toolkit/issues/4064
+Reference: https://github.com/aboutcode-org/scancode-toolkit/issues/4061
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Add minimal tests for package cache
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Cache multiregex matchers instead of patterns
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Restore binary package manifest scanning
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Only scan for bianry packages optionally
+
+Introduce a new option --binary-packages which looks for
+package/dependency data in binaries.
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Do not setup license index on --package-only
+
+We do not need the license index in a --package-only scan
+as this is designed to do a fast package detection only scan
+which skips the license detection. As license index loading
+takes a couple seconds in each case, this makes the
+package only scan much faster.
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Add a new console script to build the package patterns cache
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Address review feedback
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Remove deprecated macos runners
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Fix test failures
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Fix misc test failures
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Update typecode to latest v30.1.0
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+* Avoid using close methods on pdfParser objects
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+
+---------
+
+Signed-off-by: Ayan Sinha Mahapatra <asmahapatra@aboutcode.org>
+---
+ src/textcode/pdf.py | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/usr/lib/python3.14/site-packages/textcode/pdf.py b/usr/lib/python3.14/site-packages/textcode/pdf.py
+index 3d3faac100..4e90c866f8 100644
+--- a/usr/lib/python3.14/site-packages/textcode/pdf.py
++++ b/usr/lib/python3.14/site-packages/textcode/pdf.py
+@@ -28,20 +28,20 @@ def get_text_lines(location, max_pages=5):
+     extracted_text = BytesIO()
+     laparams = LAParams()
+     with open(location, 'rb') as pdf_file:
+-        with contextlib.closing(PDFParser(pdf_file)) as parser:
+-            document = PDFDocument(parser)
+-            if not document.is_extractable:
+-                raise PDFTextExtractionNotAllowed(
+-                    'Encrypted PDF document: text extraction is not allowed')
++        parser = PDFParser(pdf_file)
++        document = PDFDocument(parser)
++        if not document.is_extractable:
++            raise PDFTextExtractionNotAllowed(
++                'Encrypted PDF document: text extraction is not allowed')
+
+-            manager = PDFResourceManager()
+-            with contextlib.closing(
+-                TextConverter(manager, extracted_text, laparams=laparams)) as extractor:
+-                interpreter = PDFPageInterpreter(manager, extractor)
+-                pages = PDFPage.create_pages(document)
+-                for page_num, page in enumerate(pages, 1):
+-                    interpreter.process_page(page)
+-                    if max_pages and page_num == max_pages:
+-                        break
++        manager = PDFResourceManager()
++        with contextlib.closing(
++            TextConverter(manager, extracted_text, laparams=laparams)) as extractor:
++            interpreter = PDFPageInterpreter(manager, extractor)
++            pages = PDFPage.create_pages(document)
++            for page_num, page in enumerate(pages, 1):
++                interpreter.process_page(page)
++                if max_pages and page_num == max_pages:
++                    break
+                 extracted_text.seek(0)
+                 return extracted_text.readlines()
+--
+2.53.0
+

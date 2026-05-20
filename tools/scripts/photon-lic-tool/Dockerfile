@@ -41,6 +41,10 @@ RUN pip3 install \
     ruamel.yaml==0.18.16 \
    && pip3 cache purge
 
+# Apply scancode patches
+COPY scancode-patches/ /tmp/scancode-patches
+RUN bash -x /tmp/scancode-patches/apply-patches.sh
+
 ENV LIC_TOOL_DIR=/root/photon-lic-tool
 
 COPY ./ ${LIC_TOOL_DIR}
