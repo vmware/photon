@@ -1,17 +1,20 @@
 sources:
-- archive: tzlocal-4.2.tar.gz
-  archive_sha512sum: 5d1000bd8756ca2678655dbeedcfd6ef8d709503293303c98a48af234aca0d1525913585d679759c6fd7d4c5ef046c98384ee6e7a9eba769f81d05173ff0d77f
+- archive: tzlocal-5.3.1.tar.gz
+  archive_sha512sum: e72581649488e9771d314c7aea149367749866263df18baccb63c4fe369a863c392a8522c6be7987c32ff835dd11aae93b37028b0e7276dcf5c3d6e9a7b63ccc
+  url: https://github.com/regebro/tzlocal/archive/refs/tags/5.3.1.tar.gz
+  repo_url: https://github.com/regebro/tzlocal
+  commit_id: fc98de51ba42f2901fd17573b44df21555065128
+  name: tzlocal-5.3.1
+  archive_type: upstream
   skip_validation: true
   spdx:
     package:
-      detailed_description: "This Python module returns a tzinfo object with the local\
-        \ timezone information under Unix and Win-32. It requires pytz, and returns\
-        \ pytz tzinfo objects. This module attempts to fix a glaring hole in pytz,\
-        \ that there is no way to get the local timezone information, unless you know\
-        \ the zoneinfo name, and under several Linux distros that\u2019s hard or impossible\
-        \ to figure out. Also, with Windows different timezone system using pytz isn\u2019\
-        t of much use, unless you separately configure the zoneinfo timezone name.\
-        \ With tzlocal you only need to call get_localzone(), and you will get a tzinfo\
+      detailed_description: "This Python module returns a zoneinfo tzinfo object with\
+        \ the local timezone information under Unix and Win-32. This module attempts\
+        \ to fix a glaring hole in the zoneinfo module, that there is no way to get\
+        \ the local timezone information, unless you know the zoneinfo name, and under\
+        \ several Linux distros that\u2019s hard or impossible to figure out. With\
+        \ tzlocal you only need to call get_localzone(), and you will get a tzinfo\
         \ object with the local time zone info. On some Unices you will still not\
         \ get to know what the timezone name is, but you don\u2019t need that when\
         \ you have the tzinfo file. However, if the timezone name is readily available\

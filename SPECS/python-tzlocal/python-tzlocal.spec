@@ -4,34 +4,30 @@
 
 Summary:        tzinfo object for the local timezone.
 Name:           python3-tzlocal
-Version:        4.2
-Release:        5%{?dist}
+Version:        5.3.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/regebro/tzlocal
 
-Source0: https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
+Source0: https://github.com/regebro/tzlocal/archive/refs/tags/%{version}.tar.gz#/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
-BuildRequires: python3-six
+BuildRequires: python3-build
+BuildRequires: python3-installer
+BuildRequires: python3-packaging
 BuildRequires: python3-setuptools
-BuildRequires: python3-xml
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
-BuildRequires: python3-pip
-BuildRequires: python3-hypothesis
-BuildRequires: python3-pytz-deprecation-shim
 BuildRequires: tzdata
 %endif
 
 Requires: python3
-Requires: python3-pytz
-Requires: python3-pytz-deprecation-shim
 
 BuildArch: noarch
 
@@ -52,20 +48,23 @@ However, if the timezone name is readily available it will be used.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{py3_build}
+%py3_build_wheel
 
 %install
-%{py3_install}
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
-pip3 install tomli mocker pytest-mock
+pip3 install pytest-mock
 %pytest -k 'not symlink_localtime and not conflicting and not noconflict'
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.3.1-1
+- Update to version 5.3.1 to remove python3-pytz dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.2-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.2-4
