@@ -2,7 +2,7 @@
 
 Name:           pycurl3
 Version:        7.45.1
-Release:        4.1.1%{?dist}
+Release:        4.1.2%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 URL:            http://pycurl.sourceforge.net
@@ -24,7 +24,6 @@ BuildRequires:  python3-devel
 
 %if 0%{?with_check}
 BuildRequires: python3-setuptools
-BuildRequires: vsftpd
 BuildRequires: curl-libs
 BuildRequires: python3-xml
 %endif
@@ -65,7 +64,6 @@ chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
 
 %if 0%{?with_check}
 %check
-export PYCURL_VSFTPD_PATH=vsftpd
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 nose nose-show-skipped bottle==0.12.16 flaky pyflakes
 rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
@@ -84,6 +82,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 7.45.1-4.1.2
+- Drop vsftpd as BuildRequires, ftp_test.py is already removed before %check runs
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.45.1-4.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.45.1-4.1

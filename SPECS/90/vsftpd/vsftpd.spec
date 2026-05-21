@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.5
-Release:        7%{?dist}
+Release:        7.1%{?dist}
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -80,6 +82,8 @@ fi
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 3.0.5-7.1
+- Move to /90
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.0.5-7
 - Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.5-6
