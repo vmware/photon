@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 90
 %global subrelease %{?photon_subrelease}%{!?photon_subrelease:0}
 
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        11%{?dist}
+Release:        10.1.1%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Vendor:         VMware, Inc.
@@ -15,7 +15,6 @@ BuildArch:      noarch
 Source1:        VMWARE-RPM-GPG-KEY
 Source2:        VMWARE-RPM-GPG-KEY-4096
 Source3:        photon.repo
-Source4:        photon-updates.repo
 Source5:        photon-iso.repo
 Source6:        photon-debuginfo.repo
 Source7:        photon-release.repo
@@ -49,7 +48,6 @@ Photon repo files and gpg keys
 %install
 install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/yum.repos.d
@@ -81,16 +79,15 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-debuginfo.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-iso.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon.repo
-%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-updates.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-release.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-srpms.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-extras.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-snapshot.repo
 
 %changelog
-*   Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 5.0-11
--   Update the RSA 4096-bit GPG key with SHA256 signature, and deprecate 1024-bit key
--   Cleanup: Follow the subrelease versioning
+*   Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 5.0-10.1.1
+-   Remove photon-updates repo in 90 to avoid confusion
+-   Cleanup: Move to /90 and follow the subrelease versioning
 *   Mon Mar 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-9.%{subrelease}
 -   Set skip_md_filelists in snapshot repo
 *   Wed Mar 04 2026 Bo Gan <bo.gan@broadcom.com> 5.0-8.%{subrelease}
