@@ -1,9 +1,16 @@
 sources:
-- archive: lshw-B.02.19.tar.gz
-  archive_sha512sum: 168e7cf053d270f695da09dbdd4ee5207d447a13de3601f3861ab194f09c7358fe618551caf03adb628e0293f187d8fd5a842d1516b0dd16c4128ccc2126027b
+- archive: lshw-B.02.20.tar.gz
+  archive_sha512sum: afc5d57f4b7c49d8e1934a3df623657882cc1325268c8c024dc0fa25495edd3ce7fdadb9c83ac6e5d3e723bc08d6175162d4d879ced09f76ad145ff42b38d3f0
+  archive_type: upstream
+  name: lshw-B.02.20
+  url: http://www.ezix.org/software/files/lshw-B.02.20.tar.gz
+  repo_url: https://github.com/lyonel/lshw
+  commit_id: 4c6497c8b0a67cd9fa9693e9101a7cafd3297e81
+  skip_list: []
+  missing: []
   license_manual_review:
   - file_paths:
-    - lshw-B.02.19/src/pnp.ids
+    - lshw-B.02.20/src/pnp.ids
     sha256sum: abeb33bed7cf57cbe9fb72f94a19fa60078cfc480f2c012d89026609cac82717
     spdx_exp: ''
   skip_validation: true
@@ -14,9 +21,11 @@ sources:
         firmware version, mainboard configuration, CPU version and speed, cache configuration,
         bus speed, etc. Information can be displayed in plain text, XML or HTML. '
       home_page: https://github.com/lyonel/lshw/releases
-      license_concluded: (BSD-3-Clause OR GPL-2.0-or-later) AND CC-BY-SA-3.0 AND CC0-1.0
-        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later
-      license_declared: (BSD-3-Clause OR GPL-2.0-or-later) AND CC-BY-SA-3.0 AND CC0-1.0
-        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later
+      license_concluded: (BSD-3-Clause OR GPL-2.0-or-later) AND Artistic-2.0 AND
+        CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND 
+        LGPL-2.1-or-later
+      license_declared: (BSD-3-Clause OR GPL-2.0-or-later) AND Artistic-2.0 AND 
+        CC0-1.0 AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND 
+        LGPL-2.1-or-later
       short_summary: Hardware lister
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,7 +1,7 @@
 Summary:        Hardware lister
 Name:           lshw
-Version:        B.02.19
-Release:        4%{?dist}
+Version:        B.02.20
+Release:        1%{?dist}
 URL:            https://github.com/lyonel/lshw/releases
 Source0:        http://www.ezix.org/software/files/%{name}-%{version}.tar.gz
 Source1:        license.txt
@@ -42,6 +42,8 @@ The package contains lshw doc files.
 /usr/share/*
 
 %changelog
+* Fri May 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> B.02.20-1
+- Upgrade to B.02.20
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> B.02.19-4
 - Fix requires on doc sub package
 * Thu Jul 31 2025 Michelle Wang <michelle.wang@broadcom.com> B.02.19-3
