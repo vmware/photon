@@ -7,7 +7,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        17.2.1%{?dist}
+Release:        17.2.2%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -49,14 +49,18 @@ Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
 Patch6: do-not-allocate-1m-on-stack.patch
 Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
 Patch8: sd-netlink-make-default-timeout-configurable.patch
-Patch9: CVE-2026-29111-1.patch
-Patch10: CVE-2026-29111-2.patch
-Patch11: CVE-2026-29111-3.patch
-Patch12: CVE-2026-29111-4.patch
 
 %if 0%{?STIG_HARDEN}
 Patch9: harden-tmpfs-mount-options.patch
 %endif
+
+Patch10: CVE-2026-29111-1.patch
+Patch11: CVE-2026-29111-2.patch
+Patch12: CVE-2026-29111-3.patch
+Patch13: CVE-2026-29111-4.patch
+Patch14: CVE-2026-40225.patch
+Patch15: CVE-2026-40226-1.patch
+Patch16: CVE-2026-40226-2.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -700,6 +704,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.2
+- Fix CVE-2026-40225, CVE-2026-40226
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.1
 - Bump after moving to SPECS/90
 * Mon Mar 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2
