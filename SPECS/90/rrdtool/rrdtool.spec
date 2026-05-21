@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Round Robin Database Tool to store and display time-series data
 Name:           rrdtool
-Version:        1.10.2
-Release:        1%{?dist}
+Version:        1.8.0
+Release:        9.1%{?dist}
 URL:            http://oss.oetiker.ch/rrdtool
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -95,8 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Thu May 21 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.10.2-1
-- Update to version 1.10.2
+* Thu May 21 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.8.0-9.1
+- Bump for subrelease 90
 * Mon Dec 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.0-9
 - Release bump due to libpng update
 * Thu Nov 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.0-8
