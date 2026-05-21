@@ -3,7 +3,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2602.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -22,7 +22,6 @@ BuildRequires:  libfastjson-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  liblogging-devel
 BuildRequires:  librelp-devel
-BuildRequires:  autogen
 BuildRequires:  gnutls-devel
 BuildRequires:  curl-devel
 BuildRequires:  libgpg-error-devel
@@ -125,6 +124,8 @@ make %{?_smp_mflags} check
 %{_libdir}/rsyslog/mmnormalize.so
 
 %changelog
+* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 8.2602.0-4
+- Disable autogen dependency
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.2602.0-3
 - Extended to build for subrelease 91 and above
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.2602.0-2

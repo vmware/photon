@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.8.13
-Release:        2%{?dist}
+Release:        1.1%{?dist}
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ Source1: license.txt
 Patch0: default-priority.patch
 
 BuildRequires:  nettle-devel >= 3.10
+BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
@@ -24,6 +25,7 @@ BuildRequires:  guile-devel
 BuildRequires:  gc-devel
 
 Requires:       nettle
+Requires:       autogen-libopts
 Requires:       libtasn1
 Requires:       openssl
 Requires:       ca-certificates
@@ -99,8 +101,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
-* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.8.13-2
-- Disable autogen dependency
+* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.8.13-1.1
+- Bump for subrelease 90
 * Mon May 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.13-1
 - Update to latest version
 * Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 3.7.10-8

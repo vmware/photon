@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:    The Automated Text and Program Generation Tool
 Name:       autogen
 Version:    5.18.16
 # TODO: try to remove CFLAGS on next version update
-Release:    10%{?dist}
+Release:    10.1%{?dist}
 URL:        http://www.gnu.org/software/autogen
 Group:      System Environment/Tools
 Vendor:     VMware, Inc.
@@ -91,6 +93,8 @@ make check
 %{_libdir}/*.a
 
 %changelog
+* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.18.16-10.1
+- Bump for subrelease 90
 * Sun Apr 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.18.16-10
 - Fix build with newer glibc
 * Wed Aug 13 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 5.18.16-9

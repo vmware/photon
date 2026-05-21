@@ -1,0 +1,15 @@
+sources:
+- archive: glib-networking-2.74.0.tar.xz
+  archive_sha512sum: f266c106f2c9379b95773a852c1b5c62ae1d6a758d25c436c3558f620d8e0a211201b3c4dfd89cdbe28b88430bba0cca621e62c01ea23d473983e203919bb1e6
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Glib-netowkring contains networking related gio modules
+        for Glib. '
+      home_page: http://wiki.gnome.org/glib-networking
+      license_concluded: LGPL-3.0-or-later AND GPL-2.0-only AND Apache-2.0 AND LGPL-2.1-only
+        AND GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.0-or-later AND MPL-2.0
+      license_declared: LGPL-3.0-or-later AND GPL-2.0-only AND Apache-2.0 AND LGPL-2.1-only
+        AND GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.0-or-later AND MPL-2.0
+      short_summary: Glib networking modules
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:    RELP Library
 Name:       librelp
 Version:    1.10.0
-Release:    8%{?dist}
+Release:    7.1%{?dist}
 URL:        http://www.librelp.com
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
@@ -15,6 +15,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  gnutls-devel
+BuildRequires:  autogen
+
 Requires:   gnutls
 
 %description
@@ -74,8 +76,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.10.0-8
-- Disable autogen dependency
+* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.10.0-7.1
+- Bump for subrelease 90
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 1.10.0-7
 - Version bump due to gnutls update
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.0-6

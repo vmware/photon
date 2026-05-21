@@ -4,7 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -27,7 +27,6 @@ Requires:       libgcc-atomic = %{version}-%{release}
 Requires:       gmp
 
 %if 0%{?with_check}
-BuildRequires:  autogen
 BuildRequires:  dejagnu
 %endif
 
@@ -256,6 +255,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 12.2.0-14
+- Disable autogen dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-13
 - Extended to build for subrelease 91 and above
 * Wed Apr 29 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-12

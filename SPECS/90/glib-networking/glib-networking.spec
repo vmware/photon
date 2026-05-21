@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.74.0
-Release:      8%{?dist}
+Release:      6.1%{?dist}
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
 Vendor:       VMware, Inc.
@@ -17,6 +17,7 @@ Source1: license.txt
 Patch0: disable-pkcs-related-tests.patch
 
 BuildRequires: nettle-devel
+BuildRequires: autogen-libopts-devel
 BuildRequires: libtasn1-devel
 BuildRequires: ca-certificates
 BuildRequires: gnutls-devel
@@ -25,6 +26,7 @@ BuildRequires: intltool
 BuildRequires: glib-devel
 BuildRequires: glib-schemas
 BuildRequires: meson
+BuildRequires: gnome-common
 BuildRequires: ninja-build
 BuildRequires: systemd-rpm-macros
 
@@ -81,10 +83,8 @@ CONFIGURE_OPTS=(
 %defattr(-,root,root)
 
 %changelog
-* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.74.0-8
-- Disable autogen dependency
-* Wed May 20 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> - 2.74.0-7
-- Remove gnome-common BuildRequires dependency.
+* Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.74.0-6.1
+- Bump for subrelease 90
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 2.74.0-6
 - Version bump due to nettle and gnutls update
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.74.0-5
