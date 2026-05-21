@@ -7,7 +7,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        7.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -32,8 +32,8 @@ BuildRequires: build-essential
 BuildRequires: gnupg
 BuildRequires: krb5-devel
 BuildRequires: libcap-devel
-BuildRequires: libecap-devel
 BuildRequires: libgpg-error-devel
+BuildRequires: libxcrypt-devel
 BuildRequires: libxml2-devel
 BuildRequires: nettle-devel
 BuildRequires: openldap-devel
@@ -55,7 +55,6 @@ Requires: Linux-PAM
 Requires: cyrus-sasl
 Requires: openldap
 Requires: libcap
-Requires: libecap
 Requires: expat-libs
 Requires: libgcc
 Requires: libstdc++
@@ -114,7 +113,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
       --enable-cachemgr-hostname=localhost \
       --enable-delay-pools \
       --enable-epoll \
-      --enable-ecap \
+      --disable-ecap \
       --enable-icap-client \
       --enable-ident-lookups \
       --enable-linux-netfilter \
@@ -244,6 +243,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Mon May 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 7.4-4
+- Remove libecap dependency and disable ecap support
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4-3
 - Extended to build for subrelease 91 and above
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 7.4-2

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:      Squid interface for embedded adaptation modules
 Name:         libecap
 Version:      1.0.1
-Release:      2%{?dist}
+Release:      2.1%{?dist}
 URL:          http://www.e-cap.org/
 Source0:      http://www.e-cap.org/archive/%{name}-%{version}.tar.gz
 
@@ -63,6 +65,8 @@ rm -f %{buildroot}%{_libdir}/libecap.la
 %{_includedir}/libecap
 
 %changelog
+* Mon May 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.0.1-2.1
+- Bump release when moving to SPECS/90
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.1-2
 - Release bump for SRP compliance
 * Fri Apr 30 2021 Susant Sahani <ssahani@vmware.com> 1.0.1-1
