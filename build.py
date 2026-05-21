@@ -352,8 +352,13 @@ class Utilities:
         url = self.args[0]
         files = self.specDepsObject.listRPMfilenames()
         notFound = []
+        rpmPath = constants.rpmPath
+
+        os.makedirs(f"{rpmPath}/noarch", exist_ok=True)
+        os.makedirs(f"{rpmPath}/{constants.buildArch}", exist_ok=True)
+
         for f in files:
-            dst = os.path.join(constants.rpmPath, f)
+            dst = os.path.join(rpmPath, f)
             if os.path.exists(dst):
                 continue
             src = f"{url}/{f}"
@@ -361,12 +366,13 @@ class Utilities:
             try:
                 downloader.downloadFile(src, dst)
             except requests.exceptions.HTTPError:
-                self.logger.info("Not found")
+                print("Not found", file=sys.stderr)
                 notFound.append(f)
             except Exception as e:
-                print(f"ERROR: {e}")
+                print(f"ERROR: {e}", file=sys.stderr)
+
         if notFound:
-            self.logger.info("List of missing files: " + str(notFound))
+            print(f"List of missing files: {notFound}", file=sys.stderr)
 
 
 """
