@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.9
-Release:        2%{?dist}
+Release:        1.1%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -185,7 +185,7 @@ fi
 %defattr(-,root,root)
 
 %changelog
-* Fri May 22 2026 Michelle Wang <michelle.wang@broadcom.com> 8.4.9-2
+* Fri May 22 2026 Michelle Wang <michelle.wang@broadcom.com> 8.4.9-1.1
 - Split mysql in 90 and 91+ for icu dependecy
 * Mon May 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.9-1
 - Upgrade to v8.4.9 to fix CVEs

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Libical — an implementation of iCalendar protocols and data formats
 Name:           libical
 Version:        3.0.14
-Release:        7%{?dist}
+Release:        6.1%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -78,7 +78,7 @@ make test ARGS="-V" %{?_smp_mflags}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Fri May 22 2026 Michelle Wang <michelle.wang@broadcom.com> 3.0.14-7
+* Fri May 22 2026 Michelle Wang <michelle.wang@broadcom.com> 3.0.14-6.1
 - Split libical in 90 and 91+ for icu dependecy
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.14-6
 - Release bump for SRP compliance

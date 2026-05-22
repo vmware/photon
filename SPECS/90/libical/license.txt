@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND GPL-2.0-or-later WITH Bison-exception-2.2 AND MPL-2.0 AND Unlicense AND MPL-1.0 AND BSD-3-Clause AND LGPL-2.0-or-later AND LGPL-3.0-only AND GPL-1.0-or-later AND (LGPL-2.1-only OR MPL-1.0) AND LGPL-2.1-only AND (MPL-1.0 OR LGPL-2.0-or-later)
