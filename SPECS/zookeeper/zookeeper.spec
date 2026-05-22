@@ -7,7 +7,7 @@
 Summary:        High-performance coordination service for distributed applications
 Name:           zookeeper
 Version:        3.9.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://zookeeper.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -90,7 +90,7 @@ install -D -m 0755 %{SOURCE4} %{buildroot}%{_bindir}/zkEnv.sh
 rm -rf %{buildroot}
 
 %pre
-%sysusers_create_compat %{SOURCE4}
+%sysusers_create_compat %{SOURCE3}
 
 %post
 /sbin/ldconfig
@@ -117,6 +117,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Fri May 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-4
+- Fix user creation issue
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-3
 - Disable debuginfo package
 - Don't package cmd file, it is for Windows hosts
