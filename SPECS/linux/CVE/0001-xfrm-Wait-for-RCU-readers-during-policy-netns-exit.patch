@@ -1,0 +1,42 @@
+From 6a643d353f99d281ac51edfdfb944db5f37e0bde Mon Sep 17 00:00:00 2001
+From: Steffen Klassert <steffen.klassert@secunet.com>
+Date: Thu, 2 Apr 2026 13:31:04 +0200
+Subject: [PATCH] xfrm: Wait for RCU readers during policy netns exit
+
+[ Upstream commit 069daad4f2ae9c5c108131995529d5f02392c446 ]
+
+xfrm_policy_fini() frees the policy_bydst hash tables after flushing the
+policy work items and deleting all policies, but it does not wait for
+concurrent RCU readers to leave their read-side critical sections first.
+
+The policy_bydst tables are published via rcu_assign_pointer() and are
+looked up through rcu_dereference_check(), so netns teardown must also
+wait for an RCU grace period before freeing the table memory.
+
+Fix this by adding synchronize_rcu() before freeing the policy hash tables.
+
+Fixes: e1e551bc5630 ("xfrm: policy: prepare policy_bydst hash for rcu lookups")
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Applied patch to v5.10 by Gerrit Photon ]
+---
+ net/xfrm/xfrm_policy.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index c4ebfaa0b..56956abd3 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -4166,6 +4166,8 @@ static void xfrm_policy_fini(struct net *net)
+ #endif
+ 	xfrm_policy_flush(net, XFRM_POLICY_TYPE_MAIN, false);
+ 
++	synchronize_rcu();
++
+ 	WARN_ON(!list_empty(&net->xfrm.policy_all));
+ 
+ 	for (dir = 0; dir < XFRM_POLICY_MAX; dir++) {
+-- 
+2.43.7
+

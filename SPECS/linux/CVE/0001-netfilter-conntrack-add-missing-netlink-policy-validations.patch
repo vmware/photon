@@ -1,0 +1,63 @@
+From f3a90ca5010d94fd91bd30c27e250b131a20f498 Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Tue, 10 Mar 2026 00:28:29 +0100
+Subject: [PATCH] netfilter: conntrack: add missing netlink policy validations
+
+[ Upstream commit f900e1d77ee0ef87bfb5ab3fe60f0b3d8ad5ba05 ]
+
+Hyunwoo Kim reports out-of-bounds access in sctp and ctnetlink.
+
+These attributes are used by the kernel without any validation.
+Extend the netlink policies accordingly.
+
+Quoting the reporter:
+  nlattr_to_sctp() assigns the user-supplied CTA_PROTOINFO_SCTP_STATE
+  value directly to ct->proto.sctp.state without checking that it is
+  within the valid range. [..]
+
+  and: ... with exp->dir = 100, the access at
+  ct->master->tuplehash[100] reads 5600 bytes past the start of a
+  320-byte nf_conn object, causing a slab-out-of-bounds read confirmed by
+  UBSAN.
+
+Fixes: 076a0ca02644 ("netfilter: ctnetlink: add NAT support for expectations")
+Fixes: a258860e01b8 ("netfilter: ctnetlink: add full support for SCTP to ctnetlink")
+Reported-by: Hyunwoo Kim <imv4bel@gmail.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Applied patch to v5.10 by Gerrit Photon ]
+---
+ net/netfilter/nf_conntrack_netlink.c    | 2 +-
+ net/netfilter/nf_conntrack_proto_sctp.c | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index befc9d2bc..46bdc3808 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -3474,7 +3474,7 @@ ctnetlink_change_expect(struct nf_conntrack_expect *x,
+ 
+ #if IS_ENABLED(CONFIG_NF_NAT)
+ static const struct nla_policy exp_nat_nla_policy[CTA_EXPECT_NAT_MAX+1] = {
+-	[CTA_EXPECT_NAT_DIR]	= { .type = NLA_U32 },
++	[CTA_EXPECT_NAT_DIR]	= NLA_POLICY_MAX(NLA_BE32, IP_CT_DIR_REPLY),
+ 	[CTA_EXPECT_NAT_TUPLE]	= { .type = NLA_NESTED },
+ };
+ #endif
+diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
+index 6b2a215b2..2a1d00e70 100644
+--- a/net/netfilter/nf_conntrack_proto_sctp.c
++++ b/net/netfilter/nf_conntrack_proto_sctp.c
+@@ -595,7 +595,8 @@ static int sctp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
+ }
+ 
+ static const struct nla_policy sctp_nla_policy[CTA_PROTOINFO_SCTP_MAX+1] = {
+-	[CTA_PROTOINFO_SCTP_STATE]	    = { .type = NLA_U8 },
++	[CTA_PROTOINFO_SCTP_STATE]	    = NLA_POLICY_MAX(NLA_U8,
++							 SCTP_CONNTRACK_HEARTBEAT_SENT),
+ 	[CTA_PROTOINFO_SCTP_VTAG_ORIGINAL]  = { .type = NLA_U32 },
+ 	[CTA_PROTOINFO_SCTP_VTAG_REPLY]     = { .type = NLA_U32 },
+ };
+-- 
+2.43.7
+

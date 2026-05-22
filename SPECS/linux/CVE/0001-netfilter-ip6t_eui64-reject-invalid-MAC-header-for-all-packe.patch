@@ -1,0 +1,51 @@
+From bb98fca38d97109fe963994fd257e7b36af50a96 Mon Sep 17 00:00:00 2001
+From: Zhengchuan Liang <zcliangcn@gmail.com>
+Date: Sat, 4 Apr 2026 17:39:47 +0800
+Subject: [PATCH] netfilter: ip6t_eui64: reject invalid MAC header for all
+ packets
+
+[ Upstream commit fdce0b3590f724540795b874b4c8850c90e6b0a8 ]
+
+`eui64_mt6()` derives a modified EUI-64 from the Ethernet source address
+and compares it with the low 64 bits of the IPv6 source address.
+
+The existing guard only rejects an invalid MAC header when
+`par->fragoff != 0`. For packets with `par->fragoff == 0`, `eui64_mt6()`
+can still reach `eth_hdr(skb)` even when the MAC header is not valid.
+
+Fix this by removing the `par->fragoff != 0` condition so that packets
+with an invalid MAC header are rejected before accessing `eth_hdr(skb)`.
+
+Fixes: 1da177e4c3f41 ("Linux-2.6.12-rc2")
+Reported-by: Yifan Wu <yifanwucs@gmail.com>
+Reported-by: Juefei Pu <tomapufckgml@gmail.com>
+Co-developed-by: Yuan Tan <yuantan098@gmail.com>
+Signed-off-by: Yuan Tan <yuantan098@gmail.com>
+Suggested-by: Xin Liu <bird@lzu.edu.cn>
+Tested-by: Ren Wei <enjou1224z@gmail.com>
+Signed-off-by: Zhengchuan Liang <zcliangcn@gmail.com>
+Signed-off-by: Ren Wei <n05ec@lzu.edu.cn>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Applied patch to v5.10 by Gerrit Photon ]
+---
+ net/ipv6/netfilter/ip6t_eui64.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/ipv6/netfilter/ip6t_eui64.c b/net/ipv6/netfilter/ip6t_eui64.c
+index d704f7ed3..da69a27e8 100644
+--- a/net/ipv6/netfilter/ip6t_eui64.c
++++ b/net/ipv6/netfilter/ip6t_eui64.c
+@@ -22,8 +22,7 @@ eui64_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 	unsigned char eui64[8];
+ 
+ 	if (!(skb_mac_header(skb) >= skb->head &&
+-	      skb_mac_header(skb) + ETH_HLEN <= skb->data) &&
+-	    par->fragoff != 0) {
++	      skb_mac_header(skb) + ETH_HLEN <= skb->data)) {
+ 		par->hotdrop = true;
+ 		return false;
+ 	}
+-- 
+2.43.7
+

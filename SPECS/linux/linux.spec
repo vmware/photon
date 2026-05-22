@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.255
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -595,6 +595,21 @@ Patch333: 0001-netfilter-nft_set_pipapo_avx2-don-t-return-non-match.patch
 Patch334: 0001-btrfs-tracepoints-get-correct-superblock-from-dentry.patch
 # Fix CVE-2026-43304
 Patch335: 0001-libceph-define-and-enforce-CEPH_MAX_KEY_LEN.patch
+# Fix CVE-2026-31407
+Patch336: 0001-netfilter-conntrack-add-missing-netlink-policy-validations.patch
+# Fix CVE-2026-43456
+Patch337: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
+Patch338: 0001-bonding-prevent-potential-infinite-loop-in-bond_head.patch
+# Fix CVE-2026-43091
+Patch339: 0001-xfrm-Wait-for-RCU-readers-during-policy-netns-exit.patch
+# Fix CVE-2026-43281
+Patch340: 0001-mailbox-Prevent-out-of-bounds-access-in-of_mbox_index_xlate.patch
+# Fix CVE-2026-31694
+Patch341: 0001-fuse-reject-oversized-dirents-in-page-cache.patch
+# Fix CVE-2026-31673
+Patch342: 0001-af_unix-read-UNIX_DIAG_VFS-data-under-unix_state_lock.patch
+# Fix CVE-2026-31685
+Patch343: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-all-packe.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1287,6 +1302,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri May 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-3
+- Fix CVE-2026-31407, CVE-2026-43456, CVE-2026-43091, CVE-2026-43281
+- Fix CVE-2026-31694, CVE-2026-31673, CVE-2026-31685
 * Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.255-2
 - Fix CVE-2026-43114, CVE-2026-43117, CVE-2026-43304
 * Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-1

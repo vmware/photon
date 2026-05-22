@@ -1,0 +1,54 @@
+From 3187f6034d635518c16535ca725b1e2f29e73ac4 Mon Sep 17 00:00:00 2001
+From: Samuel Page <sam@bynar.io>
+Date: Mon, 20 Apr 2026 11:01:37 +0200
+Subject: [PATCH] fuse: reject oversized dirents in page cache
+
+commit 51a8de6c50bf947c8f534cd73da4c8f0a13e7bed upstream.
+
+fuse_add_dirent_to_cache() computes a serialized dirent size from the
+server-controlled namelen field and copies the dirent into a single
+page-cache page. The existing logic only checks whether the dirent fits
+in the remaining space of the current page and advances to a fresh page
+if not. It never checks whether the dirent itself exceeds PAGE_SIZE.
+
+As a result, a malicious FUSE server can return a dirent with
+namelen=4095, producing a serialized record size of 4120 bytes. On 4 KiB
+page systems this causes memcpy() to overflow the cache page by 24 bytes
+into the following kernel page.
+
+Reject dirents that cannot fit in a single page before copying them into
+the readdir cache.
+
+Fixes: 69e34551152a ("fuse: allow caching readdir")
+Cc: stable@vger.kernel.org # v6.16+
+Assisted-by: Bynario AI
+Signed-off-by: Samuel Page <sam@bynar.io>
+Reported-by: Qi Tang <tpluszz77@gmail.com>
+Reported-by: Zijun Hu <nightu@northwestern.edu>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Link: https://patch.msgid.link/20260420090139.662772-1-mszeredi@redhat.com
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Applied patch to v5.10 by Gerrit Photon ]
+---
+ fs/fuse/readdir.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/fs/fuse/readdir.c b/fs/fuse/readdir.c
+index 14e99ffa5..0e4a26815 100644
+--- a/fs/fuse/readdir.c
++++ b/fs/fuse/readdir.c
+@@ -41,6 +41,10 @@ static void fuse_add_dirent_to_cache(struct file *file,
+ 	unsigned int offset;
+ 	void *addr;
+ 
++	/* Dirent doesn't fit in readdir cache page?  Skip caching. */
++	if (reclen > PAGE_SIZE)
++		return;
++
+ 	spin_lock(&fi->rdc.lock);
+ 	/*
+ 	 * Is cache already completed?  Or this entry does not go at the end of
+-- 
+2.43.7
+

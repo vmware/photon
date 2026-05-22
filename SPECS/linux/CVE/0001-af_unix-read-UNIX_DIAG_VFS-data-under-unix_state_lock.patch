@@ -1,0 +1,74 @@
+From d8b30cd2e868537209de5b68fad83468e7dd2294 Mon Sep 17 00:00:00 2001
+From: Jiexun Wang <wangjiexun2025@gmail.com>
+Date: Tue, 7 Apr 2026 16:00:14 +0800
+Subject: [PATCH] af_unix: read UNIX_DIAG_VFS data under unix_state_lock
+
+[ Upstream commit 39897df386376912d561d4946499379effa1e7ef ]
+
+Exact UNIX diag lookups hold a reference to the socket, but not to
+u->path. Meanwhile, unix_release_sock() clears u->path under
+unix_state_lock() and drops the path reference after unlocking.
+
+Read the inode and device numbers for UNIX_DIAG_VFS while holding
+unix_state_lock(), then emit the netlink attribute after dropping the
+lock.
+
+This keeps the VFS data stable while the reply is being built.
+
+Fixes: 5f7b0569460b ("unix_diag: Unix inode info NLA")
+Reported-by: Yifan Wu <yifanwucs@gmail.com>
+Reported-by: Juefei Pu <tomapufckgml@gmail.com>
+Co-developed-by: Yuan Tan <yuantan098@gmail.com>
+Signed-off-by: Yuan Tan <yuantan098@gmail.com>
+Suggested-by: Xin Liu <bird@lzu.edu.cn>
+Tested-by: Ren Wei <enjou1224z@gmail.com>
+Signed-off-by: Jiexun Wang <wangjiexun2025@gmail.com>
+Signed-off-by: Ren Wei <n05ec@lzu.edu.cn>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@google.com>
+Link: https://patch.msgid.link/20260407080015.1744197-1-n05ec@lzu.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Applied patch to v5.10 by Gerrit Photon ]
+---
+ net/unix/diag.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/net/unix/diag.c b/net/unix/diag.c
+index 486276a17..699fba7b7 100644
+--- a/net/unix/diag.c
++++ b/net/unix/diag.c
+@@ -25,18 +25,23 @@ static int sk_diag_dump_name(struct sock *sk, struct sk_buff *nlskb)
+ 
+ static int sk_diag_dump_vfs(struct sock *sk, struct sk_buff *nlskb)
+ {
+-	struct dentry *dentry = unix_sk(sk)->path.dentry;
++	struct unix_diag_vfs uv;
++	struct dentry *dentry;
++	bool have_vfs = false;
+ 
++	unix_state_lock(sk);
++	dentry = unix_sk(sk)->path.dentry;
+ 	if (dentry) {
+-		struct unix_diag_vfs uv = {
+-			.udiag_vfs_ino = d_backing_inode(dentry)->i_ino,
+-			.udiag_vfs_dev = dentry->d_sb->s_dev,
+-		};
+-
+-		return nla_put(nlskb, UNIX_DIAG_VFS, sizeof(uv), &uv);
++		uv.udiag_vfs_ino = d_backing_inode(dentry)->i_ino;
++		uv.udiag_vfs_dev = dentry->d_sb->s_dev;
++		have_vfs = true;
+ 	}
++	unix_state_unlock(sk);
+ 
+-	return 0;
++	if (!have_vfs)
++		return 0;
++
++	return nla_put(nlskb, UNIX_DIAG_VFS, sizeof(uv), &uv);
+ }
+ 
+ static int sk_diag_dump_peer(struct sock *sk, struct sk_buff *nlskb)
+-- 
+2.43.7
+

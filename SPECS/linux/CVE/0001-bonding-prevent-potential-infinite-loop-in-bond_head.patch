@@ -1,0 +1,204 @@
+From c195c3f85e314088751174d14aa21b030712e4b8 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Sun, 15 Mar 2026 10:41:52 +0000
+Subject: [PATCH] bonding: prevent potential infinite loop in
+ bond_header_parse()
+
+[ Upstream commit b7405dcf7385445e10821777143f18c3ce20fa04 ]
+
+bond_header_parse() can loop if a stack of two bonding devices is setup,
+because skb->dev always points to the hierarchy top.
+
+Add new "const struct net_device *dev" parameter to
+(struct header_ops)->parse() method to make sure the recursion
+is bounded, and that the final leaf parse method is called.
+
+Fixes: 950803f72547 ("bonding: fix type confusion in bond_setup_by_slave()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Jiayuan Chen <jiayuan.chen@shopee.com>
+Tested-by: Jiayuan Chen <jiayuan.chen@shopee.com>
+Cc: Jay Vosburgh <jv@jvosburgh.net>
+Cc: Andrew Lunn <andrew+netdev@lunn.ch>
+Link: https://patch.msgid.link/20260315104152.1436867-1-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/firewire/net.c          | 5 +++--
+ drivers/net/bonding/bond_main.c | 8 +++++---
+ include/linux/etherdevice.h     | 3 ++-
+ include/linux/if_ether.h        | 3 ++-
+ include/linux/netdevice.h       | 6 ++++--
+ net/ethernet/eth.c              | 9 +++------
+ net/ipv4/ip_gre.c               | 3 ++-
+ net/mac802154/iface.c           | 4 +++-
+ net/phonet/af_phonet.c          | 5 ++++-
+ 9 files changed, 28 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/firewire/net.c b/drivers/firewire/net.c
+index 715e491dfbc3..c91459f83b39 100644
+--- a/drivers/firewire/net.c
++++ b/drivers/firewire/net.c
+@@ -266,9 +266,10 @@ static void fwnet_header_cache_update(struct hh_cache *hh,
+ 	memcpy((u8 *)hh->hh_data + HH_DATA_OFF(FWNET_HLEN), haddr, net->addr_len);
+ }
+ 
+-static int fwnet_header_parse(const struct sk_buff *skb, unsigned char *haddr)
++static int fwnet_header_parse(const struct sk_buff *skb, const struct net_device *dev,
++			      unsigned char *haddr)
+ {
+-	memcpy(haddr, skb->dev->dev_addr, FWNET_ALEN);
++	memcpy(haddr, dev->dev_addr, FWNET_ALEN);
+ 
+ 	return FWNET_ALEN;
+ }
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index a4daa5aadd36..f1bbbe086a2f 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1446,9 +1446,11 @@ static int bond_header_create(struct sk_buff *skb, struct net_device *bond_dev,
+ 	return ret;
+ }
+ 
+-static int bond_header_parse(const struct sk_buff *skb, unsigned char *haddr)
++static int bond_header_parse(const struct sk_buff *skb,
++			     const struct net_device *dev,
++			     unsigned char *haddr)
+ {
+-	struct bonding *bond = netdev_priv(skb->dev);
++	struct bonding *bond = netdev_priv(dev);
+ 	const struct header_ops *slave_ops;
+ 	struct slave *slave;
+ 	int ret = 0;
+@@ -1458,7 +1460,7 @@ static int bond_header_parse(const struct sk_buff *skb, unsigned char *haddr)
+ 	if (slave) {
+ 		slave_ops = READ_ONCE(slave->dev->header_ops);
+ 		if (slave_ops && slave_ops->parse)
+-			ret = slave_ops->parse(skb, haddr);
++			ret = slave_ops->parse(skb, slave->dev, haddr);
+ 	}
+ 	rcu_read_unlock();
+ 	return ret;
+diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+index bbd3aeb2f9c5..26ff864b98f9 100644
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -35,7 +35,8 @@ extern const struct header_ops eth_header_ops;
+ 
+ int eth_header(struct sk_buff *skb, struct net_device *dev, unsigned short type,
+ 	       const void *daddr, const void *saddr, unsigned len);
+-int eth_header_parse(const struct sk_buff *skb, unsigned char *haddr);
++int eth_header_parse(const struct sk_buff *skb, const struct net_device *dev,
++		     unsigned char *haddr);
+ int eth_header_cache(const struct neighbour *neigh, struct hh_cache *hh,
+ 		     __be16 type);
+ void eth_header_cache_update(struct hh_cache *hh, const struct net_device *dev,
+diff --git a/include/linux/if_ether.h b/include/linux/if_ether.h
+index 8a9792a6427a..47a0feffc121 100644
+--- a/include/linux/if_ether.h
++++ b/include/linux/if_ether.h
+@@ -37,7 +37,8 @@ static inline struct ethhdr *inner_eth_hdr(const struct sk_buff *skb)
+ 	return (struct ethhdr *)skb_inner_mac_header(skb);
+ }
+ 
+-int eth_header_parse(const struct sk_buff *skb, unsigned char *haddr);
++int eth_header_parse(const struct sk_buff *skb, const struct net_device *dev,
++		     unsigned char *haddr);
+ 
+ extern ssize_t sysfs_format_mac(char *buf, const unsigned char *addr, int len);
+ 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index dcf1b603cb51..31025b93ac41 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -280,7 +280,9 @@ struct header_ops {
+ 	int	(*create) (struct sk_buff *skb, struct net_device *dev,
+ 			   unsigned short type, const void *daddr,
+ 			   const void *saddr, unsigned int len);
+-	int	(*parse)(const struct sk_buff *skb, unsigned char *haddr);
++	int	(*parse)(const struct sk_buff *skb,
++			 const struct net_device *dev,
++			 unsigned char *haddr);
+ 	int	(*cache)(const struct neighbour *neigh, struct hh_cache *hh, __be16 type);
+ 	void	(*cache_update)(struct hh_cache *hh,
+ 				const struct net_device *dev,
+@@ -3187,7 +3189,7 @@ static inline int dev_parse_header(const struct sk_buff *skb,
+ 
+ 	if (!dev->header_ops || !dev->header_ops->parse)
+ 		return 0;
+-	return dev->header_ops->parse(skb, haddr);
++	return dev->header_ops->parse(skb, dev, haddr);
+ }
+ 
+ static inline __be16 dev_parse_header_protocol(const struct sk_buff *skb)
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index 081390c32707..c0e69dc0558f 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -199,14 +199,11 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
+ }
+ EXPORT_SYMBOL(eth_type_trans);
+ 
+-/**
+- * eth_header_parse - extract hardware address from packet
+- * @skb: packet to extract header from
+- * @haddr: destination buffer
+- */
+-int eth_header_parse(const struct sk_buff *skb, unsigned char *haddr)
++int eth_header_parse(const struct sk_buff *skb, const struct net_device *dev,
++		     unsigned char *haddr)
+ {
+ 	const struct ethhdr *eth = eth_hdr(skb);
++
+ 	memcpy(haddr, eth->h_source, ETH_ALEN);
+ 	return ETH_ALEN;
+ }
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index c56848f36298..a12aebb46555 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -880,7 +880,8 @@ static int ipgre_header(struct sk_buff *skb, struct net_device *dev,
+ 	return -(t->hlen + sizeof(*iph));
+ }
+ 
+-static int ipgre_header_parse(const struct sk_buff *skb, unsigned char *haddr)
++static int ipgre_header_parse(const struct sk_buff *skb, const struct net_device *dev,
++			      unsigned char *haddr)
+ {
+ 	const struct iphdr *iph = (const struct iphdr *) skb_mac_header(skb);
+ 	memcpy(haddr, &iph->saddr, 4);
+diff --git a/net/mac802154/iface.c b/net/mac802154/iface.c
+index 22514ab060f8..dcb3b0d61333 100644
+--- a/net/mac802154/iface.c
++++ b/net/mac802154/iface.c
+@@ -477,7 +477,9 @@ static int mac802154_header_create(struct sk_buff *skb,
+ }
+ 
+ static int
+-mac802154_header_parse(const struct sk_buff *skb, unsigned char *haddr)
++mac802154_header_parse(const struct sk_buff *skb,
++		       const struct net_device *dev,
++		       unsigned char *haddr)
+ {
+ 	struct ieee802154_hdr hdr;
+ 
+diff --git a/net/phonet/af_phonet.c b/net/phonet/af_phonet.c
+index ca6ae4c59433..1d341d109341 100644
+--- a/net/phonet/af_phonet.c
++++ b/net/phonet/af_phonet.c
+@@ -129,9 +129,12 @@ static int pn_header_create(struct sk_buff *skb, struct net_device *dev,
+ 	return 1;
+ }
+ 
+-static int pn_header_parse(const struct sk_buff *skb, unsigned char *haddr)
++static int pn_header_parse(const struct sk_buff *skb,
++			   const struct net_device *dev,
++			   unsigned char *haddr)
+ {
+ 	const u8 *media = skb_mac_header(skb);
++
+ 	*haddr = *media;
+ 	return 1;
+ }
+-- 
+2.53.0
+
