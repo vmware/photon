@@ -1,0 +1,20 @@
+sources:
+- archive: dovecot-2.3-pigeonhole-0.5.21.1.tar.gz
+  archive_sha512sum: 7387b417611599fe70d1a83d3b408321e66f5a883bf78a9d55c7496b1a17220677daebaefde2061e0d7064fe07c410ecfc64662878bb253ddcd9e128dd83fbaa
+  archive_type: upstream
+  name: dovecot-2.3-pigeonhole-0.5.21.1
+  version: 0.5.21.1
+  url: https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.21.1.tar.gz
+  repo_url: https://github.com/dovecot/pigeonhole.git
+  commit_id: '49005e736d8c60ff9a4427049a02f6f430e4c993'
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__']
+  missing: ['ltmain.sh', '.gitignore', 'autogen.sh', 'install-sh', 'errors', 'pigeonhole-version.h', 'realpath.h', 'fileinto-bad-utf8.sieve', 'dummy-config.h.in', 'ltversion.m4', 'strtrim.c', 'realpath.c', 'config.guess', 'Makefile.in', 'failures', 'lda-sieve-log.c', 'aclocal.m4', 'errors-cpu-limit.svtest', 'strtrim.h', 'configure', 'limits.svtest', 'sieve-execute.h', 'config.sub', 'xml', 'libtool.m4', 'depcomp', 'config.rpath', 'ltoptions.m4', 'RFC-questions.txt', 'lda-sieve-log.h', 'errors.svtest', 'syntax.sieve', 'sieve-execute.c', 'metadataexists-bad-utf8.sieve', 'test-realpath.c', 'ltsugar.m4', 'test-rfc2822.c', 'missing', 'special-use', 'lt~obsolete.m4', 'cpu-limit.sieve', 'compile', 'ChangeLog', 'fileinto.sieve', 'metadata-bad-utf8.sieve', 'variables.txt']
+  spdx:
+    package:
+      detailed_description: 'Pigeonhole adds Sieve language and ManageSieve protocol support to the Dovecot
+        Secure IMAP Server'
+      home_page: https://pigeonhole.dovecot.org/
+      license_concluded: BSD-2-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND X11
+      license_declared: BSD-2-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND X11
+      short_summary: Sieve and ManageSieve support for Dovecot
+      supplier: 'Organization: Broadcom, Inc.'

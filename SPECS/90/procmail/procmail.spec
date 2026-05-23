@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        Autonomous Mail Processor
 Name:           procmail
 Version:        3.22
-Release:        6%{?dist}
+Release:        6.1%{?dist}
 URL:            http://www.procmail.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -43,6 +45,8 @@ make install-suid %{?_smp_mflags} \
 %{_mandir}/man5/*
 
 %changelog
+* Sat May 23 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.22-6.1
+- Move to 90
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.22-6
 - Release bump for SRP compliance
 * Tue Dec 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.22-5

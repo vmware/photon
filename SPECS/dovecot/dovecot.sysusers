@@ -1,0 +1,4 @@
+g dovecot -
+u dovecot - "Dovecot IMAP server" /usr/libexec/dovecot /sbin/nologin
+g dovenull -
+u dovenull - "Dovecot login user" /dev/null /sbin/nologin
