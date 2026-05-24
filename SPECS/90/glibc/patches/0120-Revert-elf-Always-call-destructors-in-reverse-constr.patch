@@ -1,7 +1,7 @@
 From dc3b5b9048d342b5b779683dff018ac3bd14a17b Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 18 Oct 2023 14:31:02 +0200
-Subject: [PATCH 120/175] Revert "elf: Always call destructors in reverse
+Subject: [PATCH 120/254] Revert "elf: Always call destructors in reverse
  constructor order (bug 30785)"
 
 This reverts commit 5d83a52a4905405792418d6a0f3afa3601a98c37.
@@ -589,5 +589,5 @@ index ab8a7fbf84586220c861d3354587e1fa20e5827f..c2627fced763913f6f47ac002e6c3793
     initializer functions have completed.  */
  extern void _dl_fini (void) attribute_hidden;
 -- 
-2.35.6
+2.53.0
 

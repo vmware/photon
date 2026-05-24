@@ -1,0 +1,144 @@
+From abfa5410a0e1baf2e5f002f9e189c0104d2af4df Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Wed, 9 Aug 2023 11:08:52 -0700
+Subject: [PATCH 204/254] x86_64: Sort fpu/multiarch/Makefile
+
+Sort Makefile variables using scripts/sort-makefile-lines.py.
+
+No code generation changes observed in libm.  No regressions on x86_64.
+
+(cherry picked from commit 881546979d0219c18337e1b4f4d00cfacab13c40)
+---
+ sysdeps/x86_64/fpu/multiarch/Makefile | 94 +++++++++++++++++++++------
+ 1 file changed, 74 insertions(+), 20 deletions(-)
+
+diff --git a/sysdeps/x86_64/fpu/multiarch/Makefile b/sysdeps/x86_64/fpu/multiarch/Makefile
+index 248162525bab14ee123f0f8b84f2dbaa697c3145..e37e488c370b1463f0a40674072c8a4435ac6ca6 100644
+--- a/sysdeps/x86_64/fpu/multiarch/Makefile
++++ b/sysdeps/x86_64/fpu/multiarch/Makefile
+@@ -1,17 +1,45 @@
+ ifeq ($(subdir),math)
+-libm-sysdep_routines += s_floor-c s_ceil-c s_floorf-c s_ceilf-c \
+-			s_rint-c s_rintf-c s_nearbyint-c s_nearbyintf-c \
+-			s_roundeven-c s_roundevenf-c s_trunc-c s_truncf-c
++libm-sysdep_routines += \
++  s_ceil-c \
++  s_ceilf-c \
++  s_floor-c \
++  s_floorf-c \
++  s_rint-c \
++  s_rintf-c \
++  s_nearbyint-c \
++  s_nearbyintf-c \
++  s_roundeven-c \
++  s_roundevenf-c \
++  s_trunc-c \
++  s_truncf-c \
++# libm-sysdep_routines
+ 
+-libm-sysdep_routines += s_ceil-sse4_1 s_ceilf-sse4_1 s_floor-sse4_1 \
+-			s_floorf-sse4_1 s_nearbyint-sse4_1 \
+-			s_nearbyintf-sse4_1 s_roundeven-sse4_1 \
+-			s_roundevenf-sse4_1 s_rint-sse4_1 s_rintf-sse4_1 \
+-			s_trunc-sse4_1 s_truncf-sse4_1
++libm-sysdep_routines += \
++  s_ceil-sse4_1 \
++  s_ceilf-sse4_1 \
++  s_floor-sse4_1 \
++  s_floorf-sse4_1 \
++  s_nearbyint-sse4_1 \
++  s_nearbyintf-sse4_1 \
++  s_roundeven-sse4_1 \
++  s_roundevenf-sse4_1 \
++  s_rint-sse4_1 \
++  s_rintf-sse4_1 \
++  s_trunc-sse4_1 \
++  s_truncf-sse4_1 \
++# libm-sysdep_routines
+ 
+-libm-sysdep_routines += e_exp-fma e_log-fma e_pow-fma s_atan-fma \
+-			e_asin-fma e_atan2-fma s_sin-fma s_tan-fma \
+-			s_sincos-fma
++libm-sysdep_routines += \
++  e_asin-fma \
++  e_atan2-fma \
++  e_exp-fma \
++  e_log-fma \
++  e_pow-fma \
++  s_atan-fma \
++  s_sin-fma \
++  s_sincos-fma \
++  s_tan-fma \
++# libm-sysdep_routines
+ 
+ CFLAGS-e_asin-fma.c = -mfma -mavx2
+ CFLAGS-e_atan2-fma.c = -mfma -mavx2
+@@ -23,10 +51,22 @@ CFLAGS-s_sin-fma.c = -mfma -mavx2
+ CFLAGS-s_tan-fma.c = -mfma -mavx2
+ CFLAGS-s_sincos-fma.c = -mfma -mavx2
+ 
+-libm-sysdep_routines += s_sinf-sse2 s_cosf-sse2 s_sincosf-sse2
++libm-sysdep_routines += \
++  s_cosf-sse2 \
++  s_sincosf-sse2 \
++  s_sinf-sse2 \
++# libm-sysdep_routines
+ 
+-libm-sysdep_routines += e_exp2f-fma e_expf-fma e_log2f-fma e_logf-fma \
+-			e_powf-fma s_sinf-fma s_cosf-fma s_sincosf-fma
++libm-sysdep_routines += \
++  e_exp2f-fma \
++  e_expf-fma \
++  e_log2f-fma \
++  e_logf-fma \
++  e_powf-fma \
++  s_cosf-fma \
++  s_sincosf-fma \
++  s_sinf-fma \
++# libm-sysdep_routines
+ 
+ CFLAGS-e_exp2f-fma.c = -mfma -mavx2
+ CFLAGS-e_expf-fma.c = -mfma -mavx2
+@@ -37,9 +77,17 @@ CFLAGS-s_sinf-fma.c = -mfma -mavx2
+ CFLAGS-s_cosf-fma.c = -mfma -mavx2
+ CFLAGS-s_sincosf-fma.c = -mfma -mavx2
+ 
+-libm-sysdep_routines += e_exp-fma4 e_log-fma4 e_pow-fma4 s_atan-fma4 \
+-			e_asin-fma4 e_atan2-fma4 s_sin-fma4 s_tan-fma4 \
+-			s_sincos-fma4
++libm-sysdep_routines += \
++  e_exp-fma4 \
++  e_log-fma4 \
++  e_pow-fma4 \
++  e_asin-fma4 \
++  s_atan-fma4 \
++  e_atan2-fma4 \
++  s_sin-fma4 \
++  s_sincos-fma4 \
++  s_tan-fma4 \
++# libm-sysdep_routines
+ 
+ CFLAGS-e_asin-fma4.c = -mfma4
+ CFLAGS-e_atan2-fma4.c = -mfma4
+@@ -51,9 +99,15 @@ CFLAGS-s_sin-fma4.c = -mfma4
+ CFLAGS-s_tan-fma4.c = -mfma4
+ CFLAGS-s_sincos-fma4.c = -mfma4
+ 
+-libm-sysdep_routines += e_exp-avx e_log-avx s_atan-avx \
+-			e_atan2-avx s_sin-avx s_tan-avx \
+-			s_sincos-avx
++libm-sysdep_routines += \
++  e_exp-avx \
++  e_log-avx \
++  s_atan-avx \
++  e_atan2-avx \
++  s_sin-avx \
++  s_sincos-avx \
++  s_tan-avx \
++# libm-sysdep_routines
+ 
+ CFLAGS-e_atan2-avx.c = -msse2avx -DSSE2AVX
+ CFLAGS-e_exp-avx.c = -msse2avx -DSSE2AVX
+-- 
+2.53.0
+

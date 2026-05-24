@@ -1,7 +1,7 @@
 From 0cbe0b1a47f82b95a0c3cc06e7707d898446928d Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wdijkstr@arm.com>
 Date: Wed, 26 Oct 2022 14:16:50 +0100
-Subject: [PATCH 143/175] aarch64: Use memcpy_simd as the default memcpy
+Subject: [PATCH 143/254] aarch64: Use memcpy_simd as the default memcpy
 
 Since __memcpy_simd is the fastest memcpy on almost all cores, replace
 the generic memcpy with it.  If SVE is available, a SVE memcpy will be
@@ -652,5 +652,5 @@ index 261996ecc4b36bdaf3c50598d910e9c7dcace08b..70e8eaef7c5010e32e55c4036e8bc915
      {
        if (IS_A64FX (midr))
 -- 
-2.35.6
+2.53.0
 

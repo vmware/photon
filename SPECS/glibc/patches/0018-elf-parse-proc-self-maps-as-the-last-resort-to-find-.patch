@@ -1,7 +1,7 @@
 From 26953143787bf2f7e9a0bf88749f547efe029e67 Mon Sep 17 00:00:00 2001
 From: Xi Ruoyao <xry111@xry111.site>
 Date: Tue, 3 Feb 2026 16:20:12 +0800
-Subject: [PATCH 18/22] elf: parse /proc/self/maps as the last resort to find
+Subject: [PATCH 18/27] elf: parse /proc/self/maps as the last resort to find
  the gap for tst-link-map-contiguous-ldso
 
 The initialization process of libc.so calls mmap() several times and the
@@ -129,5 +129,5 @@ index 9f97b8b95a26f4f3a3ebe577cc7ad9e4aae90b34..4d04d37581c3b6a6fc48ae3a2d00a08b
      }
    else
 -- 
-2.43.7
+2.53.0
 

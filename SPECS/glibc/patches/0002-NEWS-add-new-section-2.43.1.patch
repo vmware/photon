@@ -1,7 +1,7 @@
 From 45b58d6bd185b8c6d0c5b2b906243c1ecbaaecab Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Andreas=20K=2E=20H=C3=BCttel?= <dilfridge@gentoo.org>
 Date: Sat, 24 Jan 2026 02:32:06 +0100
-Subject: [PATCH 02/22] NEWS: add new section 2.43.1
+Subject: [PATCH 02/27] NEWS: add new section 2.43.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -28,5 +28,5 @@ index e271fb2e4d76903c77a302aaec1ca22ce31027d0..97ef63d56132d1545c678c9257d93a62
  Version 2.43
  
 -- 
-2.43.7
+2.53.0
 

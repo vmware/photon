@@ -1,7 +1,7 @@
 From f45608f6d74b95d0711c80c24b5eda07b60a7e50 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 1 Feb 2023 18:45:19 +0000
-Subject: [PATCH 153/175] AArch64: Improve SVE memcpy and memmove
+Subject: [PATCH 153/254] AArch64: Improve SVE memcpy and memmove
 
 Improve SVE memcpy by copying 2 vectors if the size is small enough.
 This improves performance of random memcpy by ~9% on Neoverse V1, and
@@ -77,5 +77,5 @@ index a70907ec5595114e4da35c54e932279c22e53cc6..6bc8390fe8de2aa7c7843eeda762256c
  
  	.p2align 4
 -- 
-2.35.6
+2.53.0
 

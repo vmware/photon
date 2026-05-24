@@ -1,0 +1,29 @@
+From 4f3b4e7b52b14dcc4633f319bd4087af76674ae6 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Thu, 27 Feb 2025 16:28:52 +0000
+Subject: [PATCH 225/254] AArch64: Use prefer_sve_ifuncs for SVE memset
+
+Use prefer_sve_ifuncs for SVE memset just like memcpy.
+
+Reviewed-by: Yury Khrustalev <yury.khrustalev@arm.com>
+(cherry picked from commit 0f044be1dae5169d0e57f8d487b427863aeadab4)
+---
+ sysdeps/aarch64/multiarch/memset.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sysdeps/aarch64/multiarch/memset.c b/sysdeps/aarch64/multiarch/memset.c
+index d5b7665949a17568e2404a067bc09fac1366ab57..6c9bb910c68de9ecfde6b7dea5f94d05113c5dd3 100644
+--- a/sysdeps/aarch64/multiarch/memset.c
++++ b/sysdeps/aarch64/multiarch/memset.c
+@@ -49,7 +49,7 @@ select_memset_ifunc (void)
+       if (IS_A64FX (midr) && zva_size == 256)
+ 	return __memset_a64fx;
+ 
+-      if (zva_size == 64)
++      if (prefer_sve_ifuncs && zva_size == 64)
+ 	return __memset_sve_zva64;
+     }
+ 
+-- 
+2.53.0
+

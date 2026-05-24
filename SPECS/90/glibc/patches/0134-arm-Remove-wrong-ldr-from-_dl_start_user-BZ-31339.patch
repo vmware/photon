@@ -1,7 +1,7 @@
 From ec6aaab3e1d754a1ad762f9e9ca4e2525ce87ad3 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Mon, 5 Feb 2024 16:10:24 +0000
-Subject: [PATCH 134/175] arm: Remove wrong ldr from _dl_start_user (BZ 31339)
+Subject: [PATCH 134/254] arm: Remove wrong ldr from _dl_start_user (BZ 31339)
 
 The commit 49d877a80b29d3002887b084eec6676d9f5fec18 (arm: Remove
 _dl_skip_args usage) removed the _SKIP_ARGS literal, which was
@@ -36,5 +36,5 @@ index 6a422713bdf008f19a9e2cfb5e7b00e108b14a97..659c6f16dad47155c38a4bfd98e747bc
  	mov	r6, r0\n\
  	@ get the original arg count\n\
 -- 
-2.35.6
+2.53.0
 

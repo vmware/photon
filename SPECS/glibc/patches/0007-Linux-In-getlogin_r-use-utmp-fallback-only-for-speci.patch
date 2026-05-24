@@ -1,7 +1,7 @@
 From d6cb7ce0e98b2c16df5b2f5b9693d0130ccb8af5 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 13 Feb 2026 09:02:07 +0100
-Subject: [PATCH 07/22] Linux: In getlogin_r, use utmp fallback only for
+Subject: [PATCH 07/27] Linux: In getlogin_r, use utmp fallback only for
  specific errors
 
 Most importantly, if getwpuid_r fails, it does not make sense to retry
@@ -74,5 +74,5 @@ index 3b85e91be68603311e984ba14c6930ae0c2a11bb..200c96860fdfd5bedc68243029d602af
      }
  
 -- 
-2.43.7
+2.53.0
 

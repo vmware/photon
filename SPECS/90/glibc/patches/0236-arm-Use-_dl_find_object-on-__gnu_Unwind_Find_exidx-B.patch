@@ -1,0 +1,202 @@
+From 05fc7da0079fdc7b132d64289db73a84b86a8959 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Thu, 22 Feb 2024 10:42:55 -0300
+Subject: [PATCH 236/254] arm: Use _dl_find_object on __gnu_Unwind_Find_exidx
+ (BZ 31405)
+
+Instead of __dl_iterate_phdr. On ARM dlfo_eh_frame/dlfo_eh_count
+maps to PT_ARM_EXIDX vaddr start / length.
+
+On a Neoverse N1 machine with 160 cores, the following program:
+
+  $ cat test.c
+  #include <stdlib.h>
+  #include <pthread.h>
+  #include <assert.h>
+
+  enum {
+    niter = 1024,
+    ntimes = 128,
+  };
+
+  static void *
+  tf (void *arg)
+  {
+    int a = (int) arg;
+
+    for (int i = 0; i < niter; i++)
+      {
+        void *p[ntimes];
+        for (int j = 0; j < ntimes; j++)
+  	p[j] = malloc (a * 128);
+        for (int j = 0; j < ntimes; j++)
+  	free (p[j]);
+      }
+
+    return NULL;
+  }
+
+  int main (int argc, char *argv[])
+  {
+    enum { nthreads = 16 };
+    pthread_t t[nthreads];
+
+    for (int i = 0; i < nthreads; i ++)
+      assert (pthread_create (&t[i], NULL, tf, (void *) i) == 0);
+
+    for (int i = 0; i < nthreads; i++)
+      {
+        void *r;
+        assert (pthread_join (t[i], &r) == 0);
+        assert (r == NULL);
+      }
+
+    return 0;
+  }
+  $ arm-linux-gnueabihf-gcc -fsanitize=address test.c -o test
+
+Improves from ~15s to 0.5s.
+
+Checked on arm-linux-gnueabihf.
+
+(cherry picked from commit f4c142bb9fe6b02c0af8cfca8a920091e2dba44b)
+---
+ elf/Makefile             |  2 +-
+ elf/dl-find_object.c     |  5 ++--
+ include/dlfcn.h          |  3 ++-
+ sysdeps/arm/find_exidx.c | 57 +++-------------------------------------
+ 4 files changed, 10 insertions(+), 57 deletions(-)
+
+diff --git a/elf/Makefile b/elf/Makefile
+index 3e08a8046d6b97afd4b01740cd51325fe42e394f..43cbe9e4e7b3f6cad2b933cfd23699d7fc223b59 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -35,6 +35,7 @@ routines = \
+   dl-addr-obj \
+   dl-early_allocate \
+   dl-error \
++  dl-find_object \
+   dl-iteratephdr \
+   dl-libc \
+   dl-origin \
+@@ -60,7 +61,6 @@ dl-routines = \
+   dl-deps \
+   dl-exception \
+   dl-execstack \
+-  dl-find_object \
+   dl-fini \
+   dl-init \
+   dl-load \
+diff --git a/elf/dl-find_object.c b/elf/dl-find_object.c
+index 2e5b456c11347226a955fc59203416e9f6f9462a..cb318a832f1302bfdec2ae3c50f747a777f9f98a 100644
+--- a/elf/dl-find_object.c
++++ b/elf/dl-find_object.c
+@@ -356,7 +356,7 @@ _dlfo_lookup (uintptr_t pc, struct dl_find_object_internal *first1, size_t size)
+ }
+ 
+ int
+-_dl_find_object (void *pc1, struct dl_find_object *result)
++__dl_find_object (void *pc1, struct dl_find_object *result)
+ {
+   uintptr_t pc = (uintptr_t) pc1;
+ 
+@@ -463,7 +463,8 @@ _dl_find_object (void *pc1, struct dl_find_object *result)
+         return -1;
+     } /* Transaction retry loop.  */
+ }
+-rtld_hidden_def (_dl_find_object)
++hidden_def (__dl_find_object)
++weak_alias (__dl_find_object, _dl_find_object)
+ 
+ /* _dlfo_process_initial is called twice.  First to compute the array
+    sizes from the initial loaded mappings.  Second to fill in the
+diff --git a/include/dlfcn.h b/include/dlfcn.h
+index ae25f05303b18044b222a255677be24bfe0e72f3..f3691439cc345a4c18f49673773d33331bd70899 100644
+--- a/include/dlfcn.h
++++ b/include/dlfcn.h
+@@ -4,7 +4,8 @@
+ #include <link.h>		/* For ElfW.  */
+ #include <stdbool.h>
+ 
+-rtld_hidden_proto (_dl_find_object)
++extern __typeof (_dl_find_object) __dl_find_object;
++hidden_proto (__dl_find_object)
+ 
+ /* Internally used flag.  */
+ #define __RTLD_DLOPEN	0x80000000
+diff --git a/sysdeps/arm/find_exidx.c b/sysdeps/arm/find_exidx.c
+index aab06d25f6492f79df3ca2c534dedf51cb5f6dee..eea38ff7d03a65e5e4dccddb0d04aedbdfb4ef0e 100644
+--- a/sysdeps/arm/find_exidx.c
++++ b/sysdeps/arm/find_exidx.c
+@@ -16,64 +16,15 @@
+    <https://www.gnu.org/licenses/>.  */
+ 
+ #include <link.h>
+-#include <unwind.h>
+-
+-struct unw_eh_callback_data
+-{
+-  _Unwind_Ptr pc;
+-  _Unwind_Ptr exidx_start;
+-  int exidx_len;
+-};
+-
+-
+-/* Callback to determins if the PC lies within an object, and remember the
+-   location of the exception index table if it does.  */
+-
+-static int
+-find_exidx_callback (struct dl_phdr_info * info, size_t size, void * ptr)
+-{
+-  struct unw_eh_callback_data * data;
+-  const ElfW(Phdr) *phdr;
+-  int i;
+-  int match;
+-  _Unwind_Ptr load_base;
+-
+-  data = (struct unw_eh_callback_data *) ptr;
+-  load_base = info->dlpi_addr;
+-  phdr = info->dlpi_phdr;
+-
+-  match = 0;
+-  for (i = info->dlpi_phnum; i > 0; i--, phdr++)
+-    {
+-      if (phdr->p_type == PT_LOAD)
+-        {
+-          _Unwind_Ptr vaddr = phdr->p_vaddr + load_base;
+-          if (data->pc >= vaddr && data->pc < vaddr + phdr->p_memsz)
+-            match = 1;
+-        }
+-      else if (phdr->p_type == PT_ARM_EXIDX)
+-	{
+-	  data->exidx_start = (_Unwind_Ptr) (phdr->p_vaddr + load_base);
+-	  data->exidx_len = phdr->p_memsz;
+-	}
+-    }
+-
+-  return match;
+-}
+-
+ 
+ /* Find the exception index table containing PC.  */
+ 
+ _Unwind_Ptr
+ __gnu_Unwind_Find_exidx (_Unwind_Ptr pc, int * pcount)
+ {
+-  struct unw_eh_callback_data data;
+-
+-  data.pc = pc;
+-  data.exidx_start = 0;
+-  if (__dl_iterate_phdr (find_exidx_callback, &data) <= 0)
++  struct dl_find_object data;
++  if (__dl_find_object ((void *) pc, &data) < 0)
+     return 0;
+-
+-  *pcount = data.exidx_len / 8;
+-  return data.exidx_start;
++  *pcount = data.dlfo_eh_count;
++  return (_Unwind_Ptr) data.dlfo_eh_frame;
+ }
+-- 
+2.53.0
+

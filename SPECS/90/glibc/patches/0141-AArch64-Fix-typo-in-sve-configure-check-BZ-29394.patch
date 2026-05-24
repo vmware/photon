@@ -1,7 +1,7 @@
 From c21dfb30188557fb39c8016a60cc88b3b87f3f55 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wdijkstr@arm.com>
 Date: Thu, 11 Aug 2022 17:52:00 +0100
-Subject: [PATCH 141/175] AArch64: Fix typo in sve configure check (BZ# 29394)
+Subject: [PATCH 141/254] AArch64: Fix typo in sve configure check (BZ# 29394)
 
 Fix a typo in the SVE configure check. This fixes [BZ# 29394].
 
@@ -49,5 +49,5 @@ index 51253d98025b6f5956575558e459d72e0763c674..85c6f765082811f5e8312eebda8d615e
          ptrue p0.b
  EOF
 -- 
-2.35.6
+2.53.0
 

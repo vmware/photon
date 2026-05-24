@@ -1,7 +1,7 @@
 From 02ffd413cf83c07c5c419b5cba72990e1ed140ca Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Thu, 12 Feb 2026 09:48:53 -0300
-Subject: [PATCH 19/22] elf: Use dl-symbol-redir-ifunc.h instead _dl_strlen
+Subject: [PATCH 19/27] elf: Use dl-symbol-redir-ifunc.h instead _dl_strlen
 
 Also replace the loop with strlen And remove
 -fno-tree-loop-distribute-patterns usage.
@@ -155,5 +155,5 @@ index 04b6c1e6a3a773e7d038387e80ce27f9926c5d1a..b607e525f2ce8f48a5468a4347055eec
  
  #endif
 -- 
-2.43.7
+2.53.0
 

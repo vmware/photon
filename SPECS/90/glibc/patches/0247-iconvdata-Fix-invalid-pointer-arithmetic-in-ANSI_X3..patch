@@ -1,0 +1,31 @@
+From 51eeaa8bf02cc6c942ee345258be675d0b9b76b9 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 28 Nov 2025 11:46:09 +0100
+Subject: [PATCH 247/254] iconvdata: Fix invalid pointer arithmetic in
+ ANSI_X3.110 module
+
+The expression inptr + 1 can technically be invalid: if inptr == inend,
+inptr may point one element past the end of an array.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit e98bd0c54d5e296ad1be91b6fe35260c6b87e733)
+---
+ iconvdata/ansi_x3.110.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/iconvdata/ansi_x3.110.c b/iconvdata/ansi_x3.110.c
+index fa2f6b46e531668d2fc6f31725e283f32e46ebde..6c9e5a024e4fb4c3f32a5ec1b5c57ebfefbd0361 100644
+--- a/iconvdata/ansi_x3.110.c
++++ b/iconvdata/ansi_x3.110.c
+@@ -407,7 +407,7 @@ static const char from_ucs4[][2] =
+ 	   is also available.  */					      \
+ 	uint32_t ch2;							      \
+ 									      \
+-	if (inptr + 1 >= inend)						      \
++	if (inend - inptr <= 1)						      \
+ 	  {								      \
+ 	    /* The second character is not available.  */		      \
+ 	    result = __GCONV_INCOMPLETE_INPUT;				      \
+-- 
+2.53.0
+

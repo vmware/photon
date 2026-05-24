@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.43
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -360,6 +360,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Sun May 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-3
+- Sync with branch, fix CVE-2026-5928, CVE-2026-5450
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-2
 - Extended to build for subrelease 91 and above
 * Mon Apr 27 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-1

@@ -1,7 +1,7 @@
 From 5a5211b4384546ed4554a9431b884dc75766b941 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Thu, 26 Oct 2023 17:30:36 +0100
-Subject: [PATCH 159/175] AArch64: Remove Falkor memcpy
+Subject: [PATCH 159/254] AArch64: Remove Falkor memcpy
 
 The latest implementations of memcpy are actually faster than the Falkor
 implementations [1], so remove the falkor/phecda ifuncs for memcpy and
@@ -464,5 +464,5 @@ index 7e18062aa22986dc5a791027c0837395c5e85794..b4bd43a228140607066cef1a8a752f91
  			      && MIDR_PARTNUM(midr) == 0xd0c)
  #define IS_NEOVERSE_N2(midr) (MIDR_IMPLEMENTOR(midr) == 'A'		      \
 -- 
-2.35.6
+2.53.0
 

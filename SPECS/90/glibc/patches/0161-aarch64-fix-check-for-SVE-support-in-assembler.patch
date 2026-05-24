@@ -1,7 +1,7 @@
 From b77e357bf9bf9972fc33bfbde4269d911eb9b682 Mon Sep 17 00:00:00 2001
 From: Szabolcs Nagy <szabolcs.nagy@arm.com>
 Date: Wed, 13 Mar 2024 14:34:14 +0000
-Subject: [PATCH 161/175] aarch64: fix check for SVE support in assembler
+Subject: [PATCH 161/254] aarch64: fix check for SVE support in assembler
 
 Due to GCC bug 110901 -mcpu can override -march setting when compiling
 asm code and thus a compiler targetting a specific cpu can fail the
@@ -57,5 +57,5 @@ index 85c6f765082811f5e8312eebda8d615eabcf39a1..bb5adb17828c0d8f203478c7872fd4fb
  else
    libc_cv_aarch64_sve_asm=no
 -- 
-2.35.6
+2.53.0
 

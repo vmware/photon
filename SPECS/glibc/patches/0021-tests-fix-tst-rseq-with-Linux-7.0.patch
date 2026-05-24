@@ -1,7 +1,7 @@
 From ce1013a197eb4a3b8ff2b07e0672f4d0b976ce7c Mon Sep 17 00:00:00 2001
 From: Michael Jeanson <mjeanson@efficios.com>
 Date: Fri, 20 Feb 2026 11:01:00 -0500
-Subject: [PATCH 21/22] tests: fix tst-rseq with Linux 7.0
+Subject: [PATCH 21/27] tests: fix tst-rseq with Linux 7.0
 
 A sub-test of tst-rseq is to validate the return code and errno of the
 rseq syscall when attempting to register the exact same rseq area as was
@@ -54,5 +54,5 @@ index 11371dc6c57901d13054c7edbe551fa242bade9b..ba93d390f4617eaff4c3649f7057d856
    TEST_COMPARE (errno, EBUSY);
  }
 -- 
-2.43.7
+2.53.0
 

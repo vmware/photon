@@ -1,7 +1,7 @@
 From 4d4ba8bae4bac5e0fd266c22517a3f16a1006bbe Mon Sep 17 00:00:00 2001
 From: Andreas Schwab <schwab@suse.de>
 Date: Tue, 28 Feb 2023 10:37:18 -0300
-Subject: [PATCH 136/175] support: use 64-bit time_t (bug 30111)
+Subject: [PATCH 136/254] support: use 64-bit time_t (bug 30111)
 
 Ensure to use 64-bit time_t in the test infrastructure.
 
@@ -118,5 +118,5 @@ index b6a1158ae17bf934576358a5a60e59dcd87f6f7d..2033985a677890a4c43f995c21d99015
  #include <stdio.h>
  #include <stdlib.h>
 -- 
-2.35.6
+2.53.0
 

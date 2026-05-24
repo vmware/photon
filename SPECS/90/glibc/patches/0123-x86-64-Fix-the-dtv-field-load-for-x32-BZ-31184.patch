@@ -1,7 +1,7 @@
 From 6a1168279d770ee9631d8d0409768ac67c96be3c Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Wed, 20 Dec 2023 16:31:43 -0800
-Subject: [PATCH 123/175] x86-64: Fix the dtv field load for x32 [BZ #31184]
+Subject: [PATCH 123/254] x86-64: Fix the dtv field load for x32 [BZ #31184]
 
 On x32, I got
 
@@ -64,5 +64,5 @@ index 0db2cb41526a1651982c5e52759426ff1754fe1d..706856e095de6230e48055ff7b2b34cf
  	movq	TLSDESC_ARG(%rax), %rdi
  	movq	(%rsi), %rax
 -- 
-2.35.6
+2.53.0
 

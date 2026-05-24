@@ -1,7 +1,7 @@
 From 8e99cc76a26a88589aaa4e54c1ae48fa27be26b7 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Wed, 11 Oct 2023 13:43:56 -0300
-Subject: [PATCH 135/175] malloc: Use __get_nprocs on arena_get2 (BZ 30945)
+Subject: [PATCH 135/254] malloc: Use __get_nprocs on arena_get2 (BZ 30945)
 
 This restore the 2.33 semantic for arena_get2.  It was changed by
 11a02b035b46 to avoid arena_get2 call malloc (back when __get_nproc
@@ -102,5 +102,5 @@ index 064eaa08ae2f79b6f5ffb580c7d77b318494a804..4d017861206798e9ac4bacb26a591c03
  {
    enum
 -- 
-2.35.6
+2.53.0
 

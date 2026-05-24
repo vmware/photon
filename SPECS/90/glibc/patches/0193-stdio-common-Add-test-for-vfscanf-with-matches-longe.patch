@@ -1,0 +1,177 @@
+From 6484b76fa367a9afdd9df9aba787bb9b7628f1b7 Mon Sep 17 00:00:00 2001
+From: "Maciej W. Rozycki" <macro@redhat.com>
+Date: Fri, 26 Jul 2024 13:21:34 +0100
+Subject: [PATCH 193/254] stdio-common: Add test for vfscanf with matches
+ longer than INT_MAX [BZ #27650]
+
+Complement commit b03e4d7bd25b ("stdio: fix vfscanf with matches longer
+than INT_MAX (bug 27650)") and add a test case for the issue, inspired
+by the reproducer provided with the bug report.
+
+This has been verified to succeed as from the commit referred and fail
+beforehand.
+
+As the test requires 2GiB of data to be passed around its performance
+has been evaluated using a choice of systems and the execution time
+determined to be respectively in the range of 9s for POWER9@2.166GHz,
+24s for FU740@1.2GHz, and 40s for 74Kf@950MHz.  As this is on the verge
+of and beyond the default timeout it has been increased by the factor of
+8.  Regardless, following recent practice the test has been added to the
+standard rather than extended set.
+
+Reviewed-by: DJ Delorie <dj@redhat.com>
+(cherry picked from commit 89cddc8a7096f3d9225868304d2bc0a1aaf07d63)
+(cherry picked from commit 99ffa84bdcdc3d81e82f448279f0c8278dd30964)
+---
+ stdio-common/Makefile            |   5 ++
+ stdio-common/tst-scanf-bz27650.c | 108 +++++++++++++++++++++++++++++++
+ 2 files changed, 113 insertions(+)
+ create mode 100644 stdio-common/tst-scanf-bz27650.c
+
+diff --git a/stdio-common/Makefile b/stdio-common/Makefile
+index b1e9144de07a4bc01d9f3f3952c43f8852740e2a..129c0448129980844a8a1ba6c710ffb8a815dbc9 100644
+--- a/stdio-common/Makefile
++++ b/stdio-common/Makefile
+@@ -190,6 +190,7 @@ tests := \
+   tst-put-error \
+   tst-renameat2 \
+   tst-rndseek \
++  tst-scanf-bz27650 \
+   tst-scanf-round \
+   tst-setvbuf1 \
+   tst-sprintf \
+@@ -246,6 +247,7 @@ generated += \
+   tst-printf-fp-free.mtrace \
+   tst-printf-fp-leak-mem.out \
+   tst-printf-fp-leak.mtrace \
++  tst-scanf-bz27650.mtrace \
+   tst-vfprintf-width-prec-mem.out \
+   tst-vfprintf-width-prec.mtrace \
+   # generated
+@@ -316,6 +318,9 @@ tst-printf-fp-free-ENV = \
+ tst-printf-fp-leak-ENV = \
+   MALLOC_TRACE=$(objpfx)tst-printf-fp-leak.mtrace \
+   LD_PRELOAD=$(common-objpfx)/malloc/libc_malloc_debug.so
++tst-scanf-bz27650-ENV = \
++  MALLOC_TRACE=$(objpfx)tst-scanf-bz27650.mtrace \
++  LD_PRELOAD=$(common-objpfx)malloc/libc_malloc_debug.so
+ 
+ $(objpfx)tst-unbputc.out: tst-unbputc.sh $(objpfx)tst-unbputc
+ 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)'; \
+diff --git a/stdio-common/tst-scanf-bz27650.c b/stdio-common/tst-scanf-bz27650.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..3a742bc86556908c824a1150362c53a00cd4e1bd
+--- /dev/null
++++ b/stdio-common/tst-scanf-bz27650.c
+@@ -0,0 +1,108 @@
++/* Test for BZ #27650, formatted input matching beyond INT_MAX.
++   Copyright (C) 2024 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <error.h>
++#include <errno.h>
++#include <limits.h>
++#include <mcheck.h>
++#include <stddef.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++#include <sys/types.h>
++
++#include <support/check.h>
++#include <support/test-driver.h>
++
++/* Produce a stream of more than INT_MAX characters via buffer BUF of
++   size SIZE according to bookkeeping in COOKIE and then return EOF.  */
++
++static ssize_t
++io_read (void *cookie, char *buf, size_t size)
++{
++  unsigned int *written = cookie;
++  unsigned int w = *written;
++
++  if (w > INT_MAX)
++    return 0;
++
++  memset (buf, 'a', size);
++  *written = w + size;
++  return size;
++}
++
++/* Consume a stream of more than INT_MAX characters from an artificial
++   input stream of which none is the new line character.  The call to
++   fscanf is supposed to complete upon the EOF condition of input,
++   however in the presence of BZ #27650 it will terminate prematurely
++   with characters still outstanding in input.  Diagnose the condition
++   and return status accordingly.  */
++
++int
++do_test (void)
++{
++  static cookie_io_functions_t io_funcs = { .read = io_read };
++  unsigned int written = 0;
++  FILE *in;
++  int v;
++
++  mtrace ();
++
++  in = fopencookie (&written, "r", io_funcs);
++  if (in == NULL)
++    {
++      FAIL ("fopencookie: %m");
++      goto out;
++    }
++
++  v = fscanf (in, "%*[^\n]");
++  if (ferror (in))
++    {
++      FAIL ("fscanf: input failure, at %u: %m", written);
++      goto out_close;
++    }
++  else if (v == EOF)
++    {
++      FAIL ("fscanf: unexpected end of file, at %u", written);
++      goto out_close;
++    }
++
++  if (!feof (in))
++    {
++      v = fgetc (in);
++      if (ferror (in))
++	FAIL ("fgetc: input failure: %m");
++      else if (v == EOF)
++	FAIL ("fgetc: unexpected end of file after missing end of file");
++      else if (v == '\n')
++	FAIL ("unexpected new line character received");
++      else
++	FAIL ("character received after end of file expected: \\x%02x", v);
++    }
++
++out_close:
++  if (fclose (in) != 0)
++    FAIL ("fclose: %m");
++
++out:
++  return EXIT_SUCCESS;
++}
++
++#define TIMEOUT (DEFAULT_TIMEOUT * 8)
++#include <support/test-driver.c>
+-- 
+2.53.0
+

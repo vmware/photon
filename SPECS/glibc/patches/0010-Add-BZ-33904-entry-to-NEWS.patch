@@ -1,7 +1,7 @@
 From c3ceb93dc4f67253037644dc8f194831e27f3160 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Thu, 26 Feb 2026 10:21:24 -0300
-Subject: [PATCH 10/22] Add BZ 33904 entry to NEWS
+Subject: [PATCH 10/27] Add BZ 33904 entry to NEWS
 
 ---
  NEWS | 1 +
@@ -20,5 +20,5 @@ index 1f07633e578493cd67c20f278a4c16889536bab8..cec8b61f5556b6bd43954f87ea714dc1
  Version 2.43
  
 -- 
-2.43.7
+2.53.0
 

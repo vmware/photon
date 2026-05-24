@@ -1,7 +1,7 @@
 From ad96b5532570a6782f784b4f2c6aa2a52359144d Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Wed, 18 Oct 2023 14:30:00 +0200
-Subject: [PATCH 119/175] Revert "elf: Remove unused l_text_end field from
+Subject: [PATCH 119/254] Revert "elf: Remove unused l_text_end field from
  struct link_map"
 
 This reverts commit 9f0d3bb2e325dc30ae20e347cccbe10fa0b4ce9b.
@@ -131,5 +131,5 @@ index 4eb8fe0d96e0be183c963285673c7b3c894659ca..8176e23da918f68fa4c0c4d074424cdd
      /* Linked list of objects in reverse ELF constructor execution
         order.  Head of list is stored in _dl_init_called_list.  */
 -- 
-2.35.6
+2.53.0
 

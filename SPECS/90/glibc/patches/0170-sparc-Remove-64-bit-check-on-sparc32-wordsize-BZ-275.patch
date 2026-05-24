@@ -1,7 +1,7 @@
 From 5b48737556a4928ec2cf8641c83e197671acdf00 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Wed, 17 Jan 2024 10:13:06 -0300
-Subject: [PATCH 170/175] sparc: Remove 64 bit check on sparc32 wordsize (BZ
+Subject: [PATCH 170/254] sparc: Remove 64 bit check on sparc32 wordsize (BZ
  27574)
 
 The sparc32 is always 32 bits.
@@ -34,5 +34,5 @@ index 2f66f10d7206731a2110721685d0ac6dc184ab14..4bbd2e63b49bb2e2f7879050e9b0f8ed
 +#define __WORDSIZE32_SIZE_ULONG	0
 +#define __WORDSIZE32_PTRDIFF_LONG	0
 -- 
-2.35.6
+2.53.0
 

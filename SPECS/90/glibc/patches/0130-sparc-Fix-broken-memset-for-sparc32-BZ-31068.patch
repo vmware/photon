@@ -1,7 +1,7 @@
 From d5e88bbf596206ae8f24be90c078f08ca479d596 Mon Sep 17 00:00:00 2001
 From: Andreas Larsson <andreas@gaisler.com>
 Date: Wed, 15 Nov 2023 13:29:43 +0100
-Subject: [PATCH 130/175] sparc: Fix broken memset for sparc32 [BZ #31068]
+Subject: [PATCH 130/254] sparc: Fix broken memset for sparc32 [BZ #31068]
 
 Fixes commit a61933fe27df ("sparc: Remove bzero optimization") that
 after moving code jumped to the wrong label 4.
@@ -39,5 +39,5 @@ index b1b67cb2d109bca09d5a47037d66797d8ab92673..51542633171c4cb6dadd4d87dea7d1fa
  END(memset)
  libc_hidden_builtin_def (memset)
 -- 
-2.35.6
+2.53.0
 

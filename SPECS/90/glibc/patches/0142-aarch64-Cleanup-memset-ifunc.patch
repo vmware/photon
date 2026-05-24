@@ -1,7 +1,7 @@
 From 9627bbbc1c06dbc7d24f61639488d4146082a951 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wdijkstr@arm.com>
 Date: Wed, 26 Oct 2022 14:12:55 +0100
-Subject: [PATCH 142/175] aarch64: Cleanup memset ifunc
+Subject: [PATCH 142/254] aarch64: Cleanup memset ifunc
 
 Cleanup memset ifunc selectors. The A64FX memset relies on a ZVA size of
 256, so add an explicit check.
@@ -81,5 +81,5 @@ index c4008f346b34ec5b4b767a1433cf72692572a714..1e9ad2160c1d602ad0ba91927bec9870
  # undef memset
  strong_alias (__libc_memset, memset);
 -- 
-2.35.6
+2.53.0
 

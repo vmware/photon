@@ -1,7 +1,7 @@
 From cc5b5da1353e9e4c1486c12befcce9f76ed1e34b Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Sat, 23 Dec 2023 06:27:50 -0800
-Subject: [PATCH 125/175] NEWS: Mention bug fixes for 29039/30745/30843
+Subject: [PATCH 125/254] NEWS: Mention bug fixes for 29039/30745/30843
 
 ---
  NEWS | 3 +++
@@ -32,5 +32,5 @@ index 8ac1be6cb9d23f11d27970f1223a38b2d3895996..0f0ebce3f066989de6170227f32fff00
    [31185] Incorrect thread point access in _dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic
  
 -- 
-2.35.6
+2.53.0
 

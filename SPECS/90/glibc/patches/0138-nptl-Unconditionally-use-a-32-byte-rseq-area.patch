@@ -1,7 +1,7 @@
 From 54e812100df2a6f1d75fbef4e3b45c076599842f Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 21 Jul 2023 16:18:18 +0200
-Subject: [PATCH 138/175] nptl: Unconditionally use a 32-byte rseq area
+Subject: [PATCH 138/254] nptl: Unconditionally use a 32-byte rseq area
 
 If the kernel headers provide a larger struct rseq, we used that
 size as the argument to the rseq system call.  As a result,
@@ -55,5 +55,5 @@ index 70cf4b639a3437138f2f67c48df006e62cab568c..ff634dac331057d45fee545217717126
  
  static inline bool
 -- 
-2.35.6
+2.53.0
 

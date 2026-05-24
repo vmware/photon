@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.36
-Release:        23.1.1%{?dist}
+Release:        23.1.2%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -28,23 +28,8 @@ Patch1:         0002-malloc-arena-fix.patch
 #generate using ./tools/scripts/generate-glibc-release-patches.sh %{version}
 %include %{SOURCE3}
 
-# CVE-2025-4802 (skipped tests)
-Patch501: 0001-elf-Ignore-LD_LIBRARY_PATH-and-debug-env-var-for-set.patch
-Patch502: 0002-support-Use-const-char-argument-in-support_capture_s.patch
-Patch503: 0003-support-Add-support_record_failure_barrier.patch
-Patch504: 0004-support-Don-t-fail-on-fchown-when-spawning-sgid-proc.patch
-Patch505: 0005-support-Pick-group-in-support_capture_subprogram_sel.patch
-
-# CVE-2025-8058
-Patch506: 0001-posix-Fix-double-free-after-allocation-failure-in-re.patch
-Patch507: CVE-2025-0395.patch
-
-Patch508: 0001-memalign-reinstate-alignment-overflow-check-CVE-2026.patch
-Patch509: 0002-resolv-Fix-NSS-DNS-backend-for-getnetbyaddr-CVE-2026.patch
-Patch510: 0003-posix-Reset-wordexp_t-fields-with-WRDE_REUSE-CVE-202.patch
-
-Patch511: resolv-Count-records-correctly-CVE-2026-4437.patch
-Patch512: resolv-Check-hostname-for-validity-CVE-2026-4438.patch
+Patch501: CVE-2026-5450.patch
+Patch502: CVE-2026-5928.patch
 
 Provides:       rtld(GNU_HASH)
 Provides:       /sbin/ldconfig
@@ -381,6 +366,9 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri May 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-23.1.2
+- Sync with branch, fix cves
+- Fix CVE-2026-5928, CVE-2026-5450
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-23.1.1
 - Adjusted to build for subrelease 90
 * Mon Apr 13 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.36-23.1

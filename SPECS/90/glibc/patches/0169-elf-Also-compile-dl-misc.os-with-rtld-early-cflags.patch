@@ -1,7 +1,7 @@
 From d31c4d38a34c609acef6e61cfd272b11a9b625eb Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Thu, 25 Apr 2024 08:06:52 -0700
-Subject: [PATCH 169/175] elf: Also compile dl-misc.os with
+Subject: [PATCH 169/254] elf: Also compile dl-misc.os with
  $(rtld-early-cflags)
 
 Also compile dl-misc.os with $(rtld-early-cflags) to avoid
@@ -51,5 +51,5 @@ index 30c9af1de978f9d6752dfc71613e3c1ae4ea57dc..cea9c1b29d92ac1ac13baae67130c74d
  CFLAGS-dl-setup_hash.os += $(rtld-early-cflags)
  CFLAGS-dl-sysdep.os += $(rtld-early-cflags)
 -- 
-2.35.6
+2.53.0
 

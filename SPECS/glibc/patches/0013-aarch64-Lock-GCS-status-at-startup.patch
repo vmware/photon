@@ -1,7 +1,7 @@
 From 2ee41ba6ecd34bf7e5c4f90fdfa20376c1dcecb0 Mon Sep 17 00:00:00 2001
 From: Yury Khrustalev <yury.khrustalev@arm.com>
 Date: Mon, 2 Feb 2026 18:27:53 +0000
-Subject: [PATCH 13/22] aarch64: Lock GCS status at startup
+Subject: [PATCH 13/27] aarch64: Lock GCS status at startup
 
 If GCS is enabled (see tunable glibc.cpu.aarch64_gcs), we lock all GCS
 operations (including status, write on shadow stack, and push to shadow
@@ -210,5 +210,5 @@ index 9eecc557fdba0c9b4795cd639907e0042aa71f87..4ccd13741bc506ba1b0a2735bcab7bd5
  }
  
 -- 
-2.43.7
+2.53.0
 

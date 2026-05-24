@@ -1,0 +1,161 @@
+From 72f4c0533c8c21c52a7874896eb7e90da1be01e6 Mon Sep 17 00:00:00 2001
+From: Michael Jeanson <mjeanson@efficios.com>
+Date: Wed, 3 Jul 2024 12:35:34 -0400
+Subject: [PATCH 178/254] nptl: fix potential merge of __rseq_* relro symbols
+
+While working on a patch to add support for the extensible rseq ABI, we
+came across an issue where a new 'const' variable would be merged with
+the existing '__rseq_size' variable. We tracked this to the use of
+'-fmerge-all-constants' which allows the compiler to merge identical
+constant variables. This means that all 'const' variables in a compile
+unit that are of the same size and are initialized to the same value can
+be merged.
+
+In this specific case, on 32 bit systems 'unsigned int' and 'ptrdiff_t'
+are both 4 bytes and initialized to 0 which should trigger the merge.
+However for reasons we haven't delved into when the attribute 'section
+(".data.rel.ro")' is added to the mix, only variables of the same exact
+types are merged. As far as we know this behavior is not specified
+anywhere and could change with a new compiler version, hence this patch.
+
+Move the definitions of these variables into an assembler file and add
+hidden writable aliases for internal use. This has the added bonus of
+removing the asm workaround to set the values on rseq registration.
+
+Tested on Debian 12 with GCC 12.2.
+
+Signed-off-by: Michael Jeanson <mjeanson@efficios.com>
+Reviewed-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit 2b92982e2369d292560793bee8e730f695f48ff3)
+---
+ elf/Makefile                  |  1 +
+ elf/dl-rseq-symbols.S         | 64 +++++++++++++++++++++++++++++++++++
+ sysdeps/nptl/dl-tls_init_tp.c | 14 ++++----
+ 3 files changed, 71 insertions(+), 8 deletions(-)
+ create mode 100644 elf/dl-rseq-symbols.S
+
+diff --git a/elf/Makefile b/elf/Makefile
+index cea9c1b29d92ac1ac13baae67130c74d6799ed4f..88e75b4aee1076126addbd73460647cc67c9a7ab 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -74,6 +74,7 @@ dl-routines = \
+   dl-printf \
+   dl-profile \
+   dl-reloc \
++  dl-rseq-symbols \
+   dl-runtime \
+   dl-scope \
+   dl-setup_hash \
+diff --git a/elf/dl-rseq-symbols.S b/elf/dl-rseq-symbols.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..b4bba06a99b0a486cb5935050acc46c374a06fa8
+--- /dev/null
++++ b/elf/dl-rseq-symbols.S
+@@ -0,0 +1,64 @@
++/* Define symbols used by rseq.
++   Copyright (C) 2024 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sysdep.h>
++
++#if __WORDSIZE == 64
++#define RSEQ_OFFSET_SIZE	8
++#else
++#define RSEQ_OFFSET_SIZE	4
++#endif
++
++/* Some targets define a macro to denote the zero register.  */
++#undef zero
++
++/* Define 2 symbols: '__rseq_size' is public const and '_rseq_size' (an
++   alias of '__rseq_size') is hidden and writable for internal use by the
++   dynamic linker which will initialize the value both symbols point to
++   before copy relocations take place. */
++
++	.globl	__rseq_size
++	.type	__rseq_size, %object
++	.size	__rseq_size, 4
++	.hidden _rseq_size
++	.globl	_rseq_size
++	.type	_rseq_size, %object
++	.size	_rseq_size, 4
++	.section .data.rel.ro
++	.balign 4
++__rseq_size:
++_rseq_size:
++	.zero	4
++
++/* Define 2 symbols: '__rseq_offset' is public const and '_rseq_offset' (an
++   alias of '__rseq_offset') is hidden and writable for internal use by the
++   dynamic linker which will initialize the value both symbols point to
++   before copy relocations take place. */
++
++	.globl	__rseq_offset
++	.type	__rseq_offset, %object
++	.size	__rseq_offset, RSEQ_OFFSET_SIZE
++	.hidden _rseq_offset
++	.globl	_rseq_offset
++	.type	_rseq_offset, %object
++	.size	_rseq_offset, RSEQ_OFFSET_SIZE
++	.section .data.rel.ro
++	.balign RSEQ_OFFSET_SIZE
++__rseq_offset:
++_rseq_offset:
++	.zero	RSEQ_OFFSET_SIZE
+diff --git a/sysdeps/nptl/dl-tls_init_tp.c b/sysdeps/nptl/dl-tls_init_tp.c
+index 53fba774a55c5e76febbe549e30f06d7e4cba6bb..1e451a9dc1903d4637ef2c7de9504cc24c8c174a 100644
+--- a/sysdeps/nptl/dl-tls_init_tp.c
++++ b/sysdeps/nptl/dl-tls_init_tp.c
+@@ -45,8 +45,10 @@ rtld_mutex_dummy (pthread_mutex_t *lock)
+ #endif
+ 
+ const unsigned int __rseq_flags;
+-const unsigned int __rseq_size attribute_relro;
+-const ptrdiff_t __rseq_offset attribute_relro;
++
++/* The variables are in .data.relro but are not yet write-protected.  */
++extern unsigned int _rseq_size attribute_hidden;
++extern ptrdiff_t _rseq_offset attribute_hidden;
+ 
+ void
+ __tls_pre_init_tp (void)
+@@ -107,10 +109,7 @@ __tls_init_tp (void)
+ #endif
+     if (rseq_register_current_thread (pd, do_rseq))
+       {
+-        /* We need a writable view of the variables.  They are in
+-           .data.relro and are not yet write-protected.  */
+-        extern unsigned int size __asm__ ("__rseq_size");
+-        size = sizeof (pd->rseq_area);
++        _rseq_size = sizeof (pd->rseq_area);
+       }
+ 
+ #ifdef RSEQ_SIG
+@@ -119,8 +118,7 @@ __tls_init_tp (void)
+        all targets support __thread_pointer, so set __rseq_offset only
+        if thre rseq registration may have happened because RSEQ_SIG is
+        defined.  */
+-    extern ptrdiff_t offset __asm__ ("__rseq_offset");
+-    offset = (char *) &pd->rseq_area - (char *) __thread_pointer ();
++    _rseq_offset = (char *) &pd->rseq_area - (char *) __thread_pointer ();
+ #endif
+   }
+ 
+-- 
+2.53.0
+

@@ -1,7 +1,7 @@
 From 1da017615277676054c47d99b030230e295d8583 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Thu, 26 Oct 2023 17:07:21 +0100
-Subject: [PATCH 158/175] AArch64: Add memset_zva64
+Subject: [PATCH 158/254] AArch64: Add memset_zva64
 
 Add a specialized memset for the common ZVA size of 64 to avoid the
 overhead of reading the ZVA size.  Since the code is identical to
@@ -224,5 +224,5 @@ index 0000000000000000000000000000000000000000..13f45fd3d882c756f18a1679d758e2eb
 +
 +#include "../memset.S"
 -- 
-2.35.6
+2.53.0
 

@@ -1,7 +1,7 @@
 From f4171ba5e5a772217ed0ebb80701fe1698407252 Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Thu, 18 Jan 2024 10:52:18 -0300
-Subject: [PATCH 132/175] sparc: Fix sparc64 memmove length comparison (BZ
+Subject: [PATCH 132/254] sparc: Fix sparc64 memmove length comparison (BZ
  31266)
 
 The small counts copy bytes comparsion should be unsigned (as the
@@ -29,5 +29,5 @@ index 8d46f2cd4ef4f3e9866291c69067674716bc5484..77466841602f1b95ca3b2bdec2c5a18e
  	bz,pn	%icc, .Laldst
  	 cmp	%o5, 2		/* is src half-word aligned  */
 -- 
-2.35.6
+2.53.0
 

@@ -1,0 +1,75 @@
+From d5eee9726d72cee570d1ca666ceae149c2c15ef9 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Fri, 24 Jan 2025 18:53:13 +0800
+Subject: [PATCH 217/254] stdlib: Test using setenv with updated environ [BZ
+ #32588]
+
+Add a test for setenv with updated environ.  Verify that BZ #32588 is
+fixed.
+
+Signed-off-by: H.J. Lu <hjl.tools@gmail.com>
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit 8ab34497de14e35aff09b607222fe1309ef156da)
+---
+ stdlib/Makefile             |  1 +
+ stdlib/tst-setenv-environ.c | 36 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+ create mode 100644 stdlib/tst-setenv-environ.c
+
+diff --git a/stdlib/Makefile b/stdlib/Makefile
+index 3d49c4941a603e4a6460d3af18197b137ec8ba36..2da3030efc1c6bb74e7b35d5e7c78786df6f5a23 100644
+--- a/stdlib/Makefile
++++ b/stdlib/Makefile
+@@ -222,6 +222,7 @@ tests := \
+   tst-setcontext7 \
+   tst-setcontext8 \
+   tst-setcontext9 \
++  tst-setenv-environ \
+   tst-strfmon_l \
+   tst-strfrom \
+   tst-strfrom-locale \
+diff --git a/stdlib/tst-setenv-environ.c b/stdlib/tst-setenv-environ.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..02fcef96d098f1b7e58f1dc09c013faaa3625dc9
+--- /dev/null
++++ b/stdlib/tst-setenv-environ.c
+@@ -0,0 +1,36 @@
++/* Test using setenv with updated environ.
++   Copyright (C) 2025 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <stdlib.h>
++#include <support/check.h>
++
++extern char **environ;
++
++int
++do_test (void)
++{
++  char *valp;
++  static char *dummy_environ[] = { NULL };
++  environ = dummy_environ;
++  setenv ("A", "1", 0);
++  valp = getenv ("A");
++  TEST_VERIFY_EXIT (valp[0] == '1' && valp[1] == '\0');
++  return 0;
++}
++
++#include <support/test-driver.c>
+-- 
+2.53.0
+

@@ -1,0 +1,88 @@
+From 26e2759e59904e785a49f2c7075b8eddd755c49d Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Wed, 24 Jul 2024 14:05:14 -0700
+Subject: [PATCH 188/254] mremap: Update manual entry
+
+Update mremap manual entry:
+
+1. Change mremap to variadic.
+2. Document MREMAP_FIXED and MREMAP_DONTUNMAP.
+
+Signed-off-by: H.J. Lu <hjl.tools@gmail.com>
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit cb2dee4eccf46642eef588bee64f9c875c408f1c)
+---
+ manual/llio.texi | 42 +++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 7 deletions(-)
+
+diff --git a/manual/llio.texi b/manual/llio.texi
+index 85aa32b4f06ab6172f1c1d2d7077f6b52fd81deb..17dabd159ecc70a9c8b7af1a3a7e453c4f34dda6 100644
+--- a/manual/llio.texi
++++ b/manual/llio.texi
+@@ -1781,7 +1781,7 @@ There is no existing mapping in at least part of the given region.
+ 
+ @end deftypefun
+ 
+-@deftypefun {void *} mremap (void *@var{address}, size_t @var{length}, size_t @var{new_length}, int @var{flag})
++@deftypefun {void *} mremap (void *@var{address}, size_t @var{length}, size_t @var{new_length}, int @var{flag}, ... /* void *@var{new_address} */)
+ @standards{GNU, sys/mman.h}
+ @safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+ 
+@@ -1790,12 +1790,40 @@ area. @var{address} and @var{length} must cover a region entirely mapped
+ in the same @code{mmap} statement.  A new mapping with the same
+ characteristics will be returned with the length @var{new_length}.
+ 
+-One option is possible, @code{MREMAP_MAYMOVE}.  If it is given in
+-@var{flags}, the system may remove the existing mapping and create a new
+-one of the desired length in another location.
++Possible flags are
+ 
+-The address of the resulting mapping is returned, or @math{-1}.  Possible
+-error codes include:
++@table @code
++
++@item MREMAP_MAYMOVE
++If it is given in @var{flags}, the system may remove the existing mapping
++and create a new one of the desired length in another location.
++
++@item MREMAP_FIXED
++If it is given in @var{flags}, @code{mremap} accepts a fifth argument,
++@code{void *new_address}, which specifies a page-aligned address to
++which the mapping must be moved.  Any previous mapping at the address
++range specified by @var{new_address} and @var{new_size} is unmapped.
++
++@code{MREMAP_FIXED} must be used together with @code{MREMAP_MAYMOVE}.
++
++@item MREMAP_DONTUNMAP
++If it is given in @var{flags}, @code{mremap} accepts a fifth argument,
++@code{void *new_address}, which specifies a page-aligned address.  Any
++previous mapping at the address range specified by @var{new_address} and
++@var{new_size} is unmapped.  If @var{new_address} is @code{NULL}, the
++kernel chooses the page-aligned address at which to create the mapping.
++Otherwise, the kernel takes it as a hint about where to place the mapping.
++The mapping at the address range specified by @var{old_address} and
++@var{old_size} isn't unmapped.
++
++@code{MREMAP_DONTUNMAP} must be used together with @code{MREMAP_MAYMOVE}.
++@var{old_size} must be the same as @var{new_size}.  This flag bit is
++Linux-specific.
++
++@end table
++
++The address of the resulting mapping is returned, or @code{MAP_FAILED}.
++Possible error codes include:
+ 
+ @table @code
+ 
+@@ -1804,7 +1832,7 @@ There is no existing mapping in at least part of the original region, or
+ the region covers two or more distinct mappings.
+ 
+ @item EINVAL
+-The address given is misaligned or inappropriate.
++Any arguments are inappropriate, including unknown @var{flags} values.
+ 
+ @item EAGAIN
+ The region has pages locked, and if extended it would exceed the
+-- 
+2.53.0
+

@@ -1,0 +1,66 @@
+From b33ecb069b1837da23164882c0b2ffaf29818aec Mon Sep 17 00:00:00 2001
+From: Carlos O'Donell <carlos@redhat.com>
+Date: Thu, 18 May 2023 12:56:45 -0400
+Subject: [PATCH 218/254] assert: Reformat Makefile.
+
+Reflow all long lines adding comment terminators.
+Sort all reflowed text using scripts/sort-makefile-lines.py.
+
+No code generation changes observed in binary artifacts.
+No regressions on x86_64 and i686.
+
+(cherry picked from commit ebd928224a138d4560dc0be3ef162162d62a9e43)
+
+ # Conflicts:
+ #	assert/Makefile
+ (Missing __libc_assert_fail)
+---
+ assert/Makefile | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/assert/Makefile b/assert/Makefile
+index f7cf8e9b77939aefbd399a5615de4c1f9f4ca535..d2deec69a0a7de81cb08ecdb200bcf25d4cc9e15 100644
+--- a/assert/Makefile
++++ b/assert/Makefile
+@@ -22,10 +22,22 @@ subdir	:= assert
+ 
+ include ../Makeconfig
+ 
+-headers	:= assert.h
+-
+-routines := assert assert-perr __assert
+-tests := test-assert test-assert-perr tst-assert-c++ tst-assert-g++
++headers := \
++  assert.h
++  # headers
++
++routines := \
++  __assert \
++  assert \
++  assert-perr \
++  # routines
++
++tests := \
++  test-assert \
++  test-assert-perr \
++  tst-assert-c++ \
++  tst-assert-g++ \
++  # tests
+ 
+ ifeq ($(have-cxx-thread_local),yes)
+ CFLAGS-tst-assert-c++.o = -std=c++11
+@@ -33,7 +45,10 @@ LDLIBS-tst-assert-c++ = -lstdc++
+ CFLAGS-tst-assert-g++.o = -std=gnu++11
+ LDLIBS-tst-assert-g++ = -lstdc++
+ else
+-tests-unsupported += tst-assert-c++ tst-assert-g++
++tests-unsupported += \
++  tst-assert-c++ \
++  tst-assert-g++ \
++  # tests-unsupported
+ endif
+ 
+ include ../Rules
+-- 
+2.53.0
+

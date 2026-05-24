@@ -1,7 +1,7 @@
 From 5dfafca33cf5db5ca88af43f4f764c29a69aff18 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Wed, 20 Dec 2023 19:42:12 -0800
-Subject: [PATCH 124/175] x86-64: Fix the tcb field load for x32 [BZ #31185]
+Subject: [PATCH 124/254] x86-64: Fix the tcb field load for x32 [BZ #31185]
 
 _dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic access the thread pointer
 via the tcb field in TCB:
@@ -65,5 +65,5 @@ index 706856e095de6230e48055ff7b2b34cfcb4c63d8..7619e743e1be41bf5431081780e9ab58
  	ret
  .Lslow:
 -- 
-2.35.6
+2.53.0
 

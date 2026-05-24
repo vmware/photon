@@ -1,0 +1,112 @@
+From d0e60bebb31f89513c85e80658f74837aa78d25a Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 21 May 2025 16:47:34 +0200
+Subject: [PATCH 233/254] support: Pick group in
+ support_capture_subprogram_self_sgid if UID == 0
+
+When running as root, it is likely that we can run under any group.
+Pick a harmless group from /etc/group in this case.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 2f769cec448d84a62b7dd0d4ff56978fe22c0cd6)
+---
+ support/support_capture_subprocess.c | 58 ++++++++++++++++++++++++++--
+ 1 file changed, 54 insertions(+), 4 deletions(-)
+
+diff --git a/support/support_capture_subprocess.c b/support/support_capture_subprocess.c
+index d63fe8a027e5be6f4c92829e279000b9f4981f4e..4929790619d1e457575c5ad43c124f3dd584e3c1 100644
+--- a/support/support_capture_subprocess.c
++++ b/support/support_capture_subprocess.c
+@@ -21,7 +21,11 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#include <grp.h>
++#include <scratch_buffer.h>
++#include <stdio_ext.h>
+ #include <stdlib.h>
++#include <string.h>
+ #include <support/check.h>
+ #include <support/xunistd.h>
+ #include <support/xsocket.h>
+@@ -209,10 +213,48 @@ err:
+   return status;
+ }
+ 
++/* Returns true if a group with NAME has been found, and writes its
++   GID to *TARGET.  */
++static bool
++find_sgid_group (gid_t *target, const char *name)
++{
++  /* Do not use getgrname_r because it does not work in statically
++     linked binaries if the system libc is different.  */
++  FILE *fp = fopen ("/etc/group", "rce");
++  if (fp == NULL)
++    return false;
++  __fsetlocking (fp, FSETLOCKING_BYCALLER);
++
++  bool ok = false;
++  struct scratch_buffer buf;
++  scratch_buffer_init (&buf);
++  while (true)
++    {
++      struct group grp;
++      struct group *result = NULL;
++      int status = fgetgrent_r (fp, &grp, buf.data, buf.length, &result);
++      if (status == 0 && result != NULL)
++	{
++	  if (strcmp (result->gr_name, name) == 0)
++	    {
++	      *target = result->gr_gid;
++	      ok = true;
++	      break;
++	    }
++	}
++      else if (errno != ERANGE)
++	break;
++      else if (!scratch_buffer_grow (&buf))
++	break;
++    }
++  scratch_buffer_free (&buf);
++  fclose (fp);
++  return ok;
++}
++
+ int
+ support_capture_subprogram_self_sgid (const char *child_id)
+ {
+-  gid_t target = 0;
+   const int count = 64;
+   gid_t groups[count];
+ 
+@@ -224,6 +266,7 @@ support_capture_subprogram_self_sgid (const char *child_id)
+ 		     (intmax_t) getuid ());
+ 
+   gid_t current = getgid ();
++  gid_t target = current;
+   for (int i = 0; i < ret; ++i)
+     {
+       if (groups[i] != current)
+@@ -233,9 +276,16 @@ support_capture_subprogram_self_sgid (const char *child_id)
+ 	}
+     }
+ 
+-  if (target == 0)
+-    FAIL_UNSUPPORTED("Could not find a suitable GID for user %jd\n",
+-		     (intmax_t) getuid ());
++  if (target == current)
++    {
++      /* If running as root, try to find a harmless group for SGID.  */
++      if (getuid () != 0
++	  || (!find_sgid_group (&target, "nogroup")
++	      && !find_sgid_group (&target, "bin")
++	      && !find_sgid_group (&target, "daemon")))
++	FAIL_UNSUPPORTED("Could not find a suitable GID for user %jd\n",
++			 (intmax_t) getuid ());
++    }
+ 
+   return copy_and_spawn_sgid (child_id, target);
+ }
+-- 
+2.53.0
+

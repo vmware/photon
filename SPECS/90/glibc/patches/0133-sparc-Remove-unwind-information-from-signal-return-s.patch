@@ -1,7 +1,7 @@
 From 2853e541c58af1f5d868c4161ea9562e7876a989 Mon Sep 17 00:00:00 2001
 From: Daniel Cederman <cederman@gaisler.com>
 Date: Tue, 16 Jan 2024 09:31:41 +0100
-Subject: [PATCH 133/175] sparc: Remove unwind information from signal return
+Subject: [PATCH 133/254] sparc: Remove unwind information from signal return
  stubs [BZ #31244]
 
 The functions were previously written in C, but were not compiled
@@ -70,5 +70,5 @@ index 2829e881eb6f0e6d7120a8ddcbc6631d61dd7ffc..a1492ea59eddd1aeff0e50889adc2e70
 -END (__sigreturn_stub)
 +END_NOCFI (__sigreturn_stub)
 -- 
-2.35.6
+2.53.0
 

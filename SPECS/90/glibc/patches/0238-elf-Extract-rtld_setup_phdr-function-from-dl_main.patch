@@ -1,0 +1,94 @@
+From 81188fb7df7242246f107dcdf8e42505ca7eee0c Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 1 Aug 2025 10:20:23 +0200
+Subject: [PATCH 238/254] elf: Extract rtld_setup_phdr function from dl_main
+
+Remove historic binutils reference from comment and update
+how this data is used by applications.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 2cac9559e06044ba520e785c151fbbd25011865f)
+---
+ elf/rtld.c | 59 +++++++++++++++++++++++++++++-------------------------
+ 1 file changed, 32 insertions(+), 27 deletions(-)
+
+diff --git a/elf/rtld.c b/elf/rtld.c
+index 6e40893e5298bd47476b37273b4cef2e22782c73..714edff6c663127d36eee0b07052d3c13210c487 100644
+--- a/elf/rtld.c
++++ b/elf/rtld.c
+@@ -1295,6 +1295,37 @@ rtld_setup_main_map (struct link_map *main_map)
+   return has_interp;
+ }
+ 
++/* Set up the program header information for the dynamic linker
++   itself.  It can be accessed via _r_debug and dl_iterate_phdr
++   callbacks.  */
++static void
++rtld_setup_phdr (void)
++{
++  /* Starting from binutils-2.23, the linker will define the magic
++     symbol __ehdr_start to point to our own ELF header if it is
++     visible in a segment that also includes the phdrs.  */
++
++  const ElfW(Ehdr) *rtld_ehdr = &__ehdr_start;
++  assert (rtld_ehdr->e_ehsize == sizeof *rtld_ehdr);
++  assert (rtld_ehdr->e_phentsize == sizeof (ElfW(Phdr)));
++
++  const ElfW(Phdr) *rtld_phdr = (const void *) rtld_ehdr + rtld_ehdr->e_phoff;
++
++  GL(dl_rtld_map).l_phdr = rtld_phdr;
++  GL(dl_rtld_map).l_phnum = rtld_ehdr->e_phnum;
++
++
++  /* PT_GNU_RELRO is usually the last phdr.  */
++  size_t cnt = rtld_ehdr->e_phnum;
++  while (cnt-- > 0)
++    if (rtld_phdr[cnt].p_type == PT_GNU_RELRO)
++      {
++	GL(dl_rtld_map).l_relro_addr = rtld_phdr[cnt].p_vaddr;
++	GL(dl_rtld_map).l_relro_size = rtld_phdr[cnt].p_memsz;
++	break;
++      }
++}
++
+ /* Adjusts the contents of the stack and related globals for the user
+    entry point.  The ld.so processed skip_args arguments and bumped
+    _dl_argv and _dl_argc accordingly.  Those arguments are removed from
+@@ -1764,33 +1795,7 @@ dl_main (const ElfW(Phdr) *phdr,
+   ++GL(dl_ns)[LM_ID_BASE]._ns_nloaded;
+   ++GL(dl_load_adds);
+ 
+-  /* Starting from binutils-2.23, the linker will define the magic symbol
+-     __ehdr_start to point to our own ELF header if it is visible in a
+-     segment that also includes the phdrs.  If that's not available, we use
+-     the old method that assumes the beginning of the file is part of the
+-     lowest-addressed PT_LOAD segment.  */
+-
+-  /* Set up the program header information for the dynamic linker
+-     itself.  It is needed in the dl_iterate_phdr callbacks.  */
+-  const ElfW(Ehdr) *rtld_ehdr = &__ehdr_start;
+-  assert (rtld_ehdr->e_ehsize == sizeof *rtld_ehdr);
+-  assert (rtld_ehdr->e_phentsize == sizeof (ElfW(Phdr)));
+-
+-  const ElfW(Phdr) *rtld_phdr = (const void *) rtld_ehdr + rtld_ehdr->e_phoff;
+-
+-  GL(dl_rtld_map).l_phdr = rtld_phdr;
+-  GL(dl_rtld_map).l_phnum = rtld_ehdr->e_phnum;
+-
+-
+-  /* PT_GNU_RELRO is usually the last phdr.  */
+-  size_t cnt = rtld_ehdr->e_phnum;
+-  while (cnt-- > 0)
+-    if (rtld_phdr[cnt].p_type == PT_GNU_RELRO)
+-      {
+-	GL(dl_rtld_map).l_relro_addr = rtld_phdr[cnt].p_vaddr;
+-	GL(dl_rtld_map).l_relro_size = rtld_phdr[cnt].p_memsz;
+-	break;
+-      }
++  rtld_setup_phdr ();
+ 
+   /* Add the dynamic linker to the TLS list if it also uses TLS.  */
+   if (GL(dl_rtld_map).l_tls_blocksize != 0)
+-- 
+2.53.0
+

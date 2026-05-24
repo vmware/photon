@@ -1,0 +1,34 @@
+From eb2d69db2de1b970bf2ebf3e8a76056107edbeb2 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Wed, 24 Jul 2024 15:17:47 +0100
+Subject: [PATCH 223/254] math: Improve layout of expf data
+
+GCC aligns global data to 16 bytes if their size is >= 16 bytes.  This patch
+changes the exp2f_data struct slightly so that the fields are better aligned.
+As a result on targets that support them, load-pair instructions accessing
+poly_scaled and invln2_scaled are now 16-byte aligned.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 44fa9c1080fe6a9539f0d2345b9d2ae37b8ee57a)
+---
+ sysdeps/ieee754/flt-32/math_config.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sysdeps/ieee754/flt-32/math_config.h b/sysdeps/ieee754/flt-32/math_config.h
+index c7f71ca496228c2d1d8a07b4e81f7113abc85f52..6a52d1d51b478a2bf46a2d55e9ec7fdc66369ef7 100644
+--- a/sysdeps/ieee754/flt-32/math_config.h
++++ b/sysdeps/ieee754/flt-32/math_config.h
+@@ -126,9 +126,9 @@ extern const struct exp2f_data
+   uint64_t tab[1 << EXP2F_TABLE_BITS];
+   double shift_scaled;
+   double poly[EXP2F_POLY_ORDER];
+-  double shift;
+   double invln2_scaled;
+   double poly_scaled[EXP2F_POLY_ORDER];
++  double shift;
+ } __exp2f_data attribute_hidden;
+ 
+ #define LOGF_TABLE_BITS 4
+-- 
+2.53.0
+

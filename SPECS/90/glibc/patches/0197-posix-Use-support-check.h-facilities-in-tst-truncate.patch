@@ -1,0 +1,89 @@
+From 43b9069a5845b2722b9f0c5ca81c13b942c24924 Mon Sep 17 00:00:00 2001
+From: "Maciej W. Rozycki" <macro@redhat.com>
+Date: Fri, 26 Jul 2024 13:21:34 +0100
+Subject: [PATCH 197/254] posix: Use <support/check.h> facilities in
+ tst-truncate and tst-truncate64
+
+Remove local FAIL macro in favor to FAIL_RET from <support/check.h>,
+which provides equivalent reporting, with the name of the file of the
+failure site additionally included, for the tst-truncate-common core
+shared between the tst-truncate and tst-truncate64 tests.
+
+Reviewed-by: DJ Delorie <dj@redhat.com>
+(cherry picked from commit fe47595504a55e7bb992f8928533df154b510383)
+---
+ posix/tst-truncate-common.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
+
+diff --git a/posix/tst-truncate-common.c b/posix/tst-truncate-common.c
+index c8093c5473068ac6454433cfc28e88a3ffb6ff65..39061ce6c5425f1ba7994bacfb474fa1efe4519e 100644
+--- a/posix/tst-truncate-common.c
++++ b/posix/tst-truncate-common.c
+@@ -21,6 +21,8 @@
+ #include <sys/stat.h>
+ #include <unistd.h>
+ 
++#include <support/check.h>
++
+ static void do_prepare (void);
+ #define PREPARE(argc, argv)     do_prepare ()
+ static int do_test (void);
+@@ -42,9 +44,6 @@ do_prepare (void)
+     }
+ }
+ 
+-#define FAIL(str) \
+-  do { printf ("error: %s (line %d)\n", str, __LINE__); return 1; } while (0)
+-
+ static int
+ do_test_with_offset (off_t offset)
+ {
+@@ -54,35 +53,35 @@ do_test_with_offset (off_t offset)
+   memset (buf, 0xcf, sizeof (buf));
+ 
+   if (pwrite (temp_fd, buf, sizeof (buf), offset) != sizeof (buf))
+-    FAIL ("write failed");
++    FAIL_RET ("write failed");
+   if (fstat (temp_fd, &st) < 0 || st.st_size != (offset + sizeof (buf)))
+-    FAIL ("initial size wrong");
++    FAIL_RET ("initial size wrong");
+ 
+   if (ftruncate (temp_fd, offset + 800) < 0)
+-    FAIL ("size reduction with ftruncate failed");
++    FAIL_RET ("size reduction with ftruncate failed");
+   if (fstat (temp_fd, &st) < 0 || st.st_size != (offset + 800))
+-    FAIL ("size after reduction with ftruncate is incorrect");
++    FAIL_RET ("size after reduction with ftruncate is incorrect");
+ 
+   /* The following test covers more than POSIX.  POSIX does not require
+      that ftruncate() can increase the file size.  But we are testing
+      Unix systems.  */
+   if (ftruncate (temp_fd, offset + 1200) < 0)
+-    FAIL ("size increate with ftruncate failed");
++    FAIL_RET ("size increate with ftruncate failed");
+   if (fstat (temp_fd, &st) < 0 || st.st_size != (offset + 1200))
+-    FAIL ("size after increase is incorrect");
++    FAIL_RET ("size after increase is incorrect");
+ 
+   if (truncate (temp_filename, offset + 800) < 0)
+-    FAIL ("size reduction with truncate failed");
++    FAIL_RET ("size reduction with truncate failed");
+   if (fstat (temp_fd, &st) < 0 || st.st_size != (offset + 800))
+-    FAIL ("size after reduction with truncate incorrect");
++    FAIL_RET ("size after reduction with truncate incorrect");
+ 
+   /* The following test covers more than POSIX.  POSIX does not require
+      that truncate() can increase the file size.  But we are testing
+      Unix systems.  */
+   if (truncate (temp_filename, (offset + 1200)) < 0)
+-    FAIL ("size increase with truncate failed");
++    FAIL_RET ("size increase with truncate failed");
+   if (fstat (temp_fd, &st) < 0 || st.st_size != (offset + 1200))
+-    FAIL ("size increase with truncate is incorrect");
++    FAIL_RET ("size increase with truncate is incorrect");
+ 
+   return 0;
+ }
+-- 
+2.53.0
+

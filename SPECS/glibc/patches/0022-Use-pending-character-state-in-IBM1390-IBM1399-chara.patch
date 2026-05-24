@@ -1,7 +1,7 @@
 From 8362e8ce10b24068bacc19552c128dd10e082fd9 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Thu, 16 Apr 2026 19:13:43 +0200
-Subject: [PATCH 22/22] Use pending character state in IBM1390, IBM1399
+Subject: [PATCH 22/27] Use pending character state in IBM1390, IBM1399
  character sets (CVE-2026-4046)
 
 Follow the example in iso-2022-jp-3.c and use the __count state
@@ -327,5 +327,5 @@ index 0000000000000000000000000000000000000000..c9693e0efebe4eae33588c016c1f8ccb
 +
 +#include <support/test-driver.c>
 -- 
-2.43.7
+2.53.0
 

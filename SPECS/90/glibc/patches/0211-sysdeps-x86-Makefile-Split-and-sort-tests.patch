@@ -1,0 +1,183 @@
+From f7397059447651a98fb7b3c605baa4872bc18f96 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 7 Dec 2023 09:00:11 -0800
+Subject: [PATCH 211/254] sysdeps/x86/Makefile: Split and sort tests
+
+Put each test on a separate line and sort tests.
+
+(cherry picked from commit 7e03e0de7e7c2de975b5c5e18f5a4b0c75816674)
+---
+ sysdeps/x86/Makefile | 110 ++++++++++++++++++++++++++++++-------------
+ 1 file changed, 78 insertions(+), 32 deletions(-)
+
+diff --git a/sysdeps/x86/Makefile b/sysdeps/x86/Makefile
+index 56fd5fc805c41cede6e84472a53846bc3837ab3d..d680a9269570db5a297afc22c133c289cf39fc2c 100644
+--- a/sysdeps/x86/Makefile
++++ b/sysdeps/x86/Makefile
+@@ -10,38 +10,53 @@ sysdep_headers += sys/platform/x86.h bits/platform/x86.h
+ CFLAGS-dl-get-cpu-features.os += $(rtld-early-cflags)
+ CFLAGS-get-cpuid-feature-leaf.o += $(no-stack-protector)
+ 
+-tests += tst-get-cpu-features tst-get-cpu-features-static \
+-	 tst-cpu-features-cpuinfo tst-cpu-features-cpuinfo-static \
+-	 tst-cpu-features-supports tst-cpu-features-supports-static
+-tests-static += tst-get-cpu-features-static \
+-		tst-cpu-features-cpuinfo-static \
+-		tst-cpu-features-supports-static
++tests += \
++  tst-get-cpu-features \
++  tst-get-cpu-features-static \
++  tst-cpu-features-cpuinfo \
++  tst-cpu-features-cpuinfo-static \
++  tst-cpu-features-supports \
++  tst-cpu-features-supports-static \
++# tests
++tests-static += \
++  tst-get-cpu-features-static \
++  tst-cpu-features-cpuinfo-static \
++  tst-cpu-features-supports-static \
++# tests-static
+ ifeq (yes,$(have-ifunc))
+ ifeq (yes,$(have-gcc-ifunc))
+ tests += \
+   tst-ifunc-isa-1 \
+-  tst-ifunc-isa-1-static
++  tst-ifunc-isa-1-static \
++# tests
+ tests-static += \
+-  tst-ifunc-isa-1-static
++  tst-ifunc-isa-1-static \
++# tests-static
+ test-xfail-tst-ifunc-isa-1 = $(with-lld)
+ test-xfail-tst-ifunc-isa-1-static = $(with-lld)
+ ifneq ($(have-tunables),no)
+ tests += \
+   tst-ifunc-isa-2 \
+-  tst-ifunc-isa-2-static
++  tst-ifunc-isa-2-static \
++# tests
+ tests-static += \
+-  tst-ifunc-isa-2-static
++  tst-ifunc-isa-2-static \
++# tests-static
+ test-xfail-tst-ifunc-isa-2 = $(with-lld)
+ test-xfail-tst-ifunc-isa-2-static = $(with-lld)
+ endif
+ endif
+ endif
+ ifeq (yes,$(enable-x86-isa-level))
+-tests += tst-isa-level-1
+-modules-names += tst-isa-level-mod-1-baseline \
+-		 tst-isa-level-mod-1-v2 \
+-		 tst-isa-level-mod-1-v3 \
+-		 tst-isa-level-mod-1-v4 \
++tests += \
++  tst-isa-level-1 \
++# tests
++modules-names += \
++  tst-isa-level-mod-1-baseline \
++  tst-isa-level-mod-1-v2 \
++  tst-isa-level-mod-1-v3 \
++  tst-isa-level-mod-1-v4 \
++# modules-names
+ 
+ # X86 ISA level baseline
+ CFLAGS-tst-isa-level-mod-1-baseline.c += -DINCLUDE_X86_ISA_LEVEL \
+@@ -72,7 +87,9 @@ endif
+ endif
+ 
+ ifeq ($(subdir),math)
+-tests += tst-ldbl-nonnormal-printf
++tests += \
++ tst-ldbl-nonnormal-printf \
++# tests
+ endif # $(subdir) == math
+ 
+ ifeq ($(subdir),setjmp)
+@@ -80,7 +97,9 @@ gen-as-const-headers += jmp_buf-ssp.sym
+ sysdep_routines += __longjmp_cancel
+ ifneq ($(enable-cet),no)
+ ifneq ($(have-tunables),no)
+-tests += tst-setjmp-cet
++tests += \
++  tst-setjmp-cet \
++# tests
+ tst-setjmp-cet-ENV = GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on
+ endif
+ endif
+@@ -128,22 +147,47 @@ ifneq ($(enable-cet),no)
+ ifeq ($(subdir),elf)
+ sysdep-dl-routines += dl-cet
+ 
+-tests += tst-cet-legacy-1 tst-cet-legacy-1a tst-cet-legacy-2 \
+-	 tst-cet-legacy-2a tst-cet-legacy-3 tst-cet-legacy-4 \
+-	 tst-cet-legacy-5a tst-cet-legacy-6a tst-cet-legacy-7 \
+-	 tst-cet-legacy-8 tst-cet-legacy-9 tst-cet-legacy-9-static \
+-	 tst-cet-legacy-10 tst-cet-legacy-10-static
+-tests-static += tst-cet-legacy-9-static tst-cet-legacy-10-static
++tests += \
++  tst-cet-legacy-1 \
++  tst-cet-legacy-1a \
++  tst-cet-legacy-2 \
++  tst-cet-legacy-2a \
++  tst-cet-legacy-3 \
++  tst-cet-legacy-4 \
++  tst-cet-legacy-5a \
++  tst-cet-legacy-6a \
++  tst-cet-legacy-7 \
++  tst-cet-legacy-8 \
++  tst-cet-legacy-9 \
++  tst-cet-legacy-9-static \
++  tst-cet-legacy-10 \
++  tst-cet-legacy-10-static \
++# tests
++tests-static += \
++  tst-cet-legacy-9-static \
++  tst-cet-legacy-10-static \
++# tests-static
+ tst-cet-legacy-1a-ARGS = -- $(host-test-program-cmd)
+ ifneq (no,$(have-tunables))
+-tests += tst-cet-legacy-4a tst-cet-legacy-4b tst-cet-legacy-4c \
+-	 tst-cet-legacy-5b tst-cet-legacy-6b
++tests += \
++  tst-cet-legacy-4a \
++  tst-cet-legacy-4b \
++  tst-cet-legacy-4c \
++  tst-cet-legacy-5b \
++  tst-cet-legacy-6b \
++# tests
+ endif
+-modules-names += tst-cet-legacy-mod-1 tst-cet-legacy-mod-2 \
+-		 tst-cet-legacy-mod-4 tst-cet-legacy-mod-5a \
+-		 tst-cet-legacy-mod-5b tst-cet-legacy-mod-5c \
+-		 tst-cet-legacy-mod-6a tst-cet-legacy-mod-6b \
+-		 tst-cet-legacy-mod-6c
++modules-names += \
++  tst-cet-legacy-mod-1 \
++  tst-cet-legacy-mod-2 \
++  tst-cet-legacy-mod-4 \
++  tst-cet-legacy-mod-5a \
++  tst-cet-legacy-mod-5b \
++  tst-cet-legacy-mod-5c \
++  tst-cet-legacy-mod-6a \
++  tst-cet-legacy-mod-6b \
++  tst-cet-legacy-mod-6c \
++# modules-names
+ 
+ CFLAGS-tst-cet-legacy-2.c += -fcf-protection=branch
+ CFLAGS-tst-cet-legacy-2a.c += -fcf-protection
+@@ -253,7 +297,9 @@ endif
+ ifeq ($(subdir),posix)
+ tests += \
+   tst-sysconf-cache-linesize \
+-  tst-sysconf-cache-linesize-static
++  tst-sysconf-cache-linesize-static \
++# tests
+ tests-static += \
+-  tst-sysconf-cache-linesize-static
++  tst-sysconf-cache-linesize-static \
++# tests-static
+ endif
+-- 
+2.53.0
+

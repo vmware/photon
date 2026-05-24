@@ -1,0 +1,302 @@
+From 09f2d9f1da53cf5d67f42e5a19d091404076d3bb Mon Sep 17 00:00:00 2001
+From: Andreas Schwab <schwab@suse.de>
+Date: Mon, 5 Aug 2024 10:55:51 +0200
+Subject: [PATCH 191/254] Fix name space violation in fortify wrappers (bug
+ 32052)
+
+Rename the identifier sz to __sz everywhere.
+
+Fixes: a643f60c53 ("Make sure that the fortified function conditionals are constant")
+(cherry picked from commit 39ca997ab378990d5ac1aadbaa52aaf1db6d526f)
+(redone from scratch because of many conflicts)
+---
+ NEWS                  |  1 +
+ libio/bits/stdio2.h   | 40 +++++++++++++++----------------
+ socket/bits/socket2.h | 20 ++++++++--------
+ stdlib/bits/stdlib.h  | 10 ++++----
+ wcsmbs/bits/wchar2.h  | 56 +++++++++++++++++++++----------------------
+ 5 files changed, 64 insertions(+), 63 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index ed2fe84fa0f2dc1a0e4ccdbfe49a94996230ac61..15cda0b84de527296bcfa95891b103b2c2804bab 100644
+--- a/NEWS
++++ b/NEWS
+@@ -102,6 +102,7 @@ The following bugs are resolved with this release:
+   [31890] resolv: Allow short error responses to match any DNS query
+   [31965] rseq extension mechanism does not work as intended
+   [31968] mremap implementation in C does not handle arguments correctly
++  [32052] Name space violation in fortify wrappers
+ 
+ Version 2.36
+ 
+diff --git a/libio/bits/stdio2.h b/libio/bits/stdio2.h
+index b1e200e7164bfd7a56479a2b1333b3154d575bbf..0fa261257c1af4942f7a05f8ebd186ff7f62f548 100644
+--- a/libio/bits/stdio2.h
++++ b/libio/bits/stdio2.h
+@@ -208,12 +208,12 @@ extern char *__REDIRECT (__fgets_chk_warn,
+ __fortify_function __wur __fortified_attr_access (__write_only__, 1, 2) char *
+ fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
+ {
+-  size_t sz = __glibc_objsize (__s);
+-  if (__glibc_safe_or_unknown_len (__n, sizeof (char), sz))
++  size_t __sz = __glibc_objsize (__s);
++  if (__glibc_safe_or_unknown_len (__n, sizeof (char), __sz))
+     return __fgets_alias (__s, __n, __stream);
+-  if (__glibc_unsafe_len (__n, sizeof (char), sz))
+-    return __fgets_chk_warn (__s, sz, __n, __stream);
+-  return __fgets_chk (__s, sz, __n, __stream);
++  if (__glibc_unsafe_len (__n, sizeof (char), __sz))
++    return __fgets_chk_warn (__s, __sz, __n, __stream);
++  return __fgets_chk (__s, __sz, __n, __stream);
+ }
+ 
+ extern size_t __REDIRECT (__fread_alias,
+@@ -232,12 +232,12 @@ __fortify_function __wur size_t
+ fread (void *__restrict __ptr, size_t __size, size_t __n,
+        FILE *__restrict __stream)
+ {
+-  size_t sz = __glibc_objsize0 (__ptr);
+-  if (__glibc_safe_or_unknown_len (__n, __size, sz))
++  size_t __sz = __glibc_objsize0 (__ptr);
++  if (__glibc_safe_or_unknown_len (__n, __size, __sz))
+     return __fread_alias (__ptr, __size, __n, __stream);
+-  if (__glibc_unsafe_len (__n, __size, sz))
+-    return __fread_chk_warn (__ptr, sz, __size, __n, __stream);
+-  return __fread_chk (__ptr, sz, __size, __n, __stream);
++  if (__glibc_unsafe_len (__n, __size, __sz))
++    return __fread_chk_warn (__ptr, __sz, __size, __n, __stream);
++  return __fread_chk (__ptr, __sz, __size, __n, __stream);
+ }
+ 
+ #ifdef __USE_GNU
+@@ -254,12 +254,12 @@ extern char *__REDIRECT (__fgets_unlocked_chk_warn,
+ __fortify_function __wur __fortified_attr_access (__write_only__, 1, 2) char *
+ fgets_unlocked (char *__restrict __s, int __n, FILE *__restrict __stream)
+ {
+-  size_t sz = __glibc_objsize (__s);
+-  if (__glibc_safe_or_unknown_len (__n, sizeof (char), sz))
++  size_t __sz = __glibc_objsize (__s);
++  if (__glibc_safe_or_unknown_len (__n, sizeof (char), __sz))
+     return __fgets_unlocked_alias (__s, __n, __stream);
+-  if (__glibc_unsafe_len (__n, sizeof (char), sz))
+-    return __fgets_unlocked_chk_warn (__s, sz, __n, __stream);
+-  return __fgets_unlocked_chk (__s, sz, __n, __stream);
++  if (__glibc_unsafe_len (__n, sizeof (char), __sz))
++    return __fgets_unlocked_chk_warn (__s, __sz, __n, __stream);
++  return __fgets_unlocked_chk (__s, __sz, __n, __stream);
+ }
+ #endif
+ 
+@@ -281,8 +281,8 @@ __fortify_function __wur size_t
+ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
+ 		FILE *__restrict __stream)
+ {
+-  size_t sz = __glibc_objsize0 (__ptr);
+-  if (__glibc_safe_or_unknown_len (__n, __size, sz))
++  size_t __sz = __glibc_objsize0 (__ptr);
++  if (__glibc_safe_or_unknown_len (__n, __size, __sz))
+     {
+ # ifdef __USE_EXTERN_INLINES
+       if (__builtin_constant_p (__size)
+@@ -307,9 +307,9 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
+ # endif
+       return __fread_unlocked_alias (__ptr, __size, __n, __stream);
+     }
+-  if (__glibc_unsafe_len (__n, __size, sz))
+-    return __fread_unlocked_chk_warn (__ptr, sz, __size, __n, __stream);
+-  return __fread_unlocked_chk (__ptr, sz, __size, __n, __stream);
++  if (__glibc_unsafe_len (__n, __size, __sz))
++    return __fread_unlocked_chk_warn (__ptr, __sz, __size, __n, __stream);
++  return __fread_unlocked_chk (__ptr, __sz, __size, __n, __stream);
+ 
+ }
+ #endif
+diff --git a/socket/bits/socket2.h b/socket/bits/socket2.h
+index 0aface56398fdcf801a00d774e1d6a84aafa0457..0b1cb015ce2553afbf64947af27d91af92029ed0 100644
+--- a/socket/bits/socket2.h
++++ b/socket/bits/socket2.h
+@@ -33,12 +33,12 @@ extern ssize_t __REDIRECT (__recv_chk_warn,
+ __fortify_function ssize_t
+ recv (int __fd, void *__buf, size_t __n, int __flags)
+ {
+-  size_t sz = __glibc_objsize0 (__buf);
+-  if (__glibc_safe_or_unknown_len (__n, sizeof (char), sz))
++  size_t __sz = __glibc_objsize0 (__buf);
++  if (__glibc_safe_or_unknown_len (__n, sizeof (char), __sz))
+     return __recv_alias (__fd, __buf, __n, __flags);
+-  if (__glibc_unsafe_len (__n, sizeof (char), sz))
+-    return __recv_chk_warn (__fd, __buf, __n, sz, __flags);
+-  return __recv_chk (__fd, __buf, __n, sz, __flags);
++  if (__glibc_unsafe_len (__n, sizeof (char), __sz))
++    return __recv_chk_warn (__fd, __buf, __n, __sz, __flags);
++  return __recv_chk (__fd, __buf, __n, __sz, __flags);
+ }
+ 
+ extern ssize_t __recvfrom_chk (int __fd, void *__restrict __buf, size_t __n,
+@@ -61,11 +61,11 @@ __fortify_function ssize_t
+ recvfrom (int __fd, void *__restrict __buf, size_t __n, int __flags,
+ 	  __SOCKADDR_ARG __addr, socklen_t *__restrict __addr_len)
+ {
+-  size_t sz = __glibc_objsize0 (__buf);
+-  if (__glibc_safe_or_unknown_len (__n, sizeof (char), sz))
++  size_t __sz = __glibc_objsize0 (__buf);
++  if (__glibc_safe_or_unknown_len (__n, sizeof (char), __sz))
+     return __recvfrom_alias (__fd, __buf, __n, __flags, __addr, __addr_len);
+-  if (__glibc_unsafe_len (__n, sizeof (char), sz))
+-    return __recvfrom_chk_warn (__fd, __buf, __n, sz, __flags, __addr,
++  if (__glibc_unsafe_len (__n, sizeof (char), __sz))
++    return __recvfrom_chk_warn (__fd, __buf, __n, __sz, __flags, __addr,
+ 				__addr_len);
+-  return __recvfrom_chk (__fd, __buf, __n, sz, __flags, __addr, __addr_len);
++  return __recvfrom_chk (__fd, __buf, __n, __sz, __flags, __addr, __addr_len);
+ }
+diff --git a/stdlib/bits/stdlib.h b/stdlib/bits/stdlib.h
+index de1c3b20f0ba84b6e7c86c0e5cc45994fed97398..19f8bd5b52e2866bbf1837e8db43e42f4cabb770 100644
+--- a/stdlib/bits/stdlib.h
++++ b/stdlib/bits/stdlib.h
+@@ -36,16 +36,16 @@ extern char *__REDIRECT_NTH (__realpath_chk_warn,
+ __fortify_function __wur char *
+ __NTH (realpath (const char *__restrict __name, char *__restrict __resolved))
+ {
+-  size_t sz = __glibc_objsize (__resolved);
++  size_t __sz = __glibc_objsize (__resolved);
+ 
+-  if (sz == (size_t) -1)
++  if (__sz == (size_t) -1)
+     return __realpath_alias (__name, __resolved);
+ 
+ #if defined _LIBC_LIMITS_H_ && defined PATH_MAX
+-  if (__glibc_unsafe_len (PATH_MAX, sizeof (char), sz))
+-    return __realpath_chk_warn (__name, __resolved, sz);
++  if (__glibc_unsafe_len (PATH_MAX, sizeof (char), __sz))
++    return __realpath_chk_warn (__name, __resolved, __sz);
+ #endif
+-  return __realpath_chk (__name, __resolved, sz);
++  return __realpath_chk (__name, __resolved, __sz);
+ }
+ 
+ 
+diff --git a/wcsmbs/bits/wchar2.h b/wcsmbs/bits/wchar2.h
+index 3f110efe57bc295b149100090e95942b5aa009c8..1181d36c24cfbdd10b5e1195d7679cbf6e48f48b 100644
+--- a/wcsmbs/bits/wchar2.h
++++ b/wcsmbs/bits/wchar2.h
+@@ -107,9 +107,9 @@ extern wchar_t *__REDIRECT_NTH (__wcscpy_alias,
+ __fortify_function wchar_t *
+ __NTH (wcscpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src))
+ {
+-  size_t sz = __glibc_objsize (__dest);
+-  if (sz != (size_t) -1)
+-    return __wcscpy_chk (__dest, __src, sz / sizeof (wchar_t));
++  size_t __sz = __glibc_objsize (__dest);
++  if (__sz != (size_t) -1)
++    return __wcscpy_chk (__dest, __src, __sz / sizeof (wchar_t));
+   return __wcscpy_alias (__dest, __src);
+ }
+ 
+@@ -121,9 +121,9 @@ extern wchar_t *__REDIRECT_NTH (__wcpcpy_alias,
+ __fortify_function wchar_t *
+ __NTH (wcpcpy (wchar_t *__restrict __dest, const wchar_t *__restrict __src))
+ {
+-  size_t sz = __glibc_objsize (__dest);
+-  if (sz != (size_t) -1)
+-    return __wcpcpy_chk (__dest, __src, sz / sizeof (wchar_t));
++  size_t __sz = __glibc_objsize (__dest);
++  if (__sz != (size_t) -1)
++    return __wcpcpy_chk (__dest, __src, __sz / sizeof (wchar_t));
+   return __wcpcpy_alias (__dest, __src);
+ }
+ 
+@@ -177,9 +177,9 @@ extern wchar_t *__REDIRECT_NTH (__wcscat_alias,
+ __fortify_function wchar_t *
+ __NTH (wcscat (wchar_t *__restrict __dest, const wchar_t *__restrict __src))
+ {
+-  size_t sz = __glibc_objsize (__dest);
+-  if (sz != (size_t) -1)
+-    return __wcscat_chk (__dest, __src, sz / sizeof (wchar_t));
++  size_t __sz = __glibc_objsize (__dest);
++  if (__sz != (size_t) -1)
++    return __wcscat_chk (__dest, __src, __sz / sizeof (wchar_t));
+   return __wcscat_alias (__dest, __src);
+ }
+ 
+@@ -193,9 +193,9 @@ __fortify_function wchar_t *
+ __NTH (wcsncat (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
+ 		size_t __n))
+ {
+-  size_t sz = __glibc_objsize (__dest);
+-  if (sz != (size_t) -1)
+-    return __wcsncat_chk (__dest, __src, __n, sz / sizeof (wchar_t));
++  size_t __sz = __glibc_objsize (__dest);
++  if (__sz != (size_t) -1)
++    return __wcsncat_chk (__dest, __src, __n, __sz / sizeof (wchar_t));
+   return __wcsncat_alias (__dest, __src, __n);
+ }
+ 
+@@ -211,10 +211,10 @@ __fortify_function int
+ __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
+ 		 const wchar_t *__restrict __fmt, ...))
+ {
+-  size_t sz = __glibc_objsize (__s);
+-  if (sz != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
++  size_t __sz = __glibc_objsize (__s);
++  if (__sz != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
+     return __swprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+-			   sz / sizeof (wchar_t), __fmt, __va_arg_pack ());
++			   __sz / sizeof (wchar_t), __fmt, __va_arg_pack ());
+   return __swprintf_alias (__s, __n, __fmt, __va_arg_pack ());
+ }
+ #elif !defined __cplusplus
+@@ -236,10 +236,10 @@ __fortify_function int
+ __NTH (vswprintf (wchar_t *__restrict __s, size_t __n,
+ 		  const wchar_t *__restrict __fmt, __gnuc_va_list __ap))
+ {
+-  size_t sz = __glibc_objsize (__s);
+-  if (sz != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
++  size_t __sz = __glibc_objsize (__s);
++  if (__sz != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
+     return __vswprintf_chk (__s, __n,  __USE_FORTIFY_LEVEL - 1,
+-			    sz / sizeof (wchar_t), __fmt, __ap);
++			    __sz / sizeof (wchar_t), __fmt, __ap);
+   return __vswprintf_alias (__s, __n, __fmt, __ap);
+ }
+ 
+@@ -293,12 +293,12 @@ extern wchar_t *__REDIRECT (__fgetws_chk_warn,
+ __fortify_function __wur wchar_t *
+ fgetws (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+ {
+-  size_t sz = __glibc_objsize (__s);
+-  if (__glibc_safe_or_unknown_len (__n, sizeof (wchar_t), sz))
++  size_t __sz = __glibc_objsize (__s);
++  if (__glibc_safe_or_unknown_len (__n, sizeof (wchar_t), __sz))
+     return __fgetws_alias (__s, __n, __stream);
+-  if (__glibc_unsafe_len (__n, sizeof (wchar_t), sz))
+-    return __fgetws_chk_warn (__s, sz / sizeof (wchar_t), __n, __stream);
+-  return __fgetws_chk (__s, sz / sizeof (wchar_t), __n, __stream);
++  if (__glibc_unsafe_len (__n, sizeof (wchar_t), __sz))
++    return __fgetws_chk_warn (__s, __sz / sizeof (wchar_t), __n, __stream);
++  return __fgetws_chk (__s, __sz / sizeof (wchar_t), __n, __stream);
+ }
+ 
+ #ifdef __USE_GNU
+@@ -316,13 +316,13 @@ extern wchar_t *__REDIRECT (__fgetws_unlocked_chk_warn,
+ __fortify_function __wur wchar_t *
+ fgetws_unlocked (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+ {
+-  size_t sz = __glibc_objsize (__s);
+-  if (__glibc_safe_or_unknown_len (__n, sizeof (wchar_t), sz))
++  size_t __sz = __glibc_objsize (__s);
++  if (__glibc_safe_or_unknown_len (__n, sizeof (wchar_t), __sz))
+     return __fgetws_unlocked_alias (__s, __n, __stream);
+-  if (__glibc_unsafe_len (__n, sizeof (wchar_t), sz))
+-    return __fgetws_unlocked_chk_warn (__s, sz / sizeof (wchar_t), __n,
++  if (__glibc_unsafe_len (__n, sizeof (wchar_t), __sz))
++    return __fgetws_unlocked_chk_warn (__s, __sz / sizeof (wchar_t), __n,
+ 				       __stream);
+-  return __fgetws_unlocked_chk (__s, sz / sizeof (wchar_t), __n, __stream);
++  return __fgetws_unlocked_chk (__s, __sz / sizeof (wchar_t), __n, __stream);
+ }
+ #endif
+ 
+-- 
+2.53.0
+

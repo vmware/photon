@@ -1,0 +1,62 @@
+From 909ec8415cc1d2350abddfcaacec99448966e610 Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Thu, 1 Jun 2023 07:23:15 -0400
+Subject: [PATCH 232/254] support: Don't fail on fchown when spawning sgid
+ processes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In some cases (e.g. when podman creates user containers), the only other
+group assigned to the executing user is nobody and fchown fails with it
+because the group is not mapped.  Do not fail the test in this case,
+instead exit as unsupported.
+
+Reported-by: Frédéric Bérat <fberat@redhat.com>
+Tested-by: Frédéric Bérat <fberat@redhat.com>
+Signed-off-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 6286cca2cb8389dcffec39238a8bf15ffea96396)
+---
+ support/support_capture_subprocess.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/support/support_capture_subprocess.c b/support/support_capture_subprocess.c
+index 1b4aa66ede5e98a14ef5c69f4d2c85bb5f33d7b6..d63fe8a027e5be6f4c92829e279000b9f4981f4e 100644
+--- a/support/support_capture_subprocess.c
++++ b/support/support_capture_subprocess.c
+@@ -153,9 +153,18 @@ copy_and_spawn_sgid (const char *child_id, gid_t gid)
+ 	  p += wrcount;
+ 	}
+     }
+-  TEST_VERIFY (fchown (outfd, getuid (), gid) == 0);
++
++  bool chowned = false;
++  TEST_VERIFY ((chowned = fchown (outfd, getuid (), gid) == 0)
++	       || errno == EPERM);
+   if (support_record_failure_is_failed ())
+     goto err;
++  else if (!chowned)
++    {
++      ret = 77;
++      goto err;
++    }
++
+   TEST_VERIFY (fchmod (outfd, 02750) == 0);
+   if (support_record_failure_is_failed ())
+     goto err;
+@@ -192,8 +201,10 @@ err:
+       free (dirname);
+     }
+ 
++  if (ret == 77)
++    FAIL_UNSUPPORTED ("Failed to make sgid executable for test\n");
+   if (ret != 0)
+-    FAIL_EXIT1("Failed to make sgid executable for test\n");
++    FAIL_EXIT1 ("Failed to make sgid executable for test\n");
+ 
+   return status;
+ }
+-- 
+2.53.0
+

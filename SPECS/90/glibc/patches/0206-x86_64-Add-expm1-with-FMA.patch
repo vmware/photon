@@ -1,0 +1,135 @@
+From f3a9a9faccac027496bcf088a9a3a54beec95420 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Fri, 11 Aug 2023 08:04:08 -0700
+Subject: [PATCH 206/254] x86_64: Add expm1 with FMA
+
+On Skylake, it improves expm1 bench performance by:
+
+        Before       After     Improvement
+max     70.204       68.054       3%
+min     20.709       16.2         22%
+mean    22.1221      16.7367      24%
+
+NB: Add
+
+extern long double __expm1l (long double);
+extern long double __expm1f128 (long double);
+
+for __typeof (__expm1l) and __typeof (__expm1f128) when __expm1 is
+defined since __expm1 may be expanded in their declarations which
+causes the build failure.
+
+(cherry picked from commit 1b214630ce6f7e0099b8b6f87246246739b079cf)
+---
+ sysdeps/ieee754/dbl-64/s_expm1.c           |  7 +++++
+ sysdeps/x86_64/fpu/multiarch/Makefile      |  2 ++
+ sysdeps/x86_64/fpu/multiarch/s_expm1-fma.c | 10 ++++++
+ sysdeps/x86_64/fpu/multiarch/s_expm1.c     | 36 ++++++++++++++++++++++
+ 4 files changed, 55 insertions(+)
+ create mode 100644 sysdeps/x86_64/fpu/multiarch/s_expm1-fma.c
+ create mode 100644 sysdeps/x86_64/fpu/multiarch/s_expm1.c
+
+diff --git a/sysdeps/ieee754/dbl-64/s_expm1.c b/sysdeps/ieee754/dbl-64/s_expm1.c
+index 8f1c95bd04bdb0bc44113c13b62c58c75c106a3f..1cafeca9c02381a1ef8bdce21b0f45dfe879ce9f 100644
+--- a/sysdeps/ieee754/dbl-64/s_expm1.c
++++ b/sysdeps/ieee754/dbl-64/s_expm1.c
+@@ -130,6 +130,11 @@ static const double
+ 	  4.00821782732936239552e-06, /* 3ED0CFCA 86E65239 */
+ 	  -2.01099218183624371326e-07 }; /* BE8AFDB7 6E09C32D */
+ 
++#ifndef SECTION
++# define SECTION
++#endif
++
++SECTION
+ double
+ __expm1 (double x)
+ {
+@@ -258,4 +263,6 @@ __expm1 (double x)
+     }
+   return y;
+ }
++#ifndef __expm1
+ libm_alias_double (__expm1, expm1)
++#endif
+diff --git a/sysdeps/x86_64/fpu/multiarch/Makefile b/sysdeps/x86_64/fpu/multiarch/Makefile
+index f773255721b8a04244f7290cb68ccdd062aa81b8..add339a876c97898f3540cd098796b96b11c8024 100644
+--- a/sysdeps/x86_64/fpu/multiarch/Makefile
++++ b/sysdeps/x86_64/fpu/multiarch/Makefile
+@@ -37,6 +37,7 @@ libm-sysdep_routines += \
+   e_log2-fma \
+   e_pow-fma \
+   s_atan-fma \
++  s_expm1-fma \
+   s_sin-fma \
+   s_sincos-fma \
+   s_tan-fma \
+@@ -49,6 +50,7 @@ CFLAGS-e_log-fma.c = -mfma -mavx2
+ CFLAGS-e_log2-fma.c = -mfma -mavx2
+ CFLAGS-e_pow-fma.c = -mfma -mavx2
+ CFLAGS-s_atan-fma.c = -mfma -mavx2
++CFLAGS-s_expm1-fma.c = -mfma -mavx2
+ CFLAGS-s_sin-fma.c = -mfma -mavx2
+ CFLAGS-s_tan-fma.c = -mfma -mavx2
+ CFLAGS-s_sincos-fma.c = -mfma -mavx2
+diff --git a/sysdeps/x86_64/fpu/multiarch/s_expm1-fma.c b/sysdeps/x86_64/fpu/multiarch/s_expm1-fma.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..3ee2bd804ebdea4df4dc2c79ca71e1587d522746
+--- /dev/null
++++ b/sysdeps/x86_64/fpu/multiarch/s_expm1-fma.c
+@@ -0,0 +1,10 @@
++#define __expm1 __expm1_fma
++
++/* NB: __expm1 may be expanded to __expm1_fma in the following
++   prototypes.  */
++extern long double __expm1l (long double);
++extern long double __expm1f128 (long double);
++
++#define SECTION __attribute__ ((section (".text.fma")))
++
++#include <sysdeps/ieee754/dbl-64/s_expm1.c>
+diff --git a/sysdeps/x86_64/fpu/multiarch/s_expm1.c b/sysdeps/x86_64/fpu/multiarch/s_expm1.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..2cae83fb7f21bb992414e553c56f3d50ef6ee591
+--- /dev/null
++++ b/sysdeps/x86_64/fpu/multiarch/s_expm1.c
+@@ -0,0 +1,36 @@
++/* Multiple versions of expm1.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <libm-alias-double.h>
++
++extern double __redirect_expm1 (double);
++
++#define SYMBOL_NAME expm1
++#include "ifunc-fma.h"
++
++libc_ifunc_redirected (__redirect_expm1, __expm1, IFUNC_SELECTOR ());
++libm_alias_double (__expm1, expm1)
++
++#define __expm1 __expm1_sse2
++
++/* NB: __expm1 may be expanded to __expm1_sse2 in the following
++   prototypes.  */
++extern long double __expm1l (long double);
++extern long double __expm1f128 (long double);
++
++#include <sysdeps/ieee754/dbl-64/s_expm1.c>
+-- 
+2.53.0
+

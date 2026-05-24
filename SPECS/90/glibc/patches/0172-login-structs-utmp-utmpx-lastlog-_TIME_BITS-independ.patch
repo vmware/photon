@@ -1,7 +1,7 @@
 From 85242ed63a33cac458eae3ffe504693680b686d9 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 19 Apr 2024 14:38:17 +0200
-Subject: [PATCH 172/175] login: structs utmp, utmpx, lastlog _TIME_BITS
+Subject: [PATCH 172/254] login: structs utmp, utmpx, lastlog _TIME_BITS
  independence (bug 30701)
 
 These structs describe file formats under /var/log, and should not
@@ -395,5 +395,5 @@ index 70f652bca14d65c1de5a21669e7c0ffb8ecfe5ea..3f40aa76f99c75e5aabc1390ab4a2ff4
 -# define __WORDSIZE_TIME64_COMPAT32	0
  #endif
 -- 
-2.35.6
+2.53.0
 

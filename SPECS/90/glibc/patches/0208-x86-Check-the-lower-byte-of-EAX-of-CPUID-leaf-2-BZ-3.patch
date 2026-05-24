@@ -1,0 +1,77 @@
+From f1c33665e545d8f8bcf57df600cd48630b74fddc Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Mon, 28 Aug 2023 12:08:14 -0700
+Subject: [PATCH 208/254] x86: Check the lower byte of EAX of CPUID leaf 2 [BZ
+ #30643]
+
+The old Intel software developer manual specified that the low byte of
+EAX of CPUID leaf 2 returned 1 which indicated the number of rounds of
+CPUDID leaf 2 was needed to retrieve the complete cache information. The
+newer Intel manual has been changed to that it should always return 1
+and be ignored.  If the lower byte isn't 1, CPUID leaf 2 can't be used.
+In this case, we ignore CPUID leaf 2 and use CPUID leaf 4 instead.  If
+CPUID leaf 4 doesn't contain the cache information, cache information
+isn't available at all.  This addresses BZ #30643.
+
+(cherry picked from commit 1493622f4f9048ffede3fbedb64695efa49d662a)
+---
+ sysdeps/x86/dl-cacheinfo.h | 31 +++++++++++++------------------
+ 1 file changed, 13 insertions(+), 18 deletions(-)
+
+diff --git a/sysdeps/x86/dl-cacheinfo.h b/sysdeps/x86/dl-cacheinfo.h
+index 72ee1788e3a91ce14d07a489601a10ea3b926676..16ee0f5b36e33db4558e3c2a020fa9c440f684dd 100644
+--- a/sysdeps/x86/dl-cacheinfo.h
++++ b/sysdeps/x86/dl-cacheinfo.h
+@@ -187,7 +187,7 @@ intel_check_word (int name, unsigned int value, bool *has_level_2,
+ 	      ++round;
+ 	    }
+ 	  /* There is no other cache information anywhere else.  */
+-	  break;
++	  return -1;
+ 	}
+       else
+ 	{
+@@ -257,28 +257,23 @@ handle_intel (int name, const struct cpu_features *cpu_features)
+ 
+   /* OK, we can use the CPUID instruction to get all info about the
+      caches.  */
+-  unsigned int cnt = 0;
+-  unsigned int max = 1;
+   long int result = 0;
+   bool no_level_2_or_3 = false;
+   bool has_level_2 = false;
++  unsigned int eax;
++  unsigned int ebx;
++  unsigned int ecx;
++  unsigned int edx;
++  __cpuid (2, eax, ebx, ecx, edx);
+ 
+-  while (cnt++ < max)
++  /* The low byte of EAX of CPUID leaf 2 should always return 1 and it
++     should be ignored.  If it isn't 1, use CPUID leaf 4 instead.  */
++  if ((eax & 0xff) != 1)
++    return intel_check_word (name, 0xff, &has_level_2, &no_level_2_or_3,
++			     cpu_features);
++  else
+     {
+-      unsigned int eax;
+-      unsigned int ebx;
+-      unsigned int ecx;
+-      unsigned int edx;
+-      __cpuid (2, eax, ebx, ecx, edx);
+-
+-      /* The low byte of EAX in the first round contain the number of
+-	 rounds we have to make.  At least one, the one we are already
+-	 doing.  */
+-      if (cnt == 1)
+-	{
+-	  max = eax & 0xff;
+-	  eax &= 0xffffff00;
+-	}
++      eax &= 0xffffff00;
+ 
+       /* Process the individual registers' value.  */
+       result = intel_check_word (name, eax, &has_level_2,
+-- 
+2.53.0
+

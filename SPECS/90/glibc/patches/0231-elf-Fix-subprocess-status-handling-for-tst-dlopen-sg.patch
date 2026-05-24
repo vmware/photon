@@ -1,0 +1,62 @@
+From 9403232d98c3328a3b3944334ebdbeea01481af2 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 21 May 2025 08:43:32 +0200
+Subject: [PATCH 231/254] elf: Fix subprocess status handling for
+ tst-dlopen-sgid (bug 32987)
+
+This should really move into support_capture_subprogram_self_sgid.
+
+Reviewed-by: Sam James <sam@gentoo.org>
+(cherry picked from commit 35fc356fa3b4f485bd3ba3114c9f774e5df7d3c2)
+---
+ NEWS                  |  1 +
+ elf/tst-dlopen-sgid.c | 12 ++++++++++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 96ff2c8a2059f6762f5e189c60d139b3eec565a2..5efe374819683adeab83900bd81405c0fb61f0ab 100644
+--- a/NEWS
++++ b/NEWS
+@@ -113,6 +113,7 @@ The following bugs are resolved with this release:
+   [32231] elf: Change ldconfig auxcache magic number
+   [32470] x86: Avoid integer truncation with large cache sizes
+   [32582] Fix underallocation of abort_msg_s struct (CVE-2025-0395)
++  [32987] elf: Fix subprocess status handling for tst-dlopen-sgid
+ 
+ Version 2.36
+ 
+diff --git a/elf/tst-dlopen-sgid.c b/elf/tst-dlopen-sgid.c
+index 47829a405e90b6b92fb7932f47dc178ee18c51b6..5688b79f2e870b1dd4dd66c098f03632a0afccc0 100644
+--- a/elf/tst-dlopen-sgid.c
++++ b/elf/tst-dlopen-sgid.c
+@@ -26,6 +26,8 @@
+ #include <support/check.h>
+ #include <support/support.h>
+ #include <support/temp_file.h>
++#include <support/test-driver.h>
++#include <sys/wait.h>
+ #include <unistd.h>
+ 
+ /* This is the name of our test object.  Use a custom module for
+@@ -66,10 +68,16 @@ do_test (void)
+     free (from);
+   }
+ 
+-  TEST_COMPARE (support_capture_subprogram_self_sgid (magic_argument), 0);
+-
+   free (libdir);
+ 
++  int status = support_capture_subprogram_self_sgid (magic_argument);
++
++  if (WEXITSTATUS (status) == EXIT_UNSUPPORTED)
++    return EXIT_UNSUPPORTED;
++
++  if (!WIFEXITED (status))
++    FAIL_EXIT1 ("Unexpected exit status %d from child process\n", status);
++
+   return 0;
+ }
+ 
+-- 
+2.53.0
+

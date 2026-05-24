@@ -1,0 +1,146 @@
+From e76e84dfcb3328b441151824d3f2761c79052f18 Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Tue, 13 Aug 2024 21:08:49 -0400
+Subject: [PATCH 196/254] ungetc: Fix backup buffer leak on program exit [BZ
+ #27821]
+
+If a file descriptor is left unclosed and is cleaned up by _IO_cleanup
+on exit, its backup buffer remains unfreed, registering as a leak in
+valgrind.  This is not strictly an issue since (1) the program should
+ideally be closing the stream once it's not in use and (2) the program
+is about to exit anyway, so keeping the backup buffer around a wee bit
+longer isn't a real problem.  Free it anyway to keep valgrind happy
+when the streams in question are the standard ones, i.e. stdout, stdin
+or stderr.
+
+Also, the _IO_have_backup macro checks for _IO_save_base,
+which is a roundabout way to check for a backup buffer instead of
+directly looking for _IO_backup_base.  The roundabout check breaks when
+the main get area has not been used and user pushes a char into the
+backup buffer with ungetc.  Fix this to use the _IO_backup_base
+directly.
+
+Signed-off-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 3e1d8d1d1dca24ae90df2ea826a8916896fc7e77)
+(cherry picked from commit b9f72bd5de931eac39219018c2fa319a449bb2cf)
+---
+ libio/genops.c                 |  6 ++++++
+ libio/libioP.h                 |  4 ++--
+ stdio-common/Makefile          |  7 +++++++
+ stdio-common/tst-ungetc-leak.c | 32 ++++++++++++++++++++++++++++++++
+ 4 files changed, 47 insertions(+), 2 deletions(-)
+ create mode 100644 stdio-common/tst-ungetc-leak.c
+
+diff --git a/libio/genops.c b/libio/genops.c
+index c27b3b1f415a1477ce64891a3ed20da98c650efd..36add52faab300f070c5e5161c958bc96dcf7b47 100644
+--- a/libio/genops.c
++++ b/libio/genops.c
+@@ -796,6 +796,12 @@ _IO_unbuffer_all (void)
+ 	legacy = 1;
+ #endif
+ 
++      /* Free up the backup area if it was ever allocated.  */
++      if (_IO_have_backup (fp))
++	_IO_free_backup_area (fp);
++      if (fp->_mode > 0 && _IO_have_wbackup (fp))
++	_IO_free_wbackup_area (fp);
++
+       if (! (fp->_flags & _IO_UNBUFFERED)
+ 	  /* Iff stream is un-orientated, it wasn't used. */
+ 	  && (legacy || fp->_mode != 0))
+diff --git a/libio/libioP.h b/libio/libioP.h
+index ba4fdbd200c2692d32fca55c992ca7155fb14718..bef3324ffb39f3ae67a45cc879f177516bb20673 100644
+--- a/libio/libioP.h
++++ b/libio/libioP.h
+@@ -529,8 +529,8 @@ extern void _IO_old_init (FILE *fp, int flags) __THROW;
+        ((__fp)->_wide_data->_IO_write_base \
+ 	= (__fp)->_wide_data->_IO_write_ptr = __p, \
+ 	(__fp)->_wide_data->_IO_write_end = (__ep))
+-#define _IO_have_backup(fp) ((fp)->_IO_save_base != NULL)
+-#define _IO_have_wbackup(fp) ((fp)->_wide_data->_IO_save_base != NULL)
++#define _IO_have_backup(fp) ((fp)->_IO_backup_base != NULL)
++#define _IO_have_wbackup(fp) ((fp)->_wide_data->_IO_backup_base != NULL)
+ #define _IO_in_backup(fp) ((fp)->_flags & _IO_IN_BACKUP)
+ #define _IO_have_markers(fp) ((fp)->_markers != NULL)
+ #define _IO_blen(fp) ((fp)->_IO_buf_end - (fp)->_IO_buf_base)
+diff --git a/stdio-common/Makefile b/stdio-common/Makefile
+index 129c0448129980844a8a1ba6c710ffb8a815dbc9..743e2611fa21c5817a5e347d70dc80ecaba13af0 100644
+--- a/stdio-common/Makefile
++++ b/stdio-common/Makefile
+@@ -202,6 +202,7 @@ tests := \
+   tst-swscanf \
+   tst-tmpnam \
+   tst-ungetc \
++  tst-ungetc-leak \
+   tst-unlockedio \
+   tst-vfprintf-mbs-prec \
+   tst-vfprintf-user-type \
+@@ -234,6 +235,7 @@ tests-special += \
+   $(objpfx)tst-printfsz-islongdouble.out \
+   $(objpfx)tst-setvbuf1-cmp.out \
+   $(objpfx)tst-unbputc.out \
++  $(objpfx)tst-ungetc-leak-mem.out \
+   $(objpfx)tst-vfprintf-width-prec-mem.out \
+   # tests-special
+ 
+@@ -248,6 +250,8 @@ generated += \
+   tst-printf-fp-leak-mem.out \
+   tst-printf-fp-leak.mtrace \
+   tst-scanf-bz27650.mtrace \
++  tst-ungetc-leak-mem.out \
++  tst-ungetc-leak.mtrace \
+   tst-vfprintf-width-prec-mem.out \
+   tst-vfprintf-width-prec.mtrace \
+   # generated
+@@ -321,6 +325,9 @@ tst-printf-fp-leak-ENV = \
+ tst-scanf-bz27650-ENV = \
+   MALLOC_TRACE=$(objpfx)tst-scanf-bz27650.mtrace \
+   LD_PRELOAD=$(common-objpfx)malloc/libc_malloc_debug.so
++tst-ungetc-leak-ENV = \
++  MALLOC_TRACE=$(objpfx)tst-ungetc-leak.mtrace \
++  LD_PRELOAD=$(common-objpfx)malloc/libc_malloc_debug.so
+ 
+ $(objpfx)tst-unbputc.out: tst-unbputc.sh $(objpfx)tst-unbputc
+ 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)'; \
+diff --git a/stdio-common/tst-ungetc-leak.c b/stdio-common/tst-ungetc-leak.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c5152b43f80b217f5c87bf2af5dd4da5bfc7d5c
+--- /dev/null
++++ b/stdio-common/tst-ungetc-leak.c
+@@ -0,0 +1,32 @@
++/* Test for memory leak with ungetc when stream is unused.
++   Copyright The GNU Toolchain Authors.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <stdio.h>
++#include <mcheck.h>
++#include <support/check.h>
++#include <support/support.h>
++
++static int
++do_test (void)
++{
++  mtrace ();
++  TEST_COMPARE (ungetc('y', stdin), 'y');
++  return 0;
++}
++
++#include <support/test-driver.c>
+-- 
+2.53.0
+

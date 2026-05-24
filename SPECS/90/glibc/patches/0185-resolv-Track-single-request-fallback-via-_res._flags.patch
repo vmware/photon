@@ -1,0 +1,81 @@
+From 3d252f17b817627238e9bed3ca5ce5ebca481937 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Thu, 13 Jun 2024 18:56:30 +0200
+Subject: [PATCH 185/254] resolv: Track single-request fallback via _res._flags
+ (bug 31476)
+
+This avoids changing _res.options, which inteferes with change
+detection as part of automatic reloading of /etc/resolv.conf.
+
+Reviewed-by: DJ Delorie <dj@redhat.com>
+(cherry picked from commit 868ab8923a2ec977faafec97ecafac0c3159c1b2)
+---
+ NEWS                     |  1 +
+ resolv/res_send.c        | 12 +++++++-----
+ resolv/resolv-internal.h |  2 ++
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 3f124cbada3e3a9f582e37757d8e51cb0bce0c61..68f10fdfc73408769c644fc3ad3d605ca8cd6e26 100644
+--- a/NEWS
++++ b/NEWS
+@@ -98,6 +98,7 @@ The following bugs are resolved with this release:
+   [30843] potential use-after-free in getcanonname (CVE-2023-4806)
+   [31184] FAIL: elf/tst-tlsgap
+   [31185] Incorrect thread point access in _dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic
++  [31476] resolv: Track single-request fallback via _res._flags
+   [31890] resolv: Allow short error responses to match any DNS query
+   [31965] rseq extension mechanism does not work as intended
+ 
+diff --git a/resolv/res_send.c b/resolv/res_send.c
+index aab885f7565cb1df1cfe8f9ff500774d18f8a850..1bcc98ed21d5a9ece7a9477a6a20aff253eeb97b 100644
+--- a/resolv/res_send.c
++++ b/resolv/res_send.c
+@@ -947,9 +947,11 @@ send_dg(res_state statp,
+ 		seconds /= statp->nscount;
+ 	if (seconds <= 0)
+ 		seconds = 1;
+-	bool single_request_reopen = (statp->options & RES_SNGLKUPREOP) != 0;
+-	bool single_request = (((statp->options & RES_SNGLKUP) != 0)
+-			       | single_request_reopen);
++	bool single_request_reopen = ((statp->options & RES_SNGLKUPREOP)
++				      || (statp->_flags & RES_F_SNGLKUPREOP));
++	bool single_request = ((statp->options & RES_SNGLKUP)
++			       || (statp->_flags & RES_F_SNGLKUP)
++			       || single_request_reopen);
+ 	int save_gotsomewhere = *gotsomewhere;
+ 
+ 	int retval;
+@@ -1006,14 +1008,14 @@ send_dg(res_state statp,
+ 		       have received the first answer.  */
+ 		    if (!single_request)
+ 		      {
+-			statp->options |= RES_SNGLKUP;
++			statp->_flags |= RES_F_SNGLKUP;
+ 			single_request = true;
+ 			*gotsomewhere = save_gotsomewhere;
+ 			goto retry;
+ 		      }
+ 		    else if (!single_request_reopen)
+ 		      {
+-			statp->options |= RES_SNGLKUPREOP;
++			statp->_flags |= RES_F_SNGLKUPREOP;
+ 			single_request_reopen = true;
+ 			*gotsomewhere = save_gotsomewhere;
+ 			__res_iclose (statp, false);
+diff --git a/resolv/resolv-internal.h b/resolv/resolv-internal.h
+index bb12f474d266e451404ab550d8de733bd5992e34..170a4b9101b721dcbbcc21805e081ba32a0f2012 100644
+--- a/resolv/resolv-internal.h
++++ b/resolv/resolv-internal.h
+@@ -26,6 +26,8 @@
+ #define RES_F_VC        0x00000001 /* Socket is TCP.  */
+ #define RES_F_CONN      0x00000002 /* Socket is connected.  */
+ #define RES_F_EDNS0ERR  0x00000004 /* EDNS0 caused errors.  */
++#define RES_F_SNGLKUP	0x00200000 /* Private version of RES_SNGLKUP.  */
++#define RES_F_SNGLKUPREOP 0x00400000 /* Private version of RES_SNGLKUPREOP.  */
+ 
+ /* The structure HEADER is normally aligned on a word boundary.  In
+    some code, we need to access this structure when it may be aligned
+-- 
+2.53.0
+

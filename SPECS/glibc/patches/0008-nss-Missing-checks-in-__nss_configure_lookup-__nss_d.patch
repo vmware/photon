@@ -1,7 +1,7 @@
 From 48f5a05a7a1eeb9e0567ab429f654648f831307f Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 13 Feb 2026 09:02:07 +0100
-Subject: [PATCH 08/22] nss: Missing checks in __nss_configure_lookup,
+Subject: [PATCH 08/27] nss: Missing checks in __nss_configure_lookup,
  __nss_database_get (bug 28940)
 
 This avoids a null pointer dereference in the
@@ -407,5 +407,5 @@ index 0000000000000000000000000000000000000000..0e2985ad57b07fce220da04f69f9f75f
 +
 +#include <support/test-driver.c>
 -- 
-2.43.7
+2.53.0
 

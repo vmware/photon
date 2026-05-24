@@ -1,0 +1,79 @@
+From 86ad51cc6f0373640f8df543563f29718033234b Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Tue, 13 Aug 2024 21:00:06 -0400
+Subject: [PATCH 195/254] ungetc: Fix uninitialized read when putting into
+ unused streams [BZ #27821]
+
+When ungetc is called on an unused stream, the backup buffer is
+allocated without the main get area being present.  This results in
+every subsequent ungetc (as the stream remains in the backup area)
+checking uninitialized memory in the backup buffer when trying to put a
+character back into the stream.
+
+Avoid comparing the input character with buffer contents when in backup
+to avoid this uninitialized read.  The uninitialized read is harmless in
+this context since the location is promptly overwritten with the input
+character, thus fulfilling ungetc functionality.
+
+Also adjust wording in the manual to drop the paragraph that says glibc
+cannot do multiple ungetc back to back since with this change, ungetc
+can actually do this.
+
+Signed-off-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit cdf0f88f97b0aaceb894cc02b21159d148d7065c)
+(cherry picked from commit 804d3c8db79db204154dcf5e11a76f14fdddc570)
+---
+ libio/genops.c            | 2 +-
+ manual/stdio.texi         | 8 +++-----
+ stdio-common/tst-ungetc.c | 2 ++
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/libio/genops.c b/libio/genops.c
+index 1b629eb6954743829a1a77fb676ec3c53888c92e..c27b3b1f415a1477ce64891a3ed20da98c650efd 100644
+--- a/libio/genops.c
++++ b/libio/genops.c
+@@ -635,7 +635,7 @@ _IO_sputbackc (FILE *fp, int c)
+ {
+   int result;
+ 
+-  if (fp->_IO_read_ptr > fp->_IO_read_base
++  if (fp->_IO_read_ptr > fp->_IO_read_base && !_IO_in_backup (fp)
+       && (unsigned char)fp->_IO_read_ptr[-1] == (unsigned char)c)
+     {
+       fp->_IO_read_ptr--;
+diff --git a/manual/stdio.texi b/manual/stdio.texi
+index 753c50920d87a45b020806165d9c310ce5ea9251..9f94dd1e781380339074c8604ab8c73cda03bcfc 100644
+--- a/manual/stdio.texi
++++ b/manual/stdio.texi
+@@ -1474,11 +1474,9 @@ program; usually @code{ungetc} is used only to unread a character that
+ was just read from the same stream.  @Theglibc{} supports this
+ even on files opened in binary mode, but other systems might not.
+ 
+-@Theglibc{} only supports one character of pushback---in other
+-words, it does not work to call @code{ungetc} twice without doing input
+-in between.  Other systems might let you push back multiple characters;
+-then reading from the stream retrieves the characters in the reverse
+-order that they were pushed.
++@Theglibc{} supports pushing back multiple characters; subsequently
++reading from the stream retrieves the characters in the reverse order
++that they were pushed.
+ 
+ Pushing back characters doesn't alter the file; only the internal
+ buffering for the stream is affected.  If a file positioning function
+diff --git a/stdio-common/tst-ungetc.c b/stdio-common/tst-ungetc.c
+index 5c808f073419f00b246dd362829ec3aea3e4aef0..388b202493ddd586b93870faec6e4be3a55c9b41 100644
+--- a/stdio-common/tst-ungetc.c
++++ b/stdio-common/tst-ungetc.c
+@@ -48,6 +48,8 @@ do_test (void)
+   TEST_VERIFY_EXIT (getc (fp) == 'b');
+   TEST_VERIFY_EXIT (getc (fp) == 'l');
+   TEST_VERIFY_EXIT (ungetc ('m', fp) == 'm');
++  TEST_VERIFY_EXIT (ungetc ('n', fp) == 'n');
++  TEST_VERIFY_EXIT (getc (fp) == 'n');
+   TEST_VERIFY_EXIT (getc (fp) == 'm');
+   TEST_VERIFY_EXIT ((c = getc (fp)) == 'a');
+   TEST_VERIFY_EXIT (getc (fp) == EOF);
+-- 
+2.53.0
+

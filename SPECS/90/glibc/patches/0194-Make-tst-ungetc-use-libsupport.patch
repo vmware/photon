@@ -1,0 +1,148 @@
+From 5a9f74b6f49b61b1b0064848186a180d004c0d80 Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Wed, 14 Aug 2024 19:20:04 -0400
+Subject: [PATCH 194/254] Make tst-ungetc use libsupport
+
+Signed-off-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 3f7df7e757f4efec38e45d4068e5492efcac4856)
+(cherry picked from commit 87a1968a72e4b4e5436f3e2be1ed8a8d5a5862c7)
+---
+ stdio-common/tst-ungetc.c | 112 +++++++++++++++++++-------------------
+ 1 file changed, 57 insertions(+), 55 deletions(-)
+
+diff --git a/stdio-common/tst-ungetc.c b/stdio-common/tst-ungetc.c
+index 1344b2b591e3d6b12418d4c27bf930f783c7fcf6..5c808f073419f00b246dd362829ec3aea3e4aef0 100644
+--- a/stdio-common/tst-ungetc.c
++++ b/stdio-common/tst-ungetc.c
+@@ -1,70 +1,72 @@
+-/* Test for ungetc bugs.  */
++/* Test for ungetc bugs.
++   Copyright (C) 1996-2024 Free Software Foundation, Inc.
++   Copyright The GNU Toolchain Authors.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
+-#include <unistd.h>
+-
+-#undef assert
+-#define assert(x) \
+-  if (!(x)) \
+-    { \
+-      fputs ("test failed: " #x "\n", stderr); \
+-      retval = 1; \
+-      goto the_end; \
+-    }
++#include <support/check.h>
++#include <support/support.h>
++#include <support/temp_file.h>
++#include <support/xstdio.h>
++#include <support/xunistd.h>
+ 
+-int
+-main (int argc, char *argv[])
++static int
++do_test (void)
+ {
+-  char name[] = "/tmp/tst-ungetc.XXXXXX";
++  char *name = NULL;
+   FILE *fp = NULL;
+-  int retval = 0;
+   int c;
+   char buffer[64];
+ 
+-  int fd = mkstemp (name);
++  int fd = create_temp_file ("tst-ungetc.", &name);
+   if (fd == -1)
+-    {
+-      printf ("mkstemp failed: %m\n");
+-      return 1;
+-    }
+-  close (fd);
+-  fp = fopen (name, "w");
+-  assert (fp != NULL)
+-  fputs ("bla", fp);
+-  fclose (fp);
+-  fp = NULL;
++    FAIL_EXIT1 ("cannot create temporary file: %m");
++  xclose (fd);
+ 
+-  fp = fopen (name, "r");
+-  assert (fp != NULL);
+-  assert (ungetc ('z', fp) == 'z');
+-  assert (getc (fp) == 'z');
+-  assert (getc (fp) == 'b');
+-  assert (getc (fp) == 'l');
+-  assert (ungetc ('m', fp) == 'm');
+-  assert (getc (fp) == 'm');
+-  assert ((c = getc (fp)) == 'a');
+-  assert (getc (fp) == EOF);
+-  assert (ungetc (c, fp) == c);
+-  assert (feof (fp) == 0);
+-  assert (getc (fp) == c);
+-  assert (getc (fp) == EOF);
+-  fclose (fp);
+-  fp = NULL;
++  fp = xfopen (name, "w");
++  fputs ("bla", fp);
++  xfclose (fp);
+ 
+-  fp = fopen (name, "r");
+-  assert (fp != NULL);
+-  assert (getc (fp) == 'b');
+-  assert (getc (fp) == 'l');
+-  assert (ungetc ('b', fp) == 'b');
+-  assert (fread (buffer, 1, 64, fp) == 2);
+-  assert (buffer[0] == 'b');
+-  assert (buffer[1] == 'a');
++  fp = xfopen (name, "r");
++  TEST_VERIFY_EXIT (ungetc ('z', fp) == 'z');
++  TEST_VERIFY_EXIT (getc (fp) == 'z');
++  TEST_VERIFY_EXIT (getc (fp) == 'b');
++  TEST_VERIFY_EXIT (getc (fp) == 'l');
++  TEST_VERIFY_EXIT (ungetc ('m', fp) == 'm');
++  TEST_VERIFY_EXIT (getc (fp) == 'm');
++  TEST_VERIFY_EXIT ((c = getc (fp)) == 'a');
++  TEST_VERIFY_EXIT (getc (fp) == EOF);
++  TEST_VERIFY_EXIT (ungetc (c, fp) == c);
++  TEST_VERIFY_EXIT (feof (fp) == 0);
++  TEST_VERIFY_EXIT (getc (fp) == c);
++  TEST_VERIFY_EXIT (getc (fp) == EOF);
++  xfclose (fp);
+ 
+-the_end:
+-  if (fp != NULL)
+-    fclose (fp);
+-  unlink (name);
++  fp = xfopen (name, "r");
++  TEST_VERIFY_EXIT (getc (fp) == 'b');
++  TEST_VERIFY_EXIT (getc (fp) == 'l');
++  TEST_VERIFY_EXIT (ungetc ('b', fp) == 'b');
++  TEST_VERIFY_EXIT (fread (buffer, 1, 64, fp) == 2);
++  TEST_VERIFY_EXIT (buffer[0] == 'b');
++  TEST_VERIFY_EXIT (buffer[1] == 'a');
++  xfclose (fp);
+ 
+-  return retval;
++  return 0;
+ }
++
++#include <support/test-driver.c>
+-- 
+2.53.0
+

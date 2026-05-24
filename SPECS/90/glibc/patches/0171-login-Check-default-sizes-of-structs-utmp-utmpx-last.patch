@@ -1,7 +1,7 @@
 From eeeaf0fe2df339889f30f166c0b3c488535700cb Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 19 Apr 2024 14:38:17 +0200
-Subject: [PATCH 171/175] login: Check default sizes of structs utmp, utmpx,
+Subject: [PATCH 171/254] login: Check default sizes of structs utmp, utmpx,
  lastlog
 
 The default <utmp-size.h> is for ports with a 64-bit time_t.
@@ -243,5 +243,5 @@ index 0000000000000000000000000000000000000000..8f21ebe1b6c26ea1a5005bc2d0997ebf
 +#define UTMP_SIZE 384
 +#define LASTLOG_SIZE 292
 -- 
-2.35.6
+2.53.0
 

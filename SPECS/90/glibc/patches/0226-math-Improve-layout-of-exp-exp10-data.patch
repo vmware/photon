@@ -1,0 +1,40 @@
+From 03e0cad3a0d8cfb6e761e8e16cc09e6c96f9fd44 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Fri, 13 Dec 2024 15:43:07 +0000
+Subject: [PATCH 226/254] math: Improve layout of exp/exp10 data
+
+GCC aligns global data to 16 bytes if their size is >= 16 bytes.  This patch
+changes the exp_data struct slightly so that the fields are better aligned
+and without gaps.  As a result on targets that support them, more load-pair
+instructions are used in exp.
+
+The exp benchmark improves 2.5%, "144bits" by 7.2%, "768bits" by 12.7% on
+Neoverse V2.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 5afaf99edb326fd9f36eb306a828d129a3a1d7f7)
+(cherry picked from commit 5a08d049dc5037e89eb95bb1506652f0043fa39e)
+---
+ sysdeps/ieee754/dbl-64/math_config.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/sysdeps/ieee754/dbl-64/math_config.h b/sysdeps/ieee754/dbl-64/math_config.h
+index a346fdca582d03a910d7f6f44e7b19d4a1c6737e..6c6cee511f7887f934da0ae25259e837e1289ecf 100644
+--- a/sysdeps/ieee754/dbl-64/math_config.h
++++ b/sysdeps/ieee754/dbl-64/math_config.h
+@@ -134,10 +134,11 @@ check_uflow (double x)
+ extern const struct exp_data
+ {
+   double invln2N;
+-  double shift;
+   double negln2hiN;
+   double negln2loN;
+   double poly[4]; /* Last four coefficients.  */
++  double shift;
++
+   double exp2_shift;
+   double exp2_poly[EXP2_POLY_ORDER];
+   uint64_t tab[2*(1 << EXP_TABLE_BITS)];
+-- 
+2.53.0
+

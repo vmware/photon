@@ -1,7 +1,7 @@
 From 144ba302089cff5a2f2e1c9e1280faea9da9f8cc Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Andreas=20K=2E=20H=C3=BCttel?= <dilfridge@gentoo.org>
 Date: Mon, 26 Jan 2026 01:29:30 +0100
-Subject: [PATCH 04/22] po: Incorporate translatins (nl updated, ar new)
+Subject: [PATCH 04/27] po: Incorporate translatins (nl updated, ar new)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -7339,5 +7339,5 @@ index 4bec5f448e3a3a9417e2b6581c69f16b74378cb4..4d2a8564962d230d08ab2a998dcfdb9e
  #, c-format
  msgid "%s: pre-%d clients may mishandle distant timestamps"
 -- 
-2.43.7
+2.53.0
 

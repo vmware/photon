@@ -1,0 +1,200 @@
+From c0aebc61b0e0f8c3f4ebb2fa816ef7af0cf8f94f Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Tue, 24 Dec 2024 18:01:59 +0000
+Subject: [PATCH 224/254] AArch64: Add SVE memset
+
+Add SVE memset based on the generic memset with predicated load for sizes < 16.
+Unaligned memsets of 128-1024 are improved by ~20% on average by using aligned
+stores for the last 64 bytes.  Performance of random memset benchmark improves
+by ~2% on Neoverse V1.
+
+Reviewed-by: Yury Khrustalev <yury.khrustalev@arm.com>
+(cherry picked from commit 163b1bbb76caba4d9673c07940c5930a1afa7548)
+---
+ sysdeps/aarch64/multiarch/Makefile           |   1 +
+ sysdeps/aarch64/multiarch/ifunc-impl-list.c  |   3 +-
+ sysdeps/aarch64/multiarch/memset.c           |   4 +
+ sysdeps/aarch64/multiarch/memset_sve_zva64.S | 123 +++++++++++++++++++
+ 4 files changed, 130 insertions(+), 1 deletion(-)
+ create mode 100644 sysdeps/aarch64/multiarch/memset_sve_zva64.S
+
+diff --git a/sysdeps/aarch64/multiarch/Makefile b/sysdeps/aarch64/multiarch/Makefile
+index e4720b746859f51502e070ba0c2f308072a49740..214b6137b0bc63a220d05bc64d7dcb2a206b49c0 100644
+--- a/sysdeps/aarch64/multiarch/Makefile
++++ b/sysdeps/aarch64/multiarch/Makefile
+@@ -14,6 +14,7 @@ sysdep_routines += \
+   memset_generic \
+   memset_kunpeng \
+   memset_mops \
++  memset_sve_zva64 \
+   memset_zva64 \
+   strlen_asimd \
+   strlen_generic \
+diff --git a/sysdeps/aarch64/multiarch/ifunc-impl-list.c b/sysdeps/aarch64/multiarch/ifunc-impl-list.c
+index 1c712ce913fd8b948c21345bd6b06141a544defe..7ec82150ca321368eb90aa3f984bacff7801006d 100644
+--- a/sysdeps/aarch64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/aarch64/multiarch/ifunc-impl-list.c
+@@ -56,7 +56,8 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_emag)
+ 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_kunpeng)
+ #if HAVE_AARCH64_SVE_ASM
+-	      IFUNC_IMPL_ADD (array, i, memset, sve && zva_size == 256, __memset_a64fx)
++	      IFUNC_IMPL_ADD (array, i, memset, sve && !bti && zva_size == 256, __memset_a64fx)
++	      IFUNC_IMPL_ADD (array, i, memset, sve && zva_size == 64, __memset_sve_zva64)
+ #endif
+ 	      IFUNC_IMPL_ADD (array, i, memset, mops, __memset_mops)
+ 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_generic))
+diff --git a/sysdeps/aarch64/multiarch/memset.c b/sysdeps/aarch64/multiarch/memset.c
+index 9ef9521fa6437221054e3d257aa6099ad1c18477..d5b7665949a17568e2404a067bc09fac1366ab57 100644
+--- a/sysdeps/aarch64/multiarch/memset.c
++++ b/sysdeps/aarch64/multiarch/memset.c
+@@ -34,6 +34,7 @@ extern __typeof (__redirect_memset) __memset_kunpeng attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_a64fx attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_generic attribute_hidden;
+ extern __typeof (__redirect_memset) __memset_mops attribute_hidden;
++extern __typeof (__redirect_memset) __memset_sve_zva64 attribute_hidden;
+ 
+ static inline __typeof (__redirect_memset) *
+ select_memset_ifunc (void)
+@@ -47,6 +48,9 @@ select_memset_ifunc (void)
+     {
+       if (IS_A64FX (midr) && zva_size == 256)
+ 	return __memset_a64fx;
++
++      if (zva_size == 64)
++	return __memset_sve_zva64;
+     }
+ 
+   if (IS_KUNPENG920 (midr))
+diff --git a/sysdeps/aarch64/multiarch/memset_sve_zva64.S b/sysdeps/aarch64/multiarch/memset_sve_zva64.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..7fb40fdd9e927bb3e1cfae42cd3cac3c178ac1dd
+--- /dev/null
++++ b/sysdeps/aarch64/multiarch/memset_sve_zva64.S
+@@ -0,0 +1,123 @@
++/* Optimized memset for SVE.
++   Copyright (C) 2025 Free Software Foundation, Inc.
++
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library.  If not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sysdep.h>
++
++/* Assumptions:
++ *
++ * ARMv8-a, AArch64, Advanced SIMD, SVE, unaligned accesses.
++ * ZVA size is 64.
++ */
++
++#if HAVE_AARCH64_SVE_ASM
++
++.arch armv8.2-a+sve
++
++#define dstin	x0
++#define val	x1
++#define valw	w1
++#define count	x2
++#define dst	x3
++#define dstend	x4
++#define zva_val	x5
++#define vlen	x5
++#define off	x3
++#define dstend2 x5
++
++ENTRY (__memset_sve_zva64)
++	dup	v0.16B, valw
++	cmp	count, 16
++	b.lo	L(set_16)
++
++	add	dstend, dstin, count
++	cmp	count, 64
++	b.hs	L(set_128)
++
++	/* Set 16..63 bytes.  */
++	mov	off, 16
++	and	off, off, count, lsr 1
++	sub	dstend2, dstend, off
++	str	q0, [dstin]
++	str	q0, [dstin, off]
++	str	q0, [dstend2, -16]
++	str	q0, [dstend, -16]
++	ret
++
++	.p2align 4
++L(set_16):
++	whilelo p0.b, xzr, count
++	st1b	z0.b, p0, [dstin]
++	ret
++
++	.p2align 4
++L(set_128):
++	bic	dst, dstin, 15
++	cmp	count, 128
++	b.hi	L(set_long)
++	stp	q0, q0, [dstin]
++	stp	q0, q0, [dstin, 32]
++	stp	q0, q0, [dstend, -64]
++	stp	q0, q0, [dstend, -32]
++	ret
++
++	.p2align 4
++L(set_long):
++	cmp	count, 256
++	b.lo	L(no_zva)
++	tst	valw, 255
++	b.ne	L(no_zva)
++
++	str	q0, [dstin]
++	str	q0, [dst, 16]
++	bic	dst, dstin, 31
++	stp	q0, q0, [dst, 32]
++	bic	dst, dstin, 63
++	sub	count, dstend, dst	/* Count is now 64 too large.  */
++	sub	count, count, 128	/* Adjust count and bias for loop.  */
++
++	sub	x8, dstend, 1		/* Write last bytes before ZVA loop.  */
++	bic	x8, x8, 15
++	stp	q0, q0, [x8, -48]
++	str	q0, [x8, -16]
++	str	q0, [dstend, -16]
++
++	.p2align 4
++L(zva64_loop):
++	add	dst, dst, 64
++	dc	zva, dst
++	subs	count, count, 64
++	b.hi	L(zva64_loop)
++	ret
++
++L(no_zva):
++	str	q0, [dstin]
++	sub	count, dstend, dst	/* Count is 16 too large.  */
++	sub	count, count, 64 + 16	/* Adjust count and bias for loop.  */
++L(no_zva_loop):
++	stp	q0, q0, [dst, 16]
++	stp	q0, q0, [dst, 48]
++	add	dst, dst, 64
++	subs	count, count, 64
++	b.hi	L(no_zva_loop)
++	stp	q0, q0, [dstend, -64]
++	stp	q0, q0, [dstend, -32]
++	ret
++
++END (__memset_sve_zva64)
++#endif
+-- 
+2.53.0
+

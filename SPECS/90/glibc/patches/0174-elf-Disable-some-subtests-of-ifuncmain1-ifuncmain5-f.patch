@@ -1,7 +1,7 @@
 From 6c9e3708912ef1a0a2148b2719aa1533dfa68aa8 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 4 Nov 2022 18:37:16 +0100
-Subject: [PATCH 174/175] elf: Disable some subtests of ifuncmain1, ifuncmain5
+Subject: [PATCH 174/254] elf: Disable some subtests of ifuncmain1, ifuncmain5
  for !PIE
 
 (cherry picked from commit 9cc9d61ee12f2f8620d8e0ea3c42af02bf07fe1e)
@@ -94,5 +94,5 @@ index f398085cb46719d18950533e3178de578face344..6fda768fb6908aed552e3150a478ad2c
    return 0;
  }
 -- 
-2.35.6
+2.53.0
 

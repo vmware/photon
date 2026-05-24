@@ -1,0 +1,113 @@
+From e943a75e580a155acec247e458b2fa76992526fd Mon Sep 17 00:00:00 2001
+From: Yu Chien Peter Lin <peterlin@andestech.com>
+Date: Fri, 30 Sep 2022 20:19:51 +0800
+Subject: [PATCH 215/254] nptl: Convert tst-setuid2 to test-driver
+
+Use <support/test-driver.c> and replace pthread calls to its xpthread
+equivalents.
+
+Signed-off-by: Yu Chien Peter Lin <peterlin@andestech.com>
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 365b3af67ecaf176b2e2678afe903bebce598fd7)
+---
+ nptl/tst-setuid2.c | 52 +++++++++++++---------------------------------
+ 1 file changed, 15 insertions(+), 37 deletions(-)
+
+diff --git a/nptl/tst-setuid2.c b/nptl/tst-setuid2.c
+index aff3b1a97dba3aa14f9060678ba7cbb8663296af..9b7799991ca374cc9e4e8a3dc8c6c34e777ffff5 100644
+--- a/nptl/tst-setuid2.c
++++ b/nptl/tst-setuid2.c
+@@ -20,6 +20,7 @@
+ #include <signal.h>
+ #include <stdbool.h>
+ #include <stdio.h>
++#include <support/xthread.h>
+ #include <sys/syscall.h>
+ #include <unistd.h>
+ 
+@@ -36,30 +37,21 @@ static pthread_cond_t cond_recv;
+ static void *
+ thread_func (void *ctx __attribute__ ((unused)))
+ {
+-  int ret = pthread_mutex_lock (&mutex);
+-  if (ret != 0)
+-    FAIL ("pthread_mutex_lock (thread): %d", ret);
+-
++  xpthread_mutex_lock (&mutex);
+   while (true)
+     {
+       if (func_sent != NULL)
+ 	{
+ 	  void (*func) (void) = func_sent;
+-	  ret = pthread_mutex_unlock (&mutex);
+-	  if (ret != 0)
+-	    FAIL ("pthread_mutex_unlock (thread): %d", ret);
++	  xpthread_mutex_unlock (&mutex);
++
+ 	  func ();
+-	  ret = pthread_mutex_lock (&mutex);
+-	  if (ret != 0)
+-	    FAIL ("pthread_mutex_lock (thread): %d", ret);
++
++	  xpthread_mutex_lock (&mutex);
+ 	  func_sent = NULL;
+-	  ret = pthread_cond_signal (&cond_recv);
+-	  if (ret != 0)
+-	    FAIL ("pthread_cond_signal (recv): %d", ret);
++	  xpthread_cond_signal (&cond_recv);
+ 	}
+-      ret = pthread_cond_wait (&cond_send, &mutex);
+-      if (ret != 0)
+-	FAIL ("pthread_cond_wait (send): %d", ret);
++      xpthread_cond_wait (&cond_send, &mutex);
+     }
+   return NULL;
+ }
+@@ -67,31 +59,18 @@ thread_func (void *ctx __attribute__ ((unused)))
+ static void
+ run_on_thread (void (*func) (void))
+ {
+-  int ret = pthread_mutex_lock (&mutex);
+-  if (ret != 0)
+-    FAIL ("pthread_mutex_lock (%s): %d", __func__, ret);
++  xpthread_mutex_lock (&mutex);
+   func_sent = func;
+-  ret = pthread_mutex_unlock (&mutex);
+-  if (ret != 0)
+-    FAIL ("pthread_mutex_unlock (%s): %d", __func__, ret);
++  xpthread_mutex_unlock (&mutex);
+ 
+-  ret = pthread_cond_signal (&cond_send);
+-  if (ret != 0)
+-    FAIL ("pthread_mutex_lock (%s): %d", __func__, ret);
+-
+-  ret = pthread_mutex_lock (&mutex);
+-  if (ret != 0)
+-    FAIL ("pthread_mutex_lock (%s): %d", __func__, ret);
++  xpthread_cond_signal (&cond_send);
+ 
++  xpthread_mutex_lock (&mutex);
+   while (func_sent != NULL)
+     {
+-      ret = pthread_cond_wait (&cond_recv, &mutex);
+-      if (ret != 0)
+-	FAIL ("pthread_mutex_wait (%s): %d", __func__, ret);
++      xpthread_cond_wait (&cond_recv, &mutex);
+     }
+-  ret = pthread_mutex_unlock (&mutex);
+-  if (ret != 0)
+-    FAIL ("pthread_mutex_unlock (%s): %d", __func__, ret);
++  xpthread_mutex_unlock (&mutex);
+ }
+ 
+ static void
+@@ -141,5 +120,4 @@ do_test (void)
+   return 0;
+ }
+ 
+-#define TEST_FUNCTION do_test ()
+-#include "../test-skeleton.c"
++#include <support/test-driver.c>
+-- 
+2.53.0
+

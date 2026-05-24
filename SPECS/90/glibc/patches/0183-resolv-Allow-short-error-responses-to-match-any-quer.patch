@@ -1,0 +1,223 @@
+From 4987404a5f71be9556b4fd83f8ca0081e090045a Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Wed, 24 Jul 2024 12:06:47 +0200
+Subject: [PATCH 183/254] resolv: Allow short error responses to match any
+ query (bug 31890)
+
+Reviewed-by: DJ Delorie <dj@redhat.com>
+(cherry picked from commit 691a3b2e9bfaba842e46a5ccb7f5e6ea144c3ade)
+---
+ NEWS                               |   1 +
+ resolv/Makefile                    |   3 +
+ resolv/res_send.c                  |  29 +++++---
+ resolv/tst-resolv-short-response.c | 112 +++++++++++++++++++++++++++++
+ 4 files changed, 135 insertions(+), 10 deletions(-)
+ create mode 100644 resolv/tst-resolv-short-response.c
+
+diff --git a/NEWS b/NEWS
+index f6ae9e233746856cd9b28ca95f7f5225a08537df..ec35d1c58b7e2865af2b5d45fcb8e10279e0e5f6 100644
+--- a/NEWS
++++ b/NEWS
+@@ -97,6 +97,7 @@ The following bugs are resolved with this release:
+   [30843] potential use-after-free in getcanonname (CVE-2023-4806)
+   [31184] FAIL: elf/tst-tlsgap
+   [31185] Incorrect thread point access in _dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic
++  [31890] resolv: Allow short error responses to match any DNS query
+   [31965] rseq extension mechanism does not work as intended
+ 
+ Version 2.36
+diff --git a/resolv/Makefile b/resolv/Makefile
+index 28cedf49ee70626f3751fdfef7b6822b24d97f8a..bc7e051ca96a2cd296aa9f1bf863fe110567ddad 100644
+--- a/resolv/Makefile
++++ b/resolv/Makefile
+@@ -105,6 +105,7 @@ tests += \
+   tst-resolv-nondecimal \
+   tst-resolv-res_init-multi \
+   tst-resolv-search \
++  tst-resolv-short-response \
+   tst-resolv-trailing \
+ 
+ # This test calls __res_context_send directly, which is not exported
+@@ -297,6 +298,8 @@ $(objpfx)tst-resolv-nondecimal: $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-qtypes: $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-rotate: $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-search: $(objpfx)libresolv.so $(shared-thread-library)
++$(objpfx)tst-resolv-short-response: $(objpfx)libresolv.so \
++  $(shared-thread-library)
+ $(objpfx)tst-resolv-trailing: $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-threads: $(objpfx)libresolv.so $(shared-thread-library)
+ $(objpfx)tst-resolv-txnid-collision: $(objpfx)libresolv.a \
+diff --git a/resolv/res_send.c b/resolv/res_send.c
+index 6a08e729a473f20c46a021a3382f6dd32f574cc0..9649cbe4fac83c45cc4c0510ed24595e45b997ff 100644
+--- a/resolv/res_send.c
++++ b/resolv/res_send.c
+@@ -1197,19 +1197,30 @@ send_dg(res_state statp,
+ 		}
+ 
+ 		/* Check for the correct header layout and a matching
+-		   question.  */
++		   question.  Some recursive resolvers send REFUSED
++		   without copying back the question section
++		   (producing a response that is only HFIXEDSZ bytes
++		   long).  Skip query matching in this case.  */
++		bool thisansp_error = (anhp->rcode == SERVFAIL ||
++				       anhp->rcode == NOTIMP ||
++				       anhp->rcode == REFUSED);
++		bool skip_query_match = (*thisresplenp == HFIXEDSZ
++					 && ntohs (anhp->qdcount) == 0
++					 && thisansp_error);
+ 		int matching_query = 0; /* Default to no matching query.  */
+ 		if (!recvresp1
+ 		    && anhp->id == hp->id
+-		    && __libc_res_queriesmatch (buf, buf + buflen,
+-						*thisansp,
+-						*thisansp + *thisanssizp))
++		    && (skip_query_match
++			|| __libc_res_queriesmatch (buf, buf + buflen,
++						    *thisansp,
++						    *thisansp + *thisanssizp)))
+ 		  matching_query = 1;
+ 		if (!recvresp2
+ 		    && anhp->id == hp2->id
+-		    && __libc_res_queriesmatch (buf2, buf2 + buflen2,
+-						*thisansp,
+-						*thisansp + *thisanssizp))
++		    && (skip_query_match
++			|| __libc_res_queriesmatch (buf2, buf2 + buflen2,
++						    *thisansp,
++						    *thisansp + *thisanssizp)))
+ 		  matching_query = 2;
+ 		if (matching_query == 0)
+ 		  /* Spurious UDP packet.  Drop it and continue
+@@ -1219,9 +1230,7 @@ send_dg(res_state statp,
+ 		    goto wait;
+ 		  }
+ 
+-		if (anhp->rcode == SERVFAIL ||
+-		    anhp->rcode == NOTIMP ||
+-		    anhp->rcode == REFUSED) {
++		if (thisansp_error) {
+ 		next_ns:
+ 			if (recvresp1 || (buf2 != NULL && recvresp2)) {
+ 			  *resplen2 = 0;
+diff --git a/resolv/tst-resolv-short-response.c b/resolv/tst-resolv-short-response.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..cf1e39876f8fb470d383fe678959835bcc689ac5
+--- /dev/null
++++ b/resolv/tst-resolv-short-response.c
+@@ -0,0 +1,112 @@
++/* Test for spurious timeouts with short 12-byte responses (bug 31890).
++   Copyright (C) 2024 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <resolv.h>
++#include <support/check.h>
++#include <support/resolv_test.h>
++#include <support/check_nss.h>
++
++/* The rcode in the initial response.  */
++static volatile int rcode;
++
++static void
++response (const struct resolv_response_context *ctx,
++          struct resolv_response_builder *b,
++          const char *qname, uint16_t qclass, uint16_t qtype)
++{
++  switch (ctx->server_index)
++    {
++    case 0:
++      /* First server times out.  */
++      struct resolv_response_flags flags = {.rcode = rcode};
++      resolv_response_init (b, flags);
++      break;
++    case 1:
++      /* Second server sends reply.  */
++      resolv_response_init (b, (struct resolv_response_flags) {});
++      resolv_response_add_question (b, qname, qclass, qtype);
++      resolv_response_section (b, ns_s_an);
++      resolv_response_open_record (b, qname, qclass, qtype, 0);
++      switch (qtype)
++        {
++        case T_A:
++          {
++            char ipv4[4] = {192, 0, 2, 17};
++            resolv_response_add_data (b, &ipv4, sizeof (ipv4));
++          }
++          break;
++        case T_AAAA:
++          {
++            char ipv6[16]
++              = {0x20, 0x01, 0xd, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
++            resolv_response_add_data (b, &ipv6, sizeof (ipv6));
++          }
++          break;
++        default:
++          FAIL_EXIT1 ("unexpected TYPE%d query", qtype);
++        }
++      resolv_response_close_record (b);
++      break;
++    default:
++      FAIL_EXIT1 ("unexpected query to server %d", ctx->server_index);
++    }
++}
++
++static void
++check_one (void)
++{
++
++  /* The buggy 1-second query timeout results in 30 seconds of delay,
++     which triggers a test timeout failure.  */
++  for (int i = 0;  i < 10; ++i)
++    {
++      check_hostent ("www.example", gethostbyname ("www.example"),
++                     "name: www.example\n"
++                     "address: 192.0.2.17\n");
++      check_hostent ("www.example", gethostbyname2 ("www.example", AF_INET6),
++                     "name: www.example\n"
++                     "address: 2001:db8::1\n");
++    }
++}
++
++static int
++do_test (void)
++{
++  struct resolv_test *aux = resolv_test_start
++    ((struct resolv_redirect_config)
++     {
++       .response_callback = response,
++     });
++
++  _res.options |= RES_SNGLKUP;
++
++  rcode = 2; /* SERVFAIL.  */
++  check_one ();
++
++  rcode = 4; /* NOTIMP.  */
++  check_one ();
++
++  rcode = 5; /* REFUSED.  */
++  check_one ();
++
++  resolv_test_end (aux);
++
++  return 0;
++}
++
++#include <support/test-driver.c>
+-- 
+2.53.0
+

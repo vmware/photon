@@ -1,0 +1,320 @@
+From 902680a6fd49843a02687e230a632919236cb05f Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Thu, 22 May 2025 14:36:37 +0200
+Subject: [PATCH 234/254] Fix error reporting (false negatives) in SGID tests
+
+And simplify the interface of support_capture_subprogram_self_sgid.
+
+Use the existing framework for temporary directories (now with
+mode 0700) and directory/file deletion.  Handle all execution
+errors within support_capture_subprogram_self_sgid.  In particular,
+this includes test failures because the invoked program did not
+exit with exit status zero.  Existing tests that expect exit
+status 42 are adjusted to use zero instead.
+
+In addition, fix callers not to call exit (0) with test failures
+pending (which may mask them, especially when running with --direct).
+
+Fixes commit 35fc356fa3b4f485bd3ba3114c9f774e5df7d3c2
+("elf: Fix subprocess status handling for tst-dlopen-sgid (bug 32987)").
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit 3a3fb2ed83f79100c116c824454095ecfb335ad7)
+---
+ elf/tst-dlopen-sgid.c                |   8 +-
+ elf/tst-env-setuid-tunables.c        |  18 +----
+ elf/tst-env-setuid.c                 |  10 +--
+ stdlib/tst-secure-getenv.c           |   9 +--
+ support/capture_subprocess.h         |  10 ++-
+ support/support_capture_subprocess.c | 106 ++++++---------------------
+ 6 files changed, 36 insertions(+), 125 deletions(-)
+
+diff --git a/elf/tst-dlopen-sgid.c b/elf/tst-dlopen-sgid.c
+index 5688b79f2e870b1dd4dd66c098f03632a0afccc0..8aec52e19fc56abae14eaee048cc218cd121ec2a 100644
+--- a/elf/tst-dlopen-sgid.c
++++ b/elf/tst-dlopen-sgid.c
+@@ -70,13 +70,7 @@ do_test (void)
+ 
+   free (libdir);
+ 
+-  int status = support_capture_subprogram_self_sgid (magic_argument);
+-
+-  if (WEXITSTATUS (status) == EXIT_UNSUPPORTED)
+-    return EXIT_UNSUPPORTED;
+-
+-  if (!WIFEXITED (status))
+-    FAIL_EXIT1 ("Unexpected exit status %d from child process\n", status);
++  support_capture_subprogram_self_sgid (magic_argument);
+ 
+   return 0;
+ }
+diff --git a/elf/tst-env-setuid-tunables.c b/elf/tst-env-setuid-tunables.c
+index 5e9e4c57561437e9b4f27bec5672f56db1b64138..bca299bb3489ab08be497b6b0b1d6aef4312a12f 100644
+--- a/elf/tst-env-setuid-tunables.c
++++ b/elf/tst-env-setuid-tunables.c
+@@ -127,10 +127,7 @@ do_test (int argc, char **argv)
+ 
+       if (ret != 0)
+ 	exit (1);
+-
+-      /* Special return code to make sure that the child executed all the way
+-	 through.  */
+-      exit (42);
++      return 0;
+     }
+   else
+     {
+@@ -149,18 +146,7 @@ do_test (int argc, char **argv)
+ 	      continue;
+ 	    }
+ 
+-	  int status = support_capture_subprogram_self_sgid (buf);
+-
+-	  /* Bail out early if unsupported.  */
+-	  if (WEXITSTATUS (status) == EXIT_UNSUPPORTED)
+-	    return EXIT_UNSUPPORTED;
+-
+-	  if (WEXITSTATUS (status) != 42)
+-	    {
+-	      printf ("    [%d] child failed with status %d\n", i,
+-		      WEXITSTATUS (status));
+-	      support_record_failure ();
+-	    }
++	  support_capture_subprogram_self_sgid (buf);
+ 	}
+       return 0;
+     }
+diff --git a/elf/tst-env-setuid.c b/elf/tst-env-setuid.c
+index 53fc52787dbfe0177a630f9b21a64b89c0bcb971..8ed4d48c266c6dda2f0d63e66f9166efdaf2b733 100644
+--- a/elf/tst-env-setuid.c
++++ b/elf/tst-env-setuid.c
+@@ -104,20 +104,14 @@ do_test (int argc, char **argv)
+       if (ret != 0)
+ 	exit (1);
+ 
+-      exit (EXIT_SUCCESS);
++      return 0;
+     }
+   else
+     {
+       if (test_parent () != 0)
+ 	exit (1);
+ 
+-      int status = support_capture_subprogram_self_sgid (SETGID_CHILD);
+-
+-      if (WEXITSTATUS (status) == EXIT_UNSUPPORTED)
+-	return EXIT_UNSUPPORTED;
+-
+-      if (!WIFEXITED (status))
+-	FAIL_EXIT1 ("Unexpected exit status %d from child process\n", status);
++      support_capture_subprogram_self_sgid (SETGID_CHILD);
+ 
+       return 0;
+     }
+diff --git a/stdlib/tst-secure-getenv.c b/stdlib/tst-secure-getenv.c
+index 69719a8acb803d28ddbe145f3472acc757050a3b..ed4728cbba645d678cb638fd500d5ef6d3524e6a 100644
+--- a/stdlib/tst-secure-getenv.c
++++ b/stdlib/tst-secure-getenv.c
+@@ -57,13 +57,7 @@ do_test (void)
+       exit (1);
+     }
+ 
+-  int status = support_capture_subprogram_self_sgid (MAGIC_ARGUMENT);
+-
+-  if (WEXITSTATUS (status) == EXIT_UNSUPPORTED)
+-    return EXIT_UNSUPPORTED;
+-
+-  if (!WIFEXITED (status))
+-    FAIL_EXIT1 ("Unexpected exit status %d from child process\n", status);
++  support_capture_subprogram_self_sgid (MAGIC_ARGUMENT);
+ 
+   return 0;
+ }
+@@ -82,6 +76,7 @@ alternative_main (int argc, char **argv)
+       if (secure_getenv ("PATH") != NULL)
+ 	FAIL_EXIT (4, "PATH variable not filtered out\n");
+ 
++      support_record_failure_barrier ();
+       exit (EXIT_SUCCESS);
+     }
+ }
+diff --git a/support/capture_subprocess.h b/support/capture_subprocess.h
+index 037b9c220ebc34d2585716bcfcf1fa3d45255d94..8cae175bfe5d9453fecd9d54768a10d429d549e0 100644
+--- a/support/capture_subprocess.h
++++ b/support/capture_subprocess.h
+@@ -41,10 +41,12 @@ struct support_capture_subprocess support_capture_subprocess
+ struct support_capture_subprocess support_capture_subprogram
+   (const char *file, char *const argv[]);
+ 
+-/* Copy the running program into a setgid binary and run it with CHILD_ID
+-   argument.  If execution is successful, return the exit status of the child
+-   program, otherwise return a non-zero failure exit code.  */
+-int support_capture_subprogram_self_sgid (const char *child_id);
++/* Copy the running program into a setgid binary and run it with
++   CHILD_ID argument.  If the program exits with a non-zero status,
++   exit with that exit status (or status 1 if the program did not exit
++   normally).  If the test cannot be performed, exit with
++   EXIT_UNSUPPORTED.  */
++void support_capture_subprogram_self_sgid (const char *child_id);
+ 
+ /* Deallocate the subprocess data captured by
+    support_capture_subprocess.  */
+diff --git a/support/support_capture_subprocess.c b/support/support_capture_subprocess.c
+index 4929790619d1e457575c5ad43c124f3dd584e3c1..424d6a910e8c0d6809dfa2f56b78d5b982b74aab 100644
+--- a/support/support_capture_subprocess.c
++++ b/support/support_capture_subprocess.c
+@@ -31,6 +31,7 @@
+ #include <support/xsocket.h>
+ #include <support/xspawn.h>
+ #include <support/support.h>
++#include <support/temp_file.h>
+ #include <support/test-driver.h>
+ 
+ static void
+@@ -112,105 +113,44 @@ support_capture_subprogram (const char *file, char *const argv[])
+ /* Copies the executable into a restricted directory, so that we can
+    safely make it SGID with the TARGET group ID.  Then runs the
+    executable.  */
+-static int
++static void
+ copy_and_spawn_sgid (const char *child_id, gid_t gid)
+ {
+-  char *dirname = xasprintf ("%s/tst-tunables-setuid.%jd",
+-			     test_dir, (intmax_t) getpid ());
++  char *dirname = support_create_temp_directory ("tst-glibc-sgid-");
+   char *execname = xasprintf ("%s/bin", dirname);
+-  int infd = -1;
+-  int outfd = -1;
+-  int ret = 1, status = 1;
+-
+-  TEST_VERIFY (mkdir (dirname, 0700) == 0);
+-  if (support_record_failure_is_failed ())
+-    goto err;
++  add_temp_file (execname);
+ 
+-  infd = open ("/proc/self/exe", O_RDONLY);
+-  if (infd < 0)
++  if (access ("/proc/self/exe", R_OK) != 0)
+     FAIL_UNSUPPORTED ("unsupported: Cannot read binary from procfs\n");
+ 
+-  outfd = open (execname, O_WRONLY | O_CREAT | O_EXCL, 0700);
+-  TEST_VERIFY (outfd >= 0);
+-  if (support_record_failure_is_failed ())
+-    goto err;
+-
+-  char buf[4096];
+-  for (;;)
+-    {
+-      ssize_t rdcount = read (infd, buf, sizeof (buf));
+-      TEST_VERIFY (rdcount >= 0);
+-      if (support_record_failure_is_failed ())
+-	goto err;
+-      if (rdcount == 0)
+-	break;
+-      char *p = buf;
+-      char *end = buf + rdcount;
+-      while (p != end)
+-	{
+-	  ssize_t wrcount = write (outfd, buf, end - p);
+-	  if (wrcount == 0)
+-	    errno = ENOSPC;
+-	  TEST_VERIFY (wrcount > 0);
+-	  if (support_record_failure_is_failed ())
+-	    goto err;
+-	  p += wrcount;
+-	}
+-    }
++  support_copy_file ("/proc/self/exe", execname);
+ 
+-  bool chowned = false;
+-  TEST_VERIFY ((chowned = fchown (outfd, getuid (), gid) == 0)
+-	       || errno == EPERM);
+-  if (support_record_failure_is_failed ())
+-    goto err;
+-  else if (!chowned)
+-    {
+-      ret = 77;
+-      goto err;
+-    }
++  if (chown (execname, getuid (), gid) != 0)
++    FAIL_UNSUPPORTED ("cannot change group of \"%s\" to %jd: %m",
++		      execname, (intmax_t) gid);
+ 
+-  TEST_VERIFY (fchmod (outfd, 02750) == 0);
+-  if (support_record_failure_is_failed ())
+-    goto err;
+-  TEST_VERIFY (close (outfd) == 0);
+-  if (support_record_failure_is_failed ())
+-    goto err;
+-  TEST_VERIFY (close (infd) == 0);
+-  if (support_record_failure_is_failed ())
+-    goto err;
++  if (chmod (execname, 02750) != 0)
++    FAIL_UNSUPPORTED ("cannot make \"%s\" SGID: %m ", execname);
+ 
+   /* We have the binary, now spawn the subprocess.  Avoid using
+      support_subprogram because we only want the program exit status, not the
+      contents.  */
+-  ret = 0;
+-  infd = outfd = -1;
+ 
+   char * const args[] = {execname, (char *) child_id, NULL};
++  int status = support_subprogram_wait (args[0], args);
+ 
+-  status = support_subprogram_wait (args[0], args);
++  free (execname);
++  free (dirname);
+ 
+-err:
+-  if (outfd >= 0)
+-    close (outfd);
+-  if (infd >= 0)
+-    close (infd);
+-  if (execname != NULL)
+-    {
+-      unlink (execname);
+-      free (execname);
+-    }
+-  if (dirname != NULL)
++  if (WIFEXITED (status))
+     {
+-      rmdir (dirname);
+-      free (dirname);
++      if (WEXITSTATUS (status) == 0)
++	return;
++      else
++	exit (WEXITSTATUS (status));
+     }
+-
+-  if (ret == 77)
+-    FAIL_UNSUPPORTED ("Failed to make sgid executable for test\n");
+-  if (ret != 0)
+-    FAIL_EXIT1 ("Failed to make sgid executable for test\n");
+-
+-  return status;
++  else
++    FAIL_EXIT1 ("subprogram failed with status %d", status);
+ }
+ 
+ /* Returns true if a group with NAME has been found, and writes its
+@@ -252,7 +192,7 @@ find_sgid_group (gid_t *target, const char *name)
+   return ok;
+ }
+ 
+-int
++void
+ support_capture_subprogram_self_sgid (const char *child_id)
+ {
+   const int count = 64;
+@@ -287,7 +227,7 @@ support_capture_subprogram_self_sgid (const char *child_id)
+ 			 (intmax_t) getuid ());
+     }
+ 
+-  return copy_and_spawn_sgid (child_id, target);
++  copy_and_spawn_sgid (child_id, target);
+ }
+ 
+ void
+-- 
+2.53.0
+

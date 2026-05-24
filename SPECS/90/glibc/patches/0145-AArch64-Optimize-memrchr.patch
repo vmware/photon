@@ -1,7 +1,7 @@
 From 1296aa9b0b145b8a4c82ece6c6ea2f4afa87d21b Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:51:17 +0000
-Subject: [PATCH 145/175] AArch64: Optimize memrchr
+Subject: [PATCH 145/254] AArch64: Optimize memrchr
 
 Optimize the main loop - large strings are 43% faster on modern CPUs.
 
@@ -67,5 +67,5 @@ index 5179320720485eeaa073ca47d8ab95ecf3d90842..428af51f70d9e0fa1d5c6de48b8cacb4
  	shrn	vend.8b, vhas_chr.8h, 4		/* 128->64 */
  	fmov	synd, dend
 -- 
-2.35.6
+2.53.0
 

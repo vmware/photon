@@ -1,7 +1,7 @@
 From 88e96e7b5fc8c80ef22b08022dd327a546066aae Mon Sep 17 00:00:00 2001
 From: Andreas Schwab <schwab@suse.de>
 Date: Thu, 23 Nov 2023 18:23:46 +0100
-Subject: [PATCH 160/175] aarch64: correct CFI in rawmemchr (bug 31113)
+Subject: [PATCH 160/254] aarch64: correct CFI in rawmemchr (bug 31113)
 
 The .cfi_return_column directive changes the return column for the whole
 FDE range.  But the actual intent is to tell the unwinder that the value
@@ -27,5 +27,5 @@ index 55d9e34d4fa9f111fe41f926943a1e4b413e20a9..f90ce2bf8644b8c245a1290a4cb32da5
  	bl	__strlen
  	add	x0, x14, x0
 -- 
-2.35.6
+2.53.0
 

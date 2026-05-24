@@ -1,7 +1,7 @@
 From 305ce0b58809869295e62c3caa7eda4c8e41134f Mon Sep 17 00:00:00 2001
 From: Yury Khrustalev <yury.khrustalev@arm.com>
 Date: Tue, 3 Feb 2026 15:51:11 +0000
-Subject: [PATCH 14/22] aarch64: Tests for locking GCS
+Subject: [PATCH 14/27] aarch64: Tests for locking GCS
 
 Check that GCS is locked properly based on the value of the
 glibc.cpu.aarch64_gcs tunable.
@@ -562,5 +562,5 @@ index 0000000000000000000000000000000000000000..7e028200315f5aac985dad7e417beee2
 +#define GCS_SHOULD_UNLOCK
 +#include "tst-gcs-lock.c"
 -- 
-2.43.7
+2.53.0
 

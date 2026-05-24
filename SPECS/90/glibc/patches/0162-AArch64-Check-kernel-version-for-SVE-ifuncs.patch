@@ -1,7 +1,7 @@
 From 24de733967029fd902c34073d2ab25b900887352 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Thu, 21 Mar 2024 16:48:33 +0000
-Subject: [PATCH 162/175] AArch64: Check kernel version for SVE ifuncs
+Subject: [PATCH 162/254] AArch64: Check kernel version for SVE ifuncs
 
 Old Linux kernels disable SVE after every system call.  Calling the
 SVE-optimized memcpy afterwards will then cause a trap to reenable SVE.
@@ -149,5 +149,5 @@ index b4bd43a228140607066cef1a8a752f915d98d710..d51597b9237e44d1fbaebd86cbe1e11f
  };
  
 -- 
-2.35.6
+2.53.0
 

@@ -1,7 +1,7 @@
 From 8ee69bd2df74fcc18ecf7e08eb5c74809c0be0e9 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Wed, 11 Jan 2023 13:52:23 +0000
-Subject: [PATCH 148/175] AArch64: Improve strchrnul
+Subject: [PATCH 148/254] AArch64: Improve strchrnul
 
 Unroll the main loop, which improves performance slightly.
 
@@ -41,5 +41,5 @@ index ee154ab74bb8ea50274bd67a43e5e08f974565ef..94465fc088a018d7a6d0a991978c5bd2
  #ifndef __AARCH64EB__
  	rbit	tmp1, tmp1
 -- 
-2.35.6
+2.53.0
 

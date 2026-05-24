@@ -1,7 +1,7 @@
 From ee65bc1df6268c561e6c62dcc4435fbbf705bc67 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Thu, 9 May 2024 20:07:01 -0700
-Subject: [PATCH 175/175] Force DT_RPATH for --enable-hardcoded-path-in-tests
+Subject: [PATCH 175/254] Force DT_RPATH for --enable-hardcoded-path-in-tests
 
 On Fedora 40/x86-64, linker enables --enable-new-dtags by default which
 generates DT_RUNPATH instead of DT_RPATH.  Unlike DT_RPATH, DT_RUNPATH
@@ -46,5 +46,5 @@ index 9dd058e04bdf7e706442a4721eb5f4cb06778812..151f542c278fa71bfb627f9ac78045ef
  link-libc-tests-rpath-link = $(link-libc-rpath-link)
  link-test-modules-rpath-link =
 -- 
-2.35.6
+2.53.0
 

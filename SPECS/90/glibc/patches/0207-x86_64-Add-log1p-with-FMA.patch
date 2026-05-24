@@ -1,0 +1,140 @@
+From 78a9a50bf2c5b69cbfe0819d1decc574367bb9c3 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 17 Aug 2023 09:42:29 -0700
+Subject: [PATCH 207/254] x86_64: Add log1p with FMA
+
+On Skylake, it changes log1p bench performance by:
+
+        Before       After     Improvement
+max     63.349       58.347       8%
+min     4.448        5.651        -30%
+mean    12.0674      10.336       14%
+
+The minimum code path is
+
+ if (hx < 0x3FDA827A)                          /* x < 0.41422  */
+    {
+      if (__glibc_unlikely (ax >= 0x3ff00000))           /* x <= -1.0 */
+        {
+	   ...
+        }
+      if (__glibc_unlikely (ax < 0x3e200000))           /* |x| < 2**-29 */
+        {
+          math_force_eval (two54 + x);          /* raise inexact */
+          if (ax < 0x3c900000)                  /* |x| < 2**-54 */
+            {
+	      ...
+            }
+          else
+            return x - x * x * 0.5;
+
+FMA and non-FMA code sequences look similar.  Non-FMA version is slightly
+faster.  Since log1p is called by asinh and atanh, it improves asinh
+performance by:
+
+        Before       After     Improvement
+max     75.645       63.135       16%
+min     10.074       10.071       0%
+mean    15.9483      14.9089      6%
+
+and improves atanh performance by:
+
+        Before       After     Improvement
+max     91.768       75.081       18%
+min     15.548       13.883       10%
+mean    18.3713      16.8011      8%
+
+(cherry picked from commit a8ecb126d4c26c52f4ad828c566afe4043a28155)
+---
+ sysdeps/ieee754/dbl-64/s_log1p.c           |  5 ++++
+ sysdeps/x86_64/fpu/multiarch/Makefile      |  2 ++
+ sysdeps/x86_64/fpu/multiarch/s_log1p-fma.c |  4 +++
+ sysdeps/x86_64/fpu/multiarch/s_log1p.c     | 29 ++++++++++++++++++++++
+ 4 files changed, 40 insertions(+)
+ create mode 100644 sysdeps/x86_64/fpu/multiarch/s_log1p-fma.c
+ create mode 100644 sysdeps/x86_64/fpu/multiarch/s_log1p.c
+
+diff --git a/sysdeps/ieee754/dbl-64/s_log1p.c b/sysdeps/ieee754/dbl-64/s_log1p.c
+index e6476a826039ea8c8f2ac66133448b8c33c966c4..eeb0af859ffce7dacb14bf8fe82ff88ed11af23e 100644
+--- a/sysdeps/ieee754/dbl-64/s_log1p.c
++++ b/sysdeps/ieee754/dbl-64/s_log1p.c
+@@ -99,6 +99,11 @@ static const double
+ 
+ static const double zero = 0.0;
+ 
++#ifndef SECTION
++# define SECTION
++#endif
++
++SECTION
+ double
+ __log1p (double x)
+ {
+diff --git a/sysdeps/x86_64/fpu/multiarch/Makefile b/sysdeps/x86_64/fpu/multiarch/Makefile
+index add339a876c97898f3540cd098796b96b11c8024..ea81753b708fcb8dacb17d49a4e3f58560d1dac2 100644
+--- a/sysdeps/x86_64/fpu/multiarch/Makefile
++++ b/sysdeps/x86_64/fpu/multiarch/Makefile
+@@ -38,6 +38,7 @@ libm-sysdep_routines += \
+   e_pow-fma \
+   s_atan-fma \
+   s_expm1-fma \
++  s_log1p-fma \
+   s_sin-fma \
+   s_sincos-fma \
+   s_tan-fma \
+@@ -51,6 +52,7 @@ CFLAGS-e_log2-fma.c = -mfma -mavx2
+ CFLAGS-e_pow-fma.c = -mfma -mavx2
+ CFLAGS-s_atan-fma.c = -mfma -mavx2
+ CFLAGS-s_expm1-fma.c = -mfma -mavx2
++CFLAGS-s_log1p-fma.c = -mfma -mavx2
+ CFLAGS-s_sin-fma.c = -mfma -mavx2
+ CFLAGS-s_tan-fma.c = -mfma -mavx2
+ CFLAGS-s_sincos-fma.c = -mfma -mavx2
+diff --git a/sysdeps/x86_64/fpu/multiarch/s_log1p-fma.c b/sysdeps/x86_64/fpu/multiarch/s_log1p-fma.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..8952df8f9e08d49aeec1b9c5ea2958b7c58a8631
+--- /dev/null
++++ b/sysdeps/x86_64/fpu/multiarch/s_log1p-fma.c
+@@ -0,0 +1,4 @@
++#define __log1p __log1p_fma
++#define SECTION __attribute__ ((section (".text.fma")))
++
++#include <sysdeps/ieee754/dbl-64/s_log1p.c>
+diff --git a/sysdeps/x86_64/fpu/multiarch/s_log1p.c b/sysdeps/x86_64/fpu/multiarch/s_log1p.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ce5198d6d844c1c1e55b9ea4ec0fd4b175e1f11
+--- /dev/null
++++ b/sysdeps/x86_64/fpu/multiarch/s_log1p.c
+@@ -0,0 +1,29 @@
++/* Multiple versions of log1p.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <libm-alias-double.h>
++
++extern double __redirect_log1p (double);
++
++#define SYMBOL_NAME log1p
++#include "ifunc-fma.h"
++
++libc_ifunc_redirected (__redirect_log1p, __log1p, IFUNC_SELECTOR ());
++
++#define __log1p __log1p_sse2
++#include <sysdeps/ieee754/dbl-64/s_log1p.c>
+-- 
+2.53.0
+

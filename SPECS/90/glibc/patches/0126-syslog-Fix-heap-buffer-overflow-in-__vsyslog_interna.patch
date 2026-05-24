@@ -1,7 +1,7 @@
 From d1a83b6767f68b3cb5b4b4ea2617254acd040c82 Mon Sep 17 00:00:00 2001
 From: Arjun Shankar <arjun@redhat.com>
 Date: Mon, 15 Jan 2024 17:44:43 +0100
-Subject: [PATCH 126/175] syslog: Fix heap buffer overflow in
+Subject: [PATCH 126/254] syslog: Fix heap buffer overflow in
  __vsyslog_internal (CVE-2023-6246)
 
 __vsyslog_internal did not handle a case where printing a SYSLOG_HEADER
@@ -177,5 +177,5 @@ diff --git a/misc/tst-syslog-long-progname.root/postclean.req b/misc/tst-syslog-
 new file mode 100644
 index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 -- 
-2.35.6
+2.53.0
 

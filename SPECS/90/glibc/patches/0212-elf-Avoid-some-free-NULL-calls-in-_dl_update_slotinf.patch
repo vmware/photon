@@ -1,0 +1,50 @@
+From daa48c814b3746425c57a9b4ea68f299d0e4422e Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Mon, 3 Jun 2024 10:49:40 +0200
+Subject: [PATCH 212/254] elf: Avoid some free (NULL) calls in
+ _dl_update_slotinfo
+
+This has been confirmed to work around some interposed mallocs.  Here
+is a discussion of the impact test ust/libc-wrapper/test_libc-wrapper
+in lttng-tools:
+
+  New TLS usage in libgcc_s.so.1, compatibility impact
+  <https://inbox.sourceware.org/libc-alpha/8734v1ieke.fsf@oldenburg.str.redhat.com/>
+
+Reportedly, this patch also papers over a similar issue when tcmalloc
+2.9.1 is not compiled with -ftls-model=initial-exec.  Of course the
+goal really should be to compile mallocs with the initial-exec TLS
+model, but this commit appears to be a useful interim workaround.
+
+Fixes commit d2123d68275acc0f061e73d5f86ca504e0d5a344 ("elf: Fix slow
+tls access after dlopen [BZ #19924]").
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+(cherry picked from commit afe42e935b3ee97bac9a7064157587777259c60e)
+---
+ elf/dl-tls.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/elf/dl-tls.c b/elf/dl-tls.c
+index 2f5108bba386343febdbb3f124d07a814b2abd45..1a9982197fd73156ad02dbbd9aa855af18bbe211 100644
+--- a/elf/dl-tls.c
++++ b/elf/dl-tls.c
+@@ -825,7 +825,14 @@ _dl_update_slotinfo (unsigned long int req_modid, size_t new_gen)
+ 		 dtv entry free it.  Note: this is not AS-safe.  */
+ 	      /* XXX Ideally we will at some point create a memory
+ 		 pool.  */
+-	      free (dtv[modid].pointer.to_free);
++	      /* Avoid calling free on a null pointer.  Some mallocs
++		 incorrectly use dynamic TLS, and depending on how the
++		 free function was compiled, it could call
++		 __tls_get_addr before the null pointer check in the
++		 free implementation.  Checking here papers over at
++		 least some dynamic TLS usage by interposed mallocs.  */
++	      if (dtv[modid].pointer.to_free != NULL)
++		free (dtv[modid].pointer.to_free);
+ 	      dtv[modid].pointer.val = TLS_DTV_UNALLOCATED;
+ 	      dtv[modid].pointer.to_free = NULL;
+ 
+-- 
+2.53.0
+

@@ -1,0 +1,476 @@
+From b8717fb2d5a80e6524db993da7f7c18a65975b63 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 1 Aug 2025 12:19:49 +0200
+Subject: [PATCH 239/254] elf: Handle ld.so with LOAD segment gaps in
+ _dl_find_object (bug 31943)
+
+Detect if ld.so not contiguous and handle that case in _dl_find_object.
+Set l_find_object_processed even for initially loaded link maps,
+otherwise dlopen of an initially loaded object adds it to
+_dlfo_loaded_mappings (where maps are expected to be contiguous),
+in addition to _dlfo_nodelete_mappings.
+
+Test elf/tst-link-map-contiguous-ldso iterates over the loader
+image, reading every word to make sure memory is actually mapped.
+It only does that if the l_contiguous flag is set for the link map.
+Otherwise, it finds gaps with mmap and checks that _dl_find_object
+does not return the ld.so mapping for them.
+
+The test elf/tst-link-map-contiguous-main does the same thing for
+the libc.so shared object.  This only works if the kernel loaded
+the main program because the glibc dynamic loader may fill
+the gaps with PROT_NONE mappings in some cases, making it contiguous,
+but accesses to individual words may still fault.
+
+Test elf/tst-link-map-contiguous-libc is again slightly different
+because the dynamic loader always fills the gaps with PROT_NONE
+mappings, so a different form of probing has to be used.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 20681be149b9eb1b6c1f4246bf4bd801221c86cd)
+---
+ NEWS                               |  1 +
+ elf/Makefile                       |  6 ++
+ elf/dl-find_object.c               | 78 +++++++++++++++---------
+ elf/dl-find_object.h               |  4 +-
+ elf/rtld.c                         | 25 +++++++-
+ elf/tst-link-map-contiguous-ldso.c | 98 ++++++++++++++++++++++++++++++
+ elf/tst-link-map-contiguous-libc.c | 57 +++++++++++++++++
+ elf/tst-link-map-contiguous-main.c | 45 ++++++++++++++
+ 8 files changed, 283 insertions(+), 31 deletions(-)
+ create mode 100644 elf/tst-link-map-contiguous-ldso.c
+ create mode 100644 elf/tst-link-map-contiguous-libc.c
+ create mode 100644 elf/tst-link-map-contiguous-main.c
+
+diff --git a/NEWS b/NEWS
+index 60ac79f4e6690413454263b4394b08afe6ea58e9..e70aeb9d21f431583e4334cecb7af3ed539d2dda 100644
+--- a/NEWS
++++ b/NEWS
+@@ -106,6 +106,7 @@ The following bugs are resolved with this release:
+   [31185] Incorrect thread point access in _dl_tlsdesc_undefweak and _dl_tlsdesc_dynamic
+   [31476] resolv: Track single-request fallback via _res._flags
+   [31890] resolv: Allow short error responses to match any DNS query
++  [31943] _dl_find_object can fail if ld.so contains gaps between load segments
+   [31965] rseq extension mechanism does not work as intended
+   [31968] mremap implementation in C does not handle arguments correctly
+   [32052] Name space violation in fortify wrappers
+diff --git a/elf/Makefile b/elf/Makefile
+index 3e08a8046d6b97afd4b01740cd51325fe42e394f..97befdaf02f37e282b363a442bef3d2fbab0cfb7 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -504,6 +504,8 @@ tests-internal += \
+   tst-dl_find_object \
+   tst-dl_find_object-threads \
+   tst-dlmopen2 \
++  tst-link-map-contiguous-ldso \
++  tst-link-map-contiguous-libc \
+   tst-ptrguard1 \
+   tst-stackguard1 \
+   tst-tls-surplus \
+@@ -515,6 +517,10 @@ tests-internal += \
+   unload2 \
+   # tests-internal
+ 
++ifeq ($(build-hardcoded-path-in-tests),yes)
++tests-internal += tst-link-map-contiguous-main
++endif
++
+ tests-container += \
+   tst-dlopen-self-container \
+   tst-dlopen-tlsmodid-container \
+diff --git a/elf/dl-find_object.c b/elf/dl-find_object.c
+index 2e5b456c11347226a955fc59203416e9f6f9462a..cb8555a5435ff23e467e07dab6c30602eac88eb6 100644
+--- a/elf/dl-find_object.c
++++ b/elf/dl-find_object.c
+@@ -465,6 +465,37 @@ _dl_find_object (void *pc1, struct dl_find_object *result)
+ }
+ rtld_hidden_def (_dl_find_object)
+ 
++/* Subroutine of _dlfo_process_initial to split out noncontigous link
++   maps.  NODELETE is the number of used _dlfo_nodelete_mappings
++   elements.  It is incremented as needed, and the new NODELETE value
++   is returned.  */
++static size_t
++_dlfo_process_initial_noncontiguous_map (struct link_map *map,
++                                         size_t nodelete)
++{
++  struct dl_find_object_internal dlfo;
++  _dl_find_object_from_map (map, &dlfo);
++
++  /* PT_LOAD segments for a non-contiguous link map are added to the
++     non-closeable mappings.  */
++  const ElfW(Phdr) *ph = map->l_phdr;
++  const ElfW(Phdr) *ph_end = map->l_phdr + map->l_phnum;
++  for (; ph < ph_end; ++ph)
++    if (ph->p_type == PT_LOAD)
++      {
++        if (_dlfo_nodelete_mappings != NULL)
++          {
++            /* Second pass only.  */
++            _dlfo_nodelete_mappings[nodelete] = dlfo;
++            ElfW(Addr) start = ph->p_vaddr + map->l_addr;
++            _dlfo_nodelete_mappings[nodelete].map_start = start;
++            _dlfo_nodelete_mappings[nodelete].map_end = start + ph->p_memsz;
++          }
++        ++nodelete;
++      }
++  return nodelete;
++}
++
+ /* _dlfo_process_initial is called twice.  First to compute the array
+    sizes from the initial loaded mappings.  Second to fill in the
+    bases and infos arrays with the (still unsorted) data.  Returns the
+@@ -476,29 +507,8 @@ _dlfo_process_initial (void)
+ 
+   size_t nodelete = 0;
+   if (!main_map->l_contiguous)
+-    {
+-      struct dl_find_object_internal dlfo;
+-      _dl_find_object_from_map (main_map, &dlfo);
+-
+-      /* PT_LOAD segments for a non-contiguous are added to the
+-         non-closeable mappings.  */
+-      for (const ElfW(Phdr) *ph = main_map->l_phdr,
+-             *ph_end = main_map->l_phdr + main_map->l_phnum;
+-           ph < ph_end; ++ph)
+-        if (ph->p_type == PT_LOAD)
+-          {
+-            if (_dlfo_nodelete_mappings != NULL)
+-              {
+-                /* Second pass only.  */
+-                _dlfo_nodelete_mappings[nodelete] = dlfo;
+-                _dlfo_nodelete_mappings[nodelete].map_start
+-                  = ph->p_vaddr + main_map->l_addr;
+-                _dlfo_nodelete_mappings[nodelete].map_end
+-                  = _dlfo_nodelete_mappings[nodelete].map_start + ph->p_memsz;
+-              }
+-            ++nodelete;
+-          }
+-    }
++    /* Contiguous case already handled in _dl_find_object_init.  */
++    nodelete = _dlfo_process_initial_noncontiguous_map (main_map, nodelete);
+ 
+   size_t loaded = 0;
+   for (Lmid_t ns = 0; ns < GL(dl_nns); ++ns)
+@@ -510,11 +520,22 @@ _dlfo_process_initial (void)
+           /* lt_library link maps are implicitly NODELETE.  */
+           if (l->l_type == lt_library || l->l_nodelete_active)
+             {
+-              if (_dlfo_nodelete_mappings != NULL)
+-                /* Second pass only.  */
+-                _dl_find_object_from_map
+-                  (l, _dlfo_nodelete_mappings + nodelete);
+-              ++nodelete;
++              /* The kernel may have loaded ld.so with gaps.   */
++              if (!l->l_contiguous
++#ifdef SHARED
++                  && l == &GL(dl_rtld_map)
++#endif
++                  )
++                nodelete
++                  = _dlfo_process_initial_noncontiguous_map (l, nodelete);
++              else
++                {
++                  if (_dlfo_nodelete_mappings != NULL)
++                    /* Second pass only.  */
++                    _dl_find_object_from_map
++                      (l, _dlfo_nodelete_mappings + nodelete);
++                  ++nodelete;
++                }
+             }
+           else if (l->l_type == lt_loaded)
+             {
+@@ -756,7 +777,6 @@ _dl_find_object_update_1 (struct link_map **loaded, size_t count)
+           /* Prefer newly loaded link map.  */
+           assert (loaded_index1 > 0);
+           _dl_find_object_from_map (loaded[loaded_index1 - 1], dlfo);
+-          loaded[loaded_index1 -  1]->l_find_object_processed = 1;
+           --loaded_index1;
+         }
+ 
+diff --git a/elf/dl-find_object.h b/elf/dl-find_object.h
+index 3b49877e0e8448a24c20b54dcbf8a5ac14a6d190..9d13163ccdfdabd0637ce5da537ec31242ce43a7 100644
+--- a/elf/dl-find_object.h
++++ b/elf/dl-find_object.h
+@@ -87,7 +87,7 @@ _dl_find_object_to_external (struct dl_find_object_internal *internal,
+ }
+ 
+ /* Extract the object location data from a link map and writes it to
+-   *RESULT using relaxed MO stores.  */
++   *RESULT using relaxed MO stores.  Set L->l_find_object_processed.  */
+ static void __attribute__ ((unused))
+ _dl_find_object_from_map (struct link_map *l,
+                           struct dl_find_object_internal *result)
+@@ -100,6 +100,8 @@ _dl_find_object_from_map (struct link_map *l,
+   atomic_store_relaxed (&result->eh_dbase, (void *) l->l_info[DT_PLTGOT]);
+ #endif
+ 
++  l->l_find_object_processed = 1;
++
+   for (const ElfW(Phdr) *ph = l->l_phdr, *ph_end = l->l_phdr + l->l_phnum;
+        ph < ph_end; ++ph)
+     if (ph->p_type == DLFO_EH_SEGMENT_TYPE)
+diff --git a/elf/rtld.c b/elf/rtld.c
+index 714edff6c663127d36eee0b07052d3c13210c487..bb3fc4806afe7a3a1c3dc4fb9a87c0a6de5b7de0 100644
+--- a/elf/rtld.c
++++ b/elf/rtld.c
+@@ -1297,7 +1297,7 @@ rtld_setup_main_map (struct link_map *main_map)
+ 
+ /* Set up the program header information for the dynamic linker
+    itself.  It can be accessed via _r_debug and dl_iterate_phdr
+-   callbacks.  */
++   callbacks, and it is used by _dl_find_object.  */
+ static void
+ rtld_setup_phdr (void)
+ {
+@@ -1315,6 +1315,29 @@ rtld_setup_phdr (void)
+   GL(dl_rtld_map).l_phnum = rtld_ehdr->e_phnum;
+ 
+ 
++  GL(dl_rtld_map).l_contiguous = 1;
++  /* The linker may not have produced a contiguous object.  The kernel
++     will load the object with actual gaps (unlike the glibc loader
++     for shared objects, which always produces a contiguous mapping).
++     See similar logic in rtld_setup_main_map above.  */
++  {
++    ElfW(Addr) expected_load_address = 0;
++    for (const ElfW(Phdr) *ph = rtld_phdr; ph < &rtld_phdr[rtld_ehdr->e_phnum];
++	 ++ph)
++      if (ph->p_type == PT_LOAD)
++	{
++	  ElfW(Addr) mapstart = ph->p_vaddr & ~(GLRO(dl_pagesize) - 1);
++	  if (GL(dl_rtld_map).l_contiguous && expected_load_address != 0
++	      && expected_load_address != mapstart)
++	    GL(dl_rtld_map).l_contiguous = 0;
++	  ElfW(Addr) allocend = ph->p_vaddr + ph->p_memsz;
++	  /* The next expected address is the page following this load
++	     segment.  */
++	  expected_load_address = ((allocend + GLRO(dl_pagesize) - 1)
++				   & ~(GLRO(dl_pagesize) - 1));
++	}
++  }
++
+   /* PT_GNU_RELRO is usually the last phdr.  */
+   size_t cnt = rtld_ehdr->e_phnum;
+   while (cnt-- > 0)
+diff --git a/elf/tst-link-map-contiguous-ldso.c b/elf/tst-link-map-contiguous-ldso.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..04de808bb234fe3885ab4cdaacf5809ae5505e5b
+--- /dev/null
++++ b/elf/tst-link-map-contiguous-ldso.c
+@@ -0,0 +1,98 @@
++/* Check that _dl_find_object behavior matches up with gaps.
++   Copyright (C) 2025 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <dlfcn.h>
++#include <gnu/lib-names.h>
++#include <link.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <support/check.h>
++#include <support/xdlfcn.h>
++#include <support/xunistd.h>
++#include <sys/mman.h>
++#include <unistd.h>
++
++static int
++do_test (void)
++{
++  struct link_map *l = xdlopen (LD_SO, RTLD_NOW);
++  if (!l->l_contiguous)
++    {
++      puts ("info: ld.so link map is not contiguous");
++
++      /* Try to find holes by probing with mmap.  */
++      int pagesize = getpagesize ();
++      bool gap_found = false;
++      ElfW(Addr) addr = l->l_map_start;
++      TEST_COMPARE (addr % pagesize, 0);
++      while (addr < l->l_map_end)
++        {
++          void *expected = (void *) addr;
++          void *ptr = xmmap (expected, 1, PROT_READ | PROT_WRITE,
++                             MAP_PRIVATE | MAP_ANONYMOUS, -1);
++          struct dl_find_object dlfo;
++          int dlfo_ret = _dl_find_object (expected, &dlfo);
++          if (ptr == expected)
++            {
++              if (dlfo_ret < 0)
++                {
++                  TEST_COMPARE (dlfo_ret, -1);
++                  printf ("info: hole without mapping data found at %p\n", ptr);
++                }
++              else
++                FAIL ("object \"%s\" found in gap at %p",
++                      dlfo.dlfo_link_map->l_name, ptr);
++              gap_found = true;
++            }
++          else if (dlfo_ret == 0)
++            {
++              if ((void *) dlfo.dlfo_link_map != (void *) l)
++                {
++                  printf ("info: object \"%s\" found at %p\n",
++                          dlfo.dlfo_link_map->l_name, ptr);
++                  gap_found = true;
++                }
++            }
++          else
++            TEST_COMPARE (dlfo_ret, -1);
++          xmunmap (ptr, 1);
++          addr += pagesize;
++        }
++      if (!gap_found)
++        FAIL ("no ld.so gap found");
++    }
++  else
++    {
++      puts ("info: ld.so link map is contiguous");
++
++      /* Assert that ld.so is truly contiguous in memory.  */
++      volatile long int *p = (volatile long int *) l->l_map_start;
++      volatile long int *end = (volatile long int *) l->l_map_end;
++      while (p < end)
++        {
++          *p;
++          ++p;
++        }
++    }
++
++  xdlclose (l);
++
++  return 0;
++}
++
++#include <support/test-driver.c>
+diff --git a/elf/tst-link-map-contiguous-libc.c b/elf/tst-link-map-contiguous-libc.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..eb5728c765ac3cfb575522a09e9f5275db0ceaf1
+--- /dev/null
++++ b/elf/tst-link-map-contiguous-libc.c
+@@ -0,0 +1,57 @@
++/* Check that the entire libc.so program image is readable if contiguous.
++   Copyright (C) 2025 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <gnu/lib-names.h>
++#include <link.h>
++#include <support/check.h>
++#include <support/xdlfcn.h>
++#include <support/xunistd.h>
++#include <sys/mman.h>
++#include <unistd.h>
++
++static int
++do_test (void)
++{
++  struct link_map *l = xdlopen (LIBC_SO, RTLD_NOW);
++
++  /* The dynamic loader fills holes with PROT_NONE mappings.  */
++  if (!l->l_contiguous)
++    FAIL_EXIT1 ("libc.so link map is not contiguous");
++
++  /* Direct probing does not work because not everything is readable
++     due to PROT_NONE mappings.  */
++  int pagesize = getpagesize ();
++  ElfW(Addr) addr = l->l_map_start;
++  TEST_COMPARE (addr % pagesize, 0);
++  while (addr < l->l_map_end)
++    {
++      void *expected = (void *) addr;
++      void *ptr = xmmap (expected, 1, PROT_READ | PROT_WRITE,
++                         MAP_PRIVATE | MAP_ANONYMOUS, -1);
++      if (ptr == expected)
++        FAIL ("hole in libc.so memory image after %lu bytes",
++              (unsigned long int) (addr - l->l_map_start));
++      xmunmap (ptr, 1);
++      addr += pagesize;
++    }
++
++  xdlclose (l);
++
++  return 0;
++}
++#include <support/test-driver.c>
+diff --git a/elf/tst-link-map-contiguous-main.c b/elf/tst-link-map-contiguous-main.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..2d1a054f0fbb0855ae4c680989091d8df59fe5be
+--- /dev/null
++++ b/elf/tst-link-map-contiguous-main.c
+@@ -0,0 +1,45 @@
++/* Check that the entire main program image is readable if contiguous.
++   Copyright (C) 2025 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <link.h>
++#include <support/check.h>
++#include <support/xdlfcn.h>
++
++static int
++do_test (void)
++{
++  struct link_map *l = xdlopen ("", RTLD_NOW);
++  if (!l->l_contiguous)
++    FAIL_UNSUPPORTED ("main link map is not contiguous");
++
++  /* This check only works if the kernel loaded the main program.  The
++     dynamic loader replaces gaps with PROT_NONE mappings, resulting
++     in faults.  */
++  volatile long int *p = (volatile long int *) l->l_map_start;
++  volatile long int *end = (volatile long int *) l->l_map_end;
++  while (p < end)
++    {
++      *p;
++      ++p;
++    }
++
++  xdlclose (l);
++
++  return 0;
++}
++#include <support/test-driver.c>
+-- 
+2.53.0
+

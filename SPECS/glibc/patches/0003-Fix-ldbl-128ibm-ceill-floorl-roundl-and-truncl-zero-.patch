@@ -1,7 +1,7 @@
 From 022abaeacbc85d8409bad22375b16a8c07d3ae39 Mon Sep 17 00:00:00 2001
 From: Aurelien Jarno <aurelien@aurel32.net>
 Date: Tue, 20 Jan 2026 18:25:08 +0100
-Subject: [PATCH 03/22] Fix ldbl-128ibm ceill, floorl, roundl and truncl
+Subject: [PATCH 03/27] Fix ldbl-128ibm ceill, floorl, roundl and truncl
  zero-sign handling
 
 When the result of ceill, floorl, roundl and truncl is zero, the sign of
@@ -159,5 +159,5 @@ index 7f0b77cd3fff83a2d25471895262ebcac8a3d390..21ecbd0c85fed528c73dcb85dd4a1307
      }
    else
 -- 
-2.43.7
+2.53.0
 

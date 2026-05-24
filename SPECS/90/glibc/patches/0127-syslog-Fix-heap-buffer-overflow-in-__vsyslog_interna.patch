@@ -1,7 +1,7 @@
 From 2bc9d7c002bdac38b5c2a3f11b78e309d7765b83 Mon Sep 17 00:00:00 2001
 From: Arjun Shankar <arjun@redhat.com>
 Date: Mon, 15 Jan 2024 17:44:44 +0100
-Subject: [PATCH 127/175] syslog: Fix heap buffer overflow in
+Subject: [PATCH 127/254] syslog: Fix heap buffer overflow in
  __vsyslog_internal (CVE-2023-6779)
 
 __vsyslog_internal used the return value of snprintf/vsnprintf to
@@ -102,5 +102,5 @@ index fe1daf988b71f1d380526cda0658561a13aee1bf..3108ae913477a0fb99dfa88fb32f6d89
      }
  
 -- 
-2.35.6
+2.53.0
 

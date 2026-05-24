@@ -1,7 +1,7 @@
 From f9ae26cbbec008eb572a2af8a743ea7d3945e78e Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Thu, 26 Oct 2023 16:34:47 +0100
-Subject: [PATCH 157/175] AArch64: Cleanup emag memset
+Subject: [PATCH 157/254] AArch64: Cleanup emag memset
 
 Cleanup emag memset - merge the memset_base64.S file, remove
 the unused ZVA code (since it is disabled on emag).
@@ -344,5 +344,5 @@ index a1d31cd9aca31825af547a79084d38a778a08dec..7ecf61dc59cc6768de639b1642f9441a
 -#include "./memset_base64.S"
 +END (__memset_emag)
 -- 
-2.35.6
+2.53.0
 

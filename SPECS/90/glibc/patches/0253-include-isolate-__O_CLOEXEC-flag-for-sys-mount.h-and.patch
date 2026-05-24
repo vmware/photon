@@ -1,0 +1,143 @@
+From c13121204aea247799184590aafc28dbda0ccb39 Mon Sep 17 00:00:00 2001
+From: DJ Delorie <dj@redhat.com>
+Date: Mon, 26 Jan 2026 22:24:42 -0500
+Subject: [PATCH 253/254] include: isolate __O_CLOEXEC flag for sys/mount.h and
+ fcntl.h
+
+Including sys/mount.h should not implicitly include fcntl.h
+as that causes namespace pollution and conflicts with kernel
+headers.  It only needs O_CLOEXEC for OPEN_TREE_CLOEXEC
+(although it shouldn't need that, but it's defined that way)
+so we provide that define (via a private version) separately.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+Tested-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit 419245719ccbc7dad6a97f24465e7f09c090327a)
+
+(Adjusted sysdeps/unix/sysv/linux/Makefile for lack of reformatting.)
+---
+ io/fcntl.c                                   | 4 ++++
+ sysdeps/unix/sysv/linux/Makefile             | 2 +-
+ sysdeps/unix/sysv/linux/alpha/bits/cloexec.h | 1 +
+ sysdeps/unix/sysv/linux/bits/cloexec.h       | 1 +
+ sysdeps/unix/sysv/linux/bits/fcntl-linux.h   | 4 +---
+ sysdeps/unix/sysv/linux/hppa/bits/cloexec.h  | 1 +
+ sysdeps/unix/sysv/linux/sparc/bits/cloexec.h | 1 +
+ sysdeps/unix/sysv/linux/sys/mount.h          | 6 +++++-
+ sysdeps/unix/sysv/linux/tst-mount.c          | 1 +
+ 9 files changed, 16 insertions(+), 5 deletions(-)
+ create mode 100644 sysdeps/unix/sysv/linux/alpha/bits/cloexec.h
+ create mode 100644 sysdeps/unix/sysv/linux/bits/cloexec.h
+ create mode 100644 sysdeps/unix/sysv/linux/hppa/bits/cloexec.h
+ create mode 100644 sysdeps/unix/sysv/linux/sparc/bits/cloexec.h
+
+diff --git a/io/fcntl.c b/io/fcntl.c
+index 491678bccc9d62a19911ca99062c0ccbfd0d10d7..d6e56629b80fb130ec6f5f3e00b7136ab2dfa14f 100644
+--- a/io/fcntl.c
++++ b/io/fcntl.c
+@@ -18,6 +18,10 @@
+ #include <errno.h>
+ #include <fcntl.h>
+ 
++#ifndef __O_CLOEXEC
++# error __O_CLOEXEC not defined by fcntl.h/cloexec.h
++#endif
++
+ /* Perform file control operations on FD.  */
+ int
+ __fcntl (int fd, int cmd, ...)
+diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
+index d92ea7a1f303e96a13e0f2320de0fce752e599a7..80ad22259c16d415489a3a7df902359fe8e2718e 100644
+--- a/sysdeps/unix/sysv/linux/Makefile
++++ b/sysdeps/unix/sysv/linux/Makefile
+@@ -114,7 +114,7 @@ sysdep_headers += sys/mount.h sys/acct.h \
+ 		  bits/types/struct_shmid64_ds_helper.h \
+ 		  bits/pthread_stack_min.h bits/pthread_stack_min-dynamic.h \
+ 		  sys/rseq.h bits/rseq.h \
+-		  sys/pidfd.h
++		  sys/pidfd.h bits/cloexec.h
+ 
+ tests += tst-clone tst-clone2 tst-clone3 tst-fanotify tst-personality \
+ 	 tst-quota tst-sync_file_range tst-sysconf-iov_max tst-ttyname \
+diff --git a/sysdeps/unix/sysv/linux/alpha/bits/cloexec.h b/sysdeps/unix/sysv/linux/alpha/bits/cloexec.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..f381f28a53b462f6af59f96fa6ed07efc7208b5c
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/alpha/bits/cloexec.h
+@@ -0,0 +1 @@
++#define __O_CLOEXEC 010000000
+diff --git a/sysdeps/unix/sysv/linux/bits/cloexec.h b/sysdeps/unix/sysv/linux/bits/cloexec.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..3059fb6473aa7a7d2633799b42dac17102fa0ab5
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/bits/cloexec.h
+@@ -0,0 +1 @@
++#define __O_CLOEXEC 02000000
+diff --git a/sysdeps/unix/sysv/linux/bits/fcntl-linux.h b/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
+index bfc674235d60c423888eaa1bcc167eb40ef7a6bd..b7d1ad99e26277abf56882696dc0bf4e758840ad 100644
+--- a/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
++++ b/sysdeps/unix/sysv/linux/bits/fcntl-linux.h
+@@ -81,9 +81,7 @@
+ #ifndef __O_NOFOLLOW
+ # define __O_NOFOLLOW	0400000
+ #endif
+-#ifndef __O_CLOEXEC
+-# define __O_CLOEXEC   02000000
+-#endif
++#include <bits/cloexec.h>
+ #ifndef __O_DIRECT
+ # define __O_DIRECT	 040000
+ #endif
+diff --git a/sysdeps/unix/sysv/linux/hppa/bits/cloexec.h b/sysdeps/unix/sysv/linux/hppa/bits/cloexec.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..f381f28a53b462f6af59f96fa6ed07efc7208b5c
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/hppa/bits/cloexec.h
+@@ -0,0 +1 @@
++#define __O_CLOEXEC 010000000
+diff --git a/sysdeps/unix/sysv/linux/sparc/bits/cloexec.h b/sysdeps/unix/sysv/linux/sparc/bits/cloexec.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..6706eaa7d5b637b2ee638af5c9dc0057f784578f
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/sparc/bits/cloexec.h
+@@ -0,0 +1 @@
++#define __O_CLOEXEC 0x400000
+diff --git a/sysdeps/unix/sysv/linux/sys/mount.h b/sysdeps/unix/sysv/linux/sys/mount.h
+index 19841d07385244813e3773d872348d37dcc8c97d..4a65508a260df131ec2112a9662ebbd89be9afb9 100644
+--- a/sysdeps/unix/sysv/linux/sys/mount.h
++++ b/sysdeps/unix/sysv/linux/sys/mount.h
+@@ -21,7 +21,6 @@
+ #ifndef _SYS_MOUNT_H
+ #define _SYS_MOUNT_H	1
+ 
+-#include <fcntl.h>
+ #include <features.h>
+ #include <stdint.h>
+ #include <stddef.h>
+@@ -263,6 +262,11 @@ enum fsconfig_command
+ 
+ /* open_tree flags.  */
+ #define OPEN_TREE_CLONE    1         /* Clone the target tree and attach the clone */
++#ifndef O_CLOEXEC
++# include <bits/cloexec.h>
++# define O_CLOEXEC __O_CLOEXEC
++#endif
++#undef  OPEN_TREE_CLOEXEC
+ #define OPEN_TREE_CLOEXEC  O_CLOEXEC /* Close the file on execve() */
+ 
+ 
+diff --git a/sysdeps/unix/sysv/linux/tst-mount.c b/sysdeps/unix/sysv/linux/tst-mount.c
+index b6333a60e67ad641837f6eaf7772d6d948497ca0..d5c844455cb757c5a25badf17905a29d976ae2cc 100644
+--- a/sysdeps/unix/sysv/linux/tst-mount.c
++++ b/sysdeps/unix/sysv/linux/tst-mount.c
+@@ -20,6 +20,7 @@
+ #include <support/check.h>
+ #include <support/xunistd.h>
+ #include <support/namespace.h>
++#include <fcntl.h> /* For AT_ constants.  */
+ #include <sys/mount.h>
+ 
+ _Static_assert (sizeof (struct mount_attr) == MOUNT_ATTR_SIZE_VER0,
+-- 
+2.53.0
+

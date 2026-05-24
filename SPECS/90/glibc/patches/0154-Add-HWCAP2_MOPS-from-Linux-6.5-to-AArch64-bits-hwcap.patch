@@ -1,7 +1,7 @@
 From aaa0fc324d695915ad1a3fe162942989e9dd6f5b Mon Sep 17 00:00:00 2001
 From: Joseph Myers <joseph@codesourcery.com>
 Date: Tue, 17 Oct 2023 13:13:27 +0000
-Subject: [PATCH 154/175] Add HWCAP2_MOPS from Linux 6.5 to AArch64
+Subject: [PATCH 154/254] Add HWCAP2_MOPS from Linux 6.5 to AArch64
  bits/hwcap.h
 
 Linux 6.5 adds a new AArch64 HWCAP2 value, HWCAP2_MOPS.  Add it to
@@ -44,5 +44,5 @@ index 616239bb847e4d9b64fcff799b3e3e600e26ea23..b7ffea84e5c95c00c6fd18a89209eab3
 +#define HWCAP2_SME_F16F16	(1UL << 42)
 +#define HWCAP2_MOPS		(1UL << 43)
 -- 
-2.35.6
+2.53.0
 

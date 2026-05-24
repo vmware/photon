@@ -1,7 +1,7 @@
 From 9898ea58b538e325a25f53bde021d0ca07d0a1c0 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Fri, 27 Feb 2026 20:20:45 +0000
-Subject: [PATCH 11/22] malloc: Avoid accessing /sys/kernel/mm files
+Subject: [PATCH 11/27] malloc: Avoid accessing /sys/kernel/mm files
 
 On AArch64 malloc always checks /sys/kernel/mm/transparent_hugepage/enabled to
 set the THP mode.  However this check is quite expensive and the file may not
@@ -79,5 +79,5 @@ index a49e211925ae6303d064b7e590fd015e85affe38..771e7d40b73e10df9e3270e6ea7c501b
  	{
  	  uintptr_t lastbrk = (uintptr_t) MORECORE (0);
 -- 
-2.43.7
+2.53.0
 

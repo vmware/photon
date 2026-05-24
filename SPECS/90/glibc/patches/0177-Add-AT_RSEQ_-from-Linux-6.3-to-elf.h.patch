@@ -1,0 +1,36 @@
+From 61da55a07f7609ca7b6e9ef42113a53593286eda Mon Sep 17 00:00:00 2001
+From: Joseph Myers <joseph@codesourcery.com>
+Date: Fri, 26 May 2023 15:03:31 +0000
+Subject: [PATCH 177/254] Add AT_RSEQ_* from Linux 6.3 to elf.h
+
+Linux 6.3 adds constants AT_RSEQ_FEATURE_SIZE and AT_RSEQ_ALIGN; add
+them to glibc's elf.h.  (Recall that, although elf.h is a
+system-independent header, so far we've put AT_* constants there even
+if Linux-specific, as discussed in bug 15794.  So rather than making
+any attempt to fix that issue, the new constants are just added there
+alongside the existing ones.)
+
+Tested for x86_64.
+
+(cherry picked from commit 8754a4133e154ca853e6765a3fe5c7a904c77626)
+---
+ elf/elf.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/elf/elf.h b/elf/elf.h
+index 014393f3ccc7a628d34c63a192ed31147ae92805..f34d4ef7f498ed93faeb80e621d3ab609b56ce8c 100644
+--- a/elf/elf.h
++++ b/elf/elf.h
+@@ -1215,6 +1215,9 @@ typedef struct
+ #define AT_HWCAP2	26		/* More machine-dependent hints about
+ 					   processor capabilities.  */
+ 
++#define AT_RSEQ_FEATURE_SIZE	27	/* rseq supported feature size.  */
++#define AT_RSEQ_ALIGN	28		/* rseq allocation alignment.  */
++
+ #define AT_EXECFN	31		/* Filename of executable.  */
+ 
+ /* Pointer to the global system page used for system calls and other
+-- 
+2.53.0
+

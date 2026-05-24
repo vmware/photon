@@ -1,0 +1,48 @@
+From bce1d807219f0c816cf6d37e526a4da2163d84df Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Thu, 4 Jul 2024 10:09:07 -0300
+Subject: [PATCH 179/254] elf: Make dl-rseq-symbols Linux only
+
+And avoid a Hurd build failures.
+
+Checked on x86_64-linux-gnu.
+
+(cherry picked from commit 9fc639f654dc004736836613be703e6bed0c36a8)
+---
+ elf/Makefile                                       | 1 -
+ sysdeps/unix/sysv/linux/Makefile                   | 1 +
+ {elf => sysdeps/unix/sysv/linux}/dl-rseq-symbols.S | 0
+ 3 files changed, 1 insertion(+), 1 deletion(-)
+ rename {elf => sysdeps/unix/sysv/linux}/dl-rseq-symbols.S (100%)
+
+diff --git a/elf/Makefile b/elf/Makefile
+index 88e75b4aee1076126addbd73460647cc67c9a7ab..cea9c1b29d92ac1ac13baae67130c74d6799ed4f 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -74,7 +74,6 @@ dl-routines = \
+   dl-printf \
+   dl-profile \
+   dl-reloc \
+-  dl-rseq-symbols \
+   dl-runtime \
+   dl-scope \
+   dl-setup_hash \
+diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
+index d5d9af4de2af79e1c7409dfa584f331eccf8b1cc..a039048c5d2686cfb2f8e403cebd41625813ec84 100644
+--- a/sysdeps/unix/sysv/linux/Makefile
++++ b/sysdeps/unix/sysv/linux/Makefile
+@@ -402,6 +402,7 @@ endif
+ 
+ ifeq ($(subdir),elf)
+ sysdep-rtld-routines += dl-brk dl-sbrk dl-getcwd dl-openat64 dl-opendir
++dl-routines += dl-rseq-symbols
+ 
+ libof-lddlibc4 = lddlibc4
+ 
+diff --git a/elf/dl-rseq-symbols.S b/sysdeps/unix/sysv/linux/dl-rseq-symbols.S
+similarity index 100%
+rename from elf/dl-rseq-symbols.S
+rename to sysdeps/unix/sysv/linux/dl-rseq-symbols.S
+-- 
+2.53.0
+

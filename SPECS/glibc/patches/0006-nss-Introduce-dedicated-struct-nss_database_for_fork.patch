@@ -1,7 +1,7 @@
 From 140c760d711d03c0230dff218b5268b11935f92e Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 13 Feb 2026 09:02:07 +0100
-Subject: [PATCH 06/22] nss: Introduce dedicated struct nss_database_for_fork
+Subject: [PATCH 06/27] nss: Introduce dedicated struct nss_database_for_fork
  type
 
 The initialized field in struct nss_database_data is rather confusing
@@ -117,5 +117,5 @@ index 8e541ff98564e286535e8ea1c6372a7590b9640b..933ac6fee741ce0e4e92c5f808845b4f
    /* If we are not running multiple threads, we do not have to
       preserve lock state.  If fork runs from a signal handler, only
 -- 
-2.43.7
+2.53.0
 

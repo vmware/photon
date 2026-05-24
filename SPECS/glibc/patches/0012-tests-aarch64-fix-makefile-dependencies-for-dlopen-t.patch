@@ -1,7 +1,7 @@
 From fa4a40c7d497fa99e578495f02b5ad5e449c72b1 Mon Sep 17 00:00:00 2001
 From: Yury Khrustalev <yury.khrustalev@arm.com>
 Date: Mon, 16 Feb 2026 12:46:39 +0000
-Subject: [PATCH 12/22] tests: aarch64: fix makefile dependencies for dlopen
+Subject: [PATCH 12/27] tests: aarch64: fix makefile dependencies for dlopen
  tests for BTI
 
 Some BTI tests in the sysdeps/aarch64 directory use
@@ -34,5 +34,5 @@ index 0d32eddf366cc25a9491c3de27e81ef0b12b6ba8..ff4f72c45e64c15026bb45900fc91fc2
  tst-bti-abort-unprot-preload-ENV = \
    GLIBC_TUNABLES=glibc.cpu.aarch64_bti=1 \
 -- 
-2.43.7
+2.53.0
 

@@ -1,0 +1,50 @@
+From fbcde5ea4613bc04c174e9adcca9f6eb5e308d79 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 17 Dec 2024 18:12:03 +0100
+Subject: [PATCH 203/254] x86: Avoid integer truncation with large cache sizes
+ (bug 32470)
+
+Some hypervisors report 1 TiB L3 cache size.  This results
+in some variables incorrectly getting zeroed, causing crashes
+in memcpy/memmove because invariants are violated.
+
+(cherry picked from commit 61c3450db96dce96ad2b24b4f0b548e6a46d68e5)
+---
+ NEWS                       | 1 +
+ sysdeps/x86/dl-cacheinfo.h | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 30a3eaaf47d20d3823359bbd587a3eee87b3277b..32cba994c9329e2662378b30fbb9f26e3eb7c169 100644
+--- a/NEWS
++++ b/NEWS
+@@ -106,6 +106,7 @@ The following bugs are resolved with this release:
+   [32052] Name space violation in fortify wrappers
+   [32137] libio: Attempt wide backup free only for non-legacy code
+   [32231] elf: Change ldconfig auxcache magic number
++  [32470] x86: Avoid integer truncation with large cache sizes
+ 
+ Version 2.36
+ 
+diff --git a/sysdeps/x86/dl-cacheinfo.h b/sysdeps/x86/dl-cacheinfo.h
+index d95c1efa2c231b61cc3ea69b99696b3e04373bf9..72ee1788e3a91ce14d07a489601a10ea3b926676 100644
+--- a/sysdeps/x86/dl-cacheinfo.h
++++ b/sysdeps/x86/dl-cacheinfo.h
+@@ -901,12 +901,12 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
+ 
+ #if HAVE_TUNABLES
+   /* NB: The REP MOVSB threshold must be greater than VEC_SIZE * 8.  */
+-  unsigned int minimum_rep_movsb_threshold;
++  unsigned long int minimum_rep_movsb_threshold;
+ #endif
+   /* NB: The default REP MOVSB threshold is 4096 * (VEC_SIZE / 16) for
+      VEC_SIZE == 64 or 32.  For VEC_SIZE == 16, the default REP MOVSB
+      threshold is 2048 * (VEC_SIZE / 16).  */
+-  unsigned int rep_movsb_threshold;
++  unsigned long int rep_movsb_threshold;
+   if (CPU_FEATURE_USABLE_P (cpu_features, AVX512F)
+       && !CPU_FEATURE_PREFERRED_P (cpu_features, Prefer_No_AVX512))
+     {
+-- 
+2.53.0
+

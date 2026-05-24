@@ -1,0 +1,34 @@
+From 27296daa2595d377c04fdcf1058b71f9a015fb1a Mon Sep 17 00:00:00 2001
+From: Noah Goldstein <goldstein.w.n@gmail.com>
+Date: Wed, 1 Nov 2023 15:30:26 -0500
+Subject: [PATCH 210/254] x86: Only align destination to 1x VEC_SIZE in memset
+ 4x loop
+
+Current code aligns to 2x VEC_SIZE. Aligning to 2x has no affect on
+performance other than potentially resulting in an additional
+iteration of the loop.
+1x maintains aligned stores (the only reason to align in this case)
+and doesn't incur any unnecessary loop iterations.
+Reviewed-by: Sunil K Pandey <skpgkp2@gmail.com>
+
+(cherry picked from commit 9469261cf1924d350feeec64d2c80cafbbdcdd4d)
+---
+ sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S b/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
+index 905d0fa4643d57684460bb0c0d8138aa89f02ff7..bc4053d1c508a34f502609dad882ff02b4eb7fae 100644
+--- a/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
++++ b/sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
+@@ -301,7 +301,7 @@ L(more_2x_vec):
+ 	leaq	(VEC_SIZE * 4)(%rax), %LOOP_REG
+ #endif
+ 	/* Align dst for loop.  */
+-	andq	$(VEC_SIZE * -2), %LOOP_REG
++	andq	$(VEC_SIZE * -1), %LOOP_REG
+ 	.p2align 4
+ L(loop):
+ 	VMOVA	%VEC(0), LOOP_4X_OFFSET(%LOOP_REG)
+-- 
+2.53.0
+

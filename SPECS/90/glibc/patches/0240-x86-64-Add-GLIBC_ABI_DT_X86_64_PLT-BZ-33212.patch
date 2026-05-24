@@ -1,0 +1,82 @@
+From 99338e3841dd8dcc36e35c274e1063c33b5e5e87 Mon Sep 17 00:00:00 2001
+From: "H.J. Lu" <hjl.tools@gmail.com>
+Date: Thu, 14 Aug 2025 07:03:20 -0700
+Subject: [PATCH 240/254] x86-64: Add GLIBC_ABI_DT_X86_64_PLT [BZ #33212]
+
+When the linker -z mark-plt option is used to add DT_X86_64_PLT,
+DT_X86_64_PLTSZ and DT_X86_64_PLTENT, the r_addend field of the
+R_X86_64_JUMP_SLOT relocation stores the offset of the indirect
+branch instruction.  However, glibc versions without the commit:
+
+commit f8587a61892cbafd98ce599131bf4f103466f084
+Author: H.J. Lu <hjl.tools@gmail.com>
+Date:   Fri May 20 19:21:48 2022 -0700
+
+    x86-64: Ignore r_addend for R_X86_64_GLOB_DAT/R_X86_64_JUMP_SLOT
+
+    According to x86-64 psABI, r_addend should be ignored for R_X86_64_GLOB_DAT
+    and R_X86_64_JUMP_SLOT.  Since linkers always set their r_addends to 0, we
+    can ignore their r_addends.
+
+    Reviewed-by: Fangrui Song <maskray@google.com>
+
+won't ignore the r_addend value in the R_X86_64_JUMP_SLOT relocation.
+Such programs and shared libraries will fail at run-time randomly.
+
+Add GLIBC_ABI_DT_X86_64_PLT version to indicate that glibc is compatible
+with DT_X86_64_PLT.
+
+The linker can add the glibc GLIBC_ABI_DT_X86_64_PLT version dependency
+whenever -z mark-plt is passed to the linker.  The resulting programs and
+shared libraries will fail to load at run-time against libc.so without the
+GLIBC_ABI_DT_X86_64_PLT version, instead of fail randomly.
+
+This fixes BZ #33212.
+
+Signed-off-by: H.J. Lu <hjl.tools@gmail.com>
+Reviewed-by: Sam James <sam@gentoo.org>
+(cherry picked from commit 399384e0c8193e31aea014220ccfa24300ae5938)
+---
+ sysdeps/x86_64/Makefile | 9 +++++++++
+ sysdeps/x86_64/Versions | 5 +++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/sysdeps/x86_64/Makefile b/sysdeps/x86_64/Makefile
+index c19bef2decacd052fe90c2b6d87b99f59822e6df..f173c5ef4aa64a3fe0878e42496d9c6d6b19fe19 100644
+--- a/sysdeps/x86_64/Makefile
++++ b/sysdeps/x86_64/Makefile
+@@ -190,6 +190,15 @@ endif
+ 
+ tests-internal += tst-x86-64-tls-1
+ 
++tests-special += $(objpfx)check-dt-x86-64-plt.out
++
++$(objpfx)check-dt-x86-64-plt.out: $(common-objpfx)libc.so
++       LC_ALL=C $(READELF) -V -W $< \
++               | sed -ne '/.gnu.version_d/, /.gnu.version_r/ p' \
++               | grep GLIBC_ABI_DT_X86_64_PLT > $@; \
++       $(evaluate-test)
++generated += check-dt-x86-64-plt.out
++
+ endif # $(subdir) == elf
+ 
+ ifeq ($(subdir),csu)
+diff --git a/sysdeps/x86_64/Versions b/sysdeps/x86_64/Versions
+index e94758b23643a9056ae176f3a18d7f46686049b0..6a989ad3b373cdf65f05dbe1f96d8d898040c96f 100644
+--- a/sysdeps/x86_64/Versions
++++ b/sysdeps/x86_64/Versions
+@@ -5,6 +5,11 @@ libc {
+   GLIBC_2.13 {
+     __fentry__;
+   }
++  GLIBC_ABI_DT_X86_64_PLT {
++    # This symbol is used only for empty version map and will be removed
++    # by scripts/versions.awk.
++    __placeholder_only_for_empty_version_map;
++  }
+ }
+ libm {
+   GLIBC_2.1 {
+-- 
+2.53.0
+

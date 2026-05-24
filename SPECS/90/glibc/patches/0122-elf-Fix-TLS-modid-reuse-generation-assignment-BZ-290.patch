@@ -1,7 +1,7 @@
 From 882a991620fcf2ecb3f623e2d29ac551b33bd6ee Mon Sep 17 00:00:00 2001
 From: Hector Martin <marcan@marcan.st>
 Date: Tue, 28 Nov 2023 15:23:07 +0900
-Subject: [PATCH 122/175] elf: Fix TLS modid reuse generation assignment (BZ
+Subject: [PATCH 122/254] elf: Fix TLS modid reuse generation assignment (BZ
  29039)
 
 _dl_assign_tls_modid() assigns a slotinfo entry for a new module, but
@@ -50,5 +50,5 @@ index 093cdddb7ed8ff53cf721a1290afe7138d22005e..bf0ff0d9e8fe4a2d078cfeb725b569ab
  	      }
  
 -- 
-2.35.6
+2.53.0
 

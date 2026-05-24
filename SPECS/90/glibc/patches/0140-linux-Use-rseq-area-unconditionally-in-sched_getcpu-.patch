@@ -1,7 +1,7 @@
 From 1b85f77f43c8e352d6aac7835eedf654c5d9242b Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Fri, 15 Mar 2024 19:08:24 +0100
-Subject: [PATCH 140/175] linux: Use rseq area unconditionally in sched_getcpu
+Subject: [PATCH 140/254] linux: Use rseq area unconditionally in sched_getcpu
  (bug 31479)
 
 Originally, nptl/descr.h included <sys/rseq.h>, but we removed that
@@ -49,5 +49,5 @@ index 5c3301004cc9f39db8a4c838dcb8bf3e5c7beeb0..3a2f71238622864c07112b3da062034b
 -}
 -#endif /* RSEQ_SIG */
 -- 
-2.35.6
+2.53.0
 

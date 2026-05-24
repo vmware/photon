@@ -1,7 +1,7 @@
 From 78ad1b1b0d42b95c2c75463dc413bfd162a778e8 Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Sun, 14 Apr 2024 08:24:51 +0200
-Subject: [PATCH 163/175] powerpc: Fix ld.so address determination for PCREL
+Subject: [PATCH 163/254] powerpc: Fix ld.so address determination for PCREL
  mode (bug 31640)
 
 This seems to have stopped working with some GCC 14 versions,
@@ -52,5 +52,5 @@ index bb0ccd0811b3c0bbc410ba60353ad6fee10273af..3868bcc2f778a2cfadd0b62397c30914
  /* The PLT uses Elf64_Rela relocs.  */
  #define elf_machine_relplt elf_machine_rela
 -- 
-2.35.6
+2.53.0
 

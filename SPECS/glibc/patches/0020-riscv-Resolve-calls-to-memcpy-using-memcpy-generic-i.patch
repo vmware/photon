@@ -1,7 +1,7 @@
 From 60cabd0464c6722d4e1f13bbbeef191ea40ef2ef Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>
 Date: Sat, 21 Mar 2026 08:11:06 -0600
-Subject: [PATCH 20/22] riscv: Resolve calls to memcpy using memcpy-generic in
+Subject: [PATCH 20/27] riscv: Resolve calls to memcpy using memcpy-generic in
  early startup
 
 This patch from Adhemerval sets up the ifunc redirections so that we
@@ -51,5 +51,5 @@ index a865090a539b98b9c42a6f08973df0ed9941d80e..a033ea95698e50f9ad350916e14db761
 +CFLAGS-memcpy-generic.c += $(no-stack-protector)
  endif
 -- 
-2.43.7
+2.53.0
 

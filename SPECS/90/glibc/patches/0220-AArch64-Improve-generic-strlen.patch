@@ -1,0 +1,92 @@
+From 4909fb4d963450e9fb08d8cb3255e7b2f34a3aef Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Wed, 7 Aug 2024 14:43:47 +0100
+Subject: [PATCH 220/254] AArch64: Improve generic strlen
+
+Improve performance by handling another 16 bytes before entering the loop.
+Use ADDHN in the loop to avoid SHRN+FMOV when it terminates.  Change final
+size computation to avoid increasing latency.  On Neoverse V1 performance
+of the random strlen benchmark improves by 4.6%.
+
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit 3dc426b642dcafdbc11a99f2767e081d086f5fc7)
+---
+ sysdeps/aarch64/strlen.S | 39 +++++++++++++++++++++++++++------------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
+
+diff --git a/sysdeps/aarch64/strlen.S b/sysdeps/aarch64/strlen.S
+index 10b9ec07693bff0afd93b3c5bb324bc4bbf4ae7a..352fb40d3abbb44bc1cc604cfd1c86fdc8f8e251 100644
+--- a/sysdeps/aarch64/strlen.S
++++ b/sysdeps/aarch64/strlen.S
+@@ -1,4 +1,5 @@
+-/* Copyright (C) 2012-2022 Free Software Foundation, Inc.
++/* Generic optimized strlen using SIMD.
++   Copyright (C) 2012-2024 Free Software Foundation, Inc.
+ 
+    This file is part of the GNU C Library.
+ 
+@@ -56,36 +57,50 @@ ENTRY (STRLEN)
+ 	shrn	vend.8b, vhas_nul.8h, 4		/* 128->64 */
+ 	fmov	synd, dend
+ 	lsr	synd, synd, shift
+-	cbz	synd, L(loop)
++	cbz	synd, L(next16)
+ 
+ 	rbit	synd, synd
+ 	clz	result, synd
+ 	lsr	result, result, 2
+ 	ret
+ 
++L(next16):
++	ldr	data, [src, 16]
++	cmeq	vhas_nul.16b, vdata.16b, 0
++	shrn	vend.8b, vhas_nul.8h, 4		/* 128->64 */
++	fmov	synd, dend
++	cbz	synd, L(loop)
++	add	src, src, 16
++#ifndef __AARCH64EB__
++	rbit	synd, synd
++#endif
++	sub	result, src, srcin
++	clz	tmp, synd
++	add	result, result, tmp, lsr 2
++	ret
++
+ 	.p2align 5
+ L(loop):
+-	ldr	data, [src, 16]
++	ldr	data, [src, 32]!
+ 	cmeq	vhas_nul.16b, vdata.16b, 0
+-	umaxp	vend.16b, vhas_nul.16b, vhas_nul.16b
++	addhn	vend.8b, vhas_nul.8h, vhas_nul.8h
+ 	fmov	synd, dend
+ 	cbnz	synd, L(loop_end)
+-	ldr	data, [src, 32]!
++	ldr	data, [src, 16]
+ 	cmeq	vhas_nul.16b, vdata.16b, 0
+-	umaxp	vend.16b, vhas_nul.16b, vhas_nul.16b
++	addhn	vend.8b, vhas_nul.8h, vhas_nul.8h
+ 	fmov	synd, dend
+ 	cbz	synd, L(loop)
+-	sub	src, src, 16
++	add	src, src, 16
+ L(loop_end):
+-	shrn	vend.8b, vhas_nul.8h, 4		/* 128->64 */
+-	sub	result, src, srcin
+-	fmov	synd, dend
++	sub	result, shift, src, lsl 2	/* (srcin - src) << 2.  */
+ #ifndef __AARCH64EB__
+ 	rbit	synd, synd
++	sub	result, result, 3
+ #endif
+-	add	result, result, 16
+ 	clz	tmp, synd
+-	add	result, result, tmp, lsr 2
++	sub	result, tmp, result
++	lsr	result, result, 2
+ 	ret
+ 
+ END (STRLEN)
+-- 
+2.53.0
+

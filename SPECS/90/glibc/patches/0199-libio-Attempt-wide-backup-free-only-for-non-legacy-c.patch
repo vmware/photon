@@ -1,0 +1,55 @@
+From 485b2a773d19fe551a9e692c804d0a13b1355396 Mon Sep 17 00:00:00 2001
+From: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Date: Tue, 3 Sep 2024 14:58:33 -0400
+Subject: [PATCH 199/254] libio: Attempt wide backup free only for non-legacy
+ code
+
+_wide_data and _mode are not available in legacy code, so do not attempt
+to free the wide backup buffer in legacy code.
+
+Resolves: BZ #32137 and BZ #27821
+
+Signed-off-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit ae4d44b1d501421ad9a3af95279b8f4d1546f1ce)
+---
+ NEWS           | 2 ++
+ libio/genops.c | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/NEWS b/NEWS
+index 15cda0b84de527296bcfa95891b103b2c2804bab..3437574218c4639f519b76047b3c0a318d115266 100644
+--- a/NEWS
++++ b/NEWS
+@@ -52,6 +52,7 @@ The following bugs are resolved with this release:
+   [20975] Deferred cancellation triggers in __check_pf and looses lock leading to deadlock
+   [24816] Fix tst-nss-files-hosts-long on single-stack hosts
+   [27576] gmon: improve mcount overflow handling
++  [27821] ungetc: Fix backup buffer leak on program exit
+   [28846] CMSG_NXTHDR may trigger -Wstrict-overflow warning
+   [29039] Corrupt DTV after reuse of a TLS module ID following dlclose with unused TLS
+   [29444] gmon: Fix allocated buffer overflow (bug 29444)
+@@ -103,6 +104,7 @@ The following bugs are resolved with this release:
+   [31965] rseq extension mechanism does not work as intended
+   [31968] mremap implementation in C does not handle arguments correctly
+   [32052] Name space violation in fortify wrappers
++  [32137] libio: Attempt wide backup free only for non-legacy code
+ 
+ Version 2.36
+ 
+diff --git a/libio/genops.c b/libio/genops.c
+index 36add52faab300f070c5e5161c958bc96dcf7b47..1be964ef774d5ce67768634dc69e84d5b4162092 100644
+--- a/libio/genops.c
++++ b/libio/genops.c
+@@ -799,7 +799,7 @@ _IO_unbuffer_all (void)
+       /* Free up the backup area if it was ever allocated.  */
+       if (_IO_have_backup (fp))
+ 	_IO_free_backup_area (fp);
+-      if (fp->_mode > 0 && _IO_have_wbackup (fp))
++      if (!legacy && fp->_mode > 0 && _IO_have_wbackup (fp))
+ 	_IO_free_wbackup_area (fp);
+ 
+       if (! (fp->_flags & _IO_UNBUFFERED)
+-- 
+2.53.0
+

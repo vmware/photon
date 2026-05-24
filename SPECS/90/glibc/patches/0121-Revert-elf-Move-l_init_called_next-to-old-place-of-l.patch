@@ -1,7 +1,7 @@
 From 88d5d70b1e89c0a449352286134946e26f7a498a Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Thu, 19 Oct 2023 09:29:42 +0200
-Subject: [PATCH 121/175] Revert "elf: Move l_init_called_next to old place of
+Subject: [PATCH 121/254] Revert "elf: Move l_init_called_next to old place of
  l_text_end in link map"
 
 This reverts commit f441cb9a70fa3f55e9bbd615924879d692d21a6c.
@@ -38,5 +38,5 @@ index 8176e23da918f68fa4c0c4d074424cdd179c4ec6..87966e839701095e753e1aec0a9d3950
      struct link_map_reldeps
        {
 -- 
-2.35.6
+2.53.0
 

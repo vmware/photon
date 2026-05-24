@@ -1,0 +1,101 @@
+From 5bec8bd46f393f3548160fdd88426b118153f3d7 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Sat, 1 Feb 2025 12:37:58 +0100
+Subject: [PATCH 237/254] elf: Do not add a copy of _dl_find_object to libc.so
+
+This reduces code size and dependencies on ld.so internals from
+libc.so.
+
+Fixes commit f4c142bb9fe6b02c0af8cfca8a920091e2dba44b
+("arm: Use _dl_find_object on __gnu_Unwind_Find_exidx (BZ 31405)").
+
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit 96429bcc91a14f71b177ddc5e716de3069060f2c)
+---
+ elf/Makefile             | 2 +-
+ elf/dl-find_object.c     | 5 ++---
+ include/dlfcn.h          | 3 +--
+ sysdeps/arm/find_exidx.c | 3 ++-
+ 4 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/elf/Makefile b/elf/Makefile
+index 43cbe9e4e7b3f6cad2b933cfd23699d7fc223b59..3e08a8046d6b97afd4b01740cd51325fe42e394f 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -35,7 +35,6 @@ routines = \
+   dl-addr-obj \
+   dl-early_allocate \
+   dl-error \
+-  dl-find_object \
+   dl-iteratephdr \
+   dl-libc \
+   dl-origin \
+@@ -61,6 +60,7 @@ dl-routines = \
+   dl-deps \
+   dl-exception \
+   dl-execstack \
++  dl-find_object \
+   dl-fini \
+   dl-init \
+   dl-load \
+diff --git a/elf/dl-find_object.c b/elf/dl-find_object.c
+index cb318a832f1302bfdec2ae3c50f747a777f9f98a..2e5b456c11347226a955fc59203416e9f6f9462a 100644
+--- a/elf/dl-find_object.c
++++ b/elf/dl-find_object.c
+@@ -356,7 +356,7 @@ _dlfo_lookup (uintptr_t pc, struct dl_find_object_internal *first1, size_t size)
+ }
+ 
+ int
+-__dl_find_object (void *pc1, struct dl_find_object *result)
++_dl_find_object (void *pc1, struct dl_find_object *result)
+ {
+   uintptr_t pc = (uintptr_t) pc1;
+ 
+@@ -463,8 +463,7 @@ __dl_find_object (void *pc1, struct dl_find_object *result)
+         return -1;
+     } /* Transaction retry loop.  */
+ }
+-hidden_def (__dl_find_object)
+-weak_alias (__dl_find_object, _dl_find_object)
++rtld_hidden_def (_dl_find_object)
+ 
+ /* _dlfo_process_initial is called twice.  First to compute the array
+    sizes from the initial loaded mappings.  Second to fill in the
+diff --git a/include/dlfcn.h b/include/dlfcn.h
+index f3691439cc345a4c18f49673773d33331bd70899..ae25f05303b18044b222a255677be24bfe0e72f3 100644
+--- a/include/dlfcn.h
++++ b/include/dlfcn.h
+@@ -4,8 +4,7 @@
+ #include <link.h>		/* For ElfW.  */
+ #include <stdbool.h>
+ 
+-extern __typeof (_dl_find_object) __dl_find_object;
+-hidden_proto (__dl_find_object)
++rtld_hidden_proto (_dl_find_object)
+ 
+ /* Internally used flag.  */
+ #define __RTLD_DLOPEN	0x80000000
+diff --git a/sysdeps/arm/find_exidx.c b/sysdeps/arm/find_exidx.c
+index eea38ff7d03a65e5e4dccddb0d04aedbdfb4ef0e..0236b1f4ca99d21b9af9f88ca72b4575b4d8d4eb 100644
+--- a/sysdeps/arm/find_exidx.c
++++ b/sysdeps/arm/find_exidx.c
+@@ -15,6 +15,7 @@
+    License along with the GNU C Library.  If not, see
+    <https://www.gnu.org/licenses/>.  */
+ 
++#include <ldsodefs.h>
+ #include <link.h>
+ 
+ /* Find the exception index table containing PC.  */
+@@ -23,7 +24,7 @@ _Unwind_Ptr
+ __gnu_Unwind_Find_exidx (_Unwind_Ptr pc, int * pcount)
+ {
+   struct dl_find_object data;
+-  if (__dl_find_object ((void *) pc, &data) < 0)
++  if (GLRO(dl_find_object) ((void *) pc, &data) < 0)
+     return 0;
+   *pcount = data.dlfo_eh_count;
+   return (_Unwind_Ptr) data.dlfo_eh_frame;
+-- 
+2.53.0
+

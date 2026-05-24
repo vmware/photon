@@ -1,7 +1,7 @@
 From 3bac018a985f202b36556dba9ae187cc8474342f Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Tue, 17 Oct 2023 16:54:21 +0100
-Subject: [PATCH 155/175] AArch64: Add support for MOPS memcpy/memmove/memset
+Subject: [PATCH 155/254] AArch64: Add support for MOPS memcpy/memmove/memset
 
 Add support for MOPS in cpu_features and INIT_ARCH.  Add ifuncs using MOPS for
 memcpy, memmove and memset (use .inst for now so it works with all binutils
@@ -310,5 +310,5 @@ index 391165a99c20adf82f10c5b07d559ab304a893e2..7e18062aa22986dc5a791027c0837395
  
  #endif /* _CPU_FEATURES_AARCH64_H  */
 -- 
-2.35.6
+2.53.0
 

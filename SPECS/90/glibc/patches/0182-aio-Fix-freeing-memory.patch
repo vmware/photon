@@ -1,0 +1,32 @@
+From e47b88d2fb0c740f7ff87fc50a3d299e8396db4f Mon Sep 17 00:00:00 2001
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date: Wed, 12 Apr 2023 00:12:02 +0200
+Subject: [PATCH 182/254] aio: Fix freeing memory
+
+The content of the pool array is initialized only until pool_size,
+pointers between pool_size and pool_max_size were not initialized by the
+realloc call in get_elem so they should not be freed.
+
+This fixes aio tests crashing at their termination on GNU/Hurd.
+
+(cherry picked from commit 0cee4aa92f5b9b213856c8ba1ab84c34d73c943b)
+---
+ rt/aio_misc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rt/aio_misc.c b/rt/aio_misc.c
+index b4304d0a6f295e1649910565c4d2da63dc394279..5f9e52bcbaf620cdbcae2515a792cfcb93962aca 100644
+--- a/rt/aio_misc.c
++++ b/rt/aio_misc.c
+@@ -698,7 +698,7 @@ libc_freeres_fn (free_res)
+ {
+   size_t row;
+ 
+-  for (row = 0; row < pool_max_size; ++row)
++  for (row = 0; row < pool_size; ++row)
+     free (pool[row]);
+ 
+   free (pool);
+-- 
+2.53.0
+

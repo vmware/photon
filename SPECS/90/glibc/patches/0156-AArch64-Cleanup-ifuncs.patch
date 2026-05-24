@@ -1,7 +1,7 @@
 From 6bb41218730dd042c53964b03cdb2a0835293991 Mon Sep 17 00:00:00 2001
 From: Wilco Dijkstra <wilco.dijkstra@arm.com>
 Date: Tue, 24 Oct 2023 13:51:07 +0100
-Subject: [PATCH 156/175] AArch64: Cleanup ifuncs
+Subject: [PATCH 156/254] AArch64: Cleanup ifuncs
 
 Cleanup ifuncs.  Remove uses of libc_hidden_builtin_def, use ENTRY rather than
 ENTRY_ALIGN, remove unnecessary defines and conditional compilation.  Rename
@@ -536,5 +536,5 @@ index bf03ac53ebffaa4bb1ffc8ddab17207647c0ae23..014e376ec1ff6efb09a15eaeeccaa95d
  #endif
  
 -- 
-2.35.6
+2.53.0
 

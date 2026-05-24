@@ -1,0 +1,74 @@
+From 1164f18399d7747b4ba0feb81c31fb20fe6665f6 Mon Sep 17 00:00:00 2001
+From: Yu Chien Peter Lin <peterlin@andestech.com>
+Date: Fri, 30 Sep 2022 20:19:50 +0800
+Subject: [PATCH 214/254] support: Add xpthread_cond_signal wrapper
+
+Signed-off-by: Yu Chien Peter Lin <peterlin@andestech.com>
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+(cherry picked from commit 3bea50ccbc925d4fc5f85ec402b6154cbe770b71)
+---
+ support/Makefile               |  1 +
+ support/xpthread_cond_signal.c | 26 ++++++++++++++++++++++++++
+ support/xthread.h              |  1 +
+ 3 files changed, 28 insertions(+)
+ create mode 100644 support/xpthread_cond_signal.c
+
+diff --git a/support/Makefile b/support/Makefile
+index 7c572fbe4a9eeff79df471a0007fe59423e0af6c..c8c1363b7684fa923c8fca32641cc767fc34a68f 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -161,6 +161,7 @@ libsupport-routines = \
+   xpthread_cancel \
+   xpthread_check_return \
+   xpthread_cond_wait \
++  xpthread_cond_signal \
+   xpthread_create \
+   xpthread_detach \
+   xpthread_join \
+diff --git a/support/xpthread_cond_signal.c b/support/xpthread_cond_signal.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..ed0be1a8abf8559b7ecc52f393e6520a8028fcfe
+--- /dev/null
++++ b/support/xpthread_cond_signal.c
+@@ -0,0 +1,26 @@
++/* pthread_cond_signal with error checking.
++   Copyright (C) 2022 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <support/xthread.h>
++
++void
++xpthread_cond_signal (pthread_cond_t *cond)
++{
++  xpthread_check_return
++    ("pthread_cond_signal", pthread_cond_signal (cond));
++}
+diff --git a/support/xthread.h b/support/xthread.h
+index af06715f469cc07e9a6f5838048938d5e1ed50d9..ae09649325d42a2ad4dc80f0c7cd0f4b0835b8d5 100644
+--- a/support/xthread.h
++++ b/support/xthread.h
+@@ -62,6 +62,7 @@ void xpthread_mutex_consistent (pthread_mutex_t *);
+ void xpthread_spin_lock (pthread_spinlock_t *lock);
+ void xpthread_spin_unlock (pthread_spinlock_t *lock);
+ void xpthread_cond_wait (pthread_cond_t * cond, pthread_mutex_t * mutex);
++void xpthread_cond_signal (pthread_cond_t *cond);
+ pthread_t xpthread_create (pthread_attr_t *attr,
+                            void *(*thread_func) (void *), void *closure);
+ void xpthread_detach (pthread_t thr);
+-- 
+2.53.0
+

@@ -1,0 +1,61 @@
+From b1f62861bf9b8045cd910396db24152b6b8368af Mon Sep 17 00:00:00 2001
+From: Michael Jeanson <mjeanson@efficios.com>
+Date: Thu, 7 Nov 2024 22:23:49 +0100
+Subject: [PATCH 201/254] nptl: initialize rseq area prior to registration
+
+Per the rseq syscall documentation, 3 fields are required to be
+initialized by userspace prior to registration, they are 'cpu_id',
+'rseq_cs' and 'flags'. Since we have no guarantee that 'struct pthread'
+is cleared on all architectures, explicitly set those 3 fields prior to
+registration.
+
+Signed-off-by: Michael Jeanson <mjeanson@efficios.com>
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit 97f60abd25628425971f07e9b0e7f8eec0741235)
+---
+ nptl/descr.h                            |  2 ++
+ sysdeps/unix/sysv/linux/rseq-internal.h | 10 ++++++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/nptl/descr.h b/nptl/descr.h
+index ff634dac331057d45fee5452177171268e3934f9..bbb26607ef4632a5b6fcceb1f8ce79c53b6f799c 100644
+--- a/nptl/descr.h
++++ b/nptl/descr.h
+@@ -411,6 +411,8 @@ struct pthread
+     {
+       uint32_t cpu_id_start;
+       uint32_t cpu_id;
++      uint64_t rseq_cs;
++      uint32_t flags;
+     };
+     char pad[32];		/* Original rseq area size.  */
+   } rseq_area __attribute__ ((aligned (32)));
+diff --git a/sysdeps/unix/sysv/linux/rseq-internal.h b/sysdeps/unix/sysv/linux/rseq-internal.h
+index f08a70dfc4df07e363d70121cde52c5988bcdd65..538160b617f79bd58daea8a749a51cf39260bb9f 100644
+--- a/sysdeps/unix/sysv/linux/rseq-internal.h
++++ b/sysdeps/unix/sysv/linux/rseq-internal.h
+@@ -51,11 +51,21 @@ rseq_register_current_thread (struct pthread *self, bool do_rseq)
+         /* The initial implementation used only 20 bytes out of 32,
+            but still expected size 32.  */
+         size = RSEQ_AREA_SIZE_INITIAL;
++
++      /* Initialize the rseq fields that are read by the kernel on
++         registration, there is no guarantee that struct pthread is
++         cleared on all architectures.  */
++      THREAD_SETMEM (self, rseq_area.cpu_id, RSEQ_CPU_ID_UNINITIALIZED);
++      THREAD_SETMEM (self, rseq_area.rseq_cs, 0);
++      THREAD_SETMEM (self, rseq_area.flags, 0);
++
+       int ret = INTERNAL_SYSCALL_CALL (rseq, &self->rseq_area,
+                                        size, 0, RSEQ_SIG);
+       if (!INTERNAL_SYSCALL_ERROR_P (ret))
+         return true;
+     }
++  /* When rseq is disabled by tunables or the registration fails, inform
++     userspace by setting 'cpu_id' to RSEQ_CPU_ID_REGISTRATION_FAILED.  */
+   THREAD_SETMEM (self, rseq_area.cpu_id, RSEQ_CPU_ID_REGISTRATION_FAILED);
+   return false;
+ }
+-- 
+2.53.0
+

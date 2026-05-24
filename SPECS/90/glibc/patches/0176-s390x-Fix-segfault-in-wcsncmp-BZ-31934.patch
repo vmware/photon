@@ -1,0 +1,58 @@
+From a70c55a91b2b361f43e4142aadf86f22af57d406 Mon Sep 17 00:00:00 2001
+From: Stefan Liebler <stli@linux.ibm.com>
+Date: Thu, 11 Jul 2024 11:28:53 +0200
+Subject: [PATCH 176/254] s390x: Fix segfault in wcsncmp [BZ #31934]
+
+The z13/vector-optimized wcsncmp implementation segfaults if n=1
+and there is only one character (equal on both strings) before
+the page end.  Then it loads and compares one character and misses
+to check n again.  The following load fails.
+
+This patch removes the extra load and compare of the first character
+and just start with the loop which uses vector-load-to-block-boundary.
+This code-path also checks n.
+
+With this patch both tests are passing:
+- the simplified one mentioned in the bugzilla 31934
+- the full one in Florian Weimer's patch:
+"manual: Document a GNU extension for strncmp/wcsncmp"
+(https://patchwork.sourceware.org/project/glibc/patch/874j9eml6y.fsf@oldenburg.str.redhat.com/):
+On s390x-linux-gnu (z16), the new wcsncmp test fails due to bug 31934.
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+
+(cherry picked from commit 9b7651410375ec8848a1944992d663d514db4ba7)
+---
+ sysdeps/s390/wcsncmp-vx.S | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/sysdeps/s390/wcsncmp-vx.S b/sysdeps/s390/wcsncmp-vx.S
+index c518539bfae2bc30245adf6294761505a79a6487..5db0c707a10d5f3fa094466892123f7c0c3a3671 100644
+--- a/sysdeps/s390/wcsncmp-vx.S
++++ b/sysdeps/s390/wcsncmp-vx.S
+@@ -59,14 +59,7 @@ ENTRY(WCSNCMP_Z13)
+ 	sllg	%r4,%r4,2	/* Convert character-count to byte-count.  */
+ 	locgrne	%r4,%r1		/* Use max byte-count, if bit 0/1 was one.  */
+ 
+-	/* Check first character without vector load.  */
+-	lghi	%r5,4		/* current_len = 4 bytes.  */
+-	/* Check s1/2[0].  */
+-	lt	%r0,0(%r2)
+-	l	%r1,0(%r3)
+-	je	.Lend_cmp_one_char
+-	crjne	%r0,%r1,.Lend_cmp_one_char
+-
++	lghi	%r5,0		/* current_len = 0 bytes.  */
+ .Lloop:
+ 	vlbb	%v17,0(%r5,%r3),6 /* Load s2 to block boundary.  */
+ 	vlbb	%v16,0(%r5,%r2),6 /* Load s1 to block boundary.  */
+@@ -167,7 +160,6 @@ ENTRY(WCSNCMP_Z13)
+ 	srl	%r4,2		/* And convert it to character-index.  */
+ 	vlgvf	%r0,%v16,0(%r4)	/* Load character-values.  */
+ 	vlgvf	%r1,%v17,0(%r4)
+-.Lend_cmp_one_char:
+ 	cr	%r0,%r1
+ 	je	.Lend_equal
+ 	lghi	%r2,1
+-- 
+2.53.0
+

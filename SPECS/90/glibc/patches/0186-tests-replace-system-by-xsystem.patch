@@ -1,0 +1,230 @@
+From 45cfbf015f4e080dda3af67e715c7e4ef667c394 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20B=C3=A9rat?= <fberat@redhat.com>
+Date: Wed, 14 Jun 2023 10:52:07 +0200
+Subject: [PATCH 186/254] tests: replace system by xsystem
+
+With fortification enabled, system calls return result needs to be checked,
+has it gets the __wur macro enabled.
+Reviewed-by: Siddhesh Poyarekar <siddhesh@sourceware.org>
+
+(cherry picked from commit 8022fc7d5119a22e9e0ac72798f649385b0e167a)
+---
+ elf/tst-stackguard1.c     |  5 ++++-
+ libio/bug-mmap-fflush.c   |  7 +++++--
+ nptl/tst-cancel7.c        |  3 ++-
+ nptl/tst-stackguard1.c    |  5 ++++-
+ nss/tst-nss-db-endpwent.c |  3 ++-
+ support/Makefile          |  1 +
+ support/xstdlib.h         | 31 +++++++++++++++++++++++++++++++
+ support/xsystem.c         | 37 +++++++++++++++++++++++++++++++++++++
+ 8 files changed, 86 insertions(+), 6 deletions(-)
+ create mode 100644 support/xstdlib.h
+ create mode 100644 support/xsystem.c
+
+diff --git a/elf/tst-stackguard1.c b/elf/tst-stackguard1.c
+index 050784319a24853747f8093d53ae3b8e3565cbc1..98625632dc932d04ef556222921277da9055c08e 100644
+--- a/elf/tst-stackguard1.c
++++ b/elf/tst-stackguard1.c
+@@ -26,6 +26,8 @@
+ #include <tls.h>
+ #include <unistd.h>
+ 
++#include <support/xstdlib.h>
++
+ static const char *command;
+ static bool child;
+ static uintptr_t stack_chk_guard_copy;
+@@ -108,7 +110,8 @@ do_test (void)
+ 	  dup2 (fds[1], 2);
+ 	  close (fds[1]);
+ 
+-	  system (command);
++	  xsystem (command);
++
+ 	  exit (0);
+ 	}
+ 
+diff --git a/libio/bug-mmap-fflush.c b/libio/bug-mmap-fflush.c
+index d8aa58985aa0790c1267e7b00a281eec0238da6e..3f99222eefa7d4c3a925e887ee53d495f9a9402d 100644
+--- a/libio/bug-mmap-fflush.c
++++ b/libio/bug-mmap-fflush.c
+@@ -4,6 +4,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++#include <support/xstdlib.h>
+ 
+ static char *fname;
+ 
+@@ -35,14 +36,16 @@ do_test (void)
+   char buffer[1024];
+ 
+   snprintf (buffer, sizeof (buffer), "echo 'From foo@bar.com' > %s", fname);
+-  system (buffer);
++  xsystem (buffer);
++
+   f = fopen (fname, "r");
+   fseek (f, 0, SEEK_END);
+   o = ftello (f);
+   fseek (f, 0, SEEK_SET);
+   fflush (f);
+   snprintf (buffer, sizeof (buffer), "echo 'From bar@baz.edu' >> %s", fname);
+-  system (buffer);
++  xsystem (buffer);
++
+   fseek (f, o, SEEK_SET);
+   if (fgets (buffer, 1024, f) == NULL)
+     exit (1);
+diff --git a/nptl/tst-cancel7.c b/nptl/tst-cancel7.c
+index 903457db76312890ed5ece4f0d96832edc1acd7a..1c80457553bdbbb0f04ebcaf5d34880b6d8d75f0 100644
+--- a/nptl/tst-cancel7.c
++++ b/nptl/tst-cancel7.c
+@@ -43,7 +43,8 @@ tf (void *arg)
+ {
+   char *cmd = xasprintf ("%s --direct --sem %s --pidfile %s",
+ 			 command, semfilename, pidfilename);
+-  system (cmd);
++  if (system (cmd))
++    FAIL_EXIT1("system call unexpectedly returned");
+   /* This call should never return.  */
+   return NULL;
+ }
+diff --git a/nptl/tst-stackguard1.c b/nptl/tst-stackguard1.c
+index 3460c01819ee8dfe588b990daeac6fdfa8d0ea15..bc8900ce2287b2740d98441e1c209ca45a4ac14a 100644
+--- a/nptl/tst-stackguard1.c
++++ b/nptl/tst-stackguard1.c
+@@ -27,6 +27,8 @@
+ #include <tls.h>
+ #include <unistd.h>
+ 
++#include <support/xstdlib.h>
++
+ static const char *command;
+ static bool child;
+ static uintptr_t stack_chk_guard_copy;
+@@ -138,7 +140,8 @@ do_test (void)
+ 	  dup2 (fds[1], 2);
+ 	  close (fds[1]);
+ 
+-	  system (command);
++	  xsystem (command);
++
+ 	  exit (0);
+ 	}
+ 
+diff --git a/nss/tst-nss-db-endpwent.c b/nss/tst-nss-db-endpwent.c
+index da4ab643e770f5371603762c5a59516135c33145..c2417b2505aa6e01ce331de029758c35a8f7c645 100644
+--- a/nss/tst-nss-db-endpwent.c
++++ b/nss/tst-nss-db-endpwent.c
+@@ -23,6 +23,7 @@
+ 
+ #include <support/support.h>
+ #include <support/check.h>
++#include <support/xstdlib.h>
+ 
+ /* It is entirely allowed to start with a getpwent call without
+    resetting the state of the service via a call to setpwent.
+@@ -55,7 +56,7 @@ do_test (void)
+ 
+   cmd = xasprintf ("%s/makedb -o /var/db/passwd.db /var/db/passwd.in",
+ 		   support_bindir_prefix);
+-  system (cmd);
++  xsystem (cmd);
+   free (cmd);
+ 
+   try_it ();
+diff --git a/support/Makefile b/support/Makefile
+index 75b96c35f5e4139e2093f3c7364bcc1902c15d6f..7c572fbe4a9eeff79df471a0007fe59423e0af6c 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -207,6 +207,7 @@ libsupport-routines = \
+   xstrndup \
+   xsymlink \
+   xsysconf \
++  xsystem \
+   xunlink \
+   xuselocale \
+   xwaitpid \
+diff --git a/support/xstdlib.h b/support/xstdlib.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..db5a5b9d4fd1fa71b4a90e8dd19d408351994261
+--- /dev/null
++++ b/support/xstdlib.h
+@@ -0,0 +1,31 @@
++/* Error-checking wrappers for stdlib functions.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#ifndef SUPPORT_XSTDLIB_H
++#define SUPPORT_XSTDLIB_H
++
++#include <stdlib.h>
++#include <sys/cdefs.h>
++
++__BEGIN_DECLS
++
++void xsystem (const char *cmd);
++
++__END_DECLS
++
++#endif /* SUPPORT_XSTDLIB_H */
+diff --git a/support/xsystem.c b/support/xsystem.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..1f558953bca8f5b2c960a20e54724cde700ef543
+--- /dev/null
++++ b/support/xsystem.c
+@@ -0,0 +1,37 @@
++/* Error-checking replacement for "system".
++   Copyright (C) 2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <support/support.h>
++#include <support/check.h>
++
++#include <support/xstdlib.h>
++
++void
++xsystem (const char *cmd)
++{
++  int ret = system (cmd);
++
++  if (ret == 0 && cmd == NULL)
++    FAIL_EXIT1 ("Unable to spawn a shell for NULL command");
++
++  if (ret == 127)
++    FAIL_EXIT1 ("Child terminated with status 127");
++
++  if (ret < 0)
++    FAIL_EXIT1 ("system (\"%s\")", cmd);
++}
+-- 
+2.53.0
+

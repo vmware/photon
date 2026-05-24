@@ -1,7 +1,7 @@
 From 2be6cf2e75d091f2aef606af4ddd876855b77abb Mon Sep 17 00:00:00 2001
 From: Florian Weimer <fweimer@redhat.com>
 Date: Mon, 26 Jan 2026 17:12:37 +0100
-Subject: [PATCH 15/22] posix: Run tst-wordexp-reuse-mem test
+Subject: [PATCH 15/27] posix: Run tst-wordexp-reuse-mem test
 
 The test was not properly scheduled for execution with a Makefile
 dependency.
@@ -28,5 +28,5 @@ index 71a19061686600b73c9bd24e934ffd96998e0647..f37794846287ff2318b290a5d25419c0
  endif
  endif
 -- 
-2.43.7
+2.53.0
 

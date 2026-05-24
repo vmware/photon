@@ -1,7 +1,7 @@
 From 911bd469f80c6378da9319fe7508d012f95fc20c Mon Sep 17 00:00:00 2001
 From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
 Date: Thu, 26 Feb 2026 09:49:19 -0300
-Subject: [PATCH 09/22] debug: Fix build with --enable-fortify-source=1 (BZ
+Subject: [PATCH 09/27] debug: Fix build with --enable-fortify-source=1 (BZ
  33904)
 
 The libio/bits/stdio2-decl.h only defined the prototypes for
@@ -30,5 +30,5 @@ index 9758bf4b557e77ab97386ae5f1802b5c76f1d906..97c2236f2485c0b0199db7430c3d8a72
  libc_hidden_ldbl_proto (__vfprintf_chk)
  #endif
 -- 
-2.43.7
+2.53.0
 

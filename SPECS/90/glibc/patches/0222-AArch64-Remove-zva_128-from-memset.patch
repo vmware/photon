@@ -1,0 +1,65 @@
+From 2c9bfcf3ed812b296ac821c8149381015279d361 Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Mon, 25 Nov 2024 18:43:08 +0000
+Subject: [PATCH 222/254] AArch64: Remove zva_128 from memset
+
+Remove ZVA 128 support from memset - the new memset no longer
+guarantees count >= 256, which can result in underflow and a
+crash if ZVA size is 128 ([1]).  Since only one CPU uses a ZVA
+size of 128 and its memcpy implementation was removed in commit
+e162ab2bf1b82c40f29e1925986582fa07568ce8, remove this special
+case too.
+
+[1] https://sourceware.org/pipermail/libc-alpha/2024-November/161626.html
+
+Reviewed-by: Andrew Pinski <quic_apinski@quicinc.com>
+(cherry picked from commit a08d9a52f967531a77e1824c23b5368c6434a72d)
+---
+ sysdeps/aarch64/memset.S | 25 +------------------------
+ 1 file changed, 1 insertion(+), 24 deletions(-)
+
+diff --git a/sysdeps/aarch64/memset.S b/sysdeps/aarch64/memset.S
+index caafb019e2b6217b8a7ebc48a453a48a66ce76d3..71814d0b2f6dd3a7d847e25b3be2468a6e0a817e 100644
+--- a/sysdeps/aarch64/memset.S
++++ b/sysdeps/aarch64/memset.S
+@@ -104,7 +104,7 @@ L(set_long):
+ 	mrs	zva_val, dczid_el0
+ 	and	zva_val, zva_val, 31
+ 	cmp	zva_val, 4		/* ZVA size is 64 bytes.  */
+-	b.ne	L(zva_128)
++	b.ne	L(no_zva)
+ #endif
+ 	stp	q0, q0, [dst, 32]
+ 	bic	dst, dstin, 63
+@@ -137,28 +137,5 @@ L(no_zva_loop):
+ 	stp	q0, q0, [dstend, -32]
+ 	ret
+ 
+-#ifndef ZVA64_ONLY
+-	.p2align 4
+-L(zva_128):
+-	cmp	zva_val, 5		/* ZVA size is 128 bytes.  */
+-	b.ne	L(no_zva)
+-
+-	stp	q0, q0, [dst, 32]
+-	stp	q0, q0, [dst, 64]
+-	stp	q0, q0, [dst, 96]
+-	bic	dst, dst, 127
+-	sub	count, dstend, dst	/* Count is now 128 too large.	*/
+-	sub	count, count, 128 + 128	/* Adjust count and bias for loop.  */
+-1:	add	dst, dst, 128
+-	dc	zva, dst
+-	subs	count, count, 128
+-	b.hi	1b
+-	stp	q0, q0, [dstend, -128]
+-	stp	q0, q0, [dstend, -96]
+-	stp	q0, q0, [dstend, -64]
+-	stp	q0, q0, [dstend, -32]
+-	ret
+-#endif
+-
+ END (MEMSET)
+ libc_hidden_builtin_def (MEMSET)
+-- 
+2.53.0
+
