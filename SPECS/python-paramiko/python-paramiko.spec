@@ -4,8 +4,8 @@
 
 Summary:        Python SSH module
 Name:           python3-paramiko
-Version:        2.12.0
-Release:        10%{?dist}
+Version:        4.0.0
+Release:        1%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,25 +16,28 @@ Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2023-48795.patch
-Patch1: support-key-operations-in-openssl-fips-mode.patch
+Patch0: support-key-operations-in-openssl-fips-mode.patch
 
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-ecdsa
+BuildRequires:  python3-build
 BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-wheel
 BuildRequires:  python3-xml
+BuildRequires:  python3-packaging
+BuildRequires:  python3-installer
 
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
-BuildRequires:  python3-pip
+BuildRequires:  python3-PyNaCl
+BuildRequires:  python3-bcrypt
+BuildRequires:  python3-mock
 %endif
 
 Requires:       python3
-Requires:       python3-ecdsa > 0.11
 Requires:       python3-cryptography
 Requires:       python3-PyNaCl
 Requires:       python3-bcrypt
@@ -50,23 +53,27 @@ signed by a powerful central authority.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{py3_build}
+%{py3_build_wheel}
 
 %install
-%py3_install -- --single-version-externally-managed
+%{py3_install_wheel}
+%{py_byte_compile_and_ghost}
 
+%if 0%{?with_check}
 %check
-pip3 install pytest_relaxed PyNaCl bcrypt
 %{pytest}
+%endif
 
 %clean
 rm -rf %{buildroot}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-, root, root)
 %{python3_sitelib}/*
 
 %changelog
+* Mon May 18 2026 Prashant S Chauhan <prahant.singh-chauhan@broadcom.com> 4.0.0-1
+- Upgrade to upstream 4.0.0.
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12.0-10
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.0-9

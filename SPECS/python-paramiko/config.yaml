@@ -1,14 +1,16 @@
 sources:
-- archive: paramiko-2.12.0.tar.gz
-  archive_sha512sum: 1bf325ffd393447cb90009d01dc1104d0d43a6acdd08cc6d28310063a649a333323748800dab119ab5e10833975e68f5f5702044fc247a2e8058122a5327f2c7
-  skip_validation: true
+- archive: paramiko-4.0.0.tar.gz
+  archive_sha512sum: 5a6d4cf000f13e1a9ee2558f18a942e3b7f334807b007bed77cfb9d50f15d423b3490a0deca08f82749391092d2514c44cd7d8dda2dc66436db3816c2501c72a
+  archive_type: upstream
+  name: paramiko-4.0.0
+  version: 4.0.0
+  url: https://github.com/paramiko/paramiko/archive/refs/tags/4.0.0.tar.gz
+  repo_url: https://github.com/paramiko/paramiko
+  commit_id: aad0370db9fd5c22064a673c9602fc48314eb6f4
+  skip_validation: false
   spdx:
     package:
-      detailed_description: '"Paramiko" is a combination of the esperanto words for
-        "paranoid" and "friend". It''s a module for Python 2.6+ that implements the
-        SSH2 protocol for secure (encrypted and authenticated) connections to remote
-        machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical
-        certificates signed by a powerful central authority. '
+      detailed_description: '"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It''s a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority. '
       home_page: http://www.paramiko.org
       license_concluded: LGPL-2.1-or-later AND LGPL-2.1-only AND LGPL-2.0-or-later
       license_declared: LGPL-2.1-or-later AND LGPL-2.1-only AND LGPL-2.0-or-later
