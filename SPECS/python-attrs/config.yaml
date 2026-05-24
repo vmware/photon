@@ -1,12 +1,22 @@
 sources:
-- archive: attrs-22.1.0.tar.gz
-  archive_sha512sum: 447637bc82b31d565479e364869b996eaf7b67e526ad97f79ba1c27f287bbb25a2c40663e35437bc19037f605fac9322bd35f303f2769f0eb2ee673900551885
-  skip_validation: true
+- archive: attrs-26.1.0.tar.gz
+  archive_sha512sum: a3d7b0dd549fa2e7992041e4dfac08e7c168a198634968c07b1c667796ca2e467e0872604a46796f97ffd9f887a6566c0c7ab7c37ee9cad00fba8e5466d7f41e
+  archive_type: upstream
+  name: attrs-26.1.0
+  version: 26.1.0
+  url: https://github.com/python-attrs/attrs/archive/refs/tags/26.1.0.tar.gz
+  repo_url: https://github.com/python-attrs/attrs.git
+  commit_id: 7bfc49e9b22d5ba25b6e429524c3d49fee27cb36
+  skip_list:
+  - .git_archival.txt
+  missing:
+  - PKG-INFO
   spdx:
     package:
-      detailed_description: 'Attributes without boilerplate. '
-      home_page: https://pypi.python.org/pypi/attrs
+      detailed_description: 'attrs is a Python library for defining classes without boilerplate: declarative attributes, repr,
+        equality, initialization, and more, with optional static typing. Documentation: https://www.attrs.org/.'
+      home_page: https://github.com/python-attrs/attrs
       license_concluded: MIT
       license_declared: MIT
-      short_summary: Attributes without boilerplate.
+      short_summary: Python classes without boilerplate.
       supplier: 'Organization: Broadcom, Inc.'

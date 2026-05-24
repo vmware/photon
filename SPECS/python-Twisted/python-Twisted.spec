@@ -1,12 +1,12 @@
 %global build_if %{photon_subrelease} >= 91
 
 %global debug_package   %{nil}
-%define srcname         Twisted
+%define srcname         twisted
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
-Version:        24.7.0
-Release:        4%{?dist}
+Version:        26.4.0
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,13 +21,15 @@ Patch0: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-wheel
-BuildRequires: python3-pip
 BuildRequires: python3-hatchling
 BuildRequires: python3-pathspec
 BuildRequires: python3-pluggy
 BuildRequires: python3-hatch-fancy-pypi-readme
 BuildRequires: python3-incremental
+BuildRequires: python3-setuptools
 BuildRequires: python3-packaging
+BuildRequires: python3-build
+BuildRequires: python3-installer
 
 %if 0%{?with_check}
 BuildRequires: sudo
@@ -55,13 +57,14 @@ license. Twisted runs on Python 2 and an ever growing subset also works with Pyt
 many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 
 %prep
-%autosetup -p1 -n twisted-%{version}
+%autosetup -p1 -n %{srcname}-%{srcname}-%{version}
 
 %build
-%{pyproject_wheel}
+%py3_build_wheel
 
 %install
-%{pyproject_install}
+%py3_install_wheel
+%py_byte_compile_and_ghost
 
 for fn in twistd trial tkconch pyhtmlizer twist conch ckeygen cftp; do
   ln -sv ${fn} %{buildroot}%{_bindir}/${fn}3
@@ -78,7 +81,7 @@ PATH=%{buildroot}%{_bindir}:$PATH \
 %clean
 rm -rf %{buildroot}
 
-%files
+%files  -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/mailmail
@@ -92,6 +95,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Fri May 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.4.0-1
+- Upgrade Twisted to 26.4.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.7.0-4
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 24.7.0-3

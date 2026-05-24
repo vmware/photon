@@ -2,13 +2,13 @@
 
 Summary:        Attributes without boilerplate.
 Name:           python3-attrs
-Version:        22.1.0
-Release:        5%{?dist}
+Version:        26.1.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        attrs-%{version}.tar.gz
+Source0:        https://github.com/python-attrs/attrs/archive/%{version}/attrs-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -16,13 +16,18 @@ Source1: license.txt
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
+BuildRequires:  python3-hatchling
+BuildRequires:  python3-hatch-vcs
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-hatch-fancy-pypi-readme
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
 %if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-zope.interface
-BuildRequires:  python3-pip
+BuildRequires:  python3-pytest
+BuildRequires:  python3-hypothesis
 %endif
 
 Requires:       python3
@@ -34,24 +39,27 @@ Provides:       python%{python3_version}dist(attrs) = %{version}-%{release}
 Attributes without boilerplate.
 
 %prep
-%autosetup -p1 -n attrs-%{version}
+%autosetup -n attrs-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%py_byte_compile_and_ghost
 
+%if 0%{?with_check}
 %check
-#python2 does not support for tests
-pip3 install pytest hypothesis==4.38.0
-python3 setup.py test
+%pytest
+%endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 26.1.0-1
+- Update to 26.1.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 22.1.0-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.1.0-4

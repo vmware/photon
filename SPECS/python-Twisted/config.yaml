@@ -1,14 +1,15 @@
 sources:
-- archive: Twisted-24.7.0.tar.gz
-  archive_sha512sum: cd5a993c8f1dfdc82597bdc095e07c1016a2a86d1ce5b011b27f9f760db428fcba4579dda5733244979827f9c772c2480d1d419d2d24ae7af8697e2b8e852f62
-  skip_validation: true
+- archive: twisted-26.4.0.tar.gz
+  archive_sha512sum: 3ce57341b2fddf5c1fb0f0abef3dfb65f40caeaf35f72f3da2bf1e2e33776f47b877e0454f2687049dd476006a58e7d8256f359667b4f3fad4c9bca910256647
+  archive_type: upstream
+  name: twisted-twisted-26.4.0
+  version: 26.4.0
+  url: https://github.com/twisted/twisted/archive/refs/tags/twisted-26.4.0.tar.gz
+  repo_url: https://github.com/twisted/twisted
+  commit_id: 3dc92b79333c231338390c2b8cec5c142a31863d
   spdx:
     package:
-      detailed_description: "Twisted is an event-driven networking engine written\
-        \ in Python and licensed under the open source \u200BMIT license. Twisted\
-        \ runs on Python 2 and an ever growing subset also works with Python 3. Twisted\
-        \ also supports many common network protocols, including SMTP, POP3, IMAP,\
-        \ SSHv2, and DNS. "
+      detailed_description: "Twisted is an event-driven networking engine written in Python and licensed under the open source \u200BMIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3. Twisted also supports many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS. "
       home_page: https://twistedmatrix.com
       license_concluded: MIT
       license_declared: MIT

@@ -13,12 +13,12 @@ index 6824482..48bb569 100644
 --- a/src/twisted/internet/_sslverify.py
 +++ b/src/twisted/internet/_sslverify.py
 @@ -7,7 +7,7 @@
- import warnings
  from binascii import hexlify
+ from collections.abc import Sequence
  from functools import lru_cache
 -from hashlib import md5
 +from hashlib import sha512
- from typing import Dict
+ from typing import TYPE_CHECKING, Any, Callable, TypeVar
  
  from zope.interface import Interface, implementer
 @@ -519,12 +519,12 @@ class Certificate(CertBase):

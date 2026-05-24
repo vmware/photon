@@ -1,14 +1,16 @@
 sources:
-- archive: hatch_fancy_pypi_readme-22.8.0.tar.gz
-  archive_sha512sum: e8f28a9020fc38bb03187e85688531c0fa895fcc56f3deb241bf19a71b2e88f2a354526eabe1a8e0bf7736f97883208eec2a7eac4199e08ddc40988643491632
-  skip_validation: true
+- archive: hatch-fancy-pypi-readme-25.1.0.tar.gz
+  archive_sha512sum: 0d882a2203f69e0c65c93e23b3ad04627e31695a106a4c93dbe8e4483f514497646944d3788ea2a9d534b68410b2b4511b49fd6b870ee3d8b2c024fc0c654cab
+  archive_type: upstream
+  name: hatch-fancy-pypi-readme-25.1.0
+  version: 25.1.0
+  url: https://github.com/hynek/hatch-fancy-pypi-readme/archive/25.1.0/hatch-fancy-pypi-readme-25.1.0.tar.gz
+  repo_url: https://github.com/hynek/hatch-fancy-pypi-readme.git
+  skip_validation: false
+  commit_id: 8d7b82ce008390d7725c32e064aed8be26ab1cac
   spdx:
     package:
-      detailed_description: "hatch-fancy-pypi-readme is a Hatch metadata plugin for\
-        \ everyone who cares about the first impression of their project\u2019s PyPI\
-        \ landing page. It allows you to define your PyPI project description in terms\
-        \ of concatenated fragments that are based on static strings, files, and most\
-        \ importantly: parts of files defined using cut-off points or regular expressions. "
+      detailed_description: "hatch-fancy-pypi-readme is a Hatch metadata plugin for everyone who cares about the first impression of their project\u2019s PyPI landing page. It allows you to define your PyPI project description in terms of concatenated fragments that are based on static strings, files, and most importantly: parts of files defined using cut-off points or regular expressions. "
       home_page: https://github.com/hynek/hatch-fancy-pypi-readme
       license_concluded: MIT
       license_declared: MIT
