@@ -4,7 +4,7 @@
 
 Name:           cloud-init
 Version:        25.1.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -59,7 +59,6 @@ BuildRequires: python3-jsonschema
 BuildRequires: python3-pyserial
 BuildRequires: python3-attrs
 BuildRequires: python3-iniconfig
-BuildRequires: python3-netifaces
 BuildRequires: shadow
 %endif
 
@@ -79,7 +78,6 @@ Requires: python3-six
 Requires: python3-setuptools
 Requires: python3-xml
 Requires: python3-jsonschema
-Requires: python3-netifaces
 Requires: python3-pyserial
 Requires: dhcpcd
 Requires: openssl-c_rehash
@@ -155,6 +153,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Fri May 22 2026 Prashant S Chauhan <prashant.singh-chuahan@broadcom.com> 25.1.3-10
+- Remove netifaces dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.1.3-9
 - Extended to build for subrelease 91 and above
 * Mon Apr 20 2026 Bo Gan <bo.gan@broadcom.com> 25.1.3-8
