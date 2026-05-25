@@ -1,0 +1,191 @@
+From 2f88c9c25aaedcbc00ae7ebe8f3c778b256fac9e Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Sat, 6 Dec 2025 13:31:58 +0100
+Subject: [PATCH 419/419] loader/efi/linux.c: Disable code not used on x86 when
+ building for x86
+
+When building grub for x86_64-efi or i386-efi then loader/i386/efi/linux.c
+already registers "linux" and "initrd" commands and those will be used
+instead of those defined in the generic loader/efi/linux.c code.
+
+Disable (#ifdef out) the unused code in loader/efi/linux.c when building
+for x86. This also avoids registering the linux and initrd commands twice.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/efi/linux.c | 57 +++++-------------------------------
+ 1 file changed, 7 insertions(+), 50 deletions(-)
+
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index a41755f2d..fc7935453 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -38,6 +38,7 @@
+ 
+ GRUB_MOD_LICENSE ("GPLv3+");
+ 
++#if !defined(__i386__) && !defined(__x86_64__)
+ static grub_dl_t my_mod;
+ static int loaded;
+ 
+@@ -72,12 +73,6 @@ static initrd_media_device_path_t initrd_lf2_device_path = {
+   }
+ };
+ 
+-extern grub_err_t
+-grub_cmd_linux_x86_legacy (grub_command_t cmd, int argc, char *argv[]);
+-
+-extern grub_err_t
+-grub_cmd_initrd_x86_legacy (grub_command_t cmd, int argc, char *argv[]);
+-
+ static grub_efi_status_t __grub_efi_api
+ grub_efi_initrd_load_file2 (grub_efi_load_file2_t *this,
+                             grub_efi_device_path_t *device_path,
+@@ -88,6 +83,7 @@ grub_efi_initrd_load_file2 (grub_efi_load_file2_t *this,
+ static grub_efi_load_file2_t initrd_lf2 = {
+   grub_efi_initrd_load_file2
+ };
++#endif
+ 
+ #pragma GCC diagnostic push
+ #pragma GCC diagnostic ignored "-Wcast-align"
+@@ -394,6 +390,7 @@ grub_arch_efi_linux_load_image_header (grub_file_t file,
+   if (lh->pe_image_header.optional_header.magic != GRUB_PE32_NATIVE_MAGIC)
+     return grub_error (GRUB_ERR_NOT_IMPLEMENTED_YET, "non-native image not supported");
+ 
++#if !defined(__i386__) && !defined(__x86_64__)
+   /*
+    * Linux kernels built for any architecture are guaranteed to support the
+    * LoadFile2 based initrd loading protocol if the image version is >= 1.
+@@ -405,6 +402,7 @@ grub_arch_efi_linux_load_image_header (grub_file_t file,
+ 
+   grub_dprintf ("linux", "LoadFile2 initrd loading %sabled\n",
+                 initrd_use_loadfile2 ? "en" : "dis");
++#endif
+ 
+   return GRUB_ERR_NONE;
+ }
+@@ -540,13 +538,12 @@ unload:
+   return grub_errno;
+ }
+ 
++#if !defined(__i386__) && !defined(__x86_64__)
+ static grub_err_t
+ grub_linux_boot (void)
+ {
+-#if !defined(__i386__) && !defined(__x86_64__)
+   if (finalize_params_linux () != GRUB_ERR_NONE)
+     return grub_errno;
+-#endif
+ 
+   return grub_arch_efi_linux_boot_image ((grub_addr_t) kernel_addr,
+ 					 kernel_size, linux_args);
+@@ -567,9 +564,7 @@ grub_linux_unload (void)
+   if (kernel_addr)
+     grub_efi_free_pages ((grub_addr_t) kernel_addr,
+ 			 GRUB_EFI_BYTES_TO_PAGES (kernel_size));
+-#if !defined(__i386__) && !defined(__x86_64__)
+   grub_fdt_unload ();
+-#endif
+ 
+   if (initrd_lf2_handle != NULL)
+     {
+@@ -585,7 +580,6 @@ grub_linux_unload (void)
+   return GRUB_ERR_NONE;
+ }
+ 
+-#if !defined(__i386__) && !defined(__x86_64__)
+ /*
+  * As per linux/Documentation/arm/Booting
+  * ARM initrd needs to be covered by kernel linear mapping,
+@@ -633,7 +627,6 @@ allocate_initrd_mem (int initrd_pages)
+   grub_dprintf ("linux", "got 0x%016llx\n", (unsigned long long)ret);
+   return ret;
+ }
+-#endif
+ 
+ static grub_efi_status_t __grub_efi_api
+ grub_efi_initrd_load_file2 (grub_efi_load_file2_t *this,
+@@ -686,11 +679,6 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
+       goto fail;
+     }
+ 
+-#if defined(__i386__) || defined(__x86_64__)
+-  if (!initrd_use_loadfile2)
+-    return grub_cmd_initrd_x86_legacy (cmd, argc, argv);
+-#endif
+-
+   if (!loaded)
+     {
+       grub_error (GRUB_ERR_BAD_ARGUMENT,
+@@ -726,7 +714,6 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
+       return GRUB_ERR_NONE;
+     }
+ 
+-#if !defined(__i386__) && !defined(__x86_64__)
+   initrd_size = grub_get_initrd_size (&initrd_ctx);
+   grub_dprintf ("linux", "Loading initrd\n");
+ 
+@@ -749,7 +736,6 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
+   initrd_end = initrd_start + initrd_size;
+   grub_dprintf ("linux", "[addr=%p, size=0x%x]\n",
+ 		(void *) initrd_start, initrd_size);
+-#endif
+ 
+  fail:
+   grub_initrd_close (&initrd_ctx);
+@@ -768,20 +754,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+   grub_dl_ref (my_mod);
+ 
+   if (grub_is_shim_lock_enabled () == true)
+-    {
+-#if defined(__i386__) || defined(__x86_64__)
+-      grub_dprintf ("linux", "shim_lock enabled, falling back to legacy Linux kernel loader\n");
+-
+-      err = grub_cmd_linux_x86_legacy (cmd, argc, argv);
+-
+-      if (err == GRUB_ERR_NONE)
+-	return GRUB_ERR_NONE;
+-      else
+-	goto fail;
+-#else
+-      grub_dprintf ("linux", "shim_lock enabled, trying Linux kernel EFI stub loader\n");
+-#endif
+-    }
++    grub_dprintf ("linux", "shim_lock enabled, trying Linux kernel EFI stub loader\n");
+ 
+   if (argc == 0)
+     {
+@@ -796,24 +769,7 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+   kernel_size = grub_file_size (file);
+ 
+   if (grub_arch_efi_linux_load_image_header (file, &lh) != GRUB_ERR_NONE)
+-#if !defined(__i386__) && !defined(__x86_64__)
+     goto fail;
+-#else
+-    goto fallback;
+-
+-  if (!initrd_use_loadfile2)
+-    {
+-      /*
+-       * This is a EFI stub image but it is too old to implement the LoadFile2
+-       * based initrd loading scheme, and Linux/x86 does not support the DT
+-       * based method either. So fall back to the x86-specific loader that
+-       * enters Linux in EFI mode but without going through its EFI stub.
+-       */
+-fallback:
+-      grub_file_close (file);
+-      return grub_cmd_linux_x86_legacy (cmd, argc, argv);
+-    }
+-#endif
+ 
+   grub_loader_unset();
+ 
+@@ -896,3 +852,4 @@ GRUB_MOD_FINI (linux)
+   grub_unregister_command (cmd_linux);
+   grub_unregister_command (cmd_initrd);
+ }
++#endif
+-- 
+2.52.0
+

@@ -1,0 +1,83 @@
+From 1a74ad8c7fb7005d05960d516f402f4d6371d041 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Thu, 4 Dec 2025 21:34:53 +0100
+Subject: [PATCH 409/419] Revert "loader/efi: Fix RISC-V build"
+
+This fully reverts commit ae0fba3cfd68147f7d60866728de0eaae4956710.
+
+This will break RISC-V builds, but further reverts in this series
+will completely remove the troublesome parse_pe_header() function.
+
+Note the modifed code is not used on x86 (#ifdef !x86).
+
+This is part of a series of reverts to move non x86 vmlinuz loading back
+to using EFI boot services load_image + start_image calls.
+
+The current DYI approach breaks booting kernel EFI binaries which have
+the stubble stub for automatic DTB loading.
+
+Switching back to EFI boot services load_image + start_image fixes this
+and also brings Fedora's grub inline with how upstream grub is loading
+and booting kernels on arm64 platforms.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/efi/linux.c |  2 +-
+ include/grub/efi/efi.h       | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index 111edf0e1..65ddc9eb1 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -762,7 +762,7 @@ parse_pe_header (void *kernel, grub_uint64_t *total_size,
+ 		 grub_uint32_t *alignment, grub_uint32_t *code_size)
+ {
+   struct linux_arch_kernel_header *lh = kernel;
+-  struct grub_efixx_linux_pe_header *pe;
++  struct grub_armxx_linux_pe_header *pe;
+   grub_uint16_t i;
+   struct grub_pe32_section_table *sections;
+ 
+diff --git a/include/grub/efi/efi.h b/include/grub/efi/efi.h
+index 81daf6bea..7eed1bd79 100644
+--- a/include/grub/efi/efi.h
++++ b/include/grub/efi/efi.h
+@@ -36,28 +36,28 @@ struct linux_arch_kernel_header {
+   struct grub_pe_image_header pe_image_header;
+ };
+ 
+-struct grub_efi32_linux_pe_header
++struct grub_arm_linux_pe_header
+ {
+   grub_uint32_t magic;
+   struct grub_pe32_coff_header coff;
+   struct grub_pe32_optional_header opt;
+ };
+ 
+-struct grub_efi64_linux_pe_header
++struct grub_arm64_linux_pe_header
+ {
+   grub_uint32_t magic;
+   struct grub_pe32_coff_header coff;
+   struct grub_pe64_optional_header opt;
+ };
+ 
+-#if defined(__arm__) || (defined(__riscv) && (__riscv_xlen == 32))
++#if defined(__arm__)
+ # define GRUB_PE32_PEXX_MAGIC GRUB_PE32_PE32_MAGIC
+-# define grub_efixx_linux_pe_header grub_efi32_linux_pe_header
++# define grub_armxx_linux_pe_header grub_arm_linux_pe_header
+ #endif
+ 
+-#if defined(__aarch64__) || (defined(__riscv) && (__riscv_xlen == 64))
++#if defined(__aarch64__)
+ # define GRUB_PE32_PEXX_MAGIC GRUB_PE32_PE64_MAGIC
+-# define grub_efixx_linux_pe_header grub_efi64_linux_pe_header
++# define grub_armxx_linux_pe_header grub_arm64_linux_pe_header
+ #endif
+ 
+ #define GRUB_EFI_GRUB_VARIABLE_GUID             \
+-- 
+2.52.0
+

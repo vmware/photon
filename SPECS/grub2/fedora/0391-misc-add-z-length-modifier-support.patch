@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:32 +0800
+Subject: [PATCH] misc: add z length modifier support
+
+Add support for the 'z' length modifier in the printf code. This allows
+printing of size_t and ssize_t values using %zu, %zd and related
+formats. The parser maps 'z' to the correct integer width based on
+sizeof (size_t).
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/kern/misc.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/grub-core/kern/misc.c b/grub-core/kern/misc.c
+index c1c77c300c..2568a5489b 100644
+--- a/grub-core/kern/misc.c
++++ b/grub-core/kern/misc.c
+@@ -30,6 +30,7 @@
+ #if DEBUG_WITH_TIMESTAMPS
+ #include <grub/time.h>
+ #endif
++#include <stddef.h>
+ 
+ union printf_arg
+ {
+@@ -883,6 +884,9 @@ parse_printf_arg_fmt (const char *fmt0, struct printf_args *args,
+   COMPILE_TIME_ASSERT (sizeof (long) <= sizeof (long long));
+   COMPILE_TIME_ASSERT (sizeof (long long) == sizeof (void *)
+ 		       || sizeof (int) == sizeof (void *));
++  COMPILE_TIME_ASSERT (sizeof (size_t) == sizeof (unsigned)
++		       || sizeof (size_t) == sizeof (unsigned long)
++		       || sizeof (size_t) == sizeof (unsigned long long));
+ 
+   fmt = fmt0;
+   while ((c = *fmt++) != 0)
+@@ -917,11 +921,17 @@ parse_printf_arg_fmt (const char *fmt0, struct printf_args *args,
+ 	fmt++;
+ 
+       c = *fmt++;
++      if (c == 'z')
++	{
++	  c = *fmt++;
++	  goto do_count;
++	}
+       if (c == 'l')
+ 	c = *fmt++;
+       if (c == 'l')
+ 	c = *fmt++;
+ 
++ do_count:
+       switch (c)
+ 	{
+ 	case 'p':
+@@ -1018,6 +1028,14 @@ parse_printf_arg_fmt (const char *fmt0, struct printf_args *args,
+ 	  continue;
+ 	}
+ 
++      if (c == 'z')
++	{
++	  c = *fmt++;
++	  if (sizeof (size_t) == sizeof (unsigned long))
++	    longfmt = 1;
++	  else if (sizeof (size_t) == sizeof (unsigned long long))
++	    longfmt = 2;
++	}
+       if (c == 'l')
+ 	{
+ 	  c = *fmt++;
+@@ -1194,6 +1212,8 @@ grub_vsnprintf_real (char *str, grub_size_t max_len, const char *fmt0,
+ 	}
+ 
+       c = *fmt++;
++      if (c == 'z')
++	c = *fmt++;
+       if (c == 'l')
+ 	c = *fmt++;
+       if (c == 'l')

@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:38 +0800
+Subject: [PATCH] util/grub-editenv: wire list_variables to optional fs_envblk
+
+This patch updates list_variables() so that it also prints entries from
+the external environment block when one is present. The function first
+lists all variables from the file based envblk, then iterates over the
+external envblk and prints those as well.
+
+The output format remains the same as before. The change makes it
+possible to inspect variables regardless of whether they are stored in
+the file envblk or in the reserved block.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Avnish Chouhan <avnish@linux.ibm.com>
+Reviewed-by: Sudhakar Kuppusamy <sudhakar@linux.ibm.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ util/grub-editenv.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/util/grub-editenv.c b/util/grub-editenv.c
+index 7ff1da9b40..170d8f139a 100644
+--- a/util/grub-editenv.c
++++ b/util/grub-editenv.c
+@@ -358,10 +358,17 @@ static void
+ list_variables (const char *name)
+ {
+   grub_envblk_t envblk;
++  grub_envblk_t envblk_on_block = NULL;
+ 
+   envblk = open_envblk_file (name);
++  grub_envblk_iterate (envblk, &envblk_on_block, read_env_block_var);
+   grub_envblk_iterate (envblk, NULL, print_var);
+   grub_envblk_close (envblk);
++  if (envblk_on_block != NULL)
++    {
++      grub_envblk_iterate (envblk_on_block, NULL, print_var);
++      grub_envblk_close (envblk_on_block);
++    }
+ }
+ 
+ static void

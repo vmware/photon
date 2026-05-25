@@ -1,0 +1,88 @@
+From 3d3a6162c2b36ff641672c0c0d35b9fb8b758cba Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Thu, 4 Dec 2025 21:22:32 +0100
+Subject: [PATCH 412/419] Revert "loader/efi/linux.c: read the kernel image
+ before header"
+
+This fully reverts commit 9728e07d670899ed9cb61ca467c4a3eb4e40fa1f.
+
+Note that the modifed version of grub_cmd_linux() is never used on x86,
+which uses linux_cmd() from grub-core/loader/i386/efi/linux.c .
+
+This is part of a series of reverts to move non x86 vmlinuz loading back
+to using EFI boot services load_image + start_image calls.
+
+The current DYI approach breaks booting kernel EFI binaries which have
+the stubble stub for automatic DTB loading.
+
+Switching back to EFI boot services load_image + start_image fixes this
+and also brings Fedora's grub inline with how upstream grub is loading
+and booting kernels on arm64 platforms.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/efi/linux.c | 34 ++++++++++++++--------------------
+ 1 file changed, 14 insertions(+), 20 deletions(-)
+
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index 18b9160f2..aa7d0f5dd 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -799,7 +799,6 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+   grub_file_t file = 0;
+   struct linux_arch_kernel_header lh;
+   grub_off_t filelen;
+-  grub_off_t filereadlen;
+   grub_uint32_t align;
+   grub_uint32_t code_size;
+   void *kernel = NULL;
+@@ -833,25 +832,6 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+   if (!file)
+     goto fail;
+ 
+-  filelen = grub_file_size (file);
+-  kernel = grub_malloc(filelen);
+-  if (!kernel)
+-    {
+-      grub_error (GRUB_ERR_OUT_OF_MEMORY, N_("cannot allocate kernel load buffer"));
+-      goto fail;
+-    }
+-
+-  filereadlen = grub_file_read (file, kernel, filelen);
+-  grub_dprintf ("linux", "filelen     : %lld\n", (long long) filelen);
+-  grub_dprintf ("linux", "filereadlen : %lld\n", (long long) filereadlen);
+-
+-  if (filereadlen < filelen)
+-    {
+-      grub_error (GRUB_ERR_FILE_READ_ERROR, N_("Can't read kernel %s"),
+-		  argv[0]);
+-      goto fail;
+-    }
+-
+   if (grub_arch_efi_linux_load_image_header (file, &lh) != GRUB_ERR_NONE)
+ #if !defined(__i386__) && !defined(__x86_64__)
+     goto fail;
+@@ -872,6 +852,20 @@ fallback:
+     }
+ #endif
+ 
++  filelen = grub_file_size (file);
++  kernel = grub_malloc(filelen);
++  if (!kernel)
++    {
++      grub_error (GRUB_ERR_OUT_OF_MEMORY, N_("cannot allocate kernel load buffer"));
++      goto fail;
++    }
++
++  if (grub_file_read (file, kernel, filelen) < (grub_ssize_t)filelen)
++    {
++      grub_error (GRUB_ERR_FILE_READ_ERROR, N_("Can't read kernel %s"),
++		  argv[0]);
++      goto fail;
++    }
+ 
+ #if !defined(__i386__) && !defined(__x86_64__)
+   if (parse_pe_header (kernel, &kernel_size, &handover_offset, &align, &code_size) != GRUB_ERR_NONE)
+-- 
+2.52.0
+

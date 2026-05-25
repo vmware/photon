@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Leo Sandoval <lsandova@redhat.com>
+Date: Tue, 24 Feb 2026 10:43:20 -0600
+Subject: [PATCH] tpm.c: disable PCR8 measurements at the  configuration step
+
+At the configuration step, we can disable PCR8 measurements through
+the configure parameter `--with-pcr8-disabled=yes`.
+
+Signed-off-by: Leo Sandoval <lsandova@redhat.com>
+---
+ config.h.in              |  1 +
+ configure.ac             | 12 ++++++++++++
+ grub-core/commands/tpm.c |  5 +++++
+ 3 files changed, 18 insertions(+)
+
+diff --git a/config.h.in b/config.h.in
+index 39f4e5472c..54a29a1719 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -17,6 +17,7 @@
+ #define DISK_CACHE_STATS @DISK_CACHE_STATS@
+ #define BOOT_TIME_STATS @BOOT_TIME_STATS@
+ #define DEBUG_WITH_TIMESTAMPS @DEBUG_WITH_TIMESTAMPS@
++#define DISABLE_PCR8 @DISABLE_PCR8@
+ 
+ /* We don't need those.  */
+ #define MINILZO_CFG_SKIP_LZO_PTR 1
+diff --git a/configure.ac b/configure.ac
+index a6a6957fbd..b37914440a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1699,6 +1699,17 @@ else
+ fi
+ AC_SUBST([DEBUG_WITH_TIMESTAMPS])
+ 
++AC_ARG_WITH([pcr8-disabled],
++	   AS_HELP_STRING([--with-pcr8-disabled],
++                          [disable PCR8 measurements]))
++
++if test x$with_pcr8_disabled = xyes; then
++  DISABLE_PCR8=1
++else
++  DISABLE_PCR8=0
++fi
++AC_SUBST([DISABLE_PCR8])
++
+ AC_ARG_ENABLE([grub-emu-sdl2],
+ 	      [AS_HELP_STRING([--enable-grub-emu-sdl2],
+                              [build and install the `grub-emu' debugging utility with SDL2 support (default=guessed)])])
+@@ -2310,6 +2321,7 @@ AM_CONDITIONAL([COND_ENABLE_EFIEMU], [test x$enable_efiemu = xyes])
+ AM_CONDITIONAL([COND_ENABLE_CACHE_STATS], [test x$DISK_CACHE_STATS = x1])
+ AM_CONDITIONAL([COND_ENABLE_BOOT_TIME_STATS], [test x$BOOT_TIME_STATS = x1])
+ AM_CONDITIONAL([COND_DEBUG_WITH_TIMESTAMPS], [test x$DEBUG_WITH_TIMESTAMPS = x1])
++AM_CONDITIONAL([COND_DISABLE_PCR8], [test x$DISABLE_PCR8 = x1])
+ 
+ AM_CONDITIONAL([COND_HAVE_CXX], [test x$HAVE_CXX = xyes])
+ 
+diff --git a/grub-core/commands/tpm.c b/grub-core/commands/tpm.c
+index b3ddbe5d3a..6e9480568c 100644
+--- a/grub-core/commands/tpm.c
++++ b/grub-core/commands/tpm.c
+@@ -57,6 +57,11 @@ grub_tpm_verify_init (grub_file_t io,
+ {
+   *context = io->name;
+   *flags |= GRUB_VERIFY_FLAGS_SINGLE_CHUNK;
++
++#if DISABLE_PCR8
++  grub_tpm_disable_pcr (GRUB_STRING_PCR);
++#endif
++
+   return GRUB_ERR_NONE;
+ }
+ 

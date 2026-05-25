@@ -1,0 +1,112 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Marta Lewandowska <mlewando@redhat.com>
+Date: Fri, 27 Mar 2026 11:15:27 +0100
+Subject: [PATCH] Add support for the efi keyword
+
+Add support for UKIs using the efi keyword in BLS snippets.
+
+Signed-off-by: Marta Lewandowska <mlewando@redhat.com>
+---
+ grub-core/commands/blscfg.c | 53 +++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 42 insertions(+), 11 deletions(-)
+
+diff --git a/grub-core/commands/blscfg.c b/grub-core/commands/blscfg.c
+index 38913d696..6fc621400 100644
+--- a/grub-core/commands/blscfg.c
++++ b/grub-core/commands/blscfg.c
+@@ -762,6 +762,7 @@ static void create_entry (struct bls_entry *entry)
+ 
+   char *title = NULL;
+   char *clinux = NULL;
++  char *cuki = NULL;
+   char *options = NULL;
+   char **initrds = NULL;
+   char *initrd = NULL;
+@@ -785,10 +786,19 @@ static void create_entry (struct bls_entry *entry)
+ 
+   grub_dprintf("blscfg", "%s got here\n", __func__);
+   clinux = bls_get_val (entry, "linux", NULL);
+-  if (!clinux)
++  cuki = bls_get_val (entry, "efi", NULL);
++  if (!clinux && !cuki)
+     {
+-      grub_dprintf ("blscfg", "Skipping file %s with no 'linux' key.\n", entry->filename);
+-      goto finish;
++      if (!clinux)
++        {
++          grub_dprintf ("blscfg", "Skipping file %s with no 'linux' key.\n", entry->filename);
++          goto finish;
++        }
++      if (!cuki)
++        {
++          grub_dprintf ("blscfg", "Skipping file %s with no 'efi' key.\n", entry->filename);
++          goto finish;
++        }
+     }
+ 
+   /*
+@@ -801,12 +811,6 @@ static void create_entry (struct bls_entry *entry)
+   if (dotconf)
+     dotconf[0] = '\0';
+ 
+-  title = bls_get_val (entry, "title", NULL);
+-  options = expand_val (bls_get_val (entry, "options", NULL));
+-
+-  if (!options)
+-    options = expand_val (grub_env_get("default_kernelopts"));
+-
+   initrds = bls_make_list (entry, "initrd", NULL);
+ 
+   devicetree = expand_val (bls_get_val (entry, "devicetree", NULL));
+@@ -825,6 +829,22 @@ static void create_entry (struct bls_entry *entry)
+   argc += 1;
+   argv = grub_malloc ((argc + 1) * sizeof (char *));
+   argv[0] = title ? title : clinux;
++
++  title = bls_get_val (entry, "title", NULL);
++  if (clinux)
++    {
++      argv[0] = title ? title : clinux;
++      options = expand_val (bls_get_val (entry, "options", NULL));
++      if (!options)
++        options = expand_val (grub_env_get("default_kernelopts"));
++    }
++  if (cuki)
++    {
++      argv[0] = title ? title : cuki;
++      options = bls_get_val (entry, ".cmdline", NULL);
++      if (!options)
++        options = expand_val (bls_get_val (entry, "options", NULL));
++    }
+   for (i = 1; i < argc; i++)
+     argv[i] = args[i-1];
+   argv[argc] = NULL;
+@@ -945,7 +965,9 @@ static void create_entry (struct bls_entry *entry)
+ 
+   const char *sdval = grub_env_get("save_default");
+   bool savedefault = ((NULL != sdval) && (grub_strcmp(sdval, "true") == 0));
+-  src = grub_xasprintf ("%sload_video\n"
++  if(clinux)
++    {
++      src = grub_xasprintf ("%sload_video\n"
+ 			"set gfxpayload=keep\n"
+ 			"insmod gzio\n"
+ 			"linux %s%s%s%s\n"
+@@ -976,7 +976,16 @@ static void create_entry (struct bls_entry *entry)
+ 			separate_boot ? GRUB_BOOT_DEVICE : "",
+ 			clinux, options ? " " : "", options ? options : "",
+ 			initrd ? initrd : "", dt ? dt : "");
+-
++    }
++  if(cuki)
++    {
++      src = grub_xasprintf ("%schainloader %s%s%s%s\n",
++                        savedefault ? "savedefault\n" : "",
++                        separate_boot ? GRUB_BOOT_DEVICE : "",
++                        cuki,
++                        (options != NULL) ? " " : "",
++                        (options != NULL) ? options : "");
++    }
+   grub_normal_add_menu_entry (argc, argv, classes, id, users, hotkey, NULL, src, 0, &index, entry);
+   grub_dprintf ("blscfg", "Added entry %d id:\"%s\"\n", index, id);
+ 

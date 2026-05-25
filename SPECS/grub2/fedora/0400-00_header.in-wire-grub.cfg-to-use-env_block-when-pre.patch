@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:41 +0800
+Subject: [PATCH] 00_header.in: wire grub.cfg to use env_block when present
+
+This patch extends the generated grub.cfg so that it can use the
+external environment block when the variable env_block is defined.
+During boot, if env_block is set, grub.cfg builds a device path for it,
+exports the variable, and then loads its contents in addition to the
+normal grubenv file.
+
+When GRUB writes variables such as next_entry or saved_entry, the save
+commands are changed to write into env_block if it is set, and to fall
+back to the grubenv file otherwise. In this way the external environment
+block is used automatically, and existing commands like savedefault or
+save_env do not need to change.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ util/grub.d/00_header.in | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/util/grub.d/00_header.in b/util/grub.d/00_header.in
+index 3e1b77265d..a5d43929b8 100644
+--- a/util/grub.d/00_header.in
++++ b/util/grub.d/00_header.in
+@@ -58,6 +58,13 @@ if [ -f \${config_directory}/grubenv ]; then
+ elif [ -s \$prefix/grubenv ]; then
+   load_env
+ fi
++
++if [ "\${env_block}" ] ; then
++  set env_block="(\${root})\${env_block}"
++  export env_block
++  load_env -f "\${env_block}"
++fi
++
+ EOF
+ if [ "x$GRUB_BUTTON_CMOS_ADDRESS" != "x" ]; then
+     cat <<EOF
+@@ -66,7 +73,11 @@ if cmostest $GRUB_BUTTON_CMOS_ADDRESS ; then
+ elif [ "\${next_entry}" ] ; then
+    set default="\${next_entry}"
+    set next_entry=
+-   save_env next_entry
++   if [ "\${env_block}" ] ; then
++     save_env -f "\${env_block}" next_entry
++   else
++     save_env next_entry
++   fi
+    set boot_once=true
+ else
+    set default="${GRUB_DEFAULT}"
+@@ -77,7 +88,11 @@ else
+ if [ "\${next_entry}" ] ; then
+    set default="\${next_entry}"
+    set next_entry=
+-   save_env next_entry
++   if [ "\${env_block}" ] ; then
++     save_env -f "\${env_block}" next_entry
++   else
++     save_env next_entry
++   fi
+    set boot_once=true
+ else
+    set default="${GRUB_DEFAULT}"
+@@ -105,7 +120,12 @@ fi
+ function savedefault {
+   if [ -z "\${boot_once}" ]; then
+     saved_entry="\${chosen}"
+-    save_env saved_entry
++    if [ "\${env_block}" ] ; then
++      save_env -f "\${env_block}" saved_entry
++    else
++      save_env saved_entry
++    fi
++
+   fi
+ }
+ 

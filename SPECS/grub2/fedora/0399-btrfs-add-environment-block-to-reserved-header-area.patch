@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:40 +0800
+Subject: [PATCH] btrfs: add environment block to reserved header area
+
+This patch reserves space for the GRUB environment block inside the
+Btrfs header. The block is placed at an offset of GRUB_ENV_BTRFS_OFFSET
+, 256 KiB from the start of the device, and occupies one sector. To
+protect the space, overflow guard sectors are placed before and after
+the reserved block.
+
+The Btrfs header already defines regions for bootloader use. By adding
+this entry, GRUB gains a fixed and safe location to store the
+environment block without conflicting with other structures in the
+header.
+
+Add Btrfs and its reserved area information to the fs_envblk_spec table.
+With the groundworks done in previous patches, the function is now
+complete and working in grub-editenv.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+---
+ grub-core/fs/btrfs.c | 10 +++++++++-
+ include/grub/fs.h    |  2 ++
+ util/grub-editenv.c  |  9 ++++++++-
+ 3 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/grub-core/fs/btrfs.c b/grub-core/fs/btrfs.c
+index 3228e17886..261c413e9f 100644
+--- a/grub-core/fs/btrfs.c
++++ b/grub-core/fs/btrfs.c
+@@ -2650,11 +2650,16 @@ struct embed_region {
+  * https://btrfs.wiki.kernel.org/index.php/Manpage/btrfs(5)#BOOTLOADER_SUPPORT
+  * The first 1 MiB on each device is unused with the exception of primary
+  * superblock that is on the offset 64 KiB and spans 4 KiB.
++ *
++ * Note: If this table is modified, also update
++ * util/grub-editenv.c::fs_envblk_spec, which describes the file-system
++ * specific layout of reserved raw blocks used as environment blocks so that
++ * both stay consistent.
+  */
+ 
+ static const struct {
+   struct embed_region available;
+-  struct embed_region used[6];
++  struct embed_region used[9];
+ } btrfs_head = {
+   .available = {0, GRUB_DISK_KiB_TO_SECTORS (1024)}, /* The first 1 MiB. */
+   .used = {
+@@ -2662,6 +2667,9 @@ static const struct {
+     {GRUB_DISK_KiB_TO_SECTORS (64) - 1, 1},                        /* Overflow guard. */
+     {GRUB_DISK_KiB_TO_SECTORS (64), GRUB_DISK_KiB_TO_SECTORS (4)}, /* 4 KiB superblock. */
+     {GRUB_DISK_KiB_TO_SECTORS (68), 1},                            /* Overflow guard. */
++    {(GRUB_ENV_BTRFS_OFFSET >> GRUB_DISK_SECTOR_BITS) - 1, 1},     /* Overflow guard. */
++    {(GRUB_ENV_BTRFS_OFFSET >> GRUB_DISK_SECTOR_BITS), 1},         /* Environment Block. */
++    {(GRUB_ENV_BTRFS_OFFSET >> GRUB_DISK_SECTOR_BITS) + 1, 1},     /* Overflow guard. */
+     {GRUB_DISK_KiB_TO_SECTORS (1024) - 1, 1},                      /* Overflow guard. */
+     {0, 0}                                                         /* Array terminator. */
+   }
+diff --git a/include/grub/fs.h b/include/grub/fs.h
+index df4c93b16f..89e4d2b9bc 100644
+--- a/include/grub/fs.h
++++ b/include/grub/fs.h
+@@ -132,4 +132,6 @@ grub_fs_unregister (grub_fs_t fs)
+ 
+ grub_fs_t EXPORT_FUNC(grub_fs_probe) (grub_device_t device);
+ 
++#define GRUB_ENV_BTRFS_OFFSET (256 * 1024)
++
+ #endif /* ! GRUB_FS_HEADER */
+diff --git a/util/grub-editenv.c b/util/grub-editenv.c
+index 201dc7ccd4..3c3f9d09f3 100644
+--- a/util/grub-editenv.c
++++ b/util/grub-editenv.c
+@@ -156,9 +156,16 @@ static fs_envblk_ops_t fs_envblk_ops = {
+ 
+ /*
+  * fs_envblk_spec describes the file-system specific layout of reserved raw
+- * blocks used as environment blocks.
++ * blocks used as environment blocks. At present only Btrfs is supported. Other
++ * file-systems may be added if they provide a similar facility and avoid the
++ * limitation of writing to COW.
++ *
++ * Note: If this table is modified, also update
++ * grub-core/fs/btrfs.c::btrfs_head, which defines the layout in the Btrfs
++ * header and exports GRUB_ENV_BTRFS_OFFSET, so that both stay consistent.
+  */
+ static fs_envblk_spec_t fs_envblk_spec[] = {
++  { "btrfs", GRUB_ENV_BTRFS_OFFSET, GRUB_DISK_SECTOR_SIZE },
+   { NULL, 0, 0 }
+ };
+ 

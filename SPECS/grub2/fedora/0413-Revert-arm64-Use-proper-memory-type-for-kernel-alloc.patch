@@ -1,0 +1,54 @@
+From ddb21e0868f309a780f495ce25b14a866328001e Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Thu, 4 Dec 2025 21:25:54 +0100
+Subject: [PATCH 413/419] Revert "arm64: Use proper memory type for kernel
+ allocation"
+
+This fully reverts commit ba84a3e50533138afe65c5b87b13cf8a0df90393.
+
+Note the modifed code is not used on x86 (#ifdef !x86).
+
+This is part of a series of reverts to move non x86 vmlinuz loading back
+to using EFI boot services load_image + start_image calls.
+
+The current DYI approach breaks booting kernel EFI binaries which have
+the stubble stub for automatic DTB loading.
+
+Switching back to EFI boot services load_image + start_image fixes this
+and also brings Fedora's grub inline with how upstream grub is loading
+and booting kernels on arm64 platforms.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/efi/linux.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index aa7d0f5dd..32406a3b4 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -25,9 +25,7 @@
+ #include <grub/loader.h>
+ #include <grub/mm.h>
+ #include <grub/types.h>
+-#include <grub/efi/api.h>
+ #include <grub/efi/efi.h>
+-#include <grub/cpu/efi/memory.h>
+ #include <grub/efi/fdtload.h>
+ #include <grub/efi/memory.h>
+ #include <grub/efi/linux.h>
+@@ -878,10 +876,7 @@ fallback:
+   grub_loader_unset();
+ 
+   kernel_alloc_pages = GRUB_EFI_BYTES_TO_PAGES (kernel_size + align - 1);
+-  kernel_alloc_addr = grub_efi_allocate_pages_real (GRUB_EFI_MAX_USABLE_ADDRESS,
+-						    kernel_alloc_pages,
+-						    GRUB_EFI_ALLOCATE_MAX_ADDRESS,
+-						    GRUB_EFI_LOADER_CODE);
++  kernel_alloc_addr = grub_efi_allocate_any_pages (kernel_alloc_pages);
+   grub_dprintf ("linux", "kernel numpages: %d\n", kernel_alloc_pages);
+   if (!kernel_alloc_addr)
+     {
+-- 
+2.52.0
+

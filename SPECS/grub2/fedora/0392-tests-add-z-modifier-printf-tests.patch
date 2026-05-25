@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:33 +0800
+Subject: [PATCH] tests: add z modifier printf tests
+
+Add unit tests for %zd, %zu and %zx to verify size_t and ssize_t
+formatting matches system snprintf.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ tests/printf_unit_test.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/tests/printf_unit_test.c b/tests/printf_unit_test.c
+index 098c29fd9c..f2de187b03 100644
+--- a/tests/printf_unit_test.c
++++ b/tests/printf_unit_test.c
+@@ -20,6 +20,7 @@
+ #include <string.h>
+ #include <grub/test.h>
+ #include <grub/misc.h>
++#include <stdint.h>
+ 
+ #define MSG "printf test failed: %s, %s", real, expected
+ 
+@@ -73,6 +74,15 @@ printf_test (void)
+   grub_snprintf (real, sizeof (real), "%%0%dd ", 1);
+   snprintf (expected, sizeof (expected), "%%0%dd ", 1);
+   grub_test_assert (strcmp (real, expected) == 0, MSG);
++  grub_snprintf (real, sizeof (real), "%zd %zd %zd", (ssize_t) -1, (ssize_t) (SIZE_MAX >> 1), (ssize_t) 42);
++  snprintf (expected, sizeof (expected), "%zd %zd %zd", (ssize_t) -1, (ssize_t) (SIZE_MAX >> 1), (ssize_t) 42);
++  grub_test_assert (strcmp (real, expected) == 0, MSG);
++  grub_snprintf (real, sizeof (real), "%zu %zu %zu", (size_t) 0, (size_t) SIZE_MAX, (size_t) 42);
++  snprintf (expected, sizeof (expected), "%zu %zu %zu", (size_t) 0, (size_t) SIZE_MAX, (size_t) 42);
++  grub_test_assert (strcmp (real, expected) == 0, MSG);
++  grub_snprintf (real, sizeof (real), "%zx %zx %zx", (ssize_t) (SIZE_MAX >> 1), (size_t) SIZE_MAX, (size_t) 0xdeadbeefU);
++  snprintf (expected, sizeof (expected), "%zx %zx %zx", (ssize_t) (SIZE_MAX >> 1), (size_t) SIZE_MAX, (size_t) 0xdeadbeefU);
++  grub_test_assert (strcmp (real, expected) == 0, MSG);
+ }
+ 
+ GRUB_UNIT_TEST ("printf_unit_test", printf_test);

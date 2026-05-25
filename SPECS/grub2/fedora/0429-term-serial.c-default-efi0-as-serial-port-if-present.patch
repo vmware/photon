@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Leo Sandoval <lsandova@redhat.com>
+Date: Fri, 6 Feb 2026 14:28:08 -0600
+Subject: [PATCH] term/serial.c: default efi0 as 'serial' port if present
+
+Currently the port 'com0' is the default which ultimately is register
+as the 'serial' port. The following change follows the same logic but
+prioritizes the 'efi0' before 'com0', effectively becoming the
+'serial' port in case the former is present.
+
+Signed-off-by: Leo Sandoval <lsandova@redhat.com>
+---
+ grub-core/term/serial.c | 11 ++++++++++-
+ include/grub/serial.h   |  1 +
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/grub-core/term/serial.c b/grub-core/term/serial.c
+index 8260dcb7a8..fe85010532 100644
+--- a/grub-core/term/serial.c
++++ b/grub-core/term/serial.c
+@@ -213,10 +213,15 @@ grub_serial_find (const char *name)
+ #if (defined(__i386__) || defined(__x86_64__)) && !defined(GRUB_MACHINE_IEEE1275) && !defined(GRUB_MACHINE_QEMU)
+   if (grub_strcmp (name, "auto") == 0)
+     {
+-      /* Look for an SPCR if any. If not, default to com0. */
++      /* Look for an SPCR if any. If not, default to efi0 or com0, in that order. */
+       port = grub_ns8250_spcr_init ();
+       if (port != NULL)
+         return port;
++
++      FOR_SERIAL_PORTS (port)
++        if (grub_strcmp (port->name, "efi0") == 0)
++          return port;
++
+       FOR_SERIAL_PORTS (port)
+         if (grub_strcmp (port->name, "com0") == 0)
+           return port;
+@@ -350,7 +355,11 @@ grub_cmd_serial (grub_extcmd_context_t ctxt, int argc, char **args)
+ #if !defined (GRUB_MACHINE_EMU) && !defined(GRUB_MACHINE_ARC) && (defined(__mips__) || defined (__i386__) || defined (__x86_64__))
+ 
+   /* Compatibility kludge.  */
++#ifdef GRUB_MACHINE_EFI
++  if (port->driver == &grub_efiserial_driver)
++#else
+   if (port->driver == &grub_ns8250_driver)
++#endif
+     {
+       if (!registered)
+ 	{
+diff --git a/include/grub/serial.h b/include/grub/serial.h
+index d7e0635788..19cecd3161 100644
+--- a/include/grub/serial.h
++++ b/include/grub/serial.h
+@@ -216,6 +216,7 @@ extern void grub_pciserial_init (void);
+ 
+ struct grub_serial_port *grub_serial_find (const char *name);
+ extern struct grub_serial_driver grub_ns8250_driver;
++extern struct grub_serial_driver grub_efiserial_driver;
+ void EXPORT_FUNC(grub_serial_unregister_driver) (struct grub_serial_driver *driver);
+ 
+ #ifndef GRUB_MACHINE_EMU

@@ -1,8 +1,7 @@
-From 8ed78fd9f0852ab218cc1f991c38e5a229e43807 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alec Brown <alec.r.brown@oracle.com>
 Date: Thu, 21 Aug 2025 21:14:06 +0000
-Subject: [PATCH 1/2] gettext/gettext: Unregister gettext command on module
- unload
+Subject: [PATCH] gettext/gettext: Unregister gettext command on module unload
 
 When the gettext module is loaded, the gettext command is registered but
 isn't unregistered when the module is unloaded. We need to add a call to
@@ -18,10 +17,10 @@ Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
  1 file changed, 12 insertions(+), 7 deletions(-)
 
 diff --git a/grub-core/gettext/gettext.c b/grub-core/gettext/gettext.c
-index 9ffc73428..edebed998 100644
+index fffe3a05488b..1ca152ddd938 100644
 --- a/grub-core/gettext/gettext.c
 +++ b/grub-core/gettext/gettext.c
-@@ -502,6 +502,8 @@ grub_cmd_translate (grub_command_t cmd __attribute__ ((unused)),
+@@ -509,6 +509,8 @@ grub_cmd_translate (grub_command_t cmd __attribute__ ((unused)),
    return 0;
  }
  
@@ -30,7 +29,7 @@ index 9ffc73428..edebed998 100644
  GRUB_MOD_INIT (gettext)
  {
    const char *lang;
-@@ -521,13 +523,14 @@ GRUB_MOD_INIT (gettext)
+@@ -528,13 +530,14 @@ GRUB_MOD_INIT (gettext)
    grub_register_variable_hook ("locale_dir", NULL, read_main);
    grub_register_variable_hook ("secondary_locale_dir", NULL, read_secondary);
  
@@ -52,7 +51,7 @@ index 9ffc73428..edebed998 100644
  
    /* Reload .mo file information if lang changes.  */
    grub_register_variable_hook ("lang", NULL, grub_gettext_env_write_lang);
-@@ -544,6 +547,8 @@ GRUB_MOD_FINI (gettext)
+@@ -551,6 +554,8 @@ GRUB_MOD_FINI (gettext)
    grub_register_variable_hook ("secondary_locale_dir", NULL, NULL);
    grub_register_variable_hook ("lang", NULL, NULL);
  
@@ -61,6 +60,3 @@ index 9ffc73428..edebed998 100644
    grub_gettext_delete_list (&main_context);
    grub_gettext_delete_list (&secondary_context);
  
--- 
-2.52.0
-

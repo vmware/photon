@@ -1,0 +1,91 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:35 +0800
+Subject: [PATCH] util/grub-editenv: add fs_envblk write helper
+
+This patch adds the function fs_envblk_write to update the reserved
+environment block on disk. The helper takes an in memory envblk buffer
+and writes it back to the device at the location defined by the
+fs_envblk specification. It performs size checks and uses file sync to
+ensure that the updated data is flushed.
+
+The helper is also added into the fs_envblk ops table, together with the
+open helper from the previous patch. With this change the basic input
+and output path for an external environment block is complete. The
+choice of which variables should be written externally will be handled
+by later patches.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Avnish Chouhan <avnish@linux.ibm.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ util/grub-editenv.c | 38 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
+
+diff --git a/util/grub-editenv.c b/util/grub-editenv.c
+index a544452e78..f4b69bb19f 100644
+--- a/util/grub-editenv.c
++++ b/util/grub-editenv.c
+@@ -131,9 +131,11 @@ struct fs_envblk_spec {
+ typedef struct fs_envblk_spec fs_envblk_spec_t;
+ 
+ static grub_envblk_t fs_envblk_open (grub_envblk_t envblk);
++static void fs_envblk_write (grub_envblk_t envblk);
+ 
+ struct fs_envblk_ops {
+   grub_envblk_t (*open) (grub_envblk_t);
++  void (*write) (grub_envblk_t);
+ };
+ typedef struct fs_envblk_ops fs_envblk_ops_t;
+ 
+@@ -145,7 +147,8 @@ struct fs_envblk {
+ typedef struct fs_envblk *fs_envblk_t;
+ 
+ static fs_envblk_ops_t fs_envblk_ops = {
+-  .open = fs_envblk_open
++  .open = fs_envblk_open,
++  .write = fs_envblk_write
+ };
+ 
+ /*
+@@ -381,6 +384,39 @@ write_envblk (const char *name, grub_envblk_t envblk)
+   fclose (fp);
+ }
+ 
++static void
++fs_envblk_write (grub_envblk_t envblk)
++{
++  FILE *fp;
++  const char *device;
++  off_t offset;
++  size_t size;
++
++  if (envblk == NULL)
++    return;
++
++  device = fs_envblk->dev;
++  offset = fs_envblk->spec->offset;
++  size = fs_envblk->spec->size;
++
++  if (grub_envblk_size (envblk) > size)
++    grub_util_error ("%s", _("environment block too small"));
++
++  fp = grub_util_fopen (device, "r+b");
++
++  if (fp == NULL)
++    grub_util_error (_("cannot open `%s': %s"), device, strerror (errno));
++
++  if (fseek (fp, offset, SEEK_SET) < 0)
++    grub_util_error (_("cannot seek `%s': %s"), device, strerror (errno));
++
++  if (fwrite (grub_envblk_buffer (envblk), 1, grub_envblk_size (envblk), fp) != grub_envblk_size (envblk))
++    grub_util_error (_("cannot write to `%s': %s"), device, strerror (errno));
++
++  grub_util_file_sync (fp);
++  fclose (fp);
++}
++
+ static void
+ set_variables (const char *name, int argc, char *argv[])
+ {

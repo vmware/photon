@@ -1,0 +1,253 @@
+From 9739419e3e588db98bfed6c97a8e3a2bea01154a Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Thu, 4 Dec 2025 22:54:11 +0100
+Subject: [PATCH 416/419] Revert "Add support for Linux EFI stub loading on arm
+ architectures"
+
+This fully reverts commit fa8f1996918936126a5e734bc0dac5d53c6a978e.
+
+Note that the modifed version of grub_cmd_linux() is never used on x86,
+which uses linux_cmd() from grub-core/loader/i386/efi/linux.c .
+
+This concludes the series of reverts to move non x86 vmlinuz loading back
+to using EFI boot services load_image + start_image calls.
+
+The current DYI approach breaks booting kernel EFI binaries which have
+the stubble stub for automatic DTB loading.
+
+Switching back to EFI boot services load_image + start_image fixes this
+and also brings Fedora's grub inline with how upstream grub is loading
+and booting kernels on arm64 platforms.
+
+This also fixes 2 issues with the xen_hypervisor and xen_module commands:
+
+1) With the now reverted move of setting loaded_image->load_options in
+finalize_params() the commandline would no longer be set for the xen case.
+
+2) The handover_offset variable passed by grub_efi_linux_boot is a global
+variable set by the linux cmd and this would either be 0 or the value
+from the last run linux cmd, neither of which is likely correct for
+the xen case.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/arm64/xen_boot.c |   4 +-
+ grub-core/loader/efi/linux.c      | 124 +++++++++++++++---------------
+ include/grub/efi/efi.h            |   2 +-
+ 3 files changed, 63 insertions(+), 67 deletions(-)
+
+diff --git a/grub-core/loader/arm64/xen_boot.c b/grub-core/loader/arm64/xen_boot.c
+index 5d7c8603d..881011ec4 100644
+--- a/grub-core/loader/arm64/xen_boot.c
++++ b/grub-core/loader/arm64/xen_boot.c
+@@ -253,9 +253,7 @@ xen_boot (void)
+ 
+   return grub_arch_efi_linux_boot_image (xen_hypervisor->start,
+                                          xen_hypervisor->size,
+-                                         xen_hypervisor->cmdline,
+-                                         0);
+-
++                                         xen_hypervisor->cmdline);
+ }
+ 
+ static void
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index 720d5b02b..459b84ab6 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -28,7 +28,6 @@
+ #include <grub/efi/efi.h>
+ #include <grub/efi/fdtload.h>
+ #include <grub/efi/memory.h>
+-#include <grub/efi/linux.h>
+ #include <grub/efi/pe32.h>
+ #include <grub/efi/linux.h>
+ #include <grub/efi/sb.h>
+@@ -44,7 +43,6 @@ static int loaded;
+ 
+ static void *kernel_addr;
+ static grub_uint64_t kernel_size;
+-static grub_uint32_t handover_offset;
+ 
+ static char *linux_args;
+ static grub_uint32_t cmdline_size;
+@@ -415,9 +413,8 @@ grub_arch_efi_linux_load_image_header (grub_file_t file,
+ static grub_err_t
+ finalize_params_linux (void)
+ {
+-  grub_efi_loaded_image_t *loaded_image = NULL;
+-  int node, retval, len;
+   grub_err_t err = GRUB_ERR_NONE;
++  int node, retval;
+   void *fdt;
+ 
+   /* Set initrd info */
+@@ -469,30 +466,6 @@ finalize_params_linux (void)
+       goto failure;
+     }
+ 
+-  grub_dprintf ("linux", "Installed/updated FDT configuration table @ %p\n",
+-                fdt);
+-
+-  /* Convert command line to UCS-2 */
+-  loaded_image = grub_efi_get_loaded_image (grub_efi_image_handle);
+-  if (loaded_image == NULL)
+-    {
+-      err = grub_error(grub_errno, "Failed to install fdt");
+-      goto failure;
+-    }
+-  loaded_image->load_options_size = len =
+-    (grub_strlen (linux_args) + 1) * sizeof (grub_efi_char16_t);
+-  loaded_image->load_options =
+-    grub_efi_allocate_any_pages (GRUB_EFI_BYTES_TO_PAGES (loaded_image->load_options_size));
+-  if (!loaded_image->load_options)
+-    {
+-      err = grub_error(GRUB_ERR_BAD_OS, "failed to create kernel parameters");
+-      goto failure;
+-    }
+-
+-  loaded_image->load_options_size =
+-    2 * grub_utf8_to_utf16 (loaded_image->load_options, len,
+-                           (grub_uint8_t *) linux_args, len, NULL);
+-
+   return GRUB_ERR_NONE;
+ 
+ failure:
+@@ -501,37 +474,70 @@ failure:
+ }
+ #endif
+ 
+-static void
+-free_params (void)
+-{
+-  grub_efi_loaded_image_t *loaded_image = NULL;
+-
+-  loaded_image = grub_efi_get_loaded_image (grub_efi_image_handle);
+-  if (loaded_image)
+-    {
+-      if (loaded_image->load_options)
+-       grub_efi_free_pages ((grub_efi_physical_address_t)(grub_efi_uintn_t)loaded_image->load_options,
+-                            GRUB_EFI_BYTES_TO_PAGES (loaded_image->load_options_size));
+-      loaded_image->load_options = NULL;
+-      loaded_image->load_options_size = 0;
+-    }
+-}
+-
+ grub_err_t
+-grub_arch_efi_linux_boot_image (grub_addr_t addr, grub_size_t size, char *args,
+-				int nx_supported)
++grub_arch_efi_linux_boot_image (grub_addr_t addr, grub_size_t size, char *args)
+ {
+-  grub_err_t retval;
++  grub_efi_memory_mapped_device_path_t *mempath;
++  grub_efi_handle_t image_handle;
++  grub_efi_boot_services_t *b;
++  grub_efi_status_t status;
++  grub_efi_loaded_image_t *loaded_image;
++  int len;
++
++  mempath = grub_malloc (2 * sizeof (grub_efi_memory_mapped_device_path_t));
++  if (!mempath)
++    return grub_errno;
++
++  mempath[0].header.type = GRUB_EFI_HARDWARE_DEVICE_PATH_TYPE;
++  mempath[0].header.subtype = GRUB_EFI_MEMORY_MAPPED_DEVICE_PATH_SUBTYPE;
++  mempath[0].header.length = grub_cpu_to_le16_compile_time (sizeof (*mempath));
++  mempath[0].memory_type = GRUB_EFI_LOADER_DATA;
++  mempath[0].start_address = addr;
++  mempath[0].end_address = addr + size;
++
++  mempath[1].header.type = GRUB_EFI_END_DEVICE_PATH_TYPE;
++  mempath[1].header.subtype = GRUB_EFI_END_ENTIRE_DEVICE_PATH_SUBTYPE;
++  mempath[1].header.length = sizeof (grub_efi_device_path_t);
++
++  b = grub_efi_system_table->boot_services;
++  status = b->load_image (0, grub_efi_image_handle,
++			  (grub_efi_device_path_t *) mempath,
++			  (void *) addr, size, &image_handle);
++  if (status != GRUB_EFI_SUCCESS)
++    return grub_error (GRUB_ERR_BAD_OS, "cannot load image");
+ 
+   grub_dprintf ("linux", "linux command line: '%s'\n", args);
+ 
+-  retval = grub_efi_linux_boot (addr, size, 0, handover_offset,
+-				(void *)addr, nx_supported);
++  /* Convert command line to UCS-2 */
++  loaded_image = grub_efi_get_loaded_image (image_handle);
++  if (loaded_image == NULL)
++    {
++      grub_error (GRUB_ERR_BAD_FIRMWARE, "missing loaded_image proto");
++      goto unload;
++    }
++  loaded_image->load_options_size = len =
++    (grub_strlen (args) + 1) * sizeof (grub_efi_char16_t);
++  loaded_image->load_options =
++    grub_efi_allocate_any_pages (GRUB_EFI_BYTES_TO_PAGES (loaded_image->load_options_size));
++  if (!loaded_image->load_options)
++    return grub_errno;
+ 
+-  /* Never reached... */
+-  free_params();
+-  return retval;
+- }
++  loaded_image->load_options_size =
++    2 * grub_utf8_to_utf16 (loaded_image->load_options, len,
++			    (grub_uint8_t *) args, len, NULL);
++
++  grub_dprintf ("linux", "starting image %p\n", image_handle);
++  status = b->start_image (image_handle, 0, NULL);
++
++  /* When successful, not reached */
++  grub_error (GRUB_ERR_BAD_OS, "start_image() returned 0x%" PRIxGRUB_EFI_UINTN_T, status);
++  grub_efi_free_pages ((grub_addr_t) loaded_image->load_options,
++		       GRUB_EFI_BYTES_TO_PAGES (loaded_image->load_options_size));
++unload:
++  b->unload_image (image_handle);
++
++  return grub_errno;
++}
+ 
+ static grub_err_t
+ grub_linux_boot (void)
+@@ -541,10 +547,8 @@ grub_linux_boot (void)
+     return grub_errno;
+ #endif
+ 
+-  return grub_arch_efi_linux_boot_image((grub_addr_t)kernel_addr,
+-					(grub_size_t)kernel_size,
+-					linux_args,
+-					0);
++  return grub_arch_efi_linux_boot_image ((grub_addr_t) kernel_addr,
++					 kernel_size, linux_args);
+ }
+ 
+ static grub_err_t
+@@ -833,12 +837,6 @@ fallback:
+ 
+   grub_dprintf ("linux", "kernel @ %p\n", kernel_addr);
+ 
+-#if !defined(__i386__) && !defined(__x86_64__)
+-  struct grub_armxx_linux_pe_header *pe;
+-  pe = (void *)((unsigned long)kernel_addr + lh.hdr_offset);
+-  handover_offset = pe->opt.entry_addr;
+-#endif
+-
+   cmdline_size = grub_loader_cmdline_size (argc, argv) + sizeof (LINUX_IMAGE);
+   linux_args = grub_malloc (cmdline_size);
+   if (!linux_args)
+diff --git a/include/grub/efi/efi.h b/include/grub/efi/efi.h
+index 4bd196500..48a757789 100644
+--- a/include/grub/efi/efi.h
++++ b/include/grub/efi/efi.h
+@@ -200,7 +200,7 @@ grub_err_t EXPORT_FUNC(grub_efi_get_ram_base)(grub_addr_t *);
+ grub_err_t grub_arch_efi_linux_load_image_header(grub_file_t file,
+                                                 struct linux_arch_kernel_header *lh);
+ grub_err_t grub_arch_efi_linux_boot_image(grub_addr_t addr, grub_size_t size,
+-					  char *args, int nx_enabled);
++					  char *args);
+ grub_efi_status_t
+ EXPORT_FUNC (grub_efi_load_image) (grub_efi_boolean_t boot_policy,
+ 				   grub_efi_handle_t parent_image_handle,
+-- 
+2.52.0
+

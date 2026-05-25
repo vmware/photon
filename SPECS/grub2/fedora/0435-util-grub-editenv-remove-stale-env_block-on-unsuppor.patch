@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang <mchang@suse.com>
+Date: Mon, 20 Apr 2026 12:28:15 +0800
+Subject: [PATCH] util/grub-editenv: remove stale env_block on unsupported
+ filesystem
+
+The env_block variable is only valid when grub-editenv has filesystem
+backed environment block support for the default grubenv location. If a
+grubenv file is copied from such a setup to an unsupported filesystem or
+non default path, the stale env_block entry may remain behind.
+
+When updating the environment block in set_variables() and
+unset_variables(), remove env_block if filesystem backed support is not
+available. This keeps the file contents consistent with the current
+grubenv location and avoids carrying stale env_block into unsupported
+cases.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Leo Sandoval <lsandova@redhat.com>
+Reviewed-by: Neal Gompa <neal@gompa.dev>
+Part-of: <https://gitlab.freedesktop.org/gnu-grub/grub/-/merge_requests/106>
+---
+ util/grub-editenv.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/util/grub-editenv.c b/util/grub-editenv.c
+index 41bb86739..143bcdaca 100644
+--- a/util/grub-editenv.c
++++ b/util/grub-editenv.c
+@@ -459,6 +459,8 @@ set_variables (const char *name, int argc, char *argv[])
+   envblk = open_envblk_file (name);
+   if (fs_envblk != NULL)
+     envblk_on_block = fs_envblk->ops->open (envblk);
++  else
++    grub_envblk_delete (envblk, "env_block");
+ 
+   while (argc)
+     {
+@@ -522,6 +524,8 @@ unset_variables (const char *name, int argc, char *argv[])
+ 
+   if (fs_envblk != NULL)
+     envblk_on_block = fs_envblk->ops->open (envblk);
++  else
++    grub_envblk_delete (envblk, "env_block");
+ 
+   while (argc)
+     {

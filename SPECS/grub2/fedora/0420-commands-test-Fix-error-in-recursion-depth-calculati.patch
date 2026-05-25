@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Thomas Frauendorfer | Miray Software <tf@miray.de>
+Date: Fri, 9 May 2025 13:51:08 +0200
+Subject: [PATCH] commands/test: Fix error in recursion depth calculation
+
+The commit c68b7d236 (commands/test: Stack overflow due to unlimited
+recursion depth) added recursion depth tests to the test command. But in
+the error case it decrements the pointer to the depth value instead of
+the value itself. Fix it.
+
+Fixes: c68b7d236 (commands/test: Stack overflow due to unlimited recursion depth)
+
+Signed-off-by: Thomas Frauendorfer | Miray Software <tf@miray.de>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/commands/test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/grub-core/commands/test.c b/grub-core/commands/test.c
+index b585c3d70316..ee47ab2641a6 100644
+--- a/grub-core/commands/test.c
++++ b/grub-core/commands/test.c
+@@ -403,7 +403,7 @@ test_parse (char **args, int *argn, int argc, int *depth)
+ 	  if (++(*depth) > MAX_TEST_RECURSION_DEPTH)
+ 	    {
+ 	      grub_error (GRUB_ERR_OUT_OF_RANGE, N_("max recursion depth exceeded"));
+-	      depth--;
++	      (*depth)--;
+ 	      return ctx.or || ctx.and;
+ 	    }
+ 

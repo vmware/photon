@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alec Brown <alec.r.brown@oracle.com>
+Date: Tue, 12 Aug 2025 03:45:34 +0000
+Subject: [PATCH] util/misc.c: Change offset type for
+ grub_util_write_image_at()
+
+Adding filevercmp support to grub-core/commands/blsuki.c from gnulib will cause
+issues with the type of the offset parameter for grub_util_write_image_at() for
+emu builds. To fix this issue, we can change the type from off_t to grub_off_t.
+
+Signed-off-by: Alec Brown <alec.r.brown@oracle.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ include/grub/util/misc.h | 2 +-
+ util/misc.c              | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/grub/util/misc.h b/include/grub/util/misc.h
+index e9e0a6724a..bfce065583 100644
+--- a/include/grub/util/misc.h
++++ b/include/grub/util/misc.h
+@@ -36,7 +36,7 @@ char *grub_util_read_image (const char *path);
+ void grub_util_load_image (const char *path, char *buf);
+ void grub_util_write_image (const char *img, size_t size, FILE *out,
+ 			    const char *name);
+-void grub_util_write_image_at (const void *img, size_t size, off_t offset,
++void grub_util_write_image_at (const void *img, size_t size, grub_off_t offset,
+ 			       FILE *out, const char *name);
+ 
+ char *make_system_path_relative_to_its_root (const char *path);
+diff --git a/util/misc.c b/util/misc.c
+index 0f928e5b49..6e16a68d9a 100644
+--- a/util/misc.c
++++ b/util/misc.c
+@@ -101,7 +101,7 @@ grub_util_read_image (const char *path)
+ }
+ 
+ void
+-grub_util_write_image_at (const void *img, size_t size, off_t offset, FILE *out,
++grub_util_write_image_at (const void *img, size_t size, grub_off_t offset, FILE *out,
+ 			  const char *name)
+ {
+   grub_util_info ("writing 0x%" GRUB_HOST_PRIxLONG_LONG " bytes at offset 0x%"

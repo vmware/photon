@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Leo Sandoval <lsandova@redhat.com>
+Date: Thu, 30 Apr 2026 12:22:26 -0600
+Subject: [PATCH] tpm: Disable any GRUB_STRING_PCR command measurement
+
+Currently when configure with the parameter `--with-pcr8-disabled`,
+PCR8 (GRUB_STRING_PCR) is disabled at the `grub_tmp_verify_init`
+function, but on images with embedded configurations, (embedded)
+commands are being measured through the `grub_tpm_verify_string`
+function which is called before the init one, thus PCR8 measurements
+are still observed. The proposed change, disables PCR8 measurements at
+the verify string function, effectively disabling any PCR8 measurement
+during boot.
+
+Signed-off-by: Leo Sandoval <lsandova@redhat.com>
+---
+ grub-core/commands/tpm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/grub-core/commands/tpm.c b/grub-core/commands/tpm.c
+index 6e9480568..9fbbada65 100644
+--- a/grub-core/commands/tpm.c
++++ b/grub-core/commands/tpm.c
+@@ -82,7 +82,7 @@ grub_tpm_verify_string (char *str, enum grub_verify_string_type type)
+ {
+   const char *prefix = NULL;
+   char *description;
+-  grub_err_t status;
++  grub_err_t status = GRUB_ERR_NONE;
+ 
+   switch (type)
+     {
+@@ -102,9 +102,13 @@ grub_tpm_verify_string (char *str, enum grub_verify_string_type type)
+   grub_memcpy (description, prefix, grub_strlen (prefix));
+   grub_memcpy (description + grub_strlen (prefix), str,
+ 	       grub_strlen (str) + 1);
++#if DISABLE_PCR8
++  grub_dprintf ("tpm", "String measurement disabled for %s\n", description);
++#else
+   status =
+     grub_tpm_measure ((unsigned char *) str, grub_strlen (str),
+ 		      GRUB_STRING_PCR, description);
++#endif
+   grub_free (description);
+   if (status == GRUB_ERR_NONE)
+     return GRUB_ERR_NONE;

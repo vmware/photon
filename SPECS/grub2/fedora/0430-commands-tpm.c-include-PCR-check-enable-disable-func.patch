@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Leo Sandoval <lsandova@redhat.com>
+Date: Mon, 23 Feb 2026 16:20:19 -0600
+Subject: [PATCH] commands/tpm.c: include PCR check/enable/disable functions
+
+Signed-off-by: Leo Sandoval <lsandova@redhat.com>
+---
+ grub-core/commands/tpm.c | 21 +++++++++++++++++++++
+ include/grub/tpm.h       |  4 ++++
+ 2 files changed, 25 insertions(+)
+
+diff --git a/grub-core/commands/tpm.c b/grub-core/commands/tpm.c
+index 324423ef86..b3ddbe5d3a 100644
+--- a/grub-core/commands/tpm.c
++++ b/grub-core/commands/tpm.c
+@@ -29,6 +29,27 @@
+ 
+ GRUB_MOD_LICENSE ("GPLv3+");
+ 
++/* By default, enable all PCR's */
++static grub_uint32_t pcr_mask = 0xffffffff;
++
++inline bool
++grub_tpm_pcr_is_enabled (grub_uint8_t pcr)
++{
++  return pcr_mask & ( 1 << pcr );
++}
++
++inline void
++grub_tpm_enable_pcr (grub_uint8_t pcr)
++{
++  pcr_mask |= ( 1 << pcr );
++}
++
++inline void
++grub_tpm_disable_pcr (grub_uint8_t pcr)
++{
++  pcr_mask &= ~( 1 << pcr );
++}
++
+ static grub_err_t
+ grub_tpm_verify_init (grub_file_t io,
+ 		      enum grub_file_type type __attribute__ ((unused)),
+diff --git a/include/grub/tpm.h b/include/grub/tpm.h
+index d09783dacc..d02f0f3c22 100644
+--- a/include/grub/tpm.h
++++ b/include/grub/tpm.h
+@@ -46,4 +46,8 @@ grub_is_tpm_fail_fatal (void)
+   return grub_env_get_bool ("tpm_fail_fatal", false);
+ }
+ 
++bool EXPORT_FUNC(grub_tpm_pcr_is_enabled) (grub_uint8_t pcr);
++void EXPORT_FUNC(grub_tpm_enable_pcr) (grub_uint8_t pcr);
++void EXPORT_FUNC(grub_tpm_disable_pcr) (grub_uint8_t pcr);
++
+ #endif

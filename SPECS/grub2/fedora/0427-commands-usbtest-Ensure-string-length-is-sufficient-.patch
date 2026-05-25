@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jamie <volticks@gmail.com>
+Date: Mon, 14 Jul 2025 10:07:47 +0100
+Subject: [PATCH] commands/usbtest: Ensure string length is sufficient in usb
+ string processing
+
+If descstrp->length is less than 2 this will result in underflow in
+"descstrp->length / 2 - 1" math. Let's fix the check to make sure the
+value is sufficient.
+
+Signed-off-by: Jamie <volticks@gmail.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/commands/usbtest.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/grub-core/commands/usbtest.c b/grub-core/commands/usbtest.c
+index 8ef187a9ae76..3184ac9afd37 100644
+--- a/grub-core/commands/usbtest.c
++++ b/grub-core/commands/usbtest.c
+@@ -90,7 +90,7 @@ grub_usb_get_string (grub_usb_device_t dev, grub_uint8_t index, int langid,
+ 			      0x06, (3 << 8) | index,
+ 			      langid, descstr.length, (char *) descstrp);
+ 
+-  if (descstrp->length == 0)
++  if (descstrp->length < 2)
+     {
+       grub_free (descstrp);
+       *string = grub_strdup ("");

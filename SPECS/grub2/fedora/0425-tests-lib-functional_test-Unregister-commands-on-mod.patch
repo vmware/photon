@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alec Brown <alec.r.brown@oracle.com>
+Date: Thu, 21 Aug 2025 21:14:08 +0000
+Subject: [PATCH] tests/lib/functional_test: Unregister commands on module
+ unload
+
+When the functional_test module is loaded, both the functional_test and
+all_functional_test commands are registered but only the all_functional_test
+command is being unregistered since it was the last to set the cmd variable
+that gets unregistered when the module is unloaded. To unregister both
+commands, we need to create an additional grub_extcmd_t variable.
+
+Signed-off-by: Alec Brown <alec.r.brown@oracle.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/tests/lib/functional_test.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/grub-core/tests/lib/functional_test.c b/grub-core/tests/lib/functional_test.c
+index 403fa5c789ab..31b6b5dab350 100644
+--- a/grub-core/tests/lib/functional_test.c
++++ b/grub-core/tests/lib/functional_test.c
+@@ -90,17 +90,18 @@ grub_functional_all_tests (grub_extcmd_context_t ctxt __attribute__ ((unused)),
+   return GRUB_ERR_NONE;
+ }
+ 
+-static grub_extcmd_t cmd;
++static grub_extcmd_t cmd, cmd_all;
+ 
+ GRUB_MOD_INIT (functional_test)
+ {
+   cmd = grub_register_extcmd ("functional_test", grub_functional_test, 0, 0,
+ 			      "Run all loaded functional tests.", 0);
+-  cmd = grub_register_extcmd ("all_functional_test", grub_functional_all_tests, 0, 0,
+-			      "Run all functional tests.", 0);
++  cmd_all = grub_register_extcmd ("all_functional_test", grub_functional_all_tests, 0, 0,
++				  "Run all functional tests.", 0);
+ }
+ 
+ GRUB_MOD_FINI (functional_test)
+ {
+   grub_unregister_extcmd (cmd);
++  grub_unregister_extcmd (cmd_all);
+ }

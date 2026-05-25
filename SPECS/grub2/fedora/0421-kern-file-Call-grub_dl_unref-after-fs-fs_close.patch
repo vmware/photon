@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Thomas Frauendorfer | Miray Software <tf@miray.de>
+Date: Wed, 7 May 2025 16:15:22 +0200
+Subject: [PATCH] kern/file: Call grub_dl_unref() after fs->fs_close()
+
+With commit 16f196874 (kern/file: Implement filesystem reference
+counting) files hold a reference to their file systems.
+
+When closing a file in grub_file_close() we should not expect
+file->fs to stay valid after calling grub_dl_unref() on file->fs->mod.
+So, grub_dl_unref() should be called after file->fs->fs_close().
+
+Fixes: CVE-2025-54771
+Fixes: 16f196874 (kern/file: Implement filesystem reference counting)
+
+Reported-by: Thomas Frauendorfer | Miray Software <tf@miray.de>
+Signed-off-by: Thomas Frauendorfer | Miray Software <tf@miray.de>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/kern/file.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/grub-core/kern/file.c b/grub-core/kern/file.c
+index ec90a26ba0e9..f051bd48ff7e 100644
+--- a/grub-core/kern/file.c
++++ b/grub-core/kern/file.c
+@@ -223,13 +223,13 @@ grub_file_read (grub_file_t file, void *buf, grub_size_t len)
+ grub_err_t
+ grub_file_close (grub_file_t file)
+ {
+-  if (file->fs->mod)
+-    grub_dl_unref (file->fs->mod);
+-
+   grub_dprintf ("file", "Closing `%s' ...\n", file->name);
+   if (file->fs->fs_close)
+     (file->fs->fs_close) (file);
+ 
++  if (file->fs->mod)
++    grub_dl_unref (file->fs->mod);
++
+   if (file->device)
+     grub_device_close (file->device);
+ 

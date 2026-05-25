@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Neal Gompa <ngompa@fedoraproject.org>
+Date: Wed, 26 Nov 2025 08:20:26 -0500
+Subject: [PATCH] util/grub.d/00_header.in: Prefer $dev instead of $root for
+ $env_block
+
+In UEFI environments where GRUB loads a stub grub.cfg on the EFI
+System Partition (ESP) that points to the real one on the operating
+system volume, the $root value is set to the ESP instead of the
+operating system volume.
+
+This is particularly problematic for setups where the operating
+system boot data is on a Btrfs volume and the external environment
+block in the Btrfs bootloader space is used for grubenv data.
+
+Using $dev in its place resolves this problem, since the stub
+grub.cfg populates this variable. Use it if it exists, and
+fall back to $root accordingly.
+
+This is unlikely to be upstreamable, as it depends on the method
+Fedora Linux and derivatives use to load the GRUB configuration.
+
+Signed-off-by: Neal Gompa <ngompa@fedoraproject.org>
+---
+ util/grub.d/00_header.in | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/util/grub.d/00_header.in b/util/grub.d/00_header.in
+index a5d43929b8..01f1f4144e 100644
+--- a/util/grub.d/00_header.in
++++ b/util/grub.d/00_header.in
+@@ -60,7 +60,11 @@ elif [ -s \$prefix/grubenv ]; then
+ fi
+ 
+ if [ "\${env_block}" ] ; then
+-  set env_block="(\${root})\${env_block}"
++  if [ "\${dev}" ]; then
++    set env_block="(\${dev})\${env_block}"
++  else
++    set env_block="(\${root})\${env_block}"
++  fi
+   export env_block
+   load_env -f "\${env_block}"
+ fi

@@ -1,0 +1,176 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:39 +0800
+Subject: [PATCH] util/grub-editenv: add probe call for external envblk
+
+This patch adds the probe_fs_envblk() function to identify the root
+filesystem and invoke fs_envblk_init() with the probed filesystem type
+and device. This checks if the feature is available and initializes the
+handle, fs_envblk, to access the external environment block. It avoids
+configurations with diskfilter or cryptodisk where filesystem blocks may
+be remapped or encrypted.
+
+The probe is only invoked when grub-editenv is working on the default
+environment file path. This restriction ensures that probing and
+possible raw device access are not triggered for arbitrary user supplied
+paths, but only for the standard grubenv file. In that case the code
+checks if the filename equals DEFAULT_ENVBLK_PATH and then calls
+probe_fs_envblk with fs_envblk_spec. The result is stored in the global
+fs_envblk handle. At this stage the external environment block is only
+detected and recorded, and the behavior of grub-editenv is unchanged.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Avnish Chouhan <avnish@linux.ibm.com>
+---
+ util/grub-editenv.c | 115 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 113 insertions(+), 2 deletions(-)
+
+diff --git a/util/grub-editenv.c b/util/grub-editenv.c
+index 170d8f139a..201dc7ccd4 100644
+--- a/util/grub-editenv.c
++++ b/util/grub-editenv.c
+@@ -23,8 +23,11 @@
+ #include <grub/util/misc.h>
+ #include <grub/lib/envblk.h>
+ #include <grub/i18n.h>
+-#include <grub/emu/hostfile.h>
++#include <grub/emu/hostdisk.h>
+ #include <grub/util/install.h>
++#include <grub/emu/getroot.h>
++#include <grub/fs.h>
++#include <grub/crypto.h>
+ 
+ #include <stdio.h>
+ #include <unistd.h>
+@@ -161,7 +164,7 @@ static fs_envblk_spec_t fs_envblk_spec[] = {
+ 
+ static fs_envblk_t fs_envblk = NULL;
+ 
+-static void __attribute__ ((unused))
++static void
+ fs_envblk_init (const char *fs_name, const char *dev)
+ {
+   fs_envblk_spec_t *p;
+@@ -582,6 +585,111 @@ incr_variables (const char *name, int argc, char *argv[])
+   grub_envblk_close (envblk);
+ }
+ 
++static bool
++is_abstraction (grub_device_t dev)
++{
++  if (dev == NULL || dev->disk == NULL)
++    return false;
++
++  if (dev->disk->dev->id == GRUB_DISK_DEVICE_DISKFILTER_ID ||
++      dev->disk->dev->id == GRUB_DISK_DEVICE_CRYPTODISK_ID)
++    return true;
++
++  return false;
++}
++
++static void
++probe_fs_envblk (fs_envblk_spec_t *spec)
++{
++  char **grub_devices = NULL;
++  char **curdev, **curdrive;
++  size_t ndev = 0;
++  char **grub_drives = NULL;
++  grub_device_t grub_dev = NULL;
++  grub_fs_t grub_fs = NULL;
++  bool have_abstraction = false;
++
++  grub_util_biosdisk_init (DEFAULT_DEVICE_MAP);
++  grub_init_all ();
++  grub_gcry_init_all ();
++
++  grub_lvm_fini ();
++  grub_mdraid09_fini ();
++  grub_mdraid1x_fini ();
++  grub_diskfilter_fini ();
++  grub_diskfilter_init ();
++  grub_mdraid09_init ();
++  grub_mdraid1x_init ();
++  grub_lvm_init ();
++
++  grub_devices = grub_guess_root_devices (DEFAULT_DIRECTORY);
++
++  if (grub_devices == NULL || grub_devices[0] == NULL)
++    {
++      grub_util_warn (_("cannot find a device for %s (is /dev mounted?)"), DEFAULT_DIRECTORY);
++      goto cleanup;
++    }
++
++  for (curdev = grub_devices; *curdev != NULL; curdev++, ndev++)
++    grub_util_pull_device (*curdev);
++
++  grub_drives = xcalloc ((ndev + 1), sizeof (grub_drives[0]));
++
++  for (curdev = grub_devices, curdrive = grub_drives; *curdev != NULL; curdev++,
++       curdrive++)
++    {
++      *curdrive = grub_util_get_grub_dev (*curdev);
++      if (*curdrive == NULL)
++	{
++	  grub_util_warn (_("cannot find a GRUB drive for %s.  Check your device.map"),
++			  *curdev);
++	  goto cleanup;
++	}
++    }
++  *curdrive = NULL;
++
++  grub_dev = grub_device_open (grub_drives[0]);
++  if (grub_dev == NULL)
++    {
++      grub_util_warn (_("cannot open device %s: %s"), grub_drives[0], grub_errmsg);
++      grub_errno = GRUB_ERR_NONE;
++      goto cleanup;
++    }
++
++  grub_fs = grub_fs_probe (grub_dev);
++  if (grub_fs == NULL)
++    {
++      grub_util_warn (_("cannot probe fs for %s: %s"), grub_drives[0], grub_errmsg);
++      grub_errno = GRUB_ERR_NONE;
++      goto cleanup;
++    }
++
++  have_abstraction = is_abstraction (grub_dev);
++  for (curdrive = grub_drives + 1; *curdrive != NULL && have_abstraction == false; curdrive++)
++    {
++      grub_device_t dev = grub_device_open (*curdrive);
++
++      if (dev == NULL)
++	continue;
++      have_abstraction = is_abstraction (dev);
++      grub_device_close (dev);
++    }
++
++  if (have_abstraction == false)
++    fs_envblk_init (grub_fs->name, grub_devices[0]);
++
++ cleanup:
++  if (grub_devices != NULL)
++    for (curdev = grub_devices; *curdev != NULL; curdev++)
++      free (*curdev);
++  free (grub_devices);
++  free (grub_drives);
++  grub_device_close (grub_dev);
++  grub_gcry_fini_all ();
++  grub_fini_all ();
++  grub_util_biosdisk_fini ();
++}
++
+ int
+ main (int argc, char *argv[])
+ {
+@@ -613,6 +721,9 @@ main (int argc, char *argv[])
+       command  = argv[curindex++];
+     }
+ 
++  if (strcmp (filename, DEFAULT_ENVBLK_PATH) == 0)
++    probe_fs_envblk (fs_envblk_spec);
++
+   if (strcmp (command, "create") == 0)
+     grub_util_create_envblk_file (filename);
+   else if (strcmp (command, "list") == 0)

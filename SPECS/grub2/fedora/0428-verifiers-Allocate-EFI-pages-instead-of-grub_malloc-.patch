@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Leo Sandoval <lsandova@redhat.com>
+Date: Thu, 22 Jan 2026 12:25:42 -0600
+Subject: [PATCH] verifiers: Allocate EFI pages instead of grub_malloc for
+ verified buffer
+
+This way we are not restricted to the grub_malloc limit
+GRUB_EFI_MAX_ALLOCATION_ADDRESS (0x7fffffff) and instead use the
+broader limit GRUB_EFI_MAX_USABLE_ADDRESS (__UINTPTR_MAX__). The
+reason behind this change is that initrd files keep growing and the
+TPM verifier requires the whole file so it can be measured but
+allocating through grub_malloc may lead to out-of-memory issues on
+those systems with memory contrains e.g. ASUS, thus use direct EFI
+page allocation instead.
+
+Signed-off-by: Leo Sandoval <lsandova@redhat.com>
+---
+ grub-core/kern/verifiers.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/grub-core/kern/verifiers.c b/grub-core/kern/verifiers.c
+index 75d7994cf6..21fc752f17 100644
+--- a/grub-core/kern/verifiers.c
++++ b/grub-core/kern/verifiers.c
+@@ -22,6 +22,10 @@
+ #include <grub/verify.h>
+ #include <grub/dl.h>
+ 
++#if defined (GRUB_MACHINE_EFI) && defined (__x86_64__)
++#include <grub/efi/efi.h>
++#endif
++
+ GRUB_MOD_LICENSE ("GPLv3+");
+ 
+ struct grub_file_verifier *grub_file_verifiers;
+@@ -38,7 +42,13 @@ verified_free (grub_verified_t verified)
+ {
+   if (verified)
+     {
++#if defined (GRUB_MACHINE_EFI) && defined (__x86_64__)
++      if (verified->buf && verified->file->size)
++	grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)verified->buf,
++			     GRUB_EFI_BYTES_TO_PAGES(verified->file->size));
++#else
+       grub_free (verified->buf);
++#endif
+       grub_free (verified);
+     }
+ }
+@@ -145,7 +155,11 @@ grub_verifiers_open (grub_file_t io, enum grub_file_type type)
+     {
+       goto fail;
+     }
++#if defined (GRUB_MACHINE_EFI) && defined (__x86_64__)
++  verified->buf = grub_efi_allocate_any_pages (GRUB_EFI_BYTES_TO_PAGES (ret->size));
++#else
+   verified->buf = grub_malloc (ret->size);
++#endif
+   if (!verified->buf)
+     {
+       goto fail;

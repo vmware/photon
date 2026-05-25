@@ -1,0 +1,168 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Axtens <dja@axtens.net>
+Date: Fri, 15 Nov 2024 15:34:29 +0800
+Subject: [PATCH] posix_wrap: Tweaks in preparation for libtasn1
+
+Cc: Vladimir Serbinenko <phcoder@gmail.com>
+Signed-off-by: Daniel Axtens <dja@axtens.net>
+Signed-off-by: Gary Lin <glin@suse.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Tested-by: Stefan Berger <stefanb@linux.ibm.com>
+---
+ grub-core/lib/posix_wrap/c-ctype.h | 114 +++++++++++++++++++++++++++++++++++++
+ grub-core/lib/posix_wrap/string.h  |  21 +++++++
+ 2 files changed, 135 insertions(+)
+ create mode 100644 grub-core/lib/posix_wrap/c-ctype.h
+
+diff --git a/grub-core/lib/posix_wrap/c-ctype.h b/grub-core/lib/posix_wrap/c-ctype.h
+new file mode 100644
+index 0000000000..5f8fc8ce3f
+--- /dev/null
++++ b/grub-core/lib/posix_wrap/c-ctype.h
+@@ -0,0 +1,114 @@
++/*
++ *  GRUB  --  GRand Unified Bootloader
++ *  Copyright (C) 2024  Free Software Foundation, Inc.
++ *
++ *  GRUB is free software: you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation, either version 3 of the License, or
++ *  (at your option) any later version.
++ *
++ *  GRUB is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef GRUB_POSIX_C_CTYPE_H
++#define GRUB_POSIX_C_CTYPE_H	1
++
++#include <grub/misc.h>
++
++static inline bool
++c_isspace (int c)
++{
++  return !!grub_isspace (c);
++}
++
++static inline bool
++c_isdigit (int c)
++{
++  return !!grub_isdigit (c);
++}
++
++static inline bool
++c_islower (int c)
++{
++  return !!grub_islower (c);
++}
++
++static inline bool
++c_isascii (int c)
++{
++  return !(c & ~0x7f);
++}
++
++static inline bool
++c_isupper (int c)
++{
++  return !!grub_isupper (c);
++}
++
++static inline bool
++c_isxdigit (int c)
++{
++  return !!grub_isxdigit (c);
++}
++
++static inline bool
++c_isprint (int c)
++{
++  return !!grub_isprint (c);
++}
++
++static inline bool
++c_iscntrl (int c)
++{
++  return !grub_isprint (c);
++}
++
++static inline bool
++c_isgraph (int c)
++{
++  return grub_isprint (c) && !grub_isspace (c);
++}
++
++static inline bool
++c_isalnum (int c)
++{
++  return grub_isalpha (c) || grub_isdigit (c);
++}
++
++static inline bool
++c_ispunct (int c)
++{
++  return grub_isprint (c) && !grub_isspace (c) && !c_isalnum (c);
++}
++
++static inline bool
++c_isalpha (int c)
++{
++  return !!grub_isalpha (c);
++}
++
++static inline bool
++c_isblank (int c)
++{
++  return c == ' ' || c == '\t';
++}
++
++static inline int
++c_tolower (int c)
++{
++  return grub_tolower (c);
++}
++
++static inline int
++c_toupper (int c)
++{
++  return grub_toupper (c);
++}
++
++#endif
+diff --git a/grub-core/lib/posix_wrap/string.h b/grub-core/lib/posix_wrap/string.h
+index 1adb450b5a..d3e400d500 100644
+--- a/grub-core/lib/posix_wrap/string.h
++++ b/grub-core/lib/posix_wrap/string.h
+@@ -84,6 +84,27 @@ memchr (const void *s, int c, grub_size_t n)
+   return grub_memchr (s, c, n);
+ }
+ 
++static inline char *
++strncat (char *dest, const char *src, grub_size_t n)
++{
++  const char *end;
++  char *str = dest;
++  grub_size_t src_len;
++
++  dest += grub_strlen (dest);
++
++  end = grub_memchr (src, '\0', n);
++  if (end != NULL)
++    src_len = (grub_size_t) (end - src);
++  else
++    src_len = n;
++
++  dest[src_len] = '\0';
++  grub_memcpy (dest, src, src_len);
++
++  return str;
++}
++
+ #define memcmp grub_memcmp
+ #define memcpy grub_memcpy
+ #define memmove grub_memmove

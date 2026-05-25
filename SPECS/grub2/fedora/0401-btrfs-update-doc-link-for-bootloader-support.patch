@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:43 +0800
+Subject: [PATCH] btrfs: update doc link for bootloader support
+
+The old wiki link is obsolete and no longer updated, change it to the
+current documentation.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/fs/btrfs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/grub-core/fs/btrfs.c b/grub-core/fs/btrfs.c
+index 261c413e9f..2222c57abd 100644
+--- a/grub-core/fs/btrfs.c
++++ b/grub-core/fs/btrfs.c
+@@ -2647,7 +2647,8 @@ struct embed_region {
+ };
+ 
+ /*
+- * https://btrfs.wiki.kernel.org/index.php/Manpage/btrfs(5)#BOOTLOADER_SUPPORT
++ * https://btrfs.readthedocs.io/en/latest/btrfs-man5.html#man-btrfs5-bootloader-support
++ * or invoke "man 5 btrfs" and visit the "bootloader support" subsection.
+  * The first 1 MiB on each device is unused with the exception of primary
+  * superblock that is on the offset 64 KiB and spans 4 KiB.
+  *

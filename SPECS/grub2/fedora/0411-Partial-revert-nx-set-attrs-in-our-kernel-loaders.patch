@@ -1,0 +1,71 @@
+From c3fb9c43ad6f72780092cdd6b8d8c90c3dc6e889 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Thu, 4 Dec 2025 21:16:59 +0100
+Subject: [PATCH 411/419] Partial revert: "nx: set attrs in our kernel loaders"
+
+This reverts a small part of commit be61be0c71c7.
+
+The only reverted bits are the changes to grub_cmd_linux() these changes
+call grub_efi_check_nx_image_support() and store the result into a local
+variable, which is then never used. So reverting these changes is a no-op
+as the removed code only reads a flag which is never used.
+
+Also note that this version of grub_cmd_linux() is never used on x86,
+which uses linux_cmd() from grub-core/loader/i386/efi/linux.c .
+
+This is part of a series of reverts to move non x86 vmlinuz loading back
+to using EFI boot services load_image + start_image calls.
+
+This partial revert is done to make further reverts in this series cleaner.
+
+The current DYI approach breaks booting kernel EFI binaries which have
+the stubble stub for automatic DTB loading.
+
+Switching back to EFI boot services load_image + start_image fixes this
+and also brings Fedora's grub inline with how upstream grub is loading
+and booting kernels on arm64 platforms.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/efi/linux.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index fa6af0d8d..18b9160f2 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -800,9 +800,10 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+   struct linux_arch_kernel_header lh;
+   grub_off_t filelen;
+   grub_off_t filereadlen;
++  grub_uint32_t align;
++  grub_uint32_t code_size;
+   void *kernel = NULL;
+   grub_err_t err;
+-  int nx_supported = 1;
+ 
+   grub_dl_ref (my_mod);
+ 
+@@ -873,8 +874,6 @@ fallback:
+ 
+ 
+ #if !defined(__i386__) && !defined(__x86_64__)
+-  grub_uint32_t align;
+-  grub_uint32_t code_size;
+   if (parse_pe_header (kernel, &kernel_size, &handover_offset, &align, &code_size) != GRUB_ERR_NONE)
+     goto fail;
+   grub_dprintf ("linux", "kernel mem size     : %lld\n", (long long) kernel_size);
+@@ -882,10 +881,6 @@ fallback:
+   grub_dprintf ("linux", "kernel alignment    : 0x%x\n", align);
+   grub_dprintf ("linux", "kernel size         : 0x%x\n", code_size);
+ 
+-  err = grub_efi_check_nx_image_support((grub_addr_t)kernel, filelen, &nx_supported);
+-  if (err != GRUB_ERR_NONE)
+-    goto fail;
+-
+   grub_loader_unset();
+ 
+   kernel_alloc_pages = GRUB_EFI_BYTES_TO_PAGES (kernel_size + align - 1);
+-- 
+2.52.0
+

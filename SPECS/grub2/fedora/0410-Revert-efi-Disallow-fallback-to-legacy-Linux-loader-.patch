@@ -1,0 +1,85 @@
+From 675dc757673ce250c76f8ecfb1853e3cee002ad7 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Thu, 4 Dec 2025 21:02:50 +0100
+Subject: [PATCH 410/419] Revert "efi: Disallow fallback to legacy Linux loader
+ when shim says NX is required."
+
+This fully reverts commit b899582b9a8e.
+
+Note this is actually a no-op since the modified linux_cmd() x86-only code
+is not used on x86 at all, instead x86 uses the linux_cmd() function
+from grub-core/loader/i386/efi/linux.c .
+
+This is part of a series of reverts to move non x86 vmlinuz loading back
+to using EFI boot services load_image + start_image calls.
+
+The current DYI approach breaks booting kernel EFI binaries which have
+the stubble stub for automatic DTB loading.
+
+Switching back to EFI boot services load_image + start_image fixes this
+and also brings Fedora's grub inline with how upstream grub is loading
+and booting kernels on arm64 platforms.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/efi/linux.c | 13 +++++--------
+ include/grub/efi/api.h       |  2 --
+ 2 files changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index 65ddc9eb1..fa6af0d8d 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -803,7 +803,6 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+   void *kernel = NULL;
+   grub_err_t err;
+   int nx_supported = 1;
+-  int nx_required = 0;
+ 
+   grub_dl_ref (my_mod);
+ 
+@@ -852,23 +851,21 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+       goto fail;
+     }
+ 
+-#if !defined(__i386__) && !defined(__x86_64__)
+   if (grub_arch_efi_linux_load_image_header (file, &lh) != GRUB_ERR_NONE)
++#if !defined(__i386__) && !defined(__x86_64__)
+     goto fail;
+ #else
+-  if (grub_arch_efi_linux_load_image_header (file, &lh) != GRUB_ERR_NONE ||
+-      !initrd_use_loadfile2)
+-    {
+-      /* We cannot use the legacy loader when NX is required */
+-      if (grub_efi_check_nx_required(&nx_required))
+-        goto fail;
++    goto fallback;
+ 
++  if (!initrd_use_loadfile2)
++    {
+       /*
+        * This is a EFI stub image but it is too old to implement the LoadFile2
+        * based initrd loading scheme, and Linux/x86 does not support the DT
+        * based method either. So fall back to the x86-specific loader that
+        * enters Linux in EFI mode but without going through its EFI stub.
+        */
++fallback:
+       grub_file_close (file);
+       return grub_cmd_linux_x86_legacy (cmd, argc, argv);
+     }
+diff --git a/include/grub/efi/api.h b/include/grub/efi/api.h
+index 5047ecf28..24243eb03 100644
+--- a/include/grub/efi/api.h
++++ b/include/grub/efi/api.h
+@@ -2006,8 +2006,6 @@ struct grub_efi_block_io
+ };
+ typedef struct grub_efi_block_io grub_efi_block_io_t;
+ 
+-#define GRUB_MOK_POLICY_NX_REQUIRED	0x1
+-
+ struct grub_efi_shim_lock_protocol
+ {
+   /*
+-- 
+2.52.0
+

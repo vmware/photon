@@ -1,0 +1,102 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Leo Sandoval <lsandova@redhat.com>
+Date: Fri, 11 Apr 2025 15:31:53 -0600
+Subject: [PATCH] Include function name on debug and error print functions
+
+Together with the line number, the debug log gives more context when
+debugging.
+
+Signed-off-by: Leo Sandoval <lsandova@redhat.com>
+---
+ grub-core/kern/err.c  | 4 ++--
+ grub-core/kern/misc.c | 4 ++--
+ include/grub/err.h    | 6 +++---
+ include/grub/misc.h   | 5 +++--
+ 4 files changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/grub-core/kern/err.c b/grub-core/kern/err.c
+index aebfe0cf83..ba04b57fb7 100644
+--- a/grub-core/kern/err.c
++++ b/grub-core/kern/err.c
+@@ -38,14 +38,14 @@ static int grub_error_stack_assert;
+ #endif
+ 
+ grub_err_t
+-grub_error (grub_err_t n, const char *file, const int line, const char *fmt, ...)
++grub_error (grub_err_t n, const char *file, const char *function, const int line, const char *fmt, ...)
+ {
+   va_list ap;
+   int m;
+ 
+   grub_errno = n;
+ 
+-  m = grub_snprintf (grub_errmsg, sizeof (grub_errmsg), "%s:%d:", file, line);
++  m = grub_snprintf (grub_errmsg, sizeof (grub_errmsg), "%s:%s:%d:", file, function, line);
+   if (m < 0)
+     m = 0;
+ 
+diff --git a/grub-core/kern/misc.c b/grub-core/kern/misc.c
+index 69bd655f3d..541c7bb80c 100644
+--- a/grub-core/kern/misc.c
++++ b/grub-core/kern/misc.c
+@@ -248,7 +248,7 @@ grub_debug_enabled (const char * condition)
+ }
+ 
+ void
+-grub_real_dprintf (const char *file, const int line, const char *condition,
++grub_real_dprintf (const char *file, const char *function, const int line, const char *condition,
+ 		   const char *fmt, ...)
+ {
+   va_list args;
+@@ -272,7 +272,7 @@ grub_real_dprintf (const char *file, const int line, const char *condition,
+       else
+         last_had_cr = 0;
+ #endif
+-      grub_printf ("%s:%d:%s: ", file, line, condition);
++      grub_printf ("%s:%s:%d:%s: ", file, function, line, condition);
+       va_start (args, fmt);
+       grub_vprintf (fmt, args);
+       va_end (args);
+diff --git a/include/grub/err.h b/include/grub/err.h
+index 7530f58b29..6379a6baf8 100644
+--- a/include/grub/err.h
++++ b/include/grub/err.h
+@@ -88,10 +88,10 @@ struct grub_error_saved
+ extern grub_err_t EXPORT_VAR(grub_errno);
+ extern char EXPORT_VAR(grub_errmsg)[GRUB_MAX_ERRMSG];
+ 
+-grub_err_t EXPORT_FUNC(grub_error) (grub_err_t n, const char *file, const int line, const char *fmt, ...)
+-	__attribute__ ((format (GNU_PRINTF, 4, 5)));
++grub_err_t EXPORT_FUNC(grub_error) (grub_err_t n, const char *file, const char *function, const int line, const char *fmt, ...)
++	__attribute__ ((format (GNU_PRINTF, 5, 6)));
+ 
+-#define grub_error(n, fmt, ...) grub_error (n, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
++#define grub_error(n, fmt, ...) grub_error (n, __FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
+ 
+ 
+ void EXPORT_FUNC(grub_fatal) (const char *fmt, ...) __attribute__ ((noreturn));
+diff --git a/include/grub/misc.h b/include/grub/misc.h
+index 0429339ef3..2b9096a0b3 100644
+--- a/include/grub/misc.h
++++ b/include/grub/misc.h
+@@ -43,7 +43,7 @@
+ #define CONCAT(a, b) CONCAT_(a, b)
+ #endif
+ 
+-#define grub_dprintf(condition, ...) grub_real_dprintf(GRUB_FILE, __LINE__, condition, __VA_ARGS__)
++#define grub_dprintf(condition, ...) grub_real_dprintf(GRUB_FILE, __FUNCTION__, __LINE__, condition, __VA_ARGS__)
+ 
+ void *EXPORT_FUNC(grub_memmove) (void *dest, const void *src, grub_size_t n);
+ char *EXPORT_FUNC(grub_strcpy) (char *dest, const char *src);
+@@ -420,9 +420,10 @@ int EXPORT_FUNC(grub_puts_) (const char *s);
+ int EXPORT_FUNC(grub_debug_is_enabled) (void);
+ int EXPORT_FUNC(grub_debug_enabled) (const char *condition);
+ void EXPORT_FUNC(grub_real_dprintf) (const char *file,
++				     const char *function,
+                                      const int line,
+                                      const char *condition,
+-                                     const char *fmt, ...) __attribute__ ((format (GNU_PRINTF, 4, 5)));
++                                     const char *fmt, ...) __attribute__ ((format (GNU_PRINTF, 5, 6)));
+ int EXPORT_FUNC(grub_printf) (const char *fmt, ...) __attribute__ ((format (GNU_PRINTF, 1, 2)));
+ int EXPORT_FUNC(grub_printf_) (const char *fmt, ...) __attribute__ ((format (GNU_PRINTF, 1, 2)));
+ void EXPORT_FUNC(grub_qdprintf) (const char *condition,

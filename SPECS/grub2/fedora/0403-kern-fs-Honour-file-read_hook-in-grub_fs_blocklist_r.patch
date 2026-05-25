@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Date: Thu, 29 Aug 2024 13:01:02 +0200
+Subject: [PATCH] kern/fs: Honour file->read_hook() in grub_fs_blocklist_read()
+
+Unlike files accessed via a normal file system, the file->read_hook() is
+not honoured when using blocklist notation.
+
+This means that when trying to use a dedicated, 1 KiB, raw partition
+for the environment block and hence does something like
+
+  save_env --file=(hd0,gpt9)0+2 X Y Z
+
+this fails with "sparse file not allowed", which is rather unexpected,
+as I've explicitly said exactly which blocks should be used. Adding
+a little debugging reveals that grub_file_size(file) is 1024 as expected,
+but total_length is 0, simply because the callback was never invoked, so
+blocklists is an empty list.
+
+Fix that by honouring the ->read_hook() set by the caller, also when
+a "file" is specified with blocklist notation.
+
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Reviewed-by: Vladimir Serbinenko <phcoder@gmail.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ grub-core/kern/fs.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/grub-core/kern/fs.c b/grub-core/kern/fs.c
+index f25bace620..9f6f4ef9da 100644
+--- a/grub-core/kern/fs.c
++++ b/grub-core/kern/fs.c
+@@ -216,12 +216,15 @@ grub_fs_blocklist_read (grub_file_t file, char *buf, grub_size_t len)
+   grub_disk_addr_t sector;
+   grub_off_t offset;
+   grub_ssize_t ret = 0;
++  grub_disk_t disk = file->device->disk;
+ 
+   if (len > file->size - file->offset)
+     len = file->size - file->offset;
+ 
+   sector = (file->offset >> GRUB_DISK_SECTOR_BITS);
+   offset = (file->offset & (GRUB_DISK_SECTOR_SIZE - 1));
++  disk->read_hook = file->read_hook;
++  disk->read_hook_data = file->read_hook_data;
+   for (p = file->data; p->length && len > 0; p++)
+     {
+       if (sector < p->length)
+@@ -233,9 +236,12 @@ grub_fs_blocklist_read (grub_file_t file, char *buf, grub_size_t len)
+ 	       >> GRUB_DISK_SECTOR_BITS) > p->length - sector)
+ 	    size = ((p->length - sector) << GRUB_DISK_SECTOR_BITS) - offset;
+ 
+-	  if (grub_disk_read (file->device->disk, p->offset + sector, offset,
++	  if (grub_disk_read (disk, p->offset + sector, offset,
+ 			      size, buf) != GRUB_ERR_NONE)
+-	    return -1;
++	    {
++	      ret = -1;
++	      break;
++	    }
+ 
+ 	  ret += size;
+ 	  len -= size;
+@@ -245,6 +251,8 @@ grub_fs_blocklist_read (grub_file_t file, char *buf, grub_size_t len)
+       else
+ 	sector -= p->length;
+     }
++  disk->read_hook = NULL;
++  disk->read_hook_data = NULL;
+ 
+   return ret;
+ }

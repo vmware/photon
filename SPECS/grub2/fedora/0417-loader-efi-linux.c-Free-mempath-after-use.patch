@@ -1,0 +1,28 @@
+From 49efc382a2b582c7ec9a3459dbc0dc1901571cb0 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Date: Sat, 6 Dec 2025 13:02:46 +0100
+Subject: [PATCH 417/419] loader/efi/linux.c: Free mempath after use
+
+Fix grub_arch_efi_linux_boot_image () leaking the memory allocated for
+mempath by freeing it after use.
+
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ grub-core/loader/efi/linux.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/grub-core/loader/efi/linux.c b/grub-core/loader/efi/linux.c
+index 459b84ab6..73a599004 100644
+--- a/grub-core/loader/efi/linux.c
++++ b/grub-core/loader/efi/linux.c
+@@ -503,6 +503,7 @@ grub_arch_efi_linux_boot_image (grub_addr_t addr, grub_size_t size, char *args)
+   status = b->load_image (0, grub_efi_image_handle,
+ 			  (grub_efi_device_path_t *) mempath,
+ 			  (void *) addr, size, &image_handle);
++  grub_free (mempath);
+   if (status != GRUB_EFI_SUCCESS)
+     return grub_error (GRUB_ERR_BAD_OS, "cannot load image");
+ 
+-- 
+2.52.0
+

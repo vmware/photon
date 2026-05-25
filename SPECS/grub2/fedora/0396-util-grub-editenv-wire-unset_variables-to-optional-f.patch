@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:37 +0800
+Subject: [PATCH] util/grub-editenv: wire unset_variables to optional fs_envblk
+
+This patch updates unset_variables() so that removals are also applied
+to the external environment block when it is present. The code opens the
+external block, deletes the same named keys there, and then writes the
+external block back using fs_envblk_write(). The file based envblk is
+still updated and written as before.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Avnish Chouhan <avnish@linux.ibm.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ util/grub-editenv.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/util/grub-editenv.c b/util/grub-editenv.c
+index be844bf902..7ff1da9b40 100644
+--- a/util/grub-editenv.c
++++ b/util/grub-editenv.c
+@@ -502,18 +502,32 @@ static void
+ unset_variables (const char *name, int argc, char *argv[])
+ {
+   grub_envblk_t envblk;
++  grub_envblk_t envblk_on_block = NULL;
+ 
+   envblk = open_envblk_file (name);
++
++  if (fs_envblk != NULL)
++    envblk_on_block = fs_envblk->ops->open (envblk);
++
+   while (argc)
+     {
+       grub_envblk_delete (envblk, argv[0]);
+ 
++      if (envblk_on_block != NULL)
++	grub_envblk_delete (envblk_on_block, argv[0]);
++
+       argc--;
+       argv++;
+     }
+ 
+   write_envblk (name, envblk);
+   grub_envblk_close (envblk);
++
++  if (envblk_on_block != NULL)
++    {
++      fs_envblk->ops->write (envblk_on_block);
++      grub_envblk_close (envblk_on_block);
++    }
+ }
+ 
+ struct get_int_value_params {

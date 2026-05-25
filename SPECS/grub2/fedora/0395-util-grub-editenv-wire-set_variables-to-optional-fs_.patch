@@ -1,0 +1,118 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Michael Chang via Grub-devel <grub-devel@gnu.org>
+Date: Fri, 17 Oct 2025 17:01:36 +0800
+Subject: [PATCH] util/grub-editenv: wire set_variables to optional fs_envblk
+
+This patch changes set_variables() so that it can use an external
+environment block when one is present. The variable next_entry is
+written into the external block, env_block is treated as read only, and
+all other variables are written into the normal file based envblk.
+
+A cleanup step is added to handle cases where GRUB at runtime writes
+variables into the external block because file based updates are not
+safe on a copy on write filesystem such as Btrfs. For example, the
+savedefault command can update saved_entry, and on Btrfs GRUB will place
+that update in the external block instead of the file envblk. If an
+older copy remains in the external block, it would override the newer
+value from the file envblk when GRUB first loads the file and then
+applies the external block on top of it. To avoid this, whenever a
+variable is updated in the file envblk, any same named key in the
+external block is deleted.
+
+Signed-off-by: Michael Chang <mchang@suse.com>
+Reviewed-by: Neal Gompa <ngompa13@gmail.com>
+Reviewed-by: Avnish Chouhan <avnish@linux.ibm.com>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+---
+ util/grub-editenv.c | 58 +++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 56 insertions(+), 2 deletions(-)
+
+diff --git a/util/grub-editenv.c b/util/grub-editenv.c
+index f4b69bb19f..be844bf902 100644
+--- a/util/grub-editenv.c
++++ b/util/grub-editenv.c
+@@ -417,12 +417,35 @@ fs_envblk_write (grub_envblk_t envblk)
+   fclose (fp);
+ }
+ 
++struct var_lookup_ctx {
++  const char *varname;
++  bool found;
++};
++typedef struct var_lookup_ctx var_lookup_ctx_t;
++
++static int
++var_lookup_iter (const char *varname, const char *value __attribute__ ((unused)), void *hook_data)
++{
++  var_lookup_ctx_t *ctx = (var_lookup_ctx_t *) hook_data;
++
++  if (grub_strcmp (ctx->varname, varname) == 0)
++    {
++      ctx->found = true;
++      return 1;
++    }
++  return 0;
++}
++
+ static void
+ set_variables (const char *name, int argc, char *argv[])
+ {
+   grub_envblk_t envblk;
++  grub_envblk_t envblk_on_block = NULL;
+ 
+   envblk = open_envblk_file (name);
++  if (fs_envblk != NULL)
++    envblk_on_block = fs_envblk->ops->open (envblk);
++
+   while (argc)
+     {
+       char *p;
+@@ -433,15 +456,46 @@ set_variables (const char *name, int argc, char *argv[])
+ 
+       *(p++) = 0;
+ 
+-      if (! grub_envblk_set (envblk, argv[0], p))
+-        grub_util_error ("%s", _("environment block too small"));
++      if ((strcmp (argv[0], "next_entry") == 0) && envblk_on_block != NULL)
++	{
++	  if (grub_envblk_set (envblk_on_block, argv[0], p) == 0)
++	    grub_util_error ("%s", _("environment block too small"));
++	  goto next;
++	}
+ 
++      if (strcmp (argv[0], "env_block") == 0)
++	{
++	  grub_util_warn (_("can't set env_block as it's read-only"));
++	  goto next;
++	}
++
++      if (grub_envblk_set (envblk, argv[0], p) == 0)
++	grub_util_error ("%s", _("environment block too small"));
++
++      if (envblk_on_block != NULL)
++	{
++	  var_lookup_ctx_t ctx = {
++	    .varname = argv[0],
++	    .found = false
++	  };
++
++	  grub_envblk_iterate (envblk_on_block, &ctx, var_lookup_iter);
++	  if (ctx.found == true)
++	    grub_envblk_delete (envblk_on_block, argv[0]);
++	}
++ next:
+       argc--;
+       argv++;
+     }
+ 
+   write_envblk (name, envblk);
+   grub_envblk_close (envblk);
++
++  if (envblk_on_block != NULL)
++    {
++      fs_envblk->ops->write (envblk_on_block);
++      grub_envblk_close (envblk_on_block);
++    }
+ }
+ 
+ static void
