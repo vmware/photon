@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.255
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.258
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ BuildArch:      x86_64
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=13fba407c99a493c73e517a0a2ee619210eb40e8e30a5af9bad8c436df20941aa8acbaabc87b1fcc4f37e95c262b418b3e14f0f53a03c0c29eac32f52b38e512
+%define sha512 linux=41cbb70f7acd77014c39902364499ed628e5168314dae158f3e0b54f708aa4b4e0e87eb93780351d645bb3047a0bfd9f5b5e8e6119fd23c10653dc51614b04a4
 Source1:        config-esx
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -502,8 +502,6 @@ Patch285: 0001-scsi-lpfc-Fix-use-after-free-KFENCE-violation-during.patch
 # CVE-2025-38129
 Patch286: 0001-page_pool-fix-inconsistency-for-page_pool_ring_-un-l.patch
 Patch287: 0002-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
-# CVE-2025-38584
-Patch288: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
 
 # CVE-2022-49622
 Patch291: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
@@ -527,11 +525,7 @@ Patch301: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
 Patch302: 0001-drm-i915-fix-race-condition-UAF-in-i915_perf_add_con.patch
 #CVE-2023-53794
 Patch303: 0001-cifs-fix-session-state-check-in-reconnect-to-avoid-u.patch
-# CVE-2023-53596
-Patch304: 0001-drivers-base-Free-devm-resources-when-unregistering-a-device.patch
 
-# Fix CVE-2022-50552
-Patch305: 0001-blk-mq-use-quiesced-elevator-switch-when-reinitializ.patch
 # CVE-2023-53867
 Patch306: 0001-ceph-drop-private-list-from-remove_session_caps_cb.patch
 Patch307: 0002-ceph-fix-auth-cap-handling-logic-in-remove_session_c.patch
@@ -558,32 +552,19 @@ Patch318: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
 Patch319: 0001-netfilter-nf_tables-register-hooks-last-when-adding-.patch
 Patch320: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
 
-# CVE-2026-23442
-Patch327: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
+# Fix CVE-2026-45850
+Patch321: 0001-ipvs-skip-ipv6-extension-headers-for-csum-checks.patch
 
-# CVE-2026-23444
-Patch328: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
-# Fix CVE-2026-43114
-Patch329: 0001-netfilter-nft_set_pipapo_avx2-don-t-return-non-match.patch
-# Fix CVE-2026-43117
-Patch330: 0001-btrfs-tracepoints-get-correct-superblock-from-dentry.patch
+# Fix CVE-2026-46191
+Patch322: 0001-fbcon-Avoid-OOB-font-access-if-console-rotation-fails.patch
+
 # Fix CVE-2026-43304
 Patch331: 0001-libceph-define-and-enforce-CEPH_MAX_KEY_LEN.patch
-# Fix CVE-2026-31407
-Patch332: 0001-netfilter-conntrack-add-missing-netlink-policy-validations.patch
 # Fix CVE-2026-43456
 Patch333: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
 Patch334: 0001-bonding-prevent-potential-infinite-loop-in-bond_head.patch
 # Fix CVE-2026-43091
 Patch335: 0001-xfrm-Wait-for-RCU-readers-during-policy-netns-exit.patch
-# Fix CVE-2026-43281
-Patch336: 0001-mailbox-Prevent-out-of-bounds-access-in-of_mbox_index_xlate.patch
-# Fix CVE-2026-31694
-Patch337: 0001-fuse-reject-oversized-dirents-in-page-cache.patch
-# Fix CVE-2026-31673
-Patch338: 0001-af_unix-read-UNIX_DIAG_VFS-data-under-unix_state_lock.patch
-# Fix CVE-2026-31685
-Patch339: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-all-packe.patch
 
 #Patches for ptp_vmw
 Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -972,6 +953,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jun 03 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 5.10.258-1
+- Update to version 5.10.258
+- Fix CVE-2026-46191 and CVE-2026-45850
 * Thu May 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-4
 - Fix CVE-2026-43071, CVE-2026-43125, CVE-2026-43198
 * Fri May 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.255-3
