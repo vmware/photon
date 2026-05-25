@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.172
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.174
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1072,6 +1072,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-1
+- Update to version 6.1.174
 * Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.172-3
 - Fix build with glibc-2.43
 - Move linux-tools out to a different spec

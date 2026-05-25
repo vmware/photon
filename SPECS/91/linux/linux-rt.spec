@@ -24,8 +24,8 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.172
-Release:        5%{?dist}
+Version:        6.1.174
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -733,6 +733,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-1
+- Update to version 6.1.174
 * Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.172-5
 - Removed xerces-c-devel from BuildRequires
 * Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.172-4

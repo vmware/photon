@@ -32,8 +32,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.172
-Release:        4%{?dist}
+Version:        6.1.174
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -766,6 +766,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-1
+- Update to version 6.1.174
 * Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.172-4
 - Removed xerces-c-devel from BuildRequires
 * Fri May 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.172-3
