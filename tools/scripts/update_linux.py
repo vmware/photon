@@ -328,6 +328,10 @@ def update_spec_files(photon_git, linux_git, specs, major_version, version, sha5
     for spec in specs:
         content = spec.read_text()
         for pattern, replacement in replacements:
+            if str(spec).endswith("linux-tools-90.spec") and "Release" in pattern:
+                pattern = r"^(Release:\s*)\d+.\d+(%)"
+                replacement = lambda m: m.group(1) + "0.1" + m.group(2)
+
             content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
         spec.write_text(content)
 
