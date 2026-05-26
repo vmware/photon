@@ -1,6 +1,6 @@
 sources:
-- archive: traceroute-2.1.6.tar.gz
-  archive_sha512sum: e0400a8f4f6ce27af064ea9755f031280d662bd3bae1b504734669371a07e8bb1f89e4af2877ce68412fe61306f5e50dc7ad8d8df5483eb30075a043cbceba62
+- archive: traceroute-2.1.3.tar.gz
+  archive_sha512sum: db96214e6957fffe17c013044fdc20be6cf94fe5249c9adac77e62e20327c4d582b2ddf4b511f93f30be0cba9f67b0f3f61490745f35ff5a32c63ed66cb0c444
   skip_validation: true
   spdx:
     package:

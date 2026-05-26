@@ -1,8 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+# Build this spec if subrelease is 90
+%global build_if %{photon_subrelease} <= 90
 Name:           traceroute
 Summary:        Traces the route taken by packets over an IPv4/IPv6 network
-Version:        2.1.6
-Release:        1%{?dist}
+Version:        2.1.3
+Release:        2.1%{?dist}
 Group:          Applications/Internet
 Url:            http://traceroute.sourceforge.net
 Vendor:         VMware, Inc.
@@ -45,8 +46,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/*
 
 %changelog
-* Tue May 26 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 2.1.6-1
-- Version upgrade
+* Tue May 26 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 2.1.3-2.1
+- Adjusted to build for subrelease 90
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.1.3-2
 - Release bump for SRP compliance
 * Fri Nov 03 2023 Mukul Sikka <msikka@vmware.com> 2.1.3-1
