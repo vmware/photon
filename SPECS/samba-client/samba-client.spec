@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        13%{?dist}
+Release:        14%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,7 +63,6 @@ Requires: jansson
 Requires: libxml2
 Requires: lmdb
 Requires: openldap
-Requires: perl-Parse-Yapp
 Requires: dbus
 Requires: libtalloc
 Requires: ncurses-libs
@@ -465,6 +464,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.19.3-14
+- Remove runtime depedency of perl-Parse-Yapp
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-13
 - Extended to build for subrelease 91 and above
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 4.19.3-12
