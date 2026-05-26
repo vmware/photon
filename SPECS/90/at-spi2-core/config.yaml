@@ -1,6 +1,6 @@
 sources:
-- archive: at-spi2-core-2.60.4.tar.xz
-  archive_sha512sum: ff938b8c5d58bb0a81ef673dd277b7f7386257263dfb0940a4a73f97240b051bfd4fe53b1072fc1f4abbe53af1da2f6a667ce0b07076d8a757a6bbb07539dea9
+- archive: at-spi2-core-2.46.0.tar.xz
+  archive_sha512sum: 633af2c02fab3b8cb02e37f929ce80dd5ce28ca5641046ef5e25cb29299530b90028e6c6f318a0c098a4270bed3eab48fb55d6967a76bfadd2520f49de47c770
   skip_validation: true
   spdx:
     package:

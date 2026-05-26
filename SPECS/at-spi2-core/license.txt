@@ -1,1 +1,1 @@
-License: LGPL-2.0-or-later AND LGPL-2.1-or-later AND GPL-2.0-or-later AND LGPL-2.1-only AND AFL-2.1 AND FSFAP-no-warranty-disclaimer
+License: (BSD-3-Clause OR GPL-2.0-only) AND AFL-2.1 AND Apache-2.0 AND BSD-3-Clause AND FSFAP-no-warranty-disclaimer AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT
