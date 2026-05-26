@@ -1,0 +1,133 @@
+From 1ced27ef9c343e8af63527f701b8a276e90e9e74 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Thu, 21 May 2026 18:35:47 +0000
+Subject: [PATCH 3/7] remove redundant TDNFFreeReposInternal()
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ client/api.c        |  2 +-
+ client/prototypes.h |  5 -----
+ client/repolist.c   | 39 ++++++---------------------------------
+ 3 files changed, 7 insertions(+), 39 deletions(-)
+
+diff --git a/client/api.c b/client/api.c
+index a118fbe..833d35a 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -2579,7 +2579,7 @@ TDNFCloseHandle(
+     {
+         if(pTdnf->pRepos)
+         {
+-            TDNFFreeReposInternal(pTdnf->pRepos);
++            TDNFFreeRepos(pTdnf->pRepos);
+         }
+         if(pTdnf->pConf)
+         {
+diff --git a/client/prototypes.h b/client/prototypes.h
+index d38affb..fc989d8 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -713,11 +713,6 @@ TDNFCloneRepo(
+     PTDNF_REPO_DATA* ppRepo
+     );
+ 
+-void
+-TDNFFreeReposInternal(
+-    PTDNF_REPO_DATA pRepos
+-    );
+-
+ //resolve.c
+ uint32_t
+ TDNFPrepareAllPackages(
+diff --git a/client/repolist.c b/client/repolist.c
+index 2bca86e..08d2335 100644
+--- a/client/repolist.c
++++ b/client/repolist.c
+@@ -316,7 +316,7 @@ error:
+     }
+     if(pReposAll)
+     {
+-        TDNFFreeReposInternal(pReposAll);
++        TDNFFreeRepos(pReposAll);
+     }
+     goto cleanup;
+ }
+@@ -352,7 +352,7 @@ cleanup:
+ error:
+     if(pRepo)
+     {
+-        TDNFFreeReposInternal(pRepo);
++        TDNFFreeRepos(pRepo);
+     }
+     goto cleanup;
+ }
+@@ -416,7 +416,7 @@ error:
+     }
+     if(pRepo)
+     {
+-        TDNFFreeReposInternal(pRepo);
++        TDNFFreeRepos(pRepo);
+     }
+     goto cleanup;
+ }
+@@ -488,7 +488,7 @@ error:
+     }
+     if(pRepo)
+     {
+-        TDNFFreeReposInternal(pRepo);
++        TDNFFreeRepos(pRepo);
+     }
+     goto cleanup;
+ }
+@@ -559,7 +559,7 @@ error:
+     }
+     if(pRepo)
+     {
+-        TDNFFreeReposInternal(pRepo);
++        TDNFFreeRepos(pRepo);
+     }
+     goto cleanup;
+ }
+@@ -719,7 +719,7 @@ error:
+     TDNF_SAFE_FREE_MEMORY(pRepo);
+     if(pRepos)
+     {
+-        TDNFFreeReposInternal(pRepos);
++        TDNFFreeRepos(pRepos);
+     }
+     goto cleanup;
+ }
+@@ -961,30 +961,3 @@ error:
+     goto cleanup;
+ }
+ 
+-void
+-TDNFFreeReposInternal(
+-    PTDNF_REPO_DATA pRepos
+-    )
+-{
+-    PTDNF_REPO_DATA pRepo = NULL;
+-    while(pRepos)
+-    {
+-        pRepo = pRepos;
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszId);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszName);
+-        TDNF_SAFE_FREE_STRINGARRAY(pRepo->ppszBaseUrls);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszMetaLink);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszMirrorList);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszSnapshotUrl);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszSnapshotFile);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLCaCert);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLClientCert);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLClientKey);
+-        TDNF_SAFE_FREE_STRINGARRAY(pRepo->ppszUrlGPGKeys);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszUser);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszPass);
+-        TDNF_SAFE_FREE_MEMORY(pRepo->pszCacheName);
+-        pRepos = pRepo->pNext;
+-        TDNF_SAFE_FREE_MEMORY(pRepo);
+-    }
+-}
+-- 
+2.43.0
+

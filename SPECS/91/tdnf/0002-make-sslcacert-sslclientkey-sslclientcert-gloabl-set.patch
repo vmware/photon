@@ -1,0 +1,157 @@
+From c07ec9aefe2a4c0b50c08a166e002ab5f1eb9e72 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Thu, 21 May 2026 18:26:56 +0000
+Subject: [PATCH 2/7] make sslcacert, sslclientkey, sslclientcert gloabl
+ settings
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ client/config.c     | 15 +++++++++++++++
+ client/repolist.c   | 22 +++++++++++++++++++++-
+ common/config.h     |  9 ++++++---
+ common/utils.c      |  6 ++++++
+ include/tdnftypes.h |  3 +++
+ 5 files changed, 51 insertions(+), 4 deletions(-)
+
+diff --git a/client/config.c b/client/config.c
+index 6b52600..a51b7bc 100644
+--- a/client/config.c
++++ b/client/config.c
+@@ -177,6 +177,18 @@ TDNFConfigFromCnfTree(PTDNF_CONF pConf, struct cnfnode *cn_top)
+         {
+             pConf->nSSLVerify = isTrue(cn->value);
+         }
++        else if (strcmp(cn->name, TDNF_CONF_KEY_SSL_CA_CERT) == 0)
++        {
++            SET_STRING(pConf->pszSSLCaCert, cn->value);
++        }
++        else if (strcmp(cn->name, TDNF_CONF_KEY_SSL_CLI_CERT) == 0)
++        {
++            SET_STRING(pConf->pszSSLClientCert, cn->value);
++        }
++        else if (strcmp(cn->name, TDNF_CONF_KEY_SSL_CLI_KEY) == 0)
++        {
++            SET_STRING(pConf->pszSSLClientKey, cn->value);
++        }
+         else if (strcmp(cn->name, TDNF_CONF_KEY_KEEP_CACHE) == 0)
+         {
+             pConf->nKeepCache = isTrue(cn->value);
+@@ -604,6 +616,9 @@ TDNFFreeConfig(
+         TDNF_SAFE_FREE_MEMORY(pConf->pszRepoDir);
+         TDNF_SAFE_FREE_MEMORY(pConf->pszCacheDir);
+         TDNF_SAFE_FREE_MEMORY(pConf->pszPersistDir);
++        TDNF_SAFE_FREE_MEMORY(pConf->pszSSLCaCert);
++        TDNF_SAFE_FREE_MEMORY(pConf->pszSSLClientCert);
++        TDNF_SAFE_FREE_MEMORY(pConf->pszSSLClientKey);
+         TDNF_SAFE_FREE_STRINGARRAY(pConf->ppszDistroVerPkgs);
+         TDNF_SAFE_FREE_MEMORY(pConf->pszVarReleaseVer);
+         TDNF_SAFE_FREE_MEMORY(pConf->pszVarBaseArch);
+diff --git a/client/repolist.c b/client/repolist.c
+index d7ab274..2bca86e 100644
+--- a/client/repolist.c
++++ b/client/repolist.c
+@@ -504,7 +504,7 @@ TDNFCreateRepo(
+     uint32_t dwError = 0;
+     PTDNF_REPO_DATA pRepo = NULL;
+ 
+-    if(!pTdnf || !pTdnf->pArgs || !ppRepo || !pszId)
++    if(!pTdnf || !pTdnf->pArgs || !pTdnf->pConf || !ppRepo || !pszId)
+     {
+         dwError = ERROR_TDNF_INVALID_PARAMETER;
+         BAIL_ON_TDNF_ERROR(dwError);
+@@ -524,6 +524,21 @@ TDNFCreateRepo(
+     pRepo->nSkipIfUnavailable = TDNF_REPO_DEFAULT_SKIP;
+     pRepo->nGPGCheck = pTdnf->pConf->nGPGCheck;
+     pRepo->nSSLVerify = pTdnf->pConf->nSSLVerify;
++    if (pTdnf->pConf->pszSSLCaCert)
++    {
++        dwError = TDNFSafeAllocateString(pTdnf->pConf->pszSSLCaCert, &pRepo->pszSSLCaCert);
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++    if (pTdnf->pConf->pszSSLClientCert)
++    {
++        dwError = TDNFSafeAllocateString(pTdnf->pConf->pszSSLClientCert, &pRepo->pszSSLClientCert);
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++    if (pTdnf->pConf->pszSSLClientKey)
++    {
++        dwError = TDNFSafeAllocateString(pTdnf->pConf->pszSSLClientKey, &pRepo->pszSSLClientKey);
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
+     pRepo->lMetadataExpire = TDNF_REPO_DEFAULT_METADATA_EXPIRE;
+     pRepo->nPriority = TDNF_REPO_DEFAULT_PRIORITY;
+     pRepo->nTimeout = TDNF_REPO_DEFAULT_TIMEOUT;
+@@ -960,6 +975,11 @@ TDNFFreeReposInternal(
+         TDNF_SAFE_FREE_STRINGARRAY(pRepo->ppszBaseUrls);
+         TDNF_SAFE_FREE_MEMORY(pRepo->pszMetaLink);
+         TDNF_SAFE_FREE_MEMORY(pRepo->pszMirrorList);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSnapshotUrl);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSnapshotFile);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLCaCert);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLClientCert);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLClientKey);
+         TDNF_SAFE_FREE_STRINGARRAY(pRepo->ppszUrlGPGKeys);
+         TDNF_SAFE_FREE_MEMORY(pRepo->pszUser);
+         TDNF_SAFE_FREE_MEMORY(pRepo->pszPass);
+diff --git a/common/config.h b/common/config.h
+index 4d7cf63..56d7f10 100644
+--- a/common/config.h
++++ b/common/config.h
+@@ -48,6 +48,9 @@
+ #define TDNF_CONF_KEY_PLUGIN_PATH         "pluginpath"
+ #define TDNF_CONF_KEY_PLUGIN_CONF_PATH    "pluginconfpath"
+ #define TDNF_CONF_KEY_SSL_VERIFY          "sslverify"
++#define TDNF_CONF_KEY_SSL_CA_CERT         "sslcacert"
++#define TDNF_CONF_KEY_SSL_CLI_CERT        "sslclientcert"
++#define TDNF_CONF_KEY_SSL_CLI_KEY         "sslclientkey"
+ #define TDNF_PLUGIN_CONF_KEY_ENABLED      "enabled"
+ #define TDNF_CONF_KEY_TSFLAGS             "tsflags"
+ #define TDNF_CONF_KEY_EXCLUDE             "excludepkgs"
+@@ -78,9 +81,9 @@
+ #define TDNF_REPO_KEY_MINRATE             "minrate"
+ #define TDNF_REPO_KEY_THROTTLE            "throttle"
+ #define TDNF_REPO_KEY_SSL_VERIFY          TDNF_CONF_KEY_SSL_VERIFY
+-#define TDNF_REPO_KEY_SSL_CA_CERT         "sslcacert"
+-#define TDNF_REPO_KEY_SSL_CLI_CERT        "sslclientcert"
+-#define TDNF_REPO_KEY_SSL_CLI_KEY         "sslclientkey"
++#define TDNF_REPO_KEY_SSL_CA_CERT         TDNF_CONF_KEY_SSL_CA_CERT
++#define TDNF_REPO_KEY_SSL_CLI_CERT        TDNF_CONF_KEY_SSL_CLI_CERT
++#define TDNF_REPO_KEY_SSL_CLI_KEY         TDNF_CONF_KEY_SSL_CLI_KEY
+ #define TDNF_REPO_KEY_SKIP_MD_FILELISTS   "skip_md_filelists"
+ #define TDNF_REPO_KEY_SKIP_MD_UPDATEINFO  "skip_md_updateinfo"
+ #define TDNF_REPO_KEY_SKIP_MD_OTHER       "skip_md_other"
+diff --git a/common/utils.c b/common/utils.c
+index 08633cd..0f5ca99 100644
+--- a/common/utils.c
++++ b/common/utils.c
+@@ -441,7 +441,13 @@ TDNFFreeRepos(
+         TDNF_SAFE_FREE_MEMORY(pRepo->pszMirrorList);
+         TDNF_SAFE_FREE_MEMORY(pRepo->pszSnapshotUrl);
+         TDNF_SAFE_FREE_MEMORY(pRepo->pszSnapshotFile);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLCaCert);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLClientCert);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszSSLClientKey);
+         TDNF_SAFE_FREE_STRINGARRAY(pRepo->ppszUrlGPGKeys);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszUser);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszPass);
++        TDNF_SAFE_FREE_MEMORY(pRepo->pszCacheName);
+ 
+         pRepos = pRepo->pNext;
+         TDNF_SAFE_FREE_MEMORY(pRepo);
+diff --git a/include/tdnftypes.h b/include/tdnftypes.h
+index c82aacf..231d618 100644
+--- a/include/tdnftypes.h
++++ b/include/tdnftypes.h
+@@ -259,6 +259,9 @@ typedef struct _TDNF_CONF
+     int nGPGCheck;
+     int nCliGPGCheck;
+     int nSSLVerify;
++    char* pszSSLCaCert;
++    char* pszSSLClientCert;
++    char* pszSSLClientKey;
+     int nInstallOnlyLimit;
+     int nCleanRequirementsOnRemove;
+     int nKeepCache;
+-- 
+2.43.0
+

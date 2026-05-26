@@ -7,7 +7,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.6.5
-Release:        0.1%{?buildtag}%{?dist}
+Release:        1.1%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -22,6 +22,12 @@ Source1:        license.txt
 Source2: tdnf.conf
 
 Patch0: 0001-do-not-nuke-RPMBUILD_DIR-in-pytests-since-it-can-be-.patch
+Patch1: 0002-make-sslcacert-sslclientkey-sslclientcert-gloabl-set.patch
+Patch2: 0003-remove-redundant-TDNFFreeReposInternal.patch
+Patch3: 0004-use-SSL_CERT_FILE-environment-variable.patch
+Patch4: 0005-add-a-test-for-sslcacert-settings-and-SSL_CERT_FILE.patch
+Patch5: 0006-check-use-solver_findallproblemrules.patch
+Patch6: 0007-add-a-test-for-detailed-solver-problem-reports.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -252,6 +258,9 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Tue May 26 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.5-1.1
+- improve solver problem reporting
+- global SSL settings, and use SSL_CERT_FILE env
 * Tue May 19 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.5-0.1
 - update to 3.6.5
 * Fri May 15 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.4-1.2

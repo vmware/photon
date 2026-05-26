@@ -1,0 +1,160 @@
+From 7b73fe23c1c4fadc0c9453de85f9879465d57ec6 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <oliver.kurth@broadcom.com>
+Date: Fri, 22 May 2026 18:31:09 +0000
+Subject: [PATCH 6/7] check: use solver_findallproblemrules
+
+Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
+---
+ client/api.c       |  2 +-
+ client/goal.c      |  2 +-
+ solv/prototypes.h  |  3 +-
+ solv/tdnfpackage.c | 69 ++++++++++++++++++++++++++++++++++++++--------
+ 4 files changed, 61 insertions(+), 15 deletions(-)
+
+diff --git a/client/api.c b/client/api.c
+index 833d35a..0ae08bb 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -290,7 +290,7 @@ TDNFCheckLocalPackages(
+         dwError = TDNFGetSkipProblemOption(pTdnf, &dwSkipProblem);
+         BAIL_ON_TDNF_ERROR(dwError);
+ 
+-        dwError = SolvReportProblems(pTdnf->pSack, pSolv, dwSkipProblem);
++        dwError = SolvReportProblems(pTdnf->pSack, pSolv, dwSkipProblem, pTdnf->pArgs->nVerbose);
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+diff --git a/client/goal.c b/client/goal.c
+index 87199b6..f134c6f 100644
+--- a/client/goal.c
++++ b/client/goal.c
+@@ -380,7 +380,7 @@ TDNFSolv(
+         {
+             dwError = TDNFGetSkipProblemOption(pTdnf, &dwSkipProblem);
+             BAIL_ON_TDNF_ERROR(dwError);
+-            dwError = SolvReportProblems(pTdnf->pSack, pSolv, dwSkipProblem);
++            dwError = SolvReportProblems(pTdnf->pSack, pSolv, dwSkipProblem, pTdnf->pArgs->nVerbose);
+             BAIL_ON_TDNF_ERROR(dwError);
+         }
+ 
+diff --git a/solv/prototypes.h b/solv/prototypes.h
+index a5ecbab..73ae08e 100644
+--- a/solv/prototypes.h
++++ b/solv/prototypes.h
+@@ -570,7 +570,8 @@ uint32_t
+ SolvReportProblems(
+     PSolvSack pSack,
+     Solver* pSolv,
+-    TDNF_SKIPPROBLEM_TYPE dwSkipProblem
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem,
++    int nVerbose
+     );
+ 
+ uint32_t
+diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
+index 9398529..88c30d0 100644
+--- a/solv/tdnfpackage.c
++++ b/solv/tdnfpackage.c
+@@ -1912,7 +1912,8 @@ uint32_t
+ SolvReportProblems(
+     PSolvSack pSack,
+     Solver* pSolv,
+-    TDNF_SKIPPROBLEM_TYPE dwSkipProblem
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem,
++    int nVerbose
+     )
+ {
+     int nCount = 0;
+@@ -1932,20 +1933,17 @@ SolvReportProblems(
+     nCount = solver_problem_count(pSolv);
+     for ( ; nCount > 0; nCount--)
+     {
+-        const char *pszProblem = NULL;
+-
+         Id dwProblemId = solver_findproblemrule(pSolv, nCount);
++        const char *pszProblem = NULL;
+ 
+-        type = solver_ruleinfo(pSolv, dwProblemId,
+-                               &dwSource, &dwTarget, &dwDep);
++        type = solver_ruleinfo(pSolv, dwProblemId, &dwSource, &dwTarget, &dwDep);
+ 
+-       if (SkipBasedOnType(pSolv, type, dwSource, dwSkipProblem))
+-       {
+-           continue;
+-       }
++        if (SkipBasedOnType(pSolv, type, dwSource, dwSkipProblem))
++        {
++            continue;
++        }
+ 
+-        pszProblem = solver_problemruleinfo2str(pSolv, type, dwSource,
+-                                                dwTarget, dwDep);
++        pszProblem = solver_problemruleinfo2str(pSolv, type, dwSource, dwTarget, dwDep);
+ 
+         if (dwSkipProblem != SKIPPROBLEM_NONE &&
+             type == SOLVER_RULE_PKG_REQUIRES)
+@@ -1956,13 +1954,60 @@ SolvReportProblems(
+             }
+         }
+ 
++        total_prblms++;
+         dwError = ERROR_TDNF_SOLV_FAILED;
+-        pr_err("%u. %s\n", ++total_prblms, pszProblem);
++
++        if (nVerbose)
++        {
++            Queue rids;
++            queue_init(&rids);
++
++            solver_findallproblemrules(pSolv, nCount, &rids);
++
++            pr_err("Problem %u:\n", total_prblms);
++
++            for (int j = 0; j < rids.count; j++)
++            {
++                const char *pszSubProblem = NULL;
++                Id probr = rids.elements[j];
++                type = solver_ruleinfo(pSolv, probr, &dwSource, &dwTarget, &dwDep);
++
++                if (type == SOLVER_RULE_JOB)
++                {
++                    pszSubProblem = pool_tmpjoin(pSolv->pool, "job ", pool_job2str(pSolv->pool, dwTarget, dwDep, 0), " conflicts with other jobs");
++                }
++                else
++                {
++                    pszSubProblem = solver_problemruleinfo2str(pSolv, type, dwSource, dwTarget, dwDep);
++                }
++
++                if (dwSkipProblem != SKIPPROBLEM_NONE &&
++                    type == SOLVER_RULE_PKG_REQUIRES)
++                {
++                    if (!check_for_providers(pSack, type, pszSubProblem, prv_pkgname))
++                    {
++                        continue;
++                    }
++                }
++
++                pr_err("  - %s\n", pszSubProblem);
++            }
++
++            queue_free(&rids);
++        }
++        else
++        {
++            pr_err("%u. %s\n", total_prblms, pszProblem);
++        }
+     }
+ 
+     if (dwError)
+     {
+         pr_err("Found %u problem(s) while resolving\n", total_prblms);
++        if (!nVerbose)
++        {
++            pr_err("Please retry with --verbose to see detailed solver rules\n");
++        }
+     }
+ 
+     return dwError;
+-- 
+2.43.0
+
