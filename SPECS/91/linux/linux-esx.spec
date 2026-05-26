@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.174
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -394,6 +394,16 @@ Patch238: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
 Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
 # Fix CVE-2026-31685
 Patch241: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-a.patch
+# Fix CVE-2026-23447
+Patch242: 0001-net-usb-cdc_ncm-add-ndpoffset-to-NDP32-nframes-bound.patch
+# Fix CVE-2026-31613
+Patch243: 0001-smb-client-fix-OOB-reads-parsing-symlink-error-respo.patch
+# Fix CVE-2026-31648
+Patch244: 0001-mm-filemap-fix-nr_pages-calculation-overflow-in-file.patch
+# Prerequisite for CVE-2026-31663
+Patch245: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch
+# Fix CVE-2026-31663
+Patch246: 0001-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
 
 # aarch64 [250..260]
 %ifarch aarch64
@@ -766,6 +776,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue May 26 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.174-2
+- Fix CVE-2026-23447, CVE-2026-31613, CVE-2026-31663, CVE-2026-31648
 * Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-1
 - Update to version 6.1.174
 * Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.172-4

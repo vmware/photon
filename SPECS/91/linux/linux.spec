@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.174
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -429,6 +429,16 @@ Patch241: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
 Patch242: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
 # Fix CVE-2026-31685
 Patch243: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-a.patch
+# Fix CVE-2026-23447
+Patch244: 0001-net-usb-cdc_ncm-add-ndpoffset-to-NDP32-nframes-bound.patch
+# Fix CVE-2026-31613
+Patch245: 0001-smb-client-fix-OOB-reads-parsing-symlink-error-respo.patch
+# Fix CVE-2026-31648
+Patch246: 0001-mm-filemap-fix-nr_pages-calculation-overflow-in-file.patch
+# Prerequisite for CVE-2026-31663
+Patch247: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch
+# Fix CVE-2026-31663
+Patch248: 0001-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1072,6 +1082,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue May 26 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.174-2
+- Fix CVE-2026-23447, CVE-2026-31613, CVE-2026-31648, CVE-2026-31663
 * Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-1
 - Update to version 6.1.174
 * Tue May 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.172-3
