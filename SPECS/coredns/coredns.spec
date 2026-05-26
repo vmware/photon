@@ -2,8 +2,8 @@
 
 Summary:        CoreDNS
 Name:           coredns
-Version:        1.11.1
-Release:        11%{?dist}
+Version:        1.14.3
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -11,12 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512  %{name}=f8752811e9e7913311f47ae13f35c755ac86ea240572be1c1dabc1712b6c42380c60ac385fa9573c77d6fcf4c144df2bc00574f18e8d7b70da21ed8ae4fb87cd
-
-Patch0:         coredns-CVE-2025-47950.patch
-Patch1:         coredns-CVE-2025-58063.patch
-Patch2:         coredns-CVE-2026-26017.patch
-Patch3:         coredns-CVE-2026-26018.patch
+%define sha512  %{name}=39b87ff29460e8eb2fd9db53ae6fe19d7b7c99da0a7cfc9e93b22d93c2c53c5cfd2bb493610901a6cfae578430d1fc215b9c9d70e95cc31f0c4084b618e60864
 
 BuildRequires: go
 BuildRequires: git
@@ -41,6 +36,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue May 26 2026 Dweep Advani <dweep.advani@broadcom.com> 1.14.3-1
+- Upgrade to 1.14.3 to fix CVE-2026-32934/2936/3190/3489
 * Fri Mar 13 2026 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-11
 - Fix CVE-2026-26017 and CVE-2026-26018
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-10
