@@ -1,15 +1,14 @@
 sources:
-- archive: calico-3.32.0.tar.gz
+- archive: calico-3.31.0.tar.gz
   archive_type: upstream
-  archive_sha512sum: 5d2c67af4646d394a7728f323dfeb56ada92969e5e118958310021097bb1a7563c45b4c725dc22108ea6e38654f78e8f11f0cc622d72f8023863504279b41690
-  version: 3.32.0
-  name: calico-3.32.0
-  url: https://github.com/projectcalico/calico/archive/refs/tags/v3.32.0.tar.gz
+  archive_sha512sum: 99ee9245ca07e2827f2f69dbec5cf60c3445fa157aab7732310b9cdd7ee7f0c7c112259421f88eb581126170d260a4100f7751e6dc1734c4ec0d6d2e098a16ab
+  version: 3.31.0
+  name: calico-3.31.0
+  url: https://github.com/projectcalico/calico/archive/refs/tags/v3.31.0.tar.gz
   repo_url: https://github.com/projectcalico/calico
-  commit_id: eb1cf57823a1dd8d25c48b82fd023ea9e3e17996
+  commit_id: b1f3c43f84370504e218eb5be8a34c81348f866a
   skip_list: []
   missing: []
-  skip_validation: false
   spdx:
     package:
       detailed_description: 'Calico node is a container that bundles together various

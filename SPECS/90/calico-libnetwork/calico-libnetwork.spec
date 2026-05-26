@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define debug_package   %{nil}
 %define src_name        libnetwork-plugin
@@ -10,7 +10,7 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.3
-Release:       27%{?dist}
+Release:       26.1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -87,8 +87,8 @@ rm -rf %{buildroot}
 %{_datadir}/calico/docker/%{src_name}
 
 %changelog
-* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-27
-- Rebuild for go 1.26.3
+* Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-26.1
+- Maintain for photon_subrelease <= 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.3-26
 - Bump version as a part of go upgrade
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.1.3-25

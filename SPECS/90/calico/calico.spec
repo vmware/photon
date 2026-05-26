@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define network_required 1
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.32.0
-Release:        1%{?dist}
+Version:        3.31.0
+Release:        2.1%{?dist}
 URL:            https://github.com/projectcalico/calico
 Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -140,8 +140,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
-* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.32.0-1
-- Update calico to 3.32.0
+* Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.31.0-2.1
+- Maintain for photon_subrelease <= 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.31.0-2
 - Bump version as a part of go upgrade
 * Wed Oct 22 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.31.0-1
