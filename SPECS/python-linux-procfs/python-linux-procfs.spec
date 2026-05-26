@@ -6,7 +6,7 @@
 
 Name:           python3-linux-procfs
 Version:        0.7.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -22,7 +22,6 @@ Source1: license.txt
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-BuildRequires: python3-defusedxml
 
 %if 0%{?with_check}
 BuildRequires: python3-six
@@ -55,6 +54,8 @@ LANG=en_US.UTF-8 python3 bitmasklist_test.py
 %license COPYING
 
 %changelog
+* Mon May 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.7.0-5
+- Remove deprecated python3-defusedxml from BuildRequires
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.7.0-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.0-3

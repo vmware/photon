@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        14%{?dist}
+Release:        15%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,7 +29,6 @@ BuildRequires: python3-devel
 BuildRequires: libarchive
 BuildRequires: libarchive-devel
 BuildRequires: Linux-PAM-devel
-BuildRequires: python3-defusedxml
 BuildRequires: libxslt-devel
 BuildRequires: docbook-xsl
 BuildRequires: docbook-xml
@@ -51,10 +50,10 @@ BuildRequires: bison
 BuildRequires: perl-JSON
 BuildRequires: zlib-devel
 BuildRequires: ncurses-devel
+BuildRequires: python3-xml
 
 Requires: %{name}-libs = %{version}-%{release}
 Requires: libtirpc
-Requires: python3
 Requires: libarchive
 Requires: Linux-PAM
 Requires: libxslt
@@ -464,6 +463,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Wed May 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.3-15
+- Remove deprecated python3-defusedxml from BuildRequires
 * Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.19.3-14
 - Remove runtime depedency of perl-Parse-Yapp
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-13

@@ -2,7 +2,7 @@
 
 Name:           tuned
 Version:        2.21.0
-Release:        5.1%{?dist}
+Release:        5.2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
@@ -36,7 +36,6 @@ Requires:       python3-pyudev
 Requires:       python3-linux-procfs
 Requires:       python3-pygobject
 Requires:       python3-schedutils
-Requires:       python3-ethtool
 Requires:       linux-python3-perf
 Requires:       irqbalance
 Requires:       systemd
@@ -167,6 +166,8 @@ fi
 %{_datadir}/doc
 
 %changelog
+* Thu May 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.21.0-5.2
+- Drop requirement on python3-ethtool
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.21.0-5.1
 - Bump after moving to SPECS/91
 * Wed Jan 07 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.21.0-5
