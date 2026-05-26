@@ -1,0 +1,19 @@
+sources:
+- archive: passlib-1.9.3.tar.gz
+  archive_sha512sum: 79619d8829a232a78cbf48af0a1ec5c253d97ff92f4c64f2315fc56607e9074a20d0edbb071a33102f14dbf93d8f2bedc871dccc9e18ca7fec6925e8269e92c4
+  archive_type: upstream
+  repo_url: https://github.com/notypecheck/passlib
+  commit_id: 5f40be746486046748a05c4102a87f12a01ff4b4
+  name: passlib-1.9.3
+  version: 1.9.3
+  url: https://github.com/notypecheck/passlib/archive/refs/tags/1.9.3.tar.gz
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Passlib is a password hashing library for Python'
+      home_page: https://foss.heptapod.net/python-libs/passlib
+      license_concluded: BSD-3-Clause AND Beerware AND UnixCrypt AND ISC
+      license_declared: BSD-3-Clause AND Beerware AND UnixCrypt AND ISC
+      short_summary: Passlib is a password hashing library for Python
+      supplier: 'Organization: Broadcom, Inc.'

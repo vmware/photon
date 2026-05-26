@@ -1,0 +1,25 @@
+From f551932036860dc07ae9bd151d7a7f0fb43e40f8 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 24 Mar 2026 19:53:12 +0530
+Subject: [PATCH] Removed unsupported versions to make hatchling happy
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ pyproject.toml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 34f7b43..d6477f7 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -43,7 +43,6 @@ classifiers = [
+     "Programming Language :: Python :: 3.10",
+     "Programming Language :: Python :: 3.11",
+     "Programming Language :: Python :: 3.12",
+-    "Programming Language :: Python :: 3.13",
+     "Programming Language :: Python :: Implementation :: CPython",
+     "Topic :: Security :: Cryptography",
+     "Topic :: Software Development :: Libraries",
+-- 
+2.53.0
+
