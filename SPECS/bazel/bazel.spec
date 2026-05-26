@@ -5,8 +5,8 @@
 
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
-Version:        5.3.2
-Release:        10%{?dist}
+Version:        9.0.1
+Release:        1%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +17,7 @@ Source0: https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires:  openjdk11
+BuildRequires:  openjdk21
 BuildRequires:  zlib-devel
 BuildRequires:  which
 BuildRequires:  findutils
@@ -28,7 +28,7 @@ BuildRequires:  unzip
 BuildRequires:  gcc
 BuildRequires:  python3
 
-Requires: (openjdk11 or openjdk17 or openjdk21 or openjdk25)
+Requires: (openjdk21 or openjdk25)
 
 %description
 Bazel is Google's own build tool, now publicly available in Beta. Bazel has
@@ -63,6 +63,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.1-1
+- Upgrade to 9.0.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.3.2-10
 - Extended to build for subrelease 91 and above
 * Mon Apr 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.3.2-9

@@ -1,7 +1,20 @@
 sources:
-- archive: bazel-5.3.2-dist.zip
-  archive_sha512sum: a63895c224d51619cf83e6e55872aa6d55d17c7dcea59eaf467069d2c95259f5964fbf8fa5994df0e3c030234a7adf70a2715edb4edbbe2bf69d21dd698c0833
+- archive: bazel-9.0.1-dist.zip
+  archive_sha512sum: 744bdb33ce3966444e432c2ca699ded022567bc222f2476d9ebbf96f53fc4f919ba9062b23e19d5df0a0d6b56f58c7637ff65b036244abacccdb423a9650a527
   skip_validation: true
+  name: bazel-9.0.1-dist
+  version: 9.0.1
+  url: https://github.com/bazelbuild/bazel/releases/download/9.0.1/bazel-9.0.1-dist.zip
+  repo_url: https://github.com/bazelbuild/bazel
+  commit_id: 43f23b4349195333b97bef77cc62c2ea4ffd8e91
+  skip_list: []
+  missing: []
+  license_manual_review:
+  - file_paths:
+    - bazel-9.0.1/derived/repository_cache/content_addressable/sha256/9d7739f5a9157bfaf0a7ed1916337192f37ecca98ec7a58c878fb03baf3e3354/file-extract/googleapis-de157ca34fa487ce248eb9130293d630b501e4ad/google/cloud/securesourcemanager/v1/secure_source_manager.proto
+    sha256sum: 7b36b16481e8035afef64a622db0d157950d28800613b4336605fcb5cb262bea
+    spdx_exp: ''
+    # false positive, it does not indicate the licenses.
   spdx:
     package:
       detailed_description: 'Bazel is Google''s own build tool, now publicly available
@@ -10,42 +23,8 @@ sources:
         provides an extensible framework that you can use to develop your own build
         rules. '
       home_page: http://bazel.build/
-      license_concluded: (Apache-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later
-        OR MIT) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSD-3-Clause OR GPL-2.0-only)
-        AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1
-        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1 OR GPL-2.0-only
-        WITH Classpath-exception-2.0) AND (EPL-1.0 OR GPL-2.0-only) AND (GPL-2.0-only
-        OR MIT) AND (GPL-3.0-only OR MIT) AND (LGPL-3.0-or-later OR Ruby) AND APSL-2.0
-        AND Apache-1.1 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause
-        AND BSD-3-Clause AND BSL-1.0 AND CC-BY-2.5 AND CC-BY-SA-3.0 AND CC-PDDC AND
-        CC0-1.0 AND CDDL-1.1 AND CPL-1.0 AND EPL-1.0 AND EPL-2.0 AND FSFAP AND GPL-1.0-or-later
-        AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH GNAT-exception AND GPL-3.0-only AND GPL-3.0-or-later
-        WITH Autoconf-exception-macro AND HPND AND HPND-export2-US AND HPND-sell-variant
-        AND ICU AND IJG AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
-        AND LGPL-3.0-only AND LPD-document AND Libpng AND MIT AND MIT-open-group AND
-        MPL-1.1 AND MPL-2.0 AND NTP AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone
-        AND Python-2.0 AND RSA-MD AND SAX-PD AND SMLNJ AND SSLeay-standalone AND Unicode-3.0
-        AND Unicode-TOU AND W3C AND W3C-19980720 AND X11 AND XFree86-1.1 AND Zlib
-        AND dtoa
-      license_declared: (Apache-2.0 OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-1.0-or-later
-        OR MIT) AND (BSD-3-Clause OR GPL-2.0-only OR MIT) AND (BSD-3-Clause OR GPL-2.0-only)
-        AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1
-        OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.1 OR GPL-2.0-only
-        WITH Classpath-exception-2.0) AND (EPL-1.0 OR GPL-2.0-only) AND (GPL-2.0-only
-        OR MIT) AND (GPL-3.0-only OR MIT) AND (LGPL-3.0-or-later OR Ruby) AND APSL-2.0
-        AND Apache-1.1 AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause
-        AND BSD-3-Clause AND BSL-1.0 AND CC-BY-2.5 AND CC-BY-SA-3.0 AND CC-PDDC AND
-        CC0-1.0 AND CDDL-1.1 AND CPL-1.0 AND EPL-1.0 AND EPL-2.0 AND FSFAP AND GPL-1.0-or-later
-        AND GPL-2.0-only AND GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-or-later
-        AND GPL-2.0-or-later WITH GNAT-exception AND GPL-3.0-only AND GPL-3.0-or-later
-        WITH Autoconf-exception-macro AND HPND AND HPND-export2-US AND HPND-sell-variant
-        AND ICU AND IJG AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later
-        AND LGPL-3.0-only AND LPD-document AND Libpng AND MIT AND MIT-open-group AND
-        MPL-1.1 AND MPL-2.0 AND NTP AND OFL-1.1 AND OpenSSL AND OpenSSL-standalone
-        AND Python-2.0 AND RSA-MD AND SAX-PD AND SMLNJ AND SSLeay-standalone AND Unicode-3.0
-        AND Unicode-TOU AND W3C AND W3C-19980720 AND X11 AND XFree86-1.1 AND Zlib
-        AND dtoa
+      license_concluded: (Apache-2.0 OR MIT) AND (BSD-3-Clause OR GPL-1.0-or-later OR MIT) AND (BSD-3-Clause OR GPL-2.0-only) AND (CC0-1.0 OR MIT) AND (CDDL-1.0 OR GPL-2.0-only) AND (CDDL-1.1 OR GPL-2.0-only) AND (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR MIT) AND APSL-2.0 AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC-BY-3.0 AND CC-BY-4.0 AND CC0-1.0 AND CDDL-1.0 AND ECL-2.0 AND EPL-1.0 AND EPL-2.0 AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND ICU AND ISC AND JSON AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND LPD-document AND MIT AND MPL-2.0 AND Minpack AND NTP AND OpenSSL AND OpenSSL-standalone AND Python-2.0 AND RSA-MD AND Ruby AND SAX-PD AND SSLeay-standalone AND Unlicense AND W3C AND W3C-19980720 AND X11 AND Zlib AND dtoa
+      license_declared: (Apache-2.0 OR MIT) AND (BSD-3-Clause OR GPL-1.0-or-later OR MIT) AND (BSD-3-Clause OR GPL-2.0-only) AND (CC0-1.0 OR MIT) AND (CDDL-1.0 OR GPL-2.0-only) AND (CDDL-1.1 OR GPL-2.0-only) AND (GPL-1.0-or-later OR MIT) AND (GPL-2.0-only OR MIT) AND APSL-2.0 AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC-BY-3.0 AND CC-BY-4.0 AND CC0-1.0 AND CDDL-1.0 AND ECL-2.0 AND EPL-1.0 AND EPL-2.0 AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND ICU AND ISC AND JSON AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND LPD-document AND MIT AND MPL-2.0 AND Minpack AND NTP AND OpenSSL AND OpenSSL-standalone AND Python-2.0 AND RSA-MD AND Ruby AND SAX-PD AND SSLeay-standalone AND Unlicense AND W3C AND W3C-19980720 AND X11 AND Zlib AND dtoa
       short_summary: Build software of any size, quickly and reliably, just as engineers
         do at Google.
       supplier: 'Organization: Broadcom, Inc.'
