@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} <=90
+%global build_if %{photon_subrelease} <= 90
 %global debug_package %{nil}
 
 Summary:        Pretty stack trace printer for C++.

@@ -1,0 +1,93 @@
+From 61b6e09e46a3621e8d6caf5992e48acb72ea32c8 Mon Sep 17 00:00:00 2001
+From: Quentin Armitage <quentin@armitage.org.uk>
+Date: Fri, 12 Jul 2024 15:32:35 +0100
+Subject: [PATCH 4/5] vrrp and ipvs: handle empty nftables chain names
+
+We now return an error if a chain name is empty.
+
+Signed-off-by: Quentin Armitage <quentin@armitage.org.uk>
+---
+ keepalived/core/global_parser.c | 25 +++++++++++++++----------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
+
+diff --git a/keepalived/core/global_parser.c b/keepalived/core/global_parser.c
+index cd83ddd..e3a8c5e 100644
+--- a/keepalived/core/global_parser.c
++++ b/keepalived/core/global_parser.c
+@@ -1050,9 +1050,10 @@ vrrp_higher_prio_send_advert_handler(const vector_t *strvec)
+ 	else
+ 		global_data->vrrp_higher_prio_send_advert = true;
+ }
+-#ifdef _WITH_IPTABLES_
++
++#if defined _WITH_IPTABLES_ || defined _WITH_NFTABLES_
+ static bool
+-check_valid_iptables_ipset_name(const vector_t *strvec, unsigned entry, unsigned max_len, const char *type_name, const char *log_name)
++check_valid_iptables_ipset_nftables_name(const vector_t *strvec, unsigned entry, unsigned max_len, const char *type_name, const char *log_name)
+ {
+ 	if (strlen(strvec_slot(strvec, entry)) >= max_len - 1) {
+ 		report_config_error(CONFIG_GENERAL_ERROR, "VRRP Error : %s %s name too long - ignored", type_name, log_name);
+@@ -1066,11 +1067,13 @@ check_valid_iptables_ipset_name(const vector_t *strvec, unsigned entry, unsigned
+ 
+ 	return true;
+ }
++#endif
+ 
++#ifdef _WITH_IPTABLES_
+ static bool
+ check_valid_iptables_chain_name(const vector_t *strvec, unsigned entry, const char *log_name)
+ {
+-	return check_valid_iptables_ipset_name(strvec, entry, XT_EXTENSION_MAXNAMELEN, "iptables", log_name);
++	return check_valid_iptables_ipset_nftables_name(strvec, entry, XT_EXTENSION_MAXNAMELEN, "iptables", log_name);
+ }
+ 
+ static void
+@@ -1099,7 +1102,7 @@ vrrp_iptables_handler(const vector_t *strvec)
+ static bool
+ check_valid_ipset_name(const vector_t *strvec, unsigned entry, const char *log_name)
+ {
+-	return check_valid_iptables_ipset_name(strvec, entry, IPSET_MAXNAMELEN, "ipset", log_name);
++	return check_valid_iptables_ipset_nftables_name(strvec, entry, IPSET_MAXNAMELEN, "ipset", log_name);
+ }
+ 
+ static void
+@@ -1203,6 +1206,12 @@ vrrp_iptables_handler(__attribute__((unused)) const vector_t *strvec)
+ 
+ #ifdef _WITH_NFTABLES_
+ #ifdef _WITH_VRRP_
++static bool
++check_valid_nftables_chain_name(const vector_t *strvec, unsigned entry, const char *log_name)
++{
++	return check_valid_iptables_ipset_nftables_name(strvec, entry, NFT_TABLE_MAXNAMELEN, "nftables", log_name);
++}
++
+ static void
+ vrrp_nftables_handler(__attribute__((unused)) const vector_t *strvec)
+ {
+@@ -1214,10 +1223,8 @@ vrrp_nftables_handler(__attribute__((unused)) const vector_t *strvec)
+ 	}
+ 
+ 	if (vector_size(strvec) >= 2) {
+-		if (strlen(strvec_slot(strvec, 1)) >= NFT_TABLE_MAXNAMELEN) {
+-			report_config_error(CONFIG_GENERAL_ERROR, "nftables table name too long - ignoring");
++		if (!check_valid_nftables_chain_name(strvec, 1, "chain"))
+ 			return;
+-		}
+ 		name = strvec_slot(strvec, 1);
+ 	}
+ 	else {
+@@ -1257,10 +1264,8 @@ ipvs_nftables_handler(__attribute__((unused)) const vector_t *strvec)
+ 	}
+ 
+ 	if (vector_size(strvec) >= 2) {
+-		if (strlen(strvec_slot(strvec, 1)) >= NFT_TABLE_MAXNAMELEN) {
+-			report_config_error(CONFIG_GENERAL_ERROR, "ipvs nftables table name too long - ignoring");
++		if (!check_valid_nftables_chain_name(strvec, 1, "ipvs chain"))
+ 			return;
+-		}
+ 		name = strvec_slot(strvec, 1);
+ 	}
+ 	else {
+-- 
+2.39.4
+

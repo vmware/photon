@@ -1,0 +1,104 @@
+sources:
+- archive: monitoring-plugins-2.3.5.tar.gz
+  archive_sha512sum: 7b24027003b7f46bef4a55f216b3cf20998385f3f91ecba7959f254748cac6d884012b7423087ba9f34fec2ceb9ffc1748e62f004befcc75953887cf4cb76df7
+  archive_type: upstream
+  name: monitoring-plugins-2.3.5
+  url: https://github.com/monitoring-plugins/monitoring-plugins/archive/refs/tags/v2.3.5.tar.gz
+  repo_url: https://github.com/monitoring-plugins/monitoring-plugins
+  commit_id: 70e55c0a7a833365670113e6bef03d43377e8f6b
+  skip_list: []
+  missing: []
+  skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_dig.c
+    sha256sum: e93faa929c07d53632b32c03f91f9e5b4110d91660c2013abb434e44f82d93da
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_snmp.c
+    sha256sum: 683a25b93443b843acc4fbf0f354fdb84666d992d84d10fdd3bdfdb3c4140884
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/negate.c
+    sha256sum: 8d08658feef203141434368b2c751431195acbc26fadf69b77e81ea149be55dc
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_game.c
+    sha256sum: 382e1021cdd68fcc432ea3cbd250727a3da71c1c0bafe1e0a2707b11e05c1d9e
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_ntp.c
+    sha256sum: 2326678df3f4cd08e78894d12201a6b8009b833f4204984e86fe06e1d92ea1f2
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_apt.c
+    sha256sum: f0545ba9e2577bdca992e24f49d178be3336c8f55898154770c476cb3a775bbf
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_hpjd.c
+    sha256sum: 0145467b886cb4c0a8a3493a8311c86266c78f05785d41890e5461ec70670046
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/lib/extra_opts.c
+    sha256sum: 410fbc43a24c3899d85500c10e2a860ab3b96e26d184fb5a05ac8839d13dd441
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_dummy.c
+    sha256sum: 6d80e1eccf1a4903d7dd43823a067d94ca1821eca01fdc429d270ca4fbcf250a
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/sslutils.c
+    sha256sum: b701132864995a7aa151999c02d41936a717da98f954a4df8a318fc6705b22d6
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_mrtgtraf.c
+    sha256sum: 9a0805560913e62a9cf2a3ebc4d30088209c9051e3304bf61105261311cd08f8
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/lib/utils_tcp.c
+    sha256sum: 89d980d68705e5fc3b543542e77495744aa74759c2de0d02778ac97ddd860c9b
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_mrtg.c
+    sha256sum: 0c3748e6bbfe5dca8c9b1218bbe3f131ebe4b9c7ec0086ebc8349b75ab6fbe2d
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_ide_smart.c
+    sha256sum: 43a9787145e6fd45dac8202f4a3e354cfc2a06349a7ed3650cb83131607adc12
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/plugins/check_ssh.c
+    sha256sum: 288ac3b303f3cf7569aef4285409ee2a18e35059d0455695a35724a71175df0e
+    spdx_exp: GPL-3.0-or-later
+  - file_paths:
+    - monitoring-plugins-2.3.5/perlmods/Monitoring-Plugin-0.39.tar.gz-extract/Monitoring-Plugin-0.39/inc/Module/Install/Metadata.pm
+    sha256sum: 979c6acd2c82d6538757add26474b65c0e80a6dc764cec431a75c989639ec07a
+    spdx_exp: ''
+  spdx:
+    package:
+      detailed_description: 'Monitoring plugins maintains a bundle of more than 50
+        standard plugins. Typically, the monitoring software runs these plugins to
+        determine the current status of hosts and services on your network. Each plugin
+        is a stand alone command line tool that provides a specific type to check. '
+      home_page: https://github.com/monitoring-plugins
+      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND AGPL-3.0-or-later
+        AND Apache-1.1 AND Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0
+        AND BSD-2-Clause AND BSD-3-Clause AND FSFUL AND FSFULLR AND GFDL-1.1-or-later
+        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH
+        Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND MPL-1.0 AND
+        MPL-1.1 AND OpenSSL AND TMate AND Zlib AND curl
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND AGPL-3.0-or-later
+        AND Apache-1.1 AND Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0
+        AND BSD-2-Clause AND BSD-3-Clause AND FSFUL AND FSFULLR AND GFDL-1.1-or-later
+        AND GPL-1.0-only AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-only WITH
+        Linux-syscall-note AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic
+        AND ISC AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND MPL-1.0 AND
+        MPL-1.1 AND OpenSSL AND TMate AND Zlib AND curl
+      short_summary: Monitoring plugins are used to monitor status of hosts and services
+        on the network
+      supplier: 'Organization: Broadcom, Inc.'

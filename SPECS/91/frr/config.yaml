@@ -1,0 +1,46 @@
+sources:
+- archive: frr-10.5.0.tar.gz
+  archive_type: upstream
+  archive_sha512sum: b44367c966e7f8337056b269dab301c91db99f954c47b48997443570b210870f87113ca04e84de4483c9a79845d0b8dec1a311b0d22696f542301084bdadc2e8
+  name: frr-frr-10.5.0
+  version: 10.5.0
+  url: https://github.com/FRRouting/frr/archive/refs/tags/frr-10.5.0.tar.gz
+  repo_url: https://github.com/FRRouting/frr
+  commit_id: c41ba202c3f821a43091781181c73772501034ae
+  skip_list:
+  - RCS
+  - CVS
+  - tags
+  - .git
+  - .hg
+  - .bzr
+  - _darcs
+  - __pycache__
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'FRRouting is free software that manages TCP/IP based
+        routing protocols. It takes a multi-server and multi-threaded approach to
+        resolve the current complexity of the Internet.  FRRouting supports BGP4,
+        OSPFv2, OSPFv3, ISIS, RIP, RIPng, PIM, NHRP, PBR, EIGRP and BFD.  FRRouting
+        is a fork of Quagga. '
+      home_page: https://frrouting.org
+      license_concluded: (ISC OR GPL-2.0-or-later) AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND BSD-3-Clause-Clear AND GPL-3.0-only AND Latex2e-translated-notice AND
+        GPL-3.0-or-later AND Latex2e AND MIT AND LGPL-2.1-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only WITH Linux-syscall-note AND
+        BSD-2-Clause AND Unlicense AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later AND ISC
+        AND GPL-2.0-only AND GPL-1.0-or-later AND LGPL-2.1-only AND FSFAP AND Apache-2.0
+      license_declared: (ISC OR GPL-2.0-or-later) AND GPL-3.0-or-later WITH Autoconf-exception-macro
+        AND BSD-3-Clause-Clear AND GPL-3.0-only AND Latex2e-translated-notice AND
+        GPL-3.0-or-later AND Latex2e AND MIT AND LGPL-2.1-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-2.0-only WITH Linux-syscall-note AND
+        BSD-2-Clause AND Unlicense AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-2.0
+        AND GPL-2.0-or-later WITH Linux-syscall-note AND GPL-2.0-or-later AND ISC
+        AND GPL-2.0-only AND GPL-1.0-or-later AND LGPL-2.1-only AND FSFAP AND Apache-2.0
+      short_summary: Internet Routing Protocol
+      supplier: 'Organization: Broadcom, Inc.'
+
+
+

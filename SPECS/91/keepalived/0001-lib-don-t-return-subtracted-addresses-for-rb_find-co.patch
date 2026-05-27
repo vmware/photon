@@ -1,0 +1,32 @@
+From b27ad52cc02a1af209592a3c0ebb95208d0fcfbe Mon Sep 17 00:00:00 2001
+From: Quentin Armitage <quentin@armitage.org.uk>
+Date: Fri, 12 Jul 2024 15:11:13 +0100
+Subject: [PATCH 1/5] lib: don't return subtracted addresses for rb_find()
+ compare function
+
+If sizeof(int) < sizeof(void *) returning the difference between two
+addresses in an int can cause an overflow.
+
+Use less_equal_greater_than() for comparing addresses.
+
+Signed-off-by: Quentin Armitage <quentin@armitage.org.uk>
+---
+ lib/memory.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/memory.c b/lib/memory.c
+index 94a2a3c..af032a7 100644
+--- a/lib/memory.c
++++ b/lib/memory.c
+@@ -185,7 +185,7 @@ static FILE *log_op = NULL;
+ static inline int
+ memcheck_ptr_cmp(const void *key, const struct rb_node *a)
+ {
+-	return (const char *)key - (char *)rb_entry_const(a, MEMCHECK, t)->ptr;
++	return less_equal_greater_than((const char *)key, (char *)rb_entry_const(a, MEMCHECK, t)->ptr);
+ }
+ 
+ static inline bool
+-- 
+2.39.4
+

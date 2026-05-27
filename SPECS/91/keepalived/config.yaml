@@ -1,0 +1,23 @@
+sources:
+- archive: keepalived-2.2.7.tar.gz
+  archive_sha512sum: 617ea91a8fcf9cabb4a5c92e9131ed3efc40930e823c77359ec0c7e82bae3f899108443afbb214678437caac1b649a710fa5f783d370fd3030ae9319be522623
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The main goal of the keepalived project is to add a strong
+        & robust keepalive facility to the Linux Virtual Server project. This project
+        is written in C with multilayer TCP/IP stack checks. Keepalived implements
+        a framework based on three family checks : Layer3, Layer4 & Layer5/7. This
+        framework gives the daemon the ability to check the state of an LVS server
+        pool. When one of the servers of the LVS server pool is down, keepalived informs
+        the linux kernel via a setsockopt call to remove this server entry from the
+        LVS topology. In addition keepalived implements an independent VRRPv2 stack
+        to handle director failover. So in short keepalived is a userspace daemon
+        for LVS cluster nodes healthchecks and LVS directors failover. '
+      home_page: http://www.keepalived.org
+      license_concluded: GPL-2.0-only AND FSFAP-no-warranty-disclaimer AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND BSD-3-Clause
+      license_declared: GPL-2.0-only AND FSFAP-no-warranty-disclaimer AND GPL-2.0-or-later
+        AND GPL-1.0-or-later AND BSD-3-Clause
+      short_summary: HA monitor built upon LVS, VRRP and services poller
+      supplier: 'Organization: Broadcom, Inc.'

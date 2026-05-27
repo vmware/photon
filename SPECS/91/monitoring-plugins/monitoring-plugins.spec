@@ -1,14 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Monitoring plugins are used to monitor status of hosts and services on the network
 Name:           monitoring-plugins
 Version:        2.3.5
-Release:        5%{?dist}
+Release:        4.1%{?dist}
 Group:          Development/Tools
 URL:            https://github.com/%{name}
-Vendor:         VMware, Inc.
-Distribution:   Photon
-
 Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
@@ -16,6 +13,8 @@ Source1: license.txt
 
 Patch0:         Revert-Actually-build-check_mssql-too.patch
 
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  make
@@ -52,8 +51,8 @@ rm -rf %{buildroot}
 %{_prefix}/share/locale/de
 
 %changelog
-* Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.5-5
-- Bump version to keep verison higher than 91
+* Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.5-4.1
+- Bump after moving to SPECS/91
 * Fri Jan 02 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3.5-4
 - Bump up as part of net-snmp update
 * Mon Aug 11 2025 Ajay Kaher <ajay.kaher@broadcom.com> 2.3.5-3
