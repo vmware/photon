@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 %global _default_patch_fuzz 1
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
-Version:        2.92rel2
-Release:        1%{?dist}
+Version:        2.90
+Release:        4.1%{?dist}
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
 Vendor:         VMware, Inc.
@@ -15,6 +15,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:         enable_dnssec.patch
+Patch1:         0001-Fix-bounds-checking-in-check_ia.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  systemd-rpm-macros
@@ -96,9 +97,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
-* Wed May 27 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.92rel2-1
-- Update to v2.92rel2
-- Fixes multiple critical CVEs
+* Wed May 27 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.90-4.1
+- Split and bumpup for 90
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.90-4
 - Version bump due to nettle update
 * Tue Jan 27 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.90-3

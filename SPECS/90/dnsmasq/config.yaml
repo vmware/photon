@@ -1,6 +1,6 @@
 sources:
-- archive: dnsmasq-2.92rel2.tar.xz
-  archive_sha512sum: 607abf33d6eac24eafdff9cd291d84b065354303d5e1d9514d79085b247fb3861ac57851ca1dfc4a5cddd314f8b970d17e93b987b1576e9f6ba1d6bffd42fff1
+- archive: dnsmasq-2.90.tar.xz
+  archive_sha512sum: e169de1892f935e219b0f49d90107f95cba42b40bca20bd3c973313c2cd4df58b929af6628cd988419051d81c3b4ccf8e9f816274df7d0840e79f5bf49602442
   skip_validation: true
   spdx:
     package:
