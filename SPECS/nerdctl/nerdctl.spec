@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 %define debug_package %{nil}
 # git tag commit hash
@@ -6,8 +8,8 @@
 
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
-Version:        1.4.0
-Release:        16%{?dist}
+Version:        2.3.1
+Release:        1%{?dist}
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -46,6 +48,7 @@ export REVISION=%{commit_hash}
 %make_build
 
 %install
+export PREFIX="%{_prefix}"
 export BINDIR="%{_bindir}"
 %make_install %{?_smp_mflags}
 
@@ -57,8 +60,15 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 %{_bindir}/containerd-rootless.sh
 %{_bindir}/containerd-rootless-setuptool.sh
+%doc %{_docdir}/%{name}/
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.1-1
+- Upgrade to v2.3.1
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-18
+- Bump version as a part of cni upgrade
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-17
+- Rebuild for go 1.26.3
 * Fri Feb 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.4.0-16
 - Bump up version as a part of containerd upgrade to 2.2.1
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.0-15

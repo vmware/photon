@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 %global debug_package   %{nil}
 %define plugins_dir     %{_libexecdir}/docker/cli-plugins
 
 Name:           docker-compose
-Version:        2.40.3
-Release:        3%{?dist}
+Version:        5.1.4
+Release:        1%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -15,8 +17,6 @@ Source0:        https://github.com/docker/compose/archive/refs/tags/v%{version}.
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: CVE-2026-33186.patch
 
 BuildRequires:  go
 BuildRequires:  ca-certificates
@@ -30,7 +30,7 @@ The binary can also be run standalone as a direct replacement for
 Docker Compose V1 ('docker-compose').
 
 %prep
-%autosetup -p1 -n compose-%{version}
+%autosetup -n compose-%{version}
 
 %build
 %make_build VERSION=%{version} build
@@ -59,6 +59,9 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.1.4-1
+- Upgrade to v5.1.4
+- CVE-2026-33186 included upstream
 * Wed Mar 25 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.40.3-3
 - Fix CVE-2026-33186
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.40.3-2

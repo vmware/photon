@@ -1,10 +1,12 @@
-%define gopath_comp github.com/cpuguy83/go-md2man
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Converts markdown into roff (man pages)
 Name:           go-md2man
-Version:        2.0.2
-Release:        14%{?dist}
+Version:        2.0.7
+Release:        1%{?dist}
 URL:            https://github.com/cpuguy83/go-md2man
 Source0:        https://github.com/cpuguy83/go-md2man/archive/%{name}-%{version}.tar.gz
+Source2:        %{name}-%{version}-vendor.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -12,27 +14,17 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  go >= 1.11
-BuildRequires:  which
 
 %description
 Converts markdown into roff (man pages).
 
 %prep
-%autosetup
-cd ../
-mkdir -p "$(dirname "src/%{gopath_comp}")"
-mkdir -p src/%{gopath_comp}
-mv %{name}-%{version}/* src/%{gopath_comp}/
-mv src %{name}-%{version}/
+%autosetup -a 2
 
 %build
-export GOPATH="$(pwd)"
-cd src/%{gopath_comp}
-# Disable GO Modules for now. go.mod has extraneous entries
-make %{?_smp_mflags} GO111MODULE=off
+go build -mod=vendor -o bin/go-md2man .
 
 %install
-cd src/%{gopath_comp}
 install -v -m755 -D -t %{buildroot}%{_bindir} bin/go-md2man
 install -v -m644 -D -t %{buildroot}%{_docdir}/licenses/%{name} LICENSE.md
 
@@ -42,6 +34,8 @@ install -v -m644 -D -t %{buildroot}%{_docdir}/licenses/%{name} LICENSE.md
 %{_docdir}/licenses/%{name}
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.0.7-1
+- Upgrade to v2.0.7
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.2-14
 - Bump version as a part of go upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.2-13

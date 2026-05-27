@@ -1,14 +1,14 @@
 sources:
-- archive: containerd-2.2.1.tar.gz
+- archive: containerd-2.3.1.tar.gz
   archive_type: upstream
-  version: 2.2.1
-  name: containerd-2.2.1
-  url: https://github.com/containerd/containerd/archive/refs/tags/v2.2.1.tar.gz
+  version: 2.3.1
+  name: containerd-2.3.1
+  url: https://github.com/containerd/containerd/archive/refs/tags/v2.3.1.tar.gz
   repo_url: https://github.com/containerd/containerd.git
-  commit_id: dea7da592f5d1d2b7755e3a161be07f43fad8f75
+  commit_id: 64b425cf570b3b8dd1d4cc46da7c1fce65c6651a
   skip_list: []
   missing: []
-  archive_sha512sum: 6bbfe356bdb0fd70c5b3ca0d932b790bb34b40832392e6a309a907351dc344e3b6059e2cd583145200aab218b4e8f5160d698f2b3a84d05bbf834d023eea4bd3
+  archive_sha512sum: a0dbb73c73267205a5e880afa370371b84cbb45d3c64071b9e6f9b8124377c0833a20799e4492df0636781f0af7016703475e96d4750ce235f9706c9d90f5191
   skip_validation: false
   spdx:
     package:

@@ -1,0 +1,13 @@
+sources:
+- archive: glide-0.13.3.tar.gz
+  archive_sha512sum: bb0cf1308a9ac0768db647552131867eaccbd8c449e10fb8c8f0fa41f0cca67983b15689ad307c5299a9a125a6a7bfea19fae39525eaf407c92d893918577945
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Glide is a tool for managing the vendor directory within
+        a Go package. '
+      home_page: https://github.com/Masterminds/glide
+      license_concluded: MIT AND Apache-2.0
+      license_declared: MIT AND Apache-2.0
+      short_summary: Vendor Package Management for Goland
+      supplier: 'Organization: Broadcom, Inc.'

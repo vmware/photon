@@ -1,12 +1,15 @@
 sources:
-- archive: docker-buildx-0.32.0.tar.gz
+- archive: docker-buildx-0.34.1.tar.gz
   archive_type: upstream
-  name: buildx-0.32.0
-  url: https://github.com/docker/buildx/archive/refs/tags/v0.32.0.tar.gz
-  archive_sha512sum: d132e2d928a073400dc2f530f0b98caec3869d3cad8544d7552347032fd225e6a5f17299d807402f4f7a17addfb954e9eefb565fc09cf01e4ef40fede9c6b3e9
-  commit_id: a953c9b4b457d29a1559364f1006865fd042c66d
+  name: buildx-0.34.1
+  url: https://github.com/docker/buildx/archive/refs/tags/v0.34.1.tar.gz
+  archive_sha512sum: be69ff92a136e169456710c369099bd33ed0ae17271133fe0322fe1664c868ad76dd74265879fa783fa257a6ed6dca37c213d1153de9e903833b59cde4181d0b
+  commit_id: e0b0e77d18d3379bc1e0d55f3b37de288d36fe47
   repo_url: https://github.com/docker/buildx.git
-  skip_validation: true
+  version: '0.34.1'
+  skip_list: []
+  missing: []
+  skip_validation: false
   license_manual_review:
   - # CC-BY-SA covers the README and CONTRIBUTING.md only, neither of which are
     # packaged by us

@@ -1,14 +1,14 @@
 sources:
-- archive: kapacitor-1.7.7.tar.gz
+- archive: kapacitor-1.8.5.tar.gz
   archive_type: upstream
-  version: 1.7.7
-  name: kapacitor-1.7.7
-  url: https://github.com/influxdata/kapacitor/archive/refs/tags/v1.7.7.tar.gz
+  version: 1.8.5
+  name: kapacitor-1.8.5
+  url: https://github.com/influxdata/kapacitor/archive/refs/tags/v1.8.5.tar.gz
   repo_url: https://github.com/influxdata/kapacitor.git
-  commit_id: f59b0b1f0c0681f37a7aa62d79600009d2f168c8
+  commit_id: 1632cc16b34166a05dd52cd9dc718ad68cceab23
   skip_list: []
   missing: []
-  archive_sha512sum: 0495a946fb3c788f830fd39bd6433c22f0c1e5a5e84ff49354bf78a9437cd260c5413d2bc879639e7c66634f61abe73dfd41f01ad305eb2103146dd6969bcdfb
+  archive_sha512sum: de72996bc126f21b9c40f62c7c52a45a6daf6bbcc897a6c5fbf21abd10a5eba2652710eb14b5e164f397d2119896d68f8763948978c1388be4cdc45a1e37fd22
   skip_validation: false
   spdx:
     package:

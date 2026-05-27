@@ -1,0 +1,274 @@
+From 68c831c40b396f0274f6a9f97d77707c39970b02 Mon Sep 17 00:00:00 2001
+From: Martin Hilton <mhilton@influxdata.com>
+Date: Fri, 24 May 2024 16:57:10 +0100
+Subject: [PATCH] fix(libflux): build on rust 1.78 (#5484)
+
+* fix(libflux): build on rust 1.78
+
+Fix compiler errors and clippy lints produced when attempting to
+build using rust 1.78.
+
+* fix: make generate
+---
+ libflux/flux-core/Cargo.toml                  |  1 +
+ .../src/semantic/flatbuffers/types.rs         |  6 ++---
+ libflux/flux-core/src/semantic/nodes.rs       |  4 ++--
+ libflux/flux-core/src/semantic/sub.rs         | 24 +++++++++----------
+ libflux/flux-core/src/semantic/types.rs       | 10 ++++----
+ libflux/flux-core/src/semantic/walk/mod.rs    |  1 +
+ libflux/flux/Cargo.toml                       |  1 +
+ libflux/flux/src/cffi.rs                      |  2 +-
+ libflux/go/libflux/buildinfo.gen.go           | 16 ++++++-------
+ 9 files changed, 35 insertions(+), 30 deletions(-)
+
+diff --git a/libflux/flux-core/Cargo.toml b/libflux/flux-core/Cargo.toml
+index f2f2c6674c..2de58f8fde 100644
+--- a/libflux/flux-core/Cargo.toml
++++ b/libflux/flux-core/Cargo.toml
+@@ -1,6 +1,7 @@
+ [package]
+ name = "flux-core"
+ version = "0.154.0"
++rust-version = "1.68"
+ authors = ["Flux Team <flux-developers@influxdata.com>"]
+ edition = "2021"
+ 
+diff --git a/libflux/flux-core/src/semantic/flatbuffers/types.rs b/libflux/flux-core/src/semantic/flatbuffers/types.rs
+index 86c1b4707b..6cf0d89e65 100644
+--- a/libflux/flux-core/src/semantic/flatbuffers/types.rs
++++ b/libflux/flux-core/src/semantic/flatbuffers/types.rs
+@@ -97,7 +97,7 @@ impl From<fb::PolyType<'_>> for Option<PolyType> {
+         for value in c.iter() {
+             let constraint: Option<(BoundTvar, Kind)> = value.into();
+             let (tv, kind) = constraint?;
+-            cons.entry(tv).or_insert_with(Vec::new).push(kind);
++            cons.entry(tv).or_default().push(kind);
+         }
+         Some(PolyType {
+             vars,
+@@ -350,9 +350,9 @@ where
+     builder.finished_data()
+ }
+ 
+-pub fn deserialize<'a, T: 'a, S>(buf: &'a [u8]) -> S
++pub fn deserialize<'a, T, S>(buf: &'a [u8]) -> S
+ where
+-    T: flatbuffers::Follow<'a> + flatbuffers::Verifiable,
++    T: flatbuffers::Follow<'a> + flatbuffers::Verifiable + 'a,
+     S: std::convert::From<T::Inner>,
+ {
+     flatbuffers::root::<T>(buf).unwrap().into()
+diff --git a/libflux/flux-core/src/semantic/nodes.rs b/libflux/flux-core/src/semantic/nodes.rs
+index f4ab4f158c..9d9cf53214 100644
+--- a/libflux/flux-core/src/semantic/nodes.rs
++++ b/libflux/flux-core/src/semantic/nodes.rs
+@@ -860,8 +860,8 @@ impl VariableAssgn {
+         //
+         // Note these variables are fixed after generalization
+         // and so it is safe to update these nodes in place.
+-        self.vars = p.vars.clone();
+-        self.cons = p.cons.clone();
++        self.vars.clone_from(&p.vars);
++        self.cons.clone_from(&p.cons);
+ 
+         // Update the type environment
+         infer.add(self.id.name.clone(), p);
+diff --git a/libflux/flux-core/src/semantic/sub.rs b/libflux/flux-core/src/semantic/sub.rs
+index 4d73eef74e..7bd0ea748b 100644
+--- a/libflux/flux-core/src/semantic/sub.rs
++++ b/libflux/flux-core/src/semantic/sub.rs
+@@ -431,7 +431,7 @@ where
+ }
+ 
+ #[allow(clippy::too_many_arguments, clippy::type_complexity)]
+-pub(crate) fn merge4<A: ?Sized, B: ?Sized, C: ?Sized, D: ?Sized>(
++pub(crate) fn merge4<A, B, C, D>(
+     a_original: &A,
+     a: Option<A::Owned>,
+     b_original: &B,
+@@ -442,10 +442,10 @@ pub(crate) fn merge4<A: ?Sized, B: ?Sized, C: ?Sized, D: ?Sized>(
+     d: Option<D::Owned>,
+ ) -> Option<(A::Owned, B::Owned, C::Owned, D::Owned)>
+ where
+-    A: ToOwned,
+-    B: ToOwned,
+-    C: ToOwned,
+-    D: ToOwned,
++    A: ToOwned + ?Sized,
++    B: ToOwned + ?Sized,
++    C: ToOwned + ?Sized,
++    D: ToOwned + ?Sized,
+ {
+     let a_b_c = merge3(a_original, a, b_original, b, c_original, c);
+     merge_fn(
+@@ -465,7 +465,7 @@ where
+     .map(|((a, b, c), d)| (a, b, c, d))
+ }
+ 
+-pub(crate) fn merge3<A: ?Sized, B: ?Sized, C: ?Sized>(
++pub(crate) fn merge3<A, B, C>(
+     a_original: &A,
+     a: Option<A::Owned>,
+     b_original: &B,
+@@ -474,9 +474,9 @@ pub(crate) fn merge3<A: ?Sized, B: ?Sized, C: ?Sized>(
+     c: Option<C::Owned>,
+ ) -> Option<(A::Owned, B::Owned, C::Owned)>
+ where
+-    A: ToOwned,
+-    B: ToOwned,
+-    C: ToOwned,
++    A: ToOwned + ?Sized,
++    B: ToOwned + ?Sized,
++    C: ToOwned + ?Sized,
+ {
+     let a_b = merge(a_original, a, b_original, b);
+     merge_fn(
+@@ -492,15 +492,15 @@ where
+ 
+ /// Merges two values using `f` if either or both them is `Some(..)`.
+ /// If both are `None`, `None` is returned.
+-pub(crate) fn merge<A: ?Sized, B: ?Sized>(
++pub(crate) fn merge<A, B>(
+     a_original: &A,
+     a: Option<A::Owned>,
+     b_original: &B,
+     b: Option<B::Owned>,
+ ) -> Option<(A::Owned, B::Owned)>
+ where
+-    A: ToOwned,
+-    B: ToOwned,
++    A: ToOwned + ?Sized,
++    B: ToOwned + ?Sized,
+ {
+     merge_fn(a_original, A::to_owned, a, b_original, B::to_owned, b)
+ }
+diff --git a/libflux/flux-core/src/semantic/types.rs b/libflux/flux-core/src/semantic/types.rs
+index 8c5efb7a6f..46b5291c48 100644
+--- a/libflux/flux-core/src/semantic/types.rs
++++ b/libflux/flux-core/src/semantic/types.rs
+@@ -1314,7 +1314,7 @@ fn collect_record(record: &Record) -> (RefMonoTypeVecMap<'_, RecordLabel>, Optio
+ 
+     let mut fields = record.fields();
+     for field in &mut fields {
+-        a.entry(&field.k).or_insert_with(Vec::new).push(&field.v);
++        a.entry(&field.k).or_default().push(&field.v);
+     }
+     (a, fields.tail())
+ }
+@@ -1804,7 +1804,7 @@ impl PartialEq<&str> for Label {
+ 
+ impl PartialOrd for Label {
+     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+-        self.0.name().partial_cmp(other.0.name())
++        Some(self.cmp(other))
+     }
+ }
+ 
+@@ -1955,10 +1955,10 @@ impl<T> Function<T> {
+         self.opt.len() + self.req.len() + self.pipe.is_some() as usize
+     }
+ 
+-    pub(crate) fn parameter<Q: ?Sized>(&self, key: &Q) -> Option<&T>
++    pub(crate) fn parameter<Q>(&self, key: &Q) -> Option<&T>
+     where
+         String: Borrow<Q> + Ord,
+-        Q: Ord,
++        Q: Ord + ?Sized,
+     {
+         self.req
+             .get(key)
+@@ -2189,8 +2189,10 @@ impl Function {
+ pub(crate) trait TypeLike {
+     type Error;
+     fn typ(&self) -> &MonoType;
++    #[allow(dead_code)]
+     fn into_type(self) -> MonoType;
+     fn error(&self, error: Error) -> Self::Error;
++    #[allow(dead_code)]
+     fn location(&self) -> crate::ast::SourceLocation;
+ }
+ 
+diff --git a/libflux/flux-core/src/semantic/walk/mod.rs b/libflux/flux-core/src/semantic/walk/mod.rs
+index accd29e847..632d332f9a 100644
+--- a/libflux/flux-core/src/semantic/walk/mod.rs
++++ b/libflux/flux-core/src/semantic/walk/mod.rs
+@@ -269,6 +269,7 @@ macro_rules! mk_node {
+ 
+         /// Recursively visits children of a node given a Visitor.
+         /// Nodes are visited in depth-first order.
++        #[allow(clippy::needless_lifetimes)]
+         pub fn $walk<'a, T>(v: &mut T, $($mut)? node: $name<'a>)
+         where
+             T: ?Sized + $visitor $(<$visitor_lt>)?,
+diff --git a/libflux/flux/Cargo.toml b/libflux/flux/Cargo.toml
+index 028348811c..ee87bed529 100644
+--- a/libflux/flux/Cargo.toml
++++ b/libflux/flux/Cargo.toml
+@@ -1,6 +1,7 @@
+ [package]
+ name = "flux"
+ version = "0.154.0"
++rust-version = "1.68"
+ authors = ["Flux Team <flux-developers@influxdata.com>"]
+ edition = "2021"
+ 
+diff --git a/libflux/flux/src/cffi.rs b/libflux/flux/src/cffi.rs
+index ba18e3d54f..2e686ec41a 100644
+--- a/libflux/flux/src/cffi.rs
++++ b/libflux/flux/src/cffi.rs
+@@ -1159,7 +1159,7 @@ from(bucket: v.bucket)
+         // Safety: both parameters are valid
+         let err = unsafe { flux_ast_get_error(pkg, options) }.unwrap();
+         // Safety: pkg is a valid pointer allocated just above
+-        unsafe { Box::from_raw(pkg) }; // Free the AST
++        unsafe { drop(Box::from_raw(pkg)) }; // Free the AST
+         let msg = err.message.to_string_lossy();
+         assert!(
+             msg.contains("incomplete utf-8 byte sequence from index 0"),
+diff --git a/libflux/go/libflux/buildinfo.gen.go b/libflux/go/libflux/buildinfo.gen.go
+index 5fdea4cdf7..fdaa52b7de 100644
+--- a/libflux/go/libflux/buildinfo.gen.go
++++ b/libflux/go/libflux/buildinfo.gen.go
+@@ -15,7 +15,7 @@ package libflux
+ var sourceHashes = map[string]string{
+ 	"libflux/Cargo.lock":                                                                          "58302d93174bb2def223a5439ddbc596476216bf511a11f0ff2fc23865fc1d0a",
+ 	"libflux/Cargo.toml":                                                                          "91ac4e8b467440c6e8a9438011de0e7b78c2732403bb067d4dd31539ac8a90c1",
+-	"libflux/flux-core/Cargo.toml":                                                                "85c9190859bf653bcf13734bcd8925eadee08cc45a6c0146f6df76fb3688a97c",
++	"libflux/flux-core/Cargo.toml":                                                                "b0d9447d8532d4732f5fbbc605229ecfda4e24f7a01731f2949711b3f322add1",
+ 	"libflux/flux-core/src/ast/check/mod.rs":                                                      "4a6511e9ccc9718eada01b29544bd4d5c324ae87a85906c25ad7193a890f86fc",
+ 	"libflux/flux-core/src/ast/mod.rs":                                                            "00fac7d9da0dfb0475a994b208b9e3d97ad2199a8dcc5bac941e2376c94b5f6b",
+ 	"libflux/flux-core/src/ast/walk/mod.rs":                                                       "b0069cedffd1a20c77c4fe12465a8350a50a8916d0f29798ab47212fdd0b0692",
+@@ -43,26 +43,26 @@ var sourceHashes = map[string]string{
+ 	"libflux/flux-core/src/semantic/env.rs":                                                       "0d6295a88dae8eaaed12ee20a8d218616683e8d45a776966e0cab02be2760fd0",
+ 	"libflux/flux-core/src/semantic/flatbuffers/mod.rs":                                           "49ff0c257a8382a09d9716ab32b1ce9a2374bc2bbd2067f0886f114a87357d20",
+ 	"libflux/flux-core/src/semantic/flatbuffers/semantic_generated.rs":                            "295c79c5d0c9c9054d88f14ba30d5e3c80e4529973d7470457a1d8752b35ac8e",
+-	"libflux/flux-core/src/semantic/flatbuffers/types.rs":                                         "445a10f5c66395bc6aaeb5a9ef0949145461bfc0cb110fdb0d0ec1a768b00468",
++	"libflux/flux-core/src/semantic/flatbuffers/types.rs":                                         "d2a6774d7b90dbda92b1b6fef492bfbed6f0389bdb759bbc7cc3f48ab83c2cdd",
+ 	"libflux/flux-core/src/semantic/formatter/mod.rs":                                             "f9758877f7242998ed71f13ff71ed6e3fa3af497d2acf9df1853872b371bf12a",
+ 	"libflux/flux-core/src/semantic/fresh.rs":                                                     "18cb879ece9052682c9dda8117c23acd1f63c0325feaa1aef9a53db4f17d2d69",
+ 	"libflux/flux-core/src/semantic/fs.rs":                                                        "ae886648b20fc1e50d3c75418a9d62bb5102e93958e1bbdbf008066be4eb3909",
+ 	"libflux/flux-core/src/semantic/import.rs":                                                    "4bfa02fc96b4de3d913dbec622f0907307b4a15fe9dd4283d9cb86c6f0d18655",
+ 	"libflux/flux-core/src/semantic/infer.rs":                                                     "b6d18c94b58da27aebb5828f6471768ccc52e679a1356c6a38d0f3cd01a06dce",
+ 	"libflux/flux-core/src/semantic/mod.rs":                                                       "c152ca3a24b73b80238316b003ec6acfb098bd4b60fecae308a38586a0bfbfe3",
+-	"libflux/flux-core/src/semantic/nodes.rs":                                                     "75579f9e46d890f5a6c531eaba62343d11e6e24def787ec667568829f76c678b",
+-	"libflux/flux-core/src/semantic/sub.rs":                                                       "8bc05ffff0990facea2130e0faf5a837f8663d59996ff85869c6e631ac654553",
++	"libflux/flux-core/src/semantic/nodes.rs":                                                     "848ffb45a24f9c01e0de002a3090cbd42417e3f411d3abd5bee18e22d46042b6",
++	"libflux/flux-core/src/semantic/sub.rs":                                                       "d78826dad39aa9128ec5d7dae23b7672b88ceb6af625b3e4865bb482d3f84903",
+ 	"libflux/flux-core/src/semantic/symbols.rs":                                                   "f061d57fe4ef7f23d0adad80d43fe1c8ae92d5e25a0da4b81e21b8087e30d253",
+-	"libflux/flux-core/src/semantic/types.rs":                                                     "2e3ee9dc324778b3c2b033af148650983f01e830f83546c7f1089fd2bdf7e6a6",
++	"libflux/flux-core/src/semantic/types.rs":                                                     "d36ddbd121d669c176afe7b9eeef4b75a774fdfcf1a5e9593901b6618bc2981f",
+ 	"libflux/flux-core/src/semantic/vectorize.rs":                                                 "ec4a374bbf406b981b861d5b17d8ccfcbcd22c7f345132fe2335541dacb228e9",
+ 	"libflux/flux-core/src/semantic/walk/_walk.rs":                                                "285b7e9237e218954eddcdabeaa0a7cadd566af30ad96f714faf1b5fbcc05544",
+-	"libflux/flux-core/src/semantic/walk/mod.rs":                                                  "1f8b312b728692eeea0deaa8c608b60019f5c32bd8ed3355133608102851442c",
++	"libflux/flux-core/src/semantic/walk/mod.rs":                                                  "027f6d345ab58846bef1a8db26983e74143e880d5e82a500fd12642470b9d86a",
+ 	"libflux/flux-core/src/semantic/walk/test_utils.rs":                                           "043d5137ed626f1990c89f639e867e5b33a906f13c427313b497062f98215846",
+ 	"libflux/flux-core/src/semantic/walk/walk_mut.rs":                                             "3e9b8db77f35cfdee5ef7e24c1bc08845484f3cb7ecd50a82163b6ad46899662",
+-	"libflux/flux/Cargo.toml":                                                                     "308c541b31f6ef25094ed4a4c2fddaf38244b0632b93c1f44b2ee4b4209d479c",
++	"libflux/flux/Cargo.toml":                                                                     "e99bdbe850082422eedbd74dc2890aed7e9ec3193bd366bd8c112c30acf4e3c4",
+ 	"libflux/flux/FLUXDOC.md":                                                                     "92e6dd8043bd87b4924e09aa28fb5346630aee1214de28ea2c8fc0687cad0785",
+ 	"libflux/flux/build.rs":                                                                       "31dcb1e825555e56b4d959244c4ea630b1d32ccddc1f8615620e0c23552d914f",
+-	"libflux/flux/src/cffi.rs":                                                                    "ab9cca7d7ef52a5ff168430e285f7f6a15488f092bf4487e618be5611757dced",
++	"libflux/flux/src/cffi.rs":                                                                    "a5e3c5bb6eeb720f726cc7177afb5e7dd3a3e8b32ac269a2d48f199068995f78",
+ 	"libflux/flux/src/lib.rs":                                                                     "7e0bacaa5da218888cae12e4245d305909153bbe60cc8c17b85543563fa628cc",
+ 	"libflux/flux/templates/base.html":                                                            "a818747b9621828bb96b94291c60922db54052bbe35d5e354f8e589d2a4ebd02",
+ 	"libflux/flux/templates/home.html":                                                            "f9927514dd42ca7271b4817ad1ca33ec79c03a77a783581b4dcafabd246ebf3f",

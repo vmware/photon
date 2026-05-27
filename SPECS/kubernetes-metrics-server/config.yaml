@@ -1,7 +1,15 @@
 sources:
-- archive: kubernetes-metrics-server-0.3.7.tar.gz
-  archive_sha512sum: bb405974322a7c249ad40deb1ae1acaf9f73dee992a895173452181b4d5dc31b3538829cf478ab090e5e170985c21baf0162b98aed10f6ea035de4c112d8fb14
-  skip_validation: true
+- archive: kubernetes-metrics-server-0.8.1.tar.gz
+  archive_sha512sum: 5440addc059c5fb260091be0f9ff278a52af5bbcd2fbf375700bcab2461180bed5edb2ca0cf12e178671f3f6d7ac19f45c41deb5555eed0d59cf58695c83f566
+  archive_type: upstream
+  commit_id: 9ce65a47f9262e19e482c259ace815f01135a898
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: metrics-server-0.8.1
+  version: '0.8.1'
+  repo_url: https://github.com/kubernetes-sigs/metrics-server
+  url: https://github.com/kubernetes-sigs/metrics-server/archive/refs/tags/v0.8.1.tar.gz
   spdx:
     package:
       detailed_description: 'In Kubernetes, resource usage metrics, such as container
@@ -17,4 +25,15 @@ sources:
         AND MPL-2.0 AND JSON AND CC-BY-4.0 AND BSD-2-Clause-Views AND LGPL-3.0-or-later
         AND GPL-2.0-only AND CC0-1.0
       short_summary: Kubernetes Metrics Server
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: kubernetes-metrics-server-0.8.1-vendor.tar.gz
+  archive_sha512sum: 16f1c53acb322043a6811d54a988af03b57aa05d48d311cbc20c792dfd18f2965b6f0eaf365a79fd8144f1f886563383e08c53f0232154cb1301fbd752f2d4bb
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Vendored Go dependencies for kubernetes-metrics-server 0.8.1
+      home_page: https://github.com/kubernetes-sigs/metrics-server
+      license_concluded: Apache-2.0 AND MIT AND BSD-3-Clause AND BSD-2-Clause
+      license_declared: Apache-2.0 AND MIT AND BSD-3-Clause AND BSD-2-Clause
+      short_summary: Vendored Go dependencies for Kubernetes Metrics Server
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,13 @@
+sources:
+- archive: fuse-overlayfs-snapshotter-1.0.6.tar.gz
+  archive_sha512sum: 7ad7f1e433695045ecb09cda6a49b9822779c953105001fa20773b61128e73b1d57d15c05043ff52a2c9415ae899f75ce1ae5ac62843c4d94640c42aee26a7d3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'fuse-overlayfs snapshotter plugin for containerd. fuse-overlayfs-snapshotter
+        is a non-core sub-project of containerd. '
+      home_page: https://github.com/containerd/fuse-overlayfs-snapshotter
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: fuse-overlayfs plugin for rootless containerd
+      supplier: 'Organization: Broadcom, Inc.'

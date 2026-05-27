@@ -1,14 +1,14 @@
 sources:
-- archive: docker-cli-29.4.1.tar.gz
+- archive: docker-cli-29.5.2.tar.gz
   archive_type: upstream
-  version: 29.4.1
-  name: cli-29.4.1
-  url: https://github.com/docker/cli/archive/refs/tags/v29.4.1.tar.gz
+  version: 29.5.2
+  name: cli-29.5.2
+  url: https://github.com/docker/cli/archive/refs/tags/v29.5.2.tar.gz
   repo_url: https://github.com/docker/cli.git
-  commit_id: 055a478ea9010a19d0d4674c0d0e87ade37a4223
+  commit_id: 79eb04c7d8e1d73247cb7fe011eecc645063e0f0
   skip_list: []
   missing: []
-  archive_sha512sum: 28ef073e7e384744a45ba82c48e7ab695fa066e979b12b0f3d2ecdc91d315ffe13e43d0b483ce38b014301406a5530b1bd425b5b6af0fc3b368f774a565872af
+  archive_sha512sum: 3c569dbbcef6e9720a126147175f67297acab9a4ae8dd2af544b48eca70519dfd3c5312bf4ffab777e59a251cfdc5965217b0d3ca4c2eb41117c2e3b465bbb8a
   skip_validation: false
   spdx:
     package:
@@ -20,16 +20,16 @@ sources:
         AND MIT
       short_summary: Docker CLI
       supplier: 'Organization: Broadcom, Inc.'
-- archive: docker-v29.4.1.tar.gz
+- archive: docker-v29.5.2.tar.gz
   archive_type: upstream
-  version: 29.4.1
-  name: moby-docker-v29.4.1
-  url: https://github.com/moby/moby/archive/refs/tags/docker-v29.4.1.tar.gz
+  version: 29.5.2
+  name: moby-docker-v29.5.2
+  url: https://github.com/moby/moby/archive/refs/tags/docker-v29.5.2.tar.gz
   repo_url: https://github.com/moby/moby.git
-  commit_id: 6c91b92cc71077b70c779c510da125301a8e40f3
+  commit_id: 568f755ebeb1ac9c6a8febbda6cd371ea0a9630b
   skip_list: []
   missing: []
-  archive_sha512sum: f8f38570d9a2f6f1d162f532c2c2337079dca594d134fc5d78128d46d31f0957dbc1a79b44a89649ba078e74c2ed01079c32b590acc123b1422d0749f16fe4bf
+  archive_sha512sum: c5cbb956711e9ce8dbab010bf1eab3fd9b35e35806188e3030a3bbeafb545f4024504577df7c39588672c8d5252f6ab071bcfd6377867f4668b75855571469fb
   skip_validation: false
   spdx:
     package:

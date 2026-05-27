@@ -1,0 +1,201 @@
+%global build_if %{photon_subrelease} <= 90
+
+%define libflux_version 0.194.5
+%define libflux_vendor kapacitor-libflux-vendor-%{libflux_version}.tar.gz
+%define network_required 1
+
+Name:           kapacitor
+Version:        1.7.7
+Release:        6.1%{?dist}
+Summary:        Open source framework for processing, monitoring, and alerting on time series data
+URL:            https://www.influxdata.com/time-series-platform/kapacitor
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Group:          System/Monitoring
+
+Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
+Source1:        %{libflux_vendor}
+Source2:        %{name}.sysusers
+
+Source3: license.txt
+%include %{SOURCE3}
+
+Patch0:         fix-build-1.patch
+Patch1:         flux-0.194.5-go1.23.patch
+Patch2:         flux-0.194.5-rust1.87-1.patch
+Patch3:         flux-0.194.5-rust1.87-2.patch
+Patch4:         flux-0.194.5-proc-macro2.patch
+
+BuildRequires:  go
+BuildRequires:  systemd
+BuildRequires:  systemd-devel
+BuildRequires:  systemd-rpm-macros
+BuildRequires:  rust
+
+Requires:       systemd
+Requires:       systemd-rpm-macros
+Requires(pre):  shadow
+
+%description
+Kapacitor is an Open source framework for processing, monitoring, and alerting on time series data.
+
+%prep
+%autosetup -a 1 -n %{name}-%{version} -N
+%autopatch -p1 -M0
+
+mkdir -p ~/.cargo
+mv kapacitor-libflux-vendor-%{libflux_version} ~/.cargo/vendor
+cat > ~/.cargo/config.toml << _EOF
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "${HOME}/.cargo/vendor"
+_EOF
+
+%build
+go env -w GO111MODULE=auto
+cd ..
+mkdir -p build/src/github.com/influxdata/kapacitor
+mv %{name}-%{version}/* build/src/github.com/influxdata/%{name}
+cd build
+export GOPATH=$PWD
+export PKG_CONFIG=${GOPATH}/src/github.com/influxdata/kapacitor/pkg-config.sh
+export CARGO_NET_OFFLINE=true
+cd src/github.com/influxdata/kapacitor
+
+go get ./cmd/kapacitor
+pushd ../../../../pkg/mod/github.com/influxdata/flux@v%{libflux_version}
+%autopatch -p1 -m1 -M4
+chmod -R u+w .
+# Find every Rust file and disable the strict warning limits
+find . -type f -name "*.rs" -exec sed -i 's/deny(warnings/allow(warnings/g' {} +
+popd
+
+go build ./cmd/kapacitor
+go build ./cmd/kapacitord
+go build ./tick/cmd/tickfmt
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+mkdir -p %{buildroot}%{_libdir}/systemd/system
+mkdir -p %{buildroot}%{_sharedstatedir}/kapacitor
+mkdir -p %{buildroot}%{_localstatedir}/log/kapacitor
+mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
+mkdir -p %{buildroot}%{_sysconfdir}/kapacitor
+cd ../build/src/github.com/influxdata/kapacitor
+cp -r kapacitor %{buildroot}%{_bindir}
+cp -r kapacitord %{buildroot}%{_bindir}
+cp -r tickfmt %{buildroot}%{_bindir}
+cp -r usr/share/bash-completion/completions/kapacitor %{buildroot}%{_datadir}/bash-completion/completions/
+cp -r scripts/kapacitor.service %{buildroot}%{_libdir}/systemd/system/
+cp -r etc/logrotate.d/kapacitor %{buildroot}%{_sysconfdir}/logrotate.d/
+cp -r etc/kapacitor/kapacitor.conf %{buildroot}%{_sysconfdir}/kapacitor
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
+
+%clean
+rm -rf %{buildroot}/*
+
+%pre
+if [ $1 -eq 1 ]; then
+    # Initial installation.
+    %sysusers_create_compat %{SOURCE2}
+fi
+
+%post
+chown -R %{name}:%{name} /var/lib/%{name}
+chown -R %{name}:%{name} /var/log/%{name}
+%systemd_post kapacitor.service
+
+%preun
+%systemd_preun kapacitor.service
+
+%postun
+%systemd_postun_with_restart kapacitor.service
+
+%files
+%defattr(-,root,root,755)
+%dir %config(noreplace) %{_sysconfdir}/kapacitor
+%dir %{_sharedstatedir}/kapacitor
+%dir %{_localstatedir}/log/kapacitor
+%{_bindir}/kapacitor
+%{_bindir}/kapacitord
+%{_bindir}/tickfmt
+%{_datadir}/bash-completion/completions/kapacitor
+%{_libdir}/systemd/system/kapacitor.service
+%config(noreplace) %{_sysconfdir}/logrotate.d/kapacitor
+%config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
+%{_sysusersdir}/%{name}.conf
+
+%changelog
+* Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.7-6.1
+- Maintain for photon_subrelease <= 90
+* Thu Mar 05 2026 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.7.7-6
+- Build compatible with updated rust-1.93.1 and old rust-1.87.0
+* Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.7.7-5
+- Add missing shadow dependency for user creation
+* Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.7-4
+- Bump version as a part of go upgrade
+* Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.7-3
+- Update URL to packages.broadcom.com
+* Mon Nov 03 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.7-2
+- Version bump to fix go input dep on influxdata/pkg-config
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.7-1
+- Upgrade to 1.7.7
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-15
+- Renaming sysusers to conf to fix auto user creation
+* Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-14
+- Fix go input dependencies which have Capital letters in name.
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-13
+- Release bump for network_required packages
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.6-12
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-11
+- Bump version as a part of go upgrade
+* Sun Sep 08 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.6-10
+- Support offline build
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.6-9
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.6.6-8
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.6.6-7
+- Bump version as a part of go upgrade
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.6-6
+- Bump up version to compile with new go
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.6-5
+- Bump up version to compile with new go
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.6-4
+- Bump up version to compile with new go
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.6.6-3
+- Resolving systemd-rpm-macros for group creation
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
+- Bump up version to compile with new go
+* Mon Jul 03 2023 Srish Srinivasan <ssrish@vmware.com> 1.6.6-1
+- Update to v1.6.6 to fix multiple CVEs
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-9
+- Bump up version to compile with new go
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-8
+- Bump up version to compile with new go
+* Sun Mar 12 2023 Piyush Gupta <gpiyush@vmware.com> 1.5.9-7
+- Bump up version to compile with new go
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.5.9-6
+- Use systemd-rpm-macros for user creation
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-5
+- Bump up version to compile with new go
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-4
+- Bump up version to compile with new go
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.5.9-3
+- Bump up version to compile with new go
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.9-2
+- Bump up version to compile with new go
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.9-1
+- Automatic Version Bump
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.5.6-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.5.6-2
+- Bump up version to compile with new go
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.6-1
+- Automatic Version Bump
+* Fri Aug 03 2018 Keerthana K <keerthanak@vmware.com> 1.5.0-1
+- Initial kapacitor package for Photon.

@@ -1,15 +1,15 @@
 sources:
-- archive: telegraf-1.37.3.tar.gz
-  archive_sha512sum: 15a4dc42c1ee8b3bcd6d544c843975d191df069bd5207ed0695d0526ee35b7fd8a0d9d72f9d6dc65d75c048b52042a1730a21d345d84de9e69fd8fd2ab9bc519
+- archive: telegraf-1.38.4.tar.gz
+  archive_sha512sum: 5431566af12194bbf98f698ba4de68bb2f312377f185be403cef1cd9e9ae4fbb6cecadb35ea517e3a8b0c9e1304e12b576a55f445b643c9da1dd63b7625c8c8f
   archive_type: upstream
-  commit_id: 2a6d13155d78d3aadcd4953345ad787d0a014d74
+  commit_id: c79b06d58e912124624d029a88bbe182254f0ff4
   missing: []
   skip_list: []
   skip_validation: false
-  name: telegraf-1.37.3
-  version: 1.37.3
+  name: telegraf-1.38.4
+  version: 1.38.4
   repo_url: https://github.com/influxdata/telegraf
-  url: https://github.com/influxdata/telegraf/archive/refs/tags/v1.37.3.tar.gz
+  url: https://github.com/influxdata/telegraf/archive/refs/tags/v1.38.4.tar.gz
   spdx:
     package:
       detailed_description: Telegraf is an agent written in Go for collecting, processing, aggregating, and writing metrics. Design goals are to have a minimal memory footprint with a plugin system so that developers in the community can easily add support for collecting metrics from well known services (like Hadoop, Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Google Analytics).

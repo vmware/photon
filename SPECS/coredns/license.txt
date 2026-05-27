@@ -1,1 +1,1 @@
-License: Apache-2.0 AND BSD-3-Clause
+License: Apache-2.0 AND BSD-3-Clause AND PDDL-1.0

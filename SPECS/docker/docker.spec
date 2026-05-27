@@ -5,16 +5,16 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT e6534b4
-%define DOCKER_CLI_GITCOMMIT e6534b4
+%define DOCKER_ENGINE_GITCOMMIT 568f755
+%define DOCKER_CLI_GITCOMMIT 79eb04c
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
 
 Summary:        Docker
 Name:           docker
-Version:        29.4.1
-Release:        3%{?dist}
+Version:        29.5.2
+Release:        1%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -297,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 29.5.2-1
+- Upgrade to v29.5.2
 * Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.4.1-3
 - Build docker-rootless with fuse3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 29.4.1-2

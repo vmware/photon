@@ -1,7 +1,15 @@
 sources:
-- archive: go-md2man-2.0.2.tar.gz
-  archive_sha512sum: c81edfdc0b6647ef699cc908a1a7038d98da34df6d48b223b83a0699de91a7e322e70d67645acf1fc848918f4c1ea310160c7ccb75e6f97b53af7103c7aa18b3
-  skip_validation: true
+- archive: go-md2man-2.0.7.tar.gz
+  archive_sha512sum: cc6878af3cfdb0c06ee46b39aa407ec5e48814dc8f68eeae885607407833ac263995fe61c0870217e7c2b2102904f1cf732fa210d89ba38e2443ab1436212905
+  archive_type: upstream
+  commit_id: 061b6c7cbecd6752049221aa15b7a05160796698
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: go-md2man-2.0.7
+  version: '2.0.7'
+  repo_url: https://github.com/cpuguy83/go-md2man
+  url: https://github.com/cpuguy83/go-md2man/archive/refs/tags/v2.0.7.tar.gz
   spdx:
     package:
       detailed_description: 'Converts markdown into roff (man pages). '
@@ -9,4 +17,15 @@ sources:
       license_concluded: MIT AND BSD-2-Clause
       license_declared: MIT AND BSD-2-Clause
       short_summary: Converts markdown into roff (man pages)
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: go-md2man-2.0.7-vendor.tar.gz
+  archive_sha512sum: 06febf546c68fe05edbd3b3c5e4391ac3b16d8a4796ec7ff831614ed6f65d684b8ef2f53f320d0ada48b847808079d5435b5c03206ca9976d878da8eed41ecd2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: go-md2man vendored Go dependencies
+      home_page: https://github.com/cpuguy83/go-md2man
+      license_concluded: MIT AND BSD-2-Clause
+      license_declared: MIT AND BSD-2-Clause
+      short_summary: Vendored Go dependencies for go-md2man
       supplier: 'Organization: Broadcom, Inc.'

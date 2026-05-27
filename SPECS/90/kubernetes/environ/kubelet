@@ -1,0 +1,11 @@
+###
+# kubernetes kubelet (minion) config
+
+# Recommended to use drop in config file for kubelet instead of defining here,
+# as many args are deprecated see: https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/
+
+# Kubelet Kubeconfig
+KUBELET_KUBECONFIG=""
+
+# Additional args
+KUBELET_ARGS=""

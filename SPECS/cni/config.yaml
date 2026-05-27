@@ -1,7 +1,15 @@
 sources:
-- archive: cni-1.7.1.tar.gz
-  archive_sha512sum: 5b1a8c1a63f6f7a7ca4df570bf5c4b2003cdfe1b861ac86f145b5b523c9371275f68b01a115566a4f3455e56709a5a280b485005ea3fa121c1f381fbf6bd500e
-  skip_validation: true
+- archive: cni-1.9.1.tar.gz
+  archive_sha512sum: 5811fb14786f1f9d9e40741ce337449ce329e14e04213bc660102eb470150f24026e59caec480572e37d0e3e6e6518737f3cc7ac462c47034d0737283ec532f9
+  archive_type: upstream
+  commit_id: adc3e6b5b581638afbd194cf2e9319ecbb0151a1
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: plugins-1.9.1
+  version: '1.9.1'
+  repo_url: https://github.com/containernetworking/plugins
+  url: https://github.com/containernetworking/plugins/archive/refs/tags/v1.9.1.tar.gz
   spdx:
     package:
       detailed_description: 'The CNI (Container Network Interface) project consists

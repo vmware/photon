@@ -1,14 +1,15 @@
 sources:
-- archive: flannel-0.27.4.tar.gz
+- archive: flannel-0.28.4.tar.gz
   archive_type: upstream
-  archive_sha512sum: 9a274ce362599036eff32782887d2b77d9a0979f0006d2149ed00da7c3df99a135435bb03e1c7842624d223cb3f7a610d0c0f1795bb22ca438272a45f1217380
-  version: 0.27.4
-  name: flannel-0.27.4
-  url: https://github.com/flannel-io/flannel/archive/refs/tags/v0.27.4.tar.gz
+  archive_sha512sum: a58267e9e660e5ceb141c7844b3dbb396e76bff48ed390de81aefb50df5254595367daf1579f640ae3a99fe9d3ded6feb495c4caa3b114a98b6b0600eb1e25e9
+  version: 0.28.4
+  name: flannel-0.28.4
+  url: https://github.com/flannel-io/flannel/archive/refs/tags/v0.28.4.tar.gz
   repo_url: https://github.com/flannel-io/flannel
-  commit_id: 20bdda0b238784fbfa623a1cf4c469645f531efa
+  commit_id: 3adfe3e04407869b9f84be0a68a6cebb73df9c6e
   skip_list: []
   missing: []
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'flannel is a virtual network that provides a subnet to

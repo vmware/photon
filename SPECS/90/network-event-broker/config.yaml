@@ -1,0 +1,17 @@
+sources:
+- archive: network-event-broker-0.3.tar.gz
+  archive_sha512sum: 3560c1e25b0df04071b43492d9b043140d95c05fe96a1216ae19992965b99c0bef23141771c1f1d36b7af8ea1772d2d222011705c2321ac42ee408ee19647b2d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A daemon that configures the network and executes scripts
+        on network events such as systemd-networkd''s DBus events or dhclient gaining
+        a lease. It also watches when an address gets added/removed/modified or links
+        get added/removed. '
+      home_page: https://github.com/vmware/network-event-broker
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND MPL-2.0
+        AND BSD-3-Clause AND MIT
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND MPL-2.0
+        AND BSD-3-Clause AND MIT
+      short_summary: Manages network configuration
+      supplier: 'Organization: Broadcom, Inc.'

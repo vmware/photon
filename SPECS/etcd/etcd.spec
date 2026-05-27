@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.6.9
+Version:        3.6.11
 Release:        1%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
@@ -89,6 +91,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.11-1
+- Upgrade to v3.6.11
 * Tue Mar 31 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.9-1
 - Version upgrade to 3.6.9
 * Mon Mar 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.5-4

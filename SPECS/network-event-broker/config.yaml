@@ -1,7 +1,15 @@
 sources:
-- archive: network-event-broker-0.3.tar.gz
-  archive_sha512sum: 3560c1e25b0df04071b43492d9b043140d95c05fe96a1216ae19992965b99c0bef23141771c1f1d36b7af8ea1772d2d222011705c2321ac42ee408ee19647b2d
-  skip_validation: true
+- archive: network-event-broker-0.3.1.tar.gz
+  archive_sha512sum: 8ef727e1a637d456d88b5bf04505d9346cfc46e0bd4a9b0de0896297f881d35c1d36785294cf567d8a6569d9f34beb7700dcf037845a5756d133aeaa3a9df971
+  archive_type: upstream
+  commit_id: b752eb827e8f51b8b498082aa6ed65457a2292ff
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: network-event-broker-0.3.1
+  version: '0.3.1'
+  repo_url: https://github.com/vmware/network-event-broker
+  url: https://github.com/vmware/network-event-broker/archive/refs/tags/v0.3.1.tar.gz
   spdx:
     package:
       detailed_description: 'A daemon that configures the network and executes scripts

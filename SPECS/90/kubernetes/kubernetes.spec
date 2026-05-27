@@ -1,0 +1,343 @@
+%global build_if %{photon_subrelease} <= 90
+
+%define network_required 1
+%ifarch x86_64
+%define archname amd64
+%endif
+%ifarch aarch64
+%define archname arm64
+%endif
+
+%define debug_package %{nil}
+%define __strip /bin/true
+%define k8s_ver 1.34
+
+Summary:        Kubernetes cluster management
+Name:           kubernetes
+Version:        1.34.1
+Release:        2.1%{?dist}
+URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
+
+Source3:        10-kubeadm.conf
+Source4:        %{name}.sysusers
+Source5:        apiserver
+Source7:        controller-manager
+Source8:        kubelet
+Source9:        proxy
+Source10:       scheduler
+Source12:       kubelet.service
+Source13:       kube-apiserver.service
+Source14:       kube-proxy.service
+Source15:       kube-scheduler.service
+Source16:       kube-controller-manager.service
+
+Source17: license.txt
+%include %{SOURCE17}
+
+BuildRequires:  go
+BuildRequires:  rsync
+BuildRequires:  which
+BuildRequires:  systemd-devel
+
+Requires:       cni
+Requires:       ebtables
+Requires:       etcd >= 3.6.4
+Requires:       ethtool
+Requires:       iptables
+Requires:       iproute2
+Requires:       socat
+Requires:       util-linux
+Requires:       conntrack-tools
+Requires:       kubernetes-kubelet = %{version}-%{release}
+
+%description
+Kubernetes is an open source implementation of container cluster management.
+
+%package        kubeadm
+Summary:        kubeadm deployment tool
+Group:          Development/Tools
+Requires:       kubernetes-kubelet = %{version}-%{release}
+%description    kubeadm
+kubeadm is a tool that enables quick and easy deployment of a %{name} cluster.
+
+%package        kubelet
+Summary:        Primary node agent
+Group:          Development/Tools
+Requires(pre):  systemd-rpm-macros
+Requires(pre):  shadow
+Requires:       cri-tools >= %{k8s_ver}
+Conflicts:      kubernetes < 1.34.1
+
+%description    kubelet
+The kubelet is the primary "node agent" that runs on each node.
+
+%package        pause
+Summary:        pause binary
+Group:          Development/Tools
+%description    pause
+A pod setup process that holds a pod's namespace.
+
+%prep
+%autosetup -p1
+
+# Remove files to handle unintended inclusions
+# README.md & LICENSE.docs of vendor projects mentions license of content not code.
+find vendor/github.com/opencontainers \( -name "LICENSE.docs" -o -name "README.md" \) -print -delete
+
+%build
+export FORCE_HOST_GO=y
+make WHAT="cmd/kube-proxy" %{?_smp_mflags}
+make WHAT="cmd/kube-apiserver" %{?_smp_mflags}
+make WHAT="cmd/kube-controller-manager" %{?_smp_mflags}
+make WHAT="cmd/kubelet" %{?_smp_mflags}
+make WHAT="cmd/kubeadm" %{?_smp_mflags}
+make WHAT="cmd/kube-scheduler" %{?_smp_mflags}
+make WHAT="cmd/kubectl" %{?_smp_mflags}
+make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
+
+pushd build/pause
+mkdir -p bin
+gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
+strip bin/pause-%{archname}
+popd
+
+%install
+install -vdm644 %{buildroot}%{_sysconfdir}/profile.d
+install -m 755 -d %{buildroot}%{_bindir}
+
+# binaries install
+binaries=(cloud-controller-manager kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
+for bin in "${binaries[@]}"; do
+  echo "+++ INSTALLING ${bin}"
+  install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
+done
+install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
+
+# kubeadm install
+install -vdm644 %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d
+install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
+install -p -m 755 -t %{buildroot}%{_sysconfdir}/systemd/system %{SOURCE12}
+install -p -m 644 -t %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d %{SOURCE3}
+sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}%{_sysconfdir}/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+cd ..
+# install config files
+install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/manifests
+
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE5}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE7}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE8}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE9}
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} %{SOURCE10}
+
+# install service files
+install -d -m 0755 %{buildroot}%{_unitdir}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE12}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE13}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE14}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE15}
+install -m 0644 -t %{buildroot}%{_unitdir} %{SOURCE16}
+
+# install the place the kubelet defaults to put volumes
+install -dm755 %{buildroot}%{_sharedstatedir}/kubelet
+install -dm755 %{buildroot}%{_var}/run/%{name}
+
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/%{name}.conf
+
+mkdir -p %{buildroot}%{_tmpfilesdir}
+cat << EOF >> %{buildroot}%{_tmpfilesdir}/%{name}.conf
+d %{_var}/run/%{name} 0755 kube kube -
+EOF
+
+%check
+export GOPATH=%{_builddir}
+go get golang.org/x/tools/cmd/cover
+make %{?_smp_mflags} check
+
+%clean
+rm -rf %{buildroot}/*
+
+%pre kubelet
+if [ $1 -eq 1 ]; then
+    # Initial installation.
+    %sysusers_create_compat %{SOURCE4}
+fi
+
+%post kubelet
+homeDir="%{_sharedstatedir}/kubelet"
+chown -R kube:kube $homeDir
+chown -R kube:kube %{_var}/run/%{name}
+
+# on upgrade, adjust sshd home directory if needed
+if [ $1 -eq 2 ]; then
+  current_home=$(getent passwd kube | cut -d: -f6)
+  if [ -n "$current_home" ] && [ "$current_home" != "$homeDir" ]; then
+    echo "Migrating home for kube: $current_home -> $homeDir"
+    usermod -d "$homeDir" -m kube 2>/dev/null || usermod -d "$homeDir" kube
+  fi
+fi
+
+systemctl daemon-reload
+
+%post kubeadm
+systemctl daemon-reload
+systemctl stop kubelet
+systemctl enable kubelet
+
+%preun kubeadm
+if [ $1 -eq 0 ]; then
+    systemctl stop kubelet
+fi
+
+%postun
+if [ $1 -eq 0 ]; then
+    # Package deletion
+    systemctl daemon-reload
+fi
+
+%postun kubeadm
+if [ $1 -eq 0 ]; then
+    systemctl daemon-reload
+fi
+
+%files
+%defattr(-,root,root)
+%{_bindir}/cloud-controller-manager
+%{_bindir}/kube-apiserver
+%{_bindir}/kube-controller-manager
+%{_bindir}/kube-proxy
+%{_bindir}/kube-scheduler
+%{_bindir}/kubectl
+%{_unitdir}/kube-apiserver.service
+%{_unitdir}/kube-scheduler.service
+%{_unitdir}/kube-controller-manager.service
+%{_unitdir}/kube-proxy.service
+%{_tmpfilesdir}/%{name}.conf
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/apiserver
+%config(noreplace) %{_sysconfdir}/%{name}/controller-manager
+%config(noreplace) %{_sysconfdir}/%{name}/proxy
+%config(noreplace) %{_sysconfdir}/%{name}/scheduler
+%{_sysusersdir}/%{name}.conf
+
+%files kubelet
+%defattr(-,root,root)
+%{_bindir}/kubelet
+%{_unitdir}/kubelet.service
+%dir %{_var}/run/%{name}
+%dir %{_sharedstatedir}/kubelet
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/kubelet
+
+%files kubeadm
+%defattr(-,root,root)
+%{_bindir}/kubeadm
+%{_sysconfdir}/systemd/system/kubelet.service
+%{_sysconfdir}/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+%files pause
+%defattr(-,root,root)
+%{_bindir}/pause-%{archname}
+
+%changelog
+* Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.34.1-2.1
+- Maintain for photon_subrelease <= 90
+* Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.1-2
+- Bump version as a part of go upgrade
+* Tue Oct 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.34.1-1
+- Update to version 1.34.1
+* Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.16-5
+- Change kube user's home dir
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-4
+- Bump version as a part of go upgrade
+* Mon Jul 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-3
+- Clean up unintended licenses
+* Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-2
+- Renaming sysusers to conf to fix auto user creation
+* Tue Feb 25 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.16-1
+- Update to 1.27.16, Fixes CVE-2024-5321,fix CVE-2024-10220
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.27.13-8
+- Release bump for network_required packages
+* Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-7
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-6
+- Bump version as a part of go upgrade
+* Wed Sep 04 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-5
+- Adding env variable to compile with host go in build section
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-4
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.27.13-3
+- Bump version as a part of go upgrade
+* Thu Jun 06 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.13-2
+- Update release to compile with host go
+* Mon Apr 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.27.13-1
+- Update to 1.27.13, fixes CVE-2024-3177
+* Wed Mar 13 2024 Mukul Sikka <msikka@vmware.com> 1.27.3-10
+- Bump version as a part of go upgrade
+* Fri Mar 08 2024 Anmol Jain <anmol.jain@broadcom.com> 1.27.3-9
+- Bump version as a part of etcd upgrade
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-8
+- Bump up version to compile with new go
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-7
+- Bump up version to compile with new go
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-6
+- Bump up version to compile with new go
+* Thu Sep 07 2023 Alexey Makhalov <amakhalov@vmware.com> 1.27.3-5
+- Fix for previous change to apply all patches.
+* Wed Aug 23 2023 Alexey Makhalov <amakhalov@vmware.com> 1.27.3-4
+- Introduction of vmware.com/isolcpu POD property.
+- isolcpus allocations support for RT workloads.
+* Tue Aug 08 2023 Mukul Sikka <msikka@vmware.com> 1.27.3-3
+- Resolving systemd-rpm-macros for group creation
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.27.3-2
+- Bump up version to compile with new go
+* Tue Jul 04 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.27.3-1
+- Update to 1.27.3, Fixes multiple second level CVEs
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-4
+- Bump up version to compile with new go
+* Wed May 24 2023 Shivani Agarwal <shivania2@vmware.com> 1.26.1-3
+- Bump up version to compile with new etcd
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.26.1-2
+- Bump up version to compile with new go
+* Thu Mar 16 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.26.1-1
+- Update k8s to 1.26
+* Fri Mar 10 2023 Mukul Sikka <msikka@vmware.com> 1.23.8-8
+- Use systemd-rpm-macros for user creation
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.23.8-7
+- Bump up version to compile with new go
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.23.8-6
+- Fix requires
+* Thu Nov 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23.8-5
+- Bump version as a part of cni upgrade
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.8-4
+- Bump up version to compile with new go
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.8-3
+- Bump up version to compile with new go
+* Wed Sep 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.23.8-2
+- Remove kubectl-extras subpackage
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.8-1
+- Update kubernetes to 1.23.8
+* Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.15-1
+- Update to 1.19.15, Fix CVE-2021-25741
+* Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 1.19.10-4
+- Bump up version to compile with new glibc
+* Tue Jun 22 2021 Rishabh Jain <rjain3@vmware.com> 1.19.10-3
+- Change 10-kubeadm.conf file permission to 644
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.19.10-2
+- Bump up version to compile with new go
+* Tue May 11 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.10-1
+- Update to v1.19.10, fixes CVE-2021-3121. Added patch to fix CVE-2021-25737
+* Tue Feb 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.7-1
+- Update to v1.19.7
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.18.8-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.8-2
+- Bump up version to compile with new go
+* Wed Aug 26 2020 Ashwin H <ashwinh@vmware.com> 1.18.8-1
+- Initial version

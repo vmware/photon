@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 # Please handle this spec with care, As this a custom spec file created
 # for podman so it should be manually upgraded when required. Because
 # it has specific files from multiple repos as mention in spec comment
@@ -34,7 +36,7 @@
 Summary:        Common configuration and documentation for containers
 Name:           containers-common
 Version:        4
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/containers
 Source0:        %{name}-%{version}.tar.gz
 
@@ -105,6 +107,8 @@ ln -s %{_sysconfdir}/rhsm %{buildroot}%{_datadir}/rhel/secrets/rhsm
 %{_datadir}/rhel/secrets/*
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4-4
+- Bump version as a part of cni upgrade
 * Wed Jul 30 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4-3
 - Update license string to reflect on current source files
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 4-2

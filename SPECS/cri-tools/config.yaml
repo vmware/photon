@@ -1,14 +1,14 @@
 sources:
-- archive: cri-tools-1.34.0.tar.gz
+- archive: cri-tools-1.36.0.tar.gz
   archive_type: upstream
-  archive_sha512sum: c6ec6e9682c5891c15b22415269999210e1372274d692b0adb822219ee210918ca2d647755dd1f30f5f58ac23975531ea9c0bdea05fd97b155f5830f1d4fdbc3
+  archive_sha512sum: 5daa05ad977c85c5656c0fd1a6d4dd0b4596bf9d05038229fa522941e51793fff4272bb7c403b6bff6b6dde80d6f45f161e979861547bf5fb91095a096726967
   skip_validation: false
-  version: 1.34.0
-  name: cri-tools-1.34.0
+  version: 1.36.0
+  name: cri-tools-1.36.0
   url:
-    https://github.com/kubernetes-sigs/cri-tools/archive/refs/tags/v1.34.0.tar.gz
+    https://github.com/kubernetes-sigs/cri-tools/archive/refs/tags/v1.36.0.tar.gz
   repo_url: https://github.com/kubernetes-sigs/cri-tools
-  commit_id: ca0237b9fec5b675b0bb7bc96b7496e6d54f5ccb
+  commit_id: 88d8ad9d40f82726fda53c2d271e6172b4c619c9
   skip_list: []
   missing: []
   spdx:

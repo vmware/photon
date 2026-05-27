@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define libflux_version 0.194.5
 %define libflux_vendor kapacitor-libflux-vendor-%{libflux_version}.tar.gz
 %define network_required 1
 
 Name:           kapacitor
-Version:        1.7.7
-Release:        6%{?dist}
+Version:        1.8.5
+Release:        1%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Vendor:         VMware, Inc.
@@ -127,6 +129,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.5-1
+- Upgrade to v1.8.5
 * Thu Mar 05 2026 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.7.7-6
 - Build compatible with updated rust-1.93.1 and old rust-1.87.0
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.7.7-5

@@ -1,13 +1,15 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 %define debug_package %{nil}
 
 # Must be in sync with package version
-%define COREDNS_GIT_COMMIT ae2bbc29b
+%define COREDNS_GIT_COMMIT 17fceec6d
 
 Summary:        CoreDNS
 Name:           coredns
-Version:        1.11.1
-Release:        16%{?dist}
+Version:        1.14.3
+Release:        1%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,11 +19,6 @@ Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0:         coredns-CVE-2025-47950.patch
-Patch1:         coredns-CVE-2025-58063.patch
-Patch2:         coredns-CVE-2026-26017.patch
-Patch3:         coredns-CVE-2026-26018.patch
 
 BuildRequires: go
 BuildRequires: git
@@ -46,6 +43,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.3-1
+- Upgrade to v1.14.3
 * Fri Mar 13 2026 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-16
 - Fix CVE-2026-26017 and CVE-2026-26018
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-15

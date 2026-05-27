@@ -4,8 +4,8 @@
 
 Summary:    Linux-native fakeroot using user namespaces
 Name:       rootlesskit
-Version:    1.1.0
-Release:    17%{?dist}
+Version:    3.0.0
+Release:    1%{?dist}
 Group:      Tools/Docker
 URL:        https://github.com/rootless-containers/rootlesskit
 Vendor:     VMware, Inc.
@@ -47,6 +47,8 @@ export BINDIR=%{_bindir}
 %{_bindir}/rootlessctl
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.0.0-1
+- Upgrade to v3.0.0
 * Wed May 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-17
 - Use fuse3
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-16

@@ -1,14 +1,15 @@
 sources:
-- archive: docker-compose-2.40.3.tar.gz
+- archive: docker-compose-5.1.4.tar.gz
   archive_type: upstream
-  archive_sha512sum: aea731cae9e230b5bdf9ad576cf6b04e6edf3233ca8e309b16dbf5a2469aa80ed3082790750d84a6dae981d581e6148e7fba49ddf8d30d7b3c6efcf90576fbe1
-  version: 2.40.3
-  name: compose-2.40.3
-  url: https://github.com/docker/compose/archive/refs/tags/v2.40.3.tar.gz
+  archive_sha512sum: b9cc1c74251f97b4eef6448f66e58613c3b22b683ea92bebb6d8279b00739c285170d6cdc059e7341cb419c197b47958c6ad446ca763c93121ee524e57412a68
+  version: 5.1.4
+  name: compose-5.1.4
+  url: https://github.com/docker/compose/archive/refs/tags/v5.1.4.tar.gz
   repo_url: https://github.com/docker/compose
-  commit_id: 49b1c1e932aecd3a4843b392162d4bd56021935e
+  commit_id: 4732a2ed20a49c43a7b44bb4928259162c3ae3be
   skip_list: []
   missing: []
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Docker Compose (V2) plugin for the Docker CLI.  This

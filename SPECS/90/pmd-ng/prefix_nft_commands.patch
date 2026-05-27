@@ -1,0 +1,62 @@
+From 047db40a5a0198d9e378a40faee578b076369ea9 Mon Sep 17 00:00:00 2001
+From: Tapas Kundu <tapas.kundu@broadcom.com>
+Date: Tue, 1 Apr 2025 08:34:05 +0000
+Subject: [PATCH] prefix nft commands with "nft"
+
+Signed-off-by: Tapas Kundu <tapas.kundu@broadcom.com>
+---
+ USECASES.md                      | 14 +++++++-------
+ cmd/pmctl/pmctl_firewall_test.go | 14 +++++++-------
+ plugins/network/firewall/nft.go  |  8 ++------
+ 3 files changed, 16 insertions(+), 20 deletions(-)
+
+//Removed USECASES.md as the file does not exist in the tarball
+
+diff --git a/cmd/pmctl/pmctl_firewall_test.go b/cmd/pmctl/pmctl_firewall_test.go
+index dc7e848..362752a 100644
+--- a/cmd/pmctl/pmctl_firewall_test.go
++++ b/cmd/pmctl/pmctl_firewall_test.go
+@@ -207,13 +207,13 @@ func TestDeleteNFTChain(t *testing.T) {
+ }
+ 
+ func TestRunNFT(t *testing.T) {
+-	at := []string{"nft", "add", "table", "inet", "test99"}
+-	ac := []string{"nft", "add", "chain", "inet", "test99", "test99chain", "{ type filter hook input priority 0; }"}
+-	ar := []string{"nft", "add", "rule", "inet", "test99", "test99chain", "tcp", "dport", "{telnet, http, https}", "accept"}
+-	vr := []string{"nft", "list", "ruleset"}
+-	dr := []string{"nft", "delete", "rule", "inet", "test99", "test99chain", "handle", "3"}
+-	dc := []string{"nft", "delete", "chain", "inet", "test99", "test99chain"}
+-	dt := []string{"nft", "delete", "table", "inet", "test99"}
++	at := []string{"add", "table", "inet", "test99"}
++	ac := []string{"add", "chain", "inet", "test99", "test99chain", "{ type filter hook input priority 0; }"}
++	ar := []string{"add", "rule", "inet", "test99", "test99chain", "tcp", "dport", "{telnet, http, https}", "accept"}
++	vr := []string{"list", "ruleset"}
++	dr := []string{"delete", "rule", "inet", "test99", "test99chain", "handle", "3"}
++	dc := []string{"delete", "chain", "inet", "test99", "test99chain"}
++	dt := []string{"delete", "table", "inet", "test99"}
+ 
+ 	// Add Table
+ 	n := firewall.Nft{
+diff --git a/plugins/network/firewall/nft.go b/plugins/network/firewall/nft.go
+index db2220f..e5ae341 100644
+--- a/plugins/network/firewall/nft.go
++++ b/plugins/network/firewall/nft.go
+@@ -414,16 +414,12 @@ func (n *Nft) SaveNFT(w http.ResponseWriter) error {
+ }
+ 
+ func (n *Nft) RunNFT(w http.ResponseWriter) error {
+-	cmd := n.Command[0]
+-	n.Command = n.Command[1:]
+ 	args := strings.Join(n.Command, " ")
+ 
+-	stdout, err := system.ExecAndCapture(cmd, args)
++	stdout, err := system.ExecAndCapture("nft", args)
+ 	if err != nil {
+-		log.Errorf("Failed to run command='%s %s', command output=%v", cmd, args, err)
++		log.Errorf("Failed to run command='nft %s', command output=%v", args, err)
+ 		return fmt.Errorf("Failed to acquire command output=%v", err)
+-		//return fmt.Errorf("Failed to run command='%s %s', command output=%v", cmd, args, err)
+ 	}
+-
+ 	return web.JSONResponse(stdout, w)
+ }

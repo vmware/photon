@@ -1,0 +1,25 @@
+###
+# The following values are used to configure the kubernetes controller-manager
+
+# Cluster name
+KUBE_CLUSTER_NAME=""
+
+# Cluster IPs
+KUBE_CLUSTER_CIDR=""
+
+KUBE_BIND_ADDRESS="--bind-address=0.0.0.0"
+
+KUBE_SERVICE_CLUSTER_IP_RANGE=""
+
+# Cluster Keys and Certs
+KUBE_CLUSTER_CERTS=""
+
+KUBE_ROOT_CERTS=""
+
+KUBE_SERVICE_ACCOUNT=""
+
+# Kubeconfig
+KUBE_CONTROLLER_MANAGER_KUBECONFIG=""
+
+# Additional args
+KUBE_CONTROLLER_MANAGER_ARGS="--v=2"

@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 %global debug_package %{nil}
 
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
-Version:        2.4.2
-Release:        19%{?dist}
+Version:        5.4.2
+Release:        1%{?dist}
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -57,6 +59,8 @@ install -vpm 0755 -t %{buildroot}%{_datadir}/%{name}/docker/ \
 %{_datadir}/%{name}/docker/nginx.*
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.4.2-1
+- Upgrade to v5.4.2
 * Tue Feb 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.2-19
 - Bump up as part of docker upgrade
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.2-18

@@ -1,0 +1,21 @@
+sources:
+- archive: flannel-0.27.4.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 9a274ce362599036eff32782887d2b77d9a0979f0006d2149ed00da7c3df99a135435bb03e1c7842624d223cb3f7a610d0c0f1795bb22ca438272a45f1217380
+  version: 0.27.4
+  name: flannel-0.27.4
+  url: https://github.com/flannel-io/flannel/archive/refs/tags/v0.27.4.tar.gz
+  repo_url: https://github.com/flannel-io/flannel
+  commit_id: 20bdda0b238784fbfa623a1cf4c469645f531efa
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'flannel is a virtual network that provides a subnet to
+        a container runtime host OS for use with containers. flannel uses etcd to
+        store the network configuration, allocated subnets, and additional data. '
+      home_page: https://github.com/coreos/flannel
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Overlay network for containers based on etcd
+      supplier: 'Organization: Broadcom, Inc.'

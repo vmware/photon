@@ -1,0 +1,20 @@
+sources:
+- archive: pcstat-0.0.2.tar.gz
+  archive_sha512sum: 980898f1659b81bec591b2b7f0cc59f8b1dc46b7ca6aa135e5aed357ddf56f1c691115411245c228e3fa9ca2df69e24616d87df2b9ba519242ac56fe5f975893
+  archive_type: upstream
+  commit_id: 9987e015bb800d783917d89d8ff609c1ce8acc0e
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: "pcstat-0.0.2"
+  version: 0.0.2
+  repo_url: https://github.com/tobert/pcstat
+  url: https://github.com/tobert/pcstat/archive/refs/tags/v0.0.2.tar.gz
+  spdx:
+    package:
+      detailed_description: 'A tool that inspect which pages of a file or files are being cached by the Linux kernel'
+      home_page: https://github.com/tobert/pcstat
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: A tool that inspect which pages of a file or files are being cached by the Linux kernel
+      supplier: 'Organization: Broadcom, Inc.'

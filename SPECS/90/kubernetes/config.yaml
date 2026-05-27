@@ -1,0 +1,25 @@
+sources:
+- archive: kubernetes-1.34.1.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 97f8bb4cbbd12c1100d62faa2205388ee6b7834778c381bf3d658bc056be43e13cc63fa7df487e5305b3a162439f1ebe06226da1dd824181154d0b8f3b63b764
+  version: "1.34.1"
+  name: kubernetes-1.34.1
+  url: https://github.com/kubernetes/kubernetes/archive/refs/tags/v1.34.1.tar.gz
+  repo_url: https://github.com/kubernetes/kubernetes
+  commit_id: 93248f9ae092f571eb870b7664c534bfc7d00f03
+  skip_list: ['version.sh', 'base.go']
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Kubernetes is an open source implementation of container
+        cluster management. '
+      home_page: 
+        https://github.com/kubernetes/kubernetes/archive/v1.27.13.tar.gz
+      license_concluded: (BSD-3-Clause OR OpenSSL) AND Apache-2.0 AND 
+        BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC-BY-SA-4.0 AND 
+        GPL-1.0-or-later AND ISC AND JSON AND MIT
+      license_declared: (BSD-3-Clause OR OpenSSL) AND Apache-2.0 AND 
+        BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC-BY-SA-4.0 AND 
+        GPL-1.0-or-later AND ISC AND JSON AND MIT
+      short_summary: Kubernetes cluster management
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,11 +1,13 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define gopath_comp_cns github.com/vmware/cloud-network-setup
 
 %global debug_package %{nil}
 
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
-Version:        0.2.2
-Release:        17%{?dist}
+Version:        0.2.3
+Release:        1%{?dist}
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -86,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/cloud-network.service
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.3-1
+- Upgrade to v0.2.3
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.2.2-17
 - Add missing shadow dependency for user creation
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.2.2-16

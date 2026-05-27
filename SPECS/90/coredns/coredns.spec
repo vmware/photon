@@ -1,0 +1,124 @@
+%global build_if %{photon_subrelease} <= 90
+
+%define network_required 1
+%define debug_package %{nil}
+
+# Must be in sync with package version
+%define COREDNS_GIT_COMMIT ae2bbc29b
+
+Summary:        CoreDNS
+Name:           coredns
+Version:        1.11.1
+Release:        16.1%{?dist}
+URL:            https://github.com/%{name}/%{name}
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/coredns/coredns/archive/refs/tags/%{name}-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Patch0:         coredns-CVE-2025-47950.patch
+Patch1:         coredns-CVE-2025-58063.patch
+Patch2:         coredns-CVE-2026-26017.patch
+Patch3:         coredns-CVE-2026-26018.patch
+
+BuildRequires: go
+BuildRequires: git
+
+%description
+CoreDNS is a DNS server that chains plugins
+
+%prep
+%autosetup -p1
+
+%build
+%make_build GITCOMMIT=%{COREDNS_GIT_COMMIT}
+
+%install
+install -D -m 755 %{name} %{buildroot}%{_bindir}/%{name}
+
+%clean
+rm -rf %{buildroot}/*
+
+%files
+%defattr(-,root,root)
+%{_bindir}/%{name}
+
+%changelog
+* Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-16.1
+- Maintain for photon_subrelease <= 90
+* Fri Mar 13 2026 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-16
+- Fix CVE-2026-26017 and CVE-2026-26018
+* Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-15
+- Bump version as a part of go upgrade
+* Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-14
+- Bump version as a part of go upgrade
+* Tue Sep 16 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-13
+- Fix CVE-2025-58063
+* Thu Jun 26 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.11.1-12
+- Fix build instructions
+* Fri Jun 20 2025 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-11
+- Fix for CVE-2025-47950
+* Fri Jan 10 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.11.1-10
+- Fix go input dependencies which have Capital letters in name.
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.11.1-9
+- Release bump for network_required packages
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.11.1-8
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-7
+- Bump version as a part of go upgrade
+* Fri Aug 23 2024 Bo Gan <bo.gan@broadcom.com> 1.11.1-6
+- Simplify build scripts, and pass GITCOMMIT to make.
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-5
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 1.11.1-4
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 1.11.1-3
+- Bump version as a part of go upgrade
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 1.11.1-2
+- Bump up version to compile with new go
+* Fri Nov 03 2023 Nitesh Kumar <kunitesh@vmware.com> 1.11.1-1
+- Version upgrade to v1.11.1 to fix following CVE's:
+- CVE-2021-28235 and CVE-2023-32082
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-4
+- Bump up version to compile with new go
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-3
+- Bump up version to compile with new go
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.1-2
+- Bump up version to compile with new go
+* Tue Jul 04 2023 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
+- Version upgrade to v1.10.1 to fix CVE-2023-0296
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-5
+- Bump up version to compile with new go
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-4
+- Bump up version to compile with new go
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 1.10.0-3
+- Bump up version to compile with new go
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 1.10.0-2
+- Bump up version to compile with new go
+* Thu Nov 03 2022 Nitesh Kumar <kunitesh@vmware.com> 1.10.0-1
+- Version upgrade to v1.10.0
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.3-3
+- Bump up version to compile with new go
+* Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.8.3-2
+- Bump up version to compile with new go
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.8.3-1
+- Automatic Version Bump
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.7.1-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.7.1-2
+- Bump up version to compile with new go
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.1-1
+- Automatic Version Bump
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
+- Automatic Version Bump
+* Sun Sep 22 2019 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3
+- Fix compilation issue (do not compile mholt/caddy).
+* Sun Sep 23 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
+- Fix compilation issue.
+- aarch64 support.
+* Fri Aug 03 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.2.0-1
+- Initial version of coredns 1.2.0.

@@ -1,7 +1,15 @@
 sources:
-- archive: nerdctl-1.4.0.tar.gz
-  archive_sha512sum: b14cd92b76d9699b4042fcd7a6906b1c714221b30cff1074a1d59ea038cf74ea6437d4a4d9a265e7b0f4c96397c82d53856f9e43d08aa8abcb98af5e9fb6e8dc
-  skip_validation: true
+- archive: nerdctl-2.3.1.tar.gz
+  archive_sha512sum: 862be6d25232f71b1f53729084ca0806b2021f0ce2faa98890b70185fbcb237682a01cfc46035930f5e3f9ec971e0640704fdf9c31738bfab2c7b4f5be5f4124
+  archive_type: upstream
+  commit_id: 04f63fe15f3f8d77fe41e56ab7ff1d1f3e312860
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: nerdctl-2.3.1
+  version: '2.3.1'
+  repo_url: https://github.com/containerd/nerdctl
+  url: https://github.com/containerd/nerdctl/archive/refs/tags/v2.3.1.tar.gz
   spdx:
     package:
       detailed_description: '%{summary} contaiNERD CTL - Docker-compatible CLI for

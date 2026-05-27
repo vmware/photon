@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 %define gopath_comp_termshark github.com/gcla/termshark
 
 Summary:        A terminal user-interface for tshark, inspired by Wireshark
 Name:           termshark
 Version:        2.4.0
-Release:        22%{?dist}
+Release:        23%{?dist}
 URL:            https://github.com/gcla/%{name}/releases/tag/v%{version}.tar.gz
 Source0:        https://github.com/gcla/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -56,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Wed Jun 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.4.0-23
+- Rebuild for go 1.26.3
 * Mon Jun 01 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.4.0-22
 - Release bump to rebuild against wireshark 4.6.6
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.0-21

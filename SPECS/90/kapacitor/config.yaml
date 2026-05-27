@@ -1,0 +1,43 @@
+sources:
+- archive: kapacitor-1.7.7.tar.gz
+  archive_type: upstream
+  version: 1.7.7
+  name: kapacitor-1.7.7
+  url: https://github.com/influxdata/kapacitor/archive/refs/tags/v1.7.7.tar.gz
+  repo_url: https://github.com/influxdata/kapacitor.git
+  commit_id: f59b0b1f0c0681f37a7aa62d79600009d2f168c8
+  skip_list: []
+  missing: []
+  archive_sha512sum: 0495a946fb3c788f830fd39bd6433c22f0c1e5a5e84ff49354bf78a9437cd260c5413d2bc879639e7c66634f61abe73dfd41f01ad305eb2103146dd6969bcdfb
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: 'Kapacitor is an Open source framework for processing,
+        monitoring, and alerting on time series data. '
+      home_page: https://www.influxdata.com/time-series-platform/kapacitor
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Open source framework for processing, monitoring, and alerting
+        on time series data
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: kapacitor-libflux-vendor-0.194.5.tar.gz
+  archive_sha512sum: ed0ff9dab6cd6b851184821603ce107b15ab28a4bd1488e7d42ab8dbd406169c47794d62960e3c940596d5c5db3b5de837cb0be6f89d14e01962882aa412b6ea
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: kapacitor dependencies stored as cargo registry
+      home_page: https://packages.broadcom.com/photon/photon_sources/1.0/
+      license_concluded: Zlib AND blessing AND CC-BY-3.0 AND (Apache-2.0 OR MIT) AND
+        Apache-2.0 WITH LLVM-exception AND BSL-1.0 AND CC0-1.0 AND (Apache-2.0 WITH
+        LLVM-exception OR Apache-2.0 OR MIT) AND GPL-3.0-only AND MIT-testregex AND
+        GPL-2.0-only AND Unlicense AND MIT AND BSD-3-Clause AND Unicode-DFS-2016 AND
+        (MIT OR Apache-2.0) AND MPL-2.0 AND (Apache-2.0 OR MIT) AND (MIT OR Unlicense)
+        AND OFL-1.1 AND Apache-2.0 AND (MIT OR Apache-2.0)
+      license_declared: Zlib AND blessing AND CC-BY-3.0 AND (Apache-2.0 OR MIT) AND
+        Apache-2.0 WITH LLVM-exception AND BSL-1.0 AND CC0-1.0 AND (Apache-2.0 WITH
+        LLVM-exception OR Apache-2.0 OR MIT) AND GPL-3.0-only AND MIT-testregex AND
+        GPL-2.0-only AND Unlicense AND MIT AND BSD-3-Clause AND Unicode-DFS-2016 AND
+        (MIT OR Apache-2.0) AND MPL-2.0 AND (Apache-2.0 OR MIT) AND (MIT OR Unlicense)
+        AND OFL-1.1 AND Apache-2.0 AND (MIT OR Apache-2.0)
+      short_summary: kapacitor dependencies stored as cargo registry
+      supplier: 'Organization: Broadcom, Inc.'

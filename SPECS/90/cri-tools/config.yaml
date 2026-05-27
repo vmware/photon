@@ -1,0 +1,25 @@
+sources:
+- archive: cri-tools-1.34.0.tar.gz
+  archive_type: upstream
+  archive_sha512sum: c6ec6e9682c5891c15b22415269999210e1372274d692b0adb822219ee210918ca2d647755dd1f30f5f58ac23975531ea9c0bdea05fd97b155f5830f1d4fdbc3
+  skip_validation: false
+  version: 1.34.0
+  name: cri-tools-1.34.0
+  url:
+    https://github.com/kubernetes-sigs/cri-tools/archive/refs/tags/v1.34.0.tar.gz
+  repo_url: https://github.com/kubernetes-sigs/cri-tools
+  commit_id: ca0237b9fec5b675b0bb7bc96b7496e6d54f5ccb
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'cri-tools aims to provide a series of debugging and validation
+        tools for Kubelet CRI, which includes: crictl: CLI for kubelet CRI. critest:
+        validation test suites for kubelet CRI.'
+      home_page: https://github.com/kubernetes-incubator/cri-tools
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-SA-4.0
+        AND ISC AND MIT
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-SA-4.0
+        AND ISC AND MIT
+      short_summary: CRI tools
+      supplier: 'Organization: Broadcom, Inc.'

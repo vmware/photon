@@ -1,11 +1,15 @@
 sources:
-- archive: gobgp-4.2.0.tar.gz
-  archive_sha512sum: 6c74db94cf3754a39c54032eb553cfa87c8e9f56a12d6a6d170bc84b6f1f4948f5dec62adf93294cc68b3b5e767be0f51ad06baaa45a118a59dbd5313b726ee6
+- archive: gobgp-4.5.0.tar.gz
+  archive_sha512sum: e34c46ebaace7b28247451102f546903eae72dd388475326d80c98c810f0259d2320260ccbb169b13e23cd38130c3e9ed52061fbf4135bac646c3258fce2366d
   archive_type: upstream
-  name: gobgp-4.2.0
-  url: https://github.com/osrg/gobgp/archive/refs/tags/v4.2.0.tar.gz
+  name: gobgp-4.5.0
+  url: https://github.com/osrg/gobgp/archive/refs/tags/v4.5.0.tar.gz
   repo_url: https://github.com/osrg/gobgp
-  commit_id: 8d4da6dbf5d993476743903676ec34710e1001a0
+  commit_id: 5f191066a78e2c1e929c54b5b75fe2c683c166e4
+  version: '4.5.0'
+  skip_list: []
+  missing: []
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'GoBGP is an open source BGP implementation designed from

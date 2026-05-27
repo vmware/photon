@@ -1,0 +1,109 @@
+%global build_if %{photon_subrelease} <= 90
+
+%define network_required 1
+%global debug_package %{nil}
+%global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
+Summary:       Git extension for versioning large files
+Name:          git-lfs
+Version:       3.7.1
+Release:       2.1%{?dist}
+URL:           https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
+Source0:       https://github.com/git-lfs/git-lfs/archive/refs/tags/%{name}-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+Group:         System Environment/Programming
+Vendor:        VMware, Inc.
+Distribution:  Photon
+BuildRequires: go
+BuildRequires: which
+BuildRequires: tar
+BuildRequires: git
+Requires:      git
+
+%description
+Git LFS is a command line extension and specification for managing large files with Git
+
+%prep
+%autosetup -p1
+
+%build
+make %{?_smp_mflags}
+export PATH=$PATH:%{gemdir}/bin
+
+%install
+rm -rf %{buildroot}
+install -D bin/git-lfs %{buildroot}%{_bindir}/git-lfs
+
+%post
+git lfs install --system
+
+%preun
+git lfs uninstall
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc LICENSE.md README.md
+%{_bindir}/git-lfs
+
+%changelog
+* Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-2.1
+- Maintain for photon_subrelease <= 90
+* Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.1-2
+- Bump version as a part of go upgrade
+* Mon Nov 03 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-1
+- Upgrade to 3.7.1
+- Fix CVE-2025-26625
+* Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.0-16
+- Bump version as a part of go upgrade
+* Mon Jan 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-15
+- Fix CVE-2024-53263
+* Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.0-14
+- Release bump for network_required packages
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.2.0-13
+- Release bump for SRP compliance
+* Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-12
+- Bump version as a part of go upgrade
+* Fri Jul 12 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-11
+- Bump version as a part of go upgrade
+* Thu Jun 20 2024 Mukul Sikka <msikka@vmware.com> 3.2.0-10
+- Bump version as a part of go upgrade
+* Thu Feb 22 2024 Mukul Sikka <msikka@vmware.com> 3.2.0-9
+- Bump version as a part of go upgrade
+* Tue Nov 21 2023 Piyush Gupta <gpiyush@vmware.com> 3.2.0-8
+- Bump up version to compile with new go
+* Wed Oct 11 2023 Piyush Gupta <gpiyush@vmware.com> 3.2.0-7
+- Bump up version to compile with new go
+* Mon Sep 18 2023 Piyush Gupta <gpiyush@vmware.com> 3.2.0-6
+- Bump up version to compile with new go
+* Mon Jul 17 2023 Piyush Gupta <gpiyush@vmware.com> 3.2.0-5
+- Bump up version to compile with new go
+* Thu Jun 22 2023 Piyush Gupta <gpiyush@vmware.com> 3.2.0-4
+- Bump up version to compile with new go
+* Wed May 03 2023 Piyush Gupta <gpiyush@vmware.com> 3.2.0-3
+- Bump up version to compile with new go
+* Thu Mar 09 2023 Piyush Gupta <gpiyush@vmware.com> 3.2.0-2
+- Bump up version to compile with new go
+* Wed Nov 30 2022 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
+- Automatic Version Bump
+* Mon Nov 21 2022 Piyush Gupta <gpiyush@vmware.com> 3.1.4-4
+- Bump up version to compile with new go
+* Wed Oct 26 2022 Piyush Gupta <gpiyush@vmware.com> 3.1.4-3
+- Bump up version to compile with new go
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 3.1.4-2
+- Bump up version to compile with new go
+* Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.1.4-1
+- Automatic Version Bump
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.13.3-2
+- Bump up version to compile with new go
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.13.3-1
+- Automatic Version Bump
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 2.12.0-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 2.12.0-2
+- Bump up version to compile with new go
+* Fri Sep 18 2020 Him Kalyan Bordoloi <bordoloih@vmware.com>  2.12.0-1
+- Initial release.

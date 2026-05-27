@@ -1,0 +1,14 @@
+sources:
+- archive: cni-1.7.1.tar.gz
+  archive_sha512sum: 5b1a8c1a63f6f7a7ca4df570bf5c4b2003cdfe1b861ac86f145b5b523c9371275f68b01a115566a4f3455e56709a5a280b485005ea3fa121c1f381fbf6bd500e
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The CNI (Container Network Interface) project consists
+        of a specification and libraries for writing plugins to configure network
+        interfaces in Linux containers, along with a number of supported plugins.'
+      home_page: https://github.com/containernetworking/plugins
+      license_concluded: MIT AND BSD-2-Clause AND BSD-3-Clause AND MPL-2.0 AND Apache-2.0
+      license_declared: MIT AND BSD-2-Clause AND BSD-3-Clause AND MPL-2.0 AND Apache-2.0
+      short_summary: Container Network Interface (CNI) plugins
+      supplier: 'Organization: Broadcom, Inc.'

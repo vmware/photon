@@ -1,8 +1,10 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 Summary:        GO interface to the VMware vSphere API.
 Name:           govmomi
-Version:        0.29.0
-Release:        18%{?dist}
+Version:        0.54.0
+Release:        1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -56,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/vcsim
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.54.0-1
+- Upgrade to v0.54.0
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.29.0-18
 - Bump version as a part of go upgrade
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.29.0-17

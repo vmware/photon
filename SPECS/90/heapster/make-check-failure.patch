@@ -1,0 +1,109 @@
+diff --git a/common/kafka/glogadapter.go b/common/kafka/glogadapter.go
+index b044d9c..5336e28 100644
+--- a/common/kafka/glogadapter.go
++++ b/common/kafka/glogadapter.go
+@@ -26,17 +26,17 @@ type GologAdapterLogger struct {
+ }
+ 
+ func (GologAdapterLogger) Debug(msg string, args ...interface{}) {
+-	glog.V(6).Infof(msg, args)
++	glog.V(6).Infof(msg, args...)
+ }
+ 
+ func (GologAdapterLogger) Info(msg string, args ...interface{}) {
+-	glog.Infof(msg, args)
++	glog.Infof(msg, args...)
+ }
+ 
+ func (GologAdapterLogger) Warn(msg string, args ...interface{}) {
+-	glog.Warningf(msg, args)
++	glog.Warningf(msg, args...)
+ }
+ 
+ func (GologAdapterLogger) Error(msg string, args ...interface{}) {
+-	glog.Errorf(msg, args)
++	glog.Errorf(msg, args...)
+ }
+diff --git a/events/sinks/riemann/driver.go b/events/sinks/riemann/driver.go
+index 0d7ab90..7fe8461 100644
+--- a/events/sinks/riemann/driver.go
++++ b/events/sinks/riemann/driver.go
+@@ -103,7 +103,7 @@ func appendEvent(events []riemanngo.Event, sink *RiemannSink, event *kube_api.Ev
+ 	if len(events) >= sink.config.BatchSize {
+ 		err := riemannCommon.SendData(sink.client, events)
+ 		if err != nil {
+-			glog.Warningf("Error sending events to Riemann: ", err)
++			glog.Warningf("Error sending events to Riemann: %v", err)
+ 			// client will reconnect later
+ 			sink.client = nil
+ 		}
+@@ -137,7 +137,7 @@ func (sink *RiemannSink) ExportEvents(eventBatch *core.EventBatch) {
+ 	if len(events) > 0 {
+ 		err := riemannCommon.SendData(sink.client, events)
+ 		if err != nil {
+-			glog.Warningf("Error sending events to Riemann: ", err)
++			glog.Warningf("Error sending events to Riemann: %v", err)
+ 			// client will reconnect later
+ 			sink.client = nil
+ 		}
+diff --git a/metrics/sinks/opentsdb/driver_test.go b/metrics/sinks/opentsdb/driver_test.go
+index 5d270aa..0d6497b 100644
+--- a/metrics/sinks/opentsdb/driver_test.go
++++ b/metrics/sinks/opentsdb/driver_test.go
+@@ -32,7 +32,7 @@ var (
+ 	fakePodUid       = "redis-test-uid"
+ 	fakeClusterName  = "fakeClusterName"
+ 	fakeLabel        = map[string]string{
+-		"name": "redis",
++		"name":                   "redis",
+ 		"io.kubernetes.pod.name": "default/redis-test",
+ 		"pod_id":                 fakePodUid,
+ 		"pod_name":               fakePodName,
+diff --git a/metrics/sinks/riemann/driver.go b/metrics/sinks/riemann/driver.go
+index 70d81d4..523030e 100644
+--- a/metrics/sinks/riemann/driver.go
++++ b/metrics/sinks/riemann/driver.go
+@@ -75,7 +75,7 @@ func appendEvent(events []riemanngo.Event, sink *RiemannSink, host, name string,
+ 	if len(events) >= sink.config.BatchSize {
+ 		err := riemannCommon.SendData(sink.client, events)
+ 		if err != nil {
+-			glog.Warningf("Error sending events to Riemann: ", err)
++			glog.Warningf("Error sending events to Riemann: %v", err)
+ 			// client will reconnect later
+ 			sink.client = nil
+ 		}
+@@ -129,7 +129,7 @@ func (sink *RiemannSink) ExportData(dataBatch *core.DataBatch) {
+ 	if len(events) > 0 {
+ 		err := riemannCommon.SendData(sink.client, events)
+ 		if err != nil {
+-			glog.Warningf("Error sending events to Riemann: ", err)
++			glog.Warningf("Error sending events to Riemann: %v", err)
+ 			// client will reconnect later
+ 			sink.client = nil
+ 		}
+diff --git a/metrics/sinks/wavefront/driver_test.go b/metrics/sinks/wavefront/driver_test.go
+index d1ef986..708e00e 100644
+--- a/metrics/sinks/wavefront/driver_test.go
++++ b/metrics/sinks/wavefront/driver_test.go
+@@ -29,7 +29,7 @@ var (
+ 	fakePodName = "redis-test"
+ 	fakePodUid  = "redis-test-uid"
+ 	fakeLabel   = map[string]string{
+-		"name": "redis",
++		"name":                   "redis",
+ 		"io.kubernetes.pod.name": "default/redis-test",
+ 		"pod_id":                 fakePodUid,
+ 		"namespace_name":         "default",
+diff --git a/metrics/sources/kubelet/kubelet.go b/metrics/sources/kubelet/kubelet.go
+index 1bfe947..5386e97 100644
+--- a/metrics/sources/kubelet/kubelet.go
++++ b/metrics/sources/kubelet/kubelet.go
+@@ -223,7 +223,7 @@ metricloop:
+ 			mv.ValueType = ValueFloat
+ 			mv.FloatValue = newest.FloatValue
+ 		default:
+-			glog.V(4).Infof("Skipping %s: unknown custom metric format", spec.Name, spec.Format)
++			glog.V(4).Infof("Skipping %s: unknown custom metric format %v", spec.Name, spec.Format)
+ 			continue metricloop
+ 		}
+ 

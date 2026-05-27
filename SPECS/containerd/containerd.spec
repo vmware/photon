@@ -3,20 +3,18 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 %define gopath_comp github.com/%{name}/%{name}
+%define CONTAINERD_GITCOMMIT 64b425cf570b3b8dd1d4cc46da7c1fce65c6651a
 
 Summary:        Containerd
 Name:           containerd
-Version:        2.2.1
-Release:        3%{?dist}
+Version:        2.3.1
+Release:        1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containerd/containerd/archive/%{name}-%{version}.tar.gz
-
-# Must be in sync with package version
-%define CONTAINERD_GITCOMMIT dea7da592f5d1d2b7755e3a161be07f43fad8f75
 
 Source1: %{name}-config.toml
 Source2: disable-%{name}-by-default.preset
@@ -142,6 +140,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.1-1
+- Upgrade to v2.3.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.2.1-3
 - Extended to build for subrelease 91 and above
 * Thu Mar 12 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 2.2.1-2

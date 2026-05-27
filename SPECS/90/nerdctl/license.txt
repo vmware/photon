@@ -1,0 +1,1 @@
+License: LGPL-2.1-only AND MIT AND Apache-2.0 AND GPL-2.0-only

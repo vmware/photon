@@ -1,14 +1,15 @@
 sources:
-- archive: kube-bench-0.13.0.tar.gz
+- archive: kube-bench-0.15.5.tar.gz
   archive_type: upstream
-  archive_sha512sum: 57e8e03d5f7aacac6dc76e0845f0c2edeac50d84186b54bd4f94d86ba87b658f89cd7698247856ece4cd7faf22c87f122065ae3962f7684aea12cc37a0a07d2a
-  version: 0.13.0
-  name: kube-bench-0.13.0
-  url: https://github.com/aquasecurity/kube-bench/archive/refs/tags/v0.13.0.tar.gz
+  archive_sha512sum: 665cda6f63e8831da4d9196ec8a3c64dece10033ed5589b3d8afd7ed50eee28bed25aa43a153a2c9f68e006eedcd1f5690c13c18a48d457eedcdbbf644d6c940
+  version: 0.15.5
+  name: kube-bench-0.15.5
+  url: https://github.com/aquasecurity/kube-bench/archive/refs/tags/v0.15.5.tar.gz
   repo_url: https://github.com/aquasecurity/kube-bench
-  commit_id: 295b5e6aa98939ca5d1a823d408ae0a24a4e55af
+  commit_id: 13c5a2bed634b4f324ad54ba2942f4a77fc802e0
   skip_list: []
   missing: []
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'The Kubernetes Bench for Security is a Go application

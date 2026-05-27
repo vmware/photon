@@ -1,0 +1,20 @@
+sources:
+- archive: kube-bench-0.13.0.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 57e8e03d5f7aacac6dc76e0845f0c2edeac50d84186b54bd4f94d86ba87b658f89cd7698247856ece4cd7faf22c87f122065ae3962f7684aea12cc37a0a07d2a
+  version: 0.13.0
+  name: kube-bench-0.13.0
+  url: https://github.com/aquasecurity/kube-bench/archive/refs/tags/v0.13.0.tar.gz
+  repo_url: https://github.com/aquasecurity/kube-bench
+  commit_id: 295b5e6aa98939ca5d1a823d408ae0a24a4e55af
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'The Kubernetes Bench for Security is a Go application
+        that checks whether Kubernetes is deployed according to security best practices. '
+      home_page: https://github.com/aquasecurity/kube-bench
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Kubernetes security benchmarking tool
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,10 +1,12 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define gopath_comp_heapster k8s.io/heapster
 
 Summary:        Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:           heapster
 Version:        1.5.4
-Release:        23%{?dist}
-URL:            https://github.com/wavefrontHQ/cadvisor
+Release:        24%{?dist}
+URL:            https://github.com/kubernetes/heapster
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -84,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/eventer
 
 %changelog
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-24
+- Rebuild for go 1.26.3
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.4-23
 - Bump version as a part of go upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.5.4-22

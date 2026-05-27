@@ -1,7 +1,15 @@
 sources:
-- archive: govmomi-0.29.0.tar.gz
-  archive_sha512sum: f43cdb8333775689ede39bc2f488433de1a8c6be9cffd534f50023557f5fde3bddc6f2ead88d9f23d0de3a7ed16191bc4daa1e7f31dceb80055feb202c94ab7e
-  skip_validation: true
+- archive: govmomi-0.54.0.tar.gz
+  archive_sha512sum: 7d88ddf4176dc4fa2d06c190f687a150d4d3d92129fc1438a4eb8ccdd903279daf9a58b600b7f853f69d8f7e6caccd13c5a1077a2cc0693a1aedc7dcdc3f599f
+  archive_type: upstream
+  commit_id: df7c057af6c06430955ce56d6f04b7e49138f9b3
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: govmomi-0.54.0
+  version: '0.54.0'
+  repo_url: https://github.com/vmware/govmomi
+  url: https://github.com/vmware/govmomi/archive/refs/tags/v0.54.0.tar.gz
   spdx:
     package:
       detailed_description: 'A Go library for interacting with VMware vSphere APIs

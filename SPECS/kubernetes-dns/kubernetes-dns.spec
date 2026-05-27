@@ -1,11 +1,13 @@
+%global build_if %{photon_subrelease} >= 91
+
 %global debug_package %{nil}
 
 %define gopath_comp_k8sdns k8s.io/dns
 
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
-Version:        1.22.23
-Release:        4%{?dist}
+Version:        1.26.8
+Release:        1%{?dist}
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -65,6 +67,10 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.8-1
+- Upgrade to 1.26.8
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.23-5
+- Rebuild for go 1.26.3
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 1.22.23-4
 - Disable debuginfo package
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.22.23-3

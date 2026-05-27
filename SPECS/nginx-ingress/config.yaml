@@ -1,7 +1,15 @@
 sources:
-- archive: nginx-ingress-2.4.2.tar.gz
-  archive_sha512sum: 1d2415b73afab9c3338e2cfa717bae6e12f7bbd98f8a20606e274b09c3e4724e56fff0acdc261215ca95107e175489fef4aba9df6e3f9cb5b72d9f98859ae7d9
-  skip_validation: true
+- archive: nginx-ingress-5.4.2.tar.gz
+  archive_sha512sum: e82ef30728686085ef58841aaed3193b9c901d9d9e216c0bf9acceccb901d25af37b86aa935baa9ffdb0269d3451463ebeb4613b2a86f2337bcac8986c6e840c
+  archive_type: upstream
+  commit_id: cd864d71a5e3b6698b80daee02b2785c4020db10
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: kubernetes-ingress-5.4.2
+  version: '5.4.2'
+  repo_url: https://github.com/nginxinc/kubernetes-ingress
+  url: https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/v5.4.2.tar.gz
   spdx:
     package:
       detailed_description: 'This is an implementation of kubernetes ingress controller

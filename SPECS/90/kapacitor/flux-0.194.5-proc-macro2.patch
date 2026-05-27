@@ -1,0 +1,28 @@
+From 1ef8470a0c96fb1c5a4aaa555e9aa35ceaf7abd4 Mon Sep 17 00:00:00 2001
+From: Mukul Sikka <mukul.sikka@broadcom.com>
+Date: Tue, 17 Jun 2025 06:15:23 +0000
+Subject: [PATCH] Fix proc-macro2 version to build go 1.23
+
+---
+ libflux/Cargo.lock | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libflux/Cargo.lock b/libflux/Cargo.lock
+index acdecfe..8735755 100644
+--- a/libflux/Cargo.lock
++++ b/libflux/Cargo.lock
+@@ -990,9 +990,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "proc-macro2"
+-version = "1.0.56"
++version = "1.0.95"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "2b63bdb0cd06f1f4dedf69b254734f9b45af66e4a031e42a7480257d9898b435"
++checksum = "02b3e5e68a3a1a02aad3ec490a98007cbc13c37cbe84a3cd7b8e406d76e7f778"
+ dependencies = [
+  "unicode-ident",
+ ]
+-- 
+2.40.4
+

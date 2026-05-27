@@ -1,0 +1,2 @@
+g kube -
+u kube - "Kubernetes user" /var/lib/kubelet /sbin/nologin

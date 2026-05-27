@@ -1,0 +1,18 @@
+sources:
+- archive: pmd-ng-0.1.tar.gz
+  archive_sha512sum: 44a2813c8e454515a0a161203ce6a5f2d5ff72fb14b0456a5b19ca386ea9d2e1c002a34faced1fb883cc60ba53a9ebcb7c86da00e19aba5ab1630866a6b153ba
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'pmd-ng is a high performance open-source, simple, and
+        pluggable REST API gateway designed with stateless architecture.It is written
+        in Go, and built with performance in mind. It features real time health monitoring,
+        configuration and performance for systems, networking and applications. '
+      home_page: https://github.com/vmware/pmd-next-gen/archive/refs/tags/v0.1.tar.gz
+      license_concluded: BSD-2-Clause-Views AND Apache-2.0 AND MPL-2.0 AND NTP-0 AND
+        BSD-2-Clause AND MIT AND CC-BY-3.0 AND JSON AND BSD-3-Clause
+      license_declared: BSD-2-Clause-Views AND Apache-2.0 AND MPL-2.0 AND NTP-0 AND
+        BSD-2-Clause AND MIT AND CC-BY-3.0 AND JSON AND BSD-3-Clause
+      short_summary: pmd-ng (photon management daemon next gen) is an open source,
+        super light weight remote management API Gateway
+      supplier: 'Organization: Broadcom, Inc.'

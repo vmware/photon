@@ -1,14 +1,15 @@
 sources:
-- archive: go1.26.1.linux-amd64.tar.gz
-  archive_sha512sum: 6d23a21dff22f7732cba03305efa158ae21432042b8e5c069567640cacdea507c7330c90e03c0bebb2c731f68035b67f0a753238131e3602c64eebeab6715d93
+- archive: go1.26.3.linux-amd64.tar.gz
+  archive_sha512sum: cc49ca9764b1dff5983d7635bc6e8f9fe71754bf48ec310a43512cef6103c4a88ed446e9b759742affa9bbcac507957fb9993011cb94343b88ba938c17632c28
   archive_type: upstream
   name: go
-  version: 1.26.1
-  url: https://go.dev/dl/go1.26.1.linux-amd64.tar.gz
+  version: 1.26.3
+  url: https://go.dev/dl/go1.26.3.linux-amd64.tar.gz
   repo_url: https://github.com/golang/go
-  commit_id: e87b10ea2a2c6c65b80c4374af42b9c02ac9fb20
+  commit_id: 2dc996f71b0ebafb77e64433e58333e049488a3c
   skip_list: []
   missing: [zdefaultcc.go, zcgo.go, .gitattributes, bin, pkg, .github, zbootstrap.go, zversion.go, zzipdata.go, .gitignore]
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Go is an open source programming language that makes
@@ -24,16 +25,17 @@ sources:
         CC-BY-4.0
       short_summary: Go
       supplier: 'Organization: Broadcom, Inc.'
-- archive: go1.26.1.linux-arm64.tar.gz
-  archive_sha512sum: 0f7f35f794f1d6c84eff1fa9635ecddba356688abe15dbbc5da6dc98b558f8b88502b8dfc7e7c7e1023abf92e0b9841ae01ded99e715aa58b5408b2db69a8185
+- archive: go1.26.3.linux-arm64.tar.gz
+  archive_sha512sum: 443ebe1f87b426cf21954048d1fee8a122e3f082fb285eae3ef7ba8f793a8efcd5599f46f85777560f38de573011a6dba4a1a6effc457c4367f34d621a66f976
   archive_type: upstream
   name: go
-  version: 1.26.1
-  url: https://go.dev/dl/go1.26.1.linux-arm64.tar.gz
+  version: 1.26.3
+  url: https://go.dev/dl/go1.26.3.linux-arm64.tar.gz
   repo_url: https://github.com/golang/go
-  commit_id: e87b10ea2a2c6c65b80c4374af42b9c02ac9fb20
+  commit_id: 2dc996f71b0ebafb77e64433e58333e049488a3c
   skip_list: []
   missing: [zdefaultcc.go, zcgo.go, .gitattributes, bin, pkg, .github, zbootstrap.go, zversion.go, zzipdata.go, .gitignore]
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Go is an open source programming language that makes

@@ -1,7 +1,15 @@
 sources:
-- archive: coredns-1.11.1.tar.gz
-  archive_sha512sum: f8752811e9e7913311f47ae13f35c755ac86ea240572be1c1dabc1712b6c42380c60ac385fa9573c77d6fcf4c144df2bc00574f18e8d7b70da21ed8ae4fb87cd
-  skip_validation: true
+- archive: coredns-1.14.3.tar.gz
+  archive_sha512sum: 39b87ff29460e8eb2fd9db53ae6fe19d7b7c99da0a7cfc9e93b22d93c2c53c5cfd2bb493610901a6cfae578430d1fc215b9c9d70e95cc31f0c4084b618e60864
+  archive_type: upstream
+  commit_id: 17fceec6d93fd1dde5ba6888c363f131ff6d647f
+  missing: []
+  skip_list: []
+  skip_validation: false
+  name: coredns-1.14.3
+  version: '1.14.3'
+  repo_url: https://github.com/coredns/coredns
+  url: https://github.com/coredns/coredns/archive/refs/tags/v1.14.3.tar.gz
   spdx:
     package:
       detailed_description: 'CoreDNS is a DNS server that chains plugins '

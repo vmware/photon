@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define gopath_comp_neb github.com/vmware/network-event-broker
 
 Summary:        Manages network configuration
 Name:           network-event-broker
-Version:        0.3
-Release:        18%{?dist}
+Version:        0.3.1
+Release:        1%{?dist}
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 Source1:        %{name}.sysusers
@@ -78,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/network-broker.service
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.3.1-1
+- Upgrade to v0.3.1
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3-18
 - Bump version as a part of go upgrade
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.3-17

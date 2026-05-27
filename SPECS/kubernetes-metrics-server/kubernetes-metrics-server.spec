@@ -1,6 +1,7 @@
+%global build_if %{photon_subrelease} >= 91
+
 %global debug_package %{nil}
 
-%define gopath_comp_mserver github.com/kubernetes-incubator/metrics-server
 %ifarch aarch64
 %global gohostarch      arm64
 %else
@@ -8,20 +9,20 @@
 %endif
 
 # Must be in sync with package version
-%define METRICS_SERVER_GIT_TAG v0.3.7
-%define METRICS_SERVER_GIT_COMMIT ce4a44e5341552d3b0b568cfe06b849a637fea53
+%define METRICS_SERVER_GIT_TAG v0.8.1
+%define METRICS_SERVER_GIT_COMMIT 9ce65a47f9262e19e482c259ace815f01135a898
 
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
-Version:        0.3.7
-Release:        22%{?dist}
+Version:        0.8.1
+Release:        1%{?dist}
 URL:            https://github.com/kubernetes-incubator/metrics-server
 Source0:        https://github.com/kubernetes-sigs/metrics-server/archive/refs/tags/%{name}-%{version}.tar.gz
+Source1:        %{name}-%{version}-vendor.tar.gz
 
-Source1: license.txt
-%include %{SOURCE1}
-Patch0:         go-27704.patch
-Patch1:         go-27842.patch
+Source2: license.txt
+%include %{SOURCE2}
+
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -34,28 +35,19 @@ These metrics can be either accessed directly by user, for example by using kube
 in the cluster, e.g. Horizontal Pod Autoscaler, to make decisions.
 
 %prep
-# Using autosetup is not feasible
-%setup -q -c -n metrics-server-%{version}
-
-mkdir -p "$(dirname src/%{gopath_comp_mserver})"
-mv metrics-server-%{version} src/%{gopath_comp_mserver}
-cd src/%{gopath_comp_mserver}
-
-pushd vendor/golang.org/x/net
-%autopatch -p1
-popd
+%autosetup -a 1 -n metrics-server-%{version}
 
 %build
-#CGO_ENABLED=0 go build -ldflags -X sigs.k8s.io/metrics-server/pkg/version.gitVersion=v0.3.7 -o dist/metrics-server  cmd/metrics-server
-export GO111MODULE=auto
-export GOPATH="${PWD}"
-cd src/%{gopath_comp_mserver}
-ARCH=%{gohostarch} GIT_TAG=%{METRICS_SERVER_GIT_TAG} GIT_COMMIT=%{METRICS_SERVER_GIT_COMMIT} make all %{?_smp_mflags}
+CGO_ENABLED=0 GOARCH=%{gohostarch} \
+    go build -mod=vendor -trimpath \
+    -ldflags "-w -X k8s.io/client-go/pkg/version.gitVersion=%{METRICS_SERVER_GIT_TAG} \
+              -X k8s.io/client-go/pkg/version.gitCommit=%{METRICS_SERVER_GIT_COMMIT}" \
+    -o metrics-server \
+    sigs.k8s.io/metrics-server/cmd/metrics-server
 
 %install
-cd src/%{gopath_comp_mserver}
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} _output/%{gohostarch}/metrics-server
+install -pm 755 -t %{buildroot}%{_bindir} metrics-server
 
 %clean
 rm -rf %{buildroot}/*
@@ -65,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.8.1-1
+- Upgrade to v0.8.1
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 0.3.7-22
 - Disable debuginfo package
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3.7-21

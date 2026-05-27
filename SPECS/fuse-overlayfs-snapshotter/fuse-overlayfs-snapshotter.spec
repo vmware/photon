@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 %define debug_package %{nil}
 # git commit hash
@@ -6,8 +8,8 @@
 
 Summary:        fuse-overlayfs plugin for rootless containerd
 Name:           fuse-overlayfs-snapshotter
-Version:        1.0.6
-Release:        14%{?dist}
+Version:        2.1.7
+Release:        1%{?dist}
 URL:            https://github.com/containerd/fuse-overlayfs-snapshotter
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -50,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/containerd-fuse-overlayfs-grpc
 
 %changelog
+* Mon Jun 01 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.7-1
+- Upgrade to v2.1.7
 * Sat May 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.6-14
 - Bump version as a part of fuse3 upgrade
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.6-13

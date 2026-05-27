@@ -1,0 +1,21 @@
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/controller-manager
+ExecStart=/usr/bin/kube-controller-manager \
+          $KUBE_CLUSTER_NAME \
+          $KUBE_CLUSTER_CIDR \
+          $KUBE_BIND_ADDRESS \
+          $KUBE_SERVICE_CLUSTER_IP_RANGE \
+          $KUBE_CLUSTER_CERTS \
+          $KUBE_ROOT_CERTS \
+          $KUBE_SERVICE_ACCOUNT \
+          $KUBE_CONTROLLER_MANAGER_KUBECONFIG \
+          $KUBE_CONTROLLER_MANAGER_ARGS
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

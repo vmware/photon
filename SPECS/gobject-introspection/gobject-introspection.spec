@@ -3,9 +3,9 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.86.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
-URL:            http://live.gnome.org/GObjectIntrospection
+URL:            https://gitlab.gnome.org/GNOME/gobject-introspection
 Distribution:   Photon
 Vendor:         VMware, Inc.
 
@@ -112,6 +112,8 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.86.0-3
+- Rebuild for go 1.26.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.86.0-2
 - Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.86.0-1

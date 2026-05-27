@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define network_required 1
 %ifarch x86_64
 %define archname amd64
@@ -8,12 +10,12 @@
 
 %define debug_package %{nil}
 %define __strip /bin/true
-%define k8s_ver 1.34
+%define k8s_ver 1.36
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.34.1
-Release:        2%{?dist}
+Version:        1.36.1
+Release:        1%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -69,7 +71,7 @@ Group:          Development/Tools
 Requires(pre):  systemd-rpm-macros
 Requires(pre):  shadow
 Requires:       cri-tools >= %{k8s_ver}
-Conflicts:      kubernetes < 1.34.1
+Conflicts:      kubernetes < 1.36.1
 
 %description    kubelet
 The kubelet is the primary "node agent" that runs on each node.
@@ -244,6 +246,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.36.1-1
+- Update to version 1.36.1
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.1-2
 - Bump version as a part of go upgrade
 * Tue Oct 28 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.34.1-1

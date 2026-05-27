@@ -1,0 +1,35 @@
+###
+# kubernetes system config
+#
+# The following values are used to configure the kube-apiserver
+#
+
+# The address on the local server to listen to.
+KUBE_API_ADDRESS="--bind-address=0.0.0.0"
+
+# Comma separated list of nodes in the etcd cluster
+KUBE_ETCD_SERVERS="--etcd-servers=http://127.0.0.1:2379"
+
+# Address range to use for services
+KUBE_SERVICE_ADDRESSES=""
+
+# default admission control policies
+KUBE_ADMISSION_CONTROL="--enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota"
+
+# Audit logs and policies
+KUBE_AUDIT_LOGS=""
+
+# Keys & Certificates
+KUBE_KUBELET_CERTS=""
+
+KUBE_CLIENT_CERTS=""
+
+KUBE_SERVICE_ACCOUNT=""
+
+KUBE_TLS_CERTS=""
+
+#Encryption Config Provider
+KUBE_ENCRYPTION_PROVIDER_CONFIG=""
+
+# Add your own!
+KUBE_API_ARGS="--v=2"

@@ -7,8 +7,8 @@
 
 Name:       docker-buildx
 Summary:    Docker CLI plugin for extended build capabilities with BuildKit
-Version:    0.32.0
-Release:    3%{?dist}
+Version:    0.34.1
+Release:    1%{?dist}
 URL:        https://github.com/docker/buildx
 Group:      Applications
 Vendor:     VMware, Inc.
@@ -64,6 +64,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.34.1-1
+- Upgrade to v0.34.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.32.0-3
 - Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 0.32.0-2
