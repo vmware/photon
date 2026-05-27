@@ -1,6 +1,6 @@
 sources:
-- archive: atftp-0.8.0.tar.gz
-  archive_sha512sum: b700b3e4182970fb494ffabd49e39d3622b1aff5f69882549eff0b52a01c8c47babe51b451c4829f9b833ea2ea7c590a2f3819f8e3508176fa7d1b5c0e152b68
+- archive: atftp-0.8.1.tar.gz
+  archive_sha512sum: fa6c328cc16cf43983bf8004cc967a0c039d84326e46b4c8c175d27a1422ae2fe3acedf22913fd155285c58e63c22e302d1df2bd727a87e91a4b75faa32452e2
   skip_validation: true
   spdx:
     package:

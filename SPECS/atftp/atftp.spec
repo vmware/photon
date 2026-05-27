@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
-Version:          0.8.0
-Release:          10%{?dist}
+Version:          0.8.1
+Release:          1%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
@@ -118,6 +118,8 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Wed May 27 2026 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
+- Version bump
 * Fri Apr 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-10
 - Add iana-etc to Requires
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.8.0-9
