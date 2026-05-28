@@ -1,4 +1,4 @@
-![Photon](http://storage.googleapis.com/project-photon/vmw-logo-photon.svg "VMware Photon")
+![Photon](./docs/images/photonos-logo-sm.png "VMware Photon")
 
 # Photon OS: Linux Container Host
 
