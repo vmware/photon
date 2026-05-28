@@ -3,8 +3,8 @@ Description=The tftp server serves files using the trivial file transfer protoco
 Requires=atftpd.socket
 
 [Service]
-EnvironmentFile=@SYSCONFDIR@/sysconfig/atftpd
-ExecStart=@SBINDIR@/atftpd --user $ATFTPD_USER --group $ATFTPD_GROUP $ATFTPD_DIRECTORY
+EnvironmentFile=/etc/sysconfig/atftpd
+ExecStart=/usr/sbin/atftpd --no-fork --user $ATFTPD_USER --group $ATFTPD_GROUP $ATFTPD_DIRECTORY
 StandardInput=socket
 
 [Install]

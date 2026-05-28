@@ -1,7 +1,7 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
 Version:          0.8.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
@@ -63,8 +63,6 @@ mkdir -p %{buildroot}%{_sharedstatedir}/tftpboot \
 
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/
-
-sed -i -e "s|@SBINDIR@|%{_sbindir}|" -e "s|@SYSCONFDIR@|%{_sysconfdir}|" %{SOURCE3}
 install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/
 
 cat << EOF >> %{buildroot}%{_sysconfdir}/sysconfig/atftpd
@@ -109,7 +107,7 @@ rm -rf %{buildroot}
 %{_sbindir}/in.tftpd
 %{_unitdir}/atftpd.service
 %{_unitdir}/atftpd.socket
-%{_sysconfdir}/sysconfig/atftpd
+%config(noreplace) %{_sysconfdir}/sysconfig/atftpd
 %{_sysusersdir}/%{name}.conf
 
 %files client
@@ -118,6 +116,9 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
+* Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.1-2
+- Fix systemd unit files
+- Simple fixes in spec
 * Wed May 27 2026 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
 - Version bump
 * Fri Apr 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.8.0-10
