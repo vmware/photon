@@ -1,15 +1,19 @@
 Summary:        Portable and efficient C programming interface (API) to determine the call-chain of a program.
 Name:           libunwind
-Version:        1.6.2
-Release:        2%{?dist}
-URL:            http://www.nongnu.org/libunwind/
-Source0:        http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
+Version:        1.8.3
+Release:        1%{?dist}
+URL:            https://github.com/libunwind/libunwind
+Source0:        https://github.com/libunwind/libunwind/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 Group:          Utilities/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
 
 %description
 Portable and efficient C programming interface (API) to determine the call-chain of a program.
@@ -27,15 +31,17 @@ Requires:       %{name} = %{version}-%{release}
 This contains development tools and libraries for libunwind.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
+autoreconf -vif
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot} -name '*.la' -delete
+rm -rf %{buildroot}%{_libexecdir}
 
 %files
 %defattr(-,root,root)
@@ -48,6 +54,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libunwind*
 
 %changelog
+*   Thu May 28 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.8.3-1
+-   Upgrade to 1.8.3
 *   Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.2-2
 -   Release bump for SRP compliance
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
