@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 %define _bind_user      named
 %define _bind_group     named
 %define _home_dir       %{_sharedstatedir}/bind
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.20.21
-Release:        1%{?dist}
+Version:        9.20.7
+Release:        6.1%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -18,6 +18,13 @@ Source1:        %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0:         0001-CVE-2025-40775.patch
+Patch1:         0001-CVE-2025-40777.patch
+Patch2:         0002-CVE-2025-40777.patch
+Patch3:         0001-CVE-2025-8677.patch
+Patch4:         0002-CVE-2025-40778.patch
+Patch5:         0003-CVE-2025-40780.patch
 
 Requires:       krb5
 Requires:       e2fsprogs-libs
@@ -134,9 +141,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
-* Tue May 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.20.21-1
-- Upgrade bindutils to version 9.20.21.
-- Remove obsolete CVE patches.
+* Thu May 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.20.7-6.1
+- Bump release when moving bindutils to SPECS/90
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 9.20.7-6
 - Add missing shadow dependency for user creation
 * Tue Oct 21 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.20.7-5

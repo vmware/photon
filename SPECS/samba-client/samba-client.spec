@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        15%{?dist}
+Release:        16%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -463,6 +463,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Thu May 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.3-16
+- Bump release due to bindutils upgrade
 * Wed May 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.3-15
 - Remove deprecated python3-defusedxml from BuildRequires
 * Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.19.3-14

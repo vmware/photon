@@ -1,14 +1,14 @@
 sources:
-- archive: bind-9.20.21.tar.xz
+- archive: bind-9.20.7.tar.xz
   archive_type: upstream
-  version: 9.20.21
-  name: bind-9.20.21
-  url: https://ftp.isc.org/isc/bind9/9.20.21/bind-9.20.21.tar.xz
+  version: 9.20.7
+  name: bind-9.20.7
+  url: https://ftp.isc.org/isc/bind9/9.20.7/bind-9.20.7.tar.xz
   repo_url: https://github.com/isc-projects/bind9.git
-  commit_id: 12f97d4162d435940598de4870d0088b8e6d266c
+  commit_id: 305df5897696e30e7b8088beee777b01dc25cc39
   skip_list: []
   missing: []
-  archive_sha512sum: f0f566a243268a579a7c97409409699aa66a08e82982d48046c83d9dfd01f8a9c337af7bb80018773667fcc98a5e6fb9f244ac28e72688ab04a494337605c616
+  archive_sha512sum: b9570c0c6588819108017d30dc7fb5e2f34361f941186d29da3d2830bbe3333c8c16bdb6581f5bec4786d90b74db860a9cad5f66d4f1c65168eae69f401a9df0
   skip_validation: true
   spdx:
     package:
