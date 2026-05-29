@@ -1,0 +1,15 @@
+sources:
+- archive: inotify-tools-4.25.9.0.tar.gz
+  archive_sha512sum: a441289d570995105296a2b82ddade8256508b43bc127a5bb318f7c371f3120c082371fdc308fe56dbec921e948f954c2e4efb418968748a8790945dad6a2e46
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'inotify-tools is a library and a set of command-line
+        programs providing a simple interface to inotify. '
+      home_page: https://github.com/inotify-tools/inotify-tools
+      license_concluded: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL
+        AND X11 AND LGPL-2.1-or-later AND FSFULLRWD AND GPL-2.0-only AND FSFULLR
+      license_declared: GPL-2.0-or-later WITH Autoconf-exception-generic AND FSFUL
+        AND X11 AND LGPL-2.1-or-later AND FSFULLRWD AND GPL-2.0-only AND FSFULLR
+      short_summary: Command line utility for i-node notifications and management.
+      supplier: 'Organization: Broadcom, Inc.'
