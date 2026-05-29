@@ -1,0 +1,12 @@
+sources:
+- archive: rpi-linux-6.1.10.2023.02.28.tar.gz
+  skip_validation: true
+  archive_sha512sum: ec9c213d9a2d9be5e59a63c0f146a109095960aaa1e62f34d8f4b7744da7321678f4216ea15c64642f6e80d8e78486420da046be25a398809fc995b3b467b88f
+  spdx:
+    package:
+      detailed_description: Metapackage to install all Kernel Device Tree and Overlay Blobs for Raspberry Pi
+      home_page: http://launchpad.net/cloud-init
+      license_concluded: GPL-2.0 WITH Linux-syscall-note
+      license_declared: GPL-2.0 WITH Linux-syscall-note
+      short_summary: Device trees and overlays for Raspberry Pi
+      supplier: 'Organization: Broadcom, Inc.'

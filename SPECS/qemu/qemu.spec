@@ -234,7 +234,9 @@ make %{?_smp_mflags} check
 %{_bindir}/qemu-nbd
 %{_bindir}/qemu-storage-daemon
 %{_bindir}/qemu-pr-helper
+%ifarch x86_64
 %{_bindir}/qemu-vmsr-helper
+%endif
 %{_datadir}/qemu
 %{_libexecdir}/qemu-bridge-helper
 

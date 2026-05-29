@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 90
+
 %define debug_package %{nil}
 Summary:        Device trees and overlays for Raspberry Pi
 Name:           dtb-raspberrypi
 Version:        6.1.10.2023.02.28
 # Version Scheme: {kernel_ver}.{year}.{month}.{day}
-Release:        2%{?dist}
+Release:        2.0.1%{?dist}
 %define rpi_linux_branch rpi-6.1.y
 %define rpi_linux_req 6.1.10
 URL:            https://github.com/raspberrypi/linux
@@ -92,6 +94,8 @@ popd
 /boot/efi/overlays
 
 %changelog
+* Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.10.2023.02.28-2.0.1
+- Move to SPECS/90
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.10.2023.02.28-2
 - Release bump for SRP compliance
 * Mon Mar 06 2023 Ajay Kaher <akaher@vmware.com> 6.1.10.2023.02.28-1

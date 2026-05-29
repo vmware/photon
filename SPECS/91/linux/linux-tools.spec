@@ -5,7 +5,7 @@
 Summary:        Linux kernel userspace tools
 Name:           linux-tools
 Version:        6.1.174
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 Group:          System/Tools
 URL:            http://www.kernel.org
 Vendor:         VMware, Inc.
@@ -128,15 +128,15 @@ ARCH_FLAGS="${ARCH_FLAGS} EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
 %exclude %{_libdir}/traceevent
 %endif
 %{_bindir}/*
-%{_mandir}/*
 %{_sysconfdir}/bash_completion.d/perf
 %{_libexecdir}/perf-core
-%{_datadir}/perf-core
 %{_docdir}/perf-tip
 %{_libdir}/perf/examples/bpf/*
 %{_libdir}/perf/include/bpf/*
 %{_includedir}/perf/*
 %ifarch x86_64
+%{_mandir}/*
+%{_datadir}/perf-core
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
 %{_lib64dir}/libcpupower.so*
@@ -157,6 +157,8 @@ ARCH_FLAGS="${ARCH_FLAGS} EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.174-2
+- Fix aarch64 build
 * Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-1
 - Update to version 6.1.174
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.172-2

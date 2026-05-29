@@ -3,7 +3,7 @@
 Summary:    This package contains programs to find files
 Name:       findutils
 Version:    4.9.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://www.gnu.org/software/findutils
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -15,8 +15,9 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Conflicts:      toybox < 0.8.2-2
-BuildRequires:  libselinux-devel
-Requires:       libselinux
+%define ExtraBuildRequires libselinux-devel
+
+# no need to add libselinux to requires, libsolv will auto resolve it
 
 %description
 These programs are provided to recursively search through a
@@ -62,7 +63,8 @@ sh ./configure --host=%{_arch}-unknown-linux-gnu --build=%{_arch}-unknown-linux-
     --mandir=%{_mandir} \
     --infodir=%{_infodir} \
     --localstatedir=%{_sharedstatedir}/locate \
-    --disable-silent-rules
+    --disable-silent-rules \
+    --with-selinux
 
 %make_build
 
@@ -92,6 +94,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue May 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.9.0-7
+- Fix cyclic dependency with libselinux
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.9.0-6
 - Extended to build for subrelease 91 and above
 * Wed Mar 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.9.0-5

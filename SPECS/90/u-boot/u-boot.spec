@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} <= 90
+
 %global security_hardening none
 %global debug_package %{nil}
 Summary:        U-Boot EFI firmware
 Name:           u-boot
 Version:        2023.01
-Release:        6%{?dist}
+Release:        6.0.1%{?dist}
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -91,6 +93,8 @@ install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/fw_env.config
 /boot/efi/u-boot-rpi4.bin
 
 %changelog
+*   Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2023.01-6.0.1
+-   Move to SPECS/90
 *   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2023.01-6
 -   Release bump for SRP compliance
 *   Mon Mar 20 2023 Ajay Kaher <akaher@vmware.com> 2023.01-5

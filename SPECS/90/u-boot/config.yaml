@@ -1,0 +1,12 @@
+sources:
+- archive: u-boot-2023.01.tar.gz
+  skip_validation: true
+  archive_sha512sum: bdbdf7eb3fe05981d1030d194b90889e71630ae27aef2d8f5660535ac0d8b8ab2af580cd1ab7e12ead08c9a45cfb20d6c1510aed941becb32057795f7f99e846
+  spdx:
+    package:
+      detailed_description: U-Boot is Open Source Firmware.
+      home_page: https://github.com/u-boot/u-boot
+      license_concluded: GPL-2.0-only
+      license_declared: GPL-2.0-only
+      short_summary: U-Boot EFI firmware
+      supplier: 'Organization: Broadcom, Inc.'
