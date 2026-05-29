@@ -4,7 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.189
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Vendor:         VMware, Inc.
@@ -27,8 +27,6 @@ Patch5: 0001-Fix-const-correctness-issues.patch
 Requires: %{name}-libelf = %{version}-%{release}
 Requires: glibc >= 2.7
 Requires: bzip2-libs
-Requires: libmicrohttpd
-Requires: curl
 Requires: libarchive
 Requires: zstd
 
@@ -53,6 +51,28 @@ symbols), readelf (to see the raw ELF file structures), and elflint
 (to check for well-formed ELF files).  Also included are numerous
 helper libraries which implement DWARF, ELF, and machine-specific ELF
 handling.
+
+%package debuginfod
+Summary:    The elfutils debuginfod server and client
+Group:      Development/Tools
+Requires:   %{name} = %{version}-%{release}
+Requires:   libmicrohttpd
+Requires:   curl
+Requires:   sqlite-libs
+Conflicts:  %{name} < 0.189-11
+
+%description debuginfod
+The elfutils debuginfod server and client.
+
+%package debuginfod-devel
+Summary:    Development support for debuginfod
+Group:      Development/Tools
+Requires:   %{name}-debuginfod = %{version}-%{release}
+Conflicts:  %{name}-devel < 0.189-11
+
+%description debuginfod-devel
+The %{name}-debuginfod-devel package contains the libraries and header files for
+developing applications that use debuginfod.
 
 %package devel
 Summary:    Development libraries to handle compiled objects.
@@ -155,17 +175,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc COPYING COPYING-GPLV2 COPYING-LGPLV3 README TODO CONTRIBUTING
 %{_bindir}/eu-*
-%{_bindir}/debuginfod
-%{_bindir}/debuginfod-find
-%{_libdir}/libdebuginfod-%{version}.so
 %{_libdir}/libasm-%{version}.so
 %{_libdir}/libdw-%{version}.so
 %{_libdir}/libasm.so.*
 %{_libdir}/libdw.so.*
-%{_libdir}/libdebuginfod.so.*
 %{_mandir}/man1/eu-*.1*
-%{_mandir}/man1/debuginfod*.1*
-%{_sysconfdir}/profile.d/debuginfod.*
 
 %files devel
 %defattr(-,root,root)
@@ -176,14 +190,10 @@ rm -rf %{buildroot}
 %{_includedir}/%{name}/libdwfl.h
 %{_includedir}/%{name}/known-dwarf.h
 %{_includedir}/%{name}/libdwelf.h
-%{_includedir}/%{name}/debuginfod.h
 %{_libdir}/libdw.so
-%{_libdir}/libdebuginfod.so
+%exclude %{_libdir}/pkgconfig/libdebuginfod.pc
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/elf*.3*
-%{_mandir}/man3/debuginfod*.3*
-%{_mandir}/man8/debuginfod*.8*
-%{_mandir}/man7/debuginfod-client-config.7.gz
 
 %files devel-static
 %defattr(-,root,root)
@@ -208,7 +218,27 @@ rm -rf %{buildroot}
 %files libelf-lang -f %{name}.lang
 %defattr(-,root,root)
 
+%files debuginfod
+%defattr(-,root,root)
+%{_bindir}/debuginfod
+%{_bindir}/debuginfod-find
+%{_libdir}/libdebuginfod-%{version}.so
+%{_libdir}/libdebuginfod.so.*
+%{_mandir}/man1/debuginfod*.1*
+%{_sysconfdir}/profile.d/debuginfod.*
+
+%files debuginfod-devel
+%defattr(-,root,root)
+%{_includedir}/%{name}/debuginfod.h
+%{_libdir}/libdebuginfod.so
+%{_libdir}/pkgconfig/libdebuginfod.pc
+%{_mandir}/man3/debuginfod*.3*
+%{_mandir}/man7/debuginfod-client-config.7.gz
+%{_mandir}/man8/debuginfod*.8*
+
 %changelog
+* Tue May 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.189-11
+- Split debuginfod and debuginfod-devel into subpackages to break dependency loop with gnutls
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-10
 - version bump after glibc is upgraded in 91
 * Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-9
