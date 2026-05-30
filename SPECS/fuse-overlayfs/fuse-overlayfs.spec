@@ -1,7 +1,7 @@
 Summary:        FUSE overlay+shiftfs implementation for rootless containers
 Name:           fuse-overlayfs
 Version:        1.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -47,6 +47,8 @@ echo fuse > %{buildroot}%{_modulesloaddir}/fuse-overlayfs.conf
 %config(noreplace) %{_modulesloaddir}/fuse-overlayfs.conf
 
 %changelog
+* Sat May 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12-3
+- Bump version as a part of fuse3 upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.12-2
 - Release bump for SRP compliance
 * Fri Jun 30 2023 Prashant S Chauhan <psinghchauha@vmware.com> 1.12-1
