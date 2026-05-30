@@ -3,7 +3,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.47.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -19,10 +19,11 @@ Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
 
 BuildRequires:  util-linux-devel
-BuildRequires:  fuse-devel
 
-Requires:       util-linux-libs
-Requires:       fuse
+%define ExtraBuildRequires:  fuse3-devel
+
+Requires: util-linux-libs
+Requires: fuse3-libs
 
 %description
 The E2fsprogs package contains the utilities for handling the ext2 file system.
@@ -108,9 +109,9 @@ make %{?_smp_mflags} check
 %{_libdir}/libext2fs.so.2
 %{_libdir}/libe2p.so
 %{_libdir}/libext2fs.so
-#%{_unitdir}/*
-#%{_udevrulesdir}/*
-#%{_libexecdir}/%{name}
+%{_unitdir}/*
+%{_udevrulesdir}/*
+%{_libexecdir}/%{name}
 
 %files libs
 %{_libdir}/libss.so
@@ -149,6 +150,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.47.4-2
+- Build with fuse3
 * Mon May 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.47.4-1
 - Upgrade to v1.47.4
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.46.5-5
