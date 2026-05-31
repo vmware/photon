@@ -1,10 +1,9 @@
 %global build_if %{photon_subrelease} >= 91
-%global debug_package %{nil}
 
 Summary:        Libcap
 Name:           libcap
 Version:        2.77
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -15,6 +14,8 @@ Source0:        https://www.kernel.org/pub/linux/libs/security/linux-privs/libca
 Source1: license.txt
 %include %{SOURCE1}
 
+BuildRequires:  elfutils
+
 Requires:       %{name}-minimal = %{version}-%{release}
 Requires:       %{name}-libs = %{version}-%{release}
 
@@ -23,7 +24,6 @@ The libcap package implements the user-space interfaces to the POSIX 1003.1e cap
 These capabilities are a partitioning of the all powerful root privilege into a set of distinct privileges.
 
 %package        libs
-Group:          System Environment/Libraries
 Conflicts:      %{name} < 2.77-1
 Summary:        Libraries for %{name}
 
@@ -40,7 +40,6 @@ Summary:        Minimal set of %{name} tools
 
 %package        devel
 Summary:        Development files for libcap
-Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 
 %description    devel
@@ -57,6 +56,13 @@ Conflicts:      %{name} < 2.77-1
 
 %prep
 %autosetup -p1
+# NOTE: binutils readelf has some issue while creating debuginfo rpms
+# 'readelf: Error: Unable to find program interpreter name'
+#
+# It happens due to:
+# https://git.kernel.org/pub/scm/libs/libcap/libcap.git/tree/libcap/Makefile#n30
+# Working around it for now
+ln -sfrv %{_bindir}/eu-readelf %{_bindir}/readelf
 
 %build
 %make_build
@@ -121,6 +127,8 @@ chmod -v 755 %{buildroot}%{_libdir}/%{name}.so
 %{_mandir}/man8/*
 
 %changelog
+*   Sun May 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.77-4
+-   Workaround debuginfo build issue
 *   Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.77-3
 -   Build for subrelease >= 91
 *   Sat Mar 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.77-2
