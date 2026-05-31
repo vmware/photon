@@ -1,7 +1,14 @@
 sources:
 - archive: inotify-tools-4.25.9.0.tar.gz
   archive_sha512sum: a441289d570995105296a2b82ddade8256508b43bc127a5bb318f7c371f3120c082371fdc308fe56dbec921e948f954c2e4efb418968748a8790945dad6a2e46
-  skip_validation: true
+  archive_type: upstream
+  name: inotify-tools-4.25.9.0
+  version: 4.25.9.0
+  url: https://github.com/inotify-tools/inotify-tools/archive/refs/tags/4.25.9.0.tar.gz
+  repo_url: https://github.com/inotify-tools/inotify-tools
+  commit_id: 81c6c9881edf4844f2b8250e63f82da9cb7f5444
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'inotify-tools is a library and a set of command-line
