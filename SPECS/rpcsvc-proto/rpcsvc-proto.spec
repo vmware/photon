@@ -1,8 +1,8 @@
 Summary:        rcpsvc protocol.x files and headers
 Name:           rpcsvc-proto
-Version:        1.4.3
-Release:        2%{?dist}
-Source0:        https://github.com/thkukuk/rpcsvc-proto/releases/download/v1.4/%{name}-%{version}.tar.xz
+Version:        1.4.4
+Release:        1%{?dist}
+Source0:        https://github.com/thkukuk/rpcsvc-proto/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -49,6 +49,8 @@ make install %{?_smp_mflags} DESTDIR=%{buildroot}
 %{_includedir}/rpcsvc/*
 
 %changelog
+* Sat May 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.4.4-1
+- Upgrade to version 1.4.4
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.3-2
 - Release bump for SRP compliance
 * Tue Apr 19 2022 Gerrit Photon <photon-checkins@vmware.com> 1.4.3-1

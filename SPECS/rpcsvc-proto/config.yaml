@@ -1,6 +1,6 @@
 sources:
-- archive: rpcsvc-proto-1.4.3.tar.xz
-  archive_sha512sum: e46ba9ccdd6c520128bf3a154db90742f288a4d593b094a630141cdc5aeb834ffebf9b0eb6d5d0aad9faef3c445c75e2355cbc3e1382b50d29f4d2799441c6e9
+- archive: rpcsvc-proto-1.4.4.tar.xz
+  archive_sha512sum: 0138ac8fb2d8de3cb56f661bd1b6435fa0a35d3bd12c5cb7081c9ae1701e3620f47fe3dd002263db456655b61316749768e9a1a44325a1a6a542beae364a0393
   skip_validation: true
   spdx:
     package:
