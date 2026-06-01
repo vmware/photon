@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Data for network services and protocols
 Name:           iana-etc
-Version:        20260529
-Release:        1%{?dist}
+Version:        20250711
+Release:        1.1%{?dist}
 URL:            https://www.iana.org/protocols
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -43,8 +43,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/services
 
 %changelog
-* Mon Jun 01 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 20260529-1
-- Upgrade to 20260529
+* Mon Jun 01 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 20250711-1.1
+- Move to SPECS/90
 * Thu Jul 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250711-1
 - Update to latest protocols, services
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.30-4

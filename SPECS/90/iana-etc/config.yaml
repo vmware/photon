@@ -1,6 +1,6 @@
 sources:
-- archive: iana-etc-20260529.tar.gz
-  archive_sha512sum: 1b87d35367bb05a4a5315e7f4c7c44d937a771bfdea4370adc25fb9665ce8152e7844d93809998d05747d72b99cf5021d032de0ef3903d54b4d87f84830f14d9
+- archive: iana-etc-20250711.tar.gz
+  archive_sha512sum: dae7d23d03e33766071bcacc7e6fa2f4c3d3ee87554ca34b1004257731b30556bce314ebb189e8352e32b67d0f819d45178627ad5873401924ddd6a02dbca96f
   skip_validation: true
   repo_url: https://github.com/Mic92/iana-etc
   spdx:
