@@ -1,6 +1,6 @@
 From d817eec46ac212a245f28ea787973710affc0c29 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <alexey.makhalov@broadcom.com>
-Date: Thu, 27 Nov 2025 18:14:43 +0530
+Date: Mon, 01 Jun 2026 15:52:00 +0530
 Subject: [PATCH] NEWCA: make initrd pages immutable
 
 NEWCA initrd images can be shared across CRX instances. And there are no
@@ -8,7 +8,8 @@ cases where initrd files can be modified. From other side, accidental
 modifications can lead to expensive COWs from the hypervisor side.
 Seal these files to make corresponding NEWCA initrd pages immutable.
 
-Ignore hardlinks.
+Hardlinks sealing is different. Perform sealing only when we see
+non 0 sized file.
 
 Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
 [Guru: Ported to 6.12 kernel]
@@ -30,12 +31,19 @@ index b2f7583bb1f5..6fbeebdd1741 100644
  #include <linux/mm.h>
  #include <linux/namei.h>
  #include <linux/init_syscalls.h>
-@@ -390,6 +391,16 @@ static int __init do_name(void)
+@@ -390,6 +391,23 @@ static int __init do_name(void)
  			vfs_fchmod(wfile, mode);
  			if (body_len)
  				vfs_truncate(&wfile->f_path, body_len);
-+			/* Disallow modifications of NEWCA pages. */
-+			if (page_aligned_fmt && !ml) {
++			/*
++			 * Disallow modifications of NEWCA pages.
++			 * For hardlinked files (nlink >= 2), body_len is 0 for
++			 * all CPIO entries but the last one. Defer sealing until
++			 * the entry that carries actual data so that the
++			 * vfs_truncate() call above can set i_size correctly
++			 * before F_SEAL_GROW prevents it.
++			 */
++			if (page_aligned_fmt && (nlink < 2 || body_len)) {
 +				long err;
 +				err = memfd_fcntl(wfile, F_ADD_SEALS,
 +						  F_SEAL_SEAL | F_SEAL_SHRINK |

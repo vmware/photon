@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.92
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -544,6 +544,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jun 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.92-3
+- NEWCA initrd: fix hardlink sealing
 * Thu Jun 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.92-2
 - Consolidate CVE patches into kernel_cve_patches.inc (range 3000-3999)
 * Tue Jun 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.92-1
