@@ -4,7 +4,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -32,7 +32,6 @@ BuildRequires:  systemd-rpm-macros
 
 Requires:       kmod
 Requires:       bash
-Requires:       rpm-build
 Requires:       (coreutils or coreutils-selinux)
 Requires:       gawk
 Requires:       util-linux
@@ -72,6 +71,7 @@ Requires: %{name}-build = %{version}-%{release}
 Requires: docker
 Requires: docker-buildx
 Requires: wget
+Requires: rpm-build
 
 %description utils
 Contains auto_livepatch and gen_livepatch scripts.
@@ -123,6 +123,8 @@ cp %{kpatch_utils}/Dockerfile.ph* %{buildroot}%{_datadir}/livepatch/dockerfiles
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Mon Jun 01 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.9.10-9
+- Move rpm-build depedency only to kpatch-utils
 * Tue Sep 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.10-8
 - Do not need xml-security-c for building kernel
 * Wed Sep 10 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-7
