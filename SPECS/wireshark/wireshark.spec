@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.2.12
-Release:        4%{?dist}
+Version:        4.6.6
+Release:        1%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
@@ -11,9 +11,6 @@ Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: 0001-Remove-SpeexDSP-library-dependencies-from-photon-wir.patch
-Patch1: CVE-2025-13499.patch
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -28,6 +25,7 @@ BuildRequires:  libgcrypt-devel
 BuildRequires:  libnl-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  openssl-devel
+BuildRequires:  libxml2-devel
 BuildRequires:  pcre-devel
 BuildRequires:  systemd-devel
 BuildRequires:  git
@@ -40,6 +38,7 @@ Requires:       libcap
 Requires:       libnl
 Requires:       gnutls
 Requires:       glib
+Requires:       libxml2
 
 %description
 Wireshark is a network protocol analyzer. It allows examining data
@@ -73,6 +72,7 @@ and plugins.
        -DBUILD_mmdbresolve=OFF \
        -DBUILD_wireshark=OFF \
        -DBUILD_randpktdump=OFF \
+       -DBUILD_sharkd=OFF \
        -DENABLE_SMI=ON \
        -DENABLE_PLUGINS=ON \
        -DENABLE_NETLINK=ON \
@@ -94,6 +94,7 @@ rm -rf %{buildroot}%{_mandir} \
 %{_bindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/%{name}/*
+%{_libexecdir}/%{name}/*
 %{_datadir}/%{name}/*
 
 %files devel
@@ -101,6 +102,12 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Mon Jun 01 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.6.6-1
+- Upgrade to v4.6.6 (EOL-free stable; fixes all prior CVE patches
+  including CVE-2025-13499, CVE-2026-5654, CVE-2026-5657,
+  CVE-2026-6519, CVE-2026-6868, CVE-2026-7375)
+- Drop Patch0 (SpeexDSP): replaced by -DBUILD_sharkd=OFF cmake flag
+- Drop Patch1 (CVE-2025-13499): fixed upstream in 4.6.1+
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 4.2.12-4
 - Version bump due to gnutls update
 * Wed Nov 26 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.2.12-3
