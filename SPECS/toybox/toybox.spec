@@ -8,7 +8,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -397,6 +397,15 @@ mktoy %{_sbindir}/insmod \
 %{_mktoy_}
 mktoy %{_bindir}/netcat %{_bindir}/nc
 
+%triggerpostun -- net-tools
+[ $2 -eq 0 ] || exit 0
+%{_mktoy_}
+mktoy %{_sbindir}/arp \
+      %{_bindir}/hostname \
+      %{_bindir}/netstat \
+      %{_bindir}/ifconfig \
+      %{_sbindir}/iptunnel
+
 %triggerpostun -- hostname
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
@@ -674,8 +683,12 @@ mktoy %{_bindir}/which
 %ghost %{_bindir}/netcat
 %ghost %{_bindir}/nc
 
-# hostname
+# hostname / net-tools
 %ghost %{_bindir}/hostname
+%ghost %{_sbindir}/arp
+%ghost %{_bindir}/netstat
+%ghost %{_bindir}/ifconfig
+%ghost %{_sbindir}/iptunnel
 
 # parted
 %ghost %{_sbindir}/partprobe
@@ -796,10 +809,6 @@ mktoy %{_bindir}/which
 %{_sbindir}/iplink
 %{_sbindir}/iproute
 %{_sbindir}/iprule
-%{_sbindir}/arp
-%{_bindir}/netstat
-%{_bindir}/ifconfig
-%{_sbindir}/iptunnel
 %{_bindir}/toysh
 %{toysh_secondary_path}
 
@@ -808,6 +817,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-15
+- Add postrigger and ghosts for net-tools back in (added back to 91/92).
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.8.9-14
 - Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-13

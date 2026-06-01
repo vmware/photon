@@ -3,7 +3,7 @@
 Summary:        Utility to set/show the host name or domain name
 Name:           hostname
 Version:        3.25
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://tracker.debian.org/pkg/hostname
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -17,6 +17,8 @@ Source1: gpl-2.0.txt
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Conflicts: net-tools
 
 BuildRequires: gcc
 BuildRequires: make
@@ -55,6 +57,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.25-3
+- Add conflicts for net-tools
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.25-2
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.25-1

@@ -1,8 +1,7 @@
-%global build_if %{photon_subrelease} <= 90
 Summary:    Networking Tools
 Name:       net-tools
 Version:    2.10
-Release:    2.1.1%{?dist}
+Release:    3%{?dist}
 URL:        https://github.com/ecki/net-tools
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -17,6 +16,7 @@ Source3: license.txt
 %include %{SOURCE3}
 
 Conflicts: toybox < 0.8.2-2
+Conflicts: hostname
 
 %description
 The Net-tools package is a collection of programs for controlling the network subsystem of the Linux kernel.
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Tue May 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.10-3
+- Move back all 5.0 releases
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.10-2.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.10-2.1
