@@ -1,104 +1,59 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       LTTng is an open source tracing framework for Linux.
 Name:          lttng-tools
-Version:       2.15.0
-Release:       1%{?dist}
-URL:           https://github.com/lttng/lttng-tools
+Version:       2.13.8
+Release:       4.0.1%{?dist}
+URL:           https://lttng.org/download
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0: %{name}-%{version}.tar.bz2
+Source0:        %{name}-%{version}.tar.bz2
 
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires: libxml2-devel
+BuildRequires: libxml2-devel >= 2.7.6
 BuildRequires: nss-devel
 BuildRequires: m4
 BuildRequires: elfutils-devel
 BuildRequires: popt-devel
-BuildRequires: userspace-rcu-devel
-BuildRequires: lttng-ust-devel
-BuildRequires: zlib-devel
+BuildRequires: userspace-rcu-devel >= 0.8.0
+BuildRequires: lttng-ust-devel >= 2.9.0
 
-Requires:   userspace-rcu >= 0.15.6
-Requires:   popt
-Requires:   lttng-ust-libs
-Requires:   %{name}-libs = %{version}-%{release}
+Requires:      userspace-rcu
+Requires:      elfutils
+Requires:      nss
+Requires:      libxml2
 
 %description
 LTTng is an open source tracing framework for Linux.
-
-%package libs
-Summary:    Library files for %{name}
-Requires:   libxml2
-Requires:   zlib
-Conflicts:  %{name} < 2.15.0
-
-%description libs
-%{summary}
-
-%package devel
-Summary:    Development headers for %{name}
-Requires:   %{name} = %{version}-%{release}
-Conflicts:  %{name} < 2.15.0
-
-%description devel
-%{summary}
-
-%package doc
-Summary:    Documentation for %{name}
-Requires:   %{name} = %{version}-%{release}
-Conflicts:  %{name} < 2.15.0
-
-%description doc
-%{summary}
 
 %prep
 %autosetup -p1
 
 %build
 autoreconf -fiv
-%configure \
-    --disable-static \
-    --disable-tests
-
+%configure
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
-%post libs -p /sbin/ldconfig
-%postun libs -p /sbin/ldconfig
-
 %files
-%defattr(-,root,root)
 %{_bindir}/*
-
-%files libs
-%defattr(-,root,root)
-%{_libdir}/*.so.*
-%{_libdir}/lttng/*
-%{_datadir}/xml/*
-
-%files devel
-%defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/*.so
+%{_libdir}/liblttng*
+%{_libdir}/lttng/*
 %{_libdir}/pkgconfig/*
+%{_datadir}/*
 %exclude %dir %{_libdir}/debug
 
-%files doc
-%defattr(-,root,root)
-%{_mandir}/*
-%{_docdir}/*
-
 %changelog
-* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.15.0-1
-- Upgrade to v2.15.0
+* Mon Jun 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.8-4.0.1
+- Micro branch for 90
 * Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.8-4
 - Build for all subreleases
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.8-3.1.1

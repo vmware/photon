@@ -1,11 +1,10 @@
-%global build_if %{photon_subrelease} >= 91
-
+%global build_if %{photon_subrelease} <= 90
 %global debug_package %{nil}
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        10.0.8
-Release:        1%{?dist}
+Version:        8.0.26
+Release:        2.0.1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -41,11 +40,15 @@ applications, microservices and modern websites.
 %build
 
 %install
-mkdir -p %{buildroot}%{_datadir}/dotnet \
+mkdir -p %{buildroot}%{_libdir}/dotnet \
+         %{buildroot}%{_docdir}/%{name}-%{version} \
          %{buildroot}%{_bindir}
 
-cp -a * %{buildroot}%{_datadir}/dotnet
-ln -sfrv %{buildroot}%{_datadir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
+cp -pr * %{buildroot}%{_libdir}/dotnet
+ln -sfrv %{buildroot}%{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -53,12 +56,13 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root,0755)
 %exclude %dir %{_libdir}/debug
+%{_docdir}/*
 %{_bindir}/dotnet
-%{_datadir}/*
+%{_libdir}/*
 
 %changelog
-* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.8-1
-- Upgrade to v10.0.8
+* Mon Jun 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.26-2.0.1
+- Micro branch for 90
 * Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.26-2
 - Build for all subreleases
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.26-1.1.1

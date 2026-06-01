@@ -1,0 +1,26 @@
+sources:
+- archive: lttng-tools-2.13.8.tar.bz2
+  archive_sha512sum: 6daafb1fd458cfbaa7e19b3a8aaafa958116bb836f389febf7ac4035e5d7884d308a9fdefb4e9063329cb7d837853a79ddae0e263d3b58db1f87519bba2dcb3b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'LTTng is an open source tracing framework for Linux. '
+      home_page: https://lttng.org/download
+      license_concluded: FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND X11 AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
+        BSL-1.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-only AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-2.0-only AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFAP AND FSFUL AND GPL-2.0-or-later AND FSFULLRWD
+        AND GPL-3.0-or-later AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      license_declared: FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-macro
+        AND X11 AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
+        BSL-1.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Libtool-exception
+        AND LGPL-2.1-only AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.0-or-later
+        AND GPL-1.0-or-later AND GPL-2.0-only AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFAP AND FSFUL AND GPL-2.0-or-later AND FSFULLRWD
+        AND GPL-3.0-or-later AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      short_summary: LTTng is an open source tracing framework for Linux.
+      supplier: 'Organization: Broadcom, Inc.'

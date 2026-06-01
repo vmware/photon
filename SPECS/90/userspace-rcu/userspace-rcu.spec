@@ -1,15 +1,14 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        user space RCU (read-copy-update)
 Name:           userspace-rcu
-Version:        0.15.6
-Release:        1%{?dist}
+Version:        0.13.2
+Release:        4.0.1%{?dist}
 URL:            https://github.com/urcu/userspace-rcu/releases
+Source0:         %{name}-%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0: %{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -20,51 +19,46 @@ BuildRequires:  m4
 BuildRequires:  elfutils-devel
 BuildRequires:  popt-devel
 
-Requires: libxml2
-
 %description
 This data synchronization library provides read-side access which scales linearly with the number of cores.
 
 %package devel
-Summary:    Development Libraries for openssl
-Requires:   %{name} = %{version}-%{release}
-
+Summary: Development Libraries for openssl
+Group: Development/Libraries
+Requires: userspace-rcu = %{version}-%{release}
 %description devel
 Library files for doing development with userspace-rcu.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 autoreconf -fiv
 %configure \
     --disable-static
-
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 find %{buildroot} -name '*.la' -delete
 
-%if 0%{?with_check}
 %check
-%make_build check
-%endif
+make %{?_smp_mflags} check
 
 %files
-%defattr(-,root,root)
-%{_libdir}/*.so.*
+%{_lib}/*.so.*
+%{_includedir}/*
+%{_datadir}/*
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/pkgconfig/*
 %{_libdir}/*.so
 %{_includedir}/*
-%{_datadir}/*
 
 %changelog
-* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15.6-1
-- Upgrade to v0.15.6
+* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.13.2-4.0.1
+- Bump after moving to SPECS/91
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.13.2-4
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 0.13.2-3

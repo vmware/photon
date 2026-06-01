@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       LTTng-UST is an Userspace Tracer library
 Name:          lttng-ust
-Version:       2.15.1
-Release:       1%{?dist}
-URL:           https://lttng.org
+Version:       2.13.5
+Release:       3.0.1%{?dist}
+URL:           https://lttng.org/download/
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0: https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
+Source0:        https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -20,8 +20,7 @@ BuildRequires: userspace-rcu-devel
 BuildRequires: perl
 %endif
 
-Requires:      %{name}-libs = %{version}-%{release}
-Requires:      userspace-rcu >= 0.15.6
+Requires:      userspace-rcu
 Provides:      liblttng-ust.so.0()(64bit)
 
 %description
@@ -31,56 +30,35 @@ trace-points using LTTng.
 %package       devel
 Summary:       The libraries and header files needed for LTTng-UST development.
 Requires:      %{name} = %{version}-%{release}
-Requires:      userspace-rcu-devel
-Conflicts:     %{name} < 2.15.0
 
 %description   devel
 The libraries and header files needed for LTTng-UST development.
 
-%package       libs
-Summary:       Library files for %{name}
-Conflicts:     %{name} < 2.15.0
-
-%description   libs
-%{summary}
-
-%package       doc
-Requires:      %{name} = %{version}-%{release}
-Summary:       Documentation for %{name}
-Conflicts:     %{name} < 2.15.0
-
-%description   doc
-%{summary}
-
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %configure \
-    --docdir=%{_docdir}/%{name} \
-    --disable-static \
-    --disable-numa
+        --docdir=%{_docdir}/%{name} \
+        --disable-static \
+        --disable-numa
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
-%if 0%{?with_check}
 %check
-%make_build check
-%endif
+make %{?_smp_mflags} check
 
-%post libs -p /sbin/ldconfig
-%postun libs -p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-
-%files libs
-%defattr(-,root,root)
 %{_libdir}/*.so.*
+%{_datadir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -88,14 +66,9 @@ Conflicts:     %{name} < 2.15.0
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
-%files doc
-%defattr(-,root,root)
-%{_mandir}/*
-%{_docdir}/*
-
 %changelog
-* Mon Jun 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.15.1-1
-- Upgrade v2.15.1
+* Mon Jun 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.5-3.0.1
+- Micro branch for 90
 * Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.5-3
 - Build for all subreleases
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.13.5-2.1.1

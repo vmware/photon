@@ -1,0 +1,17 @@
+sources:
+- archive: multipath-tools-0.9.4.tar.gz
+  archive_sha512sum: 5e0dcea610fc215e345444c04453a38f39c73e493c2bc53f6b3a90cd701266aabdf7c4693dfc321099af836d0019bf27355e265ad5db5deff48f8bb94ed4719d
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Device-mapper-multipath provides tools to manage multipath
+        devices by instructing the device-mapper multipath kernel module what to do. '
+      home_page: http://christophe.varoqui.free.fr
+      license_concluded: GPL-2.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        AND LGPL-2.1-only AND GPL-3.0-only AND GPL-1.0-or-later AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND bzip2-1.0.6 AND GPL-2.0-only
+      license_declared: GPL-2.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-or-later
+        AND LGPL-2.1-only AND GPL-3.0-only AND GPL-1.0-or-later AND LGPL-2.0-only
+        AND LGPL-2.0-or-later AND bzip2-1.0.6 AND GPL-2.0-only
+      short_summary: Provide tools to manage multipath devices
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,11 +1,10 @@
-%global build_if %{photon_subrelease} >= 91
-
+%global build_if %{photon_subrelease} <= 90
 %define debug_package %{nil}
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        10.0.300
-Release:        1%{?dist}
+Version:        8.0.420
+Release:        2.0.1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -24,7 +23,7 @@ Source0: %{name}-%{version}-linux-x64.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires: dotnet-runtime = 10.0.8
+Requires: dotnet-runtime = 8.0.26
 Requires: icu >= 70.1
 
 %description
@@ -37,21 +36,20 @@ applications, microservices and modern websites.
 %build
 
 %install
-mkdir -p %{buildroot}%{_datadir}/dotnet \
+mkdir -p %{buildroot}%{_libdir}/dotnet/sdk \
          %{buildroot}%{_sysconfdir}/dotnet
 
-cp -a packs sdk shared %{buildroot}%{_datadir}/dotnet/
-
-echo "%{_datadir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
+cp -a sdk/%{version} %{buildroot}%{_libdir}/dotnet/sdk
+echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 
 %files
 %defattr(-,root,root,0755)
-%{_datadir}/*
+%{_libdir}/*
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
-* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.300-1
-- Upgrade to v10.0.300
+* Mon Jun 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-2.0.1
+- Micro branch for 90
 * Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-2
 - Build for all subreleases
 * Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.0.420-1.1

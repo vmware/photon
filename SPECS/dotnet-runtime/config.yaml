@@ -1,18 +1,13 @@
 sources:
-- archive: dotnet-runtime-8.0.26-linux-x64.tar.gz
-  archive_sha512sum: af0ac3aea50162aff62612883ab5ecba3c0dfe7cc0c50fba70342fe076c1cab242081cf84d1d130a4613ea8b4867139a3234433f42a66b1d86e4d4c174ef0751
+- archive: dotnet-runtime-10.0.8-linux-x64.tar.gz
+  archive_sha512sum: e5ed2ff2326ce833269eca8f35c2b0511c49f9585bd35f2b2c335484beec8348ff4ef5fb4b01335b78f00d1d17ad9cfd756909d847ec6eaef0df789db361a0ae
   skip_validation: true
-  url: https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.24/dotnet-runtime-8.0.24-linux-x64.tar.gz
   spdx:
     package:
       detailed_description: '.NET Core is a development platform that you can use
         to build command-line applications, microservices and modern websites.'
       home_page: https://github.com/dotnet/core
-      license_concluded: BSD-3-Clause AND Zlib AND BSD-4-Clause-UC AND CC0-1.0 AND
-        W3C-20150513 AND HP-1989 AND Unicode-3.0 AND NCSA AND LZMA-SDK-9.22 AND Apache-2.0
-        AND MIT AND BSD-2-Clause
-      license_declared: BSD-3-Clause AND Zlib AND BSD-4-Clause-UC AND CC0-1.0 AND
-        W3C-20150513 AND HP-1989 AND Unicode-3.0 AND NCSA AND LZMA-SDK-9.22 AND Apache-2.0
-        AND MIT AND BSD-2-Clause
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause-UC AND CC0-1.0 AND HP-1989 AND LZMA-SDK-9.22 AND MIT AND NCSA AND Unicode-3.0 AND W3C-20150513 AND Zlib
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause-UC AND CC0-1.0 AND HP-1989 AND LZMA-SDK-9.22 AND MIT AND NCSA AND Unicode-3.0 AND W3C-20150513 AND Zlib
       short_summary: Microsoft .NET Core Runtime
       supplier: 'Organization: Broadcom, Inc.'

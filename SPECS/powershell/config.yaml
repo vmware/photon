@@ -1,21 +1,6 @@
 sources:
-- archive: omi-1.9.0-0.tar.gz
-  archive_sha512sum: 73b60237173079707de8dbab29c3225643a8bf262348911724d542409b674f0a6593b046b87801e6998b0aad50b8dfe14748a2a6de115564e129bbb035b76759
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: Open Management Infrastructure (OMI) provides production
-        quality implementation of the DMTF CIM/WBEM standards. he OMI CIMOM is also
-        designed to be portable and highly modular.
-      home_page: https://github.com/microsoft/omi
-      license_concluded: HPND-export-US-modify AND Apache-2.0 AND MIT
-      license_declared: HPND-export-US-modify AND Apache-2.0 AND MIT
-      short_summary: OMI provides production quality implementation of the DMTF CIM/WBEM
-        standards.
-      supplier: 'Organization: Broadcom, Inc.'
-
-- archive: powershell-7.4.15-linux-x64.tar.gz
-  archive_sha512sum: ba135fda6b61f17d66764cc002171a2bd812e0c6e108d7b8d4e8eabf833b6deea2c6c235d8549836b100bbe050a6d332ed3ffe85b326a8b1836cef480fcc6290
+- archive: powershell-7.6.2-linux-x64.tar.gz
+  archive_sha512sum: effb505a891664d7c885129be67dc829218a074569c36dc00dcb3706435c72075c63ed67a1c533c044944993eefe460500c447163cab9f5b43233cd4d9d51b95
   skip_validation: true
   license_manual_review:
   - file_paths:
@@ -30,15 +15,13 @@ sources:
         models. It includes a command-line shell, an associated scripting language
         and a framework for processing cmdlets.
       home_page: https://github.com/PowerShell/PowerShell
-      license_concluded: BSD-2-Clause AND CC-BY-SA-2.0 AND Apache-2.0 AND LGPL-2.1-or-later
-        AND MIT AND Parity-6.0.0 AND Parity-7.0.0
-      license_declared: BSD-2-Clause AND CC-BY-SA-2.0 AND Apache-2.0 AND LGPL-2.1-or-later
-        AND MIT AND Parity-6.0.0 AND Parity-7.0.0
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
       short_summary: A cross-platform automation tool/framework.
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: powershell-7.4.15-nuget-deps.tar.xz
-  archive_sha512sum: 064d743352655dff62910f71a5aa3c03fa59d1c872bee0b6260862b31ae57d896b45a97c26af4e8964f6fc89e754c4514f73a1e55a1d11c4af5f01414cbf8f91
+- archive: powershell-7.6.2-nuget-deps.tar.xz
+  archive_sha512sum: 6fa4f4b7b4255df4f6bc24aec09c71febc6d557b70068bf3a38dbb47a357b6de06694344c1e69aaf13de7b11f1fbf71a4cbf77cec9fd89f0e48b7b022307d9e9
   skip_validation: true
   spdx:
     package:
@@ -55,8 +38,8 @@ sources:
         .NET.
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: powershell-7.4.15.tar.gz
-  archive_sha512sum: dd046eab73beb5f814d039084c09a8ade607b3a330f5d2906da1666d8a36c81848927186f17059cf77f2f15e9958f0d5ab5407e2d8d66795b38b69ac1a686e32
+- archive: powershell-7.6.2.tar.gz
+  archive_sha512sum: 8f0f1230ef38c7f7e1a0ae6fe6d90c9f6453e5060a30d6870eb1615d348f5c060df716de9587958577643298b43b9939f59dbe04bc32941c07fecad70b2a57ef
   skip_validation: true
   spdx:
     package:
@@ -64,25 +47,7 @@ sources:
         platform. It consists of a cross-platform command-line shell and associated
         scripting language.
       home_page: https://microsoft.com/powershell
-      license_concluded: MS-PL AND JSON AND MIT AND BSD-2-Clause AND Apache-2.0 AND
-        LGPL-2.1-or-later AND BSD-3-Clause
-      license_declared: MS-PL AND JSON AND MIT AND BSD-2-Clause AND Apache-2.0 AND
-        LGPL-2.1-or-later AND BSD-3-Clause
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
       short_summary: PowerShell is an automation and configuration management platform.
-      supplier: 'Organization: Broadcom, Inc.'
-
-- archive: powershell-native-7.4.0.tar.gz
-  archive_sha512sum: 6f00c3b7bc45307530bd04065138c4d0f613dcae3cca6bfbca3544c1cf4012b195f230a1b3d1968c1cf7f62fa1850ca6325ab81c668932886fc22fb7284e4370
-  skip_validation: true
-  spdx:
-    package:
-      detailed_description: This library provides functionality missing from .NET
-        Core via system calls, that are called from from the CorePsPlatform.cs file
-        of PowerShell. The method to do this is a Platform Invoke, which is C#'s Foreign
-        Function Interface to C code (and C++ by way of extern C).
-      home_page: https://github.com/PowerShell/PowerShell-Native
-      license_concluded: MIT AND BSD-3-Clause AND Apache-2.0
-      license_declared: MIT AND BSD-3-Clause AND Apache-2.0
-      short_summary: This library provides functionality missing from .NET Core via
-        system calls.
       supplier: 'Organization: Broadcom, Inc.'

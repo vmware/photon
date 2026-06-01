@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        6.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://oss.sgi.com/projects/xfs
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.0-4
+- Bump version as a part of userspace-rcu upgrade
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.0.0-3
 - Release bump for SRP compliance
 * Sat Jan 14 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 6.0.0-2

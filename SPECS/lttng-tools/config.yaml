@@ -1,26 +1,19 @@
 sources:
-- archive: lttng-tools-2.13.8.tar.bz2
-  archive_sha512sum: 6daafb1fd458cfbaa7e19b3a8aaafa958116bb836f389febf7ac4035e5d7884d308a9fdefb4e9063329cb7d837853a79ddae0e263d3b58db1f87519bba2dcb3b
-  skip_validation: true
+- archive: lttng-tools-2.15.0.tar.bz2
+  archive_sha512sum: a6cfe0b64d31e317c1bf48377abca917f373c959511f18f83719abc8059f1c4e69a898e056dad92fc5817f242b17358f7f893d910c7715d5710657b86cbcce56
+  archive_type: upstream
+  name: lttng-tools-2.15.0
+  version: 2.15.0
+  url: https://lttng.org/files/lttng-tools/lttng-tools-2.15.0.tar.bz2
+  repo_url: https://github.com/lttng/lttng-tools
+  commit_id: afde3d48e58081d2a8f0d26ec7f21755c8f077cb
+  skip_list: []
+  missing: ['*.m4', .gitreview, pyproject.toml, configure, man3, Makefile.in, common-cmd-options-head.txt, common-lttng-cmd-opts-head.txt, config.h.in, kernel-local-trace-pretty.expect.32, .editorconfig, test_bug1480_assert_data_pending, proposals, .clang-tidy, test_multi_sessions_per_uid_5app_streaming_kill_relayd, run.sh, .clang-format, tests, aminclude_static.am, filter-visitor-ir-check-binary-comparator.cpp, man7, abi_ref, .travis.yml, .deps, filter-parser.hpp, .github, CONTRIBUTING.md, format-cpp, testpoint.hpp, filter-lexer.cpp, .checkpatch.conf, .gitattributes, .lcovrc, .vscode, .commit_template, man8, template_test.py, config, .clang-format-ignore, .clang-tidy.ignore, README.md, kill_relayd, filter-parser.cpp, ust_gen_nevents.h, man1, Makefile, version.i, .git-blame-ignore-revs, pre-commit.py, bootstrap, .gitignore]
   spdx:
     package:
-      detailed_description: 'LTTng is an open source tracing framework for Linux. '
-      home_page: https://lttng.org/download
-      license_concluded: FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-macro
-        AND X11 AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
-        BSL-1.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Libtool-exception
-        AND LGPL-2.1-only AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.0-or-later
-        AND GPL-1.0-or-later AND GPL-2.0-only AND BSD-2-Clause AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFAP AND FSFUL AND GPL-2.0-or-later AND FSFULLRWD
-        AND GPL-3.0-or-later AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-      license_declared: FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-macro
-        AND X11 AND BSD-3-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2 AND
-        BSL-1.0 AND LGPL-2.1-or-later AND GPL-3.0-or-later WITH Libtool-exception
-        AND LGPL-2.1-only AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND LGPL-2.0-or-later
-        AND GPL-1.0-or-later AND GPL-2.0-only AND BSD-2-Clause AND GPL-2.0-or-later
-        WITH Libtool-exception AND FSFAP AND FSFUL AND GPL-2.0-or-later AND FSFULLRWD
-        AND GPL-3.0-or-later AND MIT AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+      detailed_description: 'LTTng is an open source tracing framework for Linux.'
+      home_page: https://lttng.org
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND X11
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND CC0-1.0 AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND X11
       short_summary: LTTng is an open source tracing framework for Linux.
       supplier: 'Organization: Broadcom, Inc.'

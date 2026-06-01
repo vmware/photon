@@ -1,27 +1,20 @@
 sources:
-- archive: lttng-ust-2.13.5.tar.bz2
-  archive_sha512sum: 3bf969e9deb6ce05a1ae30ad48676ae8ff63a73198583e98ce083d52b78e9fc2d171a6e3890c201abfa364600d4471d1ee8b1ee23de3faeec1f0ca84e0f0acd4
-  skip_validation: true
+- archive: lttng-ust-2.15.1.tar.bz2
+  archive_sha512sum: d8622bae7351333ada6d65f8a42bd5b45dfb064d2628e1192ce18ebdf56831d80d1caf71daeb4103df5bfb5c721391f6f03b4ccf820c8ccdafd03c78015ed117
+  archive_type: upstream
+  name: lttng-ust-2.15.1
+  version: 2.15.1
+  url: https://lttng.org/files/lttng-ust/lttng-ust-2.15.1.tar.bz2
+  repo_url: https://github.com/lttng/lttng-ust
+  commit_id: 64d7a14a866f7613e0d06f309b34a53f82740f44
+  skip_list: []
+  missing: [common-footer-author.txt, config.h.in, .editorconfig, .project, .gitignore, .intree, lttng-gen-tp.1, Makefile.in, .gitreview, bootstrap, config, .classpath, configure, CC0-1.0.txt, '*.m4', '*.3']
   spdx:
     package:
       detailed_description: 'This library may be used by user-space applications to
-        generate trace-points using LTTng. '
+        generate trace-points using LTTng.'
       home_page: https://lttng.org/download/
-      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND (GPL-2.0-only
-        OR LGPL-2.1-only) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
-        GPL-2.0-or-later WITH Autoconf-exception-macro AND FSFULLR AND LGPL-2.1-or-later
-        AND BSD-2-Clause AND X11 AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND BSD-3-Clause AND GPL-2.0-only AND MIT AND LGPL-2.0-only AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later AND FSFUL AND GPL-3.0-or-later
-        AND GPL-3.0-only AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-only
-        AND (LGPL-2.1-only OR GPL-2.0-only) AND FSFULLRWD AND FSFAP
-      license_declared: GPL-3.0-or-later WITH Autoconf-exception-2.0 AND (GPL-2.0-only
-        OR LGPL-2.1-only) AND GPL-2.0-or-later WITH Autoconf-exception-generic AND
-        GPL-2.0-or-later WITH Autoconf-exception-macro AND FSFULLR AND LGPL-2.1-or-later
-        AND BSD-2-Clause AND X11 AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
-        AND BSD-3-Clause AND GPL-2.0-only AND MIT AND LGPL-2.0-only AND GPL-2.0-or-later
-        WITH Libtool-exception AND GPL-2.0-or-later AND FSFUL AND GPL-3.0-or-later
-        AND GPL-3.0-only AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-only
-        AND (LGPL-2.1-only OR GPL-2.0-only) AND FSFULLRWD AND FSFAP
+      license_concluded: (GPL-2.0-only OR LGPL-2.1-only) AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC0-1.0 AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND X11
+      license_declared: (GPL-2.0-only OR LGPL-2.1-only) AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-4.0 AND CC0-1.0 AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND X11
       short_summary: LTTng-UST is an Userspace Tracer library
       supplier: 'Organization: Broadcom, Inc.'

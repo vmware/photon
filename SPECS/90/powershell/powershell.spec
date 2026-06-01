@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 # powershell's make files use -D_FORTIFY_SOURCE=2, which conflicts
 # with =3 from adjust-gcc-specs.sh, failing the build with error:
@@ -6,15 +6,14 @@
 # Use `nofortify` until powershell move to =3.
 %global security_hardening nofortify
 
+%global ps_native_ver   7.4.0
+%global libmi_tag       1.9.0-0
 %global gen_nuget_deps  0
-%if 0%{?gen_nuget_deps} == 1
-%define network_required 1
-%endif
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.6.2
-Release:        1%{?dist}
+Version:        7.4.15
+Release:        2.0.1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -33,13 +32,24 @@ BuildArch:      x86_64
 # tar czf powershell-$v.tar.gz PowerShell-$v
 Source0: %{name}-%{version}.tar.gz
 
+# Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
+# And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
+# PowerShell-Native uses googletest submodule in it, we need that as well
+Source1: %{name}-native-%{ps_native_ver}.tar.gz
+
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
-Source1: %{name}-%{version}-linux-x64.tar.gz
+Source2: %{name}-%{version}-linux-x64.tar.gz
 
-Source2: build.sh
-Source3: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
+Source3: build.sh
+Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
+
+# The default libmi.so file that comes with powershell (for example powershell-7.1.5-linux-x64.tar.gz)
+# needs libcrypto.1.0.0, we need it to be linked with openssl-3.x (what's present in Photon)
+# Hence we need to re-build it.
+# https://github.com/microsoft/omi/archive/refs/tags/v1.6.9-0.tar.gz
+Source5: omi-%{libmi_tag}.tar.gz
 
 # After extracting Powershell original archive (Source0 in this spec), run:
 # dotnet restore .
@@ -47,15 +57,13 @@ Source3: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 # mv $HOME/.nuget <NAME>-<VERSION>-nuget-deps
 # tar cJf <NAME>-<VERSION>-nuget-deps.tar.xz <NAME>-<VERSION>-nuget-deps
 %if 0%{?gen_nuget_deps} == 0
-Source4: %{name}-%{version}-nuget-deps.tar.xz
+Source6: %{name}-%{version}-nuget-deps.tar.xz
 %endif
 
-Source5: license.txt
-%include %{SOURCE5}
+Source7: license.txt
+%include %{SOURCE7}
 
-%if 0%{?gen_nuget_deps} == 1
 Patch0: fix-nuget-url.patch
-%endif
 
 BuildRequires:  dotnet-sdk
 BuildRequires:  dotnet-runtime
@@ -78,7 +86,7 @@ BuildRequires:  wget
 
 Requires:       icu >= 70.1
 Requires:       zlib
-Requires:       dotnet-sdk = 10.0.300
+Requires:       dotnet-sdk = 8.0.420
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -88,16 +96,21 @@ It consists of a cross-platform command-line shell and associated scripting lang
 # Using autosetup is not feasible
 %setup -qn PowerShell-%{version}
 # Using autosetup is not feasible
-%setup -qcTDa 1 -n %{name}-linux-%{version}
+%setup -qcTDa 1 -n PowerShell-Native
+# Using autosetup is not feasible
+%setup -qcTDa 2 -n %{name}-linux-%{version}
+# Using autosetup is not feasible
+%setup -qcTDa 5 -n omi
 
 pushd %{_builddir}/PowerShell-%{version}
 
+%patch -p1 0
+
 %if 0%{?gen_nuget_deps} == 0
-tar xf %{SOURCE4}
-[ -d ${HOME}/.nuget ] && rm -rf ${HOME}/.nuget
+tar xf %{SOURCE6}
+[ -d ${HOME}/.nuget ] && rm -r ${HOME}/.nuget
 mv %{name}-%{version}-nuget-deps ${HOME}/.nuget
 %else
-%patch -p1 0
 dotnet restore .
 mv $HOME/.nuget %{name}-%{version}-nuget-deps
 tar cJf %{name}-%{version}-nuget-deps.tar.xz %{name}-%{version}-nuget-deps
@@ -110,33 +123,62 @@ exit 1
 popd
 
 %build
+# Build libmi
+pushd %{_builddir}/omi/omi-%{libmi_tag}/Unix
+sh ./configure
+%make_build
+mv ./output/lib/libmi.so %{_builddir}/%{name}-linux-%{version}
+popd
+
 pushd %{_builddir}/PowerShell-%{version}
-cp %{SOURCE2} .
-cp %{SOURCE3} src
+cp %{SOURCE3} .
+cp %{SOURCE4} src
 bash -x build.sh
 popd
 
+pushd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}
+pushd src/libpsl-native
+%{__cmake} -DCMAKE_BUILD_TYPE=Debug
+%make_build
+popd
+popd
+
 %install
-mkdir -p %{buildroot}%{_docdir}/%{name} \
+mkdir -p %{buildroot}%{_libdir}/%{name} \
+         %{buildroot}%{_docdir}/%{name} \
          %{buildroot}%{_bindir} \
-         %{buildroot}%{_datadir}/%{name}
+         %{buildroot}%{_libdir}/%{name}/ref
 
 cd %{_builddir}/PowerShell-%{version}
 mv bin/ThirdPartyNotices.txt bin/LICENSE.txt %{buildroot}%{_docdir}/%{name}
-cp -a bin/* %{buildroot}%{_datadir}/%{name}
+cp -a bin/* %{buildroot}%{_libdir}/%{name}
+rm -f %{buildroot}%{_libdir}/%{name}/libpsl-native.so
 
-chmod 755 %{buildroot}%{_datadir}/%{name}/pwsh
-ln -srv %{buildroot}%{_datadir}/%{name}/pwsh %{buildroot}%{_bindir}/pwsh
+cp -a %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/%{name}-unix/libpsl-native.so \
+        %{buildroot}%{_libdir}/%{name}
 
-cp -a %{_builddir}/%{name}-linux-%{version}/ref %{buildroot}%{_datadir}/%{name}/
+chmod 755 %{buildroot}%{_libdir}/%{name}/pwsh
+ln -srv %{buildroot}%{_libdir}/%{name}/pwsh %{buildroot}%{_bindir}/pwsh
+
+cp %{_builddir}/%{name}-linux-%{version}/ref/* %{buildroot}%{_libdir}/%{name}/ref
+cp %{_builddir}/%{name}-linux-%{version}/libmi.so %{buildroot}%{_libdir}/%{name}/
 
 cp -a %{_builddir}/%{name}-linux-%{version}/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
-      %{buildroot}%{_datadir}/%{name}/Modules
+      %{buildroot}%{_libdir}/%{name}/Modules
+
+%if 0%{?with_check}
+%check
+cd %{_builddir}/PowerShell-%{version}/test/xUnit
+dotnet test
+export LANG=en_US.UTF-8
+cd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/libpsl-native
+%make_build test
+%endif
 
 %post
 #in case of upgrade, delete the soft links
 if [ $1 -eq 2 ]; then
-  pushd %{_datadir}/%{name}/ref
+  pushd %{_libdir}/%{name}/ref
   find -type l -exec unlink {} \;
   popd
 fi
@@ -153,12 +195,13 @@ fi
 %files
 %defattr(-,root,root,0755)
 %exclude %dir %{_libdir}/debug
-%{_datadir}/*
+%{_libdir}/%{name}/*
 %{_bindir}/pwsh
+%{_docdir}/*
 
 %changelog
-* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.2-1
-- Upgrade to v7.6.2
+* Mon Jun 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.15-2.0.1
+- Micro branch for 90
 * Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.15-2
 - Build for all subreleases
 * Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 7.4.15-1.1

@@ -1,0 +1,1 @@
+License: BSD-2-Clause AND (LGPL-2.0-or-later OR GPL-1.0-or-later) AND MIT AND BSD-3-Clause AND LGPL-2.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND FSFAP AND GPL-3.0-or-later AND Boehm-GC AND GPL-2.0-or-later WITH Autoconf-exception-macro AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.1-only
