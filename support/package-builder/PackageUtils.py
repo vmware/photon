@@ -319,7 +319,7 @@ class PackageUtils(object):
             not constants.buildDbgInfoRpm
             and package not in constants.buildDbgInfoRpmList
         ):
-            rpmBuildcmd += ["-D", "debug_package %{nil}"]
+            rpmBuildcmd += ["-D", "debug_package %{nil}", "-D", "_enable_debug_packages 0"]
 
         if constants.rpmCheck:
             pr_pounds = "#" * (68 + 2 * len(package))
