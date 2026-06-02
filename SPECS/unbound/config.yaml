@@ -1,17 +1,17 @@
 sources:
-- archive: unbound-1.24.1.tar.gz
-  archive_sha512sum: 7ed9f0ba9b855c931767fb2657e2cd8ae97a2863f5b5df3902a35ac12ef08883ebb9a07850c8f65e5fa0ec680ae035a5d1695d548c5384690f89dfcca5327482
+- archive: unbound-1.25.1.tar.gz
+  archive_sha512sum: e7104a70cd734a5e445890224b19510eac068b46c02fb65a7db911ad2f66db512b8aeae1dd44b505dc1288a315fd39dd54ca9decb78713bf6eb59fc6350ab804
   archive_type: upstream
-  name: unbound-release-1.24.1
-  version: 1.24.1
-  url: https://github.com/NLnetLabs/unbound/archive/refs/tags/release-1.24.1.tar.gz
+  name: unbound-release-1.25.1
+  version: 1.25.1
+  url: https://github.com/NLnetLabs/unbound/archive/refs/tags/release-1.25.1.tar.gz
   repo_url: https://github.com/NLnetLabs/unbound
-  commit_id: a33f0638e1dacf2633cf2292078a674576bca852
+  commit_id: 75b6dba593d4fff000434cd64807c6ebd50bd244
   skip_list: []
   missing: []
   spdx:
     package:
-      detailed_description: 'Unbound is a validating, recursive, and caching DNS resolver. '
+      detailed_description: 'Unbound is a validating, recursive, and caching DNS resolver.'
       home_page: http://www.unbound.net
       license_concluded: CC0-1.0 AND FSFULLR AND ISC AND HPND AND MIT AND GPL-3.0-or-later
         AND BSD-3-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND

@@ -1,6 +1,6 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.24.1
+Version:        1.25.1
 Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
@@ -15,6 +15,8 @@ Source2:        %{name}.sysusers
 Source3: license.txt
 %include %{SOURCE3}
 
+Requires:       expat-libs
+Requires:       openssl-libs
 Requires:       systemd
 Requires(pre):  systemd-rpm-macros
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -28,7 +30,6 @@ Unbound is a validating, recursive, and caching DNS resolver.
 
 %package        devel
 Summary:        unbound development libs and headers
-Group:          Development/Libraries
 Requires:       expat-devel
 Requires:       %{name} = %{version}-%{release}
 
@@ -37,7 +38,6 @@ Development files for unbound dns server
 
 %package        docs
 Summary:        unbound docs
-Group:          Documentation
 Requires:       %{name} = %{version}-%{release}
 
 %description    docs
@@ -59,8 +59,10 @@ install -vdm755 %{buildroot}%{_unitdir}
 install -pm 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
+%if 0%{?with_check}
 %check
 %make_build check
+%endif
 
 %pre
 %sysusers_create_compat %{SOURCE2}
@@ -85,7 +87,6 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 
@@ -94,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Tue Jun 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.25.1-1
+- Upgrade to v1.25.1
 * Fri Nov 07 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.1-1
 - Update to v1.24.1
 - Fix CVE-2025-11411, CVE-2025-5994
