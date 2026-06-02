@@ -1,19 +1,17 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Utility to send ICMP echo probes to network hosts
 Name:           fping
-Version:        5.5
-Release:        1%{?dist}
+Version:        5.1
+Release:        3.0.1%{?dist}
 Group:          Productivity/Networking/Diagnostic
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.fping.org/
-
 Source0:        http://fping.org/dist/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -23,24 +21,17 @@ Requires: iana-etc
 fping is a ping like program which uses the Internet Control Message Protocol
 (ICMP) echo request to determine if a target host is responding.
 
-%package docs
-Summary: Documentation for %{name}
-Requires: %{name} = %{version}-%{release}
-Conflicts: %{name} < 5.5-1
-
-%description docs
-%{summary}
-
 %prep
 %autosetup -p1
 
 %build
 %configure
-%make_build
+make %{?_smp_mflags}
 
 %install
-%make_install %{?_smp_mflags}
+make DESTDIR=%{buildroot} %{?_smp_mflags} install
 ln -sf fping %{buildroot}%{_sbindir}/fping6
+rm -rf %{buildroot}%{_infodir}
 
 %clean
 rm -rf %{buildroot}
@@ -49,15 +40,12 @@ rm -rf %{buildroot}
 %defattr(-, root, root)
 %{_sbindir}/fping
 %{_sbindir}/fping6
-
-%files docs
-%defattr(-, root, root)
 %doc CHANGELOG.md COPYING
 %doc %{_mandir}/man8/fping.8*
 
 %changelog
-* Tue Jun 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.5-1
-- Upgrade to v5.5
+* Tue Jun 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1-3.0.1
+- Micro branch for 90
 * Fri Apr 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1-3
 - Add iana-etc to Requires
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.1-2

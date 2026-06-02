@@ -1,12 +1,19 @@
 sources:
-- archive: fping-5.1.tar.gz
-  archive_sha512sum: 1a208da8dcd99093d0512af5d85ba5e7b5743ec97993d24c1fe612bb58d93090ac1ba0952f648aa075f16d390a77c4be65e394ae56dbede2a6914e0e8c68e2bd
-  skip_validation: true
+- archive: fping-5.5.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 80fddfb9462b4ed7231d96d21340e75a42a4c481b78fd70f4889422eab86405b1e4b2ee25162478f4c35f273d4a6b1ff81309af9f09121c574509bfd73b1afde
+  name: fping-5.5
+  version: 5.5
+  url: https://github.com/schweikert/fping/releases/download/v5.5/fping-5.5.tar.gz
+  repo_url: https://github.com/schweikert/fping
+  commit_id: 06f9481ef3cf79c2aa973718366fb13927777689
+  skip_list: []
+  missing: [.vscode, autoclean.sh, compile, depcomp, azure-pipelines.yml, configure, .dockerignore, .clang-format, .github, fping.8, .gitignore, fping-deps.gpg, fping-json.md, install-sh, config.h.in, config.guess, aclocal.m4, config.sub, maketags.sh, .travis.yml, Makefile.in, missing, autogen.sh]
   spdx:
     package:
       detailed_description: 'fping is a ping like program which uses the Internet
         Control Message Protocol (ICMP) echo request to determine if a target host
-        is responding. '
+        is responding.'
       home_page: http://www.fping.org/
       license_concluded: FSFULLRWD AND X11 AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
         AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND BSD-4.3TAHOE
