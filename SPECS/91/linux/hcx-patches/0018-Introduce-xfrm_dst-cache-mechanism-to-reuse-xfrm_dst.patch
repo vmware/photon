@@ -85,9 +85,9 @@ diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
 index 8a29e1b98..d6bd279c3 100644
 --- a/net/core/net-procfs.c
 +++ b/net/core/net-procfs.c
-@@ -251,6 +251,51 @@ static const struct proc_ops softnet_rps_seq_proc_ops = {
+@@ -250,6 +250,50 @@ static const struct proc_ops softnet_rps_seq_proc_ops = {
+ 	.proc_release = seq_release,
  };
- 
  
 +#ifdef CONFIG_XFRM
 +/* for xfrm_dst cache mechanism */
@@ -133,11 +133,10 @@ index 8a29e1b98..d6bd279c3 100644
 +};
 +#endif
 +
-+
- static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
- {
- 	struct list_head *ptype_list = NULL;
-@@ -383,10 +428,15 @@ static int __net_init dev_proc_net_init(struct net *net)
+ 
+ struct ptype_iter_state {
+ 	struct seq_net_private	p;
+@@ -400,10 +444,15 @@ static int __net_init dev_proc_net_init(struct net *net)
  		goto out_dev;
  	if (!proc_create("softnet_rps_stat", S_IRUGO, net->proc_net,
  			 &softnet_rps_seq_proc_ops))
@@ -149,7 +148,7 @@ index 8a29e1b98..d6bd279c3 100644
 +		goto out_softnet_rps;
 +#endif
  	if (!proc_create_net("ptype", 0444, net->proc_net, &ptype_seq_ops,
- 			sizeof(struct seq_net_private)))
+ 			sizeof(struct ptype_iter_state)))
 -		goto out_softnet;
 +		goto out_xfrm_stat;
  

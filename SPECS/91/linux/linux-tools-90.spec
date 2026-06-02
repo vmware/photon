@@ -4,8 +4,8 @@
 
 Summary:        Linux kernel userspace tools
 Name:           linux-tools
-Version:        6.1.174
-Release:        0.2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.175
+Release:        0.1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 Group:          System/Tools
 URL:            http://www.kernel.org
 Vendor:         VMware, Inc.
@@ -153,6 +153,8 @@ ARCH_FLAGS="${ARCH_FLAGS} EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Jun 01 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-0.1
+- Update to version 6.1.175
 * Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.174-0.2
 - Fix aarch64 build
 * Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-0.1

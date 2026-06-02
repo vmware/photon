@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.174
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.175
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -193,9 +193,6 @@ Patch21: 6.1-0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
-#VMCI/VSOCK
-Patch24: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
-
 Patch25: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
 
 # glibc-2.43 build error fixes
@@ -229,12 +226,6 @@ Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix CVE-2023-0597
 Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
 Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-
-#Fix CVE-2025-21863
-Patch105: 0001-io_uring-prevent-opcode-speculation.patch
-
-#Fix CVE-2024-56647
-Patch106: 0002-net-Fix-icmp-host-relookup-triggering-ip_rt_bug.patch
 
 #Fix CVE-2024-38557
 Patch107: 0003-net-mlx5-Reload-only-IB-representors-upon-lag-disabl.patch
@@ -285,9 +276,6 @@ Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 
 # Fix CVE-2025-21759
 Patch151: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
-
-# Fix CVE-2025-21739
-Patch152: 0001-scsi-ufs-core-Fix-use-after-free-in-init-error-and-r.patch
 
 # Fix CVE-2025-21714
 Patch153: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
@@ -372,9 +360,6 @@ Patch200: 0001-xfrm-Duplicate-SPI-Handling.patch
 Patch201: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
 # Fix CVE-2025-38616
 Patch202: 0001-tls-handle-data-disappearing-from-under-the-TLS-ULP.patch
-# Fix CVE-2025-38584
-Patch203: 0001-padata-Fix-pd-UAF-once-and-for-all.patch
-
 # Fix CVE-2025-39810
 Patch204: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
 Patch205: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
@@ -423,16 +408,8 @@ Patch233: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 
 # CVE-2026-23171
 Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
-# CVE-2026-23442
-Patch241: 0001-ipv6-add-NULL-checks-for-idev-in-SRv6-paths.patch
-# CVE-2026-23444
-Patch242: 0001-wifi-mac80211-always-free-skb-on-ieee80211_tx_prepar.patch
-# Fix CVE-2026-31685
-Patch243: 0001-netfilter-ip6t_eui64-reject-invalid-MAC-header-for-a.patch
 # Fix CVE-2026-23447
 Patch244: 0001-net-usb-cdc_ncm-add-ndpoffset-to-NDP32-nframes-bound.patch
-# Fix CVE-2026-31613
-Patch245: 0001-smb-client-fix-OOB-reads-parsing-symlink-error-respo.patch
 # Fix CVE-2026-31648
 Patch246: 0001-mm-filemap-fix-nr_pages-calculation-overflow-in-file.patch
 # Prerequisite for CVE-2026-31663
@@ -1082,6 +1059,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jun 01 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-1
+- Update to version 6.1.175
 * Tue May 26 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.174-2
 - Fix CVE-2026-23447, CVE-2026-31613, CVE-2026-31648, CVE-2026-31663
 * Mon May 25 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.174-1

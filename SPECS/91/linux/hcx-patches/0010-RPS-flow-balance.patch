@@ -689,7 +689,7 @@ index 1ec23bf..8a29e1b 100644
  static const struct seq_operations dev_seq_ops = {
  	.start = dev_seq_start,
  	.next  = dev_seq_next,
-@@ -192,6 +231,26 @@ static const struct seq_operations softnet_seq_ops = {
+@@ -231,6 +231,26 @@ static const struct seq_operations softnet_seq_ops = {
  	.show  = softnet_seq_show,
  };
  
@@ -713,10 +713,10 @@ index 1ec23bf..8a29e1b 100644
 +};
 +
 +
- static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
- {
- 	struct list_head *ptype_list = NULL;
-@@ -322,6 +381,9 @@ static int __net_init dev_proc_net_init(struct net *net)
+ struct ptype_iter_state {
+ 	struct seq_net_private	p;
+ 	struct net_device	*dev;
+@@ -378,6 +398,9 @@ static int __net_init dev_proc_net_init(struct net *net)
  	if (!proc_create_seq("softnet_stat", 0444, net->proc_net,
  			 &softnet_seq_ops))
  		goto out_dev;
@@ -724,7 +724,7 @@ index 1ec23bf..8a29e1b 100644
 +			 &softnet_rps_seq_proc_ops))
 +		goto out_dev;
  	if (!proc_create_net("ptype", 0444, net->proc_net, &ptype_seq_ops,
- 			sizeof(struct seq_net_private)))
+ 			sizeof(struct ptype_iter_state)))
  		goto out_softnet;
 diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
 index 4ce57e7..8073971 100644
