@@ -1,7 +1,7 @@
 Summary:        The lm_sensors package provides user-space support for the hardware monitoring drivers in the Linux kernel.
 Name:           lm-sensors
-Version:        3.6.0
-Release:        2%{?dist}
+Version:        3.6.2
+Release:        1%{?dist}
 URL:            https://github.com/lm-sensors/lm-sensors/releases
 Group:          System Drivers
 Vendor:         VMware, Inc.
@@ -42,7 +42,7 @@ Requires:  lm-sensors = %{version}-%{release}
 Documentation for lm-sensors.
 
 %prep
-%autosetup -n %{name}-3-6-0
+%autosetup -n %{name}-3-6-2
 
 %build
 make all %{?_smp_mflags}
@@ -75,6 +75,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsensors.so.5
 %{_libdir}/libsensors.so.5.0.0
 %{_sbindir}/*
+%exclude %{_datadir}/zsh/site-functions/_sensors
+%exclude %{_datadir}/zsh/site-functions/_sensors-detect
 
 %files devel
 %defattr(-,root,root)
@@ -87,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Tue Jun 02 2026 Tapas Kundu <tapas.kundu@broadcom.com> 3.6.2-1
+- Update to 3.6.2
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 3.6.0-2
 - Release bump for SRP compliance
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6.0-1

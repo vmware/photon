@@ -1,7 +1,12 @@
 sources:
-- archive: lm-sensors-3.6.0.tar.gz
-  archive_sha512sum: 4e80361913aff5403f1f0737fd4f42cffe43cc170ef48fff3914c9952f71990739d723f7b0b8120d9a01bcbbc829e964cfbd0a5cf18508af8f8dc825b49860bf
-  skip_validation: true
+- archive: lm-sensors-3.6.2.tar.gz
+  archive_sha512sum: a89ae984814f5224bf621727252042d2b84a5cc5c125dd7024ff1be223e4c269b1e7c23512e56b3f2f38c088d7c6e54df47af51d63740deb09c44f837060695a
+  archive_type: upstream
+  name: lm-sensors-3-6-2
+  version: 3.6.2
+  url: https://github.com/lm-sensors/lm-sensors/archive/refs/tags/V3-6-2.tar.gz
+  repo_url: https://github.com/lm-sensors/lm-sensors
+  commit_id: 5c3ba50f806dea27c3b1e368966191c735459111
   spdx:
     package:
       detailed_description: 'The lm_sensors package provides user-space support for
