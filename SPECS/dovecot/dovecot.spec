@@ -3,7 +3,7 @@
 Summary:        Secure IMAP and POP3 server
 Name:           dovecot
 Version:        2.3.21.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://dovecot.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -15,11 +15,21 @@ Source1:        license.txt
 Source2:        dovecot.conf
 Source3:        dovecot.sysusers
 
+Patch1:         0001-use-openssl-hmac-instead-of-custom-implementation.patch
+Patch2:         0002-Remove-OTP-authentication-support.patch
+Patch3:         0003-lib-dcrypt-add-OpenSSL-3.x-compatibility-for-EVP_PKE.patch
+Patch4:         0004-support-OpenSSL-3-providers-and-drop-ENGINE-API.patch
+Patch5:         0005-m4-crypt_xpg6-define-_DEFAULT_SOURCE-for-current-gli.patch
+
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  systemd-devel
 BuildRequires:  zstd-devel
 BuildRequires:  libcap-devel
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  gettext
 
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
@@ -63,6 +73,8 @@ plugins and external tools against the Dovecot server.
 %autosetup -p1
 
 %build
+autoreconf -fi
+
 %configure \
     --disable-static \
     --with-lmtpd \
@@ -121,5 +133,10 @@ rm -rf %{buildroot}%{_mandir}
 %{_libdir}/dovecot/dovecot-config
 
 %changelog
+* Tue Jun 02 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.21.1-2
+- Use OpenSSL HMAC for FIPS compliance
+- Remove OTP authentication support
+- Add OpenSSL 3.x compatibility and drop deprecated ENGINE API
+- Fix configure crypt check for current glibc
 * Tue May 26 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.21.1-1
 - Initial build

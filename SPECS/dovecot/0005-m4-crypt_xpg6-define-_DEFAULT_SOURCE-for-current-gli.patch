@@ -1,0 +1,32 @@
+From 32477a38edabe93b1d98577041852d50a8a62164 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Tue, 2 Jun 2026 15:06:30 +0530
+Subject: [PATCH 5/5] m4: crypt_xpg6: define _DEFAULT_SOURCE for current glibc
+
+Backport of Fedora's
+https://src.fedoraproject.org/rpms/dovecot/raw/f42/f/dovecot-configure-c99.patch.
+Current glibc no longer declares crypt() in <unistd.h> under strict
+standard modes; defining _DEFAULT_SOURCE restores the prototype so the
+configure check behaves correctly with compilers that reject implicit
+declarations.
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ m4/crypt_xpg6.m4 | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/m4/crypt_xpg6.m4 b/m4/crypt_xpg6.m4
+index 9a86f46e55..74a4bf375c 100644
+--- a/m4/crypt_xpg6.m4
++++ b/m4/crypt_xpg6.m4
+@@ -6,6 +6,7 @@ AC_DEFUN([DOVECOT_CRYPT_XPG6], [
+       #define _XOPEN_SOURCE 4
+       #define _XOPEN_SOURCE_EXTENDED 1
+       #define _XOPEN_VERSION 4
++      #define _DEFAULT_SOURCE
+       #define _XPG4_2
+       #define _XPG6
+       #include <unistd.h>
+-- 
+2.43.0
+

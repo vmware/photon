@@ -1,0 +1,52 @@
+From 896a0b04d74b334c0a1ebdad84e651013df3bc96 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Mon, 1 Jun 2026 18:03:57 +0530
+Subject: [PATCH 3/5] lib-dcrypt: add OpenSSL 3.x compatibility for
+ EVP_PKEY_get0/1_EC_KEY
+
+Took from:
+https://src.fedoraproject.org/rpms/dovecot/raw/f42/f/dovecot-2.3.14-opensslv3.patch
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ src/lib-dcrypt/dcrypt-openssl.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/src/lib-dcrypt/dcrypt-openssl.c b/src/lib-dcrypt/dcrypt-openssl.c
+index 1cbe352541..a5965cd4cd 100644
+--- a/src/lib-dcrypt/dcrypt-openssl.c
++++ b/src/lib-dcrypt/dcrypt-openssl.c
+@@ -73,10 +73,30 @@
+   2<tab>key algo oid<tab>1<tab>symmetric algo name<tab>salt<tab>hash algo<tab>rounds<tab>E(RSA = i2d_PrivateKey, EC=Private Point)<tab>key id
+ **/
+ 
++#if OPENSSL_VERSION_MAJOR == 3
++static EC_KEY *EVP_PKEY_get0_EC_KEYv3(EVP_PKEY *key)
++{
++  EC_KEY *eck = EVP_PKEY_get1_EC_KEY(key);
++  EVP_PKEY_set1_EC_KEY(key, eck);
++  EC_KEY_free(eck);
++  return eck;
++}
++
++static EC_KEY *EVP_PKEY_get1_EC_KEYv3(EVP_PKEY *key)
++{
++  EC_KEY *eck = EVP_PKEY_get1_EC_KEY(key);
++  EVP_PKEY_set1_EC_KEY(key, eck);
++  return eck;
++}
++
++#define EVP_PKEY_get0_EC_KEY EVP_PKEY_get0_EC_KEYv3
++#define EVP_PKEY_get1_EC_KEY EVP_PKEY_get1_EC_KEYv3
++#else
+ #ifndef HAVE_EVP_PKEY_get0
+ #define EVP_PKEY_get0_EC_KEY(x) x->pkey.ec
+ #define EVP_PKEY_get0_RSA(x) x->pkey.rsa
+ #endif
++#endif
+ 
+ #ifndef HAVE_OBJ_LENGTH
+ #define OBJ_length(o) ((o)->length)
+-- 
+2.43.0
+
