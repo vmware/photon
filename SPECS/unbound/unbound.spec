@@ -1,6 +1,6 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.24.1
+Version:        1.25.1
 Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
@@ -9,10 +9,12 @@ Distribution:   Photon
 URL:            http://www.unbound.net
 
 Source0: https://github.com/NLnetLabs/unbound/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=7ed9f0ba9b855c931767fb2657e2cd8ae97a2863f5b5df3902a35ac12ef08883ebb9a07850c8f65e5fa0ec680ae035a5d1695d548c5384690f89dfcca5327482
+%define sha512 %{name}=e7104a70cd734a5e445890224b19510eac068b46c02fb65a7db911ad2f66db512b8aeae1dd44b505dc1288a315fd39dd54ca9decb78713bf6eb59fc6350ab804
 
 Source1: %{name}.service
 
+Requires:       expat-libs
+Requires:       openssl
 Requires:       systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
@@ -90,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Tue Jun 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.25.1-1
+- Upgrade to v1.25.1
 * Fri Nov 07 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.1-1
 - Update to v1.24.1
 - Fix CVE-2025-11411, CVE-2025-5994
