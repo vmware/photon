@@ -76,8 +76,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.87
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.92
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -196,9 +196,6 @@ Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
-#VMCI/VSOCK
-Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
-
 Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 
 Patch28: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
@@ -241,6 +238,11 @@ Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix CVE-2026-43083
 Patch102: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
+# Fix CVE-2025-68359
+Patch103: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
+# Fix CVE-2026-43101
+Patch104: 0001-ipv6-adopt-skb_dst_dev-and-skb_dst_dev_net-_rcu-help.patch
+Patch105: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -823,7 +825,7 @@ install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 
-%if 0%{?__debug_package}
+%if 0%{?_enable_debug_packages}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
 ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
@@ -973,6 +975,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jun 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.92-1
+- Update to version 6.12.92
+- Fix CVE-2025-68359 and CVE-2026-43101
+- sshedi: fix vmlinux exclusion issue from debuginfo rpm
 * Tue May 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-2
 - Fix CVE-2026-43083
 * Mon May 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-1

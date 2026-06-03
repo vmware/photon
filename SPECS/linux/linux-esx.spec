@@ -28,8 +28,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.87
-Release:        5%{?dist}
+Version:        6.12.92
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -114,9 +114,6 @@ Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 Patch24: 0001-NEWCA-make-initrd-pages-immutable.patch
 
-#VMCI/VSOCK
-Patch25: 0001-vmw_vsock-vmci_transport-Report-error-when-receiving.patch
-
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -198,6 +195,11 @@ Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
 Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix CVE-2026-43083
 Patch102: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
+# Fix CVE-2025-68359
+Patch103: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
+# Fix CVE-2026-43101
+Patch104: 0001-ipv6-adopt-skb_dst_dev-and-skb_dst_dev_net-_rcu-help.patch
+Patch105: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -481,7 +483,7 @@ pushd ../viomem
 %make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra modules_install
 popd
 
-%if 0%{?__debug_package}
+%if 0%{?_enable_debug_packages}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 %endif
@@ -548,6 +550,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jun 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.92-1
+- Update to version 6.12.92
+- Fix CVE-2025-68359 and CVE-2026-43101
+- sshedi: fix vmlinux exclusion issue from debuginfo rpm
 * Wed May 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.87-5
 - Fix CVE-2026-43083
 * Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.87-4
