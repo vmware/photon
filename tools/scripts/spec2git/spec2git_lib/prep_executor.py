@@ -92,7 +92,6 @@ class PrepExecutor:
         self.resume = resume
         self.persistent_state_file = output_dir / ".spec2git_state.json"
         self.git_roots = set()
-        self.root_dirs = set()
 
     def ensure_build_dir(self, prep_section_lines: []):
         first_line = prep_section_lines[0]
@@ -111,7 +110,8 @@ class PrepExecutor:
                          "- need absolute path"
                     )
 
-            os.makedirs(build_dir)
+            if not os.path.exists(build_dir):
+                os.makedirs(build_dir)
 
     def execute_prep_section(self, prep_section: str, source0_git_info: Optional[Dict] = None,
                             rpmspec_build_dir: Optional[str] = None,
@@ -161,8 +161,6 @@ class PrepExecutor:
 
             lines = prep_section.split('\n')
             i = 0
-
-            self._find_root_dirs(lines)
 
             # If resuming from state, restore context
             if resuming_state:
@@ -326,13 +324,6 @@ class PrepExecutor:
 
         finally:
             pass
-
-    def _find_root_dirs(self, lines: List[str]):
-        for line in lines:
-            if line.startswith('cd ') or line.startswith('pushd '):
-                dir = line.split(' ')[1]
-                dir = dir.strip("'").strip()
-                self.root_dirs.add(dir)
 
     def _execute_shell_block(self, commands: List[str]) -> None:
         """
@@ -509,31 +500,33 @@ class PrepExecutor:
 
         state.save(self.persistent_state_file)
 
-    def _is_child_of_git_repo(self, dirpath: Path) -> bool:
+    def _is_child_of_git_repo(self, dirpath: Path, max_top_dir: Path) -> bool:
         paths = dirpath.parents
         for path in paths:
+            if path == max_top_dir:
+                return False
+
             if os.path.exists(os.path.join(path, '.git')):
                 return True
         return False
 
     def _init_all_git_repos(self):
-        # For all the touched directories, initialize them as git repos
-        # Unless the child of a git repo already
-        for dirpath, dirnames, filenames in os.walk(self.output_dir):
-            for dirname in dirnames:
-                if not dirname in self.root_dirs:
-                    continue
-                if os.path.exists(os.path.join(dirpath, dirname, '.git')):
-                    continue
-                if self._is_child_of_git_repo(Path(dirpath, dirname)):
-                    continue
-                self._initialize_git_repo(Path(dirpath, dirname))
+        # We only initialize the directories underneath the output_dir
+        # Don't recurse any further down.
+        for path in os.listdir(self.output_dir):
+            path = f"{self.output_dir}/{path}"
+            if not os.path.isdir(path):
+                continue
+            if os.path.exists(os.path.join(path, '.git')):
+                continue
+            if self._is_child_of_git_repo(Path(path), Path(self.output_dir)):
+                continue
+            self._initialize_git_repo(Path(path))
 
     def _create_final_commits(self):
         """Check known git repositories for uncommitted changes and commit them"""
         if not self.git_roots:
             self.logger.info("No git repositories found after prep section execution - no patches applied?")
-
         self._init_all_git_repos()
 
         self.logger.info("Checking for uncommitted changes in git repositories...")
