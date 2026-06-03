@@ -1,0 +1,14 @@
+sources:
+- archive: zlib-1.2.13.tar.xz
+  archive_sha512sum: 9e7ac71a1824855ae526506883e439456b74ac0b811d54e94f6908249ba8719bec4c8d7672903c5280658b26cb6b5e93ecaaafe5cdc2980c760fa196773f0725
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Compression and decompression routines '
+      home_page: http://www.zlib.net
+      license_concluded: GPL-1.0-or-later AND GPL-2.0-or-later WITH GNAT-exception
+        AND Zlib AND BSL-1.0 AND LPD-document
+      license_declared: GPL-1.0-or-later AND GPL-2.0-or-later WITH GNAT-exception
+        AND Zlib AND BSL-1.0 AND LPD-document
+      short_summary: Compression and decompression routines
+      supplier: 'Organization: Broadcom, Inc.'

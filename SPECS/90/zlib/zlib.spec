@@ -1,18 +1,21 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Compression and decompression routines
 Name:           zlib
-Version:        1.3.2
-Release:        1%{?dist}
+Version:        1.2.13
+Release:        5.0.1%{?dist}
 URL:            http://www.zlib.net
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/madler/zlib/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0: http://www.zlib.net/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:       CVE-2023-45853.patch
+Patch1:       CVE-2026-27171.patch
 
 %description
 Compression and decompression routines
@@ -69,8 +72,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
-* Wed Jun 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.2-1
-- Update to 1.3.2
+* Wed Jun 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.13-5.0.1
+- Fix CVE-2026-27171
 * Tue Nov 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 1.2.13-5
 - add static library to -devel package
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.13-4

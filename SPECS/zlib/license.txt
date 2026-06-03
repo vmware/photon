@@ -1,1 +1,1 @@
-License: GPL-2.0-or-later WITH GNAT-exception AND Zlib AND LPD-document AND GPL-1.0-or-later AND BSL-1.0
+License: Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND GPL-1.0-or-later AND GPL-2.0-or-later WITH GNAT-exception AND Info-ZIP AND LPD-document AND Zlib

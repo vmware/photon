@@ -1,7 +1,19 @@
 sources:
-- archive: zlib-1.2.13.tar.xz
-  archive_sha512sum: 9e7ac71a1824855ae526506883e439456b74ac0b811d54e94f6908249ba8719bec4c8d7672903c5280658b26cb6b5e93ecaaafe5cdc2980c760fa196773f0725
-  skip_validation: true
+- archive: zlib-1.3.2.tar.gz
+  archive_sha512sum: 70963771ea5d763614278a69b474f09b7d237ef8f53b675a10fe31d9923aeef601504b35d7ebd1b1e7f347e9ebb048e6b3b47fffdf137e7bdc7e8d5eb4ec4692
+  archive_type: upstream
+  name: zlib-1.3.2
+  version: '1.3.2'
+  url: https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz
+  repo_url: https://github.com/madler/zlib.git
+  commit_id: da607da739fa6047df13e66a2af6b8bec7c2a498
+  skip_validation: false
+  skip_list: []
+  missing:
+  - .github
+  - .gitignore
+  - find_package_no_components_test
+  - find_package_wrong_components_test
   spdx:
     package:
       detailed_description: 'Compression and decompression routines '
