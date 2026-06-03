@@ -8,7 +8,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -362,7 +362,7 @@ mktoy %{_bindir}/gunzip \
 %{_mktoy_}
 mktoy %{_sbindir}/httpd
 
-%triggerpostun -- iotop
+%triggerpostun -- iotop-c
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
 mktoy %{_bindir}/iotop
@@ -817,6 +817,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Tue Jun 02 2026 Tapas Kundu <tapas.kundu@broadcom.com> 0.8.9-16
+- Added trigger for iotop-c
 * Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-15
 - Add postrigger and ghosts for net-tools back in (added back to 91/92).
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.8.9-14

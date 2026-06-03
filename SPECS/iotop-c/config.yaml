@@ -1,0 +1,19 @@
+sources:
+- archive: iotop-c-1.31.tar.gz
+  archive_sha512sum: 0172e25458ef1ce5b3b88258426eb1b9069262e58ef4ab6c3fe16b4f6c5fd1699c8b87ad5bb96b49dab0ff5e4cb39459aaec6e0d7b410da94e6a26c4d3524504
+  archive_type: upstream
+  name: iotop-1.31
+  version: 1.31
+  url: https://github.com/Tomas-M/iotop/archive/refs/tags/v1.31.tar.gz
+  repo_url: https://github.com/Tomas-M/iotop
+  commit_id: 57890d671ba69ebc4a619a1cfe7d76cdd3d836a8
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'A top utility for IO'
+      home_page: https://github.com/Tomas-M/iotop
+      license_concluded: GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only
+      license_declared: GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only
+      short_summary: A top utility for IO
+      supplier: 'Organization: Broadcom, Inc.'
