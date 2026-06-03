@@ -34,7 +34,6 @@ index 0000000..7f7a26d
 +# example:
 +#/usr/sbin/sshd
 +#/usr/bin/login
-+#/usr/libexec/sshd-session
 diff --git a/libnss_ato.c b/libnss_ato.c
 index f2f1c38..1ab31ff 100644
 --- a/libnss_ato.c

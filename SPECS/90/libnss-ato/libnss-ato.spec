@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %global commit_id       574c5ab
 %define debug_package   %{nil}
@@ -6,7 +6,7 @@
 Summary:        libnss-ato
 Name:           libnss-ato
 Version:        20240514
-Release:        5%{?dist}
+Release:        4.1%{?dist}
 URL:            https://github.com/donapieppo/libnss-ato
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -63,8 +63,8 @@ rm -rf %{buildroot}
 %{_libdir}/libnss_ato*.so*
 
 %changelog
-* Wed Jun 03 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 20240514-5
-- Add /usr/libexec/sshd-session to libnss-ato-allowed-progs.conf
+* Wed Jun 03 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 20240514-4.1
+- Sub-version release for photon 9.0
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 20240514-4
 - Release bump for SRP compliance
 * Wed Jul 24 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20240514-3
