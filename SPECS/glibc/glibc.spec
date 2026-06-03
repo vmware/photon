@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.43
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -131,12 +131,11 @@ _EOF
 chmod +x find_requires.sh
 
 %build
-
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
         --host=%{_host} --build=%{_build} \
-        CFLAGS="%{optflags}" \
-        CXXFLAGS="%{optflags}" \
+        CFLAGS="%{optflags} -DUSE_TCACHE=0" \
+        CXXFLAGS="%{optflags} -DUSE_TCACHE=0" \
         --program-prefix=%{?_program_prefix} \
         --disable-dependency-tracking \
         --prefix=%{_prefix} \
@@ -158,7 +157,6 @@ cd %{_builddir}/%{name}-build
         --enable-kernel=3.2 \
         --enable-bind-now \
         --enable-stack-protector=strong \
-        --disable-experimental-malloc \
         --disable-silent-rules \
         --disable-crypt \
         libc_cv_slibdir=%{_libdir}
@@ -360,6 +358,9 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 02 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-4
+- Fix malloc arena stickiness for 2.43
+- Disable TCACHE, enabled by default in 2.43, as it does not work well (yet) with malloc arena stickiness
 * Sun May 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-3
 - Sync with branch, fix CVE-2026-5928, CVE-2026-5450
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-2
