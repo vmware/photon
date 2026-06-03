@@ -1,15 +1,15 @@
 sources:
-- archive: subversion-1.14.2.tar.bz2
-  archive_sha512sum: 20ada4688ca07d9fb8da4b7d53b5084568652a3b9418c65e688886bae950a16a3ff37710fcfc9c29ef14a89e75b2ceec4e9cf35d5876a7896ebc2b512cfb9ecc
+- archive: subversion-1.14.5.tar.bz2
+  archive_sha512sum: e4800564d0cc68be98f19aa58d89181de83f237f0ccff10824d9237f8c65eb0071f7176ac54e9e8f8ecbf685849bd3e94be48f678f4c23ed6a5fd7fb6edd0321
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - subversion-1.14.2/configure.ac
-    sha256sum: bf3d8606f72f45b2d77fabefacd1d8d3c7565345cbf2a189a2b9ba46e3aaddb6
+    - subversion-1.14.5/configure.ac
+    sha256sum: d0cfd6c6e8368436342820fc280038652186607b4a16e11ca5a5162793192523
     spdx_exp: Apache-2.0
   - file_paths:
-    - subversion-1.14.2/configure
-    sha256sum: a1c79a29371caa023ce2d456b97cbd60d2bc281722cd2dde6dfeceefdbf5fc9f
+    - subversion-1.14.5/configure
+    sha256sum: 6ef97bc66920aa8ee8b9a6f38dfcf12703bf1be0a72da96db7c74e95838c67f4
     spdx_exp: Apache-2.0
   spdx:
     package:
