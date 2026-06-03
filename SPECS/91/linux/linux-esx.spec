@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.175
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -381,6 +381,8 @@ Patch244: 0001-mm-filemap-fix-nr_pages-calculation-overflow-in-file.patch
 Patch245: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch
 # Fix CVE-2026-31663
 Patch246: 0001-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
+# Fix CVE-2026-43414
+Patch247: 0001-scsi-qla2xxx-Completely-fix-fcport-double-free.patch
 
 # aarch64 [250..260]
 %ifarch aarch64
@@ -753,6 +755,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jun 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-2
+- Fix CVE-2026-43414
 * Mon Jun 01 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-1
 - Update to version 6.1.175
 * Tue May 26 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.174-2

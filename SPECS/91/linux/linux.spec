@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.175
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -416,6 +416,8 @@ Patch246: 0001-mm-filemap-fix-nr_pages-calculation-overflow-in-file.patch
 Patch247: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch
 # Fix CVE-2026-31663
 Patch248: 0001-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
+# Fix CVE-2026-43414
+Patch249: 0001-scsi-qla2xxx-Completely-fix-fcport-double-free.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -1059,6 +1061,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-2
+- Fix CVE-2026-43414
 * Mon Jun 01 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-1
 - Update to version 6.1.175
 * Tue May 26 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.174-2
