@@ -2,7 +2,7 @@
 
 Name:       tpm2-pytss
 Version:    1.2.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 Summary:    Python bindings for tpm2-tss
 URL:        https://github.com/tpm2-software/tpm2-pytss
 Vendor:     VMware, Inc.
@@ -14,6 +14,8 @@ Source0: https://github.com/tpm2-software/tpm2-pytss/archive/refs/tags/%{name}-%
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0: 0001-replace-asn1crypto-with-stdlib.patch
+
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-pkgconfig
@@ -21,7 +23,6 @@ BuildRequires: python3-pycparser
 BuildRequires: python3-pip
 BuildRequires: python3-wheel
 BuildRequires: python3-packaging
-BuildRequires: python3-asn1crypto
 BuildRequires: python3-cryptography
 BuildRequires: python3-setuptools
 BuildRequires: python3-setuptools_scm
@@ -31,7 +32,6 @@ BuildRequires: tpm2-tss-devel
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
-BuildRequires: python3-cryptography
 BuildRequires: python3-cffi
 BuildRequires: python3-pip
 BuildRequires: python3-PyYAML
@@ -39,6 +39,7 @@ BuildRequires: python3-PyYAML
 
 Requires: tpm2-tss
 Requires: python3
+Requires: python3-cryptography
 
 %description
 TPM2 TSS Python bindings for Enhanced System API (ESYS).
@@ -64,6 +65,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.0-7
+- Replace asn1crypto with stdlib base64 + minimal DER helpers in tsskey.py
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.0-6
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.0-5

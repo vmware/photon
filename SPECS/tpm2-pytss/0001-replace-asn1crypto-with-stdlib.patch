@@ -1,0 +1,405 @@
+From eec287f0a00a600f37fc9b07bca6cbe9a9fca736 Mon Sep 17 00:00:00 2001
+From: Erik Larsson <who+github@cnackers.org>
+Date: Thu, 30 Apr 2026 20:15:44 +0200
+Subject: [PATCH] tsskey: replace asn1crypto with stdlib base64 and DER helpers
+
+Replace the asn1crypto dependency with stdlib base64 for PEM handling
+and minimal pure-Python DER encode/decode helpers for the ASN.1
+TSSPrivKey structure.
+
+Due to tpm2-openssl and tpm2-tss-engine encoding booleans incorrectly,
+accept any non-zero BOOLEAN value as True when decoding.
+
+Signed-off-by: Erik Larsson <who+github@cnackers.org>
+Co-authored-by: Cursor <cursoragent@cursor.com>
+---
+ docs/requirements.txt    |   1 -
+ setup.cfg                |   2 -
+ src/tpm2_pytss/tsskey.py | 206 ++++++++++++++++++++++++++++++++-------
+ test/test_tsskey.py      |  52 +++++++---
+ 4 files changed, 208 insertions(+), 53 deletions(-)
+
+diff --git a/docs/requirements.txt b/docs/requirements.txt
+index 7a813d4..2439f3b 100644
+--- a/docs/requirements.txt
++++ b/docs/requirements.txt
+@@ -1,6 +1,5 @@
+ alabaster==0.7.12
+ appdirs==1.4.4
+-asn1crypto==1.4.0
+ attrs==21.2.0
+ Babel==2.9.1
+ black==19.10b0
+diff --git a/setup.cfg b/setup.cfg
+index 5426a07..ba400cb 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -28,11 +28,9 @@ setup_requires =
+     cffi>=1.0.0
+     pkgconfig
+     cryptography>=3.0
+-    asn1crypto
+     packaging
+ install_requires =
+     cffi>=1.0.0
+-    asn1crypto
+     cryptography>=3.0
+     packaging
+     pyyaml
+diff --git a/src/tpm2_pytss/tsskey.py b/src/tpm2_pytss/tsskey.py
+index 5ad216f..2e5cc32 100644
+--- a/src/tpm2_pytss/tsskey.py
++++ b/src/tpm2_pytss/tsskey.py
+@@ -1,11 +1,10 @@
+ # SPDX-License-Identifier: BSD-2
+ 
+ import warnings
++import base64
+ from ._libtpm2_pytss import lib
+ from .types import *
+ from .constants import TPM2_ECC, TPM2_CAP, ESYS_TR
+-from asn1crypto.core import ObjectIdentifier, Sequence, Boolean, OctetString, Integer
+-from asn1crypto import pem
+ 
+ 
+ _parent_rsa_template = TPMT_PUBLIC(
+@@ -96,16 +95,137 @@ _ecc_template = TPMT_PUBLIC(
+     ),
+ )
+ 
+-_loadablekey_oid = ObjectIdentifier("2.23.133.10.1.3")
++_loadablekey_oid = "2.23.133.10.1.3"
+ 
+-# _BooleanOne is used to encode True in the same way as tpm2-tss-engine
+-class _BooleanOne(Boolean):
+-    def set(self, value):
+-        self._native = bool(value)
+-        self.contents = b"\x00" if not value else b"\x01"
+-        self._header = None
+-        if self._trailer != b"":
+-            self._trailer = b""
++_pem_begin = b"-----BEGIN TSS2 PRIVATE KEY-----\n"
++_pem_end = b"-----END TSS2 PRIVATE KEY-----\n"
++
++
++def _tssprivkey_pem_unarmor(data: bytes) -> bytes:
++    begin = data.find(_pem_begin)
++    if begin == -1:
++        raise ValueError("beginning of PEM not found")
++    skip = begin + len(_pem_begin)
++    end = data.find(_pem_end, skip)
++    if end == -1:
++        raise ValueError("end of PEM not found")
++    return base64.b64decode(data[skip:end])
++
++
++def _tssprivkey_pem_armor(data: bytes) -> bytes:
++    pem_data = base64.b64encode(data)
++    split_data = _pem_begin
++    index = 0
++    while len(pem_data[index:]):
++        split_data += pem_data[index : index + 64] + b"\n"
++        index += 64
++    split_data += _pem_end
++    return split_data
++
++
++def _der_length(n):
++    if n < 0x80:
++        return bytes([n])
++    elif n < 0x100:
++        return bytes([0x81, n])
++    elif n < 0x10000:
++        return bytes([0x82, n >> 8, n & 0xFF])
++    raise ValueError(f"DER length too large: {n}")
++
++
++def _der_tlv(tag, value):
++    return bytes([tag]) + _der_length(len(value)) + value
++
++
++def _der_boolean(value):
++    return _der_tlv(0x01, b"\xff" if value else b"\x00")
++
++
++def _der_integer(n):
++    if n == 0:
++        return _der_tlv(0x02, b"\x00")
++    result = []
++    while n > 0:
++        result.append(n & 0xFF)
++        n >>= 8
++    result.reverse()
++    if result[0] & 0x80:
++        result.insert(0, 0x00)
++    return _der_tlv(0x02, bytes(result))
++
++
++def _der_octet_string(data):
++    return _der_tlv(0x04, data)
++
++
++def _der_oid(oid_str):
++    parts = [int(x) for x in oid_str.split(".")]
++    encoded = bytes([40 * parts[0] + parts[1]])
++    for part in parts[2:]:
++        if part == 0:
++            encoded += b"\x00"
++        else:
++            enc = []
++            while part:
++                enc.append(part & 0x7F)
++                part >>= 7
++            enc.reverse()
++            for i, byte in enumerate(enc):
++                encoded += bytes([byte | (0x80 if i < len(enc) - 1 else 0)])
++    return _der_tlv(0x06, encoded)
++
++
++def _der_sequence(*elements):
++    return _der_tlv(0x30, b"".join(elements))
++
++
++def _der_explicit_0(content):
++    return _der_tlv(0xA0, content)
++
++
++def _der_read_length(data, offset):
++    b = data[offset]
++    offset += 1
++    if b < 0x80:
++        return b, offset
++    elif b == 0x81:
++        return data[offset], offset + 1
++    elif b == 0x82:
++        return (data[offset] << 8) | data[offset + 1], offset + 2
++    raise ValueError(f"Unsupported DER length encoding: {b:#x}")
++
++
++def _der_read_tlv(data, offset=0):
++    tag = data[offset]
++    length, offset = _der_read_length(data, offset + 1)
++    value = bytes(data[offset : offset + length])
++    return tag, value, offset + length
++
++
++def _der_parse_oid(value):
++    if not value:
++        raise ValueError("empty OID value")
++    parts = [value[0] // 40, value[0] % 40]
++    i = 1
++    while i < len(value):
++        n = 0
++        while True:
++            b = value[i]
++            i += 1
++            n = (n << 7) | (b & 0x7F)
++            if not (b & 0x80):
++                break
++        parts.append(n)
++    return ".".join(str(p) for p in parts)
++
++
++def _der_parse_integer(value):
++    if not value:
++        raise ValueError("empty INTEGER value")
++    n = 0
++    for b in value:
++        n = (n << 8) | b
++    return n
+ 
+ 
+ class TSSPrivKey(object):
+@@ -115,15 +235,6 @@ class TSSPrivKey(object):
+         Most users should use create_rsa/create_ecc together with to_pem and from_pem together with load.
+     """
+ 
+-    class _tssprivkey_der(Sequence):
+-        _fields = [
+-            ("type", ObjectIdentifier),
+-            ("empty_auth", _BooleanOne, {"explicit": 0, "optional": True}),
+-            ("parent", Integer),
+-            ("public", OctetString),
+-            ("private", OctetString),
+-        ]
+-
+     def __init__(self, private, public, empty_auth=True, parent=lib.TPM2_RH_OWNER):
+         """Initialize TSSPrivKey using raw values.
+ 
+@@ -164,15 +275,15 @@ class TSSPrivKey(object):
+         Returns:
+             Returns the DER encoding as bytes.
+         """
+-        seq = self._tssprivkey_der()
+-        seq["type"] = _loadablekey_oid.native
+-        seq["empty_auth"] = self.empty_auth
+-        seq["parent"] = self.parent
+         pub = self.public.marshal()
+-        seq["public"] = pub
+         priv = self.private.marshal()
+-        seq["private"] = priv
+-        return seq.dump()
++        return _der_sequence(
++            _der_oid(_loadablekey_oid),
++            _der_explicit_0(_der_boolean(self.empty_auth)),
++            _der_integer(self.parent),
++            _der_octet_string(pub),
++            _der_octet_string(priv),
++        )
+ 
+     def to_pem(self):
+         """Encode the TSSPrivKey as PEM encoded ASN.1.
+@@ -181,7 +292,7 @@ class TSSPrivKey(object):
+             Returns the PEM encoding as bytes.
+         """
+         der = self.to_der()
+-        return pem.armor("TSS2 PRIVATE KEY", der)
++        return _tssprivkey_pem_armor(der)
+ 
+     @staticmethod
+     def _getparenttemplate(ectx):
+@@ -317,13 +428,36 @@ class TSSPrivKey(object):
+         Returns:
+             Returns a TSSPrivKey instance.
+         """
+-        seq = cls._tssprivkey_der.load(data)
+-        if seq["type"].native != _loadablekey_oid.native:
++        outer_tag, outer_val, _ = _der_read_tlv(data)
++        if outer_tag != 0x30:
++            raise ValueError(f"expected SEQUENCE (0x30), got {outer_tag:#x}")
++        offset = 0
++        tag, val, offset = _der_read_tlv(outer_val, offset)
++        if tag != 0x06:
++            raise ValueError(f"expected OID (0x06), got {tag:#x}")
++        if _der_parse_oid(val) != _loadablekey_oid:
+             raise TypeError("unsupported key type")
+-        empty_auth = seq["empty_auth"].native
+-        parent = seq["parent"].native
+-        public, _ = TPM2B_PUBLIC.unmarshal(bytes(seq["public"]))
+-        private, _ = TPM2B_PRIVATE.unmarshal(bytes(seq["private"]))
++        tag, val, offset = _der_read_tlv(outer_val, offset)
++        if tag != 0xA0:
++            raise ValueError(f"expected EXPLICIT [0] (0xA0), got {tag:#x}")
++        # Some versions of tpm2-tss-engine and tpm2-openssl encode TRUE as 1.
++        # That is an invalid DER encoding, so accept any non-zero value as True.
++        bool_tag, bool_val, _ = _der_read_tlv(val)
++        if bool_tag != 0x01:
++            raise ValueError(f"expected BOOLEAN (0x01), got {bool_tag:#x}")
++        empty_auth = bool(bool_val[0])
++        tag, val, offset = _der_read_tlv(outer_val, offset)
++        if tag != 0x02:
++            raise ValueError(f"expected INTEGER (0x02), got {tag:#x}")
++        parent = _der_parse_integer(val)
++        tag, val, offset = _der_read_tlv(outer_val, offset)
++        if tag != 0x04:
++            raise ValueError(f"expected OCTET STRING (0x04), got {tag:#x}")
++        public, _ = TPM2B_PUBLIC.unmarshal(val)
++        tag, val, offset = _der_read_tlv(outer_val, offset)
++        if tag != 0x04:
++            raise ValueError(f"expected OCTET STRING (0x04), got {tag:#x}")
++        private, _ = TPM2B_PRIVATE.unmarshal(val)
+         return cls(private, public, empty_auth, parent)
+ 
+     @classmethod
+@@ -336,7 +470,5 @@ class TSSPrivKey(object):
+         Returns:
+             Returns a TSSPrivKey instance.
+         """
+-        pem_type, _, der = pem.unarmor(data)
+-        if pem_type != "TSS2 PRIVATE KEY":
+-            raise TypeError("unsupported PEM type")
++        der = _tssprivkey_pem_unarmor(data)
+         return cls.from_der(der)
+diff --git a/test/test_tsskey.py b/test/test_tsskey.py
+index bff1c47..57b4174 100644
+--- a/test/test_tsskey.py
++++ b/test/test_tsskey.py
+@@ -1,14 +1,22 @@
+ #!/usr/bin/python3 -u
+ # SPDX-License-Identifier: BSD-3
+ from tpm2_pytss import *
+-from tpm2_pytss.tsskey import TSSPrivKey, _parent_rsa_template, _parent_ecc_template
++from tpm2_pytss.tsskey import (
++    TSSPrivKey,
++    _parent_rsa_template,
++    _parent_ecc_template,
++    _der_sequence,
++    _der_oid,
++    _der_explicit_0,
++    _der_boolean,
++    _der_integer,
++    _der_octet_string,
++)
+ from .TSS2_BaseTest import TSS2_EsapiTest
+-from asn1crypto.core import ObjectIdentifier
+-from asn1crypto import pem
+ 
+ import unittest
+ 
+-rsa_pem = b"""-----BEGIN TSS2 PRIVATE KEY-----
++rsa_invalid_bool_pem = b"""-----BEGIN TSS2 PRIVATE KEY-----
+ MIIB8gYGZ4EFCgEDoAMBAQECBEAAAAEEggEYARYAAQALAAYEcgAAABAAEAgAAAEA
+ AQEAzF/VFhLaIJ9Y3up8slssYhV1Fhh7KwYBCR1dqLeI9QkDF6M05b/Uc589yMsn
+ WVIheHnkEEXyo+rD6q12BpDrC9nS6G11hd9e5TPAibVOAvt8jY3C6/b0JGCFpMNq
+@@ -23,14 +31,30 @@ RmxDJYOlsFlR3mG/MiqSSB6dZ67H/Q==
+ -----END TSS2 PRIVATE KEY-----
+ """
+ 
++rsa_pem = b"""-----BEGIN TSS2 PRIVATE KEY-----
++MIIB8gYGZ4EFCgEDoAMBAf8CBEAAAAEEggEYARYAAQALAAYEcgAAABAAEAgAAAEA
++AQEAzF/VFhLaIJ9Y3up8slssYhV1Fhh7KwYBCR1dqLeI9QkDF6M05b/Uc589yMsn
++WVIheHnkEEXyo+rD6q12BpDrC9nS6G11hd9e5TPAibVOAvt8jY3C6/b0JGCFpMNq
++W69ZonwSPO+aMPXogRBk2OL/jeost9IFbcJjEkwIs5rcaF4sI8wOXTXAx8rrqp0B
++aUjbZz1OJl9PxyCtizLPtdzfCoHVVu9FDrncKpSV1GuGWV6QCTAi8ln1KnRUdmnF
++YBltollhuZ5CLQRekfDdiPkm9ez2Ii/sbes2UvX3vSbyrI1WWCoNqeanSMDSvuMF
++CEBd8i5YDXhAYLcSu/shWZlvPQSBwAC+ACBvkTiYshUXeUbh6Sp+9uSw1RsgGNSf
++3BrApTSK5XtGEAAQUjLH4kLMJSC2c2KXRW/H9o9tuhafEX3VwlutMcz3AW+3m/gq
++MHGtezT22Oy+jImy2n1NiFotqF/3xZr6WD9IrrJh9MKhWZfucOgCpTclo7P3OaAX
++pCz81gA+sZ1NvvOLHL/ULNcKPcltDOHmI1ag6rhz1vQIq3r7Wd71RI5a/gUGxPCx
++RmxDJYOlsFlR3mG/MiqSSB6dZ67H/Q==
++-----END TSS2 PRIVATE KEY-----
++"""
++
+ 
+ class TSSKeyTest(TSS2_EsapiTest):
+     def test_rsa_frompem(self):
+-        key = TSSPrivKey.from_pem(rsa_pem)
++        TSSPrivKey.from_pem(rsa_pem)
+ 
+     def test_rsa_topem(self):
+-        key = TSSPrivKey.from_pem(rsa_pem)
++        key = TSSPrivKey.from_pem(rsa_invalid_bool_pem)
+         pem = key.to_pem()
++        print(pem.decode("ascii"))
+         self.assertEqual(pem, rsa_pem)
+ 
+     def test_create_load_rsa(self):
+@@ -83,16 +107,18 @@ class TSSKeyTest(TSS2_EsapiTest):
+ 
+     def test_bad_pem_type(self):
+         bad_pem = rsa_pem.replace(b"TSS2", b"BORK")
+-        with self.assertRaises(TypeError) as e:
++        with self.assertRaises(ValueError) as e:
+             TSSPrivKey.from_pem(bad_pem)
+-        self.assertEqual(str(e.exception), "unsupported PEM type")
++        self.assertEqual(str(e.exception), "beginning of PEM not found")
+ 
+     def test_bad_oid(self):
+-        _, _, der = pem.unarmor(rsa_pem)
+-        dc = TSSPrivKey._tssprivkey_der.load(der)
+-        dc["type"] = ObjectIdentifier("1.2.3.4")
+-        badder = dc.dump()
+-
++        badder = _der_sequence(
++            _der_oid("1.2.3.4"),
++            _der_explicit_0(_der_boolean(False)),
++            _der_integer(1),
++            _der_octet_string(b""),
++            _der_octet_string(b""),
++        )
+         with self.assertRaises(TypeError) as e:
+             TSSPrivKey.from_der(badder)
+         self.assertEqual(str(e.exception), "unsupported key type")
+-- 
+2.43.7
+

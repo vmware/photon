@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: Mukul Sikka <mukul.sikka@broadcom.com>
+Date: Thu, 21 May 2026 06:00:00 +0000
+Subject: [PATCH] Replace asn1crypto with cryptography for tls-server-end-point
+ channel binding
+
+asn1crypto is used only for one purpose: loading a DER X.509 certificate
+and reading its signature hash algorithm (cert.hash_algo) to compute the
+tls-server-end-point channel binding per RFC 5929 section 4.
+
+The cryptography library provides identical functionality via
+load_der_x509_certificate() and cert.signature_hash_algorithm.name.
+cryptography is already a widely-available Python security dependency
+and the returned hash algorithm names are identical in format (e.g.
+"sha256", "sha384") and directly usable with hashlib.new().
+
+---
+ src/scramp/core.py | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/src/scramp/core.py b/src/scramp/core.py
+--- a/src/scramp/core.py
++++ b/src/scramp/core.py
+@@ -21,7 +21,7 @@ from stringprep import (
+ )
+ from uuid import uuid4
+ 
+-from asn1crypto.x509 import Certificate
++from cryptography.x509 import load_der_x509_certificate
+ 
+ from scramp.utils import b64dec, b64enc, h, hi, hmac, uenc, xor
+ 
+@@ -93,11 +93,10 @@ def _make_cb_data(name, ssl_socket):
+ 
+     elif name == "tls-server-end-point":
+         cert_bin = ssl_socket.getpeercert(binary_form=True)
+-        cert = Certificate.load(cert_bin)
+-
+-        # Find the hash algorithm to use according to
+-        # https://tools.ietf.org/html/rfc5929#section-4
+-        hash_algo = cert.hash_algo
++        cert = load_der_x509_certificate(cert_bin)
++        # Find the hash algorithm per RFC 5929 section 4
++        hash_algo = cert.signature_hash_algorithm.name
++
+         if hash_algo in ("md5", "sha1"):
+             hash_algo = "sha256"
+ 
+-- 
+2.0.0

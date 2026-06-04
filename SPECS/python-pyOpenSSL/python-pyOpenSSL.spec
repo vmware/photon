@@ -3,7 +3,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
 Version:        23.3.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -31,7 +31,6 @@ BuildRequires:  python3-idna
 BuildRequires:  python3-pyasn1
 BuildRequires:  python3-six
 BuildRequires:  python3-packaging
-BuildRequires:  python3-asn1crypto
 BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
 %endif
@@ -63,6 +62,8 @@ pip3 install pretend flaky tomli
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.0-6
+- Replace asn1crypto
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 23.3.0-5
 - Extended to build for subrelease 91 and above
 * Fri Mar 27 2026 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.0-4

@@ -3,7 +3,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        41.0.7
-Release:        9%{?dist}
+Release:        10%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -48,7 +48,6 @@ Requires:       python3-idna
 Requires:       python3-pyasn1
 Requires:       python3-six
 Requires:       python3-packaging
-Requires:       python3-asn1crypto
 
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
@@ -86,6 +85,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 41.0.7-10
+- Remove stale Requires: python3-asn1crypto; cryptography 41.x does not use it
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 41.0.7-9
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 41.0.7-8

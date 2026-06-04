@@ -5,7 +5,7 @@
 
 Name:           python3-scramp
 Version:        1.4.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python implementation of the SCRAM protocol
 URL:            https://pypi.org/project/scramp
 Group:          Development/Languages/Python
@@ -18,6 +18,8 @@ Source0: https://files.pythonhosted.org/packages/58/77/6db18bab446c12cfbee22ca8f
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0: 0001-replace-asn1crypto-with-cryptography.patch
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-wheel
 BuildRequires:  python3-pip
@@ -28,7 +30,7 @@ BuildRequires:  python3-versioningit
 BuildRequires:  python3-packaging
 
 Requires: python3
-Requires: python3-asn1crypto
+Requires: python3-cryptography
 
 %description
 A Python implementation of the SCRAM authentication protocol.
@@ -50,6 +52,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.6-4
+- Replace asn1crypto with cryptography for tls-server-end-point channel binding
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.6-3
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.6-2
