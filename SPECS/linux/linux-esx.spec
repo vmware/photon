@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.92
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -81,6 +81,7 @@ Source10105: fips_canister_wrapper_internal.h
 Source10106: fips_canister_wrapper_internal.c
 
 Source10300: jitterentropy_rng_proxy.c
+Source10301: kernel_cve_patches.inc
 %endif
 
 # common [0..49]
@@ -190,16 +191,8 @@ Patch88: 0001-Adding-DTLS-Zero-Copy-Driver.patch
 Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
 %endif
 
-# CVE: [100..199]
-# Fix CVE-2017-1000252
-Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix CVE-2026-43083
-Patch102: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
-# Fix CVE-2025-68359
-Patch103: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
-# Fix CVE-2026-43101
-Patch104: 0001-ipv6-adopt-skb_dst_dev-and-skb_dst_dev_net-_rcu-help.patch
-Patch105: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
+# CVE patches — see kernel_cve_patches.inc (range 3000–3999)
+%include %{SOURCE10301}
 
 # aarch64 [200..219]
 %ifarch aarch64
@@ -339,6 +332,9 @@ The Linux package contains the Linux kernel doc files
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
 
+# Apply CVE patches first
+%autopatch -p1 -m3000 -M3999
+
 # common
 %autopatch -p1 -m0 -M49
 
@@ -354,9 +350,6 @@ The Linux package contains the Linux kernel doc files
 %if "%{dist}" == ".ph5"
 %autopatch -p1 -m91 -M91
 %endif
-
-# CVE
-%autopatch -p1 -m100 -M133
 
 %ifarch aarch64
 # aarch64 patches
@@ -550,6 +543,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jun 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.92-2
+- Consolidate CVE patches into kernel_cve_patches.inc (range 3000-3999)
 * Tue Jun 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.92-1
 - Update to version 6.12.92
 - Fix CVE-2025-68359 and CVE-2026-43101

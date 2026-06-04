@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.92
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -112,6 +112,7 @@ Source25:       linux-sbat.csv.in
 
 Source30: Makefile.viomem
 Source31: viomem.c
+Source56: kernel_cve_patches.inc
 
 Source55: license.txt
 %include %{SOURCE55}
@@ -233,16 +234,8 @@ Patch65: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
 Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 %endif
 
-# CVE: [100..199]
-# Fix CVE-2017-1000252
-Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix CVE-2026-43083
-Patch102: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
-# Fix CVE-2025-68359
-Patch103: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
-# Fix CVE-2026-43101
-Patch104: 0001-ipv6-adopt-skb_dst_dev-and-skb_dst_dev_net-_rcu-help.patch
-Patch105: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
+# CVE patches — see kernel_cve_patches.inc (range 3000–3999)
+%include %{SOURCE56}
 
 %ifarch aarch64
 # aarch specific patches [200..219]
@@ -569,6 +562,9 @@ The kernel fips-canister
 # Using autosetup is not feasible
 %setup -q -T -D -b 4 -n linux-%{version}
 
+# Apply CVE patches first
+%autopatch -p1 -m3000 -M3999
+
 # common
 %autopatch -p1 -m0 -M49
 
@@ -587,9 +583,6 @@ The kernel fips-canister
 %if "%{dist}" == ".ph5"
 %autopatch -p1 -m71 -M71
 %endif
-
-# CVE
-%autopatch -p1 -m100 -M130
 
 %ifarch aarch64
 # aarch64 patches
@@ -975,6 +968,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jun 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.92-2
+- Consolidate CVE patches into kernel_cve_patches.inc (range 3000-3999)
 * Tue Jun 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.92-1
 - Update to version 6.12.92
 - Fix CVE-2025-68359 and CVE-2026-43101

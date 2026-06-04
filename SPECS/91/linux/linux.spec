@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.175
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -140,9 +140,6 @@ Source78: swait_queue_head.txt
 Source79: x86_cpu_id.txt
 %endif
 
-# CVE
-Source42: CVE-2023-39191.patches
-
 %if 0%{?acvp_build}
 Source53: config_x86_64_acvp
 Source54: check_for_acvp_config_applicability.inc
@@ -153,6 +150,7 @@ Source55: glibc-2.43-build-error-fix.patches
 
 Source100: Makefile.viomem
 Source101: viomem.c
+Source102: kernel_cve_patches.inc
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
@@ -219,205 +217,9 @@ Patch61: gcc-rap-plugin-with-kcfi.patch
 Patch62: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 Patch63: fix-warn-definition.patch
 
-# CVE: [100..199]
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-# Fix CVE-2017-1000252
-Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix CVE-2023-0597
-Patch103: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
-Patch104: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-
-#Fix CVE-2024-38557
-Patch107: 0003-net-mlx5-Reload-only-IB-representors-upon-lag-disabl.patch
-
-#Fix CVE-2024-56729
-Patch108: 0004-smb-Initialize-cfid-tcon-before-performing-network-o.patch
-
-# Fix CVE-2023-39191 [110..128]
-%include %{SOURCE42}
-
-# Fix CVE-2023-52452
-Patch132: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
-
-# Fix CVE-2024-46813
-Patch134: 0001-drm-amd-display-Check-link_index-before-accessing-dc.patch
-
-# Fix CVE-2024-50029
-Patch135: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
-
-# Fix CVE-2025-39901
-Patch136: 0001-i40e-remove-read-access-to-debugfs-files.patch
-
-# Fix CVE-2024-41045
-Patch137: 0001-bpf-Defer-work-in-bpf_timer_cancel_and_free.patch
-
-# Fix CVE-2024-46811
-Patch139: 0001-drm-amd-display-Fix-index-may-exceed-array-range-wit.patch
-
-# Fix CVE-2024-35949
-Patch140: 0001-btrfs-make-sure-that-WRITTEN-is-set-on-all-metadata-.patch
-
-# Fix CVE-2024-46834
-Patch141: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
-Patch142: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
-
-# Fix CVE-2024-56611
-Patch144: 0001-mm-mempolicy-fix-migrate_to_node-assuming-there-is-a.patch
-
-# Fix CVE-2024-38564
-Patch146: 0001-bpf-Add-attach_type-checks-under-bpf_prog_attach_che.patch
-Patch147: 0002-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
-
-# Fix CVE-2025-38636
-Patch148: 0001-rv-Use-strings-in-da-monitors-tracepoints.patch
-
-# Fix CVE-2024-50018
-Patch150: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
-
-# Fix CVE-2025-21759
-Patch151: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
-
-# Fix CVE-2025-21714
-Patch153: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
-Patch154: 0001-RDMA-mlx5-Fix-implicit-ODP-hang-on-parent-deregistra.patch
-
-# Fix CVE-2024-53179
-Patch155: 0001-smb-client-fix-use-after-free-of-signing-key.patch
-
-# Fix CVE-2024-53168
-Patch156: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
-
-# Fix CVE-2025-21969
-Patch157: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
-
-# Fix CVE-2024-27042
-Patch158: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
-
-# Fix CVE-2024-26669
-Patch159: 0001-net-sched-flower-Fix-chain-template-offload.patch
-
-# Fix CVE-2024-57982
-Patch160: 0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
-
-# Fix CVE-2023-52653
-Patch161: 0001-SUNRPC-fix-a-memleak-in-gss_import_v2_context.patch
-
-# Fix CVE-2024-26661
-Patch162: 0001-drm-amd-display-Add-NULL-test-for-timing-generator-i.patch
-
-# Fix CVE-2024-26662
-Patch163: 0001-drm-amd-display-Fix-panel_cntl-could-be-null-in-dcn2.patch
-
-# Fixes Patch162 and Patch163
-Patch164: 0001-drm-amd-display-Fix-vs-typos.patch
-
-# Fix CVE-2024-26944
-Patch165: 0001-btrfs-zoned-fix-use-after-free-in-do_zone_finish.patch
-
-# Fix CVE-2024-57795
-Patch166: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
-Patch167: 0001-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
-
-# Fix CVE-2025-39705
-Patch168: 0001-drm-amd-display-fix-a-Null-pointer-dereference-vulne.patch
-
-# Fix CVE-2025-38705
-Patch169: 0001-drm-amd-pm-fix-null-pointer-access.patch
-
-# Fix CVE-2024-49922
-Patch172: 0001-drm-amd-display-Check-null-pointers-before-using-the.patch
-
-# Fix CVE-2024-49988
-Patch173: 0001-ksmbd-add-refcnt-to-ksmbd_conn-struct.patch
-Patch174: 0002-ksmbd-fix-use-after-free-in-SMB-request-handling.patch
-
-# Fix CVE-2025-38039
-Patch177: 0001-net-mlx5e-Avoid-WARN_ON-when-configuring-MQPRIO-with.patch
-
-# Fix CVE-2025-38064
-Patch179: 0001-virtio-break-and-reset-virtio-devices-on-device_shut.patch
-
-# Fix CVE-2025-38045
-Patch180: 0001-wifi-iwlwifi-fix-debug-actions-order.patch
-
-# Fix CVE-2025-39990
-Patch185: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
-
-# Fix CVE-2025-37750
-Patch187: 0001-smb-client-fix-UAF-in-decryption-with-multichannel.patch
-
-# Fix CVE-2025-2312
-Patch191: 0001-CIFS-New-mount-option-for-cifs.upcall-namespace-reso.patch
-
-# Fix CVE-2025-39744
-Patch196: 0001-rcu-Fix-rcu_read_unlock-deadloop-due-to-IRQ-work.patch
-Patch197: 0002-rcu-Fix-racy-re-initialization-of-irq_work-causing-h.patch
-
-# Fix CVE-2025-38248
-Patch199: 0001-bridge-mcast-fix-use-after-free-during-router-port-configuration.patch
-# Fix CVE-2025-39797
-Patch200: 0001-xfrm-Duplicate-SPI-Handling.patch
-Patch201: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
-# Fix CVE-2025-38616
-Patch202: 0001-tls-handle-data-disappearing-from-under-the-TLS-ULP.patch
-# Fix CVE-2025-39810
-Patch204: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
-Patch205: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
-# CVE-2024-53177
-Patch206: 0001-smb-client-prevent-new-fids-from-being-removed-by-la.patch
-Patch207: 0002-smb-client-fix-use-after-free-in-smb2_query_info_com.patch
-Patch208: 0003-smb-Don-t-leak-cfid-when-reconnect-races-with-open_c.patch
-Patch209: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
-# CVE-2025-40362
-Patch210: 0001-ceph-pass-the-mdsc-to-several-helpers.patch
-Patch211: 0002-ceph-fix-multifs-mds-auth-caps-issue.patch
-# CVE-2025-39905
-Patch212: 0001-net-phylink-add-lock-for-serializing-concurrent-pl-p.patch
-
-# CVE-2024-53095
-Patch213: 0001-smb-client-Fix-use-after-free-of-network-namespace.patch
-
-# CVE-2025-68188
-Patch215: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
-
-# CVE-2025-68379
-Patch216: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
-# CVE-2025-40328
-Patch217: 0001-smb-client-fix-potential-UAF-in-smb2_close_cached_fi.patch
-# CVE-2025-68219
-Patch218: 0001-cifs-fix-memory-leak-in-smb3_fs_context_parse_param-.patch
-# CVE-2025-71068
-Patch220: 0001-svcrdma-bound-check-rq_pages-index-in-inline-path.patch
-# Fix CVE-2025-68353
-Patch225: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
-# CVE-2023-54271
-Patch226: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
-# Fix CVE-2025-68190
-Patch229: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
-# Fix CVE-2024-25742 and CVE-2024-25743
-Patch230: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
-
-# Fix CVE-2025-71184
-Patch231: 0001-btrfs-fix-NULL-dereference-on-root-when-tracing-inod.patch
-
-# Fix CVE-2024-53068
-Patch232: 0001-firmware-arm_scmi-Fix-slab-use-after-free-in-scmi_bu.patch
-
-# Fix CVE-2025-38081
-Patch233: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
-
-# CVE-2026-23171
-Patch240: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
-# Fix CVE-2026-23447
-Patch244: 0001-net-usb-cdc_ncm-add-ndpoffset-to-NDP32-nframes-bound.patch
-# Fix CVE-2026-31648
-Patch246: 0001-mm-filemap-fix-nr_pages-calculation-overflow-in-file.patch
-# Prerequisite for CVE-2026-31663
-Patch247: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch
-# Fix CVE-2026-31663
-Patch248: 0001-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
-# Fix CVE-2026-43414
-Patch249: 0001-scsi-qla2xxx-Completely-fix-fcport-double-free.patch
+# CVE patches — see kernel_cve_patches.inc (range 3000–3999)
+%include %{SOURCE102}
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -695,8 +497,14 @@ The kernel fips-canister
 %setup -q -T -D -b 32 -n linux-%{version}
 %endif
 
+# Apply CVE patches first
+%autopatch -p1 -m3000 -M3999
+
 # common
 %autopatch -p1 -m0 -M49
+
+# apparmor
+%autopatch -p1 -m100 -M100
 
 %ifarch x86_64
 # VMW x86
@@ -705,9 +513,6 @@ The kernel fips-canister
 
 #Secure
 %autopatch -p1 -m61 -M63
-
-# CVE
-%autopatch -p1 -m100 -M249
 
 %ifarch aarch64
 # aarch64 patches
@@ -1061,6 +866,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jun 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.175-3
+- Consolidate CVE patches into kernel_cve_patches.inc (range 3000-3999)
 * Wed Jun 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-2
 - Fix CVE-2026-43414
 * Mon Jun 01 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-1
