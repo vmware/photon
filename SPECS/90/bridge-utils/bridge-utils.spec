@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 Summary:        Utilities for configuring and managing bridge devices
 Name:           bridge-utils
 Version:        1.7.1
-Release:        2.1%{?dist}
+Release:        2.1.1%{?dist}
 URL:            http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -33,6 +33,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_mandir}/man8/*
 
 %changelog
+*   Thu Jun 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.7.1-2.1.1
+-   Deprecate from 91
 *   Wed Mar 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.7.1-2.1
 -   Deprecate: move to subrelease 91
 *   Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.7.1-2
