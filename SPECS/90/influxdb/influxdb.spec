@@ -1,11 +1,13 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define network_required    1
-%define gopath  %{_var}/tmp/gopath
+%define gopath_comp_influxdb github.com/influxdata/%{name}
+%define commit_id       688e697c51fd5353725da078555adbeff0363d01
+%define main_branch     1.8
 
 Name:           influxdb
-Version:        1.12.4
-Release:        1%{?dist}
+Version:        1.8.10
+Release:        19.0.1%{?dist}
 Summary:        InfluxDB is an open source time series database
 URL:            https://influxdata.com
 Vendor:         VMware, Inc.
@@ -19,12 +21,9 @@ Source2:        %{name}.sysusers
 Source3: license.txt
 %include %{SOURCE3}
 
-Patch0: 0001-fix-libflux-build-with-newer-rust.patch
-
-BuildRequires:  go
+BuildRequires:  go >= 1.13
 BuildRequires:  git
 BuildRequires:  systemd-devel
-BuildRequires:  rust
 
 Requires:       systemd-rpm-macros
 Requires:       systemd
@@ -35,47 +34,58 @@ InfluxDB is an open source time series database with no external dependencies.
 It's useful for recording metrics, events, and performing analytics.
 
 %prep
-%autosetup -p1 -N
+# Using autosetup is not feasible
+%setup -q -c
+
+mkdir -p "$(dirname src/%{gopath_comp_influxdb})"
+mv %{name}-%{version} src/%{gopath_comp_influxdb}
 
 %build
-export PKG_CONFIG="$PWD/pkg-config.sh"
-export CGO_PKG_CONFIG=$PWD/pkg-config.sh
-export GOPATH="%{gopath}"
-
-go mod download
-
-FLUXDIR=$(go list -m -f '{{.Dir}}' github.com/influxdata/flux)
-pushd $FLUXDIR
-patch -p1 < %{PATCH0}
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_influxdb}
+go clean ./...
+go install \
+  -ldflags="-X main.version=%{version} -X main.commit=%{commit_id} -X main.branch=%{main_branch}" ./...
 popd
 
-go install \
-  -ldflags="-X main.version=%{version}-%{release} -X main.branch=v%{version}" \
-  ./...
+%check
+export GO111MODULE=auto
+export GOPATH="${PWD}"
+pushd src/%{gopath_comp_influxdb}
+go test -run=TestDatabase . -v
+popd
 
 %install
+export GOPATH="${PWD}"
 mkdir -p \
   %{buildroot}%{_bindir} \
   %{buildroot}%{_sysconfdir}/%{name} \
+  %{buildroot}%{_sysconfdir}/logrotate.d \
   %{buildroot}%{_unitdir} \
+  %{buildroot}%{_mandir}/man1 \
   %{buildroot}%{_sharedstatedir}/%{name} \
   %{buildroot}%{_var}/log/%{name}
 
-cp -a %{gopath}/bin/influx* %{buildroot}%{_bindir}
-
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
-
 mkdir -p -m 755 %{buildroot}%{_libdir}/%{name}/scripts
 
-pushd $PWD/.circleci/packages/%{name}/fs
-for i in init.sh influxd-systemd-start.sh; do
-  file="usr/lib/%{name}/scripts/${i}"
-  install -p -m 0755 "${file}" %{buildroot}%{_libdir}/%{name}/scripts/"${i}"
-done
-cp lib/systemd/system/%{name}.service  %{buildroot}%{_unitdir}
-popd
-
+cp -a bin/influx* %{buildroot}%{_bindir}
+pushd src/%{gopath_comp_influxdb}
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
+install -p -m 0755 scripts/influxd-systemd-start.sh %{buildroot}%{_libdir}/%{name}/scripts/influxd-systemd-start.sh
 cp etc/config.sample.toml %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+cp scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+cp scripts/%{name}.service %{buildroot}%{_prefix}/lib/systemd/system
+cp man/influx.txt %{buildroot}%{_mandir}/man1/influx.1
+cp man/influx_inspect.txt %{buildroot}%{_mandir}/man1/influx_inspect.1
+cp man/influx_stress.txt %{buildroot}%{_mandir}/man1/influx_stress.1
+cp man/influxd-backup.txt %{buildroot}%{_mandir}/man1/influxd-backup.1
+cp man/influxd-config.txt %{buildroot}%{_mandir}/man1/influxd-config.1
+cp man/influxd-restore.txt %{buildroot}%{_mandir}/man1/influxd-restore.1
+cp man/influxd-run.txt %{buildroot}%{_mandir}/man1/influxd-run.1
+cp man/influxd-version.txt %{buildroot}%{_mandir}/man1/influxd-version.1
+cp man/influxd.txt %{buildroot}%{_mandir}/man1/influxd.1
+popd
 
 %clean
 rm -rf %{buildroot}/*
@@ -84,9 +94,8 @@ rm -rf %{buildroot}/*
 %sysusers_create_compat %{SOURCE2}
 
 %post
-for dir in %{_sharedstatedir}/%{name} %{_var}/log/%{name}; do
-  [ -d "$dir" ] && chown -R %{name}:%{name} "$dir" || :
-done
+chown -R %{name}:%{name} /var/lib/%{name}
+chown -R %{name}:%{name} /var/log/%{name}
 %systemd_post %{name}.service
 
 %preun
@@ -98,21 +107,23 @@ done
 %files
 %defattr(-,root,root,755)
 %dir %config(noreplace) %{_sysconfdir}/%{name}
-%attr(755,%{name},%{name}) %dir %{_sharedstatedir}/%{name}
-%attr(755,%{name},%{name}) %dir %{_var}/log/%{name}
+%dir %{_sharedstatedir}/%{name}
+%dir %{_var}/log/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
-%{_libdir}/%{name}/scripts/init.sh
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_libdir}/%{name}/scripts/influxd-systemd-start.sh
-%{_unitdir}/%{name}.service
+%{_prefix}/lib/systemd/system/%{name}.service
 %{_bindir}/influxd
 %{_bindir}/influx
 %{_bindir}/influx_inspect
+%{_bindir}/influx_stress
 %{_bindir}/influx_tools
+%{_mandir}/man1/*
 %{_sysusersdir}/%{name}.conf
 
 %changelog
-* Wed Jun 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.4-1
-- Upgrade to v1.12.4
+* Wed Jun 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.10-19.0.1
+- Split for 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.10-19
 - Bump version as a part of go upgrade
 * Thu Oct 09 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.10-18

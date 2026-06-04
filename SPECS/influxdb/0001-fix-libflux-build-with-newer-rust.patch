@@ -1,0 +1,48 @@
+From 38f8a574cd3df50e49e8a0eba7931e3944410387 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 4 Jun 2026 05:19:30 +0000
+Subject: [PATCH] fix libflux build with newer rust
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ libflux/flux-core/Cargo.toml | 2 +-
+ libflux/flux-core/src/lib.rs | 2 +-
+ libflux/flux/src/lib.rs      | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/libflux/flux-core/Cargo.toml b/libflux/flux-core/Cargo.toml
+index b34b74a..355916d 100644
+--- a/libflux/flux-core/Cargo.toml
++++ b/libflux/flux-core/Cargo.toml
+@@ -29,7 +29,7 @@ required-features = ["doc"]
+ 
+ 
+ [features]
+-default = ["strict"]
++default = []
+ strict = []
+ lsp = ["lsp-types"]
+ doc = ["csv", "once_cell", "pad", "pulldown-cmark", "rayon", "tempfile"]
+diff --git a/libflux/flux-core/src/lib.rs b/libflux/flux-core/src/lib.rs
+index 733c5cb..5beb276 100644
+--- a/libflux/flux-core/src/lib.rs
++++ b/libflux/flux-core/src/lib.rs
+@@ -1,4 +1,4 @@
+-#![cfg_attr(feature = "strict", deny(warnings, missing_docs))]
++#![cfg_attr(feature = "strict", deny(missing_docs))]
+ #![allow(
+     clippy::needless_update, //
+     clippy::identity_op, // Warns on `1 * YEARS` which seems clearer than `YEARS`
+diff --git a/libflux/flux/src/lib.rs b/libflux/flux/src/lib.rs
+index 85332d5..3cd2e63 100644
+--- a/libflux/flux/src/lib.rs
++++ b/libflux/flux/src/lib.rs
+@@ -1,4 +1,4 @@
+-#![cfg_attr(feature = "strict", deny(warnings, missing_docs))]
++#![cfg_attr(feature = "strict", deny(missing_docs))]
+ 
+ //! This module provides the public facing API for Flux's Go runtime, including formatting,
+ //! parsing, and standard library analysis.
+-- 
+2.53.0
+

@@ -1,12 +1,19 @@
 sources:
-- archive: influxdb-1.8.10.tar.gz
-  archive_sha512sum: 4f5d20c190288d6397f0e87abd9b9136340b17f091c361cbc111ba661a3e63626edf5c74ddeeda164d82102dd06026e0037f50da546cda25e6c8647f4c739fae
-  skip_validation: true
+- archive: influxdb-1.12.4.tar.gz
+  archive_sha512sum: d0520c4a3baa512d44224c827d57857c4cc48f3148f818d9344cdcd55f408befbb02eaff56819a44810b5695af6564e1ad8d63674f92b376a4b6e82f96bc06bc
+  archive_type: upstream
+  name: influxdb-1.12.4
+  version: 1.12.4
+  url: https://github.com/influxdata/influxdb/archive/refs/tags/v1.12.4.tar.gz
+  repo_url: https://github.com/influxdata/influxdb
+  commit_id: f9befe3459b689dc6dd1dd11e1e58e2943434ab1
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'InfluxDB is an open source time series database with
         no external dependencies. It''s useful for recording metrics, events, and
-        performing analytics. '
+        performing analytics.'
       home_page: https://influxdata.com
       license_concluded: ISC AND Apache-2.0 AND BSD-3-Clause AND MIT
       license_declared: ISC AND Apache-2.0 AND BSD-3-Clause AND MIT
