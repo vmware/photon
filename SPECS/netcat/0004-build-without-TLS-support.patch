@@ -1,0 +1,887 @@
+From: Guilhem Moulin <guilhem@debian.org>
+Date: Fri, 9 Jun 2017 13:21:23 +0200
+Subject: Build without TLS support
+
+tls.h isn't available in libbsd-dev, and TLS supports adds options (-C, -Z)
+that are already used by our Debian-specific patches.
+
+Forwarded: not-needed
+---
+ Makefile |   2 -
+ nc.1     | 114 +++---------------------------------------
+ netcat.c | 172 +++++++++++++++++++++++++++++++++++++++++++++++++++++----------
+ 3 files changed, 153 insertions(+), 135 deletions(-)
+
+
+--- a/Makefile	2026-06-04 04:40:55.231671513 +0000
++++ b/Makefile	2026-06-04 04:41:14.907672458 +0000
+@@ -2,11 +2,9 @@
+ 
+ PROG=	nc
+ SRCS=	netcat.c atomicio.c socks.c
+-LDADD+= -ltls -lssl -lcrypto
+-DPADD+=  ${LIBTLS} ${LIBSSL} ${LIBCRYPTO}
+ 
+ PKG_CONFIG ?= pkg-config
+-LIBS=  `$(PKG_CONFIG) --libs libbsd` -lresolv -ltls
++LIBS=  `$(PKG_CONFIG) --libs libbsd` -lresolv
+ OBJS=  $(SRCS:.c=.o)
+ CFLAGS=  -g -O2
+ LDFLAGS=  -Wl,--no-add-needed
+
+diff --git a/nc.1 b/nc.1
+index 596bd8e..2eb732e 100644
+--- a/nc.1
++++ b/nc.1
+@@ -33,20 +33,14 @@
+ .Nd arbitrary TCP and UDP connections and listens
+ .Sh SYNOPSIS
+ .Nm nc
+-.Op Fl 46cDdFhklNnrStUuvz
+-.Op Fl C Ar certfile
+-.Op Fl e Ar name
+-.Op Fl H Ar hash
++.Op Fl 46DdFhklNnrStUuvz
+ .Op Fl I Ar length
+ .Op Fl i Ar interval
+-.Op Fl K Ar keyfile
+ .Op Fl M Ar ttl
+ .Op Fl m Ar minttl
+ .Op Fl O Ar length
+-.Op Fl o Ar staplefile
+ .Op Fl P Ar proxy_username
+ .Op Fl p Ar source_port
+-.Op Fl R Ar CAfile
+ .Op Fl s Ar sourceaddr
+ .Op Fl T Ar keyword
+ .Op Fl V Ar rtable
+@@ -54,7 +48,6 @@
+ .Op Fl w Ar timeout
+ .Op Fl X Ar proxy_protocol
+ .Op Fl x Ar proxy_address Ns Op : Ns Ar port
+-.Op Fl Z Ar peercertfile
+ .Op Ar destination
+ .Op Ar port
+ .Sh DESCRIPTION
+@@ -99,28 +92,10 @@ The options are as follows:
+ Use IPv4 addresses only.
+ .It Fl 6
+ Use IPv6 addresses only.
+-.It Fl C Ar certfile
+-Load the public key part of the TLS peer certificate from
+-.Ar certfile ,
+-in PEM format.
+-Requires
+-.Fl c .
+-.It Fl c
+-Use TLS to connect or listen.
+-Cannot be used together with any of the options
+-.Fl FuU .
+ .It Fl D
+ Enable debugging on the socket.
+ .It Fl d
+ Do not attempt to read from stdin.
+-.It Fl e Ar name
+-Only accept the TLS peer certificate if it contains the
+-.Ar name .
+-Requires
+-.Fl c .
+-If not specified,
+-.Ar destination
+-is used.
+ .It Fl F
+ Pass the first connected socket using
+ .Xr sendmsg 2
+@@ -137,18 +112,7 @@ using the
+ .Cm ProxyUseFdpass
+ option).
+ Cannot be used with
+-.Fl c
+-or
+ .Fl U .
+-.It Fl H Ar hash
+-Only accept the TLS peer certificate if its hash returned from
+-.Xr tls_peer_cert_hash 3
+-matches
+-.Ar hash .
+-Requires
+-.Fl c
+-and cannot be used with
+-.Fl T Cm noverify .
+ .It Fl h
+ Print out the
+ .Nm
+@@ -160,12 +124,6 @@ Sleep for
+ .Ar interval
+ seconds between lines of text sent and received.
+ Also causes a delay time between connections to multiple ports.
+-.It Fl K Ar keyfile
+-Load the TLS private key from
+-.Ar keyfile ,
+-in PEM format.
+-Requires
+-.Fl c .
+ .It Fl k
+ When a connection is completed, listen for another one.
+ Requires
+@@ -196,15 +154,6 @@ Do not perform domain name resolution.
+ If a name cannot be resolved without DNS, an error will be reported.
+ .It Fl O Ar length
+ Specify the size of the TCP send buffer.
+-.It Fl o Ar staplefile
+-During the TLS handshake, load data to be stapled from
+-.Ar staplefile ,
+-which is expected to contain an OCSP response from an OCSP server in
+-DER format.
+-Requires
+-.Fl c
+-and
+-.Fl C .
+ .It Fl P Ar proxy_username
+ Specifies a username to present to a proxy server that requires authentication.
+ If no username is specified then authentication will not be attempted.
+@@ -213,13 +162,6 @@ Proxy authentication is only supported for HTTP CONNECT proxies at present.
+ Specify the source port
+ .Nm
+ should use, subject to privilege restrictions and availability.
+-.It Fl R Ar CAfile
+-Load the root CA bundle for TLS certificate verification from
+-.Ar CAfile ,
+-in PEM format, instead of
+-.Pa /etc/ssl/cert.pem .
+-Requires
+-.Fl c .
+ .It Fl r
+ Choose source and/or destination ports randomly
+ instead of sequentially within a range or in the order that the system
+@@ -238,35 +180,7 @@ Cannot be used together with
+ or
+ .Fl x .
+ .It Fl T Ar keyword
+-Change the IPv4 TOS/IPv6 traffic class value or the TLS options.
+-.Pp
+-For TLS options,
+-.Ar keyword
+-may be one of:
+-.Cm noverify ,
+-which disables certificate verification;
+-.Cm noname ,
+-which disables certificate name checking;
+-.Cm clientcert ,
+-which requires a client certificate on incoming connections; or
+-.Cm muststaple ,
+-which requires the peer to provide a valid stapled OCSP response
+-with the handshake.
+-The following TLS options specify a value in the form of a
+-.Ar key Ns = Ns Ar value
+-pair:
+-.Cm ciphers ,
+-which allows the supported TLS ciphers to be specified (see
+-.Xr tls_config_set_ciphers 3
+-for further details);
+-.Cm protocols ,
+-which allows the supported TLS protocols to be specified (see
+-.Xr tls_config_parse_protocols 3
+-for further details).
+-Specifying TLS options requires
+-.Fl c .
+-.Pp
+-For the IPv4 TOS/IPv6 traffic class value,
++Change the IPv4 TOS/IPv6 traffic class value.
+ .Ar keyword
+ may be one of
+ .Cm critical ,
+@@ -290,13 +204,13 @@ to script telnet sessions.
+ Use
+ .Ux Ns -domain
+ sockets.
+-Cannot be used together with any of the options
+-.Fl cFx .
++Cannot be used together with
++.Fl F
++or
++.Fl x .
+ .It Fl u
+ Use UDP instead of TCP.
+ Cannot be used together with
+-.Fl c
+-or
+ .Fl x .
+ For
+ .Ux Ns -domain
+@@ -359,12 +273,6 @@ An IPv6 address can be specified unambiguously by enclosing
+ in square brackets.
+ A proxy cannot be used with any of the options
+ .Fl lsuU .
+-.It Fl Z Ar peercertfile
+-Save the peer certificates to
+-.Ar peercertfile ,
+-in PEM format.
+-Requires
+-.Fl c .
+ .It Fl z
+ Only scan for listening daemons, without sending any data to them.
+ Cannot be used together with
+@@ -522,16 +430,6 @@ the source port, with a timeout of 5 seconds:
+ .Pp
+ .Dl $ nc -p 31337 -w 5 host.example.com 42
+ .Pp
+-Open a TCP connection to port 443 of www.example.com, and negotiate TLS with
+-any supported TLS protocol version and "compat" ciphers:
+-.Pp
+-.Dl $ nc -cv -T protocols=all -T ciphers=compat www.example.com 443
+-.Pp
+-Open a TCP connection to port 443 of www.google.ca, and negotiate TLS.
+-Check for a different name in the certificate for validation:
+-.Pp
+-.Dl $ nc -cv -e adsf.au.doubleclick.net www.google.ca 443
+-.Pp
+ Open a UDP connection to port 53 of host.example.com:
+ .Pp
+ .Dl $ nc -u host.example.com 53
+diff --git a/netcat.c b/netcat.c
+index d23e566..bec6e46 100644
+--- a/netcat.c
++++ b/netcat.c
+@@ -99,7 +99,9 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
+-#include <tls.h>
++#ifdef HAVE_TLS
++# include <tls.h>
++#endif
+ #include <unistd.h>
+ #include <bsd/stdlib.h>
+ #include <bsd/string.h>
+@@ -115,10 +117,12 @@
+ #define POLL_STDOUT	3
+ #define BUFSIZE		16384
+ 
+-#define TLS_NOVERIFY	(1 << 1)
+-#define TLS_NONAME	(1 << 2)
+-#define TLS_CCERT	(1 << 3)
+-#define TLS_MUSTSTAPLE	(1 << 4)
++#ifdef HAVE_TLS
++# define TLS_NOVERIFY	(1 << 1)
++# define TLS_NONAME	(1 << 2)
++# define TLS_CCERT	(1 << 3)
++# define TLS_MUSTSTAPLE	(1 << 4)
++#endif
+ 
+ /* Command Line Options */
+ int	dflag;					/* detached, no stdin */
+@@ -144,6 +148,7 @@ int	Sflag;					/* TCP MD5 signature option */
+ int	Tflag = -1;				/* IP Type of Service */
+ int	rtableid = -1;
+ 
++#ifdef HAVE_TLS
+ int	usetls;					/* use TLS */
+ const char    *Cflag;				/* Public cert file */
+ const char    *Kflag;				/* Private key file */
+@@ -156,6 +161,7 @@ char	*tls_expecthash;			/* required hash of peer cert */
+ char	*tls_ciphers;				/* TLS ciphers */
+ char	*tls_protocols;				/* TLS protocols */
+ FILE	*Zflag;					/* file to save peer cert */
++#endif
+ 
+ int recvcount, recvlimit;
+ int timeout = -1;
+@@ -170,10 +176,16 @@ int	strtoport(char *portstr, int udp);
+ void	build_ports(char *);
+ void	help(void) __attribute__((noreturn));
+ int	local_listen(const char *, const char *, struct addrinfo);
++#ifdef HAVE_TLS
+ void	readwrite(int, struct tls *);
++#else
++void	readwrite(int);
++#endif
+ void	fdpass(int nfd) __attribute__((noreturn));
+ int	remote_connect(const char *, const char *, struct addrinfo, char *);
++#ifdef HAVE_TLS
+ int	timeout_tls(int, struct tls *, int (*)(struct tls *));
++#endif
+ int	timeout_connect(int, const struct sockaddr *, socklen_t);
+ int	socks_connect(const char *, const char *, struct addrinfo,
+ 	    const char *, const char *, struct addrinfo, int, const char *);
+@@ -184,15 +196,24 @@ int	unix_connect(char *);
+ int	unix_listen(char *);
+ void	set_common_sockopts(int, int);
+ int	process_tos_opt(char *, int *);
++#ifdef HAVE_TLS
+ int	process_tls_opt(char *, int *);
+ void	save_peer_cert(struct tls *_tls_ctx, FILE *_fp);
++#endif
+ void	report_sock(const char *, const struct sockaddr *, socklen_t, char *);
++#ifdef HAVE_TLS
+ void	report_tls(struct tls *tls_ctx, char * host);
++#endif
+ void	usage(int);
++#ifdef HAVE_TLS
+ ssize_t drainbuf(int, unsigned char *, size_t *, struct tls *);
+ ssize_t fillbuf(int, unsigned char *, size_t *, struct tls *);
+ void	tls_setup_client(struct tls *, int, char *);
+ struct tls *tls_setup_server(struct tls *, int, char *);
++#else
++ssize_t drainbuf(int, unsigned char *, size_t *);
++ssize_t fillbuf(int, unsigned char *, size_t *);
++#endif
+ 
+ int
+ main(int argc, char *argv[])
+@@ -207,20 +228,28 @@ main(int argc, char *argv[])
+ 	const char *errstr;
+ 	struct addrinfo proxyhints;
+ 	char unix_dg_tmp_socket_buf[UNIX_DG_TMP_SOCKET_SIZE];
++#ifdef HAVE_TLS
+ 	struct tls_config *tls_cfg = NULL;
+ 	struct tls *tls_ctx = NULL;
++#endif
+ 	uint32_t protocols;
+ 
+ 	ret = 1;
+ 	socksv = 5;
+ 	host = NULL;
+ 	uport = NULL;
++#ifdef HAVE_TLS
+ 	Rflag = tls_default_ca_cert_file();
++#endif
+ 
+ 	signal(SIGPIPE, SIG_IGN);
+ 
+ 	while ((ch = getopt(argc, argv,
++#ifdef HAVE_TLS
+ 	    "46C:cDde:FH:hI:i:K:klM:m:NnO:o:P:p:R:rSs:T:tUuV:vW:w:X:x:Z:z"))
++#else
++	    "46DdFhI:i:klM:m:NnO:P:p:rSs:T:tUuV:vW:w:X:x:z"))
++#endif
+ 	    != -1) {
+ 		switch (ch) {
+ 		case '4':
+@@ -242,24 +271,30 @@ main(int argc, char *argv[])
+ 			else
+ 				errx(1, "unsupported proxy protocol");
+ 			break;
++#ifdef HAVE_TLS
+ 		case 'C':
+ 			Cflag = optarg;
+ 			break;
+ 		case 'c':
+ 			usetls = 1;
+ 			break;
++#endif
+ 		case 'd':
+ 			dflag = 1;
+ 			break;
++#ifdef HAVE_TLS
+ 		case 'e':
+ 			tls_expectname = optarg;
+ 			break;
++#endif
+ 		case 'F':
+ 			Fflag = 1;
+ 			break;
++#ifdef HAVE_TLS
+ 		case 'H':
+ 			tls_expecthash = optarg;
+ 			break;
++#endif
+ 		case 'h':
+ 			help();
+ 			break;
+@@ -268,9 +303,11 @@ main(int argc, char *argv[])
+ 			if (errstr)
+ 				errx(1, "interval %s: %s", errstr, optarg);
+ 			break;
++#ifdef HAVE_TLS
+ 		case 'K':
+ 			Kflag = optarg;
+ 			break;
++#endif
+ 		case 'k':
+ 			kflag = 1;
+ 			break;
+@@ -299,10 +336,12 @@ main(int argc, char *argv[])
+ 		case 'p':
+ 			pflag = optarg;
+ 			break;
++#ifdef HAVE_TLS
+ 		case 'R':
+ 			tls_cachanged = 1;
+ 			Rflag = optarg;
+ 			break;
++#endif
+ 		case 'r':
+ 			rflag = 1;
+ 			break;
+@@ -344,12 +383,14 @@ main(int argc, char *argv[])
+ 			if ((proxy = strdup(optarg)) == NULL)
+ 				err(1, NULL);
+ 			break;
++#ifdef HAVE_TLS
+ 		case 'Z':
+ 			if (strcmp(optarg, "-") == 0)
+ 				Zflag = stderr;
+ 			else if ((Zflag = fopen(optarg, "w")) == NULL)
+ 				err(1, "can't open %s", optarg);
+ 			break;
++#endif
+ 		case 'z':
+ 			zflag = 1;
+ 			break;
+@@ -368,9 +409,11 @@ main(int argc, char *argv[])
+ 				errx(1, "TCP send window %s: %s",
+ 				    errstr, optarg);
+ 			break;
++#ifdef HAVE_TLS
+ 		case 'o':
+ 			oflag = optarg;
+ 			break;
++#endif
+ 		case 'S':
+ #ifdef TCP_MD5SIG
+ 			Sflag = 1;
+@@ -381,8 +424,10 @@ main(int argc, char *argv[])
+ 		case 'T':
+ 			errstr = NULL;
+ 			errno = 0;
++#ifdef HAVE_TLS
+ 			if (process_tls_opt(optarg, &TLSopt))
+ 				break;
++#endif
+ 			if (process_tos_opt(optarg, &Tflag))
+ 				break;
+ 			if (strlen(optarg) > 1 && optarg[0] == '0' &&
+@@ -392,7 +437,11 @@ main(int argc, char *argv[])
+ 				Tflag = (int)strtonum(optarg, 0, 255,
+ 				    &errstr);
+ 			if (Tflag < 0 || Tflag > 255 || errstr || errno)
++#ifdef HAVE_TLS
+ 				errx(1, "illegal tos/tls value %s", optarg);
++#else
++				errx(1, "illegal tos value %s", optarg);
++#endif
+ 			break;
+ 		default:
+ 			usage(1);
+@@ -425,6 +474,7 @@ main(int argc, char *argv[])
+ 	} else
+ 		usage(1);
+ 
++#ifdef HAVE_TLS
+ 	if (usetls) {
+ 		if (Cflag && unveil(Cflag, "r") == -1)
+ 			err(1, "unveil %s", Cflag);
+@@ -459,15 +509,19 @@ main(int argc, char *argv[])
+ 				err(1, "unveil /");
+ 		}
+ 	}
++#endif
+ 
+ 	if (!lflag && kflag)
+ 		errx(1, "must use -l with -k");
++#ifdef HAVE_TLS
+ 	if (uflag && usetls)
+ 		errx(1, "cannot use -c and -u");
+ 	if ((family == AF_UNIX) && usetls)
+ 		errx(1, "cannot use -c and -U");
++#endif
+ 	if ((family == AF_UNIX) && Fflag)
+ 		errx(1, "cannot use -F and -U");
++#ifdef HAVE_TLS
+ 	if (Fflag && usetls)
+ 		errx(1, "cannot use -c and -F");
+ 	if (TLSopt && !usetls)
+@@ -486,6 +540,7 @@ main(int argc, char *argv[])
+ 		errx(1, "you must specify -c to use -H");
+ 	if (tls_expectname && !usetls)
+ 		errx(1, "you must specify -c to use -e");
++#endif
+ 
+ 	/* Get name of temporary socket for unix datagram client */
+ 	if ((family == AF_UNIX) && uflag && !lflag) {
+@@ -552,6 +607,7 @@ main(int argc, char *argv[])
+ 			proxyhints.ai_flags |= AI_NUMERICHOST;
+ 	}
+ 
++#ifdef HAVE_TLS
+ 	if (usetls) {
+ 		if ((tls_cfg = tls_config_new()) == NULL)
+ 			errx(1, "unable to allocate TLS config");
+@@ -588,6 +644,7 @@ main(int argc, char *argv[])
+ 		} else if (pledge("stdio inet dns", NULL) == -1)
+ 			err(1, "pledge");
+ 	}
++#endif
+ 	if (lflag) {
+ 		ret = 0;
+ 
+@@ -598,6 +655,7 @@ main(int argc, char *argv[])
+ 				s = unix_listen(host);
+ 		}
+ 
++#ifdef HAVE_TLS
+ 		if (usetls) {
+ 			tls_config_verify_client_optional(tls_cfg);
+ 			if ((tls_ctx = tls_server()) == NULL)
+@@ -606,6 +664,7 @@ main(int argc, char *argv[])
+ 				errx(1, "tls configuration failed (%s)",
+ 				    tls_error(tls_ctx));
+ 		}
++#endif
+ 		/* Allow only one connection at a time, but stay alive. */
+ 		for (;;) {
+ 			if (family != AF_UNIX) {
+@@ -621,7 +680,11 @@ main(int argc, char *argv[])
+ 				 * let it receive datagrams from multiple
+ 				 * socket pairs.
+ 				 */
++#ifdef HAVE_TLS
+ 				readwrite(s, NULL);
++#else
++				readwrite(s);
++#endif
+ 			} else if (uflag && !kflag) {
+ 				/*
+ 				 * For UDP and not -k, we will use recvfrom()
+@@ -647,9 +710,14 @@ main(int argc, char *argv[])
+ 					    (struct sockaddr *)&z, len,
+ 					    family == AF_UNIX ? host : NULL);
+ 
++#ifdef HAVE_TLS
+ 				readwrite(s, NULL);
+ 			} else {
+ 				struct tls *tls_cctx = NULL;
++#else
++				readwrite(s);
++			} else {
++#endif
+ 				int connfd;
+ 
+ 				len = sizeof(cliaddr);
+@@ -663,6 +731,7 @@ main(int argc, char *argv[])
+ 					report_sock("Connection received",
+ 					    (struct sockaddr *)&cliaddr, len,
+ 					    family == AF_UNIX ? host : NULL);
++#ifdef HAVE_TLS
+ 				if ((usetls) &&
+ 				    (tls_cctx = tls_setup_server(tls_ctx, connfd, host)))
+ 					readwrite(connfd, tls_cctx);
+@@ -672,6 +741,10 @@ main(int argc, char *argv[])
+ 					timeout_tls(s, tls_cctx, tls_close);
+ 				close(connfd);
+ 				tls_free(tls_cctx);
++#else
++				readwrite(connfd);
++				close(connfd);
++#endif
+ 			}
+ 
+ 			if (!kflag)
+@@ -682,7 +755,11 @@ main(int argc, char *argv[])
+ 
+ 		if ((s = unix_connect(host)) > 0) {
+ 			if (!zflag)
++#ifdef HAVE_TLS
+ 				readwrite(s, NULL);
++#else
++				readwrite(s);
++#endif
+ 			close(s);
+ 		} else {
+ 			warn("%s", host);
+@@ -702,6 +779,7 @@ main(int argc, char *argv[])
+ 		for (s = -1, i = 0; portlist[i] != NULL; i++) {
+ 			if (s != -1)
+ 				close(s);
++#ifdef HAVE_TLS
+ 			tls_free(tls_ctx);
+ 			tls_ctx = NULL;
+ 
+@@ -712,6 +790,7 @@ main(int argc, char *argv[])
+ 					errx(1, "tls configuration failed (%s)",
+ 					    tls_error(tls_ctx));
+ 			}
++#endif
+ 			if (xflag)
+ 				s = socks_connect(host, portlist[i], hints,
+ 				    proxy, proxyport, proxyhints, socksv,
+@@ -741,6 +820,7 @@ main(int argc, char *argv[])
+ 			}
+ 			if (Fflag)
+ 				fdpass(s);
++#ifdef HAVE_TLS
+ 			else {
+ 				if (usetls)
+ 					tls_setup_client(tls_ctx, s, host);
+@@ -749,13 +829,19 @@ main(int argc, char *argv[])
+ 				if (tls_ctx)
+ 					timeout_tls(s, tls_ctx, tls_close);
+ 			}
++#else
++			else if (!zflag)
++				readwrite(s);
++#endif
+ 		}
+ 	}
+ 
+ 	if (s != -1)
+ 		close(s);
++#ifdef HAVE_TLS
+ 	tls_free(tls_ctx);
+ 	tls_config_free(tls_cfg);
++#endif
+ 
+ 	return ret;
+ }
+@@ -797,6 +883,7 @@ unix_bind(char *path, int flags)
+ 	return s;
+ }
+ 
++#ifdef HAVE_TLS
+ int
+ timeout_tls(int s, struct tls *tls_ctx, int (*func)(struct tls *))
+ {
+@@ -884,6 +971,7 @@ tls_setup_server(struct tls *tls_ctx, int connfd, char *host)
+ 	}
+ 	return NULL;
+ }
++#endif
+ 
+ /*
+  * unix_connect()
+@@ -1130,7 +1218,11 @@ local_listen(const char *host, const char *port, struct addrinfo hints)
+  * Loop that polls on the network file descriptor and stdin.
+  */
+ void
++#ifdef HAVE_TLS
+ readwrite(int net_fd, struct tls *tls_ctx)
++#else
++readwrite(int net_fd)
++#endif
+ {
+ 	struct pollfd pfd[4];
+ 	int stdin_fd = STDIN_FILENO;
+@@ -1230,12 +1322,17 @@ readwrite(int net_fd, struct tls *tls_ctx)
+ 		/* try to read from stdin */
+ 		if (pfd[POLL_STDIN].revents & POLLIN && stdinbufpos < BUFSIZE) {
+ 			ret = fillbuf(pfd[POLL_STDIN].fd, stdinbuf,
++#ifdef HAVE_TLS
+ 			    &stdinbufpos, NULL);
+ 			if (ret == TLS_WANT_POLLIN)
+ 				pfd[POLL_STDIN].events = POLLIN;
+ 			else if (ret == TLS_WANT_POLLOUT)
+ 				pfd[POLL_STDIN].events = POLLOUT;
+-			else if (ret == 0 || ret == -1)
++			else
++#else
++			    &stdinbufpos);
++#endif
++			if (ret == 0 || ret == -1)
+ 				pfd[POLL_STDIN].fd = -1;
+ 			/* read something - poll net out */
+ 			if (stdinbufpos > 0)
+@@ -1247,12 +1344,17 @@ readwrite(int net_fd, struct tls *tls_ctx)
+ 		/* try to write to network */
+ 		if (pfd[POLL_NETOUT].revents & POLLOUT && stdinbufpos > 0) {
+ 			ret = drainbuf(pfd[POLL_NETOUT].fd, stdinbuf,
++#ifdef HAVE_TLS
+ 			    &stdinbufpos, tls_ctx);
+ 			if (ret == TLS_WANT_POLLIN)
+ 				pfd[POLL_NETOUT].events = POLLIN;
+ 			else if (ret == TLS_WANT_POLLOUT)
+ 				pfd[POLL_NETOUT].events = POLLOUT;
+-			else if (ret == -1)
++			else
++#else
++			    &stdinbufpos);
++#endif
++			if (ret == -1)
+ 				pfd[POLL_NETOUT].fd = -1;
+ 			/* buffer empty - remove self from polling */
+ 			if (stdinbufpos == 0)
+@@ -1264,12 +1366,17 @@ readwrite(int net_fd, struct tls *tls_ctx)
+ 		/* try to read from network */
+ 		if (pfd[POLL_NETIN].revents & POLLIN && netinbufpos < BUFSIZE) {
+ 			ret = fillbuf(pfd[POLL_NETIN].fd, netinbuf,
++#ifdef HAVE_TLS
+ 			    &netinbufpos, tls_ctx);
+ 			if (ret == TLS_WANT_POLLIN)
+ 				pfd[POLL_NETIN].events = POLLIN;
+ 			else if (ret == TLS_WANT_POLLOUT)
+ 				pfd[POLL_NETIN].events = POLLOUT;
+-			else if (ret == -1)
++			else
++#else
++			    &netinbufpos);
++#endif
++			if (ret == -1)
+ 				pfd[POLL_NETIN].fd = -1;
+ 			/* eof on net in - remove from pfd */
+ 			if (ret == 0) {
+@@ -1296,12 +1403,17 @@ readwrite(int net_fd, struct tls *tls_ctx)
+ 		/* try to write to stdout */
+ 		if (pfd[POLL_STDOUT].revents & POLLOUT && netinbufpos > 0) {
+ 			ret = drainbuf(pfd[POLL_STDOUT].fd, netinbuf,
++#ifdef HAVE_TLS
+ 			    &netinbufpos, NULL);
+ 			if (ret == TLS_WANT_POLLIN)
+ 				pfd[POLL_STDOUT].events = POLLIN;
+ 			else if (ret == TLS_WANT_POLLOUT)
+ 				pfd[POLL_STDOUT].events = POLLOUT;
+-			else if (ret == -1)
++			else
++#else
++			    &netinbufpos);
++#endif
++			if (ret == -1)
+ 				pfd[POLL_STDOUT].fd = -1;
+ 			/* buffer empty - remove self from polling */
+ 			if (netinbufpos == 0)
+@@ -1325,7 +1437,11 @@ readwrite(int net_fd, struct tls *tls_ctx)
+ }
+ 
+ ssize_t
++#ifdef HAVE_TLS
+ drainbuf(int fd, unsigned char *buf, size_t *bufpos, struct tls *tls)
++#else
++drainbuf(int fd, unsigned char *buf, size_t *bufpos)
++#endif
+ {
+ 	ssize_t n;
+ 	ssize_t adjust;
+@@ -1333,16 +1449,22 @@ drainbuf(int fd, unsigned char *buf, size_t *bufpos, struct tls *tls)
+ 	if (fd == -1)
+ 		return -1;
+ 
++#ifdef HAVE_TLS
+ 	if (tls) {
+ 		n = tls_write(tls, buf, *bufpos);
+ 		if (n == -1)
+ 			errx(1, "tls write failed (%s)", tls_error(tls));
+ 	} else {
++#endif
+ 		n = write(fd, buf, *bufpos);
+ 		/* don't treat EAGAIN, EINTR as error */
+ 		if (n == -1 && (errno == EAGAIN || errno == EINTR))
++#ifdef HAVE_TLS
+ 			n = TLS_WANT_POLLOUT;
+ 	}
++#else
++			n = -2;
++#endif
+ 	if (n <= 0)
+ 		return n;
+ 	/* adjust buffer */
+@@ -1354,7 +1476,11 @@ drainbuf(int fd, unsigned char *buf, size_t *bufpos, struct tls *tls)
+ }
+ 
+ ssize_t
++#ifdef HAVE_TLS
+ fillbuf(int fd, unsigned char *buf, size_t *bufpos, struct tls *tls)
++#else
++fillbuf(int fd, unsigned char *buf, size_t *bufpos)
++#endif
+ {
+ 	size_t num = BUFSIZE - *bufpos;
+ 	ssize_t n;
+@@ -1362,16 +1488,22 @@ fillbuf(int fd, unsigned char *buf, size_t *bufpos, struct tls *tls)
+ 	if (fd == -1)
+ 		return -1;
+ 
++#ifdef HAVE_TLS
+ 	if (tls) {
+ 		n = tls_read(tls, buf + *bufpos, num);
+ 		if (n == -1)
+ 			errx(1, "tls read failed (%s)", tls_error(tls));
+ 	} else {
++#endif
+ 		n = read(fd, buf + *bufpos, num);
+ 		/* don't treat EAGAIN, EINTR as error */
+ 		if (n == -1 && (errno == EAGAIN || errno == EINTR))
++#ifdef HAVE_TLS
+ 			n = TLS_WANT_POLLIN;
+ 	}
++#else
++			n = -2;
++#endif
+ 	if (n <= 0)
+ 		return n;
+ 	*bufpos += n;
+@@ -1718,6 +1850,7 @@ process_tos_opt(char *s, int *val)
+ 	return 0;
+ }
+ 
++#ifdef HAVE_TLS
+ int
+ process_tls_opt(char *s, int *flags)
+ {
+@@ -1831,6 +1964,7 @@ report_tls(struct tls *tls_ctx, char *host)
+ 		break;
+ 	}
+ }
++#endif
+ 
+ void
+ report_sock(const char *msg, const struct sockaddr *sa, socklen_t salen,
+@@ -1872,17 +2006,12 @@ help(void)
+ 	fprintf(stderr, "\tCommand Summary:\n\
+ 	\t-4		Use IPv4\n\
+ 	\t-6		Use IPv6\n\
+-	\t-C certfile	Public key file\n\
+-	\t-c		Use TLS\n\
+ 	\t-D		Enable the debug socket option\n\
+ 	\t-d		Detach from stdin\n\
+-	\t-e name\t	Required name in peer certificate\n\
+ 	\t-F		Pass socket fd\n\
+-	\t-H hash\t	Hash string of peer certificate\n\
+ 	\t-h		This help text\n\
+ 	\t-I length	TCP receive buffer length\n\
+ 	\t-i interval	Delay interval for lines sent, ports scanned\n\
+-	\t-K keyfile	Private key file\n\
+ 	\t-k		Keep inbound sockets open for multiple connects\n\
+ 	\t-l		Listen mode, for inbound connects\n\
+ 	\t-M ttl		Outgoing TTL / Hop Limit\n\
+@@ -1890,14 +2019,12 @@ help(void)
+ 	\t-N		Shutdown the network socket after EOF on stdin\n\
+ 	\t-n		Suppress name/port resolutions\n\
+ 	\t-O length	TCP send buffer length\n\
+-	\t-o staplefile	Staple file\n\
+ 	\t-P proxyuser\tUsername for proxy authentication\n\
+ 	\t-p port\t	Specify local port for remote connects\n\
+-	\t-R CAfile	CA bundle\n\
+ 	\t-r		Randomize remote ports\n\
+ 	\t-S		Enable the TCP MD5 signature option\n\
+ 	\t-s sourceaddr	Local source address\n\
+-	\t-T keyword	TOS value or TLS options\n\
++	\t-T keyword	TOS value\n\
+ 	\t-t		Answer TELNET negotiation\n\
+ 	\t-U		Use UNIX domain socket\n\
+ 	\t-u		UDP mode\n\
+@@ -1907,7 +2034,6 @@ help(void)
+ 	\t-w timeout	Timeout for connects and final net reads\n\
+ 	\t-X proto	Proxy protocol: \"4\", \"5\" (SOCKS) or \"connect\"\n\
+ 	\t-x addr[:port]\tSpecify proxy address and port\n\
+-	\t-Z		Peer certificate file\n\
+ 	\t-z		Zero-I/O mode [used for scanning]\n\
+ 	Port numbers can be individual or ranges: lo-hi [inclusive]\n");
+ 	exit(0);
+@@ -1917,15 +2043,11 @@ void
+ usage(int ret)
+ {
+ 	fprintf(stderr,
+-	    "usage: nc [-46cDdFhklNnrStUuvz] [-C certfile] [-e name] "
+-	    "[-H hash] [-I length]\n"
+-	    "\t  [-i interval] [-K keyfile] [-M ttl] [-m minttl] [-O length]\n"
+-	    "\t  [-o staplefile] [-P proxy_username] [-p source_port] "
+-	    "[-R CAfile]\n"
++	    "usage: nc [-46DdFhklNnrStUuvz] [-I length] [-i interval] [-M ttl]\n"
++	    "\t  [-m minttl] [-O length] [-P proxy_username] [-p source_port]\n"
+ 	    "\t  [-s sourceaddr] [-T keyword] [-V rtable] [-W recvlimit] "
+ 	    "[-w timeout]\n"
+-	    "\t  [-X proxy_protocol] [-x proxy_address[:port]] "
+-	    "[-Z peercertfile]\n"
++	    "\t  [-X proxy_protocol] [-x proxy_address[:port]]\n"
+ 	    "\t  [destination] [port]\n");
+ 	if (ret)
+ 		exit(1);

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        Port of libtls from LibreSSL to OpenSSL
 Name:           libretls
 Version:        3.8.1
-Release:        1%{?dist}
+Release:        1.1%{?dist}
 URL:            https://git.causal.agency/libretls/about
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -67,5 +69,7 @@ rm -rf %{buildroot}
 %{_includedir}/tls.h
 
 %changelog
+* Thu Jun 04 2026 Tapas Kundu <tapas.kundu@broadcom.com> 3.8.1-1.1
+- Move to /90
 * Tue Sep 10 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.8.1-1
 - Initial version. Needed by bsd-netcat.

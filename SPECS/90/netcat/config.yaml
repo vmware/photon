@@ -1,0 +1,20 @@
+sources:
+- archive: nc-1270245.tar.xz
+  archive_sha512sum: e3e4399fd917db2b0704a0f573a0ec81d82e64071461825e2cae939dbbfacc52b5dad448a821b3699217b305a68a265fd8f4a15a185f694f081272460c251469
+  skip_validation: true
+  archive_type: None
+  name: "nc-1270245"
+  version: 1.228
+  url: https://packages.broadcom.com/photon/photon_sources/1.0/nc-1270245.tar.xz
+  repo_url: https://github.com/openbsd/src.git
+  commit_id: 127024533874d33a814299a400ef47fe8790e00e
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'OpenBSD netcat to read and write data across connections using TCP or UDP'
+      home_page: https://man.openbsd.org/nc.1
+      license_concluded: BSD-3-Clause AND BSD-2-Clause
+      license_declared: BSD-3-Clause AND BSD-2-Clause
+      short_summary: OpenBSD netcat to read and write data across connections using TCP or UDP
+      supplier: 'Organization: Broadcom, Inc.'

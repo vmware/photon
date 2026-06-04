@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %global commit_id 1270245
 
@@ -6,7 +6,7 @@ Summary:        OpenBSD netcat to read and write data across connections using T
 Name:           netcat
 # Version obtained from netcat.c header comment
 Version:        1.228
-Release:        3%{?dist}
+Release:        2.1%{?dist}
 URL:            https://man.openbsd.org/nc.1
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -28,10 +28,11 @@ Source1: license.txt
 Patch0: 0001-Port-to-linux-with-libbsd.patch
 Patch1: 0002-add-unveil-pledge-macros.patch
 Patch2: 0003-add-ltls-link-flag.patch
-Patch3: 0004-build-without-TLS-support.patch
 
+BuildRequires: libretls-devel
 BuildRequires: libbsd-devel
 
+Requires: libretls
 Requires: libbsd
 
 %description
@@ -61,8 +62,8 @@ rm -rf %{buildroot}
 %{_bindir}/%{name}
 
 %changelog
-* Thu Jun 04 2026 Tapas Kundu <tapas.kundu@broadcom.com> 1.228-3
-- build without tls
+* Thu Jun 04 2026 Tapas Kundu <tapas.kundu@broadcom.com> 1.228-2.1
+- Sub branch for 90
 * Mon Feb 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.228-2
 - Update URL to packages.broadcom.com
 * Mon Apr 28 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.228-1

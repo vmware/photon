@@ -1,0 +1,23 @@
+From 3fdd07d9908c87ccbe0081e5969cab6b6b4e3c5f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 18 Sep 2024 14:11:05 +0530
+Subject: [PATCH 2/3] add unveil, pledge macros
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ netcat.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/netcat.c b/netcat.c
+index 216d3ec..4ff3d3e 100644
+--- a/netcat.c
++++ b/netcat.c
+@@ -1,3 +1,5 @@
++#define unveil(path, permissions) 0
++#define pledge(request, paths) 0
+ /* $OpenBSD: netcat.c,v 1.228 2024/08/05 07:16:30 tb Exp $ */
+ /*
+  * Copyright (c) 2001 Eric Jackson <ericj@monkey.org>
+-- 
+2.46.0
+
