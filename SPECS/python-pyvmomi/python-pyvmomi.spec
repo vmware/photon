@@ -2,8 +2,8 @@
 
 Summary:        pyVmomi is the Python SDK for the VMware vSphere API that allows you to manage ESX, ESXi, and vCenter.
 Name:           python3-pyvmomi
-Version:        8.0.2.0.1
-Release:        4%{?dist}
+Version:        9.0.0.0
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,8 +13,11 @@ Source0:        pyvmomi-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 %if 0%{?with_check}
 BuildRequires:  curl-devel
 %endif
@@ -28,19 +31,22 @@ pyVmomi is the Python SDK for the VMware vSphere API that allows you to manage E
 %autosetup -p1 -n pyvmomi-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 python3 setup.py test
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jun 04 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 9.0.0.0-1
+- Upgrade to lts 9.0.0.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.0.2.0.1-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.0.2.0.1-3
