@@ -1,6 +1,8 @@
+%global build_if %{photon_subrelease} <= 90
+
 Name:           oniguruma
 Version:        6.9.8
-Release:        2%{?dist}
+Release:        2.1%{?dist}
 Summary:        Regular expressions library
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -63,6 +65,8 @@ make check %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Jun 02 2026 Bo Gan <bo.gan@broadcom.com> 6.9.8-2.1
+- Bump after moving to SPECS/90
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.9.8-2
 - Release bump for SRP compliance
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 6.9.8-1

@@ -27,26 +27,3 @@ sources:
         AND CC-BY-3.0
       short_summary: jq is a lightweight and flexible command-line JSON processor.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: v6.9.10.tar.gz
-  archive_type: upstream
-  archive_sha512sum: 60975b876662dec8701cca5d8d4027c0a36b8effe7dd32679395ed473e26b3d6b72d7f6eb63bd4dc96c3774b594e56808ce14f993f127a5d04363232586160e4
-  name: oniguruma-6.9.10
-  version: 6.9.10
-  url: https://github.com/kkos/oniguruma/archive/refs/tags/v6.9.10.tar.gz
-  repo_url: https://github.com/kkos/oniguruma.git
-  commit_id: 4ef89209a239c1aea328cf13c05a2807e5c146d1
-  skip_validation: false
-  spdx:
-    package:
-      detailed_description: 'Oniguruma is a regular expressions library. The characteristics
-        of this library is that different character encoding for every regular expression
-        object can be specified. (supported APIs: GNU regex, POSIX and Oniguruma native) '
-      home_page: https://github.com/kkos/oniguruma/
-      license_concluded: BSD-3-Clause AND CC0-1.0 AND X11 AND BSD-2-Clause AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND FSFAP
-      license_declared: BSD-3-Clause AND CC0-1.0 AND X11 AND BSD-2-Clause AND GPL-3.0-or-later
-        WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic
-        AND FSFAP
-      short_summary: Regular expressions library
-      supplier: 'Organization: Broadcom, Inc.'

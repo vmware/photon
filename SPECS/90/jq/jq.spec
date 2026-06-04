@@ -1,18 +1,15 @@
-%global build_if %{photon_subrelease} >= 91
-%define onig_ver 6.9.10
+%global build_if %{photon_subrelease} <= 90
 
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
 Version:       1.8.1
-Release:       3%{?dist}
+Release:       2.1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/stedolan/jq
 Distribution:  Photon
 
 Source0: https://github.com/stedolan/jq/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-# The vendored oniguruma is at commit 4ef8920, v6.9.10.
-Source1: https://github.com/kkos/oniguruma/archive/refs/tags/v%{onig_ver}.tar.gz
 
 # Security patches
 Patch1: CVE-2026-32316.patch
@@ -22,14 +19,15 @@ Patch4: CVE-2026-39956.patch
 Patch5: CVE-2026-39979.patch
 Patch6: CVE-2026-40164.patch
 
-Source2: license.txt
-%include %{SOURCE2}
+Source1: license.txt
+%include %{SOURCE1}
 
+BuildRequires: oniguruma-devel
 %if 0%{?with_check}
 BuildRequires: which
 %endif
 
-Obsoletes: oniguruma
+Requires: oniguruma
 
 %description
 jq is a lightweight and flexible command-line JSON processor.
@@ -44,10 +42,6 @@ Development files for jq
 
 %prep
 %autosetup -p1 -n %{name}-%{name}-%{version}
-rm -d vendor/oniguruma
-# The vendor/oniguruma is not populated in the source tarball, populate it here.
-tar -xf %{SOURCE1}
-mv oniguruma-%{onig_ver} vendor/oniguruma
 
 %build
 autoreconf -fiv
@@ -58,11 +52,6 @@ autoreconf -fiv
 
 %install
 %make_install %{?_smp_mflags}
-# Remove unnecessary files from oniguruma
-rm -f \
-  %{buildroot}%{_bindir}/onig-config \
-  %{buildroot}%{_libdir}/libonig.so \
-  %{buildroot}%{_libdir}/pkgconfig/oniguruma.pc
 
 %check
 %make_build check
@@ -79,7 +68,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_datadir}/*
 %{_libdir}/libjq.so.*
-%{_libdir}/libonig.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -88,8 +76,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-* Tue Jun 02 2026 Bo Gan <bo.gan@broadcom.com> 1.8.1-3
-- Use the vendored oniguruma
+* Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 1.8.1-2.1
+- Bump after moving to SPECS/90
 * Fri Apr 17 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.1-2
 - Fix CVE-2024-23337, CVE-2026-32316, CVE-2026-33947, CVE-2026-33948,
 - CVE-2026-39956, CVE-2026-39979, CVE-2026-40164
