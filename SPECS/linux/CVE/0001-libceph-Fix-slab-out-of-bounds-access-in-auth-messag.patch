@@ -1,0 +1,54 @@
+From c2374b92c729d0388a538b3cde7b3e3b5e55ef39 Mon Sep 17 00:00:00 2001
+From: Raphael Zimmer <raphael.zimmer@tu-ilmenau.de>
+Date: Tue, 21 Apr 2026 10:27:01 +0200
+Subject: [PATCH] libceph: Fix slab-out-of-bounds access in auth message
+ processing
+
+commit 1c439de70b1c3eb3c6bffa8245c16b9fc318f114 upstream.
+
+If a (potentially corrupted) message of type CEPH_MSG_AUTH_REPLY
+contains a positive value in its result field, it is treated as an
+error code by ceph_handle_auth_reply() and returned to
+handle_auth_reply(). Thereafter, an attempt is made to send the
+preallocated message of type CEPH_MSG_AUTH, where the returned value is
+interpreted as the size of the front segment to send. If the result
+value in the message is greater than the size of the memory buffer
+allocated for the front segment, an out-of-bounds access occurs, and
+the content of the memory region beyond this buffer is sent out.
+
+This patch fixes the issue by treating only negative values in the
+result field as errors. Positive values are therefore treated as success
+in the same way as a zero value. Additionally, a BUG_ON is added to
+__send_prepared_auth_request() comparing the len parameter to
+front_alloc_len to prevent sending the message if it exceeds the bounds
+of the allocation and to make it easier to catch any logic flaws leading
+to this.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Raphael Zimmer <raphael.zimmer@tu-ilmenau.de>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Keerthana: In v5.10.y, ceph_handle_auth_reply() already handles negative
+values as errors in result]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ net/ceph/mon_client.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/ceph/mon_client.c b/net/ceph/mon_client.c
+index 82d3f1204ee4..6626d0a1c7df 100644
+--- a/net/ceph/mon_client.c
++++ b/net/ceph/mon_client.c
+@@ -109,6 +109,8 @@ int ceph_monmap_contains(struct ceph_monmap *m, struct ceph_entity_addr *addr)
+  */
+ static void __send_prepared_auth_request(struct ceph_mon_client *monc, int len)
+ {
++	BUG_ON(len > monc->m_auth->front_alloc_len);
++
+ 	monc->pending_auth = 1;
+ 	monc->m_auth->front.iov_len = len;
+ 	monc->m_auth->hdr.front_len = cpu_to_le32(len);
+-- 
+2.43.7
+

@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.258
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -599,6 +599,8 @@ Patch337: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
 Patch338: 0001-bonding-prevent-potential-infinite-loop-in-bond_head.patch
 # Fix CVE-2026-43091
 Patch339: 0001-xfrm-Wait-for-RCU-readers-during-policy-netns-exit.patch
+# Fix CVE-2026-46119
+Patch340: 0001-libceph-Fix-slab-out-of-bounds-access-in-auth-messag.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1291,6 +1293,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Fri Jun 05 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.258-2
+- Fix CVE-2026-46119
 * Wed Jun 03 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 5.10.258-1
 - Update to version 5.10.258
 - Fix CVE-2026-46191 and CVE-2026-45850

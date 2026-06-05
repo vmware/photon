@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.258
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -565,6 +565,8 @@ Patch333: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
 Patch334: 0001-bonding-prevent-potential-infinite-loop-in-bond_head.patch
 # Fix CVE-2026-43091
 Patch335: 0001-xfrm-Wait-for-RCU-readers-during-policy-netns-exit.patch
+# Fix CVE-2026-46119
+Patch336: 0001-libceph-Fix-slab-out-of-bounds-access-in-auth-messag.patch
 
 #Patches for ptp_vmw
 Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -953,6 +955,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jun 05 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.258-2
+- Fix CVE-2026-46119
 * Wed Jun 03 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 5.10.258-1
 - Update to version 5.10.258
 - Fix CVE-2026-46191 and CVE-2026-45850
