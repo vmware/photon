@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define bootstrap           0
 %global security_hardening  none
@@ -21,7 +21,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.30
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -42,10 +42,10 @@ Source1: https://github.com/adoptium/temurin11-binaries/releases/download/%{boot
 Source2: license-openjdk11.txt
 %include %{SOURCE2}
 
-Source3: setup-zip-wrappers.sh
-
 BuildRequires: pcre-devel
 BuildRequires: which
+BuildRequires: zip
+BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
 BuildRequires: fontconfig-devel
@@ -124,7 +124,6 @@ rm -r src/java.desktop/macosx \
       src/java.desktop/share/legal/libpng.md
 
 %build
-. %{SOURCE3}
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
@@ -285,8 +284,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
-* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 11.0.30-4
-- Replace deprecated unzip with Python zipfile wrapper via setup-zip-wrappers.sh
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 11.0.30-3.1
+- Build for photon_subrelease <= 90 using zip/unzip
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.30-3
 - Require alternatives instead of chkconfig
 * Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-2

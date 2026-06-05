@@ -5,7 +5,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.35.0
-Release:         5%{?dist}
+Release:         6%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -15,6 +15,8 @@ Source0: https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Source2: setup-zip-wrappers.sh
 
 Patch0: bcc-llvm21.patch
 Patch1: 0001-Fix-build-with-LLVM-22.patch
@@ -34,8 +36,6 @@ BuildRequires: curl-devel
 BuildRequires: libbpf-devel
 BuildRequires: libxml2-devel
 BuildRequires: libllvm
-BuildRequires: zip
-
 Requires: curl-libs
 Requires: elfutils
 Requires: libbpf
@@ -82,6 +82,7 @@ Command line tools for BPF Compiler Collection (BCC)
 %autosetup -p1 -n %{name}-%{version}
 
 %build
+. %{SOURCE2}
 # Extract LLVM library flags using llvm-config
 LLVM_LIBS="$(llvm-config --libs --system-libs all)"
 LLVM_CFLAGS="$(llvm-config --cxxflags) -fexceptions"
@@ -142,6 +143,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.35.0-6
+- Drop BuildRequires: zip; add Python zip wrapper for CMake test target
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.35.0-5
 - Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.35.0-4

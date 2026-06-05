@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define bootstrap           0
 %global security_hardening  none
 %define jdk_major_version   21
@@ -12,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk21
 Version:    21.0.10
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -33,10 +35,10 @@ Source1: https://download.java.net/java/GA/jdk21.0.2/13/GPL/openjdk-%{bootstrapT
 Source2: license-openjdk21.txt
 %include %{SOURCE2}
 
+Source3: setup-zip-wrappers.sh
+
 BuildRequires: pcre-devel
 BuildRequires: which
-BuildRequires: zip
-BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
 BuildRequires: fontconfig-devel
@@ -110,6 +112,7 @@ rm -r src/java.desktop/macosx \
       src/java.desktop/share/legal/libpng.md
 
 %build
+. %{SOURCE3}
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
@@ -257,6 +260,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 21.0.10-4
+- Replace deprecated zip/unzip with Python zipfile wrappers in PATH
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 21.0.10-3
 - Require alternatives instead of chkconfig
 * Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-2

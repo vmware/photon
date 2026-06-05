@@ -1,47 +1,46 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
-%define bootstrap           1
+%define bootstrap           0
 %global security_hardening  none
-%define jdk_major_version   25
+%define jdk_major_version   21
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 %define jdkInstallDir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 
 %if 0%{?bootstrap} == 1
-%define bootstrapTarName 25.0.2
+%define bootstrapTarName 21.0.2
 %define bootstrapDirName jdk-%{bootstrapTarName}
 %endif
 
 Summary:    OpenJDK
-Name:       openjdk25
-Version:    25.0.2
-Release:    4%{?dist}
-URL:        https://github.com/openjdk/jdk25u
+Name:       openjdk21
+Version:    21.0.10
+Release:    3.1%{?dist}
+URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk25u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 
 %if 0%{?bootstrap} == 1
 %ifarch x86_64
-Source1: https://download.java.net/java/GA/jdk25.0.2/b1e0dfa218384cb9959bdcb897162d4e/10/GPL/openjdk-%{bootstrapTarName}_linux-x64_bin.tar.gz
+Source1: https://download.java.net/java/GA/jdk21.0.2/13/GPL/openjdk-%{bootstrapTarName}_linux-x64_bin.tar.gz
 %endif
 
 %ifarch aarch64
-Source1: https://download.java.net/java/GA/jdk25.0.2/b1e0dfa218384cb9959bdcb897162d4e/10/GPL/openjdk-%{bootstrapTarName}_linux-aarch64_bin.tar.gz
+Source1: https://download.java.net/java/GA/jdk21.0.2/13/GPL/openjdk-%{bootstrapTarName}_linux-aarch64_bin.tar.gz
 %endif
 %endif
 
-Source2: license-openjdk25.txt
+Source2: license-openjdk21.txt
 %include %{SOURCE2}
-
-Source3: setup-zip-wrappers.sh
 
 BuildRequires: pcre-devel
 BuildRequires: which
+BuildRequires: zip
+BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
-BuildRequires: alternatives
 BuildRequires: fontconfig-devel
 BuildRequires: freetype2-devel
 BuildRequires: glib-devel
@@ -56,7 +55,7 @@ BuildRequires: libXt-devel
 BuildRequires: cups-devel
 
 %if 0%{?bootstrap} == 0
-%define ExtraBuildRequires openjdk25
+%define ExtraBuildRequires openjdk21
 %endif
 
 Requires: alternatives
@@ -70,7 +69,7 @@ AutoReqProv: no
 OpenJDK package installs javac and JDK tools.
 
 %package        jre
-Summary:        JRE subset files from jdk25
+Summary:        JRE subset files from jdk21
 Requires:       alternatives
 Requires(postun): alternatives
 Requires:       alsa-lib
@@ -102,7 +101,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk25u-jdk-%{version}-ga
+%autosetup -p1 -n jdk21u-jdk-%{version}-ga
 %if 0%{?bootstrap} == 1
 tar xf %{SOURCE1} -C %{_var}/opt
 %endif
@@ -113,7 +112,6 @@ rm -r src/java.desktop/macosx \
       src/java.desktop/share/legal/libpng.md
 
 %build
-. %{SOURCE3}
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
@@ -234,7 +232,6 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/bin/jfr
 %{jdkInstallDir}/bin/jpackage
 %{jdkInstallDir}/bin/jwebserver
-%{jdkInstallDir}/bin/jnativescan
 %{jdkInstallDir}/include/
 %{jdkInstallDir}/lib/ct.sym
 
@@ -253,6 +250,7 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 
 %files doc
 %defattr(-,root,root)
+%{jdkInstallDir}/man/
 %{jdkInstallDir}/legal/
 %{jdkInstallDir}/demo
 
@@ -261,11 +259,21 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
-* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 25.0.2-4
-- Replace deprecated zip/unzip with Python zipfile wrappers in PATH
-* Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.0.2-3
-- Extended to build for subrelease 91 and above
-* Tue Apr 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 25.0.2-2
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 21.0.10-3.1
+- Build for photon_subrelease <= 90 using zip/unzip
+* Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 21.0.10-3
 - Require alternatives instead of chkconfig
-* Wed Apr 01 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 25.0.2-1
-- Initial build. First version of openjdk25.
+* Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-2
+- Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-1
+- Upgrade to v21.0.10
+* Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-2
+- Bootstrap using upstream jdk binaries
+* Mon Nov 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-1
+- Version upgrade to address CVEs
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.8-1
+- Upgrade to v21.0.8
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.6-1
+- Upgrade to v21.0.6
+* Sun Dec 15 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 21.0.5-1
+- Initial build. First version of openjdk21.

@@ -10,7 +10,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       15.1%{?dist}
+Release:       15.3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -24,6 +24,8 @@ Source3: systemtap.sysusers
 
 Source4: license.txt
 %include %{SOURCE4}
+
+Patch0: systemtap-replace-zip-with-python.patch
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -105,8 +107,8 @@ Requires:      %{name} = %{version}-%{release}
 Requires:      %{name}-runtime = %{version}-%{release}
 Requires:      (coreutils or coreutils-selinux)
 Requires:      nss
-Requires:      unzip
 Requires:      gzip
+Requires:      python3
 
 %description server
 SystemTap server is the server component of an instrumentation system for systems running Linux.
@@ -393,6 +395,10 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.8-15.3
+- Apply systemtap-replace-zip-with-python.patch; stap-serverd uses python3 for zip/unzip
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.8-15.2
+- Drop unzip Requires from systemtap-server; unzip deprecated in subrelease >= 91
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.8-15.1
 - Bump after moving to SPECS/91
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.8-15

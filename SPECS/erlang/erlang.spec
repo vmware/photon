@@ -1,7 +1,7 @@
 Name:          erlang
 Summary:       erlang
 Version:       27.3.4.11
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -14,7 +14,6 @@ Source1: license.txt
 
 Requires: ncurses-libs
 
-BuildRequires: unzip
 BuildRequires: openssl-devel
 
 %description
@@ -47,6 +46,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue May 26 2026 Ajay Kaher <ajay.kaher@broadcom.com> 27.3.4.11-2
+- Drop unzip BuildRequires; not needed for tar.gz source
 * Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 27.3.4.11-1
 - Update to 27.3.4.11
 * Tue Apr 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.10-1

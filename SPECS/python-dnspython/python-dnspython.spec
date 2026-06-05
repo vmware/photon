@@ -3,7 +3,7 @@
 Summary:        A DNS toolkit for Python
 Name:           python3-dnspython
 Version:        2.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/dnspython
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -24,7 +24,6 @@ BuildRequires:  python3-hatchling
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-BuildRequires:  unzip
 BuildRequires:  python3-setuptools_scm
 Requires:       python3
 Requires:       python3-libs
@@ -53,6 +52,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.6.1-5
+- Drop unzip BuildRequires; not needed for tar.gz source
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.6.1-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.6.1-3

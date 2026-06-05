@@ -22,7 +22,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       4.1.4
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -41,11 +41,12 @@ Source4: %{name}.sysusers
 Source5: license.txt
 %include %{SOURCE5}
 
+Source6: setup-zip-wrappers.sh
+
 Patch0: fix-build-error.patch
 
 BuildRequires: erlang >= %{erlang_minver}, erlang < %{erlang_maxver}
 BuildRequires: rsync
-BuildRequires: zip
 BuildRequires: git
 BuildRequires: libxslt-devel
 BuildRequires: python3-xml
@@ -69,6 +70,7 @@ rabbitmq messaging server
 %autosetup -p1
 
 %build
+. %{SOURCE6}
 export LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 export PROJECT_VERSION="%{version}"
 
@@ -157,6 +159,9 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.1.4-6
+- Drop BuildRequires: zip; not needed for xz source
+- Add Python zip wrapper to PATH; erlang.mk calls zip during build
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.4-5
 - Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.1.4-4

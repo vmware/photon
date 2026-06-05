@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Docbook-xsl-1.79.1
 Name:           docbook-xsl
 Version:        1.79.1
-Release:        12%{?dist}
+Release:        11.1%{?dist}
 URL:            http://www.docbook.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,7 +17,7 @@ Source1: license.txt
 Requires:       libxml2
 
 BuildRequires:  libxml2
-BuildRequires:  python3
+BuildRequires:  zip
 
 BuildArch:      noarch
 
@@ -31,18 +31,8 @@ allowing you to utilize transformations already written for that standard.
 %autosetup -p1
 
 %build
-# Remove Windows executables from jython.jar (zip is deprecated; use python3 zipfile)
-python3 - << 'PYEOF'
-import zipfile, os
-jar = "tools/lib/jython.jar"
-tmp = jar + ".tmp"
-remove = {"Lib/distutils/command/wininst-6.exe", "Lib/distutils/command/wininst-7.1.exe"}
-with zipfile.ZipFile(jar, "r") as zin, zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:
-    for entry in zin.infolist():
-        if entry.filename not in remove:
-            zout.writestr(entry, zin.read(entry.filename))
-os.replace(tmp, jar)
-PYEOF
+zip -d tools/lib/jython.jar Lib/distutils/command/wininst-6.exe
+zip -d tools/lib/jython.jar Lib/distutils/command/wininst-7.1.exe
 
 %install
 install -v -m755 -d %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1 &&
@@ -111,8 +101,8 @@ fi
 %{_docdir}/*
 
 %changelog
-* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.79.1-12
-- Replace deprecated zip with python3 zipfile; add BuildRequires python3
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.79.1-11.1
+- Build for photon_subrelease <= 90 using zip
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.79.1-11
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.79.1-10

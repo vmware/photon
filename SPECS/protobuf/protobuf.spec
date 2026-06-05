@@ -6,7 +6,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,7 +23,6 @@ BuildRequires: libtool
 BuildRequires: libstdc++
 BuildRequires: curl
 BuildRequires: make
-BuildRequires: unzip
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
@@ -157,6 +156,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 3.23.3-9
+- Drop unzip BuildRequires; not needed for tar.gz source
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.23.3-8
 - Extended to build for subrelease 91 and above
 * Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.23.3-7

@@ -5,7 +5,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
 Version:        2.4.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,7 +20,6 @@ BuildRequires: python3-setuptools
 BuildRequires: python3-devel
 BuildRequires: python3-pip
 BuildRequires: lapack-devel
-BuildRequires: unzip
 BuildRequires: python3-meson-python
 BuildRequires: python3-packaging
 BuildRequires: ninja-build
@@ -67,6 +66,8 @@ PATH=%{buildroot}%{_bindir}:${PATH} \
 %{python3_sitelib}/*
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.4.2-4
+- Drop unzip BuildRequires; not needed for tar.gz source
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.2-3
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.2-2

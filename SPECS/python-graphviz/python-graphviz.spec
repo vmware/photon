@@ -16,7 +16,6 @@ Source1: license.txt
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-BuildRequires:  unzip
 Requires:       python3
 Requires:       python3-libs
 BuildArch:      noarch
@@ -25,7 +24,9 @@ BuildArch:      noarch
 This package facilitates the creation and rendering of graph descriptions in the DOT language of the Graphviz graph drawing software (repo) from Python.
 
 %prep
-%autosetup -n graphviz-%{version}
+rm -rf graphviz-%{version}
+python3 -m zipfile -e %{SOURCE0} .
+%autosetup -n graphviz-%{version} -D -T
 
 %build
 %py3_build
@@ -41,6 +42,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.20.1-5
+- Replace deprecated unzip with python3 zipfile extraction in prep
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.20.1-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.20.1-4

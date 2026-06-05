@@ -6,7 +6,7 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        9.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,14 +17,14 @@ Source0: https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name
 Source1: license.txt
 %include %{SOURCE1}
 
+Source2: setup-zip-wrappers.sh
+
 BuildRequires:  openjdk21
 BuildRequires:  zlib-devel
 BuildRequires:  which
 BuildRequires:  findutils
 BuildRequires:  tar
 BuildRequires:  gzip
-BuildRequires:  zip
-BuildRequires:  unzip
 BuildRequires:  gcc
 BuildRequires:  python3
 
@@ -37,20 +37,28 @@ applications for both Android and iOS platforms. It also provides an extensible
 framework that you can use to develop your own build rules.
 
 %prep
-%autosetup -p1 -c -n %{name}-%{version}
+# Using autosetup is not feasible
+%setup -c -T -n %{name}-%{version}
+python3 - << 'PYEOF'
+import zipfile, os
+with zipfile.ZipFile("%{SOURCE0}") as zf:
+    for info in zf.infolist():
+        extracted = zf.extract(info, ".")
+        perm = (info.external_attr >> 16) & 0o777
+        if perm and os.path.isfile(extracted):
+            os.chmod(extracted, perm)
+PYEOF
 # contains copyleft licenses
 rm ./third_party/java/proguard/proguard6.2.2/docs/proguard.appdata.xml
 
 %build
+. %{SOURCE2}
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK*)
 export TMPDIR="%{_usr}/tmp"
 
 mkdir -p $TMPDIR
-env EXTRA_BAZEL_ARGS="--tool_java_runtime_version=local_jdk" ./compile.sh
-
-pushd output
-./bazel --batch
-popd
+export EXTRA_BAZEL_ARGS="--tool_java_runtime_version=local_jdk --subcommands --verbose_failures --sandbox_debug"
+./compile.sh
 
 %install
 install -vDm 755 output/%{name} %{buildroot}%{_bindir}/%{name}
@@ -63,6 +71,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 9.0.1-2
+- Replace deprecated zip/unzip with Python zip/unzip wrappers
 * Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.1-1
 - Upgrade to 9.0.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.3.2-10

@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 91
+
 %define bootstrap           0
 %global security_hardening  none
 %define jdk_major_version   17
@@ -12,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.18
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -33,10 +35,10 @@ Source1: https://download.java.net/java/GA/jdk17.0.2/8/GPL/openjdk-%{bootstrapTa
 Source2: license-openjdk17.txt
 %include %{SOURCE2}
 
+Source3: setup-zip-wrappers.sh
+
 BuildRequires: pcre-devel
 BuildRequires: which
-BuildRequires: zip
-BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
 BuildRequires: fontconfig-devel
@@ -115,6 +117,7 @@ rm -r src/java.desktop/macosx \
       src/java.desktop/share/legal/libpng.md
 
 %build
+. %{SOURCE3}
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
@@ -266,6 +269,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 17.0.18-4
+- Replace deprecated zip/unzip with Python zipfile wrappers in PATH
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.18-3
 - Require alternatives instead of chkconfig
 * Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-2

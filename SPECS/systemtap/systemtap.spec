@@ -10,7 +10,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       17%{?dist}
+Release:       18%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -24,6 +24,8 @@ Source3: systemtap.sysusers
 
 Source4: license.txt
 %include %{SOURCE4}
+
+Patch0: systemtap-replace-zip-with-python.patch
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -106,8 +108,8 @@ Requires:      %{name} = %{version}-%{release}
 Requires:      %{name}-runtime = %{version}-%{release}
 Requires:      (coreutils or coreutils-selinux)
 Requires:      nss
-Requires:      unzip
 Requires:      gzip
+Requires:      python3
 Requires(post): systemd-rpm-macros
 
 %description server
@@ -378,6 +380,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.8-18
+- Drop unzip Requires from systemtap-server
 * Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.8-17
 - Replace chkconfig with systemctl in scriptlets
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.8-16

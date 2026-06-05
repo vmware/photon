@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,7 +19,6 @@ BuildRequires:  libtool
 BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
-BuildRequires:  unzip
 
 Requires:       protobuf
 
@@ -76,6 +75,8 @@ rm -rf %{buildroot}
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.5.0-3
+- Drop unzip BuildRequires; not needed for tar.gz source
 * Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.0-2
 - Release bump for SRP compliance
 * Wed Nov 29 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.5.0-1

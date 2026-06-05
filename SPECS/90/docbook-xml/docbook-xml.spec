@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Docbook-xml-4.5
 Name:           docbook-xml
 Version:        4.5
-Release:        14%{?dist}
+Release:        13.1%{?dist}
 URL:            http://www.docbook.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -17,7 +17,7 @@ Source1: license.txt
 Requires:       libxml2
 
 BuildRequires:  libxml2
-BuildRequires:  python3
+BuildRequires:  unzip
 
 BuildArch:      noarch
 
@@ -28,7 +28,7 @@ useful for structuring books and software documentation to a standard
 allowing you to utilize transformations already written for that standard.
 %prep
 %autosetup -c -T -p1
-python3 -m zipfile -e %{SOURCE0} .
+unzip %{SOURCE0}
 if [ `id -u` -eq 0 ]; then
   chown -R root.root .
   chmod -R a+rX,g-w,o-w .
@@ -169,8 +169,8 @@ fi
 /etc/xml
 
 %changelog
-* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.5-14
-- Replace unzip with python3 -m zipfile; drop unzip BuildRequires
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.5-13.1
+- Build for photon_subrelease <= 90 using unzip
 *   Mon Dec 16 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.5-13
 -   Release bump for SRP compliance
 *   Tue Nov 12 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.5-12

@@ -1,51 +1,44 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define bootstrap           0
 %global security_hardening  none
-%define jdk_major_version   1.11.0
+%define jdk_major_version   17
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 %define jdkInstallDir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 
 %if 0%{?bootstrap} == 1
-%ifarch aarch64
-%define bootstrapTarName 11.0.28_6
-%define bootstrapDirName jdk-11.0.28+6
-%endif
-
-%ifarch x86_64
-%define bootstrapTarName 11.0.2
+%define bootstrapTarName 17.0.2
 %define bootstrapDirName jdk-%{bootstrapTarName}
 %endif
-%endif
 
-Summary:        OpenJDK
-Name:           openjdk11
-Version:        11.0.30
-Release:        4%{?dist}
-URL:            https://github.com/openjdk/jdk11u
-Group:          Development/Tools
-Vendor:         VMware, Inc.
+Summary:    OpenJDK
+Name:       openjdk17
+Version:    17.0.18
+Release:    3.1%{?dist}
+URL:        https://github.com/openjdk/jdk17u
+Group:      Development/Tools
+Vendor:     VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
+Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 
 %if 0%{?bootstrap} == 1
 %ifarch x86_64
-Source1: https://download.java.net/java/GA/jdk11/9/GPL/openjdk-%{bootstrapTarName}_linux-x64_bin.tar.gz
+Source1: https://download.java.net/java/GA/jdk17.0.2/8/GPL/openjdk-%{bootstrapTarName}_linux-x64_bin.tar.gz
 %endif
 
 %ifarch aarch64
-Source1: https://github.com/adoptium/temurin11-binaries/releases/download/%{bootstrapTarName}/OpenJDK11U-jdk_aarch64_linux_hotspot_%{bootstrapTarName}.tar.gz
+Source1: https://download.java.net/java/GA/jdk17.0.2/8/GPL/openjdk-%{bootstrapTarName}_linux-aarch64_bin.tar.gz
 %endif
 %endif
 
-Source2: license-openjdk11.txt
+Source2: license-openjdk17.txt
 %include %{SOURCE2}
-
-Source3: setup-zip-wrappers.sh
 
 BuildRequires: pcre-devel
 BuildRequires: which
+BuildRequires: zip
+BuildRequires: unzip
 BuildRequires: zlib-devel
 BuildRequires: ca-certificates
 BuildRequires: fontconfig-devel
@@ -62,7 +55,7 @@ BuildRequires: libXt-devel
 BuildRequires: cups-devel
 
 %if 0%{?bootstrap} == 0
-%define ExtraBuildRequires openjdk11
+%define ExtraBuildRequires openjdk17
 %endif
 
 Requires: alternatives
@@ -78,7 +71,7 @@ AutoReqProv: no
 The OpenJDK package installs java class library and javac java compiler.
 
 %package        jre
-Summary:        JRE subset files from jdk11
+Summary:        JRE subset files from jdk17
 Requires:       alternatives
 Requires(postun): alternatives
 Requires:       alsa-lib
@@ -87,7 +80,7 @@ Requires:       libstdc++
 Requires:       libgcc
 Requires:       zlib
 
-Conflicts: %{name} < 11.0.20-4%{?dist}
+Conflicts: %{name} < 17.0.8-4%{?dist}
 Provides: libjli.so()(64bit)
 Provides: jre = %{version}
 
@@ -113,7 +106,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep
-%autosetup -p1 -n jdk11u-jdk-%{version}-ga
+%autosetup -p1 -n jdk17u-jdk-%{version}-ga
 %if 0%{?bootstrap} == 1
 tar xf %{SOURCE1} -C %{_var}/opt
 %endif
@@ -124,7 +117,6 @@ rm -r src/java.desktop/macosx \
       src/java.desktop/share/legal/libpng.md
 
 %build
-. %{SOURCE3}
 unset JAVA_HOME
 ENABLE_HEADLESS_ONLY="true"
 
@@ -134,7 +126,7 @@ sh ./configure \
 %endif
     --with-target-bits=64 \
     --enable-headless-only \
-    --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+    --with-extra-cxxflags="-Wno-error -fno-delete-null-pointer-checks -fno-lifetime-dse" \
     --with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
     --with-freetype-include=%{_includedir}/freetype2 \
     --with-freetype-lib=%{_libdir} \
@@ -169,13 +161,10 @@ cp README.md LICENSE ASSEMBLY_EXCEPTION \
         %{buildroot}%{jdkInstallDir}/
 
 %post jre
-alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 20000 \
-  --slave %{_bindir}/jjs jjs %{jdkInstallDir}/bin/jjs \
+alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 30000 \
   --slave %{_bindir}/keytool keytool %{jdkInstallDir}/bin/keytool \
   --slave %{_bindir}/pack200 pack200 %{jdkInstallDir}/bin/pack200 \
-  --slave %{_bindir}/rmid rmid %{jdkInstallDir}/bin/rmid \
-  --slave %{_bindir}/rmiregistry rmiregistry %{jdkInstallDir}/bin/rmiregistry \
-  --slave %{_bindir}/unpack200 unpack200 %{jdkInstallDir}/bin/unpack200
+  --slave %{_bindir}/rmiregistry rmiregistry %{jdkInstallDir}/bin/rmiregistry
 
 %postun jre
 if [ $1 -eq 0 ]; then
@@ -183,10 +172,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %post
-alternatives --install %{_bindir}/javac javac %{jdkInstallDir}/bin/javac 20000 \
+alternatives --install %{_bindir}/javac javac %{jdkInstallDir}/bin/javac 30000 \
   --slave %{_bindir}/appletviewer appletviewer %{jdkInstallDir}/bin/appletviewer \
   --slave %{_bindir}/idlj idlj %{jdkInstallDir}/bin/idlj \
-  --slave %{_bindir}/jaotc jaotc %{jdkInstallDir}/bin/jaotc \
   --slave %{_bindir}/jar jar %{jdkInstallDir}/bin/jar \
   --slave %{_bindir}/jarsigner jarsigner %{jdkInstallDir}/bin/jarsigner \
   --slave %{_bindir}/jhsdb jhsdb %{jdkInstallDir}/bin/jhsdb \
@@ -208,12 +196,12 @@ alternatives --install %{_bindir}/javac javac %{jdkInstallDir}/bin/javac 20000 \
   --slave %{_bindir}/jstack jstack %{jdkInstallDir}/bin/jstack \
   --slave %{_bindir}/jstat jstat %{jdkInstallDir}/bin/jstat \
   --slave %{_bindir}/jstatd jstatd %{jdkInstallDir}/bin/jstatd \
-  --slave %{_bindir}/rmic rmic %{jdkInstallDir}/bin/rmic \
   --slave %{_bindir}/schemagen schemagen %{jdkInstallDir}/bin/schemagen \
   --slave %{_bindir}/serialver serialver %{jdkInstallDir}/bin/serialver \
   --slave %{_bindir}/wsgen wsgen %{jdkInstallDir}/bin/wsgen \
   --slave %{_bindir}/wsimport wsimport %{jdkInstallDir}/bin/wsimport \
-  --slave %{_bindir}/xjc xjc %{jdkInstallDir}/bin/xjc
+  --slave %{_bindir}/xjc xjc %{jdkInstallDir}/bin/xjc \
+  --slave %{_bindir}/jpackage jpackage %{jdkInstallDir}/bin/jpackage
 
 %postun
 # Do alternative remove only in case of uninstall
@@ -228,7 +216,6 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %defattr(-,root,root)
 %{jdkInstallDir}/LICENSE
 %{jdkInstallDir}/README.md
-%{jdkInstallDir}/bin/jaotc
 %{jdkInstallDir}/bin/jar
 %{jdkInstallDir}/bin/jarsigner
 %{jdkInstallDir}/bin/javac
@@ -248,12 +235,12 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/bin/jstack
 %{jdkInstallDir}/bin/jstat
 %{jdkInstallDir}/bin/jstatd
-%{jdkInstallDir}/bin/rmic
 %{jdkInstallDir}/bin/serialver
 %{jdkInstallDir}/bin/jhsdb
 %{jdkInstallDir}/bin/jimage
 %{jdkInstallDir}/bin/jdeprscan
 %{jdkInstallDir}/bin/jfr
+%{jdkInstallDir}/bin/jpackage
 %{jdkInstallDir}/include/
 %{jdkInstallDir}/lib/ct.sym
 
@@ -266,12 +253,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/conf
 %{jdkInstallDir}/jmods
 %{jdkInstallDir}/bin/java
-%{jdkInstallDir}/bin/jjs
 %{jdkInstallDir}/bin/keytool
-%{jdkInstallDir}/bin/pack200
-%{jdkInstallDir}/bin/rmid
 %{jdkInstallDir}/bin/rmiregistry
-%{jdkInstallDir}/bin/unpack200
 %exclude %{jdkInstallDir}/bin/*.debuginfo
 
 %files doc
@@ -285,51 +268,58 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
-* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 11.0.30-4
-- Replace deprecated unzip with Python zipfile wrapper via setup-zip-wrappers.sh
-* Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.30-3
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 17.0.18-3.1
+- Build for photon_subrelease <= 90 using zip/unzip
+* Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.18-3
 - Require alternatives instead of chkconfig
-* Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-2
+* Sun Feb 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-2
 - Use _use_internal_dependency_generator, latest rpm doesn't allow disabling it
-* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-1
-- Upgrade to v11.0.30
-* Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.29-2
+* Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-1
+- Upgrade to v17.0.18
+* Wed Nov 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.17-2
 - Bootstrap using upstream jdk binaries
-* Mon Nov 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.29-1
+* Mon Nov 10 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.17-1
 - Version upgrade to address CVEs
-* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.28-1
-- Upgrade to v11.0.28
-* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1
-- Upgrade to v11.0.26
-* Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 11.0.20-9
+* Fri Aug 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.16-1
+- Upgrade to v17.0.16
+* Tue Aug 19 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.14-2
+- java17: Add provides jre = %{version}
+* Wed Jan 22 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.14-1
+- Upgrade to v17.0.14
+* Mon Dec 16 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.13-3
 - Version bump as a part of cups upgrade
-* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 11.0.20-8
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 17.0.13-2
 - Release bump for SRP compliance
-* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 11.0.20-7
+* Tue Oct 29 2024 Tapas Kundu <tapas.kundu@broadcom.com> 17.0.13-1
+- Update to version 17.0.13
+* Tue Sep 10 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.0.8-7
 - Cleanup Extra BuildRequires
-* Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 11.0.20-6
+* Fri Sep 29 2023 Srish Srinivasan <ssrish@vmware.com> 17.0.8-6
 - Version bump as a part of cups upgrade
-* Mon Sep 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.20-5
+* Mon Sep 04 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.8-5
 - Add provides java for jre subpackage
-* Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-4
+* Mon Aug 21 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.8-4
 - Add jre subpackage
 - Change alternatives accordingly
-* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.20-3
+* Mon Jul 10 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.8-3
 - Bump version as a part of cups upgrade
-* Tue Jun 27 2023 Kuntal Nayak <nkuntal@vmware.com> 11.0.20-2
+* Tue Jun 27 2023 Kuntal Nayak <nkuntal@vmware.com> 17.0.8-2
 - Version upgrade for CVE-2016-7945 fix
-* Fri Jun 16 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.20-1
-- Upgrade to v11.0.20
-* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 11.0.18-3
+* Wed Jun 14 2023 Shivani Agarwal <shivania2@vmware.com> 17.0.8-1
+- Update to jdk-17.0.8-5 to fix CVE-2023-21937, CVE-2023-21938, CVE-2023-21930, CVE-2023-21968, CVE-2023-21967,
+- CVE-2023-21939, CVE-2022-21360, CVE-2023-21843, CVE-2023-21835, CVE-2023-21954
+* Wed Apr 19 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 17.0.6-3
 - Bump version as a part of freetype2 upgrade
-* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.18-2
+* Fri Apr 14 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.6-2
 - Bump version as a part of zlib upgrade
-* Tue Feb 14 2023 Mukul Sikka <msikka@vmware.com> 11.0.18-1
-- Updating to jdk-11.0.18-ga
-* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 11.0.12-6
+* Mon Feb 20 2023 Mukul Sikka <msikka@vmware.com> 17.0.6-1
+- changing source name convention from openjdk-VERSION to jdk-VERSION
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 17.0.5-3
 - Bump version as a part of icu upgrade
-* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-5
+* Fri Jan 06 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-2
 - Bump up due to change in elfutils
+* Fri Oct 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 17.0.5-1
+- Update to tag jdk-17.0.5-ga
 * Thu Oct 06 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 11.0.12-4
 - Rebuild with latest toolchain
 * Tue Oct 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 11.0.12-3

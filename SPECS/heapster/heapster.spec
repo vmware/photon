@@ -5,7 +5,7 @@
 Summary:        Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:           heapster
 Version:        1.5.4
-Release:        24%{?dist}
+Release:        25%{?dist}
 URL:            https://github.com/kubernetes/heapster
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -25,7 +25,6 @@ Patch3: make-check-failure.patch
 %endif
 
 BuildRequires:  go
-BuildRequires:  unzip
 
 %description
 Heapster collects and interprets various signals like compute resource usage, lifecycle events, etc, and exports cluster metrics via REST endpoints.
@@ -86,6 +85,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/eventer
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.5.4-25
+- Drop unzip BuildRequires; not needed for tar.gz source
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-24
 - Rebuild for go 1.26.3
 * Sat Jul 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.4-23

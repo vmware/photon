@@ -1,0 +1,50 @@
+--- a/stap-serverd.cxx
++++ b/stap-serverd.cxx
+@@ -1926,8 +1926,14 @@
+ {
+   ostringstream result;
+ 
+-  // Generate the command to heck the uncompressed size
+-  vector<string> args { "unzip", "-Zt", zip_file };
++  // Use python3 to sum uncompressed sizes; output format "1 file <size> bytes uncompressed"
++  // preserves toks[2] as the byte count, matching the original unzip -Zt parser below.
++  vector<string> args { "python3", "-c",
++    "import zipfile,sys;"
++    "zf=zipfile.ZipFile(sys.argv[1]);"
++    "s=sum(i.file_size for i in zf.infolist());"
++    "print('1 file',s,'bytes uncompressed')",
++    zip_file };
+   int rc = stap_system_read (0, args, result);
+   if (rc != 0)
+     {
+@@ -2118,9 +2124,16 @@
+       goto cleanup;
+     }
+ 
+-  /* Unzip the request. */
++  /* Unzip the request using python3's zipfile module (preserves Unix permissions). */
+   secStatus = SECFailure;
+-  argv = { "unzip", "-q", "-d", requestDirName, requestFileName };
++  argv = { "python3", "-c",
++    "import zipfile,os,sys\n"
++    "with zipfile.ZipFile(sys.argv[2]) as zf:\n"
++    "    for info in zf.infolist():\n"
++    "        out=zf.extract(info,sys.argv[1])\n"
++    "        perm=(info.external_attr>>16)&0o777\n"
++    "        if perm and os.path.isfile(out): os.chmod(out,perm)\n",
++    requestDirName, requestFileName };
+   rc = stap_system (0, argv);
+   if (rc != 0)
+     {
+@@ -2133,9 +2146,9 @@
+      have a result code here.  */
+   handleRequest(requestDirName, responseDirName, stapstderr);
+ 
+-  /* Zip the response. */
++  /* Zip the response using python3's zipfile module. */
+   int ziprc;
+-  argv = { "zip", "-q", "-r", responseFileName, "." };
++  argv = { "python3", "-m", "zipfile", "-c", responseFileName, "." };
+   rc = spawn_and_wait (argv, &ziprc, NULL, NULL, NULL, responseDirName);
+   if (rc != PR_SUCCESS || ziprc != 0)
+     {

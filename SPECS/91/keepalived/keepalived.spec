@@ -3,7 +3,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.2.7
-Release:        5.1%{?dist}
+Release:        5.2%{?dist}
 URL:            http://www.keepalived.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -31,7 +31,6 @@ BuildRequires:  libnl-devel
 BuildRequires:  libnfnetlink-devel
 BuildRequires:  net-snmp-devel
 BuildRequires:  systemd-devel
-BuildRequires:  unzip
 
 Requires:       systemd
 Requires:       libnl
@@ -103,6 +102,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.2.7-5.2
+- Drop unzip BuildRequires; not needed for tar.gz source
 * Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.7-5.1
 - Bump after moving to SPECS/91
 * Fri Jan 02 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.7-5

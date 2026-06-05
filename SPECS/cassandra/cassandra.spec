@@ -5,7 +5,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.10
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://cassandra.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -21,8 +21,6 @@ Source4: license.txt
 %include %{SOURCE4}
 
 BuildRequires:  apache-ant
-BuildRequires:  unzip
-BuildRequires:  zip
 BuildRequires:  openjdk11
 BuildRequires:  wget
 BuildRequires:  git
@@ -133,6 +131,8 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.0.10-9
+- Drop BuildRequires: unzip; not needed for tar.gz source
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.0.10-8
 - Renaming sysusers to conf to fix auto user creation
 * Wed Jan 08 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.10-7

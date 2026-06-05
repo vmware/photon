@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:      zip-3.0
 Name:         zip
 Version:      3.0
-Release:      5%{?dist}
+Release:      5.1%{?dist}
 URL:          http://downloads.sourceforge.net/infozip
 Group:        SystemUtilities
 Vendor:       VMware, Inc.
@@ -33,6 +35,8 @@ make %{?_smp_mflags} prefix=%{buildroot}/%{_prefix} MANDIR=%{buildroot}/usr/shar
 %{_mandir}/*
 
 %changelog
+* Wed Jun 03 2026 Ajay Kaher <ajay.kaher@broadcom.com> 3.0-5.1
+- Deprecate zip; restrict to photon_subrelease <= 90
 * Sun Dec 15 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0-5
 - Bump up for generating provenance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0-4

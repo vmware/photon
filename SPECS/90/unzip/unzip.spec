@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        18%{?dist}
+Release:        18.1%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
@@ -56,6 +58,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 
 %changelog
+* Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.0-18.1
+- Move to /90
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.0-18
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0-17
