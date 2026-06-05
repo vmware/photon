@@ -1,0 +1,21 @@
+sources:
+- archive: Kea-3.1.9.tar.gz
+  archive_sha512sum: a4af39fa6ae965301fff0cb5b585ff5e89292732a2998b4f9c4e06d9421b45fd825b25460c85d74f5cc175fdeee80a64ce6b7ddb53b9b3fce40b929272ffc279
+  archive_type: upstream
+  skip_validation: true
+  name: kea-Kea-3.1.9
+  version: 3.1.9
+  url: https://github.com/isc-projects/kea/archive/refs/tags/Kea-3.1.9.tar.gz
+  repo_url: https://github.com/isc-projects/kea.git
+  commit_id: 55c082bb63676e1c50c42c72c29613eae87efb37
+  spdx:
+    package:
+      detailed_description:
+        'Kea provides DHCPv4 and DHCPv6 servers, a dynamic DNS update module,
+        a portable DHCP library, libdhcp++, a NETCONF agent that provides a
+        YANG/NETCONF interface for Kea, and a DHCP benchmarking tool, perfdhcp.'
+      home_page: https://www.isc.org/kea/
+      license_concluded: MPL-2.0
+      license_declared: MPL-2.0
+      short_summary: A modern, scalable, robust DHCPv4 and DHCPv6 server.
+      supplier: 'Organization: Broadcom, Inc.'

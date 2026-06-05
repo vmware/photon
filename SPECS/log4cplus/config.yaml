@@ -1,0 +1,21 @@
+sources:
+- archive: log4cplus-2.1.2.tar.gz
+  archive_sha512sum: 4d95c036a15c4e9e16bb52da5d56853a08736025f19b2ed60afad0bf319109a80a1534c1d7d1e0b8369da7e5f28a9c7e7a5b4500f73250269f7e6ff57c4fdb4a
+  archive_type: upstream
+  skip_validation: true
+  name: log4cplus-2.1.2
+  version: 2.1.2
+  url: https://github.com/log4cplus/log4cplus/releases/download/REL_2_1_2/log4cplus-2.1.2.tar.gz
+  repo_url: https://github.com/log4cplus/log4cplus.git
+  commit_id: b11c9480ebb060866d2e25ce7179574b3d93385e
+  spdx:
+    package:
+      detailed_description:
+        'log4cplus is a simple to use C++23 logging API providing thread--safe,
+        flexible, and arbitrarily granular control over log management and configuration.
+        It is modeled after the Java log4j API.'
+      home_page: https://github.com/log4cplus/log4cplus/wiki
+      license_concluded: Apache-2.0 AND BSD-2-Clause
+      license_declared: Apache-2.0 AND BSD-2-Clause
+      short_summary: A simple to use C++ logging API
+      supplier: 'Organization: Broadcom, Inc.'
