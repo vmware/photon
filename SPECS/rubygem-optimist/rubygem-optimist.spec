@@ -6,7 +6,7 @@
 Summary:        Optimist is a commandline option parser for Ruby that just gets out of your way.
 Name:           rubygem-optimist
 Version:        3.2.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,8 +18,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Provides:      rubygem-trollop <= 2.9.10-4
-# Enable this once tdnf supports handling Obsoletes with snapshots.
-#Obsoletes:     rubygem-trollop <= 2.9.10-4
+Obsoletes:     rubygem-trollop <= 2.9.10-4
 
 BuildRequires: ruby-devel
 
@@ -45,6 +44,8 @@ and sensible defaults for everything you don't specify.
 %{gemdir}
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.2.1-4
+- Enable obsoletes
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.1-3
 - Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.1-2
