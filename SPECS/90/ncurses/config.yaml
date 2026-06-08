@@ -1,13 +1,13 @@
 sources:
-- archive: ncurses-6.6.tar.gz
+- archive: ncurses-6.5-20250816.tgz
   skip_validation: false
-  archive_sha512sum: 02647baae53abc844fbadee5b0a2187ad073125c4e8950df6d1c4feb781cb74ba64fb838cedfee2c246c39932187f6775b1df124f18b99a4233f0d98c72191de
+  archive_sha512sum: 310b6e85dfc7500486bd252c8f495ef4df7fc15e175e358014bf8b654f596692d0151a37d189e09064e7bd90756e4b438d2e82e9fd24b28db528c94350cc0365
   archive_type: upstream
-  name: ncurses-6.6
-  version: 6.6
+  name: ncurses-6.5-20250816
+  version: 6.5-20250816
   repo_url: https://github.com/ThomasDickey/ncurses-snapshots.git
-  commit_id: 0096bd402c4a9c8f39bd7ed266e1b8920327e4d8
-  url: https://invisible-island.net/archives/ncurses/ncurses-6.6.tar.gz
+  commit_id: 45e78e514f1b96be0f0094d8a1e05ec8f91932c5
+  url: https://packages.broadcom.com/photon/photon_sources/1.0/ncurses-6.5-20250816.tgz
   skip_list: []
   missing: []
   spdx:

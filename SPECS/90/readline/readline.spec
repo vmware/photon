@@ -1,5 +1,5 @@
-%global build_if %{photon_subrelease} >= 91
-%global major_version 8.3
+%global build_if %{photon_subrelease} <= 90
+%global major_version 8.2
 
 # If you are incrementing major_version, enable bootstrapping and adjust accordingly.
 # Version should be the latest prior build. If you don't do this, build will break.
@@ -11,8 +11,8 @@
 
 Summary:        Command-line editing and history capabilities
 Name:           readline
-Version:        8.3
-Release:        1%{?dist}
+Version:        8.2
+Release:        8.1%{?dist}
 URL:            http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -152,16 +152,14 @@ make %{?_smp_mflags} check
 %{_datadir}/%{name}/fileman.c
 %{_datadir}/%{name}/rlkeymaps.c
 %{_datadir}/%{name}/rl-timeout.c
-%{_datadir}/%{name}/rl-callbacktest2.c
-%{_datadir}/%{name}/rl-callbacktest3.c
 
 %files doc
 %defattr(-,root,root,-)
 %{_docdir}/%{name}/INSTALL
 %{_docdir}/%{name}/README
 %{_docdir}/%{name}/CHANGES
-%{_docdir}/%{name}-%{version}/history*.pdf
-%{_docdir}/%{name}-%{version}/readline*.pdf
+%{_docdir}/%{name}-%{version}/history.pdf
+%{_docdir}/%{name}-%{version}/readline.pdf
 %{_docdir}/%{name}-%{version}/history_3.ps
 %{_docdir}/%{name}-%{version}/readline_3.ps
 %{_docdir}/%{name}-%{version}/rluserman.pdf
@@ -169,8 +167,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/readline.3.gz
 
 %changelog
-* Tue Apr 28 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.3-1
-- Upgrade to 8.3
+* Fri Jun 05 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.2-8.1
+- Mark subrelease
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.2-8
 - Bump version as a part of ncurses upgrade
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.2-7

@@ -1,1 +1,1 @@
-License: SMLNJ AND MIT AND X11 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause AND FSFUL AND X11-distribute-modifications-variant AND BSD-4-Clause-UC AND HPND-Markus-Kuhn AND HPND
+License: BSD-3-Clause AND BSD-4-Clause-UC AND FSFUL AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND AND HPND-Markus-Kuhn AND MIT AND SMLNJ AND X11 AND X11-distribute-modifications-variant

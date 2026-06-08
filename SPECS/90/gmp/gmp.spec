@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 Summary:         Math libraries
 Name:            gmp
-Version:         6.3.0
-Release:         1%{?dist}
+Version:         6.2.1
+Release:         5.1%{?dist}
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
 Vendor:          VMware, Inc.
@@ -12,6 +12,8 @@ Source0: http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: mpz-inp_raw-avoid-bit-size-overflows.patch
 
 %description
 The GMP package contains math libraries. These have useful functions
@@ -71,8 +73,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
-*   Wed Jun 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.3.0-1
--   Upgrade to 6.3.0
+*   Sat Jun 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2.1-5.1
+-   Mark subrelease
 *   Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2.1-5
 -   Release bump for aarch64 SRP compliance
 *   Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2.1-4

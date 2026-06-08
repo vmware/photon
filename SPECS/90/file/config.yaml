@@ -1,12 +1,12 @@
 sources:
-    - archive: file-5.47.tar.gz
+    - archive: file-5.43.tar.gz
       archive_type: upstream
-      archive_sha512sum: a19c1f2b584bcfa70d4a02545667a90ff9e069523a5fc7b84d79b2b32cb7e59b73c555943784a13d56fa6d4618e18a254fd6102187def1a4a7d936b41ae7ce31
-      version: "5.47"
-      name: file-5.47
-      url: http://ftp.astron.com/pub/file/file-5.47.tar.gz
+      archive_sha512sum: 9d02f4e7a69d90468d6bd35df5ec240ddee8c2408b7df3e73427d7f18736baf77db0638a1fe8283f4e6abd1d5ad653890ed3a5a0d48bb52d4023ca4070ecdf06
+      version: "5.43"
+      name: file-5.43
+      url: http://ftp.astron.com/pub/file/file-5.43.tar.gz
       repo_url: https://github.com/file/file.git
-      commit_id: 7d20612996567ecedec7f5c58f7bf15c2cf42c19
+      commit_id: 011778a2877f75597ed83c1a2716d917770920ee
       skip_list: []
       missing:
           [
@@ -38,14 +38,6 @@ sources:
               .travis.yml,
               pyproject.toml,
               lt~obsolete.m4,
-              rtfd.testfile,
-              .github,
-              osm.testfile,
-              xilinx.result,
-              osm.result,
-              DESCRIPT.ION,
-              rtfd.result,
-              xilinx.testfile,
           ]
       spdx:
           package:

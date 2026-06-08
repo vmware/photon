@@ -1,9 +1,8 @@
-%global build_if %{photon_subrelease} >= 91
-
+%global build_if %{photon_subrelease} <= 90
 Summary:        Functions for multiple precision math
 Name:           mpfr
-Version:        4.2.2
-Release:        1%{?dist}
+Version:        4.1.0
+Release:        4.1%{?dist}
 URL:            http://www.mpfr.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -72,8 +71,8 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-%{version}/COPYING
 
 %changelog
-* Wed Jun 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.2.2-1
-- Upgrade to 4.2.2
+* Wed Jun 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.0-4.1
+- Mark sub-release
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.0-4
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.0-3

@@ -1,8 +1,8 @@
 %global build_if %{photon_subrelease} >= 91
 Summary:        Bourne-Again SHell
 Name:           bash
-Version:        5.2
-Release:        12%{?dist}
+Version:        5.3
+Release:        1%{?dist}
 URL:            http://www.gnu.org/software/bash
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -156,6 +156,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/*/*
 
 %changelog
+* Fri Jun 05 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.3-1
+- Upgrade to latest
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-12
 - Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-11

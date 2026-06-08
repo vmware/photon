@@ -1,6 +1,6 @@
 sources:
-- archive: bash-5.2.tar.gz
-  archive_sha512sum: 5647636223ba336bf33e0c65e516d8ebcf6932de8b44f37bc468eedb87579c628ad44213f78534beb10f47aebb9c6fa670cb0bed3b4e7717e5faf7e9a1ef81ae
+- archive: bash-5.3.tar.gz
+  archive_sha512sum: 426702c8b0fb9e0c9956259973ce5b657890fd47f4f807a64febf20077bb48d0b91474ed6e843d2ef277186b46c5fffa79b808da9b48d4ec027d5e2de1b28ed8
   skip_validation: true
   spdx:
     package:

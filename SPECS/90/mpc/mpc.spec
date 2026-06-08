@@ -1,14 +1,14 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 Summary:        Library for the arithmetic of complex numbers
 Name:           mpc
-Version:        1.4.1
-Release:        1%{?dist}
+Version:        1.3.1
+Release:        4.1%{?dist}
 URL:            http://www.multiprecision.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.xz
+Source0: http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -45,11 +45,10 @@ make %{?_smp_mflags} check
 %{_libdir}/*.a
 %{_libdir}/*.so
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
-* Wed Jun 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.1-1
-- Upgrade to 1.4.1
+* Sat Jun 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-4.1
+- Mark subrelease
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-4
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-3

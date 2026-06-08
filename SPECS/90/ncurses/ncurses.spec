@@ -1,20 +1,23 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
+%global ncursessubversion 20250816
 %define v6_so_ver   %{version}
 %define v5_so_ver   5.9
 
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
-Version:        6.6
-Release:        1%{?dist}
+Version:        6.5
+Release:        2.1%{?dist}
 URL:            http://invisible-island.net/ncurses
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://invisible-island.net/archives/ncurses/ncurses-%{version}.tar.gz
+Source0: https://invisible-island.net/archives/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2025-69720.patch
 
 Requires: ncurses-libs = %{version}-%{release}
 Requires: glibc
@@ -67,7 +70,7 @@ It contains all terminfo files
   ln -sfrv %{1} %{2}
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}-%{ncursessubversion}
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -198,8 +201,8 @@ sh ./configure
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
-* Wed Jun 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.6-1
-- Upgrade to 6.6
+* Wed Jun 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.5-2.1
+- Mark subrelease
 * Tue Apr 28 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.5-2
 - Fix CVE-2025-69720
 * Fri Aug 22 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.5-1
