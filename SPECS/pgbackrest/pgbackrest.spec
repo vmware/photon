@@ -3,7 +3,7 @@
 Summary:        Reliable PostgreSQL Backup & Restore
 Name:           pgbackrest
 Version:        2.58.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pgbackrest.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -31,7 +31,7 @@ Requires: zstd-libs
 Requires: bzip2-libs
 Requires: lz4
 Requires: libxml2
-Requires: (postgresql18-libs or postgresql17-libs or postgresql16-libs or postgresql15-libs)
+Requires: (postgresql18-libs or postgresql17-libs or postgresql16-libs)
 
 %description
 pgBackRest aims to be a reliable, easy-to-use backup and restore solution
@@ -62,6 +62,8 @@ cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Jun 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.58.0-4
+- Remove postgresql15 support
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.58.0-3
 - Remove postgresql v13, 14, 15 support
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.58.0-2

@@ -5,7 +5,7 @@
 Summary:      The Apache Portable Runtime Utility Library
 Name:         apr-util
 Version:      1.6.3
-Release:      10%{?dist}
+Release:      11%{?dist}
 URL:          https://apr.apache.org
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
@@ -58,7 +58,7 @@ This package provides the LDAP support for the %{name}.
 Group:      Development/Libraries
 Summary:    APR utility library PostgreSQL DBD driver
 Requires:   %{name} = %{version}-%{release}
-Requires:   (postgresql18 or postgresql17 or postgresql16 or postgresql15)
+Requires:   (postgresql18 or postgresql17 or postgresql16)
 
 %description pgsql
 This package provides the PostgreSQL driver for the %{name} DBD (database abstraction) interface.
@@ -130,6 +130,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Thu Jun 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-11
+- Remove postgresql15 support
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-10
 - Remove postgresql v13, 14 support
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.3-9
