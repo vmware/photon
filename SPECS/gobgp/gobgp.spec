@@ -3,10 +3,11 @@
 %define network_required 1
 %define gopath_comp_gobgp github.com/osrg/%{name}
 %define debug_package %{nil}
+
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       4.5.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/osrg/gobgp
@@ -16,6 +17,7 @@ Source1:       license.txt
 %include %{SOURCE1}
 
 BuildRequires: go
+BuildRequires: ca-certificates
 
 %description
 GoBGP is an open source BGP implementation designed from scratch for modern environment,
@@ -54,6 +56,8 @@ install -v -m755 -D -t %{buildroot}%{_bindir} bin/gobgp bin/gobgpd
 %license src/%{gopath_comp_gobgp}/LICENSE
 
 %changelog
+* Mon Jun 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.0-2
+- Add ca-certificates to build requires
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.0-1
 - Upgrade to v4.5.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.2.0-2

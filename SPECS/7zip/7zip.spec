@@ -1,8 +1,9 @@
 %global build_if %{photon_subrelease} >= 91
+%define debug_package %{nil}
 
 Name:           7zip
 Version:        26.01
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A file archiver
 URL:            https://7-zip.org
 Vendor:         VMware, Inc.
@@ -92,5 +93,7 @@ done
 %{_bindir}/7zz
 
 %changelog
+* Mon Jun 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.01-2
+- Disable debuginfo package
 * Mon Jun 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.01-1
 - Initial version.
