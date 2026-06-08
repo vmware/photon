@@ -1,0 +1,19 @@
+sources:
+- archive: 7zip-26.01.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 74a8a909dcf4f50480c2737d333ec16da431a2f95439efe5a364804e47be19daf0ed56f96c63f8fb7e9484b746d45a324e0b4c0921c160037bba6f643eaeb8fa
+  name: 7zip-26.01
+  version: 26.01
+  url: https://github.com/ip7z/7zip/archive/refs/tags/26.01.tar.gz
+  repo_url: https://github.com/ip7z/7zip
+  commit_id: 8c63d71ff886bda90c86db28466287f977374237
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: '7-Zip is a file archiver with a high compression ratio.'
+      home_page: https://github.com/ip7z/7zip
+      license_concluded: BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-or-later
+      license_declared: BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-or-later
+      short_summary: A file archiver
+      supplier: 'Organization: Broadcom, Inc.'
