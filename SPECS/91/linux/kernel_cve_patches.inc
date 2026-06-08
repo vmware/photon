@@ -236,3 +236,11 @@ Patch3097: 0001-drm-amd-display-Fix-vs-typos.patch
 
 # Fix CVE-2026-43414
 Patch3098: 0001-scsi-qla2xxx-Completely-fix-fcport-double-free.patch
+
+# Fix CVE-2026-23272
+Patch3099: 0001-netfilter-nf_tables-always-increment-set-element-cou.patch
+Patch3100: 0002-netfilter-nf_tables-fix-set-size-with-rbtree-backend.patch
+Patch3101: 0003-netfilter-nf_tables-unconditionally-bump-set-nelems-.patch
+
+# Fix CVE-2026-23239
+Patch3102: 0001-espintcp-Fix-race-condition-in-espintcp_close.patch
