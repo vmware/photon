@@ -5,7 +5,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -22,6 +22,7 @@ Requires: ncurses
 Requires: python3
 Requires: xz-libs
 Requires: zlib
+Requires: elfutils-debuginfod
 
 BuildRequires: expat-devel
 BuildRequires: ncurses-devel
@@ -181,6 +182,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
+* Mon Jun 08 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.1-3
+- Add elfutils-debuginfod for libdebuginfod.so requirement
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.1-2
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 17.1-1
