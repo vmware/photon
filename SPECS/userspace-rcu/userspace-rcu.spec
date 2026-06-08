@@ -3,7 +3,7 @@
 Summary:        user space RCU (read-copy-update)
 Name:           userspace-rcu
 Version:        0.15.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/urcu/userspace-rcu/releases
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.15.6-2
+- Release version bump as part of libxml2/libxslt
 * Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15.6-1
 - Upgrade to v0.15.6
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.13.2-4

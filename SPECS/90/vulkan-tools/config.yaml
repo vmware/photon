@@ -1,0 +1,12 @@
+sources:
+- archive: Vulkan-Tools-1.3.231.1.tar.gz
+  archive_sha512sum: 48b87ac2d45496d031eff492ed562df08ec34b40fc94bc6eaf122c4203949b0db5fceccf2718eef1d90b891ef0681db1c9d945f1dd710fb0c99020e4e3efa025
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Vulkan tools '
+      home_page: https://github.com/KhronosGroup/Vulkan-Tools
+      license_concluded: Apache-2.0 AND CC-BY-ND-4.0 AND BSD-3-Clause AND MIT
+      license_declared: Apache-2.0 AND CC-BY-ND-4.0 AND BSD-3-Clause AND MIT
+      short_summary: Vulkan tools
+      supplier: 'Organization: Broadcom, Inc.'

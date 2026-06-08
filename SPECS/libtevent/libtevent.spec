@@ -4,7 +4,7 @@
 
 Name:           libtevent
 Version:        0.17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The tevent library
 URL:            http://tevent.samba.org/
 Vendor:         VMware, Inc.
@@ -91,6 +91,8 @@ Python 3 bindings for libtevent
 %{python3_sitearch}/_tevent.cpython*.so
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.17.1-3
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.17.1-2
 - Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.17.1-1

@@ -3,7 +3,7 @@
 Summary:        API and commands for processing SPIR-V modules
 Name:           spirv-tools
 Version:        1.4.341.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Tools/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libSPIRV-Tools-shared.so
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.4.341.0-3
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.341.0-2
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.4.341.0-1

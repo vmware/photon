@@ -1,0 +1,12 @@
+sources:
+- archive: wayland-protocols-1.44.tar.xz
+  archive_sha512sum: 8714e0bedb394c01164b9f4d839daf014f130c79782e2695a304efbe1c8ea7b1e8ef01663fec340df485b179d2bfdb3bad5fba6474d6cb24b90a622d921b419b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'wayland-protocols contains Wayland protocols that adds functionality not available in the Wayland core protocol. Such protocols either adds completely new functionality, or extends the functionality of some other protocol either in Wayland core, or some other protocol in wayland-protocols. '
+      home_page: http://wayland.freedesktop.org/
+      license_concluded: HPND-sell-variant AND MIT
+      license_declared: HPND-sell-variant AND MIT
+      short_summary: Wayland protocols that adds functionality not available in the core protocol
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,6 +1,7 @@
+%global build_if %{photon_subrelease} >= 91
 Name:           vulkan-tools
 Version:        1.3.231.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Vulkan tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -66,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.3.231.1-8
+- Release version bump as part of libxml2/libxslt
 * Tue Jul 01 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.231.1-7
 - Rebuild with shared llvm libraries and upgraded mesa
 * Mon Jun 23 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 1.3.231.1-6

@@ -8,7 +8,7 @@ Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
 Version:        1.30.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -204,6 +204,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.30.2-2
+- Release version bump as part of libxml2/libxslt
 * Thu May 21 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.30.2-1
 - Update to version 1.30.2
 - Upgrade njs to v0.9.9

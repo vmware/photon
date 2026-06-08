@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
 Summary:        Libxslt
 Name:           libxslt
-Version:        1.1.39
-Release:        3%{?dist}
+Version:        1.1.45
+Release:        1%{?dist}
 URL:            http://xmlsoft.org/libxslt
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -12,11 +13,6 @@ Source0: https://download.gnome.org/sources/%{name}/1.1/%{name}-%{version}.tar.x
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: patch-to-fix-samba-build.patch
-Patch1: CVE-2024-55549.patch
-Patch2: CVE-2025-24855.patch
-Patch3: CVE-2025-7424.patch
-
 Requires:       libxml2
 Requires:       libgcrypt
 Requires:       libgpg-error
@@ -25,6 +21,7 @@ BuildRequires:  automake
 BuildRequires:  libxml2-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error-devel
+BuildRequires:  doxygen
 
 %description
 The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files.
@@ -47,7 +44,8 @@ autoreconf -vfi
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --disable-static \
-    --without-python
+    --without-python \
+    --with-plugins
 
 %make_build
 
@@ -81,11 +79,13 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxslt/*
 %{_includedir}/*
 %{_docdir}/*
-%{_datadir}/aclocal/*
 %{_mandir}/man3/*
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Tue May 26 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 1.1.45-1
+- Upgrade to 1.1.45
+- CVE-2024-55549, CVE-2025-24855, CVE-2025-7424 fixed upstream
 * Tue Oct 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.39-3
 - Fix CVE-2025-7424
 * Thu Mar 20 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.39-2

@@ -1,0 +1,52 @@
+sources:
+- archive: wireshark-4.6.6.tar.xz
+  archive_type: upstream
+  archive_sha512sum: fdeca4647ed3bb7dca5a2f5f747afaa877220ec1153c1d0c5f2688d164fa2feb4d2f45175061415fe6602d3328bf8ec028a4ade73eca6ebd8f6b67d2fcb54d5a
+  name: wireshark-4.6.6
+  repo_url: https://github.com/wireshark/wireshark
+  url: https://www.wireshark.org/download/src/wireshark-4.6.6.tar.xz
+  commit_id: 3a22c3ef473d3f9c556d1fb13e3088c693d4fa96
+  missing:
+  - .gitattributes
+  - .gitignore
+  skip_list:
+  - make-version.py
+  - org.wireshark.Wireshark.metainfo.xml
+  - git-export-release.sh.in
+  license_manual_review:
+  - file_paths:
+    - wireshark-4.6.6/tools/licensecheck.pl
+    sha256sum: dbf7222366debb63f6f1fa73b8fcc147e3682afee6b0417e8cffc54cb3b36131
+    spdx_exp: GPL-2.0-or-later
+  spdx:
+    package:
+      detailed_description: 'Wireshark is a network protocol analyzer. It allows examining
+        data from a live network or from a capture file on disk. You can interactively
+        browse the capture data, viewing summary and detailed information for each
+        packet. Wireshark has several features, including a rich display filter language
+        and the ability to view the reconstructed stream of a TCP session. '
+      home_page: http://www.wireshark.org
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-3-Clause
+        OR GPL-2.0-only) AND (GPL-2.0-only OR ISC) AND (MIT OR NCSA) AND AFL-3.0 AND
+        AGPL-3.0-only AND AGPL-3.0-or-later AND AML AND Apache-2.0 AND Artistic-1.0
+        AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND
+        BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause AND BSL-1.0 AND Beerware
+        AND CC-BY-4.0 AND CC-PDDC AND CC0-1.0 AND CDDL-1.0 AND EPL-1.0 AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        AND HPND AND ISC AND Kazlib AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND LGPL-3.0-only AND Libpng AND MIT AND MIT-open-group AND MPL-1.0 AND MS-PL
+        AND MS-RL AND NCSA AND ODbL-1.0 AND Python-2.0 AND WTFPL AND X11 AND Zlib
+        AND blessing
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (BSD-3-Clause
+        OR GPL-2.0-only) AND (GPL-2.0-only OR ISC) AND (MIT OR NCSA) AND AFL-3.0 AND
+        AGPL-3.0-only AND AGPL-3.0-or-later AND AML AND Apache-2.0 AND Artistic-1.0
+        AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-1-Clause AND BSD-2-Clause AND
+        BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause AND BSL-1.0 AND Beerware
+        AND CC-BY-4.0 AND CC-PDDC AND CC0-1.0 AND CDDL-1.0 AND EPL-1.0 AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        AND HPND AND ISC AND Kazlib AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+        AND LGPL-3.0-only AND Libpng AND MIT AND MIT-open-group AND MPL-1.0 AND MS-PL
+        AND MS-RL AND NCSA AND ODbL-1.0 AND Python-2.0 AND WTFPL AND X11 AND Zlib
+        AND blessing
+      short_summary: Wireshark is the world's foremost protocol analyzer
+      supplier: 'Organization: Broadcom, Inc.'

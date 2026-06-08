@@ -3,7 +3,7 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        6.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 URL:            https://github.com/lxml/lxml
 Vendor:         VMware, Inc.
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.0.2-3
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.0.2-2
 - Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.2-1

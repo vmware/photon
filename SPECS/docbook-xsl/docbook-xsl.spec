@@ -1,9 +1,8 @@
 %global build_if %{photon_subrelease} >= 91
-
 Summary:        Docbook-xsl-1.79.1
 Name:           docbook-xsl
 Version:        1.79.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://www.docbook.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -111,6 +110,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.79.1-13
+- Release version bump as part of libxml2/libxslt
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.79.1-12
 - Replace deprecated zip with python3 zipfile; add BuildRequires python3
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.79.1-11

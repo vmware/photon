@@ -1,7 +1,14 @@
 sources:
-- archive: xmlsec1-1.2.37.tar.gz
-  archive_sha512sum: 99220cb28a346ffac0023f9f177d6a7be3ddcea04bea434b7dc926c1f0aaa5564d75f74f92896ac100179c04d77e001f688ddf46fed4e0a0b4f20b7b87c24900
-  skip_validation: true
+- archive: xmlsec1-1.3.11.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 5a1dc5c94af681a25a28f606d8ba966e589748aee2a3d1069859437f14c710156eb80a8ab77842bf177eaa2762ba2603ea805c50ce6d3c1a237196f54cb9e617
+  version: 1.3.11
+  name: xmlsec1-1.3.11
+  url: https://github.com/lsh123/xmlsec/releases/download/1.3.11/xmlsec1-1.3.11.tar.gz
+  repo_url: https://github.com/lsh123/xmlsec
+  commit_id: 8ed619211840737cda493c5221dfdbb9e8389d84
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__']
+  missing: ['xmlsec_gnutls_keysstore.md', 'xmlsec_gcrypt_crypto.md', 'verify3.md', 'sign1.md', 'xmlsec_gcrypt.md', 'xmlsec1Conf.sh', 'config.sub', 'xmlsec_gnutls_x509.md', 'xmlsec_gnutls_crypto.md', 'xmlsec1-openssl.pc', 'xmlsec_gcrypt_app.md', 'xmlsec_core_keys.md', 'xmlsec1.spec', 'xmlsec_core_membuf.md', 'xmlsec_core_xmlenc.md', 'version.h', 'xmlsec1.1', 'xmlsec_nss.md', 'xmlsec_nss_crypto.md', 'config.guess', 'xmlsec_core_io.md', 'xmlsec_mscng_x509.md', 'xmlsec-man.md', 'xmlsec1-nss.pc', '.github', 'SECURITY.md', 'xmlsec_core_xmltree.md', 'xmlsec_core_keysdata.md', 'decrypt1.md', 'MAINTAINERS', 'xmlsec_openssl_x509.md', 'sign3.md', 'index.md', 'xmlsec_nss_app.md', 'xmlsec_mscng_app.md', 'sign2.md', 'xmlsec_openssl_crypto.md', 'verify4.md', 'xmlsec_gnutls_app.md', 'xmlsec_core_dl.md', 'xmlsec_core_transforms.md', 'encrypt2.md', 'xmlsec_core_helpers.md', 'xmlsec_core_list.md', 'xmlsec_mscrypto_keysstore.md', 'xmlsec_mscrypto_x509.md', 'compile', 'ltmain.sh', 'extra', 'xmlsec_core_errors.md', 'autogen.sh', 'xmlsec_mscrypto.md', 'configure', 'verify1.md', 'xmlsec_core_parser.md', 'xmlsec_gnutls.md', 'xmlsec_core_buffer.md', 'encrypt3.md', 'depcomp', 'xmlsec1-gnutls.pc', 'install-sh', 'config.h.in', 'xmlsec_mscrypto_certkeys.md', 'xmlsec_mscng.md', 'xmlsec_openssl.md', 'xmlsec_nss_keysstore.md', 'xmlsec_mscng_keysstore.md', 'decrypt3.md', 'xmlsec_mscng_certkeys.md', 'xmlsec_mscrypto_crypto.md', '.gitignore', 'xmlsec_core_base64.md', 'xmlsec_core_xmldsig.md', 'decrypt2.md', 'xmlsec_nss_x509.md', 'aclocal.m4', 'xmlsec1-config', 'xmlsec_openssl_keysstore.md', 'sign4.md', 'xmlsec_core_templates.md', 'verify-saml.md', 'xmlsec_nss_pkikeys.md', 'xmlsec_core_nodeset.md', 'diagrams.sxd', 'xmlsec_core_keysmngr.md', 'verify2.md', 'xmlsec_mscng_crypto.md', 'xmlsec_openssl_app.md', 'xmlsec_core.md', 'xmlsec_core_keyinfo.md', 'm4', 'xmlsec_mscrypto_app.md', 'Makefile.in', 'missing', 'encrypt1.md', 'xmlsec1-config.1', 'xmlsec_core_app.md', 'xmlsec1.pc', 'xmlsec_core_bn.md']
   spdx:
     package:
       detailed_description: 'XML Security Library is a C library based on LibXML2  and

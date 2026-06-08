@@ -1,0 +1,14 @@
+sources:
+- archive: open-vmdk-0.3.13.tar.gz
+  archive_sha512sum: ec729f4975d7d6c7206f1d4694abda9278a6203210415c9bcd0c17eb7174f947e5d0b841f33a6f211de42ec32f58937065edeb2e9e901f0c5f23f01a87ddbfea
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Tools to create OVA files from raw disk images. This
+        includes ''vmdk-convert'' to create VMDKs from raw disk images, and ''ova-compose''
+        to create OVA files that can be imported by VMware vSphere or Fusion and Workstation. '
+      home_page: https://github.com/vmware/open-vmdk
+      license_concluded: Apache-2.0 AND MIT
+      license_declared: Apache-2.0 AND MIT
+      short_summary: Tools to create OVA files from raw disk images
+      supplier: 'Organization: Broadcom, Inc.'

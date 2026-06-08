@@ -1,0 +1,23 @@
+sources:
+- archive: xmlsec1-1.2.37.tar.gz
+  archive_sha512sum: 99220cb28a346ffac0023f9f177d6a7be3ddcea04bea434b7dc926c1f0aaa5564d75f74f92896ac100179c04d77e001f688ddf46fed4e0a0b4f20b7b87c24900
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'XML Security Library is a C library based on LibXML2  and
+        OpenSSL. The library was created with a goal to support major XML security
+        standards "XML Digital Signature" and "XML Encryption". '
+      home_page: http://www.aleksey.com/xmlsec
+      license_concluded: MPL-1.1 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Libtool-exception AND X11 AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later AND MIT AND GPL-1.0-or-later
+        AND FSFUL AND LGPL-2.0-or-later AND FSFULLRWD AND GPL-3.0-or-later WITH Libtool-exception
+        AND MPL-1.0
+      license_declared: MPL-1.1 AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-2.0-or-later WITH Libtool-exception AND X11 AND FSFULLR AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later AND MIT AND GPL-1.0-or-later
+        AND FSFUL AND LGPL-2.0-or-later AND FSFULLRWD AND GPL-3.0-or-later WITH Libtool-exception
+        AND MPL-1.0
+      short_summary: Library providing support for "XML Signature" and "XML Encryption"
+        standards
+      supplier: 'Organization: Broadcom, Inc.'

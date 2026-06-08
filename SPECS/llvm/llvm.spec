@@ -7,7 +7,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        22.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -178,7 +178,7 @@ This package contains command-line tools for SPIRV-LLVM-Translator, such as llvm
 %autosetup -p1 -n %{name}-project-%{version}.src -a1
 
 %build
-# Calculate build jobs to prevent OOM
+# Calculate build jobs to prevent OOM.
 build_jobs="$(( ($(nproc)+1) / 2 ))"
 link_jobs="$(( (build_jobs + 1) / 2 ))"
 
@@ -379,6 +379,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/LLVMSPIRVLib.pc
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 22.1.0-3
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 22.1.0-2
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 22.1.0-1

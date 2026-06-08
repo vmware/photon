@@ -3,7 +3,7 @@
 Summary:       advanced key-value store (Redis-compatible)
 Name:          valkey
 Version:       9.0.3
-Release:       3%{?dist}
+Release:       2%{?dist}
 URL:           https://valkey.io
 Group:         Applications/Databases
 Vendor:        VMware, Inc.
@@ -34,7 +34,6 @@ Requires(pre): shadow-tools
 Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 
 Provides: redis
-Obsoletes: redis
 
 %description
 Valkey is an open-source, Redis-compatible in-memory data structure store used as database, cache and message broker.
@@ -93,8 +92,6 @@ make check %{?_smp_mflags}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
-* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.3-3
-- Enable Obsoletes
 * Tue May 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.0.3-2
 - Move to subrelease >=91
 * Thu Mar 05 2026 Packager <packager@broadcom.com> 9.0.3-1

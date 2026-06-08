@@ -3,7 +3,7 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
 Version:        2.9.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -72,6 +72,8 @@ find %{buildroot} -name '*.a' -delete
 %{_defaultdocdir}/%{name}
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.9.0-4
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.0-3
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.0-2

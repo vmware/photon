@@ -3,7 +3,7 @@
 Summary:      A minimalistic network configuration daemon with DHCPv4, rdisc and DHCPv6 support
 Name:         dhcpcd
 Version:      10.2.4
-Release:      3%{?dist}
+Release:      2%{?dist}
 URL:          http://roy.marples.name/projects/%{name}/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -19,7 +19,7 @@ BuildRequires: systemd-rpm-macros
 BuildRequires: systemd-devel
 
 Requires(pre): shadow
-Obsoletes:     dhcp-client
+#Obsoletes:     dhcp-client
 
 %description
 The dhcpcd package provides a minimalistic network configuration daemon
@@ -75,8 +75,6 @@ install -d %{buildroot}%{_sharedstatedir}/%{name}
 %{_mandir}/*/*
 
 %changelog
-* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.2.4-3
-- Enable obsoletes
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.2.4-2
 - Extended to build for subrelease 91 and above
 * Mon Apr 20 2026 Bo Gan <bo.gan@broadcom.com> 10.2.4-1

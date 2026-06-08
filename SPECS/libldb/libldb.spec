@@ -7,7 +7,7 @@
 
 Name:           libldb
 Version:        2.8.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A schema-less, ldap like, API and database
 Distribution:   Photon
 Vendor:         VMware, Inc.
@@ -159,6 +159,8 @@ Development files for the Python bindings for the LDB library
 %{_libdir}/pkgconfig/pyldb-util.cpython-*.pc
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.8.2-6
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.2-5
 - Extended to build for subrelease 91 and above
 * Fri Apr 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.2-4

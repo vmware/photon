@@ -3,7 +3,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.18.2
-Release:        2%{?dist}
+Release:        1%{?dist}
 Url:            https://github.com/libfuse/libfuse
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -18,7 +18,8 @@ Source1: license.txt
 %define ExtraBuildRequires meson, systemd-devel
 
 Provides: fuse
-Obsoletes: fuse
+# TODO: enable this when time comes
+#Obsoletes: fuse
 
 Requires: %{name}-libs = %{version}-%{release}
 
@@ -28,6 +29,7 @@ userspace program.
 
 %package        devel
 Summary:        Header and development files
+Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:       systemd-devel
 Requires:       pkg-config
@@ -98,8 +100,6 @@ rm -r %{buildroot}%{_sysconfdir}/init.d
 %{_datadir}/man/*
 
 %changelog
-* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.18.2-2
-- Enable obsoletes
 * Tue May 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.18.2-1
 - Upgrade to v3.18.2
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.12.0-4

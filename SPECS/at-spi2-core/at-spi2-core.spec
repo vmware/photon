@@ -3,7 +3,7 @@
 Summary:        Service Provider Interface for the Assistive Technologies.
 Name:           at-spi2-core
 Version:        2.60.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -147,6 +147,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/atk-bridge-2.0.pc
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.60.4-2
+- Release version bump as part of libxml2/libxslt
 * Tue May 26 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.60.4-1
 - Upgrade at-spi2-core to 2.60.4
 - Re-architected spec file to use standalone sub-packages (-n atk and -n atk-devel)

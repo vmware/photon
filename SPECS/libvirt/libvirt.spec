@@ -3,7 +3,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        9.3.0
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
@@ -213,6 +213,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.3.0-17
+- Release version bump as part of libxml2/libxslt
 * Mon Jun 01 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 9.3.0-16
 - Release bump to rebuild against wireshark 4.6.6
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3.0-15

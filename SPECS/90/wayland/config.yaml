@@ -1,0 +1,17 @@
+sources:
+- archive: wayland-1.23.93.tar.xz
+  archive_sha512sum: d881058cbea7c9102ffe4adb9a63651fdf91401f5f19646efe2c61a06979873655a194109e04c57d56ea10844820422547b8ddb40a857756d89c32bf888ba1ad
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Wayland is a protocol for a compositor to talk to its
+        clients as well as a C library implementation of that protocol. The compositor
+        can be a standalone display server running on Linux kernel modesetting and
+        evdev input devices, an X application, or a Wayland client itself. The clients
+        can be traditional applications, X servers (rootless or fullscreen) or other
+        display servers. '
+      home_page: http://wayland.freedesktop.org
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Wayland Compositor Infrastructure
+      supplier: 'Organization: Broadcom, Inc.'

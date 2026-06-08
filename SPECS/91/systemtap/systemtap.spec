@@ -10,7 +10,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       15.3%{?dist}
+Release:       15.4%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -395,6 +395,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Mon Jun 08 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.8-15.4
+- Release version bump as part of libxml2/libxslt
 * Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.8-15.3
 - Apply systemtap-replace-zip-with-python.patch; stap-serverd uses python3 for zip/unzip
 * Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.8-15.2

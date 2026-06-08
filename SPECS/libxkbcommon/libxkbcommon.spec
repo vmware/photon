@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
 Summary:        X.Org X11 XKB parsing library
 Name:           libxkbcommon
 Version:        1.4.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://xkbcommon.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -108,6 +109,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/xkbcommon-x11.pc
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.4.1-6
+- Release version bump as part of libxml2/libxslt
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.4.1-5
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.4.1-4

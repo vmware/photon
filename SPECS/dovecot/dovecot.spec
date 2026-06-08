@@ -3,7 +3,7 @@
 Summary:        Secure IMAP and POP3 server
 Name:           dovecot
 Version:        2.3.21.1
-Release:        3%{?dist}
+Release:        2%{?dist}
 URL:            https://dovecot.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -34,8 +34,6 @@ BuildRequires:  gettext
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-
-Obsoletes: procmail
 
 %description
 Dovecot is an open source IMAP and POP3 server for Linux/UNIX-like
@@ -135,8 +133,6 @@ rm -rf %{buildroot}%{_mandir}
 %{_libdir}/dovecot/dovecot-config
 
 %changelog
-* Mon Jun 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.21.1-3
-- Add obsoletes procmail
 * Tue Jun 02 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.21.1-2
 - Use OpenSSL HMAC for FIPS compliance
 - Remove OTP authentication support

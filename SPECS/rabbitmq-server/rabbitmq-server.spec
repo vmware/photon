@@ -22,7 +22,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       4.1.4
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -159,6 +159,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Mon Jun 08 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.4-7
+- Release version bump as part of libxml2/libxslt
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.1.4-6
 - Drop BuildRequires: zip; not needed for xz source
 - Add Python zip wrapper to PATH; erlang.mk calls zip during build

@@ -1,12 +1,12 @@
 sources:
-- archive: libxslt-1.1.39.tar.xz
+- archive: libxslt-1.1.45.tar.xz
   archive_type: upstream
-  archive_sha512sum: c0c99dc63f8b2acb6cc3ad7ad684ffa2a427ee8d1740495cbf8a7c9b9c8679f96351b4b676c73ccc191014db4cb4ab42b9a0070f6295565f39dbc665c5c16f89
-  name: libxslt-1.1.39
-  version: 1.1.39
-  url: https://download.gnome.org/sources/libxslt/1.1/libxslt-1.1.39.tar.xz
+  archive_sha512sum: 8f0608aad7250ccfe62808169d464a1641535b41a73b4fbbc1eeec9c9e785bbd8f4860d571eb567ee1e7abbd89ac3d707a5f3e3a9e836ecaf38155793ce47d78
+  name: libxslt-1.1.45
+  version: 1.1.45
+  url: https://download.gnome.org/sources/libxslt/1.1/libxslt-1.1.45.tar.xz
   repo_url: https://gitlab.gnome.org/GNOME/libxslt.git
-  commit_id: 743ab691bed98ed11ac99bbd9d903d59fb814ab8
+  commit_id: 35323d6a15f6e63c9919ddbc0abe64c90a0dd88a
   skip_list:
   - dbsql250.xsl
   - lt~obsolete.m4
@@ -52,6 +52,7 @@ sources:
   - ltmain.sh
   - ltoptions.m4
   - dbsql100.xsl
+  missing: [libxslt.m4]
   spdx:
     package:
       detailed_description: The libxslt package contains XSLT libraries used for extending

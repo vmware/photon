@@ -2,22 +2,19 @@
 
 Name:           iotop-c
 Version:        1.31
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Simple top-like I/O monitor (implemented in C)
 URL:            https://github.com/Tomas-M/iotop/
+Conflicts:      iotop
+#Obsoletes:      iotop < 0.7
+BuildRequires:  ncurses-devel
 Group:          System/Monitoring
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        https://github.com/Tomas-M/iotop/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-BuildRequires:  ncurses-devel
-
-Obsoletes:      iotop < 0.7
-Conflicts:      iotop
 
 %description
 iotop-c does for I/O usage what top(1) does for CPU usage. It watches I/O
@@ -44,14 +41,11 @@ possible.
 V=1 STRIP=: BINDIR=%{buildroot}%{_bindir} %make_install
 
 %files
-%defattr(-,root,root)
 %license COPYING
 %license LICENSE
 %{_bindir}/iotop
 %{_mandir}/man8/iotop.8*
 
 %changelog
-* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.31-2
-- Enable Obsoletes
-* Wed Apr 29 2026 Tapas Kundu <tapas.kundu@broadcom.com> 1.31-1
+* Wed Apr 29 2026 Tapas Kundu <tapas.kundu@broadcom.com> - 1.31-1
 - Initial build

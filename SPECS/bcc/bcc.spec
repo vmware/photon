@@ -5,7 +5,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.35.0
-Release:         6%{?dist}
+Release:         7%{?dist}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
@@ -143,6 +143,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/%{name}/man/*
 
 %changelog
+* Mon Jun 08 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.35.0-7
+- Release version bump as part of libxml2/libxslt
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.35.0-6
 - Drop BuildRequires: zip; add Python zip wrapper for CMake test target
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.35.0-5

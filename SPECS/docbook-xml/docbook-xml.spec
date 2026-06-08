@@ -1,9 +1,8 @@
 %global build_if %{photon_subrelease} >= 91
-
 Summary:        Docbook-xml-4.5
 Name:           docbook-xml
 Version:        4.5
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://www.docbook.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -169,6 +168,8 @@ fi
 /etc/xml
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.5-15
+- Release version bump as part of libxml2/libxslt
 * Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.5-14
 - Replace unzip with python3 -m zipfile; drop unzip BuildRequires
 *   Mon Dec 16 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.5-13

@@ -10,7 +10,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       18%{?dist}
+Release:       19%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -380,6 +380,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.8-19
+- Release version bump as part of libxml2/libxslt
 * Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.8-18
 - Drop unzip Requires from systemtap-server
 * Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.8-17

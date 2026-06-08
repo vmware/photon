@@ -1,0 +1,79 @@
+%global build_if %{photon_subrelease} <= 90
+Summary:        Tool for static C/C++ code analysis
+Name:           cppcheck
+Version:        2.9.3
+Release:        4.1%{?dist}
+URL:            https://cppcheck.sourceforge.io
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/danmar/cppcheck/archive/%{name}-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+BuildRequires: build-essential
+
+%if 0%{?with_check}
+BuildRequires: libxml2
+BuildRequires: xmlstarlet
+%endif
+
+Requires: glibc
+Requires: libgcc
+Requires: libstdc++
+
+%description
+Cppcheck is a static analysis tool for C/C++ code. Cppcheck detects the types of bugs
+that the compilers normally do not detect. The goal is to detect only real
+errors in the code (i.e. have zero false positives).
+
+%package addons
+Summary: Add-ons package for Cppcheck.
+Requires: python3
+Requires: %{name} = %{version}-%{release}
+
+%description addons
+Add-ons package for Cppcheck.
+Contains few helper python scripts.
+
+%prep
+%autosetup -p1
+
+%build
+export FILESDIR=%{_datadir}/%{name}
+%make_build
+
+%install
+export FILESDIR=%{_datadir}/%{name}
+%make_install %{?_smp_mflags}
+
+%if 0%{?with_check}
+%check
+make test %{?_smp_mflags}
+make checkcfg %{?_smp_mflags}
+%endif
+
+%files
+%defattr(-,root,root)
+%{_datadir}/%{name}/cfg/*
+%{_datadir}/%{name}/platforms/*
+%{_bindir}/%{name}
+
+%files addons
+%defattr(-,root,root)
+%{_bindir}/%{name}-htmlreport
+%{_datadir}/%{name}/addons/*
+
+%changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.9.3-4.1
+- Adjusted to build for subrelease 90
+* Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.3-4
+- Bump version as a part of python3.14 upgrade
+* Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 2.9.3-3
+- Release bump for SRP compliance
+* Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-2
+- Bump version as a part of libxml2 upgrade
+* Fri Nov 25 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.9.3-1
+- Initial version

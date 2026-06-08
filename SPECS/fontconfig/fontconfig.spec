@@ -3,7 +3,7 @@
 Summary:        library for configuring and customizing font access.
 Name:           fontconfig
 Version:        2.14.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.14.1-8
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.14.1-7
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.14.1-6

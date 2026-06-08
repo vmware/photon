@@ -3,7 +3,7 @@
 Summary:        Round Robin Database Tool to store and display time-series data
 Name:           rrdtool
 Version:        1.10.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://oss.oetiker.ch/rrdtool
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -95,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.10.2-2
+- Release version bump as part of libxml2/libxslt
 * Thu May 21 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.10.2-1
 - Update to version 1.10.2
 * Mon Dec 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.8.0-9

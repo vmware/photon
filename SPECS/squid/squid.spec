@@ -7,7 +7,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        7.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
@@ -243,6 +243,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 7.4-5
+- Release version bump as part of libxml2/libxslt
 * Mon May 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 7.4-4
 - Remove libecap dependency and disable ecap support
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4-3

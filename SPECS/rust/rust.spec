@@ -5,7 +5,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.93.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -134,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.93.1-3
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.93.1-2
 - Extended to build for subrelease 91 and above
 * Thu Mar 05 2026 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.93.1-1

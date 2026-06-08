@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
 Summary:        Library that Implements a typesafe callback system for standard C++.
 Name:           libsigc++
 Version:        3.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://libsigc.sourceforge.net
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -68,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.2.0-4
+- Release version bump as part of libxml2/libxslt
 * Mon Aug 18 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.0-3
 - License cleanup
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.2.0-2

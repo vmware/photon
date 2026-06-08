@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
-Version:        1.2.37
-Release:        3%{?dist}
+Version:        1.3.11
+Release:        1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -77,6 +78,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.3.11-1
+- Version upgrade as part of libxml2
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.2.37-3
 - Release bump for SRP compliance
 * Thu May 25 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.2.37-2

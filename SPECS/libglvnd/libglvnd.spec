@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
 Summary:        The GL Vendor-Neutral Dispatch library
 Name:           libglvnd
 Version:        1.4.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/NVIDIA/libglvnd
 Group:          Development/Libraries/C and C++
 Vendor:         VMware, Inc.
@@ -26,6 +27,7 @@ OpenGL ABI proposal.
 %package        devel
 Summary:        Development/Libraries/C and C++
 Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-glx = %{version}-%{release}
 
 %description    devel
 Vendor-neutral dispatch layer for arbitrating OpenGL API calls between
@@ -132,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libglvnd.pc
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.4.0-6
+- Release version bump as part of libxml2/libxslt
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.4.0-5
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-4

@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:       Tools to create OVA files from raw disk images
 Name:          open-vmdk
 Version:       0.3.13
-Release:       1%{?dist}
+Release:       2%{?dist}
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/vmware/open-vmdk
@@ -75,6 +77,8 @@ fi
 %dir %{_sharedstatedir}/ovfenv
 
 %changelog
+* Mon Jun 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3.13-2
+- Bump version as a part of libxml2 upgrade
 * Wed Jan 21 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.3.13-1
 - update to 0.3.13
 - signing feature and other enhancements

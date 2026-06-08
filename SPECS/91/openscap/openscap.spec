@@ -3,7 +3,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.14
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -126,6 +126,8 @@ Python bindings.
 %{python3_sitelib}
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.3.14-1.2
+- Release version bump as part of libxml2/libxslt
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.14-1.1
 - Maintain a subrelease 91 version
 * Wed Apr 29 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.14-1

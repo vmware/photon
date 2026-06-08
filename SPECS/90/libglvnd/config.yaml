@@ -1,0 +1,16 @@
+sources:
+- archive: libglvnd-1.4.0.tar.gz
+  archive_sha512sum: 2a1cf975a0453c4e3777e4380b1084d9d5ddfaf7fd96d97f7e503c1a3b46b2234245939626d5c816da8ad41b88dbf67ee0a8dbb7cc755852ed0b75a67caea8b0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Vendor-neutral dispatch layer for arbitrating OpenGL
+        API calls between multiple vendors on a per-screen basis, as described by
+        Andy Ritger''s OpenGL ABI proposal. '
+      home_page: https://github.com/NVIDIA/libglvnd
+      license_concluded: BSD-1-Clause AND MIT AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFAP-no-warranty-disclaimer AND Apache-2.0
+      license_declared: BSD-1-Clause AND MIT AND BSD-3-Clause AND GPL-3.0-or-later
+        WITH Autoconf-exception-macro AND FSFAP-no-warranty-disclaimer AND Apache-2.0
+      short_summary: The GL Vendor-Neutral Dispatch library
+      supplier: 'Organization: Broadcom, Inc.'

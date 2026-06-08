@@ -3,7 +3,7 @@
 Summary:        Reliable PostgreSQL Backup & Restore
 Name:           pgbackrest
 Version:        2.58.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pgbackrest.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -62,6 +62,8 @@ cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Jun 08 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.58.0-5
+- Release version bump as part of libxml2/libxslt
 * Thu Jun 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.58.0-4
 - Remove postgresql15 support
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.58.0-3

@@ -3,7 +3,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        1.2.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -107,6 +107,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.2.2-4
+- Release version bump as part of libxml2/libxslt
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.2-3
 - Keep version higher than 91
 * Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.2.2-2

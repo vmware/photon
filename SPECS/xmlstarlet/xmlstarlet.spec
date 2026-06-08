@@ -1,7 +1,8 @@
+%global build_if %{photon_subrelease} >= 91
 Summary:        Command Line XML Toolkit
 Name:           xmlstarlet
 Version:        1.6.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://xmlstar.sourceforge.net/
 Group:          Text Tools
 Vendor:         VMware, Inc.
@@ -37,7 +38,18 @@ commands.
 %autosetup -p1
 
 %build
+# libxml2 2.13+ removed ATTRIBUTE_UNUSED from public headers; supply it via
+# a forced-include compat header to avoid parenthesis quoting problems with -D.
+cat > compat_libxml2.h << 'COMPAT_EOF'
+#ifndef ATTRIBUTE_UNUSED
+# define ATTRIBUTE_UNUSED __attribute__((__unused__))
+#endif
+COMPAT_EOF
 autoreconf -sif
+# libxml2 2.14+ changed xmlStructuredErrorFunc to use const xmlError*; GCC 14
+# promotes -Wincompatible-pointer-types to a hard error by default in C code.
+# Also suppress deprecated-declarations and pointer-sign for APIs changed in libxml2 2.14+.
+export CFLAGS="%{optflags} -Wno-error=incompatible-pointer-types -Wno-error=pointer-sign -Wno-deprecated-declarations -include $(pwd)/compat_libxml2.h"
 %configure \
     --with-libxml-prefix=%{_prefix} \
     --with-libxslt-prefix=%{_prefix}
@@ -63,6 +75,8 @@ rm -fr %{buildroot}
 %{_bindir}/xml
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.6.1-8
+- Release version bump as part of libxml2/libxslt
 * Tue Jul 29 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.1-7
 - Handle unintended copyrights inclusions
 * Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.6.1-6

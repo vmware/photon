@@ -3,7 +3,7 @@
 Summary:        Itstool-2.0.6
 Name:           itstool
 Version:        2.0.7
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://itstool.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.0.7-8
+- Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.7-7
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.7-6

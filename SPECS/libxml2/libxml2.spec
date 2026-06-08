@@ -2,27 +2,19 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.12.10
-Release:        10%{?dist}
+Version:        2.15.3
+Release:        1%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://download.gnome.org/sources/libxml2/2.12/%{name}-%{version}.tar.xz
+Source0: https://download.gnome.org/sources/libxml2/2.15/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 #Note: If you are fixing a CVE here, please check for the same in gettext libxml2
-Patch0: CVE-2025-32414.patch
-Patch1: CVE-2025-32415.patch
-Patch2: CVE-2025-49794-96.patch
-Patch3: CVE-2025-49795-1.patch
-Patch4: CVE-2025-49795-2.patch
-Patch5: CVE-2025-6021.patch
-patch6: CVE-2025-6170.patch
-Patch7: CVE-2025-7425.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -30,6 +22,7 @@ BuildRequires: zlib-devel
 BuildRequires: pkg-config
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
+BuildRequires: doxygen
 
 Requires: readline
 Requires: ncurses-libs
@@ -59,13 +52,16 @@ Static libraries and header files for the support library for libxml
 %prep
 %autosetup -p1
 # Remove files to handle unintended copyright inclusions
-rm test/schemas/changelog093_1.xsd
+rm test/schemas/changelog093_1.xsd \
+   result/intsubset2.xml* \
+   result/noent/intsubset2.xml* \
+   test/intsubset2.xml*
 
 %build
 %configure \
     --disable-static \
     --with-history \
-    --with-python=%{python3}
+    --with-python
 
 %make_build
 
@@ -98,12 +94,10 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
-%{_docdir}/*
-%{_datadir}/gtk-doc/*
-%{_mandir}/man1/*
-%{_datadir}/aclocal/*
 
 %changelog
+* Tue May 26 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 2.15.3-1
+- Upgrade to v2.15.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12.10-10
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.10-9
