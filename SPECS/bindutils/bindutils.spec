@@ -1,12 +1,11 @@
-%global build_if %{photon_subrelease} >= 91
 %define _bind_user      named
 %define _bind_group     named
 %define _home_dir       %{_sharedstatedir}/bind
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.20.21
-Release:        2%{?dist}
+Version:        9.20.23
+Release:        1%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -134,6 +133,9 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Mon Jun 8 2026 Michelle Wang <michelle.wang@broadcom.com> 9.20.23-1
+- Fix CVE-2026-3593, CVE-2026-3592, CVE-2026-3039, CVE-2026-5947 and CVE-2026-5946
+- Drop %global build_if %{photon_subrelease} for binutils
 * Sat May 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.21-2
 - Bump version as a part of userspace-rcu upgrade
 * Tue May 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.20.21-1
