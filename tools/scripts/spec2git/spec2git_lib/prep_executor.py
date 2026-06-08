@@ -200,15 +200,23 @@ class PrepExecutor:
                             # Create git clone command
                             repo_url = source0_git_info['repo_url']
                             commit_id = source0_git_info['commit_id']
-                            clone_dir_name = f"{self.name}-{self.version}"
-
+                            source_dir_name = f"{self.name}-{self.version}"
+                            
+                            # When using git sources, we need to match RPM's expected directory structure
+                            # RPM creates a build directory like "linux-6.12.92-build" and extracts sources inside it
+                            # We need to do the same for git clone to maintain compatibility
+                            build_subdir = f"{self.name}-{self.version}-build"
+                            build_path = self.output_dir / build_subdir
+                            
                             git_clone_commands = [
                                 f"cd '{self.output_dir}'",
-                                f"rm -rf '{clone_dir_name}'",
-                                f"git clone '{repo_url}' '{clone_dir_name}'",
-                                f"cd '{clone_dir_name}'",
+                                f"mkdir -p '{build_subdir}'",
+                                f"cd '{build_subdir}'",
+                                f"rm -rf '{source_dir_name}'",
+                                f"git clone '{repo_url}' '{source_dir_name}'",
+                                f"cd '{source_dir_name}'",
                                 f"git checkout '{commit_id}'",
-                                f"cd ../"
+                                f"cd .."
                             ]
 
                             self._execute_shell_block(git_clone_commands)
@@ -219,7 +227,7 @@ class PrepExecutor:
                             # Mark that we've replaced Source0 - don't detect it again
                             source0_git_info = None
 
-                            self.git_roots.add(f"{self.output_dir}/{clone_dir_name}")
+                            self.git_roots.add(f"{build_path}/{source_dir_name}")
 
                             i += 1
                             continue
