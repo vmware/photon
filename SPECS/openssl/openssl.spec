@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.18
-Release:        3%{?dist}
+Version:        3.0.21
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha512 %{name}=6bdd16f33b83ae2a12777230c4ff00d0595bbc00253ac8c3ac31e1375e818fc74d7f491bd2e507ff33cab9f0498cfb28fa8690f75a98663568d40901523cdf3c
+%define sha512 %{name}=9be1c8c11a2d55417bb177804d1b5369aa54a9dcd2e136929509457d549697407ae9611079e94c61b58a95be598ce35b94edb336e050d1019e7269f4d2f52cda
 
 Source1: rehash_ca_certificates.sh
 Source2: provider_default.cnf
@@ -23,21 +23,6 @@ Source5: dsapub_noparam.der
 Patch0: openssl-cnf.patch
 Patch1: add-FIPS_mode-compatibility-macro.patch
 Patch2: CVE-2023-50782.patch
-
-Patch0011: 0001-Correct-handling-of-AEAD-encrypted-CMS-with-inadmiss.patch
-Patch0012: 0002-Fix-heap-buffer-overflow-in-BIO_f_linebuffer.patch
-Patch0013: 0003-Fix-OCB-AES-NI-HW-stream-path-unauthenticated-unencr.patch
-Patch0014: 0004-Check-return-code-of-UTF8_putc.patch
-Patch0015: 0005-Verify-ASN1-object-s-types-before-attempting-to-acce.patch
-Patch0016: 0006-Add-NULL-check-to-PKCS12_item_decrypt_d2i_ex.patch
-Patch0017: 0007-Ensure-ASN1-types-are-checked-before-use.patch
-
-Patch0018: 0001-dane_match_cert-should-X509_free-on-mcert-instead-of.patch
-Patch0019: 0002-Fix-NULL-Dereference-When-Delta-CRL-Lacks-CRL-Number.patch
-Patch0020: 0003-Fix-NULL-deref-in-ec-dh_cms_set_shared_info.patch
-Patch0021: 0004-Fix-NULL-deref-in-rsa_cms_decrypt.patch
-Patch0022: 0005-Avoid-possible-buffer-overflow-in-buf2hex-conversion.patch
-Patch0023: 0006-rsa_kem-validate-RSA_public_encrypt-result-in-RSASVE.patch
 
 %if 0%{?with_check}
 BuildRequires: zlib-devel
@@ -184,6 +169,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Jun 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.0.21-1
+- Upgrade to version 3.0.21
 * Mon Apr 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-3
 - Fix multiple CVEs
 - CVE-2026-28386 CVE-2026-28387 CVE-2026-28388 CVE-2026-28389
