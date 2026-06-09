@@ -4,7 +4,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.10.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org
 Group:          System Environment/Programming
@@ -29,6 +29,7 @@ Patch4:         CVE-2026-3479.patch
 Patch5:         CVE-2026-3644.patch
 Patch6:         CVE-2026-4786.patch
 Patch7:         CVE-2026-4224.patch
+Patch8:         CVE-2025-13462.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -305,6 +306,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Tue Jun 09 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.20-2
+- Fix CVE-2025-13462
 * Mon May 04 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.20-1
 - Update to 3.10.20, Fixes multiple CVEs
 * Mon Apr 27 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.10.18-6
