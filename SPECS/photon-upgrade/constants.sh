@@ -1,4 +1,5 @@
 AWK=/usr/bin/awk
+CAT=/usr/bin/cat
 CHMOD=/usr/bin/chmod
 CHOWN=/usr/bin/chown
 CP=/usr/bin/cp

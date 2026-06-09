@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
-Version:        1.0
-Release:        9%{?dist}
+Version:        1.1
+Release:        1%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -14,7 +14,7 @@ Source1:        constants.sh
 Source2:        ph5-to-ph6-upgrade.sh
 Source3:        utils.sh
 Source4:        common.sh
-Source5:        ph5-to-ph6-deprecated-pkgs.txt
+Source5:        ph5-deprecated-pkgs.txt
 
 Source6: license.txt
 %include %{SOURCE6}
@@ -58,6 +58,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Tue Jun 09 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-1
+- Support latest 5.0 package changes
 * Fri Dec 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0-9
 - Add bash completion script
 * Thu Dec 04 2025 Dweep Advani <dweep.advani@broadcom.com> 1.0-8

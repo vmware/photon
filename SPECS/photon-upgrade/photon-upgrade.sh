@@ -607,7 +607,7 @@ function update_solv_to_support_complex_deps() {
   local rc=0
 
   echo "Updating package management software and libraries."
-  if ${TDNF} $REPOS_OPT -y update libsolv rpm tdnf --refresh; then
+  if ${TDNF} $REPOS_OPT -y update libsolv rpm rpm-libs tdnf tdnf-cli-libs --refresh; then
     echo "Upgrade of package management software and libraries succeeded."
     rebuilddb
   else
@@ -750,29 +750,45 @@ verify_version_and_upgrade() {
 # Updates the installed packages to to the latest available version in the repo
 # while also taking care of any deprecated and replaced or renamed packages
 function update_os() {
-
+  local install_all_rc=0
+  local rc=0
   source "${PHOTON_UPGRADE_UTILS_DIR}/ph5-to-ph6-upgrade.sh" "${PHOTON_UPGRADE_UTILS_DIR}"
   write_to_syslog "Starting update of packages with command line: $CMDLINE"
   TO_VERSION="$FROM_VERSION"
   rebuilddb
   backup_rpms_list_n_db $RPMDB_PATH
   tdnf_makecache $FROM_VERSION
+  find_installed_deprecated_packages
   find_installed_replaced_packages
   extra_erased_pkgs_arr+=(
     $(
-      find_extra_erased_pkgs ${!replaced_pkgs_map[@]}
+      find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
+                             ${!replaced_pkgs_map[@]}
     )
   )
   remove_debuginfo_packages
   backup_configs $TMP_BACKUP_LOC \
                   ${!replaced_pkgs_map[@]} \
                   ${extra_erased_pkgs_arr[@]}
+  # deprecated drpm package would prevent package manager update from happening
+  # remove it before updating package manager
+  erase_pkgs drpm
+  update_solv_to_support_complex_deps
   pre_upgrade_rm_pkgs
-  remove_replaced_packages
   rebuilddb
   tdnf_makecache
-  distro_upgrade $FROM_VERSION
+  echo "Upating all the remaining packages to the latest available versions."
+  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT update --refresh; then
+    echo "All packages were updated to the latest available versions successfully."
+    rebuilddb
+  else
+    rc=$?
+    abort $ERETRY_EAGAIN "Error in updating all the remaining packages to the latest available versions (tdnf error code: $rc)."
+  fi
   rebuilddb
+  remove_unsupported_packages
+  remove_replaced_packages
+
   install_other_packages
 
   local install_all_rc=0
