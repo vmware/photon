@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.258
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -521,7 +521,11 @@ Patch323: 0001-ipvs-skip-ipv6-extension-headers-for-csum-checks.patch
 
 # Fix CVE-2026-46191
 Patch324: 0001-fbcon-Avoid-OOB-font-access-if-console-rotation-fails.patch
-
+# Fix CVE-2026-23099
+Patch325: 0001-bonding-limit-BOND_MODE_8023AD-to-Ethernet-devices.patch
+# Fix CVE-2026-23204
+Patch326: 0001-net-add-skb_header_pointer_careful-helper.patch
+Patch327: 0002-net-sched-cls_u32-use-skb_header_pointer_careful.patch
 # Fix CVE-2026-43304
 Patch333: 0001-libceph-define-and-enforce-CEPH_MAX_KEY_LEN.patch
 # Fix CVE-2026-43456
@@ -797,6 +801,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jun 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.258-3
+- Fix CVE-2026-23204, CVE-2026-23099
 * Fri Jun 05 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.258-2
 - Fix CVE-2026-46119
 * Wed Jun 03 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 5.10.258-1

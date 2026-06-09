@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.258
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -601,6 +601,11 @@ Patch338: 0001-bonding-prevent-potential-infinite-loop-in-bond_head.patch
 Patch339: 0001-xfrm-Wait-for-RCU-readers-during-policy-netns-exit.patch
 # Fix CVE-2026-46119
 Patch340: 0001-libceph-Fix-slab-out-of-bounds-access-in-auth-messag.patch
+# Fix CVE-2026-23099
+Patch341: 0001-bonding-limit-BOND_MODE_8023AD-to-Ethernet-devices.patch
+# Fix CVE-2026-23204
+Patch342: 0001-net-add-skb_header_pointer_careful-helper.patch
+Patch343: 0002-net-sched-cls_u32-use-skb_header_pointer_careful.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1293,6 +1298,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Tue Jun 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.258-3
+- Fix CVE-2026-23204, CVE-2026-23099
 * Fri Jun 05 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.258-2
 - Fix CVE-2026-46119
 * Wed Jun 03 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 5.10.258-1

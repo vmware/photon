@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.258
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -567,6 +567,11 @@ Patch334: 0001-bonding-prevent-potential-infinite-loop-in-bond_head.patch
 Patch335: 0001-xfrm-Wait-for-RCU-readers-during-policy-netns-exit.patch
 # Fix CVE-2026-46119
 Patch336: 0001-libceph-Fix-slab-out-of-bounds-access-in-auth-messag.patch
+# Fix CVE-2026-23099
+Patch337: 0001-bonding-limit-BOND_MODE_8023AD-to-Ethernet-devices.patch
+# Fix CVE-2026-23204
+Patch338: 0001-net-add-skb_header_pointer_careful-helper.patch
+Patch339: 0002-net-sched-cls_u32-use-skb_header_pointer_careful.patch
 
 #Patches for ptp_vmw
 Patch351: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -955,6 +960,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jun 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.258-3
+- Fix CVE-2026-23204, CVE-2026-23099
 * Fri Jun 05 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.258-2
 - Fix CVE-2026-46119
 * Wed Jun 03 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 5.10.258-1
