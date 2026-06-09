@@ -81,8 +81,9 @@ Source10105: fips_canister_wrapper_internal.h
 Source10106: fips_canister_wrapper_internal.c
 
 Source10300: jitterentropy_rng_proxy.c
-Source10301: kernel_cve_patches.inc
 %endif
+
+Source10301: kernel_cve_patches.inc
 
 # common [0..49]
 Patch0: confdata-format-change-for-split-script.patch
