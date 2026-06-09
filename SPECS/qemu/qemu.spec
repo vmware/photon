@@ -13,7 +13,7 @@
 Summary:        QEMU utilities and emulators
 Name:           qemu
 Version:        10.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.qemu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -34,6 +34,7 @@ BuildRequires:  ninja-build
 BuildRequires:  zstd-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libselinux-devel
+BuildRequires:  ca-certificates
 
 Requires:       %{name}-img = %{version}-%{release}
 Requires:       %{name}-user-static-%{targetArch} = %{version}-%{release}
@@ -246,6 +247,8 @@ make %{?_smp_mflags} check
 %{_libdir}/binfmt.d/qemu-%{targetArch}-static.conf
 
 %changelog
+* Tue Jun 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.2.2-3
+- Add ca-certificates to build requires
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.2.2-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 14 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.2.2-1
