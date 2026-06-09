@@ -1,24 +1,13 @@
 sources:
-- archive: openssl-3.0.18.tar.gz
+- archive: openssl-3.0.21.tar.gz
   archive_type: upstream
-  archive_sha512sum: 6bdd16f33b83ae2a12777230c4ff00d0595bbc00253ac8c3ac31e1375e818fc74d7f491bd2e507ff33cab9f0498cfb28fa8690f75a98663568d40901523cdf3c
-  version: 3.0.18
-  name: openssl-3.0.18
-  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.18/openssl-3.0.18.tar.gz
+  archive_sha512sum: 9be1c8c11a2d55417bb177804d1b5369aa54a9dcd2e136929509457d549697407ae9611079e94c61b58a95be598ce35b94edb336e050d1019e7269f4d2f52cda
+  version: 3.0.21
+  name: openssl-3.0.21
+  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.21/openssl-3.0.21.tar.gz
   repo_url: https://github.com/openssl/openssl
-  commit_id: c10e643222ce5a185f2980d7352d545afacb0fed
-  missing:
-  - .github
-  - gost-engine
-  - .gitmodules
-  - pyca-cryptography
-  - 90-team.norelease.conf
-  - mktar.sh
-  - krb5
-  - .gitignore
-  - .gitattributes
-  - corpora
-  - dev
+  commit_id: 51ea949dc1436e865935b47874b21a3bb31a102e
+  missing: ['.git*', blame-ignore-revs, .codespellrc, .clang-format, .pre-commit-config.yaml, gost-engine, .gitmodules, pyca-cryptography, 90-team.norelease.conf, mktar.sh, mktar.sh, krb5, corpora, dev]
   spdx:
     package:
       detailed_description: 'The OpenSSL package contains management tools and libraries
