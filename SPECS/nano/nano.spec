@@ -1,7 +1,7 @@
 Summary:        Text editor
 Name:           nano
 Version:        8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.nano-editor.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -11,6 +11,8 @@ Source0: http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-6843.patch
 
 BuildRequires: ncurses-devel
 
@@ -61,6 +63,8 @@ make %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+* Tue Jun 09 2026 Ajay Kaher <ajay.kaher@broadcom.com> 8.2-4
+- Fix CVE-2026-6843: format string vulnerability in statusline() via filename
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.2-3
 - Bump version as a part of ncurses upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 8.2-2
