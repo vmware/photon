@@ -1,0 +1,42 @@
+From f6cfd593c65d217619802e3984251e39e2e705b0 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Tue, 9 Jun 2026 17:00:01 +0530
+Subject: [PATCH 1/2] kpatch-build: adapt kernel source path based on RPM
+ version
+
+Starting with RPM 6.0, the layout under the BUILD directory has changed,
+nesting the kernel source inside a new '-build' subdirectory structure.
+
+Check the RPM major version at runtime to conditionally use the new path
+for RPM 6.x and higher, while maintaining a fallback for older versions
+to prevent breaking legacy environments.
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ kpatch-build/kpatch-build | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/kpatch-build/kpatch-build b/kpatch-build/kpatch-build
+index 360009a..4e03eff 100755
+--- a/kpatch-build/kpatch-build
++++ b/kpatch-build/kpatch-build
+@@ -1040,7 +1040,15 @@ else
+ 		elif [[ "$DISTRO" = opencloudos ]]; then
+ 			mv "$RPMTOPDIR"/BUILD/kernel-*/kernel-* "$KERNEL_SRCDIR" 2>&1 | logger || die
+ 		elif [[ "$DISTRO" = photon ]]; then
+-			mv "$RPMTOPDIR"/BUILD/linux-"$KVER" "$KERNEL_SRCDIR" 2>&1 | logger || die
++			# Extract the major version number of RPM (e.g., returns '4' or '6')
++			RPM_MAJOR_VER=$(rpm --version 2>/dev/null | grep -oE '[0-9]+' | head -n 1)
++			if [ -n "$RPM_MAJOR_VER" ] && [ "$RPM_MAJOR_VER" -ge 6 ]; then
++				# Executes if RPM version is 6.x or higher
++				mv "$RPMTOPDIR"/BUILD/linux-"$KVER"-build/linux-"$KVER" "$KERNEL_SRCDIR" 2>&1 | logger || die
++			else
++				# Fallback for older RPM versions (5.x, 4.x, etc.)
++				mv "$RPMTOPDIR"/BUILD/linux-"$KVER" "$KERNEL_SRCDIR" 2>&1 | logger || die
++			fi
+ 		else
+ 			mv "$RPMTOPDIR"/BUILD/kernel-*/linux-* "$KERNEL_SRCDIR" 2>&1 | logger || die
+ 		fi
+-- 
+2.43.0
+

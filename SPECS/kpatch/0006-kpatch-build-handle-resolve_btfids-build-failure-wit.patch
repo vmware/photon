@@ -1,0 +1,37 @@
+From 23aa0cd578953541c6effc75b2f1c95b2ff3f66a Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Wed, 10 Jun 2026 16:44:17 +0530
+Subject: [PATCH 2/2] kpatch-build: handle resolve_btfids build failure with
+ newer glibc
+
+Recent glibc versions make string APIs such as strchr() return
+const-correct pointers through C23 type-generic macros. Older
+libbpf code under tools/bpf/resolve_btfids then fails with
+-Werror=discarded-qualifiers during host-tool compilation.
+
+Export HOSTCFLAGS += -Wno-error=discarded-qualifiers to
+bypass this host-only warning while keeping target kernel
+module checks unchanged.
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ kpatch-build/kpatch-build | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/kpatch-build/kpatch-build b/kpatch-build/kpatch-build
+index 4e03eff..1fbc22c 100755
+--- a/kpatch-build/kpatch-build
++++ b/kpatch-build/kpatch-build
+@@ -1286,7 +1286,8 @@ else
+ 	MAKEVARS+=("LD=${KPATCH_CC_PREFIX}${LD}")
+ fi
+ 
+-
++# fix libbpf compilation with glibc 2.43
++export HOSTCFLAGS="-Wno-error=discarded-qualifiers"
+ # $TARGETS used as list, no quotes.
+ # shellcheck disable=SC2086
+ make "${MAKEVARS[@]}" "-j$CPUS" $TARGETS 2>&1 | logger || die
+-- 
+2.43.0
+

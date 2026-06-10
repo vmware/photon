@@ -4,7 +4,7 @@
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -23,6 +23,8 @@ Patch0:         0001-adding-option-to-set-description-field-of-module.patch
 Patch1:         0002-kpatch-compatibility-with-Photon-gcc-RAP-patch.patch
 Patch2:         0003-patch-hook-fix-cast-errors.patch
 Patch3:         0004-Support-building-of-photon-live-patch-from-kernel-so.patch
+Patch4:         0005-kpatch-build-adapt-kernel-source-path-based-on-RPM-v.patch
+Patch5:         0006-kpatch-build-handle-resolve_btfids-build-failure-wit.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -123,6 +125,9 @@ cp %{kpatch_utils}/Dockerfile.ph* %{buildroot}%{_datadir}/livepatch/dockerfiles
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
 
 %changelog
+* Tue Jun 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-10
+- kpatch-build: Adapt kernel source directory path based on RPM major version
+- kpatch-build: handle resolve_btfids build failure with newer glibc
 * Mon Jun 01 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.9.10-9
 - Move rpm-build depedency only to kpatch-utils
 * Tue Sep 16 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.9.10-8
