@@ -260,3 +260,13 @@ Patch3107: 0001-cifs-Fix-locking-usage-for-tcon-fields.patch
 
 # Fix CVE-2026-43125
 Patch3108: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
+
+# Fix CVE-2026-31709
+Patch3109: 0001-smb-client-validate-dacloffset-before-building-DACL-.patch
+Patch3110: 0002-smb-client-validate-the-whole-DACL-before-rewriting-.patch
+
+# Fix CVE-2026-43249
+Patch3111: 0001-9p-xen-protect-xen_9pfs_front_free-against-concurren.patch
+
+# Fix CVE-2026-23278
+Patch3112: 0001-netfilter-nf_tables-always-walk-all-pending-catchall.patch
