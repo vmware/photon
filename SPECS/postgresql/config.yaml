@@ -1,21 +1,4 @@
 sources:
-- archive: postgresql-15.17.tar.bz2
-  skip_validation: true
-  archive_sha512sum: 032f27f4028ee8be10f7540edd0174b5e354a2a38f4f228414539178d1bbc542c4b9c599e376685fa9de78a2d918b9ce74997908e7e5c0204b3da88bc4661e2b
-  name: postgresql-15.17
-  version: '15.17'
-  url: http://ftp.postgresql.org/pub/source/v15.17/postgresql-15.17.tar.bz2
-  repo_url: https://github.com/postgres/postgres.git
-  commit_id: 3eb6f61958ac5027a18791a828a0c7a47accf211
-  missing: []
-  spdx:
-    package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
-      home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSD-3-Clause AND NCSA AND Spencer-99 AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2 AND MIT AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND PostgreSQL AND TCL AND BSL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-1.0-or-later AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-2-Clause-Views AND X11 AND Apache-2.0 WITH LLVM-exception
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND BSD-3-Clause AND NCSA AND Spencer-99 AND FSFUL AND GPL-3.0-or-later WITH Bison-exception-2.2 AND MIT AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND PostgreSQL AND TCL AND BSL-1.0 AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-1.0-or-later AND ISC AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-2-Clause-Views AND X11 AND Apache-2.0 WITH LLVM-exception
-      short_summary: PostgreSQL database engine
-      supplier: 'Organization: Broadcom, Inc.'
 
 - archive: postgresql-16.13.tar.bz2
   skip_validation: true

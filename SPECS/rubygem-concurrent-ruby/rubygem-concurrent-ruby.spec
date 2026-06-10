@@ -5,7 +5,7 @@
 
 Name: rubygem-concurrent-ruby
 Version:        1.3.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Modern concurrency tools for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -17,8 +17,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Provides:      rubygem-thread_safe <= 0.3.6-5
-# Enable this once tdnf supports handling Obsoletes with snapshots.
-#Obsoletes:     rubygem-thread_safe <= 0.3.6-5
+Obsoletes:     rubygem-thread_safe <= 0.3.6-5
 
 BuildRequires: ruby-devel
 
@@ -43,6 +42,8 @@ classic concurrency patterns.
 %{gemdir}
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-3
+- Enable obsoletes
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.6-2
 - Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.6-1

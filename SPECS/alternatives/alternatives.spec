@@ -1,9 +1,10 @@
 %global build_if %{photon_subrelease} >= 91
 %define src_name chkconfig
+
 Summary:    Maintain symbolic links determining default commands
 Name:       alternatives
 Version:    1.32
-Release:    3%{?dist}
+Release:    4%{?dist}
 Group:      System Environment/Base
 URL:        https://git.fedorahosted.org/git/chkconfig
 Vendor:     VMware, Inc.
@@ -30,7 +31,7 @@ BuildRequires: popt-devel
 BuildRequires: libselinux-devel
 
 Conflicts: initscripts <= 5.30-1
-Conflicts: chkconfig
+Obsoletes: chkconfig
 
 %description
 alternatives creates, removes, maintains and displays information about the
@@ -79,6 +80,8 @@ rm -rf %{buildroot}
 %exclude %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.32-4
+- Enable Obsoletes
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.32-3
 - Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.32-2

@@ -3,11 +3,12 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        13%{?dist}
+Release:        14%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://www.ntpsec.org/
+
 Source0:        https://ftp.ntpsec.org/pub/releases/%{name}-%{version}.tar.gz
 Source1:        %{name}.sysusers
 
@@ -19,7 +20,6 @@ Patch1:         0001-ntpsec-Load-default-provider-before-fetching-MD5-ctx.patch
 
 BuildRequires:  binutils
 BuildRequires:  bison
-BuildRequires:  clang-devel
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
 BuildRequires:  libcap-devel
@@ -39,6 +39,7 @@ Requires:       systemd
 Requires:       %{name}-minimal = %{version}-%{release}
 
 Provides: ntp
+Obsoletes: ntp
 
 %description
 NTPsec is a more secure and improved implementation of the Network Time
@@ -46,7 +47,6 @@ Protocol derived from the original NTP project.
 
 %package        minimal
 Summary:        Minimal NTPsec utilities
-Group:          System Environment/NetworkingPrograms
 Requires:       libcap-libs
 Conflicts:      %{name} < 1.2.3-7
 
@@ -57,7 +57,6 @@ basic NTP time adjustment capabilities.
 
 %package -n python3-ntp
 Summary:        Python ntpsec bindings
-Group:          Development/Languages/Python
 Requires:       python3
 
 %description -n python3-ntp
@@ -146,6 +145,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-14
+- Enable obsoletes
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.3-13
 - Extended to build for subrelease 91 and above
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-12
