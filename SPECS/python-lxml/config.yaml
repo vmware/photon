@@ -1,24 +1,17 @@
 sources:
-- archive: lxml-6.0.2.tar.gz
-  archive_sha512sum: 2aaa37a4504cd23d2022cbe7c2d99173aa0e3d6ec82a95e2429369ef3ef787db185440b8581db975cb81287c3ab533dd2e7cb447cefe0d7e628082f51c5b5254
-  skip_validation: true
-  name: lxml-6.0.2
-  version: "6.0.2"
-  url: https://files.pythonhosted.org/packages/aa/88/262177de60548e5a2bfc46ad28232c9e9cbde697bd94132aeb80364675cb/lxml-6.0.2.tar.gz
+- archive: lxml-6.1.1.tar.gz
+  archive_sha512sum: c8bd3825f5b15af8a39b7e0a11b114ad67bcfcaf8fd08928e34918ea194525d26fa498057a30a014e452817d78a839bea7cf5221f089ae8ba0d4f5f4527dc62d
+  archive_type: upstream
+  name: lxml-lxml-6.1.1
+  version: 6.1.1
+  url: https://github.com/lxml/lxml/archive/refs/tags/lxml-6.1.1.tar.gz
   repo_url: https://github.com/lxml/lxml
-  commit_id: 283d02ec8966c0e99f4666dc7bdd936479e97246
-  missing: ['paypal_btn_donateCC_LG.gif', 'pubkey.asc', 'diff.c', 'extensions.html', 'changes-6.0.2.html', 'html5parser.html', 'sax.html', 'lxml.etree_api.h', 'xpathxslt.html', 'sax.c', 'element_classes.html', 'tagpython.png', 'apidoc', 'lxmlhtml.html', 'ci-run.sh', 'tox.ini', 'parsing.html', '.gitignore', 'capi.html', 'objectify.html', 'etree.c', 'lxml-source-howto.html', 'cssselect.html', 'tutorial.html', 'etree.h', '.hgignore', 'SECURITY.md', 'installation.html', 'lxml-ep2008.html', 'PKG-INFO', '_elementpath.c', 'credits.html', 'IDEAS.txt', 'xml-namespace.data.BROKEN', 'compatibility.html', 'setup.cfg', 'index.rst', 'download_artefacts.py', 'performance.html', '.github', 'builder.c', 'valgrind-python.supp', 'lxml-version.h', 'sitemap.html', 'resolvers.html', '.hgtags', 'intro.html', 'build.html', 'lxml.egg-info', 'lxml.etree.h', '.coveragerc', 'FAQ.html', 'api.html', 'index.html', 'validation.html', 'objectify.c', 'etree_api.h', '_difflib.c', 'doc.xsl', 'elementsoup.html']
-  skip_list: []
+  commit_id: b4a4c595fb875d6f50ae113449834209a364643a
   spdx:
     package:
-      detailed_description: 'The lxml XML toolkit is a Pythonic binding for the C
-        libraries libxml2 and libxslt. It is unique in that it combines the speed
-        and XML feature completeness of these libraries with the simplicity of a native
-        Python API, mostly compatible but superior to the well-known ElementTree API. '
+      detailed_description: 'The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API. '
       home_page: https://github.com/lxml/lxml
-      license_concluded: GPL-2.0-only AND BSD-3-Clause AND MIT-CMU AND GPL-2.0-or-later
-        AND Zlib AND GPL-1.0-or-later AND OFL-1.1 AND MIT
-      license_declared: GPL-2.0-only AND BSD-3-Clause AND MIT-CMU AND GPL-2.0-or-later
-        AND Zlib AND GPL-1.0-or-later AND OFL-1.1 AND MIT
+      license_concluded: GPL-2.0-only AND BSD-3-Clause AND MIT-CMU AND GPL-2.0-or-later AND Zlib AND GPL-1.0-or-later AND OFL-1.1 AND MIT
+      license_declared: GPL-2.0-only AND BSD-3-Clause AND MIT-CMU AND GPL-2.0-or-later AND Zlib AND GPL-1.0-or-later AND OFL-1.1 AND MIT
       short_summary: XML and HTML with Python
       supplier: 'Organization: Broadcom, Inc.'

@@ -1,15 +1,17 @@
 %global build_if %{photon_subrelease} >= 91
 
+%global srcname lxml
+
 Summary:        XML and HTML with Python
 Name:           python3-lxml
-Version:        6.0.2
-Release:        3%{?dist}
+Version:        6.1.1
+Release:        1%{?dist}
 Group:          Development/Libraries
 URL:            https://github.com/lxml/lxml
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/lxml/lxml/archive/refs/tags/lxml-%{version}.tar.gz
+Source0: https://github.com/lxml/lxml/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -19,6 +21,9 @@ BuildRequires:  libxml2-devel
 BuildRequires:  cython3
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 
 Requires:       python3
 Requires:       libxslt
@@ -28,13 +33,14 @@ Requires:       libxml2
 The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
 
 %prep
-%autosetup -p1 -n lxml-%{version}
+%autosetup -p1 -n %{srcname}-%{srcname}-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %if 0%{?with_check}
 %check
@@ -46,11 +52,13 @@ make %{?_smp_mflags} test
 %clean
 rm -rf %{buildroot}/*
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Wed Jun 10 2026 Prashant S Chauhan <prashant.singh-chuahan@broadcom.com> 6.1.1-1
+- Upgrade to 6.1.1, fixes multiple CVEs
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 6.0.2-3
 - Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.0.2-2
