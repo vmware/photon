@@ -244,3 +244,10 @@ Patch3101: 0003-netfilter-nf_tables-unconditionally-bump-set-nelems-.patch
 
 # Fix CVE-2026-23239
 Patch3102: 0001-espintcp-Fix-race-condition-in-espintcp_close.patch
+
+# Fix CVE-2026-31527
+Patch3103: 0001-driver-core-generalize-driver_override-in-struct-dev.patch
+Patch3104: 0001-driver-core-platform-use-generic-driver_override-inf.patch
+
+# Fix CVE-2026-31516
+Patch3105: 0001-xfrm-prevent-policy_hthresh.work-from-racing-with-ne.patch
