@@ -3,7 +3,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.8.13
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -24,7 +24,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
 
-Requires:       nettle
+Requires:       nettle >= 3.10
 Requires:       autogen-libopts
 Requires:       libtasn1
 Requires:       openssl
@@ -101,6 +101,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Thu Jun 11 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.8.13-1.2
+- enforce runtime dependency on nettle 3.10
 * Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.8.13-1.1
 - Bump for subrelease 90
 * Mon May 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.13-1
