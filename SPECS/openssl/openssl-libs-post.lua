@@ -54,6 +54,6 @@ end
 comment(provider_base, "")
 
 -- Comment default provider
-comment(default_provider, "#")
+comment(default_provider, "")
 
 ::postfinished::
