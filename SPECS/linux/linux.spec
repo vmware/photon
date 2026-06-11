@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.258
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -93,6 +93,7 @@ Source23:       %{name}-dracut-%{_arch}.conf
 Source25:       linux-sbat.csv.in
 %endif
 Source26:       photon_km_2025.pem
+Source27:       kernel_cve_patches.inc
 
 # common
 Patch0: net-Double-tcp_mem-limits.patch
@@ -175,437 +176,9 @@ Patch59: 0001-kernel-lockdown-when-UEFI-secure-boot-enabled.patch
 Patch60: 0002-Add-.sbat-section.patch
 %endif
 
-# CVE: [100..350]
 Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
-# Fix CVE-2017-1000252
-Patch101: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
-# Fix for CVE-2019-12379
-Patch102: consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-
-# Next 2 patches are about to be merged into stable
-Patch103: 0001-mm-fix-panic-in-__alloc_pages.patch
-
-# Fix for CVE-2021-4204
-Patch104: 0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix CVE-2025-38685
-Patch105: 0001-fbdev-Fix-vmalloc-out-of-bounds-write-in-fast_imageb.patch
-
-# Fix for CVE-2022-3522
-Patch106: 0001-mm_hugetlb_handle_pte_markers_in_page_faults.patch
-Patch107: 0002-mm_hugetlb_fix_race_condition_of_uffd_missing_minor_handling.patch
-Patch108: 0003-mm_hugetlb_use_hugetlb_pte_stable_in_migration_race_check.patch
-
-# Fix for CVE-2024-50256
-Patch109:  0001-netfilter-nf_reject_ipv6-fix-potential-crash-in-nf_s.patch
-
-# Fix for CVE-2021-47265
-Patch111:  0001-IB-mlx4-Use-port-iterator-and-validation-APIs.patch
-Patch112:  0002-RDMA-Verify-port-when-creating-flow-rule.patch
-
-# Fix for CVE-2024-26830
-Patch113: 0001-i40e-Do-not-allow-untrusted-VF-to-remove-administrat.patch
-
-# Fix for CVE-2022-0500
-Patch114: 0001-bpf-Introduce-composable-reg-ret-and-arg-types.patch
-Patch115: 0002-bpf-Replace-ARG_XXX_OR_NULL-with-ARG_XXX-PTR_MAYBE_N.patch
-Patch116: 0003-bpf-Replace-RET_XXX_OR_NULL-with-RET_XXX-PTR_MAYBE_N.patch
-Patch117: 0004-bpf-Extract-nullable-reg-type-conversion-into-a-help.patch
-Patch118: 0005-bpf-Replace-PTR_TO_XXX_OR_NULL-with-PTR_TO_XXX-PTR_M.patch
-Patch119: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
-Patch120: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
-Patch121: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
-
-#Fix for CVE-2024-50125
-Patch122: 0001-Bluetooth-call-sock_hold-earlier-in-sco_conn_del.patch
-Patch123: 0002-Bluetooth-SCO-Fix-UAF-on-sco_sock_timeout.patch
-
-# Fix CVE-2025-21863
-Patch124: 0001-io_uring-prevent-opcode-speculation.patch
-
-# Fix CVE-2024-35937
-Patch125: 0001-wifi-cfg80211-check-A-MSDU-format-more-carefully.patch
-
-# Fix CVE-2025-38512
-Patch126: 0001-wifi-prevent-A-MSDU-attacks-in-mesh-networks.patch
-
-# Fix CVE-2026-31392
-Patch128: 0001-smb-client-fix-krb5-mount-with-username-option.patch
-
-# Fix CVE-2024-26718
-Patch131: 0001-dm-crypt-dm-verity-disable-tasklets.patch
-
-# Fix CVE-2024-26669
-Patch132: 0001-net-sched-flower-Fix-chain-template-offload.patch
-
-# Fix CVE-2024-26668
-Patch133: 0001-netfilter-nft_limit-reject-configurations-that-cause.patch
-
-#Fix for CVE-2023-0597
-Patch136: 0001-x86-mm-Randomize-per-cpu-entry-area.patch
-Patch137: 0002-x86-mm-Do-not-shuffle-CPU-entry-areas-without-KASLR.patch
-
-#Fix CVE-2023-2176
-Patch138: 0001-RDMA-core-Refactor-rdma_bind_addr.patch
-
-#Fix CVE-2023-22995
-Patch139: 0001-usb-dwc3-dwc3-qcom-Add-missing-platform_device_put-i.patch
-
-#Fix CVE-2024-56604
-Patch140: 0001-Bluetooth-RFCOMM-avoid-leaving-dangling-sk-pointer-i.patch
-
-# Fix CVE-2024-26584
-Patch143: 0001-tls-rx-simplify-async-wait.patch
-Patch144: 0001-net-tls-factor-out-tls_-crypt_async_wait.patch
-Patch145: 0001-net-tls-handle-backlogging-of-crypto-requests.patch
-
-# Fix CVE-2024-26583
-Patch147: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
-
-# Fix CVE-2024-26585
-Patch148: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
-
-# Fix CVE-2024-26589
-Patch149: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
-
-# Fix CVE-2022-49444
-Patch150: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
-
-# Fix CVE-2024-58240
-Patch151: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
-
-# Fix CVE-2024-41071
-Patch155: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
-
-# Fix CVE-2024-42080
-Patch158: 0001-RDMA-restrack-Fix-potential-invalid-address-access.patch
-
-# Fix CVE-2021-47188
-Patch159: 0001-scsi-ufs-core-Improve-SCSI-abort-handling.patch
-
-# Fix CVE-2024-44934
-Patch160: 0001-net-bridge-mcast-wait-for-previous-gc-cycles-when-re.patch
-
-# Fix CVE-2025-21690
-Patch162: 0001-scsi-storvsc-Ratelimit-warning-logs-to-prevent-VM-de.patch
-
-# Fix CVE-2024-27415
-Patch165: 0001-netfilter-bridge-confirm-multicast-packets-before-pa.patch
-
-# Fix CVE-2024-27018
-Patch166: 0001-netfilter-br_netfilter-skip-conntrack-input-hook-for.patch
-
-# Fix CVE-2023-52760
-Patch167: 0001-gfs2-make-function-gfs2_make_fs_ro-to-void-type.patch
-Patch168: 0002-gfs2-Fix-slab-use-after-free-in-gfs2_qd_dealloc.patch
-
-# Fix CVE-2024-46834
-Patch169: 0001-ethtool-Fail-number-of-channels-change-when-it-confl.patch
-Patch170: 0002-ethtool-fail-closed-if-we-can-t-get-max-channel-used.patch
-
-# Fix CVE-2024-41013
-Patch171: 0001-xfs-No-need-for-inode-number-error-injection-in-__xf.patch
-Patch172: 0002-xfs-don-t-walk-off-the-end-of-a-directory-data-block.patch
-
-# Fix CVE-2024-41014
-Patch173: 0001-xfs-add-bounds-checking-to-xlog_recover_process_data.patch
-
-# Fix CVE-2024-47673
-Patch175: 0001-wifi-iwlwifi-mvm-pause-TCM-when-the-firmware-is-stop.patch
-
-# Fix CVE-2024-46848
-Patch176: 0001-perf-x86-intel-Limit-the-period-on-Haswell.patch
-
-# Fix CVE-2024-46802
-Patch177: 0001-drm-amd-display-added-NULL-check-at-start-of-dc_vali.patch
-
-# Fix CVE-2024-46816
-Patch178: 0001-drm-amd-display-handle-invalid-connector-indices.patch
-
-# Fix CVE-2024-50014
-Patch183: 0001-ext4-fix-access-to-uninitialised-lock-in-fc-replay-p.patch
-
-# Fix CVE-2024-50018
-Patch184: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
-
-# Fix CVE-2024-50038
-Patch185: 0001-netfilter-xtables-avoid-NFPROTO_UNSPEC-where-needed.patch
-Patch186: 0002-netfilter-xtables-fix-typo-causing-some-targets-not-.patch
-
-# Fixes CVE-2024-26661 and CVE-2024-26662
-Patch187: 0001-drm-amd-display-Fix-panel_cntl-could-be-null-in-dcn2.patch
-Patch188: 0002-drm-amd-display-Add-NULL-test-for-timing-generator-i.patch
-Patch189: 0003-drm-amd-display-Fix-vs-typos.patch
-
-# Fix CVE-2024-26656
-Patch190: 0001-drm-amdgpu-fix-use-after-free-bug.patch
-
-# Fix CVE-2024-26828
-Patch191: 0001-cifs-fix-underflow-in-parse_server_interfaces.patch
-
-# Fix CVE-2024-35817
-Patch192: 0001-drm-amdgpu-amdgpu_ttm_gart_bind-set-gtt-bound-flag.patch
-
-# Fix CVE-2024-27062
-Patch193: 0001-nouveau-lock-the-client-object-tree.patch
-
-# Fix CVE-2024-26915
-Patch195: 0001-drm-amdgpu-Reset-IH-OVERFLOW_CLEAR-bit.patch
-
-# Fix CVE-2024-35863
-Patch197: smb-client-fix-potential-UAF-in-is_valid_oplock_brea.patch
-
-# Fix CVE-2024-35864
-Patch198: smb-client-fix-potential-UAF-in-smb2_is_valid_lease_.patch
-
-# Fix CVE-2024-35865
-Patch199: smb-client-fix-potential-UAF-in-smb2_is_valid_oplock.patch
-
-# Fix CVE-2026-43071
-Patch200: 0001-dcache-Limit-the-minimal-number-of-bucket-to-two.patch
-
-# Fix CVE-2024-35868
-Patch201: smb-client-fix-potential-UAF-in-cifs_stats_proc_writ.patch
-
-# Fix CVE-2024-35878
-Patch202: 0001-of-Update-of_device_get_modalias.patch
-Patch203: 0002-of-module-prevent-NULL-pointer-dereference-in-vsnpri.patch
-
-# Fix CVE-2021-47200
-Patch204: 0001-drm-prime-Fix-use-after-free-in-mmap-with-drm_gem_tt.patch
-
-# Fix CVE-2021-47101
-Patch205: 0001-net-asix-fix-uninit-value-bugs.patch
-Patch206: 0002-asix-fix-uninit-value-in-asix_mdio_read.patch
-
-# Fix CVE-2023-52531
-Patch207: 0001-wifi-iwlwifi-mvm-Fix-a-memory-corruption-issue.patch
-
-# Fix CVE-2024-49991
-Patch208: 0002-drm-amdkfd-amdkfd_free_gtt_mem-clear-the-correct-poi.patch
-
-# Fix CVE-2026-43125
-Patch209: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
-
-# Fix CVE-2026-43198
-Patch210: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
-
-# Fix CVE-2023-52621
-Patch211: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
-
-# Fix CVE-2024-35839
-Patch213: 0001-netfilter-nfnetlink_log-use-proper-helper-for-fetchi.patch
-Patch214: 0002-netfilter-nf_queue-remove-excess-nf_bridge-variable.patch
-Patch215: 0003-netfilter-propagate-net-to-nf_bridge_get_physindev.patch
-Patch216: 0004-netfilter-bridge-replace-physindev-with-physinif-in-.patch
-
-# Fix CVE-2022-49651
-Patch218: 0001-srcu-Tighten-cleanup_srcu_struct-GP-checks.patch
-
-# Fix CVE-2024-57795
-Patch219: 0001-RDMA-rxe-Remove-the-direct-link-to-net_device.patch
-Patch220: 0002-RDMA-rxe-Fix-the-failure-of-ibv_query_device-and-ibv.patch
-
-# Fix CVE-2024-27056
-Patch221: 0001-iwlwifi-mvm-don-t-check-system_pm_mode-without-mutex.patch
-Patch222: 0002-wifi-iwlwifi-mvm-fix-mvmtxq-stopped-handling.patch
-Patch223: 0003-wifi-iwlwifi-mvm-fix-double-list_add-at-iwl_mvm_mac_.patch
-Patch224: 0004-wifi-iwlwifi-mvm-protect-TXQ-list-manipulation.patch
-Patch225: 0005-wifi-iwlwifi-mvm-ensure-offloading-TID-queue-exists.patch
-
-# Fix CVE-2025-21759
-Patch226: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
-
-# Fix CVE-2021-47432
-Patch227: 0001-lib-generic-radix-tree.c-Don-t-overflow-in-peek.patch
-
-# Fix CVE-2021-47182
-Patch228:  0001-scsi-core-Fix-scsi_mode_sense-buffer-length-handling.patch
-
-# Fix CVE-2024-57982
-Patch229:  0001-xfrm-state-fix-out-of-bounds-read-during-lookup.patch
-
-# Fix CVE-2022-49226
-Patch232:   0001-net-asix-add-proper-error-handling-of-usb-read-error.patch
-
-# Fix CVE-2024-40999
-%ifarch aarch64
-Patch233: 0001-net-ena-Add-validation-for-completion-descriptors-co.patch
-Patch234: 0001-net-ena-add-device-distinct-log-prefix-to-files.patch
-%endif
-
-# CVE-2022-48816
-Patch235: 0001-SUNRPC-lock-against-sock-changing-during-sysfs-read.patch
-
-# Fix CVE-2025-38728
-Patch236: 0001-smb3-fix-for-slab-out-of-bounds-on-mount-to-ksmbd.patch
-
-# CVE-2025-68190
-Patch238: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
-# Fix CVE-2024-42321
-Patch240:  0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
-
-# Fix CVE-2024-38608
-Patch241:  0001-net-mlx5e-Fix-netif-state-handling.patch
-
-# Fix CVE-2024-57798
-Patch242:  0001-drm-dp_mst-Skip-CSN-if-topology-probing-is-not-done-.patch
-Patch243:  0001-drm-dp_mst-Ensure-mst_primary-pointer-is-valid-in-dr.patch
-# Fix CVE-2024-36898
-Patch244: 0001-gpiolib-cdev-fix-uninitialised-kfifo.patch
-# Fix CVE-2024-35932
-Patch245: 0001-drm-vc4-don-t-check-if-plane-state-fb-state-fb.patch
-
-# Fix CVE-2024-38564
-Patch246: 0001-bpf-Add-BPF_PROG_TYPE_CGROUP_SKB-attach-type-enforce.patch
-
-# Fix CVE-2024-38556
-Patch247: 0001-net-mlx5-Add-a-timeout-to-acquire-the-command-queue-.patch
-
-# Fix CVE-2024-26792
-Patch248: 0001-btrfs-fix-double-free-of-anonymous-device-after-snap.patch
-
-# Fix CVE-2024-57876
-Patch249: 0001-drm-dp_mst-Fix-resetting-msg-rx-state-after-topology.patch
-
-# Fix CVE-2024-56551
-Patch250: 0001-drm-amdgpu-fix-usage-slab-after-free.patch
-
-# Fix CVE-2024-53168
-Patch251: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
-
-# Fix CVE-2023-53597
-Patch252: 0001-cifs-fix-mid-leak-during-reconnection-after-timeout-.patch
-
-# Fix CVE-2025-39990
-Patch253: 0001-bpf-Check-the-helper-function-is-valid-in-get_helper.patch
-
-# Fix CVE-2022-49635
-Patch254: 0001-drm-i915-selftests-fix-subtraction-overflow-bug.patch
-
-# Fix CVE-2025-40099
-Patch255: 0001-cifs-parse_dfs_referrals-prevent-oob-on-malformed-in.patch
-# Fix CVE-2022-50406
-Patch256: 0001-iomap-iomap-fix-memory-corruption-when-recording-err.patch
-# Fix CVE-2025-39838
-Patch257: 0001-cifs-prevent-NULL-pointer-dereference-in-UTF16-conve.patch
-# Fix CVE-2025-38068
-Patch258: 0001-lib-lzo-lzo1x_compress.c-make-lzogeneric1x_1_compres.patch
-Patch259: 0002-lib-lzo-lzo1x_compress.c-replace-ternary-operator-wi.patch
-Patch260: 0003-crypto-lzo-Fix-compression-buffer-overrun.patch
-
-# CVE-2023-53111
-Patch265: 0001-loop-Fix-use-after-free-issues.patch
-# CVE-2025-68379
-Patch266: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
-
-# Fix CVE-2024-35939
-Patch267: 0001-dma-direct-Leak-pages-on-dma_set_decrypted-failure.patch
-# Fix CVE-2023-53401
-Patch268: 0001-mm-kmem-fix-a-NULL-pointer-dereference-in-obj_stock_.patch
-Patch269: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
-# Fix CVE-2022-49935
-Patch270: 0001-dma-buf-dma-resv-check-if-the-new-fence-is-really-la.patch
-Patch271: 0002-dma-buf-fix-check-in-dma_resv_add_fence.patch
-
-# Fix CVE-2022-49961
-Patch272:   0001-bpf-Do-mark_chain_precision-for-ARG_CONST_ALLOC_SIZE.patch
-
-# Fix CVE-2025-38527
-Patch279: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
-
-# Fix CVE-2025-40149
-Patch282: 0001-net-Add-locking-to-protect-skb-dev-access-in-ip_outp.patch
-Patch283: 0002-net-netdevice-Add-operation-ndo_sk_get_lower_dev.patch
-Patch284: 0003-tls-Use-__sk_dst_get-and-dst_dev_rcu-in-get_netdev_f.patch
-
-# Fix CVE-2025-40135
-Patch285: 0001-ipv6-use-RCU-in-ip6_xmit.patch
-
-# Fix CVE-2025-39797
-Patch286: 0001-xfrm-Duplicate-SPI-Handling.patch
-Patch287: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
-
-# CVE-2025-39810
-Patch289: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
-Patch290: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
-
-# CVE-2023-53282
-Patch291: 0001-scsi-lpfc-Fix-use-after-free-KFENCE-violation-during.patch
-
-# CVE-2025-38129
-Patch292: 0001-page_pool-fix-inconsistency-for-page_pool_ring_-un-l.patch
-Patch293: 0002-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
-
-# CVE-2022-49622
-Patch297: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
-Patch298: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
-# CVE-2025-68188
-Patch300: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
-
-# CVE-2025-68283
-Patch301: 0001-libceph-replace-BUG_ON-with-bounds-check-for-map-max.patch
-
-# CVE-2023-53510
-Patch302: 0001-scsi-ufs-core-Fix-handling-of-lrbp-cmd.patch
-# CVE-2025-39901
-Patch303: 0001-i40e-replace-snprintf-with-scnprintf-in-debugfs.patch
-
-#CVE-2023-54202
-Patch305: 0001-drm-i915-fix-race-condition-UAF-in-i915_perf_add_con.patch
-#CVE-2023-53794
-Patch306: 0001-cifs-fix-session-state-check-in-reconnect-to-avoid-u.patch
-
-# Fix CVE-2023-53441
-Patch308: 0001-bpf-cpumap-Fix-memory-leak-in-cpu_map_update_elem.patch
-
-# Fix CVE-2023-53577
-Patch309: 0001-bpf-cpumap-Make-sure-kthread-is-running-before-map-u.patch
-# CVE-2023-53867
-Patch310: 0001-ceph-drop-private-list-from-remove_session_caps_cb.patch
-Patch311: 0002-ceph-fix-auth-cap-handling-logic-in-remove_session_c.patch
-Patch312: 0003-ceph-fix-potential-use-after-free-bug-when-trimming-.patch
-# CVE-2024-47745
-Patch313: 0001-i915_vma-Rename-vma_lookup-to-i915_vma_lookup.patch
-Patch314: 0001-mm-add-vma_lookup-update-find_vma_intersection-comme.patch
-Patch315: 0001-mm-mmap.c-don-t-unlock-VMAs-in-remap_file_pages.patch
-Patch316: 0002-mm-call-the-security_mmap_file-LSM-hook-in-remap_fil.patch
-Patch317: 0003-mm-split-critical-region-in-remap_file_pages-and-inv.patch
-# CVE-2026-23069
-Patch318: 0001-vsock-virtio-fix-potential-underflow-in-virtio_trans.patch
-# CVE-2026-23086
-Patch319: 0002-vsock-virtio-cap-TX-credit-to-local-buffer-size.patch
-# CVE-2025-39738
-Patch320: 0001-btrfs-do-not-allow-relocation-of-partially-dropped-s.patch
-# CVE-2025-40362
-Patch321: 0001-ceph-fix-multifs-mds-auth-caps-issue.patch
-# CVE-2026-23189
-Patch322: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
-
-# CVE-2026-23231
-Patch323: 0001-netfilter-nf_tables-register-hooks-last-when-adding-.patch
-Patch324: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
-
-# Fix CVE-2026-45850
-Patch325: 0001-ipvs-skip-ipv6-extension-headers-for-csum-checks.patch
-
-# Fix CVE-2026-46191
-Patch326: 0001-fbcon-Avoid-OOB-font-access-if-console-rotation-fails.patch
-
-# Fix CVE-2026-43304
-Patch335: 0001-libceph-define-and-enforce-CEPH_MAX_KEY_LEN.patch
-# Fix CVE-2026-43456
-Patch337: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
-Patch338: 0001-bonding-prevent-potential-infinite-loop-in-bond_head.patch
-# Fix CVE-2026-43091
-Patch339: 0001-xfrm-Wait-for-RCU-readers-during-policy-netns-exit.patch
-# Fix CVE-2026-46119
-Patch340: 0001-libceph-Fix-slab-out-of-bounds-access-in-auth-messag.patch
-# Fix CVE-2026-23099
-Patch341: 0001-bonding-limit-BOND_MODE_8023AD-to-Ethernet-devices.patch
-# Fix CVE-2026-23204
-Patch342: 0001-net-add-skb_header_pointer_careful-helper.patch
-Patch343: 0002-net-sched-cls_u32-use-skb_header_pointer_careful.patch
+# CVE patches — see kernel_cve_patches.inc (range 3000–3999)
+%include %{SOURCE27}
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -615,10 +188,6 @@ Patch353: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
 Patch354: 0001-Add-rpi-poe-fan-driver.patch
-# CVE-2026-23221
-Patch355: 0001-bus-fsl-mc-Replace-snprintf-and-sprintf-with-sysfs_e.patch
-Patch356: 0002-fsl-mc-Use-driver_set_override-instead-of-open-codin.patch
-Patch357: 0003-bus-fsl-mc-fix-use-after-free-in-driver_override_sho.patch
 %endif
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -868,7 +437,13 @@ manipulation of eBPF programs and maps.
 %setup -q -T -D -b 16 -n linux-%{version}
 %endif
 
+# Apply CVE patches first
+%autopatch -p1 -m3000 -M3999
+
 %autopatch -p1 -m0 -M48
+
+# apparmor
+%autopatch -p1 -m100 -M100
 
 %ifarch x86_64
 # VMW x86
@@ -877,9 +452,6 @@ manipulation of eBPF programs and maps.
 
 # LTP
 %autopatch -p1 -m81 -M82
-
-# CVE: [100..350]
-%autopatch -p1 -m100 -M350
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -1298,6 +870,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Jun 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.258-4
+- Consolidate CVE patches into kernel_cve_patches.inc (range 3000-3999)
 * Tue Jun 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.258-3
 - Fix CVE-2026-23204, CVE-2026-23099
 * Fri Jun 05 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.10.258-2
