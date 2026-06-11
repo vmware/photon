@@ -1,0 +1,133 @@
+From 44366841dd2eca04c0d795a1730e1996d0e98a3c Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Thu, 11 Jun 2026 16:02:08 -0700
+Subject: [PATCH] driver core: platform: use generic driver_override
+ infrastructure
+
+commit 2b38efc05bf7a8568ec74bfffea0f5cfa62bc01d upstream.
+
+When a driver is probed through __driver_attach(), the bus' match()
+callback is called without the device lock held, thus accessing the
+driver_override field without a lock, which can cause a UAF.
+
+Fix this by using the driver-core driver_override infrastructure taking
+care of proper locking internally.
+
+Note that calling match() from __driver_attach() without the device lock
+held is intentional. [1]
+
+Link: https://lore.kernel.org/driver-core/DGRGTIRHA62X.3RY09D9SOK77P@kernel.org/ [1]
+Reported-by: Gui-Dong Han <hanguidong02@gmail.com>
+Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220789
+Fixes: 3d713e0e382e ("driver core: platform: add device binding path 'driver_override'")
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://patch.msgid.link/20260303115720.48783-5-dakr@kernel.org
+Signed-off-by: Danilo Krummrich <dakr@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Dropped slimbus change as CONFIG_SLIMBUS not set and doesn't apply cleanly.
+            Dropped clk-scu.c change as driver_override not touched there.
+            Dropped sound/soc/samsung/i2s.c change as CONFIG_SND_SAMSUNG_I2S not set
+            and the patch doesn't apply cleanly
+            Dropped simple-pm-bus.c change, driver_override not touched there. ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/base/platform.c         | 35 +++++----------------------------
+ include/linux/platform_device.h |  5 -----
+ 2 files changed, 5 insertions(+), 35 deletions(-)
+
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 647066229..d5d92782c 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -439,7 +439,6 @@ static void platform_device_release(struct device *dev)
+ 	kfree(pa->pdev.dev.platform_data);
+ 	kfree(pa->pdev.mfd_cell);
+ 	kfree(pa->pdev.resource);
+-	kfree(pa->pdev.driver_override);
+ 	kfree(pa);
+ }
+ 
+@@ -1041,33 +1040,7 @@ static ssize_t modalias_show(struct device *dev,
+ }
+ static DEVICE_ATTR_RO(modalias);
+ 
+-static ssize_t driver_override_store(struct device *dev,
+-				     struct device_attribute *attr,
+-				     const char *buf, size_t count)
+-{
+-	struct platform_device *pdev = to_platform_device(dev);
+-	int ret;
+-
+-	ret = driver_set_override(dev, &pdev->driver_override, buf, count);
+-	if (ret)
+-		return ret;
+ 
+-	return count;
+-}
+-
+-static ssize_t driver_override_show(struct device *dev,
+-				    struct device_attribute *attr, char *buf)
+-{
+-	struct platform_device *pdev = to_platform_device(dev);
+-	ssize_t len;
+-
+-	device_lock(dev);
+-	len = sysfs_emit(buf, "%s\n", pdev->driver_override);
+-	device_unlock(dev);
+-
+-	return len;
+-}
+-static DEVICE_ATTR_RW(driver_override);
+ 
+ static ssize_t numa_node_show(struct device *dev,
+ 			      struct device_attribute *attr, char *buf)
+@@ -1091,7 +1064,6 @@ static umode_t platform_dev_attrs_visible(struct kobject *kobj, struct attribute
+ static struct attribute *platform_dev_attrs[] = {
+ 	&dev_attr_modalias.attr,
+ 	&dev_attr_numa_node.attr,
+-	&dev_attr_driver_override.attr,
+ 	NULL,
+ };
+ 
+@@ -1151,10 +1123,12 @@ static int platform_match(struct device *dev, struct device_driver *drv)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct platform_driver *pdrv = to_platform_driver(drv);
++	int ret;
+ 
+ 	/* When driver_override is set, only bind to the matching driver */
+-	if (pdev->driver_override)
+-		return !strcmp(pdev->driver_override, drv->name);
++	ret = device_match_driver_override(dev, drv);
++	if (ret >= 0)
++		return ret;
+ 
+ 	/* Attempt an OF style match first */
+ 	if (of_driver_match_device(dev, drv))
+@@ -1340,6 +1314,7 @@ static const struct dev_pm_ops platform_dev_pm_ops = {
+ struct bus_type platform_bus_type = {
+ 	.name		= "platform",
+ 	.dev_groups	= platform_dev_groups,
++	.driver_override = true,
+ 	.match		= platform_match,
+ 	.uevent		= platform_uevent,
+ 	.dma_configure	= platform_dma_configure,
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index e7a83b021..edd5f4c8c 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -30,11 +30,6 @@ struct platform_device {
+ 	struct resource	*resource;
+ 
+ 	const struct platform_device_id	*id_entry;
+-	/*
+-	 * Driver name to force a match.  Do not set directly, because core
+-	 * frees it.  Use driver_set_override() to set or clear it.
+-	 */
+-	const char *driver_override;
+ 
+ 	/* MFD cell pointer */
+ 	struct mfd_cell *mfd_cell;
+-- 
+2.53.0
+

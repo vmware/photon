@@ -1,0 +1,328 @@
+From de73563980f85dd7b77cc13f7a0f5d28658fec31 Mon Sep 17 00:00:00 2001
+From: Danilo Krummrich <dakr@kernel.org>
+Date: Tue, 3 Mar 2026 12:53:18 +0100
+Subject: [PATCH] driver core: generalize driver_override in struct device
+
+[ Upstream commit cb3d1049f4ea77d5ad93f17d8ac1f2ed4da70501 ]
+
+Currently, there are 12 busses (including platform and PCI) that
+duplicate the driver_override logic for their individual devices.
+
+All of them seem to be prone to the bug described in [1].
+
+While this could be solved for every bus individually using a separate
+lock, solving this in the driver-core generically results in less (and
+cleaner) changes overall.
+
+Thus, move driver_override to struct device, provide corresponding
+accessors for busses and handle locking with a separate lock internally.
+
+In particular, add device_set_driver_override(),
+device_has_driver_override(), device_match_driver_override() and
+generalize the sysfs store() and show() callbacks via a driver_override
+feature flag in struct bus_type.
+
+Until all busses have migrated, keep driver_set_override() in place.
+
+Note that we can't use the device lock for the reasons described in [2].
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=220789 [1]
+Link: https://lore.kernel.org/driver-core/DGRGTIRHA62X.3RY09D9SOK77P@kernel.org/ [2]
+Tested-by: Gui-Dong Han <hanguidong02@gmail.com>
+Co-developed-by: Gui-Dong Han <hanguidong02@gmail.com>
+Signed-off-by: Gui-Dong Han <hanguidong02@gmail.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://patch.msgid.link/20260303115720.48783-2-dakr@kernel.org
+[ Use dev->bus instead of sp->bus for consistency; fix commit message to
+  refer to the struct bus_type's driver_override feature flag. - Danilo ]
+Signed-off-by: Danilo Krummrich <dakr@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/base/bus.c         | 43 ++++++++++++++++++++++++++++-
+ drivers/base/core.c        |  2 ++
+ drivers/base/dd.c          | 60 ++++++++++++++++++++++++++++++++++++++
+ include/linux/device.h     | 54 ++++++++++++++++++++++++++++++++++
+ include/linux/device/bus.h |  5 +++-
+ 5 files changed, 162 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index 811d5e9de..b803b980a 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -436,6 +436,36 @@ int bus_for_each_drv(struct bus_type *bus, struct device_driver *start,
+ }
+ EXPORT_SYMBOL_GPL(bus_for_each_drv);
+ 
++static ssize_t driver_override_store(struct device *dev,
++				     struct device_attribute *attr,
++				     const char *buf, size_t count)
++{
++	int ret;
++
++	ret = __device_set_driver_override(dev, buf, count);
++	if (ret)
++		return ret;
++
++	return count;
++}
++
++static ssize_t driver_override_show(struct device *dev,
++				    struct device_attribute *attr, char *buf)
++{
++	guard(spinlock)(&dev->driver_override.lock);
++	return sysfs_emit(buf, "%s\n", dev->driver_override.name);
++}
++static DEVICE_ATTR_RW(driver_override);
++
++static struct attribute *driver_override_dev_attrs[] = {
++	&dev_attr_driver_override.attr,
++	NULL,
++};
++
++static const struct attribute_group driver_override_dev_group = {
++	.attrs = driver_override_dev_attrs,
++};
++
+ /**
+  * bus_add_device - add device to bus
+  * @dev: device being added
+@@ -454,20 +484,29 @@ int bus_add_device(struct device *dev)
+ 		error = device_add_groups(dev, bus->dev_groups);
+ 		if (error)
+ 			goto out_put;
++		if (dev->bus->driver_override) {
++			error = device_add_group(dev, &driver_override_dev_group);
++			if (error)
++				goto out_groups;
++		}
++
+ 		error = sysfs_create_link(&bus->p->devices_kset->kobj,
+ 						&dev->kobj, dev_name(dev));
+ 		if (error)
+-			goto out_groups;
++			goto out_override;
+ 		error = sysfs_create_link(&dev->kobj,
+ 				&dev->bus->p->subsys.kobj, "subsystem");
+ 		if (error)
+ 			goto out_subsys;
+ 		klist_add_tail(&dev->p->knode_bus, &bus->p->klist_devices);
+ 	}
+ 	return 0;
+ 
+ out_subsys:
+ 	sysfs_remove_link(&bus->p->devices_kset->kobj, dev_name(dev));
++out_override:
++	if (dev->bus->driver_override)
++		device_remove_group(dev, &driver_override_dev_group);
+ out_groups:
+ 	device_remove_groups(dev, bus->dev_groups);
+ out_put:
+@@ -526,6 +565,8 @@ void bus_remove_device(struct device *dev)
+ 	sysfs_remove_link(&dev->kobj, "subsystem");
+ 	sysfs_remove_link(&dev->bus->p->devices_kset->kobj,
+ 			  dev_name(dev));
++	if (dev->bus->driver_override)
++		device_remove_group(dev, &driver_override_dev_group);
+ 	device_remove_groups(dev, dev->bus->dev_groups);
+ 	if (klist_node_attached(&dev->p->knode_bus))
+ 		klist_del(&dev->p->knode_bus);
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index a900bde64..2014493b8 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -1840,6 +1840,7 @@ static void device_release(struct kobject *kobj)
+ 	devres_release_all(dev);
+ 
+ 	kfree(dev->dma_range_map);
++	kfree(dev->driver_override.name);
+ 
+ 	if (dev->release)
+ 		dev->release(dev);
+@@ -2491,6 +2492,7 @@ void device_initialize(struct device *dev)
+ #ifdef CONFIG_PROVE_LOCKING
+ 	mutex_init(&dev->lockdep_mutex);
+ #endif
++	spin_lock_init(&dev->driver_override.lock);
+ 	lockdep_set_novalidate_class(&dev->mutex);
+ 	spin_lock_init(&dev->devres_lock);
+ 	INIT_LIST_HEAD(&dev->devres_head);
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 0398f2c98..28b28239a 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -343,6 +343,66 @@ static void __exit deferred_probe_exit(void)
+ }
+ __exitcall(deferred_probe_exit);
+ 
++int __device_set_driver_override(struct device *dev, const char *s, size_t len)
++{
++	const char *new, *old;
++	char *cp;
++
++	if (!s)
++		return -EINVAL;
++
++	/*
++	 * The stored value will be used in sysfs show callback (sysfs_emit()),
++	 * which has a length limit of PAGE_SIZE and adds a trailing newline.
++	 * Thus we can store one character less to avoid truncation during sysfs
++	 * show.
++	 */
++	if (len >= (PAGE_SIZE - 1))
++		return -EINVAL;
++
++	/*
++	 * Compute the real length of the string in case userspace sends us a
++	 * bunch of \0 characters like python likes to do.
++	 */
++	len = strlen(s);
++
++	if (!len) {
++		/* Empty string passed - clear override */
++		spin_lock(&dev->driver_override.lock);
++		old = dev->driver_override.name;
++		dev->driver_override.name = NULL;
++		spin_unlock(&dev->driver_override.lock);
++		kfree(old);
++
++		return 0;
++	}
++
++	cp = strnchr(s, len, '\n');
++	if (cp)
++		len = cp - s;
++
++	new = kstrndup(s, len, GFP_KERNEL);
++	if (!new)
++		return -ENOMEM;
++
++	spin_lock(&dev->driver_override.lock);
++	old = dev->driver_override.name;
++	if (cp != s) {
++		dev->driver_override.name = new;
++		spin_unlock(&dev->driver_override.lock);
++	} else {
++		/* "\n" passed - clear override */
++		dev->driver_override.name = NULL;
++		spin_unlock(&dev->driver_override.lock);
++
++		kfree(new);
++	}
++	kfree(old);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(__device_set_driver_override);
++
+ /**
+  * device_is_bound() - Check if device is bound to a driver
+  * @dev: device to check
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 77d6493c2..a619b1ee6 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -428,6 +428,8 @@ enum struct_device_flags {
+  * 		on.  This shrinks the "Board Support Packages" (BSPs) and
+  * 		minimizes board-specific #ifdefs in drivers.
+  * @driver_data: Private pointer for driver specific info.
++ * @driver_override: Driver name to force a match.  Do not touch directly; use
++ *		     device_set_driver_override() instead.
+  * @links:	Links to suppliers and consumers of this device.
+  * @power:	For device power management.
+  *		See Documentation/driver-api/pm/devices.rst for details.
+@@ -515,6 +517,10 @@ struct device {
+ #ifdef CONFIG_PROVE_LOCKING
+ 	struct mutex		lockdep_mutex;
+ #endif
++	struct {
++		const char	*name;
++		spinlock_t	lock;
++	} driver_override;
+ 	struct mutex		mutex;	/* mutex to synchronize calls to
+ 					 * its driver.
+ 					 */
+@@ -660,6 +666,54 @@ static inline struct device *kobj_to_dev(struct kobject *kobj)
+ 	return container_of(kobj, struct device, kobj);
+ }
+ 
++int __device_set_driver_override(struct device *dev, const char *s, size_t len);
++
++/**
++ * device_set_driver_override() - Helper to set or clear driver override.
++ * @dev: Device to change
++ * @s: NUL-terminated string, new driver name to force a match, pass empty
++ *     string to clear it ("" or "\n", where the latter is only for sysfs
++ *     interface).
++ *
++ * Helper to set or clear driver override of a device.
++ *
++ * Returns: 0 on success or a negative error code on failure.
++ */
++static inline int device_set_driver_override(struct device *dev, const char *s)
++{
++	return __device_set_driver_override(dev, s, s ? strlen(s) : 0);
++}
++
++/**
++ * device_has_driver_override() - Check if a driver override has been set.
++ * @dev: device to check
++ *
++ * Returns true if a driver override has been set for this device.
++ */
++static inline bool device_has_driver_override(struct device *dev)
++{
++	guard(spinlock)(&dev->driver_override.lock);
++	return !!dev->driver_override.name;
++}
++
++/**
++ * device_match_driver_override() - Match a driver against the device's driver_override.
++ * @dev: device to check
++ * @drv: driver to match against
++ *
++ * Returns > 0 if a driver override is set and matches the given driver, 0 if a
++ * driver override is set but does not match, or < 0 if a driver override is not
++ * set at all.
++ */
++static inline int device_match_driver_override(struct device *dev,
++					       const struct device_driver *drv)
++{
++	guard(spinlock)(&dev->driver_override.lock);
++	if (dev->driver_override.name)
++		return !strcmp(dev->driver_override.name, drv->name);
++	return -1;
++}
++
+ /**
+  * device_iommu_mapped - Returns true when the device DMA is translated
+  *			 by an IOMMU
+diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
+index 1ea5e1d15..4d9ed302d 100644
+--- a/include/linux/device/bus.h
++++ b/include/linux/device/bus.h
+@@ -61,6 +61,9 @@ struct fwnode_handle;
+  *			this bus.
+  * @pm:		Power management operations of this bus, callback the specific
+  *		device driver's pm-ops.
++ * @driver_override:	Set to true if this bus supports the driver_override
++ *			mechanism, which allows userspace to force a specific
++ *			driver to bind to a device via a sysfs attribute.
+  * @iommu_ops:  IOMMU specific operations for this bus, used to attach IOMMU
+  *              driver implementations to a bus and allow the driver to do
+  *              bus-specific setup
+@@ -106,11 +109,11 @@ struct bus_type {
+ 
+ 	const struct dev_pm_ops *pm;
+ 
++	bool driver_override;
+ 	const struct iommu_ops *iommu_ops;
+ 
+ 	struct subsys_private *p;
+ 	struct lock_class_key lock_key;
+-
+ 	bool need_parent_lock;
+ };
+ 
+-- 
+2.53.0
+

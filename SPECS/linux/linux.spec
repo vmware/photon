@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.258
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -870,6 +870,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Jun 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.258-5
+- Fix CVE-2026-31516, CVE-2026-31527, CVE-2026-31419
 * Thu Jun 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.258-4
 - Consolidate CVE patches into kernel_cve_patches.inc (range 3000-3999)
 * Tue Jun 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 5.10.258-3

@@ -462,3 +462,13 @@ Patch3185: 0002-net-sched-cls_u32-use-skb_header_pointer_careful.patch
 Patch3186: 0001-bus-fsl-mc-Replace-snprintf-and-sprintf-with-sysfs_e.patch
 Patch3187: 0002-fsl-mc-Use-driver_set_override-instead-of-open-codin.patch
 Patch3188: 0003-bus-fsl-mc-fix-use-after-free-in-driver_override_sho.patch
+
+# CVE-2026-31527
+Patch3189: 0001-driver-core-generalize-driver_override-in-struct-dev.patch
+Patch3190: 0002-driver-core-platform-use-generic-driver_override-inf.patch
+
+# Fix CVE-2026-31516
+Patch3191: 0001-xfrm-prevent-policy_hthresh.work-from-racing-with-ne.patch
+
+# Fix CVE-2026-31419
+Patch3192: 0001-net-bonding-fix-use-after-free-in-bond_xmit_broadcas.patch
