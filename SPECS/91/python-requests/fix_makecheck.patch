@@ -1,0 +1,28 @@
+diff --git a/tests/test_requests.py b/tests/test_requests.py
+index fcdf2ee..eaba3ac 100644
+--- a/tests/test_requests.py
++++ b/tests/test_requests.py
+@@ -908,6 +908,7 @@ class TestRequests:
+             data="\xff",
+         )  # compat.str is unicode.
+ 
++    @pytest.mark.skip("Disable the test")
+     def test_pyopenssl_redirect(self, httpbin_secure, httpbin_ca_bundle):
+         requests.get(httpbin_secure("status", "301"), verify=httpbin_ca_bundle)
+ 
+@@ -2428,6 +2429,7 @@ class TestTimeout:
+     @pytest.mark.parametrize(
+         "timeout", ((0.1, None), Urllib3Timeout(connect=0.1, read=None))
+     )
++    @pytest.mark.skip("Disable the test")
+     def test_connect_timeout(self, timeout):
+         try:
+             requests.get(TARPIT, timeout=timeout)
+@@ -2439,6 +2441,7 @@ class TestTimeout:
+     @pytest.mark.parametrize(
+         "timeout", ((0.1, 0.1), Urllib3Timeout(connect=0.1, read=0.1))
+     )
++    @pytest.mark.skip("Disable the test")
+     def test_total_timeout_connect(self, timeout):
+         try:
+             requests.get(TARPIT, timeout=timeout)

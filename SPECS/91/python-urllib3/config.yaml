@@ -1,0 +1,13 @@
+sources:
+- archive: urllib3-1.26.19.tar.gz
+  archive_sha512sum: 6b72012dbd85434b2441229cbdea2a94583693f904dde349780e1290d581c8a5e10fe00a287a032ed1276349d0078b530f16a133e0f164dcea18105fa3dec79a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'urllib3 is a powerful, sanity-friendly HTTP client for
+        Python. Much of the Python ecosystem already uses urllib3 and you should too. '
+      home_page: https://pypi.python.org/pypi/urllib3
+      license_concluded: Python-2.0 AND Apache-2.0 AND MIT
+      license_declared: Python-2.0 AND Apache-2.0 AND MIT
+      short_summary: A powerful, sanity-friendly HTTP client for Python.
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,90 @@
+From 3c570ffa916084490e1c7ad72806bca99c7c7376 Mon Sep 17 00:00:00 2001
+From: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+Date: Wed, 7 Oct 2026 05:47:22 +0000
+Subject: [PATCH] ssl: Add system-wide compatibility option for X.509
+ verification
+
+Introduce support for a system-wide SSL configuration file,
+/etc/python-ssl.conf, to control the VERIFY_X509_STRICT and
+VERIFY_X509_PARTIAL_CHAIN verification flags set by
+create_urllib3_context().
+
+This allows distributions and system administrators to disable the
+VERIFY_X509_STRICT and VERIFY_X509_PARTIAL_CHAIN verification flags
+without requiring changes to individual applications.
+
+This provides a compatibility mechanism for environments that rely on
+legacy certificate chains while allowing the upstream defaults to remain
+available.
+
+Signed-off-by: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+---
+ src/urllib3/util/ssl_.py | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
+
+diff --git a/src/urllib3/util/ssl_.py b/src/urllib3/util/ssl_.py
+index f6445a4..ffec7db 100644
+--- a/src/urllib3/util/ssl_.py
++++ b/src/urllib3/util/ssl_.py
+@@ -1,5 +1,6 @@
+ from __future__ import annotations
+ 
++import configparser
+ import hashlib
+ import hmac
+ import os
+@@ -21,6 +22,8 @@ ALPN_PROTOCOLS = ["http/1.1"]
+ 
+ _TYPE_VERSION_INFO = tuple[int, int, int, str, int]
+ 
++_SSL_CONFIG = "/etc/python-ssl.conf"
++
+ # Maps the length of a digest to a possible hash function producing this digest
+ HASHFUNC_MAP = {
+     length: getattr(hashlib, algorithm, None)
+@@ -28,6 +31,26 @@ HASHFUNC_MAP = {
+ }
+ 
+ 
++def _read_ssl_config() -> tuple[bool, bool]:
++    # Upstream defaults to True, True for Python 3.13+.
++    # Photon defaults to False, False, same as python3's ssl module.
++    cfg = configparser.ConfigParser()
++
++    if not os.path.exists(_SSL_CONFIG):
++        return False, False
++
++    try:
++        cfg.read(_SSL_CONFIG)
++
++        strict = cfg.getboolean("ssl", "verify_x509_strict", fallback=False)
++        partial = cfg.getboolean("ssl", "verify_x509_partial_chain", fallback=False)
++    except Exception:
++        # Ignore malformed config and use defaults
++        return False, False
++
++    return strict, partial
++
++
+ def _is_has_never_check_common_name_reliable(
+     openssl_version: str,
+ ) -> bool:
+@@ -292,8 +315,13 @@ def create_urllib3_context(
+         # In Python 3.13+ ssl.create_default_context() sets VERIFY_X509_PARTIAL_CHAIN
+         # and VERIFY_X509_STRICT so we do the same
+         if sys.version_info >= (3, 13):
+-            verify_flags |= VERIFY_X509_PARTIAL_CHAIN
+-            verify_flags |= VERIFY_X509_STRICT
++            _VERIFY_X509_STRICT_ENABLED, _VERIFY_X509_PARTIAL_CHAIN_ENABLED = _read_ssl_config()
++
++            if _VERIFY_X509_PARTIAL_CHAIN_ENABLED:
++                verify_flags |= VERIFY_X509_PARTIAL_CHAIN
++
++            if _VERIFY_X509_STRICT_ENABLED:
++                verify_flags |= VERIFY_X509_STRICT
+ 
+     context.verify_flags |= verify_flags
+ 
+-- 
+2.53.0
+

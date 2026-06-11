@@ -1,7 +1,15 @@
 sources:
-- archive: urllib3-1.26.19.tar.gz
-  archive_sha512sum: 6b72012dbd85434b2441229cbdea2a94583693f904dde349780e1290d581c8a5e10fe00a287a032ed1276349d0078b530f16a133e0f164dcea18105fa3dec79a
-  skip_validation: true
+- archive: urllib3-2.8.0.tar.gz
+  archive_sha512sum: 3104f0b89b9d7421b0b13ff34c9e68a315772f2e1271c8b02da516b7dc4108676e632145ab9b390c3d9033019253f36a48ca44c5b89269058eebb0d21f472383
+  archive_type: upstream
+  name: urllib3-2.8.0
+  version: 2.8.0
+  url: https://github.com/urllib3/urllib3/releases/download/2.8.0/urllib3-2.8.0.tar.gz
+  repo_url: https://github.com/urllib3/urllib3
+  commit_id: b1d30ab61fe0db8f11092805e8c5ac43e091064a
+  missing: [.coveragerc, .eslintrc.yml, .github, .pre-commit-config.yaml, .readthedocs.yml,
+    CODE_OF_CONDUCT.md, PKG-INFO, _version.py, changelog, ci, eslint.config.cjs, notes,
+    noxfile.py, osv-scanner.toml, setup.cfg, towncrier.toml]
   spdx:
     package:
       detailed_description: 'urllib3 is a powerful, sanity-friendly HTTP client for

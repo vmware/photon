@@ -1,7 +1,13 @@
 sources:
-- archive: requests-2.28.1.tar.gz
-  archive_sha512sum: c123ec07171c2c7c34e4173b97750adfa313b4312d91c0d58e4eb8750361604017e5b370c23ec886d2cbf704f9074ec5ad0fa9c2cd8e6f9521532adafff39d41
-  skip_validation: true
+- archive: requests-2.34.2.tar.gz
+  archive_type: upstream
+  archive_sha512sum: 2c0a5019366812778e5090d6ee931cb98bf6728ae1cdf50b5e51a46804faa771c2018fe258b51d1c2f8a6c3db9d3de41548d77b1a1f35e871fc6d1628fb5d63c
+  name: requests-2.34.2
+  version: 2.34.2
+  url: https://github.com/psf/requests/archive/v2.34.2/requests-2.34.2.tar.gz
+  repo_url: https://github.com/psf/requests.git
+  commit_id: 6e83187b8feb273ed4c6cdab5efd8d54901dfab3
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Requests is an Apache2 Licensed HTTP library, written
@@ -16,7 +22,7 @@ sources:
         Content + Unicode URL Support - Simple Authentication + Simple URL + HTTP
         Auth Registry '
       home_page: http://python-requests.org
-      license_concluded: MIT AND Apache-2.0
-      license_declared: MIT AND Apache-2.0
+      license_concluded: Apache-2.0 AND ISC AND LGPL-2.0-or-later AND MIT
+      license_declared: Apache-2.0 AND ISC AND LGPL-2.0-or-later AND MIT
       short_summary: Awesome Python HTTP Library That's Actually Usable
       supplier: 'Organization: Broadcom, Inc.'

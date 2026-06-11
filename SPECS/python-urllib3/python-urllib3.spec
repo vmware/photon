@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
-Version:        1.26.19
-Release:        9%{?dist}
+Version:        2.8.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -14,21 +14,20 @@ Source0: https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0: 0001-ssl-Add-system-wide-compatibility-option-for-X.509-v.patch
+
 # Note: If you are fixing a CVE here, please check for the same in python3-pip
-Patch0: CVE-2025-50181.patch
-Patch1: CVE-2025-66418.patch
-Patch2: CVE-2025-66471-1.patch
-Patch3: CVE-2025-66471-2.patch
-Patch4: CVE-2026-21441-1.patch
-Patch5: CVE-2026-21441-2.patch
-Patch6: CVE-2026-9375.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:  python3-pip
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-hatchling
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-hatch-vcs
 
 Requires:       python3
 
@@ -46,10 +45,11 @@ Much of the Python ecosystem already uses urllib3 and you should too.
 rm -rf test/with_dummyserver/
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 nofiles=$(ulimit -n)
@@ -72,11 +72,13 @@ PYTHONPATH="%{buildroot}%{$python3_sitelib}" pytest \
                 urllib3 test
 ulimit -n $nofiles
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 26 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.0-1
+- Upgrade to version 2.8.0, honor /etc/python-ssl.conf for X.509 verify flags
 * Tue Jun 30 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-9
 - Fix CVE-2026-9375
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.26.19-8
