@@ -270,3 +270,20 @@ Patch3111: 0001-9p-xen-protect-xen_9pfs_front_free-against-concurren.patch
 
 # Fix CVE-2026-23278
 Patch3112: 0001-netfilter-nf_tables-always-walk-all-pending-catchall.patch
+
+# Fix CVE-2026-31505
+Patch3113: 0001-iavf-fix-out-of-bounds-writes-in-iavf_get_ethtool_st.patch
+# Fix CVE-2026-31502
+Patch3114: 0001-team-fix-header_ops-type-confusion-with-non-Ethernet.patch
+
+# Fix CVE-2026-31557
+Patch3115: 0001-nvmet-move-async-event-work-off-nvmet-wq.patch
+
+# Fix CVE-2026-23383
+Patch3116: 0001-bpf-arm64-Force-8-byte-alignment-for-JIT-buffer.patch
+
+# Fix CVE-2026-31419
+Patch3117: 0001-net-bonding-fix-use-after-free-in-bond_xmit_broadcas.patch
+
+# Fix CVE-2026-3118
+Patch3118: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
