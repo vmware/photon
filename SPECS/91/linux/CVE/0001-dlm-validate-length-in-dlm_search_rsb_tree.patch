@@ -1,0 +1,41 @@
+From 67288113c5e6cf9e659b4065c0ed6f16100e0c71 Mon Sep 17 00:00:00 2001
+From: Ezrak1e <ezrakiez@gmail.com>
+Date: Tue, 20 Jan 2026 10:35:06 -0500
+Subject: [PATCH] dlm: validate length in dlm_search_rsb_tree
+
+[ Upstream commit 080e5563f878c64e697b89e7439d730d0daad882 ]
+
+The len parameter in dlm_dump_rsb_name() is not validated and comes
+from network messages. When it exceeds DLM_RESNAME_MAXLEN, it can
+cause out-of-bounds write in dlm_search_rsb_tree().
+
+Add length validation to prevent potential buffer overflow.
+
+Signed-off-by: Ezrak1e <ezrakiez@gmail.com>
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
+[ Brennan : Vulnerable memcpy is in rsb_cmp() instead ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/dlm/lock.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index fa81cd79a..e4d3cf155 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -449,6 +449,11 @@ int dlm_search_rsb_tree(struct rb_root *tree, char *name, int len,
+ 	struct dlm_rsb *r;
+ 	int rc;
+
++	if (len > DLM_RESNAME_MAXLEN) {
++		*r_ret = NULL;
++		return -EINVAL;
++	}
++
+ 	while (node) {
+ 		r = rb_entry(node, struct dlm_rsb, res_hashnode);
+ 		rc = rsb_cmp(r, name, len);
+--
+2.53.0
+

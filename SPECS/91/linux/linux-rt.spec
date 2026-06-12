@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.175
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -541,6 +541,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Jun 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-6
+- Fix CVE-2026-43239, CVE-2026-43215, CVE-2026-43125
 * Wed Jun 10 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.175-5
 - Fix CVE-2026-31527, CVE-2026-31516
 * Mon Jun 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.175-4

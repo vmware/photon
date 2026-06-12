@@ -251,3 +251,12 @@ Patch3104: 0001-driver-core-platform-use-generic-driver_override-inf.patch
 
 # Fix CVE-2026-31516
 Patch3105: 0001-xfrm-prevent-policy_hthresh.work-from-racing-with-ne.patch
+
+# Fix CVE-2026-43239
+Patch3106: 0001-smb-client-prevent-races-in-query_interfaces.patch
+
+# Fix CVE-2026-43215
+Patch3107: 0001-cifs-Fix-locking-usage-for-tcon-fields.patch
+
+# Fix CVE-2026-43125
+Patch3108: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
