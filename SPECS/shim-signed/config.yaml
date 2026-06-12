@@ -1,6 +1,6 @@
 sources:
-- archive: shim-signed-15.8.tar.xz
-  archive_sha512sum: c97bda7d637951c62a346d7d814d9c896b63308161fa3fa6dcf28e49e9aa0bc898ea8a61bf163bde159437f397a5b34a2b7e0238819bef71b1438d30fd4e84ad
+- archive: shim-signed-16.1.tar.xz
+  archive_sha512sum: 49c4dc14cda8d6447e05621eaa331139a09408a27f6cd00d2e5cd2ea843c67dfbcfd201fa9a9011bb9a0aeb48938400b2cccfc7d1d433573294b0bb08a6b80b2
   skip_validation: true
   spdx:
     package:

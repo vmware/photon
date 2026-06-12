@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 Summary:    Photon shim
 Name:       shim-signed
-Version:    15.8
-Release:    5%{?dist}
+Version:    16.1
+Release:    1%{?dist}
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
 Vendor:     VMware, Inc.
@@ -45,6 +45,8 @@ cp revocations.efi %{buildroot}/boot/efi/EFI/BOOT/revocations.efi
 /boot/efi/EFI/BOOT/revocations.efi
 
 %changelog
+* Fri Jun 12 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 16.1-1
+- Version update.
 * Mon Jan 20 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> 15.8-5
 - Add network required option with PE image signing
 * Mon Dec 16 2024 Kuntal Nayak <kuntal.nayak@broadcom.com> 15.8-4
