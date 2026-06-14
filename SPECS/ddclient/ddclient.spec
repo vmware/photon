@@ -2,20 +2,21 @@
 
 Name:           ddclient
 Version:        3.9.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://sourceforge.net/p/ddclient/wiki/Home/
 Summary:        Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider
 Group:          Applications
-Source0:        http://downloads.sourceforge.net/project/ddclient/ddclient/ddclient-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0:        http://downloads.sourceforge.net/project/ddclient/ddclient/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
 Requires:       perl
 Requires:       perl-IO-Socket-SSL
-Requires:       perl-JSON-Any
 Requires:       perl-Data-Validate-IP
-Vendor:         VMware, Inc.
-Distribution:   Photon
 
 %description
 DDclient is a Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider.
@@ -23,20 +24,19 @@ It was originally written by Paul Burry and is now mostly by wimpunk.
 It has the capability to update more than just dyndns and it can fetch your WAN-ipaddress in a few different ways.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1
 
 %install
+install -vdm755 %{buildroot}%{_sbindir}
+cp %{name} %{buildroot}%{_sbindir}/
 
-install -vdm755 %{buildroot}/usr/sbin
-cp ddclient %{buildroot}/usr/sbin/
+install -vdm755 %{buildroot}%{_sysconfdir}/%{name}
+install -vdm755 %{buildroot}%{_var}/cache/%{name}
+install -vdm755 %{buildroot}%{_unitdir}
 
-install -vdm755 %{buildroot}/etc/ddclient
-install -vdm755 %{buildroot}/var/cache/ddclient
-install -vdm755 %{buildroot}/usr/lib/systemd/system
+cp sample-etc_ddclient.conf %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
 
-cp sample-etc_ddclient.conf %{buildroot}/etc/ddclient/ddclient.conf
-
-cat << EOF >> %{buildroot}/usr/lib/systemd/system/ddclient.service
+cat << EOF >> %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=Dynamic DNS Update Client
 After=network.target
@@ -44,8 +44,8 @@ PartOf=network-online.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/ddclient.pid
-ExecStart=/usr/sbin/ddclient
+PIDFile=%{_rundir}/%{name}.pid
+ExecStart=%{_sbindir}/%{name}
 
 [Install]
 WantedBy=network-online.target
@@ -53,12 +53,14 @@ EOF
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/ddclient/ddclient.conf
-%{_sbindir}/ddclient
-%{_lib}/systemd/system/ddclient.service
-%dir /var/cache/ddclient
+%{_sysconfdir}/%{name}/%{name}.conf
+%{_sbindir}/%{name}
+%{_unitdir}/%{name}.service
+%dir %{_var}/cache/%{name}
 
 %changelog
+* Sun Jun 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.1-4
+- Drop perl-JSON-Any dependency
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 3.9.1-3
 - Disable debuginfo package
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.9.1-2

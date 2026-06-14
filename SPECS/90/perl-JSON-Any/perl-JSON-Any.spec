@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 92
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        Wrapper Class for the various JSON classes
 Name:           perl-JSON-Any
 Version:        1.40
-Release:        1.1.1%{?dist}
+Release:        1.1.2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~ether/JSON-Any-1.39/lib/JSON/Any.pm
 Source0:        http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/JSON-Any-%{version}.tar.gz
@@ -42,6 +42,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man?/*
 
 %changelog
+* Sun Jun 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.40-1.1.2
+- Fix build_if condition
 * Fri Mar 13 2026 Dweep Advani <dweep.advani@broadcom.com> 1.40-1.1.1
 - Bump up for SPECS/90
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.40-1
