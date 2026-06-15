@@ -5,15 +5,15 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT 568f755
-%define DOCKER_CLI_GITCOMMIT 79eb04c
+%define DOCKER_ENGINE_GITCOMMIT 285b471
+%define DOCKER_CLI_GITCOMMIT d1c06ef
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
 
 Summary:        Docker
 Name:           docker
-Version:        29.5.2
+Version:        29.5.3
 Release:        1%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -297,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Mon Jun 15 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.5.3-1
+- Upgrade to v29.5.3
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 29.5.2-1
 - Upgrade to v29.5.2
 * Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.4.1-3
