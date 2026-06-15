@@ -136,7 +136,6 @@ function is_precheck_running() {
 # Returns: 0, when package is removed before upgrade, otherwise, 1
 function is_package_removed_before_upgrade() {
   local p
-
   for p in $(builtin echo "$RM_PKGS_PRE" | ${TR} , ' ') ${residual_pkgs_arr[@]}; do
     if [ "$p" = "$1" ]; then
       return 0
@@ -379,6 +378,26 @@ function find_extra_erased_pkgs() {
   fi
   printf '%s\n' ${expected_pkgs_arr[@]} $* | $SORT | $UNIQ -u
   return ${#unexpected_pkgs_arr[@]}
+}
+
+# Usage: sanitize_extra_erased_pkgs_arr
+# Removes any packages from the extra_erased_pkgs_arr which are already
+# marked for removal before upgrade or are replaced by other packages
+function sanitize_extra_erased_pkgs_arr() {
+  local p
+  local q
+  local len=0
+  local i=0
+
+  len=${#extra_erased_pkgs_arr[@]}
+  for ((i=0; i<len; i++)); do
+    for q in ${deprecated_pkgs_to_remove_arr[@]} ${!replaced_pkgs_map[@]}; do
+      if [ "${extra_erased_pkgs_arr[$i]}" = "$q" ]; then
+        unset extra_erased_pkgs_arr[$i]
+        break
+      fi
+    done
+  done
 }
 
 #Some packages are deprecaed in 5.0, lets remove them before upgrading
@@ -821,6 +840,7 @@ function verify_version_and_upgrade() {
                                  ${!replaced_pkgs_map[@]}
         )
       )
+      sanitize_extra_erased_pkgs_arr
       if is_precheck_running; then
         if [ $rc -eq 0 ]; then
           echo "Prechecks: PASS, exiting with status($rc)."
@@ -836,6 +856,7 @@ function verify_version_and_upgrade() {
                      ${!replaced_pkgs_map[@]} \
                      ${extra_erased_pkgs_arr[@]}
       record_enabled_disabled_services
+      # The residual pkgs are removed upfront to circumvent libmetalink error
       remove_unsupported_packages
       pre_upgrade_rm_pkgs
       rebuilddb
@@ -845,7 +866,6 @@ function verify_version_and_upgrade() {
       rebuilddb
       fix_post_upgrade_config
       remove_residual_pkgs
-
       local install_all_rc=0
       if [ -n "$INSTALL_ALL" ]; then
         install_all_from_repo
