@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -30,6 +30,7 @@ Source5: python_ghost_pyc.sh
 Source6: macros.bytecompile.python
 
 Patch0: 0001-Disallow-md5-usage-when-usedforsecurity-is-set-and-op.patch
+Patch1: CVE-2026-7210.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -312,6 +313,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Mon Jun 15 2026 Prashant S Chauhan <prashant.singh-chauham@broadcom.com> 3.14.5-2
+- Fix CVE-2026-7210
 * Wed May 20 2026 Prashant S Chauhan <prashant.singh-chauham@broadcom.com> 3.14.5-1
 - Update to 3.14.5
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.14.1-5
