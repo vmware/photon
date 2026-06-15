@@ -1,11 +1,11 @@
 sources:
-- archive: ruby-4.0.1.tar.gz
-  archive_sha512sum: f4eead09c7355b878a34343dd8cfb9c4c36f02ad3b9a7fd42981d722444beca0182ddea4fc771e2e01a05d9f14978a979ba0ba3590d366f53b6947f43fd78aff
+- archive: ruby-4.0.5.tar.gz
+  archive_sha512sum: ce50c8dda1479f5a84771df37cdb23f0183bba900494e7492bb90d4b0a3e60ff28b799f3c469977f5f7c1335a6c1f3400a9ca52cd4acfcbed08f016d352943f4
   license_manual_review:
   - file_paths:
-    - ruby-4.0.1/lib/rubygems/util/licenses.rb
-    sha256sum: 4419e64d89791e9103cbf4406b394f85a2d466f1297268b3f171de8259584670
-    spdx_exp: 2-clause BSDL
+    - ruby-4.0.5/lib/rubygems/util/licenses.rb
+    sha256sum: 61988fbc87fb4a8aef2255bec853ef7ea0f7cd8619f456324fa64ef627147df0
+    spdx_exp: BSD-2-Clause
   skip_validation: true
   spdx:
     package:

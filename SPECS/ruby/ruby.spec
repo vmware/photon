@@ -2,14 +2,14 @@
 
 Summary:        Ruby
 Name:           ruby
-Version:        4.0.1
-Release:        2%{?dist}
+Version:        4.0.5
+Release:        1%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://cache.ruby-lang.org/pub/ruby/3.4/%{name}-%{version}.tar.gz
+Source0:        https://cache.ruby-lang.org/pub/ruby/4.0/%{name}-%{version}.tar.gz
 
 Source1:        macros.ruby
 
@@ -108,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Mon Jun 15 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.5-1
+- Upgrade to ruby 4.0.5
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.1-2
 - Extended to build for subrelease 91 and above
 * Thu Feb 26 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.1-1
