@@ -4,7 +4,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.20.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -21,6 +21,7 @@ Source4: license.txt
 
 # Upstream pins wheel==0.45.1; distro python3-wheel is newer — relax for offline PEP517 build.
 Patch0: relax-pyproject-wheel-pin.patch
+Patch1: CVE-2026-11332.patch
 
 BuildArch: noarch
 
@@ -84,6 +85,8 @@ touch -r %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}_collection.py
 %{_rpmconfigdir}/%{name}_collection.py
 
 %changelog
+* Mon Jun 15 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.20.4-3
+- Fix CVE-2026-11332
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.20.4-2
 - Extended to build for subrelease 91 and above
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.20.4-1
