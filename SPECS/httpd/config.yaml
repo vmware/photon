@@ -1,11 +1,11 @@
 sources:
-- archive: httpd-2.4.67.tar.bz2
-  archive_sha512sum: 5ae29fc8edb253453271613cb18754de0d943d1f82361059c81f8ebe1f057b894675506550bd1341bfa9416226b569a7bac08f497c53e8bb6dede87f4f41eae4
-  name: httpd-2.4.67
-  version: 2.4.67
-  url: https://dlcdn.apache.org/httpd/httpd-2.4.67.tar.bz2
+- archive: httpd-2.4.68.tar.bz2
+  archive_sha512sum: 134a5bbd3ffe97523ac750490531bcb9441c532cedf0229aa006aa1368e9d25040507c6f519bed6754044f62c371f7c7f9a11b6a311f79b9680d478bf4373eb3
+  name: httpd-2.4.68
+  version: 2.4.68
+  url: https://dlcdn.apache.org/httpd/httpd-2.4.68.tar.bz2
   repo_url: https://github.com/apache/httpd.git
-  commit_id: 1284d059e417308158be7594be7b14d321a2ac61
+  commit_id: 736bb657405eb73fd68a64772c3a908807bdb887
   archive_type: upstream
   skip_list: [VERSIONING, ab.c, ROADMAP]
   missing: ['*.fr', '*.xml', '*.tr', '*.ja', '*.ko', '*.meta', '*.ru', '*.be', '*.xsl', '*.de', '*.es', '*-br', '*-cn', 'tmp', 'apr_common.m4', 'config.sub', 'STATUS', '.deps', 'ap_config_auto.h.in', 'configure', 'ltmain.sh', 'changes-entries', 'challenges', 'staging', 'config.guess', 'httpd.spec', 'index.xml.da']
