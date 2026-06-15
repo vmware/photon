@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        8.0.26
+Version:        8.0.28
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,7 +19,7 @@ BuildArch: x86_64
 # https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
 # https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
 Source0: %{name}-%{version}-linux-x64.tar.gz
-%define sha512 %{name}=af0ac3aea50162aff62612883ab5ecba3c0dfe7cc0c50fba70342fe076c1cab242081cf84d1d130a4613ea8b4867139a3234433f42a66b1d86e4d4c174ef0751
+%define sha512 %{name}=de3d06fbd5bd3ffe413e798867bbef24e218b863c7a224ca7f63c84e0b282c588fa0579a913d36e276e93516b24f3d32edf85ebb6d61152dbfdb8b81e8dc1cf1
 
 BuildRequires: lttng-ust-devel
 
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*
 
 %changelog
+* Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.28-1
+- Upgrade to v8.0.28
 * Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.26-1
 - Upgrade to v8.0.26
 * Fri May 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.36-1

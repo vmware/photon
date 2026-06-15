@@ -3,7 +3,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        8.0.420
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -21,7 +21,7 @@ BuildArch: x86_64
 Source0: %{name}-%{version}-linux-x64.tar.gz
 %define sha512 %{name}=36c68c1be9d5c6f24cd8e6bd4b6d36bfd7ab724ac7e3499fb13e42e70a9003310e5ee5759ed19ced1f0ecd3d26a55f135c7e72d6f788e7d44f5f0eaa72ad9a07
 
-Requires: dotnet-runtime = 8.0.26
+Requires: dotnet-runtime = 8.0.28
 Requires: icu >= 70.1
 
 %description
@@ -46,6 +46,8 @@ echo "%{_libdir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-2
+- Bump version as a part of dotnet-runtime upgrade
 * Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-1
 - Upgrade to v8.0.420
 * Fri May 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.428-1

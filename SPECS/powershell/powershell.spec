@@ -4,14 +4,12 @@
 # Use `nofortify` until powershell move to =3.
 %global security_hardening nofortify
 
-%global ps_native_ver   7.4.0
-%global libmi_tag       1.9.0-0
 %global gen_nuget_deps  0
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.4.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -32,27 +30,14 @@ BuildArch:      x86_64
 Source0: %{name}-%{version}.tar.gz
 %define sha512 %{name}=dd046eab73beb5f814d039084c09a8ade607b3a330f5d2906da1666d8a36c81848927186f17059cf77f2f15e9958f0d5ab5407e2d8d66795b38b69ac1a686e32
 
-# Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
-# And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
-# PowerShell-Native uses googletest submodule in it, we need that as well
-Source1: %{name}-native-%{ps_native_ver}.tar.gz
-%define sha512 %{name}-native=6f00c3b7bc45307530bd04065138c4d0f613dcae3cca6bfbca3544c1cf4012b195f230a1b3d1968c1cf7f62fa1850ca6325ab81c668932886fc22fb7284e4370
-
 # This is downloaded from github release page of PowerShell
 # For example:
 # https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
-Source2: %{name}-%{version}-linux-x64.tar.gz
+Source1: %{name}-%{version}-linux-x64.tar.gz
 %define sha512 %{name}-%{version}-linux=ba135fda6b61f17d66764cc002171a2bd812e0c6e108d7b8d4e8eabf833b6deea2c6c235d8549836b100bbe050a6d332ed3ffe85b326a8b1836cef480fcc6290
 
-Source3: build.sh
-Source4: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
-
-# The default libmi.so file that comes with powershell (for example powershell-7.1.5-linux-x64.tar.gz)
-# needs libcrypto.1.0.0, we need it to be linked with openssl-3.x (what's present in Photon)
-# Hence we need to re-build it.
-# https://github.com/microsoft/omi/archive/refs/tags/v1.6.9-0.tar.gz
-Source5: omi-%{libmi_tag}.tar.gz
-%define sha512 omi-%{libmi_tag}=73b60237173079707de8dbab29c3225643a8bf262348911724d542409b674f0a6593b046b87801e6998b0aad50b8dfe14748a2a6de115564e129bbb035b76759
+Source2: build.sh
+Source3: Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
 # After extracting Powershell original archive (Source0 in this spec), run:
 # dotnet restore .
@@ -60,11 +45,13 @@ Source5: omi-%{libmi_tag}.tar.gz
 # mv $HOME/.nuget <NAME>-<VERSION>-nuget-deps
 # tar cJf <NAME>-<VERSION>-nuget-deps.tar.xz <NAME>-<VERSION>-nuget-deps
 %if 0%{?gen_nuget_deps} == 0
-Source6: %{name}-%{version}-nuget-deps.tar.xz
+Source4: %{name}-%{version}-nuget-deps.tar.xz
 %define sha512 %{name}-%{version}-nuget-deps=064d743352655dff62910f71a5aa3c03fa59d1c872bee0b6260862b31ae57d896b45a97c26af4e8964f6fc89e754c4514f73a1e55a1d11c4af5f01414cbf8f91
 %endif
 
+%if 0%{?gen_nuget_deps} == 1
 Patch0: fix-nuget-url.patch
+%endif
 
 BuildRequires:  dotnet-sdk
 BuildRequires:  dotnet-runtime
@@ -97,21 +84,16 @@ It consists of a cross-platform command-line shell and associated scripting lang
 # Using autosetup is not feasible
 %setup -qn PowerShell-%{version}
 # Using autosetup is not feasible
-%setup -qcTDa 1 -n PowerShell-Native
-# Using autosetup is not feasible
-%setup -qcTDa 2 -n %{name}-linux-%{version}
-# Using autosetup is not feasible
-%setup -qcTDa 5 -n omi
+%setup -qcTDa 1 -n %{name}-linux-%{version}
 
 pushd %{_builddir}/PowerShell-%{version}
 
-%patch -p1 0
-
 %if 0%{?gen_nuget_deps} == 0
-tar xf %{SOURCE6}
-[ -d ${HOME}/.nuget ] && rm -r ${HOME}/.nuget
+tar xf %{SOURCE4}
+[ -d ${HOME}/.nuget ] && rm -rf ${HOME}/.nuget
 mv %{name}-%{version}-nuget-deps ${HOME}/.nuget
 %else
+%patch -p1 0
 dotnet restore .
 mv $HOME/.nuget %{name}-%{version}-nuget-deps
 tar cJf %{name}-%{version}-nuget-deps.tar.xz %{name}-%{version}-nuget-deps
@@ -124,57 +106,28 @@ exit 1
 popd
 
 %build
-# Build libmi
-pushd %{_builddir}/omi/omi-%{libmi_tag}/Unix
-sh ./configure
-%make_build
-mv ./output/lib/libmi.so %{_builddir}/%{name}-linux-%{version}
-popd
-
 pushd %{_builddir}/PowerShell-%{version}
-cp %{SOURCE3} .
-cp %{SOURCE4} src
+cp %{SOURCE2} .
+cp %{SOURCE3} src
 bash -x build.sh
 popd
 
-pushd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}
-pushd src/libpsl-native
-%{__cmake} -DCMAKE_BUILD_TYPE=Debug
-%make_build
-popd
-popd
-
 %install
-mkdir -p %{buildroot}%{_libdir}/%{name} \
-         %{buildroot}%{_docdir}/%{name} \
+mkdir -p %{buildroot}%{_docdir}/%{name} \
          %{buildroot}%{_bindir} \
-         %{buildroot}%{_libdir}/%{name}/ref
+         %{buildroot}%{_libdir}/%{name}
 
 cd %{_builddir}/PowerShell-%{version}
 mv bin/ThirdPartyNotices.txt bin/LICENSE.txt %{buildroot}%{_docdir}/%{name}
 cp -a bin/* %{buildroot}%{_libdir}/%{name}
-rm -f %{buildroot}%{_libdir}/%{name}/libpsl-native.so
-
-cp -a %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/%{name}-unix/libpsl-native.so \
-        %{buildroot}%{_libdir}/%{name}
 
 chmod 755 %{buildroot}%{_libdir}/%{name}/pwsh
 ln -srv %{buildroot}%{_libdir}/%{name}/pwsh %{buildroot}%{_bindir}/pwsh
 
-cp %{_builddir}/%{name}-linux-%{version}/ref/* %{buildroot}%{_libdir}/%{name}/ref
-cp %{_builddir}/%{name}-linux-%{version}/libmi.so %{buildroot}%{_libdir}/%{name}/
+cp -a %{_builddir}/%{name}-linux-%{version}/ref %{buildroot}%{_libdir}/%{name}/
 
 cp -a %{_builddir}/%{name}-linux-%{version}/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
       %{buildroot}%{_libdir}/%{name}/Modules
-
-%if 0%{?with_check}
-%check
-cd %{_builddir}/PowerShell-%{version}/test/xUnit
-dotnet test
-export LANG=en_US.UTF-8
-cd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/libpsl-native
-%make_build test
-%endif
 
 %post
 #in case of upgrade, delete the soft links
@@ -201,6 +154,9 @@ fi
 %{_docdir}/*
 
 %changelog
+* Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.15-2
+- Bump version as a part of dotnet-runtime upgrade
+- Cleanup spec
 * Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.4.15-1
 - Upgrade to v7.4.15
 * Tue Sep 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.2.24-2
