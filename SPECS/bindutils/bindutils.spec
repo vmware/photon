@@ -4,7 +4,7 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.18.27
+Version:        9.18.49
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
@@ -13,12 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512  bind=d0c89821fef38e531d65b465adeb5946589775e6a4d5e2068e969f1106c961d3b202af19247b9e20f9fbde645be10d610478edf89ed0d83b39d38fb4353c693a
-
-Patch0: bind-CVE-2024-0760.patch
-Patch1: bind-CVE-2024-1737.patch
-Patch2: bind-CVE-2024-1975.patch
-Patch3: bind-CVE-2024-4076.patch
+%define sha512  bind=e5259db8b9fdb3940d4e1d95978514692777a3675fc85a83db30e049d80d8150d10e672d51eeb885a94c6bbd4573ff8fe49248117c24ff155197a24a26b09544
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
@@ -93,6 +88,10 @@ chmod 0770 %{_home_dir}
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.18.49-1
+- Upgrade bindutils to version 9.18.49.
+- Remove obsolete CVE patches for CVE-2024-0760, CVE-2024-1737,
+- CVE-2024-1975, CVE-2024-4076.
 * Mon Jul 22 2024 Dweep Advani <dweep.advani@broadcom.com> 9.18.27-1
 - Update to version 9.18.27 to fix CVE-2024-0760/1737/1975/4076
 * Mon Feb 12 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.16.48-1

@@ -24,7 +24,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            http://github.com/SSSD/sssd
 License:        GPLv3+
 Group:          System Environment/Kernel
@@ -1030,6 +1030,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-17
+- Bump version as a part of bindutils upgrade
 * Tue Jan 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.8.2-16
 - Add scriptlets in post for few sub packages
 * Tue Jan 06 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.8.2-15
