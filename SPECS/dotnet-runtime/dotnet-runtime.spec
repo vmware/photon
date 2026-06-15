@@ -4,7 +4,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        10.0.8
+Version:        10.0.9
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.9-1
+- Upgrade to v10.0.9, contains security fixes
 * Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.8-1
 - Upgrade to v10.0.8
 * Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.26-2

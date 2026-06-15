@@ -5,7 +5,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        10.0.300
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -24,7 +24,7 @@ Source0: %{name}-%{version}-linux-x64.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires: dotnet-runtime = 10.0.8
+Requires: dotnet-runtime = 10.0.9
 Requires: icu >= 70.1
 
 %description
@@ -50,6 +50,8 @@ echo "%{_datadir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.300-2
+- Bump version as a part of dotnet-runtime upgrade
 * Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.300-1
 - Upgrade to v10.0.300
 * Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-2
