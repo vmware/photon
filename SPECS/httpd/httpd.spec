@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.67
+Version:        2.4.68
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=5ae29fc8edb253453271613cb18754de0d943d1f82361059c81f8ebe1f057b894675506550bd1341bfa9416226b569a7bac08f497c53e8bb6dede87f4f41eae4
+%define sha512 %{name}=134a5bbd3ffe97523ac750490531bcb9441c532cedf0229aa006aa1368e9d25040507c6f519bed6754044f62c371f7c7f9a11b6a311f79b9680d478bf4373eb3
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
@@ -201,6 +201,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.68-1
+- Upgrade to v2.4.67, contains security fixes
 * Fri May 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.67-1
 - Upgrade to v2.4.67, contains security fixes
 * Mon Dec 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.66-1
