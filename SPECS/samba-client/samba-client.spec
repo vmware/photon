@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        19%{?dist}
+Release:        20%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,6 +21,28 @@ Source2: license.txt
 Patch0: CVE-2025-9640.patch
 Patch1: CVE-2025-10230.patch
 Patch2: 0001-fix-memset_explicit-usage-for-newer-glibc.patch
+# Fix CVE-2026-4480: s3:printing: mask jobname passed as %J to "print command"
+Patch3:  CVE-2026-4480-01.patch
+Patch4:  CVE-2026-4480-02.patch
+Patch5:  CVE-2026-4480-03.patch
+Patch6:  CVE-2026-4480-04.patch
+Patch7:  CVE-2026-4480-05.patch
+Patch8:  CVE-2026-4480-06.patch
+Patch9:  CVE-2026-4480-07.patch
+Patch10: CVE-2026-4480-08.patch
+Patch11: CVE-2026-4480-09.patch
+Patch12: CVE-2026-4480-10.patch
+Patch13: CVE-2026-4480-11.patch
+Patch14: CVE-2026-4480-12.patch
+Patch15: CVE-2026-4480-13.patch
+# Fix CVE-2026-4408: s3:samr-server: deny/mask username passed as %u to "check password script"
+Patch16: CVE-2026-4408-01.patch
+Patch17: CVE-2026-4408-02.patch
+Patch18: CVE-2026-4408-03.patch
+Patch19: CVE-2026-4408-04.patch
+Patch20: CVE-2026-4408-05.patch
+Patch21: CVE-2026-4408-06.patch
+Patch22: CVE-2026-4408-07.patch
 
 BuildRequires: krb5-devel
 BuildRequires: libtirpc-devel
@@ -463,6 +485,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Tue Jun 16 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.3-20
+- Fix CVE-2026-4480
+- Fix CVE-2026-4408
 * Mon Jun 8 2026 Michelle Wang <michelle.wang@broadcom.com> 4.19.3-19
 - Bump release due to bindutils upgrade
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.19.3-18
