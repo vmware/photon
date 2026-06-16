@@ -5,7 +5,7 @@
 Summary:        A simple to use C++23 logging API
 Name:           log4cplus
 Version:        2.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,5 +57,7 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Mon Jun 15 2026 Bo Gan <bo.gan@broadcom.com> 2.1.2-2
+- Regenerate license
 * Wed Jun 03 2026 Bo Gan <bo.gan@broadcom.com> 2.1.2-1
 - Initial packaging

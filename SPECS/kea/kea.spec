@@ -3,7 +3,7 @@
 Summary:      A modern, scalable, robust DHCPv4 and DHCPv6 server.
 Name:         kea
 Version:      3.1.9
-Release:      1%{?dist}
+Release:      2%{?dist}
 Url:          https://www.isc.org/kea/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -128,5 +128,7 @@ rm -rf %{buildroot}
 %{_docdir}/*
 
 %changelog
+* Mon Jun 15 2026 Bo Gan <bo.gan@broadcom.com> 3.1.9-2
+- Regenerate license
 * Wed Jun 03 2026 Bo Gan <bo.gan@broadcom.com> 3.1.9-1
 - Initial packaging

@@ -1,7 +1,7 @@
 sources:
 - archive: log4cplus-2.1.2.tar.gz
-  archive_sha512sum: 4d95c036a15c4e9e16bb52da5d56853a08736025f19b2ed60afad0bf319109a80a1534c1d7d1e0b8369da7e5f28a9c7e7a5b4500f73250269f7e6ff57c4fdb4a
   archive_type: upstream
+  archive_sha512sum: 4d95c036a15c4e9e16bb52da5d56853a08736025f19b2ed60afad0bf319109a80a1534c1d7d1e0b8369da7e5f28a9c7e7a5b4500f73250269f7e6ff57c4fdb4a
   skip_validation: true
   name: log4cplus-2.1.2
   version: 2.1.2
