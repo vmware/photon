@@ -3,7 +3,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.41.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -13,6 +13,9 @@ Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# Fix CVE-2026-3184
+Patch0: CVE-2026-3184.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -148,6 +151,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jun 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.41.4-3
+- Fix CVE-2026-3184
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.41.4-2
 - Extended to build for subrelease 91 and above
 * Fri Apr 03 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.41.4-1
