@@ -287,3 +287,10 @@ Patch3117: 0001-net-bonding-fix-use-after-free-in-bond_xmit_broadcas.patch
 
 # Fix CVE-2026-3118
 Patch3118: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
+
+# Fix CVE-2026-43456
+Patch3119: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
+
+# Fix CVE-2026-45850
+Patch3120: 0001-ipvs-skip-ipv6-extension-headers-for-csum-checks.patch
+
