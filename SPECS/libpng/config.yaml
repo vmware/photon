@@ -1,12 +1,12 @@
 sources:
-- archive: libpng-1.6.56.tar.gz
-  archive_sha512sum: 352ea0d78ae50c19ee2b99714f9a66773ad18f22c18a5fb693481d9c87a372a6bf8cd7b3e7c482f2e0474ed80ddc337a2e8ec38d148212eb175d15ca0257c03a
+- archive: libpng-1.6.57.tar.gz
+  archive_sha512sum: cd20c278b04ac6275cea495c66472782c175bf431eb28afd3f529d5913179ac8cbf3a306e67fe9dc3ae09c87ad67b5d937b83f427e15d8364f513d95ff8b4649
   archive_type: upstream
-  version: 1.6.56
-  name: libpng-1.6.56
-  url: https://github.com/pnggroup/libpng/archive/refs/tags/v1.6.56.tar.gz
+  version: 1.6.57
+  name: libpng-1.6.57
+  url: https://github.com/pnggroup/libpng/archive/refs/tags/v1.6.57.tar.gz
   repo_url: https://github.com/pnggroup/libpng
-  commit_id: d5515b5b8be3901aac04e5bd8bd5c89f287bcd33
+  commit_id: 95ab3fdca83ea294efd3b092e9a53c5a39886444
   skip_list: []
   missing: []
   skip_validation: false

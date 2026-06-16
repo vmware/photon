@@ -1,6 +1,6 @@
 Summary:    contains libraries for reading and writing PNG files.
 Name:       libpng
-Version:    1.6.56
+Version:    1.6.57
 Release:    1%{?dist}
 URL:        http://www.libpng.org/
 Group:      System Environment/Libraries
@@ -62,6 +62,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+* Tue Jun 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.57-1
+- Upgrade to v1.6.57, fix CVE-2026-34757
 * Tue Mar 31 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.56-1
 - Upgrade to v1.6.56, Fix CVE-2026-33636
 * Fri Feb 13 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.55-1
