@@ -1,7 +1,7 @@
 Name:          erlang
 Summary:       erlang
-Version:       27.3.4.11
-Release:       2%{?dist}
+Version:       27.3.4.13
+Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -46,6 +46,9 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Jun 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.13-1
+- Upgrade to 27.3.4.13, includes fixes for CVE-2026-42789, CVE-2026-42790,
+- CVE-2026-42791, CVE-2026-48858
 * Tue May 26 2026 Ajay Kaher <ajay.kaher@broadcom.com> 27.3.4.11-2
 - Drop unzip BuildRequires; not needed for tar.gz source
 * Tue May 26 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 27.3.4.11-1
