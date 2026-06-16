@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        linear algebra package
 Name:           lapack
 Version:        3.11.0
-Release:        3%{?dist}
+Release:        2.0.1%{?dist}
 URL:            http://www.netlib.org/lapack
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -17,15 +17,13 @@ Source1: license.txt
 BuildRequires:  cmake
 BuildRequires:  gfortran
 
-Requires: libgfortran
-
 %description
 LAPACK is written in Fortran 90 and provides routines for solving systems of simultaneous linear equations, least-squares solutions of linear systems of equations, eigenvalue problems, and singular value problems. The associated matrix factorizations (LU, Cholesky, QR, SVD, Schur, generalized Schur) are also provided, as are related computations such as reordering of the Schur factorizations and estimating condition numbers. Dense and banded matrices are handled, but not general sparse matrices. In all areas, similar functionality is provided for real and complex matrices, in both single and double precision.
 
 %package        devel
 Summary:        Development files for lapack
-Requires:       %{name} = %{version}-%{release}
-Requires:       libgfortran-devel
+Group:          Development/Libraries
+Requires:       lapack = %{version}-%{release}
 
 %description    devel
 The lapack-devel package contains libraries and header files for
@@ -67,8 +65,8 @@ mv %{buildroot}%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
-* Tue Jun 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.0-3
-- Require libgfortran
+* Tue Jun 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.11.0-2.0.1
+- Micro branch for 90
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.11.0-2
 - Release bump for SRP compliance
 * Tue Dec 13 2022 Gerrit Photon <photon-checkins@vmware.com> 3.11.0-1

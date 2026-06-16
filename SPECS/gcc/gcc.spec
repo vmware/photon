@@ -4,7 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -24,6 +24,8 @@ Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
 Requires:       libgcc-atomic = %{version}-%{release}
+Requires:       libgfortran-devel = %{version}-%{release}
+Requires:       libquadmath-devel = %{version}-%{release}
 Requires:       gmp
 
 %if 0%{?with_check}
@@ -97,6 +99,38 @@ Requires:       libgomp = %{version}-%{release}
 An implementation of OpenMP for the C, C++, and Fortran 95 compilers in the GNU Compiler Collection.
 This package contains development headers and static library for libgomp
 
+%package -n     libgfortran
+Summary:        Libraries for libgfortran
+Conflicts:      %{name} < 12.2.0-15
+Requires:       libquadmath = %{version}-%{release}
+
+%description -n libgfortran
+%{summary}
+
+%package -n     libgfortran-devel
+Summary:        Development headers and static library for libgfortran
+Requires:       libgfortran = %{version}-%{release}
+Requires:       libquadmath-devel = %{version}-%{release}
+Conflicts:      %{name} < 12.2.0-15
+
+%description -n libgfortran-devel
+%{summary}
+
+%package -n     libquadmath
+Summary:        Libraries for libquadmath
+Conflicts:      %{name} < 12.2.0-15
+
+%description -n libquadmath
+%{summary}
+
+%package -n     libquadmath-devel
+Summary:        Development headers and static library for libquadmath
+Requires:       libquadmath = %{version}-%{release}
+Conflicts:      %{name} < 12.2.0-15
+
+%description -n libquadmath-devel
+%{summary}
+
 %prep
 %autosetup -p1
 
@@ -134,7 +168,7 @@ test %{_host} != %{_build} && export gcc_cv_objdump=%{_arch}-unknown-linux-gnu-o
 %install
 %make_install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_lib}
-ln -sv %{_bindir}/cpp %{buildroot}%{_lib}
+ln -srv %{buildroot}%{_bindir}/cpp %{buildroot}%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
 install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
@@ -212,6 +246,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %exclude %{_lib64dir}/libgcc*
 %exclude %{_lib64dir}/libstdc++*
 %exclude %{_lib64dir}/libgomp*
+%exclude %{_lib64dir}/libgfortran*
+%exclude %{_lib64dir}/libquadmath*
 
 %files -n     gfortran
 %defattr(-,root,root)
@@ -254,7 +290,28 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.so
 %{_lib64dir}/libgomp.spec
 
+%files -n libgfortran
+%defattr(-,root,root)
+%{_lib64dir}/libgfortran*.so.*
+
+%files -n libgfortran-devel
+%defattr(-,root,root)
+%{_lib64dir}/libgfortran.a
+%{_lib64dir}/libgfortran.so
+%{_lib64dir}/libgfortran.spec
+
+%files -n libquadmath
+%defattr(-,root,root)
+%{_lib64dir}/libquadmath*.so.*
+
+%files -n libquadmath-devel
+%defattr(-,root,root)
+%{_lib64dir}/libquadmath.a
+%{_lib64dir}/libquadmath.so
+
 %changelog
+* Tue Jun 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.2.0-15
+- Move fortran libs to a subpackage, needed by lapack
 * Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 12.2.0-14
 - Disable autogen dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-13

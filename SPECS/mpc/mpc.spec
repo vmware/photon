@@ -1,8 +1,14 @@
 %global build_if %{photon_subrelease} >= 91
+
+# TODO:
+# Once devel package becomes active, this workaround can be removed
+# This is to avoid bringing in mpfr-devel, gmp-devel upon installing mpc
+%global __requires_exclude ^pkgconfig\\(gmp\\).*|^pkgconfig\\(mpfr\\).*
+
 Summary:        Library for the arithmetic of complex numbers
 Name:           mpc
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.multiprecision.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -20,21 +26,34 @@ The MPC package contains a library for the arithmetic of complex
 numbers with arbitrarily high precision and correct rounding of
 the result.
 
+%package devel
+Summary:   Development headers for %{name}
+Requires:  %{name} = %{version}-%{release}
+Requires:  gmp-devel
+Requires:  mpfr-devel
+
+%description devel
+%{summary}
+
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
-      --disable-silent-rules
-make %{?_smp_mflags}
+  --disable-silent-rules
+
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
-find %{buildroot}%{_libdir} -name '*.la' -delete
-rm -rf %{buildroot}%{_infodir}
+%make_install %{?_smp_mflags}
 
+find %{buildroot}%{_libdir} -name '*.la' -delete
+rm -r %{buildroot}%{_infodir}
+
+%if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+%make_build check
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -47,7 +66,21 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so.*
 %{_libdir}/pkgconfig/%{name}.pc
 
+# TODO:
+# This is just a dummy split for now
+# Once this gets published, pckage builder can be patched as needed
+# at appropriate time
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+%{_libdir}/*.a
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/%{name}.pc
+
 %changelog
+* Tue Jun 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.1-2
+- Remove mpfr-devel, mpc-devel dependency
+- Introduce a place holder devel package
 * Wed Jun 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.1-1
 - Upgrade to 1.4.1
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-4

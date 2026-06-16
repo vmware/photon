@@ -1,0 +1,20 @@
+sources:
+- archive: lapack-3.11.0.tar.gz
+  archive_sha512sum: fc3258b9d91a833149a68a89c5589b5113e90a8f9f41c3a73fbfccb1ecddd92d9462802c0f870f1c3dab392623452de4ef512727f5874ffdcba6a4845f78fc9a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'LAPACK is written in Fortran 90 and provides routines
+        for solving systems of simultaneous linear equations, least-squares solutions
+        of linear systems of equations, eigenvalue problems, and singular value problems.
+        The associated matrix factorizations (LU, Cholesky, QR, SVD, Schur, generalized
+        Schur) are also provided, as are related computations such as reordering of
+        the Schur factorizations and estimating condition numbers. Dense and banded
+        matrices are handled, but not general sparse matrices. In all areas, similar
+        functionality is provided for real and complex matrices, in both single and
+        double precision. '
+      home_page: http://www.netlib.org/lapack
+      license_concluded: BSD-3-Clause-Open-MPI AND BSD-3-Clause
+      license_declared: BSD-3-Clause-Open-MPI AND BSD-3-Clause
+      short_summary: linear algebra package
+      supplier: 'Organization: Broadcom, Inc.'
