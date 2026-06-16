@@ -1,10 +1,18 @@
 sources:
-- archive: rsync-3.4.1.tar.gz
-  archive_sha512sum: a3ecde4843ddb795308dca88581b868ac0221eb6f88a1477d7a9a2ecb4e4686042966bdddbab40866f90a4715d3104daa7b83222ddf0f3387b796a86bde8e5c2
+- archive: rsync-3.4.4.tar.gz
+  archive_type: upstream
+  archive_sha512sum: cf9a838b1f019b70fd67fa2c293f267be3f24e579c2ea33177ec7afc502c97ce0b613ff0854088c0eb28acd14ee0a75706ae8445115cef4669bd586c505d8453
+  name: rsync-3.4.4
+  version: 3.4.4
+  url: https://github.com/RsyncProject/rsync/releases/download/v3.4.4/rsync-3.4.4.tar.gz
+  repo_url: https://github.com/RsyncProject/rsync.git
+  commit_id: f26f747b8017b321d3776becc69f330dd889fa21
+  skip_list: ['release.py']
+  missing: ['.github', 'aclocal.m4', 'config.h.in', 'configure.sh', 'rrsync.1', 'rrsync.1.html', 'rsync-ssl.1', 'rsync-ssl.1.html', 'rsync.1', 'rsync.1.html', 'rsyncd.conf.5', 'rsyncd.conf.5.html']
   license_manual_review:
   # Optional - only needed if copied from this archive to the final build directory
   - file_paths:
-    - rsync-3.4.1/lib/sysacls.c
+    - rsync-3.4.4/lib/sysacls.c
     sha256sum: 99c3a32dec83217e6eb7481c0ce959563b5c17100a57a22e0daf75fabdb90f15
     spdx_exp: GPL-3.0-or-later
   skip_validation: true
