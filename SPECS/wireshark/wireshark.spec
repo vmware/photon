@@ -1,7 +1,7 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.2.12
-Release:        4%{?dist}
+Version:        4.4.16
+Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -9,12 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha512  %{name}=b479864c30d85c6ccdbe4b56fbefee02bc4b3e60ea2f723ee46723ab0c710e63fb25c7ff31b142f0d8b3fafcb6d6fac71fc44809d5b049921b6f27e56fac1cef
+%define sha512  %{name}=f5ddbee7277e6b38f341db96118ab572705c4ac84dafa1ed17cf0330a807dcf33df37867bd55f92925cc38b742e3a2f39a0114ffdeaa953fbf123c284791220c
 
 Patch0: 0001-Remove-SpeexDSP-library-dependencies-from-photon-wir.patch
-Patch1: CVE-2025-13499.patch
-# Fix CVE-2026-6519
-Patch2: CVE-2026-6519.patch
 
 BuildRequires:  bzip2-devel
 BuildRequires:  c-ares-devel
@@ -101,6 +98,10 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Wed Jun 17 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.4.16-1
+- Upgrade to 4.4.16 to fix CVE-2026-5654, CVE-2026-6868, CVE-2026-7375,
+- CVE-2026-5657, CVE-2026-6867, CVE-2026-6524, CVE-2026-6533, CVE-2026-6523,
+- CVE-2026-6522, CVE-2026-6530, CVE-2026-6870, CVE-2026-6521, CVE-2026-5401
 * Thu May 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.2.12-4
 - Bump version as a part of gnutls upgrade
 * Wed May 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.2.12-3
