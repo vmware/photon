@@ -1,4 +1,4 @@
-From 7dd293f11fa5955e6c1af7b33b101a3890d36df3 Mon Sep 17 00:00:00 2001
+From 9b15213dd5f109bb27ab5e1f76f066902b13c26c Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 25 Mar 2026 21:55:08 +0530
 Subject: [PATCH] system auth fix
@@ -6,9 +6,9 @@ Subject: [PATCH] system auth fix
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
  defaults/main.yml     |  2 ++
- tasks/photon.yml      | 62 ++++++++++++++++++++++++++++++++++++++-----
+ tasks/photon.yml      | 66 +++++++++++++++++++++++++++++++++++++------
  templates/system-auth | 10 ++++---
- 3 files changed, 64 insertions(+), 10 deletions(-)
+ 3 files changed, 66 insertions(+), 12 deletions(-)
 
 diff --git a/defaults/main.yml b/defaults/main.yml
 index 7afd6d7..d5433b8 100644
@@ -21,14 +21,16 @@ index 7afd6d7..d5433b8 100644
 +# PHTN-50-000267
 +run_pam_add_deny_so: true
 diff --git a/tasks/photon.yml b/tasks/photon.yml
-index 3191d19..54e92ee 100644
+index 7a6c688..f7f9539 100644
 --- a/tasks/photon.yml
 +++ b/tasks/photon.yml
-@@ -1293,7 +1293,10 @@
+@@ -1291,8 +1291,11 @@
+ 
  ###################################################################################################################################
  - name: PHTN-50-000192 - Configure system-auth pam_faillock.so module
-   tags: [PHTN-50-000192]
+-  tags: [PHTN-50-000192]
 -  when: run_pam_add_faillock_so | bool
++  tags: [PHTN-50-000192, PHTN-50-000206, PHTN-50-000267]
 +  when:
 +    - run_pam_add_faillock_so | bool
 +    - run_pam_add_faildelay_so | bool
@@ -36,7 +38,7 @@ index 3191d19..54e92ee 100644
    block:
      - name: 'PHTN-50-000192 - Get current contents of {{ var_pam_system_auth_file }}'
        ansible.builtin.slurp:
-@@ -1306,11 +1309,11 @@
+@@ -1305,11 +1308,11 @@
  
      - name: 'PHTN-50-000192 - Check to see if pam_faillock.so preauth rule exists in {{ var_pam_system_auth_file }} and is before the pam_unix.so rule'
        ansible.builtin.set_fact:
@@ -50,7 +52,7 @@ index 3191d19..54e92ee 100644
  
      - name: 'PHTN-50-000192 - Remove existing pam_faillock.so rules in {{ var_pam_system_auth_file }} if one not found or incorrect'
        ansible.builtin.lineinfile:
-@@ -1320,11 +1323,19 @@
+@@ -1319,11 +1322,19 @@
        when:
          - preauthsearch == "" or authfailsearch == ""
  
@@ -71,7 +73,7 @@ index 3191d19..54e92ee 100644
          module_path: pam_unix.so
          new_type: auth
          new_control: required
-@@ -1336,7 +1347,7 @@
+@@ -1335,7 +1346,7 @@
        community.general.pamd:
          name: system-auth
          type: auth
@@ -80,11 +82,13 @@ index 3191d19..54e92ee 100644
          module_path: pam_unix.so
          new_type: auth
          new_control: required
-@@ -1537,7 +1548,10 @@
+@@ -1535,8 +1546,11 @@
+ 
  ###################################################################################################################################
  - name: PHTN-50-000206 - Configure system-auth pam_faildelay.so module
-   tags: [PHTN-50-000206]
+-  tags: [PHTN-50-000206]
 -  when: run_pam_add_faildelay_so | bool
++  tags: [PHTN-50-000192, PHTN-50-000206, PHTN-50-000267]
 +  when:
 +    - run_pam_add_faillock_so | bool
 +    - run_pam_add_faildelay_so | bool
@@ -92,13 +96,13 @@ index 3191d19..54e92ee 100644
    block:
      - name: PHTN-50-000206 - Check to see if pam_faildelay.so rule exists
        ansible.builtin.shell: |
-@@ -1566,6 +1580,42 @@
+@@ -1565,6 +1579,42 @@
          line: auth       optional pam_faildelay.so delay=4000000
          insertafter: '^auth\s+(required|requisite|\[default=die\])\s+pam_faillock\.so\s+authfail$'
  
 +###################################################################################################################################
 +- name: PHTN-50-000267 - Configure system-auth pam_deny.so module
-+  tags: [PHTN-50-000267]
++  tags: [PHTN-50-000192, PHTN-50-000206, PHTN-50-000267]
 +  when:
 +    - run_pam_add_faillock_so | bool
 +    - run_pam_add_faildelay_so | bool
