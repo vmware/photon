@@ -4,7 +4,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.2.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -247,7 +247,9 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %exclude %{_lib64dir}/libstdc++*
 %exclude %{_lib64dir}/libgomp*
 %exclude %{_lib64dir}/libgfortran*
+%ifarch x86_64
 %exclude %{_lib64dir}/libquadmath*
+%endif
 
 %files -n     gfortran
 %defattr(-,root,root)
@@ -302,14 +304,20 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 
 %files -n libquadmath
 %defattr(-,root,root)
+%ifarch x86_64
 %{_lib64dir}/libquadmath*.so.*
+%endif
 
 %files -n libquadmath-devel
 %defattr(-,root,root)
+%ifarch x86_64
 %{_lib64dir}/libquadmath.a
 %{_lib64dir}/libquadmath.so
+%endif
 
 %changelog
+* Wed Jun 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.2.0-16
+- Fix aarch64 build, libquadmath is not available for aarch64
 * Tue Jun 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.2.0-15
 - Move fortran libs to a subpackage, needed by lapack
 * Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 12.2.0-14
