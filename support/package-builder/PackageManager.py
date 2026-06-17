@@ -113,12 +113,7 @@ class PackageManager(object):
             self._createBuildImage(overwrite=overwrite)
 
         if constants.rpmCheck:
-            constants.rpmCheck = False
-            constants.addMacro("with_check", "0")
             checkPackagesSandbox()
-            self._buildTestPackages(buildThreads)
-            constants.rpmCheck = True
-            constants.addMacro("with_check", "1")
         else:
             self.buildToolChainPackages(buildThreads)
             checkPackagesSandbox()
@@ -179,7 +174,7 @@ class PackageManager(object):
 
         self.listOfPackagesAlreadyBuilt = self._readAlreadyAvailablePackages()
 
-        if rebuild:
+        if rebuild or constants.rpmCheck:
             self.listOfPackagesAlreadyBuilt = set(
                 self.listOfPackagesAlreadyBuilt
             ) - set(listPackages)
@@ -207,10 +202,6 @@ class PackageManager(object):
             self.logger.info("")
 
         return True
-
-    def _buildTestPackages(self, buildThreads):
-        self.buildToolChainPackages()
-        self._buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
     def _initializeThreadPool(self, statusEvent):
         ThreadPool.clear()

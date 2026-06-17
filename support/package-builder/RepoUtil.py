@@ -153,6 +153,10 @@ STAGE_REPOS = {
 def getRepoArgs(buildStage, buildMode):
     repoArgs = ["--disablerepo=*"]
 
+    if constants.rpmCheck:
+        repoArgs += [REPO_LOCAL, REPO_PACKAGES]
+        return repoArgs
+
     repos = STAGE_REPOS.get(buildStage)
     if not repos:
         raise Exception(f"ERROR: invalid build stage {buildStage.value}")

@@ -128,10 +128,7 @@ class PackageBuilder(object):
             self.logger.error(
                 f"Sandbox: {self.sandbox.name} not deleted for debugging."
             )
-            if constants.rpmCheck:
-                logFileName = f"{self.logPath}/{self.package}-test.log"
-            else:
-                logFileName = f"{self.logPath}/{self.package}.log"
+            logFileName = f"{self.logPath}/{self.package}.log"
             CommandUtils.runCmd(
                 ["tail", "-n", "100", logFileName],
                 ignore_rc=True,

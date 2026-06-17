@@ -325,21 +325,18 @@ class PackageUtils(object):
             pr_pounds = "#" * (68 + 2 * len(package))
             self.logger.debug(pr_pounds)
             make_check_na = not SPECS.getData().isCheckAvailable(package, version)
-            if not make_check_na:
-                make_check_na = package in constants.listMakeCheckPkgToSkip
-
             if make_check_na:
                 self.logger.info(
-                    f"####### {package} "
+                    f"\n####### {package} "
                     "MakeCheck is not available."
-                    f"Skipping MakeCheck TEST for {package} #######"
+                    f"Skipping MakeCheck TEST for {package} #######\n"
                 )
                 rpmBuildcmd = [self.rpmbuildBinary, "--clean"]
             else:
                 self.logger.info(
-                    f"####### {package} "
+                    f"\n####### {package} "
                     "MakeCheck is available. "
-                    f"Running MakeCheck TEST for {package} #######"
+                    f"Running MakeCheck TEST for {package} #######\n"
                 )
                 rpmBuildcmd = [self.rpmbuildBinary] + self.rpmbuildCheckOptions
             self.logger.debug(pr_pounds)
@@ -382,11 +379,11 @@ class PackageUtils(object):
 
         if constants.rpmCheck:
             if make_check_na:
-                constants.testLogger.info(f"{package}: N/A")
+                constants.testLogger.info(f"\n#### {package}: N/A ####\n")
             elif not returnVal:
-                constants.testLogger.info(f"{package}: PASS")
+                constants.testLogger.info(f"\n#### {package}: PASS ####\n")
             else:
-                constants.testLogger.info(f"{package}: FAIL")
+                constants.testLogger.info(f"\n#### {package}: FAIL ####\n")
 
         if constants.rpmCheck:
             if returnVal and constants.rpmCheckStopOnError:
