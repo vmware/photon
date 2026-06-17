@@ -464,7 +464,7 @@ function remove_residual_pkgs() {
 install_all_from_repo() {
   local available_pkgs_for_install="$(
       ${RPM} -q $(${TDNF} $REPOS_OPT repoquery --available) 2>&1 | \
-        ${SED} -nE 's#^package ([^ ]+\.ph[0-9]+\.[^ ]+) is not installed#\1#p'
+        ${SED} -nE 's#^package\s+(\S+)\s+is\s+not\s+installed\s*$#\1#p'
   )"
   local rc=0
   echo '--install-all option was passed.'
