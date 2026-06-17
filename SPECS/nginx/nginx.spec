@@ -5,7 +5,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.26.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -29,8 +29,10 @@ Patch2: CVE-2026-32647.patch
 Patch3: CVE-2026-27651.patch
 Patch4: CVE-2026-27784.patch
 Patch5: CVE-2026-1642.patch
-# Fix CVE-2026-28753
 Patch6: CVE-2026-28753.patch
+Patch7: CVE-2026-42945-1.patch
+Patch8: CVE-2026-42945-2.patch
+Patch9: CVE-2026-9256.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -132,6 +134,8 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Wed Jun 17 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.3-4
+- Fix CVE-2026-42945, CVE-2026-9256
 * Tue Jun 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.3-3
 - Fix CVE-2026-28753
 * Wed Apr 08 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.3-2
