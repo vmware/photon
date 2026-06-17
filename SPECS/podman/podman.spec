@@ -3,8 +3,8 @@
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
-Version:        4.5.1
-Release:        9%{?dist}
+Version:        4.9.5
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/podman
 Group:          Podman
@@ -12,13 +12,16 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/containers/podman/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=c09af81063dba7125d06bb982ae6db5c1933bb32273f194f90875b5c63b916f94d0daacf09212139ae8dc5f8cfa224e7fd1d83e1a22df19be2adde84583ee049
+%define sha512 %{name}=979f855d453034bb053d2cad52dd6b9050ff1a534efebf2c8967dd38c7df9139a2b546caf3d20f76fe130189233ded5e6354e2e68b1ef7bae2617f35b0f4ad4d
 
 Source1: https://github.com/containers/dnsname/archive/refs/tags/dnsname-%{dnsnamevers}.tar.gz
 %define sha512 dnsname=ebebbe62394b981e86cd21fa8b92639a6d67e007a18c576ffdbac8067084a4cffdc9d077213bf7c9ee1e2731c7d69e4d4c02465f2340556c8723b6e302238aad
 
 Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor-tap-vsock-%{gvisorvers}.tar.gz
 %define sha512 gvisor-tap-vsock-%{gvisorvers}=cf49a555192c869751009bfc14ef192067851ef79197307c84bf3c96a3abc3a8954fdb5d1c2490942920cc663b200fd09cf2330d976e50376c39d5da588cf471
+
+Patch0: CVE-2025-9566.patch
+
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
 BuildRequires:  libgpg-error-devel
@@ -133,6 +136,7 @@ cd ..
 %license LICENSE
 %doc README.md CONTRIBUTING.md install.md transfer.md
 %{_bindir}/%{name}
+%{_bindir}/%{name}sh
 %dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/rootlessport
 %{_libexecdir}/%{name}/quadlet
@@ -176,6 +180,8 @@ cd ..
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Wed Jun 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.5-1
+- Upgrade to 4.9.5 and add patch for CVE-2025-9566
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-9
 - Bump up as part of go upgrade
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-8
