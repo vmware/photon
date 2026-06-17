@@ -9,7 +9,7 @@ Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        26.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -24,6 +24,7 @@ Source2: %{srcname}.conf
 
 Patch0: dummy-certifi.patch
 Patch1: exclude-None-versioned-packages.patch
+Patch2: CVE-2026-44432.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -87,6 +88,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Wed Jun 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.1.1-2
+- Fix CVE-2026-44432 in vendor/urllib3
 * Thu May 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.1.1-1
 - Upgrade to 26.1.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.3-2

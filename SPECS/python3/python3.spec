@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: pip-wheel.ph5-1.0-2.tar.xz
+Source2: pip-wheel.ph5-1.0-3.tar.xz
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -313,6 +313,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Wed Jun 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.5-3
+- Update pip-wheel to 1.0-3 with CVE-2026-44432 fix for vendor/urllib3
 * Mon Jun 15 2026 Prashant S Chauhan <prashant.singh-chauham@broadcom.com> 3.14.5-2
 - Fix CVE-2026-7210
 * Wed May 20 2026 Prashant S Chauhan <prashant.singh-chauham@broadcom.com> 3.14.5-1

@@ -39,8 +39,8 @@ sources:
         AND MS-RL
       short_summary: A high-level scripting language
       supplier: 'Organization: Broadcom, Inc.'
-- archive: pip-wheel.ph5-1.0-2.tar.xz
-  archive_sha512sum: 520db940d3ff602f32a09eee9f70161380f285b3f451211b185c173bac23e55aee47d0360f3bc8963e80bb573c2989a0bf6a9eacc9d6e6f954ba28aa792d058d
+- archive: pip-wheel.ph5-1.0-3.tar.xz
+  archive_sha512sum: dee27c816930640189a55961e163f54fe8ebbd844c41b0a77fb37d23f20d21c86f46c082879e30a458c95454e8a9d3bd476c5390c3086f6f3fc6ae08dfbdfc89
   skip_validation: true
   spdx:
     package:
