@@ -1,7 +1,7 @@
 Summary:    Linux Key Management Utilities
 Name:       keyutils
 Version:    1.6.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://people.redhat.com/~dhowells/keyutils
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -20,6 +20,8 @@ instantiated.
 %package    devel
 Summary:    Header and development files
 Requires:   %{name} = %{version}-%{release}
+Conflicts:  %{name} < 1.6.1-4
+
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -55,7 +57,6 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sbindir}/*
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/*.pc
 %{_datadir}/keyutils
 %{_mandir}/man1/*
 %{_mandir}/man5/*
@@ -67,10 +68,13 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.6.1-4
+- Move pkgconfig .pc files to -devel subpackage
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.6.1-3
 - Release bump for SRP compliance
 * Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-2

@@ -3,7 +3,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        4.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -53,6 +53,7 @@ Requires:   findutils
 Requires:   libselinux-devel
 Requires:   (coreutils or coreutils-selinux)
 Requires:   %{name} = %{version}-%{release}
+Conflicts:  %{name} < 4.0.5-2
 
 %description devel
 Header files for doing development with ruby.
@@ -94,9 +95,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_includedir}/*
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/*.pc
 %{_libdir}/ruby/*
 %{_datadir}/ri/*
 %{_docdir}/%{name}-%{version}
@@ -104,10 +103,14 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
+%{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.0.5-2
+- Move headers, unversioned .so, and pkgconfig .pc files to -devel subpackage
 * Mon Jun 15 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.5-1
 - Upgrade to ruby 4.0.5
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.1-2

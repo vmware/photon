@@ -2,7 +2,7 @@
 Summary:        Memory Management Debugger.
 Name:           valgrind
 Version:        3.20.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://valgrind.org
 Group:          Development/Debuggers
 Source0:        http://valgrind.org/downloads/%{name}-%{version}.tar.bz2
@@ -21,6 +21,14 @@ threading bugs, avoiding hours of frustrating bug-hunting, making your programs
 more stable. You can also perform detailed profiling to help speed up your
 programs.
 
+%package devel
+Summary:       Development files for valgrind
+Requires:      %{name} = %{version}-%{release}
+Conflicts:     %{name} < 3.20.0-3
+
+%description devel
+Development files for valgrind
+
 %prep
 %autosetup -p1 -n %{name}-%{version}
 
@@ -37,14 +45,20 @@ make %{?_smp_mflags} -k check
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_includedir}/valgrind
-%{_libdir}/valgrind
-%{_libdir}/pkgconfig/*
 %{_libexecdir}/*
 %{_mandir}/*/*
 %{_datadir}/doc/valgrind/*
 
+%files devel
+%defattr(-,root,root)
+%{_includedir}/valgrind
+%{_libdir}/valgrind
+%{_libdir}/pkgconfig/*
+
 %changelog
+*   Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.20.0-3
+-   Create -devel subpackage; move headers, static libraries (%{_libdir}/valgrind/*.a),
+-   and pkgconfig .pc file there
 *   Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.20.0-2
 -   Release bump for SRP compliance
 *   Tue Nov 1 2022 Oliver Kurth <okurth@vmware.com> 3.20.0-1

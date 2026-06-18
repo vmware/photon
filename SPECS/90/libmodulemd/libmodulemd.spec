@@ -3,7 +3,7 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.14.0
-Release:        9.1.1%{?dist}
+Release:        9.1.2%{?dist}
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ BuildRequires:  meson
 BuildRequires:  clang-devel
 BuildRequires:  gcc
 BuildRequires:  glib-devel
-BuildRequires:  valgrind
+BuildRequires:  valgrind-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-gobject-introspection
 BuildRequires:  gobject-introspection-devel
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+* Tue Jun 16 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.14.0-9.1.2
+- Require valgrind-devel
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.14.0-9.1.1
 - Bump after moving to SPECS/90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.14.0-9.1
