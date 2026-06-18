@@ -4,7 +4,7 @@
 
 Name:           cloud-init
 Version:        25.1.3
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -62,6 +62,7 @@ BuildRequires: python3-iniconfig
 BuildRequires: shadow
 %endif
 
+Requires: (hostname or net-tools)
 Requires: shadow
 Requires: iproute2
 Requires: systemd
@@ -153,6 +154,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Thu Jun 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-11
+- Requires hostname or net-tools, make this requrement explicit
 * Fri May 22 2026 Prashant S Chauhan <prashant.singh-chuahan@broadcom.com> 25.1.3-10
 - Remove netifaces dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.1.3-9
