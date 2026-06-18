@@ -1,9 +1,7 @@
-%define _sysusersdir /usr/lib/sysusers.d/
-
 Summary:    Default file system
 Name:       filesystem
 Version:    1.1
-Release:    10%{?dist}
+Release:    11%{?dist}
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 URL:        http://www.linuxfromscratch.org
@@ -61,7 +59,8 @@ ln -svfn lib %{buildroot}%{_usr}/local/lib64
 ln -svfn lib %{buildroot}%{_libdir}/debug/lib64
 ln -svfn ../lib %{buildroot}%{_libdir}/debug%{_lib64dir}
 
-install -vdm 755 %{buildroot}%{_var}/{log,mail,spool,mnt,srv}
+mkdir -p %{buildroot}%{_var}/mail
+install -vdm 755 %{buildroot}%{_var}/{log,spool,mnt,srv}
 
 ln -svfn var/srv %{buildroot}/srv
 ln -svfn ../run %{buildroot}%{_var}/run
@@ -110,6 +109,11 @@ install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/modprobe.d/usb.conf
 while IFS=: read -r group_name _ gid _; do
   [[ -z "$group_name" || "$group_name" =~ ^# ]] && continue
 
+  if [ "$group_name" = "mail" ] && [ "$gid" != "34" ]; then
+    echo "ERROR: GID of mail group is changed, fix this condition and fix posttrans" >&2
+    exit 1
+  fi
+
   # Check if group_name or gid starts with a space
   if [[ "$group_name" == ' '* || "$gid" == ' '* ]]; then
     echo "Error: group_name or gid starts with a space: group_name='$group_name' gid='$gid'" >&2
@@ -140,6 +144,10 @@ posix = require("posix")
 posix.mkdir("/sys", "0555")
 posix.mkdir("/mnt", "0755")
 posix.mkdir("/mnt/cdrom", "0755")
+
+%posttrans -p <lua>
+posix.chown("/var/mail", 0, 34)
+posix.chmod("/var/mail", "1755")
 
 %clean
 rm -rf %{buildroot}
@@ -255,7 +263,7 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}/misc
 %dir %{_var}/local
 %dir %{_var}/log
-%dir %{_var}/mail
+%dir %attr(1775, root, mail) %{_var}/mail
 %dir %{_var}/mnt
 %dir %{_var}/srv
 %dir %{_var}/opt
@@ -275,6 +283,8 @@ rm -rf %{buildroot}
 %{_libdir}/debug%{_lib64dir}
 
 %changelog
+* Mon Jun 15 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.1-11
+- Set /var/mail permissions to 1775 (root:mail) with sticky bit
 * Wed Jul 30 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-10
 - Fix /mnt/cdrom issue, this time for real
 * Mon Jul 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-9

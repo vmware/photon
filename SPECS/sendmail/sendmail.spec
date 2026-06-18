@@ -3,7 +3,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.18.1.10
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://www.sendmail.org
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
@@ -14,6 +14,9 @@ Source1: %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
+
+# Use Dovecot LDA for local delivery instead of deprecated procmail
+Patch0: sendmail-use-dovecot-lda.patch
 
 BuildRequires: systemd-devel
 BuildRequires: openldap-devel
@@ -31,7 +34,9 @@ Requires: m4
 Requires: openldap
 Requires: /bin/sed
 Requires: gdbm
-Requires: iproute2
+Requires: iproute
+# /var/mail must be 1775 root:mail (sticky) so dovecot-lda can deliver
+Requires: filesystem >= 1.1-11
 
 %description
 Sendmail is widely used Mail Transport agent which helps in sending
@@ -192,6 +197,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Sun Jun 14 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.18.1.10-5
+- Use Dovecot LDA for local mail delivery instead of procmail
 * Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.18.1.10-4
 - Build for subrelease >= 91
 * Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.18.1.10-3

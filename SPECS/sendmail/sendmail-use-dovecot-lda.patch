@@ -1,0 +1,21 @@
+Use Dovecot LDA (dovecot-lda) for local mail delivery instead of procmail.
+
+procmail is deprecated and obsoleted by the dovecot package in Photon. The
+Linux ostype default local mailer is switched from procmail to Dovecot's
+local delivery agent, keeping the same mailer flags so delivery behavior is
+unchanged.
+
+diff -up a/cf/ostype/linux.m4 b/cf/ostype/linux.m4
+--- a/cf/ostype/linux.m4
++++ b/cf/ostype/linux.m4
+@@ -15,6 +15,7 @@ divert(-1)
+ divert(0)
+ VERSIONID(`$Id: linux.m4,v 8.14 2013-11-22 20:51:15 ca Exp $')
+ define(`confEBINDIR', `/usr/sbin')
+-ifdef(`PROCMAIL_MAILER_PATH',,
+-	define(`PROCMAIL_MAILER_PATH', `/usr/bin/procmail'))
+-FEATURE(local_procmail)
++dnl Use Dovecot LDA for local delivery instead of procmail
++define(`LOCAL_MAILER_PATH', `/usr/libexec/dovecot/dovecot-lda')dnl
++define(`LOCAL_MAILER_ARGS', `dovecot-lda -d $u')dnl
++define(`LOCAL_MAILER_FLAGS', `SPfhn9')dnl

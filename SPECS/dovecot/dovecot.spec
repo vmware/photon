@@ -3,7 +3,7 @@
 Summary:        Secure IMAP and POP3 server
 Name:           dovecot
 Version:        2.3.21.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://dovecot.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -34,6 +34,8 @@ BuildRequires:  gettext
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+# /var/mail must be 1775 root:mail (sticky) so dovecot-lda can deliver
+Requires:       filesystem >= 1.1-11
 
 Obsoletes: procmail
 
@@ -135,6 +137,11 @@ rm -rf %{buildroot}%{_mandir}
 %{_libdir}/dovecot/dovecot-config
 
 %changelog
+* Sun Jun 14 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.21.1-4
+- Enable dovecot-lda local delivery: set protocols to imap pop3, mail_location
+  to system mbox (/var/mail/%%u), add postmaster_address and passwd userdb /
+  pam passdb
+- Require filesystem >= 1.1-11 for correct /var/mail permissions (1775 root:mail)
 * Mon Jun 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.21.1-3
 - Add obsoletes procmail
 * Tue Jun 02 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.21.1-2
