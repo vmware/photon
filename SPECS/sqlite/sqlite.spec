@@ -1,7 +1,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.43.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
@@ -16,6 +16,7 @@ Patch0: CVE-2025-29088.patch
 Patch1: CVE-2025-6965.patch
 Patch2: CVE-2025-7709.patch
 Patch3: CVE-2025-70873.patch
+Patch4: CVE-2026-11822-CVE-2026-11824.patch
 
 BuildRequires:  tcl
 
@@ -102,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.*
 
 %changelog
+* Thu Jun 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.43.2-7
+- Fix CVE-2026-11822 CVE-2026-11824
 * Wed Mar 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-6
 - Fix CVE-2025-70873
 * Tue Sep 16 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-5
