@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.175
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -572,6 +572,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jun 23 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.175-12
+- Fix CVE-2026-31675; add netem multi-segment skb corruption handling
 * Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.175-11
 - Add mpc-devel to build requires
 * Thu Jun 18 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-10

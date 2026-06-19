@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.175
-Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -870,6 +870,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jun 23 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.175-11
+- Fix CVE-2026-31675; add netem multi-segment skb corruption handling
 * Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.175-10
 - Add mpc-devel to build requires
 * Fri Jun 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-9

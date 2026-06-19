@@ -294,3 +294,6 @@ Patch3119: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
 # Fix CVE-2026-45850
 Patch3120: 0001-ipvs-skip-ipv6-extension-headers-for-csum-checks.patch
 
+# Fix CVE-2026-31675
+Patch3121: 0001-net-sched-sch_netem-fix-out-of-bounds-access-in-pack.patch
+Patch3122: 0002-net-sched-netem-handle-multi-segment-skb-in-corrupti.patch
