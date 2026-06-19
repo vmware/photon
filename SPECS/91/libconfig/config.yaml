@@ -1,14 +1,7 @@
 sources:
-- archive: libconfig-1.8.2.tar.gz
-  archive_sha512sum: c3ed6c8f500b449c4d94976745a3acba1c7176f87497d5cb0deb05e62f2ff009ca0636c7c9848601f6d92dd113d82983cbd1132735f0f2d4e40b32d257f4aaa7
-  repo_url: https://github.com/hyperrealm/libconfig
-  url: https://github.com/hyperrealm/libconfig/archive/refs/tags/v1.8.2.tar.gz
-  archive_type: upstream
-  name: libconfig-1.8.2
-  version: 1.8.2
-  commit_id: a42cb47c1526a4f2ed025fcbb2289863375bc898
-  skip_list: []
-  missing: []
+- archive: libconfig-1.7.3.tar.gz
+  archive_sha512sum: 3749bf9eb29bab0f6b14f4fc759f0c419ed27a843842aaabed1ec1fbe0faa8c93322ff875ca1291d69cb28a39ece86d512aec42c2140d566c38c56dc616734f4
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Libconfig is a simple library for processing structured

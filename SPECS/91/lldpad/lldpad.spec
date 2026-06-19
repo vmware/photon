@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:       Intel LLDP Agent
 Name:          lldpad
 Version:       1.1
-Release:       5%{?dist}
+Release:       4.1%{?dist}
 URL:           http://open-lldp.org/
 Group:         System Environment/Daemons
 Vendor:        VMware, Inc.
@@ -14,7 +14,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-BuildRequires: libconfig-devel
+BuildRequires: libconfig
 BuildRequires: libnl-devel
 BuildRequires: readline-devel
 BuildRequires: systemd-rpm-macros
@@ -73,14 +73,13 @@ mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 %{_unitdir}/lldpad.socket
 
 %files devel
-%defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/liblldp_clif.so
 
 %changelog
-* Thu Jun 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-5
-- Bump version as a part of libconfig upgrade
+* Thu Jun 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-4.1
+- Sub branch for 90 and 91
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1-4
 - Release bump for SRP compliance
 * Tue Dec 20 2022 Guruswamy Basavaiah <bguruswamy@vmware.com> 1.1-3
