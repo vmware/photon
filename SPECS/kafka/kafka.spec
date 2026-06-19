@@ -11,7 +11,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
 Version:       4.1.2
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -36,10 +36,8 @@ Provides:   kafka-server
 BuildRequires: systemd-devel
 BuildRequires: systemd-rpm-macros
 BuildRequires: curl
-BuildRequires: zookeeper
 BuildRequires: openjdk17
 
-Requires: zookeeper
 Requires: systemd-rpm-macros
 Requires: jre >= 17.0
 Requires(pre): shadow
@@ -132,6 +130,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Fri Jun 19 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.2-3
+- Remove zookeeper as requires
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.2-2
 - Extended to build for subrelease 91 and above
 * Mon Apr 20 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.2-1
