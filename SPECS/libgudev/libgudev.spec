@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
 Version:        237
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
 
@@ -62,6 +64,8 @@ libgudev-devel package contains header files for building gudev applications.
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
+* Fri Jun 19 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 237-5
+- Bump release for subrelease split
 * Wed May 20 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 237-4
 - Remove gnome-common BuildRequires dependency.
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 237-3

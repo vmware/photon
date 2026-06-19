@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        provides a pure-Python implementation of immutable URLs
 Name:           python3-hyperlink
 Version:        21.0.0
-Release:        2.1%{?dist}
+Release:        2.1.1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -48,6 +48,8 @@ pytest
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jun 19 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.0.0-2.1.1
+- Bump after moving to SPECS/90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.0.0-2.1
 - Bump after moving to SPECS/91
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.0.0-2

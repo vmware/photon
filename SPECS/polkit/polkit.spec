@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
 Version:           121
-Release:           8%{?dist}
+Release:           9%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
 URL:               https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
@@ -120,6 +122,8 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Fri Jun 19 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 121-9
+- Bump release for subrelease split
 * Mon Nov 03 2025 Dweep Advani <dweep.advani@broadcom.com> 121-8
 - Fixed CVE-2025-7519
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 121-7

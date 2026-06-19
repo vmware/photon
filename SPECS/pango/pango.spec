@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.50.11
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://pango.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -88,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Fri Jun 19 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.50.11-10
+- Bump release for subrelease split
 * Mon Dec 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.50.11-9
 - Release bump due to libpng update
 * Thu Nov 27 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.50.11-8

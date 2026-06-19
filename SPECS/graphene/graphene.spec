@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 91
+
 Summary:        Thin layer of types for graphic libraries.
 Name:           graphene
 Version:        1.10.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/ebassi/graphene
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -69,6 +71,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/
 
 %changelog
+* Fri Jun 19 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.10.8-4
+- Bump release for subrelease split
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 1.10.8-3
 - Bump version as a part of meson upgrade
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.10.8-2

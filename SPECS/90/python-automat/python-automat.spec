@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} <= 90
 
 %define srcname Automat
 
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        22.10.0
-Release:        4.1%{?dist}
+Release:        4.1.1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -71,6 +71,8 @@ ln -sv automat-visualize3 %{buildroot}%{_bindir}/automat-visualize
 %{_bindir}/automat-visualize*
 
 %changelog
+* Fri Jun 19 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-4.1.1
+- Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-4.1
 - Bump after moving to SPECS/91
 * Fri Oct 17 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-4
