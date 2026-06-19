@@ -1,0 +1,197 @@
+From 66360460cab63c248ca5b1070a01c0c29133b960 Mon Sep 17 00:00:01 2001
+From: Jamal Hadi Salim <jhs@mojatatu.com>
+Date: Sun, 15 Mar 2026 11:54:22 -0400
+Subject: [PATCH] net/sched: teql: Fix double-free in teql_master_xmit
+
+[ Upstream commit 66360460cab63c248ca5b1070a01c0c29133b960 ]
+
+Whenever a TEQL devices has a lockless Qdisc as root, qdisc_reset should
+be called using the seq_lock to avoid racing with the datapath. Failure
+to do so may cause crashes like the following:
+
+[  238.028993][  T318] BUG: KASAN: double-free in skb_release_data (net/core/skbuff.c:1139)
+[  238.029328][  T318] Free of addr ffff88810c67ec00 by task poc_teql_uaf_ke/318
+[  238.029749][  T318]
+[  238.029900][  T318] CPU: 3 UID: 0 PID: 318 Comm: poc_teql_ke Not tainted 7.0.0-rc3-00149-ge5b31d988a41 #704 PREEMPT(full)
+[  238.029906][  T318] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[  238.029910][  T318] Call Trace:
+[  238.029913][  T318]  <TASK>
+[  238.029916][  T318]  dump_stack_lvl (lib/dump_stack.c:122)
+[  238.029928][  T318]  print_report (mm/kasan/report.c:379 mm/kasan/report.c:482)
+[  238.029940][  T318]  ? skb_release_data (net/core/skbuff.c:1139)
+[  238.029944][  T318]  ? srso_alias_return_thunk (arch/x86/lib/retpoline.S:221)
+...
+[  238.029957][  T318]  ? skb_release_data (net/core/skbuff.c:1139)
+[  238.029969][  T318]  kasan_report_invalid_free (mm/kasan/report.c:221 mm/kasan/report.c:563)
+[  238.029979][  T318]  ? skb_release_data (net/core/skbuff.c:1139)
+[  238.029989][  T318]  check_slab_allocation (mm/kasan/common.c:231)
+[  238.029995][  T318]  kmem_cache_free (mm/slub.c:2637 (discriminator 1) mm/slub.c:6168 (discriminator 1) mm/slub.c:6298 (discriminator 1))
+[  238.030004][  T318]  skb_release_data (net/core/skbuff.c:1139)
+...
+[  238.030025][  T318]  sk_skb_reason_drop (net/core/skbuff.c:1256)
+[  238.030032][  T318]  pfifo_fast_reset (./include/linux/ptr_ring.h:171 ./include/linux/ptr_ring.h:309 ./include/linux/skb_array.h:98 net/sched/sch_generic.c:827)
+[  238.030039][  T318]  ? srso_alias_return_thunk (arch/x86/lib/retpoline.S:221)
+...
+[  238.030054][  T318]  qdisc_reset (net/sched/sch_generic.c:1034)
+[  238.030062][  T318]  teql_destroy (./include/linux/spinlock.h:395 net/sched/sch_teql.c:157)
+[  238.030071][  T318]  __qdisc_destroy (./include/net/pkt_sched.h:328 net/sched/sch_generic.c:1077)
+[  238.030077][  T318]  qdisc_graft (net/sched/sch_api.c:1062 net/sched/sch_api.c:1053 net/sched/sch_api.c:1159)
+[  238.030089][  T318]  ? __pfx_qdisc_graft (net/sched/sch_api.c:1091)
+[  238.030095][  T318]  ? srso_alias_return_thunk (arch/x86/lib/retpoline.S:221)
+[  238.030102][  T318]  ? srso_alias_return_thunk (arch/x86/lib/retpoline.S:221)
+[  238.030106][  T318]  ? srso_alias_return_thunk (arch/x86/lib/retpoline.S:221)
+[  238.030114][  T318]  tc_get_qdisc (net/sched/sch_api.c:1529 net/sched/sch_api.c:1556)
+...
+[  238.072958][  T318] Allocated by task 303 on cpu 5 at 238.026275s:
+[  238.073392][  T318]  kasan_save_stack (mm/kasan/common.c:58)
+[  238.073884][  T318]  kasan_save_track (mm/kasan/common.c:64 (discriminator 5) mm/kasan/common.c:79 (discriminator 5))
+[  238.074230][  T318]  __kasan_slab_alloc (mm/kasan/common.c:369)
+[  238.074578][  T318]  kmem_cache_alloc_node_noprof (./include/linux/kasan.h:253 mm/slub.c:4542 mm/slub.c:4869 mm/slub.c:4921)
+[  238.076091][  T318]  kmalloc_reserve (net/core/skbuff.c:616 (discriminator 107))
+[  238.076450][  T318]  __alloc_skb (net/core/skbuff.c:713)
+[  238.076834][  T318]  alloc_skb_with_frags (./include/linux/skbuff.h:1383 net/core/skbuff.c:6763)
+[  238.077178][  T318]  sock_alloc_send_pskb (net/core/sock.c:2997)
+[  238.077520][  T318]  packet_sendmsg (net/packet/af_packet.c:2926 net/packet/af_packet.c:3019 net/packet/af_packet.c:3108)
+[  238.081469][  T318]
+[  238.081870][  T318] Freed by task 299 on cpu 1 at 238.028496s:
+[  238.082761][  T318]  kasan_save_stack (mm/kasan/common.c:58)
+[  238.083481][  T318]  kasan_save_track (mm/kasan/common.c:64 (discriminator 5) mm/kasan/common.c:79 (discriminator 5))
+[  238.085348][  T318]  kasan_save_free_info (mm/kasan/generic.c:587 (discriminator 1))
+[  238.085900][  T318]  __kasan_slab_free (mm/kasan/common.c:287)
+[  238.086439][  T318]  kmem_cache_free (mm/slub.c:6168 (discriminator 3) mm/slub.c:6298 (discriminator 3))
+[  238.087007][  T318]  skb_release_data (net/core/skbuff.c:1139)
+[  238.087491][  T318]  consume_skb (net/core/skbuff.c:1451)
+[  238.087757][  T318]  teql_master_xmit (net/sched/sch_teql.c:358)
+[  238.088116][  T318]  dev_hard_start_xmit (./include/linux/netdevice.h:5324 ./include/linux/netdevice.h:5333 net/core/dev.c:3871 net/core/dev.c:3887)
+[  238.088468][  T318]  sch_direct_xmit (net/sched/sch_generic.c:347)
+[  238.088820][  T318]  __qdisc_run (net/sched/sch_generic.c:420 (discriminator 1))
+[  238.089166][  T318]  __dev_queue_xmit (./include/net/sch_generic.h:229 ./include/net/pkt_sched.h:121 ./include/net/pkt_sched.h:117 net/core/dev.c:4196 net/core/dev.c:4802)
+
+Workflow to reproduce:
+1. Initialize a TEQL topology (dummy0 and ifb0 as slaves, teql0 up).
+2. Start multiple sender workers continuously transmitting packets
+   through teql0 to drive teql_master_xmit().
+3. In parallel, repeatedly delete and re-add the root qdisc on
+   dummy0 and ifb0 via RTNETLINK, forcing frequent teardown and reset activity
+   (teql_destroy() / qdisc_reset()).
+4. After running both workloads concurrently for several iterations,
+   KASAN reports slab-use-after-free or double-free in the skb free path.
+
+Fix this by moving dev_reset_queue to sch_generic.h and calling it, instead
+of qdisc_reset, in teql_destroy since it handles both the lock and lockless
+cases correctly for root qdiscs.
+
+Fixes: 96009c7d500e ("sched: replace __QDISC_STATE_RUNNING bit with a spin lock")
+Reported-by: Xianrui Dong <keenanat2000@gmail.com>
+Tested-by: Xianrui Dong <keenanat2000@gmail.com>
+Co-developed-by: Victor Nogueira <victor@mojatatu.com>
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Link: https://patch.msgid.link/20260315155422.147256-1-jhs@mojatatu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Ankit: Backported for v5.10.258]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ include/net/sch_generic.h | 27 +++++++++++++++++++++++++++
+ net/sched/sch_generic.c   | 26 --------------------------
+ net/sched/sch_teql.c      |  6 +-----
+ 3 files changed, 28 insertions(+), 31 deletions(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index a4c670ad8c4a..f487e1c57688 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -684,6 +684,33 @@ void qdisc_reset(struct Qdisc *qdisc);
+ void qdisc_put(struct Qdisc *qdisc);
+ void qdisc_put_unlocked(struct Qdisc *qdisc);
+ void qdisc_tree_reduce_backlog(struct Qdisc *qdisc, int n, int len);
++
++static inline void dev_reset_queue(struct net_device *dev,
++				   struct netdev_queue *dev_queue,
++				   void *_unused)
++{
++	struct Qdisc *qdisc;
++	bool nolock;
++
++	qdisc = dev_queue->qdisc_sleeping;
++	if (!qdisc)
++		return;
++
++	nolock = qdisc->flags & TCQ_F_NOLOCK;
++
++	if (nolock)
++		spin_lock_bh(&qdisc->seqlock);
++	spin_lock_bh(qdisc_lock(qdisc));
++
++	qdisc_reset(qdisc);
++
++	spin_unlock_bh(qdisc_lock(qdisc));
++	if (nolock) {
++		clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
++		spin_unlock_bh(&qdisc->seqlock);
++	}
++}
++
+ #ifdef CONFIG_NET_SCHED
+ int qdisc_offload_dump_helper(struct Qdisc *q, enum tc_setup_type type,
+ 			      void *type_data);
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 243a1d6b349c..8b9ed43ed9de 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1204,32 +1204,6 @@ static void dev_deactivate_queue(struct net_device *dev,
+ 	}
+ }
+ 
+-static void dev_reset_queue(struct net_device *dev,
+-			    struct netdev_queue *dev_queue,
+-			    void *_unused)
+-{
+-	struct Qdisc *qdisc;
+-	bool nolock;
+-
+-	qdisc = dev_queue->qdisc_sleeping;
+-	if (!qdisc)
+-		return;
+-
+-	nolock = qdisc->flags & TCQ_F_NOLOCK;
+-
+-	if (nolock)
+-		spin_lock_bh(&qdisc->seqlock);
+-	spin_lock_bh(qdisc_lock(qdisc));
+-
+-	qdisc_reset(qdisc);
+-
+-	spin_unlock_bh(qdisc_lock(qdisc));
+-	if (nolock) {
+-		clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
+-		spin_unlock_bh(&qdisc->seqlock);
+-	}
+-}
+-
+ static bool some_qdisc_is_busy(struct net_device *dev)
+ {
+ 	unsigned int i;
+diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
+index 4c65b4ed5ccd..27490a81c4fa 100644
+--- a/net/sched/sch_teql.c
++++ b/net/sched/sch_teql.c
+@@ -146,15 +146,11 @@ teql_destroy(struct Qdisc *sch)
+ 					master->slaves = NEXT_SLAVE(q);
+ 					if (q == master->slaves) {
+ 						struct netdev_queue *txq;
+-						spinlock_t *root_lock;
+ 
+ 						txq = netdev_get_tx_queue(master->dev, 0);
+ 						master->slaves = NULL;
+ 
+-						root_lock = qdisc_root_sleeping_lock(rtnl_dereference(txq->qdisc));
+-						spin_lock_bh(root_lock);
+-						qdisc_reset(rtnl_dereference(txq->qdisc));
+-						spin_unlock_bh(root_lock);
++						dev_reset_queue(master->dev, txq, NULL);
+ 					}
+ 				}
+ 				skb_queue_purge(&dat->q);
+--
+2.39.5

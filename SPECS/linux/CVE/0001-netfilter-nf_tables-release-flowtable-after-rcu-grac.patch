@@ -1,0 +1,48 @@
+From d73f4b53aaaea4c95f245e491aa5eeb8a21874ce Mon Sep 17 00:00:01 2001
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Tue, 17 Mar 2026 20:00:26 +0100
+Subject: [PATCH] netfilter: nf_tables: release flowtable after rcu grace period on error
+
+[ Upstream commit d73f4b53aaaea4c95f245e491aa5eeb8a21874ce ]
+
+Call synchronize_rcu() after unregistering the hooks from error path,
+since a hook that already refers to this flowtable can be already
+registered, exposing this flowtable to packet path and nfnetlink_hook
+control plane.
+
+This error path is rare, it should only happen by reaching the maximum
+number hooks or by failing to set up to hardware offload, just call
+synchronize_rcu().
+
+There is a check for already used device hooks by different flowtable
+that could result in EEXIST at this late stage. The hook parser can be
+updated to perform this check earlier to this error path really becomes
+rarely exercised.
+
+Uncovered by KASAN reported as use-after-free from nfnetlink_hook path
+when dumping hooks.
+
+Fixes: 3b49e2e94e6e ("netfilter: nf_tables: add flow table netlink frontend")
+Reported-by: Yiming Qian <yimingqian591@gmail.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+[Ankit: Backported for v5.10.258]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/netfilter/nf_tables_api.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 906b566ad244..a6a035b8570a 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -7308,6 +7308,7 @@ static int nf_tables_newflowtable(struct net *net, struct sock *nlsk,
+ 	return 0;
+ 
+ err_flowtable_hooks:
++	synchronize_rcu();
+ 	nft_trans_destroy(trans);
+ err_flowtable_trans:
+ 	nft_flowtable_hooks_destroy(&flowtable->hook_list);
+-- 
+2.39.5

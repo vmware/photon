@@ -472,3 +472,15 @@ Patch3191: 0001-xfrm-prevent-policy_hthresh.work-from-racing-with-ne.patch
 
 # Fix CVE-2026-31419
 Patch3192: 0001-net-bonding-fix-use-after-free-in-bond_xmit_broadcas.patch
+
+# Fix CVE-2026-23449
+Patch3193: 0001-net-sched-teql-Fix-double-free-in-teql_master_xmit.patch
+
+# Fix CVE-2026-23392
+Patch3194: 0001-netfilter-nf_tables-release-flowtable-after-rcu-grac.patch
+
+# Prerequisite for CVE-2026-31663
+Patch3195: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch
+
+# Fix CVE-2026-31663
+Patch3196: 0002-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
