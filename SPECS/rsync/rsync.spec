@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
-Version:        3.4.1
-Release:        2%{?dist}
+Version:        3.4.4
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=a3ecde4843ddb795308dca88581b868ac0221eb6f88a1477d7a9a2ecb4e4686042966bdddbab40866f90a4715d3104daa7b83222ddf0f3387b796a86bde8e5c2
-
-Patch0: CVE-2026-41035.patch
+%define sha512 %{name}=cf9a838b1f019b70fd67fa2c293f267be3f24e579c2ea33177ec7afc502c97ce0b613ff0854088c0eb28acd14ee0a75706ae8445115cef4669bd586c505d8453
 
 BuildRequires:  zlib-devel
 BuildRequires:  lz4-devel
@@ -87,6 +85,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/rsyncd.conf
 
 %changelog
+* Fri Jun 19 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.4.4-1
+- Update to v3.4.4
 * Tue May 19 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.4.1-2
 - Fix CVE-2026-41035
 * Fri Jan 17 2025 Tapas Kundu <tapas.kundu@broadcom.com> 3.4.1-1
