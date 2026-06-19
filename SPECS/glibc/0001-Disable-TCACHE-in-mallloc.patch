@@ -1,0 +1,56 @@
+From 46f1b581b943130922ac2f4f6585e8d5b2b811ee Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Fri, 19 Jun 2026 04:26:12 +0000
+Subject: [PATCH] Disable TCACHE in mallloc
+
+---
+ malloc/Makefile | 2 +-
+ malloc/malloc.c | 4 ----
+ 2 files changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/malloc/Makefile b/malloc/Makefile
+index bd7383dc64..9b972a2d07 100644
+--- a/malloc/Makefile
++++ b/malloc/Makefile
+@@ -447,7 +447,7 @@ tst-malloc-usable-tunables-threaded-main-ENV = $(malloc-check-tunables-env)
+ tst-malloc-usable-tunables-threaded-worker-ENV = $(malloc-check-tunables-env)
+ 
+ CPPFLAGS-malloc-debug.c += -DUSE_TCACHE=0
+-CPPFLAGS-malloc.c += -DUSE_TCACHE=1
++CPPFLAGS-malloc.c += -DUSE_TCACHE=0
+ # Uncomment this for test releases.  For public releases it is too expensive.
+ #CPPFLAGS-malloc.o += -DMALLOC_DEBUG=1
+ 
+diff --git a/malloc/malloc.c b/malloc/malloc.c
+index 771e7d40b7..128dec9620 100644
+--- a/malloc/malloc.c
++++ b/malloc/malloc.c
+@@ -1043,9 +1043,7 @@ static void*  _int_memalign(mstate, size_t, size_t);
+ static void*  _mid_memalign(size_t, size_t);
+ #endif
+ 
+-#if USE_TCACHE
+ static void malloc_printerr_tail(const char *str);
+-#endif
+ static void malloc_printerr(const char *str) __attribute__ ((noreturn));
+ 
+ static void munmap_chunk(mchunkptr p);
+@@ -5345,7 +5343,6 @@ malloc_printerr (const char *str)
+   __builtin_unreachable ();
+ }
+ 
+-#if USE_TCACHE
+ 
+ static volatile int dummy_var;
+ 
+@@ -5357,7 +5354,6 @@ malloc_printerr_tail (const char *str)
+     return;
+   malloc_printerr (str);
+ }
+-#endif
+ 
+ #if IS_IN (libc)
+ /* We need a wrapper function for one of the additions of POSIX.  */
+-- 
+2.53.0
+

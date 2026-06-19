@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.43
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -22,7 +22,8 @@ Source4:        license.txt
 
 #Patch taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch0:         glibc-2.31-fhs-1.patch
-Patch1:         0002-malloc-arena-fix.patch
+Patch1:         0001-Disable-TCACHE-in-mallloc.patch
+Patch2:         0002-malloc-arena-fix.patch
 
 #release branch patches
 #generate using ./tools/scripts/generate-glibc-release-patches.sh %{version}
@@ -134,8 +135,8 @@ chmod +x find_requires.sh
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
         --host=%{_host} --build=%{_build} \
-        CFLAGS="%{optflags} -DUSE_TCACHE=0" \
-        CXXFLAGS="%{optflags} -DUSE_TCACHE=0" \
+        CFLAGS="%{optflags}" \
+        CXXFLAGS="%{optflags}" \
         --program-prefix=%{?_program_prefix} \
         --disable-dependency-tracking \
         --prefix=%{_prefix} \
@@ -358,6 +359,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Jun 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-5
+- Correctly disable tcache
 * Tue Jun 02 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-4
 - Fix malloc arena stickiness for 2.43
 - Disable TCACHE, enabled by default in 2.43, as it does not work well (yet) with malloc arena stickiness
