@@ -380,6 +380,25 @@ function find_extra_erased_pkgs() {
   return ${#unexpected_pkgs_arr[@]}
 }
 
+# Usage: sanitize_extra_erased_pkgs_arr
+# Removes any packages from the extra_erased_pkgs_arr which are already
+# marked for removal before upgrade or are replaced by other packages
+function sanitize_extra_erased_pkgs_arr() {
+  local p
+  local q
+  local len=0
+  local i=0
+
+  len=${#extra_erased_pkgs_arr[@]}
+  for ((i=0; i<len; i++)); do
+    for q in ${deprecated_pkgs_to_remove_arr[@]} ${!replaced_pkgs_map[@]}; do
+      if [ "${extra_erased_pkgs_arr[$i]}" = "$q" ]; then
+        unset extra_erased_pkgs_arr[$i]
+        break
+      fi
+    done
+  done
+}
 
 #Some packages are deprecaed in 5.0, lets remove them before upgrading
 function remove_unsupported_packages() {
@@ -770,6 +789,7 @@ function update_os() {
   backup_configs $TMP_BACKUP_LOC \
                   ${!replaced_pkgs_map[@]} \
                   ${extra_erased_pkgs_arr[@]}
+  sanitize_extra_erased_pkgs_arr
   # deprecated drpm package would prevent package manager update from happening
   # remove it before updating package manager
   erase_pkgs drpm

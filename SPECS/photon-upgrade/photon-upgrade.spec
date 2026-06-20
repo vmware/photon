@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Fri Jun 19 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-3
+- Update further package changes
 * Wed Jun 17 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-2
 - Include appliance rpms in --install-all
 * Tue Jun 09 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-1

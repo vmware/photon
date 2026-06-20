@@ -8,6 +8,7 @@ backward-cpp
 bluez
 bluez-devel
 bluez-tools
+bridge-utils
 bubblewrap
 calico-bgp-daemon
 chkconfig
@@ -107,6 +108,10 @@ ostree-grub2
 ostree-libs
 pam_tacplus
 pam_tacplus-devel
+perl-DBIx-Simple
+perl-JSON-Any
+perl-Object-Accessor
+perl-Perl4-CoreLibs
 pth
 pth-devel
 python3-argparse
