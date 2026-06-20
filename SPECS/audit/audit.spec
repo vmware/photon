@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        4.1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Security
 URL:            https://github.com/linux-audit/audit-userspace
 Vendor:         VMware, Inc.
@@ -204,6 +204,8 @@ systemctl daemon-reload
 %{python3_sitearch}/*
 
 %changelog
+* Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.1.3-3
+- Fix stig rules, use fusermount3 instead of fusermount
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.3-2
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 4.1.3-1
