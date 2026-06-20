@@ -4,7 +4,7 @@
 
 Name:           python3-flit-core
 Version:        3.12.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        The build backend used by Hatch
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,8 +19,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
-
-%define ExtraBUildRequires python3-pip
+BuildRequires:  python3-xml
 
 Requires:       python3
 
@@ -31,7 +30,7 @@ This is the extensible, standards compliant build backend used by Hatch.
 %autosetup -n %{srcname}-%{version}
 
 %build
-python3 -m ensurepip
+python3 -m ensurepip --default-pip
 %{pyproject_wheel}
 
 %install
@@ -47,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-4
+- Remove python from ExtraBR
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.12.0-3
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.12.0-2

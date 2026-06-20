@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.43
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -37,7 +37,7 @@ Requires:       %{name}-libs = %{version}-%{release}
 
 Conflicts:      %{name}-i18n < 2.36-4
 
-%define ExtraBuildRequires bison, python3, python3-libs
+%define ExtraBuildRequires bison, python3
 
 %description
 This library provides the basic routines for allocating memory,
@@ -359,6 +359,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.43-6
+- Remove python3-libs from ExtraBR, redundant entry
 * Fri Jun 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-5
 - Correctly disable tcache
 * Tue Jun 02 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-4

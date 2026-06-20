@@ -3,7 +3,7 @@
 Summary:        iniconfig: brain-dead simple config-ini parsing
 Name:           python3-iniconfig
 Version:        2.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://github.com/RonnyPfannschmidt/iniconfig
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -23,7 +23,7 @@ BuildRequires:  python3-installer
 BuildRequires:  python3-setuptools_scm
 
 %if 0%{?with_check}
-%define ExtraBuildRequires python3-pytest
+BuildRequires: python3-pytest
 %endif
 
 Requires: python3
@@ -66,6 +66,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/iniconfig*
 
 %changelog
+* Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.0-3
+- Remove python package from ExtraBR
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.0-2
 - Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.3.0-1
