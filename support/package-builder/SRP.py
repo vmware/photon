@@ -180,10 +180,13 @@ class SRP(object):
         # uid.obj.comp.package.go(name='sigs.k8s.io/yaml',version='v1.3.0')
         path = unquote(path).replace("!", "")
         path = path.removeprefix(GO_REMOTE_PREFIX)
+        # Only process versioned module paths; skip sumdb, hash tiles, etc.
+        if "@v" not in path:
+            return None
         # Handle urls that list or query latest versions
         if path.endswith("list") or "@latest" in path:
             return None
-        name, version = path.split("@v")
+        name, version = path.split("@v", 1)
         name = name.removesuffix("/")
         version = version.removeprefix("/")
         if version.endswith(".mod"):
@@ -282,8 +285,8 @@ class SRP(object):
     def addAdditionalDeps(self, additional_paths):
         if not self.srpcli:
             return
-        try:
-            for path in additional_paths:
+        for path in additional_paths:
+            try:
                 if path.startswith(GO_REMOTE_PREFIX):
                     uid = self.goDepPathToUid(path)
                     if not uid:
@@ -331,8 +334,8 @@ class SRP(object):
                             "interaction_type": "dev_tools/excluded",
                         },
                     )
-        except Exception as e:
-            self.logger.exception(e)
+            except Exception as e:
+                self.logger.exception(e)
 
     def addOutputRPMS(self, files):
         if not self.srpcli:
