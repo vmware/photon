@@ -198,9 +198,6 @@ Patch3084: 0001-svcrdma-bound-check-rq_pages-index-in-inline-path.patch
 # Fix CVE-2025-68353
 Patch3085: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 
-# CVE-2023-54271
-Patch3086: 0001-blk-cgroup-Fix-NULL-deref-caused-by-blkg_policy_data.patch
-
 # Fix CVE-2025-68190
 Patch3087: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 
@@ -261,10 +258,6 @@ Patch3107: 0001-cifs-Fix-locking-usage-for-tcon-fields.patch
 # Fix CVE-2026-43125
 Patch3108: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
 
-# Fix CVE-2026-31709
-Patch3109: 0001-smb-client-validate-dacloffset-before-building-DACL-.patch
-Patch3110: 0002-smb-client-validate-the-whole-DACL-before-rewriting-.patch
-
 # Fix CVE-2026-43249
 Patch3111: 0001-9p-xen-protect-xen_9pfs_front_free-against-concurren.patch
 
@@ -290,9 +283,6 @@ Patch3118: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
 
 # Fix CVE-2026-43456
 Patch3119: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
-
-# Fix CVE-2026-45850
-Patch3120: 0001-ipvs-skip-ipv6-extension-headers-for-csum-checks.patch
 
 # Fix CVE-2026-31675
 Patch3121: 0001-net-sched-sch_netem-fix-out-of-bounds-access-in-pack.patch

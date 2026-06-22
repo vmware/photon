@@ -4,7 +4,7 @@
 
 Summary:        Linux kernel userspace tools
 Name:           linux-tools
-Version:        6.1.175
+Version:        6.1.176
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 Group:          System/Tools
 URL:            http://www.kernel.org
@@ -19,6 +19,11 @@ Source1: glibc-2.43-build-error-fix.patches
 
 Source2: license.txt
 %include %{SOURCE2}
+
+# Build compilation fixes
+Patch0: 0001-perf-bench-Avoid-NDEBUG-warning.patch
+Patch1: 0001-perf-python-Stop-using-deprecated-PyUnicode_AsString.patch
+Patch2: 0002-perf-block-range-Move-debug-code-behind-ifndef-NDEBU.patch
 
 # perf: off-cpu sample
 Patch50: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
@@ -157,6 +162,8 @@ ARCH_FLAGS="${ARCH_FLAGS} EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Jun 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.176-1
+- Update to version 6.1.176
 * Mon Jun 01 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-1
 - Update to version 6.1.175
 * Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.174-2

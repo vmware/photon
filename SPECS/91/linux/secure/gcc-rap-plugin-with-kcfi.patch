@@ -1,4 +1,4 @@
-From 328d23d18ae829a2bc26a75a6d41c14f67020cf8 Mon Sep 17 00:00:00 2001
+From 13881fdc49250e09c194d60a7ff8173350c96ec0 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Wed, 3 Apr 2024 10:56:21 +0000
 Subject: [PATCH] gcc rap plugin with kcfi
@@ -111,10 +111,10 @@ Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/Makefile b/Makefile
-index 3bf9f2d4c..826c32d22 100644
+index f7264015c..eba4703a1 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1005,10 +1005,12 @@ export CC_FLAGS_LTO
+@@ -1016,10 +1016,12 @@ export CC_FLAGS_LTO
  endif
  
  ifdef CONFIG_CFI_CLANG
@@ -222,10 +222,10 @@ index 75884d2cd..266f5ce89 100644
 +
  #endif /* _ASM_VERMAGIC_H */
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 69f85e274..291d31fd8 100644
+index 3bc6be640..22e42bb0e 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -1240,6 +1240,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+@@ -1480,6 +1480,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
  	return __text_poke(text_poke_memcpy, addr, opcode, len);
  }
  
@@ -263,10 +263,10 @@ index b67e7bee1..27a83f41c 100644
  	if (vmware_tsc_khz == 0)
  		return;
 diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index c032edcd3..e41af9f86 100644
+index c34ea5e02..0b6a61a53 100644
 --- a/arch/x86/kernel/module.c
 +++ b/arch/x86/kernel/module.c
-@@ -227,7 +227,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+@@ -228,7 +228,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
  {
  	int ret;
  	bool early = me->state == MODULE_STATE_UNFORMED;
@@ -320,7 +320,7 @@ index c0a5a4f22..5d88ced16 100644
  	} else {
  		if (fixup_vdso_exception(regs, trapnr, error_code, 0))
 diff --git a/arch/x86/tools/relocs.c b/arch/x86/tools/relocs.c
-index 9a5b101c4..f437a880b 100644
+index 4fd824a44..92bfde664 100644
 --- a/arch/x86/tools/relocs.c
 +++ b/arch/x86/tools/relocs.c
 @@ -57,6 +57,7 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
@@ -332,7 +332,7 @@ index 9a5b101c4..f437a880b 100644
  
  /*
 diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index 487840e35..146883d67 100644
+index 5d29791ec..cb0c85120 100644
 --- a/drivers/block/floppy.c
 +++ b/drivers/block/floppy.c
 @@ -530,14 +530,13 @@ static struct format_descr format_req;
@@ -380,10 +380,10 @@ index 487840e35..146883d67 100644
  
  /* schedules handler, waiting for completion. May be interrupted, will then
 diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-index c0759d49f..64395bfef 100644
+index 412f19fa3..07df9b4dc 100644
 --- a/drivers/char/tpm/tpm-chip.c
 +++ b/drivers/char/tpm/tpm-chip.c
-@@ -373,6 +373,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
+@@ -371,6 +371,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
  }
  EXPORT_SYMBOL_GPL(tpm_chip_alloc);
  
@@ -395,7 +395,7 @@ index c0759d49f..64395bfef 100644
  /**
   * tpmm_chip_alloc() - allocate a new struct tpm_chip instance
   * @pdev: parent device to which the chip is associated
-@@ -390,9 +395,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
+@@ -388,9 +393,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
  	if (IS_ERR(chip))
  		return chip;
  
@@ -630,7 +630,7 @@ index 2623a0da4..c05dc7a1c 100644
  
  	tx->flags |= BNA_TX_F_ENABLED;
 diff --git a/drivers/net/ethernet/brocade/bna/bna_types.h b/drivers/net/ethernet/brocade/bna/bna_types.h
-index 666b6922e..94261bb24 100644
+index ebf54d74c..7e5115edf 100644
 --- a/drivers/net/ethernet/brocade/bna/bna_types.h
 +++ b/drivers/net/ethernet/brocade/bna/bna_types.h
 @@ -312,8 +312,10 @@ struct bna_attr {
@@ -716,7 +716,7 @@ index 666b6922e..94261bb24 100644
  	enum bna_rx_type type;
  
 diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
-index d6d90f972..cb8e17ddf 100644
+index aecdb98f8..c6392d7c3 100644
 --- a/drivers/net/ethernet/brocade/bna/bnad.c
 +++ b/drivers/net/ethernet/brocade/bna/bnad.c
 @@ -1092,8 +1092,9 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
@@ -739,7 +739,7 @@ index d6d90f972..cb8e17ddf 100644
  {
  	struct bnad_rx_info *rx_info =
  		container_of(work, struct bnad_rx_info, rx_cleanup_work);
-@@ -1992,8 +1993,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
+@@ -1993,8 +1994,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
  	}
  	tx_info->tx = tx;
  
@@ -749,7 +749,7 @@ index d6d90f972..cb8e17ddf 100644
  
  	/* Register ISR for the Tx object */
  	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
-@@ -2249,8 +2249,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
+@@ -2250,8 +2250,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
  	rx_info->rx = rx;
  	spin_unlock_irqrestore(&bnad->bna_lock, flags);
  
@@ -1400,7 +1400,7 @@ index 9c8310957..5a4ad66bc 100644
  	bfa_cb_diag_t	cbfn;
  	void		*cbarg;
 diff --git a/drivers/scsi/bfa/bfad.c b/drivers/scsi/bfa/bfad.c
-index e5aa982ff..4f9dd0b8a 100644
+index d4455ca3a..05735c4cb 100644
 --- a/drivers/scsi/bfa/bfad.c
 +++ b/drivers/scsi/bfa/bfad.c
 @@ -400,6 +400,16 @@ bfad_hcb_comp(void *arg, bfa_status_t status)
@@ -1869,7 +1869,7 @@ index 713e13adf..dcbdf1125 100644
  	int ret = 0;
  
 diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
-index 05e1a63e0..3b5dff3b6 100644
+index ed40ae6b9..0080ba0fc 100644
 --- a/drivers/scsi/csiostor/csio_scsi.c
 +++ b/drivers/scsi/csiostor/csio_scsi.c
 @@ -65,12 +65,12 @@ static int csio_ddp_descs = 128;
@@ -1989,10 +1989,10 @@ index 6b8713675..6f3fe6a60 100644
  #define SYM_TYPED_START(name, linkage, align...)	\
  	SYM_TYPED_ENTRY(name, linkage, align)
 diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 574b4121e..5d9f44ea9 100644
+index 7c9883c49..05cc13666 100644
 --- a/include/linux/compiler_types.h
 +++ b/include/linux/compiler_types.h
-@@ -326,6 +326,10 @@ struct ftrace_likely_data {
+@@ -349,6 +349,10 @@ struct ftrace_likely_data {
  			 __scalar_type_to_expr_cases(long long),	\
  			 default: (x)))
  
@@ -2004,10 +2004,10 @@ index 574b4121e..5d9f44ea9 100644
  #define __native_word(t) \
  	(sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
 diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
-index 962cd41a2..b50341126 100644
+index f73ca4d62..5211120f0 100644
 --- a/include/linux/moduleparam.h
 +++ b/include/linux/moduleparam.h
-@@ -354,7 +354,7 @@ static inline void kernel_param_unlock(struct module *mod)
+@@ -353,7 +353,7 @@ static inline void kernel_param_unlock(struct module *mod)
   * @len is usually just sizeof(string).
   */
  #define module_param_string(name, string, len, perm)			\
@@ -2016,7 +2016,7 @@ index 962cd41a2..b50341126 100644
  		= { len, string };					\
  	__module_param_call(MODULE_PARAM_PREFIX, name,			\
  			    &param_ops_string,				\
-@@ -513,7 +513,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
+@@ -507,7 +507,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
   */
  #define module_param_array_named(name, array, type, nump, perm)		\
  	param_check_##type(name, &(array)[0]);				\
@@ -2026,7 +2026,7 @@ index 962cd41a2..b50341126 100644
  	    .ops = &param_ops_##type,					\
  	    .elemsize = sizeof(array[0]), .elem = array };		\
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 4da7411da..9506a4f38 100644
+index 8b13be163..48d0b1e05 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -194,7 +194,7 @@ static inline const char *pci_power_name(pci_power_t state)
@@ -2039,7 +2039,7 @@ index 4da7411da..9506a4f38 100644
  	pci_channel_io_normal = (__force pci_channel_state_t) 1,
  
 diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index 27a6ba1c0..617be02cf 100644
+index 7ff6bc7da..c0e176f00 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
 @@ -122,8 +122,14 @@ enum landlock_rule_type;
@@ -2058,9 +2058,9 @@ index 27a6ba1c0..617be02cf 100644
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
  
-@@ -240,18 +246,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
- 	__diag_push();							\
- 	__diag_ignore(GCC, 8, "-Wattribute-alias",			\
+@@ -244,18 +250,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+ 		      "Avoid breaking versions without -Wattribute-alias");\
+ 	__diag_ignore(clang, 23, "-Wattribute-alias",			\
  		      "Type aliasing is used to sanitize syscall arguments");\
 -	asmlinkage long sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))	\
 -		__attribute__((alias(__stringify(__se_sys##name))));	\
@@ -2083,10 +2083,10 @@ index 27a6ba1c0..617be02cf 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 44abf88e1..bf6c48e86 100644
+index ae3a01efe..f1f5f9df1 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1071,6 +1071,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+@@ -1075,6 +1075,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
  	bpf_jit_uncharge_modmem(size);
  }
  
@@ -2097,7 +2097,7 @@ index 44abf88e1..bf6c48e86 100644
  /* Allocate jit binary from bpf_prog_pack allocator.
   * Since the allocated memory is RO+X, the JIT engine cannot write directly
   * to the memory. To solve this problem, a RW buffer is also allocated at
-@@ -1117,11 +1121,24 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1121,11 +1125,24 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  
  	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
  		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
@@ -2122,7 +2122,7 @@ index 44abf88e1..bf6c48e86 100644
  	return ro_header;
  }
  
-@@ -1649,7 +1666,7 @@ bool bpf_opcode_in_insntable(u8 code)
+@@ -1653,7 +1670,7 @@ bool bpf_opcode_in_insntable(u8 code)
  }
  
  #ifndef CONFIG_BPF_JIT_ALWAYS_ON
@@ -2131,7 +2131,7 @@ index 44abf88e1..bf6c48e86 100644
  {
  	memset(dst, 0, size);
  	return -EFAULT;
-@@ -1948,7 +1965,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+@@ -1952,7 +1969,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
  		DST = *(SIZE *)(unsigned long) (SRC + insn->off);	\
  		CONT;							\
  	LDX_PROBE_MEM_##SIZEOP:						\
@@ -2141,7 +2141,7 @@ index 44abf88e1..bf6c48e86 100644
  		DST = *((SIZE *)&DST);					\
  		CONT;
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 872d149b1..9add3564f 100644
+index 146b37e97..eafbb3e0a 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
 @@ -1112,8 +1112,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
@@ -2156,10 +2156,10 @@ index 872d149b1..9add3564f 100644
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 554aba47a..1a4a78adf 100644
+index e83e84f69..95b78f42c 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -1959,8 +1959,15 @@ static int setup_load_info(struct load_info *info, int flags)
+@@ -1968,8 +1968,15 @@ static int setup_load_info(struct load_info *info, int flags)
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -2175,7 +2175,7 @@ index 554aba47a..1a4a78adf 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -1995,7 +2002,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+@@ -2004,7 +2011,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  		return err;
  
  	/* Set up license info based on the info section */
@@ -2185,7 +2185,7 @@ index 554aba47a..1a4a78adf 100644
  	if (get_modinfo(info, "test")) {
  		if (!test_taint(TAINT_TEST))
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 18a4f8f28..5c4bb23d4 100644
+index 56111b42d..afbff9486 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -4885,7 +4885,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
@@ -2198,10 +2198,10 @@ index 18a4f8f28..5c4bb23d4 100644
  		head->next = NULL;
  		head = next;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 940de9516..dfeaefa75 100644
+index 7d2491c18..f689ea969 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -869,7 +869,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
+@@ -873,7 +873,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
  
  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
  {
@@ -2212,10 +2212,10 @@ index 940de9516..dfeaefa75 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index f645da82d..0e82af111 100644
+index f4f65fa94..242d6bda9 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
-@@ -391,7 +391,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
+@@ -397,7 +397,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
  	rcu_assign_pointer(comment->c, NULL);
  }
  
@@ -3612,7 +3612,7 @@ index 000000000..65bc1cdea
 +	U64TO8_LE(out, b);
 +}
 diff --git a/security/Kconfig b/security/Kconfig
-index e6db09a77..148706453 100644
+index 918875737..4dc8d0ecf 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -5,6 +5,35 @@
@@ -3652,7 +3652,7 @@ index e6db09a77..148706453 100644
  
  config SECURITY_DMESG_RESTRICT
 diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-index 50e17fb0a..9d0b08cff 100644
+index f14f00390..837f2b1d3 100644
 --- a/security/apparmor/net.c
 +++ b/security/apparmor/net.c
 @@ -95,7 +95,7 @@ static void audit_unix_addr(struct audit_buffer *ab, const char *str,
@@ -3665,5 +3665,5 @@ index 50e17fb0a..9d0b08cff 100644
  	struct unix_sock *u = unix_sk(sk);
  	if (u && u->addr)
 -- 
-2.23.1
+2.53.0
 

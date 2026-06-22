@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.175
-Release:        11%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.176
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -64,10 +64,10 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
-%define ena_version 2.8.3
+%define ena_version 2.17.0
 Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux_%{ena_version}.tar.gz
 
-%define efa_version 2.1.1
+%define efa_version 3.1.0
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
 
 # contains pre, postun, filetriggerun tasks
@@ -678,6 +678,8 @@ rm -rf %{struct_comp_dir}
 
 # build ENA module
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
+cp configure.sh ena-conf.sh
+./ena-conf.sh --kernel-dir "${bldroot}"
 %make_build -C ${bldroot} M="${PWD}" V=1 modules
 popd
 
@@ -870,6 +872,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Jun 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.176-1
+- Update to version 6.1.176
 * Tue Jun 23 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.175-11
 - Fix CVE-2026-31675; add netem multi-segment skb corruption handling
 * Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.175-10

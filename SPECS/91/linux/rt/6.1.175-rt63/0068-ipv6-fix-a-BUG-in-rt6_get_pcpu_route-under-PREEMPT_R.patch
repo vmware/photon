@@ -1,0 +1,63 @@
+From b658e197f74b2712dd3b0a41cf042492f1d2f19a Mon Sep 17 00:00:00 2001
+From: Jiayuan Chen <jiayuan.chen@linux.dev>
+Date: Tue, 23 Dec 2025 13:14:12 +0800
+Subject: [PATCH 68/72] ipv6: fix a BUG in rt6_get_pcpu_route() under
+ PREEMPT_RT
+
+On PREEMPT_RT kernels, after rt6_get_pcpu_route() returns NULL, the
+current task can be preempted. Another task running on the same CPU
+may then execute rt6_make_pcpu_route() and successfully install a
+pcpu_rt entry. When the first task resumes execution, its cmpxchg()
+in rt6_make_pcpu_route() will fail because rt6i_pcpu is no longer
+NULL, triggering the BUG_ON(prev). It's easy to reproduce it by adding
+mdelay() after rt6_get_pcpu_route().
+
+Using preempt_disable/enable is not appropriate here because
+ip6_rt_pcpu_alloc() may sleep.
+
+Fix this by handling the cmpxchg() failure gracefully on PREEMPT_RT:
+free our allocation and return the existing pcpu_rt installed by
+another task. The BUG_ON is replaced by WARN_ON_ONCE for non-PREEMPT_RT
+kernels where such races should not occur.
+
+Link: https://syzkaller.appspot.com/bug?extid=9b35e9bc0951140d13e6
+Fixes: d2d6422f8bd1 ("x86: Allow to enable PREEMPT_RT.")
+Reported-by: syzbot+9b35e9bc0951140d13e6@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/all/6918cd88.050a0220.1c914e.0045.GAE@google.com/T/
+Signed-off-by: Jiayuan Chen <jiayuan.chen@linux.dev>
+Link: https://patch.msgid.link/20251223051413.124687-1-jiayuan.chen@linux.dev
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+
+(cherry picked from commit 1adaea51c61b52e24e7ab38f7d3eba023b2d050d)
+Signed-off-by: Clark Williams <clark.williams@gmail.com>
+---
+ net/ipv6/route.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 987ef0954e2e..99aa395ff042 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -1465,7 +1465,18 @@ static struct rt6_info *rt6_make_pcpu_route(struct net *net,
+ 
+ 	p = this_cpu_ptr(res->nh->rt6i_pcpu);
+ 	prev = cmpxchg(p, NULL, pcpu_rt);
+-	BUG_ON(prev);
++	if (unlikely(prev)) {
++		/*
++		 * Another task on this CPU already installed a pcpu_rt.
++		 * This can happen on PREEMPT_RT where preemption is possible.
++		 * Free our allocation and return the existing one.
++		 */
++		WARN_ON_ONCE(!IS_ENABLED(CONFIG_PREEMPT_RT));
++
++		dst_dev_put(&pcpu_rt->dst);
++		dst_release(&pcpu_rt->dst);
++		return prev;
++	}
+ 
+ 	if (res->f6i->fib6_destroying) {
+ 		struct fib6_info *from;
+-- 
+2.54.0
+

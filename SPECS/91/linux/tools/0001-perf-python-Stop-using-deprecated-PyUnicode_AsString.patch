@@ -1,0 +1,77 @@
+From bab8da6fe7d897352164092b66c6c07e46842247 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Date: Wed, 30 Jul 2025 10:34:20 -0300
+Subject: [PATCH] perf python: Stop using deprecated PyUnicode_AsString()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit 59edbec7a5c70af6c0058e32eb3750bfb8928d7b upstream
+
+As noticed while building for Fedora 43:
+
+    GEN     /tmp/build/perf/python/perf.cpython-314-x86_64-linux-gnu.so
+  /git/perf-6.16.0-rc3/tools/perf/util/python.c: In function ‘get_tracepoint_field’:
+  /git/perf-6.16.0-rc3/tools/perf/util/python.c:340:9: error: ‘_PyUnicode_AsString’ is deprecated [-Werror=deprecated-declarations]
+    340 |         const char *str = _PyUnicode_AsString(PyObject_Str(attr_name));
+        |         ^~~~~
+  In file included from /usr/include/python3.14/unicodeobject.h:1022,
+                   from /usr/include/python3.14/Python.h:89,
+                   from /git/perf-6.16.0-rc3/tools/perf/util/python.c:2:
+  /usr/include/python3.14/cpython/unicodeobject.h:648:1: note: declared here
+    648 | _PyUnicode_AsString(PyObject *unicode)
+        | ^~~~~~~~~~~~~~~~~~~
+  cc1: all warnings being treated as errors
+  error: command '/usr/bin/gcc' failed with exit code 1
+
+Use PyUnicode_AsUTF8() instead and also check if PyObject_Str() fails
+before doing so.
+
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Link: https://lore.kernel.org/r/aIofXNK8QLtLIaI3@x1
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+[ Brennan : Adapted for 6.1 and separate declarations from code to avoid
+            a different compiler error ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ tools/perf/util/python.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/tools/perf/util/python.c b/tools/perf/util/python.c
+index e25c3fcaeccc..2aef36885b0a 100644
+--- a/tools/perf/util/python.c
++++ b/tools/perf/util/python.c
+@@ -466,9 +466,10 @@ tracepoint_field(struct pyrf_event *pe, struct tep_format_field *field)
+ static PyObject*
+ get_tracepoint_field(struct pyrf_event *pevent, PyObject *attr_name)
+ {
+-	const char *str = _PyUnicode_AsString(PyObject_Str(attr_name));
+ 	struct evsel *evsel = pevent->evsel;
+ 	struct tep_format_field *field;
++	PyObject *obj;
++	const char *str;
+ 
+ 	if (!evsel->tp_format) {
+ 		struct tep_event *tp_format;
+@@ -480,7 +481,18 @@ get_tracepoint_field(struct pyrf_event *pevent, PyObject *attr_name)
+ 		evsel->tp_format = tp_format;
+ 	}
+ 
++	obj = PyObject_Str(attr_name);
++	if (obj == NULL)
++		return NULL;
++
++	str = PyUnicode_AsUTF8(obj);
++	if (str == NULL) {
++		Py_DECREF(obj);
++		return NULL;
++	}
++
+ 	field = tep_find_any_field(evsel->tp_format, str);
++	Py_DECREF(obj);
+ 	if (!field)
+ 		return NULL;
+ 
+-- 
+2.53.0
+

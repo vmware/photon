@@ -68,3 +68,7 @@ Patch366: 0066-Linux-6.1.134-rt51-REBASE.patch
 Patch367: 0067-Linux-6.1.163-rt59-REBASE.patch
 Patch368: 0068-ipv6-fix-a-BUG-in-rt6_get_pcpu_route-under-PREEMPT_R.patch
 Patch370: 0069-Linux-6.1.167-rt62-REBASE.patch
+# This patch is exactly the same as 0001-libbpf-Fix-Wdiscarded-qualifiers-under-C23.patch
+#Patch371: 0070-tools-lib-bpf-fix-const-qualifier-discard-in-resolve.patch
+Patch372: 0071-kvm-vmx-guard-regparm-0-on-vmread_error_trampoline-f.patch
+Patch373: 0072-Linux-6.1.175-rt63-REBASE.patch

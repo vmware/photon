@@ -1,4 +1,4 @@
-From 9b374607ac96ea0c808655ab1b8d782406909648 Mon Sep 17 00:00:00 2001
+From 6cea514f37451773058d3a04792193db43569ef0 Mon Sep 17 00:00:00 2001
 From: Florian Westphal <fw@strlen.de>
 Date: Thu, 5 Mar 2026 21:32:00 +0100
 Subject: [PATCH] netfilter: nf_tables: always walk all pending catchall
@@ -34,25 +34,25 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  1 file changed, 2 deletions(-)
 
 diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 196ac4e76..0581f6479 100644
+index 735c02101..a8904f73c 100644
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -620,7 +620,6 @@ static void nft_map_catchall_deactivate(const struct nft_ctx *ctx,
- 
+@@ -627,7 +627,6 @@ static void nft_map_catchall_deactivate(const struct nft_ctx *ctx,
  		elem.priv = catchall->elem;
+ 		nft_set_elem_change_active(ctx->net, set, ext);
  		nft_setelem_data_deactivate(ctx->net, set, &elem);
 -		break;
  	}
  }
- 
-@@ -5241,7 +5240,6 @@ static void nft_map_catchall_activate(const struct nft_ctx *ctx,
- 
+
+@@ -5267,7 +5266,6 @@ static void nft_map_catchall_activate(const struct nft_ctx *ctx,
+ 		nft_clear(ctx->net, ext);
  		elem.priv = catchall->elem;
  		nft_setelem_data_activate(ctx->net, set, &elem);
 -		break;
  	}
  }
- 
--- 
+
+--
 2.53.0
 
