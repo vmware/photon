@@ -14,7 +14,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.42.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -33,6 +33,8 @@ Patch1:         make-check-failure2.patch
 %endif
 
 Patch2:         0001-Remove-libdb-support.patch
+Patch3:         01-perl-CVE-2026-8376.patch
+Patch4:         02-perl-CVE-2026-8376.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -111,6 +113,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Mon Jun 22 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-2
+- Fix CVE-2026-8376
 * Thu Apr 09 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-1
 - Upgrade perl to 5.42.2
 * Wed Apr 08 2026 Dweep Advani <dweep.advani@broadcom.com> 5.40.2-3
