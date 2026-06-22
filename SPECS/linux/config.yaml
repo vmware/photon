@@ -1,25 +1,25 @@
 sources:
-- archive: linux-6.12.92.tar.xz
+- archive: linux-6.12.94.tar.xz
   archive_type: upstream
-  version: 6.12.92
-  name: linux-6.12.92
-  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.92.tar.xz
+  version: 6.12.94
+  name: linux-6.12.94
+  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.94.tar.xz
   repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-  commit_id: 26deb9f9c427c0382f855546d23dba76c49e680c
+  commit_id: 0b8f247169e487eff2d4c2dd531bc43f7efda2cb
   skip_list: []
   missing: []
   archive_sha512sum: 
-    1ab9803e532822cbad21b049dba320711763a56274e932de7c30fddafb6b7e0d928bc6561f42b5bb990f86ffe2f9f6b2f619628bbbd5529a3a6a33e39af031b7
+    9368813d7c2b17d0a893c1becd0d631dac9030a81c0505b463ad4d8c72edbdaeada53c24bc36ada0b84ff0ff78ae363bdf9aeeb8cff6a0d01bc6fc00b2fa275b
   skip_validation: false
   license_manual_review:
   # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
   - file_paths:
-    - linux-6.12.92/drivers/pci/controller/pci-mvebu.c
+    - linux-6.12.94/drivers/pci/controller/pci-mvebu.c
     sha256sum: c214d76c403debdf0f6151206eef31dc8e26239ba99b89bed6c83770c7840645
     spdx_exp: GPL-2.0-only
   # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
   - file_paths:
-    - linux-6.12.92/Documentation/process/kernel-docs.rst
+    - linux-6.12.94/Documentation/process/kernel-docs.rst
     sha256sum: 1a01c62a4ef537eb61f0fc47d5e7852f067af86203d7eaaf719befb102bb64b8
     spdx_exp: ''
   spdx:
@@ -158,9 +158,9 @@ sources:
         systems that rely on high-quality entropy for encryption and other 
         sensitive operations.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: efa_linux_2.13.0.tar.gz
-  archive_sha512sum: 
-    d76d46ba844b2a552dfdcf8a75448937aaf881df54d43d7e28f4cbd01db360326283883391aa9e3974d0341815a5451c53b832b6650ee8e0ba32e2028a75e2ad
+- archive: efa_linux_3.1.0.tar.gz
+  archive_sha512sum:
+    0407d1cd62652831d557969e741537576ff8aef716d98c2a27e24c38359b27d7ece51f2033d99fbd30fdace89f2c4a2d4fb8756b26e98aeca1a1a3b41f9c13be
   skip_validation: true
   spdx:
     package:
@@ -181,9 +181,9 @@ sources:
       short_summary: The open source linux kernel drivers for devices(EFA) used 
         on AWS platforms.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: ena_linux_2.13.1.tar.gz
-  archive_sha512sum: 
-    a75f47aa491d1afbf756334b105d9447fe74b9a45c02d20b908be49ff9e31f32f6be6d75d6f76a72bfd8928bf5720ff8e84216f77981f41dc1f926ffed6e9ed4
+- archive: ena_linux_2.17.0.tar.gz
+  archive_sha512sum:
+    5273dc9f92d554791d02362686c4cfd9898ec60b677d0168b73da369d956b391de4183292c42296bf8f7fa70ae1acb66d78842e9239037caf100a1bc9cd1ebeb
   skip_validation: true
   spdx:
     package:

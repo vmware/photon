@@ -76,8 +76,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.92
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.94
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -90,10 +90,10 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
-%define ena_version 2.13.1
+%define ena_version 2.17.0
 Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux_%{ena_version}.tar.gz
 
-%define efa_version 2.13.0
+%define efa_version 3.1.0
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
 
 # contains pre, postun, filetriggerun tasks
@@ -969,6 +969,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jun 22 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.94-1
+- Update to version 6.12.94
 * Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.92-3
 - Add mpc-devel to build requires
 * Thu Jun 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.92-2

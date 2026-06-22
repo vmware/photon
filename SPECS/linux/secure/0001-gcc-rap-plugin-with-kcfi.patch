@@ -1,4 +1,4 @@
-From 9057b8f857f868e7607ecc7184b58a25394d0ff4 Mon Sep 17 00:00:00 2001
+From 1e268764f263bebf700d8fbe2560e527662847d5 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 26 Jul 2024 10:51:50 +0000
 Subject: [PATCH] gcc rap plugin with kcfi
@@ -75,10 +75,10 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/Makefile b/Makefile
-index 68a8faff2543..919427a37107 100644
+index ec28adb2d..f6e701d2e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -950,6 +950,7 @@ export CC_FLAGS_LTO
+@@ -961,6 +961,7 @@ export CC_FLAGS_LTO
  endif
  
  ifdef CONFIG_CFI_CLANG
@@ -86,7 +86,7 @@ index 68a8faff2543..919427a37107 100644
  CC_FLAGS_CFI	:= -fsanitize=kcfi
  ifdef CONFIG_CFI_ICALL_NORMALIZE_INTEGERS
  	CC_FLAGS_CFI	+= -fsanitize-cfi-icall-experimental-normalize-integers
-@@ -964,6 +965,7 @@ endif
+@@ -975,6 +976,7 @@ endif
  KBUILD_CFLAGS	+= $(CC_FLAGS_CFI)
  export CC_FLAGS_CFI
  endif
@@ -95,10 +95,10 @@ index 68a8faff2543..919427a37107 100644
  # Architectures can define flags to add/remove for floating-point support
  CC_FLAGS_FPU	+= -D_LINUX_FPU_COMPILATION_UNIT
 diff --git a/arch/Kconfig b/arch/Kconfig
-index bd9f095d69fa..0d1da16a93ba 100644
+index 1812e4e4d..6937cb11e 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -820,10 +820,16 @@ config ARCH_SUPPORTS_CFI_CLANG
+@@ -821,10 +821,16 @@ config ARCH_SUPPORTS_CFI_CLANG
  config ARCH_USES_CFI_TRAPS
  	bool
  
@@ -117,10 +117,10 @@ index bd9f095d69fa..0d1da16a93ba 100644
  	  This option enables Clang's forward-edge Control Flow Integrity
  	  (CFI) checking, where the compiler injects a runtime check to each
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 7b9a7e8f39ac..33d0970f8a76 100644
+index bbd604b5b..5adc8a44e 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -2477,7 +2477,7 @@ config CALL_PADDING
+@@ -2479,7 +2479,7 @@ config CALL_PADDING
  
  config FINEIBT
  	def_bool y
@@ -130,7 +130,7 @@ index 7b9a7e8f39ac..33d0970f8a76 100644
  
  config HAVE_CALL_THUNKS
 diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index 6259f1937fe7..d4489e292e3c 100644
+index bb3fd7f2c..61c4d6f63 100644
 --- a/arch/x86/include/asm/text-patching.h
 +++ b/arch/x86/include/asm/text-patching.h
 @@ -43,6 +43,10 @@ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void
@@ -145,7 +145,7 @@ index 6259f1937fe7..d4489e292e3c 100644
  #define INT3_INSN_OPCODE	0xCC
  
 diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
-index 75884d2cdec3..266f5ce89639 100644
+index 75884d2cd..266f5ce89 100644
 --- a/arch/x86/include/asm/vermagic.h
 +++ b/arch/x86/include/asm/vermagic.h
 @@ -5,6 +5,7 @@
@@ -173,10 +173,10 @@ index 75884d2cdec3..266f5ce89639 100644
 +
  #endif /* _ASM_VERMAGIC_H */
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index d17518ca19b8..d3871f43c314 100644
+index a05503983..0b6daa937 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -1984,6 +1984,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+@@ -2212,6 +2212,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
  	return __text_poke(text_poke_memcpy, addr, opcode, len);
  }
  
@@ -191,10 +191,10 @@ index d17518ca19b8..d3871f43c314 100644
   * text_poke_kgdb - Update instructions on a live kernel by kgdb
   * @addr: address to modify
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 00189cdeb775..27132984b3ad 100644
+index c7f6500d3..e61b2e19b 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -334,10 +334,17 @@ static __init int activate_jump_labels(void)
+@@ -384,10 +384,17 @@ static __init int activate_jump_labels(void)
  }
  arch_initcall(activate_jump_labels);
  
@@ -214,7 +214,7 @@ index 00189cdeb775..27132984b3ad 100644
  	if (vmware_tsc_khz == 0)
  		return;
 diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index 837450b6e882..1f2d07440fa9 100644
+index 1e231dac6..7c9b2e043 100644
 --- a/arch/x86/kernel/module.c
 +++ b/arch/x86/kernel/module.c
 @@ -180,7 +180,11 @@ static int write_relocate_add(Elf64_Shdr *sechdrs,
@@ -231,10 +231,10 @@ index 837450b6e882..1f2d07440fa9 100644
  	if (!early) {
  		write = text_poke;
 diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 2dbadf347b5f..c67578032f66 100644
+index 243f3bc9b..14f4c7518 100644
 --- a/arch/x86/kernel/traps.c
 +++ b/arch/x86/kernel/traps.c
-@@ -153,6 +153,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
+@@ -178,6 +178,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, const char *str,
  
  		tsk->thread.error_code = error_code;
  		tsk->thread.trap_nr = trapnr;
@@ -246,10 +246,10 @@ index 2dbadf347b5f..c67578032f66 100644
  	} else {
  		if (fixup_vdso_exception(regs, trapnr, error_code, 0))
 diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 1a957ea2f4fe..a99f4da405b3 100644
+index b624f3e87..c79edb3d8 100644
 --- a/include/linux/compiler_types.h
 +++ b/include/linux/compiler_types.h
-@@ -88,7 +88,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
+@@ -101,7 +101,7 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
  /* Attributes */
  #include <linux/compiler_attributes.h>
  
@@ -258,7 +258,7 @@ index 1a957ea2f4fe..a99f4da405b3 100644
  #define __function_aligned		__aligned(CONFIG_FUNCTION_ALIGNMENT)
  #else
  #define __function_aligned
-@@ -479,6 +479,10 @@ struct ftrace_likely_data {
+@@ -519,6 +519,10 @@ struct ftrace_likely_data {
  			 __scalar_type_to_expr_cases(long long),	\
  			 default: (x)))
  
@@ -270,10 +270,10 @@ index 1a957ea2f4fe..a99f4da405b3 100644
  #define __native_word(t) \
  	(sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
 diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
-index bfb85fd13e1f..fd12a9ed34a7 100644
+index 4c0b436f2..24f025c3d 100644
 --- a/include/linux/moduleparam.h
 +++ b/include/linux/moduleparam.h
-@@ -358,7 +358,7 @@ static inline void kernel_param_unlock(struct module *mod)
+@@ -357,7 +357,7 @@ static inline void kernel_param_unlock(struct module *mod)
   * @len is usually just sizeof(string).
   */
  #define module_param_string(name, string, len, perm)			\
@@ -282,7 +282,7 @@ index bfb85fd13e1f..fd12a9ed34a7 100644
  		= { len, string };					\
  	__module_param_call(MODULE_PARAM_PREFIX, name,			\
  			    &param_ops_string,				\
-@@ -517,7 +517,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
+@@ -511,7 +511,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
   */
  #define module_param_array_named(name, array, type, nump, perm)		\
  	param_check_##type(name, &(array)[0]);				\
@@ -292,7 +292,7 @@ index bfb85fd13e1f..fd12a9ed34a7 100644
  	    .ops = &param_ops_##type,					\
  	    .elemsize = sizeof(array[0]), .elem = array };		\
 diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index 5758104921e6..ee2a8e9e26e3 100644
+index d300a009f..a8f32fede 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
 @@ -127,8 +127,14 @@ struct mnt_id_req;
@@ -311,9 +311,9 @@ index 5758104921e6..ee2a8e9e26e3 100644
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
  
-@@ -245,18 +251,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
- 	__diag_push();							\
- 	__diag_ignore(GCC, 8, "-Wattribute-alias",			\
+@@ -249,18 +255,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+ 		      "Avoid breaking versions without -Wattribute-alias");\
+ 	__diag_ignore(clang, 23, "-Wattribute-alias",			\
  		      "Type aliasing is used to sanitize syscall arguments");\
 -	asmlinkage long sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))	\
 -		__attribute__((alias(__stringify(__se_sys##name))));	\
@@ -336,10 +336,10 @@ index 5758104921e6..ee2a8e9e26e3 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 5e77c58e0601..55235e0898be 100644
+index 517710c89..d0fdee141 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1119,6 +1119,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+@@ -1127,6 +1127,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
  	bpf_jit_uncharge_modmem(size);
  }
  
@@ -350,7 +350,7 @@ index 5e77c58e0601..55235e0898be 100644
  /* Allocate jit binary from bpf_prog_pack allocator.
   * Since the allocated memory is RO+X, the JIT engine cannot write directly
   * to the memory. To solve this problem, a RW buffer is also allocated at
-@@ -1136,6 +1140,10 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1144,6 +1148,10 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  {
  	struct bpf_binary_header *ro_header;
  	u32 size, hole, start;
@@ -361,7 +361,7 @@ index 5e77c58e0601..55235e0898be 100644
  
  	WARN_ON_ONCE(!is_power_of_2(alignment) ||
  		     alignment > BPF_IMAGE_ALIGNMENT);
-@@ -1164,10 +1172,23 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1172,10 +1180,23 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  
  	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
  		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
@@ -386,10 +386,10 @@ index 5e77c58e0601..55235e0898be 100644
  	return ro_header;
  }
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index df27d08a7232..e209121a9e43 100644
+index 9099c0cc9..53a835e3f 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
-@@ -1155,8 +1155,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_pmu_context *cpc, int cpu)
+@@ -1169,8 +1169,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_pmu_context *cpc, int cpu)
  	timer->function = perf_mux_hrtimer_handler;
  }
  
@@ -401,10 +401,10 @@ index df27d08a7232..e209121a9e43 100644
  	unsigned long flags;
  
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 49b9bca9de12..44c46d5577b1 100644
+index ad58c44fb..58ee35380 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -2094,8 +2094,17 @@ static void module_augment_kernel_taints(struct module *mod, struct load_info *i
+@@ -2103,8 +2103,17 @@ static void module_augment_kernel_taints(struct module *mod, struct load_info *i
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -423,10 +423,10 @@ index 49b9bca9de12..44c46d5577b1 100644
  		modmagic = NULL;
  
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index a1c353a62c56..5bcb20d1b3eb 100644
+index 1b1ddd24c..951b0149b 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4972,7 +4972,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
+@@ -4989,7 +4989,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
  	lockdep_assert_rq_held(rq);
  
  	while (head) {
@@ -436,10 +436,10 @@ index a1c353a62c56..5bcb20d1b3eb 100644
  		head->next = NULL;
  		head = next;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 041f6e571a20..8c0ad5c4b101 100644
+index b2e4e2d04..00956eb4f 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -927,7 +927,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
+@@ -931,7 +931,8 @@ void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
  
  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
  {
@@ -450,10 +450,10 @@ index 041f6e571a20..8c0ad5c4b101 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index 61431690cbd5..e4c386f0af3c 100644
+index a4e1d7951..e9acc0c97 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
-@@ -392,7 +392,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
+@@ -397,7 +397,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
  	rcu_assign_pointer(comment->c, NULL);
  }
  
@@ -462,7 +462,7 @@ index 61431690cbd5..e4c386f0af3c 100644
  
  const struct ip_set_ext_type ip_set_extensions[] = {
 diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
-index e4deaf5fa571..7acd78f9d9c4 100644
+index e4deaf5fa..7acd78f9d 100644
 --- a/scripts/Makefile.gcc-plugins
 +++ b/scripts/Makefile.gcc-plugins
 @@ -22,6 +22,14 @@ export DISABLE_STRUCTLEAK_PLUGIN
@@ -494,7 +494,7 @@ index e4deaf5fa571..7acd78f9d9c4 100644
  # Some plugins are enabled outside of this Makefile, but they still need to
  # be included in GCC_PLUGIN so they can get built.
 diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index 320afd3cf8e8..0d3c8bdeca84 100644
+index 320afd3cf..668d130f3 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
 @@ -33,6 +33,12 @@ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
@@ -512,7 +512,7 @@ index 320afd3cf8e8..0d3c8bdeca84 100644
  
 diff --git a/scripts/gcc-plugins/rap_plugin/rap.h b/scripts/gcc-plugins/rap_plugin/rap.h
 new file mode 100644
-index 000000000000..0e2c26301e33
+index 000000000..0e2c26301
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap.h
 @@ -0,0 +1,38 @@
@@ -556,7 +556,7 @@ index 000000000000..0e2c26301e33
 +#endif
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
 new file mode 100644
-index 000000000000..f8124b597b2d
+index 000000000..f8124b597
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
 @@ -0,0 +1,224 @@
@@ -786,7 +786,7 @@ index 000000000000..f8124b597b2d
 +#include "gcc-generate-gimple-pass.h"
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_hash.c b/scripts/gcc-plugins/rap_plugin/rap_hash.c
 new file mode 100644
-index 000000000000..420fcbdbfc05
+index 000000000..420fcbdbf
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_hash.c
 @@ -0,0 +1,396 @@
@@ -1188,7 +1188,7 @@ index 000000000000..420fcbdbfc05
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_plugin.c b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
 new file mode 100644
-index 000000000000..b05e0bf95753
+index 000000000..b05e0bf95
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
 @@ -0,0 +1,557 @@
@@ -1751,7 +1751,7 @@ index 000000000000..b05e0bf95753
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/sip.c b/scripts/gcc-plugins/rap_plugin/sip.c
 new file mode 100644
-index 000000000000..65bc1cdea580
+index 000000000..65bc1cdea
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/sip.c
 @@ -0,0 +1,96 @@
@@ -1852,10 +1852,10 @@ index 000000000000..65bc1cdea580
 +	U64TO8_LE(out, b);
 +}
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 107393a8c48a..0a80e61fbfd9 100644
+index 07e8a4eb7..0dd83ee66 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -1683,15 +1683,9 @@ static void check_exports(struct module *mod)
+@@ -1687,15 +1687,9 @@ static void check_exports(struct module *mod)
  		const char *basename;
  		exp = find_symbol(s->name);
  		if (!exp) {
@@ -1872,7 +1872,7 @@ index 107393a8c48a..0a80e61fbfd9 100644
  		}
  
 diff --git a/security/Kconfig b/security/Kconfig
-index 28e685f53bd1..c1b1c69df447 100644
+index 9a3297d39..d7c228b95 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -5,6 +5,35 @@
@@ -1912,5 +1912,5 @@ index 28e685f53bd1..c1b1c69df447 100644
  
  config SECURITY_DMESG_RESTRICT
 -- 
-2.39.4
+2.53.0
 
