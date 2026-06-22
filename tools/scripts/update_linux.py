@@ -325,6 +325,7 @@ def update_spec_files(photon_git, linux_git, specs, major_version, version, sha5
                 )
             ])
 
+    # Drop patches from spec files
     for spec in specs:
         content = spec.read_text()
         for pattern, replacement in replacements:
@@ -334,6 +335,16 @@ def update_spec_files(photon_git, linux_git, specs, major_version, version, sha5
 
             content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
         spec.write_text(content)
+
+    # Drop patches from consolidated .inc CVE file
+    inc_file = Path(specs[0].parent / "kernel_cve_patches.inc")
+    if not inc_file.exists():
+        return dropped_patches
+
+    content = inc_file.read_text()
+    for pattern, replacement in replacements:
+        content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+    inc_file.write_text(content)
 
     return dropped_patches
 
