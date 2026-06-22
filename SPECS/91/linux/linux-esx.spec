@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.175
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -269,6 +269,10 @@ Patch1000: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
 %ifarch x86_64
 Patch1000: 0001-x86-vmware-mark-hypercalls-as-volatile.patch
 Patch1001: 0002-x86-esx-report-guest-crash-to-vmware-hypervisor.patch
+%endif
+
+%if 0%{?photon_subrelease} >= 91
+BuildRequires: mpc-devel
 %endif
 
 BuildRequires: bc
@@ -568,6 +572,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.175-11
+- Add mpc-devel to build requires
 * Thu Jun 18 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-10
 - Fix CVE-2026-43456, CVE-2026-45850
 * Wed Jun 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.175-9

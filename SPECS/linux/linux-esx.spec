@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.92
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -268,6 +268,7 @@ Patch10301: 0001-change-jitterentropy_rng-driver-name.patch
 %endif
 
 BuildRequires: bc
+BuildRequires: mpc-devel
 BuildRequires: kbd
 BuildRequires: kmod-devel
 BuildRequires: glib-devel
@@ -544,6 +545,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.92-4
+- Add mpc-devel to build requires
 * Thu Jun 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.92-3
 - NEWCA initrd: fix hardlink sealing
 * Thu Jun 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.92-2

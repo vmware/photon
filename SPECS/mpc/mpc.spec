@@ -1,14 +1,9 @@
 %global build_if %{photon_subrelease} >= 91
 
-# TODO:
-# Once devel package becomes active, this workaround can be removed
-# This is to avoid bringing in mpfr-devel, gmp-devel upon installing mpc
-%global __requires_exclude ^pkgconfig\\(gmp\\).*|^pkgconfig\\(mpfr\\).*
-
 Summary:        Library for the arithmetic of complex numbers
 Name:           mpc
 Version:        1.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.multiprecision.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -19,7 +14,11 @@ Source0: http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
+BuildRequires: gmp-devel
+BuildRequires: mpfr-devel
+
 Requires:       gmp
+Requires:       mpfr
 
 %description
 The MPC package contains a library for the arithmetic of complex
@@ -31,6 +30,7 @@ Summary:   Development headers for %{name}
 Requires:  %{name} = %{version}-%{release}
 Requires:  gmp-devel
 Requires:  mpfr-devel
+Requires:  pkg-config
 
 %description devel
 %{summary}
@@ -40,7 +40,8 @@ Requires:  mpfr-devel
 
 %build
 %configure \
-  --disable-silent-rules
+  --disable-silent-rules \
+  --disable-static
 
 %make_build
 
@@ -60,24 +61,17 @@ rm -r %{buildroot}%{_infodir}
 
 %files
 %defattr(-,root,root)
-%{_includedir}/*
-%{_libdir}/*.a
-%{_libdir}/*.so
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/%{name}.pc
 
-# TODO:
-# This is just a dummy split for now
-# Once this gets published, pckage builder can be patched as needed
-# at appropriate time
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/*.a
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri Jun 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.1-3
+- Keep devel package files in devel package only
 * Tue Jun 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.1-2
 - Remove mpfr-devel, mpc-devel dependency
 - Introduce a place holder devel package

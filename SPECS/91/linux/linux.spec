@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.175
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        10%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -385,6 +385,10 @@ Patch10013: 0001-Handle-approved-and-non-approved-services.patch
 %if 0%{?kat_build}
 Patch10014: 0001-Crypto-Tamper-KAT-PCT-and-Integrity-Test.patch
 %endif
+%endif
+
+%if 0%{?photon_subrelease} >= 91
+BuildRequires: mpc-devel
 %endif
 
 BuildRequires:  bc
@@ -866,6 +870,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.175-10
+- Add mpc-devel to build requires
 * Fri Jun 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.175-9
 - Fix CVE-2026-43456, CVE-2026-45850
 * Fri Jun 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.175-8
