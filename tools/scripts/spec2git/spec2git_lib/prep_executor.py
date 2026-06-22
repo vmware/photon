@@ -94,24 +94,29 @@ class PrepExecutor:
         self.git_roots = set()
 
     def ensure_build_dir(self, prep_section_lines: []):
-        first_line = prep_section_lines[0]
-        if first_line.startswith('cd'):
-            build_dir = first_line.split()[1]
-            if not build_dir:
+        # Scan past comments and blank lines to find the first meaningful command.
+        # The linux spec (and others) have comments like "# Using autosetup is not
+        # feasible" that appear before %setup expands, so checking only lines[0]
+        # misses the actual cd command that RPM v6 injects.
+        for line in prep_section_lines:
+            stripped = line.strip()
+            if not stripped or stripped.startswith('#'):
+                continue
+            # First non-empty, non-comment line
+            if not stripped.startswith('cd '):
+                return  # Not a cd — nothing to create
+            parts = stripped.split(None, 1)
+            if len(parts) < 2:
                 raise PrepExecutionError("cd cmd found but no directory passed!")
-
-            build_dir = build_dir.strip("'\"")
-
-            # As far as I can tell RPM will always inject an absolute path here...
-            # So this is pointless unless RPM behavior changes, which is possible
+            build_dir = parts[1].strip("'\"")
             if not build_dir.startswith("/"):
                 raise PrepExecutionError(
-                        f"Found local path {build_dir} in first line of %prep section" +
-                         "- need absolute path"
-                    )
-
+                    f"Found local path {build_dir} in first line of %prep section"
+                    " - need absolute path"
+                )
             if not os.path.exists(build_dir):
                 os.makedirs(build_dir)
+            return
 
     def execute_prep_section(self, prep_section: str, source0_git_info: Optional[Dict] = None,
                             rpmspec_build_dir: Optional[str] = None,
