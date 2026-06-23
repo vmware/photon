@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Name:       build-essential
 Summary:    Metapackage to install all build tools
-Version:    5.0
-Release:    1%{?dist}
+Version:    0.1
+Release:    6.0.1%{?dist}
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 URL:        https://github.com/vmware/photon
@@ -25,7 +25,6 @@ Requires:   gzip
 Requires:   linux-api-headers
 Requires:   libtool
 Requires:   make
-Requires:   mpc-devel
 Requires:   patch
 Requires:   pkg-config
 Requires:   tar
@@ -41,10 +40,8 @@ Metapackage to install all build tools
 %defattr(-,root,root,0755)
 
 %changelog
-*   Tue Jun 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-1
--   Require mpc-devel
-*   Tue Jun 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1-7
--   Fix requires after mpc-devel split
+*   Tue Jun 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1-6.0.1
+-   Split for 90
 *   Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.1-6
 -   Remove standalone license exceptions
 *   Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.1-5
