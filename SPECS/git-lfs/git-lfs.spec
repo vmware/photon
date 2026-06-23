@@ -6,12 +6,15 @@
 Summary:       Git extension for versioning large files
 Name:          git-lfs
 Version:       3.7.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 URL:           https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Source0:       https://github.com/git-lfs/git-lfs/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: update-go-deps.patch
+
 Group:         System Environment/Programming
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -50,6 +53,8 @@ rm -rf %{buildroot}
 %{_bindir}/git-lfs
 
 %changelog
+* Tue Jun 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-4
+- Upgrade Go deps to LTS-compliant versions
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-3
 - Rebuild for go 1.26.3
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.7.1-2
