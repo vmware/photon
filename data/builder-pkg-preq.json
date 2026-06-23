@@ -142,6 +142,9 @@
       "zlib-devel",
       "zstd-devel"
     ],
+    "listOptionalToolChainRPMsToInstall": [
+      "mpc-devel"
+    ],
     "providedBy": {
     }
 }

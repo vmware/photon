@@ -134,14 +134,23 @@ function install_pkgs() {
 
 # Usage: erase_pkgs p1 p2 p3 ...
 # Erases named packages using tdnf invoked with all disabled repos
-function erase_pkgs() {
-  local -a i_arr=()  # installed pkgs array
+erase_pkgs() {
+  local -a i_arr=()
+  local pkgs="$1"
+  local exclude="$2"
 
-  [ $# -eq 0 ] && return 0
+  [ -z "$pkgs" ] && return 0
 
-  i_arr=( $(find_installed_packages $*) )
+  i_arr=( $(find_installed_packages $pkgs) )
   [ ${#i_arr[@]} -eq 0 ] && return 0
-  ${TDNF} --disablerepo=* $ASSUME_YES_OPT erase ${i_arr[@]}
+
+  if [ -n "$exclude" ]; then
+    echo "Erasing packages excluding: $exclude"
+  fi
+
+  ${TDNF} --disablerepo='*' $ASSUME_YES_OPT erase "${i_arr[@]}" \
+    ${exclude:+--exclude="$exclude"}
+
   return $?
 }
 

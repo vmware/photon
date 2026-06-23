@@ -28,6 +28,10 @@ PRECHECK_ONLY='n'   # When set to y, indicates that pre upgrade checks to
                     # find anomalies need to be be performed. Those anomalies
                     # will impact the upgrade. Exits after performing checks.
 
+# Optional argument, for dev purpose only
+# Allow users to temporarily retain packages from the deprecated package list.
+RETAIN_DEPRECATED_PKGS=''
+
 # Temp location for 'rpm -qa' & rpm db copy
 TMP_BACKUP_LOC=''
 
@@ -69,6 +73,7 @@ This script upgrades or updates Photon OS based upon the options provided.
 --rm-pkgs-post : Comma separated list of packages to remove afer upgrade
 --precheck-only: Performs checks for anomalies that will impact the OS upgrade
                  and warns the user about found anomalies and exits
+--retain-deprecated-pkgs: (dev only option, *DO NOT USE IN PRODUCTION*) retain a deprected package post upgrade
 "
   exit $rc
 }
@@ -405,7 +410,7 @@ function remove_unsupported_packages() {
   local rc=0
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    erase_pkgs ${deprecated_pkgs_to_remove_arr[@]}
+    erase_pkgs "${deprecated_pkgs_to_remove_arr[*]}" "${RETAIN_DEPRECATED_PKGS}"
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $ERETRY_EAGAIN "Could not erase all unsupported packages (tdnf error code: $rc)."
@@ -604,12 +609,26 @@ function find_installed_deprecated_packages() {
   local pkg=''
   local yn=''
 
+  if [ -n "$RETAIN_DEPRECATED_PKGS" ]; then
+    echo "The following deprecated packages will be retained as per user request."
+    echo "Retain package list: $RETAIN_DEPRECATED_PKGS"
+    local p
+    for p in $(builtin echo "$RETAIN_DEPRECATED_PKGS" | ${TR} , ' '); do
+      local i
+      for i in "${!deprecated_packages_arr[@]}"; do
+        if [[ ${deprecated_packages_arr[i]} = $p ]]; then
+          unset deprecated_packages_arr[i]
+        fi
+      done
+    done
+  fi
+
   deprecated_pkgs_to_remove_arr+=(
     $(find_installed_packages ${deprecated_packages_arr[@]})
   )
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    echo "The following deprecated packages will be removed before upgrade -"
+    echo "The following deprecated packages will be removed post upgrade -"
     $PRINTF "    %s\n" ${deprecated_pkgs_to_remove_arr[@]}
     if [ -z "$ASSUME_YES_OPT" ]; then
       # This is interactive invocation of the script
@@ -826,7 +845,7 @@ function update_os() {
 
 CMD_ARGS=$(
   getopt --long \
-  'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os' \
+  'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os,retain-deprecated-pkgs:' \
   -- -- "$@"
 )
 if [ $? -ne 0 ]; then
@@ -877,6 +896,13 @@ while [ $# -gt 0 ]; do
         echoerr "--rm-pkgs-post was specified more than once" && \
           show_help $ERETRY_EINVAL
       RM_PKGS_POST="$2"
+      shift
+      ;;
+    --retain-deprecated-pkgs )
+      [ -n "" ] && \
+        echoerr "--retain-deprecated-pkgs was specified more than once" && \
+        show_help $ERETRY_EINVAL
+      RETAIN_DEPRECATED_PKGS="$2"
       shift
       ;;
     --skip-update )
