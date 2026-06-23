@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.258
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -411,6 +411,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jun 23 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.258-7
+- Fix CVE-2026-31502
 * Fri Jun 19 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.10.258-6
 - Fix CVE-2026-23449, CVE-2026-23392, CVE-2026-31663
 * Thu Jun 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.258-5

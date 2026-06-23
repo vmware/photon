@@ -484,3 +484,6 @@ Patch3195: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch
 
 # Fix CVE-2026-31663
 Patch3196: 0002-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
+
+# Fix CVE-2026-31502
+Patch3197: 0001-team-fix-header_ops-type-confusion-with-non-Ethernet.patch
