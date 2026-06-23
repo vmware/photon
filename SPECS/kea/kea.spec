@@ -3,7 +3,7 @@
 Summary:      A modern, scalable, robust DHCPv4 and DHCPv6 server.
 Name:         kea
 Version:      3.1.9
-Release:      2%{?dist}
+Release:      3%{?dist}
 Url:          https://www.isc.org/kea/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -20,8 +20,8 @@ BuildRequires: meson
 BuildRequires: log4cplus-devel
 BuildRequires: boost-devel
 BuildRequires: krb5-devel
-BuildRequires: mariadb-devel
-BuildRequires: systemd-rpm-macros
+BuildRequires: shadow
+BuildRequires: systemd-devel
 
 Requires:      kea-libs = %{version}-%{release}
 Requires(pre): shadow
@@ -70,7 +70,7 @@ The %name-docs contains %name package doc files.
 %autosetup -p1 -n kea-Kea-%{version}
 
 %build
-%meson -Dpostgresql=disabled -Dnetconf=disabled
+%meson -Dpostgresql=disabled -Dnetconf=disabled -Dmysql=disabled
 %meson_build
 
 %install
@@ -128,6 +128,8 @@ rm -rf %{buildroot}
 %{_docdir}/*
 
 %changelog
+* Mon Jun 22 2026 Bo Gan <bo.gan@broadcom.com> 3.1.9-3
+- Disable mysql support
 * Mon Jun 15 2026 Bo Gan <bo.gan@broadcom.com> 3.1.9-2
 - Regenerate license
 * Wed Jun 03 2026 Bo Gan <bo.gan@broadcom.com> 3.1.9-1
