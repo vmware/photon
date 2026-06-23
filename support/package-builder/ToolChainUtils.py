@@ -94,6 +94,19 @@ class ToolChainUtils(object):
                 self.installExtraToolchainRPMS(
                     tdnf, chroot, packageName, packageVersion
                 )
+
+            if constants.listOptionalToolChainRPMsToInstall:
+                try:
+                    subCmd = ["install", "-y", "--setopt=tsflags=nodocs"] + constants.listOptionalToolChainRPMsToInstall
+                    tdnf.run(args=subCmd + repoArgs, errMsg="Unable to install optional toolchain rpms")
+                    self.logger.debug(
+                        f"Installed optional toolchain RPMs: {constants.listOptionalToolChainRPMsToInstall}"
+                    )
+                except Exception as e:
+                    self.logger.warning(
+                        f"Optional toolchain RPMs not available, skipping: {e}"
+                    )
+
             response = tdnf.run(
                 args=["list", "--installed", "--disablerepo=*", "-j"],
                 errMsg="Listing installed RPMs",

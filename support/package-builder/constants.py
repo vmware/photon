@@ -101,6 +101,7 @@ class constants(object):
     # and stage2 published rpms will/might be used after stage2 only local
     # RPMS will be used
     listToolChainRPMsToInstall = []
+    listOptionalToolChainRPMsToInstall = []
 
     @staticmethod
     def addSpecPath(specPath):
@@ -280,6 +281,9 @@ class constants(object):
             constants.listToolChainPackages.append("coreutils-selinux")
             constants.listToolChainRPMsToInstall.extend(
                 pkgPreq["listToolChainRPMsToInstall"]
+            )
+            constants.listOptionalToolChainRPMsToInstall.extend(
+                pkgPreq.get("listOptionalToolChainRPMsToInstall", [])
             )
             constants.providedByUserOverride = pkgPreq["providedBy"]
 
