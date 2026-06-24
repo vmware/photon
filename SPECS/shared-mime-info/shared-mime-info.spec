@@ -1,8 +1,10 @@
+%global __requires_exclude pkg-config
+
 %global build_if %{photon_subrelease} >= 91
 Summary:        MIME database
 Name:           shared-mime-info
 Version:        2.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://freedesktop.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -55,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Jun 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.2-10
+- Drop runtime requirement on pkg-config.
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.2-9
 - Release version bump as part of libxml2/libxslt
 * Mon Aug 18 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.2-8
