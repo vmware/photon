@@ -115,7 +115,7 @@ function rebuilddb() {
   if [ $rc -ne 0 ]; then
     abort $rc "Failed rebuilding installed package database."
   fi
-  echo "successfully rebuilt RPMDB."
+  echo "Successfully rebuilt RPMDB."
 }
 
 # Finds packages which are installed from the provided package names in args
@@ -131,15 +131,25 @@ function install_pkgs() {
   return $?
 }
 
-
 # Usage: erase_pkgs p1 p2 p3 ...
 # Erases named packages using tdnf invoked with all disabled repos
-function erase_pkgs() {
-  local -a i_arr=()  # installed pkgs array
-  [ $# -eq 0 ] && return 0
-  i_arr=( $(find_installed_packages $*) )
+erase_pkgs() {
+  local -a i_arr=()
+  local pkgs="$1"
+  local exclude="$2"
+
+  [ -z "$pkgs" ] && return 0
+
+  i_arr=( $(find_installed_packages $pkgs) )
   [ ${#i_arr[@]} -eq 0 ] && return 0
-  ${TDNF} --disablerepo=* $ASSUME_YES_OPT erase ${i_arr[@]}
+
+  if [ -n "$exclude" ]; then
+    echo "Erasing packages excluding: $exclude"
+  fi
+
+  ${TDNF} --disablerepo='*' $ASSUME_YES_OPT erase "${i_arr[@]}" \
+    ${exclude:+--exclude="$exclude"}
+
   return $?
 }
 

@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Tue Jun 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-2
+- Port changes from 5.0 photon-upgrade
 * Mon Jun 15 2026 Dweep Advani <dweep.advani@broadcom.com> 1.2-1
 - Update to handle package chaneges 5.0
 * Tue Dec 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-7

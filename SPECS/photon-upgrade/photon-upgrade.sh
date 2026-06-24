@@ -33,6 +33,10 @@ PRECHECK_ONLY='n'   # When set to y, indicates that pre upgrade checks to
                     # find anomalies need to be be performed. Those anomalies
                     # will impact the upgrade. Exits after performing checks.
 
+# Optional argument, for dev purpose only
+# Allow users to temporarily retain packages from the deprecated package list.
+RETAIN_DEPRECATED_PKGS=''
+
 # Temp location for 'rpm -qa' & rpm db copy
 TMP_BACKUP_LOC=''
 
@@ -77,6 +81,7 @@ This script upgrades or updates Photon OS based upon the options provided.
 --rm-pkgs-post : Comma separated list of packages to remove afer upgrade
 --precheck-only: Performs checks for anomalies that will impact the OS upgrade
                  and warns the user about found anomalies and exits
+--retain-deprecated-pkgs: (dev only option, *DO NOT USE IN PRODUCTION*) retain a deprected package post upgrade
 "
   exit $rc
 }
@@ -115,7 +120,7 @@ function remove_debuginfo_packages() {
   local rc=0
   [ -z "$installed_debuginfo_pkgs" ] && return 0
   echo "Following debuginfo packages will be removed - $installed_debuginfo_pkgs"
-  erase_pkgs $installed_debuginfo_pkgs
+  erase_pkgs "$installed_debuginfo_pkgs"
   rc=$?
   if [ ${rc} -ne 0 ]; then
     abort $ERETRY_EAGAIN "Error removing debuginfo packages"
@@ -288,9 +293,9 @@ function find_installed_replaced_packages() {
 }
 
 # Usage: install_other_packages
-# Install all the other packages - install replacement packages corresponnding
-# to any of the earlier removed packagers and also install those earlier erased
-# packages which got removed due removal of some other packages
+# Install all the other packages - install replacement packages corresponding
+# to any of the earlier removed packages and also install those earlier erased
+# packages which got removed due to removal of some other packages
 function install_other_packages() {
   local rc=0
 
@@ -321,7 +326,7 @@ function remove_replaced_packages() {
     backup_configs
     echo "Removing following packages which were replaced by other "\
              "packages -\n${!replaced_pkgs_map[@]}\n"
-    erase_pkgs ${!replaced_pkgs_map[@]}
+    erase_pkgs "${!replaced_pkgs_map[@]}"
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $rc "Error removing replaced packages - ${!replaced_pkgs_map[@]} - (tdnf error code: $rc)."
@@ -405,7 +410,7 @@ function remove_unsupported_packages() {
   local rc=0
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    erase_pkgs ${deprecated_pkgs_to_remove_arr[@]}
+    erase_pkgs "${deprecated_pkgs_to_remove_arr[@]}" "$RETAIN_DEPRECATED_PKGS"
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $ERETRY_EAGAIN "Could not erase all unsupported packages (tdnf error code: $rc)."
@@ -464,7 +469,7 @@ function remove_residual_pkgs() {
 
   for p in ${residual_pkgs_arr[@]}; do
     if $RPM -q --quiet $p; then
-      erase_pkgs $p
+      erase_pkgs "$p"
       rc=$?
       if [ $rc -ne 0 ]; then
         err_rm_pkg_list="$err_rm_pkg_list $p"
@@ -483,7 +488,7 @@ function remove_residual_pkgs() {
 install_all_from_repo() {
   local available_pkgs_for_install="$(
       ${RPM} -q $(${TDNF} $REPOS_OPT repoquery --available) 2>&1 | \
-        ${SED} -nE 's#^package ([^ ]+\.ph[0-9]+\.[^ ]+) is not installed#\1#p'
+        ${SED} -nE 's#^package\s+(\S+)\s+is\s+not\s+installed\s*$#\1#p'
   )"
   local rc=0
   echo '--install-all option was passed.'
@@ -515,7 +520,7 @@ function pre_upgrade_rm_pkgs() {
 
   for p in $(builtin echo "$RM_PKGS_PRE" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
-      if erase_pkgs $p; then
+      if erase_pkgs "$p"; then
         echo "Successfully removed user named pacakge $p."
       else
         pkglist="$pkglist $p"
@@ -605,12 +610,26 @@ function find_installed_deprecated_packages() {
   local pkg=''
   local yn=''
 
+  if [ -n "$RETAIN_DEPRECATED_PKGS" ]; then
+    echo "The following deprecated packages will be retained as per user request."
+    echo "Retain package list: $RETAIN_DEPRECATED_PKGS"
+    local p
+    for p in $(builtin echo "$RETAIN_DEPRECATED_PKGS" | ${TR} , ' '); do
+      local i
+      for i in "${!deprecated_packages_arr[@]}"; do
+        if [[ ${deprecated_packages_arr[i]} = $p ]]; then
+          unset deprecated_packages_arr[i]
+        fi
+      done
+    done
+  fi
+
   deprecated_pkgs_to_remove_arr+=(
     $(find_installed_packages ${deprecated_packages_arr[@]})
   )
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    echo "The following deprecated packages will be removed before upgrade -"
+    echo "The following deprecated packages will be removed post upgrade -"
     $PRINTF "    %s\n" ${deprecated_pkgs_to_remove_arr[@]}
     if [ -z "$ASSUME_YES_OPT" ]; then
       # This is interactive invocation of the script
@@ -727,7 +746,7 @@ function do_ph4_to_ph4_update() {
   # will be replaced by those packages which are named in corresponding values
   removed_pkgs_list+=( $(find_extra_erased_pkgs ${!old_new_pkg_map[@]}) )
   backup_configs $TMP_BACKUP_LOC ${removed_pkgs_list[@]} ${!old_new_pkg_map[@]}
-  erase_pkgs ${!old_new_pkg_map[@]}
+  erase_pkgs "${!old_new_pkg_map[@]}"
   if [ ${#cleanup_residual_files_map[@]} -gt 0 ]; then
     for i in ${!cleanup_residual_files_map[@]}; do
       echo "Executing '${cleanup_residual_files_map[$i]}' for cleanup."
@@ -820,8 +839,8 @@ function verify_version_and_upgrade() {
       ((rc+=$?))
       is_precheck_running || backup_rpms_list_n_db $OLD_RPMDB_PATH
       find_files_for_review
-      tdnf_makecache $FROM_VERSION
       if [ "$UPDATE_PKGS" = 'y' ] && ! is_precheck_running; then
+        tdnf_makecache $FROM_VERSION
         # Vanilla Photon OS would want to update package manager and other
         # packages. Appliances control builds so do not need this.
         update_solv_to_support_complex_deps
@@ -888,7 +907,7 @@ function verify_version_and_upgrade() {
 
 CMD_ARGS=$(
   getopt --long \
-  'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os' \
+  'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os,retain-deprecated-pkgs:' \
   -- -- "$@"
 )
 if [ $? -ne 0 ]; then
@@ -939,6 +958,13 @@ while [ $# -gt 0 ]; do
         echoerr "--rm-pkgs-post was specified more than once" && \
           show_help $ERETRY_EINVAL
       RM_PKGS_POST="$2"
+      shift
+      ;;
+    --retain-deprecated-pkgs )
+      [ -n "$RETAIN_DEPRECATED_PKGS" ] && \
+        echoerr "--retain-deprecated-pkgs was specified more than once" && \
+        show_help $ERETRY_EINVAL
+      RETAIN_DEPRECATED_PKGS="$2"
       shift
       ;;
     --skip-update )

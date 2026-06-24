@@ -123,6 +123,9 @@ openjdk8-sample
 pam_tacplus
 pam_tacplus-devel
 perl-DBIx-Simple
+perl-JSON-Any
+perl-Object-Accessor
+perl-Perl4-CoreLibs
 perl-Object-Accessor
 perl-Perl4-CoreLibs
 pmd-devel
