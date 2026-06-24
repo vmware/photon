@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        8.20.0
-Release:        2%{?dist}
+Release:        1.0.1%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
@@ -26,8 +26,8 @@ BuildRequires: python3
 Requires: ca-certificates
 Requires: openssl-libs
 Requires: krb5
+Requires: libssh2 >= 1.11.0
 Requires: %{name}-libs = %{version}-%{release}
-Requires: libssh2 >= 1.11.1
 
 %description
 The cURL package contains an utility and a library used for
@@ -106,8 +106,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
-* Wed Jun 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.20.0-2
-- Fix libssh2 requires
+* Wed Jun 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.20.0-1.0.1
+- Sub branch for 90
 * Tue May 05 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.20.0-1
 - Upgrade to 8.20.0
 - Fixes CVE-2026-4873, CVE-2026-5545, CVE-2026-5773, CVE-2026-6253,
