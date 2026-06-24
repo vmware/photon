@@ -3,11 +3,11 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 %define gopath_comp github.com/%{name}/%{name}
-%define CONTAINERD_GITCOMMIT 64b425cf570b3b8dd1d4cc46da7c1fce65c6651a
+%define CONTAINERD_GITCOMMIT fff62f14765df376e5fc36f5a8f8e795b5670f61
 
 Summary:        Containerd
 Name:           containerd
-Version:        2.3.1
+Version:        2.3.2
 Release:        1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -140,6 +140,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Wed Jun 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.2-1
+- Upgrade to v2.3.2
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.1-1
 - Upgrade to v2.3.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.2.1-3
