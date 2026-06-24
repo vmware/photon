@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Wed Jun 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-5
+- Quote erase_pkgs args
 * Tue Jun 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-4
 - Add option to retain deprecated packages during development phase
 * Fri Jun 19 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-3

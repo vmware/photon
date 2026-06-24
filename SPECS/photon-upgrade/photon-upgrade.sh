@@ -115,7 +115,7 @@ function remove_debuginfo_packages() {
   local rc=0
   [ -z "$installed_debuginfo_pkgs" ] && return 0
   echo "Following debuginfo packages will be removed - $installed_debuginfo_pkgs"
-  erase_pkgs $installed_debuginfo_pkgs
+  erase_pkgs "$installed_debuginfo_pkgs"
   rc=$?
   if [ ${rc} -ne 0 ]; then
     abort $ERETRY_EAGAIN "Error removing debuginfo packages"
@@ -326,7 +326,7 @@ function remove_replaced_packages() {
     backup_configs
     echo "Removing following packages which were replaced by other "\
              "packages -\n${!replaced_pkgs_map[@]}\n"
-    erase_pkgs ${!replaced_pkgs_map[@]}
+    erase_pkgs "${!replaced_pkgs_map[@]}"
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $rc "Error removing replaced packages - ${!replaced_pkgs_map[@]} - (tdnf error code: $rc)."
@@ -469,7 +469,7 @@ function remove_residual_pkgs() {
 
   for p in ${residual_pkgs_arr[@]}; do
     if $RPM -q --quiet $p; then
-      erase_pkgs $p
+      erase_pkgs "$p"
       rc=$?
       if [ $rc -ne 0 ]; then
         err_rm_pkg_list="$err_rm_pkg_list $p"
@@ -520,7 +520,7 @@ function pre_upgrade_rm_pkgs() {
 
   for p in $(builtin echo "$RM_PKGS_PRE" | ${TR} , ' '); do
     if ${RPM} -q --quiet $p; then
-      if erase_pkgs $p; then
+      if erase_pkgs "$p"; then
         echo "Successfully removed user named pacakge $p."
       else
         pkglist="$pkglist $p"
@@ -804,6 +804,7 @@ function update_os() {
                              ${!replaced_pkgs_map[@]}
     )
   )
+
   remove_debuginfo_packages
   backup_configs $TMP_BACKUP_LOC \
                   ${!replaced_pkgs_map[@]} \
@@ -811,7 +812,7 @@ function update_os() {
   sanitize_extra_erased_pkgs_arr
   # deprecated drpm package would prevent package manager update from happening
   # remove it before updating package manager
-  erase_pkgs drpm
+  erase_pkgs "drpm"
   update_solv_to_support_complex_deps
   pre_upgrade_rm_pkgs
   rebuilddb
