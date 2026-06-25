@@ -1,0 +1,25 @@
+From c3dbc52c022496502f3f09ead438f6a317f1e28e Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Thu, 25 Jun 2026 08:13:11 +0000
+Subject: [PATCH] use pyasn1 version 0.6.3
+
+---
+ requirements.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/requirements.txt b/requirements.txt
+index f9f5cc3..feeeb47 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -5,7 +5,7 @@ google-auth==2.13.0
+ idna==3.4
+ kubernetes==25.3.0
+ oauthlib==3.2.2
+-pyasn1==0.4.8
++pyasn1==0.6.3
+ pyasn1-modules==0.2.8
+ python-dateutil==2.8.2
+ PyYAML==6.0.1
+-- 
+2.53.0
+

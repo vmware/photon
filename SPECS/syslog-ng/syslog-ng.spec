@@ -5,7 +5,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -23,6 +23,7 @@ Source3: license.txt
 # https://github.com/syslog-ng/syslog-ng/commit/dc64f0b6a7e79dd6fb27cf1f26b168e6a5a3f1db.patch
 Patch0: disable-example-modules.patch
 Patch1: CVE-2024-47619.patch
+Patch2: 0001-use-pyasn1-version-0.6.3.patch
 
 Requires:       glib
 Requires:       openssl
@@ -150,7 +151,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
    --disable-cpp \
    --disable-example-modules \
    --with-python=3 \
-   --with-python-packages=system \
+   --with-python-packages=none \
    PYTHON=%{python3} \
    PKG_CONFIG_PATH=%{_libdir}/pkgconfig/
 
@@ -224,6 +225,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Thu Jun 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3.1-13
+- Fix pyasn1 dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3.1-12
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-11
