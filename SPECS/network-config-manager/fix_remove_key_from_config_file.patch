@@ -1,0 +1,17 @@
+--- a/src/share/config-file.c	2026-06-25 07:53:56.160670206 +0000
++++ b/src/share/config-file.c	2026-06-25 07:55:34.292674917 +0000
+@@ -566,11 +566,13 @@ int remove_key_from_config_file(const ch
+                 if (!streq(s->name, section))
+                         continue;
+ 
+-                for (GList *i = s->keys; i; i = g_list_next (i)) {
++                for (GList *i = s->keys; i; ) {
+                         Key *key = (Key *) i->data;
++                        GList *next = g_list_next(i);     // save next BEFORE potential deletion
+ 
+                         if (streq(key->name, k))
+                                 s->keys = g_list_delete_link(s->keys, i);
++                        i = next;
+                 }
+         }
+ 

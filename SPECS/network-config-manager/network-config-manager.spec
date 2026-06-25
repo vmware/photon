@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.7.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,6 +11,8 @@ Source0: https://github.com/vmware/network-config-manager/archive/%{name}-%{vers
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: fix_remove_key_from_config_file.patch
 
 BuildRequires: glib-devel
 BuildRequires: json-c-devel
@@ -81,6 +83,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Jun 25 2026 Tapas Kundu <tapas.kundu@broadcom.com> 0.7.4-4
+- Fix segmentation fault
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.7.4-3
 - Bump version as a part of meson upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.7.4-2
