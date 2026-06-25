@@ -3,7 +3,7 @@
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        14%{?dist}
+Release:        15%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -94,7 +94,7 @@ tinker panic 0
 restrict default kod nomodify notrap nopeer noquery
 restrict 127.0.0.1
 restrict -6 ::1
-driftfile /var/lib/ntp/drift/ntp.drift
+driftfile /var/lib/ntp/ntp.drift
 EOF
 
 rm -rf %{buildroot}%{_docdir}
@@ -145,6 +145,8 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
+* Thu Jun 25 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.3-15
+- Fix driftfile path in ntp.conf
 * Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-14
 - Enable obsoletes
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.3-13
