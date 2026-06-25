@@ -3,7 +3,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          6.0.6
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
@@ -17,11 +17,6 @@ Source1: license.txt
 %if 0%{?with_check}
 Patch0: strongswan-fix-make-check.patch
 %endif
-
-Patch1: 0001-HCX-custom-remote-natt-port.patch
-Patch2: 0002-ipsec-Add-clear_df-flag.patch
-Patch3: 0003-reiniate-conn-on-failure.patch
-Patch4: 0004-Add-new-configs-min_spi-and-max_spi.patch
 
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
@@ -90,6 +85,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/%{name}.service
 
 %changelog
+* Thu Jun 25 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.0.6-2
+- Remove unused HCX patches
 * Tue May 12 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.0.6-1
 - Update to v6.0.6
 * Fri Mar 27 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 5.9.8-7
