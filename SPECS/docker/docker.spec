@@ -17,7 +17,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -52,6 +52,8 @@ Patch8:        dockerd-grpc-CVE-2023-44487.patch
 Patch9:        CVE-2026-33997.patch
 Patch10:       CVE-2026-34040-1.patch
 Patch11:       CVE-2026-34040-2.patch
+Patch12:       CVE-2026-41567.patch
+Patch13:       CVE-2026-42306.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -151,6 +153,8 @@ popd
 pushd src/%{gopath_comp_engine} #moby source directory
 %patch1 -p1
 %patch2 -p1
+%patch12 -p1
+%patch13 -p1
 popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_containerd} #containerd source directory
 %patch3 -p1
@@ -363,6 +367,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Jun 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.0.9-10
+- Fix CVE-2026-41567, CVE-2026-42306
 * Thu Apr 30 2026 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-9
 - Fix CVE-2026-33997, CVE-2026-34040
 * Wed Feb 11 2026 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-8
