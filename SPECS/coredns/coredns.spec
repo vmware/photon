@@ -9,7 +9,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.14.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -43,6 +43,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Thu Jun 25 2026 Harinadh Dommaraju <mukul.sikka@broadcom.com> 1.14.3-2
+- Release bump to fix SRP incorporated errors
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.14.3-1
 - Upgrade to v1.14.3
 * Fri Mar 13 2026 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-16
