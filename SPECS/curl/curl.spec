@@ -2,8 +2,8 @@
 
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.20.0
-Release:        2%{?dist}
+Version:        8.21.0
+Release:        1%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
@@ -106,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Thu Jun 25 2026 Dweep Advani <Harinadh.Dommaraju@broadcom.com> 8.21.0-1
+- Upgrade to 8.21.0 to fix multiple CVEs
 * Wed Jun 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.20.0-2
 - Fix libssh2 requires
 * Tue May 05 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.20.0-1
