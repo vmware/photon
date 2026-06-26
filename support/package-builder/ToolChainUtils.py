@@ -96,15 +96,27 @@ class ToolChainUtils(object):
                 )
 
             if constants.listOptionalToolChainRPMsToInstall:
-                try:
-                    subCmd = ["install", "-y", "--setopt=tsflags=nodocs"] + constants.listOptionalToolChainRPMsToInstall
-                    tdnf.run(args=subCmd + repoArgs, errMsg="Unable to install optional toolchain rpms")
-                    self.logger.debug(
-                        f"Installed optional toolchain RPMs: {constants.listOptionalToolChainRPMsToInstall}"
+                available_pkgs = []
+
+                for pkg in constants.listOptionalToolChainRPMsToInstall:
+                    try:
+                        out = tdnf.run(
+                                args=["repoquery", pkg] + repoArgs,
+                                errMsg=f"Checking availability of {pkg}",
+                              )
+                        if out and pkg in out:
+                            available_pkgs.append(pkg)
+                    except Exception as e:
+                        self.logger.debug(f"Optional RPM {pkg} not available, skipping: {e}")
+
+                if available_pkgs:
+                    subCmd = ["install", "-y", "--setopt=tsflags=nodocs"] + available_pkgs
+                    tdnf.run(
+                        args=subCmd + repoArgs,
+                        errMsg="Unable to install optional toolchain rpms",
                     )
-                except Exception as e:
-                    self.logger.warning(
-                        f"Optional toolchain RPMs not available, skipping: {e}"
+                    self.logger.debug(
+                        f"Installed optional toolchain RPMs: {available_pkgs}"
                     )
 
             response = tdnf.run(
