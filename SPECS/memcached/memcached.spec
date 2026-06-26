@@ -1,6 +1,6 @@
 Name:           memcached
 Version:        1.6.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 License:        BSD
 Group:          Applications/System
@@ -9,6 +9,8 @@ Distribution:   Photon
 URL:            https://www.memcached.org/
 Source0:        https://www.memcached.org/files/%{name}-%{version}.tar.gz
 %define sha512  %{name}=a30adc4f14c32051d2fc112eaa71de96f7ba614bd7f940ab5dd86365fe5e4df1399fa6fe6591cee903c8b914f2156050edef3139bafe38cd4a2b6424ba973e8e
+# Fix CVE-2026-47783 and CVE-2026-47784
+Patch0: CVE-2026-47783.patch
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  libevent-devel
@@ -80,6 +82,9 @@ getent passwd %{name} >/dev/null || \
 %{_includedir}/%{name}/*
 
 %changelog
+* Fri Jun 26 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.22-2
+- Fix CVE-2026-47783
+- Fix CVE-2026-47784
 * Thu Nov 09 2023 Mukul Sikka <msikka@vmware.com> 1.6.22-1
 - Version update to fix CVE-2023-46853 and CVE-2023-46852
 * Wed Apr 12 2023 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.6.15-2
