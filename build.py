@@ -77,6 +77,7 @@ targetDict = {
         "clean",
         "clean-install",
         "clean-chroot",
+        "clean-sandbox",
         "clean-stage-rpms",
         "clean-stage-for-incremental-build",
     ],
@@ -491,12 +492,11 @@ class CleanUp:
         CleanUp.clean_chroot()
         print("Deleting Photon ISO...")
         runCmd("rm -f photon-*.iso", shell=True, cwd=Build_Config.stagePath)
+        CleanUp.clean_sandbox()
         print("Deleting build layer images...")
         shutil.rmtree(constants.buildImagesPath, ignore_errors=True)
-        print("Deleting stage dir...")
+        CleanUp.clean_stage()
         shutil.rmtree(Build_Config.stagePath, ignore_errors=True)
-        print("Deleting chroot path...")
-        shutil.rmtree(constants.buildRootPath, ignore_errors=True)
         print("Deleting tools/bin...")
         shutil.rmtree("tools/bin", ignore_errors=True)
 
@@ -530,6 +530,59 @@ class CleanUp:
                     constants.buildRootPath,
                 ]
             )
+
+    def clean_stage():
+        print("Deleting stage dir...")
+        if os.path.isdir(Build_Config.stagePath):
+            runCmd(
+                [
+                    os.path.join(
+                        photonDir,
+                        "support",
+                        "package-builder",
+                        "clean-up-chroot.py",
+                    ),
+                    Build_Config.stagePath,
+                ],
+                ignore_rc=True,
+            )
+
+    def clean_sandbox():
+        sandbox_base = os.path.join(constants.buildImagesPath, "sandboxBase")
+
+        if not os.path.isdir(sandbox_base):
+            print("sandboxBase does not exist, nothing to clean")
+            return
+
+        # Find every overlay mount using sandboxBase as lowerdir via /proc/self/mountinfo.
+        # Field 5 is the mountpoint; options field contains lowerdir=<path>.
+        overlay_mounts = []
+        try:
+            with open("/proc/self/mountinfo") as f:
+                for line in f:
+                    if f"lowerdir={sandbox_base}" in line:
+                        fields = line.split()
+                        overlay_mounts.append(fields[4])
+        except OSError as e:
+            print(f"Warning: could not read /proc/self/mountinfo: {e}")
+
+        # Sort by depth (deepest first) so nested mounts are released before parents.
+        overlay_mounts.sort(key=lambda p: p.count("/"), reverse=True)
+
+        for mp in overlay_mounts:
+            print(f"Unmounting overlay: {mp}")
+            _, err, rc = runCmd(["umount", "-R", "-l", mp], ignore_rc=True, capture=True)
+            if rc:
+                print(f"Warning: failed to unmount {mp}: {err}")
+
+        # Remove per-package overlay dirs (upper/ + work/ leftovers after unmount).
+        if os.path.isdir(constants.buildRootPath):
+            print("Removing per-package sandbox directories...")
+            runCmd(["rm", "--one-file-system", "-rf", constants.buildRootPath], ignore_rc=True)
+
+        print("Removing sandboxBase...")
+        runCmd(["rm", "--one-file-system", "-rf", sandbox_base])
+        print("sandboxBase cleaned successfully")
 
     def removeUpwardDeps(pkg, display_option):
         specDeps = SpecDependencyGenerator(constants.logPath, constants.logLevel)
