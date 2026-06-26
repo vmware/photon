@@ -2,8 +2,8 @@
 
 Summary:        MySQL.
 Name:           mysql
-Version:        8.4.9
-Release:        2%{?dist}
+Version:        8.4.10
+Release:        1%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -185,6 +185,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Fri Jun 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.10-1
+- Upgrade to v8.4.10, contains security fixes
 * Fri May 22 2026 Michelle Wang <michelle.wang@broadcom.com> 8.4.9-2
 - Split mysql in 90 and 91+ for icu dependecy
 * Mon May 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.9-1
