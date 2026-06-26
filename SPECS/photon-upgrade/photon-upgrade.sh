@@ -293,9 +293,9 @@ function find_installed_replaced_packages() {
 }
 
 # Usage: install_other_packages
-# Install all the other packages - install replacement packages corresponnding
+# Install all the other packages - install replacement packages corresponding
 # to any of the earlier removed packages and also install those earlier erased
-# packages which got removed due removal of some other packages
+# packages which got removed due to removal of some other packages
 function install_other_packages() {
   local rc=0
 
@@ -405,7 +405,6 @@ function sanitize_extra_erased_pkgs_arr() {
   done
 }
 
-#Some packages are deprecaed in 5.0, lets remove them before upgrading
 function remove_unsupported_packages() {
   local rc=0
 
@@ -419,7 +418,6 @@ function remove_unsupported_packages() {
     fi
   fi
 }
-
 
 # Usage1: tdnf_makecache
 # Usage2; tdnf_makecache releasever
@@ -654,7 +652,7 @@ function update_solv_to_support_complex_deps() {
   fi
 }
 
-# Checks whether tdnf repo configurations are as expected or not.  The method
+# Checks whether tdnf repo configurations are as expected or not. The method
 # aborts photon-upgrade if it finds photon-release package from other
 # OS releases than the one being updated or upgraded to.
 function is_repo_config_valid_for_release() {
@@ -796,19 +794,8 @@ function update_os() {
   rebuilddb
   backup_rpms_list_n_db $RPMDB_PATH
   tdnf_makecache $FROM_VERSION
-  find_installed_deprecated_packages
-  find_installed_replaced_packages
-  extra_erased_pkgs_arr+=(
-    $(
-      find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
-                             ${!replaced_pkgs_map[@]}
-    )
-  )
 
   remove_debuginfo_packages
-  backup_configs $TMP_BACKUP_LOC \
-                  ${!replaced_pkgs_map[@]} \
-                  ${extra_erased_pkgs_arr[@]}
   sanitize_extra_erased_pkgs_arr
   # deprecated drpm package would prevent package manager update from happening
   # remove it before updating package manager
@@ -818,7 +805,8 @@ function update_os() {
   rebuilddb
   tdnf_makecache
   echo "Upating all the remaining packages to the latest available versions."
-  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT update --refresh; then
+  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh \
+      --allowerasing ${RETAIN_DEPRECATED_PKGS:+--exclude="${RETAIN_DEPRECATED_PKGS}"}; then
     echo "All packages were updated to the latest available versions successfully."
     rebuilddb
   else
@@ -826,6 +814,19 @@ function update_os() {
     abort $ERETRY_EAGAIN "Error in updating all the remaining packages to the latest available versions (tdnf error code: $rc)."
   fi
   rebuilddb
+  find_installed_deprecated_packages
+  find_installed_replaced_packages
+  extra_erased_pkgs_arr+=(
+    $(
+      find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
+                             ${!replaced_pkgs_map[@]}
+    )
+  )
+
+  backup_configs $TMP_BACKUP_LOC \
+                  ${!replaced_pkgs_map[@]} \
+                  ${extra_erased_pkgs_arr[@]}
+
   remove_unsupported_packages
   remove_replaced_packages
 
