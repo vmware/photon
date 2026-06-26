@@ -8,54 +8,78 @@ read -d "\n" -a deprecated_packages_arr < "$1/ph4-to-ph5-deprecated-pkgs.txt"
 declare -A replaced_pkgs_map=(
   [apache-tomcat]="apache-tomcat11 apache-tomcat10 apache-tomcat9"
   [apache-tomcat-webapps]="apache-tomcat11-webapps apache-tomcat10-webapps apache-tomcat9-webapps"
+
   [apache-tomcat9]="apache-tomcat9 apache-tomcat11 apache-tomcat10"
   [apache-tomcat9-webapps]="apache-tomcat9-webapps apache-tomcat11-webapps apache-tomcat10-webapps"
+
   [calico-confd]="calico-confd confd"
+
   [chkconfig]="alternatives"
+
   [dstat]="dstat dool"
+
   [fakeroot-ng]="fakeroot"
+
   [gcc-12]="gcc"
+
   [gcovr]="gcovr python3-gcovr"
+
   [google-compute-engine]="google-compute-engine google-guest-configs"
   [google-compute-engine-services]="google-compute-engine-services google-guest-configs"
+
   [netmgmt]=network-config-manager
   [netmgmt-devel]="network-config-manager-devel"
+
   [openjdk8]="openjdk25 openjdk21 openjdk17 openjdk11"
   [openjre8]="openjdk25-jre openjdk21-jre openjdk17-jre openjdk11-jre"
   [openjdk8-doc]="openjdk25-doc openjdk21-doc openjdk17-doc openjdk11-doc"
   [openjdk8-src]="openjdk25-src openjdk21-src openjdk17-src openjdk11-src"
+
   [pgaudit13]="pgaudit18 pgaudit17 pgaudit16"
   [pgaudit14]="pgaudit18 pgaudit17 pgaudit16"
   [pgaudit15]="pgaudit18 pgaudit17 pgaudit16"
+
   [pmd]=pmd-ng
   [pmd-cli]="pmd-ng"
   [pmd-libs]=pmd-ng
   [pmd-gssapi-unix]="pmd-ng"
+
   [procmail]="dovecot"
-  [postgresql10]="postgresql18 postgresql17 postgresql16"
-  [postgresql10-devel]="postgresql18-devel postgresql17-devel postgresql16-devel"
-  [postgresql10-libs]="postgresql18-libs postgresql17-libs postgresql16-libs"
-  [postgresql13]="postgresql18 postgresql17 postgresql16"
-  [postgresql13-client]="postgresql18-client postgresql17-client postgresql16-client"
-  [postgresql13-devel]="postgresql18-devel postgresql17-devel postgresql16-devel"
-  [postgresql13-libs]="postgresql18-libs postgresql17-libs postgresql16-libs"
-  [postgresql13-server]="postgresql18-server postgresql17-server postgresql16-server"
-  [postgresql14]="postgresql18 postgresql17 postgresql16"
-  [postgresql14-client]="postgresql18-client postgresql17-client postgresql16-client"
-  [postgresql14-devel]="postgresql18-devel postgresql17-devel postgresql16-devel"
-  [postgresql14-libs]="postgresql18-libs postgresql17-libs postgresql16-libs"
-  [postgresql14-server]="postgresql18-server postgresql17-server postgresql16-server"
-  [postgresql15]="postgresql18 postgresql17 postgresql16"
-  [postgresql15-client]="postgresql18-client postgresql17-client postgresql16-client"
-  [postgresql15-devel]="postgresql18-devel postgresql17-devel postgresql16-devel"
-  [postgresql15-libs]="postgresql18-libs postgresql17-libs postgresql16-libs"
-  [postgresql15-server]="postgresql18-server postgresql17-server postgresql16-server"
+
+  [pgaudit13]="pgaudit18 pgaudit17 pgaudit16 pgaudit15 pgaudit14"
+  [pgaudit14]="pgaudit14 pgaudit18 pgaudit17 pgaudit16 pgaudit15"
+  [pgaudit15]="pgaudit15 pgaudit18 pgaudit17 pgaudit16"
+
+  [postgresql10]="postgresql18 postgresql17 postgresql16 postgresql15 postgresql14"
+  [postgresql10-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel postgresql14-devel"
+  [postgresql10-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs postgresql14-libs"
+
+  [postgresql13]="postgresql18 postgresql17 postgresql16 postgresql15 postgresql14"
+  [postgresql13-client]="postgresql18-client postgresql17-client postgresql16-client postgresql15-client postgresql14-client"
+  [postgresql13-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel postgresql14-devel"
+  [postgresql13-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs postgresql14-libs"
+  [postgresql13-server]="postgresql18-server postgresql17-server postgresql16-server postgresql15-server postgresql14-server"
+
+  [postgresql14]="postgresql14 postgresql18 postgresql17 postgresql16 postgresql15"
+  [postgresql14-client]="postgresql14-client postgresql18-client postgresql17-client postgresql16-client postgresql15-client"
+  [postgresql14-devel]="postgresql14-devel postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel"
+  [postgresql14-libs]="postgresql14-libs postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs"
+  [postgresql14-server]="postgresql14-server postgresql18-server postgresql17-server postgresql16-server postgresql15-server"
+
+  [postgresql15]="postgresql15 postgresql18 postgresql17 postgresql16"
+  [postgresql15-client]="postgresql15-client postgresql18-client postgresql17-client postgresql16-client"
+  [postgresql15-devel]="postgresql15-devel postgresql18-devel postgresql17-devel postgresql16-devel"
+  [postgresql15-libs]="postgresql15-libs postgresql18-libs postgresql17-libs postgresql16-libs"
+  [postgresql15-server]="postgresql15-server postgresql18-server postgresql17-server postgresql16-server"
+
   [python3-gcovr]="gcovr python3-gcovr"
-  [repmgr]="repmgr18 repmgr17 repmgr16"
-  [repmgr10]="repmgr18 repmgr17 repmgr16"
-  [repmgr13]="repmgr18 repmgr17 repmgr16"
-  [repmgr14]="repmgr18 repmgr17 repmgr16"
-  [repmgr15]="repmgr18 repmgr17 repmgr16"
+
+  [repmgr]="repmgr18 repmgr17 repmgr16 repmgr15 repmgr14"
+  [repmgr10]="repmgr18 repmgr17 repmgr16 repmgr15 repmgr14"
+  [repmgr13]="repmgr18 repmgr17 repmgr16 repmgr15 repmgr14"
+  [repmgr14]="repmgr14 repmgr18 repmgr17 repmgr16 repmgr15"
+  [repmgr15]="repmgr15 repmgr18 repmgr17 repmgr16"
+
   [rubygem-mini_portile]="rubygem-mini_portile2"
 )
 

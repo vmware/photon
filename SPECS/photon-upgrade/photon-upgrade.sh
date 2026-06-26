@@ -441,7 +441,8 @@ function distro_upgrade() {
     echo "Upgrading Photon OS to $TO_VERSION from $FROM_VERSION"
   fi
 
-  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --releasever=$ver --refresh; then
+  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --releasever=$ver --refresh \
+        --allowerasing ${RETAIN_DEPRECATED_PKGS:+--exclude="${RETAIN_DEPRECATED_PKGS}"}; then
       echo "All packages were upgraded to latest versions successfully."
       if [ "$ver" = "$TO_VERSION" ]; then
         echo "The OS has been upgraded to $TO_VERSION."
@@ -847,19 +848,7 @@ function verify_version_and_upgrade() {
         prepare_for_upgrade
         distro_upgrade $FROM_VERSION
       fi
-      find_installed_deprecated_packages
       tdnf_makecache $TO_VERSION
-      find_installed_replaced_packages
-      check_installed_packages_in_target_repo
-      ((rc+=$?))
-      tdnf_makecache $FROM_VERSION
-      extra_erased_pkgs_arr+=(
-        $(
-          find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
-                                 ${!replaced_pkgs_map[@]}
-        )
-      )
-      sanitize_extra_erased_pkgs_arr
       if is_precheck_running; then
         if [ $rc -eq 0 ]; then
           echo "Prechecks: PASS, exiting with status($rc)."
@@ -871,16 +860,29 @@ function verify_version_and_upgrade() {
       trap exit_cleanup EXIT
       disable_all_coredumps || abort $ERETRY_EAGAIN "Could not disable coredumps."
       remove_debuginfo_packages
+      record_enabled_disabled_services
+      pre_upgrade_rm_pkgs
+      rebuilddb
+
+      distro_upgrade $TO_VERSION
+
+      find_installed_deprecated_packages
+      find_installed_replaced_packages
+      check_installed_packages_in_target_repo
+      ((rc+=$?))
+      extra_erased_pkgs_arr+=(
+        $(
+          find_extra_erased_pkgs ${deprecated_pkgs_to_remove_arr[@]} \
+                                 ${!replaced_pkgs_map[@]}
+        )
+      )
+      sanitize_extra_erased_pkgs_arr
+
       backup_configs $TMP_BACKUP_LOC \
                      ${!replaced_pkgs_map[@]} \
                      ${extra_erased_pkgs_arr[@]}
-      record_enabled_disabled_services
-      # The residual pkgs are removed upfront to circumvent libmetalink error
       remove_unsupported_packages
-      pre_upgrade_rm_pkgs
-      rebuilddb
       remove_replaced_packages
-      distro_upgrade $TO_VERSION
       install_other_packages
       rebuilddb
       fix_post_upgrade_config

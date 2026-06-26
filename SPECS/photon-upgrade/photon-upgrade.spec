@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,10 +52,13 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Thu Jun 25 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-3
+- Use distro-sync with allow erasing option
+- Remove deprecated packages post upgrade
 * Tue Jun 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-2
 - Port changes from 5.0 photon-upgrade
 * Mon Jun 15 2026 Dweep Advani <dweep.advani@broadcom.com> 1.2-1
-- Update to handle package chaneges 5.0
+- Update to handle package changes 5.0
 * Tue Dec 02 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-7
 - Do return value validation of install_all_from at the end
 * Mon Dec 01 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-6
