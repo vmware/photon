@@ -1,6 +1,6 @@
 Name:           memcached
 Version:        1.6.22
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +11,9 @@ Source1:        %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
+
+# Fix CVE-2026-47783 and CVE-2026-47784
+Patch0: CVE-2026-47783.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -84,6 +87,9 @@ make test %{?_smp_mflags}
 %{_includedir}/%{name}/*
 
 %changelog
+* Fri Jun 26 2026 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.22-4
+- Fix CVE-2026-47783
+- Fix CVE-2026-47784
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.22-3
 - Renaming sysusers to conf to fix auto user creation
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.6.22-2
