@@ -1,13 +1,38 @@
 sources:
 
-- archive: pgaudit-1.7.0.tar.gz
-  archive_sha512sum: 34a8b6e448a99add4c5d659095632aa0ec421b27289a0c220d198b9352e9225617b5904a23a30da45a4918823847d2fb995470e3b66060754436f9cf2dcb65f4
-  name: pgaudit-1.7.0
-  version: 1.7.0
+- archive: pgaudit-1.6.3.tar.gz
+  archive_sha512sum: 436f8e63ab035d583206ace68c3860e7ab7e86b4c5745119cc2bc7d5a2ae056fcdfebfab87ecd8eb645d60727daeea5b494921859ab5645342b5023500c89248
+  name: pgaudit-1.6.3
+  version: 1.6.3
   archive_type: upstream
-  url: https://github.com/pgaudit/pgaudit/archive/refs/tags/1.7.0.tar.gz
+  url: https://github.com/pgaudit/pgaudit/archive/refs/tags/1.6.3.tar.gz
   repo_url: https://github.com/pgaudit/pgaudit
-  commit_id: 8349710fbbe38ca9518ebe753a528b94f5ab2c19
+  commit_id: abdb653a57228c28c52600aefa4852616eb6b0af
+  spdx:
+    package:
+      detailed_description: 'The PostgreSQL Audit extension (pgaudit) provides detailed
+        session and/or object audit logging via the standard PostgreSQL logging facility. The
+        goal of the PostgreSQL Audit extension (pgaudit) is to provide PostgreSQL
+        users with capability to produce audit logs often required to comply with
+        government, financial, or ISO certifications.  An audit is an official inspection
+        of an individual''s or organization''s accounts, typically by an independent
+        body. The information gathered by the PostgreSQL Audit extension (pgaudit)
+        is properly called an audit trail or audit log. The term audit log is used
+        in this documentation.'
+      home_page: http://pgaudit.org
+      license_concluded: PostgreSQL
+      license_declared: PostgreSQL
+      short_summary: PostgreSQL Audit Extension
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: pgaudit-1.7.1.tar.gz
+  archive_sha512sum: 5516412809adde58883dd407522f2c79fbe65a7a6c70c8d6d69e51aa0a0a6eef2271f4c71f0ed140667c23753158c3124ce190045f99d36fd172416c392ec14a
+  name: pgaudit-1.7.1
+  version: 1.7.1
+  archive_type: upstream
+  url: https://github.com/pgaudit/pgaudit/archive/refs/tags/1.7.1.tar.gz
+  repo_url: https://github.com/pgaudit/pgaudit
+  commit_id: 72da89c3fa02f3f2b9f3933214d91ad9c3428467
   spdx:
     package:
       detailed_description: 'The PostgreSQL Audit extension (pgaudit) provides detailed
