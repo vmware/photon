@@ -487,3 +487,6 @@ Patch3196: 0002-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
 
 # Fix CVE-2026-31502
 Patch3197: 0001-team-fix-header_ops-type-confusion-with-non-Ethernet.patch
+
+# Fix CVE-2026-46116
+Patch3198: 0001-xfrm-defensively-unhash-xfrm_state-lists-in-__xfrm_state_delete.patch

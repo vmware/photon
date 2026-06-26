@@ -1,0 +1,118 @@
+From 946f2ebdca10ab33026290edcd3b88dc1c60536d Mon Sep 17 00:00:00 2001
+From: Michal Kosiorek <mkosiorek121@gmail.com>
+Date: Fri, 26 Jun 2026 14:27:13 -0700
+Subject: [PATCH] xfrm: defensively unhash xfrm_state lists in
+ __xfrm_state_delete
+
+[ Upstream commit 14acf9652e5690de3c7486c6db5fb8dafd0a32a3 ]
+
+KASAN reproduces a slab-use-after-free in __xfrm_state_delete()'s
+hlist_del_rcu calls under syzkaller load on linux-6.12.y stable
+(reproduced on 6.12.47, also reachable via the same code path on
+torvalds/master and on the ipsec tree). Nine unique signatures cluster
+in the xfrm_state lifecycle, the load-bearing one being:
+
+  BUG: KASAN: slab-use-after-free in __hlist_del include/linux/list.h:990 [inline]
+  BUG: KASAN: slab-use-after-free in hlist_del_rcu include/linux/rculist.h:516 [inline]
+  BUG: KASAN: slab-use-after-free in __xfrm_state_delete net/xfrm/xfrm_state.c
+  Write of size 8 at addr ffff8881198bcb70 by task kworker/u8:9/435
+
+  Workqueue: netns cleanup_net
+  Call Trace:
+   __hlist_del / hlist_del_rcu
+   __xfrm_state_delete
+   xfrm_state_delete
+   xfrm_state_flush
+   xfrm_state_fini
+   ops_exit_list
+   cleanup_net
+
+The other observed signatures hit the same slab object from
+__xfrm_state_lookup, xfrm_alloc_spi, __xfrm_state_insert and an OOB
+write variant of __xfrm_state_delete, all on the byseq/byspi
+hash chains.
+
+__xfrm_state_delete() guards its byseq and byspi unhashes with
+value-based predicates:
+
+	if (x->km.seq)
+		hlist_del_rcu(&x->byseq);
+	if (x->id.spi)
+		hlist_del_rcu(&x->byspi);
+
+while everywhere else in the file (e.g. state_cache, state_cache_input)
+the safer hlist_unhashed() check is used. xfrm_alloc_spi() sets
+x->id.spi = newspi inside xfrm_state_lock and then immediately inserts
+into byspi, but a path that observes x->id.spi != 0 outside of
+xfrm_state_lock can still skip-or-hit the byspi unhash inconsistently
+with whether x is actually on the list. The same holds for x->km.seq
+versus byseq, and the bydst/bysrc unhashes have no predicate at all,
+so a second __xfrm_state_delete() on the same object writes through
+LIST_POISON pprev.
+
+The defensive change here:
+
+  - Use hlist_del_init_rcu() instead of hlist_del_rcu() on bydst,
+    bysrc, byseq and byspi so a second deletion is a no-op rather
+    than a write through LIST_POISON pprev. The byseq/byspi nodes
+    are already initialised in xfrm_state_alloc().
+  - Test hlist_unhashed() rather than the value predicate for
+    byseq/byspi, so the unhash decision tracks list state rather than
+    mutable scalar fields.
+
+Empirical verification: applied this patch on top of v6.12.47, rebuilt,
+and re-ran the same syzkaller harness for 1h16m on a previously-crashy
+configuration that produced ~100 hits each of slab-use-after-free
+Read in xfrm_alloc_spi / Read in __xfrm_state_lookup / Write in
+__xfrm_state_delete. After the patch, 7.1M execs across 32 VMs at
+~1550 exec/sec produced zero xfrm_state UAF/OOB hits. /proc/slabinfo
+confirms the xfrm_state slab is actively allocated and freed during
+the run (~143 KiB resident), so the fuzzer is still exercising those
+code paths -- they just no longer crash.
+
+Reproduction:
+
+  - Linux 6.12.47 x86_64 + KASAN_GENERIC + KASAN_INLINE + KCOV
+  - syzkaller @ 746545b8b1e4c3a128db8652b340d3df90ce61db
+  - 32 QEMU/KVM VMs x 2 vCPU on AWS c5.metal bare metal
+  - 9 unique signatures collected in ~9h, all within xfrm_state
+    lifecycle
+
+Fixes: fe9f1d8779cb ("xfrm: add state hashtable keyed by seq")
+Fixes: 7b4dc3600e48 ("[XFRM]: Do not add a state whose SPI is zero to the SPI hash.")
+Reported-by: Michal Kosiorek <mkosiorek121@gmail.com>
+Tested-by: Michal Kosiorek <mkosiorek121@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Michal Kosiorek <mkosiorek121@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+[ dropped state_cache/state_cache_input unhash hunks and xfrm_nat_keepalive_state_updated() call ]
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Brenann: 5.10 backport: byseq hash chain not present; dropped those hunks]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/xfrm/xfrm_state.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 61a0a5b843d9..e261ad5684ee 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -659,10 +659,10 @@ int __xfrm_state_delete(struct xfrm_state *x)
+ 		x->km.state = XFRM_STATE_DEAD;
+ 		spin_lock(&net->xfrm.xfrm_state_lock);
+ 		list_del(&x->km.all);
+-		hlist_del_rcu(&x->bydst);
+-		hlist_del_rcu(&x->bysrc);
+-		if (x->id.spi)
+-			hlist_del_rcu(&x->byspi);
++		hlist_del_init_rcu(&x->bydst);
++		hlist_del_init_rcu(&x->bysrc);
++		if (!hlist_unhashed(&x->byspi))
++			hlist_del_init_rcu(&x->byspi);
+ 		net->xfrm.state_num--;
+ 		spin_unlock(&net->xfrm.xfrm_state_lock);
+
+--
+2.53.0
+
