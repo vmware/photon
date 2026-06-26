@@ -1,22 +1,22 @@
 sources:
-- archive: node-v24.17.0.tar.gz
-  archive_sha512sum: 1614b2ef4e977c64da9647819c1502fcaa157234e1e142a538b4453447cd2ec5b7546bf2e24f10fec372a5a2c2c407f6f390b12c5b43dead4224732011407a2d
+- archive: node-v24.18.0.tar.gz
+  archive_sha512sum: 1cd1d6a8b2436dc20e8e255aa4871e05813b1d38108dc4807beb3bc058ec043469ba14676c4c74ca9f83ee18dbf3e9fb3048439f27d38379086bc588268c0be8
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - node-v24.17.0/deps/npm/node_modules/spdx-license-ids/index.json
+    - node-v24.18.0/deps/npm/node_modules/spdx-license-ids/index.json
     sha256sum: d5ef45aff38fd904a68c563bf5814172bb0caa656220be820b3a81601e637241
     spdx_exp: ''
   # index.json contains list of all licenses in an array as string for parsing.
   # Removed AGPL-30, AGPL-1.0, CC-BY-SA & SSPL-1.0
   - file_paths:
-    - node-v24.17.0/deps/npm/node_modules/spdx-license-ids/deprecated.json
+    - node-v24.18.0/deps/npm/node_modules/spdx-license-ids/deprecated.json
     sha256sum: 29c9e630daa0adc09dec96ddeb6f81d1046210e81824bebda6486250450fb130
     spdx_exp: ''
   # index.js contains list of all Licenses for identification purpose.
   # Removed AGPL-1.0, AGPL-2.0, AGPL-3.0 & AGPL-3.0-or-later
   - file_paths:
-    - node-v24.17.0/deps/npm/test/schemas/cyclonedx/spdx.schema.json
+    - node-v24.18.0/deps/npm/test/schemas/cyclonedx/spdx.schema.json
     sha256sum: 4f6e2b05c05d26a4f2dc5879fbc2fca94b0a28db46289d0c51345621b71cfbfc
     spdx_exp: ''
   # spdx.schema.json contains all Licenses as strings for identification purpose
