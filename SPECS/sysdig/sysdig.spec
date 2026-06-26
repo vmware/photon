@@ -15,7 +15,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.39.0
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -49,9 +49,10 @@ Patch5: 0006-tbb.cmake-use-user-provided-source-archive.patch
 Patch6: 0007-uthash.cmake-use-user-provided-source-archive.patch
 Patch7: 0008-valijson.cmake-use-user-provided-source-archive.patch
 Patch8: 0009-falcolib-Add-prototype-for-nsec_to_clock.patch
+Patch9: 0010-chisels-common.lua-fix-format_time_interval-for-Lua-5.3.patch
 
 # Fix for scap module
-Patch9: 0001-sysdig-Fix-signature-of-probe-as-per-upstream-kernel.patch
+Patch20: 0001-sysdig-Fix-signature-of-probe-as-per-upstream-kernel.patch
 
 BuildRequires: cmake
 BuildRequires: jsoncpp-devel
@@ -92,6 +93,7 @@ that runs in your terminal
 %autosetup -a0 -a1 -N
 pushd %{_builddir}/%{name}-%{version}
 %autopatch -p1 -m0 -M4
+%autopatch -p1 -m9 -M9
 popd
 
 pushd %{_builddir}/%{name}-%{version}/libs-%{falcosecurity_libs_ver}
@@ -144,7 +146,7 @@ popd
 
 # Fix for scap module
 pushd %{__cmake_builddir}
-%autopatch -p1 -m9 -M9
+%autopatch -p1 -m20 -M20
 popd
 export KERNELDIR="%{_modulesdir}/build"
 
@@ -182,6 +184,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Thu Jun 25 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.39.0-3
+- Fix format_time_interval in chisels/common.lua for Lua 5.3+ compatibility
 * Sun May 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.39.0-2
 - Patch cmake files to properly use source archives from localhost
 * Mon May 04 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.39.0-1

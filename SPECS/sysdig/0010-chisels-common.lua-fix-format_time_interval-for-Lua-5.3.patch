@@ -1,0 +1,47 @@
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Subject: [PATCH] chisels/common.lua: fix format_time_interval for Lua 5.3+
+
+Lua 5.3 introduced a strict integer/float split.  The %u format
+specifier requires an integer argument; passing a float raises:
+
+  bad argument #N to 'format' (number has no integer representation)
+
+format_time_interval() uses compound format strings such as "%u.%02us"
+which contain two %u specifiers: the whole-units field and the
+zero-padded fractional field, separated by a literal '.'.  The
+fractional fields are computed by division, which produces a float in
+Lua 5.3:
+
+  (val % ONE_S_IN_NS)  / 10000000  -- arg #3, the %02u in "%u.%02us"
+  (val % ONE_MS_IN_NS) / 10000     -- arg #3, the %02u in "%u.%02ums"
+  (val % ONE_US_IN_NS) / 10        -- arg #3, the %02u in "%u.%02uus"
+
+Wrap each with math.floor() to restore integer type.  Fixes chisel
+aborts in topfiles_time and topscalls_time when built against Lua 5.3+.
+
+Upstream issue: https://github.com/draios/sysdig/issues/2185
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ userspace/sysdig/chisels/common.lua | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/userspace/sysdig/chisels/common.lua b/userspace/sysdig/chisels/common.lua
+--- a/userspace/sysdig/chisels/common.lua
++++ b/userspace/sysdig/chisels/common.lua
+@@ -125,13 +125,13 @@ function format_time_interval(val)
+ 	if val >= (ONE_S_IN_NS) then
+-		return string.format("%u.%02us", math.floor(val / ONE_S_IN_NS), (val % ONE_S_IN_NS) / 10000000)
++		return string.format("%u.%02us", math.floor(val / ONE_S_IN_NS), math.floor((val % ONE_S_IN_NS) / 10000000))
+ 	elseif val >= (ONE_S_IN_NS / 100) then
+ 		return string.format("%ums", math.floor(val / (ONE_S_IN_NS / 1000)))
+ 	elseif val >= (ONE_S_IN_NS / 1000) then
+-		return string.format("%u.%02ums", math.floor(val / (ONE_S_IN_NS / 1000)), (val % ONE_MS_IN_NS) / 10000)
++		return string.format("%u.%02ums", math.floor(val / (ONE_S_IN_NS / 1000)), math.floor((val % ONE_MS_IN_NS) / 10000))
+ 	elseif val >= (ONE_S_IN_NS / 100000) then
+ 		return string.format("%uus", math.floor(val / (ONE_S_IN_NS / 1000000)))
+ 	elseif val >= (ONE_S_IN_NS / 1000000) then
+-		return string.format("%u.%02uus", math.floor(val / (ONE_S_IN_NS / 1000000)), (val % ONE_US_IN_NS) / 10)
++		return string.format("%u.%02uus", math.floor(val / (ONE_S_IN_NS / 1000000)), math.floor((val % ONE_US_IN_NS) / 10))
+ 	else
+ 		return string.format("%uns", val)
+ 	end
