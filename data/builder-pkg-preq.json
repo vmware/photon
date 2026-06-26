@@ -25,6 +25,7 @@
       "bash",
       "binutils",
       "bison",
+      "build-essential",
       "bzip2",
       "coreutils",
       "debugedit",
