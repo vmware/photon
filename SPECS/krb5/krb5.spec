@@ -3,7 +3,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.20.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -23,6 +23,7 @@ Patch5: CVE-2025-24528.patch
 %if 0%{photon_subrelease} >= 91
 Patch6: 0001-Fix-strchr-conformance-to-C23.patch
 %endif
+Patch7: CVE-2026-11850.patch
 
 Requires:       openssl-libs
 Requires:       e2fsprogs-libs
@@ -137,6 +138,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/man/man5/.k5login.5.gz
 
 %changelog
+* Fri Jun 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.20.2-14
+- Fix for CVE-2026-11850
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.20.2-13
 - version bump after glibc is upgraded in 91
 * Sat Apr 11 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.20.2-11
