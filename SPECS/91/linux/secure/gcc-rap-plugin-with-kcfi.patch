@@ -102,8 +102,7 @@ Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
  scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 553 ++++++++++++++++++
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  security/Kconfig                              |  29 +
- security/apparmor/net.c                       |   2 +-
- 61 files changed, 1888 insertions(+), 182 deletions(-)
+ 60 files changed, 1887 insertions(+), 181 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -3651,19 +3650,6 @@ index 918875737..4dc8d0ecf 100644
  source "security/keys/Kconfig"
  
  config SECURITY_DMESG_RESTRICT
-diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-index f14f00390..837f2b1d3 100644
---- a/security/apparmor/net.c
-+++ b/security/apparmor/net.c
-@@ -95,7 +95,7 @@ static void audit_unix_addr(struct audit_buffer *ab, const char *str,
- }
- 
- static void audit_unix_sk_addr(struct audit_buffer *ab, const char *str,
--			       struct sock *sk)
-+			       const struct sock *sk)
- {
- 	struct unix_sock *u = unix_sk(sk);
- 	if (u && u->addr)
--- 
+--
 2.53.0
 
