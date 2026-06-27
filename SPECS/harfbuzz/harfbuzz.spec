@@ -3,7 +3,7 @@
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        7.0.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Sat Jun 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.1-6
+- Fix aarch64 build
 * Tue May 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.0.1-5
 - Enable for 91 subrlease
 * Tue Jan 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.0.1-4
