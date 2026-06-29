@@ -3,8 +3,8 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        9.2.0136
-Release:        2%{?dist}
+Version:        9.2.0670
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,15 +12,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/vim/vim/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=3a9b8719adc04ee81e8ffdbcfb9a7bb584683cffa31cc1cd2bb5f6a7933335e7a09c6303d58e4a0bc9054d5eeec6cb913d4d54afbed0515a311c7af583322ec3
+%define sha512 %{name}=30fdb8ce9e5eb6e63302b692ecca5c2f29b1bd8b51b782cabb8953c241e0582730a6db494bc2f1dc100a5a9c4ed3aad9720d48dda34e19b1200057b49079cde5
 
 Source1:        vimrc
-
-Patch0: vim-CVE-2026-33412.patch
-Patch1: vim-CVE-2026-32249.patch
-Patch2: vim-CVE-2026-34714.patch
-Patch3: vim-CVE-2026-34982.patch
-Patch4: vim-CVE-2026-35177.patch
 
 BuildRequires:  ncurses-devel
 
@@ -187,6 +181,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Jun 29 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0670-1
+- Upgrade to 9.2.0670 to fix multiple CVEs
 * Tue Apr 28 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-2
 - Fix CVE-2026-33412, CVE-2026-32249, CVE-2026-34714, CVE-2026-34982 and CVE-2026-35177
 * Thu Mar 12 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0136-1
