@@ -1,7 +1,7 @@
 Summary:        OpenPGP standard implementation used for encrypted communication and data storage.
 Name:           gnupg
 Version:        2.2.41
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://gnupg.org/index.html
 Group:          Applications/Cryptography.
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:         CVE-2025-68973.patch
+Patch1:         CVE-2026-57062.patch
 
 BuildRequires:  zlib-devel
 BuildRequires:  bzip2-devel
@@ -66,6 +67,8 @@ make %{?_smp_mflags} check
 %exclude %{_docdir}/*
 
 %changelog
+* Mon Jun 29 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.2.41-5
+- Fix for CVE-2026-57062
 * Mon Jan 12 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.2.41-4
 - Fix CVE-2025-68973
 * Tue Aug 05 2025 Srinidhi Rao <srinidhi.rao@broadcom.com> 2.2.41-3
