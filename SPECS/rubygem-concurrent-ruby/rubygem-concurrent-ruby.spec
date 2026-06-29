@@ -4,8 +4,8 @@
 %global gem_name concurrent-ruby
 
 Name: rubygem-concurrent-ruby
-Version:        1.3.6
-Release:        3%{?dist}
+Version:        1.3.7
+Release:        1%{?dist}
 Summary:        Modern concurrency tools for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ classic concurrency patterns.
 %{gemdir}
 
 %changelog
+* Mon Jun 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.7-1
+- Upgrade to v1.3.7, fixes CVE-2026-54906
 * Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.3.6-3
 - Enable obsoletes
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.6-2
