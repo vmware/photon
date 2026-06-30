@@ -326,7 +326,7 @@ function remove_replaced_packages() {
     backup_configs
     echo "Removing following packages which were replaced by other "\
              "packages -\n${!replaced_pkgs_map[@]}\n"
-    erase_pkgs "${!replaced_pkgs_map[@]}"
+    erase_pkgs "${!replaced_pkgs_map[*]}"
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $rc "Error removing replaced packages - ${!replaced_pkgs_map[@]} - (tdnf error code: $rc)."
