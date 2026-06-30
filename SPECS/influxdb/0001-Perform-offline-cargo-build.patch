@@ -1,0 +1,25 @@
+From 28d9c15291820332dfb16300b8c05deba3e2e2c3 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Tue, 30 Jun 2026 16:52:54 +0000
+Subject: [PATCH] Perform offline cargo build
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 46e1435..a4b49f3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -19,7 +19,7 @@ export GO_TEST_FLAGS=
+ export GO_GENERATE=go generate $(GO_ARGS)
+ export GO_VET=env GO111MODULE=on go vet $(GO_ARGS)
+ export CARGO=cargo
+-export CARGO_ARGS=
++export CARGO_ARGS="--offline"
+ export PATH := $(shell pwd)/bin:$(PATH)
+ 
+ define go_deps
+-- 
+2.53.0
+

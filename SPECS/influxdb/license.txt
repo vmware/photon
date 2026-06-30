@@ -1,1 +1,1 @@
-License: MIT AND Apache-2.0 AND BSD-3-Clause AND ISC
+License: (Apache-2.0 OR Apache-2.0 OR MIT) AND (Apache-2.0 OR Apache-2.0 WITH LLVM-exception OR MIT) AND (Apache-2.0 OR MIT) AND (MIT OR Unlicense) AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-3-Clause AND BSL-1.0 AND CC-BY-3.0 AND CC0-1.0 AND ISC AND MIT AND MIT-testregex AND MPL-2.0 AND Unicode-DFS-2016 AND Unlicense AND Zlib AND blessing

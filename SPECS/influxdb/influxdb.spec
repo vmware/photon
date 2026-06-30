@@ -2,10 +2,11 @@
 
 %define network_required    1
 %define gopath  %{_var}/tmp/gopath
+%define libflux_version 0.196.0
 
 Name:           influxdb
 Version:        1.12.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        InfluxDB is an open source time series database
 URL:            https://influxdata.com
 Vendor:         VMware, Inc.
@@ -13,13 +14,14 @@ Distribution:   Photon
 Group:          Applications/Database
 
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
-
+Source1:        libflux-vendor-%{libflux_version}.tar.gz
 Source2:        %{name}.sysusers
 
 Source3: license.txt
 %include %{SOURCE3}
 
 Patch0: 0001-fix-libflux-build-with-newer-rust.patch
+Patch1: 0001-Perform-offline-cargo-build.patch
 
 BuildRequires:  go
 BuildRequires:  git
@@ -36,6 +38,8 @@ It's useful for recording metrics, events, and performing analytics.
 
 %prep
 %autosetup -p1 -N
+# Using autosetup is not feasible
+%setup -q -T -D -a 1
 
 %build
 export PKG_CONFIG="$PWD/pkg-config.sh"
@@ -47,6 +51,19 @@ go mod download
 FLUXDIR=$(go list -m -f '{{.Dir}}' github.com/influxdata/flux)
 pushd $FLUXDIR
 patch -p1 < %{PATCH0}
+patch -p1 < %{PATCH1}
+
+pushd libflux
+mkdir -p .cargo
+cat > .cargo/config.toml <<'EOF'
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "%{_builddir}/%{buildsubdir}/libflux-vendor-%{libflux_version}"
+EOF
+
+popd
 popd
 
 go install \
@@ -111,6 +128,8 @@ done
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Jun 30 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.12.4-2
+- Use vendored sources for libflux
 * Wed Jun 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.4-1
 - Upgrade to v1.12.4
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.10-19
