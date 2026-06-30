@@ -1,6 +1,6 @@
 sources:
-- archive: faraday-2.14.1.gem
-  archive_sha512sum: ba661ffe8cb520d82ceecb3b31da9e49207c80b9b7f6089b656beabcd3bf662c07f5c0a3d2ef8efc37e79f14882e2fe599948b87d769e0da808c2f2e7662ec42
+- archive: faraday-2.14.3.gem
+  archive_sha512sum: 185156a86d4f690431c69d358b54aa6e85dc6090fdf951a56f4f926d90101d24c5ad5e39cefcf01b015e61da68e718741d04397f18678baec9277882f6897700
   skip_validation: true
   spdx:
     package:
