@@ -1,6 +1,14 @@
 sources:
-- archive: nasm-2.16.01-xdoc.tar.xz
-  archive_sha512sum: ec260c0a537b0172e6f2ac17118c744db8743886388a112e99bab1b8c8fee91547dade69dcfe9a15289b2b1a428e8c009048a468f7982b03dd4506abcafc0787
+- archive: nasm-3.02-xdoc.tar.xz
+  archive_type: None
+  archive_sha512sum: b76d6a0764ce9991a79bb16078bc8fa73ff822183fcc39c7135c6d4d12487d3a2409f40f6fc6ca36f10545bab391b6aadb58e6f3d903cce0153a30dc80ff5184
+  name: nasm-3.02-xdoc
+  version: 3.02
+  url: http://www.nasm.us/pub/nasm/releasebuilds/3.02/nasm-3.02-xdoc.tar.xz
+  repo_url: https://github.com/netwide-assembler/nasm.git
+  commit_id: 4a56d66ed9626d5a3ded5414c9d8b7f1a48ce065
+  skip_list: []
+  missing: []
   skip_validation: true
   spdx:
     package:
@@ -10,12 +18,26 @@ sources:
       license_declared: BSD-2-Clause
       short_summary: Netwide Assembler docs
       supplier: 'Organization: Broadcom, Inc.'
-- archive: nasm-2.16.01.tar.xz
-  archive_sha512sum: 51fccb5639ce019d9c423c0f279750ffbd74c64cd41dd3b185d1aa1a1aaed79c5d3cd8d4bebbc13ee249a375ed27457ea2abde1a4dbb24d354598fffd1254833
-  skip_validation: true
+- archive: nasm-3.02.tar.xz
+  archive_type: upstream
+  archive_sha512sum: dc80d8a9a582423e62703da3cc3f37ee57735939b975faa8a72d061a8b596f763d206c7cc3e48c32d2ad726f38e430dc3b85cffd0c3b32e71e20ad9cc24f4804
+  name: nasm-3.02
+  version: 3.02
+  url: http://www.nasm.us/pub/nasm/releasebuilds/3.02/nasm-3.02.tar.xz
+  repo_url: https://github.com/netwide-assembler/nasm.git
+  commit_id: 4a56d66ed9626d5a3ded5414c9d8b7f1a48ce065
+  skip_validation: false
+  skip_list: ['Makefile.in', 'msvc.mak', 'openwcom.mak', 'builtin.mac']
+  missing: ['.gitignore', 'configure', 'nasm.1', 'nasm.spec', 'nasm.xml', 'ndisasm.1',
+    'ndisasm.xml', 'version.h', 'version.mac', 'version.mak', 'version.sed', 'directbl.c',
+    'directiv.h', 'pptok.c', 'pptok.h', 'pptok.ph', 'tokens.h', 'tokhash.c', 'warnings_c.h',
+    'aclocal.m4', 'clean.sh', 'config.h.in', 'warnings.src', 'nasmtok.el', 'nasmtok.json',
+    'warnings.h', 'macros.c', 'version.nsh', 'iflag.c', 'iflaggen.h', 'insns.xda',
+    'insnsa.c', 'insnsb.c', 'insnsd.c', 'insnsi.h', 'insnsn.c', 'regdis.c', 'regdis.h',
+    'regflags.c', 'regs.c', 'regs.h', 'regvals.c']
   license_manual_review:
   - file_paths:
-    - nasm-2.16.01/doc/pspdf.pl
+    - nasm-3.02/doc/pspdf.pl
     sha256sum: d229a9849a97faad93f8476353f96be92227e145e016c429d88da01546d84f3f
     spdx_exp: ''
   # Reported incorrect license
