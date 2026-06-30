@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.176
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -872,6 +872,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jun 30 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 6.1.176-2
+- Fix CVE-2026-46266
 * Wed Jun 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.176-1
 - Update to version 6.1.176
 * Tue Jun 23 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.175-11
