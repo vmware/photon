@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.41.5
-Release:        1%{?dist}
+Version:        2.41.4
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.41/%{name}-%{version}.tar.xz
+Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -151,8 +151,6 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
-* Tue Jun 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.41.5-1
-- Update to v2.41.5
 * Mon Jun 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.41.4-3
 - Fix CVE-2026-3184
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.41.4-2
