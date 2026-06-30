@@ -5,7 +5,7 @@
 Summary:        The fastest markdown parser in pure Python.
 Name:           python3-mistune
 Version:        3.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,6 +17,10 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: CVE-2026-33079.patch
+Patch1: CVE-2026-49851-1.patch
+Patch2: CVE-2026-49851-2.patch
+Patch3: CVE-2026-49851-3.patch
+Patch4: CVE-2026-44899.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -52,6 +56,8 @@ pip3 install tomli
 %{python3_sitelib}/*
 
 %changelog
+* Tue Jun 30 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.0-4
+- Fix CVE-2026-49851
 * Tue Jun 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.0-3
 - Fix CVE-2026-33079
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.0-2
