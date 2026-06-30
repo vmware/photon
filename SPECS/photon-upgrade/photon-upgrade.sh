@@ -326,7 +326,7 @@ function remove_replaced_packages() {
     backup_configs
     echo "Removing following packages which were replaced by other "\
              "packages -\n${!replaced_pkgs_map[@]}\n"
-    erase_pkgs "${!replaced_pkgs_map[@]}"
+    erase_pkgs "${!replaced_pkgs_map[*]}"
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $rc "Error removing replaced packages - ${!replaced_pkgs_map[@]} - (tdnf error code: $rc)."
@@ -410,7 +410,7 @@ function remove_unsupported_packages() {
   local rc=0
 
   if [ ${#deprecated_pkgs_to_remove_arr[@]} -gt 0 ]; then
-    erase_pkgs "${deprecated_pkgs_to_remove_arr[@]}" "$RETAIN_DEPRECATED_PKGS"
+    erase_pkgs "${deprecated_pkgs_to_remove_arr[*]}" "$RETAIN_DEPRECATED_PKGS"
     rc=$?
     if [ $rc -ne 0 ]; then
       abort $ERETRY_EAGAIN "Could not erase all unsupported packages (tdnf error code: $rc)."
@@ -747,7 +747,7 @@ function do_ph4_to_ph4_update() {
   # will be replaced by those packages which are named in corresponding values
   removed_pkgs_list+=( $(find_extra_erased_pkgs ${!old_new_pkg_map[@]}) )
   backup_configs $TMP_BACKUP_LOC ${removed_pkgs_list[@]} ${!old_new_pkg_map[@]}
-  erase_pkgs "${!old_new_pkg_map[@]}"
+  erase_pkgs "${!old_new_pkg_map[*]}"
   if [ ${#cleanup_residual_files_map[@]} -gt 0 ]; then
     for i in ${!cleanup_residual_files_map[@]}; do
       echo "Executing '${cleanup_residual_files_map[$i]}' for cleanup."

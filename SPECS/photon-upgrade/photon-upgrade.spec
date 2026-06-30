@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -52,6 +52,9 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Tue Jun 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-4
+- Pass package arrays correctly to erase_pkgs() by using '*' array
+  expansion for replaced and unsupported package removal.
 * Thu Jun 25 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-3
 - Use distro-sync with allow erasing option
 - Remove deprecated packages post upgrade
