@@ -3,7 +3,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.90
-Release:        4.1%{?dist}
+Release:        4.2%{?dist}
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
 Vendor:         VMware, Inc.
@@ -16,6 +16,12 @@ Source1: license.txt
 
 Patch0:         enable_dnssec.patch
 Patch1:         0001-Fix-bounds-checking-in-check_ia.patch
+Patch2:         CVE-2026-2291.patch
+Patch3:         CVE-2026-4890.patch
+Patch4:         CVE-2026-4891.patch
+Patch5:         CVE-2026-4892.patch
+Patch6:         CVE-2026-4893.patch
+Patch7:         CVE-2026-5172.patch
 
 BuildRequires:  nettle-devel
 BuildRequires:  systemd-rpm-macros
@@ -97,6 +103,9 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Jul 01 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.90-4.2
+- Fix CVE-2026-2291, CVE-2026-4890, CVE-2026-4891, CVE-2026-4892,
+- CVE-2026-4893 and CVE-2026-5172
 * Wed May 27 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.90-4.1
 - Split and bumpup for 90
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.90-4
