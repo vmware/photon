@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mike Dalessio <mike.dalessio@gmail.com>
+Date: Wed, 10 Jun 2026 13:26:02 -0400
+Subject: [PATCH 2/5] fix(CRuby): use-after-free in Document#encoding= when
+ setter raises
+
+When Document#encoding= received input that made StringValueCStr
+raise (e.g. a string containing a null byte), the document's current
+encoding string had already been freed before the raise, leaving
+doc->encoding pointing at freed memory. A subsequent call to
+Document#encoding would then read invalid memory.
+
+Evaluate and duplicate the new encoding before freeing the old one, so
+the document is left in a consistent state if StringValueCStr raises.
+
+ref: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-5v8h-3h3q-446p
+
+Fixes: CVE-2026-57236
+
+[Shivani: backported to nokogiri-1.13.6; dropped the JRuby-only
+XmlDocument.java hunk since this package ships only the CRuby C
+extension]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ ext/nokogiri/xml_document.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/ext/nokogiri/xml_document.c b/ext/nokogiri/xml_document.c
+index 1af62ac..44adef4 100644
+--- a/ext/nokogiri/xml_document.c
++++ b/ext/nokogiri/xml_document.c
+@@ -210,13 +210,16 @@ static VALUE
+ set_encoding(VALUE self, VALUE encoding)
+ {
+   xmlDocPtr doc;
++  xmlChar *new_encoding;
+   Data_Get_Struct(self, xmlDoc, doc);
+ 
++  new_encoding = xmlStrdup((xmlChar *)StringValueCStr(encoding));
++
+   if (doc->encoding) {
+     xmlFree(DISCARD_CONST_QUAL_XMLCHAR(doc->encoding));
+   }
+ 
+-  doc->encoding = xmlStrdup((xmlChar *)StringValueCStr(encoding));
++  doc->encoding = new_encoding;
+ 
+   return encoding;
+ }

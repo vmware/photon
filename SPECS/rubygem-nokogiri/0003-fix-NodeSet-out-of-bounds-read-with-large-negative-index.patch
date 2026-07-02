@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mike Dalessio <mike.dalessio@gmail.com>
+Date: Wed, 10 Jun 2026 15:52:50 -0400
+Subject: [PATCH 1/5] fix(CRuby): out-of-bounds read in NodeSet#[] with large
+ negative index
+
+index_at checked the offset with abs((int)offset), truncating the
+64-bit index to 32 bits. A large negative index could pass the check
+but then be used at full width to read outside the node table. Compare
+the full-width offset against the bounds instead.
+
+ref: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-5prr-v3j2-97mh
+
+Fixes: CVE-2026-57235
+
+[Shivani: backported to nokogiri-1.13.6; dropped the JRuby-only
+XmlNodeSet.java hunk and test changes since this package ships only
+the CRuby C extension]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ ext/nokogiri/xml_node_set.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ext/nokogiri/xml_node_set.c b/ext/nokogiri/xml_node_set.c
+index 5670371..006fb41 100644
+--- a/ext/nokogiri/xml_node_set.c
++++ b/ext/nokogiri/xml_node_set.c
+@@ -297,7 +297,7 @@ index_at(VALUE self, long offset)
+ 
+   Data_Get_Struct(self, xmlNodeSet, node_set);
+ 
+-  if (offset >= node_set->nodeNr || abs((int)offset) > node_set->nodeNr) {
++  if (offset >= node_set->nodeNr || offset < -node_set->nodeNr) {
+     return Qnil;
+   }
+ 

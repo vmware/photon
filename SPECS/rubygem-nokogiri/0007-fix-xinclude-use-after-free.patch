@@ -1,0 +1,210 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mike Dalessio <mike.dalessio@gmail.com>
+Date: Tue, 16 Jun 2026 16:31:22 -0400
+Subject: [PATCH 5/5] fix: use-after-free in Node#do_xinclude
+
+libxml2's xmlXIncludeProcessTreeFlags() frees nodes in the processed
+subtree. With NOXINCNODE it frees the <xi:include> node itself, and in
+both branches it frees the include's children (such as <xi:fallback>
+and its descendants) and any namespaces declared on them. If one of
+those C structs was already wrapped by a live Ruby object, that object
+was left pointing at freed memory.
+
+Node#do_xinclude now takes a safe_copy: keyword argument, default
+true. When enabled, each top-level <xi:include> in the subtree is
+substituted via a defensive copy of itself, while the original node is
+unlinked from the document and pinned. libxml2 only ever frees the
+copy, so any Ruby wrapper for the original node (or its descendants or
+namespaces) keeps pointing at valid memory; as a consequence, a
+wrapped <xi:include>/<xi:fallback> ends up detached from the document
+rather than removed or converted in place.
+
+safe_copy: false processes the document in place, skipping the copy.
+It is faster, but only safe when nothing in the subtree has been
+exposed to Ruby, so Document.parse passes safe_copy: false since the
+document is freshly parsed.
+
+do_xinclude now also raises when called on an unlinked <xi:include>
+node, since there is no parent to receive the substituted content.
+
+ref: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-wfpw-mmfh-qq69
+
+Fixes: CVE-2026-57438
+Also fixes: BDSA-2026-15945 (Black Duck's advisory for the same use-after-free
+in XInclude processing)
+
+[Shivani: backported to nokogiri-1.13.6. This version has no
+Noko_Node_Get_Struct macro or noko_xml_node__process_xincludes/
+_noko_xml_node_xinclude_element_p helpers, so the C entry point was
+adapted directly on top of the existing process_xincludes()
+function using plain Data_Get_Struct, and the new
+safe_process_xinclude C method was registered as a protected method
+on Nokogiri::XML::Node the same way upstream does. Dropped the
+pure-Java backend changes (not shipped in this package) and test
+changes.]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ ext/nokogiri/xml_node.c      | 56 ++++++++++++++++++++++++++++++++----
+ lib/nokogiri/xml/document.rb |  5 ++--
+ lib/nokogiri/xml/node.rb     | 34 ++++++++++++++++++++--
+ 3 files changed, 84 insertions(+), 11 deletions(-)
+
+diff --git a/ext/nokogiri/xml_node.c b/ext/nokogiri/xml_node.c
+index 14f1a87..6ccd0c4 100644
+--- a/ext/nokogiri/xml_node.c
++++ b/ext/nokogiri/xml_node.c
+@@ -1844,17 +1844,14 @@ compare(VALUE self, VALUE _other)
+  * Loads and substitutes all xinclude elements below the node. The
+  * parser context will be initialized with +options+.
+  */
+-static VALUE
+-process_xincludes(VALUE self, VALUE options)
++static void
++xinclude_process_subtree(xmlNodePtr node, int options)
+ {
+   int rcode ;
+-  xmlNodePtr node;
+   VALUE error_list = rb_ary_new();
+ 
+-  Data_Get_Struct(self, xmlNode, node);
+-
+   xmlSetStructuredErrorFunc((void *)error_list, Nokogiri_error_array_pusher);
+-  rcode = xmlXIncludeProcessTreeFlags(node, (int)NUM2INT(options));
++  rcode = xmlXIncludeProcessTreeFlags(node, options);
+   xmlSetStructuredErrorFunc(NULL, NULL);
+ 
+   if (rcode < 0) {
+@@ -1867,11 +1864,57 @@ process_xincludes(VALUE self, VALUE options)
+       rb_raise(rb_eRuntimeError, "Could not perform xinclude substitution");
+     }
+   }
++}
++
++static VALUE
++process_xincludes(VALUE self, VALUE options)
++{
++  xmlNodePtr node;
++
++  Data_Get_Struct(self, xmlNode, node);
++
++  xinclude_process_subtree(node, (int)NUM2INT(options));
+ 
+   return self;
+ }
+ 
+ 
++/*
++ * call-seq:
++ *   safe_process_xinclude(options)
++ *
++ * Process this single <xi:include> node, substituting a defensive copy of it in its place so
++ * that libxml2 frees the copy instead of this node (or its descendants or namespaces). This node
++ * is unlinked from the document and pinned, so any Ruby wrapper for it keeps pointing at valid
++ * memory instead of memory that libxml2 may have freed during the substitution.
++ *
++ * Backported from nokogiri 1.19.4 to fix CVE-2026-57438 (GHSA-wfpw-mmfh-qq69).
++ */
++static VALUE
++safe_process_xinclude(VALUE self, VALUE options)
++{
++  xmlNodePtr node, copy;
++
++  Data_Get_Struct(self, xmlNode, node);
++
++  if (node->parent == NULL) {
++    rb_raise(rb_eRuntimeError, "cannot process XInclude on an unlinked <xi:include> node");
++  }
++
++  copy = xmlDocCopyNode(node, node->doc, 1);
++  if (copy == NULL) {
++    rb_raise(rb_eRuntimeError, "Could not copy node for xinclude substitution");
++  }
++
++  xmlReplaceNode(node, copy);
++  noko_xml_document_pin_node(node);
++
++  xinclude_process_subtree(copy, (int)NUM2INT(options));
++
++  return Qnil;
++}
++
++
+ /* TODO: DOCUMENT ME */
+ static VALUE
+ in_context(VALUE self, VALUE _str, VALUE _options)
+@@ -2138,6 +2181,7 @@ noko_init_xml_node()
+   rb_define_private_method(cNokogiriXmlNode, "replace_node", replace, 1);
+   rb_define_private_method(cNokogiriXmlNode, "set", set, 2);
+   rb_define_private_method(cNokogiriXmlNode, "set_namespace", set_namespace, 1);
++  rb_define_protected_method(cNokogiriXmlNode, "safe_process_xinclude", safe_process_xinclude, 1);
+ 
+   id_decorate      = rb_intern("decorate");
+   id_decorate_bang = rb_intern("decorate!");
+diff --git a/lib/nokogiri/xml/document.rb b/lib/nokogiri/xml/document.rb
+index d97cd3b..db00457 100644
+--- a/lib/nokogiri/xml/document.rb
++++ b/lib/nokogiri/xml/document.rb
+@@ -72,8 +72,9 @@ module Nokogiri
+           read_memory(string_or_io, url, encoding, options.to_i)
+         end
+ 
+-        # do xinclude processing
+-        doc.do_xinclude(options) if options.xinclude?
++        # do xinclude processing; the document is freshly parsed and unexposed to Ruby, so the
++        # defensive copy is unnecessary
++        doc.do_xinclude(options, safe_copy: false) if options.xinclude?
+ 
+         doc
+       end
+diff --git a/lib/nokogiri/xml/node.rb b/lib/nokogiri/xml/node.rb
+index c90dea6..268729a 100644
+--- a/lib/nokogiri/xml/node.rb
++++ b/lib/nokogiri/xml/node.rb
+@@ -354,16 +354,44 @@ module Nokogiri
+         set_namespace(ns)
+       end
+ 
++      # :nodoc:
++      XINCLUDE_NAMESPACES = {
++        "xi2001" => "http://www.w3.org/2001/XInclude",
++        "xi2003" => "http://www.w3.org/2003/XInclude",
++      }.freeze
++
++      # :nodoc:
++      # every top-level <xi:include> in the subtree, in either XInclude namespace, excluding
++      # includes nested inside another include's fallback (libxml2 only expands those if the
++      # parent include fails)
++      XINCLUDE_QUERY =
++        "descendant-or-self::xi2001:include[not(ancestor::xi2001:include) and not(ancestor::xi2003:include)] | " \
++        "descendant-or-self::xi2003:include[not(ancestor::xi2001:include) and not(ancestor::xi2003:include)]"
++
+       ###
+       # Do xinclude substitution on the subtree below node. If given a block, a
+       # Nokogiri::XML::ParseOptions object initialized from +options+, will be
+       # passed to it, allowing more convenient modification of the parser options.
+-      def do_xinclude(options = XML::ParseOptions::DEFAULT_XML)
++      #
++      # When +safe_copy+ is true (the default), each top-level <xi:include> is processed on a
++      # defensive copy of itself so that libxml2 does not free memory that may already be
++      # wrapped by a live Ruby object. Pass +safe_copy: false+ to process the subtree in place,
++      # which is faster but only safe when nothing in the subtree has been exposed to Ruby (for
++      # example, immediately after parsing).
++      def do_xinclude(options = XML::ParseOptions::DEFAULT_XML, safe_copy: true)
+         options = Nokogiri::XML::ParseOptions.new(options) if Integer === options
+         yield options if block_given?
+ 
+-        # call c extension
+-        process_xincludes(options.to_i)
++        if safe_copy
++          xpath(XINCLUDE_QUERY, XINCLUDE_NAMESPACES).each do |include_node|
++            include_node.safe_process_xinclude(options.to_i)
++          end
++        else
++          # call c extension
++          process_xincludes(options.to_i)
++        end
++
++        self
+       end
+ 
+       alias_method :next, :next_sibling

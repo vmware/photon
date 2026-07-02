@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mike Dalessio <mike.dalessio@gmail.com>
+Date: Mon, 15 Jun 2026 15:02:55 -0400
+Subject: [PATCH 4/5] fix(CRuby): use-after-free in XPathContext document
+ lifetime
+
+XPathContext referenced its document only through the underlying
+libxml2 context struct, and never marked the Ruby document for GC, so
+the document could be freed by the garbage collector while the
+context was still in use. Evaluating an expression on such a context
+could then read freed memory.
+
+Add a mark function that keeps the source document reachable for as
+long as the XPathContext itself is reachable.
+
+ref: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-p67v-3w7g-wjg7
+
+Fixes: CVE-2026-57437
+
+[Shivani: backported to nokogiri-1.13.6, adapting the fix to this
+version's old-style Data_Wrap_Struct(klass, mark, free, data) API
+instead of the rb_data_type_t/TypedData struct used upstream; dropped
+test changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ ext/nokogiri/xml_xpath_context.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/ext/nokogiri/xml_xpath_context.c b/ext/nokogiri/xml_xpath_context.c
+index c481900..de48ad1 100644
+--- a/ext/nokogiri/xml_xpath_context.c
++++ b/ext/nokogiri/xml_xpath_context.c
+@@ -17,6 +17,17 @@ deallocate(xmlXPathContextPtr ctx)
+   NOKOGIRI_DEBUG_END(ctx);
+ }
+ 
++/* keep the source document alive for as long as this XPathContext is reachable, so that
++ * evaluating an expression can't read freed memory if the document has otherwise become
++ * unreachable. */
++static void
++mark(xmlXPathContextPtr ctx)
++{
++  if (ctx->doc && DOC_RUBY_OBJECT_TEST(ctx->doc)) {
++    rb_gc_mark(DOC_RUBY_OBJECT(ctx->doc));
++  }
++}
++
+ /* find a CSS class in an HTML element's `class` attribute */
+ static const xmlChar *
+ builtin_css_class(const xmlChar *str, const xmlChar *val)
+@@ -384,7 +395,7 @@ new (VALUE klass, VALUE nodeobj)
+   xmlXPathRegisterFuncNS(ctx, (const xmlChar *)"local-name-is", NOKOGIRI_BUILTIN_URI,
+                          xpath_builtin_local_name_is);
+ 
+-  self = Data_Wrap_Struct(klass, 0, deallocate, ctx);
++  self = Data_Wrap_Struct(klass, mark, deallocate, ctx);
+   return self;
+ }
+ 

@@ -1,0 +1,94 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mike Dalessio <mike.dalessio@gmail.com>
+Date: Sun, 14 Jun 2026 15:33:22 -0400
+Subject: [PATCH 3/5] fix(CRuby): avoid UAF in XML::Attr#value=
+
+Setting an attribute's value via Attr#value= (or #content=) freed the
+attribute's existing child node list unconditionally. If Ruby code had
+already accessed one of those child nodes, its wrapper was left
+pointing at freed memory.
+
+When replacing an attribute value, pin any existing child nodes that
+have already been wrapped by Ruby (unlink and hand them off to the
+document instead of freeing them), then use xmlNodeSetContent() to
+clear/set the remaining unwrapped content.
+
+ref: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-phwj-rprq-35pp
+
+Fixes: CVE-2026-57435
+
+[Shivani: backported to nokogiri-1.13.6; adapted to this codebase's
+plain Data_Get_Struct (no Noko_Node_Get_Struct macro exists in this
+version) and dropped test changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ ext/nokogiri/xml_attr.c | 45 +++++++++++++++++++++++++----------------
+ 1 file changed, 28 insertions(+), 17 deletions(-)
+
+diff --git a/ext/nokogiri/xml_attr.c b/ext/nokogiri/xml_attr.c
+index 63e5498..fe00fbc 100644
+--- a/ext/nokogiri/xml_attr.c
++++ b/ext/nokogiri/xml_attr.c
+@@ -13,34 +13,45 @@ static VALUE
+ set_value(VALUE self, VALUE content)
+ {
+   xmlAttrPtr attr;
+-  xmlChar *value;
+-  xmlNode *cur;
+ 
+   Data_Get_Struct(self, xmlAttr, attr);
+ 
+-  if (attr->children) {
+-    xmlFreeNodeList(attr->children);
++  {
++    /* Unlink and pin any already-wrapped children instead of freeing them, so that any live Ruby
++     * wrapper for a child node keeps pointing at valid memory. */
++    xmlNode *cur = attr->children;
++    xmlNode *next;
++
++    while (cur) {
++      next = cur->next;
++      if (cur->_private) {
++        xmlUnlinkNode(cur);
++        noko_xml_document_pin_node(cur);
++      }
++      cur = next;
++    }
+   }
+-  attr->children = attr->last = NULL;
+ 
+   if (content == Qnil) {
++    xmlNodeSetContent((xmlNodePtr)attr, NULL); /* Clear any remaining unwrapped children. */
+     return content;
+   }
+ 
+-  value = xmlEncodeEntitiesReentrant(attr->doc, (unsigned char *)StringValueCStr(content));
+-  if (xmlStrlen(value) == 0) {
+-    attr->children = xmlNewDocText(attr->doc, value);
+-  } else {
+-    attr->children = xmlStringGetNodeList(attr->doc, value);
+-  }
+-  xmlFree(value);
++  {
++    xmlChar *value = xmlEncodeEntitiesReentrant(attr->doc, (unsigned char *)StringValueCStr(content));
++
++    if (xmlStrlen(value) == 0) {
++      xmlNodeSetContent((xmlNodePtr)attr, NULL); /* Clear any remaining unwrapped children. */
+ 
+-  for (cur = attr->children; cur; cur = cur->next) {
+-    cur->parent = (xmlNode *)attr;
+-    cur->doc = attr->doc;
+-    if (cur->next == NULL) {
+-      attr->last = cur;
++      /* Preserve empty-string attributes as foo="" and not boolean foo */
++      attr->children = attr->last = xmlNewDocText(attr->doc, value);
++      if (attr->children) {
++        attr->children->parent = (xmlNode *)attr;
++      }
++    } else {
++      xmlNodeSetContent((xmlNodePtr)attr, value);
+     }
++    xmlFree(value);
+   }
+ 
+   return content;

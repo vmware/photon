@@ -4,7 +4,7 @@
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
 Version:        1.13.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -18,6 +18,17 @@ Patch0:         0001-Raise-RuntimeError-when-canonicalization-fails.patch
 # Remove this patch with nokogiri-1.19.3 upgrade
 Patch1:         0001-fix-ReDoS-in-CSS-tokenizer-STRING-rule.patch
 Patch2:         0002-fix-ReDoS-in-CSS-tokenizer-ident-rule.patch
+# Remove these patches with nokogiri-1.19.4 upgrade
+# Fix CVE-2026-57235
+Patch3:         0003-fix-NodeSet-out-of-bounds-read-with-large-negative-index.patch
+# Fix CVE-2026-57236
+Patch4:         0004-fix-Document-encoding-use-after-free.patch
+# Fix CVE-2026-57435
+Patch5:         0005-fix-xml-attr-value-use-after-free.patch
+# Fix CVE-2026-57437
+Patch6:         0006-fix-xpath-context-document-use-after-free.patch
+# Fix CVE-2026-57438
+Patch7:         0007-fix-xinclude-use-after-free.patch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-mini_portile2
@@ -47,6 +58,8 @@ Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features
 %{gem_base}
 
 %changelog
+*   Thu Jul 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.6-4
+-   Fix CVE-2026-57235, CVE-2026-57236, CVE-2026-57435, CVE-2026-57437 and CVE-2026-57438
 *   Tue May 12 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.6-3
 -   Fixing ReDoS in CSS tokenizer rule
 *   Mon Feb 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.13.6-2
