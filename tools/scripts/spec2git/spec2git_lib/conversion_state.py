@@ -52,6 +52,13 @@ class ConversionState:
     use_git_apply: bool = False
     cmd_str: str = ""
 
+    # CLI-provided git source override for Source0. When both are set, they
+    # take priority over any repo_url/commit_id found in config.yaml (and
+    # over --use-tarball, which only disables the config.yaml-derived
+    # autodetection) -- see Spec2GitWorkflow._check_source0_git_info.
+    cli_repo_url: Optional[str] = None
+    cli_repo_commit: Optional[str] = None
+
     # Patch control
     stop_before_patch: Optional[str] = None
     resume: bool = False

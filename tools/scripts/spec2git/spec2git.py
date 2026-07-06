@@ -55,6 +55,7 @@ SPEC TO GIT Examples:
   %(prog)s linux.spec --stop-before-patch Patch512
   %(prog)s linux.spec --use-tarball
   %(prog)s linux.spec --use-git-apply
+  %(prog)s gzip.spec --repo-url https://git.example.org/gzip.git --repo-commit v1.12
 
 GIT TO SPEC Examples:
   %(prog)s linux.spec --git2spec --git-repo /tmp/linux-git
@@ -83,6 +84,12 @@ GIT TO SPEC Examples:
                        help='[spec2git] Force overwrite existing output directory')
     parser.add_argument('--use-git-apply', action='store_true',
                        help='[spec2git] Use "git apply" instead of "patch" command')
+    parser.add_argument('--repo-url',
+                       help='[spec2git] Upstream git repo URL for Source0, overriding '
+                            'config.yaml (and --use-tarball). Must be paired with --repo-commit')
+    parser.add_argument('--repo-commit',
+                       help='[spec2git] Tag/commit to check out from --repo-url, matching '
+                            'the package\'s current Version. Must be paired with --repo-url')
 
     # Git2Spec options
     parser.add_argument('--git-repo',
@@ -102,6 +109,9 @@ GIT TO SPEC Examples:
 
     args = parser.parse_args()
     setup_logging(args.verbose)
+
+    if bool(args.repo_url) != bool(args.repo_commit):
+        parser.error("--repo-url and --repo-commit must be given together")
 
     try:
         if args.git2spec:
@@ -141,6 +151,8 @@ GIT TO SPEC Examples:
                 target_arch=args.arch,
                 use_git_apply=args.use_git_apply,
                 cmd_str=' '.join(sys.argv[0:]),
+                repo_url=args.repo_url,
+                repo_commit=args.repo_commit,
             )
             success = converter.run()
 

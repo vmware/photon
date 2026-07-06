@@ -36,7 +36,9 @@ class Spec2Git:
                  force: bool = False,
                  target_arch: Optional[str] = None,
                  use_git_apply: bool = False,
-                 cmd_str: str = ""):
+                 cmd_str: str = "",
+                 repo_url: Optional[str] = None,
+                 repo_commit: Optional[str] = None):
         """
         Initialize Spec2Git converter
 
@@ -52,12 +54,19 @@ class Spec2Git:
             target_arch: Target architecture (e.g., x86_64, aarch64)
             use_git_apply: Use 'git apply' instead of 'patch' command
             cmd_str: Command string used to invoke spec2git
+            repo_url: Upstream git repo URL to use for Source0, overriding
+                config.yaml (and --use-tarball). Must be paired with repo_commit.
+            repo_commit: Tag/commit to check out from repo_url, matching the
+                package's current Version. Must be paired with repo_url.
         Raises:
             ValidationError: If inputs are invalid
         """
         # Validate inputs
         validate_spec2git_inputs(spec_file, output_dir, macros,
                                 stop_before_patch)
+
+        if bool(repo_url) != bool(repo_commit):
+            raise ValidationError("--repo-url and --repo-commit must be given together")
 
         # Setup logging
         self.logger = self._setup_logging(verbose)
@@ -74,6 +83,8 @@ class Spec2Git:
         self.target_arch = target_arch
         self.use_git_apply = use_git_apply
         self.cmd_str = cmd_str
+        self.repo_url = repo_url
+        self.repo_commit = repo_commit
 
         # Normalize patch parameters
         if self.stop_before_patch and not self.stop_before_patch.startswith('Patch'):
@@ -100,6 +111,8 @@ class Spec2Git:
                 target_arch=self.target_arch,
                 use_git_apply=self.use_git_apply,
                 cmd_str=self.cmd_str,
+                cli_repo_url=self.repo_url,
+                cli_repo_commit=self.repo_commit,
             )
 
             # Create and execute workflow

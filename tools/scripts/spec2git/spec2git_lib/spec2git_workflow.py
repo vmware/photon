@@ -211,6 +211,15 @@ class Spec2GitWorkflow(BaseWorkflow):
         downloaded = {}
 
         for source_num, source_name in self.context.state.sources.items():
+            # A CLI-provided --repo-url/--repo-commit pair for Source0 means
+            # the caller already knows how to get the source and doesn't
+            # need (or may not even have) a downloadable tarball -- skip the
+            # tarball lookup entirely rather than risk it hanging/failing on
+            # an unreachable or nonexistent URL.
+            if source_num == 0 and self.context.state.cli_repo_url and self.context.state.cli_repo_commit:
+                self._check_source0_git_info(source_name)
+                continue
+
             try:
                 source_path = self.context.source_handler.find_source_file(source_name)
                 downloaded[source_num] = source_path
@@ -227,14 +236,31 @@ class Spec2GitWorkflow(BaseWorkflow):
 
     def _check_source0_git_info(self, source_name: str):
         """Check if Source0 should use git clone"""
-        if self.context.state.use_tarball:
-            return
-
         # Extract filename from URL if source_name is a URL
         if source_name.startswith(('http://', 'https://', 'ftp://')):
             filename = os.path.basename(source_name)
         else:
             filename = source_name
+
+        # CLI-provided repo info always wins, and applies even under
+        # --use-tarball (which only disables the config.yaml-derived
+        # autodetection below).
+        if self.context.state.cli_repo_url and self.context.state.cli_repo_commit:
+            self.logger.info(
+                f"Using CLI-provided git repository for Source0: "
+                f"{self.context.state.cli_repo_url}@{self.context.state.cli_repo_commit}"
+            )
+            self._update_context(
+                source0_git_info={
+                    'repo_url': self.context.state.cli_repo_url,
+                    'commit_id': self.context.state.cli_repo_commit,
+                    'filename': filename,
+                }
+            )
+            return
+
+        if self.context.state.use_tarball:
+            return
 
         # Look for git info in config.yaml
         for source in self.context.state.config_yaml_data.get('sources', []):
