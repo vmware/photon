@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 90
 
 %global _default_patch_fuzz 2
 %global debug_package       %{nil}
@@ -6,7 +6,7 @@
 Summary:        OpenLdap-2.6.4
 Name:           openldap
 Version:        2.6.4
-Release:        6%{?dist}
+Release:        5.1.1%{?dist}
 URL:            https://www.openldap.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -185,8 +185,8 @@ rm -rf %{buildroot}/*
 %dir %attr(-,ldap,ldap) %{_sharedstatedir}/%{name}
 
 %changelog
-* Mon Jul 06 2026 Dweep Advani <dweep.advani@broadcom.com> 2.6.4-6
-- Bump for correcting linker cache for perl 5.42.2 and subrelease for 90
+* Fri Jul 10 2026 Dweep Advani <dweep.advani@broadcom.com> 2.6.4-5.1.1
+- Subrelease to 90 while fixing linker cache issue in 91
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.6.4-5
 - Add missing shadow dependency for user creation
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.6.4-4

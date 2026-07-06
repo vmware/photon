@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 90
 
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.2.7
-Release:        8%{?dist}
+Release:        5.2.1%{?dist}
 URL:            http://www.keepalived.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -102,12 +102,12 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
-* Mon Jul 06 2026 Dweep Advani <dweep.advani@broadcom.com> 2.2.7-8
-- Bump for correcting linker cache for perl 5.42.2
-* Thu May 28 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.2.7-7
+* Fri Jul 10 2026 Dweep Advani <dweep.advani@broadcom.com> 2.2.7-5.2.1
+- Subrelease to 90 while fixing linker cache issue in 91
+* Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.2.7-5.2
 - Drop unzip BuildRequires; not needed for tar.gz source
-* Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.7-6
-- Bump version to keep version higher than 91
+* Thu May 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.2.7-5.1
+- Bump after moving to SPECS/91
 * Fri Jan 02 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.2.7-5
 - Bump up as part of net-snmp update
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.2.7-4
