@@ -1,7 +1,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
 Version:        23.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -35,6 +35,7 @@ Requires:       python3-cryptography
 Requires:       python3-six
 
 Patch0: CVE-2026-27459.patch
+Patch1: CVE-2026-40475.patch
 
 BuildArch:      noarch
 
@@ -61,6 +62,8 @@ LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jul 06 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.2.0-4
+- Fix CVE-2026-40475
 * Thu Apr 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 23.2.0-3
 - Fix CVE-2026-27459
 * Tue Dec 19 2023 Prashant S Chauhan <psingchauha@vmware.com> 23.2.0-2
