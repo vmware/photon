@@ -1,6 +1,6 @@
-From ad23f508894e590faa499c6c98e1a20a3c2fb090 Mon Sep 17 00:00:00 2001
+From 2886718713d9e2021c0c4c10289cc2e13b0b1e25 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Fri, 3 Feb 2017 07:11:28 -0800
+Date: Tue, 7 Jul 2026 05:33:59 +0000
 Subject: [PATCH] Added rap_plugin
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
@@ -46,7 +46,6 @@ Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
  arch/x86/kernel/traps.c                       |   4 +
  arch/x86/xen/xen-asm.S                        |   8 +-
  drivers/char/tpm/tpm-chip.c                   |   9 +-
- drivers/firmware/dmi-id.c                     |   7 +-
  drivers/net/ethernet/brocade/bna/bfa_cs.h     |  42 +-
  drivers/net/ethernet/brocade/bna/bfa_ioc.c    |  10 +-
  drivers/net/ethernet/brocade/bna/bfa_ioc.h    |   4 +-
@@ -69,7 +68,7 @@ Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
  drivers/scsi/bfa/bfad.c                       |  12 +-
  drivers/scsi/bfa/bfad_drv.h                   |   5 +-
  drivers/scsi/csiostor/csio_defs.h             |  19 +-
- drivers/scsi/csiostor/csio_hw.c               |  69 +-
+ drivers/scsi/csiostor/csio_hw.c               |  69 ++-
  drivers/scsi/csiostor/csio_init.c             |   2 +-
  drivers/scsi/csiostor/csio_lnode.c            |  32 +-
  drivers/scsi/csiostor/csio_rnode.c            |  28 +-
@@ -81,7 +80,7 @@ Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
  fs/nfs/read.c                                 |   2 +-
  fs/nfs/symlink.c                              |   4 +-
  include/linux/compiler_types.h                |   4 +
- include/linux/linkage.h                       |  35 +
+ include/linux/linkage.h                       |  35 ++
  include/linux/moduleparam.h                   |   4 +-
  include/linux/pagemap.h                       |   2 +-
  include/linux/pci.h                           |   2 +-
@@ -100,13 +99,13 @@ Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
  scripts/Makefile.gcc-plugins                  |  12 +
  scripts/gcc-plugins/Makefile                  |   4 +-
  scripts/gcc-plugins/rap_plugin/rap.h          |  36 ++
- .../gcc-plugins/rap_plugin/rap_fptr_pass.c    | 224 +++++++
- scripts/gcc-plugins/rap_plugin/rap_hash.c     | 396 ++++++++++++
- scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 539 ++++++++++++++++
- scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
+ .../gcc-plugins/rap_plugin/rap_fptr_pass.c    | 224 ++++++++
+ scripts/gcc-plugins/rap_plugin/rap_hash.c     | 396 +++++++++++++
+ scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 539 ++++++++++++++++++
+ scripts/gcc-plugins/rap_plugin/sip.c          |  96 ++++
  scripts/mod/modpost.c                         |   7 -
  security/Kconfig                              |  18 +
- 96 files changed, 2363 insertions(+), 541 deletions(-)
+ 95 files changed, 2014 insertions(+), 284 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -626,7 +625,7 @@ index 3baa1ec39..b888ca542 100644
  	pushq   %rbx
  	pushq   %r12
 diff --git a/arch/x86/crypto/sha256-avx2-asm.S b/arch/x86/crypto/sha256-avx2-asm.S
-index 3439aaf42..c672bc079 100644
+index 81c805315..0018d8dff 100644
 --- a/arch/x86/crypto/sha256-avx2-asm.S
 +++ b/arch/x86/crypto/sha256-avx2-asm.S
 @@ -525,7 +525,7 @@ STACK_SIZE	= _RSP      + _RSP_SIZE
@@ -925,7 +924,7 @@ index e8f58ddd0..e872a7966 100644
  extern void e820__range_add   (u64 start, u64 size, enum e820_type type);
  extern u64  e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type);
 diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index c6015b407..619de0626 100644
+index 7281ce64e..9b2ca7e25 100644
 --- a/arch/x86/include/asm/text-patching.h
 +++ b/arch/x86/include/asm/text-patching.h
 @@ -50,6 +50,10 @@ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void
@@ -968,10 +967,10 @@ index 75884d2cd..266f5ce89 100644
 +
  #endif /* _ASM_VERMAGIC_H */
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 00aa43a9c..52b66e97a 100644
+index 30dc73210..e6c011c69 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -1318,6 +1318,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+@@ -1552,6 +1552,13 @@ void *text_poke(void *addr, const void *opcode, size_t len)
  	return __text_poke(addr, opcode, len);
  }
  
@@ -1009,7 +1008,7 @@ index 124ea6860..d041d7e75 100644
  	if (vmware_tsc_khz == 0)
  		return;
 diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-index 7f57110f9..b00d2f8f9 100644
+index bebaeb9ef..933e5e5c9 100644
 --- a/arch/x86/kernel/e820.c
 +++ b/arch/x86/kernel/e820.c
 @@ -145,7 +145,7 @@ static struct e820_entry *__e820__mapped_all(u64 start, u64 end,
@@ -1035,7 +1034,7 @@ index 5b2dabedc..3f23b433e 100644
  	RET
  SYM_FUNC_END(ftrace_epilogue)
 diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index 455e19584..53e33da34 100644
+index 1ab8e583c..4ac7f8e49 100644
 --- a/arch/x86/kernel/module.c
 +++ b/arch/x86/kernel/module.c
 @@ -226,7 +226,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
@@ -1052,10 +1051,10 @@ index 455e19584..53e33da34 100644
  	if (!early) {
  		write = text_poke;
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index f0e4ad859..7e1b03a9a 100644
+index 9d91061b8..ade4c41d7 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
-@@ -259,6 +259,10 @@ struct pv_info pv_info = {
+@@ -257,6 +257,10 @@ struct pv_info pv_info = {
  /* 64-bit pagetable entries */
  #define PTE_IDENT	__PV_IS_CALLEE_SAVE(_paravirt_ident_64)
  
@@ -1066,7 +1065,7 @@ index f0e4ad859..7e1b03a9a 100644
  struct paravirt_patch_template pv_ops = {
  	/* Init ops. */
  	.init.patch		= native_patch,
-@@ -324,8 +328,7 @@ struct paravirt_patch_template pv_ops = {
+@@ -321,8 +325,7 @@ struct paravirt_patch_template pv_ops = {
  	.mmu.flush_tlb_kernel	= native_flush_tlb_global,
  	.mmu.flush_tlb_one_user	= native_flush_tlb_one_user,
  	.mmu.flush_tlb_others	= native_flush_tlb_others,
@@ -1092,10 +1091,10 @@ index 98838b784..1adac5037 100644
  	}
  
 diff --git a/arch/x86/xen/xen-asm.S b/arch/x86/xen/xen-asm.S
-index e3031afcb..e428faabe 100644
+index 620c80499..0a1b8f1f0 100644
 --- a/arch/x86/xen/xen-asm.S
 +++ b/arch/x86/xen/xen-asm.S
-@@ -27,7 +27,7 @@
+@@ -49,7 +49,7 @@ SYM_FUNC_END(xen_hypercall_pv)
   * event status with one and operation.  If there are pending events,
   * then enter the hypervisor to get them handled.
   */
@@ -1104,7 +1103,7 @@ index e3031afcb..e428faabe 100644
  	FRAME_BEGIN
  	/* Unmask events */
  	movb $0, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
-@@ -53,7 +53,7 @@ SYM_FUNC_END(xen_irq_enable_direct)
+@@ -75,7 +75,7 @@ SYM_FUNC_END(xen_irq_enable_direct)
   * Disabling events is simply a matter of making the event mask
   * non-zero.
   */
@@ -1113,7 +1112,7 @@ index e3031afcb..e428faabe 100644
  	movb $1, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
  	RET
  SYM_FUNC_END(xen_irq_disable_direct)
-@@ -67,7 +67,7 @@ SYM_FUNC_END(xen_irq_disable_direct)
+@@ -89,7 +89,7 @@ SYM_FUNC_END(xen_irq_disable_direct)
   * undefined.  We need to toggle the state of the bit, because Xen and
   * x86 use opposite senses (mask vs enable).
   */
@@ -1122,7 +1121,7 @@ index e3031afcb..e428faabe 100644
  	testb $0xff, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
  	setz %ah
  	addb %ah, %ah
-@@ -82,7 +82,7 @@ SYM_FUNC_END(xen_save_fl_direct)
+@@ -104,7 +104,7 @@ SYM_FUNC_END(xen_save_fl_direct)
   * interrupt mask state, it checks for unmasked pending events and
   * enters the hypervisor to get them delivered if so.
   */
@@ -1132,10 +1131,10 @@ index e3031afcb..e428faabe 100644
  	testw $X86_EFLAGS_IF, %di
  	setz PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
 diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-index ed600473a..bf9a6a7c0 100644
+index 528ed3161..2c3cc6702 100644
 --- a/drivers/char/tpm/tpm-chip.c
 +++ b/drivers/char/tpm/tpm-chip.c
-@@ -373,6 +373,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
+@@ -371,6 +371,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
  }
  EXPORT_SYMBOL_GPL(tpm_chip_alloc);
  
@@ -1147,7 +1146,7 @@ index ed600473a..bf9a6a7c0 100644
  /**
   * tpmm_chip_alloc() - allocate a new struct tpm_chip instance
   * @pdev: parent device to which the chip is associated
-@@ -390,9 +395,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
+@@ -388,9 +393,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
  	if (IS_ERR(chip))
  		return chip;
  
@@ -1382,7 +1381,7 @@ index 2623a0da4..c05dc7a1c 100644
  
  	tx->flags |= BNA_TX_F_ENABLED;
 diff --git a/drivers/net/ethernet/brocade/bna/bna_types.h b/drivers/net/ethernet/brocade/bna/bna_types.h
-index 666b6922e..94261bb24 100644
+index ebf54d74c..7e5115edf 100644
 --- a/drivers/net/ethernet/brocade/bna/bna_types.h
 +++ b/drivers/net/ethernet/brocade/bna/bna_types.h
 @@ -312,8 +312,10 @@ struct bna_attr {
@@ -1468,7 +1467,7 @@ index 666b6922e..94261bb24 100644
  	enum bna_rx_type type;
  
 diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
-index 7e4e831d7..cd1586389 100644
+index 9ccfb038f..3dba835a9 100644
 --- a/drivers/net/ethernet/brocade/bna/bnad.c
 +++ b/drivers/net/ethernet/brocade/bna/bnad.c
 @@ -1092,8 +1092,9 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
@@ -1491,7 +1490,7 @@ index 7e4e831d7..cd1586389 100644
  {
  	struct bnad_rx_info *rx_info =
  		container_of(work, struct bnad_rx_info, rx_cleanup_work);
-@@ -1993,8 +1994,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
+@@ -1994,8 +1995,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
  	}
  	tx_info->tx = tx;
  
@@ -1501,7 +1500,7 @@ index 7e4e831d7..cd1586389 100644
  
  	/* Register ISR for the Tx object */
  	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
-@@ -2250,8 +2250,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
+@@ -2251,8 +2251,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
  	rx_info->rx = rx;
  	spin_unlock_irqrestore(&bnad->bna_lock, flags);
  
@@ -2152,7 +2151,7 @@ index 9c8310957..5a4ad66bc 100644
  	bfa_cb_diag_t	cbfn;
  	void		*cbarg;
 diff --git a/drivers/scsi/bfa/bfad.c b/drivers/scsi/bfa/bfad.c
-index 440ef32be..7e8a78443 100644
+index 45b5f83ad..73b39cfdc 100644
 --- a/drivers/scsi/bfa/bfad.c
 +++ b/drivers/scsi/bfa/bfad.c
 @@ -400,6 +400,16 @@ bfad_hcb_comp(void *arg, bfa_status_t status)
@@ -2621,7 +2620,7 @@ index 713e13adf..dcbdf1125 100644
  	int ret = 0;
  
 diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
-index 55e74da2f..fe018ae17 100644
+index e320ca291..12d2da1a5 100644
 --- a/drivers/scsi/csiostor/csio_scsi.c
 +++ b/drivers/scsi/csiostor/csio_scsi.c
 @@ -65,12 +65,12 @@ static int csio_ddp_descs = 128;
@@ -2717,7 +2716,7 @@ index 55e74da2f..fe018ae17 100644
  	case CSIO_SCSIE_ABORT:
  	case CSIO_SCSIE_CLOSE:
 diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
-index cce9ace65..4b61feaea 100644
+index 1ab795bf5..a98df6e39 100644
 --- a/fs/9p/vfs_addr.c
 +++ b/fs/9p/vfs_addr.c
 @@ -108,8 +108,7 @@ static int v9fs_vfs_readpages(struct file *filp, struct address_space *mapping,
@@ -2767,7 +2766,7 @@ index 960b64268..1a99eef5f 100644
  		}
  	}
 diff --git a/fs/afs/internal.h b/fs/afs/internal.h
-index 31c7a5621..047c1936b 100644
+index e53de4033..9995d64d6 100644
 --- a/fs/afs/internal.h
 +++ b/fs/afs/internal.h
 @@ -1048,7 +1048,7 @@ extern void afs_put_wb_key(struct afs_wb_key *);
@@ -2780,10 +2779,10 @@ index 31c7a5621..047c1936b 100644
  
  static inline struct afs_read *afs_get_read(struct afs_read *req)
 diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index 9f88ca7b2..9726acde3 100644
+index 75af96574..173a7d2e7 100644
 --- a/fs/nfs/dir.c
 +++ b/fs/nfs/dir.c
-@@ -160,7 +160,7 @@ typedef struct {
+@@ -161,7 +161,7 @@ typedef struct {
  	unsigned int	cache_entry_index;
  	bool plus;
  	bool eof;
@@ -2792,7 +2791,7 @@ index 9f88ca7b2..9726acde3 100644
  
  static
  void nfs_readdir_init_array(struct page *page)
-@@ -706,9 +706,9 @@ int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page,
+@@ -707,9 +707,9 @@ int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page,
   * We only need to convert from xdr once so future lookups are much simpler
   */
  static
@@ -2805,10 +2804,10 @@ index 9f88ca7b2..9726acde3 100644
  	int ret;
  
 diff --git a/fs/nfs/read.c b/fs/nfs/read.c
-index eb854f1f8..dc0f39b87 100644
+index 75334ba10..aeb30b419 100644
 --- a/fs/nfs/read.c
 +++ b/fs/nfs/read.c
-@@ -373,7 +373,7 @@ struct nfs_readdesc {
+@@ -369,7 +369,7 @@ struct nfs_readdesc {
  };
  
  static int
@@ -2834,10 +2833,10 @@ index 25ba299fd..c133ef0fd 100644
  
  	error = NFS_PROTO(inode)->readlink(inode, page, 0, PAGE_SIZE);
 diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index eb2bda017..9bb9256f2 100644
+index 88cc44572..cb38f0f70 100644
 --- a/include/linux/compiler_types.h
 +++ b/include/linux/compiler_types.h
-@@ -272,6 +272,10 @@ struct ftrace_likely_data {
+@@ -271,6 +271,10 @@ struct ftrace_likely_data {
  			 __scalar_type_to_expr_cases(long long),	\
  			 default: (x)))
  
@@ -2936,10 +2935,10 @@ index dbf8506de..4265db4e3 100644
  #ifndef SYM_DATA_LOCAL
  #define SYM_DATA_LOCAL(name, data...)			\
 diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
-index 6388eb973..27fd653b0 100644
+index 2c9d43eed..cf494c53f 100644
 --- a/include/linux/moduleparam.h
 +++ b/include/linux/moduleparam.h
-@@ -354,7 +354,7 @@ static inline void kernel_param_unlock(struct module *mod)
+@@ -353,7 +353,7 @@ static inline void kernel_param_unlock(struct module *mod)
   * @len is usually just sizeof(string).
   */
  #define module_param_string(name, string, len, perm)			\
@@ -2948,7 +2947,7 @@ index 6388eb973..27fd653b0 100644
  		= { len, string };					\
  	__module_param_call(MODULE_PARAM_PREFIX, name,			\
  			    &param_ops_string,				\
-@@ -511,7 +511,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
+@@ -512,7 +512,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
   */
  #define module_param_array_named(name, array, type, nump, perm)		\
  	param_check_##type(name, &(array)[0]);				\
@@ -2971,10 +2970,10 @@ index fcb3f0401..356aae0b0 100644
  pgoff_t page_cache_next_miss(struct address_space *mapping,
  			     pgoff_t index, unsigned long max_scan);
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index bf4645347..d6516e06e 100644
+index 8360b87ca..c159ebae9 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -179,7 +179,7 @@ static inline const char *pci_power_name(pci_power_t state)
+@@ -188,7 +188,7 @@ static inline const char *pci_power_name(pci_power_t state)
   */
  typedef unsigned int __bitwise pci_channel_state_t;
  
@@ -2984,7 +2983,7 @@ index bf4645347..d6516e06e 100644
  	pci_channel_io_normal = (__force pci_channel_state_t) 1,
  
 diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index 17a24e118..d9bd946d2 100644
+index 339a35aad..ddf4e094f 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
 @@ -117,9 +117,15 @@ struct open_how;
@@ -3005,9 +3004,9 @@ index 17a24e118..d9bd946d2 100644
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
  
-@@ -236,18 +242,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
- 	__diag_push();							\
- 	__diag_ignore(GCC, 8, "-Wattribute-alias",			\
+@@ -240,18 +246,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+ 		      "Avoid breaking versions without -Wattribute-alias");\
+ 	__diag_ignore(clang, 23, "-Wattribute-alias",			\
  		      "Type aliasing is used to sanitize syscall arguments");\
 -	asmlinkage long sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))	\
 -		__attribute__((alias(__stringify(__se_sys##name))));	\
@@ -3030,10 +3029,10 @@ index 17a24e118..d9bd946d2 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 33ea6ab12..526fe9c8e 100644
+index db613a97e..018177ff5 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -864,6 +864,8 @@ void __weak bpf_jit_free_exec(void *addr)
+@@ -868,6 +868,8 @@ void __weak bpf_jit_free_exec(void *addr)
  	module_memfree(addr);
  }
  
@@ -3042,7 +3041,7 @@ index 33ea6ab12..526fe9c8e 100644
  struct bpf_binary_header *
  bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  		     unsigned int alignment,
-@@ -896,11 +898,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -900,11 +902,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  	hdr->pages = pages;
  	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
  		     PAGE_SIZE - sizeof(*hdr));
@@ -3068,7 +3067,7 @@ index 33ea6ab12..526fe9c8e 100644
  }
  
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index bd569cf23..9501d2684 100644
+index c9cd1f622..d287c7df0 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
 @@ -1201,8 +1201,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
@@ -3083,10 +3082,10 @@ index bd569cf23..9501d2684 100644
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
 diff --git a/kernel/module.c b/kernel/module.c
-index 72a5dcdcc..d5ec230df 100644
+index c1b5e2d04..ffda9f922 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -3263,8 +3263,15 @@ static int setup_load_info(struct load_info *info, int flags)
+@@ -3259,8 +3259,15 @@ static int setup_load_info(struct load_info *info, int flags)
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -3102,7 +3101,7 @@ index 72a5dcdcc..d5ec230df 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -3299,7 +3306,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+@@ -3295,7 +3302,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  		return err;
  
  	/* Set up license info based on the info section */
@@ -3112,10 +3111,10 @@ index 72a5dcdcc..d5ec230df 100644
  	return 0;
  }
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 40f40f359..a690c7bc8 100644
+index bcb313b1e..e87e67e22 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3682,7 +3682,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+@@ -3681,7 +3681,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
  /* rq->lock is NOT held, but preemption is disabled */
  static void __balance_callback(struct rq *rq)
  {
@@ -3124,7 +3123,7 @@ index 40f40f359..a690c7bc8 100644
  	void (*func)(struct rq *rq);
  	unsigned long flags;
  
-@@ -3690,7 +3690,7 @@ static void __balance_callback(struct rq *rq)
+@@ -3689,7 +3689,7 @@ static void __balance_callback(struct rq *rq)
  	head = rq->balance_callback;
  	rq->balance_callback = NULL;
  	while (head) {
@@ -3134,7 +3133,7 @@ index 40f40f359..a690c7bc8 100644
  		head->next = NULL;
  		head = next;
 diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index d91295d30..70a92f2a6 100644
+index 6548bd90c..22e97b86a 100644
 --- a/kernel/sched/deadline.c
 +++ b/kernel/sched/deadline.c
 @@ -569,8 +569,8 @@ static inline bool need_pull_dl_task(struct rq *rq, struct task_struct *prev)
@@ -3149,7 +3148,7 @@ index d91295d30..70a92f2a6 100644
  static void push_dl_tasks(struct rq *);
  static void pull_dl_task(struct rq *);
 diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 1289991c9..3a187063b 100644
+index 2c49da905..eb0208f44 100644
 --- a/kernel/sched/rt.c
 +++ b/kernel/sched/rt.c
 @@ -359,8 +359,8 @@ static inline int has_pushable_tasks(struct rq *rq)
@@ -3164,7 +3163,7 @@ index 1289991c9..3a187063b 100644
  static void push_rt_tasks(struct rq *);
  static void pull_rt_task(struct rq *);
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 8de07aba8..1c7f47008 100644
+index 2a43d95da..e636f4270 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
 @@ -975,7 +975,10 @@ struct rq {
@@ -3198,7 +3197,7 @@ index 8de07aba8..1c7f47008 100644
  	rq->balance_callback = head;
  }
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 3b0d8c6dd..e310d795a 100644
+index b98af5680..31050e591 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -2996,7 +2996,7 @@ static struct page *wait_on_page_read(struct page *page)
@@ -3233,10 +3232,10 @@ index d30bcf4bc..23005c91f 100644
  	struct page *page;
  	int ret = 0;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 2b88b17cc..b6484a493 100644
+index 68726bf9c..13a031b84 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -757,7 +757,8 @@ rx_handler_func_t *br_get_rx_handler(const struct net_device *dev);
+@@ -760,7 +760,8 @@ rx_handler_func_t *br_get_rx_handler(const struct net_device *dev);
  
  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
  {
@@ -3247,10 +3246,10 @@ index 2b88b17cc..b6484a493 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index cc04c4d79..e524e0548 100644
+index cf827d725..e7b40c6c9 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
-@@ -391,7 +391,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
+@@ -397,7 +397,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
  	rcu_assign_pointer(comment->c, NULL);
  }
  
@@ -4631,10 +4630,10 @@ index 000000000..65bc1cdea
 +	U64TO8_LE(out, b);
 +}
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 78ac98cfa..860894b20 100644
+index 379d03d0c..22087f1fc 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -2202,13 +2202,6 @@ static int check_exports(struct module *mod)
+@@ -2206,13 +2206,6 @@ static int check_exports(struct module *mod)
  		const char *basename;
  		exp = find_symbol(s->name);
  		if (!exp || exp->module == mod) {
@@ -4649,13 +4648,13 @@ index 78ac98cfa..860894b20 100644
  		}
  		basename = strrchr(mod->name, '/');
 diff --git a/security/Kconfig b/security/Kconfig
-index f603230c6..2bf1eb4d3 100644
+index 2faa8955c..ac7006153 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -95,6 +95,24 @@ config PAX_XATTR_PAX_FLAGS
-
+ 
  endif
-
+ 
 +config PAX_RAP
 +	bool "Prevent code reuse attacks"
 +	depends on X86_64 && GCC_PLUGINS
@@ -4675,8 +4674,8 @@ index f603230c6..2bf1eb4d3 100644
 +	  headers explicitly in addition to the normal gcc package.
 +
  config PAX_RANDKSTACK
-	bool "Randomize kernel stack base"
-	depends on X86_TSC && X86
---
-2.39.0
+ 	bool "Randomize kernel stack base"
+ 	depends on X86_TSC && X86
+-- 
+2.53.0
 

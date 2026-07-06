@@ -25,8 +25,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.258
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        5.10.260
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=41cbb70f7acd77014c39902364499ed628e5168314dae158f3e0b54f708aa4b4e0e87eb93780351d645bb3047a0bfd9f5b5e8e6119fd23c10653dc51614b04a4
+%define sha512 linux=37954bf006cb68fbeff174cb1ad9dbcd67d8ef7898c99d477031e33bdb4826c8ca75723d2fe8d3dff98e217057d3538d8eb7a12dd7bc3c6e48baf5a1bee56a3b
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -870,6 +870,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Jul 06 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.260-1
+- Update to version 5.10.260
 * Fri Jun 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.258-8
 - Fix CVE-2026-46116
 * Tue Jun 23 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.258-7

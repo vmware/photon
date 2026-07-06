@@ -366,10 +366,6 @@ Patch3146: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
 # CVE-2023-53282
 Patch3147: 0001-scsi-lpfc-Fix-use-after-free-KFENCE-violation-during.patch
 
-# CVE-2025-38129
-Patch3148: 0001-page_pool-fix-inconsistency-for-page_pool_ring_-un-l.patch
-Patch3149: 0002-page_pool-Fix-use-after-free-in-page_pool_recycle_in.patch
-
 # CVE-2022-49622
 Patch3150: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
 Patch3151: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
@@ -429,12 +425,6 @@ Patch3172: 0001-ceph-fix-NULL-pointer-dereference-in-ceph_mds_auth_m.patch
 Patch3173: 0001-netfilter-nf_tables-register-hooks-last-when-adding-.patch
 Patch3174: 0002-netfilter-nf_tables-fix-use-after-free-in-nf_tables_.patch
 
-# Fix CVE-2026-45850
-Patch3175: 0001-ipvs-skip-ipv6-extension-headers-for-csum-checks.patch
-
-# Fix CVE-2026-46191
-Patch3176: 0001-fbcon-Avoid-OOB-font-access-if-console-rotation-fails.patch
-
 # Fix CVE-2026-43304
 Patch3177: 0001-libceph-define-and-enforce-CEPH_MAX_KEY_LEN.patch
 
@@ -450,13 +440,6 @@ Patch3181: 0001-libceph-Fix-slab-out-of-bounds-access-in-auth-messag.patch
 
 # Fix CVE-2024-26904
 Patch3182: 0001-btrfs-fix-data-race-at-btrfs_use_block_rsv.patch
-
-# Fix CVE-2026-23099
-Patch3183: 0001-bonding-limit-BOND_MODE_8023AD-to-Ethernet-devices.patch
-
-# Fix CVE-2026-23204
-Patch3184: 0001-net-add-skb_header_pointer_careful-helper.patch
-Patch3185: 0002-net-sched-cls_u32-use-skb_header_pointer_careful.patch
 
 # CVE-2026-23221
 Patch3186: 0001-bus-fsl-mc-Replace-snprintf-and-sprintf-with-sysfs_e.patch

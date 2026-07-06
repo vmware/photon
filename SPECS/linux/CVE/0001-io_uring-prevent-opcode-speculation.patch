@@ -1,6 +1,6 @@
-From 4d199de6518963b3413871117a9eafae24499e5b Mon Sep 17 00:00:00 2001
+From d482b9292164333e86c61d29d558b0a2d40b5eeb Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <ajay.kaher@broadcom.com>
-Date: Thu, 27 Mar 2025 13:07:11 +0000
+Date: Mon, 6 Jul 2026 07:25:32 +0000
 Subject: [PATCH] io_uring: prevent opcode speculation
 
 commit 1e988c3fe1264708f4f92109203ac5b1d65de50b upstream.
@@ -19,14 +19,14 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
        - modified to apply on v5.10.y]
 Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
 ---
- io_uring/io_uring.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ io_uring/io_uring.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
-index 4e86da84f..284b72dcd 100644
+index 01eff1694..97d431885 100644
 --- a/io_uring/io_uring.c
 +++ b/io_uring/io_uring.c
-@@ -7165,9 +7165,10 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+@@ -7178,9 +7178,10 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
  	struct io_submit_state *state;
  	unsigned int sqe_flags;
  	int personality, ret = 0;
@@ -38,7 +38,7 @@ index 4e86da84f..284b72dcd 100644
  	/* same numerical values with corresponding REQ_F_*, safe to copy */
  	req->flags = sqe_flags = READ_ONCE(sqe->flags);
  	req->user_data = READ_ONCE(sqe->user_data);
-@@ -7175,16 +7176,21 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+@@ -7188,18 +7189,24 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
  	req->fixed_rsrc_refs = NULL;
  	req->task = current;
  
@@ -54,6 +54,9 @@ index 4e86da84f..284b72dcd 100644
 +	if (unlikely(opcode >= IORING_OP_LAST)) {
  		return -EINVAL;
 +	}
++
+ 	req->opcode = array_index_nospec(req->opcode, IORING_OP_LAST);
+ 
  	if (!io_check_restriction(ctx, req, sqe_flags))
  		return -EACCES;
  
@@ -63,7 +66,7 @@ index 4e86da84f..284b72dcd 100644
  		return -EOPNOTSUPP;
  	if (unlikely(sqe_flags & IOSQE_IO_DRAIN))
  		ctx->drain_active = true;
-@@ -7204,12 +7210,12 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+@@ -7219,12 +7226,12 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
  	 * is potentially a read/write to block based storage.
  	 */
  	if (!state->plug_started && state->ios_left > 1 &&
@@ -79,5 +82,5 @@ index 4e86da84f..284b72dcd 100644
  					(sqe_flags & IOSQE_FIXED_FILE),
  					IO_URING_F_NONBLOCK);
 -- 
-2.39.4
+2.53.0
 

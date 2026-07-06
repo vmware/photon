@@ -1,6 +1,6 @@
-From d4dda43bc63ba35a680cedb6a6cf7c01269fd122 Mon Sep 17 00:00:00 2001
-From: Ignat Korchagin <ignat@cloudflare.com>
-Date: Mon, 14 Oct 2024 16:38:02 +0100
+From 9c0856c449d74c5c4dea44e3acff5580fc7b93d1 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 6 Jul 2026 07:34:01 +0000
 Subject: [PATCH] Bluetooth: RFCOMM: avoid leaving dangling sk pointer in
  rfcomm_sock_alloc()
 
@@ -21,39 +21,32 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
 [Guru: Back ported to kernel branch 5.10.y]
 Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
 ---
- net/bluetooth/rfcomm/sock.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ net/bluetooth/rfcomm/sock.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
-index 2dcb70f49a68..c3b4d41da8e6 100644
+index 03b6d0f0d..ae5a96fe0 100644
 --- a/net/bluetooth/rfcomm/sock.c
 +++ b/net/bluetooth/rfcomm/sock.c
-@@ -273,18 +273,19 @@ static struct sock *rfcomm_sock_alloc(struct net *net, struct socket *sock, int
+@@ -286,13 +286,13 @@ static struct sock *rfcomm_sock_alloc(struct net *net, struct socket *sock,
  	struct rfcomm_dlc *d;
  	struct sock *sk;
  
+-	sk = bt_sock_alloc(net, sock, &rfcomm_proto, proto, prio, kern);
+-	if (!sk)
 +	d = rfcomm_dlc_alloc(prio);
 +	if (!d)
-+		return NULL;
-+
- 	sk = sk_alloc(net, PF_BLUETOOTH, prio, &rfcomm_proto, kern);
--	if (!sk)
-+	if (!sk) {
-+		rfcomm_dlc_free(d);
  		return NULL;
-+	}
- 
- 	sock_init_data(sock, sk);
- 	INIT_LIST_HEAD(&bt_sk(sk)->accept_q);
  
 -	d = rfcomm_dlc_alloc(prio);
 -	if (!d) {
 -		sk_free(sk);
--		return NULL;
--	}
++	sk = bt_sock_alloc(net, sock, &rfcomm_proto, proto, prio, kern);
++	if (!sk) {
++		rfcomm_dlc_free(d);
+ 		return NULL;
+ 	}
  
- 	d->data_ready   = rfcomm_sk_data_ready;
- 	d->state_change = rfcomm_sk_state_change;
 -- 
-2.39.4
+2.53.0
 

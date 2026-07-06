@@ -1,6 +1,6 @@
-From d0d406c572d53f3d805f270b87494b4aa25b80a1 Mon Sep 17 00:00:00 2001
+From 32a3db846b49e27cc33760f3f9042586e7379141 Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <ajay.kaher@broadcom.com>
-Date: Mon, 11 Nov 2024 17:18:17 +0000
+Date: Mon, 6 Jul 2026 06:21:55 +0000
 Subject: [PATCH 2/2] Bluetooth: SCO: Fix UAF on sco_sock_timeout
 
 From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
@@ -25,22 +25,22 @@ Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
  3 files changed, 35 insertions(+), 6 deletions(-)
 
 diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
-index 7d2bd562d..b08b559f5 100644
+index 43b438601..a5fe5743e 100644
 --- a/include/net/bluetooth/bluetooth.h
 +++ b/include/net/bluetooth/bluetooth.h
-@@ -314,6 +314,7 @@ int  bt_sock_register(int proto, const struct net_proto_family *ops);
+@@ -315,6 +315,7 @@ int  bt_sock_register(int proto, const struct net_proto_family *ops);
  void bt_sock_unregister(int proto);
  void bt_sock_link(struct bt_sock_list *l, struct sock *s);
  void bt_sock_unlink(struct bt_sock_list *l, struct sock *s);
 +bool bt_sock_linked(struct bt_sock_list *l, struct sock *s);
+ struct sock *bt_sock_alloc(struct net *net, struct socket *sock,
+ 			   struct proto *prot, int proto, gfp_t prio, int kern);
  int  bt_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		     int flags);
- int  bt_sock_stream_recvmsg(struct socket *sock, struct msghdr *msg,
 diff --git a/net/bluetooth/af_bluetooth.c b/net/bluetooth/af_bluetooth.c
-index 14a917e70..506819186 100644
+index bef5b6330..0af14e331 100644
 --- a/net/bluetooth/af_bluetooth.c
 +++ b/net/bluetooth/af_bluetooth.c
-@@ -154,6 +154,28 @@ void bt_sock_unlink(struct bt_sock_list *l, struct sock *sk)
+@@ -184,6 +184,28 @@ void bt_sock_unlink(struct bt_sock_list *l, struct sock *sk)
  }
  EXPORT_SYMBOL(bt_sock_unlink);
  
@@ -68,9 +68,9 @@ index 14a917e70..506819186 100644
 +
  void bt_accept_enqueue(struct sock *parent, struct sock *sk, bool bh)
  {
- 	BT_DBG("parent %p, sk %p", parent, sk);
+ 	const struct cred *old_cred;
 diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 6d6eff079..d38e0c6da 100644
+index 2437c6d17..2fbd9c934 100644
 --- a/net/bluetooth/sco.c
 +++ b/net/bluetooth/sco.c
 @@ -76,6 +76,16 @@ struct sco_pinfo {
@@ -113,5 +113,5 @@ index 6d6eff079..d38e0c6da 100644
  
  	if (sk) {
 -- 
-2.39.4
+2.53.0
 
