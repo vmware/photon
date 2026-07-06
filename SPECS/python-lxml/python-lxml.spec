@@ -1,7 +1,7 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        4.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -10,6 +10,9 @@ Distribution:   Photon
 
 Source0:        https://github.com/lxml/lxml/releases/download/lxml-%{version}/lxml-%{version}.tar.gz
 %define sha512  lxml=d7ec55c7db2c63a716ca5f4d833706d90fc76c944885e010fcdb96786bcfe796994e438450cf4e8e6e75d702e21fb16971f28f854d7a1f76c34e4ae315414d84
+
+Patch0: CVE-2026-41066-1.patch
+Patch1: CVE-2026-41066-2.patch
 
 BuildRequires:  libxslt-devel
 BuildRequires:  libxml2-devel
@@ -31,6 +34,7 @@ The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxs
 %autosetup -p1 -n lxml-%{version}
 
 %build
+export WITH_CYTHON=true
 %py3_build
 
 %install
@@ -51,6 +55,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Jul 03 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.1-2
+- Fix CVE-2026-41066
 * Mon Aug 08 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.1-1
 - Upgrade to 4.9.1
 * Mon Jul 18 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.7.1-2
