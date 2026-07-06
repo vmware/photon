@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mike Dalessio <mike.dalessio@gmail.com>
+Date: Sun, 14 Jun 2026 18:41:30 -0400
+Subject: [PATCH] fix: Document#root= rejects non-element nodes
+
+A DTD could be assigned as the document root. An unlinked DTD is freed
+directly during teardown, but assigning it as root also relinks it into
+the tree, so xmlFreeDoc frees it a second time -- a heap use-after-free.
+
+Restrict root= to element nodes, raising TypeError otherwise. The
+type check now happens before the current root is unlinked/pinned, so
+a rejected assignment leaves the document's existing root untouched.
+
+ref: https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-wjv4-x9w8-wm3h
+
+Fixes: CVE-2026-57436
+
+[Shivani: backported to nokogiri-1.13.6. Same fix, adapted to this
+version's plain Data_Get_Struct (no Noko_Node_Get_Struct macro exists
+here). Dropped the JRuby XmlDocument.java hunk (not shipped in this
+package) and test changes. Reproduced the double-free
+("double free or corruption (!prev)") on the unpatched 1.13.6 C
+extension by unlinking a DTD node and assigning it via
+Document#root=, and confirmed this patch converts it into a clean
+TypeError while leaving the original root intact.]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ ext/nokogiri/xml_document.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
+
+diff --git a/ext/nokogiri/xml_document.c b/ext/nokogiri/xml_document.c
+index 20a9e40..39c87c5 100644
+--- a/ext/nokogiri/xml_document.c
++++ b/ext/nokogiri/xml_document.c
+@@ -148,12 +148,6 @@ rb_xml_document_root_set(VALUE self, VALUE rb_new_root)
+ 
+   Data_Get_Struct(self, xmlDoc, c_document);
+ 
+-  c_current_root = xmlDocGetRootElement(c_document);
+-  if (c_current_root) {
+-    xmlUnlinkNode(c_current_root);
+-    noko_xml_document_pin_node(c_current_root);
+-  }
+-
+   if (!NIL_P(rb_new_root)) {
+     if (!rb_obj_is_kind_of(rb_new_root, cNokogiriXmlNode)) {
+       rb_raise(rb_eArgError,
+@@ -163,13 +157,23 @@ rb_xml_document_root_set(VALUE self, VALUE rb_new_root)
+ 
+     Data_Get_Struct(rb_new_root, xmlNode, c_new_root);
+ 
+-    /* If the new root's document is not the same as the current document,
+-     * then we need to dup the node in to this document. */
+-    if (c_new_root->doc != c_document) {
+-      c_new_root = xmlDocCopyNode(c_new_root, c_document, 1);
+-      if (!c_new_root) {
+-        rb_raise(rb_eRuntimeError, "Could not reparent node (xmlDocCopyNode)");
+-      }
++    if (c_new_root->type != XML_ELEMENT_NODE) {
++      rb_raise(rb_eTypeError, "root must be a Nokogiri::XML::Element");
++    }
++  }
++
++  c_current_root = xmlDocGetRootElement(c_document);
++  if (c_current_root) {
++    xmlUnlinkNode(c_current_root);
++    noko_xml_document_pin_node(c_current_root);
++  }
++
++  /* If the new root's document is not the same as the current document,
++   * then we need to dup the node in to this document. */
++  if (c_new_root && c_new_root->doc != c_document) {
++    c_new_root = xmlDocCopyNode(c_new_root, c_document, 1);
++    if (!c_new_root) {
++      rb_raise(rb_eRuntimeError, "Could not reparent node (xmlDocCopyNode)");
+     }
+   }
+ 
