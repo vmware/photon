@@ -76,7 +76,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.94
+Version:        6.12.95
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -969,6 +969,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 06 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.95-1
+- Update to version 6.12.95
 * Mon Jun 22 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.94-1
 - Update to version 6.12.94
 * Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.92-3
