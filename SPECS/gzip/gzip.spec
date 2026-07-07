@@ -1,7 +1,7 @@
 Summary:    Programs for compressing and decompressing files
 Name:       gzip
 Version:    1.12
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://www.gnu.org/software
 Group:      Applications/File
 Vendor:     VMware, Inc.
@@ -11,6 +11,9 @@ Source0:    http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-41991.patch
+Patch1: CVE-2026-41992.patch
 
 BuildRequires:  less
 
@@ -45,6 +48,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Mon Aug 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.12-5
+- Fix CVE-2026-41991, CVE-2026-41992
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.12-4
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12-3
