@@ -1,11 +1,19 @@
 sources:
-- archive: oj-3.16.13.gem
-  archive_sha512sum: 9f76f3ee5538adc879e8347fddcf384e7fdbc7b3cff3839072eb826ff53f6e2fbe4c7ceff5563f63c0601bdec0652891205787125c404f1fcf735fc33a853705
-  skip_validation: true
+- archive: oj-3.17.3.gem
+  archive_type: upstream
+  archive_sha512sum: af5c77c1ab17a5c5fa2f0c6fed174c2c13d447df3b14ef2a5fd27fb2222393ab835b7fe2aa3f98ed59d0957c587ad197edc15e7acffc098dc192bede6d766485
+  name: rubygem-oj-3.17.3
+  version: "3.17.3"
+  url: https://rubygems.org/downloads/oj-3.17.3.gem
+  repo_url: https://github.com/ohler55/oj/
+  commit_id: bbde91a679728f94c4492ebc3683f4fa3309049f
+  skip_list: []
+  missing: ['test', 'docs', '.github', 'tp.x', '.rubocop.yml', 'Gemfile', '_config.yml', '.editorconfig', 'oj.gemspec', 'design.txt', 'SECURITY.md', '.gitignore', 'build_test.sh', '.yardopts', 'gemfiles', 'tea.yaml', 'Rakefile', 'samples', 'encoder.c', 'notes', '.clang-format']
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'The fastest JSON parser and object serializer. '
-      home_page: https://rubygems.org/gems/oj/versions/3.16.13
+      home_page: https://rubygems.org/gems/oj/versions/3.17.3
       license_concluded: MIT
       license_declared: MIT
       short_summary: The fastest JSON parser and object serializer.
