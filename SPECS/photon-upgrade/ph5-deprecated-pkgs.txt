@@ -171,6 +171,7 @@ timescaledb14
 tinycdb
 tinycdb-devel
 tuna
+unzip
 vsftpd
 xerces-c
 xerces-c-devel
@@ -180,3 +181,4 @@ xml-security-c-devel
 xmlto
 xorg-applications
 xorg-fonts
+zip
