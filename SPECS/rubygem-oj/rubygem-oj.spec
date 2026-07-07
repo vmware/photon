@@ -2,8 +2,8 @@
 %global gem_name oj
 
 Name: rubygem-oj
-Version:        3.10.14
-Release:        3%{?dist}
+Version:        3.17.3
+Release:        1%{?dist}
 Summary:        The fastest JSON parser and object serializer.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -11,9 +11,11 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha512  oj=b1b273bd3dcf4cdf47292dae6a7cdd15887051ad242326f884468ee8a3abbbd2f7da654069ce620190464e46979650617283e5a2568c322ac83d253f3c6bf9a9
+%define sha512  oj=af5c77c1ab17a5c5fa2f0c6fed174c2c13d447df3b14ef2a5fd27fb2222393ab835b7fe2aa3f98ed59d0957c587ad197edc15e7acffc098dc192bede6d766485
+
 BuildRequires:  ruby-devel
 BuildRequires:  gmp-devel
+Requires:       ruby
 
 %description
 The fastest JSON parser and object serializer.
@@ -32,6 +34,10 @@ The fastest JSON parser and object serializer.
 %{gem_base}
 
 %changelog
+*   Tue Jul 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.17.3-1
+-   Fix CVE-2026-54592, CVE-2026-54903, CVE-2026-54902, CVE-2026-54901, CVE-2026-54900
+-   CVE-2026-54899, CVE-2026-54898, CVE-2026-54897, CVE-2026-54896, CVE-2026-54502
+-   CVE-2026-54500
 *   Tue Apr 30 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.10.14-3
 -   Add gem macros
 *   Thu Apr 25 2024 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.10.14-2
