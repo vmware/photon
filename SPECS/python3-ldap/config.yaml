@@ -1,0 +1,23 @@
+sources:
+- archive: python-ldap-3.4.7.tar.gz
+  archive_sha512sum: ecf20c6a23b32fe21cde969407287f415a091d15dd0de49d986472de23de35e2d9dd590ceb7b26353e8eb3d4f2ee4fd9c9d8c9bd6c600cd45d80ab73bcd4c8df
+  archive_type: upstream
+  skip_validation: false
+  name: python-ldap-python-ldap-3.4.7
+  version: 3.4.7
+  url: https://github.com/python-ldap/python-ldap/archive/refs/tags/python-ldap-3.4.7.tar.gz
+  repo_url: https://github.com/python-ldap/python-ldap
+  commit_id: 79f34cc398c5bdf202bdb4024a1bb2ec272ce26e
+  spdx:
+    package:
+      detailed_description: 'python-ldap provides an object-oriented API to access
+        LDAP directory servers from Python programs. It wraps the OpenLDAP client
+        libraries (libldap) via a C extension module and mainly covers the LDAPv3
+        protocol as specified by RFC 4510 to 4519 (also affects LDAPv2 compatibility).
+        It also provides modules for other LDAP-related operations (e.g. LDIF, LDAPURLs,
+        LDAP schema handling).'
+      home_page: https://www.python-ldap.org/
+      license_concluded: PSF-2.0
+      license_declared: PSF-2.0
+      short_summary: Python interface to LDAP
+      supplier: 'Organization: Broadcom, Inc.'
