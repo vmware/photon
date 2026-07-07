@@ -4,7 +4,7 @@
 
 Name:           rubygem-concurrent-ruby
 Version:        1.1.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Modern concurrency tools for Rails framework.
 Group:          Development/Languages
 License:        MIT
@@ -16,6 +16,8 @@ Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha512 %{gem_name}=037add9697ac36a2b7e24e39e6c11c1c7b593bd55bf0f3c3c56bdc320c05b05bcafefd463bb9211859e50851cc3858309d0cd5dacc4e521c1ca433dcf8956ba8
 
 Patch0: CVE-2026-54906.patch
+Patch1: CVE-2026-54904.patch
+Patch2: CVE-2026-54905.patch
 
 BuildRequires: ruby-devel
 
@@ -29,6 +31,8 @@ classic concurrency patterns.
 %prep
 %gem_unpack %{SOURCE0}
 %patch -p1 0
+%patch -p1 1
+%patch -p1 2
 
 %build
 %gem_build
@@ -41,6 +45,8 @@ classic concurrency patterns.
 %{gem_base}
 
 %changelog
+* Tue Jul 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.1.7-3
+- Fix CVE-2026-54904, CVE-2026-54905
 * Mon Jun 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.7-2
 - Fix CVE-2026-54906
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.7-1
