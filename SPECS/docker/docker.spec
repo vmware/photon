@@ -17,7 +17,7 @@
 Summary:        Docker
 Name:           docker
 Version:        24.0.9
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -147,36 +147,38 @@ tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 
 # Patch sources
 pushd tini
-%patch0 -p1
+%patch -P 0 -p1
 popd
 
 pushd src/%{gopath_comp_engine} #moby source directory
-%patch1 -p1
-%patch2 -p1
-%patch12 -p1
-%patch13 -p1
+%patch -P 1 -p1
+%patch -P 2 -p1
+%patch -P 12 -p1
+#%%patch -P 13 -p1
+echo "TODO: CVE-2026-42306.patch has issues, not applying it for now."
+echo %{PATCH13}
 popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_containerd} #containerd source directory
-%patch3 -p1
+%patch -P 3 -p1
 popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_crypto} #crypto source directory
-%patch4 -p1
-%patch5 -p1
+%patch -P 4 -p1
+%patch -P 5 -p1
 popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_protobuf} #protobuf source directory
-%patch6 -p1
+%patch -P 6 -p1
 popd
 pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_golangjwt} #golang-jwt source directory
-%patch7 -p1
+%patch -P 7 -p1
 popd
 
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
+%patch -P 8 -p1
+%patch -P 9 -p1
+%patch -P 10 -p1
+%patch -P 11 -p1
 
 %build
-export GOPATH="$(pwd)"
+export GOPATH="$PWD"
 export GO111MODULE=off
 
 CONTAINERD_MIN_VER="1.2.0-beta.1"
@@ -367,6 +369,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Wed Jul 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.9-11
+- Don't apply CVE-2026-42306.patch
 * Thu Jun 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.0.9-10
 - Fix CVE-2026-41567, CVE-2026-42306
 * Thu Apr 30 2026 Mukul Sikka <mukul.sikka@broadcom.com> 24.0.9-9
