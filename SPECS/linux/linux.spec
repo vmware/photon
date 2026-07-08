@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.95
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -228,6 +228,7 @@ Patch63: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
 # vmxnet3
 Patch65: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
+Patch66: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
 
 # Backward compatibility
 %if "%{dist}" == ".ph5"
@@ -578,7 +579,7 @@ The kernel fips-canister
 %autopatch -p1 -m61 -M63
 
 # vmxnet3
-%autopatch -p1 -m64 -M65
+%autopatch -p1 -m65 -M66
 
 # Backward compatibility
 %if "%{dist}" == ".ph5"
@@ -969,6 +970,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 07 2026 Bo Gan <bo.gan@broadcom.com> 6.12.95-2
+- Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Mon Jul 06 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.95-1
 - Update to version 6.12.95
 * Mon Jun 22 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.94-1

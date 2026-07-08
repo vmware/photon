@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.95
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -166,6 +166,7 @@ Patch72: 0009-esx-vmxnet3-software-timestamping.patch
 
 # vmxnet3
 Patch73: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
+Patch74: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
 
 # initialize MMCONFIG
 Patch75: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
@@ -545,6 +546,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jul 07 2026 Bo Gan <bo.gan@broadcom.com> 6.12.95-2
+- Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Mon Jul 06 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.95-1
 - Update to version 6.12.95
 * Tue Jun 30 2026 Mounesh Badiger<mounesh.badiger@broadcom.com> 6.12.94-2
