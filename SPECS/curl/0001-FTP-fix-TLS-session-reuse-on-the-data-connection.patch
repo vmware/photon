@@ -1,0 +1,1229 @@
+From e3d9d3cfe6feb2d2cb12caaf27053f9e79a1a870 Mon Sep 17 00:00:00 2001
+From: Stefan Eissing <stefan@eissing.org>
+Date: Thu, 2 Jul 2026 12:04:18 +0200
+Subject: [PATCH] FTP: fix TLS session reuse on the data connection
+
+FTP servers using SSL can be configured to check TLS session reuse on
+the DATA connection. They hand out a new session on every CONTROL
+connect and require to see the client using exactly that one when
+up-/downloading on DATA.
+
+This means:
+
+1. We have to configure the SSL filter on the DATA connection with
+   exactly the same peers.
+
+2. We have to remember the SSL session on the CONTROL connection -
+   separately from the session cache. The SSL filter on the DATA
+   connection then looks for a session at the CONTROL filter and, if
+   present, uses that.
+
+Tests:
+
+Enable `require_ssl_reuse` in our pytest setup for vsftpd. This
+reproduces the problem reported in #22225 and verifies the fix.
+
+Skip ftp+SSL pytests for rustls, as we have no possibility to reuse
+sessions in that backend.
+
+Schannel: we do not run these tests with the backend. I expect it has
+similar problems but am not able to verify.
+
+Reported-by: Laurent Sabourin
+Fixes #22225
+Closes #22246
+
+[Guru: Backported from main to 8.21.0 tag]
+---
+ lib/cf-setup.c                    |  15 ++-
+ lib/vquic/cf-ngtcp2-cmn.c         |   7 +-
+ lib/vtls/gtls.c                   | 133 +++++++++++++++-------
+ lib/vtls/gtls.h                   |   6 +-
+ lib/vtls/mbedtls.c                |  60 +++++++++-
+ lib/vtls/openssl.c                | 178 +++++++++++++++++++-----------
+ lib/vtls/openssl.h                |   3 +-
+ lib/vtls/vtls.c                   |  58 ++++++----
+ lib/vtls/vtls_int.h               |   8 ++
+ lib/vtls/vtls_scache.c            |  50 ++++++++-
+ lib/vtls/vtls_scache.h            |   5 +
+ lib/vtls/wolfssl.c                |  77 +++++++++----
+ lib/vtls/wolfssl.h                |   3 +-
+ tests/http/conftest.py            |   4 +-
+ tests/http/test_31_vsftpds.py     |  36 ++++--
+ tests/http/test_32_ftps_vsftpd.py |  19 +++-
+ tests/http/testenv/vsftpd.py      |   2 +-
+ 17 files changed, 483 insertions(+), 181 deletions(-)
+
+diff --git a/lib/cf-setup.c b/lib/cf-setup.c
+index 119294a89a..c1a4826f67 100644
+--- a/lib/cf-setup.c
++++ b/lib/cf-setup.c
+@@ -273,12 +273,15 @@ static CURLcode cf_setup_add_origin_filters(struct Curl_cfilter *cf,
+       else
+ #endif
+       {
+-        /* Another FTP quirk: when adding SSL verification, to a DATA
+-         * connection, always verify against the control's origin */
+-        struct Curl_peer *origin = Curl_conn_get_origin(cf->conn, FIRSTSOCKET);
+-        struct Curl_peer *peer =
+-          Curl_conn_get_destination(cf->conn, cf->sockindex);
+-        result = Curl_cf_ssl_insert_after(cf, data, origin, peer);
++        /* FTP is a bitch. Wherever we really connect to on the DATA
++         * (secondary) connection, many servers require TLS sessions reuse
++         * to prove they are talking to the same client.
++         * For the TLS session lookup to work, we need to instantiate
++         * the SSL filter with the same peers as FIRSTSOCKET. See #22225
++         * Meaning: cf->sockindex does not matter here. */
++        result = Curl_cf_ssl_insert_after(cf, data,
++          Curl_conn_get_origin(cf->conn, FIRSTSOCKET),
++          Curl_conn_get_destination(cf->conn, FIRSTSOCKET));
+       }
+       if(result) {
+         CURL_TRC_CF(data, cf, "adding SSL filter for origin failed -> %d",
+diff --git a/lib/vquic/cf-ngtcp2-cmn.c b/lib/vquic/cf-ngtcp2-cmn.c
+index e1ca18cf69..a5698a2c78 100644
+--- a/lib/vquic/cf-ngtcp2-cmn.c
++++ b/lib/vquic/cf-ngtcp2-cmn.c
+@@ -647,7 +647,7 @@ static int quic_ossl_new_session_cb(SSL *ssl, SSL_SESSION *ssl_sessionid)
+     }
+ #endif
+     Curl_ossl_add_session(cf, data, ctx->ssl_peer.scache_key, ssl_sessionid,
+-                          SSL_version(ssl), "h3", quic_tp, quic_tp_len);
++                          SSL_version(ssl), "h3", quic_tp, quic_tp_len, NULL);
+   }
+   return 0;
+ }
+@@ -718,7 +718,8 @@ static int quic_gtls_handshake_cb(gnutls_session_t session, unsigned int htype,
+         quic_tp_len = (size_t)tplen;
+       }
+       (void)Curl_gtls_cache_session(cf, data, ctx->ssl_peer.scache_key,
+-                                    session, 0, "h3", quic_tp, quic_tp_len);
++                                    session, 0, "h3", quic_tp, quic_tp_len,
++                                    NULL);
+       break;
+     }
+     default:
+@@ -757,7 +758,7 @@ static int wssl_quic_new_session_cb(WOLFSSL *ssl, WOLFSSL_SESSION *session)
+       }
+       (void)Curl_wssl_cache_session(cf, data, ctx->ssl_peer.scache_key,
+                                     session, wolfSSL_version(ssl),
+-                                    "h3", quic_tp, quic_tp_len);
++                                    "h3", quic_tp, quic_tp_len, NULL);
+     }
+   }
+   return 0;
+diff --git a/lib/vtls/gtls.c b/lib/vtls/gtls.c
+index 1a7a4a1e5b..8cc9c53f1c 100644
+--- a/lib/vtls/gtls.c
++++ b/lib/vtls/gtls.c
+@@ -720,14 +720,17 @@ CURLcode Curl_gtls_cache_session(struct Curl_cfilter *cf,
+                                  curl_off_t valid_until,
+                                  const char *alpn,
+                                  unsigned char *quic_tp,
+-                                 size_t quic_tp_len)
++                                 size_t quic_tp_len,
++                                 struct Curl_ssl_session **psession)
+ {
+-  struct Curl_ssl_session *sc_session;
++  struct Curl_ssl_session *sc_session = NULL, *sc_dup = NULL;
+   unsigned char *sdata, *qtp_clone = NULL;
+   size_t sdata_len = 0;
+   size_t earlydata_max = 0;
+   CURLcode result = CURLE_OK;
+ 
++  if(psession)
++    *psession = NULL;
+   if(!Curl_ssl_scache_use(cf, data))
+     return CURLE_OK;
+ 
+@@ -766,10 +769,20 @@ CURLcode Curl_gtls_cache_session(struct Curl_cfilter *cf,
+                                     qtp_clone, quic_tp_len,
+                                     &sc_session);
+   /* call took ownership of `sdata` and `qtp_clone` */
++  if(!result && psession &&  /* return a duplicate if asked for and FTP */
++     (cf->conn->scheme->family == CURLPROTO_FTP))
++    result = Curl_ssl_session_dup(sc_session, &sc_dup);
+   if(!result) {
+     result = Curl_ssl_scache_put(cf, data, ssl_peer_key, sc_session);
+     /* took ownership of `sc_session` */
++    sc_session = NULL;
+   }
++  if(!result && psession) {
++    *psession = sc_dup;
++    sc_dup = NULL;
++  }
++  Curl_ssl_session_destroy(sc_session);
++  Curl_ssl_session_destroy(sc_dup);
+   return result;
+ }
+ #endif
+@@ -780,9 +793,17 @@ static CURLcode cf_gtls_update_session_id(struct Curl_cfilter *cf,
+                                           gnutls_session_t session)
+ {
+   struct ssl_connect_data *connssl = cf->ctx;
+-  return Curl_gtls_cache_session(cf, data, connssl->peer.scache_key,
+-                                 session, 0, connssl->negotiated.alpn,
+-                                 NULL, 0);
++  struct Curl_ssl_session *scs = NULL;
++  CURLcode result;
++
++  result = Curl_gtls_cache_session(cf, data, connssl->peer.scache_key,
++                                   session, 0, connssl->negotiated.alpn,
++                                   NULL, 0, &scs);
++  if(!result) {
++    Curl_ssl_session_destroy(connssl->session);
++    connssl->session = scs;
++  }
++  return result;
+ }
+ 
+ static int gtls_handshake_cb(gnutls_session_t session, unsigned int htype,
+@@ -1104,6 +1125,55 @@ static CURLcode gtls_on_session_reuse(struct Curl_cfilter *cf,
+ }
+ #endif
+ 
++static CURLcode gtls_apply_session(
++  struct gtls_ctx *gctx,
++  struct Curl_cfilter *cf,
++  struct Curl_easy *data,
++  struct ssl_peer *peer,
++  struct alpn_spec *alpns,
++  Curl_gtls_init_session_reuse_cb *sess_reuse_cb,
++  struct Curl_ssl_session *scs,
++  bool *pwas_setup)
++{
++  struct ssl_config_data *ssl_config = Curl_ssl_cf_get_config(cf, data);
++  CURLcode result = CURLE_OK;
++  int rc;
++
++  if(scs && scs->sdata && scs->sdata_len &&
++     (!scs->alpn || Curl_alpn_contains_proto(alpns, scs->alpn))) {
++    /* we got a cached session, use it! */
++
++    result = gtls_client_init(cf, data, peer, scs->earlydata_max, gctx);
++    if(result)
++      goto out;
++    *pwas_setup = TRUE;
++
++    rc = gnutls_session_set_data(gctx->session, scs->sdata, scs->sdata_len);
++    if(rc < 0)
++      infof(data, "SSL session not accepted by GnuTLS, continuing without");
++    else {
++      infof(data, "SSL reusing session with ALPN '%s'",
++            scs->alpn ? scs->alpn : "-");
++      if(ssl_config->earlydata && scs->alpn &&
++         !cf->conn->bits.connect_only) {
++        bool do_early_data = FALSE;
++        if(sess_reuse_cb) {
++          result = sess_reuse_cb(cf, data, alpns, scs, &do_early_data);
++          if(result)
++            goto out;
++        }
++        if(do_early_data) {
++          /* We only try the ALPN protocol the session used before,
++           * otherwise we might send early data for the wrong protocol */
++          Curl_alpn_restrict_to(alpns, scs->alpn);
++        }
++      }
++    }
++  }
++out:
++  return result;
++}
++
+ CURLcode Curl_gtls_ctx_init(struct gtls_ctx *gctx,
+                             struct Curl_cfilter *cf,
+                             struct Curl_easy *data,
+@@ -1115,57 +1185,40 @@ CURLcode Curl_gtls_ctx_init(struct gtls_ctx *gctx,
+                             Curl_gtls_init_session_reuse_cb *sess_reuse_cb)
+ {
+   struct ssl_primary_config *conn_config = Curl_ssl_cf_get_primary_config(cf);
+-  struct ssl_config_data *ssl_config = Curl_ssl_cf_get_config(cf, data);
+   struct Curl_ssl_session *scs = NULL;
+   gnutls_datum_t gtls_alpns[ALPN_ENTRIES_MAX];
+   size_t gtls_alpns_count = 0;
+   bool gtls_session_setup = FALSE;
+   struct alpn_spec alpns;
+   CURLcode result = CURLE_OK;
+-  int rc;
+ 
+   DEBUGASSERT(gctx);
+   Curl_alpn_copy(&alpns, alpns_requested);
+ 
++  if((cf->sockindex == SECONDARYSOCKET) && !(cf->cft->flags & CF_TYPE_PROXY)) {
++    /* FTP is a bitch. On TLS secured transfers, it is a common server
++     * option to require the client to use the SAME TLS session as on
++     * the control connection or it fails the request. See #22225. */
++    scs = Curl_ssl_get_cf_session(data, cf->cft, FIRSTSOCKET);
++    if(scs) {
++      result = gtls_apply_session(gctx, cf, data, peer, &alpns,
++                                  sess_reuse_cb, scs, &gtls_session_setup);
++      scs = NULL;
++      if(!result && gtls_session_setup) {
++        CURL_TRC_CF(data, cf, "applied SSL session from control connection");
++      }
++    }
++  }
+   /* This might be a reconnect, so we check for a session ID in the cache
+      to speed up things. We need to do this before constructing the GnuTLS
+      session since we need to set flags depending on the kind of reuse. */
+-  if(conn_config->cache_session && !conn_config->verifystatus) {
++  if(!gtls_session_setup && conn_config->cache_session &&
++     !conn_config->verifystatus) {
+     result = Curl_ssl_scache_take(cf, data, peer->scache_key, &scs);
+     if(result)
+       goto out;
+-
+-    if(scs && scs->sdata && scs->sdata_len &&
+-       (!scs->alpn || Curl_alpn_contains_proto(&alpns, scs->alpn))) {
+-      /* we got a cached session, use it! */
+-
+-      result = gtls_client_init(cf, data, peer, scs->earlydata_max, gctx);
+-      if(result)
+-        goto out;
+-      gtls_session_setup = TRUE;
+-
+-      rc = gnutls_session_set_data(gctx->session, scs->sdata, scs->sdata_len);
+-      if(rc < 0)
+-        infof(data, "SSL session not accepted by GnuTLS, continuing without");
+-      else {
+-        infof(data, "SSL reusing session with ALPN '%s'",
+-              scs->alpn ? scs->alpn : "-");
+-        if(ssl_config->earlydata && scs->alpn &&
+-           !cf->conn->bits.connect_only) {
+-          bool do_early_data = FALSE;
+-          if(sess_reuse_cb) {
+-            result = sess_reuse_cb(cf, data, &alpns, scs, &do_early_data);
+-            if(result)
+-              goto out;
+-          }
+-          if(do_early_data) {
+-            /* We only try the ALPN protocol the session used before,
+-             * otherwise we might send early data for the wrong protocol */
+-            Curl_alpn_restrict_to(&alpns, scs->alpn);
+-          }
+-        }
+-      }
+-    }
++    result = gtls_apply_session(gctx, cf, data, peer, &alpns,
++                                sess_reuse_cb, scs, &gtls_session_setup);
+   }
+ 
+   if(!gtls_session_setup) {
+diff --git a/lib/vtls/gtls.h b/lib/vtls/gtls.h
+index 4c662003eb..72aec29e32 100644
+--- a/lib/vtls/gtls.h
++++ b/lib/vtls/gtls.h
+@@ -105,7 +105,8 @@ CURLcode Curl_gtls_verifyserver(struct Curl_cfilter *cf,
+                                 struct ssl_peer *peer,
+                                 const char *pinned_key);
+ 
+-/* Extract TLS session and place in cache, if configured. */
++/* Extract TLS session and place in cache, if configured. Return
++ * a copy of the session if desired. */
+ CURLcode Curl_gtls_cache_session(struct Curl_cfilter *cf,
+                                  struct Curl_easy *data,
+                                  const char *ssl_peer_key,
+@@ -113,7 +114,8 @@ CURLcode Curl_gtls_cache_session(struct Curl_cfilter *cf,
+                                  curl_off_t valid_until,
+                                  const char *alpn,
+                                  unsigned char *quic_tp,
+-                                 size_t quic_tp_len);
++                                 size_t quic_tp_len,
++                                 struct Curl_ssl_session **psession);
+ 
+ /* Report properties of a successful handshake */
+ void Curl_gtls_report_handshake(struct Curl_easy *data, struct gtls_ctx *gctx);
+diff --git a/lib/vtls/mbedtls.c b/lib/vtls/mbedtls.c
+index 57727613ae..a44493488f 100644
+--- a/lib/vtls/mbedtls.c
++++ b/lib/vtls/mbedtls.c
+@@ -786,6 +786,38 @@ static CURLcode mbed_load_crl(struct Curl_cfilter *cf,
+   return CURLE_OK;
+ }
+ 
++static bool mbed_apply_session(struct Curl_cfilter *cf,
++                               struct Curl_easy *data,
++                               struct Curl_ssl_session *sc_session)
++{
++  struct ssl_connect_data *connssl = cf->ctx;
++  struct mbed_ssl_backend_data *backend =
++    (struct mbed_ssl_backend_data *)connssl->backend;
++
++  if(sc_session && sc_session->sdata && sc_session->sdata_len) {
++    mbedtls_ssl_session session;
++    int ret;
++
++    mbedtls_ssl_session_init(&session);
++    ret = mbedtls_ssl_session_load(&session, sc_session->sdata,
++                                   sc_session->sdata_len);
++    if(ret) {
++      failf(data, "SSL session error loading: -0x%x", (unsigned int)-ret);
++    }
++    else {
++      ret = mbedtls_ssl_set_session(&backend->ssl, &session);
++      if(ret)
++        failf(data, "SSL session error setting: -0x%x", (unsigned int)-ret);
++    }
++    mbedtls_ssl_session_free(&session);
++    if(!ret) {
++      infof(data, "SSL reusing session ID");
++      return TRUE;
++    }
++  }
++  return FALSE;
++}
++
+ static CURLcode mbed_configure_ssl(struct Curl_cfilter *cf,
+                                    struct Curl_easy *data)
+ {
+@@ -795,6 +827,7 @@ static CURLcode mbed_configure_ssl(struct Curl_cfilter *cf,
+   struct ssl_primary_config *conn_config = Curl_ssl_cf_get_primary_config(cf);
+   struct ssl_config_data *ssl_config = Curl_ssl_cf_get_config(cf, data);
+   int ret;
++  bool session_applied = FALSE;
+   CURLcode result;
+   char errorbuf[128];
+ 
+@@ -899,8 +932,22 @@ static CURLcode mbed_configure_ssl(struct Curl_cfilter *cf,
+                                    MBEDTLS_SSL_SESSION_TICKETS_DISABLED);
+ #endif
+ 
++  if((cf->sockindex == SECONDARYSOCKET) && !(cf->cft->flags & CF_TYPE_PROXY)) {
++    /* FTP is a bitch. On TLS secured transfers, it is a common server
++     * option to require the client to use the SAME TLS session as on
++     * the control connection or it fails the request. See #22225. */
++    struct Curl_ssl_session *scs =
++      Curl_ssl_get_cf_session(data, cf->cft, FIRSTSOCKET);
++    if(scs) {
++      if(mbed_apply_session(cf, data, scs)) {
++        CURL_TRC_CF(data, cf, "applied SSL session from control connection");
++        session_applied = TRUE;
++      }
++    }
++  }
++
+   /* Check if there is a cached ID we can/should use here! */
+-  if(Curl_ssl_scache_use(cf, data)) {
++  if(!session_applied && Curl_ssl_scache_use(cf, data)) {
+     struct Curl_ssl_session *sc_session = NULL;
+     CURLcode sresult = Curl_ssl_scache_take(cf, data, connssl->peer.scache_key,
+                                             &sc_session);
+@@ -1196,13 +1243,22 @@ static CURLcode mbed_new_session(struct Curl_cfilter *cf,
+                                    connssl->negotiated.alpn, 0, 0,
+                                    &sc_session);
+   sdata = NULL;  /* call took ownership */
+-  if(!result)
++  if(!result && /* return a duplicate if asked for and FTP */
++     (cf->conn->scheme->family == CURLPROTO_FTP)) {
++    Curl_ssl_session_destroy(connssl->session);
++    result = Curl_ssl_session_dup(sc_session, &connssl->session);
++  }
++
++  if(!result) {
+     result = Curl_ssl_scache_put(cf, data, connssl->peer.scache_key,
+                                  sc_session);
++    sc_session = NULL;
++  }
+ 
+ out:
+   if(msession_alloced)
+     mbedtls_ssl_session_free(&session);
++  Curl_ssl_session_destroy(sc_session);
+   curlx_free(sdata);
+   return result;
+ }
+diff --git a/lib/vtls/openssl.c b/lib/vtls/openssl.c
+index 010bbb9825..ca952c01a3 100644
+--- a/lib/vtls/openssl.c
++++ b/lib/vtls/openssl.c
+@@ -2647,17 +2647,20 @@ CURLcode Curl_ossl_add_session(struct Curl_cfilter *cf,
+                                int ietf_tls_id,
+                                const char *alpn,
+                                unsigned char *quic_tp,
+-                               size_t quic_tp_len)
++                               size_t quic_tp_len,
++                               struct Curl_ssl_session **psession)
+ {
++  struct Curl_ssl_session *sc_session = NULL, *sc_dup = NULL;
+   unsigned char *der_session_buf = NULL;
+   unsigned char *qtp_clone = NULL;
+   CURLcode result = CURLE_OK;
+ 
++  if(psession)
++    *psession = NULL;
+   if(!cf || !data)
+     goto out;
+ 
+   if(Curl_ssl_scache_use(cf, data)) {
+-    struct Curl_ssl_session *sc_session = NULL;
+     size_t der_session_size;
+     unsigned char *der_session_ptr;
+     size_t earlydata_max = 0;
+@@ -2698,14 +2701,25 @@ CURLcode Curl_ossl_add_session(struct Curl_cfilter *cf,
+                                       earlydata_max, qtp_clone, quic_tp_len,
+                                       &sc_session);
+     der_session_buf = NULL;  /* took ownership of sdata */
++    if(!result && psession &&  /* return a duplicate if asked for and FTP */
++       (cf->conn->scheme->family == CURLPROTO_FTP)) {
++        result = Curl_ssl_session_dup(sc_session, &sc_dup);
++    }
+     if(!result) {
+       result = Curl_ssl_scache_put(cf, data, ssl_peer_key, sc_session);
+       /* took ownership of `sc_session` */
++      sc_session = NULL;
+     }
+   }
+ 
+ out:
+   curlx_free(der_session_buf);
++  if(!result && psession) {
++    *psession = sc_dup;
++    sc_dup = NULL;
++  }
++  Curl_ssl_session_destroy(sc_session);
++  Curl_ssl_session_destroy(sc_dup);
+   return result;
+ }
+ 
+@@ -2718,8 +2732,14 @@ static int ossl_new_session_cb(SSL *ssl, SSL_SESSION *ssl_sessionid)
+   if(cf) {
+     struct Curl_easy *data = CF_DATA_CURRENT(cf);
+     struct ssl_connect_data *connssl = cf->ctx;
++    struct Curl_ssl_session *session = NULL;
+     Curl_ossl_add_session(cf, data, connssl->peer.scache_key, ssl_sessionid,
+-                          SSL_version(ssl), connssl->negotiated.alpn, NULL, 0);
++                          SSL_version(ssl), connssl->negotiated.alpn, NULL,
++                          0, &session);
++    if(session) { /* remember current TLS session */
++      Curl_ssl_session_destroy(connssl->session);
++      connssl->session = session;
++    }
+   }
+   return 0;
+ }
+@@ -3324,6 +3344,82 @@ CURLcode Curl_ssl_setup_x509_store(struct Curl_cfilter *cf,
+   return result;
+ }
+ 
++static bool ossl_apply_session(
++  struct ossl_ctx *octx,
++  struct Curl_cfilter *cf,
++  struct Curl_easy *data,
++  struct alpn_spec *alpns,
++  Curl_ossl_init_session_reuse_cb *sess_reuse_cb,
++  struct Curl_ssl_session *scs)
++{
++  struct ssl_config_data *ssl_config = Curl_ssl_cf_get_config(cf, data);
++  struct ssl_primary_config *conn_cfg = Curl_ssl_cf_get_primary_config(cf);
++  const unsigned char *der_sessionid = scs->sdata;
++  size_t der_sessionid_size = scs->sdata_len;
++  SSL_SESSION *ssl_session = NULL;
++
++  /* If OpenSSL does not accept the session from the cache, this
++   * is not an error. We continue without it. */
++  ssl_session = d2i_SSL_SESSION(NULL, &der_sessionid,
++                                (long)der_sessionid_size);
++  if(ssl_session) {
++    if(!SSL_set_session(octx->ssl, ssl_session)) {
++      VERBOSE(char error_buffer[256]);
++      infof(data, "SSL: SSL_set_session not accepted, "
++            "continuing without: %s",
++            ossl_strerror(ERR_get_error(), error_buffer,
++                          sizeof(error_buffer)));
++    }
++    else {
++      if(conn_cfg->verifypeer &&
++         (SSL_get_verify_result(octx->ssl) != X509_V_OK)
++#ifdef USE_APPLE_SECTRUST
++         /* if sectrust is used and verified the session before */
++         && (!ssl_config->native_ca_store || !scs->sectrust_verified)
++#endif
++        ) {
++        /* Session was from unverified connection, cannot reuse here */
++        SSL_set_session(octx->ssl, NULL);
++        infof(data, "SSL session not peer verified, not reusing");
++      }
++      else {
++        infof(data, "SSL reusing session with ALPN '%s'",
++              scs->alpn ? scs->alpn : "-");
++        octx->reused_session = TRUE;
++#ifdef USE_APPLE_SECTRUST
++        octx->sectrust_session = scs->sectrust_verified;
++#endif
++        infof(data, "SSL verify result: %lx",
++              (unsigned long)SSL_get_verify_result(octx->ssl));
++#ifdef HAVE_OPENSSL_EARLYDATA
++        if(ssl_config->earlydata && scs->alpn &&
++           SSL_SESSION_get_max_early_data(ssl_session) &&
++           !cf->conn->bits.connect_only &&
++           (SSL_version(octx->ssl) == TLS1_3_VERSION)) {
++          bool do_early_data = FALSE;
++          if(sess_reuse_cb)
++            (void)sess_reuse_cb(cf, data, alpns, scs, &do_early_data);
++          if(do_early_data) {
++            /* We only try the ALPN protocol the session used before,
++             * otherwise we might send early data for the wrong protocol */
++            Curl_alpn_restrict_to(alpns, scs->alpn);
++          }
++        }
++#else
++        (void)alpns;
++        (void)ssl_config;
++        (void)sess_reuse_cb;
++#endif
++      }
++    }
++    SSL_SESSION_free(ssl_session);
++  }
++  else {
++    infof(data, "SSL session not accepted by OpenSSL, continuing without");
++  }
++  return (bool)octx->reused_session;
++}
++
+ static CURLcode ossl_init_session_and_alpns(
+   struct ossl_ctx *octx,
+   struct Curl_cfilter *cf,
+@@ -3332,7 +3428,6 @@ static CURLcode ossl_init_session_and_alpns(
+   const struct alpn_spec *alpns_requested,
+   Curl_ossl_init_session_reuse_cb *sess_reuse_cb)
+ {
+-  struct ssl_config_data *ssl_config = Curl_ssl_cf_get_config(cf, data);
+   struct ssl_primary_config *conn_cfg = Curl_ssl_cf_get_primary_config(cf);
+   struct alpn_spec alpns;
+   CURLcode result;
+@@ -3340,70 +3435,25 @@ static CURLcode ossl_init_session_and_alpns(
+   Curl_alpn_copy(&alpns, alpns_requested);
+ 
+   octx->reused_session = FALSE;
+-  if(Curl_ssl_scache_use(cf, data) && !conn_cfg->verifystatus) {
++
++  if((cf->sockindex == SECONDARYSOCKET) && !(cf->cft->flags & CF_TYPE_PROXY)) {
++    /* FTP is a bitch. On TLS secured transfers, it is a common server
++     * option to require the client to use the SAME TLS session as on
++     * the control connection or it fails the request. See #22225. */
++    struct Curl_ssl_session *scs =
++      Curl_ssl_get_cf_session(data, cf->cft, FIRSTSOCKET);
++    if(scs) {
++      if(ossl_apply_session(octx, cf, data, &alpns, sess_reuse_cb, scs))
++        CURL_TRC_CF(data, cf, "applied SSL session from control connection");
++    }
++  }
++  if(!octx->reused_session &&
++     Curl_ssl_scache_use(cf, data) && !conn_cfg->verifystatus) {
+     struct Curl_ssl_session *scs = NULL;
+ 
+     result = Curl_ssl_scache_take(cf, data, peer->scache_key, &scs);
+     if(!result && scs && scs->sdata && scs->sdata_len) {
+-      const unsigned char *der_sessionid = scs->sdata;
+-      size_t der_sessionid_size = scs->sdata_len;
+-      SSL_SESSION *ssl_session = NULL;
+-
+-      /* If OpenSSL does not accept the session from the cache, this
+-       * is not an error. We continue without it. */
+-      ssl_session = d2i_SSL_SESSION(NULL, &der_sessionid,
+-                                    (long)der_sessionid_size);
+-      if(ssl_session) {
+-        if(!SSL_set_session(octx->ssl, ssl_session)) {
+-          VERBOSE(char error_buffer[256]);
+-          infof(data, "SSL: SSL_set_session not accepted, "
+-                "continuing without: %s",
+-                ossl_strerror(ERR_get_error(), error_buffer,
+-                              sizeof(error_buffer)));
+-        }
+-        else {
+-          if(conn_cfg->verifypeer &&
+-             (SSL_get_verify_result(octx->ssl) != X509_V_OK)) {
+-            /* Session was from unverified connection, cannot reuse here */
+-            SSL_set_session(octx->ssl, NULL);
+-            infof(data, "SSL session not peer verified, not reusing");
+-          }
+-          else {
+-            infof(data, "SSL reusing session with ALPN '%s'",
+-                  scs->alpn ? scs->alpn : "-");
+-            octx->reused_session = TRUE;
+-            infof(data, "SSL verify result: %lx",
+-                  (unsigned long)SSL_get_verify_result(octx->ssl));
+-#ifdef HAVE_OPENSSL_EARLYDATA
+-            if(ssl_config->earlydata && scs->alpn &&
+-               SSL_SESSION_get_max_early_data(ssl_session) &&
+-               !cf->conn->bits.connect_only &&
+-               (SSL_version(octx->ssl) == TLS1_3_VERSION)) {
+-              bool do_early_data = FALSE;
+-              if(sess_reuse_cb) {
+-                result = sess_reuse_cb(cf, data, &alpns, scs, &do_early_data);
+-                if(result) {
+-                  SSL_SESSION_free(ssl_session);
+-                  return result;
+-                }
+-              }
+-              if(do_early_data) {
+-                /* We only try the ALPN protocol the session used before,
+-                 * otherwise we might send early data for the wrong protocol */
+-                Curl_alpn_restrict_to(&alpns, scs->alpn);
+-              }
+-            }
+-#else
+-            (void)ssl_config;
+-            (void)sess_reuse_cb;
+-#endif
+-          }
+-        }
+-        SSL_SESSION_free(ssl_session);
+-      }
+-      else {
+-        infof(data, "SSL session not accepted by OpenSSL, continuing without");
+-      }
++      (void)ossl_apply_session(octx, cf, data, &alpns, sess_reuse_cb, scs);
+     }
+     Curl_ssl_scache_return(cf, data, peer->scache_key, scs);
+   }
+diff --git a/lib/vtls/openssl.h b/lib/vtls/openssl.h
+index 4fa466b367..aa0ba39ab4 100644
+--- a/lib/vtls/openssl.h
++++ b/lib/vtls/openssl.h
+@@ -179,7 +179,8 @@ CURLcode Curl_ossl_add_session(struct Curl_cfilter *cf,
+                                int ietf_tls_id,
+                                const char *alpn,
+                                unsigned char *quic_tp,
+-                               size_t quic_tp_len);
++                               size_t quic_tp_len,
++                               struct Curl_ssl_session **psession);
+ 
+ /*
+  * Get the server cert, verify it and show it, etc., only call failf() if
+diff --git a/lib/vtls/vtls.c b/lib/vtls/vtls.c
+index 82ce007b3d..74925797f0 100644
+--- a/lib/vtls/vtls.c
++++ b/lib/vtls/vtls.c
+@@ -877,19 +877,6 @@ void Curl_ssl_peer_cleanup(struct ssl_peer *peer)
+   peer->type = CURL_SSL_PEER_DNS;
+ }
+ 
+-static void cf_close(struct Curl_cfilter *cf, struct Curl_easy *data)
+-{
+-  struct ssl_connect_data *connssl = cf->ctx;
+-  if(connssl) {
+-    connssl->ssl_impl->close(cf, data);
+-    connssl->state = ssl_connection_none;
+-    connssl->connecting_state = ssl_connect_1;
+-    connssl->prefs_checked = FALSE;
+-    Curl_ssl_peer_cleanup(&connssl->peer);
+-  }
+-  cf->connected = FALSE;
+-}
+-
+ static ssl_peer_type get_peer_type(const char *hostname)
+ {
+   if(hostname && hostname[0]) {
+@@ -957,13 +944,18 @@ out:
+ 
+ static void ssl_cf_destroy(struct Curl_cfilter *cf, struct Curl_easy *data)
+ {
+-  struct cf_call_data save;
+-
+-  CF_DATA_SAVE(save, cf, data);
+-  cf_close(cf, data);
+-  CF_DATA_RESTORE(cf, save);
+-  cf_ctx_free(cf->ctx);
+-  cf->ctx = NULL;
++  struct ssl_connect_data *connssl = cf->ctx;
++  if(connssl) {
++    connssl->ssl_impl->close(cf, data);
++    connssl->state = ssl_connection_none;
++    connssl->connecting_state = ssl_connect_1;
++    connssl->prefs_checked = FALSE;
++    Curl_ssl_peer_cleanup(&connssl->peer);
++    Curl_ssl_session_destroy(connssl->session);
++    cf_ctx_free(connssl);
++    cf->ctx = NULL;
++  }
++  cf->connected = FALSE;
+ }
+ 
+ static CURLcode ssl_cf_connect(struct Curl_cfilter *cf,
+@@ -1776,4 +1768,30 @@ CURLcode Curl_on_session_reuse(struct Curl_cfilter *cf,
+   return result;
+ }
+ 
++struct Curl_ssl_session *Curl_ssl_get_cf_session(struct Curl_easy *data,
++                                                 const struct Curl_cftype *cft,
++                                                 int sockindex)
++{
++  if(data->conn &&
++#ifndef CURL_DISABLE_PROXY
++     ((cft == &Curl_cft_ssl) || (cft == &Curl_cft_ssl_proxy))) {
++#else
++     (cft == &Curl_cft_ssl)) {
++#endif
++    struct Curl_cfilter *cf1 = data->conn->cfilter[sockindex];
++    for(; cf1; cf1 = cf1->next) {
++      /* A tunneling proxy does not offer end2end encryption, even if
++       * it does SSL itself (e.g. QUIC H3 proxy) */
++      if(cf1->cft == cft)
++        break;
++    }
++    if(cf1) {
++      struct ssl_connect_data *connssl = cf1->ctx;
++      if(connssl)
++        return connssl->session;
++    }
++  }
++  return NULL;
++}
++
+ #endif /* USE_SSL */
+diff --git a/lib/vtls/vtls_int.h b/lib/vtls/vtls_int.h
+index fa5da6e4d5..b3ef76af1e 100644
+--- a/lib/vtls/vtls_int.h
++++ b/lib/vtls/vtls_int.h
+@@ -116,6 +116,7 @@ struct ssl_connect_data {
+   const struct alpn_spec *alpn;     /* ALPN to use or NULL for none */
+   void *backend;                    /* vtls backend specific props */
+   struct cf_call_data call_data;    /* data handle used in current call */
++  struct Curl_ssl_session *session; /* TLS session in use or NULL */
+   struct curltime handshake_done;   /* time when handshake finished */
+   struct {
+     char *alpn;                     /* ALPN value or NULL */
+@@ -203,6 +204,13 @@ CURLcode Curl_on_session_reuse(struct Curl_cfilter *cf,
+                                struct alpn_spec *alpns,
+                                struct Curl_ssl_session *scs,
+                                bool *do_early_data, bool early_data_allowed);
++
++/* Retrieve the SSL session held at the filter of type `cft` at
++ * data's connection at `sockindex` or NULL if not found/available. */
++struct Curl_ssl_session *Curl_ssl_get_cf_session(struct Curl_easy *data,
++                                                 const struct Curl_cftype *cft,
++                                                 int sockindex);
++
+ #endif /* USE_SSL */
+ 
+ #endif /* HEADER_CURL_VTLS_INT_H */
+diff --git a/lib/vtls/vtls_scache.c b/lib/vtls/vtls_scache.c
+index 98beeac036..a55394bc78 100644
+--- a/lib/vtls/vtls_scache.c
++++ b/lib/vtls/vtls_scache.c
+@@ -44,7 +44,7 @@
+ #include "curl_trc.h"
+ #include "curl_sha256.h"
+ #include "rand.h"
+-
++#include "curlx/strdup.h"
+ 
+ /* a peer+tls-config we cache sessions for */
+ struct Curl_ssl_scache_peer {
+@@ -456,6 +456,54 @@ void Curl_ssl_session_destroy(struct Curl_ssl_session *s)
+   }
+ }
+ 
++CURLcode Curl_ssl_session_dup(struct Curl_ssl_session *src,
++                              struct Curl_ssl_session **pdest)
++{
++  struct Curl_ssl_session *dest = NULL;
++  CURLcode result = CURLE_OUT_OF_MEMORY;
++
++  if(!src || !pdest)
++    return CURLE_BAD_FUNCTION_ARGUMENT;
++  *pdest = NULL;
++
++  dest = curlx_calloc(1, sizeof(*dest));
++  if(!dest)
++    goto out;
++
++  dest->ietf_tls_id = src->ietf_tls_id;
++  dest->valid_until = src->valid_until;
++  dest->earlydata_max = src->earlydata_max;
++  dest->sectrust_verified = src->sectrust_verified;
++  if(src->sdata_len) {
++    dest->sdata = curlx_memdup(src->sdata, src->sdata_len);
++    if(!dest->sdata)
++      goto out;
++    dest->sdata_len = src->sdata_len;
++  }
++  if(src->quic_tp_len) {
++    dest->quic_tp = curlx_memdup(src->quic_tp, src->quic_tp_len);
++    if(!dest->quic_tp)
++      goto out;
++    dest->quic_tp_len = src->quic_tp_len;
++  }
++  if(src->alpn) {
++    dest->alpn = curlx_strdup(src->alpn);
++    if(!dest->alpn)
++      goto out;
++  }
++  result = CURLE_OK;
++
++out:
++  if(!result)
++    *pdest = dest;
++  else {
++    *pdest = NULL;
++    if(dest)
++      Curl_ssl_session_destroy(dest);
++  }
++  return result;
++}
++
+ static void cf_ssl_scache_clear_peer(struct Curl_ssl_scache_peer *peer)
+ {
+   Curl_llist_destroy(&peer->sessions, NULL);
+diff --git a/lib/vtls/vtls_scache.h b/lib/vtls/vtls_scache.h
+index effb1d8f96..5fd9d3c054 100644
+--- a/lib/vtls/vtls_scache.h
++++ b/lib/vtls/vtls_scache.h
+@@ -131,6 +131,7 @@ struct Curl_ssl_session {
+   const unsigned char *quic_tp; /* Optional QUIC transport param bytes */
+   size_t quic_tp_len;          /* number of bytes in quic_tp */
+   struct Curl_llist_node list; /*  internal storage handling */
++  BIT(sectrust_verified);      /* session comes from sectrust verified TLS */
+ };
+ 
+ /* Create a `session` instance. Does NOT need locking.
+@@ -156,6 +157,10 @@ CURLcode Curl_ssl_session_create2(void *sdata, size_t sdata_len,
+                                   unsigned char *quic_tp, size_t quic_tp_len,
+                                   struct Curl_ssl_session **psession);
+ 
++/* Duplicate an ssl session */
++CURLcode Curl_ssl_session_dup(struct Curl_ssl_session *src,
++                              struct Curl_ssl_session **pdest);
++
+ /* Destroy a `session` instance. Can be called with NULL.
+  * Does NOT need locking. */
+ void Curl_ssl_session_destroy(struct Curl_ssl_session *s);
+diff --git a/lib/vtls/wolfssl.c b/lib/vtls/wolfssl.c
+index 92eaa7a751..e2a6383878 100644
+--- a/lib/vtls/wolfssl.c
++++ b/lib/vtls/wolfssl.c
+@@ -397,14 +397,17 @@ CURLcode Curl_wssl_cache_session(struct Curl_cfilter *cf,
+                                  int ietf_tls_id,
+                                  const char *alpn,
+                                  unsigned char *quic_tp,
+-                                 size_t quic_tp_len)
++                                 size_t quic_tp_len,
++                                 struct Curl_ssl_session **pscs)
+ {
+   CURLcode result = CURLE_OK;
+-  struct Curl_ssl_session *sc_session = NULL;
++  struct Curl_ssl_session *sc_session = NULL, *sc_dup = NULL;
+   unsigned char *sdata = NULL, *sdata_ptr, *qtp_clone = NULL;
+   unsigned int sdata_len;
+   unsigned int earlydata_max = 0;
+ 
++  if(pscs)
++    *pscs = NULL;
+   if(!session)
+     goto out;
+ 
+@@ -446,13 +449,23 @@ CURLcode Curl_wssl_cache_session(struct Curl_cfilter *cf,
+                                     earlydata_max, qtp_clone, quic_tp_len,
+                                     &sc_session);
+   sdata = NULL;  /* took ownership of sdata */
++  if(!result && pscs &&  /* return a duplicate if asked for and FTP */
++     (cf->conn->scheme->family == CURLPROTO_FTP))
++    result = Curl_ssl_session_dup(sc_session, &sc_dup);
+   if(!result) {
+     result = Curl_ssl_scache_put(cf, data, ssl_peer_key, sc_session);
+     /* took ownership of `sc_session` */
++    sc_session = NULL;
+   }
+ 
+ out:
+   curlx_free(sdata);
++  if(!result && pscs) {
++    *pscs = sc_dup;
++    sc_dup = NULL;
++  }
++  Curl_ssl_session_destroy(sc_session);
++  Curl_ssl_session_destroy(sc_dup);
+   return result;
+ }
+ 
+@@ -465,12 +478,17 @@ static int wssl_vtls_new_session_cb(WOLFSSL *ssl, WOLFSSL_SESSION *session)
+   if(cf && session) {
+     struct ssl_connect_data *connssl = cf->ctx;
+     struct Curl_easy *data = CF_DATA_CURRENT(cf);
++    struct Curl_ssl_session *scs = NULL;
+     DEBUGASSERT(connssl);
+     DEBUGASSERT(data);
+     if(connssl && data) {
+       (void)Curl_wssl_cache_session(cf, data, connssl->peer.scache_key,
+                                     session, wolfSSL_version(ssl),
+-                                    connssl->negotiated.alpn, NULL, 0);
++                                    connssl->negotiated.alpn, NULL, 0, &scs);
++      if(scs) {
++        Curl_ssl_session_destroy(connssl->session);
++        connssl->session = scs;
++      }
+     }
+   }
+   return 0;
+@@ -498,36 +516,35 @@ static CURLcode wssl_on_session_reuse(struct Curl_cfilter *cf,
+                                connssl->earlydata_max);
+ }
+ 
+-static CURLcode wssl_setup_session(
++static bool wssl_apply_session(
+   struct Curl_cfilter *cf,
+   struct Curl_easy *data,
+   struct wssl_ctx *wss,
+   struct alpn_spec *alpns,
+-  const char *ssl_peer_key,
+-  Curl_wssl_init_session_reuse_cb *sess_reuse_cb)
++  Curl_wssl_init_session_reuse_cb *sess_reuse_cb,
++  struct Curl_ssl_session *scs)
+ {
+   struct ssl_config_data *ssl_config = Curl_ssl_cf_get_config(cf, data);
+-  struct Curl_ssl_session *scs = NULL;
+-  CURLcode result;
++  CURLcode result = CURLE_OK;
++  WOLFSSL_SESSION *session = NULL;
++  bool success = FALSE;
+ 
+-  result = Curl_ssl_scache_take(cf, data, ssl_peer_key, &scs);
+-  if(!result && scs && scs->sdata && scs->sdata_len &&
++  if(scs && scs->sdata && scs->sdata_len &&
+      (!scs->alpn || Curl_alpn_contains_proto(alpns, scs->alpn))) {
+-    WOLFSSL_SESSION *session;
+     /* wolfSSL changes the passed pointer for whatever reasons, yikes */
+     const unsigned char *sdata = scs->sdata;
+     session = wolfSSL_d2i_SSL_SESSION(NULL, &sdata, (long)scs->sdata_len);
+     if(session) {
+       int ret = wolfSSL_set_session(wss->ssl, session);
+       if(ret != WOLFSSL_SUCCESS) {
+-        Curl_ssl_session_destroy(scs);
+-        scs = NULL;
+         infof(data, "cached session not accepted (%d), "
+               "removing from cache", ret);
++        goto out;
+       }
+       else {
+         infof(data, "SSL reusing session with ALPN '%s'",
+               scs->alpn ? scs->alpn : "-");
++        success = TRUE;
+         if(ssl_config->earlydata &&
+            !cf->conn->bits.connect_only &&
+            !strcmp("TLSv1.3", wolfSSL_get_version(wss->ssl))) {
+@@ -535,7 +552,6 @@ static CURLcode wssl_setup_session(
+           if(sess_reuse_cb) {
+             result = sess_reuse_cb(cf, data, alpns, scs, &do_early_data);
+             if(result) {
+-              wolfSSL_SESSION_free(session);
+               goto out;
+             }
+           }
+@@ -554,15 +570,14 @@ static CURLcode wssl_setup_session(
+ #endif
+         }
+       }
+-      wolfSSL_SESSION_free(session);
+     }
+     else {
+       failf(data, "could not decode previous session");
+     }
+   }
+ out:
+-  Curl_ssl_scache_return(cf, data, ssl_peer_key, scs);
+-  return result;
++  wolfSSL_SESSION_free(session);
++  return success;
+ }
+ 
+ static CURLcode wssl_populate_x509_store(struct Curl_cfilter *cf,
+@@ -1151,6 +1166,9 @@ static CURLcode wssl_init_ssl_handle(
+   unsigned char transport,
+   Curl_wssl_init_session_reuse_cb *sess_reuse_cb)
+ {
++  struct Curl_ssl_session *scs = NULL;
++  bool session_applied = FALSE;
++
+   /* Let's make an SSL structure */
+   wctx->ssl = wolfSSL_new(wctx->ssl_ctx);
+   if(!wctx->ssl) {
+@@ -1170,11 +1188,30 @@ static CURLcode wssl_init_ssl_handle(
+   (void)transport;
+ #endif
+ 
++  if((cf->sockindex == SECONDARYSOCKET) && !(cf->cft->flags & CF_TYPE_PROXY)) {
++    /* FTP is a bitch. On TLS secured transfers, it is a common server
++     * option to require the client to use the SAME TLS session as on
++     * the control connection or it fails the request. See #22225. */
++    scs = Curl_ssl_get_cf_session(data, cf->cft, FIRSTSOCKET);
++    if(scs) {
++      session_applied = wssl_apply_session(cf, data, wctx, alpns,
++                                           sess_reuse_cb, scs);
++      if(session_applied)
++        CURL_TRC_CF(data, cf, "applied SSL session from control connection");
++      scs = NULL;
++    }
++  }
++
+   /* Check if there is a cached ID we can/should use here! */
+-  if(Curl_ssl_scache_use(cf, data)) {
++  if(!session_applied && Curl_ssl_scache_use(cf, data)) {
+     /* Set session from cache if there is one */
+-    (void)wssl_setup_session(cf, data, wctx, alpns, peer->scache_key,
+-                             sess_reuse_cb);
++    CURLcode result = Curl_ssl_scache_take(cf, data, peer->scache_key, &scs);
++    if(!result && scs) {
++      if(wssl_apply_session(cf, data, wctx, alpns, sess_reuse_cb, scs))
++        Curl_ssl_scache_return(cf, data, peer->scache_key, scs);
++      else
++        Curl_ssl_session_destroy(scs);
++    }
+   }
+ 
+ #ifdef HAVE_ALPN
+diff --git a/lib/vtls/wolfssl.h b/lib/vtls/wolfssl.h
+index 2490bf3e9c..2016a0069f 100644
+--- a/lib/vtls/wolfssl.h
++++ b/lib/vtls/wolfssl.h
+@@ -88,7 +88,8 @@ CURLcode Curl_wssl_cache_session(struct Curl_cfilter *cf,
+                                  int ietf_tls_id,
+                                  const char *alpn,
+                                  unsigned char *quic_tp,
+-                                 size_t quic_tp_len);
++                                 size_t quic_tp_len,
++                                 struct Curl_ssl_session **pscs);
+ #endif
+ 
+ CURLcode Curl_wssl_verify_pinned(struct Curl_cfilter *cf,
+diff --git a/tests/http/conftest.py b/tests/http/conftest.py
+index 225d63fe6d..31a3d55b64 100644
+--- a/tests/http/conftest.py
++++ b/tests/http/conftest.py
+@@ -106,9 +106,7 @@ def httpd(env) -> Generator[Httpd, None, None]:
+ @pytest.fixture(scope="session")
+ def nghttpx(env, httpd) -> Generator[Union[Nghttpx, bool], None, None]:
+     nghttpx = NghttpxQuic(env=env)
+-    if nghttpx.exists():
+-        if not nghttpx.supports_h3() and env.have_h3_curl():
+-            log.warning("nghttpx does not support QUIC, but curl does")
++    if nghttpx.exists() and nghttpx.supports_h3() and env.have_h3_curl():
+         nghttpx.clear_logs()
+         assert nghttpx.initial_start()
+         yield nghttpx
+diff --git a/tests/http/test_31_vsftpds.py b/tests/http/test_31_vsftpds.py
+index ac4c154c47..18f93dede4 100644
+--- a/tests/http/test_31_vsftpds.py
++++ b/tests/http/test_31_vsftpds.py
+@@ -37,6 +37,10 @@ log = logging.getLogger(__name__)
+ 
+ 
+ @pytest.mark.skipif(condition=not Env.has_vsftpd(), reason="missing vsftpd")
++@pytest.mark.skipif(condition=Env.curl_uses_lib('rustls-ffi'),
++                    reason="rustls does not support TLS session reuse")
++@pytest.mark.skipif(condition=Env.curl_uses_lib('libressl'),
++                    reason="libressl fails on TLS session reuse")
+ class TestVsFTPD:
+ 
+     SUPPORTS_SSL = True
+@@ -101,31 +105,39 @@ class TestVsFTPD:
+         self.check_downloads(curl, srcfile, count)
+         r.check_stats_timelines()
+ 
+-    @pytest.mark.parametrize("docname", [
+-        'data-1k', 'data-1m', 'data-10m'
++    @pytest.mark.parametrize("docname,count,secure", [
++        ['data-1k', 10, True],
++        ['data-1m', 5, True],
++        ['data-1m', 5, False],
++        ['data-10m', 2,True]
+     ])
+-    def test_31_03_download_10_serial(self, env: Env, vsftpds: VsFTPD, docname):
++    def test_31_03_download_10_serial(self, env: Env, vsftpds: VsFTPD, docname, count, secure):
+         curl = CurlClient(env=env)
+         srcfile = os.path.join(vsftpds.docs_dir, f'{docname}')
+-        count = 10
+         url = f'ftp://{env.ftp_domain}:{vsftpds.port}/{docname}?[0-{count-1}]'
+-        r = curl.ftp_ssl_get(urls=[url], with_stats=True)
++        xargs = []
++        if not secure:
++            xargs.append('--insecure')
++        r = curl.ftp_ssl_get(urls=[url], with_stats=True, extra_args=xargs)
+         r.check_stats(count=count, http_status=226)
+         self.check_downloads(curl, srcfile, count)
+         assert r.total_connects == count + 1, 'should reuse the control conn'
+         r.check_stats_timelines()
+ 
+-    @pytest.mark.parametrize("docname", [
+-        'data-1k', 'data-1m', 'data-10m'
++    @pytest.mark.parametrize("docname,count,secure", [
++        ['data-1k', 10, True],
++        ['data-1m', 5, True],
++        ['data-1m', 5, False],
++        ['data-10m', 2,True]
+     ])
+-    def test_31_04_download_10_parallel(self, env: Env, vsftpds: VsFTPD, docname):
++    def test_31_04_download_10_parallel(self, env: Env, vsftpds: VsFTPD, docname, count, secure):
+         curl = CurlClient(env=env)
+         srcfile = os.path.join(vsftpds.docs_dir, f'{docname}')
+-        count = 10
+         url = f'ftp://{env.ftp_domain}:{vsftpds.port}/{docname}?[0-{count-1}]'
+-        r = curl.ftp_ssl_get(urls=[url], with_stats=True, extra_args=[
+-            '--parallel'
+-        ])
++        xargs = ['--parallel']
++        if not secure:
++            xargs.append('--insecure')
++        r = curl.ftp_ssl_get(urls=[url], with_stats=True, extra_args=xargs)
+         r.check_stats(count=count, http_status=226)
+         self.check_downloads(curl, srcfile, count)
+         assert r.total_connects > count + 1, 'should have used several control conns'
+diff --git a/tests/http/test_32_ftps_vsftpd.py b/tests/http/test_32_ftps_vsftpd.py
+index 1181bb3211..275b06a99a 100644
+--- a/tests/http/test_32_ftps_vsftpd.py
++++ b/tests/http/test_32_ftps_vsftpd.py
+@@ -37,6 +37,10 @@ log = logging.getLogger(__name__)
+ 
+ 
+ @pytest.mark.skipif(condition=not Env.has_vsftpd(), reason="missing vsftpd")
++@pytest.mark.skipif(condition=Env.curl_uses_lib('rustls-ffi'),
++                    reason="rustls does not support TLS session reuse")
++@pytest.mark.skipif(condition=Env.curl_uses_lib('libressl'),
++                    reason="libressl fails on TLS session reuse")
+ class TestFtpsVsFTPD:
+ 
+     SUPPORTS_SSL = True
+@@ -101,15 +105,20 @@ class TestFtpsVsFTPD:
+         self.check_downloads(curl, srcfile, count)
+         r.check_stats_timelines()
+ 
+-    @pytest.mark.parametrize("docname", [
+-        'data-1k', 'data-1m', 'data-10m'
++    @pytest.mark.parametrize("docname,count,secure", [
++        ['data-1k', 10, True],
++        ['data-1m', 5, True],
++        ['data-1m', 5, False],
++        ['data-10m', 2,True]
+     ])
+-    def test_32_03_download_10_serial(self, env: Env, vsftpds: VsFTPD, docname):
++    def test_32_03_download_10_serial(self, env: Env, vsftpds: VsFTPD, docname, count, secure):
+         curl = CurlClient(env=env)
+         srcfile = os.path.join(vsftpds.docs_dir, f'{docname}')
+-        count = 10
+         url = f'ftps://{env.ftp_domain}:{vsftpds.port}/{docname}?[0-{count-1}]'
+-        r = curl.ftp_get(urls=[url], with_stats=True)
++        xargs = []
++        if not secure:
++            xargs.append('--insecure')
++        r = curl.ftp_get(urls=[url], with_stats=True, extra_args=xargs)
+         r.check_stats(count=count, http_status=226)
+         self.check_downloads(curl, srcfile, count)
+         assert r.total_connects == count + 1, 'should reuse the control conn'
+diff --git a/tests/http/testenv/vsftpd.py b/tests/http/testenv/vsftpd.py
+index 6c2d1db8c5..daaf904f1e 100644
+--- a/tests/http/testenv/vsftpd.py
++++ b/tests/http/testenv/vsftpd.py
+@@ -217,7 +217,7 @@ class VsFTPD:
+                 f'rsa_cert_file={creds.cert_file}',
+                 f'rsa_private_key_file={creds.pkey_file}',
+                 # require_ssl_reuse=YES means ctrl and data connection need to use the same session
+-                'require_ssl_reuse=NO',
++                'require_ssl_reuse=YES',
+             ])
+             if self._ssl_implicit:
+                 conf.extend([
+-- 
+2.43.0
+
