@@ -2,22 +2,20 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT a61e2b4
-%define DOCKER_CLI_GITCOMMIT ced0996
-%define TINI_GITCOMMIT de40ad0
+%define DOCKER_ENGINE_GITCOMMIT     6fdf0a6
+%define DOCKER_CLI_GITCOMMIT        0bab007
+%define TINI_GITCOMMIT              de40ad0
 
-%define gopath_comp_engine github.com/docker/docker
-%define gopath_comp_cli github.com/docker/cli
-%define gopath_comp_libnetwork github.com/docker/libnetwork
-%define gopath_comp_containerd github.com/containerd/containerd
-%define gopath_comp_crypto golang.org/x/crypto
-%define gopath_comp_protobuf google.golang.org/protobuf
-%define gopath_comp_golangjwt github.com/golang-jwt/jwt/v4
+%define gopath_comp_engine      github.com/docker/docker
+%define gopath_comp_containerd  github.com/containerd/containerd
+%define gopath_comp_cli         github.com/docker/cli
+
+%define docker_cli_version      25.0.7
 
 Summary:        Docker
 Name:           docker
-Version:        24.0.9
-Release:        11%{?dist}
+Version:        25.0.16
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -25,58 +23,44 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/moby/moby/archive/moby-%{version}.tar.gz
-%define sha512  moby=b71a058f32fb80676bb4c83f5d2236c9496ffc5c7f216ebff5bcac6f5959e121be3b2bfd2ff9aa5cccee27f71947dfe5b76090e82020806cc9ee452cd1f21084
+%define sha512  moby=e8933f1275144168dd4fb2fb5fcfb835990ce397505d6dc4582643693c585a44dfc1bc43386b76fe3a80744fa25e3be11ea34c3d944008cc2353191530872746
 
 Source1:        https://github.com/krallin/tini/archive/tini-0.19.0.tar.gz
 %define sha512  tini=3591a6db54b8f35c30eafc6bbf8903926c382fd7fe2926faea5d95c7b562130b5264228df550f2ad83581856fd5291cf4aab44ee078aef3270c74be70886055c
 
-Source2:        https://github.com/docker/libnetwork/archive/libnetwork-64b7a45.tar.gz
-%define sha512  libnetwork=e4102a20d2ff681de7bc52381d473c6f6b13d1d59fb14a749e8e3ceda439a74dd7cf2046a2042019c646269173b55d4e78140fe5e8c59d913895a35d4a5f40a4
+Source2:        https://github.com/docker/cli/archive/refs/tags/%{name}-cli-%{docker_cli_version}.tar.gz
+%define sha512  %{name}-cli=0d1a688ab402329b5f4e17c36b596c0db7af4203c376472c6e8585fb9dece33df707b080c35e2866923239f04d623642199dbf3702b02dd99756c8a71b306722
 
-Source3:        https://github.com/docker/cli/archive/refs/tags/docker-cli-%{version}.tar.gz
-%define sha512  docker-cli=7abfbf593783ffaadf84461b7e6dcbef7fbb857166721ba8004531212a231f4630a747c09ef8a3a5cf119861c51465ba3d5bc4b63f0e4d76936fd3b1baff530f
+Source3:       %{name}.service
+Source4:       %{name}.socket
+Source5:       default-disable.preset
 
-Source97:       docker-post19.service
-Source98:       docker-post19.socket
-Source99:       default-disable.preset
+Patch0: tini-disable-git.patch
+Patch1: dockerd-containerd-CVE-2024-40635.patch
+Patch2: CVE-2026-41567.patch
+Patch3: CVE-2026-42306-1.patch
+Patch4: CVE-2026-42306-2.patch
+Patch5: CVE-2026-42306-3.patch
 
-Patch0:        tini-disable-git.patch
-Patch1:        CVE-2024-41110-1.patch
-Patch2:        CVE-2024-41110-2.patch
-Patch3:        dockerd-containerd-CVE-2024-40635.patch
-Patch4:        dockerd-crypto-ssh-CVE-2024-45337.patch
-Patch5:        dockerd-crypto-ssh-CVE-2025-22869.patch
-Patch6:        dockerd-golang-protobuf-CVE-2024-24786.patch
-Patch7:        dockerd-golang-jwt-CVE-2025-30204.patch
-Patch8:        dockerd-grpc-CVE-2023-44487.patch
-Patch9:        CVE-2026-33997.patch
-Patch10:       CVE-2026-34040-1.patch
-Patch11:       CVE-2026-34040-2.patch
-Patch12:       CVE-2026-41567.patch
-Patch13:       CVE-2026-42306.patch
-
-BuildRequires:  systemd
 BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
-BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
-BuildRequires:  go
+BuildRequires:  go1.26
 BuildRequires:  go-md2man
 BuildRequires:  cmake
 BuildRequires:  sed
 BuildRequires:  jq
-BuildRequires:  libapparmor
 BuildRequires:  libapparmor-devel
 BuildRequires:  libslirp-devel
 BuildRequires:  slirp4netns
 
-Requires:       docker-engine = %{version}-%{release}
-Requires:       docker-cli = %{version}-%{release}
+Requires:       %{name}-engine = %{version}-%{release}
+Requires:       %{name}-cli = %{version}-%{release}
 # bash completion uses awk
 Requires:       gawk
 
@@ -107,11 +91,11 @@ Requires:       glibc
 Docker is an open source project to build, ship and run any application as a lightweight container.
 
 %package        doc
-Summary:        Documentation and vimfiles for docker
-Requires:       docker = %{version}-%{release}
+Summary:        Documentation and vimfiles for %{name}
+Requires:       %{name} = %{version}-%{release}
 
 %description    doc
-Documentation and vimfiles for docker
+Documentation and vimfiles for %{name}
 
 %package    rootless
 Summary:    Rootless support for Docker
@@ -132,50 +116,29 @@ Use dockerd-rootless-setuptool.sh to setup systemd for dockerd-rootless.sh.
 
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
          "$(dirname "src/%{gopath_comp_cli}")" \
-         "src/%{gopath_comp_libnetwork}" \
          tini \
          bin
 
 mv moby-%{version} src/%{gopath_comp_engine}
 
-tar -xf %{SOURCE3}
-mv cli-%{version} src/%{gopath_comp_cli}
+tar -xf %{SOURCE2}
+mv cli-%{docker_cli_version} src/%{gopath_comp_cli}
 
 tar -C tini -xf %{SOURCE1}
 
-tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
-
-# Patch sources
 pushd tini
 %patch -P 0 -p1
 popd
 
-pushd src/%{gopath_comp_engine} #moby source directory
+# containerd source directory
+pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_containerd}
 %patch -P 1 -p1
-%patch -P 2 -p1
-%patch -P 12 -p1
-#%%patch -P 13 -p1
-echo "TODO: CVE-2026-42306.patch has issues, not applying it for now."
-echo %{PATCH13}
-popd
-pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_containerd} #containerd source directory
-%patch -P 3 -p1
-popd
-pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_crypto} #crypto source directory
-%patch -P 4 -p1
-%patch -P 5 -p1
-popd
-pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_protobuf} #protobuf source directory
-%patch -P 6 -p1
-popd
-pushd src/%{gopath_comp_engine}/vendor/%{gopath_comp_golangjwt} #golang-jwt source directory
-%patch -P 7 -p1
 popd
 
-%patch -P 8 -p1
-%patch -P 9 -p1
-%patch -P 10 -p1
-%patch -P 11 -p1
+# moby/docker patches
+pushd src/%{gopath_comp_engine}
+%autopatch -m2 -M5 -p1
+popd
 
 %build
 export GOPATH="$PWD"
@@ -190,23 +153,18 @@ ENGINE_IMAGE="engine-community"
 # cli
 pushd "src/%{gopath_comp_cli}"
   DISABLE_WARN_OUTSIDE_CONTAINER=1 \
-  VERSION=%{version} \
+  VERSION=%{docker_cli_version} \
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
   GITCOMMIT=%{DOCKER_CLI_GITCOMMIT} \
-  make dynbinary manpages
+  make %{?_smp_mflags} dynbinary
 popd
-
-# Don't use trimpath for now, see https://github.com/golang/go/issues/16860
-# Ideally we should remove the RPM build prefixes (.../BUILD/src/...)
-
-#BUILDFLAGS="-gcflags=all=-trimpath=$GOPATH -asmflags=all=-trimpath=$GOPATH"
 
 # daemon
 pushd "src/%{gopath_comp_engine}"
   VERSION=%{version} \
   DOCKER_GITCOMMIT=%{DOCKER_ENGINE_GITCOMMIT} \
-  PRODUCT=docker \
+  PRODUCT=%{name} \
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
   DEFAULT_PRODUCT_LICENSE="$DEFAULT_PRODUCT_LICENSE" \
@@ -214,20 +172,15 @@ pushd "src/%{gopath_comp_engine}"
   ./hack/make.sh dynbinary
 popd
 
-# proxy
-pushd "src/%{gopath_comp_libnetwork}"
-  go build -buildmode=pie -ldflags=-linkmode=external -o "$GOPATH/bin/docker-proxy" %{gopath_comp_libnetwork}/cmd/proxy
-popd
-
 # init
 pushd tini
-%cmake \
+%{cmake} \
     -Dtini_VERSION_GIT:STRING=%{TINI_GITCOMMIT} \
     -Dgit_version_check_ret=0
 
 cd %{__cmake_builddir}
 make tini-static %{?_smp_mflags}
-cp tini-static "$GOPATH/bin/docker-init"
+cp tini-static "$GOPATH/bin/%{name}-init"
 popd
 
 jq -n \
@@ -239,96 +192,82 @@ jq -n \
   > distribution_based_engine.json
 
 %install
-install -d -m755 %{buildroot}%{_mandir}/man1
-install -d -m755 %{buildroot}%{_mandir}/man5
-install -d -m755 %{buildroot}%{_mandir}/man8
 install -d -m755 %{buildroot}%{_bindir}
 install -d -m755 %{buildroot}%{_unitdir}
-install -d -m755 %{buildroot}%{_sharedstatedir}/docker-engine
+install -d -m755 %{buildroot}%{_sharedstatedir}/%{name}-engine
 install -d -m755 %{buildroot}%{_udevrulesdir}
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
-# install binary
 install -p -m 755 src/%{gopath_comp_cli}/build/docker %{buildroot}%{_bindir}/docker
-install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd %{buildroot}%{_bindir}/dockerd
 
-# install proxy
-install -p -m 755 bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
+# install binary
+pushd src/%{gopath_comp_engine}/bundles/dynbinary-daemon
+for file in dockerd %{name}-proxy; do
+  install -p -m 755 $file %{buildroot}%{_bindir}/$file
+done
+popd
 
 # install tini
-install -p -m 755 bin/docker-init %{buildroot}%{_bindir}/docker-init
+install -p -m 755 bin/%{name}-init %{buildroot}%{_bindir}/%{name}-init
 
 # install udev rules
-install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}/80-docker.rules
+install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-%{name}.rules \
+            %{buildroot}%{_udevrulesdir}/80-%{name}.rules
 
 # add init scripts
-install -p -m 644 %{SOURCE97} %{buildroot}%{_unitdir}/docker.service
-install -p -m 644 %{SOURCE98} %{buildroot}%{_unitdir}/docker.socket
+install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
+install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/%{name}.socket
+install -v -D -m 0644 %{SOURCE5} %{buildroot}%{_presetdir}/50-%{name}.preset
 
 # add docker-engine metadata
-install -p -m 644 distribution_based_engine.json %{buildroot}%{_sharedstatedir}/docker-engine/distribution_based_engine.json
+install -p -m 644 distribution_based_engine.json \
+            %{buildroot}%{_sharedstatedir}/%{name}-engine/distribution_based_engine.json
 
 # add bash completions
-install -p -m 644 src/%{gopath_comp_cli}/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
-
-# install manpages
-install -p -m 644 src/%{gopath_comp_cli}/man/man1/*.1 %{buildroot}%{_mandir}/man1
-install -p -m 644 src/%{gopath_comp_cli}/man/man5/*.5 %{buildroot}%{_mandir}/man5
-install -p -m 644 src/%{gopath_comp_cli}/man/man8/*.8 %{buildroot}%{_mandir}/man8
-
-# vimfiles are now upstream, no vim files installed
-
-mkdir -p build-docs
-for engine_file in AUTHORS CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
-  cp "src/%{gopath_comp_engine}/$engine_file" "build-docs/engine-$engine_file"
-done
-for cli_file in AUTHORS LICENSE MAINTAINERS NOTICE README.md; do
-  cp "src/%{gopath_comp_cli}/$cli_file" "build-docs/cli-$cli_file"
-done
-
-install -v -D -m 0644 %{SOURCE99} %{buildroot}%{_presetdir}/50-docker.preset
+install -p -m 644 src/%{gopath_comp_cli}/contrib/completion/bash/%{name} \
+            %{buildroot}%{_datadir}/bash-completion/completions/%{name}
 
 # docker-rootless
-install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless.sh %{buildroot}%{_bindir}/dockerd-rootless.sh
-install -D -p -m 0755 %{_builddir}/moby-%{version}/src/github.com/docker/docker/contrib/dockerd-rootless-setuptool.sh %{buildroot}%{_bindir}/dockerd-rootless-setuptool.sh
+pushd %{_builddir}/moby-%{version}/src/github.com/%{name}/%{name}/contrib
+for file in dockerd-rootless.sh dockerd-rootless-setuptool.sh; do
+  install -D -p -m 0755 $file %{buildroot}%{_bindir}/$file
+done
+popd
 
 %pre engine
-if [ $1 -gt 0 ] ; then
+if [ $1 -gt 0 ]; then
   # package upgrade scenario, before new files are installed
 
   # clear any old state
-  rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
+  rm -f %{_sharedstatedir}/rpm-state/%{name}-is-active > /dev/null 2>&1 || :
 
   # check if docker service is running
-  if systemctl is-active docker.service > /dev/null 2>&1; then
-    systemctl stop docker > /dev/null 2>&1 || :
-    touch %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
+  if systemctl is-active %{name}.service > /dev/null 2>&1; then
+    systemctl stop %{name} > /dev/null 2>&1 || :
+    touch %{_sharedstatedir}/rpm-state/%{name}-is-active > /dev/null 2>&1 || :
   fi
 fi
 
 %preun engine
-%systemd_preun docker.service
+%systemd_preun %{name}.service
 
 %post engine
 if [ $1 -eq 1 ] ; then
-  getent group docker >/dev/null || groupadd -r docker
+  getent group %{name} >/dev/null || groupadd -r %{name}
 fi
-%systemd_post docker.service
+%systemd_post %{name}.service
 
 %postun engine
-%systemd_postun_with_restart docker.service
-if [ $1 -eq 0 ] ; then
-  getent group docker >/dev/null && groupdel docker || :
-fi
+%systemd_postun_with_restart %{name}.service
 
 %posttrans engine
 if [ $1 -ge 0 ] ; then
   # package upgrade scenario, after new files are installed
 
   # check if docker was running before upgrade
-  if [ -f %{_sharedstatedir}/rpm-state/docker-is-active ]; then
-    systemctl start docker > /dev/null 2>&1 || :
-    rm -f %{_sharedstatedir}/rpm-state/docker-is-active > /dev/null 2>&1 || :
+  if [ -f %{_sharedstatedir}/rpm-state/%{name}-is-active ]; then
+    systemctl start %{name} > /dev/null 2>&1 || :
+    rm -f %{_sharedstatedir}/rpm-state/%{name}-is-active > /dev/null 2>&1 || :
   fi
 fi
 
@@ -340,28 +279,22 @@ rm -rf %{buildroot}/*
 
 %files engine
 %defattr(-,root,root)
-%{_unitdir}/docker.service
-%{_unitdir}/docker.socket
-%{_presetdir}/50-docker.preset
-%{_bindir}/docker-proxy
-%{_bindir}/docker-init
+%{_unitdir}/%{name}.service
+%{_unitdir}/%{name}.socket
+%{_presetdir}/50-%{name}.preset
+%{_bindir}/%{name}-proxy
+%{_bindir}/%{name}-init
 %{_bindir}/dockerd
-%{_udevrulesdir}/80-docker.rules
-%{_sharedstatedir}/docker-engine/distribution_based_engine.json
+%{_udevrulesdir}/80-%{name}.rules
+%{_sharedstatedir}/%{name}-engine/distribution_based_engine.json
 
 %files cli
 %defattr(-,root,root)
-%{_bindir}/docker
-%{_datadir}/bash-completion/completions/docker
+%{_bindir}/%{name}
+%{_datadir}/bash-completion/completions/%{name}
 
 %files doc
 %defattr(-,root,root)
-%doc build-docs/engine-AUTHORS build-docs/engine-CONTRIBUTING.md build-docs/engine-LICENSE build-docs/engine-MAINTAINERS build-docs/engine-NOTICE build-docs/engine-README.md
-%doc build-docs/cli-LICENSE build-docs/cli-MAINTAINERS build-docs/cli-NOTICE build-docs/cli-README.md
-%doc
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man8/*
 
 %files rootless
 %defattr(-,root,root)
@@ -369,6 +302,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Jul 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.0.16-1
+- Upgrade to v25, LTS series
 * Wed Jul 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.9-11
 - Don't apply CVE-2026-42306.patch
 * Thu Jun 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.0.9-10

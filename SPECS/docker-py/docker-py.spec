@@ -1,6 +1,6 @@
 Name:           docker-py3
 Version:        6.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Jul 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.0-3
+- Bump version as a part of docker upgrade
 * Wed Jan 15 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.0.0-2
 - Fix functionality break introduced by CVE-2024-35195 in python3-requests
 * Mon Oct 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 6.0.0-1
