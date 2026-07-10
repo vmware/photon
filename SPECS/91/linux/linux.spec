@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.176
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -875,6 +875,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Jul 10 2026 Ankit Jain <ankit-aj.ajin@broadcom.com> 6.1.176-4
+- Pin UPAI enums: IFLA_BRPORT_SINK_CONNECTED=60, IFLA_GRE_MSS_CLAMP=30
+- to make it consistent between 6.1/6.12 kernel and some headroom for future upgrades.
 * Wed Jul 08 2026 Bo Gan <bo.gan@broadcom.com> 6.1.176-3
 - Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Tue Jun 30 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 6.1.176-2

@@ -54,7 +54,7 @@ index 5e7a1041d..f1e85edb7 100644
  	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
  	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
  	IFLA_BRPORT_LOCKED,
-+	IFLA_BRPORT_SINK_CONNECTED,
++	IFLA_BRPORT_SINK_CONNECTED = 60,
  	__IFLA_BRPORT_MAX
  };
  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
@@ -562,6 +562,15 @@ diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
 index 1163226c0..9d2d693b7 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
+@@ -62,7 +62,7 @@
+ #include "dev.h"
+ 
+ #define RTNL_MAX_TYPE		50
+-#define RTNL_SLAVE_MAX_TYPE	40
++#define RTNL_SLAVE_MAX_TYPE	60
+ 
+ struct rtnl_link {
+ 	rtnl_doit_func		doit;
 @@ -4835,6 +4835,8 @@ int ndo_dflt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
  				IFLA_BRPORT_LEARNING_SYNC, BR_LEARNING_SYNC) ||
  	    brport_nla_put_flag(skb, flags, mask,
