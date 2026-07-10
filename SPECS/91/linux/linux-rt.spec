@@ -25,7 +25,7 @@
 Summary:        Kernel
 Name:           linux-rt
 Version:        6.1.176
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -135,6 +135,9 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # latency spikes across all vcpus due to nested pagetable
 # synchronization.
 Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
+
+# vmxnet3 patches
+Patch24: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
 
 Patch25: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
 
@@ -541,6 +544,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Wed Jul 08 2026 Bo Gan <bo.gan@broadcom.com> 6.1.176-2
+- Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Wed Jun 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.176-1
 - Update to version 6.1.176
 * Tue Jun 23 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.175-10

@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.176
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -136,6 +136,9 @@ Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 #initrd newca
 Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 Patch24: 0001-NEWCA-make-initrd-pages-immutable.patch
+
+# vmxnet3 patches
+Patch25: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -572,6 +575,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jul 08 2026 Bo Gan <bo.gan@broadcom.com> 6.1.176-3
+- Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Tue Jun 30 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 6.1.176-2
 - Fix CVE-2026-46266
 * Wed Jun 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.176-1
