@@ -97,7 +97,7 @@ index e0fbbfe..c165e50 100644
  	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
  	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
  	IFLA_BRPORT_LOCKED,
-+	IFLA_BRPORT_SINK_CONNECTED, /* port connected to sink device */
++	IFLA_BRPORT_SINK_CONNECTED = 60, /* port connected to sink device */
  	__IFLA_BRPORT_MAX
  };
  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)

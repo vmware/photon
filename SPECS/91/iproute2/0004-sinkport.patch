@@ -87,7 +87,7 @@ index 987efed..de87adc 100644
  	IFLA_BRPORT_MCAST_MAX_GROUPS,
  	IFLA_BRPORT_NEIGH_VLAN_SUPPRESS,
  	IFLA_BRPORT_BACKUP_NHID,
-+	IFLA_BRPORT_SINK_CONNECTED, /* port connected to sink device */
++	IFLA_BRPORT_SINK_CONNECTED = 60, /* port connected to sink device */
  	__IFLA_BRPORT_MAX
  };
  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)

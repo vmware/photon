@@ -3,7 +3,7 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        6.12.0
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -105,6 +105,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri Jul 10 2026 Ankit Jain <ankit-aj.ajin@broadcom.com> 6.12.0-2.2
+- Fix UPAI enums IFLA_BRPORT_SINK_CONNECTED and IFLA_GRE_MSS_CLAMP
+- to match with v6.1/v6.12 kernel
+- Fix print_trunk segfault
 * Fri Jul 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.0-2.1
 - Fix UPAI enums to make it compatible with v6.1.y kernel for subrelease 91
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.0-2

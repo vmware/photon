@@ -1,5 +1,5 @@
 From 0e11d461b2586bba26f3aa30c533b7f711904885 Mon Sep 17 00:00:00 2001
-From: Your Name <you@example.com>
+From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Fri, 24 Jun 2022 19:19:57 +0530
 Subject: [PATCH 2/4] iptrunk
 
@@ -586,7 +586,7 @@ index 0000000..f777c9f
 +    }
 +
 +    if (rtnl_dump_filter_nc(&rth, print_trunk,
-+                stdout, NLM_F_DUMP_INTR) < 0) {
++                &da, NLM_F_DUMP_INTR) < 0) {
 +        fprintf(stderr, "Dump terminated\n");
 +        return -1;
 +    }

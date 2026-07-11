@@ -581,7 +581,7 @@ index 0000000..f777c9f
 +    }
 +
 +    if (rtnl_dump_filter_nc(&rth, print_trunk,
-+                stdout, NLM_F_DUMP_INTR) < 0) {
++                &da, NLM_F_DUMP_INTR) < 0) {
 +        fprintf(stderr, "Dump terminated\n");
 +        return -1;
 +    }
