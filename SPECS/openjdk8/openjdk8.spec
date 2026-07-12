@@ -1,15 +1,22 @@
 %global security_hardening  none
 %define jdk_major_version   1.8.0
 %define subversion          482
-%define bootstrapjdkversion 1.8.0.112
 %define _use_internal_dependency_generator 0
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 %define jdkInstallDir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 
+%ifarch x86_64
+%define bootstrapjdkversion 1.8.0.112
+%endif
+
+%ifarch aarch64
+%define bootstrapjdkversion 1.8.0.151
+%endif
+
 Summary:    OpenJDK
 Name:       openjdk8
 Version:    1.8.0.482
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
 Group:      Development/Tools
@@ -44,7 +51,13 @@ BuildRequires: libXt-devel
 BuildRequires: cups-devel
 BuildRequires: alsa-lib-devel
 
+%ifarch aarch64
+%define ExtraBuildRequires openjdk8, openjre8
+%endif
+
+%ifarch x86_64
 %define ExtraBuildRequires openjdk, openjre
+%endif
 
 Requires: openjre8 = %{version}-%{release}
 Requires: chkconfig
@@ -107,10 +120,18 @@ popd
 
 unset JAVA_HOME
 
+%ifarch x86_64
+BOOT_JDK="%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin"
+%endif
+
+%ifarch aarch64
+BOOT_JDK="%{_libdir}/jvm/OpenJDK-%{bootstrapjdkversion}"
+%endif
+
 sh ./configure \
     CUPS_NOT_NEEDED=yes \
     --with-target-bits=64 \
-    --with-boot-jdk=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin \
+    --with-boot-jdk=${BOOT_JDK} \
     --disable-headful \
     --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
     --with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse -fcommon" \
@@ -128,7 +149,7 @@ make \
     JAVAC_FLAGS=-g \
     STRIP_POLICY=no_strip \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-    CLASSPATH=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin/jre \
+    CLASSPATH=${BOOT_JDK}/jre \
     POST_STRIP_CMD="" \
     LOG=trace \
     JOBS=%{_jobs} \
@@ -141,7 +162,7 @@ make DESTDIR=%{buildroot} install \
         BUILD_HEADLESS_ONLY=yes \
         OPENJDK_TARGET_OS=linux \
         DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-        CLASSPATH=%{_var}/opt/OpenJDK-%{bootstrapjdkversion}-bin/jre
+        CLASSPATH=${BOOT_JDK}/jre
 
 install -vdm755 %{buildroot}%{jdkInstallDir}
 chown -R root:root %{buildroot}%{jdkInstallDir}
@@ -299,6 +320,8 @@ rm -rf %{buildroot}/*
 %{jdkInstallDir}/src.zip
 
 %changelog
+* Sun Jul 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.482-2
+- Fix aarch64 build
 * Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.482-1
 - Upgrade to v1.8.0.482
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.472-1
