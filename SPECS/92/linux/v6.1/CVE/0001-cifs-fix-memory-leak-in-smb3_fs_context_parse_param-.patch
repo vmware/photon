@@ -1,0 +1,65 @@
+From d429631794ed3b1880278d82c28da1089edb38ae Mon Sep 17 00:00:00 2001
+From: Shaurya Rane <ssrane_b23@ee.vjti.ac.in>
+Date: Tue, 18 Nov 2025 20:32:57 +0530
+Subject: [PATCH] cifs: fix memory leak in smb3_fs_context_parse_param error
+ path
+
+[ Upstream commit 7e4d9120cfa413dd34f4f434befc5dbe6c38b2e5 ]
+
+Add proper cleanup of ctx->source and fc->source to the
+cifs_parse_mount_err error handler. This ensures that memory allocated
+for the source strings is correctly freed on all error paths, matching
+the cleanup already performed in the success path by
+smb3_cleanup_fs_context_contents().
+Pointers are also set to NULL after freeing to prevent potential
+double-free issues.
+
+This change fixes a memory leak originally detected by syzbot. The
+leak occurred when processing Opt_source mount options if an error
+happened after ctx->source and fc->source were successfully
+allocated but before the function completed.
+
+The specific leak sequence was:
+1. ctx->source = smb3_fs_context_fullpath(ctx, '/') allocates memory
+2. fc->source = kstrdup(ctx->source, GFP_KERNEL) allocates more memory
+3. A subsequent error jumps to cifs_parse_mount_err
+4. The old error handler freed passwords but not the source strings,
+causing the memory to leak.
+
+This issue was not addressed by commit e8c73eb7db0a ("cifs: client:
+fix memory leak in smb3_fs_context_parse_param"), which only fixed
+leaks from repeated fsconfig() calls but not this error path.
+
+Patch updated with minor change suggested by kernel test robot
+
+Reported-by: syzbot+87be6809ed9bf6d718e3@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=87be6809ed9bf6d718e3
+Fixes: 24e0a1eff9e2 ("cifs: switch to new mount api")
+Reviewed-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Shaurya Rane <ssrane_b23@ee.vjti.ac.in>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Ankit: Backported for v6.1]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ fs/smb/client/fs_context.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/fs/smb/client/fs_context.c b/fs/smb/client/fs_context.c
+index 41fff2f8f..bf8d76d3b 100644
+--- a/fs/smb/client/fs_context.c
++++ b/fs/smb/client/fs_context.c
+@@ -1544,6 +1544,10 @@ static int smb3_fs_context_parse_param(struct fs_context *fc,
+  cifs_parse_mount_err:
+ 	kfree_sensitive(ctx->password);
+ 	ctx->password = NULL;
++	kfree(ctx->source);
++	ctx->source = NULL;
++	kfree(fc->source);
++	fc->source = NULL;
+ 	return -EINVAL;
+ }
+ 
+-- 
+2.40.4
+

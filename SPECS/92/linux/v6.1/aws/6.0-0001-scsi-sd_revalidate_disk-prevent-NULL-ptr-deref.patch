@@ -1,0 +1,56 @@
+From 7494a27f2ff232efcdb8031fdd5a58f019edd690 Mon Sep 17 00:00:00 2001
+From: "kernel-team@fedoraproject.org" <kernel-team@fedoraproject.org>
+Date: Fri, 10 Feb 2012 14:56:13 -0500
+Subject: scsi: sd_revalidate_disk prevent NULL ptr deref
+
+Bugzilla: 754518
+Upstream-status: Fedora mustard (might be worth dropping...)
+(cherry picked from commit 375799a9c882e8dcf2bd663102305315eda18ddb)
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834769/
+
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+CR: https://cr.amazon.com/r/8209723/
+---
+ drivers/scsi/sd.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index eb76ba055021..06522ef024a5 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3209,15 +3209,22 @@ static bool sd_validate_opt_xfer_size(struct scsi_disk *sdkp,
+ static int sd_revalidate_disk(struct gendisk *disk)
+ {
+ 	struct scsi_disk *sdkp = scsi_disk(disk);
+-	struct scsi_device *sdp = sdkp->device;
+-	struct request_queue *q = sdkp->disk->queue;
+-	sector_t old_capacity = sdkp->capacity;
++	struct scsi_device *sdp;
++	struct request_queue *q;
++	sector_t old_capacity;
+ 	unsigned char *buffer;
+ 	unsigned int dev_max, rw_max;
+
+ 	SCSI_LOG_HLQUEUE(3, sd_printk(KERN_INFO, sdkp,
+ 				      "sd_revalidate_disk\n"));
+
++	if (WARN_ONCE((!sdkp), "Invalid scsi_disk from %p\n", disk))
++		goto out;
++
++	sdp = sdkp->device;
++	q = sdkp->disk->queue;
++	old_capacity = sdkp->capacity;
++
+ 	/*
+ 	 * If the device is offline, don't try and read capacity or any
+ 	 * of the other niceties.
+--
+2.17.1
+

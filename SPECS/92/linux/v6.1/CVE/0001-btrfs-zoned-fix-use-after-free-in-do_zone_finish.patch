@@ -1,0 +1,190 @@
+From 352838ce1dac8c879271981e3b1229136bcedbc4 Mon Sep 17 00:00:00 2001
+From: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Date: Wed, 28 Feb 2024 12:13:27 +0100
+Subject: [PATCH] btrfs: zoned: fix use-after-free in do_zone_finish()
+
+commit 1ec17ef59168a1a6f1105f5dc517f783839a5302 upstream.
+
+Shinichiro reported the following use-after-free triggered by the device
+replace operation in fstests btrfs/070.
+
+ BTRFS info (device nullb1): scrub: finished on devid 1 with status: 0
+ ==================================================================
+ BUG: KASAN: slab-use-after-free in do_zone_finish+0x91a/0xb90 [btrfs]
+ Read of size 8 at addr ffff8881543c8060 by task btrfs-cleaner/3494007
+
+ CPU: 0 PID: 3494007 Comm: btrfs-cleaner Tainted: G        W          6.8.0-rc5-kts #1
+ Hardware name: Supermicro Super Server/X11SPi-TF, BIOS 3.3 02/21/2020
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x5b/0x90
+  print_report+0xcf/0x670
+  ? __virt_addr_valid+0x200/0x3e0
+  kasan_report+0xd8/0x110
+  ? do_zone_finish+0x91a/0xb90 [btrfs]
+  ? do_zone_finish+0x91a/0xb90 [btrfs]
+  do_zone_finish+0x91a/0xb90 [btrfs]
+  btrfs_delete_unused_bgs+0x5e1/0x1750 [btrfs]
+  ? __pfx_btrfs_delete_unused_bgs+0x10/0x10 [btrfs]
+  ? btrfs_put_root+0x2d/0x220 [btrfs]
+  ? btrfs_clean_one_deleted_snapshot+0x299/0x430 [btrfs]
+  cleaner_kthread+0x21e/0x380 [btrfs]
+  ? __pfx_cleaner_kthread+0x10/0x10 [btrfs]
+  kthread+0x2e3/0x3c0
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork+0x31/0x70
+  ? __pfx_kthread+0x10/0x10
+  ret_from_fork_asm+0x1b/0x30
+  </TASK>
+
+ Allocated by task 3493983:
+  kasan_save_stack+0x33/0x60
+  kasan_save_track+0x14/0x30
+  __kasan_kmalloc+0xaa/0xb0
+  btrfs_alloc_device+0xb3/0x4e0 [btrfs]
+  device_list_add.constprop.0+0x993/0x1630 [btrfs]
+  btrfs_scan_one_device+0x219/0x3d0 [btrfs]
+  btrfs_control_ioctl+0x26e/0x310 [btrfs]
+  __x64_sys_ioctl+0x134/0x1b0
+  do_syscall_64+0x99/0x190
+  entry_SYSCALL_64_after_hwframe+0x6e/0x76
+
+ Freed by task 3494056:
+  kasan_save_stack+0x33/0x60
+  kasan_save_track+0x14/0x30
+  kasan_save_free_info+0x3f/0x60
+  poison_slab_object+0x102/0x170
+  __kasan_slab_free+0x32/0x70
+  kfree+0x11b/0x320
+  btrfs_rm_dev_replace_free_srcdev+0xca/0x280 [btrfs]
+  btrfs_dev_replace_finishing+0xd7e/0x14f0 [btrfs]
+  btrfs_dev_replace_by_ioctl+0x1286/0x25a0 [btrfs]
+  btrfs_ioctl+0xb27/0x57d0 [btrfs]
+  __x64_sys_ioctl+0x134/0x1b0
+  do_syscall_64+0x99/0x190
+  entry_SYSCALL_64_after_hwframe+0x6e/0x76
+
+ The buggy address belongs to the object at ffff8881543c8000
+  which belongs to the cache kmalloc-1k of size 1024
+ The buggy address is located 96 bytes inside of
+  freed 1024-byte region [ffff8881543c8000, ffff8881543c8400)
+
+ The buggy address belongs to the physical page:
+ page:00000000fe2c1285 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1543c8
+ head:00000000fe2c1285 order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+ flags: 0x17ffffc0000840(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
+ page_type: 0xffffffff()
+ raw: 0017ffffc0000840 ffff888100042dc0 ffffea0019e8f200 dead000000000002
+ raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
+ page dumped because: kasan: bad access detected
+
+ Memory state around the buggy address:
+  ffff8881543c7f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  ffff8881543c7f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ >ffff8881543c8000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                        ^
+  ffff8881543c8080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8881543c8100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+
+This UAF happens because we're accessing stale zone information of a
+already removed btrfs_device in do_zone_finish().
+
+The sequence of events is as follows:
+
+btrfs_dev_replace_start
+  btrfs_scrub_dev
+   btrfs_dev_replace_finishing
+    btrfs_dev_replace_update_device_in_mapping_tree <-- devices replaced
+    btrfs_rm_dev_replace_free_srcdev
+     btrfs_free_device                              <-- device freed
+
+cleaner_kthread
+ btrfs_delete_unused_bgs
+  btrfs_zone_finish
+   do_zone_finish              <-- refers the freed device
+
+The reason for this is that we're using a cached pointer to the chunk_map
+from the block group, but on device replace this cached pointer can
+contain stale device entries.
+
+The staleness comes from the fact, that btrfs_block_group::physical_map is
+not a pointer to a btrfs_chunk_map but a memory copy of it.
+
+Also take the fs_info::dev_replace::rwsem to prevent
+btrfs_dev_replace_update_device_in_mapping_tree() from changing the device
+underneath us again.
+
+Note: btrfs_dev_replace_update_device_in_mapping_tree() is holding
+fs_info::mapping_tree_lock, but as this is a spinning read/write lock we
+cannot take it as the call to blkdev_zone_mgmt() requires a memory
+allocation which may not sleep.
+But btrfs_dev_replace_update_device_in_mapping_tree() is always called with
+the fs_info::dev_replace::rwsem held in write mode.
+
+Many thanks to Shinichiro for analyzing the bug.
+
+Reported-by: Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+CC: stable@vger.kernel.org # 6.8
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Brennan : Ported to v6.1 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/btrfs/zoned.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
+index ba03ea17a10f..12f0057f2f3f 100644
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -1464,11 +1464,7 @@ int btrfs_load_block_group_zone_info(struct btrfs_block_group *cache, bool new)
+ 
+ 	map = em->map_lookup;
+ 
+-	cache->physical_map = kmemdup(map, map_lookup_size(map->num_stripes), GFP_NOFS);
+-	if (!cache->physical_map) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	cache->physical_map = map;
+ 
+ 	zone_info = kcalloc(map->num_stripes, sizeof(*zone_info), GFP_NOFS);
+ 	if (!zone_info) {
+@@ -1978,6 +1974,7 @@ static int do_zone_finish(struct btrfs_block_group *block_group, bool fully_writ
+ 	struct map_lookup *map;
+ 	const bool is_metadata = (block_group->flags &
+ 			(BTRFS_BLOCK_GROUP_METADATA | BTRFS_BLOCK_GROUP_SYSTEM));
++	struct btrfs_dev_replace *dev_replace = &fs_info->dev_replace;
+ 	int ret = 0;
+ 	int i;
+ 
+@@ -2050,6 +2047,7 @@ static int do_zone_finish(struct btrfs_block_group *block_group, bool fully_writ
+ 	btrfs_clear_data_reloc_bg(block_group);
+ 	spin_unlock(&block_group->lock);
+ 
++	down_read(&dev_replace->rwsem);
+ 	map = block_group->physical_map;
+ 	for (i = 0; i < map->num_stripes; i++) {
+ 		struct btrfs_device *device = map->stripes[i].dev;
+@@ -2066,11 +2064,14 @@ static int do_zone_finish(struct btrfs_block_group *block_group, bool fully_writ
+ 				       device->zone_info->zone_size >> SECTOR_SHIFT,
+ 				       GFP_NOFS);
+ 
+-		if (ret)
++		if (ret) {
++			up_read(&dev_replace->rwsem);
+ 			return ret;
++		}
+ 
+ 		btrfs_dev_clear_active_zone(device, physical);
+ 	}
++	up_read(&dev_replace->rwsem);
+ 
+ 	if (!fully_written)
+ 		btrfs_dec_block_group_ro(block_group);
+-- 
+2.40.4
+

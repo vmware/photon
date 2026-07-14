@@ -1,0 +1,314 @@
+From 67aed76b2ac902c25603e116f7993bc4f5b82514 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 25 May 2022 12:37:48 +0000
+Subject: [PATCH 4/6] arm64: kmsg dumper for VMware hypervisor
+
+kmsg_dumper dumps kmsg to vmware.log in VMware hosts in case of
+a kernel panic in the guest.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ arch/arm64/include/asm/vmware.h |  51 ++++++++
+ arch/arm64/kernel/vmware.c      | 222 +++++++++++++++++++++++++++++++-
+ 2 files changed, 272 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/include/asm/vmware.h
+
+diff --git a/arch/arm64/include/asm/vmware.h b/arch/arm64/include/asm/vmware.h
+new file mode 100644
+index 000000000000..834986a2cbfd
+--- /dev/null
++++ b/arch/arm64/include/asm/vmware.h
+@@ -0,0 +1,51 @@
++/* SPDX-License-Identifier: GPL-2.0 or MIT */
++/*
++ * Copyright (C) 2021, VMware, Inc.
++ * Author : Cyprien Laplace <claplace@vmware.com>
++ */
++#ifndef _ASM_ARM64_VMWARE_H
++#define _ASM_ARM64_VMWARE_H
++
++#include <asm/memory.h>
++
++/*
++ * Encoding for virtual I/O port translation: HVC 0x86 allows efficient
++ * drop-in replacement for x86 [REP] IN/INS/OUT/OUTS instructions used
++ * for backdoors and virtual devices.
++ */
++#define X86_IO_MAGIC          0x86
++/*
++ * Transfer size, bits [1:0]
++ *    00: 1 byte
++ *    01: 2 bytes
++ *    10: 4 bytes
++ *    11: Invalid value
++ */
++#define X86_IO_W7_SIZE_SHIFT  0
++/*
++ * Transfer direction, bit [2]
++ *    0: Write (OUT/OUTS/REP OUTS instructions)
++ *    1: Read (IN/INS/REP INS instructions)
++ */
++#define X86_IO_W7_DIR         BIT(2)
++/*
++ * Instruction type, bits [4:3]
++ *    00: Non-string instruction (IN/OUT) without DX register
++ *        The port address (8-bit immediate) is set in W7<12:5>.
++ *
++ *    01: Non-string instruction (IN/OUT) with DX register
++ *
++ *    10: String instruction without REP prefix (INS/OUTS)
++ *        The direction flag (EFLAGS.DF) is set in W7<5>.
++ *
++ *    11: String instruction with REP prefix (REP INS/REP OUTS)
++ *        The direction flag (EFLAGS.DF) is set in W7<5>.
++ */
++#define X86_IO_W7_WITH        BIT(3)
++#define X86_IO_W7_STR         BIT(4)
++
++#define VMWARE_HYPERVISOR_PORT    0x5658
++#define VMWARE_HYPERVISOR_PORT_HB 0x5659
++#define VMWARE_HYPERVISOR_MAGIC 0x564D5868
++
++#endif /* _ASM_ARM64_VMWARE_H */
+diff --git a/arch/arm64/kernel/vmware.c b/arch/arm64/kernel/vmware.c
+index a8d17233b17b..50391b49555e 100644
+--- a/arch/arm64/kernel/vmware.c
++++ b/arch/arm64/kernel/vmware.c
+@@ -12,7 +12,227 @@
+ #include <linux/dmi.h>
+ #include <linux/of.h>
+ #include <linux/of_fdt.h>
++#include <linux/kmsg_dump.h>
++
+ #include <asm/hypervisor.h>
++#include <asm/vmware.h>
++
++#undef pr_fmt
++#define pr_fmt(fmt)	"vmware: " fmt
++
++#define MESSAGE_STATUS_SUCCESS  (0x01 << 16)
++#define MESSAGE_STATUS_CPT      (0x10 << 16)
++#define MESSAGE_STATUS_HB       (0x80 << 16)
++#define MESSAGE_TYPE_OPEN       (0 << 16)
++#define MESSAGE_TYPE_SENDSIZE   (1 << 16)
++#define MESSAGE_TYPE_SEND       (2 << 16)
++#define MESSAGE_TYPE_CLOSE      (6 << 16)
++#define VMWARE_HB_CMD_MSGST_SUCCESS \
++	(VMWARE_HB_CMD_MESSAGE | MESSAGE_STATUS_SUCCESS)
++
++#define VMWARE_CMD_MSG_OPEN \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_OPEN)
++#define VMWARE_CMD_MSG_SENDSIZE \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_SENDSIZE)
++#define VMWARE_CMD_MSG_SEND \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_SEND)
++#define VMWARE_CMD_MSG_CLOSE \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_CLOSE)
++#define VMWARE_CMD_GETHZ         45
++#define VMWARE_CMD_MESSAGE       30
++#define VMWARE_CMD_GETVERSION    10
++#define VMWARE_HB_CMD_MESSAGE    0
++
++#define RPCI_PROTOCOL_NUM       0x49435052 /* 'RPCI' */
++#define GUESTMSG_FLAG_COOKIE    0x80000000
++
++struct vmw_msg {
++	uint32_t id;
++	uint32_t cookie_high;
++	uint32_t cookie_low;
++};
++
++static bool vmware_log_open(struct vmw_msg *msg)
++{
++	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
++	register uint64_t x1 asm("x1") = RPCI_PROTOCOL_NUM | GUESTMSG_FLAG_COOKIE;
++	register uint32_t w2 asm("w2") = VMWARE_CMD_MSG_OPEN;
++	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT;
++	register uint32_t w4 asm("w4") = 0;
++	register uint32_t w5 asm("w5") = 0;
++	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
++					 X86_IO_W7_DIR |
++					 2 << X86_IO_W7_SIZE_SHIFT;
++	uint32_t result = 0;
++
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (w2),
++			      "+r" (w3),
++			      "+r" (w4),
++			      "+r" (w5) :
++			      "r"  (x1),
++			      "r"  (w7),
++			      [magic] "i"  (X86_IO_MAGIC) :
++			      "memory");
++	result = w2;
++	msg->id = w3;
++	msg->cookie_high = w4;
++	msg->cookie_low = w5;
++
++	return !(result & MESSAGE_STATUS_SUCCESS);
++}
++
++static bool vmware_log_close(struct vmw_msg *msg)
++{
++	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
++	register uint64_t x1 asm("x1") = 0;
++	register uint32_t w2 asm("w2") = VMWARE_CMD_MSG_CLOSE;
++	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT | msg->id;
++	register uint32_t w4 asm("w4") = msg->cookie_high;
++	register uint32_t w5 asm("w5") = msg->cookie_low;
++	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
++					 X86_IO_W7_DIR |
++					 2 << X86_IO_W7_SIZE_SHIFT;
++	uint32_t result = 0;
++
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (w2) :
++			      "r"  (w3),
++			      "r"  (w4),
++			      "r"  (w5),
++			      "r"  (x1),
++			      "r"  (w7),
++			      [magic] "i"  (X86_IO_MAGIC) :
++			      "memory");
++
++	result = w2;
++	return !(result & MESSAGE_STATUS_SUCCESS);
++}
++
++static inline uint64_t vmware_lb_cmd_msg_send(uint64_t cmd, uint64_t str,
++				struct vmw_msg *msg)
++{
++	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
++	register uint64_t x1 asm("x1") = str;
++	register uint64_t x2 asm("x2") = cmd;
++	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT |
++					 msg->id;
++	register uint64_t x4 asm("x4") = msg->cookie_high;
++	register uint32_t w5 asm("w5") = msg->cookie_low;
++	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
++					 X86_IO_W7_DIR |
++					 2 << X86_IO_W7_SIZE_SHIFT;
++	uint64_t ret = 0;
++
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (x2) :
++			      "r"  (w3),
++			      "r"  (x4),
++			      "r"  (w5),
++			      "r"  (x1),
++			      "r"  (w7),
++			      [magic] "i"  (X86_IO_MAGIC) :
++			      "memory");
++	ret = x2;
++	return ret;
++}
++
++static inline uint64_t vmware_hb_cmd_msg_send(uint64_t cmd, uint64_t str,
++				uint64_t len, struct vmw_msg *msg)
++{
++	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
++	register uint32_t w1 asm("w1") = cmd;
++	register uint64_t x2 asm("x2") = len;
++	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT_HB |
++					 msg->id;
++	register uint64_t x4 asm("x4") = str;
++	register uint32_t w5 asm("w5") = msg->cookie_low;
++	register uint32_t w6 asm("w6") = msg->cookie_high;
++	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
++					 X86_IO_W7_STR;
++	uint64_t ret = 0;
++
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (w1) :
++			      "r"  (x2),
++			      "r"  (x4),
++			      "r"  (w3),
++			      "r"  (w5),
++			      "r"  (w6),
++			      "r"  (w7),
++			      [magic] "i" (X86_IO_MAGIC));
++	ret = w1;
++	return ret;
++}
++
++static bool vmware_log_send(struct vmw_msg *msg, const char *log_str)
++{
++	uint64_t result = 0;
++	uint32_t str;
++	uint32_t len = strlen(log_str);
++	bool retry = false;
++
++	do {
++		result = vmware_lb_cmd_msg_send(VMWARE_CMD_MSG_SENDSIZE,
++						len, msg);
++		if (!(result & MESSAGE_STATUS_SUCCESS))
++			goto ret;
++		if (result & MESSAGE_STATUS_HB) {
++			result = vmware_hb_cmd_msg_send(VMWARE_HB_CMD_MSGST_SUCCESS,
++							(uint64_t) log_str, len, msg);
++		} else {
++			do {
++				size_t s = min_t(size_t, sizeof(str), len);
++
++				memcpy(&str, log_str, s);
++				len -= s;
++				log_str += s;
++
++				result = vmware_lb_cmd_msg_send(VMWARE_CMD_MSG_SEND,
++								str, msg);
++			} while (len && (result & MESSAGE_STATUS_SUCCESS));
++		}
++		if (!(result & MESSAGE_STATUS_SUCCESS)) {
++			if (result & MESSAGE_STATUS_CPT) {
++				retry = true;
++			}
++			else
++				goto ret;
++		}
++	} while (retry);
++ret:
++	return !(result & MESSAGE_STATUS_SUCCESS);
++}
++
++static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
++				enum kmsg_dump_reason reason)
++{
++	struct vmw_msg msg;
++	struct kmsg_dump_iter iter;
++	static char line[1024] = {'l', 'o', 'g', ' '};
++	size_t len = 0;
++
++	kmsg_dump_rewind(&iter);
++	while (kmsg_dump_get_line(&iter, true, line + 4,
++	                          sizeof(line) - 4, &len)) {
++		line[len + 4] = '\0';
++		if (vmware_log_open(&msg) || vmware_log_send(&msg, line) || vmware_log_close(&msg))
++			break;
++	}
++}
++
++static struct kmsg_dumper kmsg_dumper = {
++	.dump = kmsg_dumper_vmware_log
++};
++
++static void __init vmware_platform_setup(void)
++{
++	kmsg_dump_register(&kmsg_dumper);
++}
+ 
+ static int __init fdt_find_hyper_node(unsigned long node,
+ 				      const char *uname,
+@@ -39,5 +259,5 @@ const __initconst struct hypervisor_arm64 arm64_hyper_vmware = {
+ 	.name			= "VMware",
+ 	.detect			= vmware_platform,
+ 	.type			= HYPER_VMWARE,
+-	.init.init_platform     = NULL,
++	.init.init_platform	= vmware_platform_setup,
+ };
+-- 
+2.28.0
+

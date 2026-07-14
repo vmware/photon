@@ -1,0 +1,29 @@
+From a6d3cf55c3b9254dbef7ebd36fe09e8e0efda04e Mon Sep 17 00:00:00 2001
+From: Kevin Wang <wxianzhao@vmware.com>
+Date: Sat, 25 Jun 2022 01:13:35 +0000
+Subject: [PATCH 16/16] gre_tap interface mss_clamp support
+
+Signed-off-by: Srish Srinivasan <ssrish@vmware.com>
+---
+ net/ipv4/ip_gre.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 5c1b06fd9..ace0c6e24 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -911,6 +911,12 @@ static netdev_tx_t gre_tap_xmit(struct sk_buff *skb,
+ 	if (skb_cow_head(skb, dev->needed_headroom))
+ 		goto free_skb;
+ 
++	if (gre_mss_clamp) {
++		if ((tunnel->parms.mss_clamp != 0) &&
++		    gre_tap_mss_clamp(skb, tunnel->parms.mss_clamp))
++			goto free_skb;
++	}
++
+ 	__gre_xmit(skb, dev, &tunnel->parms.iph, htons(ETH_P_TEB));
+ 	return NETDEV_TX_OK;
+ 
+-- 
+2.39.0

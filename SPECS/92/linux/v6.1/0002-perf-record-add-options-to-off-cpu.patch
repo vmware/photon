@@ -1,0 +1,54 @@
+From 2cab0d76eae8fddd2209627ace2b87a456e201f0 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 10 Jun 2024 15:38:28 +0530
+Subject: [PATCH 2/3] perf/record: add options --off-cpu-kernel
+
+--off-cpu-kernel to collect off cpu samples using on/off cpu time with-in kernel.
+
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ tools/perf/builtin-record.c | 1 +
+ tools/perf/util/evsel.c     | 2 ++
+ tools/perf/util/record.h    | 1 +
+ 3 files changed, 4 insertions(+)
+
+diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+index b9b0fda..357ef8f 100644
+--- a/tools/perf/builtin-record.c
++++ b/tools/perf/builtin-record.c
+@@ -3532,6 +3532,7 @@ static struct option __record_options[] = {
+ 			    "write collected trace data into several data files using parallel threads",
+ 			    record__parse_threads),
+ 	OPT_BOOLEAN(0, "off-cpu", &record.off_cpu, "Enable off-cpu analysis"),
++	OPT_BOOLEAN(0, "off-cpu-kernel", &record.opts.off_cpu_kernel, "Enable kernel based off-cpu analysis"),
+ 	OPT_END()
+ };
+ 
+diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+index 7db35db..02b80d2 100644
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -878,6 +878,8 @@ static void __evsel__config_callchain(struct evsel *evsel, struct record_opts *o
+ 		attr->exclude_callchain_user = 1;
+ 	if (opts->user_callchains)
+ 		attr->exclude_callchain_kernel = 1;
++	if (opts->off_cpu_kernel)
++		attr->off_cpu = 1;
+ 	if (param->record_mode == CALLCHAIN_LBR) {
+ 		if (!opts->branch_stack) {
+ 			if (attr->exclude_user) {
+diff --git a/tools/perf/util/record.h b/tools/perf/util/record.h
+index 4269e91..2350a55 100644
+--- a/tools/perf/util/record.h
++++ b/tools/perf/util/record.h
+@@ -53,6 +53,7 @@ struct record_opts {
+ 	bool	      kcore;
+ 	bool	      text_poke;
+ 	bool	      build_id;
++	bool	      off_cpu_kernel;
+ 	unsigned int  freq;
+ 	unsigned int  mmap_pages;
+ 	unsigned int  auxtrace_mmap_pages;
+-- 
+2.7.4
+

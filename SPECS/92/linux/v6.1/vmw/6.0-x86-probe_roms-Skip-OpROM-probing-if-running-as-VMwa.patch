@@ -1,0 +1,44 @@
+From 9f150b82606ef498c40c2e2eb7660c25825ce5a6 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Fri, 8 Jan 2021 05:30:45 -0800
+Subject: [PATCH] x86/probe_roms: Skip OpROM probing if running as VMware
+ Guests
+
+Avoid unnecessary MMIO acesses that triggers VMEXITs, which could cause
+performance degradation. Such MMIO VMEXITs also lead to unexpected #VC,
+if SEV-ES was enabled.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/kernel/probe_roms.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/x86/kernel/probe_roms.c b/arch/x86/kernel/probe_roms.c
+index cc2c34ba7..eb9b72a87 100644
+--- a/arch/x86/kernel/probe_roms.c
++++ b/arch/x86/kernel/probe_roms.c
+@@ -22,6 +22,7 @@
+ #include <asm/io.h>
+ #include <asm/setup_arch.h>
+ #include <asm/sev.h>
++#include <asm/hypervisor.h>
+ 
+ static struct resource system_rom_resource = {
+ 	.name	= "System ROM",
+@@ -203,6 +204,13 @@ void __init probe_roms(void)
+ 	unsigned char c;
+ 	int i;
+ 
++	/* Stop probing if running under VMware -- avoid MMIO/VMEXITs */
++	if (hypervisor_is_type(X86_HYPER_VMWARE)) {
++		request_resource(&iomem_resource, &video_rom_resource);
++		request_resource(&iomem_resource, &system_rom_resource);
++		return;
++	}
++
+ 	/* video rom */
+ 	upper = adapter_rom_resources[0].start;
+ 	for (start = video_rom_resource.start; start < upper; start += 2048) {
+-- 
+2.23.1
+

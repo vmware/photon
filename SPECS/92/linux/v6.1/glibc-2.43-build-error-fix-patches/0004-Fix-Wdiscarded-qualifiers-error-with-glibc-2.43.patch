@@ -1,0 +1,32 @@
+From 51bd3981c13170c9f52763b5204bb95a6e627e00 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Sat, 9 May 2026 16:43:30 +0530
+Subject: [PATCH 04/18] Fix -Wdiscarded-qualifiers error with glibc-2.43
+
+builtin-list.c:104:31: warning: assignment discards 'const' qualifier
+from pointer target type [-Wdiscarded-qualifiers]
+  104 |                 else if ((sep = strchr(argv[i], ':')) != NULL) {
+            |
+
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ tools/perf/builtin-list.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/perf/builtin-list.c b/tools/perf/builtin-list.c
+index 58e1ec1654ef..a37f3b8a597c 100644
+--- a/tools/perf/builtin-list.c
++++ b/tools/perf/builtin-list.c
+@@ -75,7 +75,8 @@ int cmd_list(int argc, const char **argv)
+ 	}
+ 
+ 	for (i = 0; i < argc; ++i) {
+-		char *sep, *s;
++		const char *sep;
++		char *s;
+ 
+ 		if (strcmp(argv[i], "tracepoint") == 0)
+ 			print_tracepoint_events(NULL, NULL, raw_dump);
+-- 
+2.54.0
+

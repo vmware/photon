@@ -1,0 +1,90 @@
+From dd0e1eab25e72b5c724400c8ca0770c104f69c28 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Wed, 9 Apr 2025 08:20:06 +0000
+Subject: [PATCH] vmgenid: expose vmgenid via sysfs
+
+Make VM generation ID available as a hex string in /sys/kernel/vmgenid.
+Using this ID userspace can detect if VM was cloned or modified.
+
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+---
+ drivers/virt/vmgenid.c | 37 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 36 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/virt/vmgenid.c b/drivers/virt/vmgenid.c
+index a1c467a0e..f04ee9caf 100644
+--- a/drivers/virt/vmgenid.c
++++ b/drivers/virt/vmgenid.c
+@@ -19,8 +19,25 @@ enum { VMGENID_SIZE = 16 };
+ struct vmgenid_state {
+ 	u8 *next_id;
+ 	u8 this_id[VMGENID_SIZE];
++	spinlock_t lock; /* to protect this_id */
++	struct kobj_attribute kobj_attr;
+ };
+ 
++static ssize_t vmgenid_show(struct kobject *kobj, struct kobj_attribute *attr,
++			    char *page)
++{
++	struct vmgenid_state *state = container_of(attr, struct vmgenid_state, kobj_attr);
++	u8 id[VMGENID_SIZE];
++	unsigned long flags;
++
++	/* To avoid reading partially modified ID */
++	spin_lock_irqsave(&state->lock, flags);
++	memcpy(id, state->this_id, sizeof(id));
++	spin_unlock_irqrestore(&state->lock, flags);
++
++	return sysfs_emit(page, "%*phN\n", VMGENID_SIZE, id);
++}
++
+ static int vmgenid_add(struct acpi_device *device)
+ {
+ 	struct acpi_buffer parsed = { ACPI_ALLOCATE_BUFFER };
+@@ -28,7 +45,7 @@ static int vmgenid_add(struct acpi_device *device)
+ 	union acpi_object *obj;
+ 	phys_addr_t phys_addr;
+ 	acpi_status status;
+-	int ret = 0;
++	int rc, ret = 0;
+ 
+ 	state = devm_kmalloc(&device->dev, sizeof(*state), GFP_KERNEL);
+ 	if (!state)
+@@ -60,6 +77,19 @@ static int vmgenid_add(struct acpi_device *device)
+ 
+ 	device->driver_data = state;
+ 
++	spin_lock_init(&state->lock);
++
++	state->kobj_attr.attr.name = "vmgenid";
++	state->kobj_attr.attr.mode = 0444;
++	state->kobj_attr.show = vmgenid_show;
++	rc = sysfs_add_file_to_group(kernel_kobj, &state->kobj_attr.attr, NULL);
++	if (rc) {
++		/*
++		 * Throw an error message and go forward. Continue using
++		 * vmgenid device without sysfs entry.
++		 */
++		dev_err(&device->dev, "Error adding sysfs file [%d]\n", rc);
++	}
+ out:
+ 	ACPI_FREE(parsed.pointer);
+ 	return ret;
+@@ -69,9 +99,14 @@ static void vmgenid_notify(struct acpi_device *device, u32 event)
+ {
+ 	struct vmgenid_state *state = acpi_driver_data(device);
+ 	u8 old_id[VMGENID_SIZE];
++	unsigned long flags;
+ 
+ 	memcpy(old_id, state->this_id, sizeof(old_id));
++
++	spin_lock_irqsave(&state->lock, flags);
+ 	memcpy(state->this_id, state->next_id, sizeof(state->this_id));
++	spin_unlock_irqrestore(&state->lock, flags);
++
+ 	if (!memcmp(old_id, state->this_id, sizeof(old_id)))
+ 		return;
+ 	add_vmfork_randomness(state->this_id, sizeof(state->this_id));
+-- 
+2.39.4
+

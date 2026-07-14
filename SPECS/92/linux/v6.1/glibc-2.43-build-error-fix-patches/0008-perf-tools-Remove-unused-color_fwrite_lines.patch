@@ -1,0 +1,75 @@
+From 405eb99f5c1319595908c67c1dec95e34b4d9084 Mon Sep 17 00:00:00 2001
+From: "Dr. David Alan Gilbert" <linux@treblig.org>
+Date: Wed, 9 Oct 2024 01:39:38 +0100
+Subject: [PATCH 08/18] perf tools: Remove unused color_fwrite_lines
+
+color_fwrite_lines() was added by 2009's commit
+8fc0321f1ad0 ("perf_counter tools: Add color terminal output support")
+
+but has never been used.
+
+Remove it.
+
+Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
+Reviewed-by: Ian Rogers <irogers@google.com>
+Link: https://lore.kernel.org/r/20241009003938.254936-1-linux@treblig.org
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/perf/util/color.c | 28 ----------------------------
+ tools/perf/util/color.h |  1 -
+ 2 files changed, 29 deletions(-)
+
+diff --git a/tools/perf/util/color.c b/tools/perf/util/color.c
+index bffbdd216a6a..e51f0a676a22 100644
+--- a/tools/perf/util/color.c
++++ b/tools/perf/util/color.c
+@@ -93,34 +93,6 @@ int color_fprintf(FILE *fp, const char *color, const char *fmt, ...)
+ 	return r;
+ }
+ 
+-/*
+- * This function splits the buffer by newlines and colors the lines individually.
+- *
+- * Returns 0 on success.
+- */
+-int color_fwrite_lines(FILE *fp, const char *color,
+-		size_t count, const char *buf)
+-{
+-	if (!*color)
+-		return fwrite(buf, count, 1, fp) != 1;
+-
+-	while (count) {
+-		char *p = memchr(buf, '\n', count);
+-
+-		if (p != buf && (fputs(color, fp) < 0 ||
+-				fwrite(buf, p ? (size_t)(p - buf) : count, 1, fp) != 1 ||
+-				fputs(PERF_COLOR_RESET, fp) < 0))
+-			return -1;
+-		if (!p)
+-			return 0;
+-		if (fputc('\n', fp) < 0)
+-			return -1;
+-		count -= p + 1 - buf;
+-		buf = p + 1;
+-	}
+-	return 0;
+-}
+-
+ const char *get_percent_color(double percent)
+ {
+ 	const char *color = PERF_COLOR_NORMAL;
+diff --git a/tools/perf/util/color.h b/tools/perf/util/color.h
+index 01f7bed21c9b..aecf56dae73f 100644
+--- a/tools/perf/util/color.h
++++ b/tools/perf/util/color.h
+@@ -39,7 +39,6 @@ int color_vsnprintf(char *bf, size_t size, const char *color,
+ int color_vfprintf(FILE *fp, const char *color, const char *fmt, va_list args);
+ int color_fprintf(FILE *fp, const char *color, const char *fmt, ...);
+ int color_snprintf(char *bf, size_t size, const char *color, const char *fmt, ...);
+-int color_fwrite_lines(FILE *fp, const char *color, size_t count, const char *buf);
+ int value_color_snprintf(char *bf, size_t size, const char *fmt, double value);
+ int percent_color_snprintf(char *bf, size_t size, const char *fmt, ...);
+ int percent_color_len_snprintf(char *bf, size_t size, const char *fmt, ...);
+-- 
+2.54.0
+
