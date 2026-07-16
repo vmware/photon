@@ -1,0 +1,99 @@
+From febd269272011739f8188835f3f4fb77976da01f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 16 Jul 2026 20:57:16 +0530
+Subject: [PATCH] print sshd confs in lower case
+
+openssh >= 10.4p1 onwards 'sshd -G' and 'sshd -T' started printing confs
+in mixed case, this patch keeps it like earlier versions.
+(all lower case).
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ servconf.c | 36 +++++++++++++++++++++++++++---------
+ 1 file changed, 27 insertions(+), 9 deletions(-)
+
+diff --git a/servconf.c b/servconf.c
+index 9b443bea0..81a4b6ef4 100644
+--- a/servconf.c
++++ b/servconf.c
+@@ -4064,33 +4064,49 @@ fmt_intarg(ServerOpCodes code, int val)
+ 	}
+ }
+ 
++static void
++lowercase_print(const char *s)
++{
++	char buf[256];
++	size_t i;
++
++	for (i = 0; i < sizeof(buf) - 1 && s[i]; i++)
++		buf[i] = (char)tolower((unsigned char)s[i]);
++	buf[i] = '\0';
++	printf("%s", buf);
++}
++
+ static void
+ dump_cfg_int(ServerOpCodes code, int val)
+ {
+ 	if (code == sUnusedConnectionTimeout && val == 0) {
+-		printf("%s none\n", lookup_opcode_name(code));
++		lowercase_print(lookup_opcode_name(code));
++		printf(" none\n");
+ 		return;
+ 	}
+-	printf("%s %d\n", lookup_opcode_name(code), val);
++	lowercase_print(lookup_opcode_name(code));
++	printf(" %d\n", val);
+ }
+ 
+ static void
+ dump_cfg_oct(ServerOpCodes code, int val)
+ {
+-	printf("%s 0%o\n", lookup_opcode_name(code), val);
++	lowercase_print(lookup_opcode_name(code));
++	printf(" 0%o\n", val);
+ }
+ 
+ static void
+ dump_cfg_fmtint(ServerOpCodes code, int val)
+ {
+-	printf("%s %s\n", lookup_opcode_name(code), fmt_intarg(code, val));
++	lowercase_print(lookup_opcode_name(code));
++	printf(" %s\n", fmt_intarg(code, val));
+ }
+ 
+ static void
+ dump_cfg_string(ServerOpCodes code, const char *val)
+ {
+-	printf("%s %s\n", lookup_opcode_name(code),
+-	    val == NULL ? "none" : val);
++	lowercase_print(lookup_opcode_name(code));
++	printf(" %s\n", val == NULL ? "none" : val);
+ }
+ 
+ static void
+@@ -4098,8 +4114,10 @@ dump_cfg_strarray(ServerOpCodes code, u_int count, char **vals)
+ {
+ 	u_int i;
+ 
+-	for (i = 0; i < count; i++)
+-		printf("%s %s\n", lookup_opcode_name(code), vals[i]);
++	for (i = 0; i < count; i++) {
++		lowercase_print(lookup_opcode_name(code));
++		printf(" %s\n", vals[i]);
++	}
+ }
+ 
+ static void
+@@ -4117,7 +4135,7 @@ dump_cfg_strarray_oneline(ServerOpCodes code, u_int count, char **vals)
+ 		break;
+ 	}
+ 
+-	printf("%s", lookup_opcode_name(code));
++	lowercase_print(lookup_opcode_name(code));
+ 	for (i = 0; i < count; i++)
+ 		printf(" %s",  vals[i]);
+ 	if (code == sAuthenticationMethods && count == 0)
+-- 
+2.55.0
+

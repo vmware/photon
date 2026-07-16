@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 %define STIG_HARDEN 0
 
 %define privsep_path %{_datadir}/empty.sshd
@@ -6,8 +6,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        10.4p1
-Release:        1%{?dist}
+Version:        10.3p1
+Release:        2%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -37,7 +37,6 @@ Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch2: 0001-Use-OOB-ed25519-implementation-explicitly.patch
-Patch3: 0001-print-sshd-confs-in-lower-case.patch
 
 BuildRequires: openssl-fips-provider
 BuildRequires: openssl-devel
@@ -244,8 +243,6 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
-* Thu Jul 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.4p1-1
-- Version upgrade to address security issues.
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.3p1-2
 - Extended to build for subrelease 91 and above
 * Wed Apr 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.3p1-1

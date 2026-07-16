@@ -1,12 +1,12 @@
 sources:
-- archive: openssh-10.4p1.tar.gz
-  archive_sha512sum: c49600022a3a3f0f0ba4284072cccbe1088030cd175ea166e08251224712731f97cb1a3f039d19f71714c537ab88b177602be0932bc35a26f3227dc09c43f37c
+- archive: openssh-10.3p1.tar.gz
+  archive_sha512sum: cb2bd67086491c25e305879b924c3dfa8236502a60c7f250b2fd17d2d9a79ebfc2e40b2f43e42dcf598cc510996e00cc03df9b8e38f34bc2dc71a3d4ff3788fa
   archive_type: upstream
-  name: openssh-10.4p1
-  version: 10.4p1
-  url: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.4p1.tar.gz
+  name: openssh-10.3p1
+  version: 10.3p1
+  url: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.3p1.tar.gz
   repo_url: https://github.com/openssh/openssh-portable
-  commit_id: e8dd756725e8800fcd0b3fd71ee6b4382d1e8fab
+  commit_id: 2d98db98331803cbb820211b2fb0d31a6e71e58e
   skip_list: []
   missing: []
   spdx:
