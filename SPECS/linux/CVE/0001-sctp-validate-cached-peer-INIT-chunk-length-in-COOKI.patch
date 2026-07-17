@@ -1,0 +1,62 @@
+From 5a65a2606b2e010b411d184dc70c691a4c1bea9d Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Wed, 15 Jul 2026 11:39:45 +0000
+Subject: [PATCH] CVE-2026-53246: sctp: validate cached peer INIT chunk length in
+ COOKIE_ECHO processing 
+
+From: Xin Long <lucien.xin@gmail.com>
+
+commit 0861615c28de668669d748ef4eb913ea9262d13b upstream.
+
+When a listening SCTP server processes a COOKIE_ECHO chunk, the cached
+peer INIT chunk embedded after the cookie is parsed and its parameters
+are later walked by sctp_process_init() using sctp_walk_params().
+
+However, the chunk header length of this cached INIT chunk was not
+validated against the remaining buffer in the COOKIE_ECHO payload. If
+the length field is inflated, the parameter walk can run beyond the
+actual received data, leading to out-of-bounds reads and potential
+memory corruption during later parameter handling (e.g. STATE_COOKIE
+processing and kmemdup() copies).
+
+Add a bounds check in sctp_unpack_cookie() to ensure the cached INIT
+chunk length does not exceed the available data in the COOKIE_ECHO
+buffer before it is used.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Brian Geffon <bgeffon@google.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Link: https://patch.msgid.link/eb60825fa22d6f9e663c7d4dbb69f397b5d34d42.1780362366.git.lucien.xin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[ Ajay Kaher: Modified to apply on v6.12 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/sctp/sm_make_chunk.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index 96ca40012..0d6ecdcda 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -1749,6 +1749,7 @@ struct sctp_association *sctp_unpack_cookie(
+ 	struct sctp_signed_cookie *cookie;
+ 	struct sk_buff *skb = chunk->skb;
+ 	struct sctp_cookie *bear_cookie;
++	struct sctp_chunkhdr *ch;
+ 	__u8 *digest = ep->digest;
+ 	enum sctp_scope scope;
+ 	unsigned int len;
+@@ -1779,6 +1780,10 @@ struct sctp_association *sctp_unpack_cookie(
+ 	cookie = chunk->subh.cookie_hdr;
+ 	bear_cookie = &cookie->c;
+ 
++	ch = (struct sctp_chunkhdr *)(bear_cookie + 1);
++	if (ntohs(ch->length) > len - fixed_size)
++		goto malformed;
++
+ 	if (!sctp_sk(ep->base.sk)->hmac)
+ 		goto no_hmac;
+ 
+-- 
+2.53.0
+

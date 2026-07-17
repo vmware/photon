@@ -1,0 +1,93 @@
+From 2de4d2749b5e6970ac5824967ba7bdccb9b1cc84 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Wed, 15 Jul 2026 09:23:57 +0000
+Subject: [PATCH] CVE-2026-31589: mm: call ->free_folio() directly in
+ folio_unmap_invalidate()
+
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
+
+commit 615d9bb2ccad42f9e21d837431e401db2e471195 upstream.
+
+We can only call filemap_free_folio() if we have a reference to (or hold a
+lock on) the mapping.  Otherwise, we've already removed the folio from the
+mapping so it no longer pins the mapping and the mapping can be removed,
+causing a use-after-free when accessing mapping->a_ops.
+
+Follow the same pattern as __remove_mapping() and load the free_folio
+function pointer before dropping the lock on the mapping.  That lets us
+make filemap_free_folio() static as this was the only caller outside
+filemap.c.
+
+Link: https://lore.kernel.org/20260413184314.3419945-1-willy@infradead.org
+Fixes: fb7d3bc41493 ("mm/filemap: drop streaming/uncached pages when writeback completes")
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reported-by: Google Big Sleep <big-sleep-vuln-reports+bigsleep-501448199@google.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Jan Kara <jack@suse.cz>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+[ Ajay: Modified to apply on v6.12 — adapted to invalidate_complete_folio2(),
+  the pre-refactor name of folio_unmap_invalidate() in the 6.12 series ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ mm/filemap.c  | 3 ++-
+ mm/internal.h | 1 -
+ mm/truncate.c | 7 ++++++-
+ 3 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/mm/filemap.c b/mm/filemap.c
+index dc6a84519..48c2e02a9 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -233,7 +233,8 @@ void __filemap_remove_folio(struct folio *folio, void *shadow)
+ 	page_cache_delete(mapping, folio, shadow);
+ }
+ 
+-void filemap_free_folio(struct address_space *mapping, struct folio *folio)
++static void filemap_free_folio(const struct address_space *mapping,
++		struct folio *folio)
+ {
+ 	void (*free_folio)(struct folio *);
+ 	int refs = 1;
+diff --git a/mm/internal.h b/mm/internal.h
+index 3bfc1dc2d..bef6af8d2 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -401,7 +401,6 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t *start,
+ 		pgoff_t end, struct folio_batch *fbatch, pgoff_t *indices);
+ unsigned find_get_entries(struct address_space *mapping, pgoff_t *start,
+ 		pgoff_t end, struct folio_batch *fbatch, pgoff_t *indices);
+-void filemap_free_folio(struct address_space *mapping, struct folio *folio);
+ int truncate_inode_folio(struct address_space *mapping, struct folio *folio);
+ bool truncate_inode_partial_folio(struct folio *folio, loff_t start,
+ 		loff_t end);
+diff --git a/mm/truncate.c b/mm/truncate.c
+index fb5c20b57..9b9d59aa0 100644
+--- a/mm/truncate.c
++++ b/mm/truncate.c
+@@ -574,6 +574,8 @@ EXPORT_SYMBOL(invalidate_mapping_pages);
+ static int invalidate_complete_folio2(struct address_space *mapping,
+ 					struct folio *folio)
+ {
++	void (*free_folio)(struct folio *);
++
+ 	if (folio->mapping != mapping)
+ 		return 0;
+ 
+@@ -590,9 +592,12 @@ static int invalidate_complete_folio2(struct address_space *mapping,
+ 	xa_unlock_irq(&mapping->i_pages);
+ 	if (mapping_shrinkable(mapping))
+ 		inode_add_lru(mapping->host);
++	free_folio = mapping->a_ops->free_folio;
+ 	spin_unlock(&mapping->host->i_lock);
+ 
+-	filemap_free_folio(mapping, folio);
++	if (free_folio)
++		free_folio(folio);
++	folio_put_refs(folio, folio_nr_pages(folio));
+ 	return 1;
+ failed:
+ 	xa_unlock_irq(&mapping->i_pages);
+-- 
+2.53.0
+

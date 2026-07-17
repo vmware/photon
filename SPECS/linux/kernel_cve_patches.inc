@@ -14,3 +14,11 @@ Patch3002: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
 # Fix CVE-2026-43101
 Patch3003: 0001-ipv6-adopt-skb_dst_dev-and-skb_dst_dev_net-_rcu-help.patch
 Patch3004: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
+# Fixes CVE-2026-31589, CVE-2026-43414, CVE-2026-43465, CVE-2026-53224, CVE-2026-53246, CVE-2026-53260
+Patch3005: 0001-mm-call-free_folio-directly-in-folio_.patch
+Patch3006: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-c.patch
+Patch3007: 0001-scsi-qla2xxx-Completely-fix-fcport-do.patch
+Patch3008: 0001-sctp-validate-cached-peer-INIT-chunk-length-in-COOKI.patch
+Patch3009: 0001-tcp-Add-preempt_-disable-enable-_nest.patch
+Patch3010: 0002-sctp-validate-embedded-INIT-chunk-and.patch
+Patch3011: 0003-sctp-add-INIT-verification-after-cookie-unpacking.patch
