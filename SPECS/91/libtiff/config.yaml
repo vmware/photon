@@ -1,6 +1,6 @@
 sources:
-- archive: tiff-4.7.2.tar.xz
-  archive_sha512sum: 884dbd26f9eebcff4676696757ac315836c460696d403609a3f804368be3571f5f0e99a96dd7cc9fedc5dc2adfc087175d5d6823dca9eba10c733aa1676d78de
+- archive: tiff-4.5.1.tar.xz
+  archive_sha512sum: fc6af93d36598527480c517ddc4f19fe72e9f07ef4997e5731604253c8db0b9bae816ba7a56985bf22fbbb48db1fab5ed4c2b32a5145bc9477ef24b221a61179
   skip_validation: true
   spdx:
     package:

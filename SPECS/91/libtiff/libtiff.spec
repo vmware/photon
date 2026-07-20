@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.7.2
-Release:        1%{?dist}
+Version:        4.5.1
+Release:        13%{?dist}
 URL:            http://www.libtiff.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -13,6 +13,27 @@ Source0: https://download.osgeo.org/%{name}/tiff-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2023-40745.patch
+Patch1: CVE-2023-41175.patch
+Patch2: CVE-2023-6277.patch
+Patch3: CVE-2023-52355.patch
+Patch4: CVE-2023-52356.patch
+Patch5: CVE-2024-7006.patch
+Patch6: CVE-2023-6228.patch
+Patch7: CVE-2025-8176.patch
+Patch8: CVE-2025-8177.patch
+Patch9: CVE-2025-8534.patch
+Patch10: CVE-2025-8851.patch
+Patch11: CVE-2025-9165.patch
+Patch12: CVE-2025-9900.patch
+Patch13: CVE-2024-13978-prep.patch
+Patch14: CVE-2024-13978-1.patch
+Patch15: CVE-2024-13978-2.patch
+Patch16: CVE-2025-61144.patch
+Patch17: CVE-2026-4775.patch
+Patch18: CVE-2025-61145.patch
+Patch19: CVE-2025-61143.patch
 
 BuildRequires:  libjpeg-turbo-devel
 
@@ -65,8 +86,6 @@ It contains the libraries and header files to create applications
 %{_mandir}/man*/*
 
 %changelog
-* Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.7.2-1
-- Upgrade to 4.7.2
 * Wed Apr 08 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-13
 - Fix CVE-2026-4775, CVE-2025-61145 and CVE-2025-61143
 * Mon Mar 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-12
