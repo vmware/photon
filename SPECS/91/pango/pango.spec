@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.50.11
-Release:        11%{?dist}
+Release:        10%{?dist}
 URL:            http://pango.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -90,8 +90,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Mon Jul 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.50.11-11
-- Bump version as a part of harfbuzz upgrade
 * Fri Jun 19 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.50.11-10
 - Bump release for subrelease split
 * Mon Dec 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.50.11-9

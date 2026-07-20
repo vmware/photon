@@ -1,15 +1,7 @@
 sources:
-- archive: harfbuzz-14.2.1.tar.gz
-  archive_type: upstream
-  archive_sha512sum: b7642a81eb021bf96cf8c91c5ebdde7f4fdfd40c76db722f00cf001125f4b81b954d08485774d2b23318d49b1e954fa0189ba8f10db56d148f33f9d90891d0cb
-  version: 14.2.1
-  name: harfbuzz-14.2.1
-  url: https://github.com/harfbuzz/harfbuzz/archive/refs/tags/14.2.1.tar.gz
-  repo_url: https://github.com/harfbuzz/harfbuzz
-  commit_id: 56feae4035bdd48f62ba2b8d8c16232d4d89b3a4
-  skip_list: []
-  missing: []
-  skip_validation: false
+- archive: harfbuzz-7.0.1.tar.xz
+  archive_sha512sum: 2f2fe4604c062549bf5975cde4022bb137fc04f05ef99fcb566411408cfd136371eae2139b943f70bd17eb758690cbd5183acd552bc901d13c634da11eea404c
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'HarfBuzz is an implementation of the OpenType Layout

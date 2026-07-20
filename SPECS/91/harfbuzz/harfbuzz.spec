@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        opentype text shaping engine
 Name:           harfbuzz
-Version:        14.2.1
-Release:        1%{?dist}
+Version:        7.0.1
+Release:        6%{?dist}
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/harfbuzz/harfbuzz/releases/download/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/harfbuzz/harfbuzz/releases/download/%{version}/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -18,7 +18,6 @@ BuildRequires:  glib-devel
 BuildRequires:  freetype2-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  meson
 
 Requires:       glib
 Requires:       freetype2
@@ -38,23 +37,15 @@ It contains the libraries and header files to create applications
 %autosetup -p1
 
 %build
-%meson \
-    -Dgobject=enabled \
-    -Dintrospection=enabled \
-    -Dcairo=disabled \
-    -Dchafa=disabled \
-    -Dpng=disabled \
-    -Dicu=disabled \
-    -Ddocs=disabled \
-    -Dgpu_demo=disabled
-%meson_build
+%configure --with-gobject --enable-introspection
+%make_build
 
 %install
-%meson_install
+%make_install %{?_smp_mflags}
 
 %if 0%{?with_check}
 %check
-%meson_test
+make %{?_smp_mflags} check
 %endif
 
 %clean
@@ -74,6 +65,7 @@ rm -rf %{buildroot}/*
 
 %files devel
 %defattr(-,root,root)
+%doc %{_datadir}/gtk-doc
 %dir %{_includedir}/%{name}
 %{_includedir}/%{name}/*
 %{_libdir}/*.so
@@ -82,8 +74,6 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
-* Mon Jul 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 14.2.1-1
-- Upgrade version 14.2.1 to fix CVE-2026-22693
 * Sat Jun 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.1-6
 - Fix aarch64 build
 * Tue May 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.0.1-5
