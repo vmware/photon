@@ -19,15 +19,15 @@ sources:
       license_declared: BSD-3-Clause AND BSD-2-Clause
       short_summary: Set, add, and clear arbitrary output headers in NGINX http servers.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: nginx-1.30.4.tar.gz
-  archive_sha512sum: 48c21de65fa188137a4088d02c28e2533a7164040bf19281637e025012e6d03afcacb0ee15463a107685a2a221037f24ce15fc89c46b6f7a36b94443d3993bf1
+- archive: nginx-1.30.2.tar.gz
+  archive_sha512sum: dbba779a15595a77f340795c3a06bf5f846f351a14738f36085b3251f053c6b2946f112640754b8470b541ca45319fb599111cffc06e5cf2ac2384e64d16348c
   skip_validation: false
   archive_type: upstream
-  name: "nginx-1.30.4"
-  version: 1.30.4
-  url: https://github.com/nginx/nginx/releases/download/release-1.30.4/nginx-1.30.4.tar.gz
+  name: "nginx-1.30.2"
+  version: 1.30.2
+  url: https://github.com/nginx/nginx/releases/download/release-1.30.2/nginx-1.30.2.tar.gz
   repo_url: https://github.com/nginx/nginx
-  commit_id: 017cf98dcce217946572a896f0992370475e189f
+  commit_id: a92a537860c7b87d3793d9eb41c9cf3ed833b53c
   skip_list: []
   missing: [html, docs, CHANGES, misc, man, configure, CHANGES.ru, .gitignore, .github]
   spdx:
