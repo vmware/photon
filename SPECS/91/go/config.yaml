@@ -1,12 +1,12 @@
 sources:
-- archive: go1.26.5.linux-amd64.tar.gz
-  archive_sha512sum: 03c09e3868bd195e670a869afb741d95765d2431d3a538ab452b3dac52c51902848663565b62da20ae28b0b2f538c8a52f4d1bea546ed125f1c76f5b6ca6299d
+- archive: go1.26.3.linux-amd64.tar.gz
+  archive_sha512sum: cc49ca9764b1dff5983d7635bc6e8f9fe71754bf48ec310a43512cef6103c4a88ed446e9b759742affa9bbcac507957fb9993011cb94343b88ba938c17632c28
   archive_type: upstream
   name: go
-  version: 1.26.5
-  url: https://go.dev/dl/go1.26.5.linux-amd64.tar.gz
+  version: 1.26.3
+  url: https://go.dev/dl/go1.26.3.linux-amd64.tar.gz
   repo_url: https://github.com/golang/go
-  commit_id: c19862e5f8415b4f24b189d065ed739517c548ba
+  commit_id: 2dc996f71b0ebafb77e64433e58333e049488a3c
   skip_list: []
   missing: [zdefaultcc.go, zcgo.go, .gitattributes, bin, pkg, .github, zbootstrap.go, zversion.go, zzipdata.go, .gitignore]
   skip_validation: false
@@ -25,14 +25,14 @@ sources:
         CC-BY-4.0
       short_summary: Go
       supplier: 'Organization: Broadcom, Inc.'
-- archive: go1.26.5.linux-arm64.tar.gz
-  archive_sha512sum: d250f0d6c697dfaeb66c77939a02ce3210fe633b43012a31b70d9256975f068a64c2d387ab741a8594830fd845b8d088853075a26f555a1427ddcb9c2a4c1c5b
+- archive: go1.26.3.linux-arm64.tar.gz
+  archive_sha512sum: 443ebe1f87b426cf21954048d1fee8a122e3f082fb285eae3ef7ba8f793a8efcd5599f46f85777560f38de573011a6dba4a1a6effc457c4367f34d621a66f976
   archive_type: upstream
   name: go
-  version: 1.26.5
-  url: https://go.dev/dl/go1.26.5.linux-arm64.tar.gz
+  version: 1.26.3
+  url: https://go.dev/dl/go1.26.3.linux-arm64.tar.gz
   repo_url: https://github.com/golang/go
-  commit_id: c19862e5f8415b4f24b189d065ed739517c548ba
+  commit_id: 2dc996f71b0ebafb77e64433e58333e049488a3c
   skip_list: []
   missing: [zdefaultcc.go, zcgo.go, .gitattributes, bin, pkg, .github, zbootstrap.go, zversion.go, zzipdata.go, .gitignore]
   skip_validation: false
