@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Name:          erlang
 Summary:       erlang
-Version:       27.3.4.14
+Version:       27.3.4.13
 Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
@@ -48,8 +48,6 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
-* Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.14-1
-- Upgrade to 27.3.4.14
 * Tue Jun 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.13-1
 - Upgrade to 27.3.4.13, includes fixes for CVE-2026-42789, CVE-2026-42790,
 - CVE-2026-42791, CVE-2026-48858
