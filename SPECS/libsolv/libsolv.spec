@@ -2,7 +2,7 @@
 
 Summary:        A free package dependency solver
 Name:           libsolv
-Version:        0.7.35
+Version:        0.7.39
 Release:        1%{?dist}
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -13,6 +13,11 @@ Source0: https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# Fix a heap buffer overflow when decompressing solv pages (CVE-2026-48864).
+# Rejected upstream <https://github.com/openSUSE/libsolv/pull/622>; carried
+# downstream by RHEL/AlmaLinux/SUSE.
+Patch0: CVE-2026-48864.patch
 
 Requires:       rpm-libs >= 4.16.1.3
 Requires:       expat-libs
@@ -79,6 +84,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.7.39-1
+- Upgrade to v0.7.39
 * Tue Jan 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.35-1
 - Upgrade to v0.7.35
 * Wed Apr 09 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.7.22-7

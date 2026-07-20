@@ -1,12 +1,12 @@
 sources:
-- archive: libsolv-0.7.35.tar.gz
-  archive_sha512sum: 25769f89a60ae4ce37ac84ac995f6d4e7392b6c299637ca2389d80803d5e100979cf4ab573336d44a85ea155b8c5400a39eff9757c5146206b0f0b3c3717459b
+- archive: libsolv-0.7.39.tar.gz
+  archive_sha512sum: b2879217aa00a88ade731fed05ed282af8678e0db7970d3ae392f6a9d41d20a348875268abb05ff7fbe9f65f4e41f25cd5c5f0b255382802298a779484806779
   archive_type: upstream
-  name: libsolv-0.7.35
-  version: 0.7.35
-  url: https://github.com/openSUSE/libsolv/archive/refs/tags/0.7.35.tar.gz
+  name: libsolv-0.7.39
+  version: 0.7.39
+  url: https://github.com/openSUSE/libsolv/archive/refs/tags/0.7.39.tar.gz
   repo_url: https://github.com/openSUSE/libsolv
-  commit_id: fb4b4340d46108cb365113e432642d6024886c7a
+  commit_id: 2f58c6f86edd978d6bdbd87dce9c85388e9b9dcc
   skip_list: []
   missing: []
   spdx:
