@@ -1,14 +1,37 @@
 sources:
-    - archive: acl-2.3.1.tar.gz
-      archive_sha512sum: f101e27058c959f4c412f475c3fc77a90d1ead8728701e4ce04ff08b34139d35e0e72278c9ac7622ba6054e81c0aeca066e09491b5f5666462e3866705a0e892
-      skip_validation: true
-      spdx:
-          package:
-              short_summary: Commands for Manipulating POSIX Access Control Lists
-              detailed_description:
-                  "This package contains the getfacl and setfacl utilities
-                  needed for manipulating access control lists. "
-              home_page: https://savannah.nongnu.org/projects/acl
-              license_concluded: LGPL-2.1-only AND GPL-2.0-only AND BSD-Source-beginning-file AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND FSFUL AND FSFULLRWD AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-1.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-or-later
-              license_declared: LGPL-2.1-only AND GPL-2.0-only AND BSD-Source-beginning-file AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later WITH Libtool-exception AND FSFULLR AND FSFUL AND FSFULLRWD AND GPL-3.0-or-later WITH Libtool-exception AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-1.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later AND GPL-2.0-or-later
-              supplier: "Organization: Broadcom, Inc."
+- archive: acl-2.4.0.tar.gz
+  archive_sha512sum: 91f82d5620ca35977e917b7f678c86136a48c2500829b31a19aee7f5be8137a7a48a049dc4d51e5f8dc3328be248756bbfee77565eff6c8a4c8fc79cb850ee0c
+  skip_validation: false
+  archive_type: upstream
+  name: acl-2.4.0
+  version: 2.4.0
+  url: http://download-mirror.savannah.gnu.org/releases/acl/acl-2.4.0.tar.gz
+  repo_url: https://git.savannah.gnu.org/git/acl.git
+  commit_id: 3589787cd589b34bdd9265936e17190b6d3f17d1
+  missing: [.gitignore, ABOUT-NLS, CVE, Makefile.in, Makefile.in.in, POTFILES.in,
+    Rules-quot, TODO, acl.pot, aclocal.m4, autogen.sh, boldquot.sed, build-aux, build-to-host.m4,
+    config.h.in, configure, de.gmo, en@boldquot.gmo, en@boldquot.header, en@boldquot.po,
+    en@quot.gmo, en@quot.header, en@quot.po, es.gmo, fr.gmo, gettext.m4, gl.gmo, host-cpu-c-abi.m4,
+    iconv.m4, insert-header.sed, intlmacosx.m4, ka.gmo, lib-ld.m4, lib-link.m4, lib-prefix.m4,
+    libtool.m4, ltoptions.m4, ltsugar.m4, ltversion.m4, lt~obsolete.m4, nls.m4, old-acl.5,
+    pl.gmo, po.m4, progtest.m4, quot.sed, remove-potcdate.sed, stamp-po, sv.gmo, update-potfiles]
+  skip_list: [de.po, es.po, fr.po, gl.po, ka.po, pl.po, sv.po]
+  spdx:
+    package:
+      short_summary: Commands for Manipulating POSIX Access Control Lists
+      detailed_description: 'This package contains the getfacl and setfacl utilities
+        needed for manipulating access control lists. '
+      home_page: https://savannah.nongnu.org/projects/acl
+      license_concluded: LGPL-2.1-only AND GPL-2.0-only AND BSD-Source-beginning-file
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFULLR AND FSFUL AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND X11 AND GPL-1.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later AND
+        GPL-2.0-or-later
+      license_declared: LGPL-2.1-only AND GPL-2.0-only AND BSD-Source-beginning-file
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFULLR AND FSFUL AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Libtool-exception AND LGPL-2.1-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND X11 AND GPL-1.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later AND
+        GPL-2.0-or-later
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,9 +1,14 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
+
+# acl-2.3.1 crashes at runtime when compiled with -D_FORTIFY_SOURCE=3
+# https://savannah.nongnu.org/bugs/index.php?62519
+# Use `nofortify3` until fixed upstream.
+%global security_hardening nofortify3
 
 Summary:        Access control list utilities
 Name:           acl
-Version:        2.4.0
-Release:        1%{?dist}
+Version:        2.3.1
+Release:        7%{?dist}
 Group:          System Environment/Base
 URL:            https://savannah.nongnu.org/projects/%{name}
 Vendor:         VMware, Inc.
@@ -94,8 +99,6 @@ fi
 %{_libdir}/libacl.so.*
 
 %changelog
-* Mon Jul 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.0-1
-- Upgrade to 2.4.0, fixes CVE-2026-54369, CVE-2026-54370
 * Wed Mar 18 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.3.1-7
 - Set security_hardening nofortify3
 * Thu Jul 03 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.1-6

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:    Archiving program
 Name:       tar
 Version:    1.34
-Release:    8%{?dist}
+Release:    7%{?dist}
 URL:        http://www.gnu.org/software/tar
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -16,7 +16,6 @@ Source1: license.txt
 
 Patch0: CVE-2022-48303.patch
 Patch1: CVE-2023-39804.patch
-Patch2: avoid-acl-prefix-for-functions.patch
 
 BuildRequires: libacl-devel
 
@@ -55,8 +54,6 @@ rm -rf %{buildroot}{%{_infodir},%{_mandir}}
 %{_libexecdir}/rmt
 
 %changelog
-* Thu Jul 30 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 1.34-8
-- Fix build against libacl 2.4.0
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34-7
 - Release bump for SRP compliance
 * Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34-6

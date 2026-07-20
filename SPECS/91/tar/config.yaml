@@ -1,0 +1,24 @@
+sources:
+- archive: tar-1.34.tar.xz
+  archive_sha512sum: 5e77c4a7b49983ad7d15238c2bce28be7a8aa437b4b1815fc00abd13096da308b6bba196cc6e3ed79d85e62823d520ae0d8fcda2d93873842cf84dc3369fc902
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Contains GNU archiving program '
+      home_page: http://www.gnu.org/software/tar
+      license_concluded: GFDL-1.1-or-later AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GFDL-1.3-invariants-only
+        AND GFDL-1.3-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-2.0-or-later AND GFDL-1.3-only AND FSFAP AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND X11 AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-3.0-only AND LGPL-3.0-or-later
+      license_declared: GFDL-1.1-or-later AND FSFUL AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLR AND GPL-3.0-or-later
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic AND GFDL-1.3-invariants-only
+        AND GFDL-1.3-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later WITH Texinfo-exception
+        AND GPL-2.0-or-later AND GFDL-1.3-only AND FSFAP AND FSFULLRWD AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND X11 AND GPL-1.0-or-later AND GPL-2.0-only AND
+        GPL-3.0-only AND LGPL-3.0-or-later
+      short_summary: Archiving program
+      supplier: 'Organization: Broadcom, Inc.'
