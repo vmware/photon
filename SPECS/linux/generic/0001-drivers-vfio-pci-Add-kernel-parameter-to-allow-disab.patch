@@ -1,4 +1,4 @@
-From 135b07a97f9c537991a6307f4720b6d000f8d126 Mon Sep 17 00:00:00 2001
+From e1d23ffcd9edd90a2ebe7481ae3f3b7a6a8a90c9 Mon Sep 17 00:00:00 2001
 From: Todd Sabin <tsabin@vmware.com>
 Date: Fri, 11 Oct 2024 10:24:36 +0000
 Subject: [PATCH] drivers/vfio/pci: Add kernel parameter to allow disabling of
@@ -18,10 +18,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 [Srinidhi Rao<srinidhi.rao@broadcom.com> ported this patch to v6.11]
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
 ---
- drivers/vfio/pci/vfio_pci_config.c | 22 ++++++++---
- drivers/vfio/pci/vfio_pci_core.c   | 59 ++++++++++++++++++++++++------
+ drivers/vfio/pci/vfio_pci_config.c | 22 ++++++---
+ drivers/vfio/pci/vfio_pci_core.c   | 71 +++++++++++++++++++++++-------
  include/linux/vfio_pci_core.h      |  2 +
- 3 files changed, 66 insertions(+), 17 deletions(-)
+ 3 files changed, 72 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
 index 8ea38e742..1711d64a6 100644
@@ -64,7 +64,7 @@ index 8ea38e742..1711d64a6 100644
  	}
  
 diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-index c7ea0b239..c4ff1ed5b 100644
+index e76e33e7d..34e328c51 100644
 --- a/drivers/vfio/pci/vfio_pci_core.c
 +++ b/drivers/vfio/pci/vfio_pci_core.c
 @@ -41,6 +41,14 @@
@@ -82,7 +82,7 @@ index c7ea0b239..c4ff1ed5b 100644
  
  static void vfio_pci_eventfd_rcu_free(struct rcu_head *rcu)
  {
-@@ -517,10 +525,15 @@ int vfio_pci_core_enable(struct vfio_pci_core_device *vdev)
+@@ -520,10 +528,15 @@ int vfio_pci_core_enable(struct vfio_pci_core_device *vdev)
  	if (ret)
  		goto out_power;
  
@@ -102,7 +102,7 @@ index c7ea0b239..c4ff1ed5b 100644
  
  	vdev->reset_works = !ret;
  	pci_save_state(pdev);
-@@ -710,17 +710,21 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
+@@ -700,17 +713,21 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
  	 * We can not use the "try" reset interface here, which will
  	 * overwrite the previously restored configuration information.
  	 */
@@ -134,7 +134,7 @@ index c7ea0b239..c4ff1ed5b 100644
  	}
  
  out_restore_state:
-@@ -1247,6 +1264,12 @@ static int vfio_pci_ioctl_reset(struct vfio_pci_core_device *vdev,
+@@ -1259,6 +1276,12 @@ static int vfio_pci_ioctl_reset(struct vfio_pci_core_device *vdev,
  	if (!vdev->reset_works)
  		return -EINVAL;
  
@@ -147,7 +147,7 @@ index c7ea0b239..c4ff1ed5b 100644
  	vfio_pci_zap_and_down_write_memory_lock(vdev);
  
  	/*
-@@ -1438,6 +1461,12 @@ static int vfio_pci_ioctl_pci_hot_reset(struct vfio_pci_core_device *vdev,
+@@ -1450,6 +1473,12 @@ static int vfio_pci_ioctl_pci_hot_reset(struct vfio_pci_core_device *vdev,
  	if (!!hdr.count == vfio_device_cdev_opened(&vdev->vdev))
  		return -EINVAL;
  
@@ -160,7 +160,7 @@ index c7ea0b239..c4ff1ed5b 100644
  	/* Can we do a slot or bus reset or neither? */
  	if (!pci_probe_reset_slot(vdev->pdev->slot))
  		slot = true;
-@@ -2508,7 +2537,11 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+@@ -2530,7 +2559,11 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
  	list_for_each_entry(vdev, &dev_set->device_list, vdev.dev_set_list)
  		vfio_pci_set_power_state(vdev, PCI_D0);
  
@@ -173,8 +173,8 @@ index c7ea0b239..c4ff1ed5b 100644
  
  	vdev = list_last_entry(&dev_set->device_list,
  			       struct vfio_pci_core_device, vdev.dev_set_list);
-@@ -2568,8 +2601,12 @@ static void vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set)
- 	if (!disable_idle_d3 && vfio_pci_dev_set_pm_runtime_get(dev_set))
+@@ -2590,8 +2623,12 @@ static void vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set)
+ 	if (vfio_pci_dev_set_pm_runtime_get(dev_set))
  		return;
  
 -	if (!pci_reset_bus(pdev))
@@ -189,10 +189,10 @@ index c7ea0b239..c4ff1ed5b 100644
  	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list) {
  		if (reset_done)
 diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-index f889be76e..a4b05b02c 100644
+index f13fbac17..b4c2179c1 100644
 --- a/include/linux/vfio_pci_core.h
 +++ b/include/linux/vfio_pci_core.h
-@@ -173,4 +173,6 @@ VFIO_IOREAD_DECLARATION(32)
+@@ -178,4 +178,6 @@ VFIO_IOREAD_DECLARATION(32)
  VFIO_IOREAD_DECLARATION(64)
  #endif
  
@@ -200,5 +200,5 @@ index f889be76e..a4b05b02c 100644
 +
  #endif /* VFIO_PCI_CORE_H */
 -- 
-2.43.7
+2.53.0
 

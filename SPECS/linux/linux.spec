@@ -76,8 +76,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.95
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.96
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -970,6 +970,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Jul 20 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.96-1
+- Update to version 6.12.96
 * Tue Jul 07 2026 Bo Gan <bo.gan@broadcom.com> 6.12.95-2
 - Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Mon Jul 06 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.95-1
