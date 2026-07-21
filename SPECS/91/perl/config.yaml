@@ -1,0 +1,75 @@
+sources:
+- archive: perl-5.42.2.tar.gz
+  archive_sha512sum: c17925b1146270310fbefd82a98bd94532b499a547f5be005ece204918bfc0034e473a97df643925625a940209f81a65acdd99857b3b18911461571230262c0f
+  archive_type: upstream
+  name: perl-5.42.2
+  version: 5.42.2
+  url: https://www.cpan.org/src/5.0/perl-5.42.2.tar.gz
+  repo_url: https://github.com/Perl/perl5.git
+  commit_id: b62845c7186b0b6a8e4e83419e6b5ef64ceef3ed
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__']
+  missing: ['.git*', '.mailmap']
+  license_manual_review:
+  - file_paths:
+    - perl-5.42.2/cpan/CPAN-Meta/lib/CPAN/Meta/Converter.pm
+    sha256sum: 9528d678363d4857b45cba7a0b9efadc488aab4a1d5495baceec58f731444490
+    spdx_exp: GPL-1.0-or-later
+  - file_paths:
+    - perl-5.42.2/cpan/CPAN-Meta/lib/CPAN/Meta/Validator.pm
+    sha256sum: cc02695d6c683879171ebd513e3e8e6c2a06b7ec1938fe41f0663ee36a925292
+    spdx_exp: GPL-1.0-or-later
+  - file_paths:
+    - perl-5.42.2/cpan/CPAN-Meta/lib/CPAN/Meta/Spec.pm
+    sha256sum: 749a5b9a43d01ee0f7ab505910a6c505880e5c8875a6a6f41d9648aab0c5502a
+    spdx_exp: GPL-1.0-or-later
+  spdx:
+    package:
+      detailed_description: 'The Perl package contains the Practical Extraction and Report Language.'
+      home_page: http://www.perl.org/
+      license_concluded: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later OR MIT) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+        (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-2.0-or-later)
+        AND (Artistic-2.0 OR GPL-1.0-or-later) AND AGPL-3.0-only AND Apache-1.1 AND
+        Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-2-Clause-Views
+        AND BSD-3-Clause AND CC0-1.0 AND FSFAP AND GPL-1.0-only AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND JSON AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND LGPL-3.0-only AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0 AND Martin-Birgmeier
+        AND OpenSSL AND RSA-MD AND SISSL AND Spencer-86 AND TTWL AND X11 AND Zlib
+        AND bzip2-1.0.6 AND metamail
+      license_declared: (Artistic-1.0 OR GPL-1.0-or-later) AND (Artistic-1.0-Perl
+        OR GPL-1.0-or-later OR MIT) AND (Artistic-1.0-Perl OR GPL-1.0-or-later) AND
+        (Artistic-1.0-Perl OR GPL-1.0-or-later) AND (Artistic-1.0-Perl OR GPL-2.0-or-later)
+        AND (Artistic-2.0 OR GPL-1.0-or-later) AND AGPL-3.0-only AND Apache-1.1 AND
+        Apache-2.0 AND Artistic-1.0 AND Artistic-1.0-Perl AND Artistic-2.0 AND BSD-2-Clause-Views
+        AND BSD-3-Clause AND CC0-1.0 AND FSFAP AND GPL-1.0-only AND GPL-1.0-or-later
+        AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+        WITH Bison-exception-2.2 AND JSON AND LGPL-2.0-or-later AND LGPL-2.1-only
+        AND LGPL-3.0-only AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0 AND Martin-Birgmeier
+        AND OpenSSL AND RSA-MD AND SISSL AND Spencer-86 AND TTWL AND X11 AND Zlib
+        AND bzip2-1.0.6 AND metamail
+      short_summary: Practical Extraction and Report Language
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: perl-cross-1.6.3.tar.gz
+  archive_sha512sum: eb8aa2d57121ef288e253f9443bd4f53ad8b23152096265a0f8211ca4f2a61fdf3fdd03ca1e7d1e1c4a8a408421c7254cfaf12d1f81333aa4a0bf53d74cfa223
+  archive_type: upstream
+  name: perl-cross-1.6.3
+  version: 1.6.3
+  url: https://github.com/arsv/perl-cross/releases/download/1.6.3/perl-cross-1.6.3.tar.gz
+  repo_url: https://github.com/arsv/perl-cross.git
+  commit_id: fb1aa0d6327bb6d75403853ce955047d01e1da4b
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__', 'configure_sigs.sh']
+  missing: ['.git*', '0pack.sh', 'Artistic', 'Copying', 'LICENSE', 'README.md']
+  spdx:
+    package:
+      detailed_description: perl-cross provides alternative configure script, top-level
+        Makefile as well as some auxilliary files for the standard perl distribution
+        intended to allow cross-compiling perl in a relatively straighforward way.
+      home_page: https://arsv.github.io/perl-cross
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0
+      short_summary: Cross-compiling perl
+      supplier: 'Organization: Broadcom, Inc.'

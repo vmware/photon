@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 # Let perl pick its default fotify level
 %global security_hardening nofortify
@@ -14,7 +14,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.42.2
-Release:        3%{?dist}
+Release:        2%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -35,9 +35,6 @@ Patch1:         make-check-failure2.patch
 Patch2:         0001-Remove-libdb-support.patch
 Patch3:         01-perl-CVE-2026-8376.patch
 Patch4:         02-perl-CVE-2026-8376.patch
-Patch5:         perl-CVE-2026-13221.patch
-Patch6:         perl-01-CVE-2026-57432.patch
-Patch7:         perl-02-CVE-2026-57432.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -64,7 +61,7 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %if 0%{?with_check}
 %autopatch -p1 -m0 -M1
 %endif
-%autopatch -p1 -m2 -M7
+%autopatch -p1 -m2 -M6
 
 %build
 export BUILD_ZLIB=False
@@ -116,8 +113,6 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
-* Mon Jul 20 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-3
-- Fix CVE-2026-13221 and CVE-2026-57432
 * Mon Jun 22 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-2
 - Fix CVE-2026-8376
 * Thu Apr 09 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-1
