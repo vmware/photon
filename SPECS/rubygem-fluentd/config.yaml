@@ -1,13 +1,21 @@
 sources:
-- archive: fluentd-1.19.1.gem
-  archive_sha512sum: 9526eba9373c2b8c42831cfd9a7398d31a5aec992ca5fe4e7b3ac6df715fa6f13faa78930a69b28d5511178deae297b3bb300acd65f2374d5273ba32fb383e1d
-  skip_validation: true
+- archive: fluentd-1.19.3.gem
+  archive_type: upstream
+  archive_sha512sum: 5a63b1a8a325ca3a267e7867919b5c02dec3de8067bcc9a524ae3ad254968b84f32fabc7434d188761b967e23bdb60f4feae4de9d4d20da42cbbe9111759647f
+  name: rubygem-fluentd-1.19.3
+  version: "1.19.3"
+  url: https://rubygems.org/downloads/fluentd-1.19.3.gem
+  repo_url: https://github.com/fluent/fluentd
+  commit_id: 43c860907e3d6a92c922233fd16eb2ed9ea16b69
+  skip_list: []
+  missing: ['test', 'tasks', 'fluentd.gemspec', 'Gemfile', '.github', '.gitignore']
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'Fluentd is an open source data collector designed to
         scale and simplify log management. It can collect, process and ship many kinds
         of data in near real-time. '
-      home_page: https://rubygems.org/gems/fluentd/versions/1.19.1
+      home_page: https://rubygems.org/gems/fluentd/versions/1.19.3
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: An open source data collector designed to scale and simplify
