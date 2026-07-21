@@ -282,3 +282,7 @@ Patch3122: 0002-net-sched-netem-handle-multi-segment-skb-in-corrupti.patch
 
 # Fix CVE-2026-46266
 Patch3123: 0001-inet-RAW-sockets-IPPROTO_RAW-MUST-drop-incoming-ICMP.patch
+# Fixes CVE-2026-53224, CVE-2026-53246
+Patch3124: 0001-sctp-validate-cached-peer-INIT-chunk-length-in-COOKI.patch
+Patch3125: 0002-sctp-validate-embedded-INIT-chunk-and-address-list-l.patch
+Patch3126: 0003-sctp-add-INIT-verification-after-cookie-unpacking.patch

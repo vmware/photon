@@ -1,0 +1,111 @@
+From f18335e632a3fded0e65148c1bcd177afee17962 Mon Sep 17 00:00:00 2001
+From: Xin Long <lucien.xin@gmail.com>
+Date: Sun, 7 Jun 2026 19:03:47 -0400
+Subject: [PATCH] sctp: validate embedded INIT chunk and address list lengths
+ in cookie
+
+[ Upstream commit 6f4c80a2a7e6d06753b89a578b710a2499a5e62b ]
+
+sctp_unpack_cookie() only checked that the embedded INIT chunk length
+did not exceed the remaining cookie payload, but did not ensure that the
+INIT chunk is large enough to contain a complete INIT header.
+
+A malformed COOKIE_ECHO can therefore carry a truncated INIT chunk whose
+length field is smaller than sizeof(struct sctp_init_chunk).  Later,
+sctp_process_init() accesses INIT parameters unconditionally, which may
+lead to out-of-bounds reads.
+
+In addition, raw_addr_list_len is not fully validated against the
+remaining cookie payload. When cookie authentication is disabled, an
+attacker can supply an oversized raw_addr_list_len and cause
+sctp_raw_to_bind_addrs() to read beyond the end of the cookie. The
+address parser also lacks sufficient bounds checks for parameter headers
+and lengths, allowing malformed address parameters to trigger
+out-of-bounds reads.
+
+Fix this by:
+
+- requiring the embedded INIT chunk length to be at least sizeof(struct
+  sctp_init_chunk);
+- validating that the INIT chunk and raw address list together fit
+  within the cookie payload;
+- verifying sufficient data exists for each address parameter header and
+  payload before parsing it.
+
+Note that sctp_verify_init() must be called after sctp_unpack_cookie()
+and before sctp_process_init() when cookie authentication is disabled.
+This will be addressed in a separate patch.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Link: https://patch.msgid.link/75af23a89adf881a0895d511775e4770da367cbf.1780873427.git.lucien.xin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Shivani: Modified to apply on 6.1.y ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ net/sctp/bind_addr.c     | 11 ++++++++++-
+ net/sctp/sm_make_chunk.c |  9 +++++++--
+ 2 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/net/sctp/bind_addr.c b/net/sctp/bind_addr.c
+index 6b95d3ba8..0947b276d 100644
+--- a/net/sctp/bind_addr.c
++++ b/net/sctp/bind_addr.c
+@@ -275,6 +275,16 @@ int sctp_raw_to_bind_addrs(struct sctp_bind_addr *bp, __u8 *raw_addr_list,
+ 		param = (struct sctp_paramhdr *)raw_addr_list;
+ 		rawaddr = (union sctp_addr_param *)raw_addr_list;
+ 
++		if (addrs_len < sizeof(*param)) {
++			retval = -EINVAL;
++			goto out_err;
++		}
++		len = ntohs(param->length);
++		if (addrs_len < len) {
++			retval = -EINVAL;
++			goto out_err;
++		}
++
+ 		af = sctp_get_af_specific(param_type2af(param->type));
+ 		if (unlikely(!af) ||
+ 		    !af->from_addr_param(&addr, rawaddr, htons(port), 0)) {
+@@ -291,7 +301,6 @@ int sctp_raw_to_bind_addrs(struct sctp_bind_addr *bp, __u8 *raw_addr_list,
+ 			goto out_err;
+ 
+ next:
+-		len = ntohs(param->length);
+ 		addrs_len -= len;
+ 		raw_addr_list += len;
+ 	}
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index 49bf63e84..b53ce1d85 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -1751,8 +1751,8 @@ struct sctp_association *sctp_unpack_cookie(
+ 	struct sctp_cookie *bear_cookie;
+ 	__u8 *digest = ep->digest;
+ 	struct sctp_chunkhdr *ch;
++	unsigned int len, chlen;
+ 	enum sctp_scope scope;
+-	unsigned int len;
+ 	ktime_t kt;
+ 
+ 	/* Header size is static data prior to the actual cookie, including
+@@ -1781,7 +1781,12 @@ struct sctp_association *sctp_unpack_cookie(
+ 	bear_cookie = &cookie->c;
+ 
+ 	ch = (struct sctp_chunkhdr *)(bear_cookie + 1);
+-	if (ntohs(ch->length) > len - fixed_size)
++	chlen = ntohs(ch->length);
++	if (chlen < sizeof(struct sctp_init_chunk))
++		goto malformed;
++	if (chlen > len - fixed_size)
++		goto malformed;
++	if (bear_cookie->raw_addr_list_len > len - fixed_size - chlen)
+ 		goto malformed;
+ 
+ 	if (!sctp_sk(ep->base.sk)->hmac)
+-- 
+2.53.0
+
