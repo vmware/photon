@@ -168,7 +168,9 @@ class SpecData(object):
 
             name = specObj.name
             for specPkg in specObj.listPackages:
-                self.mapPackageToSpec[specPkg] = name
+                # Keep every provider of specPkg instead of overwriting.
+                self.mapPackageToSpec.setdefault(specPkg, set())
+                self.mapPackageToSpec[specPkg].add(name)
 
             if name not in self.mapSpecObjects:
                 self.mapSpecObjects[name] = [specObj]
@@ -202,8 +204,7 @@ class SpecData(object):
                 satisfied = False
 
                 # Prioritize actual pkg/specs over virtual capabilities
-                resolved = self.mapPackageToSpec.get(req.package, "")
-                if resolved:
+                for resolved in self.mapPackageToSpec.get(req.package, []):
                     specObjs = self.mapSpecObjects[resolved]
                     for obj in specObjs:
                         dpkg = dependentPackageData()
@@ -213,6 +214,8 @@ class SpecData(object):
                         if self._doesCapabilityMatchReq(dpkg, req):
                             satisfied = True
                             break
+                    if satisfied:
+                        break
 
                 if satisfied:
                     continue
@@ -252,7 +255,7 @@ class SpecData(object):
     def _getListSpecFiles(self, paths):
         listSpecFiles = []
         for path in paths:
-            for dirEntry in os.listdir(path):
+            for dirEntry in sorted(os.listdir(path)):
                 dirEntryPath = os.path.join(path, dirEntry)
                 if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".spec"):
                     listSpecFiles.append(dirEntryPath)
@@ -423,10 +426,19 @@ class SpecData(object):
             checkBuildRequiresList.append(pkg.package + "-" + properVersion)
         return checkBuildRequiresList
 
-    # Returns list of SpecObjects for given subpackage name
+    # Returns list of SpecObjects for given subpackage name, merged
+    # across every default package that provides it.
     def getSpecObjects(self, package):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName]
+        specNames = self.mapPackageToSpec.get(package, set())
+        if not specNames:
+            self.logger.error(f"Could not find {package} package from specs")
+            raise Exception(f"Invalid package: {package}")
+        merged = [
+            obj
+            for specName in specNames
+            for obj in self.mapSpecObjects[specName]
+        ]
+        return sorted(merged, key=lambda x: self.compareVersions(x), reverse=True)
 
     def getPkgNamesFromObj(self, objlist):
         listPkgName = []
@@ -480,16 +492,24 @@ class SpecData(object):
     def compareVersions(p):
         return LooseVersion(p.version)
 
-    def getSpecName(self, package):
+    # Returns every spec name that provides package, since a subpackage
+    # name can be provided by more than one spec.
+    def getSpecNames(self, package):
         if self.isRPMPackage(package):
-            return self.mapPackageToSpec[package]
+            return list(self.mapPackageToSpec[package])
         self.logger.error(f"Could not find {package} package from specs")
         raise Exception(f"Invalid package: {package}")
 
+    # Disambiguates getSpecNames() using the exact version being built.
+    def getSpecNameForVersion(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x: x.name)
+
     def isRPMPackage(self, package):
         if package in self.mapPackageToSpec:
-            specName = self.mapPackageToSpec[package]
-            return specName in self.mapSpecObjects
+            return any(
+                specName in self.mapSpecObjects
+                for specName in self.mapPackageToSpec[package]
+            )
         return False
 
     def getSecurityHardeningOption(self, package, version):
@@ -530,7 +550,7 @@ class SpecData(object):
     # Converts "glibc-devel-2.28" into "glibc-2.28"
     def getBasePkg(self, pkg):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
-        return self.getSpecName(package) + f"-{version}"
+        return self.getSpecNameForVersion(package, version) + f"-{version}"
 
 
 class SPECS(object):

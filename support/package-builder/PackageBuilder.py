@@ -188,7 +188,7 @@ class PackageBuilder(object):
         return listInstalledPackages, listInstalledRPMs
 
     def _checkIfPackageIsAlreadyBuilt(self, package, version, doneList):
-        basePkg = SPECS.getData().getSpecName(package) + f"-{version}"
+        basePkg = SPECS.getData().getSpecNameForVersion(package, version) + f"-{version}"
         return basePkg in doneList
 
     def _findBuildTimeRequiredPackages(self, arch):

@@ -230,11 +230,11 @@ class PackageManager(object):
             if "@" in pkg:
                 pkg, versionGiven = pkg.split("@")
 
-            base = SPECS.getData().getSpecName(pkg)
-            for version in SPECS.getData().getVersions(base):
-                if versionGiven and versionGiven not in version:
-                    continue
-                listPackageNamesAndVersions.add(f"{base}-{version}")
+            for base in SPECS.getData().getSpecNames(pkg):
+                for version in SPECS.getData().getVersions(base):
+                    if versionGiven and versionGiven not in version:
+                        continue
+                    listPackageNamesAndVersions.add(f"{base}-{version}")
 
         returnVal = self._calculateParams(listPackageNamesAndVersions, rebuild=rebuild)
         if not returnVal:

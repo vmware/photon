@@ -72,7 +72,7 @@ class PackageUtils(object):
         listSourcesFiles = SPECS.getData().getSources(package, version)
         listPatchFiles = SPECS.getData().getPatches(package, version)
         specFile = SPECS.getData().getSpecFile(package, version)
-        specName = SPECS.getData().getSpecName(package) + ".spec"
+        specName = os.path.basename(specFile)
         sourcePath = os.path.join(constants.topDirPath, "SOURCES")
         sandboxSpecPath = os.path.join(constants.topDirPath, "SPECS", specName)
         if (
