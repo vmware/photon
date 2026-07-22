@@ -16,11 +16,12 @@ else
   ret=""
 fi
 
-if [ "${ret}" != "${img_url}" ]; then
+msg="$(basename $img_url)"
+if [ "${ret}" != "${msg}" ]; then
   docker rmi -f "${img_tag}"
 
   echo "Creating photon docker image ..."
-  if ! docker import --message $"${img_url}" "${img_url}" "${img_tag}"; then
+  if ! docker import --message $"${msg}" "${img_url}" "${img_tag}"; then
     echo "ERROR: docker import of ${img_url} docker image failed" >&2
     exit 1
   fi
