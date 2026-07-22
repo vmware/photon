@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.96
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -115,6 +115,8 @@ Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 #initrd newca
 Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 Patch24: 0001-NEWCA-make-initrd-pages-immutable.patch
+
+Patch29: 0001-randomize_kstack-Unify-random-source-across-arches.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -546,6 +548,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Jul 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.96-3
+- Backport upstream randomize_kstack: Unify random source across arches
+- (a96ef5848cb0).
 * Mon Jul 27 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.96-2
 - Fixes CVE-2026-31589, CVE-2026-43414, CVE-2026-43465, CVE-2026-53224, CVE-2026-53246, CVE-2026-53260
 * Mon Jul 20 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.96-1

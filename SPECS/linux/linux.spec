@@ -77,7 +77,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.96
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -200,6 +200,8 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 
 Patch28: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
+
+Patch29: 0001-randomize_kstack-Unify-random-source-across-arches.patch
 
 %ifarch x86_64
 # VMW: [50..60]
@@ -970,6 +972,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Jul 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.96-3
+- Backport upstream randomize_kstack: Unify random source across arches
+- (a96ef5848cb0).
 * Mon Jul 27 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.96-2
 - Fixes CVE-2026-31589, CVE-2026-43414, CVE-2026-43465, CVE-2026-53224, CVE-2026-53246, CVE-2026-53260
 * Mon Jul 20 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.96-1
