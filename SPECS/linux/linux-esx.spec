@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.103
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -549,6 +549,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 21 2026 Garrett Goble <Garrett.Goble@broadcom.com> 6.12.103-7
+- Update SBX driver
 * Fri Aug 21 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.103-6
 - Make ima module to use lib sha1 instead of crypto shash
 * Wed Aug 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.103-5

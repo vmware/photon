@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.177
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -575,6 +575,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Aug 20 2026 Garrett Goble <Garrett.Goble@broadcom.com> 6.1.177-4
+- Update SBX driver
 * Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.177-3
 - Revert fix for CVE-2026-53224, CVE-2026-53246 due to failing LTP
 * Thu Jul 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.177-2
