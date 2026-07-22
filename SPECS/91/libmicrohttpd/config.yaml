@@ -1,30 +1,7 @@
 sources:
-- archive: libmicrohttpd-1.0.6.tar.gz
-  archive_sha512sum: 2efbdd7c4d0780be2593c2719c7fb4307a0785e5994f35312ed57e766f12e2cb3ad61202238febd8483c3782d49935e715a965ae7b80fc10bca8abe58dbd1b65
-  archive_type: upstream
-  name: libmicrohttpd-1.0.6
-  version: 1.0.6
-  url: https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-1.0.6.tar.gz
-  repo_url: https://git.gnunet.org/libmicrohttpd.git
-  commit_id: 0f23455719b4f374b09a3f3f968ad67b4c10f443
-  skip_list: [libmicrohttpd.pot]
-  missing: [.dir-locals.el, .editorconfig, .gitattributes, .gitignore, .gitlab-ci.yml,
-    .gitmodules, INSTALL, MHD_config.h.in, Makefile.in, SECURITY.md, aclocal.m4,
-    autogen.sh, autopoint-timestamp, autopoint-trigger, bootstrap, build-aux, build-common,
-    codeset.m4, configure, configure.ac, connection_close.c, coverage.sh, cpp.hint,
-    extern-inline.m4, fcntl-o.m4, fixes-autoconf, fixes-libtool, funding.json,
-    gen_http_headers_insert.sh, gen_http_methods_insert.sh, gen_http_statuses_inserts.sh,
-    gendocs.sh, gendocs_template, glibc2.m4, glibc21.m4, gnutls, install-sh, intdiv0.m4,
-    intl-thread-locale.m4, intl.m4, intldir.m4, intmax.m4, inttypes-pri.m4, inttypes_h.m4,
-    largepost-files.vcxproj, lcmessage.m4, libmicrohttpd-tutorial.info, libmicrohttpd.doxy,
-    libmicrohttpd.info, libtool.m4, lock.m4, longlong.m4, ltoptions.m4, ltsugar.m4,
-    ltversion.m4, lt~obsolete.m4, make-dist.sh, mhd_check_cc_ldflag.m4, mhd_find_add_cc_ldflag.m4,
-    mhd_find_add_cc_ldflag_ifelse.m4, microhttpd_dll_res_vc.rc, perf_replies-files.vcxproj,
-    perf_replies-filters.vcxproj, perf_replies.vcxproj, perf_replies.vcxproj.filters,
-    po-configure, pogen.sh, printf-posix.m4, pthread_windows.c, pthread_windows.h,
-    run-gendocs.sh, simplepost-files.vcxproj, size_max.m4, stamp-m.in, stamp-vti,
-    stdint_h.m4, test_get_empty.c, threadlib.m4, uintmax_t.m4, uncrustify.cfg, uncrustify.sh,
-    uncrustify_precommit, version.texi, visibility.m4, wchar_t.m4, wint_t.m4, xsize.m4]
+- archive: libmicrohttpd-0.9.76.tar.gz
+  archive_sha512sum: 9ff8a837892142376eaeaf50c0b0dba76697d0ff44b908434cba8db4324c57dfb8bbcc1a922b97d825891ac10f50693dee9388531856e0fa81fa2cfeac538581
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'GNU libmicrohttpd is a small C library that is supposed
