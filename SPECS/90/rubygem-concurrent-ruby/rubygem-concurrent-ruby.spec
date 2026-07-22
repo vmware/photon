@@ -5,7 +5,7 @@
 
 Name: rubygem-concurrent-ruby
 Version:        1.3.4
-Release:        1.1.1%{?dist}
+Release:        1.1.2%{?dist}
 Summary:        Modern concurrency tools for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -15,6 +15,10 @@ Source0:        https://rubygems.org/downloads/concurrent-ruby-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-54906.patch
+Patch1: CVE-2026-54904.patch
+Patch2: CVE-2026-54905.patch
 
 BuildRequires: ruby-devel
 
@@ -27,6 +31,9 @@ classic concurrency patterns.
 
 %prep
 %gem_unpack %{SOURCE0}
+%patch -p1 0
+%patch -p1 1
+%patch -p1 2
 
 %build
 %gem_build
@@ -39,6 +46,8 @@ classic concurrency patterns.
 %{gemdir}
 
 %changelog
+* Wed Jul 22 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.4-1.1.2
+- Fix CVE-2026-54904, CVE-2026-54905, CVE-2026-54906
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.4-1.1.1
 - Adjusted to build for subrelease 90
 * Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.4-1.1
