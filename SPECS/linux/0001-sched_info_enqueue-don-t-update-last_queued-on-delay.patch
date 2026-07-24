@@ -1,0 +1,56 @@
+From c91adc3015638aff2dea65b89fe91f8e9fedfa65 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 10 Jul 2026 15:27:33 -0700
+Subject: [PATCH] sched_info_enqueue: don't update last_queued on delayed
+ migration
+
+When a task is on the runqueue in sched_delayed state, it can be
+migrated to another CPU/runqueue. In this case, it will call the
+normal enqueue task path, (move_queued_task()->enqueue_task_fair()),
+which has some guards for this. However, there is no guard in
+sched_info_enqueue(), and so last_queued can be set at migration time,
+via enqueue_task()->sched_info_enqueue(), even though it's only migrating
+from one runqueue to another in sched_delayed state.
+
+This means that the CPU delay calculation is incorrect if the task gets
+woken up again and requeued via requeue_delayed_entity(). The CPU delay
+will be based on the migration time, instead of the enqueue time.
+
+Fix this by adding a guard in sched_info_enqueue() to skip updating the
+timestamp when the task is in sched_delayed state.
+
+Crafted a test scenario to trigger migrations during sched_delayed state,
+and read the run delay and other stats from /proc/<pid>/schedstats.
+
+Before patch:
+Total Run Delay: 6746115520 ns
+Total Wakeups:   3763
+Avg Delay/Wakeup: 1792749 ns
+
+After patch:
+Total Run Delay: 3434157802 ns
+Total Wakeups:   3666
+Avg Delay/Wakeup: 936758 ns
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=220310
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ kernel/sched/stats.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/sched/stats.h b/kernel/sched/stats.h
+index 6ade91bce63e..191ca80016f7 100644
+--- a/kernel/sched/stats.h
++++ b/kernel/sched/stats.h
+@@ -281,7 +281,7 @@ static void sched_info_arrive(struct rq *rq, struct task_struct *t)
+  */
+ static inline void sched_info_enqueue(struct rq *rq, struct task_struct *t)
+ {
+-	if (!t->sched_info.last_queued)
++	if (!t->sched_info.last_queued && !t->se.sched_delayed)
+ 		t->sched_info.last_queued = rq_clock(rq);
+ }
+
+--
+2.53.0
+

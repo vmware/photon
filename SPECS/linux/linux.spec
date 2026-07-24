@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.107
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -208,6 +208,8 @@ Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 Patch28: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
 
 Patch29: 0001-randomize_kstack-Unify-random-source-across-arches.patch
+
+Patch30: 0001-sched_info_enqueue-don-t-update-last_queued-on-delay.patch
 
 %ifarch x86_64
 # VMW: [50..60]
@@ -981,6 +983,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 02 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.107-3
+- sched_info_enqueue: don't update last_queued on delayed migration
 * Tue Sep 01 2026 Bo Gan <bo.gan@broadcom.com> 6.12.107-2
 - Backport upstream fix to solve ACPI PNP0C01/PNP0C02 device registration with platform driver
 * Mon Aug 31 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.107-1
