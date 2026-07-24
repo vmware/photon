@@ -38,7 +38,7 @@ def unmountmountpoints(listmountpoints):
         return True
     result = True
     for mountpoint in listmountpoints:
-        cmd = ["umount", mountpoint]
+        cmd = ["umount", "-lR", mountpoint]
         _, _, rc = CommandUtils.runCmd(cmd, capture=True, ignore_rc=True)
         if rc:
             result = False

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os.path
+import os
 import shutil
 import subprocess
 import tarfile
@@ -269,10 +269,7 @@ class Chroot(Sandbox):
             if rc:
                 # Not a mountpoint
                 continue
-            _, _, rc = self._cmd(["umount", "-R", d], ignore_rc=True)
-            if rc:
-                # Try unmount with lazy umount
-                self._cmd(["umount", "-R", "-l", d], ignore_rc=True)
+            _, _, rc = self._cmd(["umount", "-lR", d], ignore_rc=True)
 
         CommandUtils.umountWithRetry(self.chrootPath)
 
@@ -342,6 +339,7 @@ class SystemdNspawn(Sandbox):
 
         nspawnCmd = [
             "systemd-nspawn",
+            "--as-pid2",
             "--property=DeviceAllow=char-*",  # Allows mknod char devices
             "--quiet",
             "--console=pipe",
