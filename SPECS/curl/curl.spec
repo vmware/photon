@@ -1,6 +1,6 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.20.0
+Version:        8.21.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
@@ -9,7 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=edfa5882aaeefcf2226fe03b19246151c0377c3656f9c8cc385bdaf34565e1354e762005b58780917a6d98039ae34085e4a4bcb44255c77e3b0e1d94090c010b
+%define sha512 %{name}=5f7c646e5a3d4d3d8b8a3675adfa29c266a3148599d510d24f91c82d6ff064bfafce420af01522f8be973019619f3eee5e970398fa79be168b77f697c52bf8e5
+
+Patch0:        0001-FTP-fix-TLS-session-reuse-on-the-data-connection.patch
+Patch1:        0002-Fix_non-tunneling_proxy_hostname_use.patch
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -107,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Fri Jul 24 2026 Dweep Advani <dweep.advani@broadcom.com> 8.21.0-1
+- Upgrade to 8.21.0 to fix CVEs
 * Tue May 05 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.20.0-1
 - Upgrade to 8.20.0
 - Fixes CVE-2026-4873, CVE-2026-5545, CVE-2026-5773, CVE-2026-6253,
