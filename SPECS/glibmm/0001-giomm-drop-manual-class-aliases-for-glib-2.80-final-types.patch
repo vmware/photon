@@ -1,0 +1,88 @@
+From 80270415d60e1b389e9a1a3cbf9bd9b76403f5d4 Mon Sep 17 00:00:00 2001
+From: Michelle Wang <michelle.wang@broadcom.com>
+Date: Sun, 9 Aug 2026 12:37:15 +0000
+Subject: [PATCH] giomm: drop manual class aliases for GLib >= 2.80 final types
+
+GLib >= 2.80 made GDBusActionGroupClass and GEmblemClass final
+(opaque) types, so giomm can no longer alias them for BaseClassType.
+Use GObjectClass instead, matching the fix already applied upstream
+in later giomm releases.
+
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ untracked/gio/giomm/dbusactiongroup.h           | 3 +--
+ untracked/gio/giomm/emblem.h                    | 3 +--
+ untracked/gio/giomm/private/dbusactiongroup_p.h | 2 +-
+ untracked/gio/giomm/private/emblem_p.h          | 2 +-
+ 4 files changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/untracked/gio/giomm/dbusactiongroup.h b/untracked/gio/giomm/dbusactiongroup.h
+index 1434ea1..c35860a 100644
+--- a/untracked/gio/giomm/dbusactiongroup.h
++++ b/untracked/gio/giomm/dbusactiongroup.h
+@@ -29,7 +29,6 @@
+
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+ using GDBusActionGroup = struct _GDBusActionGroup;
+-using GDBusActionGroupClass = struct _GDBusActionGroupClass;
+ #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+
+@@ -69,7 +68,7 @@ public:
+   using CppObjectType = ActionGroup;
+   using CppClassType = ActionGroup_Class;
+   using BaseObjectType = GDBusActionGroup;
+-  using BaseClassType = GDBusActionGroupClass;
++  using BaseClassType = GObjectClass;
+
+   // noncopyable
+   ActionGroup(const ActionGroup&) = delete;
+diff --git a/untracked/gio/giomm/emblem.h b/untracked/gio/giomm/emblem.h
+index e2267b3..7646177 100644
+--- a/untracked/gio/giomm/emblem.h
++++ b/untracked/gio/giomm/emblem.h
+@@ -28,7 +28,6 @@
+
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+ using GEmblem = struct _GEmblem;
+-using GEmblemClass = struct _GEmblemClass;
+ #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+
+@@ -63,7 +62,7 @@ public:
+   using CppObjectType = Emblem;
+   using CppClassType = Emblem_Class;
+   using BaseObjectType = GEmblem;
+-  using BaseClassType = GEmblemClass;
++  using BaseClassType = GObjectClass;
+
+   // noncopyable
+   Emblem(const Emblem&) = delete;
+diff --git a/untracked/gio/giomm/private/dbusactiongroup_p.h b/untracked/gio/giomm/private/dbusactiongroup_p.h
+index c22a185..786bd93 100644
+--- a/untracked/gio/giomm/private/dbusactiongroup_p.h
++++ b/untracked/gio/giomm/private/dbusactiongroup_p.h
+@@ -19,7 +19,7 @@ public:
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+   using CppObjectType = ActionGroup;
+   using BaseObjectType = GDBusActionGroup;
+-  using BaseClassType = GDBusActionGroupClass;
++  using BaseClassType = GObjectClass;
+   using CppClassParent = Glib::Object_Class;
+   using BaseClassParent = GObjectClass;
+
+diff --git a/untracked/gio/giomm/private/emblem_p.h b/untracked/gio/giomm/private/emblem_p.h
+index ab4c619..81b7a48 100644
+--- a/untracked/gio/giomm/private/emblem_p.h
++++ b/untracked/gio/giomm/private/emblem_p.h
+@@ -16,7 +16,7 @@ public:
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+   using CppObjectType = Emblem;
+   using BaseObjectType = GEmblem;
+-  using BaseClassType = GEmblemClass;
++  using BaseClassType = GObjectClass;
+   using CppClassParent = Glib::Object_Class;
+   using BaseClassParent = GObjectClass;
+
+--
+2.53.0

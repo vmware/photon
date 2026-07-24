@@ -1,20 +1,18 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        C++ interface to the glib
 Name:           glibmm
-Version:        2.88.1
-Release:        1%{?dist}
+Version:        2.74.0
+Release:        6%{?dist}
 URL:            http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.88/%{name}-%{version}.tar.xz
+Source0: http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.74/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: 0001-giomm-drop-manual-class-aliases-for-glib-2.80-final-types.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  libsigc++-devel >= 3.2.0
@@ -51,6 +49,19 @@ These are the header files of glibmm.
 %autosetup -p1
 rm untracked/docs/tagfile-to-devhelp2.xsl
 
+# Fix compatibility with GLib >= 2.80 final types by dropping manual aliases
+if [ -d "untracked/gio/giomm" ]; then
+    # Fix DBusActionGroup
+    sed -i '/using GDBusActionGroupClass = struct _GDBusActionGroupClass;/d' untracked/gio/giomm/dbusactiongroup.h
+    sed -i 's/using BaseClassType = GDBusActionGroupClass;/using BaseClassType = GObjectClass;/g' untracked/gio/giomm/dbusactiongroup.h
+    sed -i 's/using BaseClassType = GDBusActionGroupClass;/using BaseClassType = GObjectClass;/g' untracked/gio/giomm/private/dbusactiongroup_p.h
+
+    # Fix Emblem
+    sed -i '/using GEmblemClass = struct _GEmblemClass;/d' untracked/gio/giomm/emblem.h
+    sed -i 's/using BaseClassType = GEmblemClass;/using BaseClassType = GObjectClass;/g' untracked/gio/giomm/emblem.h
+    sed -i 's/using BaseClassType = GEmblemClass;/using BaseClassType = GObjectClass;/g' untracked/gio/giomm/private/emblem_p.h
+fi
+
 %build
 %meson
 %meson_build
@@ -82,9 +93,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Sun Aug 09 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.88.1-1
-- Upgrade to 2.88.1
-- Convert the GLib >= 2.80 final-types %prep sed fixup into Patch0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.74.0-6
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.74.0-5

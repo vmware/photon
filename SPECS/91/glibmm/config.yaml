@@ -1,15 +1,7 @@
 sources:
-- archive: glibmm-2.88.1.tar.xz
-  archive_sha512sum: af05171b4651e94f4ef0d8e06a27160cd1a7b0a4e596ba7b6584567564829a60031f27ab96a25ba7fefb6395026f4cb40a5eaf1c5bc2e15428c18fd4d52b9328
-  archive_type: upstream
-  name: glibmm-2.88.1
-  version: 2.88.1
-  url: https://download.gnome.org/sources/glibmm/2.88/glibmm-2.88.1.tar.xz
-  repo_url: https://github.com/GNOME/glibmm
-  commit_id: e55cb434920942d4f70ada12c6287fccbdb931c9
-  skip_list: []
-  missing: ['build_scripts', 'docs', 'gio', 'glib', '.gitignore', '.gitlab-ci.yml', 'glibmm.doap', 'ChangeLog']
-  skip_validation: false
+- archive: glibmm-2.74.0.tar.xz
+  archive_sha512sum: 29c16a6c921fb135721c39b5328e0b45e09c500c65175199c1ec5ee75bdd5fb907072389c6980da3bf8fac0846235af5580f692706eb00d26947804daa1c99c9
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'gtkmm provides a C++ interface to the GTK+ GUI library.
