@@ -437,6 +437,7 @@ class SpecData(object):
             obj
             for specName in specNames
             for obj in self.mapSpecObjects[specName]
+            if package in obj.listPackages
         ]
         return sorted(merged, key=lambda x: self.compareVersions(x), reverse=True)
 
