@@ -9,25 +9,27 @@
 use_ozone = true
 ozone_auto_platforms = false
 ozone_platform = "headless"
-angle_enable_vulkan = true
 angle_enable_swiftshader = false
+
 # Embed resource.pak into binary to simplify deployment.
 headless_use_embedded_resources = true
+
 # Disable headless commands support.
 headless_enable_commands = false
+
 # Don't use Prefs component, disabling access to Local State prefs.
 headless_use_prefs = false
-# Don't use Policy component, disabling all policies.
-headless_use_policy = false
+
 # Remove a dependency on a system fontconfig library.
 use_bundled_fontconfig = true
+
 # In order to simplify deployment we build ICU data file
 # into binary.
 icu_use_data_file = false
+
 # Use embedded data instead external files for headless in order
 # to simplify deployment.
 v8_use_external_startup_data = false
-#use_goma=false
 enable_print_preview = false
 enable_remoting = false
 use_alsa = false
@@ -108,3 +110,11 @@ rtc_enable_sctp = false
 
 use_libfuzzer=false
 register_fuzztests_in_test_suites=false
+
+enable_service_discovery = true
+
+is_cfi=false
+use_thin_lto=false
+
+# concurrent_links should be set to an appropriate value to avoid build time OOM
+# it is done in spec after some calculations

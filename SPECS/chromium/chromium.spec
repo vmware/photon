@@ -7,7 +7,7 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        148.0.7778.165
+Version:        150.0.7871.128
 Release:        1%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
@@ -20,7 +20,7 @@ BuildArch: x86_64
 # Contact Shreenidhi Shedi for cleanup related info.
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.xz
 
-Source1: depot_tools-7b46edb.tar.xz
+Source1: depot_tools-f394ab2.tar.xz
 
 Source2: headless.gn
 
@@ -30,6 +30,7 @@ Source3: license.txt
 Patch0: gn-tweaks.patch
 
 BuildRequires: git
+BuildRequires: bc
 BuildRequires: nss-devel
 BuildRequires: dbus-devel
 BuildRequires: glib-devel
@@ -58,14 +59,43 @@ cp %{SOURCE2} %{output_dir}/args.gn
 py_path="$(realpath -s --relative-to=$PWD/depot_tools %{_bindir})"
 echo "${py_path}" > depot_tools/python3_bin_reldir.txt
 
+CPUS=$(nproc)
+RAM_GB=$(awk '/MemTotal/ {print int($2 / 1024 / 1024)}' /proc/meminfo)
+
+# Give 6GB RAM per link job
+LINK_JOBS=$(( RAM_GB / 6 ))
+(( LINK_JOBS < 1 )) && LINK_JOBS=1
+
+# Use only 25% of available CPU cores, to avoid OOM
+JOBS=$(( RAM_GB / 4 ))
+
+if (( JOBS > CPUS )); then
+  JOBS=$(( (CPUS / 2) - 1 ))
+fi
+
+if (( JOBS < 1 )); then
+  JOBS=1
+  HALF_JOBS=1
+else
+  HALF_JOBS=$(( JOBS / 2 ))
+  (( HALF_JOBS < 1 )) && HALF_JOBS=1
+fi
+
+echo "concurrent_links=$LINK_JOBS" >> %{output_dir}/args.gn
+sync
 %{_builddir}/src/depot_tools/gn gen %{output_dir}
 
-# sometimes build breaks with OOM
-for i in 1 2 3; do
-  if ninja -C %{output_dir} headless_shell -j %{_jobs}; then
+echo "Using $JOBS jobs ($RAM_GB GB RAM available)"
+
+# Sometimes build breaks with OOM
+for i in $(seq 1 10); do
+  # Don't exceed 80% load
+  LOAD=$(echo "$JOBS * 0.8 / 1" | bc)
+  if ninja -C %{output_dir} headless_shell -j ${JOBS} -l ${LOAD}; then
     break
   fi
-  echo "Warning: chromium build failed, retry ($i)" >&2
+  JOBS=${HALF_JOBS}
+  echo "Warning: chromium build failed, retry ($i), using $JOBS jobs" >&2
 done
 
 %install
@@ -87,6 +117,8 @@ cp -a  %{output_dir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Tue Jul 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 150.0.7871.128-1
+- Upgrade to v150.0.7871.128
 * Mon May 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 148.0.7778.165-1
 - Upgrade to v148.0.7778.165
 * Sat Feb 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 145.0.7632.155-1
