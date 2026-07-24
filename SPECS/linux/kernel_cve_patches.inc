@@ -25,3 +25,10 @@ Patch3011: 0003-sctp-add-INIT-verification-after-cookie-unpacking.patch
 # Fixes CVE-2026-43197, CVE-2026-43198
 Patch3012: 0001-netconsole-avoid-OOB-reads-msg-is-not-nul-terminated.patch
 Patch3013: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
+# Fixes CVE-2025-40074, CVE-2025-68353, CVE-2026-23208, CVE-2026-43009, CVE-2026-43485
+Patch3014: 0001-ALSA-usb-audio-Prevent-excessive-number-of-frames.patch
+Patch3015: 0001-bpf-Fix-incorrect-pruning-due-to-atomic-fetch-precis.patch
+Patch3016: 0001-ipv4-start-using-dst_dev_rcu.patch
+Patch3017: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
+Patch3018: 0001-nouveau-gsp-drop-WARN_ON-in-ACPI-probes.patch
+Patch3019: 0002-ALSA-usb-audio-Use-the-right-limit-for-PCM-OOB-check.patch

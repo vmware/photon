@@ -1,0 +1,55 @@
+From 62932d9ed639a9fa71b4ac1a56766a4b43abb7e4 Mon Sep 17 00:00:00 2001
+From: Edward Adam Davis <eadavis@qq.com>
+Date: Tue, 13 Jan 2026 16:29:23 +0800
+Subject: ALSA: usb-audio: Prevent excessive number of frames
+
+[ Upstream commit ef5749ef8b307bf8717945701b1b79d036af0a15 ]
+
+In this case, the user constructed the parameters with maxpacksize 40
+for rate 22050 / pps 1000, and packsize[0] 22 packsize[1] 23. The buffer
+size for each data URB is maxpacksize * packets, which in this example
+is 40 * 6 = 240; When the user performs a write operation to send audio
+data into the ALSA PCM playback stream, the calculated number of frames
+is packsize[0] * packets = 264, which exceeds the allocated URB buffer
+size, triggering the out-of-bounds (OOB) issue reported by syzbot [1].
+
+Added a check for the number of single data URB frames when calculating
+the number of frames to prevent [1].
+
+[1]
+BUG: KASAN: slab-out-of-bounds in copy_to_urb+0x261/0x460 sound/usb/pcm.c:1487
+Write of size 264 at addr ffff88804337e800 by task syz.0.17/5506
+Call Trace:
+ copy_to_urb+0x261/0x460 sound/usb/pcm.c:1487
+ prepare_playback_urb+0x953/0x13d0 sound/usb/pcm.c:1611
+ prepare_outbound_urb+0x377/0xc50 sound/usb/endpoint.c:333
+
+Reported-by: syzbot+6db0415d6d5c635f72cb@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=6db0415d6d5c635f72cb
+Tested-by: syzbot+6db0415d6d5c635f72cb@syzkaller.appspotmail.com
+Signed-off-by: Edward Adam Davis <eadavis@qq.com>
+Link: https://patch.msgid.link/tencent_9AECE6CD2C7A826D902D696C289724E8120A@qq.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Shivani: Backported for CVE-2026-23208. Modified to apply on 6.12.y ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ sound/usb/pcm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
+index 08bf535ed..3a4666e3b 100644
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -1505,7 +1505,7 @@ static int prepare_playback_urb(struct snd_usb_substream *subs,
+ 
+ 	for (i = 0; i < ctx->packets; i++) {
+ 		counts = snd_usb_endpoint_next_packet_size(ep, ctx, i, avail);
+-		if (counts < 0)
++		if (counts < 0 || frames + counts >= ep->max_urb_frames)
+ 			break;
+ 		/* set up descriptor */
+ 		urb->iso_frame_desc[i].offset = frames * stride;
+-- 
+2.53.0
+
