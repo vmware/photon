@@ -46,7 +46,11 @@ class KernelSpecProcessor:
             if 'kernels' in pattern:
                 pattern = "*drivers-intel-*"
             else:
-                pattern = f"*{pattern}*"
+                # Anchor to "<pattern>-*" (the generator's own output naming,
+                # e.g. "sysdig-0.39.0-6.1.177.spec") so this can't match a
+                # hand-written "<pattern>.spec" living elsewhere in the tree
+                # (e.g. SPECS/91/sysdig/sysdig.spec).
+                pattern = f"{pattern}-*"
             k_specs = self.__find_spec_files(pattern)
             for spec_file in k_specs:
                 spec_file.unlink()
