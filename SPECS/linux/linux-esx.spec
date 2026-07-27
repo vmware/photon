@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.96
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -548,6 +548,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Jul 30 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.96-4
+- Fixes CVE-2026-43197, CVE-2026-43198
 * Tue Jul 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.96-3
 - Backport upstream randomize_kstack: Unify random source across arches
 - (a96ef5848cb0).

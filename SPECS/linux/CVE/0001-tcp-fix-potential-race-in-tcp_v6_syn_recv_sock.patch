@@ -1,0 +1,478 @@
+From b046ee473b978cb6d67d84b0c078f4b67d704026 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Date: Mon, 27 Jul 2026 06:39:33 +0000
+Subject: [PATCH] tcp: fix potential race in tcp_v6_syn_recv_sock()
+
+[ Upstream commit 858d2a4f67ff69e645a43487ef7ea7f28f06deae ]
+
+Code in tcp_v6_syn_recv_sock() after the call to tcp_v4_syn_recv_sock()
+is done too late.
+
+After tcp_v4_syn_recv_sock(), the child socket is already visible
+from TCP ehash table and other cpus might use it.
+
+Since newinet->pinet6 is still pointing to the listener ipv6_pinfo
+bad things can happen as syzbot found.
+
+Move the problematic code in tcp_v6_mapped_child_init()
+and call this new helper from tcp_v4_syn_recv_sock() before
+the ehash insertion.
+
+This allows the removal of one tcp_sync_mss(), since
+tcp_v4_syn_recv_sock() will call it with the correct
+context.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot+937b5bbb6a815b3e5d0b@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/netdev/69949275.050a0220.2eeac1.0145.GAE@google.com/
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@google.com>
+Link: https://patch.msgid.link/20260217161205.2079883-1-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan :
+  - Dropped diff for af_smc.c as smc_tcp_syn_recv_sock() is not
+            present in v5.10.
+  - DCCP code is very similar (removed upstream), so applied the same change to DCCP
+  - Few minor changes to tcp code to match v5.10 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+[ Keerthana K:
+  - Backported for v6.12.y based on the v5.10.y backport above.
+  - Also updated net/smc/af_smc.c, which v5.10.y didn't need since SMC
+    didn't wire .syn_recv_sock at that version. ]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ include/net/inet_connection_sock.h |  4 +-
+ include/net/tcp.h                  |  4 +-
+ net/dccp/dccp.h                    |  4 +-
+ net/dccp/ipv4.c                    |  9 ++-
+ net/dccp/ipv6.c                    | 76 ++++++++++-------------
+ net/dccp/minisocks.c               |  2 +-
+ net/ipv4/syncookies.c              |  2 +-
+ net/ipv4/tcp_fastopen.c            |  2 +-
+ net/ipv4/tcp_ipv4.c                |  8 ++-
+ net/ipv4/tcp_minisocks.c           |  2 +-
+ net/ipv6/tcp_ipv6.c                | 97 +++++++++++++-----------------
+ net/mptcp/subflow.c                |  6 +-
+ net/smc/af_smc.c                   |  6 +-
+ 13 files changed, 110 insertions(+), 112 deletions(-)
+
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index bcc138ff087b..fe4f8261c443 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -42,7 +42,9 @@ struct inet_connection_sock_af_ops {
+ 				      struct request_sock *req,
+ 				      struct dst_entry *dst,
+ 				      struct request_sock *req_unhash,
+-				      bool *own_req);
++				      bool *own_req,
++				      void (*opt_child_init)(struct sock *newsk,
++							     const struct sock *sk));
+ 	u16	    net_header_len;
+ 	u16	    sockaddr_len;
+ 	int	    (*setsockopt)(struct sock *sk, int level, int optname,
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 3255a199ef60..f449edc1e159 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -463,7 +463,9 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 				  struct request_sock *req,
+ 				  struct dst_entry *dst,
+ 				  struct request_sock *req_unhash,
+-				  bool *own_req);
++				  bool *own_req,
++				  void (*opt_child_init)(struct sock *newsk,
++							 const struct sock *sk));
+ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb);
+ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
+ int tcp_connect(struct sock *sk);
+diff --git a/net/dccp/dccp.h b/net/dccp/dccp.h
+index 1f748ed1279d..e4e055493203 100644
+--- a/net/dccp/dccp.h
++++ b/net/dccp/dccp.h
+@@ -267,7 +267,9 @@ struct sock *dccp_v4_request_recv_sock(const struct sock *sk, struct sk_buff *sk
+ 				       struct request_sock *req,
+ 				       struct dst_entry *dst,
+ 				       struct request_sock *req_unhash,
+-				       bool *own_req);
++				       bool *own_req,
++				       void (*opt_child_init)(struct sock *newsk,
++							      const struct sock *sk));
+ struct sock *dccp_check_req(struct sock *sk, struct sk_buff *skb,
+ 			    struct request_sock *req);
+ 
+diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+index 5926159a6f20..fa3f2cc48891 100644
+--- a/net/dccp/ipv4.c
++++ b/net/dccp/ipv4.c
+@@ -410,7 +410,9 @@ struct sock *dccp_v4_request_recv_sock(const struct sock *sk,
+ 				       struct request_sock *req,
+ 				       struct dst_entry *dst,
+ 				       struct request_sock *req_unhash,
+-				       bool *own_req)
++				       bool *own_req,
++				       void (*opt_child_init)(struct sock *newsk,
++							      const struct sock *sk))
+ {
+ 	struct inet_request_sock *ireq;
+ 	struct inet_sock *newinet;
+@@ -438,6 +440,11 @@ struct sock *dccp_v4_request_recv_sock(const struct sock *sk,
+ 
+ 	sk_setup_caps(newsk, dst);
+ 
++#if IS_ENABLED(CONFIG_IPV6)
++	if (opt_child_init)
++		opt_child_init(newsk, sk);
++#endif
++
+ 	dccp_sync_mss(newsk, dst_mtu(dst));
+ 
+ 	if (__inet_inherit_port(sk, newsk) < 0)
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index d6649246188d..745ee67536e4 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -414,12 +414,39 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	return -1;
+ }
+ 
++/* Called from dccp_v4_request_recv_sock() for v6 mapped children */
++static void dccp_v6_mapped_child_init(struct sock *newsk, const struct sock *sk)
++{
++	struct inet_sock *newinet = inet_sk(newsk);
++	struct ipv6_pinfo *newnp;
++	struct dccp6_sock *newdp6 = (struct dccp6_sock *)newsk;
++
++	newinet->pinet6 = &newdp6->inet6;
++	newnp = inet6_sk(newsk);
++
++	memcpy(newnp, inet6_sk(sk), sizeof(struct ipv6_pinfo));
++
++	newnp->saddr = newsk->sk_v6_rcv_saddr;
++
++	inet_csk(newsk)->icsk_af_ops = &dccp_ipv6_mapped;
++	newsk->sk_backlog_rcv = dccp_v4_do_rcv;
++	newnp->pktoptions  = NULL;
++	newnp->opt	   = NULL;
++	newnp->ipv6_mc_list = NULL;
++	newnp->ipv6_ac_list = NULL;
++	newnp->ipv6_fl_list = NULL;
++	newnp->mcast_oif   = newinet->mc_index;
++	newnp->mcast_hops  = newinet->mc_ttl;
++}
++
+ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
+ 					      struct sk_buff *skb,
+ 					      struct request_sock *req,
+ 					      struct dst_entry *dst,
+ 					      struct request_sock *req_unhash,
+-					      bool *own_req)
++					      bool *own_req,
++					      void (*opt_child_init)(struct sock *newsk,
++								     const struct sock *sk))
+ {
+ 	struct inet_request_sock *ireq = inet_rsk(req);
+ 	struct ipv6_pinfo *newnp;
+@@ -429,49 +456,10 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
+ 	struct dccp6_sock *newdp6;
+ 	struct sock *newsk;
+ 
+-	if (skb->protocol == htons(ETH_P_IP)) {
+-		/*
+-		 *	v6 mapped
+-		 */
+-		newsk = dccp_v4_request_recv_sock(sk, skb, req, dst,
+-						  req_unhash, own_req);
+-		if (newsk == NULL)
+-			return NULL;
+-
+-		newdp6 = (struct dccp6_sock *)newsk;
+-		newinet = inet_sk(newsk);
+-		newinet->pinet6 = &newdp6->inet6;
+-		newnp = inet6_sk(newsk);
+-
+-		memcpy(newnp, np, sizeof(struct ipv6_pinfo));
+-
+-		newnp->saddr = newsk->sk_v6_rcv_saddr;
+-
+-		inet_csk(newsk)->icsk_af_ops = &dccp_ipv6_mapped;
+-		newsk->sk_backlog_rcv = dccp_v4_do_rcv;
+-		newnp->pktoptions  = NULL;
+-		newnp->opt	   = NULL;
+-		newnp->ipv6_mc_list = NULL;
+-		newnp->ipv6_ac_list = NULL;
+-		newnp->ipv6_fl_list = NULL;
+-		newnp->mcast_oif   = inet_iif(skb);
+-		newnp->mcast_hops  = ip_hdr(skb)->ttl;
+-
+-		/*
+-		 * No need to charge this sock to the relevant IPv6 refcnt debug socks count
+-		 * here, dccp_create_openreq_child now does this for us, see the comment in
+-		 * that function for the gory details. -acme
+-		 */
+-
+-		/* It is tricky place. Until this moment IPv4 tcp
+-		   worked with IPv6 icsk.icsk_af_ops.
+-		   Sync it now.
+-		 */
+-		dccp_sync_mss(newsk, inet_csk(newsk)->icsk_pmtu_cookie);
+-
+-		return newsk;
+-	}
+-
++	if (skb->protocol == htons(ETH_P_IP))
++		return dccp_v4_request_recv_sock(sk, skb, req, dst,
++						 req_unhash, own_req,
++						 dccp_v6_mapped_child_init);
+ 
+ 	if (sk_acceptq_is_full(sk))
+ 		goto out_overflow;
+diff --git a/net/dccp/minisocks.c b/net/dccp/minisocks.c
+index fecc8190064f..49939eba8703 100644
+--- a/net/dccp/minisocks.c
++++ b/net/dccp/minisocks.c
+@@ -187,7 +187,7 @@ struct sock *dccp_check_req(struct sock *sk, struct sk_buff *skb,
+ 		 goto drop;
+ 
+ 	child = inet_csk(sk)->icsk_af_ops->syn_recv_sock(sk, skb, req, NULL,
+-							 req, &own_req);
++							 req, &own_req, NULL);
+ 	if (child) {
+ 		child = inet_csk_complete_hashdance(sk, child, req, own_req);
+ 		goto out;
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 640fc3b54277..d311cb168ec1 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -202,7 +202,7 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
+ 	bool own_req;
+ 
+ 	child = icsk->icsk_af_ops->syn_recv_sock(sk, skb, req, dst,
+-						 NULL, &own_req);
++						 NULL, &own_req, NULL);
+ 	if (child) {
+ 		refcount_set(&req->rsk_refcnt, 1);
+ 		sock_rps_save_rxhash(child, skb);
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index f9460e7531ba..d36a1ceb7510 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -247,7 +247,7 @@ static struct sock *tcp_fastopen_create_child(struct sock *sk,
+ 	bool own_req;
+ 
+ 	child = inet_csk(sk)->icsk_af_ops->syn_recv_sock(sk, skb, req, NULL,
+-							 NULL, &own_req);
++							 NULL, &own_req, NULL);
+ 	if (!child)
+ 		return NULL;
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 6e896f1641af..48e7cbd462d4 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1742,7 +1742,9 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 				  struct request_sock *req,
+ 				  struct dst_entry *dst,
+ 				  struct request_sock *req_unhash,
+-				  bool *own_req)
++				  bool *own_req,
++				  void (*opt_child_init)(struct sock *newsk,
++							 const struct sock *sk))
+ {
+ 	struct inet_request_sock *ireq;
+ 	bool found_dup_sk = false;
+@@ -1798,6 +1800,10 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 	}
+ 	sk_setup_caps(newsk, dst);
+ 
++#if IS_ENABLED(CONFIG_IPV6)
++	if (opt_child_init)
++		opt_child_init(newsk, sk);
++#endif
+ 	tcp_ca_openreq_child(newsk, dst);
+ 
+ 	tcp_sync_mss(newsk, dst_mtu(dst));
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index adddfb7d934c..445f70bbf771 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -850,7 +850,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+ 	 * socket is created, wait for troubles.
+ 	 */
+ 	child = inet_csk(sk)->icsk_af_ops->syn_recv_sock(sk, skb, req, NULL,
+-							 req, &own_req);
++							 req, &own_req, NULL);
+ 	if (!child)
+ 		goto listen_overflow;
+ 
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index a79cd20d3d31..0c521ea24fce 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1342,11 +1342,48 @@ static void tcp_v6_restore_cb(struct sk_buff *skb)
+ 		sizeof(struct inet6_skb_parm));
+ }
+ 
++/* Called from tcp_v4_syn_recv_sock() for v6_mapped children. */
++static void tcp_v6_mapped_child_init(struct sock *newsk, const struct sock *sk)
++{
++	struct inet_sock *newinet = inet_sk(newsk);
++	struct ipv6_pinfo *newnp;
++
++	newinet->pinet6 = newnp = tcp_inet6_sk(newsk);
++
++	memcpy(newnp, tcp_inet6_sk(sk), sizeof(struct ipv6_pinfo));
++
++	newnp->saddr = newsk->sk_v6_rcv_saddr;
++
++	inet_csk(newsk)->icsk_af_ops = &ipv6_mapped;
++	if (sk_is_mptcp(newsk))
++		mptcpv6_handle_mapped(newsk, true);
++	newsk->sk_backlog_rcv = tcp_v4_do_rcv;
++#if defined(CONFIG_TCP_MD5SIG) || defined(CONFIG_TCP_AO)
++	tcp_sk(newsk)->af_specific = &tcp_sock_ipv6_mapped_specific;
++#endif
++
++	newnp->ipv6_mc_list = NULL;
++	newnp->ipv6_ac_list = NULL;
++	newnp->ipv6_fl_list = NULL;
++	newnp->pktoptions  = NULL;
++	newnp->opt	   = NULL;
++
++	/* tcp_v4_syn_recv_sock() has initialized newinet->mc_{index,ttl} */
++	newnp->mcast_oif   = newinet->mc_index;
++	newnp->mcast_hops  = newinet->mc_ttl;
++
++	newnp->rcv_flowinfo = 0;
++	if (inet6_test_bit(REPFLOW, sk))
++		newnp->flow_label = 0;
++}
++
+ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 					 struct request_sock *req,
+ 					 struct dst_entry *dst,
+ 					 struct request_sock *req_unhash,
+-					 bool *own_req)
++					 bool *own_req,
++					 void (*opt_child_init)(struct sock *newsk,
++								const struct sock *sk))
+ {
+ 	struct inet_request_sock *ireq;
+ 	struct ipv6_pinfo *newnp;
+@@ -1362,60 +1399,10 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
+ #endif
+ 	struct flowi6 fl6;
+ 
+-	if (skb->protocol == htons(ETH_P_IP)) {
+-		/*
+-		 *	v6 mapped
+-		 */
+-
+-		newsk = tcp_v4_syn_recv_sock(sk, skb, req, dst,
+-					     req_unhash, own_req);
+-
+-		if (!newsk)
+-			return NULL;
+-
+-		inet_sk(newsk)->pinet6 = tcp_inet6_sk(newsk);
+-
+-		newnp = tcp_inet6_sk(newsk);
+-		newtp = tcp_sk(newsk);
+-
+-		memcpy(newnp, np, sizeof(struct ipv6_pinfo));
+-
+-		newnp->saddr = newsk->sk_v6_rcv_saddr;
+-
+-		inet_csk(newsk)->icsk_af_ops = &ipv6_mapped;
+-		if (sk_is_mptcp(newsk))
+-			mptcpv6_handle_mapped(newsk, true);
+-		newsk->sk_backlog_rcv = tcp_v4_do_rcv;
+-#if defined(CONFIG_TCP_MD5SIG) || defined(CONFIG_TCP_AO)
+-		newtp->af_specific = &tcp_sock_ipv6_mapped_specific;
+-#endif
+-
+-		newnp->ipv6_mc_list = NULL;
+-		newnp->ipv6_ac_list = NULL;
+-		newnp->ipv6_fl_list = NULL;
+-		newnp->pktoptions  = NULL;
+-		newnp->opt	   = NULL;
+-		newnp->mcast_oif   = inet_iif(skb);
+-		newnp->mcast_hops  = ip_hdr(skb)->ttl;
+-		newnp->rcv_flowinfo = 0;
+-		if (inet6_test_bit(REPFLOW, sk))
+-			newnp->flow_label = 0;
+-
+-		/*
+-		 * No need to charge this sock to the relevant IPv6 refcnt debug socks count
+-		 * here, tcp_create_openreq_child now does this for us, see the comment in
+-		 * that function for the gory details. -acme
+-		 */
+-
+-		/* It is tricky place. Until this moment IPv4 tcp
+-		   worked with IPv6 icsk.icsk_af_ops.
+-		   Sync it now.
+-		 */
+-		tcp_sync_mss(newsk, inet_csk(newsk)->icsk_pmtu_cookie);
+-
+-		return newsk;
+-	}
+-
++	if (skb->protocol == htons(ETH_P_IP))
++		return tcp_v4_syn_recv_sock(sk, skb, req, dst,
++					    req_unhash, own_req,
++					    tcp_v6_mapped_child_init);
+ 	ireq = inet_rsk(req);
+ 
+ 	if (sk_acceptq_is_full(sk))
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 10e945f5fa0f..970253e7a824 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -809,7 +809,9 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+ 					  struct request_sock *req,
+ 					  struct dst_entry *dst,
+ 					  struct request_sock *req_unhash,
+-					  bool *own_req)
++					  bool *own_req,
++					  void (*opt_child_init)(struct sock *newsk,
++								 const struct sock *sk))
+ {
+ 	struct mptcp_subflow_context *listener = mptcp_subflow_ctx(sk);
+ 	struct mptcp_subflow_request_sock *subflow_req;
+@@ -856,7 +858,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+ 
+ create_child:
+ 	child = listener->icsk_af_ops->syn_recv_sock(sk, skb, req, dst,
+-						     req_unhash, own_req);
++						     req_unhash, own_req, opt_child_init);
+ 
+ 	if (child && *own_req) {
+ 		struct mptcp_subflow_context *ctx = mptcp_subflow_ctx(child);
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index c96abb1386be..2374a535cea2 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -125,7 +125,9 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk,
+ 					  struct request_sock *req,
+ 					  struct dst_entry *dst,
+ 					  struct request_sock *req_unhash,
+-					  bool *own_req)
++					  bool *own_req,
++					  void (*opt_child_init)(struct sock *newsk,
++								 const struct sock *sk))
+ {
+ 	struct smc_sock *smc;
+ 	struct sock *child;
+@@ -150,7 +152,7 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk,
+ 
+ 	/* passthrough to original syn recv sock fct */
+ 	child = smc->ori_af_ops->syn_recv_sock(sk, skb, req, dst, req_unhash,
+-					       own_req);
++					       own_req, opt_child_init);
+ 	/* child must not inherit smc or its ops */
+ 	if (child) {
+ 		rcu_assign_sk_user_data(child, NULL);
+-- 
+2.43.7
+

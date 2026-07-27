@@ -22,3 +22,6 @@ Patch3008: 0001-sctp-validate-cached-peer-INIT-chunk-length-in-COOKI.patch
 Patch3009: 0001-tcp-Add-preempt_-disable-enable-_nest.patch
 Patch3010: 0002-sctp-validate-embedded-INIT-chunk-and.patch
 Patch3011: 0003-sctp-add-INIT-verification-after-cookie-unpacking.patch
+# Fixes CVE-2026-43197, CVE-2026-43198
+Patch3012: 0001-netconsole-avoid-OOB-reads-msg-is-not-nul-terminated.patch
+Patch3013: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
