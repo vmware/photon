@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{BUILD_FOR}
 
 %define network_required    1
 %global security_hardening  none
@@ -19,7 +19,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.39.2
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 URL:            https://falco.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -215,6 +215,9 @@ rm -rf %{buildroot}/*
 %exclude %{_includedir}/httplib.h
 
 %changelog
+* Mon Jul 27 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.39.2-3
+- Convert to a .spec.in template so falco is built against every active
+  kernel (v6.1 and v6.12) in subrelease 92 instead of only one
 * Sun May 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.39.2-2
 - Patch cmake files to properly use source archives from localhost
 * Thu Jan 29 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.39.2-1
