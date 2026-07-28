@@ -1,70 +1,15 @@
 sources:
-- archive: bind-9.20.26.tar.xz
+- archive: bind-9.20.23.tar.xz
   archive_type: upstream
-  version: 9.20.26
-  name: bind-9.20.26
-  url: https://downloads.isc.org/isc/bind9/9.20.26/bind-9.20.26.tar.xz
+  version: 9.20.23
+  name: bind-9.20.23
+  url: https://downloads.isc.org/isc/bind9/9.20.23/bind-9.20.23.tar.xz
   repo_url: https://github.com/isc-projects/bind9.git
-  commit_id: 5a605f835e9a7f245d412410ef3836db9be14f34
+  commit_id: 7d0b4d4d436e7b950225a533e5bc56d8f935cc1c
   skip_list: []
-  missing:
-  - '*.in'
-  - '*.m4'
-  - '*.1in'
-  - '*.8in'
-  - '*.5in'
-  - '*.sh'
-  - '*.pl'
-  - tests
-  - testdata
-  - include
-  - dev
-  - design
-  - cocci
-  - conftools
-  - .github
-  - .gitlab
-  - .clang-format
-  - .clang-format.headers
-  - .gitlab-ci.yml
-  - .editorconfig
-  - .gitattributes
-  - .gitignore
-  - .mailmap
-  - .readthedocs.yaml
-  - .reuse
-  - REUSE.toml
-  - LICENSES
-  - .uncrustify.cfg
-  - .dir-locals.el
-  - .gitchangelog.rc
-  - .git-blame-ignore-revs
-  - .tsan-suppress
-  - sonar-project.properties
-  - dangerfile.py
-  - pyproject.toml
-  - FUZZING.md
-  - srcid
-  - names.csv
-  - mainpage
-  - startperf
-  - dnssec-policy.default.conf
-  - suppr-lsan.txt
-  - install-sh
-  - depcomp
-  - compile
-  - missing
-  - ar-lib
-  - test-driver
-  - config.guess
-  - config.sub
-  - configure
-  - run-clang-tidy
-  - models.c
-  - gen-rsa-sha-vectors.c
-  - gen-eddsa-vectors.c
-  archive_sha512sum: 6d90452d86bfbd1cd6c1301f8c2d9c2251402c81a03d45ab30217f5db05ab1ca6ca7e01fac3642bcd7e1866bd535763e9a9526886312eb5eaf4e532431a92931
-  skip_validation: false
+  missing: []
+  archive_sha512sum: fce8a69620c15223e54dd197c09c7b00c165e5e3a5b2f62b241f589be5675c581029cf750caa8ed1f1fcb0faf293df04e77c494c205bab89d6d01153395bf4cb
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'BIND is open source software that implements the Domain

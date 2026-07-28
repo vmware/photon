@@ -27,7 +27,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        23%{?dist}
+Release:        24%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1039,6 +1039,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Tue Aug 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-24
+- Bump release due to bindutils upgrade
 * Thu Jul 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.8.2-23
 - Rebuild for samba-client 4.24.5
 * Mon Jun 8 2026 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-22
