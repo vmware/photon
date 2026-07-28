@@ -42,36 +42,7 @@ trap fini EXIT
 git clone -q --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 [ $? -ne 0 ] && abort 1 "git clone depot_tools failed"
 
-depotToolsOutDir="depot_tools.new"
-pushd depot_tools
-commit_hash="$(git rev-parse --short HEAD)"
-
-mkdir -p ${depotToolsOutDir}/python-bin
-
-files=(subprocess2.py gn gclient_utils.py LICENSE gn_helper.py)
-files+=(gn.py gclient_paths.py)
-
-cp -a ${files[@]} ${depotToolsOutDir}/
-
-cp -a python-bin/python3 ${depotToolsOutDir}/python-bin
-mv ${depotToolsOutDir} ..
-popd
-
-mv depot_tools depot_tools.bak
-mv ${depotToolsOutDir} depot_tools
-
-depot_tools_tarball="depot_tools-$commit_hash.tar.xz"
-
-tar -I 'xz -9' -cpf $depot_tools_tarball depot_tools
-[ $? -ne 0 ] && abort 1 "ERROR: depot_tools tar creation error"
-
-mv $depot_tools_tarball $outputdir/
-[ $? -ne 0 ] && abort 1 "ERROR: mv depot_tools"
-
-rm -rf depot_tools
-mv depot_tools.bak depot_tools
 export PATH=$PATH:$PWD/depot_tools
-
 mkdir -p _tmp_ && pushd _tmp_
 
 cat << EOF > .gclient
@@ -105,6 +76,34 @@ echo "Source directory is bootstrapped (at: $PWD), now clean it up"
 echo "Use: https://github-vcf.devops.broadcom.net/vcf/photon-misc-scripts/tree/master/cleanup-chromium-src"
 echo "Once done, run -> tar -I 'xz -9' -cpf $chromium_tarball src/"
 popd # _tmp_
+
+pushd depot_tools
+depot_tools_commit_hash="$(git rev-parse --short HEAD)"
+
+patterns=(
+  git* .git* *.bat *lint* man python2* gerrit* tests win* zsh* google* pinpoint*
+  black isort roll* bootstrap* presubmit* metrics* *ninja* mcp luci* recipes infra*
+  owners* crowbar* cros* download* jj hooks PRESUBMIT.py my_activity.py mac* rdb*
+  cipd* README* siso* build* clang* ruff* rust* testing_support swift* upload*
+  agents ensure_bootstrap codereview* yapf led markdown_format.py update_depot_tools
+  *vpython* prpc android* *OWNERS* repo* *.sh
+)
+for item in "${patterns[@]}"; do
+  if [[ ! -e "$item" ]] && [[ ! -L "$item" ]]; then
+    echo "${item} is invalid in depot_tools delete items"
+    exit 1
+  fi
+done
+rm -rf ${patterns[@]}
+popd
+
+depot_tools_tarball="depot_tools-$depot_tools_commit_hash.tar.xz"
+
+tar -I 'xz -9' -cpf $depot_tools_tarball depot_tools
+[ $? -ne 0 ] && abort 1 "ERROR: depot_tools tar creation error"
+
+mv $depot_tools_tarball $outputdir/
+[ $? -ne 0 ] && abort 1 "ERROR: mv depot_tools"
 
 rm -rf depot_tools
 
