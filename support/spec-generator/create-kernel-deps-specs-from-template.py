@@ -26,9 +26,7 @@ class KernelSpecProcessor:
         self.__load_data(driver_info_file)
         self.__extract_kernel_data()
 
-    # Same precedence build.py uses: PHOTON_SUBRELEASE env var first, falling
-    # back to build-config.json's photon-subrelease (never edited by update
-    # builds, which only ever set the env var).
+    # Same precedence as build.py: PHOTON_SUBRELEASE env var, else build-config.json.
     def __load_current_subrelease(self):
         env_value = os.environ.get("PHOTON_SUBRELEASE")
         if env_value is not None:
@@ -54,9 +52,7 @@ class KernelSpecProcessor:
                     continue
         return None
 
-    # Evaluate a "%{photon_subrelease} <op> N" build_if expression against
-    # the active subrelease. Anything we can't parse (e.g. the default "1")
-    # is treated as always active, matching prior behaviour.
+    # Evaluate a "%{photon_subrelease} <op> N" build_if expression; unparseable defaults to active.
     def __is_build_if_active(self, build_for_value):
         if self.current_subrelease is None:
             return True
@@ -93,16 +89,54 @@ class KernelSpecProcessor:
                 k_specs.extend(directory_path.rglob(pattern))
         return k_specs
 
+    def __read_build_if(self, path):
+        with open(path, "r") as file:
+            content = file.read()
+        match = re.search(r"^\s*%(?:global|define)\s+build_if\s+(.*)", content, re.MULTILINE)
+        return match.group(1).strip() if match else "1"
+
+    def __template_dir_label(self, candidate):
+        for spec_path in self.spec_paths:
+            root = Path(spec_path).resolve()
+            try:
+                parts = candidate.resolve().relative_to(root).parts
+            except ValueError:
+                continue
+            return parts[0] if parts and parts[0].isdigit() else None
+        return None
+
+    # Pick among duplicate templates (base + subrelease overrides) by build_if
+    # truth, not directory name -- prefer the named override, else any active
+    # override, else the base template.
+    def __resolve_template_match(self, matches):
+        if not matches:
+            return None
+        if self.current_subrelease is None or len(matches) == 1:
+            return matches[0]
+
+        current = str(self.current_subrelease)
+        overrides, base_match = [], None
+        for candidate in matches:
+            label = self.__template_dir_label(candidate)
+            if label is None:
+                base_match = base_match or candidate
+            else:
+                overrides.append((label, candidate))
+
+        overrides.sort(key=lambda pair: pair[0] != current)
+        for _, candidate in overrides:
+            if self.__is_build_if_active(self.__read_build_if(candidate)):
+                return candidate
+
+        return base_match or matches[0]
+
     def __delete_older_specs(self):
         for pattern, value in  self.spec_map.items():
             k_specs = []
             if 'kernels' in pattern:
                 pattern = "*drivers-intel-*"
             else:
-                # Anchor to "<pattern>-*" (the generator's own output naming,
-                # e.g. "sysdig-0.39.0-6.1.177.spec") so this can't match a
-                # hand-written "<pattern>.spec" living elsewhere in the tree
-                # (e.g. SPECS/91/sysdig/sysdig.spec).
+                # Only match our own generated output, not a hand-written "<pattern>.spec".
                 pattern = f"{pattern}-*"
             k_specs = self.__find_spec_files(pattern)
             for spec_file in k_specs:
@@ -134,24 +168,15 @@ class KernelSpecProcessor:
                 self.krels[linux_flavour].append(release_match)
                 self.build_for[linux_flavour].extend([build_for_value])
 
-    # Some templates (e.g. sysdig.spec.in, falco.spec.in) pin their own
-    # static "%global build_if %{photon_subrelease} >= N" instead of using
-    # the %{BUILD_FOR} placeholder. For those, honor that gate up front and
-    # skip generating anything for this package at an inactive subrelease --
-    # otherwise we'd still stamp out a file (e.g. sysdig-*-6.1.176.spec) that
-    # merely sits inert on disk instead of never existing.
+    # Skip a package entirely if its template's own build_if is inactive.
     def __is_template_active(self, spec_file):
         if spec_file not in self.__template_active_cache:
             active = True
-            matches = self.__find_spec_files(spec_file, template=True)
-            if matches:
-                with open(matches[0], "r") as file:
-                    content = file.read()
-                match = re.search(
-                    r"^\s*%(?:global|define)\s+build_if\s+(.*)", content, re.MULTILINE
-                )
-                if match:
-                    active = self.__is_build_if_active(match.group(1).strip())
+            match_path = self.__resolve_template_match(
+                self.__find_spec_files(spec_file, template=True)
+            )
+            if match_path:
+                active = self.__is_build_if_active(self.__read_build_if(match_path))
             self.__template_active_cache[spec_file] = active
         return self.__template_active_cache[spec_file]
 
@@ -159,8 +184,10 @@ class KernelSpecProcessor:
     def __process_spec_file(self, spec_file, kver, krel, ksubrel,
                           build_for_value, target_fn,
                           linux_flavour, pkg_version):
-        spec_file = self.__find_spec_files(spec_file, template=True)
-        with open(spec_file[0], "r") as file:
+        spec_file = self.__resolve_template_match(
+            self.__find_spec_files(spec_file, template=True)
+        )
+        with open(spec_file, "r") as file:
             content = file.read()
         linux_flavour = linux_flavour.replace('linux', '')
 
@@ -171,7 +198,7 @@ class KernelSpecProcessor:
                          .replace("%{KERNEL_FLAVOUR}", linux_flavour) \
                          .replace("%{PKG_VERSION}", pkg_version)
 
-        target_dir = os.path.dirname(spec_file[0])
+        target_dir = os.path.dirname(spec_file)
         target_file = os.path.join(target_dir, target_fn)
         with open(target_file, "w") as file:
             file.write(content)
