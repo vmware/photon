@@ -3,7 +3,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.12.10
-Release:        8.1.1%{?dist}
+Release:        8.1.2%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -23,6 +23,13 @@ Patch4: CVE-2025-49795-2.patch
 Patch5: CVE-2025-6021.patch
 patch6: CVE-2025-6170.patch
 Patch7: CVE-2025-7425.patch
+Patch8: CVE-2025-8732.patch
+Patch9: CVE-2026-0989.patch
+Patch10: CVE-2026-0990.patch
+Patch11: CVE-2026-0992-1.patch
+Patch12: CVE-2026-0992-2.patch
+Patch13: CVE-2026-1757.patch
+Patch14: CVE-2026-11979.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -104,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Jul 28 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.10-8.1.2
+- Fix CVE-2025-8732, CVE-2026-0989, CVE-2026-0990, CVE-2026-0992, CVE-2026-1757, CVE-2026-11979
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12.10-8.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.12.10-8.1
