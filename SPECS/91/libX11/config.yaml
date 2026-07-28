@@ -1,15 +1,7 @@
 sources:
-- archive: libX11-1.8.13.tar.gz
-  archive_sha512sum: 3dbcb261bbf56e8613b61e84af5d6924bf804a5fb90fe84f3bde46e4bec3b0c8c496d9e2a9b6717511fd37544fe84350092a744aa98640612f653640693d791e
-  archive_type: upstream
-  name: libX11-1.8.13
-  version: 1.8.13
-  url: https://xorg.freedesktop.org/archive/individual/lib/libX11-1.8.13.tar.gz
-  repo_url: https://gitlab.freedesktop.org/xorg/lib/libX11
-  commit_id: 6c75545a1deb51f5903992c52af6bc35cc9bc103
-  skip_list: []
-  missing: ['.gitignore', '.gitlab-ci.yml', 'ChangeLog', 'INSTALL', 'Makefile.in', 'aclocal.m4', 'autogen.sh', 'compile', 'config.guess', 'config.h.in', 'config.sub', 'configure', 'depcomp', 'install-sh', 'libtool.m4', 'ltmain.sh', 'ltoptions.m4', 'ltsugar.m4', 'ltversion.m4', 'lt~obsolete.m4', 'missing', 'test-driver']
-  skip_validation: false
+- archive: libX11-1.8.5.tar.gz
+  archive_sha512sum: 967f7746b08650c4238630b007137e89085c88d89b256d5d9b37faa6a50b1df2a3ec749281677f1c64570a3eafd310872e6842cbb5aecaba1cdf7c0c4140ea56
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Core X11 protocol client library. '

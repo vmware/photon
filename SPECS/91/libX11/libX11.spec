@@ -1,18 +1,24 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Core X11 protocol client library.
 Name:           libX11
-Version:        1.8.13
-Release:        1%{?dist}
+Version:        1.8.5
+Release:        4%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.gz
+Source0:        https://github.com/freedesktop/xorg-libX11/archive/refs/tags/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+Patch0:         CVE-2023-3138.patch
+Patch1:         CVE-2023-43785.patch
+Patch2:         CVE-2023-43786_1.patch
+Patch3:         CVE-2023-43786_2.patch
+Patch4:         CVE-2023-43786_3.patch
+Patch5:         CVE-2023-43787.patch
 
 BuildRequires:  libxcb-devel
 BuildRequires:  xtrans
@@ -65,8 +71,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/
 
 %changelog
-* Tue Jul 28 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.8.13-1
-- Upgrade to 1.8.13
 * Mon May 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.8.5-4
 - Release bump for xtrans upgrade
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.8.5-3

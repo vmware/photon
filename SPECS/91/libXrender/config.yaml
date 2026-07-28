@@ -1,15 +1,7 @@
 sources:
-- archive: libXrender-0.9.12.tar.gz
-  archive_sha512sum: b7cbe8ead3a4eeb7c42acede8569361cf11818d98d05ede75a5f0c48c3fb6b1c0b3b62bb2ba6aea19b4804938512e63ebed127928b1a553b518e3ab974bd089d
-  archive_type: upstream
-  name: libXrender-0.9.12
-  version: 0.9.12
-  url: http://ftp.x.org/pub/individual/lib/libXrender-0.9.12.tar.gz
-  repo_url: https://gitlab.freedesktop.org/xorg/lib/libXrender
-  commit_id: 46e12ff9e8e4d3f0313a2f097df93dbfdc14f92f
-  skip_list: []
-  missing: ['.clang-format', '.gitignore', '.gitlab-ci.yml', 'ChangeLog', 'INSTALL', 'Makefile.in', 'aclocal.m4', 'autogen.sh', 'compile', 'config.guess', 'config.h.in', 'config.sub', 'configure', 'depcomp', 'install-sh', 'ltmain.sh', 'm4', 'missing']
-  skip_validation: false
+- archive: libXrender-0.9.10.tar.bz2
+  archive_sha512sum: 16ea0cf638b32d7df54b270457ef8c9d9a80da27fa845b105b560cb31027b4c7fe799cf23d6b6bac492be5961264e96d7845d316a9af4de9ff38bf40885ea6fe
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'The X11 Renderer library. '
