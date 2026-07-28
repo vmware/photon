@@ -1,4 +1,4 @@
-%global build_if %{BUILD_FOR}
+%global build_if %{photon_subrelease} >= 92
 
 %global security_hardening      none
 %define uname_r                 %{KERNEL_VERSION}-%{KERNEL_RELEASE}
