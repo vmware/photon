@@ -1,0 +1,100 @@
+sources:
+- archive: i40e-2.28.10.tar.gz
+  archive_sha512sum: 3ce0d2440d9befddb3d54f1556a8bd2b8d7c4abcaeab9f8f6c05a929f7b29ff8a5f97c26a0fa8059113217a72861831be9ec34ee5b94d724b31bcfe2680133f3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel i40e v2.28.10 driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Intel i40e driver v2.28.10
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: i40e-2.25.7.tar.gz
+  archive_sha512sum: d1a206806be1b2481704a9d928c3d77769ef6f1d94798b8a35258e191a091252c75222b04a85049b52fb06ce68b8bd8543ddcc0e938a6ec75320432d75f71530
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel i40e v2.25.7 driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (GPL-2.0-only OR MIT) AND GPL-2.0-or-later AND GPL-2.0-only AND BSD-3-Clause
+      license_declared: (GPL-2.0-only OR MIT) AND GPL-2.0-or-later AND GPL-2.0-only AND BSD-3-Clause
+      short_summary: Intel i40e driver v2.25.7
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: i40e-2.22.18.tar.gz
+  archive_sha512sum: 042fd064528cb807894dc1f211dcb34ff28b319aea48fc6dede928c93ef4bbbb109bdfc903c27bae98b2a41ba01b7b1dffc3acac100610e3c6e95427162a26ac
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel i40e v2.22.18 driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (GPL-2.0-only OR MIT) AND GPL-2.0-only AND GPL-2.0-or-later AND BSD-3-Clause
+      license_declared: (GPL-2.0-only OR MIT) AND GPL-2.0-only AND GPL-2.0-or-later AND BSD-3-Clause
+      short_summary: Intel i40e driver v2.22.18
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: iavf-4.13.16.tar.gz
+  archive_sha512sum: c2043541e82351b58abde59b74a74c5ca09e7dec3aadc3ef103a40c6c1bdc152413d01f8796e123b7a17962855c21bae879f529ee1a1cefaad37f8a65196ddae
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel iavf v%{src_ver} driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
+      short_summary: Intel iavf driver v4.13.16
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: iavf-4.11.1.tar.gz
+  archive_sha512sum: 201961b1f4b891368060f321e414d3d28b18a7c7b15bb6ad7c8e517216228bd67cbf68a018d59ce6b38e97cbb620f5ca1d88f829679d15930bc06688f40fa757
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel iavf v%{src_ver} driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (GPL-2.0-only OR MIT) AND GPL-2.0-only AND BSD-3-Clause AND GPL-2.0-or-later
+      license_declared: (GPL-2.0-only OR MIT) AND GPL-2.0-only AND BSD-3-Clause AND GPL-2.0-or-later
+      short_summary: Intel iavf driver v4.11.1
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: iavf-4.9.5.tar.gz
+  archive_sha512sum: 2e97671d1fd51b5b0017b49dcfa62854ef55a85182fcd4990d2d7faea0c3dc9532fe3896c81eabff3c30fb3b2b9573c22416adfec3a1e0f0107c44a9216fbf3a
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel iavf v%{src_ver} driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (GPL-2.0-only OR MIT) AND GPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-only
+      license_declared: (GPL-2.0-only OR MIT) AND GPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-only
+      short_summary: Intel iavf driver v4.9.5
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: ice-2.3.10.tar.gz
+  archive_sha512sum: 323f4553da0fe8d58fe5e02c30137ea274d181262e5885b9d2deff0206f4ad0a80c3c8dc90226e83d613d9092449b1cdb7ea255ec45e43a12809cd770923d83f
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel ice v2.3.10 driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND Intel
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND Intel
+      short_summary: Intel ice driver v2.3.10
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: ice-1.14.9.tar.gz
+  archive_sha512sum: 4a7fdc7b451d88ccd1ebcda45f1549407873c8d6fdd82bf549d47ef97acbafe13e5a09f03d3dc1ed22c76fa0486fca7186cfea76ba715a13bc83262f6aee37b3
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel ice v1.14.9 driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR Linux-OpenIB) AND Intel AND GPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-only
+      license_declared: (GPL-2.0-only OR MIT) AND (GPL-2.0-only OR Linux-OpenIB) AND Intel AND GPL-2.0-or-later AND BSD-3-Clause AND GPL-2.0-only
+      short_summary: Intel ice driver v1.14.9
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: ice-1.13.7.tar.gz
+  archive_sha512sum: 6167a0240624915ee6dce8f2186d6980c224baab8bcccee2b1d991d5cc15510b95b7b2a309cc60e57eae7dfffc4e2186730650ba104a231e54711c3b01f20f7b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'This Linux package contains the Intel ice v%{src_ver} driver. '
+      home_page: https://sourceforge.net/projects/e1000
+      license_concluded: (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND Intel AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only
+      license_declared: (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND Intel AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only
+      short_summary: Intel ice driver v1.13.7
+      supplier: 'Organization: Broadcom, Inc.'
