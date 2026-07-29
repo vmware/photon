@@ -1,36 +1,36 @@
 sources:
-- archive: samba-4.24.5.tar.gz
-  archive_sha512sum: dadaee50c61cc8076bd5f4e6e3a8be13b6aa6aeff33991277c7f5398ba9dea32e8d966c0206dec9cad240b935768b707f9c9dd6b60c3db433dcf8ddb30134088
+- archive: samba-4.19.3.tar.gz
+  archive_sha512sum: 1eacc6be2866ecc7cbb13c5d17a32ad14cc8148e811db9c730a11065ac3ed84a82e406e750dc97fbc884377346c4538a38d8031e63db6b09acd78fbd2c02d702
   skip_validation: false
   archive_type: upstream
   license_manual_review:
   - file_paths:
-    - samba-4.24.5/testdata/printing/example.ps
+    - samba-4.19.3/testdata/printing/example.ps
     sha256sum: 3c15833db965cd270f3d574758bb293b2592399cc963bf9e0e1b9d75c8d3e9e7
     spdx_exp: ''
   - file_paths:
-    - samba-4.24.5/lib/talloc/man/talloc.3.xml
-    sha256sum: 8e5ca81cdafeb321224f9a26ab41c58c336c248f333d9957267f674cd25a1184
+    - samba-4.19.3/lib/talloc/man/talloc.3.xml
+    sha256sum: 7196c9bc980aae69ed55f007a6c4a29ea3ef60dc50550d1ef4bae3e145eae582
     spdx_exp: ''
   - file_paths:
-    - samba-4.24.5/README.contributing
+    - samba-4.19.3/README.contributing
     sha256sum: 9b760ebc3217f179250ccd6e60be29a48af86198ea03647c46d8739185896a82
     spdx_exp: ''
   - file_paths:
-    - samba-4.24.5/COPYING
-    - samba-4.24.5/ctdb/COPYING
-    - samba-4.24.5/examples/pcap2nbench/COPYING
+    - samba-4.19.3/COPYING
+    - samba-4.19.3/ctdb/COPYING
+    - samba-4.19.3/examples/pcap2nbench/COPYING
     sha256sum: 8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903
     spdx_exp: ''
   - file_paths:
-    - samba-4.24.5/docs-xml/gpl-3.0.xml
+    - samba-4.19.3/docs-xml/gpl-3.0.xml
     sha256sum: ef0b816050d7f82f66c3d1d7bab0273767d2a0c3a1047484a2ddb67cfdbfbbbb
     spdx_exp: ''
-  name: samba-4.24.5
-  version: 4.24.5
-  url: https://www.samba.org/ftp/samba/stable/samba-4.24.5.tar.gz
+  name: samba-4.19.3
+  version: 4.19.3
+  url: https://www.samba.org/ftp/samba/stable/samba-4.19.3.tar.gz
   repo_url: https://gitlab.com/samba-team/samba.git
-  commit_id: 2ac52091905428fcaa48c10cc4e4fe439f9c679d
+  commit_id: ec5885982af6ad9d2b7330f199ddc29ed1678554
   skip_list:
   - vfs_gpfs.c
   - VERSION

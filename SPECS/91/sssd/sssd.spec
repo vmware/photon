@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %global sssd_user root
 
@@ -9,8 +9,7 @@
 %define __provides_exclude_from %{python3_sitearch}/.*\.so$
 
 # Determine the location of the LDB modules directory
-# In samba 4.24.x, ldb modules moved to /usr/lib/samba/ldb/
-%global ldb_modulesdir %{_libdir}/samba/ldb
+%global ldb_modulesdir %{_libdir}/ldb/modules/ldb
 
 # directory variables
 %global servicename sssd
@@ -27,7 +26,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        23%{?dist}
+Release:        22%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -462,10 +461,6 @@ program to handle the OAuth 2.0 Device Authorization Grant is provided.
 
 autoreconf -ivf
 
-# ldb headers moved to /usr/include/samba-4.0/ in samba 4.24.x; expose them
-# for AC_CHECK_HEADER([ldb.h]) which does not inherit LDB_CFLAGS from pkg-config
-export CPPFLAGS="$(pkg-config --cflags ldb) ${CPPFLAGS}"
-
 %configure \
     --disable-rpath \
     --disable-static \
@@ -486,8 +481,7 @@ export CPPFLAGS="$(pkg-config --cflags ldb) ${CPPFLAGS}"
     --with-sssd-user=%{sssd_user} \
     --with-syslog=journald \
     --with-test-dir=/dev/shm \
-    --without-oidc-child \
-    --with-smb-idmap-interface-version=6
+    --without-oidc-child
 
 # to fix intermittent build failure
 %make_build || \
@@ -495,7 +489,7 @@ export CPPFLAGS="$(pkg-config --cflags ldb) ${CPPFLAGS}"
 %make_build
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
 # Prepare language files
 %find_lang %{name}
@@ -1039,8 +1033,6 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
-* Thu Jul 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.8.2-23
-- Rebuild for samba-client 4.24.5
 * Mon Jun 8 2026 Michelle Wang <michelle.wang@broadcom.com> 2.8.2-22
 - Bump release due to bindutils upgrade
 * Thu May 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-21

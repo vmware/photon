@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.1.0
-Release:        20%{?dist}
+Release:        19%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/gssapi/gss-ntlmssp
@@ -95,8 +95,6 @@ rm -rf %{buildroot}/*
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
-* Thu Jun 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.1.0-20
-- Bump release due to samba-client upgrade to 4.24.5
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.1.0-19
 - Release version bump as part of libxml2/libxslt
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 1.1.0-18

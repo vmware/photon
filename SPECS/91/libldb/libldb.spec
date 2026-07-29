@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 
 %global cmocka_version 1.1.5
 %global talloc_version 2.4.1

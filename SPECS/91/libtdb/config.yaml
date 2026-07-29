@@ -1,13 +1,13 @@
 sources:
-- archive: tdb-1.4.15.tar.gz
-  archive_sha512sum: 1d2aeffaa4192dbd05b6f6356e7ceed50c4c18ed7080f6ecc9b7731cd7875e9822feafe1c1b281fc369fcd01c972441b5aed4104a421f0f985925815bfa4ed09
-  archive_type: upstream
+- archive: tdb-1.4.13.tar.gz
+  archive_sha512sum: 23cbabaf272947d65ab6ba22481ecbf2b86889f860b223ae650101fbf3c6a19acd179d8da15013502076172876acbf3ee3695e9cdeeaa721ed30920b1bd4937d
+  archive_type: None
   skip_validation: true
-  name: "tdb-1.4.15"
-  version: 1.4.15
-  url: https://www.samba.org/ftp/tdb/tdb-1.4.15.tar.gz
-  repo_url: https://gitlab.com/samba-team/samba
-  commit_id: c05d12c4fefa0272fb06a040ff8ba2b03ab42fb3
+  name: "tdb-1.4.13"
+  version: 1.4.13
+  url: https://download.samba.org/pub/tdb/tdb-1.4.13.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba/-/tree/master/lib/tdb
+  commit_id: 70a8c7a89a6d62d2ff172d79b5f4e6439300b88d
   skip_list: []
   missing: []
   spdx:

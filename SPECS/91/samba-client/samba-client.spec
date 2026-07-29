@@ -1,14 +1,12 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %global _samba_modules  pdb_tdbsam,pdb_ldap,pdb_smbpasswd,pdb_wbc_sam,pdb_samba4
 %define maj_ver         4.0
-%global samba_version   4.24.5
-%global ldb_version     2.11.0
 
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.24.5
-Release:        1%{?dist}
+Version:        4.19.3
+Release:        20%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,6 +17,32 @@ Source1: smb.conf.vendor
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Patch0: CVE-2025-9640.patch
+Patch1: CVE-2025-10230.patch
+Patch2: 0001-fix-memset_explicit-usage-for-newer-glibc.patch
+# Fix CVE-2026-4480: s3:printing: mask jobname passed as %J to "print command"
+Patch3:  CVE-2026-4480-01.patch
+Patch4:  CVE-2026-4480-02.patch
+Patch5:  CVE-2026-4480-03.patch
+Patch6:  CVE-2026-4480-04.patch
+Patch7:  CVE-2026-4480-05.patch
+Patch8:  CVE-2026-4480-06.patch
+Patch9:  CVE-2026-4480-07.patch
+Patch10: CVE-2026-4480-08.patch
+Patch11: CVE-2026-4480-09.patch
+Patch12: CVE-2026-4480-10.patch
+Patch13: CVE-2026-4480-11.patch
+Patch14: CVE-2026-4480-12.patch
+Patch15: CVE-2026-4480-13.patch
+# Fix CVE-2026-4408: s3:samr-server: deny/mask username passed as %u to "check password script"
+Patch16: CVE-2026-4408-01.patch
+Patch17: CVE-2026-4408-02.patch
+Patch18: CVE-2026-4408-03.patch
+Patch19: CVE-2026-4408-04.patch
+Patch20: CVE-2026-4408-05.patch
+Patch21: CVE-2026-4408-06.patch
+Patch22: CVE-2026-4408-07.patch
 
 BuildRequires: krb5-devel
 BuildRequires: libtirpc-devel
@@ -36,16 +60,14 @@ BuildRequires: jansson-devel
 BuildRequires: libxml2-devel
 BuildRequires: lmdb
 BuildRequires: openldap-devel
-BuildRequires: libxcrypt-devel
 BuildRequires: perl-Parse-Yapp
 BuildRequires: dbus-devel
 BuildRequires: sudo
-BuildRequires: libtdb-devel >= 1.4.15
+BuildRequires: libtdb-devel >= 1.4.8
 BuildRequires: libtalloc-devel >= 2.4.1
+BuildRequires: libldb-devel >= 2.7.2
 BuildRequires: libtevent-devel >= 0.15.0
 BuildRequires: python3-tdb
-BuildRequires: python3-talloc-devel
-BuildRequires: python3-tevent
 BuildRequires: bison
 BuildRequires: perl-JSON
 BuildRequires: zlib-devel
@@ -67,7 +89,8 @@ Requires: libtalloc
 Requires: ncurses-libs
 Requires: popt
 Requires: bindutils
-Requires: libtdb >= 1.4.15
+Requires: libtdb >= 1.4.8
+Requires: libldb >= 2.7.2
 Requires: libtalloc >= 2.4.1
 Requires: libtevent >= 0.15.0
 Requires: zlib
@@ -87,7 +110,7 @@ For a more detailed description of Samba, check the Web page https://www.Samba.o
 %package libs
 Summary: Samba client libraries
 Requires:   libtdb
-Requires:   libldb = %{version}-%{release}
+Requires:   libldb
 Requires:   libtalloc
 Requires:   libtevent
 
@@ -105,6 +128,7 @@ to develop programs.
 
 %package -n libwbclient
 Summary:        Samba libwbclient Library
+Group:          System/Libraries
 Provides:       pkgconfig(wbclient)
 
 %description -n libwbclient
@@ -112,59 +136,20 @@ This package includes the wbclient library.
 
 %package -n libwbclient-devel
 Summary:        Libraries and Header Files to Develop Programs with wbclient Support
+Group:          Development/Libraries/C and C++
 Requires:       libwbclient = %{version}-%{release}
 
 %description -n libwbclient-devel
 This package contains the static libraries and header files needed to
 develop programs which make use of the wbclient programming interface.
 
-%package -n libldb
-Summary:        A schema-less, ldap like, API and database
-Requires:       libtalloc >= 2.4.1
-Requires:       libtdb >= 1.4.15
-Requires:       libtevent >= 0.15.0
-
-%description -n libldb
-An extensible library that implements an LDAP like API to access remote LDAP
-servers, or use local tdb databases. LDB is now distributed as part of Samba.
-
-%package -n libldb-devel
-Summary:        Developer tools for the LDB library
-Requires:       libldb = %{version}-%{release}
-
-%description -n libldb-devel
-Header files needed to develop programs that link against the LDB library.
-
-%package -n ldb-tools
-Summary:        Tools to manage LDB files
-Requires:       libldb = %{version}-%{release}
-
-%description -n ldb-tools
-Tools to manage LDB files.
-
-%package -n ldb-docs
-Summary:        Documentation for the LDB library and tools
-BuildArch:      noarch
-
-%description -n ldb-docs
-Man pages for the LDB library API and command-line tools.
-
-%package -n python3-ldb
-Summary:        Python bindings for the LDB library
-Requires:       libldb = %{version}-%{release}
-Requires:       python3-tdb
-
-%description -n python3-ldb
-Python bindings for the LDB library.
-
 %prep
-%autosetup -n samba-%{samba_version} -p1
+%autosetup -n samba-%{version} -p1
 rm -r third_party/heimdal
 
 %build
 export CFLAGS="-I%{_includedir}/tirpc"
 export LDFLAGS="-ltirpc"
-export LDBMODULESDIR=%{_libdir}/ldb/modules/ldb
 
 %configure \
         --enable-fhs \
@@ -182,21 +167,15 @@ export LDBMODULESDIR=%{_libdir}/ldb/modules/ldb
         --without-systemd  \
         --without-acl-support \
         --with-shared-modules=%{_samba_modules} \
-        --bundled-libraries=cmocka,!talloc,!pytalloc,!pytalloc-util,!tevent,!pytevent,!tdb,!pytdb \
-        --private-libraries=!ldb \
+        --disable-python \
+        --bundled-libraries=cmocka,!talloc,!pytalloc,!pytalloc-util,!tevent,!pytevent,!tdb,!pytdb,!ldb,!pyldb,!pldb-util \
         --enable-debug \
         --with-system-mitkrb5
 
-%make_build bin/smbclient bin/ldbadd bin/ldbdel bin/ldbedit bin/ldbmodify bin/ldbrename bin/ldbsearch
+%make_build bin/smbclient
 
 %install
-# smb.conf.5.xml exceeds xsltproc's default recursion limit (5000) in 4.24.x;
-# waf hardcodes the absolute path to xsltproc, so replace it at /usr/bin/xsltproc directly
-mv /usr/bin/xsltproc /usr/bin/xsltproc.real
-printf '#!/bin/sh\nexec /usr/bin/xsltproc.real --maxdepth 200000 "$@"\n' > /usr/bin/xsltproc
-chmod +x /usr/bin/xsltproc
 %make_install %{?_smp_mflags}
-mv /usr/bin/xsltproc.real /usr/bin/xsltproc
 
 install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/samba/smb.conf
 
@@ -218,19 +197,18 @@ for fn in \
    %{_bindir}/smbcontrol \
    %{_bindir}/smbpasswd \
    %{_bindir}/smbstatus \
-   %{_bindir}/smbtorture \
    %{_bindir}/testparm \
    %{_bindir}/wbinfo \
    %{_includedir}/samba-%{maj_ver}/credentials.h \
    %{_includedir}/samba-%{maj_ver}/dcerpc.h \
    %{_includedir}/samba-%{maj_ver}/dcesrv_core.h \
    %{_includedir}/samba-%{maj_ver}/domain_credentials.h \
+   %{_includedir}/samba-%{maj_ver}/ldb_wrap.h \
    %{_includedir}/samba-%{maj_ver}/lookup_sid.h \
    %{_includedir}/samba-%{maj_ver}/machine_sid.h \
    %{_includedir}/samba-%{maj_ver}/netapi.h \
    %{_includedir}/samba-%{maj_ver}/param.h \
    %{_includedir}/samba-%{maj_ver}/passdb.h \
-   %{_includedir}/samba-%{maj_ver}/policy.h \
    %{_includedir}/samba-%{maj_ver}/rpc_common.h \
    %{_includedir}/samba-%{maj_ver}/samba/session.h \
    %{_includedir}/samba-%{maj_ver}/share.h \
@@ -256,7 +234,6 @@ for fn in \
    %{_includedir}/samba-%{maj_ver}/util/tfork.h \
    %{_includedir}/samba-%{maj_ver}/util_ldb.h \
    %{_libdir}/libdcerpc-samr.* \
-   %{_libdir}/libsamba-policy.so* \
    %{_libdir}/libnss_winbind.so.2 \
    %{_libdir}/libnss_wins.so.2 \
    %{_libdir}/pkgconfig/dcerpc.pc \
@@ -264,24 +241,21 @@ for fn in \
    %{_libdir}/pkgconfig/netapi.pc \
    %{_libdir}/pkgconfig/samba-credentials.pc \
    %{_libdir}/pkgconfig/samba-hostconfig.pc \
-   %{_libdir}/pkgconfig/samba-policy.pc \
    %{_libdir}/pkgconfig/samdb.pc \
    %{_libdir}/samba/idmap/*.so \
    %{_libdir}/samba/krb5/async_dns_krb5_locator.so \
    %{_libdir}/samba/krb5/winbind_krb5_localauth.so \
    %{_libdir}/samba/krb5/winbind_krb5_locator.so \
-   %{_libdir}/samba/libLIBWBCLIENT-OLD-private-samba.so \
-   %{_libdir}/samba/libREG-FULL-private-samba.so \
-   %{_libdir}/samba/libauth-unix-token-private-samba.so \
-   %{_libdir}/samba/libauth4-private-samba.so \
-   %{_libdir}/samba/libcmocka-private-samba.so \
-   %{_libdir}/samba/libdsdb-module-private-samba.so \
-   %{_libdir}/samba/libnss-info-private-samba.so \
-   %{_libdir}/samba/libsamba-net-join.cpython-*-private-samba.so \
-   %{_libdir}/samba/libsamba-python.cpython-*-private-samba.so \
-   %{_libdir}/samba/libshares-private-samba.so \
-   %{_libdir}/samba/libsmbpasswdparser-private-samba.so \
-   %{_libdir}/samba/libxattr-tdb-private-samba.so \
+   %{_libdir}/samba/libLIBWBCLIENT-OLD-samba4.so \
+   %{_libdir}/samba/libREG-FULL-samba4.so \
+   %{_libdir}/samba/libauth-unix-token-samba4.so \
+   %{_libdir}/samba/libauth4-samba4.so \
+   %{_libdir}/samba/libcmocka-samba4.so \
+   %{_libdir}/samba/libdsdb-module-samba4.so \
+   %{_libdir}/samba/libnss-info-samba4.so \
+   %{_libdir}/samba/libshares-samba4.so \
+   %{_libdir}/samba/libsmbpasswdparser-samba4.so \
+   %{_libdir}/samba/libxattr-tdb-samba4.so \
    %{_libdir}/security/pam_winbind.so \
    %{_libdir}/samba/nss_info/*.so \
    %{_libdir}/samba/vfs/*.so \
@@ -289,15 +263,11 @@ for fn in \
    %{_libexecdir}/samba/samba-* \
    %{_sbindir}/eventlogadm \
    %{_sbindir}/nmbd \
-   %{_sbindir}/samba-gpupdate \
    %{_sbindir}/smbd \
    %{_sbindir}/winbindd
 do
   rm %{buildroot}${fn}
 done
-
-# Remove samba Python package; keep only ldb Python bindings
-rm -rf %{buildroot}%{python3_sitearch}/samba/
 
 %post
 /sbin/ldconfig
@@ -309,18 +279,6 @@ rm -rf %{buildroot}%{python3_sitearch}/samba/
 /sbin/ldconfig
 
 %postun libs
-/sbin/ldconfig
-
-%post -n libldb
-/sbin/ldconfig
-
-%postun -n libldb
-/sbin/ldconfig
-
-%post -n python3-ldb
-/sbin/ldconfig
-
-%postun -n python3-ldb
 /sbin/ldconfig
 
 %clean
@@ -351,7 +309,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/smbtree
 %{_bindir}/net
 %{_bindir}/samba-log-parser
-%{_bindir}/wspsearch
 %ghost %{_libexecdir}/samba/cups_backend_smb
 %{_tmpfilesdir}/samba.conf
 %attr(0700,root,root) %dir /var/log/samba
@@ -364,12 +321,6 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/samba/smb.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/samba
 %{_mandir}/man1/*
-%exclude %{_mandir}/man1/ldbadd.1*
-%exclude %{_mandir}/man1/ldbdel.1*
-%exclude %{_mandir}/man1/ldbedit.1*
-%exclude %{_mandir}/man1/ldbmodify.1*
-%exclude %{_mandir}/man1/ldbrename.1*
-%exclude %{_mandir}/man1/ldbsearch.1*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
@@ -377,8 +328,6 @@ rm -rf %{buildroot}/*
 %files libs
 %defattr(-,root,root,-)
 %{_libdir}/libdcerpc-binding.so.*
-%{_libdir}/libdcerpc.so.*
-%{_libdir}/libdcerpc-server-core.so.*
 %{_libdir}/libndr.so.*
 %{_libdir}/libndr-krb5pac.so.*
 %{_libdir}/libndr-nbt.so.*
@@ -394,98 +343,100 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsmbldap.so.*
 %{_libdir}/libtevent-util.so.*
 %{_libdir}/libsmbclient.so.*
+%{_libdir}/libdcerpc.so.*
 %dir %{_libdir}/samba
-%{_libdir}/samba/libaddns-private-samba.so
-%{_libdir}/samba/libads-private-samba.so
-%{_libdir}/samba/libasn1util-private-samba.so
-%{_libdir}/samba/libauth-private-samba.so
-%{_libdir}/samba/libauthkrb5-private-samba.so
-%{_libdir}/samba/libCHARSET3-private-samba.so
-%{_libdir}/samba/libcliauth-private-samba.so
-%{_libdir}/samba/libcli-cldap-private-samba.so
-%{_libdir}/samba/libclidns-private-samba.so
-%{_libdir}/samba/libcli-ldap-common-private-samba.so
-%{_libdir}/samba/libcli-ldap-private-samba.so
-%{_libdir}/samba/libcli-nbt-private-samba.so
-%{_libdir}/samba/libcli-smb-common-private-samba.so
-%{_libdir}/samba/libcli-spoolss-private-samba.so
-%{_libdir}/samba/libcluster-private-samba.so
-%{_libdir}/samba/libcmdline-contexts-private-samba.so
-%{_libdir}/samba/libcmdline-private-samba.so
-%{_libdir}/samba/libcommon-auth-private-samba.so
-%{_libdir}/samba/libdbwrap-private-samba.so
-%{_libdir}/samba/libdcerpc-pkt-auth-private-samba.so
-%{_libdir}/samba/libdcerpc-samba4-private-samba.so
-%{_libdir}/samba/libdcerpc-samba-private-samba.so
-%{_libdir}/samba/libdnsserver-common-private-samba.so
-%{_libdir}/samba/libevents-private-samba.so
-%{_libdir}/samba/libflag-mapping-private-samba.so
-%{_libdir}/samba/libgenrand-private-samba.so
-%{_libdir}/samba/libgensec-private-samba.so
-%{_libdir}/samba/libgpext-private-samba.so
-%{_libdir}/samba/libgpo-private-samba.so
-%{_libdir}/samba/libgse-private-samba.so
-%{_libdir}/samba/libhttp-private-samba.so
-%{_libdir}/samba/libinterfaces-private-samba.so
-%{_libdir}/samba/libiov-buf-private-samba.so
-%{_libdir}/samba/libkrb5samba-private-samba.so
-%{_libdir}/samba/liblibcli-lsa3-private-samba.so
-%{_libdir}/samba/liblibcli-netlogon3-private-samba.so
-%{_libdir}/samba/liblibsmb-private-samba.so
-%{_libdir}/samba/libmessages-dgm-private-samba.so
-%{_libdir}/samba/libmessages-util-private-samba.so
-%{_libdir}/samba/libMESSAGING-private-samba.so
-%{_libdir}/samba/libMESSAGING-SEND-private-samba.so
-%{_libdir}/samba/libmscat-private-samba.so
-%{_libdir}/samba/libmsghdr-private-samba.so
-%{_libdir}/samba/libmsrpc3-private-samba.so
-%{_libdir}/samba/libndr-samba4-private-samba.so
-%{_libdir}/samba/libndr-samba-private-samba.so
-%{_libdir}/samba/libnetif-private-samba.so
-%{_libdir}/samba/libnet-keytab-private-samba.so
-%{_libdir}/samba/libngtcp2-crypto-gnutls-private-samba.so
-%{_libdir}/samba/libngtcp2-private-samba.so
-%{_libdir}/samba/libnpa-tstream-private-samba.so
-%{_libdir}/samba/libposix-eadb-private-samba.so
-%{_libdir}/samba/libprinter-driver-private-samba.so
-%{_libdir}/samba/libprinting-migrate-private-samba.so
-%{_libdir}/samba/libquic-private-samba.so
-%{_libdir}/samba/libregistry-private-samba.so
-%{_libdir}/samba/libreplace-private-samba.so
-%{_libdir}/samba/libRPC-SERVER-LOOP-private-samba.so
-%{_libdir}/samba/libRPC-WORKER-private-samba.so
-%{_libdir}/samba/libsamba3-util-private-samba.so
-%{_libdir}/samba/libsamba-cluster-support-private-samba.so
-%{_libdir}/samba/libsamba-debug-private-samba.so
-%{_libdir}/samba/libsamba-modules-private-samba.so
-%{_libdir}/samba/libsamba-net-private-samba.so
-%{_libdir}/samba/libsamba-security-private-samba.so
-%{_libdir}/samba/libsamba-security-trusts-private-samba.so
-%{_libdir}/samba/libsamba-sockets-private-samba.so
-%{_libdir}/samba/libsamdb-common-private-samba.so
-%{_libdir}/samba/libsecrets3-private-samba.so
-%{_libdir}/samba/libserver-id-db-private-samba.so
-%{_libdir}/samba/libserver-role-private-samba.so
-%{_libdir}/samba/libsmbclient-raw-private-samba.so
-%{_libdir}/samba/libsmbd-base-private-samba.so
-%{_libdir}/samba/libsmbd-shim-private-samba.so
-%{_libdir}/samba/libsmbldaphelper-private-samba.so
-%{_libdir}/samba/libsocket-blocking-private-samba.so
-%{_libdir}/samba/libstable-sort-private-samba.so
-%{_libdir}/samba/libsys-rw-private-samba.so
-%{_libdir}/samba/libtalloc-report-printf-private-samba.so
-%{_libdir}/samba/libtalloc-report-private-samba.so
-%{_libdir}/samba/libtdb-wrap-private-samba.so
-%{_libdir}/samba/libtime-basic-private-samba.so
-%{_libdir}/samba/libtorture-private-samba.so
-%{_libdir}/samba/libutil-crypt-private-samba.so
-%{_libdir}/samba/libutil-reg-private-samba.so
-%{_libdir}/samba/libutil-setid-private-samba.so
-%{_libdir}/samba/libutil-tdb-private-samba.so
+%{_libdir}/samba/libdnsserver-common-samba4.so
+%{_libdir}/samba/ldb/ildap.so
+%{_libdir}/samba/libRPC-WORKER-samba4.so
+%{_libdir}/samba/libcmdline-samba4.so
+%{_libdir}/samba/libRPC-SERVER-LOOP-samba4.so
+%{_libdir}/samba/ldb/ldbsamba_extensions.so
+%{_libdir}/samba/libdcerpc-samba4.so
+%{_libdir}/samba/libdcerpc-pkt-auth-samba4.so
+%{_libdir}/samba/libCHARSET3-samba4.so
+%{_libdir}/samba/libMESSAGING-SEND-samba4.so
+%{_libdir}/samba/libMESSAGING-samba4.so
+%{_libdir}/samba/libaddns-samba4.so
+%{_libdir}/samba/libads-samba4.so
+%{_libdir}/samba/libasn1util-samba4.so
+%{_libdir}/samba/libauth-samba4.so
+%{_libdir}/samba/libauthkrb5-samba4.so
+%{_libdir}/samba/libcli-cldap-samba4.so
+%{_libdir}/samba/libcli-ldap-common-samba4.so
+%{_libdir}/samba/libcli-ldap-samba4.so
+%{_libdir}/samba/libcli-nbt-samba4.so
+%{_libdir}/samba/libcli-smb-common-samba4.so
+%{_libdir}/samba/libcli-spoolss-samba4.so
+%{_libdir}/samba/libcliauth-samba4.so
+%{_libdir}/samba/libclidns-samba4.so
+%{_libdir}/samba/libcluster-samba4.so
+%{_libdir}/samba/libcmdline-contexts-samba4.so
+%{_libdir}/samba/libcommon-auth-samba4.so
+%{_libdir}/samba/libdbwrap-samba4.so
+%{_libdir}/samba/libdcerpc-samba-samba4.so
+%{_libdir}/samba/libevents-samba4.so
+%{_libdir}/samba/libflag-mapping-samba4.so
+%{_libdir}/samba/libgenrand-samba4.so
+%{_libdir}/samba/libgensec-samba4.so
+%{_libdir}/samba/libgpext-samba4.so
+%{_libdir}/samba/libgpo-samba4.so
+%{_libdir}/samba/libgse-samba4.so
+%{_libdir}/samba/libhttp-samba4.so
+%{_libdir}/samba/libinterfaces-samba4.so
+%{_libdir}/samba/libiov-buf-samba4.so
+%{_libdir}/samba/libkrb5samba-samba4.so
+%{_libdir}/samba/libldbsamba-samba4.so
+%{_libdir}/samba/liblibcli-lsa3-samba4.so
+%{_libdir}/samba/liblibcli-netlogon3-samba4.so
+%{_libdir}/samba/liblibsmb-samba4.so
+%{_libdir}/samba/libmessages-dgm-samba4.so
+%{_libdir}/samba/libmessages-util-samba4.so
+%{_libdir}/samba/libmscat-samba4.so
+%{_libdir}/samba/libmsghdr-samba4.so
+%{_libdir}/samba/libmsrpc3-samba4.so
+%{_libdir}/samba/libndr-samba-samba4.so
+%{_libdir}/samba/libndr-samba4.so
+%{_libdir}/samba/libnet-keytab-samba4.so
+%{_libdir}/samba/libnetif-samba4.so
+%{_libdir}/samba/libnpa-tstream-samba4.so
+%{_libdir}/samba/libposix-eadb-samba4.so
+%{_libdir}/samba/libprinter-driver-samba4.so
+%{_libdir}/samba/libprinting-migrate-samba4.so
+%{_libdir}/samba/libreplace-samba4.so
+%{_libdir}/samba/libregistry-samba4.so
+%{_libdir}/samba/libsamba-cluster-support-samba4.so
+%{_libdir}/samba/libsamba-debug-samba4.so
+%{_libdir}/samba/libsamba-modules-samba4.so
+%{_libdir}/samba/libsamba-security-samba4.so
+%{_libdir}/samba/libsamba-sockets-samba4.so
+%{_libdir}/samba/libsamba3-util-samba4.so
+%{_libdir}/samba/libsamdb-common-samba4.so
+%{_libdir}/samba/libsecrets3-samba4.so
+%{_libdir}/samba/libserver-id-db-samba4.so
+%{_libdir}/samba/libserver-role-samba4.so
+%{_libdir}/samba/libsmb-transport-samba4.so
+%{_libdir}/samba/libsmbclient-raw-samba4.so
+%{_libdir}/samba/libsmbd-base-samba4.so
+%{_libdir}/samba/libsmbd-shim-samba4.so
+%{_libdir}/samba/libsmbldaphelper-samba4.so
+%{_libdir}/samba/libstable-sort-samba4.so
+%{_libdir}/samba/libsys-rw-samba4.so
+%{_libdir}/samba/libsocket-blocking-samba4.so
+%{_libdir}/samba/libtalloc-report-printf-samba4.so
+%{_libdir}/samba/libtalloc-report-samba4.so
+%{_libdir}/samba/libtdb-wrap-samba4.so
+%{_libdir}/samba/libtime-basic-samba4.so
+%{_libdir}/samba/libtorture-samba4.so
+%{_libdir}/samba/libtrusts-util-samba4.so
+%{_libdir}/samba/libutil-reg-samba4.so
+%{_libdir}/samba/libutil-setid-samba4.so
+%{_libdir}/samba/libutil-tdb-samba4.so
+%dir %{_libdir}/samba/ldb
 %dir %{_libdir}/samba/pdb
 %{_libdir}/samba/pdb/ldapsam.so
 %{_libdir}/samba/pdb/smbpasswd.so
 %{_libdir}/samba/pdb/tdbsam.so
+%{_libdir}/libdcerpc-server-core.*
 
 %files devel
 %defattr(-,root,root,-)
@@ -493,18 +444,15 @@ rm -rf %{buildroot}/*
 %{_includedir}/samba-%{maj_ver}/core/*.h
 %{_includedir}/samba-%{maj_ver}/samba/version.h
 %{_includedir}/samba-%{maj_ver}/ndr.h
-%{_includedir}/samba-%{maj_ver}/smb3posix.h
 %{_includedir}/samba-%{maj_ver}/util/discard.h
 %{_includedir}/samba-%{maj_ver}/util/data_blob.h
-%{_includedir}/samba-%{maj_ver}/util/talloc_keep_secret.h
 %{_includedir}/samba-%{maj_ver}/util/time.h
 %{_includedir}/samba-%{maj_ver}/charset.h
 %{_includedir}/samba-%{maj_ver}/gen_ndr/*
 %{_includedir}/samba-%{maj_ver}/ndr/*
 %{_libdir}/libdcerpc.so
-%{_libdir}/libdcerpc-binding.so
-%{_libdir}/libdcerpc-server-core.so
 %{_libdir}/libsmbclient.so
+%{_libdir}/libdcerpc-binding.so
 %{_libdir}/libndr-krb5pac.so
 %{_libdir}/libndr-nbt.so
 %{_libdir}/libndr-standard.so
@@ -519,10 +467,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsmbconf.so
 %{_libdir}/libsmbldap.so
 %{_libdir}/libtevent-util.so
-%{_libdir}/samba/libidmap-private-samba.so
+%{_libdir}/samba/libidmap-samba4.so
 %{_libdir}/pkgconfig/ndr*.pc
 %{_libdir}/pkgconfig/samba-util.pc
 %{_libdir}/pkgconfig/smbclient.pc
+%{_mandir}/man7/libsmbclient.7*
 
 %files -n libwbclient
 %defattr(-,root,root,-)
@@ -535,57 +484,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/libwbclient.so
 %{_libdir}/pkgconfig/wbclient.pc
 
-%files -n libldb
-%defattr(-,root,root,-)
-%{_libdir}/libldb.so.*
-%dir %{_libdir}/samba
-%{_libdir}/samba/libldb-cmdline-private-samba.so
-%{_libdir}/samba/libldb-key-value-private-samba.so
-%{_libdir}/samba/libldb-tdb-err-map-private-samba.so
-%{_libdir}/samba/libldb-tdb-int-private-samba.so
-%{_libdir}/samba/libldbsamba-private-samba.so
-%dir %{_libdir}/samba/ldb
-%{_libdir}/samba/ldb/*.so
-
-%files -n libldb-devel
-%defattr(-,root,root,-)
-%{_includedir}/samba-%{maj_ver}/ldb.h
-%{_includedir}/samba-%{maj_ver}/ldb_module.h
-%{_includedir}/samba-%{maj_ver}/ldb_handlers.h
-%{_includedir}/samba-%{maj_ver}/ldb_errors.h
-%{_includedir}/samba-%{maj_ver}/ldb_version.h
-%{_includedir}/samba-%{maj_ver}/ldb_wrap.h
-%{_libdir}/libldb.so
-%{_libdir}/pkgconfig/ldb.pc
-
-%files -n ldb-tools
-%defattr(-,root,root,-)
-%{_bindir}/ldbadd
-%{_bindir}/ldbdel
-%{_bindir}/ldbedit
-%{_bindir}/ldbmodify
-%{_bindir}/ldbrename
-%{_bindir}/ldbsearch
-
-%files -n ldb-docs
-%defattr(-,root,root,-)
-%{_mandir}/man1/ldbadd.1.*
-%{_mandir}/man1/ldbdel.1.*
-%{_mandir}/man1/ldbedit.1.*
-%{_mandir}/man1/ldbmodify.1.*
-%{_mandir}/man1/ldbrename.1.*
-%{_mandir}/man1/ldbsearch.1.*
-%{_mandir}/man3/ldb*.gz
-
-%files -n python3-ldb
-%defattr(-,root,root,-)
-%{python3_sitearch}/ldb.cpython-*.so
-%{python3_sitearch}/_ldb_text.py
-%{_libdir}/samba/libpyldb-util.cpython-*-private-samba.so
-
 %changelog
-* Thu Jul 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.24.5-1
-- Upgrade to 4.24.5; fix CVE-2026-4408 and CVE-2026-4480
 * Tue Jun 16 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.3-20
 - Fix CVE-2026-4480
 - Fix CVE-2026-4408
