@@ -1,6 +1,6 @@
 #! /bin/bash
 
-BUILD_SCRIPT_VERSION=1.3
+BUILD_SCRIPT_VERSION=1.4
 
 # Target to Photon OS version
 VERSION="5.0"
@@ -25,10 +25,67 @@ WITH_CHECK=0
 # Example: RPM_MACROS=( --define \"vmxnet3_sw_timestamp 1\" )
 RPM_MACROS=()
 
+# Local path to a snapshot-<N>-Update<M>.<arch>.list (or plain package_list) file.
+# When set, the sandbox is pinned to these exact package NVRs via tdnf's
+# native `snapshot=` repo directive instead of resolving latest from the
+# live photon repo, giving a reproducible build environment. Unlike
+# VERSION/SUBRELEASE/DKR_IMG above, this has no static default to edit here:
+# it names a specific file that necessarily changes per invocation, so it is
+# only ever set via the --snapshot/-s flag parsed below.
+SNAPSHOT_LIST=""
+
+# Where the RPMs named in SNAPSHOT_LIST actually live. Accepts:
+#   - an http(s)/ftp URL to a repo (e.g. an internal mirror or artifactory path)
+#   - a local directory containing the RPMs (repo-formatted, with repodata/)
+#   - "local", to source them from the same $STAGE_RPMS/LOCAL_RPMS dir already
+#     mounted into the sandbox for the local repo, without a separate mirror
+# Left empty, defaults to the official Broadcom Photon repo for $VERSION.
+SNAPSHOT_BASEURL=""
+
+# Only the official Broadcom repo (the SNAPSHOT_BASEURL-unset default) is
+# signed with the Photon GPG key - mirrors/local directories/local RPMs are
+# assumed unsigned unless proven otherwise. Set below once SNAPSHOT_BASEURL
+# is resolved.
+SNAPSHOT_GPGCHECK=0
+
 TOPDIR="/usr/src/photon"
 SRCDIR="$TOPDIR/SOURCES"
+SNAPDIR="$TOPDIR/SNAPSHOT"
+SNAP_BASEURL_DIR="$TOPDIR/SNAPSHOT_RPMS"
 
-test "$#" -lt 1 && echo "Usage: $0 <spec-file-to-build.spec> [path-to-output-directory]" && exit 1
+# Pull --snapshot/-s and --snapshot-baseurl/-b out of the argument list before
+# positional parsing so they can appear anywhere:
+# build_spec.sh <spec> [outdir] [--snapshot <file>] [--snapshot-baseurl <url-or-dir>]
+# (CLI flags rather than more top-of-file variables, since a snapshot pin is
+# per-invocation input, not a per-checkout setting like VERSION/SUBRELEASE.)
+ARGS=()
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --snapshot=*)
+      SNAPSHOT_LIST="${1#*=}"
+      shift
+      ;;
+    --snapshot|-s)
+      SNAPSHOT_LIST="$2"
+      shift 2
+      ;;
+    --snapshot-baseurl=*)
+      SNAPSHOT_BASEURL="${1#*=}"
+      shift
+      ;;
+    --snapshot-baseurl|-b)
+      SNAPSHOT_BASEURL="$2"
+      shift 2
+      ;;
+    *)
+      ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+set -- "${ARGS[@]}"
+
+test "$#" -lt 1 && echo "Usage: $0 <spec-file-to-build.spec> [path-to-output-directory] [--snapshot <snapshot-list-file>] [--snapshot-baseurl <url-or-local-dir>]" && exit 1
 
 CP="cp"
 READLINK="readlink"
@@ -80,7 +137,44 @@ PH_ROOT=$(find_ph_root)
 STAGE_DIR="$(realpath ${PH_ROOT})/stage"
 STAGE_SOURCES="$(realpath ${STAGE_DIR})/SOURCES"
 STAGE_RPMS="$STAGE_DIR/RPMS"
-if [[ -n "$SUBRELEASE" ]]; then
+
+# -v mount to inject into `docker run`, and the resulting baseurl= value
+# written into the sandbox's [photon] repo when pinning to a snapshot.
+# Populated below when a local SNAPSHOT_BASEURL directory is given; left
+# empty for URLs (no mount needed).
+BASEURL_MOUNT=""
+SNAPSHOT_REPO_BASEURL=""
+
+if [[ -n "$SNAPSHOT_LIST" ]]; then
+  SNAPSHOT_LIST=$($READLINK -m "$SNAPSHOT_LIST")
+  [[ ! -f "$SNAPSHOT_LIST" ]] && echo "Snapshot list not found: $SNAPSHOT_LIST" && exit 1
+
+  if [[ -z "$SNAPSHOT_BASEURL" ]]; then
+    # Default: official Broadcom Photon repo, matching the baseurl used by
+    # the standard photon-snapshot.repo templates shipped with the OS.
+    SNAPSHOT_REPO_BASEURL="https://packages.broadcom.com/photon/$VERSION/photon_${VERSION}_"'\$basearch'
+    SNAPSHOT_GPGCHECK=1
+  elif [[ "$SNAPSHOT_BASEURL" == "local" ]]; then
+    # Reuse the local RPMs dir already mounted at $TOPDIR/LOCAL_RPMS for the
+    # local repo, instead of requiring a separate mirror/baseurl/repo.
+    SNAPSHOT_REPO_BASEURL="file://$TOPDIR/LOCAL_RPMS"
+  elif [[ "$SNAPSHOT_BASEURL" =~ ^[a-zA-Z][a-zA-Z0-9+.-]*:// ]]; then
+    # Any URL (internal mirror, artifactory, ftp, existing file:// path, etc.)
+    SNAPSHOT_REPO_BASEURL="$SNAPSHOT_BASEURL"
+  else
+    # Local directory of RPMs (with repodata/) - mount it read-only into the
+    # sandbox and point the repo at it via file://.
+    SNAPSHOT_BASEURL=$($READLINK -m "$SNAPSHOT_BASEURL")
+    [[ ! -d "$SNAPSHOT_BASEURL" ]] && echo "Snapshot baseurl directory not found: $SNAPSHOT_BASEURL" && exit 1
+    BASEURL_MOUNT="-v $SNAPSHOT_BASEURL:$SNAP_BASEURL_DIR:ro"
+    SNAPSHOT_REPO_BASEURL="file://$SNAP_BASEURL_DIR"
+  fi
+
+  # Tag the cached template image with the snapshot list + baseurl so
+  # different sources/snapshots never share a template, while repeat builds
+  # against the same pin still reuse it.
+  CONTAINER_IMG="photon_build_spec:$VERSION-snapshot-$(echo "$SNAPSHOT_LIST|$SNAPSHOT_BASEURL" | md5sum | cut -c1-12)"
+elif [[ -n "$SUBRELEASE" ]]; then
   CONTAINER_IMG="photon_build_spec:$VERSION-$SUBRELEASE"
 else
   CONTAINER_IMG="photon_build_spec:$VERSION"
@@ -99,10 +193,15 @@ if [ -e $LOCAL_STAGE ]; then
   rm -rf $LOCAL_STAGE
 fi
 
-mkdir -p ${LOCAL_STAGE}/{LOGS,RPMS,SRPMS} \
+mkdir -p ${LOCAL_STAGE}/{LOGS,RPMS,SRPMS,SNAPSHOT} \
          $LOCAL_SOURCES \
          $STAGE_SOURCES \
          $STAGE_RPMS
+
+LOCAL_SNAPSHOT_DIR="${LOCAL_STAGE}/SNAPSHOT"
+if [[ -n "$SNAPSHOT_LIST" ]]; then
+  cp "$SNAPSHOT_LIST" "${LOCAL_SNAPSHOT_DIR}/snapshot.list"
+fi
 
 LOGFILE=${LOCAL_STAGE}/LOGS/$(basename "$SPECFILE" .spec).log
 
@@ -177,6 +276,8 @@ create_sandbox() {
         -v $LOCAL_STAGE/RPMS:$TOPDIR/RPMS \
         -v $LOCAL_STAGE/SRPMS:$TOPDIR/SRPMS \
         -v $STAGE_RPMS:$TOPDIR/LOCAL_RPMS \
+        -v $LOCAL_SNAPSHOT_DIR:$SNAPDIR \
+        $BASEURL_MOUNT \
         --privileged -d --name $CONTAINER --network="host" \
         $CONTAINER_IMG tail -f /dev/null
       return 0
@@ -191,6 +292,8 @@ create_sandbox() {
     -v $LOCAL_STAGE/RPMS:$TOPDIR/RPMS \
     -v $LOCAL_STAGE/SRPMS:$TOPDIR/SRPMS \
     -v $STAGE_RPMS:$TOPDIR/LOCAL_RPMS \
+    -v $LOCAL_SNAPSHOT_DIR:$SNAPDIR \
+    $BASEURL_MOUNT \
     --privileged -d --name $CONTAINER --network="host" \
     "$DKR_IMG" tail -f /dev/null
 
@@ -207,6 +310,30 @@ create_sandbox() {
 
   run "Create local repo in sandbox" echo -e "[local]\nname=VMWare Photon Linux Local\nbaseurl=file://$TOPDIR/LOCAL_RPMS\nenabled=1\ngpgcheck=0\nskip_if_unavailable=1\npriority=10" | sed 1d | docker exec -i $CONTAINER sh -c 'cat > /etc/yum.repos.d/local.repo'
 
+  if [[ -n "$SNAPSHOT_LIST" ]]; then
+    # Disable every default repo (now including the local repo just created
+    # above) so the snapshot pin below ends up the only enabled repo - no
+    # priority=10 local repo left that could silently win over the pin.
+    run "Disable default repos for snapshot pin" \
+      docker exec -i $CONTAINER sh -c "sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*.repo"
+
+    # Re-point the existing [photon] repo at the snapshot instead of writing
+    # a whole new repo file from scratch, so it keeps the real gpgkey list
+    # and other fields already shipped with the image.
+    local snapshot_repo_tmp
+    snapshot_repo_tmp=$(mktemp)
+    docker cp "$CONTAINER:/etc/yum.repos.d/photon.repo" "$snapshot_repo_tmp"
+    sed -i \
+      -e "s|^baseurl=.*|baseurl=$SNAPSHOT_REPO_BASEURL|" \
+      -e "/^baseurl=/a snapshot=file://$SNAPDIR/snapshot.list" \
+      -e "s/^gpgcheck=.*/gpgcheck=$SNAPSHOT_GPGCHECK/" \
+      -e "s/^enabled=.*/enabled=1/" \
+      "$snapshot_repo_tmp"
+    run "Pin sandbox to snapshot $(basename "$SNAPSHOT_LIST")" \
+      docker cp "$snapshot_repo_tmp" "$CONTAINER:/etc/yum.repos.d/photon.repo"
+    rm -f "$snapshot_repo_tmp"
+  fi
+
   run "Create build template image for future use" docker commit "$(docker ps -q -f "name=$CONTAINER")" $CONTAINER_IMG
 }
 
@@ -215,7 +342,7 @@ prepare_buildenv() {
   local url=
   local enable_photon=
 
-  [[ -z "$SUBRELEASE" ]] && enable_photon="--enablerepo photon"
+  [[ -z "$SUBRELEASE" && -z "$SNAPSHOT_LIST" ]] && enable_photon="--enablerepo photon"
 
   in_sandbox mkdir -p $SRCDIR
 
