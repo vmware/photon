@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -44,6 +44,13 @@ Patch18: CVE-2026-35386.patch
 Patch19: CVE-2026-35388.patch
 Patch20: CVE-2026-35414.patch
 Patch21: CVE-2026-35387.patch
+Patch22: CVE-2026-59995.patch
+Patch23: CVE-2026-59996.patch
+Patch24: CVE-2026-59997.patch
+Patch25: CVE-2026-59999.patch
+Patch26: CVE-2026-60000.patch
+Patch27: CVE-2026-60001.patch
+Patch28: CVE-2026-60002.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -226,6 +233,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Thu Jul 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-16
+- CVE fixes, CVE-2026-59995 through CVE-2026-60002
 * Wed Apr 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-15
 - Fix CVE-2026-35387
 * Wed Apr 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-14
