@@ -66,6 +66,9 @@
 %global fips_plugins 1
 %if 0%{?canister_build}
 %global canister_usage 0
+# This is the last certified canister version
+# Remove below line when building a new canister
+%define fips_certified_kernel_version 6.12.60-18.ph5
 %else
 %global canister_usage 1
 %endif
@@ -77,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.96
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -127,7 +130,7 @@ Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
 %if 0%{?canister_usage}
-%define fips_canister_version 6.12.60-18.ph5
+%define fips_canister_version 6.12.60-18.1.ph5
 %define ExtraBuildRequires linux-fips-canister = %{fips_canister_version}
 BuildRequires:       linux-fips-canister = %{fips_canister_version}
 %endif
@@ -403,6 +406,9 @@ Patch11013: 1013-Disable-ret-sites-section-in-x86-shasum-object-files.patch
 Patch11015: 1015-FIPS-crypto-self-tests.patch
 # Disable alloc_hook_tags if MEM_PROFILING is disabled
 Patch11016: 1016-linux-canister-Eliminate-codetag-and-other-taggings-.patch
+# CVE-2026-64313 fix was applied on canister v6.12.60-18.1.
+# Below entry is kept for future reference
+Patch11017: 0001-crypto-ecc-Fix-carry-overflow-in-vli-multiplication.patch
 %endif
 
 # ACVP special builds
@@ -656,7 +662,7 @@ touch crypto/.fips_canister.o.cmd
 %endif
 
 %if 0%{?canister_build}
-%autopatch -p1 -m11000 -M11016
+%autopatch -p1 -m11000 -M11017
 cp %{SOURCE11000} crypto/
 cp %{SOURCE11001} crypto/
 cp %{SOURCE11002} crypto/
@@ -664,7 +670,7 @@ install -m 755 %{SOURCE11003} crypto/
 cp %{SOURCE11004} crypto/
 cp %{SOURCE11005} crypto/
 sed -i "0,/FIPS_CANISTER_VERSION.*$/s/FIPS_CANISTER_VERSION.*$/FIPS_CANISTER_VERSION \"%{lkcm_version}\"/" crypto/fips_integrity.c
-sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{version}-%{release}\"/" crypto/fips_integrity.c
+sed -i "0,/FIPS_KERNEL_VERSION.*$/s/FIPS_KERNEL_VERSION.*$/FIPS_KERNEL_VERSION \"%{fips_certified_kernel_version}\"/" crypto/fips_integrity.c
 %endif
 
 %if 0%{?acvp_build:1}
@@ -972,6 +978,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Jul 30 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.96-5
+- Update canister v6.12.60-18.1 with CVE-2026-64313 fix
 * Thu Jul 30 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.96-4
 - Fixes CVE-2026-43197, CVE-2026-43198
 * Tue Jul 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.96-3
