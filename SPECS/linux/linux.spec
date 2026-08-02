@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.96
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -978,6 +978,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Aug 05 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.96-7
+- Fixes CVE-2025-40158, CVE-2025-68745, CVE-2026-63872, CVE-2026-64076, CVE-2026-64077
 * Mon Aug 03 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.96-6
 - Fixes CVE-2025-40074, CVE-2025-68353, CVE-2026-23208, CVE-2026-43009, CVE-2026-43485
 * Thu Jul 30 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.96-5

@@ -32,3 +32,9 @@ Patch3016: 0001-ipv4-start-using-dst_dev_rcu.patch
 Patch3017: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 Patch3018: 0001-nouveau-gsp-drop-WARN_ON-in-ACPI-probes.patch
 Patch3019: 0002-ALSA-usb-audio-Use-the-right-limit-for-PCM-OOB-check.patch
+# Fixes CVE-2025-40158, CVE-2025-68745, CVE-2026-63872, CVE-2026-64076, CVE-2026-64077
+Patch3020: 0001-esp-fix-page-frag-reference-leak-on-skb_to_sgvec-failure.patch
+Patch3021: 0001-ipv6-use-RCU-in-ip6_output.patch
+Patch3022: 0001-netfilter-bridge-eb_tables-close-module-init-race.patch
+Patch3023: 0001-netfilter-ebtables-move-to-two-stage-removal-scheme.patch
+Patch3024: 0001-scsi-qla2xxx-Clear-cmds-after-chip-reset.patch
