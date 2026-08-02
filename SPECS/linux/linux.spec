@@ -26,7 +26,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.260
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -870,6 +870,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Aug 05 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 5.10.260-2
+- Fixes CVE-2025-40323
 * Mon Jul 06 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.260-1
 - Update to version 5.10.260
 * Fri Jun 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.258-8
