@@ -19,11 +19,8 @@ Patch3005: 0001-mm-call-free_folio-directly-in-folio_.patch
 Patch3006: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-c.patch
 Patch3007: 0001-scsi-qla2xxx-Completely-fix-fcport-do.patch
 Patch3008: 0001-sctp-validate-cached-peer-INIT-chunk-length-in-COOKI.patch
-Patch3009: 0001-tcp-Add-preempt_-disable-enable-_nest.patch
 Patch3010: 0002-sctp-validate-embedded-INIT-chunk-and.patch
 Patch3011: 0003-sctp-add-INIT-verification-after-cookie-unpacking.patch
-# Fixes CVE-2026-43197, CVE-2026-43198
-Patch3012: 0001-netconsole-avoid-OOB-reads-msg-is-not-nul-terminated.patch
 Patch3013: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
 # Fixes CVE-2025-40074, CVE-2025-68353, CVE-2026-23208, CVE-2026-43009, CVE-2026-43485
 Patch3014: 0001-ALSA-usb-audio-Prevent-excessive-number-of-frames.patch

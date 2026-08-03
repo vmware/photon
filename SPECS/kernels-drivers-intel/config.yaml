@@ -1,14 +1,14 @@
 sources:
-- archive: i40e-2.28.10.tar.gz
-  archive_sha512sum: 3ce0d2440d9befddb3d54f1556a8bd2b8d7c4abcaeab9f8f6c05a929f7b29ff8a5f97c26a0fa8059113217a72861831be9ec34ee5b94d724b31bcfe2680133f3
+- archive: i40e-2.30.18.tar.gz
+  archive_sha512sum: 57f57ad4b04a11609bf6f09bce6e7950185687426bd5fe2ef328bfb2e06da2f8381b82b1ec35eb3e381a20aafdfda80a56dcaa58493a7f5a75f54d0bafa58605
   skip_validation: true
   spdx:
     package:
-      detailed_description: 'This Linux package contains the Intel i40e v2.28.10 driver. '
+      detailed_description: 'This Linux package contains the Intel i40e v2.30.18 driver. '
       home_page: https://sourceforge.net/projects/e1000
       license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
       license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
-      short_summary: Intel i40e driver v2.28.10
+      short_summary: Intel i40e driver v2.30.18
       supplier: 'Organization: Broadcom, Inc.'
 - archive: i40e-2.25.7.tar.gz
   archive_sha512sum: d1a206806be1b2481704a9d928c3d77769ef6f1d94798b8a35258e191a091252c75222b04a85049b52fb06ce68b8bd8543ddcc0e938a6ec75320432d75f71530

@@ -28,8 +28,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.96
-Release:        8%{?dist}
+Version:        6.12.103
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -168,7 +168,6 @@ Patch72: 0009-esx-vmxnet3-software-timestamping.patch
 
 # vmxnet3
 Patch73: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
-Patch74: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
 
 # initialize MMCONFIG
 Patch75: 0001-initialize-MMCONFIG-if-already-not-initialized.patch
@@ -548,6 +547,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Aug 10 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.103-1
+- Update to version 6.12.103
 * Thu Aug 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.96-8
 - Make SELinux opt-in by default (add selinux=0 to default cmdline)
 * Wed Aug 05 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.96-7

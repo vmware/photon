@@ -1,4 +1,4 @@
-From 1e268764f263bebf700d8fbe2560e527662847d5 Mon Sep 17 00:00:00 2001
+From 6846b30c4c970a3b4e305283597f25d828b14e97 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
 Date: Fri, 26 Jul 2024 10:51:50 +0000
 Subject: [PATCH] gcc rap plugin with kcfi
@@ -75,10 +75,10 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
 diff --git a/Makefile b/Makefile
-index ec28adb2d..f6e701d2e 100644
+index 9210e46bf..2fd2253d8 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -961,6 +961,7 @@ export CC_FLAGS_LTO
+@@ -965,6 +965,7 @@ export CC_FLAGS_LTO
  endif
  
  ifdef CONFIG_CFI_CLANG
@@ -86,7 +86,7 @@ index ec28adb2d..f6e701d2e 100644
  CC_FLAGS_CFI	:= -fsanitize=kcfi
  ifdef CONFIG_CFI_ICALL_NORMALIZE_INTEGERS
  	CC_FLAGS_CFI	+= -fsanitize-cfi-icall-experimental-normalize-integers
-@@ -975,6 +976,7 @@ endif
+@@ -979,6 +980,7 @@ endif
  KBUILD_CFLAGS	+= $(CC_FLAGS_CFI)
  export CC_FLAGS_CFI
  endif
@@ -95,7 +95,7 @@ index ec28adb2d..f6e701d2e 100644
  # Architectures can define flags to add/remove for floating-point support
  CC_FLAGS_FPU	+= -D_LINUX_FPU_COMPILATION_UNIT
 diff --git a/arch/Kconfig b/arch/Kconfig
-index 1812e4e4d..6937cb11e 100644
+index c60ce8b56..3e3f3d274 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
 @@ -821,10 +821,16 @@ config ARCH_SUPPORTS_CFI_CLANG
@@ -336,10 +336,10 @@ index d300a009f..a8f32fede 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 517710c89..d0fdee141 100644
+index 6bc3dc998..2bcfef374 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1127,6 +1127,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+@@ -1182,6 +1182,10 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
  	bpf_jit_uncharge_modmem(size);
  }
  
@@ -350,7 +350,7 @@ index 517710c89..d0fdee141 100644
  /* Allocate jit binary from bpf_prog_pack allocator.
   * Since the allocated memory is RO+X, the JIT engine cannot write directly
   * to the memory. To solve this problem, a RW buffer is also allocated at
-@@ -1144,6 +1148,10 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1200,6 +1204,10 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  {
  	struct bpf_binary_header *ro_header;
  	u32 size, hole, start;
@@ -361,7 +361,7 @@ index 517710c89..d0fdee141 100644
  
  	WARN_ON_ONCE(!is_power_of_2(alignment) ||
  		     alignment > BPF_IMAGE_ALIGNMENT);
-@@ -1172,10 +1180,23 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -1228,10 +1236,23 @@ bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
  
  	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
  		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
@@ -386,7 +386,7 @@ index 517710c89..d0fdee141 100644
  	return ro_header;
  }
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 9099c0cc9..53a835e3f 100644
+index da77f856e..543744b7e 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
 @@ -1169,8 +1169,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_pmu_context *cpc, int cpu)
@@ -423,10 +423,10 @@ index ad58c44fb..58ee35380 100644
  		modmagic = NULL;
  
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1b1ddd24c..951b0149b 100644
+index ea106403a..d5ac2115b 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4989,7 +4989,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
+@@ -4990,7 +4990,7 @@ static void do_balance_callbacks(struct rq *rq, struct balance_callback *head)
  	lockdep_assert_rq_held(rq);
  
  	while (head) {
@@ -450,11 +450,11 @@ index b2e4e2d04..00956eb4f 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index a4e1d7951..e9acc0c97 100644
+index f51a1af31..f936b4a00 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
 @@ -397,7 +397,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
- 	rcu_assign_pointer(comment->c, NULL);
+ 	kfree_rcu(c, rcu);
  }
  
 -typedef void (*destroyer)(struct ip_set *, void *);

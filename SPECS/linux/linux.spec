@@ -79,8 +79,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.96
-Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.103
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -233,7 +233,6 @@ Patch63: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
 # vmxnet3
 Patch65: 0001-vmxnet3_support_higher_link_speeds_from_vmxnet3_v9.patch
-Patch66: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
 
 # Backward compatibility
 %if "%{dist}" == ".ph5"
@@ -408,7 +407,7 @@ Patch11015: 1015-FIPS-crypto-self-tests.patch
 Patch11016: 1016-linux-canister-Eliminate-codetag-and-other-taggings-.patch
 # CVE-2026-64313 fix was applied on canister v6.12.60-18.1.
 # Below entry is kept for future reference
-Patch11017: 0001-crypto-ecc-Fix-carry-overflow-in-vli-multiplication.patch
+# 0001-crypto-ecc-Fix-carry-overflow-in-vli-multiplication.patch
 %endif
 
 # ACVP special builds
@@ -978,6 +977,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Aug 10 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.103-1
+- Update to version 6.12.103
 * Thu Aug 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.96-9
 - Make SELinux opt-in by default (add selinux=0 to default cmdline)
 * Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.96-8

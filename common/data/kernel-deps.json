@@ -1,0 +1,105 @@
+{
+    "linux_flavour": [
+        "linux",
+        "linux-esx",
+        "linux-rt"
+    ],
+    "linux_dep_package": {
+        "kernels-drivers-intel-iavf": {
+            "v6.1": {
+                "linux": [
+                    "4.9.5"
+                ],
+                "linux-rt": [
+                    "4.11.1"
+                ],
+                "linux-esx": [
+                    "4.9.5"
+                ]
+            },
+            "v6.12": {
+                "linux": [
+                    "4.13.16"
+                ],
+                "linux-rt": [
+                    "4.13.16"
+                ],
+                "linux-esx": [
+                    "4.13.16"
+                ]
+            }
+        },
+        "kernels-drivers-intel-i40e": {
+            "v6.1": {
+                "linux": [
+                    "2.22.18"
+                ],
+                "linux-rt": [
+                    "2.25.7"
+                ],
+                "linux-esx": [
+                    "2.22.18"
+                ]
+            },
+            "v6.12": {
+                "linux": [
+                    "2.30.18"
+                ],
+                "linux-esx": [
+                    "2.30.18"
+                ],
+                "linux-rt": [
+                    "2.30.18"
+                ]
+            }
+        },
+        "kernels-drivers-intel-ice": {
+            "v6.1": {
+                "linux": [
+                    "1.13.7"
+                ],
+                "linux-rt": [
+                    "1.14.9"
+                ],
+                "linux-esx": [
+                    "1.13.7"
+                ]
+            },
+            "v6.12": {
+                "linux": [
+                    "2.3.10"
+                ],
+                "linux-rt": [
+                    "2.3.10"
+                ],
+                "linux-esx": [
+                    "2.3.10"
+                ]
+            }
+        },
+        "sysdig": {
+            "v6.1": {
+                "linux": [
+                    "0.39.0"
+                ]
+            },
+            "v6.12": {
+                "linux": [
+                    "0.39.0"
+                ]
+            }
+        },
+        "falco": {
+            "v6.1": {
+                "linux": [
+                    "0.39.2"
+                ]
+            },
+            "v6.12": {
+                "linux": [
+                    "0.39.2"
+                ]
+            }
+        }
+    }
+}
