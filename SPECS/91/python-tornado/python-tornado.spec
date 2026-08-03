@@ -1,28 +1,26 @@
-%global build_if %{photon_subrelease} >= 92
-
-%global srcname tornado
+%global build_if %{photon_subrelease} == 91
 
 Name:           python3-tornado
-Version:        6.5.7
-Release:        1%{?dist}
+Version:        6.2
+Release:        9%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/tornado
-Source0:        https://github.com/tornadoweb/tornado/archive/refs/tags/v6.5.7.tar.gz#/%{srcname}-%{version}.tar.gz
+Source0:        https://pypi.python.org/packages/fa/14/52e2072197dd0e63589e875ebf5984c91a027121262aa08f71a49b958359/tornado-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
+Patch0: CVE-2024-52804.patch
+Patch1: CVE-2025-47287.patch
+Patch2: CVE-2025-67725-67726.patch
+
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python3
-BuildRequires:  python3-setuptools
+BuildRequires:  python3 python3-setuptools
 BuildRequires:  python3-devel
-BuildRequires:  python3-wheel
-BuildRequires:  python3-build
-BuildRequires:  python3-installer
-BuildRequires:  python3-packaging
+BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 
@@ -30,25 +28,22 @@ Requires:       python3-libs
 Tornado is a Python web framework and asynchronous networking library
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n tornado-%{version}
 
 %build
-%py3_build_wheel
+%py3_build
 
 %install
-%py3_install_wheel
-%{py_byte_compile_and_ghost}
+%py3_install
 
 %check
 sh runtests.sh
 
-%files -f %{py_ghost_filelist}
+%files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-* Mon Aug 03 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.5.7-1
-- Upgrade to version 6.5.7
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.2-9
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.2-8
