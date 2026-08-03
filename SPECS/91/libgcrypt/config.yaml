@@ -1,13 +1,7 @@
 sources:
-- archive: libgcrypt-1.10.4.tar.bz2
-  archive_sha512sum: 7881e587b337c4478844d097aa67d459cdf33e4d5a8e6634d85fda908d38cb427a477148ec6a474baff38b78f4eef87eb169cb69e65baec6aa6ae8c764b5e5bf
-  archive_type: upstream
-  name: libgcrypt-1.10.4
-  url: https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.10.4.tar.bz2
-  repo_url: https://github.com/gpg/libgcrypt
-  commit_id: d365a41094571f2cce18f27b53ffdceb540f77bb
-  skip_list: []
-  missing: ['ChangeLog', 'configure', 'aclocal.m4', 'Makefile.in', 'stamp-h.in', 'Notes-wk', 'gcrypt.info-1', 'config.h.in', 'VERSION', 'distfiles', 'md2.c', 'gcrypt.info', '.mailmap', 'announce-1.4.txt', 'git-hooks', 'version.texi', 'test-getrusage.c', 'stamp-vti', 'db2any', 'fipsrngdrv.c', 'libgcrypt-modules.png', '.gitignore', 'announce.txt', 'pkcstv2c.awk', 'fips-fsm.png', 'fips-fsm.pdf', 'libgcrypt-modules.pdf', 'libgcrypt.txt', 'gcrypt.info-2']
+- archive: libgcrypt-1.10.1.tar.bz2
+  archive_sha512sum: e5ca7966624fff16c3013795836a2c4377f0193dbb4ac5ad2b79654b1fa8992e17d83816569a402212dc8367a7980d4141f5d6ac282bae6b9f02186365b61f13
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'The libgcrypt package contains a general purpose crypto
