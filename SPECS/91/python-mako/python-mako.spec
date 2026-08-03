@@ -1,17 +1,19 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Name:           python3-mako
-Version:        1.3.12
-Release:        1%{?dist}
+Version:        1.2.4
+Release:        4%{?dist}
 Summary:        Python templating language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.makotemplates.org
-Source0: https://github.com/sqlalchemy/mako/archive/refs/tags/rel_1_3_12.tar.gz#/Mako-%{version}.tar.gz
+Source0: https://github.com/sqlalchemy/mako/archive/refs/tags/Mako-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-41205.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -28,7 +30,7 @@ BuildArch:      noarch
 A super-fast templating language that borrows the best ideas from the existing templating languages. Mako is a template library written in Python. It provides a familiar, non-XML syntax which compiles into Python modules for maximum performance. Mako's syntax and API borrows from the best ideas of many others, including Django templates, Cheetah, Myghty, and Genshi.
 
 %prep
-%autosetup -p1 -n mako-rel_1_3_12
+%autosetup -p1 -n mako-rel_1_2_4
 
 %build
 %py3_build
@@ -48,8 +50,6 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
-* Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.12-1
-- Upgrade to v1.3.12
 * Fri Jun 12 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.4-4
 - Fix CVE-2026-41205
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.4-3
