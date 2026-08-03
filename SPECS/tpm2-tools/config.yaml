@@ -1,7 +1,13 @@
 sources:
-- archive: tpm2-tools-5.3.tar.gz
-  archive_sha512sum: 224a5ea3448a877362abb35ac06b115c559c09b44b30d74c8326211be66d24e0e130c285b1e285be1842e7203ab488629b0f4e451cbd782c83ed72023d146675
-  skip_validation: true
+- archive: tpm2-tools-5.7.tar.gz
+  archive_sha512sum: 629b0b1826815877f452935285f7b3fe0f32bd24fe9130eb169a2dc9b7b254a737797043af9eea68be706b87c32ab2b7189151360c9c00bc5c31dce62a799670
+  archive_type: upstream
+  name: tpm2-tools-5.7
+  url: https://github.com/tpm2-software/tpm2-tools/releases/download/5.7/tpm2-tools-5.7.tar.gz
+  repo_url: https://github.com/tpm2-software/tpm2-tools
+  commit_id: c6e182cf690ca0022b77fe7d3c174659917a7e7e
+  skip_list: []
+  missing: ['fapi-pcr-extend-read_ecc.sh', '.cirrus.yml', 'fapi-nv-write-authorize_ecc.sh', 'fapi-nv-write-read-policy-or2_ecc.sh', 'missing', 'ltmain.sh', 'man', 'aminclude_static.am', 'requirements.txt', 'fapi-set-get-certificate_ecc.sh', 'fapi-export-policy_ecc.sh', 'fapi-encrypt-decrypt_ecc.sh', 'compile', 'config.h.in', 'fapi-nv-extend_ecc.sh', 'fapi-nv-set-bits_ecc.sh', 'fapi-policy_signed_ecc.sh', 'Makefile.in', 'install-sh', 'fapi-set-get-description_ecc.sh', 'fapi-get-info_ecc.sh', 'config.sub', 'SECURITY.md', 'fapi-export-key_ecc.sh', 'fapi-list_ecc.sh', 'fapi-key-change-auth_ecc.sh', '.github', '.readthedocs.yml', 'fapi-nv-write-read_ecc.sh', 'configure', 'fapi-branch-select_ecc.sh', 'VERSION', 'fapi-quote-verify_ecc.sh', 'fapi-sign-verify_ecc.sh', 'requirements.in', 'fapi-testing-template_ecc.sh', 'fapi-get-random_ecc.sh', '.codecov.yml', '.lgtm.yml', 'misc', 'fapi-gettpm2object_ecc.sh', 'fapi-provision_ecc.sh', 'fapi-seal-unseal_ecc.sh', 'fapi-nv-write-read-policy-or_ecc.sh', 'fapi-authorize-policy_ecc.sh', 'depcomp', 'config.guess', 'fapi-get-platform-certificates_ecc.sh', '.ci', '.gitignore', 'fapi-set-get-app-data_ecc.sh', 'CODE_OF_CONDUCT.md', 'mkdocs.yml', 'aclocal.m4', 'src_vars.mk', 'm4', 'man1', 'fapi-get-tpm-blobs_ecc.sh', 'fapi-policy_signed_delegation_ecc.sh', 'fapi-nv-increment_ecc.sh', 'test-driver']
   spdx:
     package:
       detailed_description: 'The source repository for the TPM (Trusted Platform Module)

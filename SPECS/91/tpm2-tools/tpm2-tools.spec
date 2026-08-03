@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        The source repository for the TPM (Trusted Platform Module) 2 tools
 Name:           tpm2-tools
-Version:        5.7
-Release:        1%{?dist}
+Version:        5.3
+Release:        4%{?dist}
 URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -13,6 +13,9 @@ Source0: https://github.com/tpm2-software/tpm2-tools/releases/download/%{version
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:        CVE-2024-29039.patch
+Patch1:        CVE-2024-29038.patch
 
 BuildRequires: openssl-devel
 BuildRequires: curl-devel
@@ -33,6 +36,7 @@ The source repository for the TPM (Trusted Platform Module) 2 tools
 %autosetup -p1
 
 %build
+sed -i "/compatibility/a extern int BN_bn2binpad(const BIGNUM *a, unsigned char *to, int tolen);" lib/tpm2_openssl.c
 %configure --disable-static
 %make_build
 
@@ -57,8 +61,6 @@ make %{?_smp_mflags} check
 %{_datadir}/bash-completion/*
 
 %changelog
-* Mon Aug 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.7-1
-- Upgrade to v5.7. Fixes CVE-2024-29039
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.3-4
 - Release bump for SRP compliance
 * Thu Aug 01 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.3-3
