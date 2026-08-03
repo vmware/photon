@@ -1,20 +1,26 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %define srcname mistune
 
 Summary:        The fastest markdown parser in pure Python.
 Name:           python3-mistune
-Version:        3.3.4
-Release:        1%{?dist}
+Version:        3.2.0
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/mistune
 
-Source0: https://github.com/lepture/mistune/archive/refs/tags/v%{version}.tar.gz#/%{srcname}-%{version}.tar.gz
+Source0: https://files.pythonhosted.org/packages/source/m/mistune/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-33079.patch
+Patch1: CVE-2026-49851-1.patch
+Patch2: CVE-2026-49851-2.patch
+Patch3: CVE-2026-49851-3.patch
+Patch4: CVE-2026-44899.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
@@ -47,12 +53,9 @@ pip3 install tomli
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/mistune
 %{python3_sitelib}/*
 
 %changelog
-* Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.3.4-1
-- Upgrade to v3.3.4
 * Tue Jun 30 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.0-4
 - Fix CVE-2026-49851
 * Tue Jun 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.0-3

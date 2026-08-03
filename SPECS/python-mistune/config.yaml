@@ -1,7 +1,13 @@
 sources:
-- archive: mistune-3.2.0.tar.gz
-  archive_sha512sum: 0fc30fb323bc901830472626fc34fc4d99fc066a7492c61c7d2672df473e95220accad02f98ddcf070ddbd9fe918585319251f767e7c41443eaa37918e007838
-  skip_validation: true
+- archive: mistune-3.3.4.tar.gz
+  archive_sha512sum: 5ce0215de01c8d8b33e6ba5b19c9cebbc6bbbf25670e6611cf9f29efbc19007dd66005f6c5f1f6f7a53b766c466e9f9e8104b493ae72fc7428a31086b67e9bc2
+  archive_type: upstream
+  name: mistune-3.3.4
+  url: https://github.com/lepture/mistune/archive/refs/tags/v3.3.4.tar.gz
+  repo_url: https://github.com/lepture/mistune
+  commit_id: 69ec2b8a6d5b37ecb3c56d96df4b40b9d3004657
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'The fastest markdown parser in pure Python with renderer
