@@ -1,16 +1,16 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.4.3
+%define RUNC_VERSION 1.4.2
 %define RUNC_BRANCH  v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
 
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.4.3
+Version:             1.4.2
 Release:             1%{?dist}
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
@@ -67,8 +67,6 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
-* Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.3-1
-- Upgrade to v1.4.3 to fix CVE-2026-41579
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.2-1
 - Upgrade to v1.4.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.0-3
