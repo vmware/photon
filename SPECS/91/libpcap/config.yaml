@@ -1,13 +1,7 @@
 sources:
-- archive: libpcap-1.10.6.tar.gz
-  archive_sha512sum: 69e530bc5b470875fba9d82e3b40f36c84cbab21354edb228679c590d3b519363e62611b10fdc4ec84f19159a0dba14330c72edb2d476417695f6500026fb079
-  archive_type: upstream
-  name: libpcap-1.10.6
-  url: https://www.tcpdump.org/release/libpcap-1.10.6.tar.gz
-  repo_url: https://github.com/the-tcpdump-group/libpcap
-  commit_id: a999701dca5c873779281938baee6bc185a8d4dc
-  skip_list: []
-  missing: ['build_matrix.sh', '.mailmap', 'build.sh', 'configure', '.gitattributes', 'build_common.sh', '.github', '.ci-coverity-scan-build.sh', 'fuzz', '.gitignore', '.cirrus.yml', 'config.h.in', 'BPF', '.appveyor.yml']
+- archive: libpcap-1.10.1.tar.gz
+  archive_sha512sum: 56c314f19c2b857742bf8abcb1e78066986aaa95cec339b75a3c8b70a9fa2b5167da98708352f9ec97a1cea2700cfb4e040bda108d58ac46cec9b7deab88d171
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Libpcap provides a portable framework for low-level network
