@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.74.0
-Release:      10%{?dist}
+Release:      9%{?dist}
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
 Vendor:       VMware, Inc.
@@ -16,8 +16,6 @@ Source1: license.txt
 
 Patch0: disable-pkcs-related-tests.patch
 Patch1: CVE-2026-2574.patch
-Patch2: CVE-2025-60018.patch
-Patch3: CVE-2025-60019.patch
 
 BuildRequires: nettle-devel
 BuildRequires: libtasn1-devel
@@ -84,8 +82,6 @@ CONFIGURE_OPTS=(
 %defattr(-,root,root)
 
 %changelog
-* Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.74.0-10
-- Patched for CVE-2025-60018 and CVE-2025-60019
 * Sat Jun 27 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 2.74.0-9
 - Fix CVE-2026-2574 - out of bounds read in accepted-cas property getter
 * Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.74.0-8

@@ -1,0 +1,1 @@
+License: (GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1) AND Adobe-Glyph AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND HPND-Kevlin-Henney AND HPND-Pbmplus AND LGPL-2.0-or-later AND WTFPL AND X11 AND Xfig AND gnuplot
