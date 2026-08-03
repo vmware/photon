@@ -1,0 +1,20 @@
+sources:
+- archive: libxml2-2.15.3.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 6f7f1aabd012454553e851bd1ee548fbd14d21c576f2b2ab9eeedab3dfba51392083f74b34f060e9b538baeea212cdb462b8669c214c711771fb9a897fdc1c60
+  version: 2.15.3
+  name: libxml2-2.15.3
+  url: https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.3.tar.xz
+  repo_url: https://gitlab.gnome.org/GNOME/libxml2.git
+  commit_id: c94eb0210183b9d7cb43f8e7fddc6be55843ef49
+  skip_list: []
+  missing: ['customhtml.xsl', 'ltsugar.m4', 'xmltutorial.xml', '.gitignore', 'includestory.xml', '.gitattributes', 'missing', 'depcomp', 'genChRanges.py', 'libxml2.doap', 'compile', 'regexp.options', 'aclocal.m4', 'testOOMlib.h', 'fixup-tests.py', 'libxml2-xzlib.html', '.gitlab-ci', 'valid.options', 'ltmain.sh', 'schema.options', 'Makefile.in', 'chvalid.def', '.editorconfig', 'install-sh', 'ltversion.m4', 'xml.options', 'lt~obsolete.m4', 'config.h.in', 'ltoptions.m4', 'testOOMlib.c', 'configure', 'html.options', 'config.sub', 'customfo.xsl', 'py-compile', 'rngparser.c', 'MAINTAINERS.md', 'testOOM.c', 'xpath.options', 'uri.options', 'libtool.m4', 'xinclude.options', '.gitlab-ci.yml', 'config.guess', 'oss-fuzz-build.sh', '_redirects', 'scripts', 'test_xmlcatalog_add_del.cmake', 'run_and_diff.cmake', 'lint.dict', 'reader.options', 'dist-doc', 'icu.c', 'xstc', 'libxml.m4']
+  spdx:
+    package:
+      detailed_description: 'The libxml2 package contains libraries and utilities
+        used for parsing XML files. '
+      home_page: http://xmlsoft.org
+      license_concluded: (GPL-2.0-only OR MIT) AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND ISC-Veillard AND Latex2e-translated-notice AND MIT AND X11
+      license_declared: (GPL-2.0-only OR MIT) AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND ISC-Veillard AND Latex2e-translated-notice AND MIT AND X11
+      short_summary: Libxml2
+      supplier: 'Organization: Broadcom, Inc.'
