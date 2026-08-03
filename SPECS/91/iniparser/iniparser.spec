@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Name:       iniparser
 Version:    4.1
-Release:    4%{?dist}
+Release:    3%{?dist}
 Summary:    C library for parsing "INI-style" files
 URL:        https://github.com/ndevilla/%{name}
 Group:      Development/Tools
@@ -18,7 +18,6 @@ BuildRequires: gcc
 BuildRequires: make
 
 Patch0: CVE-2025-0633.patch
-Patch1: CVE-2023-33461.patch
 
 %description
 iniParser is an ANSI C library to parse "INI-style" files, often used to
@@ -77,8 +76,6 @@ cd example && make %{?_smp_mflags}
 %{_includedir}/*.h
 
 %changelog
-* Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.1-4
-- Patched for CVE-2023-33461
 * Fri Feb 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.1-3
 - Fix for CVE-2025-0633
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 4.1-2
