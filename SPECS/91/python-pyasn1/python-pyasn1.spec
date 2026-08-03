@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Name:           python3-pyasn1
-Version:        0.6.4
-Release:        1%{?dist}
+Version:        0.6.3
+Release:        2%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,11 +15,9 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-wheel
-BuildRequires:  python3-build
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-installer
-BuildRequires:  python3-packaging
+BuildRequires:  python3-pip
+BuildRequires:  python3-wheel
 
 Requires:       python3
 
@@ -34,24 +32,21 @@ but then generalized to be suitable for a wide range of protocols based on ASN.1
 %autosetup -p1 -n pyasn1-%{version}
 
 %build
-%py3_build_wheel
+%pyproject_wheel
 
 %install
-%py3_install_wheel
-%{py_byte_compile_and_ghost}
+%pyproject_install
 
 %if 0%{?with_check}
 %check
 python3 -m pytest tests/
 %endif
 
-%files -f %{py_ghost_filelist}
+%files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
-* Mon Aug 03 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.6.4-1
-- Upgrade to version 0.6.4
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.6.3-2
 - Extended to build for subrelease 91 and above
 * Tue Mar 31 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.6.3-1
