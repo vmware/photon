@@ -1,4 +1,4 @@
-From c80b10a57e1d7aafee74e2291d6cc8e94f6122a7 Mon Sep 17 00:00:00 2001
+From ef2179cc6f5228f579dc0505c86342575be0ccc5 Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
 Date: Mon, 25 Jan 2021 10:53:06 +0530
 Subject: [PATCH] crypto: AF_ALG -- add sign/verify API
@@ -17,17 +17,17 @@ Signed-off-by: Tadeusz Struk <tadeusz.struk@intel.com>
 Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
 ---
  crypto/af_alg.c             | 10 +++++-----
- crypto/algif_aead.c         | 30 ++++++++++++++++++++----------
+ crypto/algif_aead.c         | 28 +++++++++++++++++++---------
  crypto/algif_skcipher.c     | 25 +++++++++++++++++--------
  include/crypto/if_alg.h     |  6 +++---
  include/uapi/linux/if_alg.h |  2 ++
- 5 files changed, 47 insertions(+), 26 deletions(-)
+ 5 files changed, 46 insertions(+), 25 deletions(-)
 
 diff --git a/crypto/af_alg.c b/crypto/af_alg.c
-index 6c271e55f44d..c80502df3fbb 100644
+index 3c3cb965f..5dd8a9977 100644
 --- a/crypto/af_alg.c
 +++ b/crypto/af_alg.c
-@@ -944,7 +944,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
+@@ -919,7 +919,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
  	struct af_alg_tsgl *sgl;
  	struct af_alg_control con = {};
  	long copied = 0;
@@ -36,7 +36,7 @@ index 6c271e55f44d..c80502df3fbb 100644
  	bool init = false;
  	int err = 0;
  
-@@ -955,11 +955,11 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
+@@ -930,11 +930,11 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
  
  		init = true;
  		switch (con.op) {
@@ -51,7 +51,7 @@ index 6c271e55f44d..c80502df3fbb 100644
  			break;
  		default:
  			return -EINVAL;
-@@ -989,7 +989,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
+@@ -964,7 +964,7 @@ int af_alg_sendmsg(struct socket *sock, struct msghdr *msg, size_t size,
  	ctx->init = true;
  
  	if (init) {
@@ -61,10 +61,10 @@ index 6c271e55f44d..c80502df3fbb 100644
  			memcpy(ctx->iv, con.iv->iv, ivsize);
  
 diff --git a/crypto/algif_aead.c b/crypto/algif_aead.c
-index 7d58cbbce4af..b79e93e2b2ea 100644
+index c6c2ce218..e5b17cf65 100644
 --- a/crypto/algif_aead.c
 +++ b/crypto/algif_aead.c
-@@ -55,7 +55,7 @@ static inline bool aead_sufficient_data(struct sock *sk)
+@@ -47,7 +47,7 @@ static inline bool aead_sufficient_data(struct sock *sk)
  	 * The minimum amount of memory needed for an AEAD cipher is
  	 * the AAD and in case of decryption the tag.
  	 */
@@ -73,12 +73,12 @@ index 7d58cbbce4af..b79e93e2b2ea 100644
  }
  
  static int aead_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
-@@ -71,6 +71,19 @@ static int aead_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+@@ -62,6 +62,19 @@ static int aead_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
  	return af_alg_sendmsg(sock, msg, size, ivsize);
  }
  
 +static inline int aead_cipher_op(struct af_alg_ctx *ctx,
-+                                struct af_alg_async_req *areq)
++				struct af_alg_async_req *areq)
 +{
 +	switch (ctx->op) {
 +	case ALG_OP_ENCRYPT:
@@ -90,10 +90,10 @@ index 7d58cbbce4af..b79e93e2b2ea 100644
 +	}
 +}
 +
- static int crypto_aead_copy_sgl(struct crypto_sync_skcipher *null_tfm,
- 				struct scatterlist *src,
- 				struct scatterlist *dst, unsigned int len)
-@@ -138,7 +151,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
+ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
+ 			 size_t ignored, int flags)
+ {
+@@ -114,7 +127,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
  	 * buffer provides the tag which is consumed resulting in only the
  	 * plaintext without a buffer for the tag returned to the caller.
  	 */
@@ -102,25 +102,16 @@ index 7d58cbbce4af..b79e93e2b2ea 100644
  		outlen = used + as;
  	else
  		outlen = used - as;
-@@ -212,7 +225,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
- 	/* Use the RX SGL as source (and destination) for crypto op. */
- 	rsgl_src = areq->first_rsgl.sgl.sgt.sgl;
+@@ -150,7 +163,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
+ 	if (usedpages < outlen) {
+ 		size_t less = outlen - usedpages;
  
--	if (ctx->enc) {
-+	if (ctx->op == ALG_OP_ENCRYPT) {
- 		/*
- 		 * Encryption operation - The in-place cipher operation is
- 		 * achieved by the following operation:
-@@ -229,7 +242,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
- 		if (err)
+-		if (used < less + (ctx->enc ? 0 : as)) {
++		if (used < less + (ctx->op ? 0 : as)) {
+ 			err = -EINVAL;
  			goto free;
- 		af_alg_pull_tsgl(sk, processed, NULL, 0);
--	} else {
-+	} else if (ctx->op == ALG_OP_DECRYPT) {
- 		/*
- 		 * Decryption operation - To achieve an in-place cipher
- 		 * operation, the following  SGL structure is used:
-@@ -295,8 +308,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
+ 		}
+@@ -208,8 +221,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
  		aead_request_set_callback(&areq->cra_u.aead_req,
  					  CRYPTO_TFM_REQ_MAY_SLEEP,
  					  af_alg_async_cb, areq);
@@ -130,7 +121,7 @@ index 7d58cbbce4af..b79e93e2b2ea 100644
  
  		/* AIO operation in progress */
  		if (err == -EINPROGRESS)
-@@ -309,10 +321,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
+@@ -222,10 +234,7 @@ static int _aead_recvmsg(struct socket *sock, struct msghdr *msg,
  					  CRYPTO_TFM_REQ_MAY_SLEEP |
  					  CRYPTO_TFM_REQ_MAY_BACKLOG,
  					  crypto_req_done, &ctx->wait);
@@ -142,7 +133,7 @@ index 7d58cbbce4af..b79e93e2b2ea 100644
  	}
  
  
-@@ -543,6 +552,7 @@ static int aead_accept_parent_nokey(void *private, struct sock *sk)
+@@ -422,6 +431,7 @@ static int aead_accept_parent_nokey(void *private, struct sock *sk)
  
  	INIT_LIST_HEAD(&ctx->tsgl_list);
  	ctx->len = len;
@@ -151,7 +142,7 @@ index 7d58cbbce4af..b79e93e2b2ea 100644
  
  	ask->private = ctx;
 diff --git a/crypto/algif_skcipher.c b/crypto/algif_skcipher.c
-index 125d395c5e00..a3a196dff94c 100644
+index ba0a17fd9..cf6487385 100644
 --- a/crypto/algif_skcipher.c
 +++ b/crypto/algif_skcipher.c
 @@ -93,6 +93,19 @@ static void algif_skcipher_done(void *data, int err)
@@ -174,7 +165,7 @@ index 125d395c5e00..a3a196dff94c 100644
  static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
  			     size_t ignored, int flags)
  {
-@@ -178,9 +191,7 @@ static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
+@@ -183,9 +196,7 @@ static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
  					      cflags |
  					      CRYPTO_TFM_REQ_MAY_SLEEP,
  					      algif_skcipher_done, areq);
@@ -185,7 +176,7 @@ index 125d395c5e00..a3a196dff94c 100644
  
  		/* AIO operation in progress */
  		if (err == -EINPROGRESS)
-@@ -194,11 +205,8 @@ static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
+@@ -199,11 +210,8 @@ static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
  					      CRYPTO_TFM_REQ_MAY_SLEEP |
  					      CRYPTO_TFM_REQ_MAY_BACKLOG,
  					      crypto_req_done, &ctx->wait);
@@ -199,7 +190,7 @@ index 125d395c5e00..a3a196dff94c 100644
  		if (!err)
  			err = algif_skcipher_export(
  				sk, &areq->cra_u.skcipher_req);
-@@ -393,6 +401,7 @@ static int skcipher_accept_parent_nokey(void *private, struct sock *sk)
+@@ -398,6 +406,7 @@ static int skcipher_accept_parent_nokey(void *private, struct sock *sk)
  
  	INIT_LIST_HEAD(&ctx->tsgl_list);
  	ctx->len = len;
@@ -208,10 +199,10 @@ index 125d395c5e00..a3a196dff94c 100644
  
  	ask->private = ctx;
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index e8e091633c06..7bc23a3376a3 100644
+index 0cc8fa749..c907a4a6e 100644
 --- a/include/crypto/if_alg.h
 +++ b/include/crypto/if_alg.h
-@@ -137,10 +137,10 @@ struct af_alg_async_req {
+@@ -133,10 +133,10 @@ struct af_alg_async_req {
   * @more:		More data to be expected from user space?
   * @merge:		Shall new data from user space be merged into existing
   *			SG?
@@ -224,7 +215,7 @@ index e8e091633c06..7bc23a3376a3 100644
   * @len:		Length of memory allocated for this data structure.
   * @inflight:		Non-zero when AIO requests are in flight.
   */
-@@ -158,10 +158,10 @@ struct af_alg_ctx {
+@@ -154,10 +154,10 @@ struct af_alg_ctx {
  
  	bool		more:1,
  			merge:1,
@@ -237,7 +228,7 @@ index e8e091633c06..7bc23a3376a3 100644
  
  	unsigned int inflight;
 diff --git a/include/uapi/linux/if_alg.h b/include/uapi/linux/if_alg.h
-index 0824fbc026a1..3a3b08f7500b 100644
+index 0824fbc02..3a3b08f75 100644
 --- a/include/uapi/linux/if_alg.h
 +++ b/include/uapi/linux/if_alg.h
 @@ -57,5 +57,7 @@ struct af_alg_iv {
@@ -249,5 +240,5 @@ index 0824fbc026a1..3a3b08f7500b 100644
  
  #endif	/* _LINUX_IF_ALG_H */
 -- 
-2.39.4
+2.53.0
 
