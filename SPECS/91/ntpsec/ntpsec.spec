@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Improved implementation of Network Time Protocol
 Name:           ntpsec
 Version:        1.2.3
-Release:        16%{?dist}
+Release:        15%{?dist}
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -122,8 +122,8 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %dir %{_sysconfdir}/logrotate.d
-%attr(644,root,root) %config(noreplace) %{_sysconfdir}/ntp.conf
-%attr(644,root,root) %config(noreplace) %{_sysconfdir}/logrotate.d/ntpsec.conf
+%attr(0750, root, root) %config(noreplace) %{_sysconfdir}/ntp.conf
+%attr(0750, root, root) %config(noreplace) %{_sysconfdir}/logrotate.d/ntpsec.conf
 %attr(644,ntp,ntp) %{_sharedstatedir}/ntp/ntp.drift
 %exclude %{_bindir}/ntptime
 %{_bindir}/ntp*
@@ -145,8 +145,6 @@ rm -rf %{buildroot}/*
 %{python3_sitearch}/ntp*
 
 %changelog
-* Mon Aug 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-16
-- Fix conf file attributes
 * Thu Jun 25 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.3-15
 - Fix driftfile path in ntp.conf
 * Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.3-14
