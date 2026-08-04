@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        ALSA library
 Name:           alsa-lib
 Version:        1.2.8
-Release:        6%{?dist}
+Release:        5%{?dist}
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -15,7 +15,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: CVE-2026-25068.patch
-Patch1: CVE-2026-56109.patch
 
 %description
 The ALSA Library package contains the ALSA library used by programs
@@ -60,8 +59,6 @@ rm %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/*
 
 %changelog
-* Tue Aug 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.8-6
-- Fix CVE-2026-56109
 * Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.2.8-5
 - Move pkgconfig .pc files to -devel subpackage
 * Mon Feb 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.8-4
