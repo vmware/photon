@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %define debug_package %{nil}
 %global maj_ver vim92
 
 Summary:        Text editor
 Name:           vim
-Version:        9.2.0907
-Release:        1%{?dist}
+Version:        9.2.0670
+Release:        2%{?dist}
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -196,8 +196,6 @@ fi
 %lang(zh_CN.cp936) %{_datadir}/vim/vim*/lang/zh_CN.cp936/LC_MESSAGES/vim.mo
 
 %changelog
-* Tue Aug 04 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0907-1
-- Upgrade to 9.2.0907 to fix multiple CVEs
 * Thu Jun 18 2026 Dweep Advani <dweep.advani@broadcom.com> 9.2.0670-2
 - Upgrade to latest version 9.2.0670 to fix multiple CVEs
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.2.0136-4
