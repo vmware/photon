@@ -1,30 +1,22 @@
 sources:
-- archive: node-v24.19.0.tar.gz
-  archive_sha512sum: 9063465d3053414dc4e949d1c4f0bcc0cfe8bec32d97db9f9903d4677e8249c0d1c010327f9ec6a75a27270f26495125718bbd874c227a014c401e736835e3a6
-  archive_type: upstream
-  skip_validation: false
-  name: node-v24.19.0
-  version: "24.19.0"
-  url: https://nodejs.org/download/release/v24.19.0/node-v24.19.0.tar.gz
-  repo_url: https://github.com/nodejs/node
-  commit_id: cdc1b38d40cb567b7ad0b39c86addf830a0af0ae
-  skip_list: ['documentation.md']
-  missing: ['.editorconfig', '.gitattributes', '.github', '.gitignore', '.gitpod.yml', '.mailmap', 'BUILD.gn', 'CMakeLists.txt', 'LICENSES', 'OWNERS', 'addons.html', 'addons.json', 'all.html', 'all.json', 'assert.html', 'assert.json', 'assets', 'async_context.html', 'async_context.json', 'async_hooks.html', 'async_hooks.json', 'bench', 'benchmarks', 'bigint', 'buffer.html', 'buffer.json', 'cctest', 'child_process.html', 'child_process.json', 'cli.html', 'cli.json', 'cluster.html', 'cluster.json', 'common', 'console.html', 'console.json', 'corepack.html', 'corepack.json', 'cpplint.py', 'crypto.html', 'crypto.json', 'debugger', 'debugger.html', 'debugger.json', 'debugging', 'deprecations.html', 'deprecations.json', 'dgram.html', 'dgram.json', 'diagnostics_channel.html', 'diagnostics_channel.json', 'dns.html', 'dns.json', 'doc', 'docs', 'documentation.html', 'documentation.json', 'domain.html', 'domain.json', 'embedding.html', 'embedding.json', 'environment_variables.html', 'environment_variables.json', 'errors.html', 'errors.json', 'eslint', 'eslint-rules', 'eslint.config.mjs', 'eslint.config_partial.mjs', 'esm.html', 'esm.json', 'events.html', 'events.json', 'fs.html', 'fs.json', 'fuzzer', 'fuzzilli', 'globals.html', 'globals.json', 'http.html', 'http.json', 'http2.html', 'http2.json', 'https.html', 'https.json', 'include', 'index.html', 'index.json', 'input_link.txt', 'inspector', 'inspector.html', 'inspector.json', 'intl', 'intl.html', 'intl.json', 'ittnotify', 'js-perf-test', 'license-builder.sh', 'memory', 'message', 'minizip', 'mjsunit', 'mkgrokdump', 'module.html', 'module.json', 'modules.html', 'modules.json', 'mozilla', 'n-api.html', 'n-api.json', 'net.html', 'net.json', 'os.html', 'os.json', 'osx-codesign.sh', 'osx-entitlements.plist', 'osx-notarize.sh', 'osx-productsign.sh', 'outside.txt', 'packages.html', 'packages.json', 'path.html', 'path.json', 'perf_hooks.html', 'perf_hooks.json', 'permissions.html', 'permissions.json', 'process.html', 'process.json', 'punycode.html', 'punycode.json', 'qat', 'querystring.html', 'querystring.json', 'readline.html', 'readline.json', 'repl.html', 'repl.json', 'report.html', 'report.json', 'run-tests.py', 'samples', 'single-executable-applications.html', 'single-executable-applications.json', 'sqlite.html', 'sqlite.json', 'stream.html', 'stream.json', 'string_decoder.html', 'string_decoder.json', 'synopsis.html', 'synopsis.json', 'test', 'test-eslint-alphabetize-errors.js', 'test-eslint-alphabetize-primordials.js', 'test-eslint-async-iife-no-unused-result.js', 'test-eslint-avoid-prototype-pollution.js', 'test-eslint-crypto-check.js', 'test-eslint-documented-deprecation-codes.js', 'test-eslint-documented-errors.js', 'test-eslint-duplicate-requires.js', 'test-eslint-eslint-check.js', 'test-eslint-inspector-check.js', 'test-eslint-lowercase-name-for-primitive.js', 'test-eslint-must-call-assert.js', 'test-eslint-no-array-destructuring.js', 'test-eslint-no-cryptokey-public-accessors.js', 'test-eslint-no-keyobject-cryptokey-instanceof.js', 'test-eslint-no-keyobject-public-accessors.js', 'test-eslint-no-unescaped-regexp-dot.js', 'test-eslint-non-ascii-character.js', 'test-eslint-prefer-assert-iferror.js', 'test-eslint-prefer-assert-methods.js', 'test-eslint-prefer-common-mustnotcall.js', 'test-eslint-prefer-common-mustsucceed.js', 'test-eslint-prefer-optional-chaining.js', 'test-eslint-prefer-primordials.js', 'test-eslint-prefer-proto.js', 'test-eslint-prefer-util-format-errors.js', 'test-eslint-require-common-first.js', 'test-eslint-required-modules.js', 'test.html', 'test.json', 'test262', 'tests', 'timers.html', 'timers.json', 'tls.html', 'tls.json', 'tracing.html', 'tracing.json', 'tty.html', 'tty.json', 'typescript.html', 'typescript.json', 'unittests', 'url.html', 'url.json', 'util.html', 'util.json', 'v8.html', 'v8.json', 'vm.html', 'vm.json', 'wasi.html', 'wasi.json', 'wasm-api-tests', 'wasm-js', 'wasm-spec-tests', 'webcrypto.html', 'webcrypto.json', 'webkit', 'webstreams.html', 'webstreams.json', 'worker_threads.html', 'worker_threads.json', 'zlib.html', 'zlib.json']
+- archive: node-v24.18.0.tar.gz
+  archive_sha512sum: 1cd1d6a8b2436dc20e8e255aa4871e05813b1d38108dc4807beb3bc058ec043469ba14676c4c74ca9f83ee18dbf3e9fb3048439f27d38379086bc588268c0be8
+  skip_validation: true
   license_manual_review:
   - file_paths:
-    - node-v24.19.0/deps/npm/node_modules/spdx-license-ids/index.json
+    - node-v24.18.0/deps/npm/node_modules/spdx-license-ids/index.json
     sha256sum: d5ef45aff38fd904a68c563bf5814172bb0caa656220be820b3a81601e637241
     spdx_exp: ''
   # index.json contains list of all licenses in an array as string for parsing.
   # Removed AGPL-30, AGPL-1.0, CC-BY-SA & SSPL-1.0
   - file_paths:
-    - node-v24.19.0/deps/npm/node_modules/spdx-license-ids/deprecated.json
+    - node-v24.18.0/deps/npm/node_modules/spdx-license-ids/deprecated.json
     sha256sum: 29c9e630daa0adc09dec96ddeb6f81d1046210e81824bebda6486250450fb130
     spdx_exp: ''
   # index.js contains list of all Licenses for identification purpose.
   # Removed AGPL-1.0, AGPL-2.0, AGPL-3.0 & AGPL-3.0-or-later
   - file_paths:
-    - node-v24.19.0/deps/npm/test/schemas/cyclonedx/spdx.schema.json
+    - node-v24.18.0/deps/npm/test/schemas/cyclonedx/spdx.schema.json
     sha256sum: 4f6e2b05c05d26a4f2dc5879fbc2fca94b0a28db46289d0c51345621b71cfbfc
     spdx_exp: ''
   # spdx.schema.json contains all Licenses as strings for identification purpose

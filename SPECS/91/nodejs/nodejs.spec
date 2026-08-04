@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        24.19.0
+Version:        24.18.0
 Release:        1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -110,9 +110,6 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
-* Tue Aug 04 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.19.0-1
-- Upgrade to 24.19.0 and fix CVE-2026-58042, CVE-2026-58041, CVE-2026-58043
-- CVE-2026-58046, CVE-2026-58048
 * Thu Jun 25 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.18.0-1
 - Upgrade to 24.18.0
 * Tue Jun 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.17.0-1
