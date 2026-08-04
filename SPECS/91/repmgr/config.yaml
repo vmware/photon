@@ -1,0 +1,18 @@
+sources:
+- archive: repmgr-5.5.0.tar.gz
+  archive_sha512sum: 4ba75cf0d4263557c9ccdf73972c07ca06108d4a221a6d4e5cf9541a2bc2089c3aede17874c061798708902ff2e2a87d2d1f79b49cc5a1ef69a7bbccd76e79f2
+  name: repmgr-5.5.0
+  version: 5.5.0
+  archive_type: upstream
+  url: https://github.com/EnterpriseDB/repmgr/releases/download/v5.5.0/repmgr-5.5.0.tar.gz
+  repo_url: https://github.com/EnterpriseDB/repmgr
+  commit_id: c0d9dc6dac34c4cb60c3d8805842eed18cca4e85
+  spdx:
+    package:
+      detailed_description: 'repmgr is an open-source tool suite for managing replication
+        and failover in a cluster of PostgreSQL servers.'
+      home_page: https://repmgr.org
+      license_concluded: FSFUL AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+      license_declared: FSFUL AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later
+      short_summary: Replication Manager for PostgreSQL Clusters
+      supplier: 'Organization: Broadcom, Inc.'

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# This script verifies that the postgresql data directory has been correctly
+# initialized.  We do not want to automatically initdb it, because that has
+# a risk of catastrophic failure (ie, overwriting a valuable database) in
+# corner cases, such as a remotely mounted database on a volume that's a
+# bit slow to mount.  But we can at least emit a message advising newbies
+# what to do.
+#
+# Taken from
+# https://gitlab.archlinux.org/archlinux/packaging/packages/postgresql/-/blob/main/postgresql-check-db-dir.in?ref_type=heads
+# modified to Photon's needs
+
+PGDATA="$1"
+
+if [ -z "$PGDATA" ]; then
+  echo "Usage: $0 database-path"
+  exit 1
+fi
+
+# PGMAJVER is major version
+PGMAJVER=%PGMAJVER%
+
+# Check for the PGDATA structure
+if [ -f "$PGDATA/PG_VERSION" ] && [ -d "$PGDATA/base" ]; then
+  # Check version of existing PGDATA
+  if [ x`cat "$PGDATA/PG_VERSION"` != x"$PGMAJVER" ]; then
+    echo $"Mismatching version of database format found."
+    echo $"You may need to dump and reload before using PostgreSQL $PGMAJVER."
+    echo $"See http://www.postgresql.org/docs/$PGMAJVER/static/upgrading.html"
+    exit 1
+  fi
+else
+  # No existing PGDATA! Warn the user to initdb it.
+  echo $"\"$PGDATA\" is missing or empty. Use a command like"
+  echo $"  su -l postgres -c \"initdb --encoding=UTF8 -D '$PGDATA'\""
+  echo $"with relevant options, to initialize the database cluster."
+  exit 1
+fi
+
+exit 0

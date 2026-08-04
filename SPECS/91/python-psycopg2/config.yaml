@@ -1,0 +1,26 @@
+sources:
+- archive: psycopg2-2.9.11.tar.gz
+  archive_sha512sum: 44f7b03d958dc62822be8a8c38d738c4016c3a1f860c824158b78ba0a23f04ca63377171b22a14e38b76df868458ede25f29e4643197912adb2f1a1db8c0d5c0
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "Psycopg is the most popular PostgreSQL database adapter\
+        \ for the Python programming language. Its main features are the complete\
+        \ implementation of the Python DB API 2.0 specification and the thread safety\
+        \ (several threads can share the same connection). It was designed for heavily\
+        \ multi-threaded applications that create and destroy lots of cursors and\
+        \ make a large number of concurrent \u201CINSERT\u201Ds or \u201CUPDATE\u201D\
+        s.  Psycopg 2 is mostly implemented in C as a libpq wrapper, resulting in\
+        \ being both efficient and secure. It features client-side and server-side\
+        \ cursors, asynchronous communication and notifications, \u201CCOPY TO/COPY\
+        \ FROM\u201D support. Many Python types are supported out-of-the-box and adapted\
+        \ to matching PostgreSQL data types; adaptation can be extended and customized\
+        \ thanks to a flexible objects adaptation system.  Psycopg 2 is both Unicode\
+        \ and Python 3 friendly."
+      home_page: https://pypi.python.org/pypi/psycopg2
+      license_concluded: LGPL-3.0-or-later AND PSF-2.0 AND LGPL-3.0-only AND LGPL-2.0-or-later
+        AND Zlib
+      license_declared: LGPL-3.0-or-later AND PSF-2.0 AND LGPL-3.0-only AND LGPL-2.0-or-later
+        AND Zlib
+      short_summary: Python-PostgreSQL Database Adapter
+      supplier: 'Organization: Broadcom, Inc.'
