@@ -1,13 +1,21 @@
 sources:
-- archive: msgpack-1.8.0.gem
-  archive_sha512sum: 65257f9e3ba335340812707665d8de518242c9e3f690e93c97831df3b160e159b4f576380927cf064df41b41af3993f1c88a1f41136d328b6affbe1a86fc758f
-  skip_validation: true
+- archive: msgpack-1.8.4.gem
+  archive_type: upstream
+  archive_sha512sum: 0bb69099d0c9748fe2a861d973a2b478a4ef02e8300ba56a1f957201d855db87acf6b73d37145989445df5fa4aea74b9fa927eeb6a7e7c0b88d2f9c7848a79e8
+  name: rubygem-msgpack-1.8.4
+  version: "1.8.4"
+  url: https://rubygems.org/downloads/msgpack-1.8.4.gem
+  repo_url: https://github.com/msgpack/msgpack-ruby
+  commit_id: 42378b091b0936d27bc9649da366e90798345fe6
+  skip_list: []
+  missing: ['bench', 'bin', 'doclib', 'Gemfile', '.github', '.gitignore', 'msgpack.org.md', 'Rakefile', '.rubocop.yml', 'spec']
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'MessagePack is a binary-based efficient object serialization
         library. It enables to exchange structured objects between many languages
         like JSON. But unlike JSON, it is very fast and small. '
-      home_page: https://rubygems.org/gems/msgpack/versions/1.8.0
+      home_page: https://rubygems.org/gems/msgpack/versions/1.8.4
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: A binary-based efficient object serialization library
