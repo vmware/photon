@@ -1,12 +1,12 @@
 sources:
-- archive: unbound-1.26.0.tar.gz
-  archive_sha512sum: 00440544f76bbce4815c497269bbf1a58df1136504c8bb6a67121cd874827a9847e9980adc6715dfe4c7187e9c6791961eef44b181e8bcccdaf7f2ca1e7bdd21
+- archive: unbound-1.25.1.tar.gz
+  archive_sha512sum: e7104a70cd734a5e445890224b19510eac068b46c02fb65a7db911ad2f66db512b8aeae1dd44b505dc1288a315fd39dd54ca9decb78713bf6eb59fc6350ab804
   archive_type: upstream
-  name: unbound-release-1.26.0
-  version: 1.26.0
-  url: https://github.com/NLnetLabs/unbound/archive/refs/tags/release-1.26.0.tar.gz
+  name: unbound-release-1.25.1
+  version: 1.25.1
+  url: https://github.com/NLnetLabs/unbound/archive/refs/tags/release-1.25.1.tar.gz
   repo_url: https://github.com/NLnetLabs/unbound
-  commit_id: a45da353d3feb5d8fc00685fa1ceda3816d5108f
+  commit_id: 75b6dba593d4fff000434cd64807c6ebd50bd244
   skip_list: []
   missing: []
   spdx:
