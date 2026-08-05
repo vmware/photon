@@ -1,0 +1,77 @@
+From d36b3dbf9951ec28211fb277c310a9ae6300f759 Mon Sep 17 00:00:00 2001
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Wed, 15 Apr 2026 17:56:02 +0200
+Subject: [PATCH 03/22] rculist: add list_splice_rcu() for private lists
+
+[ Upstream commit f902877b635551513729bdf9a8d1422c4aab7741 ]
+
+This patch adds a helper function, list_splice_rcu(), to safely splice
+a private (non-RCU-protected) list into an RCU-protected list.
+
+The function ensures that only the pointer visible to RCU readers
+(prev->next) is updated using rcu_assign_pointer(), while the rest of
+the list manipulations are performed with regular assignments, as the
+source list is private and not visible to concurrent RCU readers.
+
+This is useful for moving elements from a private list into a global
+RCU-protected list, ensuring safe publication for RCU readers.
+Subsystems with some sort of batching mechanism from userspace can
+benefit from this new function.
+
+The function __list_splice_rcu() has been added for clarity and to
+follow the same pattern as in the existing list_splice*() interfaces,
+where there is a check to ensure that the list to splice is not
+empty. Note that __list_splice_rcu() has no documentation for this
+reason.
+
+Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[Srinidhi: cherry picked from commit f902877b635551513729bdf9a8d1422c4aab7741 for linux v6.12.y]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ include/linux/rculist.h | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/include/linux/rculist.h b/include/linux/rculist.h
+index 14dfa6008467..2e4d990f07ad 100644
+--- a/include/linux/rculist.h
++++ b/include/linux/rculist.h
+@@ -207,6 +207,35 @@ static inline void list_replace_rcu(struct list_head *old,
+ 	old->prev = LIST_POISON2;
+ }
+ 
++static inline void __list_splice_rcu(struct list_head *list,
++				     struct list_head *prev,
++				     struct list_head *next)
++{
++	struct list_head *first = list->next;
++	struct list_head *last = list->prev;
++
++	last->next = next;
++	first->prev = prev;
++	next->prev = last;
++	rcu_assign_pointer(list_next_rcu(prev), first);
++}
++
++/**
++ * list_splice_rcu - splice a non-RCU list into an RCU-protected list,
++ *                   designed for stacks.
++ * @list:	the non RCU-protected list to splice
++ * @head:	the place in the existing RCU-protected list to splice
++ *
++ * The list pointed to by @head can be RCU-read traversed concurrently with
++ * this function.
++ */
++static inline void list_splice_rcu(struct list_head *list,
++				   struct list_head *head)
++{
++	if (!list_empty(list))
++		__list_splice_rcu(list, head, head->next);
++}
++
+ /**
+  * __list_splice_init_rcu - join an RCU-protected list into an existing list.
+  * @list:	the RCU-protected list to splice
+-- 
+2.53.0
+

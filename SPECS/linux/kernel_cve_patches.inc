@@ -35,3 +35,18 @@ Patch3021: 0001-ipv6-use-RCU-in-ip6_output.patch
 Patch3022: 0001-netfilter-bridge-eb_tables-close-module-init-race.patch
 Patch3023: 0001-netfilter-ebtables-move-to-two-stage-removal-scheme.patch
 Patch3024: 0001-scsi-qla2xxx-Clear-cmds-after-chip-reset.patch
+# Fixes CVE-2026-52988, CVE-2026-52991, CVE-2026-53089, CVE-2026-53091
+Patch3025: 0001-bpf-Fix-use-after-free-in-offloaded-map-prog-info-fi.patch
+Patch3026: 0001-cgroup-psi-Set-of-priv-to-NULL-upon-file-release.patch
+Patch3027: 0001-rculist-add-list_splice_rcu-for-private-lists.patch
+Patch3028: 0002-netfilter-nf_tables-join-hook-list-via-splice_list_r.patch
+Patch3029: 0002-sched-psi-fix-race-between-file-release-and-pressure.patch
+Patch3030: 0001-net_sched-make-room-for-struct-qdisc_skb_cb-pkt_segs.patch
+Patch3031: 0002-net-init-shinfo-gso_segs-from-qdisc_pkt_len_init.patch
+Patch3032: 0003-net_sched-initialize-qdisc_skb_cb-skb-pkt_segs-in-qd.patch
+Patch3033: 0004-net-use-qdisc_pkt_len_segs_init-in-sch_handle_ingres.patch
+Patch3034: 0005-net-dropreason-add-SKB_DROP_REASON_RECURSION_LIMIT.patch
+Patch3035: 0006-net-plumb-drop-reasons-to-__dev_queue_xmit.patch
+Patch3036: 0007-net-qdisc_pkt_len_segs_init-cleanup.patch
+Patch3037: 0008-net-pull-headers-in-qdisc_pkt_len_segs_init.patch
+Patch3038: 0009-xfrm-Do-not-clobber-inner-headers-when-already-set.patch
