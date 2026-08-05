@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 # this is also used in toybox.spec
 %define coreutils_present %{_sharedstatedir}/rpm-state/%{name}
@@ -6,7 +6,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        9.1
-Release:        10%{?dist}
+Release:        9%{?dist}
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -23,8 +23,6 @@ Source2: license.txt
 # www.linuxfromscratch.org/patches/downloads/coreutils/
 Patch0: coreutils-%{version}-i18n-1.patch
 Patch1: CVE-2025-5278.patch
-Patch2: CVE-2026-56392-1.patch
-Patch3: CVE-2026-56392-2.patch
 
 BuildRequires:  attr-devel
 
@@ -121,8 +119,6 @@ touch %{coreutils_present}
 %defattr(-,root,root)
 
 %changelog
-* Wed Aug 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-10
-- Fix CVE-2026-56392
 * Thu Apr 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-9
 - Add provides entries
 * Fri Nov 07 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1-8
