@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.96
-Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        9%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -836,7 +836,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
 
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet loadpin.enabled=0 audit=1 slab_nomerge
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet loadpin.enabled=0 audit=1 slab_nomerge selinux=0
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -978,6 +978,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.96-9
+- Make SELinux opt-in by default (add selinux=0 to default cmdline)
 * Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.96-8
 - Rebased acvp patches for linux-6.12.9*
 * Wed Aug 05 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.96-7

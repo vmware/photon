@@ -7271,7 +7271,7 @@ CONFIG_DEFAULT_SECURITY_SELINUX=y
 # CONFIG_DEFAULT_SECURITY_SMACK is not set
 # CONFIG_DEFAULT_SECURITY_APPARMOR is not set
 # CONFIG_DEFAULT_SECURITY_DAC is not set
-CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,selinux,smack,apparmor,tomoyo"
+CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,selinux,apparmor,smack,tomoyo"
 
 # Kernel hardening options
 
