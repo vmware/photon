@@ -1,14 +1,14 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Name:          crun
-Version:       1.29
-Release:       1%{?dist}
+Version:       1.8
+Release:       12%{?dist}
 Summary:       OCI runtime in C
 Group:         Development/Other
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           https://github.com/containers/crun
-Source0:       https://github.com/containers/crun/releases/download/%{version}/%{name}-%{version}.tar.gz
+Source0:       https://github.com/containers/crun/releases/download/%{version}/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -16,7 +16,7 @@ BuildRequires: libcap-devel
 BuildRequires: libseccomp-devel
 BuildRequires: systemd-devel
 BuildRequires: python3
-BuildRequires: json-c-devel
+BuildRequires: yajl-devel
 BuildRequires: git
 BuildRequires: libgcrypt-devel
 BuildRequires: autoconf
@@ -45,7 +45,7 @@ A fast and low-memory footprint OCI Container Runtime fully written in C
 
 %configure \
         --disable-silent-rules \
-        --enable-embedded-blake3
+        --enable-embedded-yajl=yes
 %make_build
 
 %install
@@ -60,8 +60,6 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
-* Fri Aug 07 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.29-1
-- Upgrade to 1.29. Drops the yajl dependency in favor of json-c.
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8-12
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8-11

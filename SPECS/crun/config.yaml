@@ -1,23 +1,33 @@
 sources:
-- archive: crun-1.8.tar.xz
-  archive_sha512sum: 373d4fa69085b1ffecff32b4f2da0ab7dd0ec80d68e24ab262127e71cdfcbee50b932aa109980ad683444fdfe288a6495fc40cd81beb8b56af5c244218c7157c
-  skip_validation: true
+- archive: crun-1.29.tar.gz
+  archive_sha512sum: e1ca10fba3a0ef528217234cabb087fd174b4e2b31303e227d4997b1c12a1e1453e8a7b667d19eaec4d3fe805a515f1985e2485d8631955aab471c5c1d5d3b01
+  archive_type: upstream
+  name: crun-1.29
+  url: https://github.com/containers/crun/releases/download/1.29/crun-1.29.tar.gz
+  repo_url: https://github.com/containers/crun
+  commit_id: d66af6a0fc2ab5fabd951b427a292344632ce074
+  skip_list: []
+  missing: ['.clang-format', '.codespellrc', '.copr', '.editorconfig', '.fmf', '.github', '.gitignore', '.gitmodules', '.lgtm.yml', '.packit.yaml', '.tarball-git-version.h', '.tarball-version', 'AGENTS.md', 'CODE-OF-CONDUCT.md', 'CONTRIBUTING.md', 'GNUmakefile', 'LICENSE', 'Makefile', 'Makefile.in', 'README.md', 'aclocal.m4', 'alpine-build', 'centos10-build', 'centos9-build', 'cfg.mk', 'clang-check', 'clang-format', 'compile', 'config.guess', 'config.h.in', 'config.sub', 'configure', 'containerd', 'contrib', 'cri-o', 'depcomp', 'design-docs', 'docs', 'flake.lock', 'flake.nix', 'fuzzing', 'gating.yaml', 'install-sh', 'libocispec', 'libtool.m4', 'ltmain.sh', 'ltoptions.m4', 'ltsugar.m4', 'ltversion.m4', 'lt~obsolete.m4', 'luacrun.d.tl', 'luacrun_spec.lua', 'maint.mk', 'missing', 'nix', 'oci-validation', 'plans', 'podman', 'release.sh', 'run_coverage_multi_env.py', 'system-blake3', 'tap-driver.sh', 'tmt', 'useless-if-before-free', 'vc-list-files', 'wasmedge-build']
   spdx:
     package:
       detailed_description: 'A fast and low-memory footprint OCI Container Runtime
         fully written in C '
       home_page: https://github.com/containers/crun
-      license_concluded: GPL-2.0-only AND GPL-3.0-or-later WITH Libtool-exception
-        AND Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only
-        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-only
-        AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later
-        AND FSFUL AND ISC AND FSFULLRWD AND (Apache-2.0 OR LGPL-2.1-or-later) AND
-        GPL-3.0-only AND LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLR AND GPL-1.0-or-later
-      license_declared: GPL-2.0-only AND GPL-3.0-or-later WITH Libtool-exception AND
-        Apache-2.0 AND GPL-2.0-or-later WITH Libtool-exception AND LGPL-2.1-only AND
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND LGPL-2.0-only AND
-        GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND GPL-2.0-or-later
-        AND FSFUL AND ISC AND FSFULLRWD AND (Apache-2.0 OR LGPL-2.1-or-later) AND
-        GPL-3.0-only AND LGPL-2.1-or-later AND GPL-3.0-or-later AND FSFULLR AND GPL-1.0-or-later
+      license_concluded: (Apache-2.0 OR LGPL-2.1-or-later) AND Apache-2.0 AND
+        FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-or-later AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND LGPL-2.0-only AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND X11
+      license_declared: (Apache-2.0 OR LGPL-2.1-or-later) AND Apache-2.0 AND
+        FSFUL AND FSFULLR AND FSFULLRWD AND GPL-1.0-or-later AND GPL-2.0-only
+        AND GPL-2.0-or-later AND GPL-2.0-or-later WITH
+        Autoconf-exception-generic AND GPL-2.0-or-later WITH Libtool-exception
+        AND GPL-3.0-only AND GPL-3.0-or-later AND GPL-3.0-or-later WITH
+        Autoconf-exception-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND LGPL-2.0-only AND LGPL-2.0-or-later
+        AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND X11
       short_summary: OCI runtime in C
       supplier: 'Organization: Broadcom, Inc.'

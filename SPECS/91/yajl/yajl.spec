@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} <= 91
+
 Name:          yajl
 Version:       2.1.0
 Release:       4%{?dist}
