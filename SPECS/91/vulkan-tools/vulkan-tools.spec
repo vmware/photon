@@ -1,7 +1,7 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 Name:           vulkan-tools
-Version:        1.4.358
-Release:        1%{?dist}
+Version:        1.3.231.1
+Release:        8%{?dist}
 Summary:        Vulkan tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -42,7 +42,7 @@ Requires:       libX11
 Vulkan tools
 
 %prep
-%autosetup -p1 -n Vulkan-Tools-%{version}
+%autosetup -p1 -n Vulkan-Tools-sdk-%{version}
 
 %build
 %{cmake} \
@@ -67,8 +67,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-* Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.358-1
-- Upgrade vulkan-tools to 1.4.358
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.3.231.1-8
 - Release version bump as part of libxml2/libxslt
 * Tue Jul 01 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.231.1-7

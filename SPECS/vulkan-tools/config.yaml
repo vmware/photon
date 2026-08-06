@@ -1,6 +1,14 @@
 sources:
-- archive: Vulkan-Tools-1.3.231.1.tar.gz
-  archive_sha512sum: 48b87ac2d45496d031eff492ed562df08ec34b40fc94bc6eaf122c4203949b0db5fceccf2718eef1d90b891ef0681db1c9d945f1dd710fb0c99020e4e3efa025
+- archive: Vulkan-Tools-1.4.358.tar.gz
+  archive_type: upstream
+  archive_sha512sum: b3cfce0f700f6ad2e5fc601270b1f4bd8dec7a7cc57c017dcf0218a161229782fd9ceddd6426956c5009538caebf5e9c7905d5969fc1e32f6d2d23dfc91edf7d
+  name: "Vulkan-Tools-1.4.358"
+  version: 1.4.358
+  url: https://github.com/KhronosGroup/Vulkan-Tools/archive/refs/tags/v1.4.358.tar.gz
+  repo_url: https://github.com/KhronosGroup/Vulkan-Tools.git
+  commit_id: 2ca98085c06deeec789fb1c18e95f66803bdaddb
+  skip_list: []
+  missing: []
   skip_validation: true
   spdx:
     package:

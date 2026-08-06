@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shivani Agarwal <shivani.agarwal@broadcom.com>
+Date: Thu, 6 Aug 2026 00:00:00 +0000
+Subject: [PATCH] intel/jay: Fix build with GCC 12 lacking C23 fixed
+ underlying type enums
+
+jay_ir.h declares "enum jay_predication : uint8_t", a C23 feature
+(fixed underlying type for enums). GCC only supports this in C mode
+starting with GCC 13; Photon's toolchain is GCC 12.2.0, so jay_ir.h
+fails to compile:
+
+  jay_ir.h:521:22: error: expected identifier or '(' before ':' token
+  jay_ir.h:595:25: error: field 'predication' has incomplete type
+  jay_ir.h:645:29: error: 'JAY_PREDICATED_DEFAULT' undeclared
+
+struct jay_inst embeds this enum as a plain field and is guarded by
+
+  static_assert(sizeof(jay_inst) == 32 + (sizeof(uintptr_t) * 2), "packed");
+
+so the enum's storage size must stay at 1 byte. Simply dropping the
+":uint8_t" annotation lets the enum fall back to int-sized storage
+and breaks that static_assert. Use GCC/Clang's
+__attribute__((packed)) on the enum instead, which forces the
+smallest integer type that fits the enumerators (1 byte here, since
+all values are 0-2) without requiring C23 syntax.
+---
+ src/intel/compiler/jay/jay_ir.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/intel/compiler/jay/jay_ir.h b/src/intel/compiler/jay/jay_ir.h
+--- a/src/intel/compiler/jay/jay_ir.h
++++ b/src/intel/compiler/jay/jay_ir.h
+@@ -518,7 +518,7 @@
+    return jay_base_type(t) == JAY_TYPE_F || jay_base_type(t) == JAY_TYPE_BF;
+ }
+
+-enum jay_predication : uint8_t {
++enum jay_predication {
+    /** No predication. */
+    JAY_NOT_PREDICATED = 0,
+
+@@ -530,7 +530,7 @@
+
+    /** Predicated with 1 default value. Used pre-RA. */
+    JAY_PREDICATED_DEFAULT = 2,
+-};
++} __attribute__((packed));
+
+ /**
+  * Representation of a shader instruction in the Jay IR.
+--
+2.43.0

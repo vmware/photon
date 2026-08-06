@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        user space library for accessing the DRM.
 Name:           libdrm
-Version:        2.4.134
+Version:        2.4.125
 Release:        1%{?dist}
 URL:            http://dri.freedesktop.org/
 Group:          System Environment/Libraries
@@ -72,8 +72,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig*
 
 %changelog
-* Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.4.134-1
-- Upgrade to 2.4.134
 * Fri Jun 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.4.125-1
 - Upgrade to 2.4.125
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 2.4.113-4

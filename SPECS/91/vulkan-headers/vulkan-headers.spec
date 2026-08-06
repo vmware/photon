@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        Vulkan Header files and API registry
 Name:           vulkan-headers
-Version:        1.4.358
-Release:        1%{?dist}
+Version:        1.3.237
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,7 +51,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%license LICENSE.md
+%license LICENSE.txt
 %doc README.md
 %{_includedir}/vulkan/
 %{_includedir}/vk_video/
@@ -60,8 +60,6 @@ rm -rf %{buildroot}/*
 %{_datadir}/cmake/*
 
 %changelog
-* Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.358-1
-- Upgrade vulkan-headers to 1.4.358
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.3.237-2
 - Release bump for SRP compliance
 * Wed Dec 14 2022 Gerrit Photon <photon-checkins@vmware.com> 1.3.237-1

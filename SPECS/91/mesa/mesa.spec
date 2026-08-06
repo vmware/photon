@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
-Version:        26.2.0
-Release:        1%{?dist}
+Version:        25.3.6
+Release:        2%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -15,7 +15,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:         0001-Remove-Nouveau-from-vulkan-drivers-and-gallium-drive.patch
-Patch1:         0002-jay-Fix-build-with-GCC-12-lacking-C23-fixed-underly.patch
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -183,14 +182,11 @@ rm -rf %{buildroot}/*
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/drirc.d/00-mesa-defaults.conf
-%{_datadir}/drirc.d/00-lavapipe-defaults.conf
 %ifarch x86_64
 %{_libdir}/libvulkan_radeon.so
 %{_libdir}/libvulkan_intel.so
 %{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/drirc.d/00-radv-defaults.conf
-%{_datadir}/drirc.d/00-anv-defaults.conf
-%{_datadir}/drirc.d/00-hasvk-defaults.conf
 %{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
@@ -199,9 +195,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/libvulkan_freedreno.so
 %{_libdir}/libvulkan_intel.so
 %{_libdir}/libvulkan_panfrost.so
-%{_datadir}/drirc.d/00-anv-defaults.conf
-%{_datadir}/drirc.d/00-turnip-defaults.conf
-%{_datadir}/drirc.d/00-panvk-defaults.conf
 %{_datadir}/vulkan/icd.d/freedreno_icd.aarch64.json
 %{_datadir}/vulkan/icd.d/intel_icd.aarch64.json
 %{_datadir}/vulkan/icd.d/panfrost_icd.aarch64.json
@@ -243,26 +236,8 @@ rm -rf %{buildroot}/*
 %files libgallium
 %defattr(-,root,root)
 %{_libdir}/libgallium-*.so
-%{_datadir}/drirc.d/00-iris-defaults.conf
-%{_datadir}/drirc.d/00-virtio_gpu-defaults.conf
-%{_datadir}/drirc.d/00-vmwgfx-defaults.conf
-%{_datadir}/drirc.d/00-zink-defaults.conf
-%ifarch x86_64
-%{_datadir}/drirc.d/00-crocus-defaults.conf
-%{_datadir}/drirc.d/00-r300-defaults.conf
-%{_datadir}/drirc.d/00-r600-defaults.conf
-%{_datadir}/drirc.d/00-radeonsi-defaults.conf
-%endif
-%ifarch aarch64
-%{_datadir}/drirc.d/00-v3d-defaults.conf
-%{_datadir}/drirc.d/00-panfrost-defaults.conf
-%{_datadir}/drirc.d/00-asahi-defaults.conf
-%{_datadir}/drirc.d/00-msm-defaults.conf
-%endif
 
 %changelog
-* Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 26.2.0-1
-- Upgrade mesa to 26.2.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.3.6-2
 - Extended to build for subrelease 91 and above
 * Sat Mar 28 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 25.3.6-1

@@ -1,14 +1,6 @@
 sources:
-- archive: Vulkan-Loader-1.4.358.tar.gz
-  archive_type: upstream
-  archive_sha512sum: b1159f5aa03dfec43259bd14479088a46038d3bd4530f8d617389dcb4c280a36608e7a3de336d55382a628683a02aa140c020db0c19cbb6e17aa095f7950bed2
-  name: "Vulkan-Loader-1.4.358"
-  version: 1.4.358
-  url: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.4.358.tar.gz
-  repo_url: https://github.com/KhronosGroup/Vulkan-Loader.git
-  commit_id: 2ee8a4305e28adba291ca156647fdd8e0206a53a
-  skip_list: []
-  missing: []
+- archive: Vulkan-Loader-1.3.237.tar.gz
+  archive_sha512sum: 54d9503ec575380d49ccf20dcedefa38baf29483c1fa125059cf2535021ed4c618781317dfca659cdbadb40331da4ffb61d88849504d6cfb688ea24cc92254e8
   skip_validation: true
   spdx:
     package:

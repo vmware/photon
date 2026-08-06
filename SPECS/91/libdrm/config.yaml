@@ -1,15 +1,7 @@
 sources:
-- archive: libdrm-2.4.134.tar.xz
-  archive_type: upstream
-  archive_sha512sum: ef2abddea59d1e93c83a48de920431b839ab50d6071ef4da3cf126e7d64ba7b235f2e34e1169d49ad9de2937a0a18acd66bb8d324b067239b1136e0ddbe792a1
-  name: "libdrm-2.4.134"
-  version: 2.4.134
-  url: https://dri.freedesktop.org/libdrm/libdrm-2.4.134.tar.xz
-  repo_url: https://gitlab.freedesktop.org/mesa/drm.git
-  commit_id: e984d448b8b17aab853369e6c203e53719f46de1
-  skip_list: []
-  missing: []
-  skip_validation: false
+- archive: libdrm-2.4.125.tar.xz
+  archive_sha512sum: faad141f48a49915c0312eb635df76968f0f4d41bb6851be625a7ae0e24826e7283b5ec9ec3b09ead9a96297bf42221c411288f9b000c3dbc159ed8dde93a7e4
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'libdrm provides a user space library for accessing the
