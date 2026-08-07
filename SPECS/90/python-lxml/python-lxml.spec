@@ -3,7 +3,7 @@
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        4.9.1
-Release:        5.1.1%{?dist}
+Release:        5.1.2%{?dist}
 Group:          Development/Libraries
 URL:            https://github.com/lxml/lxml
 Vendor:         VMware, Inc.
@@ -13,6 +13,9 @@ Source0: https://github.com/lxml/lxml/archive/refs/tags/lxml-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-41066-1.patch
+Patch1: CVE-2026-41066-2.patch
 
 BuildRequires:  libxslt-devel
 BuildRequires:  libxml2-devel
@@ -51,6 +54,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Fri Aug 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.1-5.1.2
+- Fix CVE-2026-41066
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.9.1-5.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.1-5.1
