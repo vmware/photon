@@ -137,6 +137,7 @@ class Build_Config:
     commonDir = ""
     pkgBuildType = ""
     dataDir = ""
+    kernelDepsPath = ""
     packageListFile = "build_install_options_all.json"
     pkgToBeCopiedConfFile = None
     confFile = None
@@ -228,6 +229,20 @@ class Build_Config:
         Build_Config.dataDir = dataDir
         pkgListFile = Build_Config.packageListFile
         Build_Config.packageListFile = os.path.join(dataDir, pkgListFile)
+
+    @staticmethod
+    def setKernelDepsPath(releaseBranchPath, localDataDir):
+        # Prefer kernel-deps.json from the release branch checkout, if present,
+        # so a release-specific driver matrix can override the local one.
+        releaseKernelDepsPath = os.path.join(
+            releaseBranchPath, "common/data/kernel-deps.json"
+        )
+        if os.path.isfile(releaseKernelDepsPath):
+            Build_Config.kernelDepsPath = releaseKernelDepsPath
+        else:
+            Build_Config.kernelDepsPath = os.path.join(
+                localDataDir, "kernel-deps.json"
+            )
 
 
 """
@@ -723,7 +738,7 @@ class RpmBuildTarget:
             cmd = (
                 f"{photonDir}/support/spec-generator/generate-specs-from-templates.sh "
                 f"{specPaths} "
-                f"{Build_Config.dataDir}/kernel-deps.json"
+                f"{Build_Config.kernelDepsPath}"
             )
             runCmd(cmd, shell=True)
 
@@ -1604,6 +1619,9 @@ def initialize_constants():
     constants.setTopDirPath("/usr/src/photon")
     Build_Config.setCommonDir(os.path.join(photonDir, "common"))
     Build_Config.setDataDir(os.path.join(photonDir, "common/data"))
+    Build_Config.setKernelDepsPath(
+        configdict["release-branch-path"], Build_Config.dataDir
+    )
 
     constants.setReleasePkgPreqPath(
         os.path.join(Build_Config.releaseDataPath, "builder-pkg-preq.json")
