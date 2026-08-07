@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.8.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Group:          System Environment/Libraries
@@ -13,7 +13,7 @@ Source0: https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/%{name}-%{version}.tar.xz
 
 Patch0: default-priority.patch
 
-BuildRequires:  nettle-devel
+BuildRequires:  nettle-devel >= 3.10
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
 BuildRequires:  ca-certificates
@@ -22,7 +22,7 @@ BuildRequires:  guile-devel
 BuildRequires:  gc-devel
 BuildRequires:  texinfo
 
-Requires:       nettle
+Requires:       nettle >= 3.10
 Requires:       autogen-libopts
 Requires:       libtasn1
 Requires:       openssl
@@ -98,6 +98,8 @@ sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
 %{_mandir}/man3/*
 
 %changelog
+* Fri Aug 07 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.8.13-2
+- Enforce runtime dependency on nettle 3.10
 * Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.8.13-1
 - Version upgrade to v3.8.13
 * Fri May 08 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.7.10-7
