@@ -8,7 +8,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.24.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -131,6 +131,7 @@ servers, or use local tdb databases. LDB is now distributed as part of Samba.
 %package -n libldb-devel
 Summary:        Developer tools for the LDB library
 Requires:       libldb = %{version}-%{release}
+Requires:       libtevent-devel
 
 %description -n libldb-devel
 Header files needed to develop programs that link against the LDB library.
@@ -153,6 +154,8 @@ Man pages for the LDB library API and command-line tools.
 Summary:        Python bindings for the LDB library
 Requires:       libldb = %{version}-%{release}
 Requires:       python3-tdb
+Provides:       python3-ldb-devel = %{version}-%{release}
+Obsoletes:      python3-ldb-devel < 4.24.5
 
 %description -n python3-ldb
 Python bindings for the LDB library.
@@ -298,6 +301,7 @@ done
 
 # Remove samba Python package; keep only ldb Python bindings
 rm -rf %{buildroot}%{python3_sitearch}/samba/
+%{py_byte_compile_and_ghost}
 
 %post
 /sbin/ldconfig
@@ -577,13 +581,15 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/ldbsearch.1.*
 %{_mandir}/man3/ldb*.gz
 
-%files -n python3-ldb
+%files -n python3-ldb -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitearch}/ldb.cpython-*.so
 %{python3_sitearch}/_ldb_text.py
 %{_libdir}/samba/libpyldb-util.cpython-*-private-samba.so
 
 %changelog
+* Sat Aug 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.24.5-2
+- Minor fixes qith requires and add Obsoletes for python3-;db-devel
 * Thu Jul 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.24.5-1
 - Upgrade to 4.24.5; fix CVE-2026-4408 and CVE-2026-4480
 * Tue Jun 16 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.3-20
