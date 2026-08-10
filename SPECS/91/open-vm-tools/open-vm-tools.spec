@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %global gosc_scripts    gosc-scripts
 %define gosc_ver        1.3.2
@@ -6,7 +6,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        13.0.0
-Release:        9%{?dist}
+Release:        8%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -50,14 +50,12 @@ BuildRequires: libtirpc-devel
 Requires: (hostname or net-tools)
 Requires: fuse3
 Requires: libmspack
+Requires: glib
 Requires: openssl
 Requires: libstdc++
+Requires: libtirpc
 Requires: xmlsec1 >= 1.2.32
 Requires: which
-Requires: %{name}-vmtoolsd-bin = %{version}-%{release}
-Requires: %{name}-libvmtools = %{version}-%{release}
-Requires: %{name}-vmsvc-libguestInfo = %{version}-%{release}
-Requires: %{name}-vmsvc-libtimeSync = %{version}-%{release}
 
 %ifarch x86_64
 Requires: systemd
@@ -91,75 +89,6 @@ Requires:       %{name} = %{version}-%{release}
 
 %description    gosc
 GOSC scripts
-
-%package        vmtoolsd-bin
-Summary:        vmtoolsd binary
-Requires:       e2fsprogs-libs
-Requires:       glib
-Requires:       glibc-libs
-Requires:       krb5
-Requires:       libffi
-Requires:       libgcc
-Requires:       libtirpc
-Requires:       libxcrypt
-Requires:       pcre2-libs
-Requires:       %{name}-libvmtools = %{version}-%{release}
-
-Conflicts:      %{name} < 13.0.0-9
-
-%description    vmtoolsd-bin
-%{summary}
-
-%package        libvmtools
-Summary:        vmtools shared libraries
-Requires:       libtirpc
-Requires:       libxcrypt
-Requires:       glibc-libs
-Requires:       glib
-Requires:       libgcc
-Requires:       krb5
-Requires:       pcre2-libs
-
-Conflicts:      %{name} < 13.0.0-9
-
-%description    libvmtools
-%{summary}
-
-%package        vmsvc-libguestInfo
-Summary:        vmsvc-libguestInfo plugin library
-Requires:       e2fsprogs-libs
-Requires:       glib
-Requires:       glibc-libs
-Requires:       krb5
-Requires:       libffi
-Requires:       libgcc
-Requires:       libtirpc
-Requires:       libxcrypt
-Requires:       pcre2-libs
-Requires:       %{name}-libvmtools = %{version}-%{release}
-
-Conflicts:      %{name} < 13.0.0-9
-
-%description    vmsvc-libguestInfo
-%{summary}
-
-%package        vmsvc-libtimeSync
-Summary:        vmsvc-libtimeSync plugin library
-Requires:       e2fsprogs-libs
-Requires:       glib
-Requires:       glibc-libs
-Requires:       krb5
-Requires:       libffi
-Requires:       libgcc
-Requires:       libtirpc
-Requires:       libxcrypt
-Requires:       pcre2-libs
-Requires:       %{name}-libvmtools = %{version}-%{release}
-
-Conflicts:      %{name} < 13.0.0-9
-
-%description    vmsvc-libtimeSync
-%{summary}
 
 %prep
 %autosetup -n %{name}-stable-%{version} -a0 -a1 -p1
@@ -216,11 +145,11 @@ rm -rf %{buildroot}/*
 %dir %{_libdir}/%{name}/plugins
 %dir %{_libdir}/%{name}/plugins/common
 %dir %{_libdir}/%{name}/plugins/vmsvc
-%exclude %{_libdir}/%{name}/plugins/vmsvc/libguestInfo.so
-%exclude %{_libdir}/%{name}/plugins/vmsvc/libtimeSync.so
 %{_libdir}/%{name}/plugins/vmsvc/libdeployPkgPlugin.so
+%{_libdir}/%{name}/plugins/vmsvc/libguestInfo.so
 %{_libdir}/%{name}/plugins/vmsvc/libpowerOps.so
 %{_libdir}/%{name}/plugins/vmsvc/libresolutionKMS.so
+%{_libdir}/%{name}/plugins/vmsvc/libtimeSync.so
 %{_libdir}/%{name}/plugins/vmsvc/libvmbackup.so
 %{_libdir}/%{name}/plugins/vmsvc/libcomponentMgr.so
 %{_libdir}/%{name}/plugins/common/libhgfsServer.so
@@ -229,9 +158,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/%{name}/plugins/vmsvc/libgdp.so
 %{_libdir}/%{name}/plugins/vmsvc/libguestStore.so
 %{_libdir}/*.so.*
-%exclude %{_libdir}/libvmtools.so.*
 %{_bindir}/*
-%exclude %{_bindir}/vmtoolsd
 %{_sysconfdir}/*
 %{_datadir}/%{name}/messages
 %{_unitdir}/*
@@ -255,25 +182,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_datadir}/%{name}/%{gosc_scripts}
 
-%files vmsvc-libguestInfo
-%defattr(-,root,root)
-%{_libdir}/%{name}/plugins/vmsvc/libguestInfo.so
-
-%files vmsvc-libtimeSync
-%defattr(-,root,root)
-%{_libdir}/%{name}/plugins/vmsvc/libtimeSync.so
-
-%files libvmtools
-%defattr(-,root,root)
-%{_libdir}/libvmtools.so.*
-
-%files vmtoolsd-bin
-%defattr(-,root,root)
-%{_bindir}/vmtoolsd
-
 %changelog
-* Mon Aug 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-9
-- Split package further
 * Thu Jun 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-8
 - Require net-tools or hostname
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 13.0.0-7
