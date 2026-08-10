@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.21.3
-Release:        8%{?dist}
+Release:        10%{?dist}
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
@@ -12,9 +12,24 @@ Source1: license.txt
 %include %{SOURCE1}
 Patch0:         CVE-2024-38428.patch
 Patch1:         CVE-2026-16599.patch
+Patch2:         wget-CVE-2024-10524.patch
+Patch3:         wget-CVE-2026-15146.patch
+Patch4:         wget-CVE-2026-58469.patch
+Patch5:         wget-CVE-2026-58470.patch
+Patch6:         wget-CVE-2026-58471.patch
+Patch7:         wget-CVE-2026-58472.patch
+# Fix undefined behavior in is_valid_port(), introduced by the CVE-2024-10524 fix (Patch2)
+Patch8:         wget-CVE-2024-10524-fix-is_valid_port.patch
+# Fix maybe_prepend_scheme() incorrectly refusing URLs with a colon in the path, introduced by the CVE-2024-10524 fix (Patch2)
+Patch9:         wget-CVE-2024-10524-fix-maybe_prepend_scheme.patch
+# Fix inverted isspace check in clean_metalink_string(), a regression from the CVE-2026-58469 fix (Patch4)
+Patch10:        wget-CVE-2026-58469-regression-fix.patch
+# Fix buffer overflow in html_quote_string(), a regression from the CVE-2026-58472 fix (Patch7)
+Patch11:        wget-CVE-2026-58472-regression-fix.patch
 
 Requires:       openssl
 BuildRequires:  openssl-devel
+BuildRequires:  texinfo
 %if 0%{?with_check}
 BuildRequires:  perl
 %endif
@@ -64,6 +79,15 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Fri Sep 18 2026 Dweep Advani <dweep.advani@broadcom.com> 1.21.3-10
+- Add upstream follow-up fixes for regressions/bugs introduced by
+  Patch2 (CVE-2024-10524) and Patch4/Patch7 (CVE-2026-58469/CVE-2026-58472):
+  is_valid_port() UB, maybe_prepend_scheme() path-colon bug,
+  clean_metalink_string() inverted isspace check, and a buffer
+  overflow in html_quote_string() left over by the CVE-2026-58472 fix
+* Wed Sep 09 2026 Dweep Advani <dweep.advani@broadcom.com> 1.21.3-9
+- Added texinfo to BuildRequires to fix error of makeinfo command not found
+- Fix CVE-2024-10524, CVE-2026-15146, CVE-2026-58469, CVE-2026-58470, CVE-2026-58471 and CVE-2026-58472
 * Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.3-8
 - Patched for CVE-2026-16599
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.21.3-7
