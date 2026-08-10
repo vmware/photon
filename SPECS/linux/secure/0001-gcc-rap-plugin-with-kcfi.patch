@@ -61,13 +61,13 @@ Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
  scripts/Makefile.gcc-plugins                  |  12 +
  scripts/gcc-plugins/Makefile                  |   6 +
  scripts/gcc-plugins/rap_plugin/rap.h          |  38 ++
- .../gcc-plugins/rap_plugin/rap_fptr_pass.c    | 224 +++++++
+ .../gcc-plugins/rap_plugin/rap_fptr_pass.c    | 187 +++++++
  scripts/gcc-plugins/rap_plugin/rap_hash.c     | 396 +++++++++++++
- scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 557 ++++++++++++++++++
+ scripts/gcc-plugins/rap_plugin/rap_plugin.c   | 573 ++++++++++++++++++
  scripts/gcc-plugins/rap_plugin/sip.c          |  96 +++
  scripts/mod/modpost.c                         |   6 -
  security/Kconfig                              |  29 +
- 27 files changed, 1456 insertions(+), 25 deletions(-)
+ 27 files changed, 1435 insertions(+), 25 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
@@ -559,7 +559,7 @@ new file mode 100644
 index 000000000..f8124b597
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
-@@ -0,0 +1,224 @@
+@@ -0,0 +1,187 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -590,26 +590,30 @@ index 000000000..f8124b597
 +#endif
 +}
 +
-+static tree build_rap_hash(gimple call_stmt, tree fntype)
-+{
-+	rap_hash_t hash;
-+
-+	hash = rap_hash_function_type(fntype, imprecise_rap_hash_flags);
-+	if (report_fptr_hash)
-+		inform(gimple_location(call_stmt), "fptr rap_hash: %x", hash.hash);
-+	return build_int_cst_type(rap_hash_type_node, hash.hash);
-+}
-+
-+// check the function hash of the target of the fptr
++// check the function hash of the target of the fptr, emitted as inline asm
++// (a GIMPLE tree comparison leaves codegen free to lower it however it
++// likes, which is how the previous version ended up with extra
++// sign-extension-correction instructions) so it always matches the exact
++// instruction encoding KCFI's compiler-generated caller check uses (see
++// decode_caller_hash() in arch/x86/kernel/alternative.c), making this call
++// site recognizable/rewritable by the same kernel code that already
++// handles Clang's kcfi/FineIBT callers:
++//
++//   movl $-hash, %r10d       ; 41 ba <4 bytes>  (decode_caller_hash() match)
++//   addl -rap_hash_offset(%fptr), %r10d
++//   je   1f
++//   ud2
++// 1:
 +static basic_block rap_instrument_fptr(gimple_stmt_iterator *gsi)
 +{
-+	gimple assign_hash, check_hash, call_stmt, stmt;
++	gimple asm_stmt, call_stmt;
 +	location_t loc;
-+	tree computed_hash, target_hash, fptr, fntype;
-+#if BUILDING_GCC_VERSION == 4005
-+	tree fptr2;
-+#endif
-+	basic_block cond_bb, join_bb, true_bb;
++	tree fptr, fntype, input, clobber;
++	rap_hash_t hash;
++	char *tmpl;
++	vec<tree, va_gc> *inputs = NULL;
++	vec<tree, va_gc> *clobbers = NULL;
++	basic_block bb;
 +	edge e;
 +	const HOST_WIDE_INT rap_hash_offset = sizeof(rap_hash_t) + CONFIG_FUNCTION_PADDING_BYTES;
 +
@@ -618,87 +622,46 @@ index 000000000..f8124b597
 +	fptr = gimple_call_fn(call_stmt);
 +	fntype = TREE_TYPE(TREE_TYPE(fptr));
 +
-+	if (TREE_CODE(fntype) == FUNCTION_TYPE) {
-+		computed_hash = build_rap_hash(call_stmt, fntype);
-+	} else {
++	if (TREE_CODE(fntype) != FUNCTION_TYPE) {
 +		debug_tree(fntype);
 +		gcc_unreachable();
 +	}
 +
-+	// target_hash = ((s64*)fptr)[-rap_hash_offset]
-+	target_hash = create_tmp_var(rap_hash_type_node, "rap_hash");
-+	add_referenced_var(target_hash);
-+	target_hash = make_ssa_name(target_hash, NULL);
-+#if BUILDING_GCC_VERSION == 4005
-+	fptr2 = create_tmp_var(ptr_type_node, "rap_fptr2");
-+	fptr2 = make_ssa_name(fptr2, NULL);
-+	assign_hash = gimple_build_assign(fptr2, build2(POINTER_PLUS_EXPR, ptr_type_node, fptr, build_int_cst_type(sizetype, -rap_hash_offset)));
-+	gimple_set_location(assign_hash, loc);
-+	SSA_NAME_DEF_STMT(fptr2) = assign_hash;
-+	gsi_insert_before(gsi, assign_hash, GSI_SAME_STMT);
-+	update_stmt(assign_hash);
-+	fptr = gimple_get_lhs(assign_hash);
++	hash = rap_hash_function_type(fntype, imprecise_rap_hash_flags);
++	if (report_fptr_hash)
++		inform(loc, "fptr rap_hash: %x", hash.hash);
 +
-+	fptr2 = create_tmp_var(build_pointer_type(rap_hash_type_node), "rap_fptr2");
-+	fptr2 = make_ssa_name(fptr2, NULL);
-+	assign_hash = gimple_build_assign(fptr2, fold_convert(build_pointer_type(TREE_TYPE(target_hash)), fptr));
-+	gimple_set_location(assign_hash, loc);
-+	SSA_NAME_DEF_STMT(fptr2) = assign_hash;
-+	gsi_insert_before(gsi, assign_hash, GSI_SAME_STMT);
-+	update_stmt(assign_hash);
-+	fptr = gimple_get_lhs(assign_hash);
++	gcc_assert(asprintf(&tmpl,
++		"movl $%d, %%%%r10d\n\t"
++		"addl -%lld(%%0), %%%%r10d\n\t"
++		"je 1f\n\t"
++		"ud2\n"
++		"1:",
++		-(int)hash.hash, (long long)rap_hash_offset) != -1);
 +
-+	assign_hash = gimple_build_assign(target_hash, build1(INDIRECT_REF, rap_hash_type_node, fptr));
-+#else
-+	assign_hash = gimple_build_assign(target_hash, build2(MEM_REF, integer_type_node, fptr, build_int_cst_type(build_pointer_type(rap_hash_type_node), -rap_hash_offset)));
-+#endif
-+	gimple_set_location(assign_hash, loc);
-+	SSA_NAME_DEF_STMT(target_hash) = assign_hash;
-+	gsi_insert_before(gsi, assign_hash, GSI_NEW_STMT);
-+	update_stmt(assign_hash);
++	input = build_tree_list(NULL_TREE, build_string(2, "r"));
++	input = chainon(NULL_TREE, build_tree_list(input, fptr));
++	vec_safe_push(inputs, input);
 +
-+	// compare target_hash against computed function hash
-+	// bail out on mismatch
-+	check_hash = gimple_build_cond(NE_EXPR, target_hash, computed_hash, NULL_TREE, NULL_TREE);
-+	gimple_set_location(check_hash, loc);
-+	gsi_insert_after(gsi, check_hash, GSI_NEW_STMT);
++	clobber = build_tree_list(NULL_TREE, build_string(4, "r10"));
++	vec_safe_push(clobbers, clobber);
++	clobber = build_tree_list(NULL_TREE, build_string(3, "cc"));
++	vec_safe_push(clobbers, clobber);
 +
-+	cond_bb = gimple_bb(gsi_stmt(*gsi));
-+	gcc_assert(!gsi_end_p(*gsi));
-+	gcc_assert(check_hash == gsi_stmt(*gsi));
++	asm_stmt = gimple_build_asm_vec(tmpl, inputs, NULL, clobbers, NULL);
++	gimple_asm_set_volatile(as_a_gasm(asm_stmt), true);
++	gimple_set_location(asm_stmt, loc);
++	gsi_insert_before(gsi, asm_stmt, GSI_SAME_STMT);
++	update_stmt(asm_stmt);
++	free(tmpl);
 +
-+	e = split_block(cond_bb, gsi_stmt(*gsi));
-+	cond_bb = e->src;
-+	join_bb = e->dest;
-+	e->flags = EDGE_FALSE_VALUE;
-+#if BUILDING_GCC_VERSION < 8000
-+	e->probability = REG_BR_PROB_BASE;
-+#else
-+	e->probability = profile_probability::always ();
-+#endif
++	// split right after our asm block so the returned block's first
++	// statement is still call_stmt, matching what rap_fptr_execute()'s
++	// driving loop expects (gsi_start_bb(bb) must land back on the call).
++	e = split_block(gimple_bb(asm_stmt), asm_stmt);
++	bb = e->dest;
 +
-+	true_bb = create_empty_bb(EXIT_BLOCK_PTR_FOR_FN(cfun)->prev_bb);
-+	make_edge(cond_bb, true_bb, EDGE_TRUE_VALUE | EDGE_PRESERVE);
-+
-+	gcc_assert(dom_info_available_p(CDI_DOMINATORS));
-+	set_immediate_dominator(CDI_DOMINATORS, true_bb, cond_bb);
-+	set_immediate_dominator(CDI_DOMINATORS, join_bb, cond_bb);
-+
-+	gcc_assert(cond_bb->loop_father == join_bb->loop_father);
-+	add_bb_to_loop(true_bb, cond_bb->loop_father);
-+
-+	*gsi = gsi_start_bb(true_bb);
-+
-+	// this fake dependency is to prevent PRE from merging this BB with others of the same kind
-+	stmt = barrier(fptr, false);
-+	gimple_set_location(stmt, loc);
-+	gsi_insert_after(gsi, stmt, GSI_CONTINUE_LINKING);
-+
-+	stmt = gimple_build_call(builtin_decl_implicit(BUILT_IN_TRAP), 0);
-+	gimple_set_location(stmt, loc);
-+	gsi_insert_after(gsi, stmt, GSI_CONTINUE_LINKING);
-+
-+	return join_bb;
++	return bb;
 +}
 +
 +// find all language level function pointer dereferences and verify the target function
@@ -1191,7 +1154,7 @@ new file mode 100644
 index 000000000..b05e0bf95
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
-@@ -0,0 +1,557 @@
+@@ -0,0 +1,573 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -1374,6 +1337,22 @@ index 000000000..b05e0bf95
 +	node = cgraph_get_node(decl);
 +	gcc_assert(node);
 +	if (!rap_cgraph_indirectly_callable(node)) {
++		// GCC and clang both drop -falign-functions (or
++		// -fmin-function-alignment) once -fpatchable-function-entry is
++		// also active, unless real content follows the alignment
++		// directive immediately -- this is how -fpatchable-function-entry's
++		// own section-switch bookkeeping works in both compilers, not a
++		// bug in either. clang's -fsanitize=kcfi works around it by
++		// writing a real hash, or a flat placeholder like this one, right
++		// after the alignment point for every function unconditionally;
++		// do the same here for the functions that don't get a real rap
++		// hash below.
++#if BUILDING_GCC_VERSION < 9003
++		ASM_OUTPUT_ALIGN(asm_out_file, align_functions_log);
++#else
++		ASM_OUTPUT_ALIGN(asm_out_file, align_functions.levels[0].log);
++#endif
++		ASM_OUTPUT_ASCII(asm_out_file, "\x90\x90\x90\x90\x90", 5);
 +		imprecise_rap_hash.hash = 0;
 +		return;
 +	} else {

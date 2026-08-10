@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.103
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -130,7 +130,7 @@ Source10002: jitterentropy_canister_wrapper.h
 Source10003: jitterentropy_canister_wrapper_asm.S
 
 %if 0%{?canister_usage}
-%define fips_canister_version 6.12.60-18.1.ph5
+%define fips_canister_version 6.12.60-18.2.ph5
 %define ExtraBuildRequiresSansSnapshot linux-fips-canister = %{fips_canister_version}
 BuildRequires:       linux-fips-canister = %{fips_canister_version}
 %endif
@@ -977,6 +977,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Aug 17 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.103-4
+- rap_plugin: fix function alignment gap and tighten caller-side check to match KCFI
+- Update canister v6.12.60-18.2 with rap_plugin function alignment gap fix
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.103-3
 - Extend to build for 91 and above
 * Thu Aug 13 2026 srinidhira0 <srinidhi.rao@broadcom.com> 6.12.103-2
