@@ -26,11 +26,12 @@ class PackageInfo(object):
         listPackages.sort()
         pkgUtils = PackageUtils(BuildStage.PACKAGES, BuildMode.STANDARD)
         for package in listPackages:
-            for version in SPECS.getData().getVersions(package):
+            for specObj in SPECS.getData().mapSpecObjects[package]:
+                version = specObj.version
                 srpmFile = pkgUtils.findSourceRPMFile(package, version)
                 debugrpmFile = pkgUtils.findDebugRPMFile(package, version)
-                listRPMPackages = SPECS.getData().getRPMPackages(package, version)
-                epochNum = SPECS.getData().getEpoch(package, version)
+                listRPMPackages = specObj.listRPMPackages
+                epochNum = specObj.epoch
                 epoch = f"{epochNum}:" if epochNum else ""
                 for rpmPkg in listRPMPackages:
                     self.pkgList.append(f"{rpmPkg}={epoch}{version}")
