@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 Summary:        AMD Open Source Driver for Vulkan
 Name:           amdvlk
 Version:        2023.Q1.3
