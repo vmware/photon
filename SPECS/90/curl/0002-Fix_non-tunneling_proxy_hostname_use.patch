@@ -1,0 +1,38 @@
+From a479459ea39ac0e7de37237f9f0ba9a0c9d7f470 Mon Sep 17 00:00:00 2001
+From: Stefan Eissing <stefan@eissing.org>
+Date: Fri, 24 Jul 2026 14:20:58 +0200
+Subject: [PATCH] http: fix non-tunneling proxy hostname use
+
+Make sure hostname used in URL to proxy is IDN decoded form, but keep
+the original hostname in case it was ipv6.
+
+Fixes #22382
+Reported-by: RMMoreton on github
+Closes #22385
+---
+ lib/http.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/lib/http.c b/lib/http.c
+index bc3212036d60..d8eca68198e0 100644
+--- a/lib/http.c
++++ b/lib/http.c
+@@ -2115,7 +2115,7 @@ static CURLcode http_target(struct Curl_easy *data,
+ 
+     /* The path sent to the proxy is in fact the entire URL, but if the remote
+        host is a IDN-name, we must make sure that the request we produce only
+-       uses the encoded hostname! */
++       uses the decoded hostname! */
+ 
+     /* and no fragment part */
+     CURLUcode uc;
+@@ -2124,7 +2124,8 @@ static CURLcode http_target(struct Curl_easy *data,
+     if(!h)
+       return CURLE_OUT_OF_MEMORY;
+ 
+-    if(data->state.origin->user_hostname != data->state.origin->hostname) {
++    if(!data->state.origin->ipv6 &&
++       (data->state.origin->user_hostname != data->state.origin->hostname)) {
+       uc = curl_url_set(h, CURLUPART_HOST, data->state.origin->hostname, 0);
+       if(uc) {
+         curl_url_cleanup(h);
