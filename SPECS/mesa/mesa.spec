@@ -3,7 +3,7 @@
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        26.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -16,6 +16,9 @@ Source1: license.txt
 
 Patch0:         0001-Remove-Nouveau-from-vulkan-drivers-and-gallium-drive.patch
 Patch1:         0002-jay-Fix-build-with-GCC-12-lacking-C23-fixed-underly.patch
+%ifarch aarch64
+Patch2:         0003-Disable-tegra-in-aarch64.patch
+%endif
 
 BuildRequires:  libdrm-devel >= 2.4.88
 BuildRequires:  meson
@@ -138,7 +141,6 @@ This package contains the Gallium shared library from Mesa.
     -Dgallium-va=disabled \
     -Dplatforms=wayland \
     -Dvulkan-layers=device-select \
-    -Dshared-glapi=disabled \
     -Dgles1=disabled \
     -Dopengl=false \
     -Dgbm=enabled \
@@ -148,17 +150,15 @@ This package contains the Gallium shared library from Mesa.
     -Dandroid-libbacktrace=disabled \
     -Dlmsensors=disabled \
     -Degl=enabled \
-    -Dglvnd=false \
+    -Dglvnd=disabled \
     -Dllvm=enabled \
     -Dshared-llvm=enabled \
     -Dvalgrind=disabled \
     -Dbuild-tests=false \
-    -Dselinux=false \
     -Dvulkan-drivers=auto \
     -Dgles2=disabled \
     -Dmicrosoft-clc=disabled \
     -Dbuild-aco-tests=false \
-    -Dxlib-lease=false \
     -Dgallium-rusticl=false \
     -Dandroid-libbacktrace=disabled \
     %{nil}
@@ -183,13 +183,13 @@ rm -rf %{buildroot}/*
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/drirc.d/00-mesa-defaults.conf
+%{_datadir}/drirc.d/00-anv-defaults.conf
 %{_datadir}/drirc.d/00-lavapipe-defaults.conf
 %ifarch x86_64
 %{_libdir}/libvulkan_radeon.so
 %{_libdir}/libvulkan_intel.so
 %{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/drirc.d/00-radv-defaults.conf
-%{_datadir}/drirc.d/00-anv-defaults.conf
 %{_datadir}/drirc.d/00-hasvk-defaults.conf
 %{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.x86_64.json
@@ -199,12 +199,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/libvulkan_freedreno.so
 %{_libdir}/libvulkan_intel.so
 %{_libdir}/libvulkan_panfrost.so
-%{_datadir}/drirc.d/00-anv-defaults.conf
+%{_libdir}/libvulkan_asahi.so
 %{_datadir}/drirc.d/00-turnip-defaults.conf
 %{_datadir}/drirc.d/00-panvk-defaults.conf
+%{_datadir}/drirc.d/00-hk-defaults.conf
 %{_datadir}/vulkan/icd.d/freedreno_icd.aarch64.json
 %{_datadir}/vulkan/icd.d/intel_icd.aarch64.json
 %{_datadir}/vulkan/icd.d/panfrost_icd.aarch64.json
+%{_datadir}/vulkan/icd.d/asahi_icd.aarch64.json
 %endif
 
 %files libgbm
@@ -261,6 +263,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Mon Aug 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2.0-2
+- Fix aarch64 build
 * Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 26.2.0-1
 - Upgrade mesa to 26.2.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.3.6-2
