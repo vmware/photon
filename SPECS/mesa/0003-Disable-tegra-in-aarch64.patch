@@ -1,4 +1,4 @@
-From b239c8964bb82dec9399cf9eae0bbb61f62c20df Mon Sep 17 00:00:00 2001
+From 9d0ab6ecadf34055e670f887606724517d68dbae Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Mon, 10 Aug 2026 20:29:08 +0530
 Subject: [PATCH] Disable tegra in aarch64
@@ -9,20 +9,20 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/meson.build b/meson.build
-index d6e3a8b..d56792c 100644
+index 58be803..3ea2bb8 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -174,13 +174,13 @@ if gallium_drivers.contains('auto')
      elif ['aarch64'].contains(host_machine.cpu_family())
        gallium_drivers = [
-         'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
+         'v3d', 'vc4', 'freedreno', 'etnaviv', 'svga',
 -        'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
 +        'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
          'zink', 'asahi'
        ]
      elif ['arm'].contains(host_machine.cpu_family())
        gallium_drivers = [
-         'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
+         'v3d', 'vc4', 'freedreno', 'etnaviv', 'svga',
 -        'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
 +        'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
          'zink'
