@@ -1,0 +1,1 @@
+License: MIT AND BSD-3-Clause AND Apache-2.0 AND HPND-Markus-Kuhn AND CC0-1.0

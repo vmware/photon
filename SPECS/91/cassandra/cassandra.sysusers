@@ -1,0 +1,3 @@
+g cassandra -
+u cassandra - "Cassandra" /var/opt/cassandra/data /bin/bash
+m cassandra cassandra

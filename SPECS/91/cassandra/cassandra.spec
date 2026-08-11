@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 %define network_required 1
 %global debug_package %{nil}
 %global __os_install_post %{nil}
@@ -6,7 +6,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.10
-Release:        10%{?dist}
+Release:        9%{?dist}
 URL:            http://cassandra.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -20,8 +20,6 @@ Source3:        %{name}-%{version}-dependencies.tar.gz
 
 Source4: license.txt
 %include %{SOURCE4}
-
-Patch0: CVE-2025-23015.patch
 
 BuildRequires:  apache-ant
 BuildRequires:  openjdk11
@@ -134,8 +132,6 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
-* Tue Aug 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.0.10-10
-- Fix CVE-2025-23015
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.0.10-9
 - Drop BuildRequires: unzip; not needed for tar.gz source
 * Thu May 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.0.10-8
