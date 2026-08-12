@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.7
-Release:        3%{?dist}
+Release:        2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -113,6 +113,7 @@ export MACHINE=%{_arch}
     --with-rand-seed=os,egd \
     enable-egd \
     enable-quic \
+    enable-ktls \
     zlib \
     -Wl,-z,noexecstack
 
@@ -200,8 +201,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
-* Wed Aug 12 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.7-3
-- Disable KTLS due to incompatibility.
 * Thu Jun 11 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.7-2
 - Always enable default provider.
 * Tue Jun 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.7-1
