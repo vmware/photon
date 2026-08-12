@@ -7,7 +7,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.18
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
@@ -16,6 +16,9 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 %define sha512 jdk-17=d828e4e6cb730c9452eb1085c752d8bb03c66f2edc9d177fc6c8eaa15e316f71b63545f1fcc5a628a5a40d280155da059a913c976a1af257df4d657ed940c5b8
+
+Patch0: CVE-2026-41254-1.patch
+Patch1: CVE-2026-41254-2.patch
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -238,6 +241,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-2
+- Fix CVE-2026-41254
 * Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-1
 - Upgrade to v17.0.18
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.17-1

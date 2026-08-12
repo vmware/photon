@@ -7,7 +7,7 @@
 Summary:    OpenJDK
 Name:       openjdk21
 Version:    21.0.10
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
@@ -16,6 +16,9 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 %define sha512 jdk-21=3b956c32bd5079f787be0a84d0b85f7c93eeb65565b9456d9dfd16f97e85c6fa92263e9077b8b8326296bb5f777cf39646a0c25b2a52d3e0a5b98131cbc70155
+
+Patch0: CVE-2026-41254-1.patch
+Patch1: CVE-2026-41254-2.patch
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -229,6 +232,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-2
+- Fix CVE-2026-41254
 * Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-1
 - Upgrade to v21.0.10
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.9-1
