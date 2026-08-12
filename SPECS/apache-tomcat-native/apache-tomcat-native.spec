@@ -2,8 +2,8 @@
 
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
-Version:        1.2.24
-Release:        7%{?dist}
+Version:        1.3.8
+Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://tomcat.apache.org/native-doc
 Group:          Applications/System
@@ -11,10 +11,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      x86_64
 
-Source0: http://apachemirror.wuchna.com/tomcat/tomcat-connectors/native/%{version}/source/%{srcname}-%{version}-src.tar.gz
-%define sha512 %{srcname}=5dae151a60f8bd5a9a29d63eca838c77174426025ee65a826f0698943494dd3656d50bcd417e220a926b9ce111ea167043d4b806264030e951873d06767b3d6f
-
-Patch0:         openssl_1_1_1_compatibility.patch
+Source0: https://archive.apache.org/dist/tomcat/tomcat-connectors/native/%{version}/source/%{srcname}-%{version}-src.tar.gz
+%define sha512 %{srcname}=a12b97979037720465300cbc05777ff6ee2ec1dc59ff698864d7068800bf0c2d2606a4e0e29a4d7b16f92c9130604a13e0cc27929a224c9ff77e532ac98a4695
 
 BuildRequires:  openjdk8
 BuildRequires:  openssl-devel
@@ -23,13 +21,14 @@ BuildRequires:  apr-devel
 Requires:       apr
 Requires:       openssl
 Requires:       (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
+Conflicts:      apache-tomcat < 9.0.0
 
 %description
 The Apache Tomcat Native Library is an optional component for use with Apache Tomcat
 that allows Tomcat to use certain native resources for performance, compatibility, etc.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}-src
+%autosetup -n %{srcname}-%{version}-src
 
 %build
 export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*)
@@ -56,10 +55,12 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root,-)
 %{_libdir}/libtcnative-1.so
 %{_libdir}/libtcnative-1.so.0
-%{_libdir}/libtcnative-1.so.0.2.24
+%{_libdir}/libtcnative-1.so.0.3.8
 %exclude %{_libdir}/libtcnative-1.a
 
 %changelog
+* Wed Aug 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.8-1
+- Upgrade to 1.3.8, drop openssl_1_1_1_compatibility.patch (no longer needed; upstream now supports OpenSSL >= 1.1.1 natively)
 * Sat Aug 23 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.24-7
 - Add jdk21 to requires list
 * Tue Mar 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.24-6
