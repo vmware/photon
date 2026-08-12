@@ -1,12 +1,12 @@
 sources:
-- archive: OTP-27.3.4.14.tar.gz
-  archive_sha512sum: 38a01564bfce2a7c068049182e5403dc6cbb381ce9b869a006e1940280bca03ed27abee27f88485bb22d96a422b24b02b9feb3658471f0b391a6be5fbadacb71
+- archive: OTP-27.3.4.15.tar.gz
+  archive_sha512sum: abb5d50390ced87bd39f87d1f3fb1bfb70b16c034b35e0fa0d07ef5149b3bdf2ceef8c88bb8d8f52200dc42ea1a6d5dcff18319c6f2751fbc8663dbbdaca1adf
   archive_type: upstream
-  name: otp-OTP-27.3.4.14
-  version: 27.3.4.14
-  url: https://github.com/erlang/otp/archive/refs/tags/OTP-27.3.4.14.tar.gz
+  name: otp-OTP-27.3.4.15
+  version: 27.3.4.15
+  url: https://github.com/erlang/otp/archive/refs/tags/OTP-27.3.4.15.tar.gz
   repo_url: https://github.com/erlang/otp
-  commit_id: e9f49f57cef6e38fd13c4b0cee1eb5509ef471e8
+  commit_id: 30106b0ecf7264bfc1aa5a7e2011f3b999904ee8
   skip_list:
   - .gitattributes
   - .gitignore

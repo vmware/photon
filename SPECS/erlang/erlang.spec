@@ -2,7 +2,7 @@
 
 Name:          erlang
 Summary:       erlang
-Version:       27.3.4.14
+Version:       27.3.4.15
 Release:       1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
@@ -48,6 +48,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Aug 12 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.15-1
+- Upgrade to 27.3.4.15
 * Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.14-1
 - Upgrade to 27.3.4.14
 * Tue Jun 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.13-1
