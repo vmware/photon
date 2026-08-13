@@ -3,7 +3,7 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.3.2
-Release:      6%{?dist}
+Release:      7%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -14,10 +14,10 @@ Source0: http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
-# Fix CVE-2026-40468
 Patch1: CVE-2026-40468.patch
-# Fix CVE-2026-40469
 Patch2: CVE-2026-40469.patch
+Patch3: CVE-2026-40553.patch
+Patch4: CVE-2026-40467.patch
 
 Provides:   /bin/awk
 Provides:   /bin/gawk
@@ -123,6 +123,8 @@ sed -i 's/ pty1 / /' test/Makefile
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Tue Aug 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.3.2-7
+- Fix CVE-2026-40553, CVE-2026-40467
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.3.2-6
 - Extend to build for 91 and above
 * Tue Jul 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.3.2-5
