@@ -1,0 +1,200 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Paulo Alcantara <pc@manguebit.com>
+Date: Mon, 1 Apr 2024 14:13:10 -0300
+Subject: [PATCH] smb: client: fix UAF in smb2_reconnect_server()
+
+commit 24a9799aa8efecd0eb55a75e35f9d8e6400063aa upstream.
+
+The UAF bug is due to smb2_reconnect_server() accessing a session that
+is already being teared down by another thread that is executing
+__cifs_put_smb_ses().  This can happen when (a) the client has
+connection to the server but no session or (b) another thread ends up
+setting @ses->ses_status again to something different than
+SES_EXITING.
+
+To fix this, we need to make sure to unconditionally set
+@ses->ses_status to SES_EXITING and prevent any other threads from
+setting a new status while we're still tearing it down.
+
+The following can be reproduced by adding some delay to right after
+the ipc is freed in __cifs_put_smb_ses() - which will give
+smb2_reconnect_server() worker a chance to run and then accessing
+@ses->ipc:
+
+kinit ...
+mount.cifs //srv/share /mnt/1 -o sec=krb5,nohandlecache,echo_interval=10
+[disconnect srv]
+ls /mnt/1 &>/dev/null
+sleep 30
+kdestroy
+[reconnect srv]
+sleep 10
+umount /mnt/1
+...
+CIFS: VFS: Verify user has a krb5 ticket and keyutils is installed
+CIFS: VFS: \\srv Send error in SessSetup = -126
+CIFS: VFS: Verify user has a krb5 ticket and keyutils is installed
+CIFS: VFS: \\srv Send error in SessSetup = -126
+general protection fault, probably for non-canonical address
+0x6b6b6b6b6b6b6b6b: 0000 [#1] PREEMPT SMP NOPTI
+CPU: 3 PID: 50 Comm: kworker/3:1 Not tainted 6.9.0-rc2 #1
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-1.fc39
+04/01/2014
+Workqueue: cifsiod smb2_reconnect_server [cifs]
+RIP: 0010:__list_del_entry_valid_or_report+0x33/0xf0
+Code: 4f 08 48 85 d2 74 42 48 85 c9 74 59 48 b8 00 01 00 00 00 00 ad
+de 48 39 c2 74 61 48 b8 22 01 00 00 00 00 74 69 <48> 8b 01 48 39 f8 75
+7b 48 8b 72 08 48 39 c6 0f 85 88 00 00 00 b8
+RSP: 0018:ffffc900001bfd70 EFLAGS: 00010a83
+RAX: dead000000000122 RBX: ffff88810da53838 RCX: 6b6b6b6b6b6b6b6b
+RDX: 6b6b6b6b6b6b6b6b RSI: ffffffffc02f6878 RDI: ffff88810da53800
+RBP: ffff88810da53800 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: ffff88810c064000
+R13: 0000000000000001 R14: ffff88810c064000 R15: ffff8881039cc000
+FS: 0000000000000000(0000) GS:ffff888157c00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fe3728b1000 CR3: 000000010caa4000 CR4: 0000000000750ef0
+PKRU: 55555554
+Call Trace:
+ <TASK>
+ ? die_addr+0x36/0x90
+ ? exc_general_protection+0x1c1/0x3f0
+ ? asm_exc_general_protection+0x26/0x30
+ ? __list_del_entry_valid_or_report+0x33/0xf0
+ __cifs_put_smb_ses+0x1ae/0x500 [cifs]
+ smb2_reconnect_server+0x4ed/0x710 [cifs]
+ process_one_work+0x205/0x6b0
+ worker_thread+0x191/0x360
+ ? __pfx_worker_thread+0x10/0x10
+ kthread+0xe2/0x110
+ ? __pfx_kthread+0x10/0x10
+ ret_from_fork+0x34/0x50
+ ? __pfx_kthread+0x10/0x10
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Paulo Alcantara (Red Hat) <pc@manguebit.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+[ Michael Krause: Naive, manual merge because the 3rd hunk would not apply. ]
+Signed-off-by: Michael Krause <mk-debian@galax.is>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Brennan: adapted to 5.10, which predates the cifs multichannel state
+ machine: ses->ses_lock/ses_status/SES_EXITING become
+ GlobalMid_Lock/ses->status/CifsExiting, and ses->need_reconnect stands
+ in for the chans_need_reconnect bitmap. Also folds in upstream
+ f3191fc8004d ("cifs: do not send tree disconnect to ipc shares"),
+ never backported to linux-5.10.y: it only simplified cifs_free_ipc()
+ ahead of this fix deleting that function outright, so nothing survives
+ to backport as a separate patch.]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/cifs/connect.c | 72 ++++++++++++++++++++---------------------------
+ 1 file changed, 30 insertions(+), 42 deletions(-)
+
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 7603d77963e6..c77e72b42928 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -455,6 +455,9 @@ cifs_reconnect(struct TCP_Server_Info *server)
+ 	spin_lock(&cifs_tcp_ses_lock);
+ 	list_for_each(tmp, &server->smb_ses_list) {
+ 		ses = list_entry(tmp, struct cifs_ses, smb_ses_list);
++		if (cifs_ses_exiting(ses))
++			continue;
++
+ 		ses->need_reconnect = true;
+ 		list_for_each(tmp2, &ses->tcon_list) {
+ 			tcon = list_entry(tmp2, struct cifs_tcon, tcon_list);
+@@ -2783,34 +2786,6 @@ cifs_setup_ipc(struct cifs_ses *ses, struct smb_vol *volume_info)
+ 	return rc;
+ }
+ 
+-/**
+- * cifs_free_ipc - helper to release the session IPC tcon
+- *
+- * Needs to be called everytime a session is destroyed
+- */
+-static int
+-cifs_free_ipc(struct cifs_ses *ses)
+-{
+-	int rc = 0, xid;
+-	struct cifs_tcon *tcon = ses->tcon_ipc;
+-
+-	if (tcon == NULL)
+-		return 0;
+-
+-	if (ses->server->ops->tree_disconnect) {
+-		xid = get_xid();
+-		rc = ses->server->ops->tree_disconnect(xid, tcon);
+-		free_xid(xid);
+-	}
+-
+-	if (rc)
+-		cifs_dbg(FYI, "failed to disconnect IPC tcon (rc=%d)\n", rc);
+-
+-	tconInfoFree(tcon);
+-	ses->tcon_ipc = NULL;
+-	return rc;
+-}
+-
+ static struct cifs_ses *
+ cifs_find_smb_ses(struct TCP_Server_Info *server, struct smb_vol *vol)
+ {
+@@ -2834,28 +2809,41 @@ void cifs_put_smb_ses(struct cifs_ses *ses)
+ {
+ 	unsigned int rc, xid;
+ 	struct TCP_Server_Info *server = ses->server;
+-
+-	cifs_dbg(FYI, "%s: ses_count=%d\n", __func__, ses->ses_count);
++	struct cifs_tcon *tcon;
++	bool do_logoff;
+ 
+ 	spin_lock(&cifs_tcp_ses_lock);
+-	if (ses->status == CifsExiting) {
+-		spin_unlock(&cifs_tcp_ses_lock);
+-		return;
+-	}
+-	if (--ses->ses_count > 0) {
++	spin_lock(&GlobalMid_Lock);
++	cifs_dbg(FYI, "%s: id=0x%llx ses_count=%d ses_status=%u ipc=%s\n",
++		 __func__, ses->Suid, ses->ses_count, ses->status,
++		 ses->tcon_ipc ? ses->tcon_ipc->treeName : "none");
++	if (ses->status == CifsExiting || --ses->ses_count > 0) {
++		spin_unlock(&GlobalMid_Lock);
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		return;
+ 	}
+-	spin_unlock(&cifs_tcp_ses_lock);
++	/* ses_count can never go negative */
++	WARN_ON(ses->ses_count < 0);
+ 
+-	spin_lock(&GlobalMid_Lock);
+-	if (ses->status == CifsGood)
+-		ses->status = CifsExiting;
+-	spin_unlock(&GlobalMid_Lock);
++	ses->need_reconnect = false;
+ 
+-	cifs_free_ipc(ses);
++	do_logoff = ses->status == CifsGood && server->ops->logoff;
++	ses->status = CifsExiting;
++	tcon = ses->tcon_ipc;
++	ses->tcon_ipc = NULL;
++	spin_unlock(&GlobalMid_Lock);
++	spin_unlock(&cifs_tcp_ses_lock);
+ 
+-	if (ses->status == CifsExiting && server->ops->logoff) {
++	/*
++	 * On session close, the IPC is closed and the server must release all
++	 * tcons of the session.  No need to send a tree disconnect here.
++	 *
++	 * Besides, it will make the server to not close durable and resilient
++	 * files on session close, as specified in MS-SMB2 3.3.5.6 Receiving an
++	 * SMB2 LOGOFF Request.
++	 */
++	tconInfoFree(tcon);
++	if (do_logoff) {
+ 		xid = get_xid();
+ 		rc = server->ops->logoff(xid, ses);
+ 		if (rc)

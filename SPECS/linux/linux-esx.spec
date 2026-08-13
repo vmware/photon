@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.260
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -579,6 +579,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.260-3
+- Fixes CVE-2024-35870
 * Wed Aug 05 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 5.10.260-2
 - Fixes CVE-2025-40323
 * Mon Jul 06 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.260-1

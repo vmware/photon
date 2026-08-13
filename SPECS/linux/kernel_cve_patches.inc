@@ -475,3 +475,5 @@ Patch3197: 0001-team-fix-header_ops-type-confusion-with-non-Ethernet.patch
 Patch3198: 0001-xfrm-defensively-unhash-xfrm_state-lists-in-__xfrm_state_delete.patch
 # Fixes CVE-2025-40323
 Patch3199: 0001-fbcon-Set-fb_displayi-mode-to-NULL-when-the-mode-is-released.patch
+# Fixes CVE-2024-35870
+Patch3200: 0001-smb-client-fix-UAF-in-smb2_reconnect_server.patch
