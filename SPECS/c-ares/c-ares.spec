@@ -2,8 +2,8 @@
 
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
-Version:        1.34.6
-Release:        2%{?dist}
+Version:        1.34.8
+Release:        1%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/ahost.1*
 
 %changelog
+* Thu Aug 13 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.34.8-1
+- Upgrade to 1.34.8
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.34.6-2
 - Extended to build for subrelease 91 and above
 * Mon Apr 6 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.34.6-1
