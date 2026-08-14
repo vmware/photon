@@ -1,0 +1,128 @@
+From 2f28897cb64cf0724ff9d0d8c82e6601ef08fb9d Mon Sep 17 00:00:00 2001
+From: Dragos Tatulea <dtatulea@nvidia.com>
+Date: Thu, 5 Mar 2026 16:26:34 +0200
+Subject: [PATCH] net/mlx5e: RX, Fix XDP multi-buf frag counting for legacy RQ
+
+[ Upstream commit a6413e6f6c9d9bb9833324cb3753582f7bc0f2fa ]
+
+XDP multi-buf programs can modify the layout of the XDP buffer when the
+program calls bpf_xdp_pull_data() or bpf_xdp_adjust_tail(). The
+referenced commit in the fixes tag corrected the assumption in the mlx5
+driver that the XDP buffer layout doesn't change during a program
+execution. However, this fix introduced another issue: the dropped
+fragments still need to be counted on the driver side to avoid page
+fragment reference counting issues.
+
+Such issue can be observed with the
+test_xdp_native_adjst_tail_shrnk_data selftest when using a payload of
+3600 and shrinking by 256 bytes (an upcoming selftest patch): the last
+fragment gets released by the XDP code but doesn't get tracked by the
+driver. This results in a negative pp_ref_count during page release and
+the following splat:
+
+  WARNING: include/net/page_pool/helpers.h:297 at mlx5e_page_release_fragmented.isra.0+0x4a/0x50 [mlx5_core], CPU#12: ip/3137
+  Modules linked in: [...]
+  CPU: 12 UID: 0 PID: 3137 Comm: ip Not tainted 6.19.0-rc3+ #12 NONE
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.3-0-ga6ed6b701f0a-prebuilt.qemu.org 04/01/2014
+  RIP: 0010:mlx5e_page_release_fragmented.isra.0+0x4a/0x50 [mlx5_core]
+  [...]
+  Call Trace:
+   <TASK>
+   mlx5e_dealloc_rx_wqe+0xcb/0x1a0 [mlx5_core]
+   mlx5e_free_rx_descs+0x7f/0x110 [mlx5_core]
+   mlx5e_close_rq+0x50/0x60 [mlx5_core]
+   mlx5e_close_channels+0x36/0x2c0 [mlx5_core]
+   mlx5e_close_channel+0x1c/0x50 [mlx5_core]
+   mlx5e_safe_switch_params+0x1a5/0x230 [mlx5_core]
+   mlx5e_change_mtu+0xf3/0x2f0 [mlx5_core]
+   netif_set_mtu_ext+0xf1/0x230
+   do_setlink.isra.0+0x219/0x1180
+   rtnl_newlink+0x79f/0xb60
+   rtnetlink_rcv_msg+0x213/0x3a0
+   netlink_rcv_skb+0x48/0xf0
+   netlink_unicast+0x24a/0x350
+   netlink_sendmsg+0x1ee/0x410
+   __sock_sendmsg+0x38/0x60
+   ____sys_sendmsg+0x232/0x280
+   ___sys_sendmsg+0x78/0xb0
+   __sys_sendmsg+0x5f/0xb0
+   [...]
+   do_syscall_64+0x57/0xc50
+
+This patch fixes the issue by doing page frag counting on all the
+original XDP buffer fragments for all relevant XDP actions (XDP_TX ,
+XDP_REDIRECT and XDP_PASS). This is basically reverting to the original
+counting before the commit in the fixes tag.
+
+As frag_page is still pointing to the original tail, the nr_frags
+parameter to xdp_update_skb_frags_info() needs to be calculated
+in a different way to reflect the new nr_frags.
+
+Fixes: afd5ba577c10 ("net/mlx5e: RX, Fix generating skb from non-linear xdp_buff for legacy RQ")
+Signed-off-by: Dragos Tatulea <dtatulea@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Amery Hung <ameryhung@gmail.com>
+Link: https://patch.msgid.link/20260305142634.1813208-6-tariqt@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Srinidhi: back-ported this CVE fix to v6.12.y. linux v6.12.y still uses
+the pre-rename xdp_update_skb_shared_info() API (upstream later renamed it to
+xdp_update_skb_frags_info() in a separate, unrelated commit). the frag-count
+argument correction is applied to the existing call instead of the renamed one]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index e65a27154a84..c7d6c5806b8c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1727,6 +1727,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+ 	struct skb_shared_info *sinfo;
+ 	u32 frag_consumed_bytes;
+ 	struct bpf_prog *prog;
++	u8 nr_frags_free = 0;
+ 	struct sk_buff *skb;
+ 	dma_addr_t addr;
+ 	u32 truesize;
+@@ -1769,15 +1770,13 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+ 
+ 	prog = rcu_dereference(rq->xdp_prog);
+ 	if (prog) {
+-		u8 nr_frags_free, old_nr_frags = sinfo->nr_frags;
++		u8 old_nr_frags = sinfo->nr_frags;
+ 
+ 		if (mlx5e_xdp_handle(rq, prog, mxbuf)) {
+ 			if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT,
+ 						 rq->flags)) {
+ 				struct mlx5e_wqe_frag_info *pwi;
+ 
+-				wi -= old_nr_frags - sinfo->nr_frags;
+-
+ 				for (pwi = head_wi; pwi < wi; pwi++)
+ 					pwi->frag_page->frags++;
+ 			}
+@@ -1785,10 +1784,8 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+ 		}
+ 
+ 		nr_frags_free = old_nr_frags - sinfo->nr_frags;
+-		if (unlikely(nr_frags_free)) {
+-			wi -= nr_frags_free;
++		if (unlikely(nr_frags_free))
+ 			truesize -= nr_frags_free * frag_info->frag_stride;
+-		}
+ 	}
+ 
+ 	skb = mlx5e_build_linear_skb(
+@@ -1804,7 +1801,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
+ 
+ 	if (xdp_buff_has_frags(&mxbuf->xdp)) {
+ 		/* sinfo->nr_frags is reset by build_skb, calculate again. */
+-		xdp_update_skb_shared_info(skb, wi - head_wi - 1,
++		xdp_update_skb_shared_info(skb, wi - head_wi - nr_frags_free - 1,
+ 					   sinfo->xdp_frags_size, truesize,
+ 					   xdp_buff_is_frag_pfmemalloc(
+ 						&mxbuf->xdp));
+-- 
+2.53.0
+

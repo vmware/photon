@@ -1,0 +1,53 @@
+From aa27005b049c14fa642436aae8c5d12f37062dfc Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Thu, 16 Apr 2026 15:14:51 +0200
+Subject: [PATCH] netfilter: nf_tables: use list_del_rcu for netlink hooks
+
+[ Upstream commit f3224ee463f8f6f6ced7dcdf6081add4f8128527 ]
+
+nft_netdev_unregister_hooks and __nft_unregister_flowtable_net_hooks need
+to use list_del_rcu(), this list can be walked by concurrent dumpers.
+
+Add a new helper and use it consistently.
+
+Fixes: f9a43007d3f7 ("netfilter: nf_tables: double hook unregistration in netns path")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[Srinidhi: back-ported this CVE fix to v6.12.y. The original upstream fix was
+based on unrelated ~20-commit "wildcard netdev hook specs" feature series
+(hook->ops becoming hook->ops_list, new helper consolidation, netdev notifier
+wrapping, etc.) not present in v6.12.y. That series is not required to close
+this bug: the vulnerable list_del() calls are unchanged since commit f9a43007d3f7
+which introduced the vulnerability. and every other function upstream touches
+was either already list_del_rcu-safe here or is a stack-local list that doesn't
+need it. This applies only the two-line fix to the two affected functions]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ net/netfilter/nf_tables_api.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 551b6fc1f891..5b297c6f23bf 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -350,7 +350,7 @@ static void nft_netdev_unregister_hooks(struct net *net,
+ 	list_for_each_entry_safe(hook, next, hook_list, list) {
+ 		nf_unregister_net_hook(net, &hook->ops);
+ 		if (release_netdev) {
+-			list_del(&hook->list);
++			list_del_rcu(&hook->list);
+ 			kfree_rcu(hook, rcu);
+ 		}
+ 	}
+@@ -8474,7 +8474,7 @@ static void __nft_unregister_flowtable_net_hooks(struct net *net,
+ 		flowtable->data.type->setup(&flowtable->data, hook->ops.dev,
+ 					    FLOW_BLOCK_UNBIND);
+ 		if (release_netdev) {
+-			list_del(&hook->list);
++			list_del_rcu(&hook->list);
+ 			kfree_rcu(hook, rcu);
+ 		}
+ 	}
+-- 
+2.53.0
+

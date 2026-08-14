@@ -1,0 +1,88 @@
+From 05e076b78176db82fcf5f7c41ae9002a82fd0c59 Mon Sep 17 00:00:00 2001
+From: Guillaume Gonnet <ggonnet.linux@gmail.com>
+Date: Tue, 27 Jan 2026 17:02:00 +0100
+Subject: [PATCH] bpf: Fix tcx/netkit detach permissions when prog fd isn't
+ given
+
+[ Upstream commit ae23bc81ddf7c17b663c4ed1b21e35527b0a7131 ]
+
+This commit fixes a security issue where BPF_PROG_DETACH on tcx or
+netkit devices could be executed by any user when no program fd was
+provided, bypassing permission checks. The fix adds a capability
+check for CAP_NET_ADMIN or CAP_SYS_ADMIN in this case.
+
+Fixes: e420bed02507 ("bpf: Add fd-based tcx multi-prog infra with link support")
+Signed-off-by: Guillaume Gonnet <ggonnet.linux@gmail.com>
+Link: https://lore.kernel.org/r/20260127160200.10395-1-ggonnet.linux@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+[Srinidhi: back-ported this CVE fix to v6.12.y]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ include/linux/bpf.h       |  5 +++++
+ include/linux/bpf_mprog.h | 10 ++++++++++
+ kernel/bpf/syscall.c      |  7 ++-----
+ 3 files changed, 17 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 9e1731db76d8..c35e728137a7 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2998,6 +2998,11 @@ static inline void bpf_dynptr_set_rdonly(struct bpf_dynptr_kern *ptr)
+ }
+ #endif /* CONFIG_BPF_SYSCALL */
+ 
++static inline bool bpf_net_capable(void)
++{
++	return capable(CAP_NET_ADMIN) || capable(CAP_SYS_ADMIN);
++}
++
+ static __always_inline int
+ bpf_probe_read_kernel_common(void *dst, u32 size, const void *unsafe_ptr)
+ {
+diff --git a/include/linux/bpf_mprog.h b/include/linux/bpf_mprog.h
+index 929225f7b095..86710b4a6c6e 100644
+--- a/include/linux/bpf_mprog.h
++++ b/include/linux/bpf_mprog.h
+@@ -340,4 +340,14 @@ static inline bool bpf_mprog_supported(enum bpf_prog_type type)
+ 		return false;
+ 	}
+ }
++
++static inline bool bpf_mprog_detach_empty(enum bpf_prog_type ptype)
++{
++	switch (ptype) {
++	case BPF_PROG_TYPE_SCHED_CLS:
++		return bpf_net_capable();
++	default:
++		return false;
++	}
++}
+ #endif /* __BPF_MPROG_H */
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 3bdfac9b4418..9dacb753b1fd 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1206,11 +1206,6 @@ static int map_check_btf(struct bpf_map *map, struct bpf_token *token,
+ 	return ret;
+ }
+ 
+-static bool bpf_net_capable(void)
+-{
+-	return capable(CAP_NET_ADMIN) || capable(CAP_SYS_ADMIN);
+-}
+-
+ #define BPF_MAP_CREATE_LAST_FIELD map_token_fd
+ /* called via syscall */
+ static int map_create(union bpf_attr *attr)
+@@ -4156,6 +4151,8 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+ 			prog = bpf_prog_get_type(attr->attach_bpf_fd, ptype);
+ 			if (IS_ERR(prog))
+ 				return PTR_ERR(prog);
++		} else if (!bpf_mprog_detach_empty(ptype)) {
++			return -EPERM;
+ 		}
+ 	} else if (attr->attach_flags ||
+ 		   attr->relative_fd ||
+-- 
+2.53.0
+

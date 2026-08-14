@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.109
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -579,6 +579,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 17 2026 srinidhira0 <srinidhi.rao@broadcom.com> 6.12.109-5
+- Fixes CVE-2026-43464, CVE-2026-45932, CVE-2026-46324, CVE-2026-52956
 * Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.109-4
 - Use rpm macros while building
 - Fix rpm build warnings

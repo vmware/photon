@@ -95,3 +95,8 @@ Patch3072: 0002-tls-rx-restore-msg_iter-before-TLS-1.3-optimistic-re.patch
 # Fixes CVE-2026-80785
 Patch3073: 0001-fbdev-Wrap-user-invoked-calls-to-fb_set_var-in-helpe.patch
 Patch3074: 0002-fbdev-serialize-mode-sysfs-access-with-lock_fb_info.patch
+# Fixes CVE-2026-43464, CVE-2026-45932, CVE-2026-46324, CVE-2026-52956
+Patch3075: 0001-bpf-Fix-tcx-netkit-detach-permissions-when-prog-fd-i.patch
+Patch3076: 0001-libceph-Fix-potential-out-of-bounds-access-in-__ceph.patch
+Patch3077: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-counting-for-leg.patch
+Patch3078: 0001-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
