@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Reliable PostgreSQL Backup & Restore
 Name:           pgbackrest
 Version:        2.58.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Url:            https://pgbackrest.org
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -62,6 +62,8 @@ cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
 %config(noreplace) %attr(0640,root,root) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Aug 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.58.0-8
+- Build for 91 and above
 * Tue Aug 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.58.0-7
 - Retire postgresql14
 * Fri Jun 26 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.58.0-6

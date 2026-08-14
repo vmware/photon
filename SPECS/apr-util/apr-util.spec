@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define apuver 1
 
 Summary:      The Apache Portable Runtime Utility Library
 Name:         apr-util
 Version:      1.6.3
-Release:      13%{?dist}
+Release:      14%{?dist}
 URL:          https://apr.apache.org
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
@@ -130,6 +130,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+* Fri Aug 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-14
+- Build for 91 and above
 * Tue Aug 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-13
 - Retire postgresql14
 * Fri Jun 26 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.6.3-12

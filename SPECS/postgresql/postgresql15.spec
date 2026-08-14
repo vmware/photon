@@ -2,6 +2,7 @@
 
 %define srcname         postgresql
 %global pgmajorversion  15
+%define src_rel         postgres-REL_%{pgmajorversion}_19
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -14,14 +15,14 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.18
+Version:        15.19
 Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
+Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{src_rel}.tar.gz
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -36,6 +37,8 @@ Source8: license-postgresql15.txt
 
 Source9: pgsql-gen-i18n.sh
 
+BuildRequires: docbook-xml
+BuildRequires: docbook-xsl
 BuildRequires: clang-devel
 BuildRequires: gettext
 BuildRequires: krb5-devel
@@ -211,7 +214,7 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n %{src_rel}
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
@@ -743,6 +746,9 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.19-1
+- Upgrade to v15.19
+- Build using github tagged source
 * Fri Jun 26 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 15.18-1
 - Restore postgresql15 for subrelease >= 91, upgrade to v15.18
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 15.17-4

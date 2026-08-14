@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} == 91
+%global build_if 0
 
 %define srcname         pgaudit
 %global pgmajorversion  14

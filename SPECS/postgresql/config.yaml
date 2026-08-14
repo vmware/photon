@@ -1,15 +1,14 @@
 sources:
 
-- archive: postgresql-15.18.tar.bz2
-  skip_validation: false
-  archive_sha512sum: 01f6ff71dcc24d5c2240a53ac2d70c64fadf143ea46134a3c5af1c367857edca38c88b09d5903b5e679dd6139c3b21e1041e1bada0b6ba691a82ec3b854fd2d5
+- archive: postgres-REL_15_19.tar.gz
+  archive_sha512sum: e88936cc56b93addae5628d6e8d55db808931d5efc7f9c1c165183a47080c7a69a36c8ad4681fd5c3be016c1a354ef8aad6678004058e16d3014b80dc1b4deb8
   archive_type: upstream
-  name: postgresql-15.18
-  version: '15.18'
-  url: http://ftp.postgresql.org/pub/source/v15.18/postgresql-15.18.tar.bz2
+  name: postgres-REL_15_19
+  version: '15.19'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_15_19.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 005c1971a2926fbb9caf5a1ad634cd17a42bfd3c
-  missing: ['fmgrtab.c', 'jsonpath_gram.c', 'pg_replication_origin_d.h', 'pg_constraint_d.h', 'bootparse.c', 'pg_foreign_server_d.h', 'lwlocknames.h', 'sql_help.c', 'pg_attribute_d.h', 'bootscanner.c', 'pg_policy_d.h', 'scan.c', 'pg_seclabel_d.h', 'pg_index_d.h', 'pg_statistic_ext_data_d.h', 'pg_range_d.h', 'segparse.c', 'pg_type_d.h', 'pg_ts_parser_d.h', 'pltclerrcodes.h', 'specparse.c', 'pg_db_role_setting_d.h', 'c_kwlist_d.h', 'pg_attrdef_d.h', 'pg_proc_d.h', 'pg_ts_dict_d.h', 'system_constraints.sql', 'guc-file.c', 'sql_help.h', 'pl_gram.h', 'pg_class_d.h', 'pg_amop_d.h', 'gram.c', 'plerrcodes.h', 'pg_operator_d.h', 'pg_tablespace_d.h', 'pg_publication_d.h', 'jsonpath_scan.c', 'repl_gram.c', 'pg_foreign_data_wrapper_d.h', 'pg_language_d.h', 'pg_shdescription_d.h', 'pg_shseclabel_d.h', 'pg_collation_d.h', 'exprscan.c', 'psqlscan.c', 'pg_largeobject_metadata_d.h', 'segscan.c', 'html', 'pg_enum_d.h', 'pg_opclass_d.h', 'pg_publication_rel_d.h', 'pg_rewrite_d.h', 'pg_statistic_ext_d.h', 'preproc.y', 'pl_reserved_kwlist_d.h', 'pg_ts_config_map_d.h', 'pg_trigger_d.h', 'pg_partitioned_table_d.h', 'pg_conversion_d.h', 'postgres.bki', 'fmgr-stamp', 'pg_aggregate_d.h', 'psqlscanslash.c', 'preproc.c', 'pg_ts_config_d.h', 'gram.h', 'lwlocknames.c', 'pg_am_d.h', 'pg_depend_d.h', 'errcodes.h', 'pg_init_privs_d.h', 'pg_authid_d.h', 'pg_opfamily_d.h', 'ecpg_kwlist_d.h', 'pg_shdepend_d.h', 'cubeparse.c', 'pl_unreserved_kwlist_d.h', 'schemapg.h', 'exprparse.c', 'man-stamp', 'spiexceptions.h', 'pg_inherits_d.h', 'pg_extension_d.h', 'pg_cast_d.h', 'pg_statistic_d.h', 'pg_subscription_d.h', 'pg_user_mapping_d.h', 'repl_scanner.c', 'pg_ts_template_d.h', 'fmgroids.h', 'man1', 'syncrep_gram.c', 'pg_default_acl_d.h', 'pg_database_d.h', 'README.git', 'pg_subscription_rel_d.h', 'man7', 'syncrep_scanner.c', 'system_fk_info.h', 'pg_sequence_d.h', 'pg_amproc_d.h', 'bki-stamp', 'pg_event_trigger_d.h', 'html-stamp', 'pg_auth_members_d.h', 'pg_description_d.h', 'pg_transform_d.h', 'man3', 'pg_largeobject_d.h', 'cubescan.c', 'INSTALL', 'specscanner.c', '.gitrevision', 'pg_namespace_d.h', 'preproc.h', 'fmgrprotos.h', 'kwlist_d.h', 'pg_foreign_table_d.h', 'pl_gram.c', 'pgc.c', 'pg_publication_namespace_d.h', 'pg_parameter_acl_d.h']
+  commit_id: 2ff1375b5dd8bf09d8cb0e795974528180fd75ca
+  missing: []
   spdx:
     package:
       detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
@@ -19,50 +18,50 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgresql-16.13.tar.bz2
-  skip_validation: true
-  archive_sha512sum: 3ea11b81ce55be5c3c169f0c94ddfa9debae6b3cbe7407086ba3a602fad7668900c2838d4d4488c671b2ccc670a9cd288ece90e42ecf8de953df6b4e103d286d
-  name: postgresql-16.13
-  version: '16.13'
-  url: http://ftp.postgresql.org/pub/source/v16.13/postgresql-16.13.tar.bz2
+- archive: postgres-REL_16_15.tar.gz
+  archive_sha512sum: 25119b44c4e1b8642f13b971d8a4be1b119f75a581af3da8b6a4369d03ccc7522b5bb96e9c06ce83ac9914b312264fcedd3b8f8c585743aad3ec630a0eb1addf
+  name: postgres-REL_16_15
+  version: '16.15'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_16_15.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 776479eed63aac4185e57adaf7db1ce0810a4d3e
-  missing: []
-  spdx:
-    package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
-      home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
-      short_summary: PostgreSQL database engine
-      supplier: 'Organization: Broadcom, Inc.'
-
-- archive: postgresql-17.9.tar.bz2
-  skip_validation: true
-  archive_sha512sum: 2b9c9ca9d765704895ec4af4107accead2ba3f3ce8bc87eed29fd020cf97b53a49a7d3eb9fa1242a7c430fe2f7e1be726f1ad67557ded2fe8b31b9d8fe659fbf
-  name: postgresql-17.9
-  version: '17.9'
-  url: http://ftp.postgresql.org/pub/source/v17.9/postgresql-17.9.tar.bz2
-  repo_url: https://github.com/postgres/postgres.git
-  commit_id: 6d396980fc5aed4f1a525e0bd75cb16b25ed40ca
-  missing: []
-  spdx:
-    package:
-      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
-      home_page: www.postgresql.org
-      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
-      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
-      short_summary: PostgreSQL database engine
-      supplier: 'Organization: Broadcom, Inc.'
-
-- archive: postgresql-18.3.tar.bz2
-  archive_sha512sum: fdbe6d726f46738cf14acab96e5c05f7d65aefe78563281b416bb14a27c7c42e4df921e26b32816a5030ddbe506b95767e2c74a35afc589916504df38d1cb11c
-  name: postgresql-18.3
-  version: '18.3'
+  commit_id: 7d3e000c5961a544302072058a1184e9a588837b
   archive_type: upstream
-  url: http://ftp.postgresql.org/pub/source/v18.3/postgresql-18.3.tar.bz2
+  missing: []
+  spdx:
+    package:
+      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
+      home_page: www.postgresql.org
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: postgres-REL_17_11.tar.gz
+  archive_sha512sum: 8b5cf7463eb4bfeb23278e51391f57ab87fbad2e3e989759938b5adf6500013af5ce9ede890fd1ba5878902c31fef574aa0c8bdb672cc0a2031cc1a5e3bb8032
+  archive_type: upstream
+  name: postgres-REL_17_11
+  version: '17.11'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_17_11.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 62d6c7d3df6287f1bd83199c1a746e50d31571a0
+  commit_id: 083ac033419f690758508e08c1736089384bbee8
+  missing: []
+  spdx:
+    package:
+      detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
+      home_page: www.postgresql.org
+      license_concluded: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      license_declared: (Artistic-1.0-Perl OR GPL-1.0-or-later) AND Apache-2.0 WITH LLVM-exception AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ISC AND Apache-2.0 AND TCL AND BSD-3-Clause AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND BSD-2-Clause AND FSFUL AND BSD-4-Clause-UC AND GPL-1.0-or-later AND MIT AND X11 AND GPL-3.0-or-later WITH Bison-exception-2.2 AND NCSA AND BSL-1.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic AND Spencer-99 AND PostgreSQL
+      short_summary: PostgreSQL database engine
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: postgres-REL_18_6.tar.gz
+  archive_sha512sum: 0d2df0f13e1d5b8189f7cbfff169e5a0bd18006e147b5ff2bfbff9ea248b551b22459f1af3d4016379646fd6bc8e242fe959e80e1fa478bc81a030912305f848
+  archive_type: upstream
+  name: postgres-REL_18_6
+  version: '18.6'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_18_6.tar.gz
+  repo_url: https://github.com/postgres/postgres.git
+  commit_id: 724edf9bde9d356724ad384a2e196edc3c9f80f7
   spdx:
     package:
       detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.

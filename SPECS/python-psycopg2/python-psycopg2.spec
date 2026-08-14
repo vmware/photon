@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname     psycopg2
 
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
 Version:        2.9.11
-Release:        6%{?dist}
+Release:        7%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -75,6 +75,8 @@ groupdel -f %{user}
 %{python3_sitelib}/*
 
 %changelog
+* Fri Aug 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.11-7
+- Build for 91 and above
 * Tue Aug 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.11-6
 - Retire postgresql14
 * Fri Jun 26 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.11-5

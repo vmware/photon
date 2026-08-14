@@ -1,4 +1,5 @@
-%global build_if %{photon_subrelease} == 91
+# spec can't be removed, we may need this for 91 EP
+%global build_if 0
 
 %define srcname         postgresql
 %global pgmajorversion  14
