@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.18
-Release:        4%{?dist}
+Release:        3.0.1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System Environment/Daemons
@@ -11,18 +11,17 @@ URL:            http://www.irisa.fr/caps/projects/hipsor
 
 Source0: http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
 
-Source1: %{name}.service
+Source1:        %{name}.service
 
 Source2: license.txt
 %include %{SOURCE2}
+
+Requires:       systemd
 
 BuildRequires:  systemd-devel
 BuildRequires:  automake
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  glibc
-
-Requires:       %{name}-bin = %{version}-%{release}
-Requires:       systemd
 
 %description
 A Linux entropy source using the HAVEGE algorithm
@@ -40,23 +39,6 @@ sizes of the processor instruction and data caches used to setup the
 HAVEGE collector. The haveged default is a 4kb data cache and a 16kb
 instruction cache. On machines with a cpuid instruction, haveged will
 attempt to select appropriate values from internal tables.
-
-%package        bin
-Summary:        HAVEGE entropy daemon binary
-Group:          System Environment/Daemons
-Requires:       %{name}-libs = %{version}-%{release}
-Conflicts:      %{name} < 1.9.18-4
-
-%description    bin
-Contains just the haveged binary and its shared library dependency.
-
-%package        libs
-Summary:        Shared library for the HAVEGE algorithm
-Group:          System Environment/Libraries
-Conflicts:      %{name} < 1.9.18-4
-
-%description    libs
-Contains the libhavege shared library.
 
 %package        devel
 Summary:        Headers and shared development libraries for HAVEGE algorithm
@@ -91,31 +73,21 @@ make check %{?_smp_mflags}
 rm -rf %{buildroot}
 
 %post
+/sbin/ldconfig
 %systemd_post %{name}.service
 
 %preun
 %systemd_preun %{name}.service
 
 %postun
+/sbin/ldconfig
 %systemd_postun_with_restart %{name}.service
-
-%post libs
-/sbin/ldconfig
-
-%postun libs
-/sbin/ldconfig
 
 %files
 %defattr(-, root, root, -)
-%{_unitdir}/%{name}.service
-
-%files libs
-%defattr(-, root, root, -)
-%{_libdir}/*so.*
-
-%files bin
-%defattr(-, root, root, -)
 %{_sbindir}/%{name}
+%{_unitdir}/%{name}.service
+%{_libdir}/*so.*
 
 %files devel
 %defattr(-, root, root, -)
@@ -126,8 +98,8 @@ rm -rf %{buildroot}
 %{_libdir}/*.so
 
 %changelog
-* Fri Aug 14 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 1.9.18-4
-- Split into haveged-bin/haveged-libs subpackages
+* Mon Aug 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.9.18-3.0.1
+- Split to 9.0 with subrelease
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.9.18-3
 - Release bump for SRP compliance
 * Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 1.9.18-2
