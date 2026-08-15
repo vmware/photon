@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define bootstrap   1
 
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
 Version:      2.89.2
-Release:      1%{?dist}
+Release:      2%{?dist}
 URL:          https://developer.gnome.org/glib
 Group:        Applications/System
 Vendor:       VMware, Inc.
@@ -171,6 +171,8 @@ popd
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.89.2-2
+- Extend to build for 91 and above
 * Fri Jul 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.89.2-1
 - Upgrade to 2.89.2
 * Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.88.0-5

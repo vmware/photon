@@ -1,2 +1,0 @@
-g nginx -
-u nginx - "Nginx web server" /var/lib/nginx /sbin/nologin

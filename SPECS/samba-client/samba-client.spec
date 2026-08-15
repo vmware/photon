@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global _samba_modules  pdb_tdbsam,pdb_ldap,pdb_smbpasswd,pdb_wbc_sam,pdb_samba4
 %define maj_ver         4.0
@@ -8,7 +8,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.24.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -588,6 +588,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/samba/libpyldb-util.cpython-*-private-samba.so
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.24.5-3
+- Extend to build for 91 and above
 * Sat Aug 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.24.5-2
 - Minor fixes qith requires and add Obsoletes for python3-;db-devel
 * Thu Jul 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.24.5-1

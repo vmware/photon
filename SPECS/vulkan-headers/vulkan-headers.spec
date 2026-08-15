@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Vulkan Header files and API registry
 Name:           vulkan-headers
 Version:        1.4.358
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/cmake/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.358-2
+- Extend to build for 91 and above
 * Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.358-1
 - Upgrade vulkan-headers to 1.4.358
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.3.237-2

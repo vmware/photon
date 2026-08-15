@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Gnuplot is a portable command-line driven graphing utility.
 Name:           gnuplot
 Version:        5.4.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.gnuplot.info
 Group:          Applications
 Vendor:         VMware, Inc.
@@ -51,6 +51,8 @@ make check %{?_smp_mflags}
 %{_datadir}/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.4.5-8
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.4.5-7
 - Patched for CVE-2025-3359
 * Mon May 12 2025 Mukul Sikka <mukul.sikka@broadcom.com> 5.4.5-6

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define network_required 1
 %global debug_package %{nil}
 %global __os_install_post %{nil}
@@ -6,7 +6,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.10
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://cassandra.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -134,6 +134,8 @@ source %{_sysconfdir}/profile.d/%{name}.sh
 %exclude %{_localstatedir}/opt/%{name}/build/lib
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.0.10-11
+- Extend to build for 91 and above
 * Tue Aug 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.0.10-10
 - Fix CVE-2025-23015
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.0.10-9

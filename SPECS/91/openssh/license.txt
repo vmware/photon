@@ -1,1 +1,0 @@
-License: (Apache-2.0 OR MIT) AND BSD-2-Clause AND BSD-3-Clause AND FSFUL AND FSFULLRWD AND GPL-1.0-or-later AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND HPND AND ISC AND MIT AND NTP AND SSH-OpenSSH AND SSH-short AND X11 AND X11-distribute-modifications-variant AND snprintf AND ssh-keyscan

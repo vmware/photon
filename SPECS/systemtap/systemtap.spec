@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define with_boost     1
 %define with_crash     1
@@ -10,7 +10,7 @@
 
 Name:          systemtap
 Version:       4.8
-Release:       19%{?dist}
+Release:       20%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:        VMware, Inc.
@@ -380,6 +380,8 @@ fi
 %{_libexecdir}/systemtap/python/stap-resolve-module-function.py
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.8-20
+- Extend to build for 91 and above
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.8-19
 - Release version bump as part of libxml2/libxslt
 * Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.8-18

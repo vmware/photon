@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global sssd_user root
 
@@ -27,7 +27,7 @@
 Name:           sssd
 Summary:        System Security Services Daemon
 Version:        2.8.2
-Release:        24%{?dist}
+Release:        25%{?dist}
 URL:            http://github.com/SSSD/sssd
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1039,6 +1039,8 @@ fi
 %config(noreplace) %{_sysconfdir}/krb5.conf.d/sssd_enable_idp
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.2-25
+- Extend to build for 91 and above
 * Tue Aug 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.8.2-24
 - Bump release due to bindutils upgrade
 * Thu Jul 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.8.2-23

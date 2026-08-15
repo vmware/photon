@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:       C/C++ configuration file library
 Name:          libconfig
 Version:       1.8.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 URL:           http://www.hyperrealm.com/libconfig
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -67,6 +67,8 @@ rm -r %{buildroot}%{_libdir}/*.la \
 %{_infodir}/libconfig.info*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.2-2
+- Extend to build for 91 and above
 * Thu Jun 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.2-1
 - Upgrade to v1.8.2
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.3-2

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Crypto Libraries
 Name:           libgcrypt
 Version:        1.10.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/libgcrypt
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -70,6 +70,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.4-2
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.4-1
 - Upgrade to v1.10.4
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.1-5

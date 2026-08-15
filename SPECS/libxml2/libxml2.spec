@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.15.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -98,6 +98,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.15.3-3
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.15.3-2
 - Patched for CVE-2026-11979
 * Tue May 26 2026 HarinadhD <harinadh.dommaraju@broadcom.com> 2.15.3-1

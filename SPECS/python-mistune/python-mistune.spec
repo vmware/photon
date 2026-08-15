@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname mistune
 
 Summary:        The fastest markdown parser in pure Python.
 Name:           python3-mistune
 Version:        3.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,6 +51,8 @@ pip3 install tomli
 %{python3_sitelib}/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.3.4-2
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.3.4-1
 - Upgrade to v3.3.4
 * Tue Jun 30 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.0-4

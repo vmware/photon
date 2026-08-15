@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Mesa is an OpenGL compatible 3D graphics library.
 Name:           mesa
 Version:        26.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.mesa3d.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -263,6 +263,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 26.2.0-4
+- Extend to build for 91 and above
 * Tue Aug 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2.0-3
 - Fix patch applicability issue during aarch64 build, mishap from last fix
 * Mon Aug 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2.0-2

@@ -3,8 +3,8 @@
 %global security_hardening none
 %global __cmake_in_source_build 0
 
-# Skip this spec if subrelease is 92 or more
-%global build_if %{photon_subrelease} >= 92
+# Skip this spec if subrelease is 100 or more
+%global build_if %{photon_subrelease} >= 100
 
 # SBAT generation of "linux.photon" component
 %define linux_photon_generation 1

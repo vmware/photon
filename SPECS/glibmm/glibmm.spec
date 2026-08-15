@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        C++ interface to the glib
 Name:           glibmm
 Version:        2.88.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.88.1-2
+- Extend to build for 91 and above
 * Sun Aug 09 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.88.1-1
 - Upgrade to 2.88.1
 - Convert the GLib >= 2.80 final-types %prep sed fixup into Patch0

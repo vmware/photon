@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname python-ldap
 
 Summary:        Python interface to LDAP
 Name:           python3-ldap
 Version:        3.4.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://www.python-ldap.org/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -46,5 +46,7 @@ python-ldap provides an object-oriented API to access LDAP directory servers fro
 %{python3_sitelib}/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.7-2
+- Extend to build for 91 and above
 * Tue Jul 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.4.7-1
 - Initial packaging for Photon, subrelease >= 92

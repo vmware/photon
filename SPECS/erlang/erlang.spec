@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:          erlang
 Summary:       erlang
 Version:       27.3.4.15
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -48,6 +48,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 27.3.4.15-2
+- Extend to build for 91 and above
 * Wed Aug 12 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.15-1
 - Upgrade to 27.3.4.15
 * Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.14-1

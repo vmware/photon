@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        opentype text shaping engine
 Name:           harfbuzz
 Version:        14.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 14.2.1-2
+- Extend to build for 91 and above
 * Mon Jul 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 14.2.1-1
 - Upgrade version 14.2.1 to fix CVE-2026-22693
 * Sat Jun 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.0.1-6

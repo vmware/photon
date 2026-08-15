@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:       Intel LLDP Agent
 Name:          lldpad
 Version:       1.1
-Release:       5%{?dist}
+Release:       6%{?dist}
 URL:           http://open-lldp.org/
 Group:         System Environment/Daemons
 Vendor:        VMware, Inc.
@@ -79,6 +79,8 @@ mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 %{_libdir}/liblldp_clif.so
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1-6
+- Extend to build for 91 and above
 * Thu Jun 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-5
 - Bump version as a part of libconfig upgrade
 * Thu Dec 12 2024 Ajay Kaher <ajay.kaher@broadcom.com> 1.1-4

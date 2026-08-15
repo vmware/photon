@@ -1,7 +1,7 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Name:           vulkan-tools
 Version:        1.4.358
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -67,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.358-2
+- Extend to build for 91 and above
 * Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.358-1
 - Upgrade vulkan-tools to 1.4.358
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.3.231.1-8

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 # Let perl pick its default fotify level
 %global security_hardening nofortify
@@ -14,7 +14,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.42.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -116,6 +116,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.42.2-4
+- Extend to build for 91 and above
 * Mon Jul 20 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-3
 - Fix CVE-2026-13221 and CVE-2026-57432
 * Mon Jun 22 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-2

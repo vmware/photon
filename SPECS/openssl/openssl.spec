@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -200,6 +200,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.7-4
+- Extend to build for 91 and above
 * Wed Aug 12 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.7-3
 - Disable KTLS due to incompatibility.
 * Thu Jun 11 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.7-2

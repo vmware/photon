@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:       C/C++ library for network traffic capture
 Name:          libpcap
 Version:       1.10.6
-Release:       1%{?dist}
+Release:       2%{?dist}
 URL:           http://www.tcpdump.org
 Source0:       http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 
@@ -70,6 +70,8 @@ make DESTDIR=%{buildroot} %{?_smp_mflags} install
 %{_mandir}/man7/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.10.6-2
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.6-1
 - Upgrade to v1.10.6
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.10.1-2

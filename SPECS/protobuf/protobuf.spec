@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define network_required 1
 %define java_min_ver_needed     3.3.3
@@ -6,7 +6,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.23.3
-Release:        10%{?dist}
+Release:        11%{?dist}
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -159,6 +159,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.23.3-11
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.23.3-10
 - Fix CVE-2026-0994
 * Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 3.23.3-9

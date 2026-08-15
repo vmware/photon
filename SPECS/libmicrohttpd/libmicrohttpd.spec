@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           libmicrohttpd
 Summary:        Lightweight library for embedding a webserver in applications
 Version:        1.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/libmicrohttpd/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -65,6 +65,8 @@ rm -f %{buildroot}%{_libdir}/*.la \
 %{_datadir}/man/man3/libmicrohttpd.3.gz
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.6-2
+- Extend to build for 91 and above
 * Wed Jul 22 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.0.6-1
 - Update to version 1.0.6 to fix CVEs
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 0.9.76-5

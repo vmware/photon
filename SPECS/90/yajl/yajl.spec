@@ -1,0 +1,73 @@
+%global build_if %{photon_subrelease} <= 90
+
+Name:          yajl
+Version:       2.1.0
+Release:       4.0.1%{?dist}
+Summary:       Yet Another JSON Library
+Group:         Development/Libraries
+Vendor:        VMware, Inc.
+Distribution:  Photon
+URL:           http://lloyd.github.com/yajl/
+Source0:       https://github.com/lloyd/yajl/archive/refs/tags/%{name}-%{version}.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+BuildRequires: gcc
+BuildRequires: cmake
+
+Patch0: 0001-CVE-2023-33460.patch
+Patch1: 0002-CVE-2023-33460.patch
+Patch2: CVE-2022-24795.patch
+
+%package devel
+Summary: Include files, Libraries for development with YAJL
+Requires: %{name} = %{version}-%{release}
+
+%description
+A fast streaming JSON parsing library in C
+
+%description devel
+This sub-package  provides the libraries and includes
+files which are required for development with YAJL
+
+%prep
+%autosetup -p1
+
+%build
+%cmake
+%cmake_build
+
+%install
+%cmake_install
+
+%files
+%defattr(-,root,root)
+%license COPYING
+%doc ChangeLog README TODO
+%{_bindir}/json_reformat
+%{_bindir}/json_verify
+%{_libdir}/libyajl.so.2
+%{_libdir}/libyajl.so.2.*
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/yajl/yajl_common.h
+%{_includedir}/yajl/yajl_gen.h
+%{_includedir}/yajl/yajl_parse.h
+%{_includedir}/yajl/yajl_tree.h
+%{_includedir}/yajl/yajl_version.h
+%{_libdir}/libyajl.so
+%{_libdir}/libyajl_s.a
+%{_datadir}/pkgconfig/yajl.pc
+
+%changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1.0-4.0.1
+- Restrict to build for subrelease 90 and below
+* Wed Jun 18 2025 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.1.0-4
+- Fix CVE-2022-24795
+* Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.1.0-3
+- Release bump for SRP compliance
+* Tue Sep 12 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.1.0-2
+- Apply two patches to fix CVE-2023-33460
+* Fri May 27 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.0-1
+- Initial Build

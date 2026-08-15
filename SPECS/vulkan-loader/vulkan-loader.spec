@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           vulkan-loader
 Version:        1.4.358
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Vulkan ICD desktop loader
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/VulkanLoader/
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.358-2
+- Extend to build for 91 and above
 * Thu Aug 06 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.4.358-1
 - Upgrade vulkan-loader to 1.4.358
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.3.237-9

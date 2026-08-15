@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
 Version:        3.1.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.2-6
+- Extend to build for 91 and above
 * Wed Aug 12 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.1.2-5
 - Release bump for openssl KTLS removal.
 * Thu Jun 11 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.1.2-4

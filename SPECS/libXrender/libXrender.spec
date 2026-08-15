@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        X11 Xrender runtime library.
 Name:           libXrender
 Version:        0.9.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.x.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -56,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.9.12-2
+- Extend to build for 91 and above
 * Tue Jul 28 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 0.9.12-1
 - Upgrade to 0.9.12
 * Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 0.9.10-3

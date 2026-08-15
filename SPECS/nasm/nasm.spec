@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Netwide Assembler.
 Name:           nasm
 Version:        3.02
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.nasm.us
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -74,6 +74,8 @@ make %{?_smp_mflags} -k test
 %{_docdir}/*.ps
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.02-2
+- Extend to build for 91 and above
 * Tue Jun 30 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.02-1
 - Update to v3.02 to fix CVEs for subrelease >= 92
 * Sat Aug 16 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.16.01-4

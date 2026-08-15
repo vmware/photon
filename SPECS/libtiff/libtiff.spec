@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.libtiff.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -65,6 +65,8 @@ It contains the libraries and header files to create applications
 %{_mandir}/man*/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.7.2-2
+- Extend to build for 91 and above
 * Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.7.2-1
 - Upgrade to 4.7.2
 * Wed Apr 08 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.1-13

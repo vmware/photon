@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:          crun
 Version:       1.29
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       OCI runtime in C
 Group:         Development/Other
 Vendor:        VMware, Inc.
@@ -60,6 +60,8 @@ rm -f %{buildroot}%{_prefix}/lib/*.la \
 %{_mandir}/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.29-2
+- Extend to build for 91 and above
 * Fri Aug 07 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.29-1
 - Upgrade to 1.29. Drops the yajl dependency in favor of json-c.
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8-12

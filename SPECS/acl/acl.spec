@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Access control list utilities
 Name:           acl
 Version:        2.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Base
 URL:            https://savannah.nongnu.org/projects/%{name}
 Vendor:         VMware, Inc.
@@ -94,6 +94,8 @@ fi
 %{_libdir}/libacl.so.*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.4.0-2
+- Extend to build for 91 and above
 * Mon Jul 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.4.0-1
 - Upgrade to 2.4.0, fixes CVE-2026-54369, CVE-2026-54370
 * Wed Mar 18 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.3.1-7

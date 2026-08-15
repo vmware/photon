@@ -1,1 +1,0 @@
-License: (GPL-2.0-only OR MIT) AND FSFAP AND FSFUL AND FSFULLR AND FSFULLRWD AND GFDL-1.1-or-later AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-or-later AND ISC-Veillard AND Latex2e-translated-notice AND MIT AND X11

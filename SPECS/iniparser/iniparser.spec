@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:       iniparser
 Version:    4.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 Summary:    C library for parsing "INI-style" files
 URL:        https://github.com/ndevilla/%{name}
 Group:      Development/Tools
@@ -77,6 +77,8 @@ cd example && make %{?_smp_mflags}
 %{_includedir}/*.h
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1-5
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.1-4
 - Patched for CVE-2023-33461
 * Fri Feb 21 2025 Mukul Sikka <mukul.sikka@broadcom.com> 4.1-3

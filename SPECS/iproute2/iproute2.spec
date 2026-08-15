@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        6.12.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://wiki.linuxfoundation.org/networking/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.0-5
+- Extend to build for 91 and above
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.0-4
 - Fix print_trunk segfault
 * Fri Jul 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.0-3

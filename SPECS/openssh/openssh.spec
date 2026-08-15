@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define STIG_HARDEN 0
 
 %define privsep_path %{_datadir}/empty.sshd
@@ -7,7 +7,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        10.4p1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -245,6 +245,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.4p1-3
+- Extend to build for 91 and above
 * Fri Jul 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.4p1-2
 - Fix GSSAPI config issue
 * Thu Jul 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.4p1-1

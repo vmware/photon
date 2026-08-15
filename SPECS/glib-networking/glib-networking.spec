@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:      Glib networking modules
 Name:         glib-networking
 Version:      2.74.0
-Release:      10%{?dist}
+Release:      11%{?dist}
 URL:          http://wiki.gnome.org/glib-networking
 Group:        System Environment/Development
 Vendor:       VMware, Inc.
@@ -84,6 +84,8 @@ CONFIGURE_OPTS=(
 %defattr(-,root,root)
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.74.0-11
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.74.0-10
 - Patched for CVE-2025-60018 and CVE-2025-60019
 * Sat Jun 27 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 2.74.0-9

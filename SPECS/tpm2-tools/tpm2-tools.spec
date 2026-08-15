@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        The source repository for the TPM (Trusted Platform Module) 2 tools
 Name:           tpm2-tools
 Version:        5.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ make %{?_smp_mflags} check
 %{_datadir}/bash-completion/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.7-2
+- Extend to build for 91 and above
 * Mon Aug 03 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.7-1
 - Upgrade to v5.7. Fixes CVE-2024-29039
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.3-4

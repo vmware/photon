@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        ALSA library
 Name:           alsa-lib
 Version:        1.2.8
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ rm %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.8-7
+- Extend to build for 91 and above
 * Tue Aug 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.8-6
 - Fix CVE-2026-56109
 * Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.2.8-5

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define njs_ver     0.9.9
 %define nginx_user  %{name}
 %define headers_more_nginx_module_ver 0.39
@@ -8,7 +8,7 @@ Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
 Version:        1.30.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -203,6 +203,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.30.4-2
+- Extend to build for 91 and above
 * Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.30.4-1
 - Upgrade to 1.30.4
 * Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 1.30.2-3
