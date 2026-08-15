@@ -1,6 +1,6 @@
 sources:
-- archive: powershell-7.6.2-linux-x64.tar.gz
-  archive_sha512sum: effb505a891664d7c885129be67dc829218a074569c36dc00dcb3706435c72075c63ed67a1c533c044944993eefe460500c447163cab9f5b43233cd4d9d51b95
+- archive: powershell-7.6.5-linux-x64.tar.gz
+  archive_sha512sum: 8fc4c8d62a9e361c069cb07ec30ca2d2916b7dffa04de6755b35e27d44491d21608b00860ecd828e6aaf43d2ee22a54099c31aba93263617f95c0f265e280d2e
   skip_validation: true
   license_manual_review:
   - file_paths:
@@ -20,8 +20,8 @@ sources:
       short_summary: A cross-platform automation tool/framework.
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: powershell-7.6.2-nuget-deps.tar.xz
-  archive_sha512sum: 6fa4f4b7b4255df4f6bc24aec09c71febc6d557b70068bf3a38dbb47a357b6de06694344c1e69aaf13de7b11f1fbf71a4cbf77cec9fd89f0e48b7b022307d9e9
+- archive: powershell-7.6.5-nuget-deps.tar.xz
+  archive_sha512sum: f03ed59d550c866f7cd69a5b1b3b209a5365d5a37a8cdd07eaf7748105ed9631431cd3e56497682c3fe2980ec374e3883eff78729ab1a3a2f2ba63dbeedb4563
   skip_validation: true
   spdx:
     package:
@@ -38,8 +38,8 @@ sources:
         .NET.
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: powershell-7.6.2.tar.gz
-  archive_sha512sum: 8f0f1230ef38c7f7e1a0ae6fe6d90c9f6453e5060a30d6870eb1615d348f5c060df716de9587958577643298b43b9939f59dbe04bc32941c07fecad70b2a57ef
+- archive: powershell-7.6.5.tar.gz
+  archive_sha512sum: 93728d81121caa988cdc62f1ebe0df95b90c15a3dad0d5906aa152e0a6f63207dd72661560a863ea8291f347e4b7cc5d0b16ca35323e760110657cfd53f671c8
   skip_validation: true
   spdx:
     package:
