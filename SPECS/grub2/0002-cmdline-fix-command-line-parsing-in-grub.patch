@@ -1,4 +1,4 @@
-From f9200dbfd47bc37947c91b292530e1b62a6eef02 Mon Sep 17 00:00:00 2001
+From 60052300cc391d12e97c4df121174df37a4feb68 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 14 May 2025 14:47:15 +0530
 Subject: [PATCH] cmdline: fix command line parsing in grub
@@ -35,19 +35,16 @@ https://lists.gnu.org/archive/html/grub-devel/2025-05/msg00119.html
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Reviewed-by: Alexey Makhalov  <alexey.makhalov@broadcom.com>
 ---
- grub-core/lib/cmdline.c | 70 +++++++++++++++--------------------------
- 1 file changed, 26 insertions(+), 44 deletions(-)
+ grub-core/lib/cmdline.c | 70 +++++++++++++++++------------------------
+ 1 file changed, 28 insertions(+), 42 deletions(-)
 
 diff --git a/grub-core/lib/cmdline.c b/grub-core/lib/cmdline.c
-index 8e2294d..3764174 100644
+index 8e2294d..56aedd4 100644
 --- a/grub-core/lib/cmdline.c
 +++ b/grub-core/lib/cmdline.c
-@@ -26,35 +26,29 @@ is_hex(char c)
-   return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
- }
-
--static unsigned int check_arg (char *c, int *has_space)
-+static unsigned int check_arg (char *c, int *has_space)
+@@ -28,50 +28,42 @@ is_hex(char c)
+ 
+ static unsigned int check_arg (char *c, int *has_space)
  {
 -  int space = 0;
 -  unsigned int size = 0;
@@ -85,7 +82,7 @@ index 8e2294d..3764174 100644
 +        size++;
 +        c++;
      }
-
+ 
 -  if (space)
 -    size += 2;
 -
@@ -96,64 +93,68 @@ index 8e2294d..3764174 100644
 +    /* For separator space or NULL.  */
 +    return size + 1;
  }
-
+ 
  unsigned int grub_loader_cmdline_size (int argc, char *argv[])
-@@ -63,15 +57,9 @@ unsigned int grub_loader_cmdline_size (int argc, char *argv[])
+ {
+   int i;
    unsigned int size = 0;
-
++  int has_space;
+ 
    for (i = 0; i < argc; i++)
--    {
-       size += check_arg (argv[i], 0);
+     {
+-      size += check_arg (argv[i], 0);
 -      size++; /* Separator space or NULL.  */
--    }
--
++      has_space = 0;
++      size += check_arg (argv[i], &has_space);
+     }
+ 
 -  if (size == 0)
 -    size = 1;
-
+-
 -  return size;
 +  return size ? size : 1;
  }
-
+ 
  grub_err_t
-@@ -85,8 +73,8 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
+@@ -85,8 +77,8 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
    for (i = 0; i < argc; i++)
      {
        c = argv[i];
 +      space = 0;
        arg_size = check_arg(argv[i], &space);
 -      arg_size++; /* Separator space or NULL.  */
-
+ 
        if (size < arg_size)
  	break;
-@@ -107,24 +95,18 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
+@@ -107,24 +99,18 @@ grub_create_loader_cmdline (int argc, char *argv[], char *buf,
  	      *buf++ = *c++;
  	      continue;
  	    }
 -	  else if (*c == '\\' || *c == '\'' || *c == '"')
 -	    *buf++ = '\\';
-
+ 
 -	  *buf++ = *c;
 -	  c++;
 +      *buf++ = *c++;
  	}
-
+ 
        if (space)
  	*buf++ = '"';
-
+ 
 -      *buf++ = ' ';
-+      if (argv[i+1])
++      if (i + 1 < argc)
 +	*buf++ = ' ';
      }
-
+ 
 -  /* Replace last space with null.  */
 -  if (i)
 -    buf--;
 -
 -  *buf = 0;
 +  *buf = '\0';
-
+ 
    return grub_verify_string (orig_buf, type);
  }
---
-2.50.1
+-- 
+2.53.0
 

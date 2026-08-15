@@ -5,7 +5,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.12
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -269,6 +269,9 @@ diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
 %{_datarootdir}/locale/*
 
 %changelog
+* Sat Aug 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.12-7
+- Fix NULL pointer dereference and out-of-bounds argv access in
+  grub-core/lib/cmdline.c
 * Mon May 25 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.12-6
 - Sync fedora patches
 * Tue May 05 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.12-5
