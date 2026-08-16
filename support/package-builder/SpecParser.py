@@ -139,6 +139,10 @@ class SpecParser(object):
                 self.skipSpec = not self._parseBuildIf(line)
                 if self.skipSpec:
                     return
+            elif self._isExtraBuildRequiresSansSnapshot(line):
+                self._readExtraBuildRequiresSansSnapshot(
+                    line, self.packages[self.currentPkg]
+                )
             elif self._isExtraBuildRequires(line):
                 self._readExtraBuildRequires(line, self.packages[self.currentPkg])
             elif self._isBuildRequiresNative(line):
@@ -364,6 +368,11 @@ class SpecParser(object):
     def _isGlobalSecurityHardening(self, line):
         return re.search("^%global *security_hardening", line, flags=re.IGNORECASE)
 
+    def _isExtraBuildRequiresSansSnapshot(self, line):
+        return re.search(
+            "^%define *extrabuildrequiressanssnapshot", line, flags=re.IGNORECASE
+        )
+
     def _isExtraBuildRequires(self, line):
         return re.search("^%define *extrabuildrequires", line, flags=re.IGNORECASE)
 
@@ -511,7 +520,11 @@ class SpecParser(object):
                 else:
                     # Exclude extrabuildrequires as their spec files may not present
                     # and build will fail to construct a dependency graph.
-                    dpkg = list(set(dpkg) - set(pkg.extrabuildrequires))
+                    dpkg = list(
+                        set(dpkg)
+                        - set(pkg.extrabuildrequires)
+                        - set(pkg.extrabuildrequiressanssnapshot)
+                    )
                     pkg.buildrequires.extend(dpkg)
 
             return True
@@ -555,6 +568,19 @@ class SpecParser(object):
         if not dpkg:
             return False
         pkg.extrabuildrequires.extend(dpkg)
+        return True
+
+    def _readExtraBuildRequiresSansSnapshot(self, line, pkg):
+        line = self._replaceMacros(line)
+        data = line.strip()
+        words = data.split(" ", 2)
+        if len(words) != 3:
+            print(f"Error: Unable to parse line: {line}")
+            return False
+        dpkg = self._readDependentPackageData(words[2])
+        if not dpkg:
+            return False
+        pkg.extrabuildrequiressanssnapshot.extend(dpkg)
         return True
 
     def _readBuildRequiresNative(self, line, pkg):
@@ -651,6 +677,12 @@ class SpecParser(object):
             dependentPackages.extend(pkg.extrabuildrequires)
         return dependentPackages
 
+    def _getExtraBuildRequiresSansSnapshot(self):
+        dependentPackages = []
+        for pkg in self.packages.values():
+            dependentPackages.extend(pkg.extrabuildrequiressanssnapshot)
+        return dependentPackages
+
     def _getBuildRequiresNative(self):
         dependentPackages = []
         for pkg in self.packages.values():
@@ -714,6 +746,7 @@ class SpecParser(object):
         specObj.installRequires = self._getRequiresTypeAllPackages("install")
         specObj.checkBuildRequires = self._getCheckBuildRequiresAllPackages()
         specObj.extraBuildRequires = self._getExtraBuildRequires()
+        specObj.extraBuildRequiresSansSnapshot = self._getExtraBuildRequiresSansSnapshot()
         specObj.buildRequiresNative = self._getBuildRequiresNative()
         specObj.listPackages = self._getPackageNames()
         specObj.listSources = self._getSourceNames()
@@ -839,4 +872,7 @@ if __name__ == "__main__":
     print_requires("Install Requires", specObj.installRequires)
     print_requires("Check Build Requires", specObj.checkBuildRequires)
     print_requires("Extra Build Requires", specObj.extraBuildRequires)
+    print_requires(
+        "Extra Build Requires Sans Snapshot", specObj.extraBuildRequiresSansSnapshot
+    )
     print_requires("Build Requires Native", specObj.buildRequiresNative)

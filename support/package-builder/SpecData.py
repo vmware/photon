@@ -344,6 +344,18 @@ class SpecData(object):
                 packages.append(pkg.package)
         return packages
 
+    def getExtraBuildRequiresSansSnapshotForPackage(self, package, version):
+        packages = []
+        for pkg in self._getSpecObjField(
+            package, version, field=lambda x: x.extraBuildRequiresSansSnapshot
+        ):
+            if pkg.compare and pkg.compare == "=":
+                packages.append(f"{pkg.package}-{pkg.version}")
+            else:
+                # if no version deps for publishrpms - use just name
+                packages.append(pkg.package)
+        return packages
+
     def getBuildRequiresForPkg(self, pkg):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
         return self.getBuildRequiresForPackage(package, version)

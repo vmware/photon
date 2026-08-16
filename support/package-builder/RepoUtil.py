@@ -139,7 +139,7 @@ def signAndMoveRPMsToRepo(sandboxPath, listRPMFiles, listSRPMFiles):
 
 
 REPO_LOCAL = "--enablerepo=local"
-REPO_PACKAGES = "--enablerepo=packages"
+REPO_PACKAGES = "--enablerepo=packages-snapshot"
 REPO_BOOTSTRAP = "--enablerepo=bootstrap"
 
 # Using packages repo is allowed only during toolchain builds
@@ -148,6 +148,10 @@ STAGE_REPOS = {
     BuildStage.CORE_TOOLCHAIN: [REPO_PACKAGES, REPO_LOCAL],
     BuildStage.TOOLCHAIN: [REPO_LOCAL, REPO_PACKAGES],
 }
+
+
+def getPackageRepoBaseurl():
+    return "file:///packages" if constants.packageRepoPath else constants.packageRepoURL
 
 
 def getRepoArgs(buildStage, buildMode):

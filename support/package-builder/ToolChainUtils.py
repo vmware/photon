@@ -94,6 +94,9 @@ class ToolChainUtils(object):
                 self.installExtraToolchainRPMS(
                     tdnf, chroot, packageName, packageVersion
                 )
+                self.installExtraToolchainRPMSSansSnapshot(
+                    tdnf, chroot, packageName, packageVersion
+                )
 
             if constants.listOptionalToolChainRPMsToInstall:
                 available_pkgs = []
@@ -144,11 +147,33 @@ class ToolChainUtils(object):
         repoArgs = [
             f"--releasever={constants.releaseVersionToConsume}",
             "--disablerepo=*",
-            "--enablerepo=packages",
+            "--enablerepo=packages-snapshot",
         ]
 
         subCmd = ["install", "-y", "--nogpgcheck", "--setopt=tsflags=nodocs"] + listOfToolChainPkgs
         tdnf.run(
             args=subCmd + repoArgs,
             errMsg="Extra BuildRequires RPM installation failed",
+        )
+
+    def installExtraToolchainRPMSSansSnapshot(self, tdnf, sandbox, packageName, packageVersion):
+        listOfToolChainPkgs = SPECS.getData(
+            constants.buildArch
+        ).getExtraBuildRequiresSansSnapshotForPackage(packageName, packageVersion)
+        if not listOfToolChainPkgs:
+            return []
+        self.logger.debug(
+            f"Installing package specific toolchain RPMs (sans snapshot) for {packageName}: "
+            + str(listOfToolChainPkgs)
+        )
+        repoArgs = [
+            f"--releasever={constants.releaseVersionToConsume}",
+            "--disablerepo=*",
+            "--enablerepo=packages",
+        ]
+
+        subCmd = ["install", "-y", "--nogpgcheck", "--setopt=tsflags=nodocs"] + listOfToolChainPkgs
+        tdnf.run(
+            args=subCmd + repoArgs,
+            errMsg="Extra BuildRequires (sans snapshot) RPM installation failed",
         )

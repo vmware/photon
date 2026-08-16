@@ -7,6 +7,7 @@ import tempfile
 
 from CommandUtils import CommandUtils
 from constants import constants
+import RepoUtil
 from Sandbox import Container
 
 # This utility helps manage packages in a chroot dir using another sandbox
@@ -17,9 +18,8 @@ cpu_count = os.cpu_count() or 1
 ncpus = max(1, cpu_count // 2)
 
 packages_repo_template = """\
-[packages]
-name=packages
-enabled=1
+[packages-snapshot]
+name=packages-snapshot
 gpgcheck=0
 skip_if_unavailable=1
 skip_md_filelists=1
@@ -111,25 +111,42 @@ class TDNF:
             self.sandbox.putFiles([temp_file_path], self.repoDir)
             os.remove(temp_file_path)
 
+        packagesSnapshotContent = (
+            packages_repo_template + "enabled=1\n" + f"baseurl={RepoUtil.getPackageRepoBaseurl()}"
+        )
+
+        snapShotFn = constants.packageRepoSnapshotURL
+        if snapShotFn:
+            if os.path.isfile(snapShotFn):
+                snapshotCfg = f"snapshot={self.repoDir}/{os.path.basename(snapShotFn)}"
+                self.sandbox.putFiles([snapShotFn], self.repoDir)
+            else:
+                snapshotCfg = f"snapshot={snapShotFn}"
+
+            packagesSnapshotContent += f"\n{snapshotCfg}"
+
         with tempfile.NamedTemporaryFile(
             mode="w", delete=False, suffix=".repo"
         ) as temp_file:
-            temp_file.write(packages_repo_template)
-            if constants.packageRepoPath:
-                temp_file.write("baseurl=file:///packages")
-            else:
-                temp_file.write(f"baseurl={constants.packageRepoURL}")
+            temp_file.write(packagesSnapshotContent)
+            temp_file.flush()
+            temp_file_path = temp_file.name
+            self.sandbox.putFiles([temp_file_path], self.repoDir)
+            os.remove(temp_file_path)
 
-            snapShotFn = constants.packageRepoSnapshotURL
-            if snapShotFn:
-                if os.path.isfile(snapShotFn):
-                    snapshotCfg = f"snapshot={self.repoDir}/{os.path.basename(snapShotFn)}"
-                    self.sandbox.putFiles([snapShotFn], self.repoDir)
-                else:
-                    snapshotCfg = f"snapshot={snapShotFn}"
+        # "packages" is the same repo minus the snapshot pin, disabled by
+        # default -- used to resolve ExtraBuildRequiresSansSnapshot packages
+        # against the full/live packages repo.
+        packagesContent = (
+            packages_repo_template.replace("packages-snapshot", "packages")
+            + "enabled=0\n"
+            + f"baseurl={RepoUtil.getPackageRepoBaseurl()}"
+        )
 
-                temp_file.write(f"\n{snapshotCfg}")
-
+        with tempfile.NamedTemporaryFile(
+            mode="w", delete=False, suffix=".repo"
+        ) as temp_file:
+            temp_file.write(packagesContent)
             temp_file.flush()
             temp_file_path = temp_file.name
             self.sandbox.putFiles([temp_file_path], self.repoDir)

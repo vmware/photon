@@ -48,6 +48,7 @@ class Package(object):
         self.buildrequires = []
         self.checkbuildrequires = []
         self.extrabuildrequires = []
+        self.extrabuildrequiressanssnapshot = []
         self.buildrequiresnative = []
 
         self.requires = []
@@ -91,6 +92,7 @@ class SpecObject(object):
         self.installRequires = []
         self.checkBuildRequires = []
         self.extraBuildRequires = []
+        self.extraBuildRequiresSansSnapshot = []
         self.buildRequiresNative = []
 
         """
