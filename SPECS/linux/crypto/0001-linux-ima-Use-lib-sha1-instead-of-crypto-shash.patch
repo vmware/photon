@@ -1,0 +1,277 @@
+From d73b1ab12b14073d8dc82d7be12300d563b5ca1c Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhi.rao@broadcom.com>
+Date: Sun, 16 Aug 2026 14:57:34 +0000
+Subject: [PATCH] linux:ima: Use lib sha1 instead of crypto shash
+
+  -  IMA module unconditionally computes a SHA-1 digest for every
+measurement-log entry since legacy TPMv1.2. TPM2, uses SHA-256 as its primary
+algorithm and TPMv1.2 is largely deprecated. However, due to mandatory SHA-1
+digest usage, IMA init fails in FIPS mode as crypto shash alloc for SHA-1
+returns error.
+This change is intended to make IMA module to utilize lib sha-1 which is
+outside crypto boundary for the mandatory SHA-1 slot.
+Note: This change only supports lib sha1 for internal mandatory sha-1 digest
+path. Attempt to use SHA-1 as primary algorithm or a setxattr naming sha1
+fails as SHA-1 should not be used for FIPS compliance.
+
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ security/integrity/ima/ima_crypto.c | 172 +++++++++++++++++++++-------
+ 1 file changed, 130 insertions(+), 42 deletions(-)
+
+diff --git a/security/integrity/ima/ima_crypto.c b/security/integrity/ima/ima_crypto.c
+index 8ae7821a65c2..e6f0217db735 100644
+--- a/security/integrity/ima/ima_crypto.c
++++ b/security/integrity/ima/ima_crypto.c
+@@ -158,29 +158,34 @@ int __init ima_init_crypto(void)
+ 			continue;
+ 		}
+ 
+-		ima_algo_array[i].tfm = ima_alloc_tfm(algo);
+-		if (IS_ERR(ima_algo_array[i].tfm)) {
+-			if (algo == HASH_ALGO_SHA1) {
+-				rc = PTR_ERR(ima_algo_array[i].tfm);
+-				ima_algo_array[i].tfm = NULL;
+-				goto out_array;
+-			}
+-
++		/*
++		 * The SHA1 digest is mandatory for legacy (TPM 1.2 /
++		 * pre-agile) verifiers and is always computed directly via
++		 * the SHA-1 library, not the crypto API (see
++		 * ima_calc_field_array_hash()). Skip allocating a shash
++		 * transform for it here, since "sha1" may not be registered
++		 * with the crypto API at all (e.g. disabled in FIPS mode).
++		 */
++		if (algo == HASH_ALGO_SHA1) {
+ 			ima_algo_array[i].tfm = NULL;
++			continue;
+ 		}
++
++		ima_algo_array[i].tfm = ima_alloc_tfm(algo);
++		if (IS_ERR(ima_algo_array[i].tfm))
++			ima_algo_array[i].tfm = NULL;
+ 	}
+ 
+ 	if (ima_sha1_idx >= NR_BANKS(ima_tpm_chip)) {
+-		if (ima_hash_algo == HASH_ALGO_SHA1) {
++		/*
++		 * No allocated TPM bank already covers SHA1; reserve the
++		 * extra slot for it. As above, no shash transform is
++		 * allocated - the digest is computed via the SHA-1 library.
++		 */
++		if (ima_hash_algo == HASH_ALGO_SHA1)
+ 			ima_algo_array[ima_sha1_idx].tfm = ima_shash_tfm;
+-		} else {
+-			ima_algo_array[ima_sha1_idx].tfm =
+-						ima_alloc_tfm(HASH_ALGO_SHA1);
+-			if (IS_ERR(ima_algo_array[ima_sha1_idx].tfm)) {
+-				rc = PTR_ERR(ima_algo_array[ima_sha1_idx].tfm);
+-				goto out_array;
+-			}
+-		}
++		else
++			ima_algo_array[ima_sha1_idx].tfm = NULL;
+ 
+ 		ima_algo_array[ima_sha1_idx].algo = HASH_ALGO_SHA1;
+ 	}
+@@ -192,15 +197,6 @@ int __init ima_init_crypto(void)
+ 	}
+ 
+ 	return 0;
+-out_array:
+-	for (i = 0; i < NR_BANKS(ima_tpm_chip) + ima_extra_slots; i++) {
+-		if (!ima_algo_array[i].tfm ||
+-		    ima_algo_array[i].tfm == ima_shash_tfm)
+-			continue;
+-
+-		crypto_free_shash(ima_algo_array[i].tfm);
+-	}
+-	kfree(ima_algo_array);
+ out:
+ 	crypto_free_shash(ima_shash_tfm);
+ 	return rc;
+@@ -572,23 +568,35 @@ int ima_calc_file_hash(struct file *file, struct ima_digest_data *hash)
+ 	return rc;
+ }
+ 
++/*
++ * Incremental-hash callback used by ima_calc_field_array_hash_walk() so the
++ * same field-walking logic can drive either a crypto_shash context or a
++ * plain SHA-1 library context.
++ */
++typedef int (*ima_hash_update_fn)(void *ctx, const void *data, unsigned int len);
++
++static int ima_shash_update_cb(void *ctx, const void *data, unsigned int len)
++{
++	return crypto_shash_update(ctx, data, len);
++}
++
++static int ima_sha1_lib_update_cb(void *ctx, const void *data, unsigned int len)
++{
++	sha1_update(ctx, data, len);
++	return 0;
++}
++
+ /*
+  * Calculate the hash of template data
+  */
+-static int ima_calc_field_array_hash_tfm(struct ima_field_data *field_data,
+-					 struct ima_template_entry *entry,
+-					 int tfm_idx)
++static int ima_calc_field_array_hash_walk(struct ima_field_data *field_data,
++					  struct ima_template_entry *entry,
++					  void *hash_ctx,
++					  ima_hash_update_fn update)
+ {
+-	SHASH_DESC_ON_STACK(shash, ima_algo_array[tfm_idx].tfm);
+ 	struct ima_template_desc *td = entry->template_desc;
+ 	int num_fields = entry->template_desc->num_fields;
+-	int rc, i;
+-
+-	shash->tfm = ima_algo_array[tfm_idx].tfm;
+-
+-	rc = crypto_shash_init(shash);
+-	if (rc != 0)
+-		return rc;
++	int rc = 0, i;
+ 
+ 	for (i = 0; i < num_fields; i++) {
+ 		u8 buffer[IMA_EVENT_NAME_LEN_MAX + 1] = { 0 };
+@@ -598,9 +606,8 @@ static int ima_calc_field_array_hash_tfm(struct ima_field_data *field_data,
+ 				datalen : (__force u32)cpu_to_le32(datalen);
+ 
+ 		if (strcmp(td->name, IMA_TEMPLATE_IMA_NAME) != 0) {
+-			rc = crypto_shash_update(shash,
+-						(const u8 *) &datalen_to_hash,
+-						sizeof(datalen_to_hash));
++			rc = update(hash_ctx, &datalen_to_hash,
++				   sizeof(datalen_to_hash));
+ 			if (rc)
+ 				break;
+ 		} else if (strcmp(td->fields[i]->field_id, "n") == 0) {
+@@ -608,24 +615,67 @@ static int ima_calc_field_array_hash_tfm(struct ima_field_data *field_data,
+ 			data_to_hash = buffer;
+ 			datalen = IMA_EVENT_NAME_LEN_MAX + 1;
+ 		}
+-		rc = crypto_shash_update(shash, data_to_hash, datalen);
++		rc = update(hash_ctx, data_to_hash, datalen);
+ 		if (rc)
+ 			break;
+ 	}
+ 
++	return rc;
++}
++
++static int ima_calc_field_array_hash_tfm(struct ima_field_data *field_data,
++					 struct ima_template_entry *entry,
++					 int tfm_idx)
++{
++	SHASH_DESC_ON_STACK(shash, ima_algo_array[tfm_idx].tfm);
++	int rc;
++
++	shash->tfm = ima_algo_array[tfm_idx].tfm;
++
++	rc = crypto_shash_init(shash);
++	if (rc != 0)
++		return rc;
++
++	rc = ima_calc_field_array_hash_walk(field_data, entry, shash,
++					    ima_shash_update_cb);
+ 	if (!rc)
+ 		rc = crypto_shash_final(shash, entry->digests[tfm_idx].digest);
+ 
+ 	return rc;
+ }
+ 
++/*
++ * The measurement list always carries a SHA1 digest for legacy (TPM 1.2 /
++ * pre-agile) verifiers, regardless of the algorithm configured for IMA's
++ * own hashing. "sha1" may not be registered with the crypto API at all
++ * (e.g. disabled system-wide in FIPS mode), so this mandatory digest is
++ * computed directly via the SHA-1 library instead of a shash transform.
++ */
++static int ima_calc_field_array_hash_sha1_lib(struct ima_field_data *field_data,
++					      struct ima_template_entry *entry)
++{
++	struct sha1_ctx ctx;
++	int rc;
++
++	sha1_init(&ctx);
++	rc = ima_calc_field_array_hash_walk(field_data, entry, &ctx,
++					    ima_sha1_lib_update_cb);
++	sha1_final(&ctx, entry->digests[ima_sha1_idx].digest);
++
++	return rc;
++}
++
+ int ima_calc_field_array_hash(struct ima_field_data *field_data,
+ 			      struct ima_template_entry *entry)
+ {
+ 	u16 alg_id;
+ 	int rc, i;
+ 
+-	rc = ima_calc_field_array_hash_tfm(field_data, entry, ima_sha1_idx);
++	if (ima_algo_array[ima_sha1_idx].tfm)
++		rc = ima_calc_field_array_hash_tfm(field_data, entry,
++						   ima_sha1_idx);
++	else
++		rc = ima_calc_field_array_hash_sha1_lib(field_data, entry);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -836,6 +886,33 @@ static int ima_calc_boot_aggregate_tfm(char *digest, u16 alg_id,
+ 	return rc;
+ }
+ 
++/*
++ * Same as ima_calc_boot_aggregate_tfm(), for the case where the only
++ * suitable TPM bank is SHA1 and "sha1" is not registered with the crypto
++ * API (e.g. disabled in FIPS mode). Computed directly via the SHA-1
++ * library instead of a shash transform.
++ */
++static int ima_calc_boot_aggregate_sha1_lib(char *digest)
++{
++	struct tpm_digest d = { .alg_id = TPM_ALG_SHA1, .digest = {0} };
++	struct sha1_ctx ctx;
++	u32 i;
++
++	pr_devel("calculating the boot-aggregate based on TPM bank: %04x\n",
++		 d.alg_id);
++
++	sha1_init(&ctx);
++
++	/* cumulative digest over TPM registers 0-7 */
++	for (i = TPM_PCR0; i < TPM_PCR8; i++) {
++		ima_pcrread(i, &d);
++		sha1_update(&ctx, d.digest, SHA1_DIGEST_SIZE);
++	}
++
++	sha1_final(&ctx, digest);
++	return 0;
++}
++
+ int ima_calc_boot_aggregate(struct ima_digest_data *hash)
+ {
+ 	struct crypto_shash *tfm;
+@@ -863,6 +940,17 @@ int ima_calc_boot_aggregate(struct ima_digest_data *hash)
+ 
+ 	hash->algo = ima_tpm_chip->allocated_banks[bank_idx].crypto_id;
+ 
++	/*
++	 * A TPM bank is only ever picked as a last resort (see above), so
++	 * this only triggers when no other algorithm is usable. In that
++	 * case, avoid depending on "sha1" being registered with the crypto
++	 * API.
++	 */
++	if (hash->algo == HASH_ALGO_SHA1 && hash->algo != ima_hash_algo) {
++		hash->length = SHA1_DIGEST_SIZE;
++		return ima_calc_boot_aggregate_sha1_lib(hash->digest);
++	}
++
+ 	tfm = ima_alloc_tfm(hash->algo);
+ 	if (IS_ERR(tfm))
+ 		return PTR_ERR(tfm);
+-- 
+2.53.0
+

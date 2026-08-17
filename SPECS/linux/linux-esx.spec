@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.103
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -256,6 +256,8 @@ Patch10115: 0001-lib-digsig-Use-SHA-1-library-instead-of-crypto_shash.patch
 Patch10116: 0001-crypto-sha1_generic-Renaming-sha1_final.patch
 # Track internal/external jitterentropy rng requests
 Patch10117: 0001-crypto-track-external-requests-to-jitterentropy_rng.patch
+# make ima to use lib SHA1 instead of crypto shash API
+Patch10118: 0001-linux-ima-Use-lib-sha1-instead-of-crypto-shash.patch
 
 # FIPS canister plugins
 Patch10200: 0001-Compile-GCC-plugins-for-FIPS-canister.patch
@@ -396,7 +398,7 @@ install %{SOURCE10106} crypto/
 install %{SOURCE10300} crypto/
 
 %autopatch -p1 -m10001 -M10004
-%autopatch -p1 -m10101 -M10117
+%autopatch -p1 -m10101 -M10118
 # FIPS canister plugins
 %autopatch -p1 -m10200 -M10204
 # Jitterentropy proxy
@@ -547,6 +549,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 21 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.103-6
+- Make ima module to use lib sha1 instead of crypto shash
 * Wed Aug 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.103-5
 - Remove selinux=0 from default cmdline; SELinux is now disabled via selinux-policy
 * Mon Aug 17 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.103-4
