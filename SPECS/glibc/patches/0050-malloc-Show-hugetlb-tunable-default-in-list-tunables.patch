@@ -1,0 +1,120 @@
+From 7d26579873791748c20d874adb66e877412175dd Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wilco.dijkstra@arm.com>
+Date: Fri, 14 Aug 2026 14:18:01 +0000
+Subject: [PATCH] malloc: Show hugetlb tunable default in --list-tunables
+
+Update the hugetlb tunable default in elf/dl-tunables.c so it is shown as 1
+with /lib/ld-linux-aarch64.so.1 --list-tunables.
+Move the intitialization of thp_mode/thp_pagesize to do_set_hugetlb() and
+avoid accessing /sys/kernel/mm if DEFAULT_THP_PAGESIZE > 0.  Switch off THP if
+glibc.malloc.hugetlb=0 is used - this behaves as if DEFAULT_THP_PAGESIZE==0.
+Fix the --list-tunables testcase.
+
+Reviewed-by: DJ Delorie <dj@redhat.com>
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@siemens.com>
+(cherry picked from commit e87c151130216f5c62f0e172e3eaebbc4a5d794a)
+---
+ elf/dl-tunables.c             |  5 +++++
+ elf/tst-rtld-list-tunables.sh | 12 ++----------
+ malloc/arena.c                |  9 ---------
+ malloc/malloc.c               | 18 +++++++++++++++++-
+ 4 files changed, 24 insertions(+), 20 deletions(-)
+
+diff --git a/elf/dl-tunables.c b/elf/dl-tunables.c
+index bdb1de4ceba40b17fe5e10be246702b8bd25a812..1440d3fa6a52ad8549e2e3c53b8b6ccf55d82736 100644
+--- a/elf/dl-tunables.c
++++ b/elf/dl-tunables.c
+@@ -33,6 +33,7 @@
+ #include <array_length.h>
+ #include <dl-minimal-malloc.h>
+ #include <dl-symbol-redir-ifunc.h>
++#include <malloc-hugepages.h>
+ 
+ #define TUNABLES_INTERNAL 1
+ #include "dl-tunables.h"
+@@ -296,6 +297,10 @@ __tunables_init (char **envp)
+   char *envval = NULL;
+   char **prev_envp = envp;
+ 
++  /* Default to glibc.malloc.hugetlb=1 if DEFAULT_THP_PAGESIZE is non-zero.  */
++  if (DEFAULT_THP_PAGESIZE > 0)
++    TUNABLE_SET (glibc, malloc, hugetlb, 1);
++
+   /* Ignore tunables for AT_SECURE programs.  */
+   if (__libc_enable_secure)
+     return;
+diff --git a/elf/tst-rtld-list-tunables.sh b/elf/tst-rtld-list-tunables.sh
+index 669898d8c050b6b5a89f679e37b921d6f457e8e1..11b9b4597a8faceceac43135a61898ceea58c16b 100755
+--- a/elf/tst-rtld-list-tunables.sh
++++ b/elf/tst-rtld-list-tunables.sh
+@@ -26,16 +26,8 @@ run_program_env=$3
+ LC_ALL=C
+ export LC_ALL
+ 
+-# Unset tunables and their aliases.
+-GLIBC_TUNABLES=
+-MALLOC_ARENA_MAX=
+-MALLOC_ARENA_TEST=
+-MALLOC_CHECK_=
+-MALLOC_MMAP_MAX_=
+-MALLOC_MMAP_THRESHOLD_=
+-MALLOC_PERTURB_=
+-MALLOC_TOP_PAD_=
+-MALLOC_TRIM_THRESHOLD_=
++# Unset tunables.
++export GLIBC_TUNABLES=glibc.malloc.hugetlb=0
+ 
+ ${test_wrapper_env} \
+ ${run_program_env} \
+diff --git a/malloc/arena.c b/malloc/arena.c
+index d83b4db068ad3dfa79250ce62ad65e42a5aebc12..5bfcd7f9723a8a6396ec53ea49bef5472fa28672 100644
+--- a/malloc/arena.c
++++ b/malloc/arena.c
+@@ -276,15 +276,6 @@ __ptmalloc_init (void)
+     __always_fail_morecore = true;
+ #endif
+ 
+-  /* Enable THP if DEFAULT_THP_PAGESIZE is non-zero.  Avoid quering the THP
+-     page size or mode since accessing /sys/kernel/mm is relatively slow and
+-     might not be accessible in containers.  */
+-  if (DEFAULT_THP_PAGESIZE > 0)
+-    {
+-      mp_.thp_mode = malloc_thp_mode_madvise;
+-      mp_.thp_pagesize = DEFAULT_THP_PAGESIZE;
+-    }
+-
+   thread_arena = &main_arena;
+ 
+   malloc_init_state (&main_arena);
+diff --git a/malloc/malloc.c b/malloc/malloc.c
+index 771e7d40b73e10df9e3270e6ea7c501be27d41cc..af6b4fe580d1b76b542a4eb08dd2517678f5916b 100644
+--- a/malloc/malloc.c
++++ b/malloc/malloc.c
+@@ -5114,10 +5114,26 @@ do_set_mxfast (size_t value)
+ static __always_inline int
+ do_set_hugetlb (size_t value)
+ {
++  /* Enable THP if DEFAULT_THP_PAGESIZE is non-zero.  */
++  if (DEFAULT_THP_PAGESIZE > 0)
++    {
++      mp_.thp_mode = malloc_thp_mode_madvise;
++      mp_.thp_pagesize = DEFAULT_THP_PAGESIZE;
++    }
++
+   if (value == 0)
+-    mp_.thp_mode = malloc_thp_mode_never;
++    {
++      /* Turn off THP support completely.  */
++      mp_.thp_mode = malloc_thp_mode_never;
++      mp_.thp_pagesize = 0;
++    }
+   else if (value == 1)
+     {
++      /* Avoid querying the THP page size/mode since accessing /sys/kernel/mm
++        is relatively slow and might not be accessible in containers.  */
++      if (DEFAULT_THP_PAGESIZE > 0)
++       return 0;
++
+       mp_.thp_mode = __malloc_thp_mode ();
+       if (mp_.thp_mode == malloc_thp_mode_madvise
+           || mp_.thp_mode == malloc_thp_mode_always)

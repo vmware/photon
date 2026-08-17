@@ -1,0 +1,35 @@
+From 446f708e4cf8845536549a7fa414142fc89c6887 Mon Sep 17 00:00:00 2001
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date: Tue, 26 May 2026 22:28:49 +0200
+Subject: [PATCH] Hurd: comment PF_ROUTE/AF_ROUTE defines
+
+Comment out the PF_ROUTE and AF_ROUTE defines, since they would be used for
+PF_ROUTE setsockopts, which are not available on Hurd.
+
+(cherry picked from commit ec98b25af5ae4b6dff24388ce10d0e64a7671363)
+---
+ sysdeps/mach/hurd/bits/socket.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/mach/hurd/bits/socket.h b/sysdeps/mach/hurd/bits/socket.h
+index 4a5807e61971b3f300c5355b0c91a6f575cbf2e5..fb73dea063d43a01571123c3ef134fc8fa82bf6c 100644
+--- a/sysdeps/mach/hurd/bits/socket.h
++++ b/sysdeps/mach/hurd/bits/socket.h
+@@ -95,7 +95,7 @@ enum __socket_type
+ #define	PF_LAT		14	/* DEC Local Area Transport protocol.  */
+ #define	PF_HYLINK	15	/* NSC Hyperchannel protocol.  */
+ #define	PF_APPLETALK	16	/* Don't use this.  */
+-#define	PF_ROUTE	17	/* Internal Routing Protocol.  */
++/* #define	PF_ROUTE	17	Internal Routing Protocol.  */
+ /* #define	PF_LINK		18	Link layer interface.  */
+ #define	PF_XTP		19	/* eXpress Transfer Protocol (no AF).  */
+ #define	PF_COIP		20	/* Connection-oriented IP, aka ST II.  */
+@@ -128,7 +128,7 @@ enum __socket_type
+ #define	AF_LAT		PF_LAT
+ #define	AF_HYLINK	PF_HYLINK
+ #define	AF_APPLETALK	PF_APPLETALK
+-#define	AF_ROUTE	PF_ROUTE
++/* #define	AF_ROUTE	PF_ROUTE */
+ /* #define	AF_LINK		PF_LINK */
+ #ifdef __USE_MISC
+ # define	pseudo_AF_XTP	PF_XTP

@@ -1,0 +1,58 @@
+From 8017bcfc4d9bd16083cb7f3d8eda7d07b4593b09 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Wed, 12 Aug 2026 09:03:17 -0300
+Subject: [PATCH] m68k: Fix fmod/fmodf infinite recursion (BZ 34508)
+
+Commits 6deadd4eb6a and ade9f30ce27 changed m68k fmod to call
+__m81_u(fmod), instead of the mathimpl.h inline
+__m81_u(__ieee754_fmod) (that wraps the m68k fmod instruction).
+This leads to infinite recursion.
+
+Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+
+(cherry picked from commit bb213471bedc177b8efd3178584137fb81cc976a)
+---
+ NEWS                              | 2 ++
+ sysdeps/m68k/m680x0/fpu/e_fmod.c  | 2 +-
+ sysdeps/m68k/m680x0/fpu/e_fmodf.c | 2 +-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index cec8b61f5556b6bd43954f87ea714dc1d0a5d58b..9305ab5d34fa7dd2f67f63b935da70af7d098790 100644
+--- a/NEWS
++++ b/NEWS
+@@ -14,6 +14,8 @@ The following bugs are resolved with this release:
+  [33848] build: Build fails at openat2.h, redefinition of 'struct
+     open_how'
+  [33904] build: error: '__vasprintf_chk' undeclared here
++ [34509] libc: [m68k] Regression: Perl locks up after upgrading glibc
++   to 2.43
+ 
+ Version 2.43
+ 
+diff --git a/sysdeps/m68k/m680x0/fpu/e_fmod.c b/sysdeps/m68k/m680x0/fpu/e_fmod.c
+index 9ad6924422e47d504e50318dee5a6b8b7fdf9e75..faac7c79e38826aa04317f092788865e6ba0ec39 100644
+--- a/sysdeps/m68k/m680x0/fpu/e_fmod.c
++++ b/sysdeps/m68k/m680x0/fpu/e_fmod.c
+@@ -33,7 +33,7 @@ __fmod (double x, double y)
+ 			&& !is_nan (hx)))
+     return __math_invalid (x);
+ 
+-  return __m81_u(fmod)(x, y);
++  return __m81_u(__ieee754_fmod)(x, y);
+ }
+ strong_alias (__fmod, __ieee754_fmod)
+ libm_alias_finite (__ieee754_fmod, __fmod)
+diff --git a/sysdeps/m68k/m680x0/fpu/e_fmodf.c b/sysdeps/m68k/m680x0/fpu/e_fmodf.c
+index a3bd24b71f0d0ec03e4a704870dcc95a34e4be92..98797e088744310a5c167e2973028c9ce675be0c 100644
+--- a/sysdeps/m68k/m680x0/fpu/e_fmodf.c
++++ b/sysdeps/m68k/m680x0/fpu/e_fmodf.c
+@@ -34,7 +34,7 @@ __fmodf (float x, float y)
+ 			&& !is_nan (hx)))
+     return __math_invalidf (x);
+ 
+-  return __m81_u(fmodf)(x, y);
++  return __m81_u(__ieee754_fmodf)(x, y);
+ }
+ strong_alias (__fmodf, __ieee754_fmodf)
+ versioned_symbol (libm, __fmodf, fmodf, GLIBC_2_43);

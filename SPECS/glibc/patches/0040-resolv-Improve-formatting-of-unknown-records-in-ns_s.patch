@@ -1,0 +1,51 @@
+From c46f7b2fd6cdbecaa821f35f7e2f9c989e7a3767 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 19 Jun 2026 18:22:20 +0200
+Subject: [PATCH] resolv: Improve formatting of unknown records in ns_sprintrrf
+
+Do not add the "unknown RR type" comment.  After adding the TYPE
+prefix, the number is largely redundant.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit d58415eb17d457a160af99f9e8ab164404ca151b)
+---
+ resolv/ns_print.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/resolv/ns_print.c b/resolv/ns_print.c
+index e75c39eaa8a89e0a2b5d30c52bdf9aa85de23ea5..3d38876483ac1a31fe8c196e6fffefea1b5fdf8e 100644
+--- a/resolv/ns_print.c
++++ b/resolv/ns_print.c
+@@ -115,7 +115,6 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
+ 
+ 	const char *comment;
+ 	char tmp[100];
+-	char errbuf[40];
+ 	int len, x;
+ 
+ 	/*
+@@ -590,20 +589,18 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
+ 		T(addstr(tmp, len, &buf, &buflen));
+ 		break;
+ 	    }
+-
+ 	default:
+-		snprintf (errbuf, sizeof (errbuf), "unknown RR type %d", type);
+-		comment = errbuf;
++		comment = "";
+ 		goto hexify;
+ 	}
+ 	return (buf - obuf);
+  formerr:
+-	comment = "RR format error";
++	comment = " ; RR format error";
+  hexify: {
+ 	int n, m;
+ 	char *p;
+ 
+-	len = SPRINTF((tmp, "\\# %u%s\t; %s", (unsigned)(edata - rdata),
++	len = SPRINTF((tmp, "\\# %u%s%s", (unsigned)(edata - rdata),
+ 		       rdlen != 0U ? " (" : "", comment));
+ 	T(addstr(tmp, len, &buf, &buflen));
+ 	while (rdata < edata) {

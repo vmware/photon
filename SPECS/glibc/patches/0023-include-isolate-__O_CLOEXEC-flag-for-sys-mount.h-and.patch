@@ -1,8 +1,7 @@
 From d1d8d27164e9682e467b55a7b56bd6229b7beef2 Mon Sep 17 00:00:00 2001
 From: DJ Delorie <dj@redhat.com>
 Date: Mon, 26 Jan 2026 22:24:42 -0500
-Subject: [PATCH 23/27] include: isolate __O_CLOEXEC flag for sys/mount.h and
- fcntl.h
+Subject: [PATCH] include: isolate __O_CLOEXEC flag for sys/mount.h and fcntl.h
 
 Including sys/mount.h should not implicitly include fcntl.h
 as that causes namespace pollution and conflicts with kernel
@@ -135,6 +134,3 @@ index 8e3ffbd56f838aa66762f13ab3d28d100383220c..84dcd448d465d4cbef7f085559d91141
  #include <sys/mount.h>
  
  _Static_assert (sizeof (struct mount_attr) == MOUNT_ATTR_SIZE_VER0,
--- 
-2.53.0
-

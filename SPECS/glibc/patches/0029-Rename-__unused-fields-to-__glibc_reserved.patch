@@ -1,0 +1,79 @@
+From 18b97b03b7442d8ba0860e43145f8724c9e77b17 Mon Sep 17 00:00:00 2001
+From: Jakub Jelinek <jakub@redhat.com>
+Date: Tue, 17 Feb 2026 17:06:48 +0100
+Subject: [PATCH] Rename __unused fields to __glibc_reserved.
+
+__unused is often defined to __attribute__((unused)) in BSD
+sources and furthermore libstdc++ testsuite uses it as a macro
+to verify libstdc++ headers don't use __unused identifiers.
+In ~2012 glibc headers have been cleaned up, but some new
+uses of __unused have reappeared (s390 fenv.h already many
+years ago, the rest last November).
+
+Reviewed-by: Florian Weimer <fweimer@redhat.com>
+(cherry picked from commit 243bdfec8f7cd4a85a8ce6e4e9a5a5accd3ce1aa)
+---
+ sysdeps/powerpc/nptl/bits/struct_mutex.h | 2 +-
+ sysdeps/s390/fpu/bits/fenv.h             | 8 ++++----
+ sysdeps/s390/nptl/bits/struct_mutex.h    | 2 +-
+ sysdeps/x86/nptl/bits/struct_mutex.h     | 2 +-
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/sysdeps/powerpc/nptl/bits/struct_mutex.h b/sysdeps/powerpc/nptl/bits/struct_mutex.h
+index 1472af21f70baeabd671cfeab74395e75e78a612..ebf2d50922ee0114298519286785f965771985d9 100644
+--- a/sysdeps/powerpc/nptl/bits/struct_mutex.h
++++ b/sysdeps/powerpc/nptl/bits/struct_mutex.h
+@@ -32,7 +32,7 @@ struct __pthread_mutex_s
+   int __kind;
+ #if __WORDSIZE == 64
+   short __spins;
+-  short __unused;
++  short __glibc_reserved;
+   __pthread_list_t __list;
+ # define __PTHREAD_MUTEX_HAVE_PREV      1
+ #else
+diff --git a/sysdeps/s390/fpu/bits/fenv.h b/sysdeps/s390/fpu/bits/fenv.h
+index b9e844e3932503c78cc9fec54e7ebab72bcfe5de..33e88fbe9d97ad3eaaf3529cf40a37baea673b96 100644
+--- a/sysdeps/s390/fpu/bits/fenv.h
++++ b/sysdeps/s390/fpu/bits/fenv.h
+@@ -76,10 +76,10 @@ typedef unsigned int fexcept_t; /* size of fpc */
+ typedef struct
+ {
+   fexcept_t __fpc;
+-  void *__unused;
+-  /* The field __unused (formerly __ieee_instruction_pointer) is a relict from
+-     commit "Remove PTRACE_PEEKUSER" (87b9b50f0d4b92248905e95a06a13c513dc45e59)
+-     and isn't used anymore.  */
++  void *__glibc_reserved;
++  /* The field __glibc_reserved (formerly __ieee_instruction_pointer) is a
++     relict from commit "Remove PTRACE_PEEKUSER"
++     (87b9b50f0d4b92248905e95a06a13c513dc45e59) and isn't used anymore.  */
+ } fenv_t;
+ 
+ /* If the default argument is used we use this value.  */
+diff --git a/sysdeps/s390/nptl/bits/struct_mutex.h b/sysdeps/s390/nptl/bits/struct_mutex.h
+index d069b485d1672b134531aa60a0e0eda030460e5e..571265267c2edbc388e00aed800c03b3d2c05b2d 100644
+--- a/sysdeps/s390/nptl/bits/struct_mutex.h
++++ b/sysdeps/s390/nptl/bits/struct_mutex.h
+@@ -32,7 +32,7 @@ struct __pthread_mutex_s
+   int __kind;
+ #if __WORDSIZE == 64
+   short __spins;
+-  short __unused;
++  short __glibc_reserved;
+   __pthread_list_t __list;
+ # define __PTHREAD_MUTEX_HAVE_PREV      1
+ #else
+diff --git a/sysdeps/x86/nptl/bits/struct_mutex.h b/sysdeps/x86/nptl/bits/struct_mutex.h
+index 9c19dff6606f3078a6144694b7acc59f537aa30e..13c9894ad4b3156677a2475ede4c0bc47d1df68a 100644
+--- a/sysdeps/x86/nptl/bits/struct_mutex.h
++++ b/sysdeps/x86/nptl/bits/struct_mutex.h
+@@ -32,7 +32,7 @@ struct __pthread_mutex_s
+   int __kind;
+ #ifdef __x86_64__
+   short __spins;
+-  short __unused;
++  short __glibc_reserved;
+   __pthread_list_t __list;
+ # define __PTHREAD_MUTEX_HAVE_PREV      1
+ #else

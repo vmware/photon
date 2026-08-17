@@ -1,0 +1,91 @@
+From a47b5b2b3eee486c4bea0df65af775296a13f09d Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Wed, 27 May 2026 16:48:19 -0300
+Subject: [PATCH] math: Fix fma alignment when exponent difference is exactly
+ 64 (BZ 34183)
+
+When d (the exponent difference between z and x*y) is exactly 64,
+the alignment path shifts z left by 64 bits via (zhi = nz.m, zlo = 0)
+and decrements d to 0, then takes the inner 'if (d < 64)' branch
+which evaluates 'rhi << (64 - d)' with d == 0.  A shift by 64 of a
+64-bit value is UB in C.
+
+Add the explicit 'if (d == 0)' empty branch (present in the
+original musl implementation).
+
+Checked on x86_64-linux-gnu with --disable-multi-arch and
+arm-linux-gnueabihf.
+
+Reviewed-by: H.J. Lu <hjl.tools@gmail.com>
+(cherry picked from commit 1e7935ae87550323021876f3099bb04aeadd8491)
+---
+ math/auto-libm-test-in         |  2 ++
+ math/auto-libm-test-out-fma    | 25 +++++++++++++++++++++++++
+ sysdeps/ieee754/dbl-64/s_fma.c |  5 ++++-
+ 3 files changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/math/auto-libm-test-in b/math/auto-libm-test-in
+index 2001baa60558013988f8d1846990b1da11019aeb..82f0aface85d93c9b052f2dd034c396f309bfa93 100644
+--- a/math/auto-libm-test-in
++++ b/math/auto-libm-test-in
+@@ -6483,6 +6483,8 @@ fma 0x1.000002p-126 -0x1.000002p-26 0x1p103
+ fma 0x1.000002p-126 0x1.000002p-26 -0x1p103
+ fma 0x1.000002p-126 -0x1.000002p-26 -0x1p103
+ 
++fma 0x1.000008p+0 0x1.000008p+0 0x1p+11
++
+ fma 0x1.7fp+13 0x1.0000000000001p+0 0x1.ffep-48
+ fma 0x1.fffp+0 0x1.0000000000001p+0 -0x1.fffp+0
+ fma 0x1.0000002p+0 0x1.ffffffcp-1 0x1p-300
+diff --git a/math/auto-libm-test-out-fma b/math/auto-libm-test-out-fma
+index 438fcb61da733e3ec1d9128ea22431d07ec89b31..ba1fdc747238c8f5dd88860a59d9a73586c22be4 100644
+--- a/math/auto-libm-test-out-fma
++++ b/math/auto-libm-test-out-fma
+@@ -13364,6 +13364,31 @@ fma 0x1.000002p-126 -0x1.000002p-26 -0x1p103
+ = fma tonearest ibm128 0x4.000008p-128 -0x4.000008p-28 -0x8p+100 : -0x8p+100 : inexact
+ = fma towardzero ibm128 0x4.000008p-128 -0x4.000008p-28 -0x8p+100 : -0x8p+100 : inexact
+ = fma upward ibm128 0x4.000008p-128 -0x4.000008p-28 -0x8p+100 : -0x8p+100 : inexact
++fma 0x1.000008p+0 0x1.000008p+0 0x1p+11
++= fma downward binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01p+8 : inexact
++= fma tonearest binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01p+8 : inexact
++= fma towardzero binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01p+8 : inexact
++= fma upward binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01001p+8 : inexact
++= fma downward binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001p+8 : inexact
++= fma tonearest binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001p+8 : inexact
++= fma towardzero binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001p+8 : inexact
++= fma upward binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000008p+8 : inexact
++= fma downward intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma tonearest intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma towardzero intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma upward intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma downward m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma tonearest m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma towardzero m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma upward m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma downward binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma tonearest binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma towardzero binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma upward binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma downward ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma tonearest ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma towardzero ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
++= fma upward ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+ fma 0x1.7fp+13 0x1.0000000000001p+0 0x1.ffep-48
+ = fma downward binary64 0x2.fep+12 0x1.0000000000001p+0 0x1.ffep-48 : 0x2.fe00000000002p+12 : inexact
+ = fma tonearest binary64 0x2.fep+12 0x1.0000000000001p+0 0x1.ffep-48 : 0x2.fe00000000002p+12 : inexact
+diff --git a/sysdeps/ieee754/dbl-64/s_fma.c b/sysdeps/ieee754/dbl-64/s_fma.c
+index d65d505915216671c233aac7ccd1666b1539c4f2..b9147ae32c99777a2323979fc7343db679506b79 100644
+--- a/sysdeps/ieee754/dbl-64/s_fma.c
++++ b/sysdeps/ieee754/dbl-64/s_fma.c
+@@ -114,7 +114,10 @@ __fma (double x, double y, double z)
+ 	  zhi = nz.m;
+ 	  e = nz.e - 64;
+ 	  d -= 64;
+-	  if (d < 64)
++	  if (d == 0)
++	    /* No further shift of r needed; rhi/rlo are unchanged.  */
++	    ;
++	  else if (d < 64)
+ 	    {
+ 	      rlo = rhi << (64 - d) | rlo >> d | !!(rlo << (64 - d));
+ 	      rhi = rhi >> d;

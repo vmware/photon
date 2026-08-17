@@ -1,7 +1,7 @@
 From e9517114acc77c0b8af9da6700107df16882b701 Mon Sep 17 00:00:00 2001
 From: "H.J. Lu" <hjl.tools@gmail.com>
 Date: Mon, 13 Apr 2026 10:46:42 +0800
-Subject: [PATCH 25/27] abilist.awk: Handle weak unversioned defined symbols
+Subject: [PATCH] abilist.awk: Handle weak unversioned defined symbols
 
 After
 
@@ -43,6 +43,3 @@ index 6cc7af6ac8e1dd1d4cfb84f60949ee8f9b34ad33..7ea1edf8c09d8d1d1e76f973e1cf0363
    type = $3;
    size = $5;
    sub(/^0*/, "", size);
--- 
-2.53.0
-

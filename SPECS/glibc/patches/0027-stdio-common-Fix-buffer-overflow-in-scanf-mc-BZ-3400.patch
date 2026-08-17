@@ -1,8 +1,7 @@
 From 4070d808bea1c077eb7e7d52b52b91cae98205d5 Mon Sep 17 00:00:00 2001
 From: Rocket Ma <marocketbd@gmail.com>
 Date: Fri, 17 Apr 2026 23:48:41 -0700
-Subject: [PATCH 27/27] stdio-common: Fix buffer overflow in scanf %mc [BZ
- #34008]
+Subject: [PATCH] stdio-common: Fix buffer overflow in scanf %mc [BZ #34008]
 
 * stdio-common/vfscanf-internal.c: When enlarging allocated buffer with
 format %mc or %mC, glibc allocates one byte less, leading to
@@ -128,6 +127,3 @@ index 63b9246e4784c4c90d4c0039e0fe748b9da48240..8687150dffe15a9c2df84aaf9b5e25ff
  		    /* Enlarge the buffer.  */
  		    wstr = (wchar_t *) realloc (*strptr,
  						newsize * sizeof (wchar_t));
--- 
-2.53.0
-

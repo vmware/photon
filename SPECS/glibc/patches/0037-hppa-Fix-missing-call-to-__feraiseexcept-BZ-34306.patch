@@ -1,0 +1,40 @@
+From fdf10644d6ee345c7b5277c3fa009c1bedb92d60 Mon Sep 17 00:00:00 2001
+From: John David Anglin <danglin@gcc.gnu.org>
+Date: Tue, 23 Jun 2026 13:41:10 -0400
+Subject: [PATCH] hppa: Fix missing call to __feraiseexcept (BZ 34306)
+
+The feupdateenv function is supposed to raise exceptions after
+installing the environment represented by its envp argument.
+This was accidentally missed on hppa.
+
+The failure to raise exceptions was noticed by the failure of
+the math/test-narrowing-trap test.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+---
+ sysdeps/hppa/fpu/feupdateenv.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/sysdeps/hppa/fpu/feupdateenv.c b/sysdeps/hppa/fpu/feupdateenv.c
+index 397ec7298cb9f2997697d6334ffa4b6fea4a630f..4d7c7f5a37e5b89bf90e0cabe9020bf110e5583b 100644
+--- a/sysdeps/hppa/fpu/feupdateenv.c
++++ b/sysdeps/hppa/fpu/feupdateenv.c
+@@ -24,6 +24,7 @@ __feupdateenv (const fenv_t *envp)
+ {
+   union { unsigned long long l; unsigned int sw[2]; } s;
+   fenv_t temp;
++
+   /* Get the current exception status */
+   __asm__ ("fstd %%fr0,0(%1)	\n\t"
+            "fldd 0(%1),%%fr0	\n\t"
+@@ -46,6 +47,10 @@ __feupdateenv (const fenv_t *envp)
+ 
+   /* Install new environment.  */
+   __fesetenv (&temp);
++
++  /* Raise exceptions.  */
++  __feraiseexcept (temp.__status_word >> 27);
++
+   /* Success.  */
+   return 0;
+ }

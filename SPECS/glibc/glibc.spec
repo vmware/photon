@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.43
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -359,6 +359,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-7
+- sync with 2.43 branch
 * Sat Jun 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.43-6
 - Remove python3-libs from ExtraBR, redundant entry
 * Fri Jun 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.43-5

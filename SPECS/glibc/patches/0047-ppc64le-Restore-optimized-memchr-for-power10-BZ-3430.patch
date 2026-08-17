@@ -1,0 +1,429 @@
+From bc95068f5f9d7f57d0f01757fed0900893b122b8 Mon Sep 17 00:00:00 2001
+From: Sachin Monga <smonga@linux.ibm.com>
+Date: Thu, 23 Jul 2026 10:41:51 -0500
+Subject: [PATCH] ppc64le: Restore optimized memchr for power10 [BZ #34300]
+
+Restore the POWER10 memchr implementation reverted in commit
+a7877bb6685300f159fa095c9f50b22b112cddb8 [BZ #33059], addressing the
+actual cause:
+The non-volatile vector register v20 used as the
+zero vector (M_VREG_ZERO) is replaced with the volatile register v17.
+
+Additionally, the assembler workaround used earlier for the
+instructions lxvp and vextractbm is replaced with actual
+instructions.
+
+(cherry picked from commit c9b5a4a593f24e19c889726f8fca9557962cf974)
+---
+ sysdeps/powerpc/powerpc64/le/power10/memchr.S | 299 ++++++++++++++++++
+ sysdeps/powerpc/powerpc64/multiarch/Makefile  |   2 +-
+ .../powerpc64/multiarch/ifunc-impl-list.c     |   6 +
+ .../powerpc64/multiarch/memchr-power10.S      |  28 ++
+ sysdeps/powerpc/powerpc64/multiarch/memchr.c  |  20 +-
+ 5 files changed, 348 insertions(+), 7 deletions(-)
+ create mode 100644 sysdeps/powerpc/powerpc64/le/power10/memchr.S
+ create mode 100644 sysdeps/powerpc/powerpc64/multiarch/memchr-power10.S
+
+diff --git a/sysdeps/powerpc/powerpc64/le/power10/memchr.S b/sysdeps/powerpc/powerpc64/le/power10/memchr.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..5167a349ca29cff829ee3b4487582982498b10f9
+--- /dev/null
++++ b/sysdeps/powerpc/powerpc64/le/power10/memchr.S
+@@ -0,0 +1,299 @@
++/* Optimized memchr implementation for POWER10 LE.
++   Copyright (C) 2021-2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sysdep.h>
++
++# ifndef MEMCHR
++#  define MEMCHR __memchr
++# endif
++# define M_VREG_ZERO v17
++# define M_OFF_START_LOOP 256
++# define MEMCHR_SUBTRACT_VECTORS \
++	vsububm   v4,v4,v18;	    \
++	vsububm   v5,v5,v18;	    \
++	vsububm   v6,v6,v18;	    \
++	vsububm   v7,v7,v18;
++# define M_TAIL(vreg,increment)	   \
++	vctzlsbb  r4,vreg;	   \
++	cmpld     r5,r4;	   \
++	ble       L(null);	   \
++	addi	  r4,r4,increment; \
++	add	  r3,r6,r4;	   \
++	blr
++
++#define CHECK16B(vreg,offset,addr,label) \
++	lxv	  vreg+32,offset(addr);	\
++	vcmpequb. vreg,vreg,v18;	\
++	bne	  cr6,L(label);		\
++	cmpldi	  r5,16;		\
++	ble	  L(null);		\
++	addi	  r5,r5,-16;
++
++/* Load 4 quadwords, merge into one VR for speed and check for NULLs.  r6 has #
++   of bytes already checked.  */
++#define CHECK64B(offset,addr,label)	    \
++	lxvp      v4+32,offset(addr);	    \
++	lxvp      v6+32,offset+32(addr);    \
++	MEMCHR_SUBTRACT_VECTORS;	    \
++	vminub	  v14,v4,v5;		    \
++	vminub	  v15,v6,v7;		    \
++	vminub	  v16,v14,v15;		    \
++	vcmpequb. v0,v16,M_VREG_ZERO;	    \
++	beq	  cr6,$+12;		    \
++	li	  r7,offset;		    \
++	b     	  L(label);          	    \
++	cmpldi	  r5,64;		    \
++	ble	  L(null);		    \
++	addi	  r5,r5,-64
++
++/* Implements the function
++   void *[r3] memchr (const void *s [r3], int c [r4], size_t n [r5]).  */
++
++	.machine power10
++
++ENTRY_TOCLESS (MEMCHR)
++	CALL_MCOUNT 3
++
++	cmpldi	r5,0
++	beq	L(null)
++	mr	r0,r5
++	xori	r6,r4,0xff
++
++	mtvsrd	v18+32,r4	/* matching char in v18  */
++	mtvsrd	v19+32,r6	/* non matching char in v19  */
++
++	vspltb	v18,v18,7	/* replicate  */
++	vspltb	v19,v19,7	/* replicate  */
++	vspltisb  M_VREG_ZERO,0
++
++	/* Next 16B-aligned address. Prepare address for L(aligned).  */
++	addi	  r6,r3,16
++	clrrdi	  r6,r6,4
++
++	/* Align data and fill bytes not loaded with non matching char.	 */
++	lvx	  v0,0,r3
++	lvsr	  v1,0,r3
++	vperm	  v0,v19,v0,v1
++
++	vcmpequb. v6,v0,v18
++	bne	  cr6,L(found)
++	sub	  r4,r6,r3
++	cmpld	  r5,r4
++	ble	  L(null)
++	sub	  r5,r5,r4
++
++	/* Test up to OFF_START_LOOP-16 bytes in 16B chunks.  The main loop is
++	   optimized for longer strings, so checking the first bytes in 16B
++	   chunks benefits a lot small strings.  */
++	.p2align 5
++L(aligned):
++	cmpldi	r5,0
++	beq     L(null)
++
++	CHECK16B(v0,0,r6,tail1)
++	CHECK16B(v1,16,r6,tail2)
++	CHECK16B(v2,32,r6,tail3)
++	CHECK16B(v3,48,r6,tail4)
++	CHECK16B(v4,64,r6,tail5)
++	CHECK16B(v5,80,r6,tail6)
++	CHECK16B(v6,96,r6,tail7)
++	CHECK16B(v7,112,r6,tail8)
++	CHECK16B(v8,128,r6,tail9)
++	CHECK16B(v9,144,r6,tail10)
++	CHECK16B(v10,160,r6,tail11)
++	CHECK16B(v0,176,r6,tail12)
++	CHECK16B(v1,192,r6,tail13)
++	CHECK16B(v2,208,r6,tail14)
++	CHECK16B(v3,224,r6,tail15)
++
++	cmpdi	cr5,r4,0	/* Check if c == 0.  This will be useful to
++				   choose how we will perform the main loop.  */
++
++	/* Prepare address for the loop.  */
++	addi	  r4,r3,M_OFF_START_LOOP
++	clrrdi	  r4,r4,6
++	sub	  r6,r4,r3
++	sub	  r5,r0,r6
++	addi	  r6,r4,128
++
++	/* If c == 0, use the loop without the vsububm.  */
++	beq	cr5,L(loop)
++
++	/* This is very similar to the block after L(loop), the difference is
++	   that here MEMCHR_SUBTRACT_VECTORS is not empty, and we subtract
++	   each byte loaded by the char we are looking for, this way we can keep
++	   using vminub to merge the results and checking for nulls.  */
++	.p2align 5
++L(memchr_loop):
++	CHECK64B(0,r4,pre_tail_64b)
++	CHECK64B(64,r4,pre_tail_64b)
++	addi	r4,r4,256
++
++	CHECK64B(0,r6,tail_64b)
++	CHECK64B(64,r6,tail_64b)
++	addi	r6,r6,256
++
++	CHECK64B(0,r4,pre_tail_64b)
++	CHECK64B(64,r4,pre_tail_64b)
++	addi	r4,r4,256
++
++	CHECK64B(0,r6,tail_64b)
++	CHECK64B(64,r6,tail_64b)
++	addi	r6,r6,256
++
++	b	L(memchr_loop)
++	/* Switch to a more aggressive approach checking 64B each time.  Use 2
++	   pointers 128B apart and unroll the loop once to make the pointer
++	   updates and usages separated enough to avoid stalls waiting for
++	   address calculation.  */
++	.p2align 5
++L(loop):
++#undef MEMCHR_SUBTRACT_VECTORS
++#define MEMCHR_SUBTRACT_VECTORS /* nothing */
++	CHECK64B(0,r4,pre_tail_64b)
++	CHECK64B(64,r4,pre_tail_64b)
++	addi	  r4,r4,256
++
++	CHECK64B(0,r6,tail_64b)
++	CHECK64B(64,r6,tail_64b)
++	addi	  r6,r6,256
++
++	CHECK64B(0,r4,pre_tail_64b)
++	CHECK64B(64,r4,pre_tail_64b)
++	addi      r4,r4,256
++
++	CHECK64B(0,r6,tail_64b)
++	CHECK64B(64,r6,tail_64b)
++	addi      r6,r6,256
++
++	b	  L(loop)
++
++	.p2align  5
++L(pre_tail_64b):
++	mr	r6,r4
++L(tail_64b):
++	/* OK, we found a null byte.  Let's look for it in the current 64-byte
++	   block and mark it in its corresponding VR.  lxvp vx,0(ry) puts the
++	   low 16B bytes into vx+1, and the high into vx, so the order here is
++	   v5, v4, v7, v6.  */
++	vcmpequb  v1,v5,M_VREG_ZERO
++	vcmpequb  v2,v4,M_VREG_ZERO
++	vcmpequb  v3,v7,M_VREG_ZERO
++	vcmpequb  v4,v6,M_VREG_ZERO
++
++	/* Take into account the other 64B blocks we had already checked.  */
++	add	r6,r6,r7
++	/* Extract first bit of each byte.  */
++	vextractbm r8,v1
++	vextractbm r9,v2
++	vextractbm r10,v3
++	vextractbm r11,v4
++
++	/* Shift each value into their corresponding position.  */
++	sldi	  r9,r9,16
++	sldi	  r10,r10,32
++	sldi	  r11,r11,48
++
++	/* Merge the results.  */
++	or	  r8,r8,r9
++	or	  r9,r10,r11
++	or	  r11,r9,r8
++
++	cnttzd	  r0,r11	  /* Count trailing zeros before the match.  */
++	cmpld     r5,r0
++	ble	  L(null)
++	add	  r3,r6,r0	  /* Compute final address.  */
++	blr
++
++	.p2align  5
++L(tail1):
++	M_TAIL(v0,0)
++
++	.p2align  5
++L(tail2):
++	M_TAIL(v1,16)
++
++	.p2align  5
++L(tail3):
++	M_TAIL(v2,32)
++
++	.p2align  5
++L(tail4):
++	M_TAIL(v3,48)
++
++	.p2align  5
++L(tail5):
++	M_TAIL(v4,64)
++
++	.p2align  5
++L(tail6):
++	M_TAIL(v5,80)
++
++	.p2align  5
++L(tail7):
++	M_TAIL(v6,96)
++
++	.p2align  5
++L(tail8):
++	M_TAIL(v7,112)
++
++	.p2align  5
++L(tail9):
++	M_TAIL(v8,128)
++
++	.p2align  5
++L(tail10):
++	M_TAIL(v9,144)
++
++	.p2align  5
++L(tail11):
++	M_TAIL(v10,160)
++
++	.p2align  5
++L(tail12):
++	M_TAIL(v0,176)
++
++	.p2align  5
++L(tail13):
++	M_TAIL(v1,192)
++
++	.p2align  5
++L(tail14):
++	M_TAIL(v2,208)
++
++	.p2align  5
++L(tail15):
++	M_TAIL(v3,224)
++
++	.p2align  5
++L(found):
++	vctzlsbb  r7,v6
++	cmpld     r5,r7
++	ble       L(null)
++	add       r3,r3,r7
++	blr
++
++	.p2align  5
++L(null):
++	li	r3,0
++	blr
++
++END (MEMCHR)
++
++weak_alias (__memchr, memchr)
++libc_hidden_builtin_def (memchr)
+diff --git a/sysdeps/powerpc/powerpc64/multiarch/Makefile b/sysdeps/powerpc/powerpc64/multiarch/Makefile
+index c9178223a879d0e4ea450d03624016fdc6d5fefb..7a3b34c94b6c4fbbd8986c7754a5e435a1ef9ea8 100644
+--- a/sysdeps/powerpc/powerpc64/multiarch/Makefile
++++ b/sysdeps/powerpc/powerpc64/multiarch/Makefile
+@@ -30,7 +30,7 @@ sysdep_routines += memcpy-power8-cached memcpy-power7 memcpy-a2 memcpy-power6 \
+ 		   strncase-power8
+ 
+ ifneq (,$(filter %le,$(config-machine)))
+-sysdep_routines += memcmp-power10 memcpy-power10 memmove-power10 memset-power10 \
++sysdep_routines += memchr-power10 memcmp-power10 memcpy-power10 memmove-power10 memset-power10 \
+ 		   rawmemchr-power9 rawmemchr-power10 \
+ 		   strcmp-power9 strcmp-power10 strncmp-power9 strncmp-power10 \
+ 		   strcpy-power9 strcat-power10 stpcpy-power9 \
+diff --git a/sysdeps/powerpc/powerpc64/multiarch/ifunc-impl-list.c b/sysdeps/powerpc/powerpc64/multiarch/ifunc-impl-list.c
+index 1458b4575dce75ab080be9b49670e5ba0ec47b13..2e5bd200d8b29af7b9bafc06114daaefcd757d91 100644
+--- a/sysdeps/powerpc/powerpc64/multiarch/ifunc-impl-list.c
++++ b/sysdeps/powerpc/powerpc64/multiarch/ifunc-impl-list.c
+@@ -229,6 +229,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
+ 
+   /* Support sysdeps/powerpc/powerpc64/multiarch/memchr.c.  */
+   IFUNC_IMPL (i, name, memchr,
++#ifdef __LITTLE_ENDIAN__
++	      IFUNC_IMPL_ADD (array, i, memchr,
++		              hwcap2 & PPC_FEATURE2_ARCH_3_1
++			      && hwcap & PPC_FEATURE_HAS_VSX,
++			      __memchr_power10)
++#endif
+ 	      IFUNC_IMPL_ADD (array, i, memchr,
+ 			      hwcap2 & PPC_FEATURE2_ARCH_2_07
+ 			      && hwcap & PPC_FEATURE_HAS_ALTIVEC,
+diff --git a/sysdeps/powerpc/powerpc64/multiarch/memchr-power10.S b/sysdeps/powerpc/powerpc64/multiarch/memchr-power10.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..7347524f9fe33404fe7a09a482a28c3502f4709d
+--- /dev/null
++++ b/sysdeps/powerpc/powerpc64/multiarch/memchr-power10.S
+@@ -0,0 +1,28 @@
++/* Optimized memchr implementation for POWER10/PPC64.
++   Copyright (C) 2021-2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#if defined __LITTLE_ENDIAN__ && IS_IN (libc)
++#define MEMCHR __memchr_power10
++
++#undef libc_hidden_builtin_def
++#define libc_hidden_builtin_def(name)
++#undef weak_alias
++#define weak_alias(name,alias)
++
++#include <sysdeps/powerpc/powerpc64/le/power10/memchr.S>
++#endif
+diff --git a/sysdeps/powerpc/powerpc64/multiarch/memchr.c b/sysdeps/powerpc/powerpc64/multiarch/memchr.c
+index 3761fa5fcb8de1c03c3b3dd01cb3d6169613160e..ef58dc03dde6098a3daf7fee1534a2ffd99eed86 100644
+--- a/sysdeps/powerpc/powerpc64/multiarch/memchr.c
++++ b/sysdeps/powerpc/powerpc64/multiarch/memchr.c
+@@ -25,15 +25,23 @@ extern __typeof (__memchr) __memchr_ppc attribute_hidden;
+ extern __typeof (__memchr) __memchr_power7 attribute_hidden;
+ extern __typeof (__memchr) __memchr_power8 attribute_hidden;
+ 
++# ifdef __LITTLE_ENDIAN__
++extern __typeof (__memchr) __memchr_power10 attribute_hidden;
++# endif
+ /* Avoid DWARF definition DIE on ifunc symbol so that GDB can handle
+    ifunc symbol properly.  */
+ libc_ifunc (__memchr,
+-	    (hwcap2 & PPC_FEATURE2_ARCH_2_07
+-	     && hwcap & PPC_FEATURE_HAS_ALTIVEC)
+-	    ? __memchr_power8 :
+-	    (hwcap & PPC_FEATURE_ARCH_2_06)
+-            ? __memchr_power7
+-            : __memchr_ppc);
++# ifdef __LITTLE_ENDIAN__
++	    (hwcap2 & PPC_FEATURE2_ARCH_3_1
++	     && hwcap & PPC_FEATURE_HAS_VSX)
++	    ? __memchr_power10 :
++# endif
++	      (hwcap2 & PPC_FEATURE2_ARCH_2_07
++	      && hwcap & PPC_FEATURE_HAS_ALTIVEC)
++	      ? __memchr_power8 :
++	        (hwcap & PPC_FEATURE_ARCH_2_06)
++	        ? __memchr_power7
++	        : __memchr_ppc);
+ 
+ weak_alias (__memchr, memchr)
+ libc_hidden_builtin_def (memchr)

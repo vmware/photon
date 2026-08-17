@@ -1,0 +1,57 @@
+From a13ebdbc7e644c0d7ee2b638734799c0d5405fdd Mon Sep 17 00:00:00 2001
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date: Tue, 26 May 2026 22:35:55 +0200
+Subject: [PATCH] Hurd: comment ioctls which cannot currently compile
+
+We don't currently have struct ifreq_short, ifreq_int and ifaliasreq, so
+don't let applications even try to compile these.
+
+(cherry picked from commit 707311226345f87ce6a1536a7d7365ce34b236b3)
+---
+ sysdeps/mach/hurd/bits/ioctls.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/sysdeps/mach/hurd/bits/ioctls.h b/sysdeps/mach/hurd/bits/ioctls.h
+index 151761ef6634de1ef98c98fb678384cd5fa05ea6..4588f813fb089c165b5182afecf04f8ecc3bff31 100644
+--- a/sysdeps/mach/hurd/bits/ioctls.h
++++ b/sysdeps/mach/hurd/bits/ioctls.h
+@@ -293,8 +293,8 @@ enum __ioctl_datum { IOC_8, IOC_16, IOC_32, IOC_64 };
+ #define	SIOCSIFDSTADDR	_IOW('i', 14, struct ifreq)	/* set p-p address */
+ #define	OSIOCGIFDSTADDR	_IOWR('i',15, struct ifreq)	/* get p-p address */
+ #define	SIOCGIFDSTADDR	_IOWR('i',34, struct ifreq)	/* get p-p address */
+-#define	SIOCSIFFLAGS	_IOW('i', 16, struct ifreq_short)/* set ifnet flags */
+-#define	SIOCGIFFLAGS	_IOWR('i',17, struct ifreq_short)/* get ifnet flags */
++/* #define	SIOCSIFFLAGS	_IOW('i', 16, struct ifreq_short) set ifnet flags */
++/* #define	SIOCGIFFLAGS	_IOWR('i',17, struct ifreq_short) get ifnet flags */
+ #define	OSIOCGIFBRDADDR	_IOWR('i',18, struct ifreq)	/* get broadcast addr */
+ #define	SIOCGIFBRDADDR	_IOWR('i',35, struct ifreq)	/* get broadcast addr */
+ #define	SIOCSIFBRDADDR	_IOW('i',19, struct ifreq)	/* set broadcast addr */
+@@ -303,21 +303,21 @@ enum __ioctl_datum { IOC_8, IOC_16, IOC_32, IOC_64 };
+ #define	OSIOCGIFNETMASK	_IOWR('i',21, struct ifreq)	/* get net addr mask */
+ #define	SIOCGIFNETMASK	_IOWR('i',37, struct ifreq)	/* get net addr mask */
+ #define	SIOCSIFNETMASK	_IOW('i',22, struct ifreq)	/* set net addr mask */
+-#define	SIOCGIFMETRIC	_IOWR('i',23, struct ifreq_int)	/* get IF metric */
+-#define	SIOCSIFMETRIC	_IOW('i',24, struct ifreq_int)	/* set IF metric */
++/* #define	SIOCGIFMETRIC	_IOWR('i',23, struct ifreq_int)	 get IF metric */
++/* #define	SIOCSIFMETRIC	_IOW('i',24, struct ifreq_int)	 set IF metric */
+ #define	SIOCDIFADDR	_IOW('i',25, struct ifreq)	/* delete IF addr */
+-#define	SIOCAIFADDR	_IOW('i',26, struct ifaliasreq)	/* add/chg IF alias */
++/* #define	SIOCAIFADDR	_IOW('i',26, struct ifaliasreq)	 add/chg IF alias */
+ 
+ #define	SIOCSARP	_IOW('i', 30, struct arpreq)	/* set arp entry */
+ #define	OSIOCGARP	_IOWR('i',31, struct arpreq)	/* get arp entry */
+ #define	SIOCGARP	_IOWR('i',38, struct arpreq)	/* get arp entry */
+ #define	SIOCDARP	_IOW('i', 32, struct arpreq)	/* delete arp entry */
+ 
+-#define SIOCGIFMTU	_IOWR('i', 51, struct ifreq_int)/* get IF mtu */
+-#define SIOCSIFMTU	_IOW('i', 52, struct ifreq_int)	/* set IF mtu */
++/* #define SIOCGIFMTU	_IOWR('i', 51, struct ifreq_int) get IF mtu */
++/* #define SIOCSIFMTU	_IOW('i', 52, struct ifreq_int)	 set IF mtu */
+ 
+-#define SIOCGIFINDEX	_IOWR('i', 90, struct ifreq_int)/* get IF index */
+-#define SIOCGIFNAME	_IOWR('i', 91, struct ifreq_int)/* set IF name */
++/* #define SIOCGIFINDEX	_IOWR('i', 90, struct ifreq_int) get IF index */
++/* #define SIOCGIFNAME	_IOWR('i', 91, struct ifreq_int) set IF name */
+ 
+ 
+ /* Compatibility with 4.3 BSD terminal driver.

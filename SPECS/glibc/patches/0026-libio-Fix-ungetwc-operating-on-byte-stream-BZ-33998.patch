@@ -1,7 +1,7 @@
 From 2890b35cd361df2517525bf2c5f8c63f6f0d4a20 Mon Sep 17 00:00:00 2001
 From: Rocket Ma <marocketbd@gmail.com>
 Date: Fri, 1 May 2026 20:39:07 -0700
-Subject: [PATCH 26/27] libio: Fix ungetwc operating on byte stream [BZ #33998]
+Subject: [PATCH] libio: Fix ungetwc operating on byte stream [BZ #33998]
 
 * libio/wgenops.c: When _IO_wdefault_pbackfail attempts to push back one
 character, it accidently compare the wchar to push back with the last
@@ -106,6 +106,3 @@ index 7a8466ea44387a2cb9697651dc5e0474e392bbd2..7c47459828bdafe547cc0c6273daaabe
    else
      {
        /* Need to handle a filebuf in write mode (switch to read mode). FIXME!*/
--- 
-2.53.0
-

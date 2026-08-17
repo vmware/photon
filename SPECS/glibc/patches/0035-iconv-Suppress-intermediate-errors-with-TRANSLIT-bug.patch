@@ -1,0 +1,122 @@
+From fe0ccc9564c3476f7171cb005884560da0699773 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 9 Jun 2026 07:28:02 +0200
+Subject: [PATCH] iconv: Suppress intermediate errors with //TRANSLIT (bug
+ 34236)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When tentatively converting characters on behalf of
+__gconv_transliterate, do not create a persistent error.  Just
+produce a local error, and rely on __gconv_transliterate to
+produce the error if all transliteration options are exhausted.
+
+This fixes transliteration of “½” to ASCII, which cannot use the
+“ 1⁄2 ” alternative.  Eventually, the “ 1/2 ” alternative is chosen,
+but the error sticks.  Therefore, iconv exited with status 1 before
+this change.
+
+Adjust iconv/tst-iconv_prog.sh to test both C and en_US.UTF-8 locales.
+This requires changing the way the ICONV template is defined, so that
+run_program_env is evaluated multiple times.
+
+Fixes commit 9a4b0eaf726f5404c6683d5c7c5e86f61c3f3fbc ("iconv: do not
+report error exit with transliteration [BZ #32448]"),
+commit 6cbf845fcdc76131d0e674cee454fe738b69c69d ("iconv: Preserve
+iconv -c error exit on invalid inputs (bug 32046)"), and bug 34236.
+
+Reviewed-by: Aurelien Jarno <aurelien@aurel32.net>
+(cherry picked from commit e9325bd7d04aacc45cf39505e279b1ca9de22c08)
+---
+ iconv/Makefile          |  3 ++-
+ iconv/loop.c            |  6 ++++--
+ iconv/tst-iconv_prog.sh | 30 ++++++++++++++++++++----------
+ 3 files changed, 26 insertions(+), 13 deletions(-)
+
+diff --git a/iconv/Makefile b/iconv/Makefile
+index 51ffab9efc2ae8093bac0f4b1ff599bfc624d670..69555cbe57935f9bbb8f85bca735742d7d596396 100644
+--- a/iconv/Makefile
++++ b/iconv/Makefile
+@@ -139,7 +139,8 @@ $(objpfx)test-iconvconfig.out: $(objpfx)iconvconfig
+ 	 rm -f $$tmp) > $@; \
+ 	$(evaluate-test)
+ 
+-$(objpfx)tst-iconv_prog.out: tst-iconv_prog.sh $(objpfx)iconv_prog
++$(objpfx)tst-iconv_prog.out: tst-iconv_prog.sh $(objpfx)iconv_prog \
++  $(gen-locales)
+ 	$(BASH) $< $(common-objdir) '$(test-wrapper-env)' \
+ 		 '$(run-program-env)' '$(rpath-link)' > $@; \
+ 	$(evaluate-test)
+diff --git a/iconv/loop.c b/iconv/loop.c
+index 27dea1f5d6b39a446a037478f15b4579660839c7..81841d0d2d8a500993600434e7b50985956362cb 100644
+--- a/iconv/loop.c
++++ b/iconv/loop.c
+@@ -144,8 +144,10 @@
+     if (irreversible == NULL)						      \
+       {									      \
+ 	/* This means we are in call from __gconv_transliterate.  In this     \
+-	   case we are not doing any error recovery ourselves.  */	      \
+-	result = __gconv_mark_illegal_input (step_data);		      \
++	   case we are not doing any error recovery ourselves.  Do not create \
++	   a persistent error state.  If __gconv_transliterate exhausts all   \
++	   alternatives, it will call __gconv_mark_illegal_input itself.  */  \
++	result = __GCONV_ILLEGAL_INPUT;					      \
+ 	break;								      \
+       }									      \
+ 									      \
+diff --git a/iconv/tst-iconv_prog.sh b/iconv/tst-iconv_prog.sh
+index f6c7c265a84cd6278f45440bf07ee31b55a614a9..ab6e14c68521937c85d742c8e8c578445bcff90e 100644
+--- a/iconv/tst-iconv_prog.sh
++++ b/iconv/tst-iconv_prog.sh
+@@ -29,10 +29,10 @@ LIBPATH=$codir:$codir/iconvdata
+ 
+ # How the start the iconv(1) program.  $from is not defined/expanded yet.
+ ICONV='
++$test_wrapper_env $run_program_env
+ $codir/elf/ld.so --library-path $library_path:$LIBPATH --inhibit-rpath ${from}.so
+ $codir/iconv/iconv_prog
+ '
+-ICONV="$test_wrapper_env $run_program_env $ICONV"
+ 
+ TIMEOUTFACTOR=${TIMEOUTFACTOR:-1}
+ 
+@@ -220,6 +220,7 @@ testarray=(
+ "\x00\x00;;INVALID;UTF-8;1"
+ "\x00\x00;;UTF-8;INVALID;1"
+ "\xc3\xa9;;UTF-8;ASCII//TRANSLIT;0"
++"X\xc2\xbdY;;UTF-8;ASCII//TRANSLIT;0"
+ )
+ 
+ # Requires $twobyte input, $c flag, $from, and $to to be set; sets $ret
+@@ -280,12 +281,21 @@ check_errtest_result ()
+   fi
+ }
+ 
+-for testcommand in "${testarray[@]}"; do
+-  twobyte="$(echo "$testcommand" | cut -d";" -f 1)"
+-  c="$(echo "$testcommand" | cut -d";" -f 2)"
+-  from="$(echo "$testcommand" | cut -d";" -f 3)"
+-  to="$(echo "$testcommand" | cut -d";" -f 4)"
+-  eret="$(echo "$testcommand" | cut -d";" -f 5)"
+-  execute_test
+-  check_errtest_result
+-done
++run_test_array ()
++{
++  for testcommand in "${testarray[@]}"; do
++    twobyte="$(echo "$testcommand" | cut -d";" -f 1)"
++    c="$(echo "$testcommand" | cut -d";" -f 2)"
++    from="$(echo "$testcommand" | cut -d";" -f 3)"
++    to="$(echo "$testcommand" | cut -d";" -f 4)"
++    eret="$(echo "$testcommand" | cut -d";" -f 5)"
++    execute_test
++    check_errtest_result
++  done
++}
++
++echo "info: testing C locale"
++run_test_array
++echo "info: testing en_US.UTF-8 locale"
++run_program_env="$run_program_env LC_ALL=en_US.UTF-8"
++run_test_array

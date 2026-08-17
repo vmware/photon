@@ -1,0 +1,41 @@
+From 89cbf46693714064a57e3ae76381baf8f3ba8368 Mon Sep 17 00:00:00 2001
+From: Sam James <sam@gentoo.org>
+Date: Sat, 6 Jun 2026 20:32:27 +0100
+Subject: [PATCH] elf: don't clobber ld.so.conf in
+ tst-glibc-hwcaps-prepend-cache [BZ #34210]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+dbe5065f2166be20e57a24f246a40d50e001a05d and ae589cb84df10825fc545a45c7007a5f79409bf1
+cater for setups where ld.so.conf{,.d} is required to find runtime support
+libraries, but tst-glibc-hwcaps-prepend-cache clobbers the created ld.so.conf
+with its own entry.
+
+Fix it to instead use the ld.so.conf.d created in ae589cb84df10825fc545a45c7007a5f79409bf1
+to co-exist with existing entries.
+
+Bug: https://bugs.gentoo.org/976773
+Bug: https://sourceware.org/bugzilla/show_bug.cgi?id=31901
+Bug: https://sourceware.org/bugzilla/show_bug.cgi?id=34210
+Tested-by: Andreas K. Hüttel <dilfridge@gentoo.org>
+Reported-by: Eli Schwartz <eschwartz@gentoo.org>
+Reviewed-by: Andreas K. Hüttel <dilfridge@gentoo.org>
+(cherry picked from commit d0cc9bf859d0434e397530d75a6507f13db79fba)
+---
+ elf/tst-glibc-hwcaps-prepend-cache.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/elf/tst-glibc-hwcaps-prepend-cache.c b/elf/tst-glibc-hwcaps-prepend-cache.c
+index 8a80ceed3e5aaa4cf5d0bc6604b014f0b26f4dde..98bd1ef99e0fdd9db39ac9fecb65676db73f95a4 100644
+--- a/elf/tst-glibc-hwcaps-prepend-cache.c
++++ b/elf/tst-glibc-hwcaps-prepend-cache.c
+@@ -46,7 +46,7 @@ do_test (void)
+ 
+   {
+     /* Install the default implementation of libmarkermod1.so.  */
+-    char *conf_path = xasprintf ("%s/ld.so.conf", support_sysconfdir_prefix);
++    char *conf_path = xasprintf ("%s/ld.so.conf.d/hwcaps.conf", support_sysconfdir_prefix);
+     xmkdirp (support_sysconfdir_prefix, 0777);
+     support_write_file_string (conf_path, "/glibc-test/lib\n");
+     free (conf_path);

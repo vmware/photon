@@ -1,0 +1,74 @@
+From 1d7d1a16b0f60b37d868e6727dcfc57ae4f2bc5a Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 19 Jun 2026 18:22:20 +0200
+Subject: [PATCH] resolv: Fix ns_sprintrrf formatting of class, type values
+ (bug 34289)
+
+The p_class and p_type results could overwrite each other if both
+were unknown.  Format unknown values with CLASS and TYPE prefixes,
+as in RFC 3597.  Handle A6 separately because it cannot be added
+to __p_type_syms for ABI reasons.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Reviewed-by: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+(cherry picked from commit f69b7f95e3694177546faec25d88bb266885c3b8)
+---
+ resolv/ns_print.c | 38 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 33 insertions(+), 5 deletions(-)
+
+diff --git a/resolv/ns_print.c b/resolv/ns_print.c
+index cef2212fd24b772b7b480a9d77132bfa6464c106..e75c39eaa8a89e0a2b5d30c52bdf9aa85de23ea5 100644
+--- a/resolv/ns_print.c
++++ b/resolv/ns_print.c
+@@ -78,6 +78,24 @@ ns_sprintrr(const ns_msg *handle, const ns_rr *rr,
+ }
+ libresolv_hidden_def (ns_sprintrr)
+ 
++/* Writes the class/type symbol NUMBER to *BUF, using the name from
++   *SYMS if possible.  If NUMBER is not found in *SYMS, print the
++   number with PREFIX.  */
++static int
++addsym (const struct res_sym *syms, int number, const char *prefix,
++	char **buf, size_t *buflen)
++{
++  for (; syms->name != NULL; syms++)
++    if (number == syms->number)
++      {
++	T (addstr (" ", 1, buf, buflen));
++	return addstr (syms->name, strlen (syms->name), buf, buflen);
++      }
++  char tmp[20];
++  int len = snprintf (tmp, sizeof (tmp), " %s%d", prefix, number);
++  return addstr (tmp, len, buf, buflen);
++}
++
+ /*%
+  *	Convert the fields of an RR into presentation format.
+  *
+@@ -128,11 +146,21 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
+ 	/*
+ 	 * TTL, Class, Type.
+ 	 */
+-	T(x = ns_format_ttl(ttl, buf, buflen));
+-	addlen(x, &buf, &buflen);
+-	len = SPRINTF((tmp, " %s %s", p_class(class), p_type(type)));
+-	T(addstr(tmp, len, &buf, &buflen));
+-	T(spaced = addtab(x + len, 16, spaced, &buf, &buflen));
++	{
++	  char *start = buf;
++
++	  T (x = ns_format_ttl (ttl, buf, buflen));
++	  addlen (x, &buf, &buflen);
++	  T (addsym (__p_class_syms, class, "CLASS", &buf, &buflen));
++	  if (type == ns_t_a6)
++	    /* A6 is not part of __p_type_syms, which is exported.
++	       Adding A6 there would change its size.  Handle it here.  */
++	    T (addstr (" A6", 3, &buf, &buflen));
++	  else
++	    T (addsym (__p_type_syms, type, "TYPE", &buf, &buflen));
++
++	  T (spaced = addtab(buf - start, 16, spaced, &buf, &buflen));
++	}
+ 
+ 	/*
+ 	 * RData.

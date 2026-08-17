@@ -1,0 +1,403 @@
+From a6fa9a95949e3a24c09590a61e96f500e9c75c43 Mon Sep 17 00:00:00 2001
+From: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Date: Wed, 13 May 2026 08:32:24 -0300
+Subject: [PATCH] arm: Save/restore VFP registers in PLT trampolines (BZ 34144,
+ BZ 15792)
+
+_dl_runtime_resolve and _dl_runtime_profile only preserved the integer
+argument registers (r0-r3) across the inner call to _dl_fixup /
+_dl_profile_fixup.  Two related ABI requirements demand more:
+
+  * Under AAPCS-VFP, d0-d7 hold the caller's double arguments to the
+    function being resolved.  Recent GCC emits VFP instructions inside
+    the fixup routines, clobbering them, so the resolved function sees
+    corrupted arguments (BZ 34144).
+
+  * Per RTABI32, the __aeabi_mem* helpers (and similar runtime helpers
+    reachable through the dynamic linker) must only corrupt integer
+    core registers.  IFUNC resolvers, audit modules, and interposed
+    malloc invoked during symbol resolution may also use VFP, even on
+    softfp ABI builds (BZ 15792).
+
+Save all call-clobbered VFP state -- d0-d15 unconditionally, d16-d31
+when HWCAP_ARM_VFPD32 is set, and fpscr -- around the inner fixup
+call.  Whether VFP is usable is a property of the hardware, not of
+the ABI glibc was built with, so the decision is gated on AT_HWCAP at
+runtime in both hardfp and softfp builds; hardfp builds will always
+find HWCAP_ARM_VFP set, while softfp builds running on a non-VFP CPU
+correctly skip the save.
+
+For _dl_runtime_profile the save area is slipped in just before the
+bl to _dl_profile_fixup; the outgoing framesizep argument is
+recomputed to account for the extra frame, and both the fast path
+(no audit framesize) and the slow path (audit wraps with
+pltenter/pltexit) traverse the restore before splitting.
+
+Checked on arm-linux-gnueabihf.
+
+Tested-by: Aurelien Jarno <aurelien@aurel32.net>
+Reviewed-by: Wilco Dijkstra  <Wilco.Dijkstra@arm.com>
+(cherry picked from commit 1111fbdd3e7ebed402800bc23e67055eaae0d972)
+---
+ sysdeps/arm/Makefile               |  19 +++++
+ sysdeps/arm/dl-trampoline.S        | 110 +++++++++++++++++++++++++++--
+ sysdeps/arm/tst-bz34144-audit.c    |  32 +++++++++
+ sysdeps/arm/tst-bz34144-auditmod.c |  50 +++++++++++++
+ sysdeps/arm/tst-bz34144-mod.c      |  28 ++++++++
+ sysdeps/arm/tst-bz34144.c          |  32 +++++++++
+ 6 files changed, 266 insertions(+), 5 deletions(-)
+ create mode 100644 sysdeps/arm/tst-bz34144-audit.c
+ create mode 100644 sysdeps/arm/tst-bz34144-auditmod.c
+ create mode 100644 sysdeps/arm/tst-bz34144-mod.c
+ create mode 100644 sysdeps/arm/tst-bz34144.c
+
+diff --git a/sysdeps/arm/Makefile b/sysdeps/arm/Makefile
+index d08dade3c5befde9cbe38b4fdc63ba55df3e055d..0bb1b6e05be30a267bf63fc85b7734976829a5a6 100644
+--- a/sysdeps/arm/Makefile
++++ b/sysdeps/arm/Makefile
+@@ -30,6 +30,25 @@ $(objpfx)tst-armtlsdescloc: $(objpfx)tst-armtlsdesclocmod.so
+ $(objpfx)tst-armtlsdescextnow: $(objpfx)tst-armtlsdescextnowmod.so
+ $(objpfx)tst-armtlsdescextlazy: $(objpfx)tst-armtlsdescextlazymod.so
+ endif
++
++tests += \
++  tst-bz34144 \
++  tst-bz34144-audit \
++  # tests
++modules-names += \
++  tst-bz34144-auditmod \
++  tst-bz34144-mod \
++  # modules-names
++$(objpfx)tst-bz34144: $(objpfx)tst-bz34144-mod.so
++$(objpfx)tst-bz34144-audit: $(objpfx)tst-bz34144-mod.so
++$(objpfx)tst-bz34144-audit.out: $(objpfx)tst-bz34144-auditmod.so
++# Use lazy binding to check if _dl_runtime_resolve correctly save/restore
++# the VFP state.
++LDFLAGS-tst-bz34144 = -Wl,-z,lazy
++# With LD_AUDIT, lazy resolution goes through _dl_runtime_profile, which
++# must also save/restore VFP state (BZ 34144).
++LDFLAGS-tst-bz34144-audit = -Wl,-z,lazy
++tst-bz34144-audit-ENV = LD_AUDIT=$(objpfx)tst-bz34144-auditmod.so
+ endif
+ endif
+ 
+diff --git a/sysdeps/arm/dl-trampoline.S b/sysdeps/arm/dl-trampoline.S
+index eb6d464384dd800d00d908a898411b56fcc92186..88d6824e52f5939a2e5088d0369eadbd97b6cfb2 100644
+--- a/sysdeps/arm/dl-trampoline.S
++++ b/sysdeps/arm/dl-trampoline.S
+@@ -20,6 +20,7 @@
+ #define NO_THUMB
+ #include <sysdep.h>
+ #include <libc-symbols.h>
++#include <rtld-global-offsets.h>
+ 
+ 	.text
+ 	.globl _dl_runtime_resolve
+@@ -36,13 +37,40 @@ _dl_runtime_resolve:
+ 	@	ip contains &GOT[n+3] (pointer to function)
+ 	@	lr points to &GOT[2]
+ 
+-	@ Save arguments.  We save r4 to realign the stack.
++	@ Save arguments.  We save r4 to realign the stack and to hold
++	@ the hwcap value used to decide whether to save VFP registers.
+ 	push	{r0-r4}
+ 	cfi_adjust_cfa_offset (20)
+ 	cfi_rel_offset (r0, 0)
+ 	cfi_rel_offset (r1, 4)
+ 	cfi_rel_offset (r2, 8)
+ 	cfi_rel_offset (r3, 12)
++	cfi_rel_offset (r4, 16)
++
++#ifdef SHARED
++	@ Preserve all call-clobbered VFP registers across _dl_fixup.
++	@ VFP may be used by IFUNC resolvers, audit modules, interposed
++	@ malloc, and the __aeabi_mem* helpers required by RTABI32,
++	@ which mandates that those helpers only corrupt integer core
++	@ registers.
++	LDR_GLOBAL (r4, r3, C_SYMBOL_NAME(_rtld_global_ro), \
++		    RTLD_GLOBAL_RO_DL_HWCAP_OFFSET)
++
++	tst	r4, #HWCAP_ARM_VFP
++	beq	.Lno_vfp_save
++
++# define VFP_STACK_REQ (32*8 + 8)
++	sub	sp, sp, VFP_STACK_REQ
++	cfi_adjust_cfa_offset (VFP_STACK_REQ)
++	mov	r3, sp
++	.inst	0xeca30b20	@ vstmia r3!, {d0-d15}
++	tst	r4, #HWCAP_ARM_VFPD32
++	beq	1f
++	.inst	0xece30b20	@ vstmia r3!, {d16-d31}
++1:	.inst	0xeef12a10	@ vmrs r2, fpscr
++	str	r2, [r3]
++.Lno_vfp_save:
++#endif /* SHARED */
+ 
+ 	@ get pointer to linker struct
+ 	ldr	r0, [lr, #-4]
+@@ -59,8 +87,23 @@ _dl_runtime_resolve:
+ 	@ save the return
+ 	mov	ip, r0
+ 
+-	@ get arguments and return address back.  We restore r4
+-	@ only to realign the stack.
++#ifdef SHARED
++	tst	r4, #HWCAP_ARM_VFP
++	beq	.Lno_vfp_restore
++	mov	r3, sp
++	.inst	0xecb30b20	@ vldmia r3!, {d0-d15}
++	tst	r4, #HWCAP_ARM_VFPD32
++	beq	2f
++	.inst	0xecf30b20	@ vldmia r3!, {d16-d31}
++2:	ldr	r2, [r3]
++	.inst	0xeee12a10	@ vmsr fpscr, r2
++	add	sp, sp, VFP_STACK_REQ
++	cfi_adjust_cfa_offset (-VFP_STACK_REQ)
++.Lno_vfp_restore:
++#endif /* SHARED */
++
++	@ get arguments and return address back.  We restore r4 to
++	@ its original value as well.
+ 	pop	{r0-r4,lr}
+ 	cfi_adjust_cfa_offset (-24)
+ 
+@@ -124,14 +167,71 @@ _dl_runtime_profile:
+ 	add	r3, sp, #8
+ 	stmia	r3!, {r0,r1}
+ 
++	@ Preserve all call-clobbered VFP registers across
++	@ _dl_profile_fixup.  See the matching comment in
++	@ _dl_runtime_resolve above for the rationale (BZ 34144,
++	@ BZ 15792).
++	@
++	@ Stack layout below the current sp (which becomes the new sp
++	@ after the sub):
++	@   sp +  0 ..   3: outgoing arg (framesizep) for _dl_profile_fixup
++	@   sp +  4 ..   7: saved hwcap (so we can test it after the call)
++	@   sp +  8 ..  11: saved r2 (used as scratch for LDR_GLOBAL)
++	@   sp + 12 ..  15: padding (for 8-byte alignment of the VFP area)
++	@   sp + 16 .. 16+VFP_STACK_REQ-1: VFP regs + fpscr
++#define VFP_PROFILE_STACK (16 + VFP_STACK_REQ)
++	sub	sp, sp, #VFP_PROFILE_STACK
++	cfi_adjust_cfa_offset (VFP_PROFILE_STACK)
++
++	@ r2 holds the retaddr (3rd arg to _dl_profile_fixup); spill
++	@ it so we can use it as the LDR_GLOBAL destination.
++	str	r2, [sp, #8]
++
++	LDR_GLOBAL (r2, ip, C_SYMBOL_NAME(_rtld_global_ro), \
++		    RTLD_GLOBAL_RO_DL_HWCAP_OFFSET)
++	str	r2, [sp, #4]
++
++	tst	r2, #HWCAP_ARM_VFP
++	beq	.Lprofile_no_vfp_save
++	add	ip, sp, #16
++	.inst	0xecac0b20	@ vstmia ip!, {d0-d15}
++	tst	r2, #HWCAP_ARM_VFPD32
++	beq	7f
++	.inst	0xecec0b20	@ vstmia ip!, {d16-d31}
++7:	.inst	0xeef12a10	@ vmrs r2, fpscr
++	str	r2, [ip]
++.Lprofile_no_vfp_save:
++
++	@ Restore r2 (retaddr) for _dl_profile_fixup.
++	ldr	r2, [sp, #8]
++
+ 	@ Set up extra args for _dl_profile_fixup.
+-	@ r2 and r3 are already loaded.
+-	add	ip, sp, #208
++	@ The framesize slot is at the old sp+208, which is the new
++	@ sp + VFP_PROFILE_STACK + 208 -- compute in two steps because
++	@ the combined offset is not encodable as an ARM immediate.
++	add	ip, sp, #VFP_PROFILE_STACK
++	add	ip, ip, #208
+ 	str	ip, [sp, #0]
+ 
+ 	@ call profiling fixup routine
+ 	bl	_dl_profile_fixup
+ 
++	@ Restore VFP registers.  r0 holds the resolved function
++	@ address; r1/r2/ip are caller-saved by the call.
++	ldr	r1, [sp, #4]
++	tst	r1, #HWCAP_ARM_VFP
++	beq	.Lprofile_no_vfp_restore
++	add	ip, sp, #16
++	.inst	0xecbc0b20	@ vldmia ip!, {d0-d15}
++	tst	r1, #HWCAP_ARM_VFPD32
++	beq	8f
++	.inst	0xecfc0b20	@ vldmia ip!, {d16-d31}
++8:	ldr	r2, [ip]
++	.inst	0xeee12a10	@ vmsr fpscr, r2
++.Lprofile_no_vfp_restore:
++	add	sp, sp, #VFP_PROFILE_STACK
++	cfi_adjust_cfa_offset (-VFP_PROFILE_STACK)
++
+ 	@ The address to call is now in r0.
+ 
+ 	@ Check whether we're wrapping this function.
+diff --git a/sysdeps/arm/tst-bz34144-audit.c b/sysdeps/arm/tst-bz34144-audit.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..8f1084fa0afe2b7d968ff3885ba6f5868d0125bd
+--- /dev/null
++++ b/sysdeps/arm/tst-bz34144-audit.c
+@@ -0,0 +1,32 @@
++/* Test that lazy PLT resolution via _dl_runtime_profile preserves
++   caller-saved VFP registers used to pass double arguments (BZ 34144).
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <support/test-driver.h>
++
++extern void test_float_args (double a, double b, double c, double d,
++			     double e, double f, double g, double h);
++
++static int
++do_test (void)
++{
++  test_float_args (2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
++  return 0;
++}
++
++#include <support/test-driver.c>
+diff --git a/sysdeps/arm/tst-bz34144-auditmod.c b/sysdeps/arm/tst-bz34144-auditmod.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..ada9f126c28d1fe7ef9469f425d16ac26718b27f
+--- /dev/null
++++ b/sysdeps/arm/tst-bz34144-auditmod.c
+@@ -0,0 +1,50 @@
++/* Minimal audit module used by tst-bz34144-audit to force PLT calls
++   to go through _dl_runtime_profile instead of _dl_runtime_resolve.
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <link.h>
++#include <stddef.h>
++#include <stdint.h>
++
++unsigned int
++la_version (unsigned int v)
++{
++  return v;
++}
++
++unsigned int
++la_objopen (struct link_map *l, Lmid_t lmid, uintptr_t *cookie)
++{
++  return LA_FLG_BINDFROM | LA_FLG_BINDTO;
++}
++
++uintptr_t
++la_symbind32 (Elf32_Sym *sym, unsigned int ndx, uintptr_t *refcook,
++	      uintptr_t *defcook, unsigned int *flags, const char *symname)
++{
++  return sym->st_value;
++}
++
++Elf32_Addr
++la_arm_gnu_pltenter (Elf32_Sym *sym, unsigned int ndx, uintptr_t *refcook,
++		     uintptr_t *defcook, La_arm_regs *regs,
++		     unsigned int *flags, const char *symname,
++		     long int *framesizep)
++{
++  return sym->st_value;
++}
+diff --git a/sysdeps/arm/tst-bz34144-mod.c b/sysdeps/arm/tst-bz34144-mod.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..be6b54bf91d91bc550c97c1858ca3c474bc6611a
+--- /dev/null
++++ b/sysdeps/arm/tst-bz34144-mod.c
+@@ -0,0 +1,28 @@
++/* DSO used by tst-bz34144.
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <stdlib.h>
++
++void
++test_float_args (double a, double b, double c, double d,
++		 double e, double f, double g, double h)
++{
++  if (a != 2.0 || b != 3.0 || c != 4.0 || d != 5.0
++      || e != 6.0 || f != 7.0 || g != 8.0 || h != 9.0)
++    abort ();
++}
+diff --git a/sysdeps/arm/tst-bz34144.c b/sysdeps/arm/tst-bz34144.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..61e41b3945cd2eca1b7e385e12fd5e0c722187bb
+--- /dev/null
++++ b/sysdeps/arm/tst-bz34144.c
+@@ -0,0 +1,32 @@
++/* Test that lazy PLT resolution preserves caller-saved VFP registers
++   used to pass double arguments (BZ 34144).
++   Copyright (C) 2026 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <support/test-driver.h>
++
++extern void test_float_args (double a, double b, double c, double d,
++			     double e, double f, double g, double h);
++
++static int
++do_test (void)
++{
++  test_float_args (2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
++  return 0;
++}
++
++#include <support/test-driver.c>

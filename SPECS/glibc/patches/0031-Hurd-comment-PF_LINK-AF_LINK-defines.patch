@@ -1,0 +1,35 @@
+From ced45fd472eb77e66cf9dea169ee7b1fa5cf8d78 Mon Sep 17 00:00:00 2001
+From: Pino Toscano <toscano.pino@tiscali.it>
+Date: Tue, 26 May 2026 22:27:02 +0200
+Subject: [PATCH] Hurd: comment PF_LINK/AF_LINK defines
+
+Comment out the PF_LINK and AF_LINK defines, since they are usually associated
+with struct sockaddr_dl, which is not available on Hurd.
+
+(cherry picked from commit 59a0de89ba28028f5ec3f32c1da648a0d6f1dfc5)
+---
+ sysdeps/mach/hurd/bits/socket.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sysdeps/mach/hurd/bits/socket.h b/sysdeps/mach/hurd/bits/socket.h
+index 9b81d48816e8b6ceda72a5a62c13e79758b5327d..4a5807e61971b3f300c5355b0c91a6f575cbf2e5 100644
+--- a/sysdeps/mach/hurd/bits/socket.h
++++ b/sysdeps/mach/hurd/bits/socket.h
+@@ -96,7 +96,7 @@ enum __socket_type
+ #define	PF_HYLINK	15	/* NSC Hyperchannel protocol.  */
+ #define	PF_APPLETALK	16	/* Don't use this.  */
+ #define	PF_ROUTE	17	/* Internal Routing Protocol.  */
+-#define	PF_LINK		18	/* Link layer interface.  */
++/* #define	PF_LINK		18	Link layer interface.  */
+ #define	PF_XTP		19	/* eXpress Transfer Protocol (no AF).  */
+ #define	PF_COIP		20	/* Connection-oriented IP, aka ST II.  */
+ #define	PF_CNT		21	/* Computer Network Technology.  */
+@@ -129,7 +129,7 @@ enum __socket_type
+ #define	AF_HYLINK	PF_HYLINK
+ #define	AF_APPLETALK	PF_APPLETALK
+ #define	AF_ROUTE	PF_ROUTE
+-#define	AF_LINK		PF_LINK
++/* #define	AF_LINK		PF_LINK */
+ #ifdef __USE_MISC
+ # define	pseudo_AF_XTP	PF_XTP
+ #endif
