@@ -5,8 +5,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.14.5
-Release:        5%{?dist}
+Version:        3.14.7
+Release:        1%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: pip-wheel.ph5-1.0-3.tar.xz
+Source2: pip-wheel.ph5-1.0-4.tar.xz
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -30,10 +30,7 @@ Source5: python_ghost_pyc.sh
 Source6: macros.bytecompile.python
 
 Patch0: 0001-Disallow-md5-usage-when-usedforsecurity-is-set-and-op.patch
-Patch1: CVE-2026-7210.patch
-Patch2: CVE-2026-11940.patch
-Patch3: CVE-2026-11972.patch
-Patch4: 0001-ssl-Add-system-wide-compatibility-option-for-X.509-v.patch
+Patch1: 0001-ssl-Add-system-wide-compatibility-option-for-X.509-v.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -316,6 +313,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Mon Aug 17 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.7-1
+- Upgrade to 3.14.7
 * Thu Jul 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.14.5-5
 - Add system-wide SSL configuration file to control default X.509 verification flags
 * Mon Jun 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.5-4

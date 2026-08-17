@@ -1,16 +1,16 @@
 sources:
-- archive: pip-26.1.1.tar.gz
+- archive: pip-26.2.1.tar.gz
   archive_type: upstream
-  archive_sha512sum: 777fab14b5e7e7edeffbc7ae86f4e6061e9f7cf43adcaebcb4d099c184c4f2ad6a63019a70d95b98b631821c3472713c9545fb8d65b684da67cfc31ee9293054
-  name: pip-26.1.1
-  version: "26.1.1"
+  archive_sha512sum: 03a00bdc4387a4e7e4e54672e9198893500d279912ece4cd144f015c568c974ecc2c3c7bd6abf108df852302ddd49468ef0bc514ca4323ee037d754e2fbfaee0
+  name: pip-26.2.1
+  version: "26.2.1"
   repo_url: https://github.com/pypa/pip.git
-  url: https://github.com/pypa/pip/archive/refs/tags/26.1.1.tar.gz
-  commit_id: 4432a371c6471e6a93c3eb39b3e9ab2b876b13b9
+  url: https://github.com/pypa/pip/archive/refs/tags/26.2.1.tar.gz
+  commit_id: 634a6ec1a5d9dcc2433571cdb2f4c58a4bb29caf
   missing: []
   license_manual_review:
   - file_paths:
-    - pip-26.1.1/tests/data/pypi_packages/trove_classifiers-2025.12.1.14.tar.gz-extract/trove_classifiers-2025.12.1.14/src/trove_classifiers/__init__.py
+    - pip-26.2.1/tests/data/pypi_packages/trove_classifiers-2025.12.1.14.tar.gz-extract/trove_classifiers-2025.12.1.14/src/trove_classifiers/__init__.py
     sha256sum: 35ddc94dbfd21e1fea402e97549e41260bb5859413884b57e1c73d1fbecf8468
     spdx_exp: ''
   spdx:

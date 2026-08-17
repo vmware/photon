@@ -1,18 +1,18 @@
 sources:
-- archive: Python-3.14.5.tar.xz
-  archive_sha512sum: efbaf629703cd004f6b7bc75fb16df794185589adaf8807cd45928f212271045a399df3cd9573e47c8708fb5c5002f9d4efe4e41dde4313b81a3e9d73158769f
+- archive: Python-3.14.7.tar.xz
+  archive_sha512sum: 3d4e2e2f983b320dec47005c408d7178d3656a6de0c4430ce21514797174b972f461200898b25d3dfac2a455019ef87e45d0fb2bb6ec2ca887124d10037a2a07
   archive_type: upstream
   skip_validation: false
-  name: Python-3.14.5
-  version: "3.14.5"
-  url: https://www.python.org/ftp/python/3.14.5/Python-3.14.5.tar.xz
+  name: Python-3.14.7
+  version: "3.14.7"
+  url: https://www.python.org/ftp/python/3.14.7/Python-3.14.7.tar.xz
   repo_url: https://github.com/python/cpython
-  commit_id: 5607950ef232dad16d75c0cf53101d9649d89115
+  commit_id: 823f0323ee6ec1402088b73bce1a38473cac36dc
   missing: ['mypy', 'NEWS', '.gitignore', 'NEWS.d', '.azure-pipelines', '.gitattributes', '.github']
   license_manual_review:
   - file_paths:
-    - Python-3.14.5/Modules/blake2module.c
-    sha256sum: e471acd6c8317fe31ef56d129f6e3426ebd6a4c9cd6d64a09d39bc558a491f10
+    - Python-3.14.7/Modules/blake2module.c
+    sha256sum: 7523638132c313eb5b8a5bca62bef4b5a403312718fc7585863230d231f70047
     spdx_exp: ''
   spdx:
     package:
@@ -39,8 +39,8 @@ sources:
         AND MS-RL
       short_summary: A high-level scripting language
       supplier: 'Organization: Broadcom, Inc.'
-- archive: pip-wheel.ph5-1.0-3.tar.xz
-  archive_sha512sum: dee27c816930640189a55961e163f54fe8ebbd844c41b0a77fb37d23f20d21c86f46c082879e30a458c95454e8a9d3bd476c5390c3086f6f3fc6ae08dfbdfc89
+- archive: pip-wheel.ph5-1.0-4.tar.xz
+  archive_sha512sum: 6e814def9af8bff3276ece7bd3ecd0c4ef7141094127a149670ddff4a844c8c0e792f7c8affcf0d5ac9f2d8cdc2ad4fbeac6d75308d2467dec04eeb0d3a85097
   skip_validation: true
   spdx:
     package:

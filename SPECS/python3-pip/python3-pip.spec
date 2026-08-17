@@ -8,14 +8,14 @@ Summary:        The PyPA recommended tool for installing Python packages.
 Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
-Version:        26.1.1
-Release:        2%{?dist}
+Version:        26.2.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pip/
 
-Source0: https://files.pythonhosted.org/packages/6b/8b/0b16094553ecc680e43ded8f920c3873b01b1da79a54274c98f08cb29fca/%{srcname}-%{version}.tar.gz
+Source0: https://github.com/pypa/pip/archive/refs/tags/%{version}.tar.gz#/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -24,7 +24,6 @@ Source2: %{srcname}.conf
 
 Patch0: dummy-certifi.patch
 Patch1: exclude-None-versioned-packages.patch
-Patch2: CVE-2026-44432.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -88,6 +87,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Mon Aug 17 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 26.2.1-1
+- Upgrade to 26.2.1
 * Wed Jun 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.1.1-2
 - Fix CVE-2026-44432 in vendor/urllib3
 * Thu May 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.1.1-1
