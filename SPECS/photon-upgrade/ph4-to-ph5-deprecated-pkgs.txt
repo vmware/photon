@@ -1,4 +1,5 @@
 ant-contrib
+amdvlk
 argon2
 aufs-util
 autogen
@@ -12,6 +13,7 @@ bluez-tools
 bridge-utils
 bubblewrap
 calico-bgp-daemons
+calico-libnetwork
 cgroup-utils
 chrpath
 consul
@@ -214,5 +216,7 @@ xinetd
 xml-security-c
 xml-security-c-devel
 xmlto
+yajl
+yajl-devel
 zip
 zsh-html

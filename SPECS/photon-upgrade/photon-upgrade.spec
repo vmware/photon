@@ -1,12 +1,14 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch:      noarch
 
 Source0: photon-upgrade.sh
 Source1: constants.sh
@@ -14,8 +16,6 @@ Source2: ph4-to-ph5-upgrade.sh
 Source3: utils.sh
 Source4: common.sh
 Source5: ph4-to-ph5-deprecated-pkgs.txt
-
-BuildArch:      noarch
 
 Requires:       (coreutils or coreutils-selinux)
 Requires:       gawk
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Mon Aug 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-5
+- Update deprecated package list
 * Tue Jun 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-4
 - Pass package arrays correctly to erase_pkgs() by using '*' array
   expansion for replaced and unsupported package removal.
