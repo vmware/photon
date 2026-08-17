@@ -1,0 +1,37 @@
+From d3c6729702bb9ef775272eb051607f279966e67d Mon Sep 17 00:00:00 2001
+From: Clark Williams <clark.williams@gmail.com>
+Date: Sat, 13 Jun 2026 10:58:00 -0500
+Subject: [PATCH 70/71] kvm/vmx: guard regparm(0) on vmread_error_trampoline
+ for x86_32 only
+
+regparm(0) overrides the kernel's -mregparm=3 convention on x86-32 so
+that vmread_error_trampoline receives its arguments on the stack, matching
+the inline asm callers that push args before the call.  On x86-64 the
+attribute is a no-op and newer GCC now emits -Wattributes for it, which
+becomes a build error under -Werror.  Guard it with CONFIG_X86_32.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ arch/x86/kvm/vmx/vmx_ops.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/x86/kvm/vmx/vmx_ops.h b/arch/x86/kvm/vmx/vmx_ops.h
+index d23705df6a52..60aeddf6a5c1 100644
+--- a/arch/x86/kvm/vmx/vmx_ops.h
++++ b/arch/x86/kvm/vmx/vmx_ops.h
+@@ -11,6 +11,11 @@
+ #include "../x86.h"
+ 
+ void vmread_error(unsigned long field, bool fault);
++/* regparm(0) overrides -mregparm=3 so args are stack-passed, matching asm callers */
++#ifdef CONFIG_X86_32
++__attribute__((regparm(0)))
++#endif
++void vmread_error_trampoline(unsigned long field, bool fault);
+ void vmwrite_error(unsigned long field, unsigned long value);
+ void vmclear_error(struct vmcs *vmcs, u64 phys_addr);
+ void vmptrld_error(struct vmcs *vmcs, u64 phys_addr);
+-- 
+2.55.0
+

@@ -1,0 +1,20 @@
+From 83c799a38ae0063d4dbb8d078810bc01481934f6 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Wed, 15 Jul 2026 11:19:21 -0500
+Subject: [PATCH 71/71] Linux 6.1.177-rt65 REBASE
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 40d81d8e61b6..e2eb19782d4c 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt62
++-rt65
+-- 
+2.55.0
+

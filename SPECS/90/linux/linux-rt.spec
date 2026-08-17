@@ -24,15 +24,15 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.176
-Release:        2%{?dist}
+Version:        6.1.177
+Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt62
+%define rt_version rt65
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
@@ -544,6 +544,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.177-3
+- Revert fix for CVE-2026-53224, CVE-2026-53246 due to failing LTP
+* Thu Jul 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.177-2
+- Fixes CVE-2026-53224, CVE-2026-53246
+* Tue Jul 14 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.177-1
+- Update to version 6.1.177, -rt65
 * Wed Jul 08 2026 Bo Gan <bo.gan@broadcom.com> 6.1.176-2
 - Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Wed Jun 24 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.176-1

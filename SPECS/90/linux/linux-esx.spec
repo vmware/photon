@@ -32,7 +32,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.176
+Version:        6.1.177
 Release:        3%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -575,6 +575,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.177-3
+- Revert fix for CVE-2026-53224, CVE-2026-53246 due to failing LTP
+* Thu Jul 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.177-2
+- Fixes CVE-2026-53224, CVE-2026-53246
+* Tue Jul 14 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.177-1
+- Update to version 6.1.177
 * Wed Jul 08 2026 Bo Gan <bo.gan@broadcom.com> 6.1.176-3
 - Fix for vmxnet3 BUG_ON in vmxnet3_get_hdr_len()
 * Tue Jun 30 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 6.1.176-2

@@ -1,24 +1,24 @@
 sources:
-- archive: linux-6.1.176.tar.xz
+- archive: linux-6.1.177.tar.xz
   archive_type: upstream
-  version: 6.1.176
-  name: linux-6.1.176
-  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.176.tar.xz
+  version: 6.1.177
+  name: linux-6.1.177
+  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.177.tar.xz
   repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-  commit_id: fdb6fcb41cc741ad5eaa7995f278dfcb94fdf795
+  commit_id: 090666d3cc906176fc47363520eb746b94c7d578
   skip_list: []
   missing: []
-  archive_sha512sum: '041c142a411388086a377341d5c49655c87639ebcaeb8098a876ae03bd19abf5df6c7d5b6dd225034d2fe230c2b9e123b479e27945da66940851695f078496af'
+  archive_sha512sum: 'dd4a4018d0e34076a30f4a98d870d22337d8b4c857e141887a6ae40ec7ff60e6a9f916e2cad144dd9336bdc5b9d6373d7f5008e9149be531663ba40ee25562d0'
   skip_validation: false
   license_manual_review:
   # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
   - file_paths:
-    - linux-6.1.176/drivers/pci/controller/pci-mvebu.c
+    - linux-6.1.177/drivers/pci/controller/pci-mvebu.c
     sha256sum: f2ed59ce938e92a0dff71c849860cafb5a5d2a78b34e5c0aa974288d98cccfcc
     spdx_exp: GPL-2.0-only
   # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
   - file_paths:
-    - linux-6.1.176/Documentation/process/kernel-docs.rst
+    - linux-6.1.177/Documentation/process/kernel-docs.rst
     sha256sum: 6e641499dcde7927e30dcdea64a6be9f53234d7036f4069ec47bdf5490005166
     spdx_exp: ''
   spdx:

@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.176
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.177
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -875,6 +875,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.177-3
+- Revert CVE-2026-53224, CVE-2026-53246 due to failing LTP
+* Thu Jul 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.177-2
+- Fixes CVE-2026-53224, CVE-2026-53246
+* Tue Jul 14 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.177-1
+- Update to version 6.1.177
 * Fri Jul 10 2026 Ankit Jain <ankit-aj.ajin@broadcom.com> 6.1.176-4
 - Pin UPAI enums: IFLA_BRPORT_SINK_CONNECTED=60, IFLA_GRE_MSS_CLAMP=30
 - to make it consistent between 6.1/6.12 kernel and some headroom for future upgrades.
