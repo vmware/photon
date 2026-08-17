@@ -19,7 +19,7 @@ git clone https://sourceware.org/git/glibc.git
 pushd glibc
 git checkout release/${VERSION}/master
 count="$(git rev-list glibc-${VERSION}..HEAD --count)"
-git format-patch --binary --full-index -${count} HEAD
+git format-patch -N --no-signature --binary --full-index -${count} HEAD
 popd
 rm -rf patches || true
 mkdir -p patches
