@@ -1,4 +1,5 @@
 ant-contrib
+amdvlk
 argon2
 aufs-util
 autogen
@@ -11,6 +12,7 @@ bluez-tools
 bridge-utils
 bubblewrap
 calico-bgp-daemon
+calico-libnetwork
 chkconfig
 chrpath
 consul
@@ -181,4 +183,6 @@ xml-security-c-devel
 xmlto
 xorg-applications
 xorg-fonts
+yajl
+yajl-devel
 zip
