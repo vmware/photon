@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.68
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -43,7 +43,6 @@ Requires: systemd
 Requires(post): systemd
 Requires(pre): systemd-rpm-macros
 Requires(pre): shadow
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 Provides: apache2
 
@@ -192,6 +191,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.68-2
+- Remove unnecessary requires
 * Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.68-1
 - Upgrade to v2.4.68, contains security fixes
 * Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.67-2

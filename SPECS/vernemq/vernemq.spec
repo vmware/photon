@@ -1,7 +1,7 @@
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          2.1.0
-Release:          2%{?dist}
+Release:          3%{?dist}
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -63,7 +63,6 @@ Requires:         systemd
 Requires:         openssl
 Requires:         ncurses
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A high-performance, distributed MQTT message broker.
@@ -165,6 +164,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.0-3
+- Remove unnecessary requires
 * Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.0-2
 - Bump release for updating erlang
 - Fix build failure by removing stale start.script overlay copies

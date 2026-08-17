@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        29.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -246,12 +246,6 @@ if [ $1 -eq 1 ] ; then
 fi
 %systemd_post docker.service
 
-%postun engine
-%systemd_postun_with_restart docker.service
-if [ $1 -eq 0 ] ; then
-  getent group docker >/dev/null && groupdel docker || :
-fi
-
 %posttrans engine
 if [ $1 -ge 0 ] ; then
   # package upgrade scenario, after new files are installed
@@ -297,6 +291,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.5.3-2
+- Remove unnecessary requires
+- Don't delete group post uninstall
 * Mon Jun 15 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.5.3-1
 - Upgrade to v29.5.3
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 29.5.2-1

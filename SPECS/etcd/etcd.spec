@@ -1,10 +1,11 @@
 %global build_if %{photon_subrelease} >= 91
 
 %define network_required 1
+
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.6.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -25,7 +26,6 @@ BuildRequires:  systemd-devel
 BuildRequires:  systemd-rpm-macros
 Requires(pre):  systemd-rpm-macros
 Requires(pre):  shadow
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.11-2
+- Remove unnecessary requires
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.11-1
 - Upgrade to v3.6.11
 * Tue Mar 31 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.9-1
