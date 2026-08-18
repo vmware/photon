@@ -2,7 +2,7 @@
 
 Summary:        Time zone data
 Name:           tzdata
-Version:        2023c
+Version:        2026c
 Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
@@ -13,7 +13,7 @@ Distribution:   Photon
 BuildArch:      noarch
 
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha512  tzdata=608bd286ebcbd0004cfdc1da183273f08aff61f90c8867661154453d77a05d421e4c46ad6d066a1fe2e87d5c82ec0f1c0224667a3b35f3180a3eb7f6ff84cbf5
+%define sha512  tzdata=e0b4b7044b66fbc27bc21d13d18063abcdf78ab58d5ba5fd64bd1a88d86e9d495f45add4d8e65bb6c40249f9c94ca29b72c8ebba8d0e4c468f2965ac77932ef0
 
 %description
 Sources for time zone and daylight saving time data
@@ -47,6 +47,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Tue Aug 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2026c-1
+-   Upgrade to v2026c
 *   Sun Oct 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2023c-1
 -   Upgrade to v2023c
 *   Mon Mar 06 2023 Him Kalyan Bordoloi <bordoloih@vmware.com> 2022g-1
