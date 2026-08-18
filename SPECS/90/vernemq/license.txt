@@ -1,0 +1,1 @@
+License: (Apache-2.0 OR LGPL-2.1-or-later) AND Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause AND ErlPL-1.1 AND FSFAP-no-warranty-disclaimer AND GPL-1.0-or-later AND GPL-3.0-only AND ISC AND JSON AND LGPL-2.0-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND MPL-1.0 AND MPL-1.1 AND MPL-2.0

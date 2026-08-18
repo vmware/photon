@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <= 90
 
 Summary:          VerneMQ is a high-performance, distributed MQTT message broker
 Name:             vernemq
 Version:          2.1.0
-Release:          4%{?dist}
+Release:          3.0.1%{?dist}
 URL:              https://github.com/vernemq/vernemq
 Group:            Applications/System
 Vendor:           VMware, Inc.
@@ -166,8 +166,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
-* Tue Aug 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.0-4
-- Build with 91 erlang
+* Tue Aug 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.0-3.0.1
+- Sub branch for 90
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1.0-3
 - Remove unnecessary requires
 * Wed Apr 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.1.0-2

@@ -1,0 +1,90 @@
+sources:
+- archive: vernemq-2.1.0.tar.gz
+  archive_sha512sum: 219ec809d4360e101dd64818e0932700c7700a4a0cec90671f69042b33010f6949574d90a130c27631e12d5133820c50d0e5b80652a6d66a42f186e55f9512f4
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A high-performance, distributed MQTT message broker. '
+      home_page: https://github.com/vernemq/vernemq
+      license_concluded: Apache-2.0 AND MIT AND BSD-4-Clause AND GPL-1.0-or-later
+        AND BSD-3-Clause AND FSFAP-no-warranty-disclaimer AND BSD-2-Clause AND ISC
+        AND JSON AND MPL-2.0
+      license_declared: Apache-2.0 AND MIT AND BSD-4-Clause AND GPL-1.0-or-later AND
+        BSD-3-Clause AND FSFAP-no-warranty-disclaimer AND BSD-2-Clause AND ISC AND
+        JSON AND MPL-2.0
+      short_summary: VerneMQ is a high-performance, distributed MQTT message broker
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: vernemq_vendor-2.1.0.tar.xz
+  archive_sha512sum: dbe64a919eea5152b09e34348306f9d8f9480887facaa68abc748cee95562aee9273112ff275755f2f2425e1573aafd1692cc6cbe3f3cb68823dfda8d12e742b
+  skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - vernemq_vendor-2.1.0/_checkouts/hex_core/src/hex_licenses.erl
+    sha256sum: 90bbf01e1369c6265cf578811472f32877f0a57c0c3f5f719e8e7aca3dea02ae
+    spdx_exp: ''
+  # contians a string AGPL-1.0 ,AGPL-1.0-only ,AGPL-3.0,AGPL-3.0-only, CC-BY-SA-2.0 ,CC-BY-SA-4.0 ,SSPL-1.0
+  spdx:
+    package:
+      detailed_description: Contains vendor sources for building vernemq to perform
+        offline build
+      home_page: https://github.com/vmware/photon
+      license_concluded: (Apache-2.0 OR LGPL-2.1-or-later) AND GPL-2.0-only WITH GCC-exception-2.0
+        AND Zimbra-1.3 AND OGC-1.0 AND GFDL-1.3-invariants-or-later AND NCGL-UK-2.0
+        AND UCL-1.0 AND OGL-UK-1.0 AND BSD-3-Clause-No-Military-License AND GFDL-1.2-invariants-or-later
+        AND ISC AND CAL-1.0 AND IBM-pibs AND APSL-1.0 AND copyleft-next-0.3.0 AND
+        BSD-4-Clause AND GFDL-1.3-no-invariants-only AND GPL-3.0-only WITH GCC-exception-3.1
+        AND GPL-2.0-only WITH Bison-exception-2.2 AND EFL-2.0 AND Apache-1.1 AND OGL-UK-2.0
+        AND BSD-2-Clause AND LAL-1.3 AND GFDL-1.1-only AND TMate AND Zimbra-1.4 AND
+        NTP-0 AND LGPL-3.0-only AND GPL-3.0-or-later AND CECILL-2.1 AND CDDL-1.0 AND
+        MPL-2.0 AND NIST-PD AND SSPL-1.0 AND Spencer-86 AND GPL-2.0-only WITH Autoconf-exception-2.0
+        AND GFDL-1.2-no-invariants-only AND GFDL-1.3-no-invariants-or-later AND copyleft-next-0.3.1
+        AND HaskellReport AND OGL-Canada-2.0 AND NAIST-2003 AND TAPR-OHL-1.0 AND Interbase-1.0
+        AND AGPL-1.0-only AND GPL-2.0-only AND NGPL AND etalab-2.0 AND TU-Berlin-1.0
+        AND BSD-3-Clause AND LiLiQ-R-1.1 AND CC0-1.0 AND Parity-6.0.0 AND LiLiQ-P-1.1
+        AND AGPL-3.0-only AND GFDL-1.2-no-invariants-or-later AND GPL-1.0-or-later
+        AND GPL-1.0-only AND BSD-3-Clause-Modification AND GFDL-1.3-invariants-only
+        AND NIST-PD-fallback AND Frameworx-1.0 AND EPL-1.0 AND GFDL-1.2-invariants-only
+        AND OGDL-Taiwan-1.0 AND Linux-man-pages-copyleft AND AGPL-3.0-or-later AND
+        OFL-1.1-no-RFN AND BSD-2-Clause-Patent AND GPL-2.0-only WITH Font-exception-2.0
+        AND CECILL-2.0 AND CERN-OHL-P-2.0 AND GFDL-1.1-no-invariants-or-later AND
+        MPL-1.0 AND LGPL-2.1-only AND CPOL-1.02 AND BSD-4-Clause-Shortened AND ErlPL-1.1
+        AND CAL-1.0-Combined-Work-Exception AND OGL-UK-3.0 AND HPND-sell-variant AND
+        CERN-OHL-1.2 AND GFDL-1.1-no-invariants-only AND GPL-3.0-only WITH Autoconf-exception-3.0
+        AND MIT AND LGPL-2.1-or-later AND libselinux-1.0 AND CC-BY-SA-4.0 AND LiLiQ-Rplus-1.1
+        AND CC-BY-SA-2.0 AND CERN-OHL-S-2.0 AND APSL-1.1 AND GFDL-1.1-invariants-only
+        AND PSF-2.0 AND GFDL-1.1-invariants-or-later AND Parity-7.0.0 AND BSD-2-Clause-Views
+        AND HPND AND BSD-4-Clause-UC AND GPL-3.0-only AND CERN-OHL-1.1 AND CDDL-1.1
+        AND PolyForm-Small-Business-1.0.0 AND PolyForm-Noncommercial-1.0.0 AND TU-Berlin-2.0
+        AND CERN-OHL-W-2.0 AND MPL-1.1 AND LGPL-3.0-or-later AND GPL-2.0-or-later
+        WITH eCos-exception-2.0 AND Apache-2.0 AND LGPL-2.0-or-later AND AFL-3.0
+      license_declared: (Apache-2.0 OR LGPL-2.1-or-later) AND GPL-2.0-only WITH GCC-exception-2.0
+        AND Zimbra-1.3 AND OGC-1.0 AND GFDL-1.3-invariants-or-later AND NCGL-UK-2.0
+        AND UCL-1.0 AND OGL-UK-1.0 AND BSD-3-Clause-No-Military-License AND GFDL-1.2-invariants-or-later
+        AND ISC AND CAL-1.0 AND IBM-pibs AND APSL-1.0 AND copyleft-next-0.3.0 AND
+        BSD-4-Clause AND GFDL-1.3-no-invariants-only AND GPL-3.0-only WITH GCC-exception-3.1
+        AND GPL-2.0-only WITH Bison-exception-2.2 AND EFL-2.0 AND Apache-1.1 AND OGL-UK-2.0
+        AND BSD-2-Clause AND LAL-1.3 AND GFDL-1.1-only AND TMate AND Zimbra-1.4 AND
+        NTP-0 AND LGPL-3.0-only AND GPL-3.0-or-later AND CECILL-2.1 AND CDDL-1.0 AND
+        MPL-2.0 AND NIST-PD AND SSPL-1.0 AND Spencer-86 AND GPL-2.0-only WITH Autoconf-exception-2.0
+        AND GFDL-1.2-no-invariants-only AND GFDL-1.3-no-invariants-or-later AND copyleft-next-0.3.1
+        AND HaskellReport AND OGL-Canada-2.0 AND NAIST-2003 AND TAPR-OHL-1.0 AND Interbase-1.0
+        AND AGPL-1.0-only AND GPL-2.0-only AND NGPL AND etalab-2.0 AND TU-Berlin-1.0
+        AND BSD-3-Clause AND LiLiQ-R-1.1 AND CC0-1.0 AND Parity-6.0.0 AND LiLiQ-P-1.1
+        AND AGPL-3.0-only AND GFDL-1.2-no-invariants-or-later AND GPL-1.0-or-later
+        AND GPL-1.0-only AND BSD-3-Clause-Modification AND GFDL-1.3-invariants-only
+        AND NIST-PD-fallback AND Frameworx-1.0 AND EPL-1.0 AND GFDL-1.2-invariants-only
+        AND OGDL-Taiwan-1.0 AND Linux-man-pages-copyleft AND AGPL-3.0-or-later AND
+        OFL-1.1-no-RFN AND BSD-2-Clause-Patent AND GPL-2.0-only WITH Font-exception-2.0
+        AND CECILL-2.0 AND CERN-OHL-P-2.0 AND GFDL-1.1-no-invariants-or-later AND
+        MPL-1.0 AND LGPL-2.1-only AND CPOL-1.02 AND BSD-4-Clause-Shortened AND ErlPL-1.1
+        AND CAL-1.0-Combined-Work-Exception AND OGL-UK-3.0 AND HPND-sell-variant AND
+        CERN-OHL-1.2 AND GFDL-1.1-no-invariants-only AND GPL-3.0-only WITH Autoconf-exception-3.0
+        AND MIT AND LGPL-2.1-or-later AND libselinux-1.0 AND CC-BY-SA-4.0 AND LiLiQ-Rplus-1.1
+        AND CC-BY-SA-2.0 AND CERN-OHL-S-2.0 AND APSL-1.1 AND GFDL-1.1-invariants-only
+        AND PSF-2.0 AND GFDL-1.1-invariants-or-later AND Parity-7.0.0 AND BSD-2-Clause-Views
+        AND HPND AND BSD-4-Clause-UC AND GPL-3.0-only AND CERN-OHL-1.1 AND CDDL-1.1
+        AND PolyForm-Small-Business-1.0.0 AND PolyForm-Noncommercial-1.0.0 AND TU-Berlin-2.0
+        AND CERN-OHL-W-2.0 AND MPL-1.1 AND LGPL-3.0-or-later AND GPL-2.0-or-later
+        WITH eCos-exception-2.0 AND Apache-2.0 AND LGPL-2.0-or-later AND AFL-3.0
+      short_summary: Contains vendor sources for building vernemq
+      supplier: 'Organization: Broadcom, Inc.'

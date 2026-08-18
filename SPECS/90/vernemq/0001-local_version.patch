@@ -1,0 +1,116 @@
+commit 43a82b1d82c1c7fafc56bc74b5a8eb97a3ee8af8
+Author: Tapas Kundu <tapas.kundu@broadcom.com>
+Date:   Mon Jul 7 11:09:18 2025 +0000
+
+    [PATCH] local_version
+
+    Signed-off-by: Tapas Kundu <tapas.kundu@broadcom.com>
+
+diff --git a/Makefile b/Makefile
+index 102da0c5..050eea44 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ BASE_DIR         = $(shell pwd)
+ ERLANG_BIN       = $(shell dirname $(shell which erl))
+-GIT_VERSION      = $(shell git describe --tags --always)
++GIT_VERSION      = 2.1.0
+ OVERLAY_VARS    ?=
+ REBAR ?= $(BASE_DIR)/rebar3
+
+diff --git a/rebar.config b/rebar.config
+index 5bbbdd36..f8137c81 100644
+--- a/rebar.config
++++ b/rebar.config
+@@ -57,7 +57,7 @@
+     {ci_tests, [{erl_opts, [{d, run_ci_tests, true}]}]},
+     {debug_build, [
+         {relx, [
+-            {release, {vernemq, semver}, [
++            {release, {vernemq, "2.1.0"}, [
+                 sasl,
+                 inets,
+                 xmerl,
+@@ -90,7 +90,7 @@
+             % the vars.generated is created by the Makefile
+             {overlay_vars, "vars.generated"},
+             {dev_mode, false},
+-            {include_erts, true},
++            {include_erts, false},
+             {include_src, false},
+             % we're using the runner from files/runner (ex. node_package)
+             {extended_start_script, false},
+@@ -106,11 +106,6 @@
+                 {copy, "_build/default/bin/cuttlefish", "erts-{{erts_vsn}}/bin/cuttlefish"},
+                 {copy, "apps/vmq_acl/priv/default.acl", "etc/vmq.acl"},
+                 {copy, "apps/vmq_passwd/priv/vmq_passwd", "bin/vmq-passwd"},
+-                %% the runner script expects vernemq.boot and vernemq.script instead of the default start.boot/.script
+-                {copy, "_build/default/rel/vernemq/releases/{{release_version}}/start.boot",
+-                    "releases/{{release_version}}/vernemq.boot"},
+-                {copy, "_build/default/rel/vernemq/releases/{{release_version}}/start.script",
+-                    "releases/{{release_version}}/vernemq.script"},
+                 %% Cuttlefish Schema Files have a priority order.
+                 %% Anything in a file prefixed with 00- will override
+                 %% anything in a file with a higher numbered prefix.
+@@ -143,12 +138,9 @@
+                 {template, "apps/vmq_web_ui/priv/vmq_web_ui.schema",
+                     "share/schema/22-vmq_web_ui.schema"},
+                 {template, "files/vmq.schema", "share/schema/30-vmq.schema"},
+-                {template, "_build/default/lib/cuttlefish/priv/erlang_vm.schema",
+-                    "share/schema/31-erlang_vm.schema"},
+-                {template, "_build/default/lib/riak_sysmon/priv/riak_sysmon.schema",
+-                    "share/schema/32-riak_sysmon.schema"},
+-                {template, "_build/default/lib/eleveldb/priv/eleveldb.schema",
+-                    "share/schema/33-eleveldb.schema"},
++                {template, "_checkouts/cuttlefish/priv/erlang_vm.schema", "share/schema/31-erlang_vm.schema"},
++                {template, "_checkouts/riak_sysmon/priv/riak_sysmon.schema", "share/schema/32-riak_sysmon.schema"},
++                {template, "_checkouts/eleveldb/priv/eleveldb.schema", "share/schema/33-eleveldb.schema"},
+                 {mkdir, "lib/erlio-patches"}
+             ]}
+         ]}
+@@ -158,7 +150,7 @@
+ {cuttlefish, [{schema_dir, "lib"}, {schema_discovery, false}]}.
+
+ {relx, [
+-    {release, {vernemq, semver}, [
++    {release, {vernemq, "2.1.0"}, [
+         sasl,
+         inets,
+         xmerl,
+@@ -188,7 +180,7 @@
+     % the vars.generated is created by the Makefile
+     {overlay_vars, "vars.generated"},
+     {dev_mode, false},
+-    {include_erts, true},
++    {include_erts, false},
+     {include_src, false},
+     % we're using the runner from files/runner (ex. node_package)
+     {extended_start_script, false},
+@@ -204,11 +196,6 @@
+         {copy, "_build/default/bin/cuttlefish", "erts-{{erts_vsn}}/bin/cuttlefish"},
+         {copy, "apps/vmq_acl/priv/default.acl", "etc/vmq.acl"},
+         {copy, "apps/vmq_passwd/priv/vmq_passwd", "bin/vmq-passwd"},
+-        %% the runner script expects vernemq.boot and vernemq.script instead of the default start.boot/.script
+-        {copy, "_build/default/rel/vernemq/releases/{{release_version}}/start.boot",
+-            "releases/{{release_version}}/vernemq.boot"},
+-        {copy, "_build/default/rel/vernemq/releases/{{release_version}}/start.script",
+-            "releases/{{release_version}}/vernemq.script"},
+         %% Cuttlefish Schema Files have a priority order.
+         %% Anything in a file prefixed with 00- will override
+         %% anything in a file with a higher numbered prefix.
+@@ -234,12 +221,9 @@
+             "share/schema/21-vmq_http_pub.schema"},
+         {template, "apps/vmq_web_ui/priv/vmq_web_ui.schema", "share/schema/22-vmq_web_ui.schema"},
+         {template, "files/vmq.schema", "share/schema/30-vmq.schema"},
+-        {template, "_build/default/lib/cuttlefish/priv/erlang_vm.schema",
+-            "share/schema/31-erlang_vm.schema"},
+-        {template, "_build/default/lib/riak_sysmon/priv/riak_sysmon.schema",
+-            "share/schema/32-riak_sysmon.schema"},
+-        {template, "_build/default/lib/eleveldb/priv/eleveldb.schema",
+-            "share/schema/33-eleveldb.schema"},
++        {template, "_checkouts/cuttlefish/priv/erlang_vm.schema", "share/schema/31-erlang_vm.schema"},
++        {template, "_checkouts/riak_sysmon/priv/riak_sysmon.schema", "share/schema/32-riak_sysmon.schema"},
++        {template, "_checkouts/eleveldb/priv/eleveldb.schema", "share/schema/33-eleveldb.schema"},
+         {mkdir, "lib/erlio-patches"},
+         {mkdir, "etc/conf.d"}
+     ]}
