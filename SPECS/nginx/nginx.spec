@@ -7,7 +7,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
-Version:        1.28.3
+Version:        1.30.4
 Release:        1%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
@@ -204,6 +204,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Tue Aug 18 2026 Uwe <java.entwickler@outlook.de> 1.30.4-1
+- Update to version 1.30.4 to fix CVE-2026-42533 (heap buffer overflow in map directive with regex)
 * Tue Mar 31 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 1.28.3-1
 - Upgrade to v1.28.3
 - Drop CVE-2025-53859 patch, fixed upstream in v1.28.1
