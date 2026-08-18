@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -22,6 +22,7 @@ Patch4: CVE-2023-0767.patch
 Patch5: CVE-2023-5388.patch
 Patch6: CVE-2024-0743.patch
 Patch7: CVE-2026-2781.patch
+Patch8: CVE-2026-16389.patch
 
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -138,6 +139,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue Aug 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.78-13
+- Fix CVE-2026-16389
 * Wed Mar 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-12
 - Fix CVE-2026-2781
 * Wed Dec 11 2024 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.78-11
