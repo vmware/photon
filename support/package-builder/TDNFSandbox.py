@@ -4,10 +4,10 @@ import io
 import json
 import os
 import tempfile
+import RepoUtil
 
 from CommandUtils import CommandUtils
 from constants import constants
-import RepoUtil
 from Sandbox import Container
 
 # This utility helps manage packages in a chroot dir using another sandbox
@@ -23,7 +23,6 @@ name=packages-snapshot
 gpgcheck=0
 skip_if_unavailable=1
 skip_md_filelists=1
-priority=100
 """
 
 local_repo_template = """\
@@ -94,6 +93,7 @@ class TDNF:
         )
 
         self.sandbox.create()
+        self._packagesRepoCreated = False
 
         if constants.bootstrapRepoPath:
             self.sandbox.putFiles(
@@ -112,7 +112,10 @@ class TDNF:
             os.remove(temp_file_path)
 
         packagesSnapshotContent = (
-            packages_repo_template + "enabled=1\n" + f"baseurl={RepoUtil.getPackageRepoBaseurl()}"
+            packages_repo_template
+            + "enabled=1\n"
+            + f"baseurl={RepoUtil.getPackageRepoBaseurl()}\n"
+            + "priority=90\n"
         )
 
         snapShotFn = constants.packageRepoSnapshotURL
@@ -134,13 +137,17 @@ class TDNF:
             self.sandbox.putFiles([temp_file_path], self.repoDir)
             os.remove(temp_file_path)
 
+    def createPackagesRepoFile(self):
+        if self._packagesRepoCreated:
+            return
         # "packages" is the same repo minus the snapshot pin, disabled by
         # default -- used to resolve ExtraBuildRequiresSansSnapshot packages
         # against the full/live packages repo.
         packagesContent = (
             packages_repo_template.replace("packages-snapshot", "packages")
             + "enabled=0\n"
-            + f"baseurl={RepoUtil.getPackageRepoBaseurl()}"
+            + f"baseurl={RepoUtil.getPackageRepoBaseurl()}\n"
+            + "priority=100\n"
         )
 
         with tempfile.NamedTemporaryFile(
@@ -151,6 +158,7 @@ class TDNF:
             temp_file_path = temp_file.name
             self.sandbox.putFiles([temp_file_path], self.repoDir)
             os.remove(temp_file_path)
+        self._packagesRepoCreated = True
 
     def run(self, args=[], errMsg="", ignore_rc=False):
         tdnfArgs = args + [f"--installroot={self.installRootSandboxPath}"]

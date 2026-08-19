@@ -24,7 +24,6 @@ class PackageUtils(object):
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.rpmBinary = "rpm"
-        self.installRPMPackageOptions = []
 
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOptions = ["--clean"]
@@ -55,12 +54,12 @@ class PackageUtils(object):
             try:
                 subCmd = ["upgrade", "-y"]
                 tdnf.run(
-                    args=subCmd + self.installRPMPackageOptions + repoArgs,
+                    args=subCmd + repoArgs,
                     errMsg="Unable to upgrade rpms",
                 )
                 subCmd = ["install", "-y", "--setopt=tsflags=nodocs"] + self.packagesToInstallInAOneShot
                 tdnf.run(
-                    args=subCmd + self.installRPMPackageOptions + repoArgs,
+                    args=subCmd + repoArgs,
                     errMsg="Unable to install rpms",
                 )
             finally:

@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import RepoUtil
 
 from CommandUtils import CommandUtils
 from constants import BuildStage, constants
@@ -12,6 +13,7 @@ from SourceConfigData import SOURCES
 from SpecData import SPECS
 from SRP import SRP
 from StringUtils import StringUtils
+from TDNFSandbox import TDNF
 from ToolChainUtils import ToolChainUtils
 
 
@@ -163,7 +165,42 @@ class PackageBuilder(object):
                 pkgUtils.prepRPMforInstall(pkgName)
 
             pkgUtils.installRPMSInOneShot(self.sandbox, arch)
+
+            strictBuildDeps = []
+            strictBuildDeps.extend(self.getStrictBRs())
+            strictBuildDeps.extend(self.getStrictExtraBRs())
+            if strictBuildDeps:
+                self._reinstallIfVersionMismatch(strictBuildDeps)
+
             self.logger.debug(f"Finished installing the build dependencies for {arch}")
+
+    def getStrictBRs(self):
+        arch = constants.buildArch
+        listofBRPkgs = SPECS.getData(arch).getStrictBRsForPkg(self.package, self.version)
+        if not listofBRPkgs:
+            return []
+
+        self.logger.debug(f"Package {self.package} has strict BuildRequires, checking further ...")
+        return listofBRPkgs
+
+    def getStrictExtraBRs(self):
+        arch = constants.buildArch
+        listOfExtraBRPkgs = SPECS.getData(
+            arch
+        ).getExtraBuildRequiresForPackage(self.package, self.version)
+        if not listOfExtraBRPkgs:
+            return []
+
+        self.logger.debug(f"Package {self.package} has ExtraBuildRequires, checking further ...")
+        return listOfExtraBRPkgs
+
+    def _reinstallIfVersionMismatch(self, packages):
+        tUtils = ToolChainUtils(self.buildStage, self.buildMode, self.logName, self.logPath)
+        tdnf = TDNF(installRoot=self.sandbox.getRootPath(), logger=self.logger)
+        try:
+            tUtils._reinstallIfVersionMismatch(tdnf, packages)
+        finally:
+            tdnf.clean()
 
     def srpLogCommand(self, cmd, env={}):
         self.srp.addCommand(cmd, env)

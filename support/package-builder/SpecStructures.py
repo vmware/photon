@@ -49,7 +49,6 @@ class Package(object):
         self.checkbuildrequires = []
         self.extrabuildrequires = []
         self.extrabuildrequiressanssnapshot = []
-        self.buildrequiresnative = []
 
         self.requires = []
         self.provides = []
@@ -93,7 +92,6 @@ class SpecObject(object):
         self.checkBuildRequires = []
         self.extraBuildRequires = []
         self.extraBuildRequiresSansSnapshot = []
-        self.buildRequiresNative = []
 
         """
         map subpackage name to list of install requires

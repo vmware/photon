@@ -171,3 +171,12 @@ def getRepoArgs(buildStage, buildMode):
         repoArgs += [REPO_BOOTSTRAP]
 
     return repoArgs
+
+
+# Keep all repos enabled here and try to resolve
+# Priority of packages is the following order:
+# local, packages-snapshot, packages
+def getPackagesRepoArgs():
+    repoArgs = ["--disablerepo=*", REPO_LOCAL, REPO_PACKAGES]
+    repoArgs += ["--enablerepo=packages"]
+    return repoArgs

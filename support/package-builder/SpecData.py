@@ -39,9 +39,9 @@ class SpecData(object):
     def _resolveProvider(self, req, providers):
         tmp = copy.deepcopy(req)
         for provider in providers:
-                tmp.package = provider
-                if self._getProperVersion(tmp):
-                    break
+            tmp.package = provider
+            if self._getProperVersion(tmp):
+                break
         return tmp
 
     def _calculateInfiniteVersion(self, version):
@@ -328,20 +328,50 @@ class SpecData(object):
         ):
             properVersion = self._getProperVersion(pkg)
             if not properVersion:
-                raise Exception(f"Could not find proper version for {pkg}")
+                self.logger.warning(f"Could not find proper version for {pkg}")
+                self.logger.warning(f"Considering {pkg} as ExtraBR")
+                continue
             buildRequiresList.append(f"{pkg.package}-{properVersion}")
         return buildRequiresList
+
+    def getStrictBRsForPkg(self, package, version):
+        packages = []
+        for pkg in self._getSpecObjField(
+            package, version, field=lambda x: x.buildRequires
+        ):
+            if not pkg.compare:
+                continue
+            if pkg.compare == "=":
+                packages.append(f"{pkg.package}-{pkg.version}")
+            else:
+                packages.append(f"{pkg.package} {pkg.compare} {pkg.version}")
+        return packages
 
     def getExtraBuildRequiresForPackage(self, package, version):
         packages = []
         for pkg in self._getSpecObjField(
             package, version, field=lambda x: x.extraBuildRequires
         ):
-            if pkg.compare and pkg.compare == "=":
+            if pkg.compare == "=":
+                packages.append(f"{pkg.package}-{pkg.version}")
+            elif pkg.compare:
+                packages.append(f"{pkg.package} {pkg.compare} {pkg.version}")
+            else:
+                packages.append(pkg.package)
+        return packages
+
+
+    def getStrictExtraBRsForPackage(self, package, version):
+        packages = []
+        for pkg in self._getSpecObjField(
+            package, version, field=lambda x: x.extraBuildRequires
+        ):
+            if not pkg.compare:
+                continue
+            if pkg.compare == "=":
                 packages.append(f"{pkg.package}-{pkg.version}")
             else:
-                # if no version deps for publishrpms - use just name
-                packages.append(pkg.package)
+                packages.append(f"{pkg.package} {pkg.compare} {pkg.version}")
         return packages
 
     def getExtraBuildRequiresSansSnapshotForPackage(self, package, version):
@@ -636,6 +666,7 @@ class SPECS(object):
         self.specData[constants.buildArch] = SpecData(
             constants.buildArch, constants.logPath, constants.specPaths
         )
+
 
 if __name__ == "__main__":
     import sys

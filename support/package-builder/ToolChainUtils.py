@@ -91,11 +91,21 @@ class ToolChainUtils(object):
                 f"Successfully installed default toolchain RPMS in sandbox {chroot.getRootPath()} {rpmFiles}"
             )
             if packageName:
-                self.installExtraToolchainRPMS(
-                    tdnf, chroot, packageName, packageVersion
+                strictBRs = SPECS.getData(
+                    constants.buildArch
+                ).getStrictBRsForPkg(packageName, packageVersion)
+                exactStrictBRs = [p for p in strictBRs if " " not in p]
+                if exactStrictBRs:
+                    missingBRs = self._findMissingFromRepo(
+                        tdnf, exactStrictBRs, repoArgs
+                    )
+                    if missingBRs:
+                        self._reinstallIfVersionMismatch(tdnf, missingBRs)
+                self._installExtraToolchainRPMS(
+                    tdnf, packageName, packageVersion
                 )
-                self.installExtraToolchainRPMSSansSnapshot(
-                    tdnf, chroot, packageName, packageVersion
+                self._installExtraToolchainRPMS(
+                    tdnf, packageName, packageVersion, sansSnapshot=True
                 )
 
             if constants.listOptionalToolChainRPMsToInstall:
@@ -134,46 +144,81 @@ class ToolChainUtils(object):
 
         return rpmFiles
 
-    def installExtraToolchainRPMS(self, tdnf, sandbox, packageName, packageVersion):
-        listOfToolChainPkgs = SPECS.getData(
-            constants.buildArch
-        ).getExtraBuildRequiresForPackage(packageName, packageVersion)
+    def _installExtraToolchainRPMS(self, tdnf, packageName, packageVersion, sansSnapshot=False):
+        if sansSnapshot:
+            listOfToolChainPkgs = SPECS.getData(
+                constants.buildArch
+            ).getExtraBuildRequiresSansSnapshotForPackage(packageName, packageVersion)
+            label = " (sans snapshot)"
+            errMsg = "Extra BuildRequires (sans snapshot) RPM installation failed"
+            repoName = "packages"
+            tdnf.createPackagesRepoFile()
+        else:
+            listOfToolChainPkgs = SPECS.getData(
+                constants.buildArch
+            ).getExtraBuildRequiresForPackage(packageName, packageVersion)
+            label = ""
+            errMsg = "Extra BuildRequires RPM installation failed"
+            repoName = "packages-snapshot"
+
         if not listOfToolChainPkgs:
             return []
+
         self.logger.debug(
-            f"Installing package specific toolchain RPMs for {packageName}: "
+            f"Installing package specific toolchain RPMs{label} for {packageName}: "
             + str(listOfToolChainPkgs)
         )
+
         repoArgs = [
             f"--releasever={constants.releaseVersionToConsume}",
             "--disablerepo=*",
-            "--enablerepo=packages-snapshot",
+            f"--enablerepo={repoName}",
         ]
 
-        subCmd = ["install", "-y", "--nogpgcheck", "--setopt=tsflags=nodocs"] + listOfToolChainPkgs
-        tdnf.run(
-            args=subCmd + repoArgs,
-            errMsg="Extra BuildRequires RPM installation failed",
-        )
+        subCmd = ["install", "-y", "--nogpgcheck", "--setopt=tsflags=nodocs"]
 
-    def installExtraToolchainRPMSSansSnapshot(self, tdnf, sandbox, packageName, packageVersion):
-        listOfToolChainPkgs = SPECS.getData(
-            constants.buildArch
-        ).getExtraBuildRequiresSansSnapshotForPackage(packageName, packageVersion)
-        if not listOfToolChainPkgs:
-            return []
-        self.logger.debug(
-            f"Installing package specific toolchain RPMs (sans snapshot) for {packageName}: "
-            + str(listOfToolChainPkgs)
-        )
-        repoArgs = [
-            f"--releasever={constants.releaseVersionToConsume}",
-            "--disablerepo=*",
-            "--enablerepo=packages",
-        ]
+        if sansSnapshot:
+            tdnf.run(args=subCmd + listOfToolChainPkgs + repoArgs, errMsg=errMsg)
+        else:
+            # Only install from snapshot what is actually there; fall back to packages for the rest
+            missingFromSnapshot = self._findMissingFromRepo(tdnf, listOfToolChainPkgs, repoArgs)
+            pkgsInSnapshot = [p for p in listOfToolChainPkgs if p not in set(missingFromSnapshot)]
+            if pkgsInSnapshot:
+                tdnf.run(args=subCmd + pkgsInSnapshot + repoArgs, errMsg=errMsg)
+            strictExtraBRs = SPECS.getData(
+                constants.buildArch
+            ).getStrictExtraBRsForPackage(packageName, packageVersion)
+            # strict ExtraBRs installed from snapshot + packages missing from snapshot
+            strictInSnapshot = [p for p in strictExtraBRs if p not in set(missingFromSnapshot)]
+            toReinstall = missingFromSnapshot + strictInSnapshot
+            if toReinstall:
+                self._reinstallIfVersionMismatch(tdnf, toReinstall)
 
-        subCmd = ["install", "-y", "--nogpgcheck", "--setopt=tsflags=nodocs"] + listOfToolChainPkgs
+    def _findMissingFromRepo(self, tdnf, packages, repoArgs):
+        missing = []
+        for pkg in packages:
+            try:
+                out = tdnf.run(
+                    args=["repoquery", pkg] + repoArgs,
+                    errMsg=f"Checking availability of {pkg}",
+                )
+                if not out or pkg not in out:
+                    missing.append(pkg)
+            except Exception as e:
+                self.logger.debug(
+                    f"Package {pkg} not available locally, will try packages repo: {e}"
+                )
+                missing.append(pkg)
+        return missing
+
+    def _reinstallIfVersionMismatch(self, tdnf, packages):
+        self.logger.debug(f"Reinstalling rpms: {packages}")
+        subCmd = [
+            "install", "-y", "--nogpgcheck", "--setopt=tsflags=nodocs",
+            "--setopt=reposdir=/etc/yum.repos.d",
+        ] + packages
+        tdnf.createPackagesRepoFile()
         tdnf.run(
-            args=subCmd + repoArgs,
-            errMsg="Extra BuildRequires (sans snapshot) RPM installation failed",
+            args=subCmd + RepoUtil.getPackagesRepoArgs(),
+            errMsg="Unable to install desired version of BRs/ExtraBRs",
         )
