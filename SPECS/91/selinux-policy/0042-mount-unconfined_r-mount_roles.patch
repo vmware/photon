@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Thu, 24 Apr 2026 00:00:00 +0000
+Subject: [PATCH] mount: associate unconfined_r with mount_roles
+
+Rootless containerd execs /usr/bin/mount from a user session labeled
+unconfined_u:unconfined_r:container_runtime_t with MCS.  mount_t is
+valid only for roles in mount_roles; only system_r was a member, so
+security_compute_sid failed for unconfined_r:mount_t:MCS (SELINUX_ERR,
+EACCES on exec).
+
+unconfined_domain(mount_t) is already present in mount.te; add the
+missing role association so user logins can run mount in mount_t.
+
+Made-with: Cursor
+---
+ policy/modules/system/mount.te | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/policy/modules/system/mount.te
++++ b/policy/modules/system/mount.te
+@@ -7,6 +7,14 @@
+ 
+ attribute_role mount_roles;
+ roleattribute system_r mount_roles;
++optional_policy(`
++	gen_require(`
++		role unconfined_r;
++	')
++	# Allow user sessions (e.g. SSH logins) to run mount(8) in mount_t
++	# when transitioning from container_runtime_t and similar domains.
++	roleattribute unconfined_r mount_roles;
++')
+ 
+ type mount_t;
+ type mount_exec_t;

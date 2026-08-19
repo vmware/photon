@@ -1,0 +1,26 @@
+From 95efe9e3aa7a4922171b392350d8edafa96ce3ab Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 20:53:34 +0530
+Subject: [PATCH] system userdomain (rebased for 43.6)
+
+userdomain.fc already carries /run/user entries. Drop screen_tmp_t and
+winbind_tmp_t from the user_tmp_t alias set (Photon).
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ policy/modules/system/userdomain.te | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/policy/modules/system/userdomain.te b/policy/modules/system/userdomain.te
+index 3ac8c12..a838fb3 100644
+--- a/policy/modules/system/userdomain.te
++++ b/policy/modules/system/userdomain.te
+@@ -97,7 +97,7 @@
+ ubac_constrained(user_devpts_t)
+ 
+ type user_tmp_t, user_tmp_type, user_tmpfs_type;
+-typealias user_tmp_t alias { screen_tmp_t winbind_tmp_t wine_tmp_t sshd_tmp_t staff_tmp_t sysadm_tmp_t secadm_tmp_t auditadm_tmp_t unconfined_tmp_t };
++typealias user_tmp_t alias { wine_tmp_t sshd_tmp_t staff_tmp_t sysadm_tmp_t secadm_tmp_t auditadm_tmp_t unconfined_tmp_t };
+ typealias user_tmp_t alias { staff_untrusted_content_tmp_t sysadm_untrusted_content_tmp_t secadm_untrusted_content_tmp_t auditadm_untrusted_content_tmp_t unconfined_untrusted_content_tmp_t };
+ typealias user_tmp_t alias { user_tmpfs_t staff_tmpfs_t sysadm_tmpfs_t secadm_tmpfs_t auditadm_tmpfs_t unconfined_tmpfs_t };
+ typealias user_tmp_t alias xdm_tmp_t;

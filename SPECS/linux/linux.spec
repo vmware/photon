@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.103
-Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -835,7 +835,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
 
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet loadpin.enabled=0 audit=1 slab_nomerge selinux=0
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet loadpin.enabled=0 audit=1 slab_nomerge
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -977,6 +977,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Aug 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.103-5
+- Remove selinux=0 from default cmdline; SELinux is now disabled via selinux-policy
 * Mon Aug 17 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.103-4
 - rap_plugin: fix function alignment gap and tighten caller-side check to match KCFI
 - Update canister v6.12.60-18.2 with rap_plugin function alignment gap fix

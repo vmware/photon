@@ -1,0 +1,72 @@
+From 26c387973a4278218c4ad02137c4b4306ac43ef9 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 28 Mar 2022 21:23:01 +0530
+Subject: [PATCH] contrib container
+
+Rebased for selinux-policy 43.6 / container-selinux 2.247.0.
+
+Disable container_use_devices: the tunable's allow container_domain device_node
+is rejected by semodule (neverallow on memory/fixed_disk/scsi via device_node).
+Redundant per-type device_node allows for container_device* are removed in
+patch 0042 instead.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/contrib/container.te | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
+
+diff --git a/policy/modules/contrib/container.te b/policy/modules/contrib/container.te
+--- a/policy/modules/contrib/container.te
++++ b/policy/modules/contrib/container.te
+@@ -37,7 +37,7 @@
+ ##  Allow containers to use any device volume mounted into container
+ ##  </p>
+ ## </desc>
+-gen_tunable(container_use_devices, false)
++#gen_tunable(container_use_devices, false)
+ 
+ ## <desc>
+ ##  <p>
+@@ -1151,7 +1151,7 @@
+ 
+ allow container_domain spc_t:unix_stream_socket { read write };
+ kernel_unlabeled_domtrans(container_runtime_domain, spc_t)
+-kernel_unlabeled_entry_type(spc_t)
++#kernel_unlabeled_entry_type(spc_t)
+ allow container_runtime_domain unlabeled_t:key manage_key_perms;
+ #kernel_dontaudit_write_usermodehelper_state(container_t)
+ gen_require(`
+@@ -1174,10 +1174,6 @@
+ ')
+ 
+ optional_policy(`
+-	sssd_stream_connect(container_domain)
+-')
+-
+-optional_policy(`
+ 	systemd_dbus_chat_logind(container_domain)
+ ')
+ 
+@@ -1438,7 +1434,6 @@
+ 
+ dev_rw_kvm(container_kvm_t)
+ 
+-sssd_read_public_files(container_kvm_t)
+ 
+ # Container init - Policy for running systemd based containers
+ container_domain_template(container_init, container)
+@@ -1466,10 +1461,10 @@
+ 	virt_default_capabilities(container_init_t)
+ ')
+ 
+-tunable_policy(`container_use_devices',`
+-	allow container_domain device_node:chr_file {rw_chr_file_perms map};
+-	allow container_domain device_node:blk_file {rw_blk_file_perms map};
+-')
++#tunable_policy(`container_use_devices',`
++#	allow container_domain device_node:chr_file {rw_chr_file_perms map};
++#	allow container_domain device_node:blk_file {rw_blk_file_perms map};
++#')
+ 
+ tunable_policy(`container_use_xserver_devices',`
+ 	dev_getattr_xserver_misc_dev(container_t)

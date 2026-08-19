@@ -1,0 +1,40 @@
+From 89ca96ca8332d9f9b91ba76e6ac4073d8232b180 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 30 May 2024 14:59:29 +0530
+Subject: [PATCH] authlogin.te: fix pwhistory denial (rebased for 43.6)
+
+Use gen_require for sshd_devpts_t (refpolicy style). Trailing-space cleanup
+on netlink_selinux_socket line.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ policy/modules/admin/usermanage.te | 2 ++
+ policy/modules/system/authlogin.te | 7 +++++++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/policy/modules/admin/usermanage.te b/policy/modules/admin/usermanage.te
+--- a/policy/modules/admin/usermanage.te
++++ b/policy/modules/admin/usermanage.te
+@@ -685,3 +685,5 @@
+ optional_policy(`
+ 	stapserver_manage_lib(useradd_t)
+ ')
++
++allow passwd_t updpwd_t:process { rlimitinh noatsecure siginh };
+diff --git a/policy/modules/system/authlogin.te b/policy/modules/system/authlogin.te
+--- a/policy/modules/system/authlogin.te
++++ b/policy/modules/system/authlogin.te
+@@ -721,6 +721,13 @@
+ ')
+ 
+ optional_policy(`
++	gen_require(`
++		type sshd_devpts_t;
++	')
++	allow updpwd_t sshd_devpts_t:chr_file { read write open ioctl };
++')
++
++optional_policy(`
+ 	systemd_logind_stream_connect(login_pgm)
+ ')
+ 

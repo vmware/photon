@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %define container_selinux_ver   2.247.0
 
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        43.6
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 Group:          System Environment/Libraries
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
@@ -155,9 +155,8 @@ exit 0
 %{_datadir}/selinux
 
 %changelog
-* Wed Aug 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 43.6-4
-- Restrict build to subrelease 92 and above; subrelease 91 forked off as a micro branch
-- Ship policy in permissive mode by default
+* Wed Aug 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 43.6-3.1
+- Micro branch for subrelease 91: ship policy disabled by default
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 43.6-3
 - Extended to build for subrelease 91 and above
 * Thu Apr 23 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 43.6-2
