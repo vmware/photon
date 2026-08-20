@@ -3,7 +3,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -25,6 +25,7 @@ Source7: openssl-libs-post.lua
 
 Patch0: openssl-cnf.patch
 Patch1: add-FIPS_mode-compatibility-macro.patch
+Patch2: CVE-2026-14456.patch
 
 BuildRequires: zlib-devel
 
@@ -200,6 +201,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Aug 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5.7-5
+- Fix CVE-2026-14456
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.7-4
 - Extend to build for 91 and above
 * Wed Aug 12 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.7-3
