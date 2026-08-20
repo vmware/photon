@@ -1,7 +1,7 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
 Version:        3.17.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -19,6 +19,8 @@ Patch2: iperf-CVE-2024-53580.patch
 Patch3: 0001-Fix-off-by-one-heap-overflow-in-auth.patch
 # Fix for CVE-2025-54350
 Patch4: 0002-Prevent-crash-due-to-assertion-failures-on-malformed.patch
+# Fix for CVE-2026-71217
+Patch5: CVE-2026-71217.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -63,6 +65,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Thu Aug 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.17.1-5
+- Fix for CVE-2026-71217
 * Wed Aug 06 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 3.17.1-4
 - Fix for CVE-2025-54350, CVE-2025-54349
 * Mon Apr 07 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 3.17.1-3
