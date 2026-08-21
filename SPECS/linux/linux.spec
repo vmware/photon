@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.103
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -524,7 +524,6 @@ The Linux package contains the Linux kernel doc files
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
-Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-rt = %{version})
 Requires:       audit elfutils-libelf binutils-libs
 Requires:       xz-libs
 Requires:       slang
@@ -977,6 +976,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.103-6
+- Remove linux requires from linux-tools
+- Users are expected to handle that part if there is a mismatch between tools and kernel
 * Wed Aug 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.103-5
 - Remove selinux=0 from default cmdline; SELinux is now disabled via selinux-policy
 * Mon Aug 17 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.103-4
