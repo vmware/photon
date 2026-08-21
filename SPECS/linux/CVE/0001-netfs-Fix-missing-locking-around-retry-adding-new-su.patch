@@ -1,0 +1,69 @@
+From cce18c263e9623872327ba3c956012f73c1179cc Mon Sep 17 00:00:00 2001
+From: David Howells <dhowells@redhat.com>
+Date: Tue, 12 May 2026 13:33:39 +0100
+Subject: [PATCH] netfs: Fix missing locking around retry adding new subreqs
+
+[ Upstream commit cce18c263e9623872327ba3c956012f73c1179cc ]
+
+Fix netfs_retry_write_stream() to take the appropriate lock when
+discarding excess subrequests from stream->subrequests and when
+inserting newly allocated subrequests into stream->subrequests
+during a write retry.
+
+Without the lock, the write collection worker running concurrently
+can walk stream->subrequests via list_next_entry() while these
+unprotected list_del()/list_add() calls modify the list, causing
+list corruption.
+
+Also fix the 'to' cursor update: after inserting a new subreq with
+list_add(&subreq->rreq_link, &to->rreq_link), 'to' must advance to
+the newly inserted subreq (= subreq), not to the entry that was
+already next in the list (list_next_entry(to, ...)).
+
+Note: In 6.12.y write_retry.c does not exist yet; the equivalent
+retry logic lives in write_collect.c::netfs_retry_write_stream().
+The read retry path in read_retry.c already holds rreq->lock around
+all modifications to rreq->subrequests and is not affected.
+
+Fixes: 288ace2f57c9 ("netfs: New writeback implementation")
+Closes: https://sashiko.dev/#/patchset/20260425125426.3855807-1-dhowells%40redhat.com
+Signed-off-by: David Howells <dhowells@redhat.com>
+Link: https://patch.msgid.link/20260512123404.719402-3-dhowells@redhat.com
+cc: Paulo Alcantara <pc@manguebit.org>
+cc: netfs@lists.linux.dev
+cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+[Guru: write part of the code is not present in 6.12,
+ hence not ported ]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/netfs/write_collect.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/fs/netfs/write_collect.c b/fs/netfs/write_collect.c
+--- a/fs/netfs/write_collect.c
++++ b/fs/netfs/write_collect.c
+@@ -263,7 +263,9 @@
+ 			list_for_each_entry_safe_from(subreq, tmp,
+ 						      &stream->subrequests, rreq_link) {
+ 				trace_netfs_sreq(subreq, netfs_sreq_trace_discard);
++				spin_lock_bh(&wreq->lock);
+ 				list_del(&subreq->rreq_link);
++				spin_unlock_bh(&wreq->lock);
+ 				netfs_put_subrequest(subreq, false, netfs_sreq_trace_put_done);
+ 				if (subreq == to)
+ 					break;
+@@ -287,8 +289,10 @@
+ 					     netfs_sreq_trace_new);
+ 			trace_netfs_sreq(subreq, netfs_sreq_trace_split);
+
++			spin_lock_bh(&wreq->lock);
+ 			list_add(&subreq->rreq_link, &to->rreq_link);
+-			to = list_next_entry(to, rreq_link);
++			spin_unlock_bh(&wreq->lock);
++			to = subreq;
+ 			trace_netfs_sreq(subreq, netfs_sreq_trace_retry);
+
+ 			stream->sreq_max_len	= len;
+--
+2.39.0

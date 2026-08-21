@@ -1,0 +1,178 @@
+From 1bbf0ced1d9db73ac7893c2187f3459288603e0d Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 19 May 2026 08:46:11 +0000
+Subject: [PATCH] tcp: fix stale per-CPU tcp_tw_isn leak enabling ISN
+ prediction
+
+[ Upstream commit 1bbf0ced1d9db73ac7893c2187f3459288603e0d ]
+
+Blamed commit moved the TIME_WAIT-derived ISN from the skb control
+block to a per-CPU variable, assuming the value would always be consumed
+by tcp_conn_request() for the same packet that wrote it. That assumption
+is violated by multiple drop paths between the producer
+(__this_cpu_write(tcp_tw_isn, isn) in tcp_v{4,6}_rcv()) and the consumer
+(tcp_conn_request()):
+
+ - min_ttl / min_hopcount check
+ - xfrm policy check
+ - tcp_inbound_hash() MD5/AO mismatch
+ - tcp_filter() eBPF/SO_ATTACH_FILTER drop
+ - th->syn && th->fin discard in tcp_rcv_state_process() TCP_LISTEN
+ - psp_sk_rx_policy_check() in tcp_v{4,6}_do_rcv()
+ - tcp_checksum_complete() in tcp_v{4,6}_do_rcv()
+ - tcp_v{4,6}_cookie_check() returning NULL
+
+When a packet is dropped on any of these paths, tcp_tw_isn is left set.
+
+The next SYN processed on the same CPU then consumes the non zero value in
+tcp_conn_request(), receiving a potentially predictable ISN.
+
+This patch moves back tcp_tw_isn to skb->cb[], getting rid of the per-cpu
+variable.
+
+Fixes: 41eecbd712b7 ("tcp: replace TCP_SKB_CB(skb)->tcp_tw_isn with a per-cpu field")
+Reported-by: Chris Mason <clm@meta.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@google.com>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ include/net/tcp.h       | 13 +++++++------
+ net/ipv4/tcp.c          |  3 ---
+ net/ipv4/tcp_input.c    | 16 ++++++----------
+ net/ipv4/tcp_ipv4.c     |  3 ++-
+ net/ipv6/tcp_ipv6.c     |  3 ++-
+ 5 files changed, 18 insertions(+), 20 deletions(-)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -54,8 +54,6 @@
+ DECLARE_PER_CPU(unsigned int, tcp_orphan_count);
+ int tcp_orphan_count_sum(void);
+
+-DECLARE_PER_CPU(u32, tcp_tw_isn);
+-
+ void tcp_time_wait(struct sock *sk, int state, int timeo);
+
+ #define MAX_TCP_HEADER	L1_CACHE_ALIGN(128 + MAX_HEADER)
+@@ -963,10 +961,13 @@
+ 	__u32		seq;		/* Starting sequence number	*/
+ 	__u32		end_seq;	/* SEQ + FIN + SYN + datalen	*/
+ 	union {
+-		/* Note :
++		/* Notes :
++		 *	tcp_tw_isn is used in input path only
++		 *	(isn chosen by tcp_timewait_state_process())
+ 		 * 	  tcp_gso_segs/size are used in write queue only,
+ 		 *	  cf tcp_skb_pcount()/tcp_skb_mss()
+ 		 */
++		u32		tcp_tw_isn;
+ 		struct {
+ 			u16	tcp_gso_segs;
+ 			u16	tcp_gso_size;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -297,9 +297,6 @@
+ DEFINE_PER_CPU(unsigned int, tcp_orphan_count);
+ EXPORT_PER_CPU_SYMBOL_GPL(tcp_orphan_count);
+
+-DEFINE_PER_CPU(u32, tcp_tw_isn);
+-EXPORT_PER_CPU_SYMBOL_GPL(tcp_tw_isn);
+-
+ long sysctl_tcp_mem[3] __read_mostly;
+ EXPORT_IPV6_MOD(sysctl_tcp_mem);
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -7205,6 +7205,7 @@
+ 		     struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct tcp_fastopen_cookie foc = { .len = -1 };
++	u32 isn = TCP_SKB_CB(skb)->tcp_tw_isn;
+ 	struct tcp_options_received tmp_opt;
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct net *net = sock_net(sk);
+@@ -7215,20 +7216,16 @@
+ 	struct dst_entry *dst;
+ 	struct flowi fl;
+ 	u8 syncookies;
+-	u32 isn;
+
+ #ifdef CONFIG_TCP_AO
+ 	const struct tcp_ao_hdr *aoh;
+ #endif
+
+-	isn = __this_cpu_read(tcp_tw_isn);
+-	if (isn) {
+-		/* TW buckets are converted to open requests without
+-		 * limitations, they conserve resources and peer is
+-		 * evidently real one.
+-		 */
+-		__this_cpu_write(tcp_tw_isn, 0);
+-	} else {
++	/* If isn is non-zero, this SYN originally matched a TIME_WAIT socket.
++	 * TW sockets are converted to open requests without limitations,
++	 * we skip the queue limits and syncookie checks in the block below.
++	 */
++	if (!isn) {
+ 		syncookies = READ_ONCE(net->ipv4.sysctl_tcp_syncookies);
+
+ 		if (syncookies == 2 || inet_csk_reqsk_queue_is_full(sk)) {
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2305,6 +2305,7 @@
+ 		}
+ 	}
+
++	isn = 0;
+ process:
+ 	if (static_branch_unlikely(&ip4_min_ttl)) {
+ 		/* min_ttl can be changed concurrently from do_ip_setsockopt() */
+@@ -2334,6 +2335,7 @@
+ 	th = (const struct tcphdr *)skb->data;
+ 	iph = ip_hdr(skb);
+ 	tcp_v4_fill_cb(skb, iph, th);
++	TCP_SKB_CB(skb)->tcp_tw_isn = isn;
+
+ 	skb->dev = NULL;
+
+@@ -2418,7 +2420,6 @@
+ 			sk = sk2;
+ 			tcp_v4_restore_cb(skb);
+ 			refcounted = false;
+-			__this_cpu_write(tcp_tw_isn, isn);
+ 			goto process;
+ 		}
+ 	}
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1864,6 +1864,7 @@
+ 		}
+ 	}
+
++	isn = 0;
+ process:
+ 	if (static_branch_unlikely(&ip6_min_hopcount)) {
+ 		/* min_hopcount can be changed concurrently from do_ipv6_setsockopt() */
+@@ -1893,6 +1894,7 @@
+ 	th = (const struct tcphdr *)skb->data;
+ 	hdr = ipv6_hdr(skb);
+ 	tcp_v6_fill_cb(skb, hdr, th);
++	TCP_SKB_CB(skb)->tcp_tw_isn = isn;
+
+ 	skb->dev = NULL;
+
+@@ -1979,7 +1981,6 @@
+ 			sk = sk2;
+ 			tcp_v6_restore_cb(skb);
+ 			refcounted = false;
+-			__this_cpu_write(tcp_tw_isn, isn);
+ 			goto process;
+ 		}
+ 	}
+--
+2.39.0

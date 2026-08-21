@@ -1,0 +1,119 @@
+From b5782e2d462c028096f922abca46318cec890670 Mon Sep 17 00:00:00 2001
+From: David Howells <dhowells@redhat.com>
+Date: Tue, 12 May 2026 13:33:40 +0100
+Subject: [PATCH] netfs: Fix missing barriers when accessing
+ stream->subrequests locklessly
+
+[ Upstream commit b5782e2d462c028096f922abca46318cec890670 ]
+
+The list of subrequests attached to stream->subrequests is accessed
+without locks by netfs_collect_write_results(), and then it accesses
+subreq->flags without taking a barrier after getting the subreq
+pointer from the list.  Relatedly, netfs_prepare_write() does not
+use any sort of write barrier when constructing the list to make
+sure that the NETFS_SREQ_IN_PROGRESS flag is perceived to be set
+first if no lock is taken.
+
+Fix this by:
+
+ (1) Add a new list_add_tail_release() function that uses a release
+     barrier to set the pointer to the new member of the list.
+
+ (2) Add a new list_first_entry_or_null_acquire() function that uses
+     an acquire barrier to read the pointer to the first member in a
+     list (or return NULL).
+
+ (3) Use list_add_tail_release() in netfs_prepare_write() when adding
+     a subreq to stream->subrequests, ensuring the IN_PROGRESS flag
+     store is ordered before the list pointer becomes visible.
+
+
+Fixes: 288ace2f57c9 ("netfs: New writeback implementation")
+Link: https://sashiko.dev/#/patchset/20260326104544.509518-1-dhowells%40redhat.com
+Signed-off-by: David Howells <dhowells@redhat.com>
+Link: https://patch.msgid.link/20260512123404.719402-4-dhowells@redhat.com
+cc: Paulo Alcantara <pc@manguebit.org>
+cc: netfs@lists.linux.dev
+cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+[Guru: In 6.12.y the write collector uses stream->front (protected by
+smp_load_acquire(&stream->active)) for its initial lockless access,
+so write_collect.c does not need changes. The read path uses
+rreq->subrequests under rreq->lock and is unaffected. Only the
+write-issue list_add_tail_release change and the new list.h helpers
+are applicable to 6.12.y.]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/netfs/write_issue.c    |  3 ++-
+ include/linux/list.h      | 43 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/list.h b/include/linux/list.h
+--- a/include/linux/list.h
++++ b/include/linux/list.h
+@@ -183,6 +183,29 @@
+ 	__list_add(new, head->prev, head);
+ }
+
++/**
++ * list_add_tail_release - add a new entry with release barrier
++ * @new: new entry to be added
++ * @head: list head to add it before
++ *
++ * Insert a new entry before the specified head, using a release barrier to set
++ * the ->next pointer that points to it.  This is useful for implementing
++ * queues, in particular one that the elements will be walked through forwards
++ * locklessly.
++ */
++static inline void list_add_tail_release(struct list_head *new,
++					 struct list_head *head)
++{
++	struct list_head *prev = head->prev;
++
++	if (__list_add_valid(new, prev, head)) {
++		new->next = head;
++		new->prev = prev;
++		head->prev = new;
++		smp_store_release(&prev->next, new);
++	}
++}
++
+ /*
+  * Delete a list entry by making the prev/next entries
+  * point to each other.
+@@ -636,6 +659,20 @@
+ 	pos__ != head__ ? list_entry(pos__, type, member) : NULL; \
+ })
+
++/**
++ * list_first_entry_or_null_acquire - get the first element from a list with barrier
++ * @ptr:	the list head to take the element from.
++ * @type:	the type of the struct this is embedded in.
++ * @member:	the name of the list_head within the struct.
++ *
++ * Note that if the list is empty, it returns NULL.
++ */
++#define list_first_entry_or_null_acquire(ptr, type, member) ({ \
++	struct list_head *head__ = (ptr); \
++	struct list_head *pos__ = smp_load_acquire(&head__->next); \
++	pos__ != head__ ? list_entry(pos__, type, member) : NULL; \
++})
++
+ /**
+  * list_next_entry - get the next element in list
+  * @pos:	the type * to cursor
+diff --git a/fs/netfs/write_issue.c b/fs/netfs/write_issue.c
+--- a/fs/netfs/write_issue.c
++++ b/fs/netfs/write_issue.c
+@@ -199,7 +199,8 @@
+ 	 * remove entries off of the front.
+ 	 */
+ 	spin_lock_bh(&wreq->lock);
+-	list_add_tail(&subreq->rreq_link, &stream->subrequests);
++	/* Write IN_PROGRESS before pointer to new subreq */
++	list_add_tail_release(&subreq->rreq_link, &stream->subrequests);
+ 	if (list_is_first(&subreq->rreq_link, &stream->subrequests)) {
+ 		stream->front = subreq;
+ 		if (!stream->active) {
+--
+2.39.0

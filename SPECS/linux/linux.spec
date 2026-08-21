@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.103
-Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        8%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -978,6 +978,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Aug 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.103-8
+- Fixes CVE-2026-63979, CVE-2026-64024, CVE-2026-64066, CVE-2026-64067, CVE-2026-64068
 * Fri Aug 21 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.103-7
 - Make ima module to use lib sha1 instead of crypto shash
 * Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.103-6

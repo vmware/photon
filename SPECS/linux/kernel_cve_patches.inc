@@ -50,3 +50,9 @@ Patch3035: 0006-net-plumb-drop-reasons-to-__dev_queue_xmit.patch
 Patch3036: 0007-net-qdisc_pkt_len_segs_init-cleanup.patch
 Patch3037: 0008-net-pull-headers-in-qdisc_pkt_len_segs_init.patch
 Patch3038: 0009-xfrm-Do-not-clobber-inner-headers-when-already-set.patch
+# Fixes CVE-2026-63979, CVE-2026-64024, CVE-2026-64066, CVE-2026-64067, CVE-2026-64068
+Patch3039: 0001-net-handshake-hand-off-the-pinned-file-reference-to-.patch
+Patch3040: 0001-netfs-Fix-missing-barriers-when-accessing-stream-sub.patch
+Patch3041: 0001-netfs-Fix-missing-locking-around-retry-adding-new-su.patch
+Patch3042: 0001-netfs-Fix-netfs_read_to_pagecache-to-pause-on-subreq.patch
+Patch3043: 0001-tcp-fix-stale-per-CPU-tcp_tw_isn-leak-enabling-ISN-p.patch
