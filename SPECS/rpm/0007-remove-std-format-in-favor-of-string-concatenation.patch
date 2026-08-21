@@ -1,0 +1,61 @@
+From f27226a5ced604351b98a86ee5705420f7fa3c15 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 21 Aug 2026 09:55:29 +0000
+Subject: [PATCH] remove std::format in favor of string concatenation
+
+Replace std::format calls with std::string concatenation in headerfmt
+and elfdeps to drop the <format> dependency.
+
+This is to support building newer rpm with old gcc.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/headerfmt.cc | 3 +--
+ tools/elfdeps.cc | 4 +---
+ 2 files changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/lib/headerfmt.cc b/lib/headerfmt.cc
+index a188d05..a886b0f 100644
+--- a/lib/headerfmt.cc
++++ b/lib/headerfmt.cc
+@@ -4,7 +4,6 @@
+ 
+ #include "system.h"
+ 
+-#include <format>
+ #include <string>
+ #include <unordered_map>
+ 
+@@ -741,7 +740,7 @@ static bool formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
+     /* Handle field width + justification formatting if specified */
+     if (tag->format && *tag->format) {
+ 	char *tval = NULL;
+-	const std::string fmtbuf = std::format("%{}s", tag->format);
++    const std::string fmtbuf = std::string("%") + tag->format + 's';
+ 
+ 	rasprintf(&tval, fmtbuf.c_str(), val);
+ 	free(val);
+diff --git a/tools/elfdeps.cc b/tools/elfdeps.cc
+index 109f788..a208009 100644
+--- a/tools/elfdeps.cc
++++ b/tools/elfdeps.cc
+@@ -1,6 +1,5 @@
+ #include "system.h"
+ 
+-#include <format>
+ #include <string>
+ #include <vector>
+ 
+@@ -105,8 +104,7 @@ static void addSoDep(std::vector<std::string> & deps,
+     if (ver.empty() && marker.empty()) {
+ 	addDep(deps, soname);
+     } else {
+-	auto dep = std::format("{}({}){}", soname, ver, marker);
+-	addDep(deps, dep);
++    addDep(deps, soname + "(" + ver + ")" + marker);
+     }
+ }
+ 
+-- 
+2.53.0
+

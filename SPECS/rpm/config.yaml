@@ -1,14 +1,14 @@
 sources:
-- archive: rpm-6.0.1.tar.bz2
-  archive_sha512sum: 55a03b6c65c6bd009ce824feb6298d305eb497464d860aa92ccdf15bcea9af0e2dd70e9ac4b26a8494a222656201314dc1c7a245d9cb5416b058f66f8276f4e9
+- archive: rpm-6.1.0.tar.bz2
+  archive_sha512sum: e07324fd7b32f650713edd904801c77fa0796f72b53bec863ad7d332f3ad5897a67840ec0c1a84ce1e67ef2fdd69dff17ad72e0601c07bba7b4e7798cd9af77a
   archive_type: upstream
-  name: rpm-6.0.1
-  version: 6.0.1
-  url: https://github.com/rpm-software-management/rpm/releases/download/rpm-6.0.1-release/rpm-6.0.1.tar.bz2
+  name: rpm-6.1.0
+  version: 6.1.0
+  url: https://github.com/rpm-software-management/rpm/releases/download/rpm-6.1.0-release/rpm-6.1.0.tar.bz2
   repo_url: https://github.com/rpm-software-management/rpm
-  commit_id: 58a917a6c5e24e9e8a01976c17d2eee06249b9b6
+  commit_id: f832c7e69945248dd5bcfcacfd10c176ee300fa2
   skip_list: []
-  missing: [ka.po, kw.po, ChangeLog, el.po, cmn.po, es.po, sr@latin.po, nl.po, rpm.pot, vi.po, zh_TW.po, README, tr.po, da.po, eo.po, ms.po, pt_BR.po, te.po, ja.po, POTFILES.in, nb.po, sr.po, he.po, zh_CN.po, Makevars, it.po, pl.po, CMakeLists.txt, ca.po, gu.po, ar.po, si.po, sv.po, is.po, id.po, de.po, cs.po, pa.po, LINGUAS, pt.po, uk.po, sk.po, fi.po, ko.po, fr.po, ie.po, ro.po, ru.po, sl.po, br.po]
+  missing: ['*.po', ChangeLog, rpm.pot, vi.po, zh_TW.po, README, POTFILES.in, Makevars, CMakeLists.txt, LINGUAS]
   spdx:
     package:
       detailed_description: 'RPM package manager'

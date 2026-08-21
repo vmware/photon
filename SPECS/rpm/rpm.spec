@@ -3,8 +3,8 @@
 
 Summary:    Package manager
 Name:       rpm
-Version:    6.0.1
-Release:    5%{?dist}
+Version:    6.1.0
+Release:    1%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -26,14 +26,12 @@ Patch2: 0003-If-rpm-is-not-triggered-from-tty-rpm-transactions-wo.patch
 Patch3: 0004-Migrate-rpmdb-to-usr-lib-sysimage-rpm.patch
 Patch4: 0005-build-support-findreq-findprov-in-Requires-Provides-.patch
 Patch5: 0006-Disable-scdoc.patch
-Patch6: 0007-replace-format-with-string-concatenation.patch
+Patch6: 0007-remove-std-format-in-favor-of-string-concatenation.patch
 Patch7: 0008-fix-host.patch
 Patch8: 0009-rpm-6.0-rpmformat.patch
 Patch9: 0010-rpm-6.0-vfylevel.patch
 Patch10: 0011-dilute-user-group-requires.patch
 Patch11: 0012-Treat-scriptlet-failures-as-non-fatal-by-default.patch
-Patch12: 0013-CVE-2026-44604.patch
-Patch13: 0014-harden-ndb-implementation.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -293,6 +291,8 @@ rm -rf %{buildroot}
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
 %{_bindir}/rpmlua
+%{_bindir}/rpmuncompress
+%{_bindir}/rpm-setup-autosign
 %{_rpmmacrodir}/*
 %{rpmhome}/find-lang.sh
 %{rpmhome}/find-provides
@@ -325,6 +325,11 @@ rm -rf %{buildroot}
 %{_mandir}/man1/rpm-setup-autosign.1*
 %{_mandir}/man1/rpmuncompress.1*
 %{_mandir}/man1/rpmsign.1*
+%{_mandir}/man1/elfdeps.1.gz
+%{_mandir}/man7/rpm-dependency-generators.7.gz
+%{_mandir}/man7/rpm-design.7.gz
+%{_mandir}/man7/rpm-scriptlets.7.gz
+%{_mandir}/man7/rpm-sysusers.7.gz
 
 %files devel
 %defattr(-,root,root)
@@ -354,6 +359,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Fri Aug 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-1
+- Upgrade to v6.1.0
 * Tue Aug 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-5
 - Fix CVE-2026-44604
 - Fix ndb implementation integer overflows
