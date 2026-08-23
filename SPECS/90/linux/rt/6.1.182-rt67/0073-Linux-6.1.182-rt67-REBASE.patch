@@ -1,0 +1,20 @@
+From 20f6f6afaa2c6b48f179370bfe0e9c766e3008cc Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Mon, 17 Aug 2026 16:55:51 -0500
+Subject: [PATCH 73/73] Linux 6.1.182-rt67 REBASE
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index e2eb19782d4c..5513b842ced2 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt65
++-rt67
+-- 
+2.55.0
+

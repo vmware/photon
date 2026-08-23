@@ -21,17 +21,20 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
 [ Keerthana: skipped cfids_laundromat_worker() and trace.h changes,
 which are unavailable on 6.1.y ]
 Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+[Ankit: Refreshed for 6.1.183 kernel. Kept the new trace calls added
+upstream, no logic change.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- fs/smb/client/smb2misc.c |  6 +++---
- fs/smb/client/smb2ops.c  | 11 +++++------
+ fs/smb/client/smb2misc.c |  6 ++++---
+ fs/smb/client/smb2ops.c  | 10 +++-------
  fs/smb/client/smb2pdu.c  |  2 ++
- 3 files changed, 10 insertions(+), 9 deletions(-)
+ 3 files changed, 8 insertions(+), 10 deletions(-)
 
 diff --git a/fs/smb/client/smb2misc.c b/fs/smb/client/smb2misc.c
-index cc6fa92a39ee..ad9aeb997fb8 100644
+index cd00bf48c9a5..e41fcccb9011 100644
 --- a/fs/smb/client/smb2misc.c
 +++ b/fs/smb/client/smb2misc.c
-@@ -808,12 +808,12 @@ smb2_handle_cancelled_close(struct cifs_tcon *tcon, __u64 persistent_fid,
+@@ -844,14 +844,14 @@ smb2_handle_cancelled_close(struct cifs_tcon *tcon, __u64 persistent_fid,
  	int rc;
  
  	cifs_dbg(FYI, "%s: tc_count=%d\n", __func__, tcon->tc_count);
@@ -40,61 +43,66 @@ index cc6fa92a39ee..ad9aeb997fb8 100644
  	if (tcon->tc_count <= 0) {
  		struct TCP_Server_Info *server = NULL;
  
+ 		trace_smb3_tcon_ref(tcon->debug_id, tcon->tc_count,
+ 				    netfs_trace_tcon_ref_see_cancelled_close);
  		WARN_ONCE(tcon->tc_count < 0, "tcon refcount is negative");
 -		spin_unlock(&cifs_tcp_ses_lock);
 +		spin_unlock(&tcon->tc_lock);
  
  		if (tcon->ses) {
  			server = tcon->ses->server;
-@@ -825,7 +825,7 @@ smb2_handle_cancelled_close(struct cifs_tcon *tcon, __u64 persistent_fid,
- 		return 0;
- 	}
+@@ -865,7 +865,7 @@ smb2_handle_cancelled_close(struct cifs_tcon *tcon, __u64 persistent_fid,
  	tcon->tc_count++;
+ 	trace_smb3_tcon_ref(tcon->debug_id, tcon->tc_count,
+ 			    netfs_trace_tcon_ref_get_cancelled_close);
 -	spin_unlock(&cifs_tcp_ses_lock);
 +	spin_unlock(&tcon->tc_lock);
  
  	rc = __smb2_handle_cancelled_cmd(tcon, SMB2_CLOSE_HE, 0,
  					 persistent_fid, volatile_fid);
 diff --git a/fs/smb/client/smb2ops.c b/fs/smb/client/smb2ops.c
-index 8bcecd19e901..57f6d25c9262 100644
+index 245737ba4ea6..8ebf6989f7bf 100644
 --- a/fs/smb/client/smb2ops.c
 +++ b/fs/smb/client/smb2ops.c
-@@ -2847,8 +2847,11 @@ smb2_get_dfs_refer(const unsigned int xid, struct cifs_ses *ses,
- 		tcon = list_first_entry_or_null(&ses->tcon_list,
+@@ -2848,9 +2848,11 @@ smb2_get_dfs_refer(const unsigned int xid, struct cifs_ses *ses,
  						struct cifs_tcon,
  						tcon_list);
--		if (tcon)
-+		if (tcon) {
+ 		if (tcon) {
 +			spin_lock(&tcon->tc_lock);
  			tcon->tc_count++;
+ 			trace_smb3_tcon_ref(tcon->debug_id, tcon->tc_count,
+ 					    netfs_trace_tcon_ref_get_dfs_refer);
 +			spin_unlock(&tcon->tc_lock);
-+		}
+ 		}
  		spin_unlock(&cifs_tcp_ses_lock);
  	}
- 
-@@ -2910,11 +2913,7 @@ smb2_get_dfs_refer(const unsigned int xid, struct cifs_ses *ses,
+@@ -2913,13 +2915,7 @@ smb2_get_dfs_refer(const unsigned int xid, struct cifs_ses *ses,
   out:
  	if (tcon && !tcon->ipc) {
  		/* ipc tcons are not refcounted */
 -		spin_lock(&cifs_tcp_ses_lock);
 -		tcon->tc_count--;
+-		trace_smb3_tcon_ref(tcon->debug_id, tcon->tc_count,
+-				    netfs_trace_tcon_ref_dec_dfs_refer);
 -		/* tc_count can never go negative */
 -		WARN_ON(tcon->tc_count < 0);
 -		spin_unlock(&cifs_tcp_ses_lock);
-+		cifs_put_tcon(tcon);
++		cifs_put_tcon(tcon, netfs_trace_tcon_ref_put_dfs_refer);
  	}
  	kfree(utf16_path);
  	kfree(dfs_req);
 diff --git a/fs/smb/client/smb2pdu.c b/fs/smb/client/smb2pdu.c
-index 4998c7c2675c..1a02f3b86770 100644
+index 98d6fcdf2236..6ea3dea5829c 100644
 --- a/fs/smb/client/smb2pdu.c
 +++ b/fs/smb/client/smb2pdu.c
-@@ -3920,7 +3920,9 @@ void smb2_reconnect_server(struct work_struct *work)
+@@ -3994,9 +3994,11 @@ void smb2_reconnect_server(struct work_struct *work)
  
  		list_for_each_entry(tcon, &ses->tcon_list, tcon_list) {
  			if (tcon->need_reconnect || tcon->need_reopen_files) {
 +				spin_lock(&tcon->tc_lock);
  				tcon->tc_count++;
+ 				trace_smb3_tcon_ref(tcon->debug_id, tcon->tc_count,
+ 						    netfs_trace_tcon_ref_get_reconnect_server);
 +				spin_unlock(&tcon->tc_lock);
  				list_add_tail(&tcon->rlist, &tmp_list);
  				tcon_selected = tcon_exist = true;

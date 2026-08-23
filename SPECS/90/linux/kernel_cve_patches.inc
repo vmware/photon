@@ -45,9 +45,6 @@ Patch3025: 0001-drm-amd-display-Check-link_index-before-accessing-dc.patch
 # Fix CVE-2024-50029
 Patch3026: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
 
-# Fix CVE-2025-39901
-Patch3027: 0001-i40e-remove-read-access-to-debugfs-files.patch
-
 # Fix CVE-2024-41045
 Patch3028: 0001-bpf-Defer-work-in-bpf_timer_cancel_and_free.patch
 
@@ -125,7 +122,6 @@ Patch3054: 0001-drm-amd-pm-fix-null-pointer-access.patch
 Patch3055: 0001-drm-amd-display-Check-null-pointers-before-using-the.patch
 
 # Fix CVE-2024-49988
-Patch3056: 0001-ksmbd-add-refcnt-to-ksmbd_conn-struct.patch
 Patch3057: 0002-ksmbd-fix-use-after-free-in-SMB-request-handling.patch
 
 # Fix CVE-2025-38039

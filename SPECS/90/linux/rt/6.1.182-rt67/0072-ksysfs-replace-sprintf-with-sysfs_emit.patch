@@ -1,0 +1,29 @@
+From 6fae6fde4e5fadd13c02e811895f9055fe3f451f Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Fri, 31 Jul 2026 11:00:30 -0500
+Subject: [PATCH 72/73] ksysfs:  replace sprintf with sysfs_emit
+
+Update the /sys/kernel/realtime patch to use sysfs_emit rather
+than sprintf since sysfs_emit is aware of page boundaries.
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ kernel/ksysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/ksysfs.c b/kernel/ksysfs.c
+index ab18048e2186..b5ad6e24f1fe 100644
+--- a/kernel/ksysfs.c
++++ b/kernel/ksysfs.c
+@@ -146,7 +146,7 @@ KERNEL_ATTR_RO(vmcoreinfo);
+ static ssize_t realtime_show(struct kobject *kobj,
+ 			     struct kobj_attribute *attr, char *buf)
+ {
+-	return sprintf(buf, "%d\n", 1);
++	return sysfs_emit(buf, "%d\n", 1);
+ }
+ KERNEL_ATTR_RO(realtime);
+ #endif
+-- 
+2.55.0
+

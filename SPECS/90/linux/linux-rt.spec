@@ -24,15 +24,15 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        6.1.177
-Release:        3%{?dist}
+Version:        6.1.183
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt65
+%define rt_version rt67
 %define uname_r %{version}-%{release}-rt
 %define _modulesdir /lib/modules/%{uname_r}
 
@@ -135,9 +135,6 @@ Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 # latency spikes across all vcpus due to nested pagetable
 # synchronization.
 Patch23: 6.0-vfio-Only-set-INTX_DISABLE-bit-during-disable.patch
-
-# vmxnet3 patches
-Patch24: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
 
 Patch25: 0001-x86-pti-Fix-kernel-warnings-for-pti-and-nopti-cmdlin.patch
 
@@ -544,6 +541,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/libstalld_bpf.so
 
 %changelog
+* Fri Aug 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.183-1
+- Update to version 6.1.183, -rt67
 * Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.177-3
 - Revert fix for CVE-2026-53224, CVE-2026-53246 due to failing LTP
 * Thu Jul 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.177-2

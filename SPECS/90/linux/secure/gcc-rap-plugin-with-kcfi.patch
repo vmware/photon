@@ -41,6 +41,9 @@ replaced indirect way of calling system call with switch statement based
 direct system call. So, there is no need for asm way to call syscall directly.]
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 Signed-off-by: Ashwin Dayanand Kamat <ashwin.kamat@broadcom.com>
+[Ankit: Refreshed for 6.1.183 kernel. Fixed the ip_set_core.c hunk
+context, no logic change.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
  Makefile                                      |   2 +
  arch/Kconfig                                  |   8 +-
@@ -2211,16 +2214,16 @@ index 7d2491c18..f689ea969 100644
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
 diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index f4f65fa94..242d6bda9 100644
+index 7601e4ca0..7ddab2813 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
-@@ -397,7 +397,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
- 	rcu_assign_pointer(comment->c, NULL);
+@@ -397,7 +397,6 @@ ip_set_comment_free(struct ip_set *set,
+ 	kfree_rcu(c, rcu);
  }
- 
+
 -typedef void (*destroyer)(struct ip_set *, void *);
  /* ipset data extension types, in size order */
- 
+
  const struct ip_set_ext_type ip_set_extensions[] = {
 diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
 index e4deaf5fa..7acd78f9d 100644

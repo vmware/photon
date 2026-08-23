@@ -36,27 +36,30 @@ Signed-off-by: Steve French <stfrench@microsoft.com>
 
 [Srinidhi Rao: Backported this fix to v6.1.x]
 Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+[Ankit: Refreshed for 6.1.183 kernel. Dropped the sibling refcnt patch
+(already upstream) and switched this fix to use the existing
+ksmbd_conn_get()/put() instead of raw refcnt. Same fix, no logic
+change.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- fs/smb/server/server.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ fs/smb/server/server.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/fs/smb/server/server.c b/fs/smb/server/server.c
-index 27d8d6c6fdac..c1e9ec052585 100644
+index fe797e8fe941..ad47a7ad2d66 100644
 --- a/fs/smb/server/server.c
 +++ b/fs/smb/server/server.c
-@@ -275,8 +275,12 @@ static void handle_ksmbd_work(struct work_struct *wk)
+@@ -275,8 +275,10 @@ static void handle_ksmbd_work(struct work_struct *wk)
  	 * disconnection. waitqueue_active is safe because it
  	 * uses atomic operation for condition.
  	 */
-+	atomic_inc(&conn->refcnt);
++	ksmbd_conn_get(conn);
  	if (!atomic_dec_return(&conn->r_count) && waitqueue_active(&conn->r_count_q))
  		wake_up(&conn->r_count_q);
-+
-+	if (atomic_dec_and_test(&conn->refcnt))
-+		kfree(conn);
++	ksmbd_conn_put(conn);
  }
- 
+
  /**
--- 
+--
 2.35.6
 

@@ -14,6 +14,9 @@ depmod: ERROR: Found 2 modules in dependency cycles!
 
 Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+[Ankit: Refreshed for 6.1.183 kernel. Fixed hunk context, no logic
+change.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
  drivers/vfio/pci/vfio_pci_config.c | 22 ++++++++---
  drivers/vfio/pci/vfio_pci_core.c   | 60 ++++++++++++++++++++++++------
@@ -159,9 +162,9 @@ index e030c2120183..c4359d6d374e 100644
  err_undo:
  	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list) {
 @@ -2525,8 +2559,12 @@ static void vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set)
- 	if (!disable_idle_d3 && vfio_pci_dev_set_pm_runtime_get(dev_set))
+ 	if (vfio_pci_dev_set_pm_runtime_get(dev_set))
  		return;
- 
+
 -	if (!pci_reset_bus(pdev))
 -		reset_done = true;
 +	if (vfio_pci_resets_disabled()) {

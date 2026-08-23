@@ -32,8 +32,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.177
-Release:        4%{?dist}
+Version:        6.1.183
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -137,9 +137,6 @@ Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 Patch24: 0001-NEWCA-make-initrd-pages-immutable.patch
 
-# vmxnet3 patches
-Patch25: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
-
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
 Patch31: 0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
@@ -194,6 +191,12 @@ Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch85: 0001-Adding-SBX-kernel-driver.patch
 
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+
+# Fix BPF JIT memory (bpf_jit_limit) leak: seccomp filters held by
+# unreaped zombies were not released until release_task(); release
+# them at task exit instead. Upstream commit bfafe5efa975 (v6.11).
+Patch101: seccomp-release-task-filters-when-the-task-exits.patch
+
 # CVE patches — see kernel_cve_patches.inc (range 3000–3999)
 %include %{SOURCE102}
 
@@ -360,6 +363,9 @@ The Linux package contains the Linux kernel doc files
 
 # apparmor
 %autopatch -p1 -m100 -M100
+
+# seccomp
+%autopatch -p1 -m101 -M101
 
 %ifarch x86_64
 %autopatch -p1 -m49 -M49
@@ -575,6 +581,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Aug 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.183-1
+- Update to version 6.1.183
+- Fix BPF JIT memory (bpf_jit_limit) leak from seccomp filters pinned by unreaped zombies
 * Thu Aug 20 2026 Garrett Goble <Garrett.Goble@broadcom.com> 6.1.177-4
 - Update SBX driver
 * Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.177-3

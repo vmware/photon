@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.177
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.183
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -191,9 +191,6 @@ Patch21: 6.1-0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
-# vmxnet3 patches
-Patch23: 0001-vmxnet3-fix-BUG_ON-in-vmxnet3_get_hdr_len-for-Geneve.patch
-
 Patch25: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
 
 # glibc-2.43 build error fixes
@@ -221,6 +218,12 @@ Patch62: 0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 Patch63: fix-warn-definition.patch
 
 Patch100: 6.0-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+
+# Fix BPF JIT memory (bpf_jit_limit) leak: seccomp filters held by
+# unreaped zombies were not released until release_task(); release
+# them at task exit instead. Upstream commit bfafe5efa975 (v6.11).
+Patch101: seccomp-release-task-filters-when-the-task-exits.patch
+
 # CVE patches — see kernel_cve_patches.inc (range 3000–3999)
 %include %{SOURCE102}
 
@@ -512,6 +515,9 @@ The kernel fips-canister
 
 # apparmor
 %autopatch -p1 -m100 -M100
+
+# seccomp
+%autopatch -p1 -m101 -M101
 
 %ifarch x86_64
 # VMW x86
@@ -875,6 +881,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Aug 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.183-1
+- Update to version 6.1.183
+- Fix BPF JIT memory (bpf_jit_limit) leak from seccomp filters pinned by unreaped zombies
 * Mon Aug 17 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.177-3
 - Revert CVE-2026-53224, CVE-2026-53246 due to failing LTP
 * Thu Jul 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.177-2
