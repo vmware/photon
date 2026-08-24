@@ -3,7 +3,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -23,9 +23,21 @@ Source6: license.txt
 
 Source7: openssl-libs-post.lua
 
-Patch0: openssl-cnf.patch
-Patch1: add-FIPS_mode-compatibility-macro.patch
-Patch2: CVE-2026-14456.patch
+Patch0:  openssl-cnf.patch
+Patch1:  add-FIPS_mode-compatibility-macro.patch
+Patch2:  CVE-2026-14456.patch
+Patch3:  CVE-2026-14457.patch
+Patch4:  CVE-2026-18798.patch
+# CVE-2026-54874
+Patch5:  0001-Avoid-full-read-buffer-allocation-when-buffering-DTL.patch
+Patch6:  0002-ssl-record-methods-dtls_meth.c-lower-the-unprocessed.patch
+Patch7:  0003-ssl-record-remove-dead-DTLS-processed_rcds-record-qu.patch
+Patch8:  CVE-2026-63072.patch
+Patch9:  CVE-2026-63073.patch
+Patch10: CVE-2026-63074.patch
+Patch11: CVE-2026-63075.patch
+Patch12: CVE-2026-63076.patch
+Patch13: CVE-2026-75803.patch
 
 BuildRequires: zlib-devel
 
@@ -201,6 +213,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Mon Aug 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.7-6
+- Multiple CVE fixes
+- CVE-2026-14456  CVE-2026-18798  CVE-2026-63072  CVE-2026-63074  CVE-2026-63076 CVE-2026-14457
+- CVE-2026-54874 CVE-2026-63073  CVE-2026-63075  CVE-2026-75803
 * Thu Aug 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5.7-5
 - Fix CVE-2026-14456
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.7-4
