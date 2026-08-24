@@ -1,10 +1,17 @@
 sources:
-- archive: apr-util-1.6.3.tar.gz
-  archive_sha512sum: 25f078413dc552b3391845b3dc1da72773efe181634deb2f88a9c72a1a49c82883113704bf97db8327012ccafb84a68370267925e3c7cc092ed82fc33fd7954e
-  skip_validation: true
+- archive: apr-util-1.6.5.tar.gz
+  archive_sha512sum: eae233cd229b355d7cd54096c32afa27c09cf75780da7c2723bcc2a3749af1bed687c492630d5f9904fb26c13553c86ee161370935aa363cbd121b38c9e39e99
+  archive_type: upstream
+  name: "apr-util-1.6.5"
+  version: 1.6.5
+  url: https://archive.apache.org/dist/apr/apr-util-1.6.5.tar.gz
+  repo_url: https://github.com/apache/apr-util
+  commit_id: eb1f0c8ebd4f9633c327f595746933da6349dded
+  skip_list: []
+  missing: [configure, install.sh, find_apr.m4, get-version.sh, config.sub, apu_config.h.in, STATUS, config.guess, apr_common.m4, apr-util.spec, build-outputs.mk]
   spdx:
     package:
-      detailed_description: 'The Apache Portable Runtime Utility Library. '
+      detailed_description: 'The Apache Portable Runtime Utility Library.'
       home_page: https://apr.apache.org
       license_concluded: OLDAP-2.8 AND RSA-MD AND Sleepycat AND Apache-2.0 AND GPL-3.0-or-later
         WITH Autoconf-exception-generic-3.0 AND BSD-4.3RENO AND MIT AND FSFUL AND
