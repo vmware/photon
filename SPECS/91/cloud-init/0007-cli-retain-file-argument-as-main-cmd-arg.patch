@@ -1,4 +1,4 @@
-From 7740e185128a381d9ba0391f2bf60aee9f0c09cd Mon Sep 17 00:00:00 2001
+From a560812d82baf42525ae8df3b1cc01622d69c525 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 5 Dec 2024 10:44:48 +0530
 Subject: [PATCH 7/9] cli-retain-file-argument-as-main-cmd-arg
@@ -20,39 +20,28 @@ Refer: https://github.com/canonical/cloud-init/issues/5302
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
- cloudinit/cmd/main.py            | 32 +++++++++++++++++++++++++++++---
+ cloudinit/cmd/main.py            | 17 +++++++++++++++++
  tests/unittests/cmd/test_main.py |  5 ++++-
- 2 files changed, 33 insertions(+), 4 deletions(-)
+ 2 files changed, 21 insertions(+), 1 deletion(-)
 
 diff --git a/cloudinit/cmd/main.py b/cloudinit/cmd/main.py
-index bc1fcdd..db48827 100644
+index 207b97cf9..9a5dda9cc 100644
 --- a/cloudinit/cmd/main.py
 +++ b/cloudinit/cmd/main.py
-@@ -160,8 +160,23 @@ def close_stdin(logger: Callable[[str], None] = LOG.debug):
-         logger("Not closing stdin, stdin is a tty.")
- 
- 
-+def _file_type(filepath):
-+    try:
-+        open(filepath, "rb").close()
-+    except OSError as e:
-+        raise argparse.ArgumentTypeError(f"can't open '{filepath}': {e}")
-+    return filepath
-+
-+
- def extract_fns(args):
+@@ -127,6 +127,12 @@ def extract_fns(args):
+     # since it would of broke if it couldn't have
+     # read that file already...
      fn_cfgs = []
-+
 +    if args.main_files:
 +        # Append common --file argument to beginning of list when present.
 +        # Avoid namespace collision with same --file arg defined in subcommands
-+        for filepath in args.main_files:
-+            fn_cfgs.append(os.path.realpath(filepath))
++        for fh in args.main_files:
++            fn_cfgs.append(os.path.realpath(fh.name))
 +
      if args.files:
-         for filepath in args.files:
+         for fh in args.files:
              # The realpath is more useful in logging
-@@ -1106,6 +1121,17 @@ def main(sysv_args=None):
+@@ -1052,6 +1058,17 @@ def main(sysv_args=None):
          help="Show additional pre-action logging (default: %(default)s).",
          default=False,
      )
@@ -65,40 +54,13 @@ index bc1fcdd..db48827 100644
 +            "Use additional yaml configuration files for subcommands: init,"
 +            " modules or single"
 +        ),
-+        type=_file_type,
++        type=argparse.FileType("rb"),
 +    )
      parser.add_argument(
          "--force",
          action="store_true",
-@@ -1148,7 +1174,7 @@ def main(sysv_args=None):
-         action="append",
-         dest="files",
-         help="Use additional yaml configuration files.",
--        type=str,
-+        type=_file_type,
-     )
-     # This is used so that we can know which action is selected +
-     # the functor to use to run this subcommand
-@@ -1181,7 +1207,7 @@ def main(sysv_args=None):
-         action="append",
-         dest="files",
-         help="Use additional yaml configuration files.",
--        type=str,
-+        type=_file_type,
-     )
-     parser_mod.set_defaults(action=("modules", main_modules))
- 
-@@ -1221,7 +1247,7 @@ def main(sysv_args=None):
-         action="append",
-         dest="files",
-         help="Use additional yaml configuration files.",
--        type=str,
-+        type=_file_type,
-     )
-     parser_single.set_defaults(action=("single", main_single))
- 
 diff --git a/tests/unittests/cmd/test_main.py b/tests/unittests/cmd/test_main.py
-index 1dd09bc..2911fd7 100644
+index ab5a73bd5..160c4a82e 100644
 --- a/tests/unittests/cmd/test_main.py
 +++ b/tests/unittests/cmd/test_main.py
 @@ -14,7 +14,7 @@ from cloudinit.cmd import main
@@ -126,7 +88,7 @@ index 1dd09bc..2911fd7 100644
              files=None,
              force=False,
              local=False,
-@@ -372,6 +374,7 @@ class TestMain:
+@@ -355,6 +357,7 @@ class TestMain:
          write_file(cloud_cfg_file, safeyaml.dumps(cfg))
          cmdargs = MyArgs(
              debug=False,
@@ -135,5 +97,5 @@ index 1dd09bc..2911fd7 100644
              force=False,
              local=False,
 -- 
-2.53.0
+2.48.1
 

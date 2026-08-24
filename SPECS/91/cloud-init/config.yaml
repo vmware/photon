@@ -1,12 +1,12 @@
 sources:
-- archive: cloud-init-26.2.tar.gz
+- archive: cloud-init-25.1.3.tar.gz
   archive_type: upstream
-  archive_sha512sum: 8826c2fba9ef4125121792390314a1b151ea9e004ad2db11a030881b99754884eb14c158eb497cf4c311e3b8cb5161ea5d9906838719666216f4a6430c9e18f4
-  name: cloud-init-26.2
-  version: 26.2
-  url: https://github.com/canonical/cloud-init/archive/refs/tags/26.2.tar.gz
+  archive_sha512sum: b8b6ab8b4649cacaa8d30abe5b9e738ea9443ef16cda49c3c018632563920d67248965f3ee461f0e908b49e97169f1074446e936436d5b0c131e6b1050510eb6
+  name: cloud-init-25.1.3
+  version: 25.1.3
+  url: https://github.com/canonical/cloud-init/archive/refs/tags/25.1.3.tar.gz
   repo_url: https://github.com/canonical/cloud-init.git
-  commit_id: 0578e3b752afe67d8366300841e1252cb987f91f
+  commit_id: 79ac5c8311efb8b89bca129cc8a0098ca5ef679d
   skip_list: []
   missing: []
   spdx:

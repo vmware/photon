@@ -1,4 +1,4 @@
-From 9094266e79fa3cc5a40b2e368f3f9335b17a3263 Mon Sep 17 00:00:00 2001
+From 94b60d4c1ef60fdc71c8cdc111b6c301837c8714 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 25 Aug 2021 19:48:43 +0530
 Subject: [PATCH 2/9] Change default policy
@@ -12,20 +12,27 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/tools/ds-identify b/tools/ds-identify
-index 82f6b03..acf6075 100755
+index ec33710..6741315 100755
 --- a/tools/ds-identify
 +++ b/tools/ds-identify
-@@ -100,8 +100,8 @@ DI_MAIN=${DI_MAIN:-main}
+@@ -100,7 +100,7 @@ DI_MAIN=${DI_MAIN:-main}
  
  DI_BLKID_EXPORT_OUT=""
  DI_GEOM_LABEL_STATUS_OUT=""
 -DI_DEFAULT_POLICY="search,found=all,maybe=none,notfound=${DI_DISABLED}"
--DI_DEFAULT_POLICY_NO_DMI="search,found=all,maybe=none,notfound=${DI_DISABLED}"
 +DI_DEFAULT_POLICY="search,found=all,maybe=none,notfound=${DI_ENABLED}"
-+DI_DEFAULT_POLICY_NO_DMI="search,found=all,maybe=none,notfound=${DI_ENABLED}"
+ DI_DEFAULT_POLICY_NO_DMI="search,found=all,maybe=none,notfound=${DI_ENABLED}"
  DI_DMI_BOARD_NAME=""
  DI_DMI_CHASSIS_ASSET_TAG=""
- DI_DMI_PRODUCT_NAME=""
+@@ -846,7 +846,7 @@ check_config() {
+     # key: [ some_value ]
+     # key : [ "some value" ]
+     # key\t:\t[\tsome_value\t]\t
+-    # 
++    #
+     # The syntax warned about is not valid posix shell, and we are not
+     # attempting to access an index of arrays. Silence it.
+     # shellcheck disable=1087
 -- 
-2.53.0
+2.43.0
 

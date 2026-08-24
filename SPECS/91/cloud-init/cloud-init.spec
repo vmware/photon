@@ -1,15 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
-%if 0%{?with_check}
-# for pip install
-%define network_required 1
-%endif
-
 Name:           cloud-init
-Version:        26.2
-Release:        1%{?dist}
+Version:        25.1.3
+Release:        11.1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -34,9 +29,9 @@ Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
 Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
 Patch7: 0008-No-single-process.patch
 Patch8: 0009-Show-stdout-logs-in-journal-only.patch
+Patch9: 0010-vlan-bond-support.patch
+Patch10: 0011-bridge-multi-vlan-same-interface.patch
 
-BuildRequires: meson
-BuildRequires: bash-completion-devel
 BuildRequires: photon-release
 BuildRequires: python3-devel
 BuildRequires: systemd-devel
@@ -65,7 +60,6 @@ BuildRequires: python3-pyserial
 BuildRequires: python3-attrs
 BuildRequires: python3-iniconfig
 BuildRequires: shadow
-BuildRequires: python3-passlib
 %endif
 
 Requires: (hostname or net-tools)
@@ -101,16 +95,10 @@ ssh keys and to let the user run various scripts.
 %autosetup -p1
 
 %build
-%{meson} \
-  -Dinit_system=systemd \
-  -Ddisable_sshd_keygen=true \
-  -Ddownstream_version=%{version}-%{release} \
-  %{nil}
-
-%{meson_build}
+%{py3_build}
 
 %install
-%{meson_install}
+%py3_install -- --init-system=systemd
 
 %{python3} tools/render-template --variant photon > \
         %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
@@ -119,7 +107,7 @@ ssh keys and to let the user run various scripts.
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
 # for DS from a remote location, let's remove it.
 sed -i -e "0,/'OpenStack', / s/'OpenStack', //" \
-  %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
+        %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
 mkdir -p %{buildroot}%{_sharedstatedir}/cloud \
@@ -127,11 +115,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/cloud \
 
 %if 0%{?with_check}
 %check
-%define _make_output_sync %{nil}
+%define pkglist pytest-metadata unittest2 responses pytest-mock passlib
 
-pkglist=(pytest-metadata responses pytest-mock pyfakefs)
-pip3 install --upgrade ${pkglist[@]}
-
+pip3 install --upgrade %{pkglist}
 %make_build check
 %endif
 
@@ -152,7 +138,7 @@ rm -rf %{buildroot}
 %{_bindir}/*
 %{python3_sitelib}/*
 %{_docdir}/%{name}/*
-%{_libexecdir}/%{name}/*
+%{_libdir}/%{name}/*
 %dir %{_sharedstatedir}/cloud
 %dir %{_sysconfdir}/cloud/templates
 %doc %{_sysconfdir}/cloud/cloud.cfg.d/README
@@ -166,11 +152,10 @@ rm -rf %{buildroot}
 %{_systemdgeneratordir}/%{name}-generator
 %{_udevrulesdir}/66-azure-ephemeral.rules
 %{_datadir}/bash-completion/completions/%{name}
-%{_mandir}/man1/*
 
 %changelog
-* Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-1
-- Upgrade to v26.2
+* Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-11.1
+- Sub branch for 91
 * Thu Jun 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-11
 - Requires hostname or net-tools, make this requrement explicit
 * Fri May 22 2026 Prashant S Chauhan <prashant.singh-chuahan@broadcom.com> 25.1.3-10

@@ -1,4 +1,4 @@
-From 0ae48ce598138350aaba2c9e601de0cf5b7f4f87 Mon Sep 17 00:00:00 2001
+From d852cc98e6a930886f649b1bac2d2ac54d210f27 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Wed, 25 Aug 2021 19:14:01 +0530
 Subject: [PATCH 4/9] Add default DS list & few other changes to cloud.cfg
@@ -14,10 +14,10 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  1 file changed, 9 insertions(+)
 
 diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
-index 3926ea8..cdb165c 100644
+index 82a7e0fe5..7942bc02b 100644
 --- a/config/cloud.cfg.tmpl
 +++ b/config/cloud.cfg.tmpl
-@@ -89,12 +89,21 @@ apt:
+@@ -87,12 +87,21 @@ apt:
  
  # If you use datasource_list array, keep array items in a single line.
  # If you use multi line array, ds-identify script won't read array items.
@@ -37,8 +37,8 @@ index 3926ea8..cdb165c 100644
 +  VMware:
 +    allow_raw_data: false
  
- {% if is_rhel %}
- # Default redhat settings:
+ {% if variant == "amazon" %}
+ # Amazon Linux relies on ec2-net-utils for network configuration
 -- 
-2.53.0
+2.48.1
 

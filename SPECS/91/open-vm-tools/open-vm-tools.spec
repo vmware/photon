@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %global gosc_scripts    gosc-scripts
 %define gosc_ver        1.3.2
 
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
-Version:        13.1.0
-Release:        1%{?dist}
+Version:        13.0.0
+Release:        10.1%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -28,8 +28,10 @@ Patch0: ovt-linux-deployment.patch
 Patch1: gosc-root-password-update.patch
 Patch2: gosc-change-order-of-args-to-cloud-init-in-Ph4-and-above.patch
 
-%if 0%{?photon_subrelease} >= 91
-Patch3: ovt-Fix-build-for-newer-glibc.patch
+# Fix CVE-2025-41244
+Patch3: CVE-2025-41244.patch
+%if 0%{photon_subrelease} >= 91
+Patch4: ovt-Fix-build-for-newer-glibc.patch
 %endif
 
 BuildRequires: glib-devel
@@ -270,8 +272,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/vmtoolsd
 
 %changelog
-* Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.1.0-1
-- Upgrade to v13.1.0
+* Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-10.1
+- Sub branch for 91
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.0.0-10
 - Extend to build for 91 and above
 * Mon Aug 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.0.0-9

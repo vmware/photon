@@ -1,12 +1,13 @@
 sources:
-- archive: open-vm-tools-stable-13.1.0.tar.gz
-  archive_sha512sum: f83780df49df689bbc88142bdecdb9f3a7b5d166f1c75a4e7ebcfc277be146a332c9555c6a22ce4417f15c23206ed0dcab009a8f900c3ceec1b208c44ff549d4
+- archive: open-vm-tools-stable-13.0.0.tar.gz
+  archive_sha512sum: 22e0e12b9b033f4934b99ef92d39d3c96f2e551676231c57c8da8e70cc94826a1ae1bfe10c70005b59d7464de89c95ae9c8fb3d445e6c51cf2b9a4ef413dce9a
+  skip_validation: false
   archive_type: upstream
-  name: open-vm-tools-stable-13.1.0
-  version: 13.1.0
-  url: https://github.com/vmware/open-vm-tools/archive/refs/tags/stable-13.1.0.tar.gz
+  name: "open-vm-tools-stable-13.0.0"
+  version: 13.0.0
+  url: https://github.com/vmware/open-vm-tools/archive/refs/tags/stable-13.0.0.tar.gz
   repo_url: https://github.com/vmware/open-vm-tools
-  commit_id: 50cede15e10a21ab919f5ad2961ae0a1840a1911
+  commit_id: 3c28b6f4d9af2df2027a9df9c82e2f0196bd8bf7
   skip_list: []
   missing: []
   spdx:

@@ -1,4 +1,4 @@
-From a1d20143691cb835e0628bd57b250897368d04dd Mon Sep 17 00:00:00 2001
+From 9ed9768981a22b83d5847f70c2d2eb14cd91c057 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 17 Feb 2022 11:47:22 +0530
 Subject: [PATCH 3/9] Patch VMware DS to handle network settings from vmtoolsd
@@ -10,10 +10,10 @@ Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
  1 file changed, 139 insertions(+), 3 deletions(-)
 
 diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
-index 05a4136..9b19414 100644
+index d69f36731..0e6625233 100644
 --- a/cloudinit/sources/DataSourceVMware.py
 +++ b/cloudinit/sources/DataSourceVMware.py
-@@ -34,6 +34,7 @@ from cloudinit.event import EventScope, EventType, userdata_to_events
+@@ -31,6 +31,7 @@ from cloudinit import atomic_helper, dmi, net, netinfo, sources, util
  from cloudinit.log import loggers
  from cloudinit.sources.helpers.vmware.imc import guestcust_util
  from cloudinit.subp import ProcessExecutionError, subp, which
@@ -21,7 +21,7 @@ index 05a4136..9b19414 100644
  
  PRODUCT_UUID_FILE_PATH = "/sys/class/dmi/id/product_uuid"
  
-@@ -44,6 +45,7 @@ NOVAL = "No value found"
+@@ -41,6 +42,7 @@ NOVAL = "No value found"
  DATA_ACCESS_METHOD_ENVVAR = "envvar"
  DATA_ACCESS_METHOD_GUESTINFO = "guestinfo"
  DATA_ACCESS_METHOD_IMC = "imc"
@@ -29,8 +29,8 @@ index 05a4136..9b19414 100644
  
  REDACT = "redact"
  CLEANUP_GUESTINFO = "cleanup-guestinfo"
-@@ -223,6 +225,115 @@ class DataSourceVMware(sources.DataSource):
-                 DEFAULT_NETWORK_DRIVERS
+@@ -140,6 +142,115 @@ class DataSourceVMware(sources.DataSource):
+                 ],
              )
  
 +    def get_nwk_cfgs_from_guestinfo(self):
@@ -145,7 +145,7 @@ index 05a4136..9b19414 100644
      def __str__(self):
          root = sources.DataSource.__str__(self)
          return "%s [seed=%s]" % (root, self.data_access_method)
-@@ -259,6 +370,25 @@ class DataSourceVMware(sources.DataSource):
+@@ -176,6 +287,25 @@ class DataSourceVMware(sources.DataSource):
                  self.data_access_method = data_access_method
                  break
  
@@ -171,7 +171,7 @@ index 05a4136..9b19414 100644
          if not self.data_access_method:
              LOG.debug("failed to find a valid data access method")
              return False
-@@ -266,7 +396,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -183,7 +313,8 @@ class DataSourceVMware(sources.DataSource):
          LOG.info("using data access method %s", self._get_subplatform())
  
          # Get the metadata.
@@ -181,7 +181,7 @@ index 05a4136..9b19414 100644
  
          # Get the user data.
          self.userdata_raw = ud
-@@ -281,8 +412,7 @@ class DataSourceVMware(sources.DataSource):
+@@ -198,8 +329,7 @@ class DataSourceVMware(sources.DataSource):
          # userdata, or vendordata.
          if self.metadata or self.userdata_raw or self.vendordata_raw:
              return True
@@ -191,7 +191,7 @@ index 05a4136..9b19414 100644
  
      def setup(self, is_new_instance):
          """setup(is_new_instance)
-@@ -340,6 +470,8 @@ class DataSourceVMware(sources.DataSource):
+@@ -237,6 +367,8 @@ class DataSourceVMware(sources.DataSource):
              get_key_name_fn = get_guestinfo_key_name
          elif self.data_access_method == DATA_ACCESS_METHOD_IMC:
              get_key_name_fn = get_imc_key_name
@@ -200,7 +200,7 @@ index 05a4136..9b19414 100644
          else:
              return sources.METADATA_UNKNOWN
  
-@@ -797,6 +929,10 @@ def guestinfo_get_value(key, rpctool, rpctool_fn):
+@@ -593,6 +725,10 @@ def guestinfo_get_value(key, rpctool, rpctool_fn):
      """
      LOG.debug("Getting guestinfo value for key %s", key)
  
@@ -212,5 +212,5 @@ index 05a4136..9b19414 100644
          (stdout, stderr) = rpctool_fn(
              rpctool, "info-get " + get_guestinfo_key_name(key)
 -- 
-2.53.0
+2.48.1
 
