@@ -3,7 +3,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2602.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -16,6 +16,8 @@ Source3:        rsyslog.conf
 
 Source4: license.txt
 %include %{SOURCE4}
+
+Patch0:  0001-grammer-RainerScript-replace-heap-buffer-overflow.patch
 
 BuildRequires:  systemd-devel
 BuildRequires:  libfastjson-devel
@@ -124,6 +126,8 @@ make %{?_smp_mflags} check
 %{_libdir}/rsyslog/mmnormalize.so
 
 %changelog
+* Mon Aug 24 2026 Ajay Kaher <ajay.kaher@broadcom.com> 8.2602.0-5
+- Fix RainerScript replace heap buffer overflow
 * Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 8.2602.0-4
 - Disable autogen dependency
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.2602.0-3

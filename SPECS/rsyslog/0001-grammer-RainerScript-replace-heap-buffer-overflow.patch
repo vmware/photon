@@ -1,0 +1,34 @@
+From 58bd0824e7cbf1339e132ad9eff58b7927745023 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Mon, 24 Aug 2026 17:32:02 +0000
+Subject: [PATCH] grammer: RainerScript replace() heap buffer overflow
+
+The sizing pass is corrected to use the same rewind behavior as the
+output-construction pass. Both passes consequently identify the same
+replacement positions and calculate a matching output length.
+
+The patch has passed focused regression testing, a CI-equivalent
+Ubuntu 26.04 test run, an AddressSanitizer/UndefinedBehaviorSanitizer
+test run, and a mock distribution check.
+---
+ grammar/rainerscript.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/grammar/rainerscript.c b/grammar/rainerscript.c
+index 36bf9e1..c1b6cbe 100644
+--- a/grammar/rainerscript.c
++++ b/grammar/rainerscript.c
+@@ -1769,8 +1769,8 @@ static es_str_t *doFuncReplace(struct svar *__restrict__ const operandVal,
+         if (src_buff[i] == find[j]) {
+             j++;
+         } else if (j > 0) {
+-            i -= (j - 1);
+-            lDst -= (j - 1);
++            i -= j;
++            lDst -= j;
+             j = 0;
+         }
+     }
+-- 
+2.53.0
+
