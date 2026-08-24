@@ -98,3 +98,19 @@ sources:
       license_declared: (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND Intel AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only
       short_summary: Intel ice driver v1.13.7
       supplier: 'Organization: Broadcom, Inc.'
+- archive: bcm_238.1.138.6a.tar.gz
+  url: https://docs.broadcom.com/docs-and-downloads/ethernet-network-adapters/NXE/BRCM_238.1.138.6/bcm_238.1.138.6a.tar.gz
+  archive_sha512sum: 1e42e041f51b58abb3a2ae04ee06450955022431a2039dde896e9e897f9655536803657cba7c9b9878865c0b0187b35ba2ca4d56eb591550ea90bac55209fa74
+  skip_validation: false
+  spdx:
+    package:
+      detailed_description: The open-source Linux kernel drivers for Broadcom
+        NetXtreme-E provide the essential software layer to operate Broadcom's
+        high-performance 10/25/40/50/100/200 Gigabit Ethernet network interface
+        cards (NICs).
+      home_page: https://docs.broadcom.com/docs/NXE_Linux_Installer-238.1.138.6
+      license_concluded:
+      license_declared: GPLv2
+      short_summary: The open source linux kernel drivers for Broadcom NetXtreme-E
+        Ethernet Network adapters.
+      supplier: 'Organization: Broadcom, Inc.'

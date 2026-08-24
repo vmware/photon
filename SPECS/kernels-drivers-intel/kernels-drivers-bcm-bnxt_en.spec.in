@@ -1,0 +1,70 @@
+%global build_if %{photon_subrelease} >= 91
+%global security_hardening  none
+%define debug_package       %{nil}
+%define src_ver             %{PKG_VERSION}
+%define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%define uname_r             %{kernel_ver}%{KERNEL_FLAVOUR}
+%define kern_pkg_name       linux%{KERNEL_FLAVOUR}
+%define _modulesdir         /lib/modules/%{uname_r}
+
+Summary:        Broadcom bnxt_en driver v%{src_ver}
+Name:           linux%{KERNEL_FLAVOUR}-drivers-bcm-bnxt_en
+Version:        %{src_ver}
+Release:        1%{?kernelsubrelease}%{?dist}
+URL:            https://docs.broadcom.com/docs-and-downloads/ethernet-network-adapters/NXE/BRCM_238.1.138.6/bcm_238.1.138.6a.tar.gz
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+# Note: the tarball packaging is 238.1.138.6a/238.1.138.6 but the driver version is 238.1.138.5.
+Source0: bcm_238.1.138.6a.tar.gz
+Source1: spec_install_post.inc
+Source2: license_bcm-bnxt.txt
+%include %{SOURCE2}
+
+BuildArch:      x86_64
+
+BuildRequires:  which
+BuildRequires:  kmod-devel
+BuildRequires:  %{kern_pkg_name}-devel = %{kernel_ver}
+# Requirements for signing artifacts
+%if "%{?signing_script}" != ""
+%define network_required 1
+BuildRequires:  ca-certificates-pki
+BuildRequires:  python3-requests
+%endif
+
+Requires:       kmod
+Requires:       %{kern_pkg_name} =  %{kernel_ver}
+
+%description
+This Linux package contains the Broadcom bnxt_en v%{src_ver} driver.
+
+%prep
+%autosetup -p1 -n bcm_238.1.138.6a
+tar -zxvf drivers_linux/bnxt_en/bnxt_en-1.10.3-%{src_ver}.tar.gz
+
+%build
+cd bnxt_en-1.10.3-%{src_ver}
+make -C . KVER=%{uname_r} %{?_smp_mflags}
+
+%install
+cd bnxt_en-1.10.3-%{src_ver}
+make -C . KVER=%{uname_r} INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra/bnxt_en-%{src_ver} \
+    modules_install %{?_smp_mflags}
+
+find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
+%include %{SOURCE1}
+
+%post
+/sbin/depmod -a %{uname_r}
+
+%files
+%defattr(-,root,root)
+%dir %{_modulesdir}/extra/bnxt_en-%{src_ver}
+%{_modulesdir}/extra/bnxt_en-%{src_ver}/bnxt_en.ko.xz
+
+%changelog
+* Mon Aug 24 2026 Yifeng Sun <yifeng.sun@broadcom.com> %{src_ver}-1
+- Add new bnxt_en v%{src_ver} driver

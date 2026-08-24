@@ -77,6 +77,13 @@
                 ]
             }
         },
+        "kernels-drivers-bcm-bnxt_en": {
+            "v6.12": {
+                "linux-esx": [
+                    "238.1.138.5"
+                ]
+            }
+        },
         "sysdig": {
             "v6.1": {
                 "linux": [
