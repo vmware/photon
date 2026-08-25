@@ -10,8 +10,8 @@
 
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
-Version:       4.1.2
-Release:       4%{?dist}
+Version:       4.3.1
+Release:       1%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Vendor:        VMware, Inc.
@@ -25,11 +25,10 @@ Source2:       %{name}.sysusers
 Source3: license.txt
 %include %{SOURCE3}
 
-#Download https://raw.githubusercontent.com/gradle/gradle/v8.10.2/gradle/wrapper/gradle-wrapper.jar
-Source4:       gradle-wrapper-8.14.1-jar.tar.gz
+#Download https://raw.githubusercontent.com/gradle/gradle/v9.2.1/gradle/wrapper/gradle-wrapper.jar
+Source4:    gradle-wrapper-9.2.1-jar.tar.gz
 
 Patch0:     0001-Use-proxy-if-available.patch
-Patch1:     0001-use-gradle-8.14.2.patch
 
 Provides:   kafka
 Provides:   kafka-server
@@ -131,6 +130,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Tue Aug 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.3.1-1
+- Upgrade to v4.3.1
 * Thu Jun 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.2-4
 - Use gradle 8.14.2
 * Fri Jun 19 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.2-3
