@@ -56,3 +56,5 @@ Patch3040: 0001-netfs-Fix-missing-barriers-when-accessing-stream-sub.patch
 Patch3041: 0001-netfs-Fix-missing-locking-around-retry-adding-new-su.patch
 Patch3042: 0001-netfs-Fix-netfs_read_to_pagecache-to-pause-on-subreq.patch
 Patch3043: 0001-tcp-fix-stale-per-CPU-tcp_tw_isn-leak-enabling-ISN-p.patch
+# Fixes CVEs
+Patch3044: 0001-bpf-fix-the-return-value-of-push_stack.patch
