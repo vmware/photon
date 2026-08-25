@@ -1,13 +1,13 @@
 sources:
-- archive: etcd-3.6.11.tar.gz
+- archive: etcd-3.6.14.tar.gz
   archive_type: upstream
-  archive_sha512sum: 56423c42443d9d1d2d06ff28aff389a381ed9b726cbee0d3523ac34fe2a8e22029377a42aa808077bb985f524a153c5fe63fd6166857749e8217b705fdf41910
+  archive_sha512sum: 4fa9ad2c3c06ef6364f040aad00aad5022f7a9cae8afc291c62b609a2dad27c57d8b7f8540ffd2e7d25638da8346ac7fa30e09ca681f1de280fa2b9a0064a3f4
   skip_validation: false
-  version: 3.6.11
-  name: etcd-3.6.11
-  url: https://github.com/etcd-io/etcd/archive/refs/tags/v3.6.11.tar.gz
+  version: 3.6.14
+  name: etcd-3.6.14
+  url: https://github.com/etcd-io/etcd/archive/refs/tags/v3.6.14.tar.gz
   repo_url: https://github.com/etcd-io/etcd
-  commit_id: ec166e2292a58365c90e96fcd206b3b74938d49d
+  commit_id: fc04cf702b0a46c2fd85547a2be05705b100a496
   skip_list: []
   missing: []
   spdx:

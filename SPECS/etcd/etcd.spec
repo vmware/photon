@@ -4,8 +4,8 @@
 
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.6.11
-Release:        2%{?dist}
+Version:        3.6.14
+Release:        1%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Aug 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.14-1
+- Upgrade to v3.6.14
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.11-2
 - Remove unnecessary requires
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.11-1
