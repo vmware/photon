@@ -1,7 +1,7 @@
 Summary:        precision numeric processing language
 Name:           bc
 Version:        1.07.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://ftp.gnu.org/gnu/bc/
 Group:          System Environment/base
 Vendor:         VMware, Inc.
@@ -11,6 +11,7 @@ Source0:        https://ftp.gnu.org/gnu/bc/%{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  ed
+BuildRequires:  texinfo
 Requires: flex
 Patch0:         do-not-generate-libmath-h.patch
 Patch1:         pregenerated-libmath-h.patch
@@ -64,6 +65,8 @@ cd Test
 %{_mandir}/*/*
 
 %changelog
+*   Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.07.1-6
+-   Add texinfo to BuildRequires
 *   Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 1.07.1-5
 -   Release bump for SRP compliance
 *   Mon Sep 28 2020 Sujay G <gsujay@vmware.com> 1.07.1-4

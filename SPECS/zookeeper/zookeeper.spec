@@ -7,7 +7,7 @@
 Summary:        High-performance coordination service for distributed applications
 Name:           zookeeper
 Version:        3.9.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://zookeeper.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -28,7 +28,6 @@ Patch0: zkSever_remove_cygwin_cypath.patch
 BuildRequires:  openjdk11
 BuildRequires:  apache-maven
 BuildRequires:  systemd-devel
-
 Requires:       jre >= 11.0
 Requires:       systemd
 Requires(pre):  /usr/sbin/groupadd
@@ -47,6 +46,10 @@ This package provides the Java server, client scripts, libraries, and systemd un
 %autosetup -p1 -n %{name}-release-%{version}
 
 %build
+echo "uname -n" > %{_var}/opt/hostname
+chmod +x %{_var}/opt/hostname
+export PATH=$PATH:%{_var}/opt
+
 JAVA_BIN=$(readlink -f $(command -v java))
 export JAVA_HOME=$(dirname $(dirname $JAVA_BIN))
 
@@ -117,6 +120,8 @@ rm -rf %{buildroot}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-5
+- Workaround hostname command requirement
 * Fri May 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-4
 - Fix user creation issue
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.9.4-3

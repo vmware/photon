@@ -1,7 +1,7 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        30.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.gnu.org/software/emacs
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  gcc
+BuildRequires:  texinfo
 BuildRequires:  glibc-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
@@ -75,7 +76,9 @@ rm -rf %{buildroot}%{_infodir} \
 %{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
-* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 30.1-4
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 30.1-5
+- Add texinfo to BuildRequires
+* Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 30.1-4
 - Version bump due to gnutls update
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 30.1-3
 - Bump version as a part of ncurses upgrade

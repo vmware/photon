@@ -1,7 +1,7 @@
 Summary:    Library for accessing X.509 and CMS data structure.
 Name:       libksba
 Version:    1.6.3
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://www.gnupg.org/(fr)/download/index.html#libksba
 Group:      Security/Libraries.
 Vendor:     VMware, Inc.
@@ -39,7 +39,6 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}%{_libdir} -name '*.la' -delete
-rm %{buildroot}%{_infodir}/dir
 
 %if 0%{?with_check}
 %check
@@ -63,6 +62,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/ksba.pc
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.6.3-4
+- rm info dir is not needed anymore
 * Tue Aug 12 2025 Bo Gan <bo.gan@broadcom.com> 1.6.3-3
 - Cleanup and rescan licenses
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.3-2

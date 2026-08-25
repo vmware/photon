@@ -1,7 +1,7 @@
 Summary:    Check-0.12.0
 Name:       check
 Version:    0.15.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        https://github.com/libcheck/check
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -37,7 +37,6 @@ autoreconf --install
 %install
 %make_install
 find %{buildroot} -name '*.la' -delete
-rm %{buildroot}%{_infodir}/dir
 
 %if 0%{?with_check}
 %check
@@ -63,6 +62,8 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.15.2-6
+- rm info dir not needed anymore
 * Thu Dec 12 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 0.15.2-5
 - Release bump for SRP compliance
 * Fri Nov 08 2024 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.15.2-4

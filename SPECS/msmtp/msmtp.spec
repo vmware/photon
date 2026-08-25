@@ -2,7 +2,7 @@
 
 Name:           msmtp
 Version:        1.8.32
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Provides msmtp client and server
 URL:            https://marlam.de/msmtp/
 Group:          Email/Server/Library
@@ -14,6 +14,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  autoconf
+BuildRequires:  texinfo
 BuildRequires:  automake
 BuildRequires:  gcc
 BuildRequires:  gettext
@@ -56,6 +57,8 @@ cp -r scripts/msmtpq scripts/msmtpqueue %{buildroot}%{_datadir}/%{name}
 %doc doc/msmtprc-system.example doc/msmtprc-user.example
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.32-4
+- Add texinfo to BuildRequires
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.32-3
 - Extended to build for subrelease 91 and above
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.8.32-2

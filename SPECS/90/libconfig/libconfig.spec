@@ -3,7 +3,7 @@
 Summary:       C/C++ configuration file library
 Name:          libconfig
 Version:       1.7.3
-Release:       2.1.0.1%{?dist}
+Release:       2.1.0.2%{?dist}
 URL:           http://www.hyperrealm.com/libconfig
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -13,6 +13,8 @@ Source0:       %{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+BuildRequires: texinfo
 
 %description
 Libconfig is a simple library for processing structured configuration files,
@@ -52,6 +54,8 @@ make test %{?_smp_mflags}
 %{_infodir}/libconfig.info*
 
 %changelog
+* Mon Aug 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.3-2.1.0.2
+- Add texinfo to BuildRequires
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.7.3-2.1.0.1
 - Restrict to build for subrelease 90 and below
 * Thu Jun 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.3-2.1

@@ -3,7 +3,7 @@
 
 Name:          crash
 Version:       9.0.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:        VMware, Inc.
@@ -26,6 +26,7 @@ Patch0: gcore_defs.patch
 Patch1: 0001-gcore_update_set_context_with_upstream_counterpart.patch
 
 BuildRequires: binutils
+BuildRequires: texinfo
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: zlib-devel
@@ -108,6 +109,8 @@ rm -rf "%{buildroot}"
 %{_includedir}/crash/*.h
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.0-2
+- Add texinfo to BuildRequires
 * Fri Nov 07 2025 Ajay Kaher <ajay.kaher@broadcom.com> 9.0.0-1
 - Version update
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.0.2-7

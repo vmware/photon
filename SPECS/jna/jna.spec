@@ -5,7 +5,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        5.12.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -20,6 +20,7 @@ Patch0: jna_remove_clover_jar.patch
 
 BuildRequires:  openjdk11
 BuildRequires:  apache-ant
+BuildRequires:  texinfo
 
 Requires: jre >= 11.0
 
@@ -85,6 +86,8 @@ rm -rf %{buildroot}
 %{_prefix}/*.aar
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.12.1-7
+- Add texinfo to BuildRequires
 * Fri Aug 15 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.12.1-6
 - Update Requires to jre >= 11.0
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 5.12.1-5

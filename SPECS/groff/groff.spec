@@ -1,40 +1,52 @@
 Summary:    Programs for processing and formatting text
 Name:       groff
 Version:    1.22.4
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://www.gnu.org/software/groff
 Group:      Applications/Text
 Vendor:     VMware, Inc.
 Distribution:  Photon
+
 Source0:       http://ftp.gnu.org/gnu/groff/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
 Provides: perl(oop_fh.pl)
 Provides: perl(main_subs.pl)
 Provides: perl(man.pl)
 Provides: perl(subs.pl)
+
+BuildRequires: texinfo
+
 Requires: perl
 Requires: perl-File-HomeDir
+
 %define BuildRequiresNative groff
+
 %description
 The Groff package contains programs for processing
 and formatting text.
+
 %prep
 %autosetup -p1
+
 %build
 export PAGE=letter
 %configure \
   --with-grofferdir=%{_datadir}/%{name}/%{version}/groffer
 # make doesn't support _smp_mflags
 make $(test %{_host} != %{_build} && echo "GROFFBIN=groff") \
+
 %install
 install -vdm 755 %{_defaultdocdir}/%{name}-1.22/pdf
 # make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -42,7 +54,10 @@ rm -rf %{buildroot}%{_infodir}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
+
 %changelog
+* Wed Jun 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.22.4-4
+- Add texinfo to BuildRequires
 * Fri Jun 05 2026 Dweep Advani <dweep.advani@broadcom.com> 1.22.4-3
 - Deprecate perl-DBIx-Simple
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.22.4-2

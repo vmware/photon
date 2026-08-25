@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.39
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -14,6 +14,8 @@ Source1: license.txt
 
 Source2: %{name}.patches
 %include %{SOURCE2}
+
+%define ExtraBuildRequires: texinfo
 
 %if 0%{?with_check}
 BuildRequires: dejagnu
@@ -151,6 +153,8 @@ rm $(dirname $(gcc --print-libgcc-file-name))/../specs
 %{_lib64dir}/libiberty.a
 
 %changelog
+* Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-16
+- Add texinfo to ExtraBuildRequires
 * Tue Mar 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-15
 - CVE fixes
 * Wed Nov 05 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-14
