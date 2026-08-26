@@ -1,0 +1,35 @@
+From 2b985cd2848d3c5f492ea5da356de9903062ab30 Mon Sep 17 00:00:00 2001
+From: Peter Jones <pjones@redhat.com>
+Date: Wed, 28 Jan 2026 10:27:59 -0500
+Subject: [PATCH] objcopy: use --output-target instead of --target
+
+In recent versions of binutils, efi-app-x64 and similar are output-only
+targets, and can't be specified with --target.
+
+This switches them to use --output-target instead.
+
+Signed-off-by: Peter Jones <pjones@redhat.com>
+[vamsi: only include makefile changes]
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ apps/Makefile | 6 +++---
+
+diff --git a/apps/Makefile b/apps/Makefile
+index 18980f1645c..f71879d8638 100644
+--- a/apps/Makefile
++++ b/apps/Makefile
+@@ -68,9 +68,9 @@ TARGET_RTDRIVERS =
+ 
+ ifneq ($(HAVE_EFI_OBJCOPY),)
+ 
+-FORMAT		:= --target efi-app-$(ARCH)
+-$(TARGET_BSDRIVERS): FORMAT=--target efi-bsdrv-$(ARCH)
+-$(TARGET_RTDRIVERS): FORMAT=--target efi-rtdrv-$(ARCH)
++FORMAT		:= --output-target efi-app-$(ARCH)
++$(TARGET_BSDRIVERS): FORMAT=--output-target efi-bsdrv-$(ARCH)
++$(TARGET_RTDRIVERS): FORMAT=--output-target efi-rtdrv-$(ARCH)
+ 
+ else
+ 
+-- 
+2.52.0

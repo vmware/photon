@@ -1,26 +1,7 @@
-Subject: [PATCH] binutils: do not link with static libstdc++/libgcc
-
-Remove the top-level configure check that probes for
--static-libstdc++/-static-libgcc support. Upstream uses this to
-statically bundle libstdc++/libgcc into C++ components (e.g. gold,
-the LTO plugin) so the resulting binaries don't depend on the
-runtime libstdc++.so.
-
-Photon builds against its own libstdc++ package, which is already a
-guaranteed runtime dependency, so static bundling is unnecessary. It
-also means security fixes to libstdc++/libgcc would require
-rebuilding binutils to take effect, since a statically-linked copy
-wouldn't pick up updates to the shared runtime package. Disabling
-the check keeps binutils dynamically linked against the system
-libstdc++.
-
-Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
----
-diff --git a/configure b/configure
-index 2551fe02..9d1a9413 100755
---- a/configure
-+++ b/configure
-@@ -5570,49 +5570,6 @@ if test -z "$LD"; then
+diff -rup binutils.orig/configure binutils-2.30/configure
+--- binutils.orig/configure	2018-09-24 17:50:06.967172922 +0100
++++ binutils-2.30/configure	2018-09-24 17:51:16.648624865 +0100
+@@ -4996,49 +4996,6 @@ if test -z "$LD"; then
    fi
  fi
  
@@ -70,11 +51,10 @@ index 2551fe02..9d1a9413 100755
  
  
  if test -n "$ac_tool_prefix"; then
-diff --git a/configure.ac b/configure.ac
-index fe7c1cb4..7217048c 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1499,26 +1499,6 @@ if test -z "$LD"; then
+diff -rup binutils.orig/configure.ac binutils-2.30/configure.ac
+--- binutils.orig/configure.ac	2018-09-24 17:50:07.241170767 +0100
++++ binutils-2.30/configure.ac	2018-09-24 17:50:29.908992486 +0100
+@@ -1288,26 +1288,6 @@ if test -z "$LD"; then
    fi
  fi
  
@@ -99,5 +79,5 @@ index fe7c1cb4..7217048c 100644
 -fi
 -
  ACX_PROG_GNAT
- ACX_PROG_GDC
- ACX_PROG_CARGO
+ ACX_PROG_CMP_IGNORE_INITIAL
+ 

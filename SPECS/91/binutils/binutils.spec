@@ -1,14 +1,14 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
-Version:        2.46.1
-Release:        1%{?dist}
+Version:        2.39
+Release:        16.1%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.gnu.org/gnu/binutils/%{name}-with-gold-%{version}.tar.xz
+Source0: http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -40,18 +40,16 @@ to at runtime.
 %package    devel
 Summary:    Header and development files for binutils
 Requires:   %{name} = %{version}-%{release}
-Conflicts:  gdb < 17.1-4
 
 %description    devel
 It contains the libraries and header files to create applications
 for handling compiled objects.
 
 %prep
-%autosetup -p1 -n %{name}-with-gold-%{version}
+%autosetup -p1
 
 %build
-# fix to link with supplied libiberty.a
-rm /usr/lib/libiberty.a
+sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in
 
 %configure \
   --enable-gold       \
@@ -130,20 +128,17 @@ rm $(dirname $(gcc --print-libgcc-file-name))/../specs
 %postun libs -p /sbin/ldconfig
 
 %files libs
-%{_libdir}/libbfd-%{version}*.so
+%{_libdir}/libbfd-%{version}.so
 %{_libdir}/libctf.so*
 %{_libdir}/libctf-nobfd.so*
-%{_libdir}/libopcodes-%{version}*.so
+%{_libdir}/libopcodes-%{version}.so
 %{_libdir}/bfd-plugins/libdep.so
-%{_libdir}/libsframe.so.3*
 
 %files devel
 %{_includedir}/ctf.h
 %{_includedir}/ctf-api.h
 %{_includedir}/plugin-api.h
 %{_includedir}/symcat.h
-%{_includedir}/sframe.h
-%{_includedir}/sframe-api.h
 %{_includedir}/bfd.h
 %{_includedir}/ansidecl.h
 %{_includedir}/bfdlink.h
@@ -157,15 +152,10 @@ rm $(dirname $(gcc --print-libgcc-file-name))/../specs
 %{_libdir}/libopcodes.a
 %{_libdir}/libopcodes.so
 %{_lib64dir}/libiberty.a
-%{_libdir}/libsframe.a
-%{_libdir}/libsframe.so
 
 %changelog
-* Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.46.1-1
-- Upgrade to 2.46.1
-- Use binutils-with-gold source
-- devel: add conflict with gdb < 17.1-4, which shipped libsframe.a/libsframe.so
-  before gdb started consuming it from binutils
+* Wed Aug 26 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.39-16.1
+- Mark sub release
 * Fri Jun 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-16
 - Add texinfo to ExtraBuildRequires
 * Tue Mar 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.39-15

@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 
 %global build_minimal_gdb 1
 
 Summary:        C debugger
 Name:           gdb
 Version:        17.1
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 URL:            http://www.gnu.org/software/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -156,7 +156,7 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %exclude %{_datadir}/locale
 %exclude %{_includedir}/*.h
 %{_includedir}/%{name}/*.h
-%exclude %{_libdir}/libsframe.a
+%{_libdir}/libsframe.a
 %{_libdir}/*.so
 %{_infodir}/*.gz
 %{_datadir}/%{name}/python/*
@@ -182,8 +182,8 @@ sed -i 's/hex in)/hex in )/g' %{name}/testsuite/%{name}.arch/i386-signal.exp
 %endif
 
 %changelog
-* Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.1-4
-- Do not ship libsframe, consume from binutils
+* Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.1-3.1
+- Mark sub release
 * Mon Jun 08 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.1-3
 - Add elfutils-debuginfod for libdebuginfod.so requirement
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.1-2

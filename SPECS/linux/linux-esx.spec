@@ -421,6 +421,15 @@ cp %{SOURCE21} photon-cert-bundle.pem
 
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
+%if 0%{?photon_subrelease} >= 92
+# Update toolchain config for gcc 12.5.0 and binutils 2.46.1
+sed -i 's/CONFIG_CC_VERSION_TEXT="gcc (GCC) 12.2.0"/CONFIG_CC_VERSION_TEXT="gcc (GCC) 12.5.0"/' .config
+sed -i 's/CONFIG_GCC_VERSION=120200/CONFIG_GCC_VERSION=120500/' .config
+sed -i 's/CONFIG_AS_VERSION=23900/CONFIG_AS_VERSION=24601/' .config
+sed -i 's/CONFIG_LD_VERSION=23900/CONFIG_LD_VERSION=24601/' .config
+sed -i 's/CONFIG_GCC_ASM_GOTO_OUTPUT_BROKEN=y/CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y\nCONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y/' .config
+%endif
+
 %if 0%{?fips}
 tar -xvf /usr/lib/fips-canister/fips-canister-%{fips_canister_version}.tar.bz2
 # fips_canister.o is mentioned in obj-y. So, Makefile.modpost expects

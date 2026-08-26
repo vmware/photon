@@ -693,6 +693,15 @@ cat %{SOURCE20} %{SOURCE21} > photon-cert-bundle.pem
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
+%if 0%{?photon_subrelease} >= 92
+# Update toolchain config for gcc 12.5.0 and binutils 2.46.1
+sed -i 's/CONFIG_CC_VERSION_TEXT="gcc (GCC) 12.2.0"/CONFIG_CC_VERSION_TEXT="gcc (GCC) 12.5.0"/' .config
+sed -i 's/CONFIG_GCC_VERSION=120200/CONFIG_GCC_VERSION=120500/' .config
+sed -i 's/CONFIG_AS_VERSION=23900/CONFIG_AS_VERSION=24601/' .config
+sed -i 's/CONFIG_LD_VERSION=23900/CONFIG_LD_VERSION=24601/' .config
+sed -i 's/CONFIG_GCC_ASM_GOTO_OUTPUT_BROKEN=y/CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y\nCONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y/' .config
+%endif
+
 %if 0%{?canister_build}
 sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
 sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config

@@ -1,15 +1,14 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        API and commands for processing SPIR-V modules
 Name:           spirv-tools
 Version:        1.4.341.0
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 URL:            https://github.com/KhronosGroup/SPIRV-Tools/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/SPIRV-Tools-vulkan-sdk-%{version}.tar.gz
-Patch0:         fix-gcc12-warray-bounds-false-positive.patch
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -97,8 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libSPIRV-Tools-shared.so
 
 %changelog
-* Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.341.0-4
-- Fix for new toolchain
+* Thu Aug 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.341.0-3.1
+- Mark sub-release
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.4.341.0-3
 - Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.341.0-2

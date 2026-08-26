@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 Name:           kexec-tools
 Summary:        The kexec kdump tools
-Version:        2.0.32
-Release:        1%{?dist}
+Version:        2.0.25
+Release:        4.1%{?dist}
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 Source0:        https://www.kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{version}.tar.xz
@@ -37,8 +37,8 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 %doc TODO
 
 %changelog
-*   Fri Jun 12 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.32-1
--   update to latest
+*   Fri Aug 07 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.25-4.1
+-   Mark sub release
 *   Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 2.0.25-4
 -   Release bump for SRP compliance
 *   Mon Apr 17 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 2.0.25-3

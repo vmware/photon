@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 %global security_hardening nofortify
 
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        12.5.0
-Release:        1%{?dist}
+Version:        12.2.0
+Release:        16.1%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -52,7 +52,7 @@ The gfortran package contains GNU Fortran compiler.
 %package -n     libssp
 Summary:    GCC extension library for protecting applications from stack-smashing attacks
 Group:          System Environment/Libraries
-Conflicts:      %{name} < 12.5.0-1
+Conflicts:      %{name} < 12.2.0-16.1
 %description -n libssp
 The libssp package contains GCC extension library for protecting applications from stack-smashing attacks
 
@@ -328,8 +328,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %endif
 
 %changelog
-* Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.5.0-1
-- Upgrade to 12.5
+* Fri Aug 07 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.2.0-16.1
+- Mark sub release
 - Move libssp into the libssp subpackage
 * Wed Jun 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.2.0-16
 - Fix aarch64 build, libquadmath is not available for aarch64

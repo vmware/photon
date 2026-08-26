@@ -1,6 +1,6 @@
 Name:           gnu-efi
 Version:        3.0.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Development Libraries and headers for EFI
 URL:            https://sourceforge.net/projects/gnu-efi
 Group:          System Environment/Security
@@ -13,6 +13,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: aarch64-Fix-ld-RWX-warning.patch
+Patch1: objcopy-use-output-target-instead-of-target.patch
 
 BuildRequires: binutils
 BuildRequires: gcc
@@ -49,6 +50,8 @@ export LDFLAGS=""
 %{_libdir}/libgnuefi.a
 
 %changelog
+* Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.15-4
+- Fix for new toolchain
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 3.0.15-3
 - Release bump for SRP compliance
 * Mon Oct 10 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 3.0.15-2

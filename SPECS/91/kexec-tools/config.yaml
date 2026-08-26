@@ -1,6 +1,6 @@
 sources:
-- archive: kexec-tools-2.0.32.tar.xz
-  archive_sha512sum: 60f120f8e46b9fb5dcf5a5b344ee8b303878ba9f71d58a3eefa1c9f044a6a2192b285154b738970263384c6e7281a854cd48a185334c08141aa4e6cf08230654
+- archive: kexec-tools-2.0.25.tar.xz
+  archive_sha512sum: 6fd3fe11d428c5bb2ce318744146e03ddf752cc77632064bdd7418ef3ad355ad2e2db212d68a5bc73554d78f786901beb42d72bd62e2a4dae34fb224b667ec6b
   skip_validation: true
   spdx:
     package:

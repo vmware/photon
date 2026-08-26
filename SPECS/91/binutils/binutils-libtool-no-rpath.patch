@@ -1,14 +1,3 @@
-Subject: [PATCH] binutils: skip libtool rpath for standard system libdirs
-
-Make libtool's ltmain.sh skip embedding an rpath/hardcoded libdir
-entry when the library directory is one of the standard system
-library paths (/usr/lib, /usr/lib64, or their ../lib(64)
-equivalents). These directories are already on the dynamic linker's
-default search path, so hardcoding an rpath there is redundant and
-only adds unnecessary RPATH/RUNPATH entries to built binaries.
-
-Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
----
 diff -rup binutils.orig/ltmain.sh binutils-2.37/ltmain.sh
 --- binutils.orig/ltmain.sh	2022-01-27 16:23:09.304207432 +0000
 +++ binutils-2.37/ltmain.sh	2022-01-27 16:23:18.380143759 +0000

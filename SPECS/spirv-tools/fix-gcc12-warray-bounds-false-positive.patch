@@ -1,0 +1,63 @@
+From: Cursor AI <cursor-ai@cursor.sh>
+Date: Thu, 11 Jun 2026 00:00:00 +0000
+Subject: [PATCH] fix false -Warray-bounds with GCC 12 in function.cpp and fnvar.cpp
+
+Backport of the fix proposed in upstream issue:
+  https://github.com/KhronosGroup/SPIRV-Tools/issues/5904
+
+The issue was reported December 2024, acknowledged by upstream maintainer
+@dneto0 in January 2025, but has not been merged as of June 2026.
+
+GCC 12 with -O2 enables -Warray-bounds and issues the same false positive
+for two initializer-list vector assignments:
+
+  source/val/function.cpp:91
+    continue_target_headers_[&continue_target_block] = {current_block_};
+
+  source/link/fnvar.cpp:646
+    arch_map_and[key] = {id};
+
+In both cases the compiler sees the backing store of the single-element
+initializer_list as a temporary array of size 1 and incorrectly concludes
+that the internal memmove inside std::vector::operator=(initializer_list)
+writes past the end of that array. The code is correct; this is a GCC 12
+false positive (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105523).
+
+Replace both with explicit std::vector{} constructions as proposed in the
+upstream issue. The semantics are identical; only the GCC analysis path
+differs.
+
+Authored-by: Cursor AI <cursor-ai@cursor.sh>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ source/link/fnvar.cpp   | 2 +-
+ source/val/function.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/source/link/fnvar.cpp b/source/link/fnvar.cpp
+index 352e7ea..7c5b9e4 100644
+--- a/source/link/fnvar.cpp
++++ b/source/link/fnvar.cpp
+@@ -643,7 +643,7 @@ bool VariantDefs::GenerateFnVarConstants() {
+       const auto id = spec_const_arch_ids[i];
+       const auto key = std::make_pair(arch_def.category, arch_def.family);
+       if (arch_map_and.find(key) == arch_map_and.end()) {
+-        arch_map_and[key] = {id};
++        arch_map_and[key] = std::vector{id};
+       } else {
+         arch_map_and[key].push_back(id);
+       }
+diff --git a/source/val/function.cpp b/source/val/function.cpp
+index 290574b..6a8d508 100644
+--- a/source/val/function.cpp
++++ b/source/val/function.cpp
+@@ -88,7 +88,7 @@ spv_result_t Function::RegisterLoopMerge(uint32_t merge_id,
+   merge_block_header_[&merge_block] = current_block_;
+   if (continue_target_headers_.find(&continue_target_block) ==
+       continue_target_headers_.end()) {
+-    continue_target_headers_[&continue_target_block] = {current_block_};
++    continue_target_headers_[&continue_target_block] = std::vector{current_block_};
+   } else {
+     continue_target_headers_[&continue_target_block].push_back(current_block_);
+   }
+

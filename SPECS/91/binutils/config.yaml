@@ -1,6 +1,6 @@
 sources:
-- archive: binutils-with-gold-2.46.1.tar.xz
-  archive_sha512sum: c47c0382a77133391556a9ac48586cd3ed101bfeea81e500a97e69b4056dd515351078ae78d026a1c1906648770bf828628dc39fd4cd86f84f1c9ec273d87280
+- archive: binutils-2.39.tar.xz
+  archive_sha512sum: 68e038f339a8c21faa19a57bbc447a51c817f47c2e06d740847c6e9cc3396c025d35d5369fa8c3f8b70414757c89f0e577939ddc0d70f283182504920f53b0a3
   skip_validation: true
   spdx:
     package:

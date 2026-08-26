@@ -1,0 +1,62 @@
+From 624103ec45307ef41231d2610075abee671420be Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Tue, 25 Mar 2025 23:03:56 +0000
+Subject: [PATCH] gcc: add plugin callback before struct layout
+
+---
+ gcc/c/c-decl.cc | 3 +++
+ gcc/plugin.cc   | 2 ++
+ gcc/plugin.def  | 3 +++
+ 3 files changed, 8 insertions(+)
+
+diff --git a/gcc/c/c-decl.cc b/gcc/c/c-decl.cc
+index c701f07be..38e4d12d7 100644
+--- a/gcc/c/c-decl.cc
++++ b/gcc/c/c-decl.cc
+@@ -8838,6 +8838,9 @@ finish_struct (location_t loc, tree t, tree fieldlist, tree attributes,
+
+   TYPE_FIELDS (t) = fieldlist;
+
++  invoke_plugin_callbacks (PLUGIN_BEFORE_STRUCT_LAYOUT, t);
++  fieldlist = TYPE_FIELDS(t);
++
+   maybe_apply_pragma_scalar_storage_order (t);
+
+   layout_type (t);
+diff --git a/gcc/plugin.cc b/gcc/plugin.cc
+index da4dec5b4..3dc0fc698 100644
+--- a/gcc/plugin.cc
++++ b/gcc/plugin.cc
+@@ -499,6 +499,7 @@ register_callback (const char *plugin_name,
+       case PLUGIN_INCLUDE_FILE:
+       case PLUGIN_ANALYZER_INIT:
+       case PLUGIN_TYPE_CAST:
++      case PLUGIN_BEFORE_STRUCT_LAYOUT:
+         {
+           struct callback_info *new_callback;
+           if (!callback)
+@@ -581,6 +582,7 @@ invoke_plugin_callbacks_full (int event, void *gcc_data)
+       case PLUGIN_INCLUDE_FILE:
+       case PLUGIN_ANALYZER_INIT:
+       case PLUGIN_TYPE_CAST:
++      case PLUGIN_BEFORE_STRUCT_LAYOUT:
+         {
+           /* Iterate over every callback registered with this event and
+              call it.  */
+diff --git a/gcc/plugin.def b/gcc/plugin.def
+index 2fa6b3548..a84f5e800 100644
+--- a/gcc/plugin.def
++++ b/gcc/plugin.def
+@@ -106,6 +106,9 @@ DEFEVENT (PLUGIN_TYPE_CAST)
+    ana::plugin_analyzer_init_iface *.  */
+ DEFEVENT (PLUGIN_ANALYZER_INIT)
+
++/* Before finalizing struct */
++DEFEVENT (PLUGIN_BEFORE_STRUCT_LAYOUT)
++
+ /* When adding a new hard-coded plugin event, don't forget to edit in
+    file plugin.cc the functions register_callback and
+    invoke_plugin_callbacks_full accordingly!  */
+--
+2.40.4
+
