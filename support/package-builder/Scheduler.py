@@ -86,6 +86,43 @@ class Scheduler(object):
     buildStage = BuildStage.NONE
     buildMode = BuildMode.STANDARD
 
+    # ---------- build-cost / load tracking -----------------------------------
+
+    # Logging thresholds (in JSON units).
+    BUILD_COST_WARN_THRESHOLD = 10
+    # A package whose cost exceeds this threshold is treated as "standalone":
+    # at most one such package may build at a time (lighter packages still run
+    # freely alongside it).  Set high so only truly exceptional packages
+    # trigger standalone mode; add them to packageWeights.json with cost > 1000
+    # when identified.
+    BUILD_COST_FAIL_THRESHOLD = 1000
+
+    # Elapsed seconds per package name, accumulated across all build stages.
+    # Used exclusively by _computeSpeedFactor() to calibrate the host speed
+    # from anchor package timings. Not written to disk.
+    buildTimings = {}
+
+    # Running sum of build_costs of packages currently being built.
+    currentLoad = 0
+
+    # Maximum allowed concurrent load (0 = unlimited).
+    # Set by setMaxConcurrentLoad() before the build starts.
+    maxConcurrentLoad = 0
+
+    # Number of heavy packages (cost > BUILD_COST_FAIL_THRESHOLD) currently
+    # building. Capped at 1: a second heavy is always deferred until the
+    # first finishes. Light packages are never blocked by this counter.
+    heavyPackagesBuilding = 0
+
+    # Packages used as calibration anchors for the speed-factor computation.
+    # Populated from the "__anchors__" key in packageWeights.json at parse time.
+    # When non-empty, _computeSpeedFactor() derives the machine speed ratio
+    # exclusively from these packages, making normalization independent of which
+    # other packages happened to be measured in a partial build.
+    anchorPackages = set()
+
+    # ---------- end build-cost / load tracking --------------------------------
+
     @staticmethod
     def setEvent(event):
         Scheduler.event = event
@@ -101,6 +138,25 @@ class Scheduler(object):
     @staticmethod
     def setLog(logName, logPath, logLevel):
         Scheduler.logger = Logger.getLogger(logName, logPath, logLevel)
+
+    @staticmethod
+    def setMaxConcurrentLoad(buildThreads):
+        """
+        Cap the total build-cost of simultaneously running packages.
+
+        Budget = buildThreads × BUILD_COST_FAIL_THRESHOLD.  A package is
+        "standalone" only if its cost exceeds BUILD_COST_FAIL_THRESHOLD (1000);
+        no current package in packageWeights.json reaches that threshold, so
+        all packages build freely in parallel up to the thread count.
+        Pass buildThreads=0 to disable throttling entirely.
+        """
+        Scheduler.maxConcurrentLoad = buildThreads * Scheduler.BUILD_COST_FAIL_THRESHOLD
+        Scheduler.currentLoad = 0
+        Scheduler.heavyPackagesBuilding = 0
+        # buildTimings is intentionally NOT cleared here so that timings from
+        # earlier stages (CORE_TOOLCHAIN, TOOLCHAIN) survive into the parallel
+        # PACKAGES stage.  _adjustWeightsForHost() uses those anchor timings to
+        # calibrate the package weights before the dependency graph is built.
 
     @staticmethod
     def setParams(sortedList, listOfAlreadyBuiltPackages):
@@ -134,11 +190,20 @@ class Scheduler(object):
         Scheduler._setPriorities(skipGraphBuild)
 
     @staticmethod
-    def notifyPackageBuildCompleted(package):
+    def notifyPackageBuildCompleted(package, elapsed=0.0):
         with Scheduler.lock:
             if package in Scheduler.listOfPackagesCurrentlyBuilding:
                 Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
                 Scheduler.listOfAlreadyBuiltPackages.add(package)
+                pkgCost = Scheduler._getWeight(package) - 1
+                Scheduler.currentLoad = max(0, Scheduler.currentLoad - pkgCost)
+                if pkgCost > Scheduler.BUILD_COST_FAIL_THRESHOLD:
+                    Scheduler.heavyPackagesBuilding = max(
+                        0, Scheduler.heavyPackagesBuilding - 1
+                    )
+                if elapsed > 0:
+                    pkgName, _ = StringUtils.splitPackageNameAndVersion(package)
+                    Scheduler.buildTimings[pkgName] = elapsed
                 if not constants.rpmCheck:
                     Scheduler._markPkgNodeAsBuilt(package)
                 Scheduler.printStatus()
@@ -148,6 +213,12 @@ class Scheduler(object):
         with Scheduler.lock:
             if package in Scheduler.listOfPackagesCurrentlyBuilding:
                 Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
+                pkgCost = Scheduler._getWeight(package) - 1
+                Scheduler.currentLoad = max(0, Scheduler.currentLoad - pkgCost)
+                if pkgCost > Scheduler.BUILD_COST_FAIL_THRESHOLD:
+                    Scheduler.heavyPackagesBuilding = max(
+                        0, Scheduler.heavyPackagesBuilding - 1
+                    )
                 Scheduler.listOfFailedPackages.append(package)
                 Scheduler.printStatus()
 
@@ -197,6 +268,10 @@ class Scheduler(object):
                 )
             Scheduler.listOfPackagesCurrentlyBuilding.add(package)
             Scheduler.listOfPackagesToBuild.remove(package)
+            pkgCost = Scheduler._getWeight(package) - 1
+            Scheduler.currentLoad += pkgCost
+            if pkgCost > Scheduler.BUILD_COST_FAIL_THRESHOLD:
+                Scheduler.heavyPackagesBuilding += 1
             Scheduler.printStatus()
             return package, Scheduler.buildStage, Scheduler.buildMode
 
@@ -635,29 +710,93 @@ class Scheduler(object):
         Scheduler.pkgWeights.clear()
         with open(constants.packageWeightsPath, "r") as weightFile:
             Scheduler.pkgWeights = json.load(weightFile)
+        # Extract anchor packages (used as speed-factor calibration references).
+        # Remove the key so it is never mistaken for a real package weight.
+        Scheduler.anchorPackages = set(Scheduler.pkgWeights.pop("__anchors__", []))
 
     """
     A package's weight is an indicator of the time required to build
-    that package, relative to other packages. These weights do not
-    take build-time/install-time dependencies into account -- they
-    are the individual build-times of the respective packages.
-    Package weights are positive integers, with a default value of 1.
+    that package, relative to other packages.  Weights are expressed
+    in normalized units (machine-agnostic — see _adjustWeightsForHost()), sourced
+    from packageWeights.json.  Packages absent from the JSON default
+    to 1.
+
+    The returned value is offset by +1 so that the minimum scheduler
+    weight is always 1 (not 0), which keeps the critical-chain math
+    well-defined.
     """
 
     @staticmethod
     def _getWeight(package):
         """
-        Package weights are assumed to be independent of package
-        version (i.e., in the case of multi-version packages such as
-        Go or Kubernetes, all the versions have the same weight). So
-        convert packageName-version to packageName before looking up
-        the package weight.
+        Weights are version-independent (Go, Kubernetes etc. share one
+        entry).  Strip the version suffix before the JSON lookup.
         """
         package, _ = StringUtils.splitPackageNameAndVersion(package)
         try:
             return int(Scheduler.pkgWeights[package]) + 1
         except KeyError:
             return 1
+
+    @staticmethod
+    def _logHeavyPackages():
+        """
+        Emit an INFO line listing every package whose JSON build_cost
+        exceeds BUILD_COST_FAIL_THRESHOLD so operators know which
+        packages will drive the load-throttling logic.
+        """
+        heavy = []
+        for pkg in Scheduler.sortedList:
+            name, _ = StringUtils.splitPackageNameAndVersion(pkg)
+            cost = int(Scheduler.pkgWeights.get(name, 0))
+            if cost > Scheduler.BUILD_COST_FAIL_THRESHOLD:
+                heavy.append(f"{name}({cost})")
+        if heavy:
+            Scheduler.logger.info(
+                "Heavy packages (build_cost > %d units) — "
+                "load-throttling will prevent these from building simultaneously: %s",
+                Scheduler.BUILD_COST_FAIL_THRESHOLD,
+                ", ".join(heavy),
+            )
+
+    @staticmethod
+    def _computeSpeedFactor():
+        """
+        Return the machine's speed in seconds-per-unit.
+
+        When packageWeights.json defines "__anchors__", the ratio is computed
+        exclusively from those anchor packages — they act as a fixed reference
+        whose committed weights are treated as ground truth.  This makes the
+        factor stable across partial builds (a subset of packages) and across
+        machines: if an anchor takes twice as long on a slow host, the factor
+        doubles and all other measurements are scaled accordingly.
+
+        Falls back to all measured packages when no anchors matched (e.g. a
+        build that happened to skip every anchor package).
+
+        Returns None when there is nothing to calibrate against.
+        """
+        def _ratios(candidates):
+            result = []
+            for pkgName in candidates:
+                elapsed = Scheduler.buildTimings.get(pkgName, 0)
+                if elapsed <= 0:
+                    continue
+                jsonCost = float(Scheduler.pkgWeights.get(pkgName, 0))
+                if jsonCost > 0:
+                    result.append(elapsed / jsonCost)
+            return result
+
+        ratios = _ratios(Scheduler.anchorPackages) if Scheduler.anchorPackages else []
+        if not ratios:
+            # Anchor packages were not measured this run; fall back to all.
+            ratios = _ratios(Scheduler.pkgWeights)
+
+        if not ratios:
+            return None
+
+        ratios.sort()
+        return ratios[len(ratios) // 2]
 
     @staticmethod
     def _getPriority(package):
@@ -667,13 +806,57 @@ class Scheduler(object):
             return 0
 
     @staticmethod
+    def _adjustWeightsForHost():
+        """
+        Scale all entries in pkgWeights to reflect this host's actual speed,
+        using anchor package timings measured in earlier build stages
+        (CORE_TOOLCHAIN / TOOLCHAIN) as the calibration reference.
+
+        The speed factor is:
+            median( elapsed[anchor] / committed_weight[anchor] )
+
+        where the median runs only over anchors that were both measured and
+        present in pkgWeights.  If no anchor timings are available yet (e.g.
+        the toolchain was already cached), the method is a no-op and the
+        committed weights are used as-is.
+
+        This must be called AFTER _parseWeights() and BEFORE _buildGraph() so
+        that the dependency graph — and therefore every package's
+        criticalChainWeight — is computed in real seconds for this host.
+        """
+        if not Scheduler.anchorPackages:
+            return
+
+        speedFactor = Scheduler._computeSpeedFactor()
+        if speedFactor is None or speedFactor <= 0:
+            Scheduler.logger.debug(
+                "No anchor packages measured yet; using committed weights as-is."
+            )
+            return
+
+        measured_anchors = [
+            p for p in Scheduler.anchorPackages if p in Scheduler.buildTimings
+        ]
+        Scheduler.logger.info(
+            "Host calibration: speed_factor=%.2f s/unit from anchor package(s): %s. "
+            "Scaling all package weights accordingly.",
+            speedFactor,
+            ", ".join(sorted(measured_anchors)),
+        )
+
+        for pkg in list(Scheduler.pkgWeights):
+            Scheduler.pkgWeights[pkg] = float(Scheduler.pkgWeights[pkg]) * speedFactor
+
+    @staticmethod
     def _setPriorities(skipGraphBuild):
         if skipGraphBuild:
             for package in Scheduler.sortedList:
                 Scheduler.priorityMap[package] = 0
         else:
             Scheduler._parseWeights()
+            Scheduler._adjustWeightsForHost()
             Scheduler._buildGraph()
+            Scheduler._logHeavyPackages()
 
             for package in Scheduler.sortedList:
                 pkgNode = Scheduler.mapPackagesToGraphNodes[package]
@@ -718,11 +901,69 @@ class Scheduler(object):
 
     @staticmethod
     def _getListNextPackagesReadyToBuild():
+        # Two separate gates, applied independently to each candidate:
+        #
+        # 1. Heavy gate — enforces "at most one heavy package building at a
+        #    time."  A package with cost >= BUILD_COST_FAIL_THRESHOLD is
+        #    skipped when:
+        #      • heavyPackagesBuilding >= 1: a heavy package is already running
+        #      • heavyAdmittedThisBatch: another heavy was queued earlier in
+        #        this same call.  Without this flag, a single call with
+        #        currentLoad=0 would bypass the running-load check and enqueue
+        #        all ready heavy packages at once; waiting threads would then
+        #        dequeue them simultaneously before heavyPackagesBuilding was
+        #        ever incremented.
+        #    Light packages (cost < BUILD_COST_FAIL_THRESHOLD) are never
+        #    blocked by this gate — they always run freely alongside a heavy.
+        #
+        # 2. Capacity gate — limits total projected running load to
+        #    maxConcurrentLoad.  Uses projectedLoad (currentLoad + costs of
+        #    packages already admitted in this batch) so that the budget is not
+        #    exceeded even when currentLoad hasn't been updated yet.
+        heavyAdmittedThisBatch = False
+        projectedLoad = Scheduler.currentLoad
+
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
-            if constants.rpmCheck or Scheduler._checkNextPackageIsReadyToBuild(pkg):
-                Scheduler.listOfPackagesNextToBuild.put(
-                    (-Scheduler._getPriority(pkg), pkg)
+            if not (constants.rpmCheck or Scheduler._checkNextPackageIsReadyToBuild(pkg)):
+                continue
+
+            pkgCost = Scheduler._getWeight(pkg) - 1
+            isHeavy = pkgCost > Scheduler.BUILD_COST_FAIL_THRESHOLD
+
+            # Gate 1 — heavy packages only
+            if isHeavy and (
+                Scheduler.heavyPackagesBuilding >= 1 or heavyAdmittedThisBatch
+            ):
+                Scheduler.logger.debug(
+                    "Deferring heavy '%s' (cost=%d, heavyBuilding=%d).",
+                    pkg,
+                    pkgCost,
+                    Scheduler.heavyPackagesBuilding,
                 )
-                Scheduler.logger.debug(f"Adding {pkg} to the schedule list")
+                continue
+
+            # Gate 2 — all packages; guard (projectedLoad > 0) prevents
+            # deadlock when a lone package's cost exceeds the per-thread budget.
+            if (
+                Scheduler.maxConcurrentLoad > 0
+                and projectedLoad > 0
+                and projectedLoad + pkgCost > Scheduler.maxConcurrentLoad
+            ):
+                Scheduler.logger.debug(
+                    "Throttling '%s' (cost=%d, projected=%d, max=%d).",
+                    pkg,
+                    pkgCost,
+                    projectedLoad,
+                    Scheduler.maxConcurrentLoad,
+                )
+                continue
+
+            if isHeavy:
+                heavyAdmittedThisBatch = True
+            projectedLoad += pkgCost
+            Scheduler.listOfPackagesNextToBuild.put(
+                (-Scheduler._getPriority(pkg), pkg)
+            )
+            Scheduler.logger.debug(f"Adding {pkg} to the schedule list")

@@ -258,6 +258,7 @@ class PackageManager(object):
         else:
             statusEvent = threading.Event()
             self._initializeScheduler(statusEvent)
+            Scheduler.setMaxConcurrentLoad(buildThreads)
             self._initializeThreadPool(statusEvent)
             for i in range(0, buildThreads):
                 workerName = f"WorkerThread{i}"

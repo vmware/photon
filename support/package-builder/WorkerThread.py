@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import threading
+import time
 
 import Scheduler
 import ThreadPool
@@ -28,6 +29,7 @@ class WorkerThread(threading.Thread):
                 pkg, self.mapPackageToCycle, self.pkgBuildType, buildStage, buildMode
             )
 
+            start = time.monotonic()
             try:
                 pkgBuilder.build(doneList)
             except Exception as e:
@@ -36,7 +38,8 @@ class WorkerThread(threading.Thread):
                 self.logger.debug(f"Thread {self.name} stopped building package: {pkg}")
                 self.statusEvent.set()
                 break
-            Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)
+            elapsed = time.monotonic() - start
+            Scheduler.Scheduler.notifyPackageBuildCompleted(pkg, elapsed)
 
         ThreadPool.ThreadPool.makeWorkerThreadInActive(self.name)
         self.logger.debug(f"Thread {self.name} is going to rest")
