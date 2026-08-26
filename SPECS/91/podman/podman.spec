@@ -5,8 +5,8 @@
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
-Version:        4.5.1
-Release:        15%{?dist}
+Version:        4.9.5
+Release:        1%{?dist}
 URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
@@ -20,6 +20,8 @@ Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor
 
 Source3: license.txt
 %include %{SOURCE3}
+
+Patch0: CVE-2025-9566.patch
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -147,6 +149,7 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %license LICENSE
 %doc README.md CONTRIBUTING.md install.md transfer.md
 %{_bindir}/%{name}
+%{_bindir}/%{name}sh
 %dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/rootlessport
 %{_libexecdir}/%{name}/quadlet
@@ -182,6 +185,8 @@ rm -rf %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Wed Aug 26 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.5-1
+- Upgrade to 4.9.5 and add patch for CVE-2025-9566
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.1-15
 - Extended to build for subrelease 91 and above
 * Thu Mar 12 2026 Guruswamy Baasavaiah <guruswamy.basavaiah@broadcom.com> 4.5.1-14

@@ -25,9 +25,14 @@ sources:
         AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND MIT AND MPL-2.0 AND Unlicense
       short_summary: A new network stack based on gVisor.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: podman-4.5.1.tar.gz
-  archive_sha512sum: c09af81063dba7125d06bb982ae6db5c1933bb32273f194f90875b5c63b916f94d0daacf09212139ae8dc5f8cfa224e7fd1d83e1a22df19be2adde84583ee049
+- archive: podman-4.9.5.tar.gz
+  archive_sha512sum: 979f855d453034bb053d2cad52dd6b9050ff1a534efebf2c8967dd38c7df9139a2b546caf3d20f76fe130189233ded5e6354e2e68b1ef7bae2617f35b0f4ad4d
   skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - podman-4.9.5-build/podman-4.9.5/docs/source/markdown/podman-info.1.md
+    sha256sum: 8454df6447d584ee51240875ff7d97d7226fdf3b486bbd20812a06bd682e18f0
+    spdx_exp: Apache-2.0
   spdx:
     package:
       detailed_description: '%{name} is a daemonless, open source, Linux native tool
