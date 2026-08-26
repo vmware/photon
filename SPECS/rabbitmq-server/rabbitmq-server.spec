@@ -1,6 +1,6 @@
 %global build_if %{photon_subrelease} >= 91
 
-%define erlang_minver       26.2
+%define erlang_minver       27.0
 %define erlang_maxver       28.0
 %define _rabbitmq_user      rabbitmq
 %define _rabbitmq_group     rabbitmq
@@ -17,12 +17,17 @@
 # 3.8.x --> 3.9.x (recommended & probably okay)
 # Enable all feauture flags before upgrade from 3.11.x to 3.12.4
 # Enable all feauture flags before upgrade from 3.13.x to 4.0.1
-# 3.11.0 --> 3.11.18 --> 3.12.4 --> 3.13.3 --> 4.0.x --> 4.1.x
+# 3.11.0 --> 3.11.18 --> 3.12.4 --> 3.13.3 --> 4.0.x --> 4.1.x --> 4.2.x --> 4.3.x
+# Direct in-place cluster upgrades from 4.1.x to 4.3.x are NOT supported upstream;
+# 4.2.x is a required intermediate hop. Enable all stable feature flags before
+# each hop (4.1.x -> 4.2.x, then 4.2.x -> 4.3.x).
+# This package is being upgraded one hop at a time: 4.1.x -> 4.2.x here, then
+# 4.2.x -> 4.3.x in a follow-up change.
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       4.1.4
-Release:       7%{?dist}
+Version:       4.2.9
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -159,6 +164,10 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Wed Aug 26 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 4.2.9-1
+- Upgrade to v4.2.9 (latest release in the 4.2.x series)
+- Intermediate hop toward 4.3.x; upstream requires 4.1.x -> 4.2.x -> 4.3.x in place
+- Bump minimum required erlang to 27.0 per upstream 4.2.9 release notes
 * Mon Jun 08 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.1.4-7
 - Release version bump as part of libxml2/libxslt
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 4.1.4-6
