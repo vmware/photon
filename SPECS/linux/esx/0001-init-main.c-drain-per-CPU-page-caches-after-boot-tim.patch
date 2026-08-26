@@ -1,0 +1,83 @@
+From 7c7bb854dc4f4a8e0961e7211dba8d353b790522 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <alexey.makhalov@broadcom.com>
+Date: Tue, 25 Aug 2026 20:41:28 +0000
+Subject: [PATCH] init/main.c: drain per-CPU page caches after boot-time memory
+ frees
+
+free_initmem()/mark_readonly() release several MB of memory back to
+the allocator during boot (unused kernel image, decrypted memory,
+initrd, text/rodata and rodata/data alignment gaps). These frees can
+leave a large burst of pages sitting in the per-CPU pagevec (pcp)
+caches instead of the zone's shared free list, because
+NR_FREE_PAGES/MemFree is only updated when a page lands on the shared
+free list, not merely when cached per-CPU.
+
+mm/page_alloc.c's adaptive pcp->high heuristic grows the per-CPU cache
+watermark in response to bursts of consecutive same-CPU frees with no
+intervening allocation, and does not shrink back down until enough
+allocation activity happens afterward (or memory pressure/compaction
+forces a drain). On a canister-enabled build, whose larger/differently
+structured __init section causes a bigger such burst than a
+non-canister build, this was observed to strand ~7MB in the boot CPU's
+pcp list:
+
+    # before this patch (canister build)
+    pagesets
+      cpu: 0
+        count: 1891
+        high:  2310
+    Mem: total=107 used=15 free=90 (MB)
+
+    # after this patch
+    pagesets
+      cpu: 0
+        count: 16
+        high:  2310
+    Mem: total=107 used=8 free=98 (MB)
+
+This memory was never lost or leaked -- it is fully usable and gets
+reclaimed into MemFree the moment normal allocation activity occurs --
+but the delay makes any memory-overhead measurement taken shortly
+after boot non-deterministic and dependent on exactly how the boot-time
+free bursts interact with this heuristic. Explicitly drain all pcp
+lists once the boot-time frees are done and before userspace starts, so
+/proc/meminfo reflects real, settled numbers from the first read.
+
+Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+---
+ init/main.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/init/main.c b/init/main.c
+index 73ebd2dcb..c17b4c770 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -27,6 +27,7 @@
+ #include <linux/init.h>
+ #include <linux/initrd.h>
+ #include <linux/memblock.h>
++#include <linux/gfp.h>
+ #include <linux/acpi.h>
+ #include <linux/bootconfig.h>
+ #include <linux/console.h>
+@@ -1455,6 +1456,17 @@ static int __ref kernel_init(void *unused)
+ 	free_initmem();
+ 	mark_readonly();
+ 
++	/*
++	 * The various free_*_mem() calls above can leave a large burst of
++	 * freed pages stranded in the per-CPU pagevec caches (pcp lists),
++	 * since NR_FREE_PAGES/MemFree is only updated when a page actually
++	 * lands on the zone's shared free list, not when it is cached
++	 * per-CPU. Drain explicitly here so boot-time memory accounting is
++	 * deterministic instead of depending on when the adaptive pcp->high
++	 * heuristic happens to shrink back down.
++	 */
++	drain_all_pages(NULL);
++
+ 	/*
+ 	 * Kernel mappings are now finalized - update the userspace page-table
+ 	 * to finalize PTI.
+-- 
+2.43.7
+

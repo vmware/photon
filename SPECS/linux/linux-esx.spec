@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.103
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -178,6 +178,10 @@ Patch77: 0001-Avoid-extra-scanning-for-peer-host-bridges.patch
 Patch80: 0001-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch81: 0002-vmw_extcfg-hotplug-without-firmware-support.patch
 Patch82: 0003-vmw_extcfg-hotplug-without-firmware-support.patch
+
+# Drain per-CPU page caches after boot-time memory frees, so
+# /proc/meminfo reports settled numbers from the first read
+Patch83: 0001-init-main.c-drain-per-CPU-page-caches-after-boot-tim.patch
 
 # SBX driver
 Patch85: 0001-Adding-SBX-kernel-driver.patch
@@ -549,6 +553,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Aug 26 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.103-10
+- Fix CRX memory overhead regression
 * Tue Aug 25 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.103-9
 - Fixes CVEs
 * Tue Aug 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.103-8
