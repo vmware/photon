@@ -1,0 +1,80 @@
+From 4d3591b492443b5d0aa716ca994c39022739318c Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 31 May 2026 16:48:37 +0530
+Subject: [PATCH] Show full list of not found packages while erroring out
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ client/api.c                  | 15 +++++++++++++++
+ client/resolve.c              |  9 +++++++++
+ pytests/tests/test_install.py | 10 ++++++++++
+ 3 files changed, 34 insertions(+)
+
+diff --git a/client/api.c b/client/api.c
+index 050247c1..5b495b4d 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -1600,6 +1600,21 @@ TDNFResolve(
+                   &queueGoal);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
++    /*
++     * Every package that could not be found has been collected in
++     * ppszPkgsNotResolved (and already reported individually). Without
++     * --skip-broken, any such package fails the whole transaction, so bail
++     * out here - after the complete list has been printed - instead of
++     * proceeding to solve and install a partial set.
++     */
++    if (!pTdnf->pArgs->nSkipBroken &&
++        ppszPkgsNotResolved &&
++        ppszPkgsNotResolved[0])
++    {
++        dwError = ERROR_TDNF_NO_MATCH;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
+     dwError = TDNFGoal(
+                   pTdnf,
+                   &queueGoal,
+diff --git a/client/resolve.c b/client/resolve.c
+index 9ca3d6ab..e2c66c20 100644
+--- a/client/resolve.c
++++ b/client/resolve.c
+@@ -305,7 +305,16 @@ TDNFPrepareSinglePkg(
+     dwError = SolvCountPkgByName(pSack, pszPkgName, &dwCount);
+     if (dwError == ERROR_TDNF_NO_MATCH)
+     {
++        /*
++         * The package name didn't match anything. Don't bail out here:
++         * record it as unresolved and keep going so that the full list of
++         * packages that could not be found is reported before tdnf exits.
++         * The actual transaction failure (when --skip-broken is not set) is
++         * enforced later, once every package has been processed.
++         */
+         pr_err("%s package not found or not installed\n", pszPkgName);
++        dwError = 0;
++        dwCount = 0;
+     }
+ 
+     BAIL_ON_TDNF_ERROR(dwError);
+diff --git a/pytests/tests/test_install.py b/pytests/tests/test_install.py
+index 002f3fd7..7ace0150 100644
+--- a/pytests/tests/test_install.py
++++ b/pytests/tests/test_install.py
+@@ -34,6 +34,16 @@ def test_install_invalid_arg(utils):
+     assert ret['retval'] == 1011
+ 
+ 
++# install multiple invalid packages, expect all of them to be reported
++# (not just the first one) before tdnf exits
++def test_install_multiple_invalid_args(utils):
++    ret = utils.run(['tdnf', 'install', '-y', 'invalid_package1', 'invalid_package2'])
++    assert ret['retval'] == 1011
++    output = "\n".join(ret['stdout'] + ret['stderr'])
++    assert 'invalid_package1' in output
++    assert 'invalid_package2' in output
++
++
+ def test_install_package_with_version_suffix(utils):
+     pkgname = utils.config["mulversion_pkgname"]
+     pkgversion = utils.config["mulversion_lower"]

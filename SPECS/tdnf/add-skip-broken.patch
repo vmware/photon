@@ -1,0 +1,366 @@
+From bdc00bb9280f30c21c7ae5f4f838bcd9dd6be0f9 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 26 Aug 2026 12:56:19 +0530
+Subject: [PATCH 1/4] ci: fix docker-entrypoint.sh to fail on build errors
+
+Add set -e so build failures abort the script immediately.
+Use nproc for dynamic parallel jobs instead of hardcoded 32.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ ci/docker-entrypoint.sh | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/ci/docker-entrypoint.sh b/ci/docker-entrypoint.sh
+index a5ba2376..6233e440 100755
+--- a/ci/docker-entrypoint.sh
++++ b/ci/docker-entrypoint.sh
+@@ -1,10 +1,13 @@
+ #!/bin/bash
+ 
+-rm -rf build
++set -e
++
++test -d build && rm -rf build
+ mkdir -p build
+ cd build || exit 1
+ 
+-cmake .. && make -j32 && make python -j32 && make check -j32
++jobs=$(nproc)
++cmake .. && make -j${jobs} && make python -j${jobs} && make check -j${jobs}
+ 
+ if ! flake8 ../pytests ; then
+   echo "flake8 tests failed"
+
+From d1c49a3bd297802e42075afb93ab504fa2b483b3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 26 Aug 2026 12:08:04 +0530
+Subject: [PATCH 2/4] add --skip-broken option
+
+Port of upstream dev commit 33e5cea. Adds SKIPPROBLEM_BROKEN enum value,
+wires nSkipBroken through the resolve chain, and includes test cases.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ client/api.c                       | 10 +++----
+ client/init.c                      |  1 +
+ client/resolve.c                   |  2 +-
+ include/tdnftypes.h                |  1 +
+ pytests/repo/tdnf-missing-dep.spec | 37 +++++++++++++++++++++++++
+ pytests/tests/test_install.py      | 44 ++++++++++++++++++++++++++++++
+ pytests/tests/test_json.py         |  3 +-
+ solv/tdnfpackage.c                 | 17 ++++++++----
+ 8 files changed, 102 insertions(+), 13 deletions(-)
+ create mode 100644 pytests/repo/tdnf-missing-dep.spec
+
+diff --git a/client/api.c b/client/api.c
+index 5b495b4d..98522d80 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -234,11 +234,6 @@ TDNFGetSkipProblemOption(
+ 
+     *pdwSkipProblem = SKIPPROBLEM_NONE;
+ 
+-    if (strcasecmp(pTdnf->pArgs->ppszCmds[0], "check"))
+-    {
+-        goto cleanup;
+-    }
+-
+     for (pSetOpt = pTdnf->pArgs->pSetOpt; pSetOpt; pSetOpt = pSetOpt->pNext)
+     {
+         if (!strcasecmp(pSetOpt->pszOptName, "skipconflicts"))
+@@ -252,6 +247,11 @@ TDNFGetSkipProblemOption(
+         }
+     }
+ 
++    if (pTdnf->pArgs->nSkipBroken)
++    {
++        *pdwSkipProblem |= SKIPPROBLEM_BROKEN;
++    }
++
+ cleanup:
+     return dwError;
+ 
+diff --git a/client/init.c b/client/init.c
+index bb9c1cdc..e62fc5c2 100644
+--- a/client/init.c
++++ b/client/init.c
+@@ -59,6 +59,7 @@ TDNFCloneCmdArgs(
+     pCmdArgs->nDownloadOnly  = pCmdArgsIn->nDownloadOnly;
+     pCmdArgs->nNoAutoRemove  = pCmdArgsIn->nNoAutoRemove;
+     pCmdArgs->nJsonOutput    = pCmdArgsIn->nJsonOutput;
++    pCmdArgs->nSkipBroken    = pCmdArgsIn->nSkipBroken;
+ 
+     dwError = TDNFAllocateString(
+                   pCmdArgsIn->pszInstallRoot,
+diff --git a/client/resolve.c b/client/resolve.c
+index e2c66c20..de629169 100644
+--- a/client/resolve.c
++++ b/client/resolve.c
+@@ -316,8 +316,8 @@ TDNFPrepareSinglePkg(
+         dwError = 0;
+         dwCount = 0;
+     }
+-
+     BAIL_ON_TDNF_ERROR(dwError);
++
+     if (dwCount == 0)
+     {
+         dwError = ERROR_TDNF_NO_SEARCH_RESULTS;
+diff --git a/include/tdnftypes.h b/include/tdnftypes.h
+index d73bc8f5..9c1c329e 100644
+--- a/include/tdnftypes.h
++++ b/include/tdnftypes.h
+@@ -136,6 +136,7 @@ typedef enum
+     SKIPPROBLEM_CONFLICTS = 0x01,
+     SKIPPROBLEM_OBSOLETES = 0x02,
+     SKIPPROBLEM_DISABLED  = 0x04,
++    SKIPPROBLEM_BROKEN    = 0x08
+ } TDNF_SKIPPROBLEM_TYPE;
+ 
+ typedef struct _TDNF_ *PTDNF;
+diff --git a/pytests/repo/tdnf-missing-dep.spec b/pytests/repo/tdnf-missing-dep.spec
+new file mode 100644
+index 00000000..b624405d
+--- /dev/null
++++ b/pytests/repo/tdnf-missing-dep.spec
+@@ -0,0 +1,37 @@
++#
++# tdnf-missing spec file
++#
++Summary:    basic install test file.
++Name:       tdnf-missing-dep
++Version:    1.0.1
++Release:    2
++Vendor:     VMware, Inc.
++Distribution:   Photon
++License:    VMware
++Url:        http://www.vmware.com
++Group:      Applications/tdnftest
++
++# requires something we do not have
++Requires: missing
++
++%description
++Part of tdnf test spec. Basic install/remove/upgrade test
++
++%prep
++
++%build
++
++%install
++mkdir -p %_topdir/%buildroot/lib/systemd/system/
++cat << EOF >> %_topdir/%buildroot/lib/systemd/system/%name.service
++[Unit]
++Description=%name.service for whatprovides test.
++
++EOF
++
++%files
++/lib/systemd/system/%name.service
++
++%changelog
++*   Fri Sep 16 Oliver Kurth <okurth@vmware.com> 1.0
++-   Initial build.  First version
+diff --git a/pytests/tests/test_install.py b/pytests/tests/test_install.py
+index 7ace0150..285c46b2 100644
+--- a/pytests/tests/test_install.py
++++ b/pytests/tests/test_install.py
+@@ -112,6 +112,50 @@ def test_install_obsoleted_installed(utils):
+     assert utils.check_package(PKGNAME_OBSING)
+ 
+ 
++# install multiple packages, one that doesn't exist
++# expect other pkg will be installed if invoked with --skip-broken
++def test_install_skip_broken_missing_pkg(utils):
++    pkgname = utils.config["mulversion_pkgname"]
++    utils.erase_package(pkgname)
++    pkgname_missing = "missing"
++
++    utils.run(['tdnf', 'install', '-y', '--nogpgcheck', '--skip-broken', pkgname, pkgname_missing])
++    assert utils.check_package(pkgname)
++
++
++# install multiple packages, one that doesn't exist
++# expect fail if invoked without --skip-broken
++def test_install_missing_pkg(utils):
++    pkgname = utils.config["mulversion_pkgname"]
++    utils.erase_package(pkgname)
++    pkgname_missing = "missing"
++
++    utils.run(['tdnf', 'install', '-y', '--nogpgcheck', pkgname, pkgname_missing])
++    assert not utils.check_package(pkgname)
++
++
++# install multiple packages, one with a missing dependency
++# expect other pkg will be installed if invoked with --skip-broken
++def test_install_skip_broken_missing_dep(utils):
++    pkgname = utils.config["mulversion_pkgname"]
++    utils.erase_package(pkgname)
++    pkgname_missing = "tdnf-missing-dep"
++
++    utils.run(['tdnf', 'install', '-y', '--nogpgcheck', '--skip-broken', pkgname, pkgname_missing])
++    assert utils.check_package(pkgname)
++
++
++# install multiple packages, one with a missing dependency
++# expect fail if invoked without --skip-broken
++def test_install_missing_dep(utils):
++    pkgname = utils.config["mulversion_pkgname"]
++    utils.erase_package(pkgname)
++    pkgname_missing = "tdnf-missing-dep"
++
++    utils.run(['tdnf', 'install', '-y', '--nogpgcheck', pkgname, pkgname_missing])
++    assert not utils.check_package(pkgname)
++
++
+ def test_install_memcheck(utils):
+     pkgname = utils.config["mulversion_pkgname"]
+     utils.erase_package(pkgname)
+diff --git a/pytests/tests/test_json.py b/pytests/tests/test_json.py
+index db3fe0e1..efc193bf 100644
+--- a/pytests/tests/test_json.py
++++ b/pytests/tests/test_json.py
+@@ -39,7 +39,8 @@ def test_list(utils):
+ 
+ def test_list_tdnfj(utils):
+     tdnfj = os.path.join(utils.config['build_dir'], 'bin/tdnfj')
+-    ret = utils.run([tdnfj, 'list'])
++    conf = os.path.join(utils.config['repo_path'], 'tdnf.conf')
++    ret = utils.run([tdnfj, '-c', conf, 'list'])
+     infolist = json.loads("\n".join(ret['stdout']))
+ 
+     glibc_found = False
+diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
+index 6ccf2b26..03e42286 100644
+--- a/solv/tdnfpackage.c
++++ b/solv/tdnfpackage.c
+@@ -1602,6 +1602,12 @@ SkipBasedOnType(
+                  type == SOLVER_RULE_PKG_INSTALLED_OBSOLETES;
+     }
+ 
++    if (dwSkipProblem & SKIPPROBLEM_BROKEN)
++    {
++        /* see https://github.com/openSUSE/libsolv/blob/master/src/rules.h */
++        result = result || type & SOLVER_RULE_PKG;
++    }
++
+     if (dwSkipProblem & SKIPPROBLEM_DISABLED)
+     {
+         /**
+@@ -1712,11 +1718,6 @@ SolvReportProblems(
+         type = solver_ruleinfo(pSolv, dwProblemId,
+                                &dwSource, &dwTarget, &dwDep);
+ 
+-        if (SkipBasedOnType(pSolv, type, dwSource, dwSkipProblem))
+-        {
+-            continue;
+-        }
+-
+         pszProblem = solver_problemruleinfo2str(pSolv, type, dwSource,
+                                                 dwTarget, dwDep);
+ 
+@@ -1729,7 +1730,11 @@ SolvReportProblems(
+             }
+         }
+ 
+-        dwError = ERROR_TDNF_SOLV_FAILED;
++        if (!SkipBasedOnType(pSolv, type, dwSource, dwSkipProblem))
++        {
++            dwError = ERROR_TDNF_SOLV_FAILED;
++        }
++
+         pr_err("%u. %s\n", ++total_prblms, pszProblem);
+     }
+ 
+
+From 2ba0d6e35725e4bfd0b9639d0f6216ab416c507b Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 26 Aug 2026 11:55:18 +0530
+Subject: [PATCH 3/4] add nSkipBroken to TDNF_CMD_ARGS and wire up
+ --skip-broken
+
+Commit 4d3591b referenced pTdnf->pArgs->nSkipBroken in api.c but the
+field was never added to the struct or exposed as a CLI option, causing a
+build failure.  Add the field to _TDNF_CMD_ARGS, register --skip-broken
+in the options table, and copy it in TDNFCopyOptions().
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ include/tdnftypes.h       | 1 +
+ tools/cli/lib/parseargs.c | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/include/tdnftypes.h b/include/tdnftypes.h
+index 9c1c329e..c041f94e 100644
+--- a/include/tdnftypes.h
++++ b/include/tdnftypes.h
+@@ -224,6 +224,7 @@ typedef struct _TDNF_CMD_ARGS
+     int nDisableExcludes;  //disable excludes from tdnf.conf
+     int nDownloadOnly;     //download packages only, no install
+     int nNoAutoRemove;     //overide clean_requirements_on_remove config option
++    int nSkipBroken;       //skip packages that cannot be installed/updated
+     int nJsonOutput;       //output in json format
+     char* pszDownloadDir;  //directory for download, if nDownloadOnly is set
+     char* pszInstallRoot;  //set install root
+diff --git a/tools/cli/lib/parseargs.c b/tools/cli/lib/parseargs.c
+index 28cf5cf5..a3b42fe8 100644
+--- a/tools/cli/lib/parseargs.c
++++ b/tools/cli/lib/parseargs.c
+@@ -61,6 +61,7 @@ static struct option pstOptions[] =
+     {"sec-severity",  required_argument, 0, 0},            //--sec-severity
+     {"security",      no_argument, 0, 0},                  //--security
+     {"setopt",        required_argument, 0, 0},            //--set or override options
++    {"skip-broken",   no_argument, &_opt.nSkipBroken, 1},  //--skip-broken
+     {"skipconflicts", no_argument, 0, 0},                  //--skipconflicts to skip conflict problems
+     {"skipdigest",    no_argument, 0, 0},                  //--skipdigest to skip verifying RPM digest
+     {"skipobsoletes", no_argument, 0, 0},                  //--skipobsoletes to skip obsolete problems
+@@ -325,6 +326,7 @@ TDNFCopyOptions(
+     pArgs->nDisableExcludes = pOptionArgs->nDisableExcludes;
+     pArgs->nDownloadOnly  = pOptionArgs->nDownloadOnly;
+     pArgs->nNoAutoRemove  = pOptionArgs->nNoAutoRemove;
++    pArgs->nSkipBroken    = pOptionArgs->nSkipBroken;
+     pArgs->nJsonOutput    = pOptionArgs->nJsonOutput;
+ 
+ cleanup:
+
+From c26f9f04364c1428ca9cda0bb9f35f1bcdfdbe5e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 26 Aug 2026 12:56:38 +0530
+Subject: [PATCH 4/4] ci: remove photon-3 job from CI workflow
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ .github/workflows/ci.yml | 15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index cf50d4ff..eba38ec3 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -17,21 +17,6 @@ jobs:
+               working-directory: ${{ github.workspace }}
+               run: |
+                 docker run --security-opt seccomp:unconfined --rm -e DIST -v$(pwd):/build -w/build ${DIST}/tdnf-build ./ci/docker-entrypoint.sh
+-    photon-3:
+-        env:
+-            DIST: photon
+-            DIST_VERSION: '3.0'
+-        runs-on: ubuntu-latest
+-        steps:
+-            - uses: actions/checkout@v2
+-            - name: build container
+-              working-directory: ${{ github.workspace }}
+-              run: |
+-                docker build -t ${DIST}/tdnf-build:${DIST_VERSION} -f ci/Dockerfile.${DIST}-${DIST_VERSION} .
+-            - name: run container with tests
+-              working-directory: ${{ github.workspace }}
+-              run: |
+-                docker run --security-opt seccomp:unconfined --rm -e DIST -v$(pwd):/build -w/build ${DIST}/tdnf-build:${DIST_VERSION} ./ci/docker-entrypoint.sh
+     fedora:
+         env:
+             DIST: fedora

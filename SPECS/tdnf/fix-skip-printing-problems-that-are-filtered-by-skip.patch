@@ -1,0 +1,38 @@
+From 089f7398fdfdcc6913edef56453b59bb70d82ce0 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 30 Aug 2026 13:24:57 +0530
+Subject: [PATCH] fix: skip printing problems that are filtered by
+ --skipconflicts/--skipobsoletes
+
+In SolvReportProblems, pr_err was unconditionally called after the
+SkipBasedOnType check, so skipped problems were still printed even
+though the exit code was correctly 0. Use continue to skip the entire
+problem (including the print) when SkipBasedOnType returns true.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ solv/tdnfpackage.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
+index 03e4228..c677c6a 100644
+--- a/solv/tdnfpackage.c
++++ b/solv/tdnfpackage.c
+@@ -1730,11 +1730,12 @@ SolvReportProblems(
+             }
+         }
+ 
+-        if (!SkipBasedOnType(pSolv, type, dwSource, dwSkipProblem))
++        if (SkipBasedOnType(pSolv, type, dwSource, dwSkipProblem))
+         {
+-            dwError = ERROR_TDNF_SOLV_FAILED;
++            continue;
+         }
+ 
++        dwError = ERROR_TDNF_SOLV_FAILED;
+         pr_err("%u. %s\n", ++total_prblms, pszProblem);
+     }
+ 
+-- 
+2.55.0
