@@ -1,9 +1,12 @@
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# STIG conditional in this spec permanently unreachable, and untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.13
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -221,6 +224,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 4.13-15
+- Replace the plain define of STIG_HARDEN with a define-if-unset so the flag
+  can be set from pkg_build_options.json or rpmbuild -D. A plain define in the
+  spec body beats -D, so every STIG conditional in this spec was unreachable
+  and had never been parsed or built in any constellation.
+- No change to the default build: with STIG_HARDEN unset the value is still 0
+  and the expanded spec is identical.
 * Tue Dec 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-14
 - Add provides entries
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-13
