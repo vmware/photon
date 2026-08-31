@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.113
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -99,6 +99,8 @@ Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux
 %define efa_version 3.1.0
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
 
+# shared canister/.config handling, also included by linux-esx.spec
+Source5:        canister_config.inc
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
@@ -710,14 +712,7 @@ sed -i '/CONFIG_ARCH_HAS_RELR=y/a CONFIG_RELR=y' .config
 %endif
 %endif
 
-%if 0%{?canister_build}
-sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
-sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
-%endif
-
-%if 0%{?canister_usage}
-sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
-%endif
+%include %{SOURCE5}
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -1031,6 +1026,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Oct 23 2026 Daniel Casota <dcasota@gmail.com> 6.12.113-6
+- Share canister/.config handling via canister_config.inc; fixes the fips=0 path
 * Fri Oct 23 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.113-5
 - Fixes CVE-2026-80738, CVE-2026-89654
 * Fri Oct 23 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.113-4
