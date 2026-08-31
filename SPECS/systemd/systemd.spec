@@ -1,13 +1,16 @@
 %global build_if %{photon_subrelease} >= 91
 
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# conditional below permanently unreachable, and therefore untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 %global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        257.13
-Release:        5%{?dist}
+Release:        7%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -40,14 +43,25 @@ Source14:       sysusers.generate-pre.sh
 Source15: license.txt
 %include %{SOURCE15}
 
-Patch0: 0001-enoX-uses-instance-number-for-vmware-hv.patch
-Patch1: 0002-Fetch-dns-servers-from-environment.patch
-Patch2: 0003-systemd-do-not-use-ftrivial-auto-var-init-zero.patch
-Patch3: 0004-Remove-unused-default-groups-rules-and-tmpfiles.patch
-Patch4: 0005-default-conf-modifications.patch
+# Unnumbered "Patch:" lets rpm assign indices in order, so a conditional
+# patch can never collide with an unconditional one. Two independent edits
+# both picking "Patch4:" is exactly how the STIG variant came to fail with
+# "error: patch 4 defined multiple times".
+Patch: 0001-enoX-uses-instance-number-for-vmware-hv.patch
+Patch: 0002-Fetch-dns-servers-from-environment.patch
+Patch: 0003-systemd-do-not-use-ftrivial-auto-var-init-zero.patch
+Patch: 0004-Remove-unused-default-groups-rules-and-tmpfiles.patch
+Patch: 0005-default-conf-modifications.patch
 
+# /lib/systemd/system/tmp.mount is owned by this package and is not marked as
+# a config file, so it must be hardened here, at build time. The installer
+# deliberately skips
+# the equivalent ansible control PHTN-50-000245 (stigenable.py) because editing
+# a package-owned unit at install time shows up as permanent rpm -V drift and
+# is reverted by the next systemd upgrade. Do not "fix" that skip; this is the
+# owning side of that split.
 %if 0%{?STIG_HARDEN}
-Patch4: harden-tmpfs-mount-options.patch
+Patch: harden-tmpfs-mount-options.patch
 %endif
 
 Conflicts: dracut < 109
@@ -274,6 +288,7 @@ CONFIGURE_OPTS=(
        -Doomd=false
        -Dhomed=disabled
        -Dversion-tag=v%{version}-%{release}
+       -Dsystemd-journal-gid=23
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
@@ -681,6 +696,45 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 257.13-7
+- Ship harden-tmpfs-mount-options.patch. It was referenced by the STIG
+  conditional but present only under SPECS/90/systemd, so a STIG build could
+  never have found it. Applies cleanly to 257.13.
+- Replace the plain define of STIG_HARDEN with a define-if-unset, so the flag
+  can be set from pkg_build_options.json or rpmbuild -D. A plain define in the
+  spec body beats -D, which made every STIG conditional here unreachable and
+  therefore never parsed, built or tested.
+- Switch the patch list to unnumbered "Patch:" so rpm assigns indices. The
+  conditional STIG patch and 0005-default-conf-modifications.patch had both
+  been given index 4; with STIG_HARDEN reachable that is a hard
+  "error: patch 4 defined multiple times" and no prep section is emitted.
+  Auto-numbering removes the collision class rather than this one instance.
+- Constellation: the three defects above are invisible in every build Photon
+  currently performs (STIG_HARDEN pinned to 0) and all fire together the
+  moment the STIG variant is selected, on any arch and any subrelease >= 91.
+  Non-STIG builds are byte-identical before and after: same sources, same
+  five patches, same order.
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 257.13-6
+- 0004: also drop the SUBSYSTEM=="accel" rule from 50-udev-default.rules.in.
+  The same patch removes the "render" group from sysusers.d/basic.conf.in, but
+  the accel rule kept referencing it, so systemd-udevd logged
+  "50-udev-default.rules:56 Unknown group 'render', ignoring." on every boot.
+  systemd 253 had no accel rule; the regression arrived with the 253->257
+  rebase. The dev branch (255.10) already deletes this line.
+- 0004: stop emptying sysusers.d/systemd-journal.conf.in. dracut 109 builds the
+  initrd's /etc/group by running systemd-sysusers against the shipped
+  sysusers.d snippets (11systemd-journald inst_sysusers systemd-journal.conf,
+  78systemd-sysusers systemd-sysusers --root=$initdir); with the entry removed
+  the snippet was a no-op, so the initrd had no systemd-journal group while
+  11systemd-tmpfiles still installed tmpfiles.d/systemd.conf, which references
+  it on 5 lines. Every boot logged 5x "Failed to resolve group
+  'systemd-journal'" from inside the initrd. Harmless under dracut 059, which
+  copied the group in explicitly; a real gap since the 109 bump.
+- Pin -Dsystemd-journal-gid=23 to match filesystem's static group file. The
+  meson default is 0, which meson.build maps to "-" (dynamic allocation), so
+  restoring the sysusers entry without this would let systemd-sysusers pick an
+  arbitrary GID inside the initrd and mis-own /run/log/journal across
+  switch-root.
 * Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 257.13-5
 - Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 257.13-4
