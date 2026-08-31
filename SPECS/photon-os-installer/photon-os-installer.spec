@@ -5,7 +5,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.8
-Release:       2%{?dist}
+Release:       5%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -17,6 +17,11 @@ Source1: license.txt
 
 Patch0: 0001-Use-mkpasswd-to-generate-password-hash.patch
 Patch1: 0002-fix-up-old-public_key-syntax-for-backward-compatibil.patch
+Patch2: 0003-isoInstaller-fix-interactive-NoneType-crash.patch
+Patch3: 0004-installer-add-btrfs-progs.patch
+Patch4: 0005-tdnf-capture-install-output.patch
+Patch5: 0006-stig-drop-redundant-packages.patch
+Patch6: 0007-installer-seed-locale.conf-before-package-install.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -71,6 +76,23 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.8-5
+- installer: seed /etc/locale.conf in _initialize_system() so the initrd built
+  by the initramfs file trigger during _install_packages() finds it; fixes
+  "dracut[E]: i18n_vars not set!" on the installer console and stops dracut
+  from falling back to embedding every keymap
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.8-4
+- stigenable: drop libselinux-utils (already a selinux-policy dep, never used
+  by the role), ntp (installed but never configured - no task notifies the
+  time-sync handlers) and libgcrypt (workaround for an aide packaging bug now
+  fixed by a versioned Requires in aide.spec)
+* Thu Jun 04 2026 Daniel Casota <dcasota@gmail.com> 2.8-3
+- isoInstaller: fix interactive (no-kickstart) install - no longer crashes
+  (TypeError on a None config) or skips the disk-selection UI ("No disk
+  configured"); regression from upstream 9fc8733/0a72c3a
+- installer: add btrfs-progs when a btrfs partition is selected
+- tdnf: capture install output so it no longer overlays the curses UI
+  with file paths like /etc/os-release
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 28 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.8-1
