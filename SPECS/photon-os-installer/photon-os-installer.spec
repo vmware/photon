@@ -4,8 +4,8 @@
 
 Summary:       Photon OS Installer
 Name:          photon-os-installer
-Version:       2.8
-Release:       2%{?dist}
+Version:       2.9
+Release:       1%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -15,8 +15,11 @@ Source0:       %{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: 0001-Use-mkpasswd-to-generate-password-hash.patch
-Patch1: 0002-fix-up-old-public_key-syntax-for-backward-compatibil.patch
+# Unnumbered "Patch:" lets rpm assign indices, so dropping a patch that has
+# landed upstream never leaves an index gap or a collision behind.
+Patch: 0002-fix-up-old-public_key-syntax-for-backward-compatibil.patch
+Patch: 0006-stig-drop-redundant-packages.patch
+Patch: 0007-installer-seed-locale.conf-before-package-install.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -71,6 +74,16 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.9-1
+- Upgrade to v2.9 (upstream tag v2.9, commit 59a011da).
+- Drop 0001-Use-mkpasswd-to-generate-password-hash: it is in v2.9 upstream
+  and reverses cleanly against the v2.9 tree.
+- Keep 0002-fix-up-old-public_key-syntax, which still applies to v2.9.
+- Add 0006-stig-drop-redundant-packages and
+  0007-installer-seed-locale.conf-before-package-install; both still apply
+  cleanly to v2.9 and are not yet upstream.
+- Switch to unnumbered "Patch:" so dropping an upstreamed patch cannot leave
+  an index gap or collision.
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 28 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.8-1

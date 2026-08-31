@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Mon, 31 Aug 2026 00:00:00 +0000
+Subject: [PATCH] installer: seed /etc/locale.conf before package install
+
+The initramfs rpm ships a %transfiletriggerin that runs
+"mkinitrd -q /boot/initrd.img-$kver $kver" at the end of the package
+transaction performed by _install_packages(). dracut's 20i18n module
+checks for $I18N_CONF (/etc/locale.conf) and, when it is missing and
+i18n_vars is unset, reports
+
+  dracut[E]: i18n_vars not set!  Please set up i18n_vars in  configuration file.
+
+on the installer console right before the ansible run, and then falls
+back to install_all_kbd() - embedding every keymap in the initrd instead
+of the target's own.
+
+/etc/locale.conf is only created by m_locale, which runs in the
+POST_INSTALL phase, twelve steps after _install_packages(). The file is
+therefore guaranteed to be absent while the initrd is generated.
+
+Seed it in _initialize_system(), directly after the filesystem rpm that
+provides /etc is installed and before any package transaction can fire
+the trigger. m_locale is left untouched: it rewrites the same content
+and runs localedef, and it still covers the ostree install path where
+_initialize_system() is not called.
+
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
+---
+ photon_installer/installer.py | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -1300,6 +1300,20 @@
+             self.logger.error("Failed to install filesystem rpm")
+             self.exit_gracefully()
+ 
++        # dracut's 20i18n module reads /etc/locale.conf when it builds an
++        # initrd. The initramfs rpm installs a file trigger that runs mkinitrd
++        # at the end of the package transaction started by _install_packages()
++        # below - long before m_locale (POST_INSTALL) creates the file. Without
++        # it dracut aborts i18n setup with
++        #   "i18n_vars not set!  Please set up i18n_vars in  configuration file."
++        # and falls back to embedding every keymap. Seed the file here so the
++        # initrd is built with the target's locale; m_locale writes the same
++        # content again later and additionally runs localedef.
++        locale_conf_path = os.path.join(self.photon_root, "etc/locale.conf")
++        os.makedirs(os.path.dirname(locale_conf_path), exist_ok=True)
++        with open(locale_conf_path, "w") as locale_conf:
++            locale_conf.write("LANG=en_US.UTF-8\n")
++
+     def _mount_special_folders(self):
+         for d in ["/proc", "/dev", "/dev/pts", "/sys"]:
+             self._mount(d, d, bind=True, create=True)
+-- 
+2.43.7
