@@ -5,7 +5,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.8
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -22,6 +22,7 @@ Patch3: 0004-installer-add-btrfs-progs.patch
 Patch4: 0005-tdnf-capture-install-output.patch
 Patch5: 0006-stig-drop-redundant-packages.patch
 Patch6: 0007-installer-seed-locale.conf-before-package-install.patch
+Patch7: 0008-isoBuilder-put-installer-requestable-packages-on-media.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -76,6 +77,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.8-6
+- isoBuilder: put installer-requestable packages (STIG set, --initrd-pkgs) on the media
 * Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.8-5
 - installer: seed /etc/locale.conf in _initialize_system() so the initrd built
   by the initramfs file trigger during _install_packages() finds it; fixes
