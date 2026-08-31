@@ -20,7 +20,7 @@ all:
 	fi
 
 %:
-	umask $(UMASK) && python3 build.py -c $(CONF) -t "$@" && \
+	@umask $(UMASK) && python3 build.py -c $(CONF) -t "$@" && \
 	if [[ "$@" != clean* ]]; then \
 		touch $(FIRST_PASS_MARKER); \
 	fi
