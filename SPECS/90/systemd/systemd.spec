@@ -1,13 +1,16 @@
 %global build_if %{photon_subrelease} <= 90
 
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# STIG conditional in this spec permanently unreachable, and untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 %global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        17.2.2%{?dist}
+Release:        17.2.3%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -704,6 +707,13 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 253.19-17.2.3
+- Replace the plain define of STIG_HARDEN with a define-if-unset so the flag
+  can be set from pkg_build_options.json or rpmbuild -D. A plain define in the
+  spec body beats -D, so every STIG conditional in this spec was unreachable
+  and had never been parsed or built in any constellation.
+- No change to the default build: with STIG_HARDEN unset the value is still 0
+  and the expanded spec is identical.
 * Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.2
 - Fix CVE-2026-40225, CVE-2026-40226
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.1
