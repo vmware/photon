@@ -60,7 +60,7 @@ popd
 
 %changelog
 * Wed Sep 09 2026 Daniel Casota <dcasota@gmail.com> 2.1-10
-- Fix PHTN-50-000192 pam_faillock stack corruption, add ima_hash=sha256 under FIPS, generate fipsmodule.cnf, and add the first-boot SELinux relabel service ordered before systemd-sysctl, auditd and systemd-networkd
+- Fix pam_faillock, FIPS ima_hash/fipsmodule.cnf; add first-boot SELinux relabel
 * Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-9
 - Use a definite list files for installation
 * Wed Jun 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-8

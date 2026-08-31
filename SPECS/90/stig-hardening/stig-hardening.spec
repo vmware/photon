@@ -57,7 +57,7 @@ popd
 
 %changelog
 * Wed Sep 09 2026 Daniel Casota <dcasota@gmail.com> 2.1-5.1.3
-- Backport the first-boot SELinux relabel service and FIPS PAM fixes to subrelease 90, ordered before systemd-sysctl, auditd and systemd-networkd
+- Backport first-boot SELinux relabel and FIPS PAM fixes
 * Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-5.1.2
 - Use a definite list files for installation
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1-5.1.1
