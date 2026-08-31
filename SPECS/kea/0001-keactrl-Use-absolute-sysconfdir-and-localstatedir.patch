@@ -1,0 +1,85 @@
+From: Daniel Casota <dcasota@gmail.com>
+Date: Mon, 31 Aug 2026 00:00:00 +0200
+Subject: [PATCH] keactrl: do not prepend ${prefix} to an absolute sysconfdir
+
+src/bin/keactrl/meson.build builds the paths substituted into keactrl and
+keactrl.conf by string-concatenating a literal '${prefix}/' in front of the
+sysconfdir and localstatedir options:
+
+    keactrl_conf_data.set('sysconfdir', '${prefix}/' + SYSCONFDIR)
+    keactrl_conf_data.set('localstatedir', '${prefix}/' + LOCALSTATEDIR)
+
+That assumes the options are prefix-relative, which is the autotools
+convention. Meson does not follow it. BUILTIN_DIR_NOPREFIX_OPTIONS in
+mesonbuild/options.py maps sysconfdir to an absolute '/etc' and
+localstatedir to an absolute '/var' whenever the prefix is '/usr', whether
+or not the values are passed on the command line:
+
+    BUILTIN_DIR_NOPREFIX_OPTIONS = {
+        OptionKey('sysconfdir'):     {'/usr': '/etc'},
+        OptionKey('localstatedir'):  {'/usr': '/var', '/usr/local': '/var/local'},
+
+The concatenation then yields '${prefix}//etc' and '${prefix}//var', which
+expand at run time to /usr/etc and /usr/var -- directories that do not
+exist. keactrl is unusable on any prefix=/usr build, which is essentially
+every distribution package:
+
+    $ keactrl status
+    ERROR/keactrl: keactrl configuration file doesn't exist in
+    /usr//etc/kea/keactrl.conf.
+
+Eight substitutions across the two generated files are affected, not only
+the configuration file location: KEA_LOGGER_DESTINATION, the PID directory
+and localstatedir in keactrl, and all four kea_*_config_file entries in the
+installed keactrl.conf. Passing -c does not work around it, because the
+installed keactrl.conf carries the same corrupted paths.
+
+Use the option directly when it is already absolute, and keep the
+'${prefix}/' indirection when it is prefix-relative. The indirection is what
+makes a self-contained install relocatable -- prefix is a live shell
+variable in the generated scripts -- so it must survive for the prefixes
+where meson leaves the options relative.
+
+sbindir is unaffected: meson relativizes it under the prefix, so
+'${prefix}/' + SBINDIR is already correct.
+
+Verified by generating keactrl and keactrl.conf with meson 1.12.0 from the
+unmodified templates. With prefix=/usr, with and without explicit
+--sysconfdir/--localstatedir, the config path becomes /etc/kea/keactrl.conf
+and the log and PID paths land under /var. With prefix=/usr/local and
+prefix=/opt/kea both generated files are byte-identical to the unpatched
+build.
+
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
+---
+--- a/src/bin/keactrl/meson.build
++++ b/src/bin/keactrl/meson.build
+@@ -3,7 +3,11 @@
+ keactrl_conf_data.set('exec_prefix', '${prefix}')
+ keactrl_conf_data.set('prefix', PREFIX)
+ keactrl_conf_data.set('sbindir', '${prefix}/' + SBINDIR)
+-keactrl_conf_data.set('sysconfdir', '${prefix}/' + SYSCONFDIR)
++if SYSCONFDIR.startswith('/')
++    keactrl_conf_data.set('sysconfdir', SYSCONFDIR)
++else
++    keactrl_conf_data.set('sysconfdir', '${prefix}/' + SYSCONFDIR)
++endif
+ if NETCONF_DEP.found()
+     keactrl_conf_data.set('HAVE_NETCONF', 'yes')
+ else
+@@ -11,8 +15,13 @@
+ endif
+ keactrl_conf_data.set('EXTENDED_VERSION', EXTENDED_VERSION)
+ keactrl_conf_data.set('PACKAGE_VERSION', PROJECT_VERSION)
+-keactrl_conf_data.set('runstatedir', '${prefix}/' + LOCALSTATEDIR + '/run')
+-keactrl_conf_data.set('localstatedir', '${prefix}/' + LOCALSTATEDIR)
++if LOCALSTATEDIR.startswith('/')
++    keactrl_conf_data.set('runstatedir', LOCALSTATEDIR / 'run')
++    keactrl_conf_data.set('localstatedir', LOCALSTATEDIR)
++else
++    keactrl_conf_data.set('runstatedir', '${prefix}/' + LOCALSTATEDIR + '/run')
++    keactrl_conf_data.set('localstatedir', '${prefix}/' + LOCALSTATEDIR)
++endif
+ 
+ kea_conf_data = configuration_data()
+ kea_conf_data.set('libdir', LIBDIR_INSTALLED)
