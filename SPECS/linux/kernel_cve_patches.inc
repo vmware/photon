@@ -69,3 +69,8 @@ Patch3050: 0001-net-serialize-netif_running-check-in-enqueue_to_backlog.patch
 Patch3051: 0001-netfs-Fix-netfs_create_write_req-to-handle-async-cac.patch
 Patch3052: 0001-tcp-clear-sock_ops-cb-flags-before-force-closing.patch
 Patch3053: 0001-xfrm-Fix-dev-use-after-free-in-xfrm-async-resumption.patch
+# Fixes CVE-2026-64160
+Patch3054: 0001-cifs-Fix-handling-of-a-beyond-EOF-DIO-unbuffered-rea.patch
+Patch3055: 0002-filemap-Add-folio_next_pos.patch
+Patch3056: 0003-netfs-Fix-potential-for-tearing-in-remote_i_size-and.patch
+Patch3057: 0004-cifs-Fix-undefined-variables.patch

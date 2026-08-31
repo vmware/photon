@@ -73,12 +73,14 @@ docker network disconnect 683de6a3741d h10-161-165-163 && sleep 20 &&  docker ne
 
 Before fix:
 Durable reconnect failed due to below error:
-   vfs_default_durable_reconnect (fiofile): stat_ex.st_ex_blksize differs: cookie:4096 != stat:16384, denying durable reconnect
+   vfs_default_durable_reconnect (fiofile): stat_ex.st_ex_blksize differs: cookie:4096 != stat:16384, denying durable reconnect
  [2020/12/11 00:15:31.016476,  3] ../../source3/smbd/smb2_create.c:835(smbd_smb2_create_send)
-   smbd_smb2_create_send: durable_reconnect failed: NT_STATUS_OBJECT_NAME_NOT_FOUND => NT_STATUS_OBJECT_NAME_NOT_FOUND
+   smbd_smb2_create_send: durable_reconnect failed: NT_STATUS_OBJECT_NAME_NOT_FOUND => NT_STATUS_OBJECT_NAME_NOT_FOUND
 
 After fix:
 Durable reconnect succeeded.
+[Srinidhi: rebased on top of CVE-2026-64160 fix.]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
 ---
  fs/9p/vfs_inode_dotl.c | 8 ++++++--
  1 file changed, 6 insertions(+), 2 deletions(-)
@@ -93,29 +95,28 @@ index d6379eff1..fc5ad6405 100644
  	generic_fillattr(&nop_mnt_idmap, request_mask, d_inode(dentry), stat);
 -	/* Change block size to what the server returned */
 -	stat->blksize = st->st_blksize;
- 
+
  	kfree(st);
  	return 0;
-@@ -650,6 +648,9 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
+@@ -651,6 +649,9 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
  		if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE))
- 			v9fs_i_size_write(inode, stat->st_size);
+ 			i_size_write(inode, stat->st_size);
  		inode->i_blocks = stat->st_blocks;
 +		if (stat->st_blksize != 0) {
 +			inode->i_blkbits = fls(stat->st_blksize - 1);
 +		}
+ 		spin_unlock(&inode->i_lock);
  	} else {
  		if (stat->st_result_mask & P9_STATS_ATIME) {
- 			inode_set_atime(inode, stat->st_atime_sec,
-@@ -681,6 +682,9 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
+@@ -684,6 +685,9 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
  		}
  		if (stat->st_result_mask & P9_STATS_BLOCKS)
  			inode->i_blocks = stat->st_blocks;
 +		if (stat->st_blksize != 0) {
 +			inode->i_blkbits = fls(stat->st_blksize - 1);
 +		}
+ 		spin_unlock(&inode->i_lock);
  	}
  	if (stat->st_result_mask & P9_STATS_GEN)
- 		inode->i_generation = stat->st_gen;
--- 
+--
 2.43.7
-
