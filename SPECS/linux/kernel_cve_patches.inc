@@ -58,3 +58,5 @@ Patch3042: 0001-netfs-Fix-netfs_read_to_pagecache-to-pause-on-subreq.patch
 Patch3043: 0001-tcp-fix-stale-per-CPU-tcp_tw_isn-leak-enabling-ISN-p.patch
 # Fixes CVEs
 Patch3044: 0001-bpf-fix-the-return-value-of-push_stack.patch
+# Fix CVE-2026-68082
+Patch3045: 0001-libceph-fix-two-unsafe-bare-decodes-in-decode_locker.patch
