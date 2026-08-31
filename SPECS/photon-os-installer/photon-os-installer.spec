@@ -5,7 +5,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.9
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -75,6 +75,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.9-3
+- Rebase 0002 onto the v2.9 context so it applies at rpm's --fuzz=0
 * Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.9-2
 - isoBuilder: put installer-requestable packages (STIG set, --initrd-pkgs) on the media
 * Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.9-1
