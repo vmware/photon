@@ -1,9 +1,10 @@
 %global build_if %{photon_subrelease} >= 91
+%global kea_services kea-dhcp4.service kea-dhcp6.service kea-dhcp-ddns.service
 
 Summary:      A modern, scalable, robust DHCPv4 and DHCPv6 server.
 Name:         kea
 Version:      3.1.9
-Release:      3%{?dist}
+Release:      5%{?dist}
 Url:          https://www.isc.org/kea/
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -16,15 +17,25 @@ Source2: %{name}.sysusers
 Source3: license.txt
 %include %{SOURCE3}
 
+Source4: kea-dhcp4.service
+Source5: kea-dhcp6.service
+Source6: kea-dhcp-ddns.service
+Source7: disable-kea-by-default.preset
+
+Patch0: 0001-keactrl-Use-absolute-sysconfdir-and-localstatedir.patch
+
 BuildRequires: meson
 BuildRequires: log4cplus-devel
 BuildRequires: boost-devel
 BuildRequires: krb5-devel
 BuildRequires: shadow
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 
 Requires:      kea-libs = %{version}-%{release}
+Requires:      systemd
 Requires(pre): shadow
+Requires(pre): systemd-rpm-macros
 Obsoletes:     dhcp-server
 
 %description
@@ -79,11 +90,24 @@ The %name-docs contains %name package doc files.
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
+install -vdm 755 %{buildroot}%{_unitdir}
+install -p -m 0644 %{SOURCE4} %{buildroot}%{_unitdir}/kea-dhcp4.service
+install -p -m 0644 %{SOURCE5} %{buildroot}%{_unitdir}/kea-dhcp6.service
+install -p -m 0644 %{SOURCE6} %{buildroot}%{_unitdir}/kea-dhcp-ddns.service
+install -p -D -m 0644 %{SOURCE7} %{buildroot}%{_presetdir}/50-%{name}.preset
+
 %pre
 %sysusers_create_compat %{SOURCE2}
 
 %post
 systemd-tmpfiles --create %{name}.conf
+%systemd_post %{kea_services}
+
+%preun
+%systemd_preun %{kea_services}
+
+%postun
+%systemd_postun_with_restart %{kea_services}
 
 %post libs
 /sbin/ldconfig
@@ -104,6 +128,10 @@ rm -rf %{buildroot}
 %{_sysconfdir}/kea
 %{_tmpfilesdir}/%{name}.conf
 %{_sysusersdir}/%{name}.conf
+%{_unitdir}/kea-dhcp4.service
+%{_unitdir}/kea-dhcp6.service
+%{_unitdir}/kea-dhcp-ddns.service
+%{_presetdir}/50-%{name}.preset
 %dir %attr(0750,kea,kea) %{_sharedstatedir}/kea
 %dir %attr(0750,kea,kea) %{_localstatedir}/log/kea
 
@@ -128,6 +156,10 @@ rm -rf %{buildroot}
 %{_docdir}/*
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 3.1.9-5
+- Ship systemd units for kea-dhcp4, kea-dhcp6 and kea-dhcp-ddns
+- Fix keactrl looking for its config under /usr/etc instead of /etc
+- Ship a disable-by-default preset so the DHCP servers are not enabled on install
 * Mon Jun 22 2026 Bo Gan <bo.gan@broadcom.com> 3.1.9-3
 - Disable mysql support
 * Mon Jun 15 2026 Bo Gan <bo.gan@broadcom.com> 3.1.9-2
