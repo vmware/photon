@@ -57,8 +57,19 @@
 %global canister_build 1
 %endif
 
+%ifarch x86_64
 %if 0%{?acvp_build}
 %global fips 1
+%endif
+%endif
+
+# acvp_build and kat_build are x86_64-only: the canister they certify is
+# arch/x86 crypto and the only ACVP config is config_x86_64_acvp. Refuse them
+# on any other architecture instead of building with x86_64 inputs.
+%ifnarch x86_64
+%if 0%{?acvp_build} || 0%{?kat_build}
+%{error:acvp_build and kat_build are x86_64-only; refusing to build for %{_target_cpu}}
+%endif
 %endif
 
 # Set default FIPS flags
@@ -1019,7 +1030,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %changelog
 * Sat Sep 19 2026 Daniel Casota <dcasota@gmail.com> 6.12.109-7
-- Share canister/.config handling via canister_config.inc; fixes the fips=0 path
+- Share canister/.config handling via canister_config.inc (fixes the fips=0 path) and make canister_build work against the current kernel
 * Fri Sep 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.109-6
 - Fixes CVE-2026-68337, CVE-2026-68441
 * Thu Sep 17 2026 srinidhira0 <srinidhi.rao@broadcom.com> 6.12.109-5
