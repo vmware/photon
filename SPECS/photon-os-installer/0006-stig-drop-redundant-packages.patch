@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Mon, 31 Aug 2026 03:10:00 +0200
+Subject: [PATCH] stigenable: drop three packages the hardening does not need
+
+Each added package is attack surface on a system whose purpose is to be
+hardened, so KS_STIG_PACKAGES should name only what the role actually uses.
+Three entries do not:
+
+libselinux-utils - the role never invokes any of its binaries (getenforce,
+setenforce, sestatus, restorecon, fixfiles); a grep over every *.yml in
+stig-hardening finds no reference. It is also already a Requires of
+selinux-policy, so it is installed either way and listing it changes nothing.
+The relabel service calls /usr/sbin/restorecon, which comes from
+policycoreutils, not from this package.
+
+ntp - installed and then never configured. handlers/main.yml defines
+"restart ntpd", "restart chrony" and "restart timesyncd", but no task
+notifies any of them, and outside handlers/main.yml the string "ntp" does not
+occur anywhere in the role: no ntp.conf/chrony.conf/timesyncd.conf task, no
+server or pool setting, and no PHTN control for time synchronisation among
+the 117 in the role. (README.md documents a var_ntp_servers extra-var that
+nothing consumes.) Photon 5.0 also has no package named ntp; it resolves to
+ntpsec via Provides. Removing it leaves a daemon uninstalled rather than
+installed-and-ignored.
+
+libgcrypt - present only to work around a packaging bug, as the role itself
+records at tasks/photon.yml: "Currently a bug in the aide package that does
+not upgrade libgcrypt to the needed version". The fix belongs in aide.spec,
+which now carries a versioned Requires, so the workaround is unnecessary.
+
+Time synchronisation being unimplemented is a separate finding and is not
+addressed here; this change only stops installing a package for it.
+
+Co-Authored-By: Daniel Casota <dcasota@gmail.com>
+---
+ photon_installer/stigenable.py | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/photon_installer/stigenable.py b/photon_installer/stigenable.py
+--- a/photon_installer/stigenable.py
++++ b/photon_installer/stigenable.py
+@@ -23,10 +23,7 @@
+     "rsyslog",
+     "openssl-fips-provider",
+     "selinux-policy",
+-    "libselinux-utils",
+-    "ntp",
+-    "aide",
+-    "libgcrypt"
++    "aide"
+ ]
+ 
+ 
+-- 
+2.51.0
