@@ -19,22 +19,37 @@ the filesystem is relabeled before the login prompt appears. It
 removes its trigger file on completion and is a no-op on subsequent
 boots.
 
-Known limitation: on systemd v257 (Photon 5.0 subrelease >= 92),
-early services (auditd, systemd-sysctl, systemd-networkd) may race
-with the relabel and fail on first boot. Login itself works. A
-reboot resolves all failures. See PR description for fix options.
+Ordering against sysinit.target alone is not sufficient. Early units
+such as systemd-sysctl.service also set DefaultDependencies=no and
+declare only Before=sysinit.target, so they and the relabel are
+ordered against that target but not against each other -- systemd is
+free to run them in either order, and it ran systemd-sysctl first:
+
+  Starting Apply Kernel Variables...
+  AVC denied { read } comm="systemd-sysctl"
+      name="zz-stig-hardening.conf" tcontext=unlabeled_t permissive=0
+  systemd-sysctl: Failed to open file '/etc/sysctl.d/zz-stig-hardening.conf'
+  Failed to start Apply Kernel Variables.
+  Starting SELinux Relabel Filesystem (first boot)...   <- one second later
+
+systemd-sysctl aborts on the first unreadable file, so every parameter
+in zz-stig-hardening.conf is silently absent for the whole first boot.
+On a system installed to be STIG-hardened that is a compliance gap, not
+a cosmetic failure. Order the relabel explicitly before the units that
+consume files the playbook wrote.
 
 Signed-off-by: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
 ---
 diff -ruN a/files/selinux-relabel.service b/files/selinux-relabel.service
 --- a/files/selinux-relabel.service	1970-01-01 01:00:00.000000000 +0100
 +++ b/files/selinux-relabel.service	2026-04-09 14:10:05.308254403 +0200
-@@ -0,0 +1,15 @@
+@@ -0,0 +1,16 @@
 +[Unit]
 +Description=SELinux Relabel Filesystem (first boot)
 +DefaultDependencies=no
 +After=local-fs.target
 +Before=getty-pre.target sysinit.target
++Before=systemd-sysctl.service auditd.service systemd-networkd.service
 +ConditionPathExists=/.selinux-relabel
 +
 +[Service]

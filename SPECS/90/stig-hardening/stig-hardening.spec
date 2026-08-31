@@ -4,7 +4,7 @@ Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        2.1
-Release:        5.1.2%{?dist}
+Release:        5.1.3%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -45,6 +45,9 @@ cp -a %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{nam
 %{_datadir}/ansible/
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.1-5.1.3
+- Order selinux-relabel.service before systemd-sysctl, auditd and systemd-networkd
+  so the STIG sysctl hardening is applied on the first boot, not only after a reboot
 * Fri Jun 05 2026 Daniel Casota <dcasota@gmail.com> 2.1-5.1.2
 - Backport first-boot SELinux relabel service + FIPS PAM fixes to subrelease 90
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1-5.1.1
