@@ -1,5 +1,8 @@
 %global build_if %{photon_subrelease} <= 90
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# STIG conditional in this spec permanently unreachable, and untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 %define privsep_path %{_datadir}/empty.sshd
 %global sshd_services sshd.service sshd-keygen.service
@@ -7,7 +10,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        21.2%{?dist}
+Release:        21.3%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -252,6 +255,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 9.3p2-21.3
+- Define STIG_HARDEN only if unset so it can be set from pkg_build_options.json or rpmbuild -D; the default build is unchanged
 * Wed Jul 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-21.2
 - CVE fixes, CVE-2026-59995 through CVE-2026-60002
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.3p2-21.1
