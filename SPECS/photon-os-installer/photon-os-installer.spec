@@ -5,7 +5,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.9
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -20,6 +20,7 @@ Source1: license.txt
 Patch: 0002-fix-up-old-public_key-syntax-for-backward-compatibil.patch
 Patch: 0006-stig-drop-redundant-packages.patch
 Patch: 0007-installer-seed-locale.conf-before-package-install.patch
+Patch: 0008-isoBuilder-put-installer-requestable-packages-on-media.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -74,6 +75,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.9-2
+- isoBuilder: put installer-requestable packages (STIG set, --initrd-pkgs) on the media
 * Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.9-1
 - Upgrade to v2.9 (upstream tag v2.9, commit 59a011da).
 - Drop 0001-Use-mkpasswd-to-generate-password-hash: it is in v2.9 upstream
