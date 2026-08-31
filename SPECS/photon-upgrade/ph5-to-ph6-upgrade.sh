@@ -14,6 +14,7 @@ declare -A replaced_pkgs_map=(
   [apache-tomcat10-webapps]="apache-tomcat10-webapps apache-tomcat11-webapps"
 
   [dhcp]="dhcpcd"
+  [dhcp-libs]="dhcpcd"
   [dhcp-client]="dhcpcd"
   [dhcp-server]="kea"
 

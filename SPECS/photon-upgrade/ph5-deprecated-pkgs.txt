@@ -117,6 +117,7 @@ perl-Perl4-CoreLibs
 pth
 pth-devel
 python3-argparse
+python3-asn1crypto
 python3-atomicwrites
 python3-boto
 python3-daemon
