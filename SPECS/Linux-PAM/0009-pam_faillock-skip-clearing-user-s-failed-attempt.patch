@@ -1,0 +1,91 @@
+From 7d96d452e65ba5dec73f2c77104113977dd3aeb1 Mon Sep 17 00:00:00 2001
+From: Iker Pedrosa <ipedrosa@redhat.com>
+Date: Fri, 18 Jul 2025 16:11:39 +0200
+Subject: [PATCH] pam_faillock: skip clearing user's failed attempt
+
+Automated services, like `crond` or `systemd-user`, skip the
+`auth` stack and directly invoke the `account` stack. Thus, they can
+clear the user's failed attempt records. With this new logic simply
+skip resetting the failed login counter when `auth` stack hasn't been
+been run prior to `account` stack.
+
+* modules/pam_faillock/pam_faillock.c: Skip clearing the user's failed
+attempt record during `account` stack when `auth` stack isn't run.
+* modules/pam_faillock/pam_faillock.8.xml: Document new behaviour.
+
+Resolves: https://issues.redhat.com/browse/RHEL-32294
+Signed-off-by: Iker Pedrosa <ipedrosa@redhat.com>
+
+Upstream commit: 7d96d452e65ba5dec73f2c77104113977dd3aeb1
+[sshedi: taken as is, no modifications]
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+
+---
+ modules/pam_faillock/pam_faillock.8.xml |  8 ++++++++
+ modules/pam_faillock/pam_faillock.c     | 13 +++++++++++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/modules/pam_faillock/pam_faillock.8.xml b/modules/pam_faillock/pam_faillock.8.xml
+index ce0ae050b..42f87e81e 100644
+--- a/modules/pam_faillock/pam_faillock.8.xml
++++ b/modules/pam_faillock/pam_faillock.8.xml
+@@ -243,6 +243,14 @@
+       user accounts allowing the adversary to infer that a particular account
+       is not existing on a system.
+     </para>
++    <para>
++      If the <option>auth</option> stack has not been run prior to the <option>account</option>
++      stack, the logic to reset the failed login counter is intentionally skipped. This prevents
++      automated services, such as <emphasis>crond</emphasis> or <emphasis>systemd-user</emphasis>,
++      which might only perform account management tasks, from inadvertently clearing a user's
++      failed attempt records. This ensures the faillock counter is only reset by a service that
++      performs a full, successful authentication.
++    </para>
+   </refsect1>
+ 
+   <refsect1 xml:id="pam_faillock-examples">
+diff --git a/modules/pam_faillock/pam_faillock.c b/modules/pam_faillock/pam_faillock.c
+index 2d847aeb4..a8363b6cc 100644
+--- a/modules/pam_faillock/pam_faillock.c
++++ b/modules/pam_faillock/pam_faillock.c
+@@ -62,6 +62,8 @@
+ #define FAILLOCK_ACTION_AUTHSUCC 1
+ #define FAILLOCK_ACTION_AUTHFAIL 2
+ 
++#define FAILLOCK_AUTH_EXECUTED   "pam_faillock:auth_executed"
++
+ static int
+ args_parse(pam_handle_t *pamh, int argc, const char **argv,
+ 		int flags, struct options *opts)
+@@ -478,6 +480,10 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
+ 		goto err;
+ 	}
+ 
++	rv = pam_set_data(pamh, FAILLOCK_AUTH_EXECUTED, (void *)1, NULL);
++	if (rv != PAM_SUCCESS)
++		goto err;
++
+ 	if (!(opts.flags & FAILLOCK_FLAG_LOCAL_ONLY) ||
+ 		check_local_user (pamh, opts.user) != 0) {
+ 		switch (opts.action) {
+@@ -531,6 +537,7 @@ pam_sm_acct_mgmt(pam_handle_t *pamh, int flags,
+ 	struct options opts;
+ 	int rv, fd = -1;
+ 	struct tally_data tallies;
++	const void *auth_flag;
+ 
+ 	memset(&tallies, 0, sizeof(tallies));
+ 
+@@ -541,6 +548,12 @@ pam_sm_acct_mgmt(pam_handle_t *pamh, int flags,
+ 
+ 	opts.action = FAILLOCK_ACTION_AUTHSUCC;
+ 
++	rv = pam_get_data(pamh, FAILLOCK_AUTH_EXECUTED, &auth_flag);
++	if (rv == PAM_NO_MODULE_DATA) {
++		rv = PAM_SUCCESS;
++		goto err;
++	}
++
+ 	if ((rv=get_pam_user(pamh, &opts)) != PAM_SUCCESS) {
+ 		goto err;
+ 	}

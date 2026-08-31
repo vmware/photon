@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -23,6 +23,7 @@ Patch4: 0005-CVE-2024-10963.patch
 Patch5: 0006-CVE-2024-10041.patch
 Patch6: 0007-CVE-2025-6020-prep.patch
 Patch7: 0008-CVE-2025-6020.patch
+Patch8: 0009-pam_faillock-skip-clearing-user-s-failed-attempt.patch
 
 BuildRequires: libselinux-devel
 BuildRequires: gdbm-devel
@@ -145,6 +146,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Mon Aug 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-7
+- pam_faillock: skip clearing user's failed attempt
 * Fri Nov 21 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-6
 - Fix CVE-2025-6020
 * Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.3-5
