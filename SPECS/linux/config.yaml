@@ -1,25 +1,25 @@
 sources:
-- archive: linux-6.12.103.tar.xz
+- archive: linux-6.12.107.tar.xz
   archive_type: upstream
-  version: 6.12.103
-  name: linux-6.12.103
-  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.103.tar.xz
+  version: 6.12.107
+  name: linux-6.12.107
+  url: https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.107.tar.xz
   repo_url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-  commit_id: 25c09b42358e73e1476e517b296edb6344f2e4bd
+  commit_id: f717995cb7dcd8998ab15516b8006aea09cfde0d
   skip_list: []
   missing: []
   archive_sha512sum: 
-    85423ddece421e45cde0cf3be10783725ea9a75a61b2ec679144b8856f19e46169bef0ddce2732ef91690d5bb9a4f24d37cad6db4a2c88315b82c14e3b838010
+    7a0442bab12121ee3499d79067f4f84593814906bc22ba0e6fce0403b8640b4bd5a0f0af5ed947ef80e4e659e5abc0bdba54786bfe3be1042e6aff6bec8f0efc
   skip_validation: false
   license_manual_review:
   # sspl/SSPL used as part of a variable name, falsely detected by scanner as a license
   - file_paths:
-    - linux-6.12.103/drivers/pci/controller/pci-mvebu.c
+    - linux-6.12.107/drivers/pci/controller/pci-mvebu.c
     sha256sum: c214d76c403debdf0f6151206eef31dc8e26239ba99b89bed6c83770c7840645
     spdx_exp: GPL-2.0-only
   # CC-BY-SA-2.0 mentioned as license for external resource (Linux device drivers, 3rd edition)
   - file_paths:
-    - linux-6.12.103/Documentation/process/kernel-docs.rst
+    - linux-6.12.107/Documentation/process/kernel-docs.rst
     sha256sum: 1a01c62a4ef537eb61f0fc47d5e7852f067af86203d7eaaf719befb102bb64b8
     spdx_exp: ''
   spdx:

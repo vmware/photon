@@ -25,7 +25,6 @@ Patch3013: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
 # Fixes CVE-2025-40074, CVE-2025-68353, CVE-2026-23208, CVE-2026-43009, CVE-2026-43485
 Patch3014: 0001-ALSA-usb-audio-Prevent-excessive-number-of-frames.patch
 Patch3015: 0001-bpf-Fix-incorrect-pruning-due-to-atomic-fetch-precis.patch
-Patch3016: 0001-ipv4-start-using-dst_dev_rcu.patch
 Patch3017: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 Patch3018: 0001-nouveau-gsp-drop-WARN_ON-in-ACPI-probes.patch
 Patch3019: 0002-ALSA-usb-audio-Use-the-right-limit-for-PCM-OOB-check.patch
@@ -58,5 +57,3 @@ Patch3042: 0001-netfs-Fix-netfs_read_to_pagecache-to-pause-on-subreq.patch
 Patch3043: 0001-tcp-fix-stale-per-CPU-tcp_tw_isn-leak-enabling-ISN-p.patch
 # Fixes CVEs
 Patch3044: 0001-bpf-fix-the-return-value-of-push_stack.patch
-# Fix CVE-2026-68082
-Patch3045: 0001-libceph-fix-two-unsafe-bare-decodes-in-decode_locker.patch

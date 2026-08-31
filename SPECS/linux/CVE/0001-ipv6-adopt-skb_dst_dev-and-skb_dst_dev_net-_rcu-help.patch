@@ -297,7 +297,7 @@ index a48be617a..546dd2253 100644
 +static int ip6_frag_queue(struct net *net,
 +			  struct frag_queue *fq, struct sk_buff *skb,
  			  struct frag_hdr *fhdr, int nhoff,
- 			  u32 *prob_offset)
+ 			  u32 *prob_offset, int *refs)
  {
 -	struct net *net = dev_net(skb_dst(skb)->dev);
  	int offset, end, fragsize;
@@ -322,7 +322,7 @@ index a48be617a..546dd2253 100644
  		fq->iif = iif;
 -		ret = ip6_frag_queue(fq, skb, fhdr, IP6CB(skb)->nhoff,
 +		ret = ip6_frag_queue(net, fq, skb, fhdr, IP6CB(skb)->nhoff,
- 				     &prob_offset);
+ 				     &prob_offset, &refs);
  
  		spin_unlock(&fq->q.lock);
 diff --git a/net/ipv6/route.c b/net/ipv6/route.c
