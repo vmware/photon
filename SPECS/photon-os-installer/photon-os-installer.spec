@@ -76,7 +76,7 @@ rm -rf %{buildroot}
 
 %changelog
 * Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.9-1
-- Upgrade to v2.9, drop the upstreamed mkpasswd patch, rebase 0002 onto the v2.9 context, switch to unnumbered Patch:, and put installer-requestable packages on the media
+- Upgrade to v2.9; STIG packages; requestable packages on media
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 28 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.8-1
