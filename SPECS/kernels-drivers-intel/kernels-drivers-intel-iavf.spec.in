@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global security_hardening  none
 %define src_ver             %{PKG_VERSION}
 %define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
@@ -18,7 +18,7 @@ Distribution:   Photon
 Source0:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{src_ver}/iavf-%{src_ver}.tar.gz
 
 %if "%{src_ver}" == "4.13.16"
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 
 Patch0:         iavf-v4.11.1-iavf-Makefile-added-alias-for-i40evf.patch
 %endif
@@ -107,6 +107,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 
 %changelog
 %if "%{src_ver}" == "4.13.16"
+* Tue Sep 01 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> %{PKG_VERSION}-2
+- Extend release to 91
 * Wed Oct 08 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-1
 - Initial addition of iavf v4.13.16
 %endif
