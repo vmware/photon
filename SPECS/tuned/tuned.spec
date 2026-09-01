@@ -2,7 +2,7 @@
 
 Name:           tuned
 Version:        2.27.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 Group:          System/Base
 URL:            https://github.com/redhat-performance/tuned
@@ -28,7 +28,6 @@ BuildRequires:  systemd-devel
 Requires:       dbus-python3
 Requires:       ethtool
 Requires:       gawk
-Requires:       python3-configobj
 Requires:       python3-decorator
 Requires:       polkit
 Requires:       python3-pyudev
@@ -43,7 +42,6 @@ Requires:       virt-what
 %if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  python3-pip
-BuildRequires:  python3-configobj
 BuildRequires:  python3-pyudev
 BuildRequires:  python3-decorator
 BuildRequires:  dbus-python3
@@ -167,6 +165,8 @@ fi
 %{_datadir}/doc
 
 %changelog
+* Mon Aug 31 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 2.27.0-2
+- Drop unused python3-configobj dependency
 * Thu Jun 04 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.27.0-1
 - Upgrade to latest 2.27.0, build with python3.14
 * Thu May 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.21.0-5.2

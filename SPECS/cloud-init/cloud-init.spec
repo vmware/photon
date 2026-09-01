@@ -9,12 +9,13 @@
 
 Name:           cloud-init
 Version:        26.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      noarch
 
 Source0: https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 
@@ -34,6 +35,7 @@ Patch5: 0006-Change-log-level-to-info-to-make-GOSC-regression-tes.patch
 Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
 Patch7: 0008-No-single-process.patch
 Patch8: 0009-Show-stdout-logs-in-journal-only.patch
+Patch9: 0010-Drop-mandatory-configobj-dependency.patch
 
 BuildRequires: meson
 BuildRequires: bash-completion-devel
@@ -57,7 +59,6 @@ BuildRequires: python3-macros
 
 %if 0%{?with_check}
 BuildRequires: python3-pip
-BuildRequires: python3-configobj
 BuildRequires: python3-jsonpatch
 BuildRequires: python3-pytest
 BuildRequires: python3-jsonschema
@@ -73,7 +74,6 @@ Requires: shadow
 Requires: iproute2
 Requires: systemd
 Requires: python3
-Requires: python3-configobj
 Requires: python3-prettytable
 Requires: python3-requests
 Requires: python3-PyYAML
@@ -89,8 +89,6 @@ Requires: python3-pyserial
 Requires: dhcpcd
 Requires: openssl-c_rehash
 Requires: libselinux-python3
-
-BuildArch: noarch
 
 %description
 Cloud-init is a set of init scripts for cloud instances.  Cloud instances
@@ -169,6 +167,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Tue Sep 01 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.2-2
+- Remove python3-configobj dependency
 * Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-1
 - Upgrade to v26.2
 * Thu Jun 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.1.3-11

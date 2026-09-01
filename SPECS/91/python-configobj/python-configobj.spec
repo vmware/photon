@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 
 Name:           python3-configobj
 Version:        5.0.6
-Release:        9%{?dist}
+Release:        9.1%{?dist}
 Summary:        Config file reading, writing and validation
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -42,6 +42,8 @@ python3 validate.py
 %{python3_sitelib}/*
 
 %changelog
+* Thu Sep 03 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.6-9.1
+- Build for 91 only subrelease
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0.6-9
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.6-8
