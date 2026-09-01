@@ -3,7 +3,7 @@
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
 Version:        1.11.0
-Release:        4.1%{?dist}
+Release:        4.2%{?dist}
 URL:            https://www.libssh2.org
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
@@ -15,6 +15,20 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: libssh2-CVE-2023-48795.patch
+# Fix CVE-2026-7598
+Patch1: CVE-2026-7598.patch
+# Fix CVE-2026-58050
+Patch2: CVE-2026-58050.patch
+# Fix CVE-2026-66032
+Patch3: CVE-2026-66032.patch
+# Fix CVE-2026-66033
+Patch4: CVE-2026-66033.patch
+# Fix CVE-2026-66034
+Patch5: CVE-2026-66034.patch
+# Fix CVE-2026-66035
+Patch6: CVE-2026-66035.patch
+# Fix CVE-2026-58051
+Patch7: CVE-2026-58051.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -65,6 +79,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Aug 31 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 1.11.0-4.2
+- Fix CVE-2026-58051,Fix CVE-2026-7598, CVE-2026-58050, CVE-2026-66032,
+  CVE-2026-66033, CVE-2026-66034,CVE-2026-66035
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.11.0-4.1
 - Adjusted to build for subrelease 90
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.0-4
