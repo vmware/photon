@@ -1,46 +1,63 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Daniel Casota <dcasota@gmail.com>
-Date: Mon, 31 Aug 2026 03:10:00 +0200
-Subject: [PATCH] stigenable: drop three packages the hardening does not need
+Date: Mon, 31 Aug 2026 00:00:00 +0000
+Subject: [PATCH] stigenable: drop redundant packages from KS_STIG_PACKAGES
 
-Each added package is attack surface on a system whose purpose is to be
-hardened, so KS_STIG_PACKAGES should name only what the role actually uses.
-Three entries do not:
+Three of the eight entries are removed. Each is either already satisfied
+transitively or is dead weight:
 
-libselinux-utils - the role never invokes any of its binaries (getenforce,
-setenforce, sestatus, restorecon, fixfiles); a grep over every *.yml in
-stig-hardening finds no reference. It is also already a Requires of
-selinux-policy, so it is installed either way and listing it changes nothing.
-The relabel service calls /usr/sbin/restorecon, which comes from
-policycoreutils, not from this package.
+  libselinux-utils  already a dependency of selinux-policy, and the
+                    stig-hardening role never invokes any of its binaries
+  ntp               installed but never configured - no task in the role
+                    notifies the time-sync handlers, and 0 of the 117
+                    PHTN-50-xxxxxx controls cover time sync
+  libgcrypt         a workaround for aide declaring only an unversioned
+                    Requires: libgcrypt; that belongs in aide.spec
 
-ntp - installed and then never configured. handlers/main.yml defines
-"restart ntpd", "restart chrony" and "restart timesyncd", but no task
-notifies any of them, and outside handlers/main.yml the string "ntp" does not
-occur anywhere in the role: no ntp.conf/chrony.conf/timesyncd.conf task, no
-server or pool setting, and no PHTN control for time synchronisation among
-the 117 in the role. (README.md documents a var_ntp_servers extra-var that
-nothing consumes.) Photon 5.0 also has no package named ntp; it resolves to
-ntpsec via Provides. Removing it leaves a daemon uninstalled rather than
-installed-and-ignored.
+The same three are dropped from examples/ova/packages_stig.json, so the OVA
+package list and the installer's own list say the same thing. Keeping the two
+in step matters: a list restated in two places is how the media and the
+installer drifted apart in the first place.
 
-libgcrypt - present only to work around a packaging bug, as the role itself
-records at tasks/photon.yml: "Currently a bug in the aide package that does
-not upgrade libgcrypt to the needed version". The fix belongs in aide.spec,
-which now carries a versioned Requires, so the workaround is unnecessary.
+Verified on four real STIG installs - two on photon-os-installer 2.8, two on
+latest - whose manifests already carry the reduced additional_packages list
+[audit, rsyslog, openssl-fips-provider, selinux-policy, aide]:
 
-Time synchronisation being unimplemented is a separate finding and is not
-addressed here; this change only stops installing a package for it.
+  libselinux-utils-3.10-4.ph5   installed, transitively
+  libgcrypt-1.10.4-2.ph5        installed, transitively
+  ntp                           absent, and time sync works via
+                                systemd-timesyncd
 
-Co-Authored-By: Daniel Casota <dcasota@gmail.com>
+aide's dependency is now a versioned Requires: libgcrypt >= 1.10.4, confirmed
+in aide-0.19-3.ph5, so nothing rests on the unversioned form any more.
+
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01JW73JTCUGRcaNTUEQcAMtf
 ---
- photon_installer/stigenable.py | 3 ---
- 1 file changed, 3 deletions(-)
+ examples/ova/packages_stig.json | 3 +--
+ photon_installer/stigenable.py  | 5 +----
+ 2 files changed, 2 insertions(+), 6 deletions(-)
 
+diff --git a/examples/ova/packages_stig.json b/examples/ova/packages_stig.json
+index 99dd0a9..1e307a2 100644
+--- a/examples/ova/packages_stig.json
++++ b/examples/ova/packages_stig.json
+@@ -14,8 +14,7 @@
+         "less",
+         "sudo",
+         "lvm2",
+-        "audit", "rsyslog", "openssl-fips-provider", "selinux-policy",
+-        "libselinux-utils", "ntp", "aide", "libgcrypt"
++        "audit", "rsyslog", "openssl-fips-provider", "selinux-policy", "aide"
+     ],
+     "packages_x86_64": ["linux-esx"]
+ }
 diff --git a/photon_installer/stigenable.py b/photon_installer/stigenable.py
+index 79fd6e8..e94e102 100644
 --- a/photon_installer/stigenable.py
 +++ b/photon_installer/stigenable.py
-@@ -23,10 +23,7 @@
+@@ -23,10 +23,7 @@ KS_STIG_PACKAGES = [
      "rsyslog",
      "openssl-fips-provider",
      "selinux-policy",
@@ -52,5 +69,3 @@ diff --git a/photon_installer/stigenable.py b/photon_installer/stigenable.py
  ]
  
  
--- 
-2.51.0
