@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:    Perl extension interface for libcurl
 Name:       perl-Net-Curl
 Version:    0.58
-Release:    2%{?dist}
+Release:    1.1%{?dist}
 Group:      Development/Perl
 Url:        https://metacpan.org/release/Net-Curl
 Vendor:     VMware, Inc.
@@ -22,9 +22,6 @@ BuildRequires: curl-devel
 
 Requires: perl
 Requires: curl-libs
-
-Obsoletes: perl-WWW-Curl
-Provides: perl-WWW-Curl
 
 %description
 Net::Curl is a Perl extension interface for libcurl.
@@ -47,7 +44,7 @@ rm -r %{buildroot}%{_mandir}
 %{perl_vendorarch}/auto
 
 %changelog
-* Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.58-2
-- Obsolete perl-WWW-curl
+* Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.58-1.1
+- Sub branch for 91
 * Wed Jun 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.58-1
 - Initial version. Needed by openssl-perl.

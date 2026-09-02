@@ -1,0 +1,13 @@
+#
+# base provider [openssl_init] configuration tree
+#
+
+# This merges with the provider section already defined in provider_fips.cnf
+[provider_sect]
+base = base_sect
+
+# When openssl fips provider is installed, it is going to disable default provider.
+# Hence base provider should be activated to ensure the encoder/decoder format still
+# works. The base provider will always be activated when fips provider is installed.
+[base_sect]
+activate = 1

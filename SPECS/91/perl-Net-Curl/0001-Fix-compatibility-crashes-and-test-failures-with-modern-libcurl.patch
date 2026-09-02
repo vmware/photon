@@ -1,0 +1,163 @@
+From ba78b9a9df4a7c1cabc52c437bb9978d242a486f Mon Sep 17 00:00:00 2001
+From: "C.J. Collier" <cjac@google.com>
+Date: Tue, 2 Jun 2026 00:33:39 +0000
+Subject: [PATCH] Fix compatibility crashes and test failures with modern
+ libcurl (8.13.0+)
+
+This change addresses several test failures and segmentation faults that occur
+when building Net::Curl on modern Linux distributions using libcurl 8.13.0+.
+
+1. C/XS Layer NULL-Safety and Callback Handling:
+   - In `cb_multi_socket`, added a NULL pointer check for the `easy` handle obtained
+     from `CURLINFO_PRIVATE`. When libcurl initializes internal connection checks
+     inside `curl_multi_add_handle`, the private pointer may not be set yet, leading
+     to dereference crashes. We now pass `&PL_sv_undef` instead of trying to coerce
+     NULL.
+   - In both `cb_multi_socket` and `cb_multi_timer`, we now immediately return `0`
+     if no Perl-level callback function is registered. This prevents fatal abort
+     exceptions during perform loops on modern libcurl versions which call these
+     callbacks eagerly during initialization.
+
+2. Test Suite Updates for Modern System Behavior:
+   - **t/compat-19multi.t & t/old-19multi.t:** Modern libcurl (8.13.0+) immediately
+     resolves and creates socket descriptors during `add_handle` before `perform()`
+     is called. We conditionalized the assertions checking for an empty fdset using
+     a version check (`Net::Curl::LIBCURL_VERSION_NUM < 0x080d00`), skipping them on
+     newer versions. Also migrated `compat-19multi.t` to a dynamic `done_testing` plan.
+   - **t/40-callback-opensocket.t:** Modern Linux glibc and libcurl OR in the `SOCK_CLOEXEC`
+     (and potentially `SOCK_NONBLOCK`) flags into the socket type passed to the
+     opensocket callback. We now mask the expected `socktype` with `SOCK_STREAM` to
+     ensure compatibility.
+   - **t/61-multi-wait-other.t:** Modern libcurl correctly zeroes out `revents` when
+     `curl_multi_wait` returns 0 (no events ready) instead of leaving it dirty. We
+     relaxed the assertion to accept either `0` or `CURL_WAIT_POLLIN` to satisfy both
+     legacy and correct modern behavior.
+
+TAG=agy
+CONV=8ca299e5-3c57-4521-9e40-a673282af82b
+---
+ Curl_Multi.xsh             | 17 ++++++++++++++++-
+ t/40-callback-opensocket.t |  2 +-
+ t/61-multi-wait-other.t    |  2 +-
+ t/compat-19multi.t         | 10 ++++++++--
+ t/old-19multi.t            |  6 +++++-
+ 5 files changed, 31 insertions(+), 6 deletions(-)
+
+diff --git a/Curl_Multi.xsh b/Curl_Multi.xsh
+index 3a636d6..a77485e 100644
+--- a/Curl_Multi.xsh
++++ b/Curl_Multi.xsh
+@@ -65,15 +65,26 @@ cb_multi_socket( CURL *easy_handle, curl_socket_t s, int what, void *userptr,
+ 
+ 	perl_curl_multi_t *multi;
+ 	perl_curl_easy_t *easy;
++	SV *easy_sv;
+ 
+ 	multi = (perl_curl_multi_t *) userptr;
+ 
++	if ( ! multi->cb[ CB_MULTI_SOCKET ].func || ! SvOK( multi->cb[ CB_MULTI_SOCKET ].func ) ) {
++		return 0; /* Ignore socket events if no Perl callback is registered */
++	}
++
+ 	(void) curl_easy_getinfo( easy_handle, CURLINFO_PRIVATE, (void *) &easy );
+ 
++	if ( easy ) {
++		easy_sv = SELF2PERL( easy );
++	} else {
++		easy_sv = &PL_sv_undef;
++	}
++
+ 	/* $multi, $easy, $socket, $what, $socketdata, $userdata */
+ 	SV *args[] = {
+ 		/* 0 */ SELF2PERL( multi ),
+-		/* 1 */ SELF2PERL( easy ),
++		/* 1 */ easy_sv,
+ 		/* 2 */ newSVuv( s ),
+ 		/* 3 */ newSViv( what ),
+ 		/* 4 */ &PL_sv_undef
+@@ -92,6 +103,10 @@ cb_multi_timer( CURLM *multi_handle, long timeout_ms, void *userptr )
+ 	perl_curl_multi_t *multi;
+ 	multi = (perl_curl_multi_t *) userptr;
+ 
++	if ( ! multi->cb[ CB_MULTI_TIMER ].func || ! SvOK( multi->cb[ CB_MULTI_TIMER ].func ) ) {
++		return 0; /* Ignore timer events if no Perl callback is registered */
++	}
++
+ 	/* $multi, $timeout, $userdata */
+ 	SV *args[] = {
+ 		SELF2PERL( multi ),
+diff --git a/t/40-callback-opensocket.t b/t/40-callback-opensocket.t
+index 81e8092..d08dd83 100644
+--- a/t/40-callback-opensocket.t
++++ b/t/40-callback-opensocket.t
+@@ -40,7 +40,7 @@ sub cb_opensocket {
+ 	is( $ips, "1.1.1.1", "IP is correct" );
+ 	is( $port, "666", "Port is correct" );
+ 	is( $addr->{family}, AF_INET, "family is AF_INET" );
+-	is( $addr->{socktype}, SOCK_STREAM, "socktype is SOCK_STREAM" );
++	is( $addr->{socktype} & SOCK_STREAM, SOCK_STREAM, "socktype is SOCK_STREAM" );
+ 	ok( $addr->{protocol} == IPPROTO_IP ||
+ 		$addr->{protocol} == IPPROTO_TCP,
+ 		"protocol is IPPROTO_IP or IPPROTO_TCP ($addr->{protocol})" );
+diff --git a/t/61-multi-wait-other.t b/t/61-multi-wait-other.t
+index 34e68a2..80f6bd5 100644
+--- a/t/61-multi-wait-other.t
++++ b/t/61-multi-wait-other.t
+@@ -60,7 +60,7 @@ my $line = <$fh_read>;
+ 
+ $ret = $multi->wait( [ $ev_read ], 100 );
+ is( $ret, 0, "Nothing ready" );
+-is( $ev_read->{revents}, CURL_WAIT_POLLIN(), "Ready to read, because we did not reset" );
++ok( $ev_read->{revents} == 0 || $ev_read->{revents} == CURL_WAIT_POLLIN(), "Ready to read, because we did not reset (or cleared by modern libcurl)" );
+ 
+ $ev_read->{revents} = 0;
+ $ret = $multi->wait( [ $ev_read ], 100 );
+diff --git a/t/compat-19multi.t b/t/compat-19multi.t
+index 156d1d9..006f391 100644
+--- a/t/compat-19multi.t
++++ b/t/compat-19multi.t
+@@ -15,7 +15,7 @@ use File::Temp qw/tempfile/;
+ 
+ my $server = Test::HTTP::Server->new;
+ plan skip_all => "Could not run http server\n" unless $server;
+-plan tests => 20;
++# plan tests => 20;
+ 
+ my $header = tempfile();
+ my $header2 = tempfile();
+@@ -65,7 +65,11 @@ sub action_wait {
+     ok( ! @{$fds[0]} && ! @{$fds[1]} && !@{$fds[2]} , "The three returned arrayrefs are still empty after perform");
+     $curlm->add_handle($curl);
+     @fds = $curlm->fdset;
+-    ok( ! @{$fds[0]} && ! @{$fds[1]} && !@{$fds[2]} , "The three returned arrayrefs are still empty after perform and add_handle");
++    if ( Net::Curl::LIBCURL_VERSION_NUM() < 0x080d00 ) {
++        ok( ! @{$fds[0]} && ! @{$fds[1]} && !@{$fds[2]} , "The three returned arrayrefs are still empty after perform and add_handle" );
++    } else {
++        pass( "Skipping fdset empty assertion on modern libcurl >= 8.13.0" );
++    }
+     $curlm->perform;
+     @fds = $curlm->fdset;
+     ok( 1 || @{$fds[0]} == 1 || @{$fds[1]} == 1, "The read or write fdset contains one fd");
+@@ -92,3 +96,5 @@ sub action_wait {
+     ok($body, "Body reply exists from second handle");
+     ok($header2, "Header reply exists from second handle");
+     ok($body2, "Body reply exists from second handle");
++
++done_testing();
+diff --git a/t/old-19multi.t b/t/old-19multi.t
+index e563303..61269bb 100644
+--- a/t/old-19multi.t
++++ b/t/old-19multi.t
+@@ -80,7 +80,11 @@ sub action_wait {
+     $curlm->add_handle($curl);
+     @fds = $curlm->fdset;
+     print_fdset( @fds );
+-    ok( ! $fds[0] && ! $fds[1] && !$fds[2] , "The three returned vectors are still empty after perform and add_handle");
++    if ( Net::Curl::LIBCURL_VERSION_NUM() < 0x080d00 ) {
++        ok( ! $fds[0] && ! $fds[1] && !$fds[2] , "The three returned vectors are still empty after perform and add_handle" );
++    } else {
++        pass( "Skipping fdset empty assertion on modern libcurl >= 8.13.0" );
++    }
+     $curlm->perform;
+     @fds = $curlm->fdset;
+     my $cnt;

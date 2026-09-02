@@ -1,0 +1,19 @@
+sources:
+- archive: perl-Net-Curl-0.58.tar.gz
+  archive_sha512sum: 5ef3643ff77b40ae3c9c6c3fd4359d25a32a1c4a44d8d5cd91a110d9363e4e648a4e62210ae80b7b1bcbeaf113ee80363894787a007ec174df0587f72cb02e0e
+  archive_type: upstream
+  name: perl-Net-Curl-0.58
+  version: 0.58
+  url: https://github.com/sparky/perl-Net-Curl/archive/refs/tags/v0.58.tar.gz
+  repo_url: https://github.com/sparky/perl-Net-Curl
+  commit_id: 8802e8035fd583db6127a48a27ac1857bac6914f
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Net::Curl is a Perl extension interface for libcurl'
+      home_page: https://metacpan.org/dist/Net-Curl
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Perl extension interface for libcurl
+      supplier: 'Organization: Broadcom, Inc.'

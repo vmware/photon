@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 
 # Got the intial spec from Fedora and modified it
 %global __provides_exclude %{?__provides_exclude:%__provides_exclude|}^perl\\((VMS|Win32|BSD::|DB\\)$)
@@ -9,7 +9,7 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        13%{?dist}
+Release:        13.1%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
@@ -70,6 +70,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.17-13.1
+- Sub branch for 91
 * Tue Jun 09 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.17-13
 - Built for subrelease >= 91
 * Mon Oct 27 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.17-12

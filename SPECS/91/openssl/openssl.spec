@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.8
-Release:        1%{?dist}
+Release:        0.1%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -23,9 +23,8 @@ Source6: license.txt
 
 Source7: openssl-libs-post.lua
 
-Patch0: openssl-cnf.patch
-Patch1: add-FIPS_mode-compatibility-macro.patch
-Patch2: tsget-use-net-curl.patch
+Patch0:  openssl-cnf.patch
+Patch1:  add-FIPS_mode-compatibility-macro.patch
 
 BuildRequires: zlib-devel
 
@@ -65,7 +64,6 @@ Header files for doing development with openssl.
 Summary:    openssl perl scripts
 Group:      Applications/Internet
 Requires:   perl
-Requires:   perl-Net-Curl
 Requires:   %{name} = %{version}-%{release}
 Provides:   nxtgn-openssl-perl
 Obsoletes:  nxtgn-openssl-perl
@@ -96,6 +94,14 @@ The package contains openssl doc files.
 %autosetup -p1
 
 %build
+if [ %{_host} != %{_build} ]; then
+#  export CROSS_COMPILE=%{_host}-
+  export CC=%{_host}-gcc
+  export AR=%{_host}-ar
+  export AS=%{_host}-as
+  export LD=%{_host}-ld
+fi
+
 export CFLAGS="%{optflags}"
 export MACHINE=%{_arch}
 ./config \
@@ -194,9 +200,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
-* Tue Sep 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.8-1
+* Tue Sep 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.8-0.1
 - Upgrade to v3.5.8
-- Use Net::Curl in tsget, WWW::Curl is obsolete
+- Sub branch for 91
 * Mon Aug 24 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.7-6
 - Multiple CVE fixes
 - CVE-2026-14456  CVE-2026-18798  CVE-2026-63072  CVE-2026-63074  CVE-2026-63076 CVE-2026-14457
