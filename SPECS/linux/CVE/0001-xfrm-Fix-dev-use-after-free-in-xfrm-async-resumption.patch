@@ -1,0 +1,167 @@
+From 63a30015199912bd5055bead8001b1ae68a67cdb Mon Sep 17 00:00:00 2001
+From: Dong Chenchen <dongchenchen2@huawei.com>
+Date: Tue, 9 Jun 2026 17:21:17 +0800
+Subject: [PATCH] xfrm: Fix dev use-after-free in xfrm async resumption
+
+[ Upstream commit 8045c0df98d4f14c54e5cb875f1c9c0ce89fe4ff ]
+
+xfrm async resumption hold skb->dev refcnt until after transport_finish.
+However, xfrm_rcv_cb may modify skb->dev to tunnel dev without taking
+device reference, such as vti_rcv_cb. The subsequent async resumption
+will decrement the tunnel device's reference count, which lead to uaf
+of tunnel dev and refcnt leak of orig dev as below:
+
+unregister_netdevice: waiting for vti1 to become free. Usage count = -2
+
+Stash the original skb->dev to fix refcnt imbalance. The new skb->dev set
+by xfrm_rcv_cb can race with device teardown. Extend rcu protection over
+xfrm_rcv_cb and transport_finish to prevent races.
+
+Fixes: 1c428b038400 ("xfrm: hold dev ref until after transport_finish NF_HOOK")
+Reported-by: Xu Chunxiao <xuchunxiao3@huawei.com>
+Signed-off-by: Dong Chenchen <dongchenchen2@huawei.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+
+[Ankit: Backported for v6.12.y. xfrm_input() here already has the
+crypto_done if/else split and the if(async) dev_put() calls from the
+"Fixes:" commit above; rebased the skb->dev -> dev stash onto that
+existing structure. Dropped the xfrm_inner_mode_input() EINPROGRESS
+hunk, which needs mode_cbs support (7ac64f4598b4) not present here, so
+that path stays unreachable.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/ipv4/xfrm4_input.c |  2 --
+ net/ipv6/xfrm6_input.c |  2 --
+ net/xfrm/xfrm_input.c  | 27 +++++++++++++++------------
+ 3 files changed, 15 insertions(+), 16 deletions(-)
+
+diff --git a/net/ipv4/xfrm4_input.c b/net/ipv4/xfrm4_input.c
+index adf21d6b6076..9deee1558e3d 100644
+--- a/net/ipv4/xfrm4_input.c
++++ b/net/ipv4/xfrm4_input.c
+@@ -76,8 +76,6 @@ int xfrm4_transport_finish(struct sk_buff *skb, int async)
+ 	NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING,
+ 		dev_net(dev), NULL, skb, dev, NULL,
+ 		xfrm4_rcv_encap_finish);
+-	if (async)
+-		dev_put(dev);
+ 	return 0;
+ }
+
+diff --git a/net/ipv6/xfrm6_input.c b/net/ipv6/xfrm6_input.c
+index 699a001ac166..89d0443b5307 100644
+--- a/net/ipv6/xfrm6_input.c
++++ b/net/ipv6/xfrm6_input.c
+@@ -71,8 +71,6 @@ int xfrm6_transport_finish(struct sk_buff *skb, int async)
+ 	NF_HOOK(NFPROTO_IPV6, NF_INET_PRE_ROUTING,
+ 		dev_net(dev), NULL, skb, dev, NULL,
+ 		xfrm6_transport_finish2);
+-	if (async)
+-		dev_put(dev);
+ 	return 0;
+ }
+
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 5d3633ce6ba3..9f0ec5fc21f6 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -457,6 +457,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ {
+ 	const struct xfrm_state_afinfo *afinfo;
+ 	struct net *net = dev_net(skb->dev);
++	struct net_device *dev = skb->dev;
+ 	int err;
+ 	__be32 seq;
+ 	__be32 seq_hi;
+@@ -483,7 +484,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 					       LINUX_MIB_XFRMINSTATEINVALID);
+
+ 			if (encap_type == -1)
+-				dev_put(skb->dev);
++				dev_put(dev);
+ 			goto drop;
+ 		}
+
+@@ -641,16 +642,16 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 		if (crypto_done) {
+ 			nexthdr = x->type_offload->input_tail(x, skb);
+ 		} else {
+-			dev_hold(skb->dev);
++			dev_hold(dev);
+
+ 			nexthdr = x->type->input(x, skb);
+ 			if (nexthdr == -EINPROGRESS) {
+ 				if (async)
+-					dev_put(skb->dev);
++					dev_put(dev);
+ 				return 0;
+ 			}
+
+-			dev_put(skb->dev);
++			dev_put(dev);
+ 		}
+ resume:
+ 		spin_lock(&x->lock);
+@@ -707,9 +708,12 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 		crypto_done = false;
+ 	} while (!err);
+
++	rcu_read_lock();
+ 	err = xfrm_rcv_cb(skb, family, x->type->proto, 0);
+-	if (err)
++	if (err) {
++		rcu_read_unlock();
+ 		goto drop;
++	}
+
+ 	nf_reset_ct(skb);
+
+@@ -720,8 +724,9 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 		if (skb_valid_dst(skb))
+ 			skb_dst_drop(skb);
+ 		if (async)
+-			dev_put(skb->dev);
++			dev_put(dev);
+ 		gro_cells_receive(&gro_cells, skb);
++		rcu_read_unlock();
+ 		return 0;
+ 	} else {
+ 		xo = xfrm_offload(skb);
+@@ -729,23 +734,21 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 			xfrm_gro = xo->flags & XFRM_GRO;
+
+ 		err = -EAFNOSUPPORT;
+-		rcu_read_lock();
+ 		afinfo = xfrm_state_afinfo_get_rcu(x->props.family);
+ 		if (likely(afinfo))
+ 			err = afinfo->transport_finish(skb, xfrm_gro || async);
+-		rcu_read_unlock();
+ 		if (xfrm_gro) {
+ 			sp = skb_sec_path(skb);
+ 			if (sp)
+ 				sp->olen = 0;
+ 			if (skb_valid_dst(skb))
+ 				skb_dst_drop(skb);
+-			if (async)
+-				dev_put(skb->dev);
+ 			gro_cells_receive(&gro_cells, skb);
+-			return err;
+ 		}
+
++		if (async)
++			dev_put(dev);
++		rcu_read_unlock();
+ 		return err;
+ 	}
+
+@@ -753,7 +756,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 	spin_unlock(&x->lock);
+ drop:
+ 	if (async)
+-		dev_put(skb->dev);
++		dev_put(dev);
+ 	xfrm_rcv_cb(skb, family, x && x->type ? x->type->proto : nexthdr, -1);
+ 	kfree_skb(skb);
+ 	return 0;
+--
+2.53.0

@@ -1,0 +1,121 @@
+From ce311bd2e36596f0aa2c92ca86fb3e019ac57eae Mon Sep 17 00:00:00 2001
+From: Sechang Lim <rhkrqnwk98@gmail.com>
+Date: Thu, 11 Jun 2026 09:29:18 +0000
+Subject: [PATCH] tcp: clear sock_ops cb flags before force-closing a child
+ socket
+
+[ Upstream commit 990348e5bb457697c2f1f7f7b65154a3334d9d2b ]
+
+A child socket inherits the listener's bpf_sock_ops_cb_flags via
+sk_clone_lock(). If its setup fails in tcp_v4_syn_recv_sock() /
+tcp_v6_syn_recv_sock(), the child is freed through put_and_exit, where
+inet_csk_prepare_forced_close() drops the socket lock and tcp_done() runs
+without it.
+
+If BPF_SOCK_OPS_STATE_CB_FLAG was inherited, tcp_done() -> tcp_set_state()
+calls tcp_call_bpf(), which expects the lock and trips sock_owned_by_me():
+
+  WARNING: include/net/sock.h:1799 at tcp_set_state+0x433/0x550
+  RIP: 0010:tcp_set_state+0x433/0x550 include/net/sock.h:1799
+  Call Trace:
+   <IRQ>
+   tcp_done+0xba/0x250 net/ipv4/tcp.c:5095
+   tcp_v4_syn_recv_sock+0x850/0xa50 net/ipv4/tcp_ipv4.c:1787
+   tcp_check_req+0xf30/0x1360 net/ipv4/tcp_minisocks.c:926
+   tcp_v4_rcv+0x1047/0x1b50 net/ipv4/tcp_ipv4.c:2164
+   </IRQ>
+
+The child is freed before it is ever established, so it should run no
+sock_ops callback. Clear its cb flags in inet_csk_prepare_for_destroy_sock(),
+the common point for the IPv4, IPv6 and chtls forced-close paths and for the
+MPTCP ->syn_recv_sock() failure path (dispose_child), which reaches tcp_done()
+on a child that was never established too.
+
+Suggested-by: Jiayuan Chen <jiayuan.chen@linux.dev>
+Fixes: d44874910a26 ("bpf: Add BPF_SOCK_OPS_STATE_CB")
+Signed-off-by: Sechang Lim <rhkrqnwk98@gmail.com>
+Reviewed-by: Jiayuan Chen <jiayuan.chen@linux.dev>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+[Ankit: Backported for v6.12.y. inet_csk_prepare_for_destroy_sock() is
+still a static inline in inet_connection_sock.h here (it moves to
+inet_connection_sock.c only in the later, not-yet-backported commit
+7051b54fb5aa), and that header cannot see tcp.h's new helper. Moved just
+that one function down into inet_connection_sock.c so the fix is
+reachable.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ include/net/inet_connection_sock.h | 8 +-------
+ include/net/tcp.h                  | 9 +++++++++
+ net/ipv4/inet_connection_sock.c    | 8 ++++++++
+ 3 files changed, 18 insertions(+), 7 deletions(-)
+
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index bcc138ff087b..534f4fafad42 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -296,14 +296,8 @@ reqsk_timeout(struct request_sock *req, unsigned long max_timeout)
+ 	return (unsigned long)min_t(u64, timeout, max_timeout);
+ }
+
+-static inline void inet_csk_prepare_for_destroy_sock(struct sock *sk)
+-{
+-	/* The below has to be done to allow calling inet_csk_destroy_sock */
+-	sock_set_flag(sk, SOCK_DEAD);
+-	this_cpu_inc(*sk->sk_prot->orphan_count);
+-}
+-
+ void inet_csk_destroy_sock(struct sock *sk);
++void inet_csk_prepare_for_destroy_sock(struct sock *sk);
+ void inet_csk_prepare_forced_close(struct sock *sk);
+
+ /*
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 1cc25e0b3bde..c472c1cdd3b8 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2702,6 +2702,11 @@ static inline int tcp_call_bpf_3arg(struct sock *sk, int op, u32 arg1, u32 arg2,
+ 	return tcp_call_bpf(sk, op, 3, args);
+ }
+
++static inline void tcp_clear_sock_ops_cb_flags(struct sock *sk)
++{
++	tcp_sk(sk)->bpf_sock_ops_cb_flags = 0;
++}
++
+ #else
+ static inline int tcp_call_bpf(struct sock *sk, int op, u32 nargs, u32 *args)
+ {
+@@ -2719,6 +2724,10 @@ static inline int tcp_call_bpf_3arg(struct sock *sk, int op, u32 arg1, u32 arg2,
+ 	return -EPERM;
+ }
+
++static inline void tcp_clear_sock_ops_cb_flags(struct sock *sk)
++{
++}
++
+ #endif
+
+ static inline u32 tcp_timeout_init(struct sock *sk)
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 91dcdb7567ac..e0bd8e76fa78 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -1315,6 +1315,14 @@ void inet_csk_destroy_sock(struct sock *sk)
+ }
+ EXPORT_SYMBOL(inet_csk_destroy_sock);
+
++void inet_csk_prepare_for_destroy_sock(struct sock *sk)
++{
++	/* The below has to be done to allow calling inet_csk_destroy_sock */
++	tcp_clear_sock_ops_cb_flags(sk);
++	sock_set_flag(sk, SOCK_DEAD);
++	this_cpu_inc(*sk->sk_prot->orphan_count);
++}
++
+ /* This function allows to force a closure of a socket after the call to
+  * tcp/dccp_create_openreq_child().
+  */
+--
+2.53.0

@@ -63,3 +63,9 @@ Patch3046: 0001-netfs-Fix-barriering-when-walking-subrequest-list.patch
 # Fixes CVE-2026-72413, CVE-2026-72423
 Patch3047: 0001-bpf-Guard-conntrack-opts-error-writes.patch
 Patch3048: 0001-sctp-fix-err_chunk-memory-leaks-in-INIT-handling.patch
+# Fixes CVE-2026-72366, CVE-2026-72463, CVE-2026-72493, CVE-2026-74268, CVE-2026-74269
+Patch3049: 0001-bnxt-fix-head-underflow-on-XDP-head-grow.patch
+Patch3050: 0001-net-serialize-netif_running-check-in-enqueue_to_backlog.patch
+Patch3051: 0001-netfs-Fix-netfs_create_write_req-to-handle-async-cac.patch
+Patch3052: 0001-tcp-clear-sock_ops-cb-flags-before-force-closing.patch
+Patch3053: 0001-xfrm-Fix-dev-use-after-free-in-xfrm-async-resumption.patch

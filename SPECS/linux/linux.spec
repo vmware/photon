@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.107
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -983,6 +983,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 08 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.107-6
+- Fixes CVE-2026-72366, CVE-2026-72463, CVE-2026-72493, CVE-2026-74268, CVE-2026-74269
 * Tue Sep 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.107-5
 - Fixes CVE-2026-72413, CVE-2026-72423
 * Mon Sep 07 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.107-4
