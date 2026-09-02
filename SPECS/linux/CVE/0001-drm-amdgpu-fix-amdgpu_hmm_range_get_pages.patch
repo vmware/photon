@@ -1,0 +1,92 @@
+From 962d684b5dc0741dcd93485d41b450de402d5592 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Date: Wed, 18 Feb 2026 12:53:27 +0100
+Subject: [PATCH] drm/amdgpu: fix amdgpu_hmm_range_get_pages
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit 962d684b5dc0741dcd93485d41b450de402d5592 upstream.
+
+The notifier sequence must only be read once or otherwise we could work
+with invalid pages.
+
+While at it also fix the coding style, e.g. drop the pre-initialized
+return value and use the common define for 2G range.
+
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Vitaly Prosyak <vitaly.prosyak@amd.com>
+Tested-by: Vitaly Prosyak <vitaly.prosyak@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+(cherry picked from commit c08972f555945cda57b0adb72272a37910153390)
+Cc: stable@vger.kernel.org
+[ Brennan: this commit's own diff is context-identical to 6.12.y except
+  for the notifier_seq move and the MAX_WALK_BYTE/r=0 style cleanup --
+  ported both. The struct-amdgpu_hmm_range-taking signature and the
+  kzalloc'd-vs-caller-supplied hmm_range shown as unchanged context in
+  upstream's diff come from an earlier, separate refactor not in 6.12.y
+  (6.12.y still kzalloc's its own struct hmm_range and returns it via
+  **phmm_range), so that part was left as-is rather than backported --
+  it isn't part of this commit's own delta ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_hmm.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_hmm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_hmm.c
+index e36fede..ffd8370 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_hmm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_hmm.c
+@@ -51,8 +51,6 @@
+ #include "amdgpu_amdkfd.h"
+ #include "amdgpu_hmm.h"
+ 
+-#define MAX_WALK_BYTE	(2UL << 30)
+-
+ /**
+  * amdgpu_hmm_invalidate_gfx - callback to notify about mm change
+  *
+@@ -170,12 +168,13 @@ int amdgpu_hmm_range_get_pages(struct mmu_interval_notifier *notifier,
+ 			       void *owner, struct page **pages,
+ 			       struct hmm_range **phmm_range)
+ {
++	const u64 max_bytes = SZ_2G;
+ 	struct hmm_range *hmm_range;
+ 	unsigned long end;
+ 	unsigned long timeout;
+ 	unsigned long i;
+ 	unsigned long *pfns;
+-	int r = 0;
++	int r;
+ 
+ 	hmm_range = kzalloc(sizeof(*hmm_range), GFP_KERNEL);
+ 	if (unlikely(!hmm_range))
+@@ -196,8 +195,9 @@ int amdgpu_hmm_range_get_pages(struct mmu_interval_notifier *notifier,
+ 	end = start + npages * PAGE_SIZE;
+ 	hmm_range->dev_private_owner = owner;
+ 
++	hmm_range->notifier_seq = mmu_interval_read_begin(notifier);
+ 	do {
+-		hmm_range->end = min(hmm_range->start + MAX_WALK_BYTE, end);
++		hmm_range->end = min(hmm_range->start + max_bytes, end);
+ 
+ 		pr_debug("hmm range: start = 0x%lx, end = 0x%lx",
+ 			hmm_range->start, hmm_range->end);
+@@ -205,7 +205,6 @@ int amdgpu_hmm_range_get_pages(struct mmu_interval_notifier *notifier,
+ 		timeout = jiffies + msecs_to_jiffies(HMM_RANGE_DEFAULT_TIMEOUT);
+ 
+ retry:
+-		hmm_range->notifier_seq = mmu_interval_read_begin(notifier);
+ 		r = hmm_range_fault(hmm_range);
+ 		if (unlikely(r)) {
+ 			if (r == -EBUSY && !time_after(jiffies, timeout))
+@@ -215,7 +214,7 @@ retry:
+ 
+ 		if (hmm_range->end == end)
+ 			break;
+-		hmm_range->hmm_pfns += MAX_WALK_BYTE >> PAGE_SHIFT;
++		hmm_range->hmm_pfns += max_bytes >> PAGE_SHIFT;
+ 		hmm_range->start = hmm_range->end;
+ 	} while (hmm_range->end < end);
+ 

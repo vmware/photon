@@ -74,3 +74,10 @@ Patch3054: 0001-cifs-Fix-handling-of-a-beyond-EOF-DIO-unbuffered-rea.patch
 Patch3055: 0002-filemap-Add-folio_next_pos.patch
 Patch3056: 0003-netfs-Fix-potential-for-tearing-in-remote_i_size-and.patch
 Patch3057: 0004-cifs-Fix-undefined-variables.patch
+# Fixes CVE-2026-63853, CVE-2026-63879, CVE-2026-64036, CVE-2026-64058, CVE-2026-64078
+Patch3058: 0001-cgroup-rstat-validate-cpu-before-css_rstat_cpu-acce.patch
+Patch3059: 0001-drm-amdgpu-fix-amdgpu_hmm_range_get_pages.patch
+Patch3060: 0001-drm-amdgpu-vcn-set-no_user_fence-for-VCN-v4.0-enc-r.patch
+Patch3061: 0001-netfilter-x_tables-add-and-use-xt_unregister_table_p.patch
+Patch3062: 0001-netfs-Fix-netfs_read_folio-to-wait-on-writeback.patch
+Patch3063: 0002-netfilter-x_tables-add-and-use-xtables_unregister_ta.patch

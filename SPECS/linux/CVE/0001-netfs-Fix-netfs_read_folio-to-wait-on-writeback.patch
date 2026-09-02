@@ -1,0 +1,39 @@
+From ded0c6f1606061148c202825f7e53d711f9f84cf Mon Sep 17 00:00:00 2001
+From: David Howells <dhowells@redhat.com>
+Date: Tue, 12 May 2026 13:33:59 +0100
+Subject: [PATCH] netfs: Fix netfs_read_folio() to wait on writeback
+
+commit ded0c6f1606061148c202825f7e53d711f9f84cf upstream.
+
+Fix netfs_read_folio() to wait for an ongoing writeback to complete so that
+it can trust the dirty flag and whatever is attached to folio->private
+(folio->private may get cleaned up by the collector before it clears the
+writeback flag).
+
+Fixes: ee4cdf7ba857 ("netfs: Speed up buffered reading")
+Closes: https://sashiko.dev/#/patchset/20260414082004.3756080-1-dhowells%40redhat.com
+Signed-off-by: David Howells <dhowells@redhat.com>
+Link: https://patch.msgid.link/20260512123404.719402-23-dhowells@redhat.com
+cc: Paulo Alcantara <pc@manguebit.org>
+cc: Matthew Wilcox <willy@infradead.org>
+cc: netfs@lists.linux.dev
+cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/netfs/buffered_read.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/fs/netfs/buffered_read.c b/fs/netfs/buffered_read.c
+index f59a70f3a086..2b42758e01ec 100644
+--- a/fs/netfs/buffered_read.c
++++ b/fs/netfs/buffered_read.c
+@@ -565,6 +565,8 @@ int netfs_read_folio(struct file *file, struct folio *folio)
+ 	struct netfs_inode *ctx = netfs_inode(mapping->host);
+ 	int ret;
+
++	folio_wait_writeback(folio);
++
+ 	if (folio_test_dirty(folio)) {
+ 		trace_netfs_folio(folio, netfs_folio_trace_read_gaps);
+ 		return netfs_read_gaps(file, folio);
