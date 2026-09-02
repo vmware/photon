@@ -1,0 +1,108 @@
+sources:
+- archive: samba-4.24.5.tar.gz
+  archive_sha512sum: dadaee50c61cc8076bd5f4e6e3a8be13b6aa6aeff33991277c7f5398ba9dea32e8d966c0206dec9cad240b935768b707f9c9dd6b60c3db433dcf8ddb30134088
+  skip_validation: false
+  archive_type: upstream
+  license_manual_review:
+  - file_paths:
+    - samba-4.24.5/testdata/printing/example.ps
+    sha256sum: 3c15833db965cd270f3d574758bb293b2592399cc963bf9e0e1b9d75c8d3e9e7
+    spdx_exp: ''
+  - file_paths:
+    - samba-4.24.5/lib/talloc/man/talloc.3.xml
+    sha256sum: 8e5ca81cdafeb321224f9a26ab41c58c336c248f333d9957267f674cd25a1184
+    spdx_exp: ''
+  - file_paths:
+    - samba-4.24.5/README.contributing
+    sha256sum: 9b760ebc3217f179250ccd6e60be29a48af86198ea03647c46d8739185896a82
+    spdx_exp: ''
+  - file_paths:
+    - samba-4.24.5/COPYING
+    - samba-4.24.5/ctdb/COPYING
+    - samba-4.24.5/examples/pcap2nbench/COPYING
+    sha256sum: 8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903
+    spdx_exp: ''
+  - file_paths:
+    - samba-4.24.5/docs-xml/gpl-3.0.xml
+    sha256sum: ef0b816050d7f82f66c3d1d7bab0273767d2a0c3a1047484a2ddb67cfdbfbbbb
+    spdx_exp: ''
+  name: samba-4.24.5
+  version: 4.24.5
+  url: https://www.samba.org/ftp/samba/stable/samba-4.24.5.tar.gz
+  repo_url: https://gitlab.com/samba-team/samba.git
+  commit_id: 2ac52091905428fcaa48c10cc4e4fe439f9c679d
+  skip_list:
+  - vfs_gpfs.c
+  - VERSION
+  - gpo.py
+  - vfs_aixacl2.c
+  - wscript
+  - samba_autoconf.py
+  - WHATSNEW.txt
+  - nfs4_acls.h
+  - pkinit_tests.py
+  - nfs4_acls.c
+  - vfs_zfsacl.c
+  missing:
+  - ctdb-script.options.5.html
+  - .gitignore
+  - ctdb.sysconfig.5
+  - docs
+  - ctdbd.1
+  - ltdbtool.1
+  - ctdb-script.options.5
+  - ctdb_diagnostics.1.html
+  - ctdb.1.html
+  - ctdb.7.html
+  - ctdb-etcd.7
+  - ctdb_diagnostics.1
+  - ctdb_mutex_ceph_rados_helper.7.html
+  - ctdb.1
+  - ctdb.conf.5.html
+  - ctdb_mutex_ceph_rados_helper.7
+  - onnode.1.html
+  - provisions
+  - ctdb-statistics.7
+  - ctdb-tunables.7.html
+  - .bzrignore
+  - ctdb-statistics.7.html
+  - ctdb-tunables.7
+  - ping_pong.1.html
+  - ctdb.7
+  - ping_pong.1
+  - ltdbtool.1.html
+  - ctdb-etcd.7.html
+  - ctdb.conf.5
+  - ctdbd.1.html
+  - ctdb.sysconfig.5.html
+  - onnode.1
+  spdx:
+    package:
+      detailed_description: 'Samba is the standard Windows interoperability suite
+        of programs for Linux and Unix. The samba-client package provides file and
+        print services to SMB/CIFS clients and Windows networking to Linux clients.
+        For a more detailed description of Samba, check the Web page https://www.Samba.org/  #
+        Samba Client Libaries'
+      home_page: https://www.samba.org
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND AGPL-3.0-or-later AND Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-first-lines
+        AND BSD-3-Clause AND CC-BY-4.0 AND CC-BY-SA-4.0 AND FSFAP AND FSFUL AND FSFULLRWD
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-only AND GPL-3.0-or-later AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND HP-1986 AND HPND-export-US AND
+        HPND-export-US-modify AND HPND-export2-US AND ISC AND LGPL-2.0-or-later AND
+        LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND NTP
+        AND PostgreSQL AND Spencer-94 AND TMate AND Unlicense AND X11 AND blessing
+        AND snprintf
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND (BSD-3-Clause OR GPL-1.0-or-later)
+        AND AGPL-3.0-or-later AND Apache-2.0 AND BSD-2-Clause AND BSD-2-Clause-first-lines
+        AND BSD-3-Clause AND CC-BY-4.0 AND CC-BY-SA-4.0 AND FSFAP AND FSFUL AND FSFULLRWD
+        AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-only AND GPL-3.0-or-later AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND HP-1986 AND HPND-export-US AND
+        HPND-export-US-modify AND HPND-export2-US AND ISC AND LGPL-2.0-or-later AND
+        LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND MIT AND NTP
+        AND PostgreSQL AND Spencer-94 AND TMate AND Unlicense AND X11 AND blessing
+        AND snprintf
+      short_summary: Samba Client Programs
+      supplier: 'Organization: Broadcom, Inc.'

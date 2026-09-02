@@ -1,0 +1,64 @@
+sources:
+- archive: mysql-8.4.11.tar.gz
+  archive_sha512sum: 56245b74e2ef45dcaaea76ff1db2c62e7ef24f3b05098ebb9785c93a04cdfdca36cc6fa69e0dd35f7be778ebeb46a831afa85647c9e9a9258bfeea7311013669
+  license_manual_review:
+  - file_paths:
+    - mysql-8.4.11/LICENSE
+    sha256sum: cb104b45f22bdecc7517916f792726056912586ffa5f4b1b0322d687bc3f3f1e
+    spdx_exp: GPL-2.0-only AND (GPL-2.0-only WITH Universal-FOSS-exception-1.0 AND
+      GPL-2.0-only AND GPL-1.0-or-later) AND GPL-2.0-only WITH Universal-FOSS-exception-1.0
+      AND BSL-1.0 AND curl AND BSD-Attribution-HPND-disclaimer AND RSA-MD AND dtoa
+      AND BSD-3-Clause AND BSD-2-Clause AND Zlib AND (MIT AND fmt-exception) AND Apache-2.0
+      AND ICU AND (ICU AND BSD-3-Clause) AND (BSD-3-Clause AND NAIST-2003) AND NAIST-2003
+      AND CC-BY-4.0 AND OpenVision AND HPND-export2-US AND MIT AND FSFULLRWD AND OLDAP-2.8
+      AND BSD-2-Clause-first-lines AND MIT-CMU AND CMU-Mach-nodoc AND (BSD-2-Clause
+      AND HPND-export-US-acknowledgement) AND BSD-4-Clause-UC AND BSD-4-Clause AND
+      ISC AND HPND-export-US-modify AND (BSD-2-Clause OR GPL-2.0-or-later) AND LGPL-2.1-only
+      AND (ISC AND MIT) AND (Apache-2.0 AND OpenSSL) AND (MIT AND JSON AND BSD-3-Clause)
+      AND (BSD-3-Clause AND JSON) AND (JSON AND MIT) AND Unicode-TOU AND ((BSD-3-Clause
+      OR GPL-2.0-only) AND BSD-3-Clause)
+  # we do not build kerberos auth plugin
+  - file_paths:
+    - mysql-8.4.11/router/LICENSE.router
+    sha256sum: 4ce699a720b2536118e932f6e034a52ae2dd63a84666bd1b54d381b8bde57bd8
+    spdx_exp: ''
+  # we build with DWITH_ROUTER=OFF so this is not applicable
+  spdx:
+    package:
+      detailed_description: 'MySQL is a free, widely used SQL engine. It can be used
+        as a fast database as well as a rock-solid DBMS using a modular engine architecture.'
+      home_page: http://www.mysql.com
+      license_concluded: GPL-3.0-only AND MIT-CMU AND BSD-4-Clause-UC AND Python-2.0
+        AND LGPL-2.1-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND (curl AND ISC) AND GPL-1.0-only AND Zlib AND NAIST-2003
+        AND FSFULLRWD AND GPL-2.0-or-later AND dtoa AND curl AND RSA-MD AND Apache-2.0
+        AND BSD-2-Clause-Views AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND OpenVision AND Artistic-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND BSD-Attribution-HPND-disclaimer AND FSFULLR
+        AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception AND BSD-2-Clause-first-lines
+        AND FSFUL AND HPND-export-US-modify AND CC-BY-SA-3.0 AND GPL-2.0-only WITH
+        Universal-FOSS-exception-1.0 AND MIT AND FSFAP AND GPL-1.0-or-later AND HPND-export2-US
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND ICU AND Artistic-1.0-Perl
+        AND BSD-3-Clause AND X11 AND Beerware AND BSD-4-Clause AND HPND-export-US-acknowledgement
+        AND (MIT OR CC0-1.0) AND BSL-1.0 AND BSD-2-Clause AND ISC AND CC0-1.0 AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND JSON AND (BSD-2-Clause OR GPL-2.0-only)
+        AND GPL-3.0-or-later AND CMU-Mach-nodoc AND OLDAP-2.8 AND (BSD-3-Clause OR
+        GPL-2.0-only)
+      license_declared: GPL-3.0-only AND MIT-CMU AND BSD-4-Clause-UC AND Python-2.0
+        AND LGPL-2.1-or-later AND (BSD-3-Clause OR GPL-2.0-only) AND (BSD-2-Clause
+        OR GPL-2.0-or-later) AND (curl AND ISC) AND GPL-1.0-only AND Zlib AND NAIST-2003
+        AND FSFULLRWD AND GPL-2.0-or-later AND dtoa AND curl AND RSA-MD AND Apache-2.0
+        AND BSD-2-Clause-Views AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND OpenVision AND Artistic-2.0 AND GPL-3.0-or-later WITH
+        Autoconf-exception-generic-3.0 AND BSD-Attribution-HPND-disclaimer AND FSFULLR
+        AND LGPL-2.1-only AND GPL-2.0-or-later WITH Libtool-exception AND BSD-2-Clause-first-lines
+        AND FSFUL AND HPND-export-US-modify AND CC-BY-SA-3.0 AND GPL-2.0-only WITH
+        Universal-FOSS-exception-1.0 AND MIT AND FSFAP AND GPL-1.0-or-later AND HPND-export2-US
+        AND GPL-3.0-or-later WITH Autoconf-exception-2.0 AND ICU AND Artistic-1.0-Perl
+        AND BSD-3-Clause AND X11 AND Beerware AND BSD-4-Clause AND HPND-export-US-acknowledgement
+        AND (MIT OR CC0-1.0) AND BSL-1.0 AND BSD-2-Clause AND ISC AND CC0-1.0 AND
+        GPL-3.0-or-later WITH Bison-exception-2.2 AND JSON AND (BSD-2-Clause OR GPL-2.0-only)
+        AND GPL-3.0-or-later AND CMU-Mach-nodoc AND OLDAP-2.8 AND (BSD-3-Clause OR
+        GPL-2.0-only)
+      short_summary: MySQL.
+      supplier: 'Organization: Broadcom, Inc.'

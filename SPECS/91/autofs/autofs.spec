@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %global debug_package %{nil}
 
 Summary:        A kernel-based automounter for Linux
 Name:           autofs
 Version:        5.1.8
-Release:        4%{?dist}
+Release:        3.1%{?dist}
 URL:            http://www.kernel.org/pub/linux/daemons/autofs
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ Source2: license.txt
 %include %{SOURCE2}
 
 BuildRequires:  systemd-devel
+BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
 BuildRequires:  bison
 
@@ -86,8 +87,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/autofs.service
 
 %changelog
-* Thu Aug 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.8-4
-- Remove rpcsvc-proto dependency
+* Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.8-3.1
+- Sub branch for 91, as a part of rpcsvc-proto deprecation
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.1.8-3
 - Release bump for SRP compliance
 * Sun Nov 13 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.1.8-2

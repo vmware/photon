@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        12.6.0
-Release:        1%{?dist}
+Version:        9.3.0
+Release:        19.1%{?dist}
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
@@ -14,10 +14,14 @@ Source0: http://libvirt.org/sources/%{name}-%{version}.tar.xz
 Source1: license.txt
 %include %{SOURCE1}
 
-Source2: %{name}.sysusers.conf
+Patch0:         CVE-2023-3750.patch
+Patch1:         CVE-2024-2494.patch
+Patch2:         CVE-2024-2496.patch
+Patch3:         CVE-2024-4418.patch
+Patch4:         CVE-2024-1441.patch
+Patch5:         CVE-2025-13193.patch
 
 BuildRequires:  audit-devel
-BuildRequires:  json-c-devel
 BuildRequires:  cyrus-sasl-devel
 BuildRequires:  curl-devel
 BuildRequires:  c-ares-devel
@@ -39,6 +43,7 @@ BuildRequires:  parted-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-docutils
 BuildRequires:  readline-devel
+BuildRequires:  rpcsvc-proto
 BuildRequires:  systemd-devel
 BuildRequires:  wireshark-devel
 
@@ -58,7 +63,7 @@ Requires:       parted
 Requires:       python3
 Requires:       readline
 Requires:       systemd
-Requires(pre):  shadow
+Requires:       %{name}-docs = %{version}-%{release}
 
 %description
 Libvirt is collection of software that provides a convenient way to manage
@@ -89,13 +94,6 @@ Conflicts:     %{name} < 8.10.0-3
 %description    docs
 The contains libvirt package doc files.
 
-%package ssh-proxy
-Summary: Libvirt SSH proxy
-Requires: %{name} = %{version}-%{release}
-
-%description ssh-proxy
-Allows SSH into domains via VSOCK without need for network.
-
 %prep
 %autosetup -p1
 
@@ -103,10 +101,6 @@ sed -i '/rst2man/d' meson.build
 
 %build
 CONFIGURE_OPTS=(
-    -Dsysusersdir=%{_sysusersdir} \
-    -Dlibiscsi=disabled \
-    -Dnbdkit=disabled \
-    -Dnbdkit_config_default=disabled \
     -Dapparmor=disabled \
     -Dapparmor_profiles=disabled \
     -Dsecdriver_apparmor=disabled \
@@ -144,6 +138,7 @@ CONFIGURE_OPTS=(
     -Dopenwsman=disabled \
     -Dpciaccess=disabled \
     -Dsanlock=disabled \
+    -Dyajl=disabled \
     -Dpm_utils=disabled \
     -Dpolkit=enabled \
     -Dremote_default_mode=legacy \
@@ -158,6 +153,7 @@ CONFIGURE_OPTS=(
     -Dstorage_zfs=disabled \
     -Dlibiscsi=disabled \
     -Dstorage_fs=enabled \
+    -Dyajl=disabled \
     -Dudev=disabled \
     -Dwireshark_dissector=disabled \
     -Dattr=disabled \
@@ -167,8 +163,7 @@ CONFIGURE_OPTS=(
 %meson_build
 
 %install
-%{meson_install}
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
+%meson_install
 
 %if 0%{?with_check}
 %check
@@ -178,66 +173,49 @@ install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 %clean
 rm -rf %{buildroot}/*
 
-%pre
-%sysusers_create_compat %{SOURCE2}
-
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_sbindir}/*
-%{_libdir}/%{name}*.so.*
-%{_libdir}/%{name}/connection-driver/*
-%{_libdir}/%{name}/lock-driver/lockd.so
-%{_libdir}/%{name}/storage-backend/*
+%{_libdir}/libvirt*.so.*
+%{_libdir}/libvirt/connection-driver/*
+%{_libdir}/libvirt/lock-driver/lockd.so
+%{_libdir}/libvirt/storage-backend/*
+%{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
-%{_unitdir}/*.service
-%{_unitdir}/*.socket
-%{_unitdir}/*.target
-%dir %attr(0755, root, root) %{_unitdir}/libvirtd.service.d/
-%{_unitdir}/libvirtd.service.d/10-secret.conf
-%dir %attr(0700, root, root) %{_sysconfdir}/%{name}/secrets/
-%dir %attr(0700, root, root) %{_sharedstatedir}/%{name}/secrets/
-%ghost %dir %attr(0700, root, root) %{_rundir}/%{name}/secrets/
-%{_libexecdir}/%{name}*
-%exclude %{_libexecdir}/%{name}-ssh-proxy
+%{_libdir}/systemd/system/*
+%{_libexecdir}/libvirt*
 %{_libexecdir}/virt-login-shell-helper
-%{_sysconfdir}/%{name}/nwfilter/
-%{_sysconfdir}/%{name}/qemu/networks/autostart/default.xml
-%{_sysconfdir}/%{name}/qemu/networks/default.xml
+%{_sysconfdir}/libvirt/nwfilter/
+%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+%{_sysconfdir}/libvirt/qemu/networks/default.xml
 %{_sysconfdir}/logrotate.d/*
-%{_sysusersdir}/%{name}*.conf
 
-%config(noreplace)%{_sysconfdir}/%{name}/*.conf
-%config(noreplace)%{_sysconfdir}/sasl2/%{name}.conf
+%config(noreplace)%{_sysconfdir}/libvirt/*.conf
+%config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/%{name}/*
-%{_libdir}/%{name}*.so
-%{_libdir}/pkgconfig/%{name}*
-
-%files ssh-proxy
-%config(noreplace) %{_sysconfdir}/ssh/ssh_config.d/30-%{name}-ssh-proxy.conf
-%{_libexecdir}/%{name}-ssh-proxy
+%{_includedir}/libvirt/*
+%{_libdir}/libvirt*.so
+%{_libdir}/pkgconfig/libvirt*
 
 %files docs
 %defattr(-,root,root)
-%{_docdir}/%{name}/*
+%{_docdir}/libvirt/*
 %{_datadir}/locale/*
-%{_datadir}/%{name}/test-screenshot.png
-%{_datadir}/%{name}/schemas/*.rng
+%{_datadir}/libvirt/test-screenshot.png
+%{_datadir}/libvirt/schemas/*.rng
 %{_datadir}/augeas/*
-%{_datadir}/%{name}/cpu_map/*
+%{_datadir}/libvirt/cpu_map/*
 %{_datadir}/polkit-1/*
 
 %changelog
-* Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.6.0-1
-- Upgrade to v12.6.0
-- Remove rpcsvc-proto dependency
+* Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3.0-19.1
+- Sub branch for 91, as a part of rpcsvc-proto deprecation
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.3.0-19
 - Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 9.3.0-18

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.11
-Release:        3%{?dist}
+Release:        2.1%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +17,7 @@ Source2: license.txt
 %include %{SOURCE2}
 
 BuildRequires: cmake
-BuildRequires: rpcgen
+BuildRequires: rpcsvc-proto-devel
 BuildRequires: icu-devel
 BuildRequires: libedit-devel
 BuildRequires: libevent-devel
@@ -185,8 +185,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
-* Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.11-3
-- Remove rpcsvc-proto dependency
+* Fri Aug 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.11-2.1
+- Sub branch for 91, as a part of rpcsvc-proto deprecation
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.4.11-2
 - Extend to build for 91 and above
 * Fri Jul 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.11-1

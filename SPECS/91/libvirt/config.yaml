@@ -1,13 +1,7 @@
 sources:
-- archive: libvirt-12.6.0.tar.xz
-  archive_sha512sum: 3cb1b17a16b476d97a774652f5f9eb4e2715705b32b508985fec2f0b8253c3fcbe8cb07cbddb4fb2c4b555ada033a9287aba2bb85e6caade362e9565bd3cfe00
-  archive_type: upstream
-  name: libvirt-12.6.0
-  version: 12.6.0
-  url: https://download.libvirt.org/libvirt-12.6.0.tar.xz
-  repo_url: https://github.com/libvirt/libvirt
-  commit_id: 4bc0719ff048d821657016b07e7ab74e94333b01
-  missing: ['*.git*', 'LICENSE.*', libvirt.spec, AUTHORS.rst, 'gitdm*', README, data, meson.build, tests, tools, ci, .mailmap]
+- archive: libvirt-9.3.0.tar.xz
+  archive_sha512sum: b9349dcd7798c76d75bb20afad67d6e676758cb201acaf7aed5109f0e91422b2bcca964a2f19aa8dc4fd0eca2923902474e16e3839bf8b15aca827028e88ddb7
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'Libvirt is collection of software that provides a convenient
@@ -18,7 +12,7 @@ sources:
         virtualization providers/hypervisors. For example, the command ''virsh list
         --all'' can be used to list the existing virtual machines for any supported
         hypervisor (KVM, Xen, VMWare ESX, etc.) No need to learn the hypervisor specific
-        tools.'
+        tools. '
       home_page: http://libvirt.org
       license_concluded: GPL-2.0-or-later AND GPL-2.0-only AND OFL-1.1 AND GPL-1.0-or-later
         AND LGPL-2.1-or-later AND LGPL-2.1-only AND FSFAP AND GPL-3.0-or-later AND

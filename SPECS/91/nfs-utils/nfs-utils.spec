@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.9.1
-Release:          4%{?dist}
+Release:          3.1%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -35,6 +35,7 @@ BuildRequires:    keyutils-devel
 BuildRequires:    sqlite-devel
 BuildRequires:    libgssglue-devel
 BuildRequires:    e2fsprogs-devel
+BuildRequires:    rpcsvc-proto-devel
 BuildRequires:    libnl-devel
 BuildRequires:    libxml2-devel
 
@@ -75,12 +76,6 @@ Requires: %{name} = %{version}-%{release}
 %description devel
 Development libraries and headers for %{name}
 
-%package -n rpcgen
-Summary: rpcgen binary
-
-%description -n rpcgen
-%{summary}
-
 %prep
 %autosetup -p1
 #not prevent statd to start
@@ -95,8 +90,7 @@ sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
    --without-tcp-wrappers \
    --enable-gss \
    --enable-nfsv4 \
-   --disable-static \
-   --with-rpcgen=internal
+   --disable-static
 # fix building against new gcc
 sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefile
 %make_build
@@ -186,15 +180,9 @@ rm -rf %{buildroot}/*
 %{_includedir}/nfsidmap_plugin.h
 %{_libdir}/libnfsidmap.so
 
-%files -n rpcgen
-%defattr(-,root,root)
-%{_bindir}/rpcgen
-
 %changelog
-* Thu Aug 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.1-4
-- Remove rpcsvc-proto dependency
-- Use built-in rpcsvc-proto
-- Ship rpcgen binary
+* Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.1-3.1
+- Sub branch for 91, as a part of rpcsvc-proto deprecation
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.9.1-3
 - Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.1-2

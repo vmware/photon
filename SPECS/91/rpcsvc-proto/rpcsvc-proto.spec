@@ -1,16 +1,18 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        rcpsvc protocol.x files and headers
 Name:           rpcsvc-proto
 Version:        1.4.4
-Release:        1%{?dist}
-Source0:        https://github.com/thkukuk/rpcsvc-proto/releases/download/v%{version}/%{name}-%{version}.tar.xz
-
-Source1: license.txt
-%include %{SOURCE1}
+Release:        1.1%{?dist}
 Group:          System Environment/Libraries
 URL:            https://github.com/thkukuk/rpcsvc-proto
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%define BuildRequiresNative rpcsvc-proto
+
+Source0:        https://github.com/thkukuk/rpcsvc-proto/releases/download/v%{version}/%{name}-%{version}.tar.xz
+
+Source1: license.txt
+%include %{SOURCE1}
 
 %description
 The rpcsvc-proto package contains the rcpsvc protocol.x files and headers,
@@ -49,6 +51,8 @@ make install %{?_smp_mflags} DESTDIR=%{buildroot}
 %{_includedir}/rpcsvc/*
 
 %changelog
+* Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.4.4-1.1
+- Sub branch for 91, as a part of rpcsvc-proto deprecation
 * Sat May 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.4.4-1
 - Upgrade to version 1.4.4
 * Wed Dec 11 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.3-2
