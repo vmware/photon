@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.107
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -199,6 +199,9 @@ Patch21: 0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch22: 0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+# Upstream fix to properly handle PNP0C01/PNP0C02 device.
+Patch23: 0001-ACPI-PNP-Drop-PNP0C01-and-PNP0C02-from-acpi_pnp_devi.patch
 
 Patch26: 0001-alloc_tag-avoid-current-alloc_tag-manipulations-when.patch
 
@@ -978,6 +981,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 01 2026 Bo Gan <bo.gan@broadcom.com> 6.12.107-2
+- Backport upstream fix to solve ACPI PNP0C01/PNP0C02 device registration with platform driver
 * Mon Aug 31 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.107-1
 - Update to version 6.12.107
 * Mon Aug 31 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.103-11
