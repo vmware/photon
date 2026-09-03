@@ -26,10 +26,21 @@
 %global fips 0
 %endif
 
+# The esx flavour never builds the canister itself, it always links against the
+# prebuilt canister object file. Mirror linux.spec's derived flag model so the
+# shared canister_config.inc behaves identically for both flavours.
+%if 0%{?fips}
+%global canister_build 0
+%global canister_usage 1
+%else
+%global canister_build 0
+%global canister_usage 0
+%endif
+
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.107
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -44,6 +55,8 @@ Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
 Source3:        scriptlets.inc
 Source4:        check_for_config_applicability.inc
+# shared canister/.config handling, also included by linux.spec
+Source5:        canister_config.inc
 
 Source19:       spec_install_post.inc
 
@@ -421,20 +434,15 @@ tar -xvf /usr/lib/fips-canister/fips-canister-%{fips_canister_version}.tar.bz2
 # corresponding .cmd file. Empty content is ok, since we are not going
 # to rebuild it.
 touch crypto/.fips_canister.o.cmd
-
-sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
 %else
-# Clean up .config of FIPS related configs
-sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
-sed -i "/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/d" .config
-
 sed -i "s/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_2 is not set/CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_2=y/" .config
 sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32=y/# CONFIG_CRYPTO_JITTERENTROPY_MEMSIZE_32 is not set/" .config
 
 sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKS=128/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKS=64/" .config
 sed -i "s/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKSIZE=256/CONFIG_CRYPTO_JITTERENTROPY_MEMORY_BLOCKSIZE=32/" .config
 %endif
-
+%dnl canister/.config handling, shared with linux.spec
+%include %{SOURCE5}
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
     -e "s,@@VERSION_RELEASE@@,%{version}-%{release},g" \
@@ -553,6 +561,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Thu Sep 03 2026 Daniel Casota <dcasota@gmail.com> 6.12.107-2
+- Move canister/.config handling into shared canister_config.inc (Source5),
+  included by both linux.spec and linux-esx.spec so the two flavours cannot
+  diverge again. Behaviour-preserving here: this spec already handled fips=0
+  correctly in its else branch, and that logic is what the include adopts.
 * Mon Aug 31 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.107-1
 - Update to version 6.12.107
 * Mon Aug 31 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.103-11
