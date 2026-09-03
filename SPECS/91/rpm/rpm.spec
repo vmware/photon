@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.3%{?dist}
+Release:    8.4%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -29,6 +29,7 @@ Patch4: 0005-Fix-a-race-condition-in-brp-strip.patch
 Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
 Patch6: 0007-build-support-findreq-findprov-in-Requires-Provides-.patch
 Patch7: 0008-fix-division-by-zero-in-elfdeps-RhBug-2299414.patch
+Patch8: 0009-CVE-2026-78367.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -350,6 +351,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.4
+- Fix CVE-2026-78367
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.3
 - Bump to keep version higher than 90
 - Enable selinux plugin

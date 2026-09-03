@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.1.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -32,6 +32,7 @@ Patch8: 0009-rpm-6.0-rpmformat.patch
 Patch9: 0010-rpm-6.0-vfylevel.patch
 Patch10: 0011-dilute-user-group-requires.patch
 Patch11: 0012-Treat-scriptlet-failures-as-non-fatal-by-default.patch
+Patch12: 0013-CVE-2026-78367.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -359,6 +360,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-2
+- Fix CVE-2026-78367
 * Fri Aug 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-1
 - Upgrade to v6.1.0
 * Tue Aug 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.0.1-5
