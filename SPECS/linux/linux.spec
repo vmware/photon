@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.107
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -99,6 +99,8 @@ Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux
 %define efa_version 3.1.0
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
 
+# shared canister/.config handling, also included by linux-esx.spec
+Source5:        canister_config.inc
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
@@ -688,14 +690,7 @@ cat %{SOURCE20} %{SOURCE21} > photon-cert-bundle.pem
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
-%if 0%{?canister_build}
-sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
-sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
-%endif
-
-%if 0%{?canister_usage}
-sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
-%endif
+%include %{SOURCE5}
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -978,6 +973,23 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Sep 03 2026 Daniel Casota <dcasota@gmail.com> 6.12.107-3
+- Rebase canister-creation patches 1004 and 1010 onto 6.12.107. Upstream
+  dropped the WARN_ON() wrapper around !digest_size in pkcs1pad_verify(), and
+  that single line is context for both patches, so %prep failed at --fuzz=0
+  with "1 out of 2 hunks FAILED -- crypto/rsa-pkcs1pad.c.rej". canister_build
+  could not build against the shipping kernel. In 1004 the conversion is not
+  cosmetic: WARN_ON emits a __bug_table entry and that patch exists to keep
+  __bug_table out of the canister.
+* Thu Sep 03 2026 Daniel Casota <dcasota@gmail.com> 6.12.107-2
+* Thu Sep 03 2026 Daniel Casota <dcasota@gmail.com> 6.12.107-2
+- Move canister/.config handling into shared canister_config.inc (Source5),
+  included by both linux.spec and linux-esx.spec so the two flavours cannot
+  diverge again. This also fixes the fips=0 path here: linux.spec had two
+  independent canister_build/canister_usage blocks and no else branch, so on
+  aarch64 nothing stripped the GCC_PLUGIN_{MATCH,PAD}_CANISTER_STRUCTS
+  comments before olddefconfig and the check_for_config_applicability.inc
+  diff guard failed prep. linux-esx.spec had always handled this correctly.
 * Mon Aug 31 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.107-1
 - Update to version 6.12.107
 * Mon Aug 31 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.103-11
