@@ -1,0 +1,72 @@
+From c53ed635b2e44cd6b990be8579cb59f644c4529e Mon Sep 17 00:00:00 2001
+From: Carl George <carlwgeorge@gmail.com>
+Date: Thu, 3 Sep 2026 11:59:21 +0530
+Subject: [PATCH 1/2] Remove coverage[toml] test dependency
+
+[sshedi: port to v26.1.0]
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ pyproject.toml | 33 +--------------------------------
+ 1 file changed, 1 insertion(+), 32 deletions(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 792a6b3..6982a5a 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -49,7 +49,7 @@ idna = ["idna"]
+ 
+ 
+ [dependency-groups]
+-tests = ["coverage[toml]>=5.0.2", "pytest"]
++tests = ["pytest"]
+ docs = ["sphinx", "furo", "myst-parser", "sphinx-notfound-page", "pyOpenSSL"]
+ mypy = ["mypy", "types-pyOpenSSL", "idna"]
+ dev = [
+@@ -92,7 +92,6 @@ text = """
+ [Complete Changelog →](https://service-identity.readthedocs.io/en/stable/changelog.html)
+ """
+ 
+-
+ [tool.pytest.ini_options]
+ addopts = ["-ra", "--strict-markers", "--strict-config"]
+ xfail_strict = true
+@@ -100,36 +99,6 @@ testpaths = "tests"
+ filterwarnings = ["once::Warning"]
+ norecursedirs = ["tests/typing"]
+ 
+-
+-[tool.coverage.run]
+-parallel = true
+-branch = true
+-source = ["service_identity", "tests"]
+-
+-[tool.coverage.paths]
+-source = ["src", ".tox/py*/**/site-packages"]
+-
+-[tool.coverage.report]
+-show_missing = true
+-skip_covered = true
+-exclude_also = [
+-    # allow defensive code
+-    "^\\s*raise AssertionError\\b",
+-    "^\\s*raise NotImplementedError\\b",
+-    "^\\s*return NotImplemented\\b",
+-    "^\\s*raise$",
+-
+-    # typing-related code
+-    "^if (False|TYPE_CHECKING):",
+-    ": \\.\\.\\.(\\s*#.*)?$",
+-    "^ +\\.\\.\\.$",
+-    "-> ['\"]?NoReturn['\"]?:",
+-
+-    # Tests
+-    '^if pytest\.importorskip\(',
+-]
+-
+-
+ [tool.interrogate]
+ omit-covered-files = true
+ verbose = 2
+-- 
+2.53.0
+

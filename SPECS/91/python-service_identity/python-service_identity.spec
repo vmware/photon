@@ -1,70 +1,70 @@
-%global build_if %{photon_subrelease} >= 92
-
-%define srcname service-identity
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Service identity verification for pyOpenSSL.
 Name:           python3-service_identity
-Version:        26.1.0
-Release:        1%{?dist}
+Version:        21.1.0
+Release:        5.1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/%{srcname}
-
-BuildArch:      noarch
-
-Source0: https://github.com/pyca/service-identity/archive/refs/tags/%{srcname}-%{version}.tar.gz
+Url:            https://pypi.python.org/pypi/service_identity
+Source0:        service_identity-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: 0001-Remove-coverage-toml-test-dependency.patch
-Patch1: 0002-Remove-hatch-fancy-pypi-readme-build-system-dependency.patch
-
 BuildRequires:  python3-devel
-BuildRequires:  python3-build
-BuildRequires:  python3-installer
-BuildRequires:  python3-hatchling
-BuildRequires:  python3-hatch-vcs
-BuildRequires:  python3-setuptools_scm
-
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if 0%{?with_check}
+BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
-BuildRequires:  python3-cryptography
+BuildRequires:  python3-pyasn1-modules
+BuildRequires:  python3-pyasn1
+BuildRequires:  python3-attrs
+BuildRequires:  python3-pyOpenSSL
+BuildRequires:  python3-idna
 %endif
 
 Requires:       python3
+Requires:       python3-libs
+Requires:       python3-pyasn1-modules
+Requires:       python3-pyasn1
 Requires:       python3-attrs
-Requires:       python3-cryptography
+Requires:       python3-pyOpenSSL
+
+BuildArch:      noarch
 
 %description
-%{srcname} aspires to give you all the tools you need for verifying whether a certificate is valid for the intended purposes.
+service_identity aspires to give you all the tools you need for verifying whether a certificate is valid for the intended purposes.
 
-In the simplest case, this means host name verification. However, %{srcname} implements RFC 6125 fully and plans to add other relevant RFCs too.
+In the simplest case, this means host name verification. However, service_identity implements RFC 6125 fully and plans to add other relevant RFCs too.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -n service-identity-%{version}
 
 %build
-%{py3_build_wheel}
+%py3_build
 
 %install
-%{py3_install_wheel}
+%py3_install
 %{py_byte_compile_and_ghost}
 
-%if 0%{?with_check}
 %check
-%pytest -v
-%endif
+pip3 install pathlib2
+pip3 install funcsigs
+pip3 install pluggy
+pip3 install atomicwrites
+pip3 install more-itertools
+PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 
 %files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
-* Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.1.0-1
-- Upgrade to v26.1.0
-- Fix make check
+* Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.1.0-5.1
+- Sub branch for 91
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 21.1.0-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.1.0-4

@@ -1,13 +1,20 @@
 sources:
-- archive: service_identity-21.1.0.tar.gz
-  archive_sha512sum: 36a6f7cb30871bd38da865521503c622a70318f8c5cdc74b0565bdc292bb3b84682bf3afe050d007b21f27d0c54ba0bfe1cd71b63fb13fa42cbaef66cb115c2b
-  skip_validation: true
+- archive: service-identity-26.1.0.tar.gz
+  archive_sha512sum: 2fb480bde46781fd3379a7522f727fd21af42ec0046f641a60ce70443e1ee2d3fd21da76b2c95d060cee7bdb25deea307b0fd3a44afd17cb76769acb68788972
+  archive_type: upstream
+  name: service-identity-26.1.0
+  version: 26.1.0
+  url: https://github.com/pyca/service-identity/archive/refs/tags/26.1.0.tar.gz
+  repo_url: https://github.com/pyca/service-identity.git
+  commit_id: 5025f92e3856e814bb5012ba4ed03b71320131d8
+  skip_list: [.git_archival.txt]
+  missing: []
   spdx:
     package:
       detailed_description: 'service_identity aspires to give you all the tools you
         need for verifying whether a certificate is valid for the intended purposes.  In
         the simplest case, this means host name verification. However, service_identity
-        implements RFC 6125 fully and plans to add other relevant RFCs too. '
+        implements RFC 6125 fully and plans to add other relevant RFCs too.'
       home_page: https://pypi.python.org/pypi/service_identity
       license_concluded: MIT
       license_declared: MIT

@@ -6,7 +6,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        26.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -95,6 +95,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.4.0-2
+- Bump version as a part of service_identity upgrade
 * Fri May 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.4.0-1
 - Upgrade Twisted to 26.4.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.7.0-4
