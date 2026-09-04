@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.107
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -983,6 +983,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Sep 07 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.107-4
+- Fixes CVE-2026-72288, CVE-2026-72355
 * Wed Sep 02 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.107-3
 - sched_info_enqueue: don't update last_queued on delayed migration
 * Tue Sep 01 2026 Bo Gan <bo.gan@broadcom.com> 6.12.107-2
