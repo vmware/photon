@@ -1,0 +1,130 @@
+From 50d0b50a27e1eb77428471ff5fcf040497a262a4 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 18 Sep 2026 15:36:36 -0700
+Subject: [PATCH] x86: only clobber registers in the unrolled case
+
+Previously, r8-r11 registers were getting clobbered on every
+call, which is unnecessary for .Llarge_movsq, or .Lword.
+
+Since .Lunrolled is the only one which needs these registers,
+move the push/pop operations to around only the necessary block.
+
+This should avoid unneccessary data offloading on many calls to
+rep_movs_alternative.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ arch/x86/include/asm/uaccess_64.h |  2 +-
+ arch/x86/lib/copy_user_64.S       | 63 +++++++++++++++++++++----------
+ 2 files changed, 45 insertions(+), 20 deletions(-)
+
+diff --git a/arch/x86/include/asm/uaccess_64.h b/arch/x86/include/asm/uaccess_64.h
+index 4af90ab516a8..abbadb42dce7 100644
+--- a/arch/x86/include/asm/uaccess_64.h
++++ b/arch/x86/include/asm/uaccess_64.h
+@@ -130,7 +130,7 @@ copy_user_generic(void *to, const void *from, unsigned long len)
+ 		"2:\n"
+ 		_ASM_EXTABLE_UA(1b, 2b)
+ 		:"+c" (len), "+D" (to), "+S" (from), ASM_CALL_CONSTRAINT
+-		: : "memory", "rax", "r8", "r9", "r10", "r11");
++		: : "memory", "rax");
+ 	clac();
+ 	return len;
+ }
+diff --git a/arch/x86/lib/copy_user_64.S b/arch/x86/lib/copy_user_64.S
+index 19319cd2f4f4..0b6cc552348e 100644
+--- a/arch/x86/lib/copy_user_64.S
++++ b/arch/x86/lib/copy_user_64.S
+@@ -27,7 +27,7 @@
+  * NOTE! The calling convention is very intentionally the same as
+  * for 'rep movs', so that we can rewrite the function call with
+  * just a plain 'rep movs' on machines that have FSRM.  But to make
+- * it simpler for us, we can clobber rsi/rdi and rax/r8-r11 freely.
++ * it simpler for us, we can clobber rsi/rdi and rax freely.
+  */
+ SYM_FUNC_START(rep_movs_alternative)
+ 	cmpq $64,%rcx
+@@ -115,8 +115,19 @@ SYM_FUNC_START(rep_movs_alternative)
+ 
+ 	_ASM_EXTABLE_UA( 0b, 1b)
+ 
+-	.p2align 4
+ .Lunrolled:
++	/*
++	 * Save the registers this loop uses as scratch, so that callers do
++	 * not have to treat them as clobbered. NOTE: every exit from here
++	 * must restore them, including the exception fixups at the bottom.
++	 */
++	pushq %r8
++	pushq %r9
++	pushq %r10
++	pushq %r11
++
++	.p2align 4
++.Lunrolled_loop:
+ 10:	movq (%rsi),%r8
+ 11:	movq 8(%rsi),%r9
+ 12:	movq 16(%rsi),%r10
+@@ -137,28 +148,42 @@ SYM_FUNC_START(rep_movs_alternative)
+ 	addq $64,%rdi
+ 	subq $64,%rcx
+ 	cmpq $64,%rcx
+-	jae .Lunrolled
++	jae .Lunrolled_loop
++
++	/* Restore clobbered registers */
++	popq %r11
++	popq %r10
++	popq %r9
++	popq %r8
++
+ 	cmpl $8,%ecx
+ 	jae .Lword
+ 	testl %ecx,%ecx
+ 	jne .Lcopy_user_tail
+ 	RET
+ 
+-	_ASM_EXTABLE_UA(10b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(11b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(12b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(13b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(14b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(15b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(16b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(17b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(20b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(21b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(22b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(23b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(24b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(25b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(26b, .Lcopy_user_tail)
+-	_ASM_EXTABLE_UA(27b, .Lcopy_user_tail)
++.Lunrolled_fault:
++	popq %r11
++	popq %r10
++	popq %r9
++	popq %r8
++	jmp .Lcopy_user_tail
++
++	_ASM_EXTABLE_UA(10b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(11b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(12b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(13b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(14b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(15b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(16b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(17b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(20b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(21b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(22b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(23b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(24b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(25b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(26b, .Lunrolled_fault)
++	_ASM_EXTABLE_UA(27b, .Lunrolled_fault)
+ SYM_FUNC_END(rep_movs_alternative)
+ EXPORT_SYMBOL(rep_movs_alternative)
+-- 
+2.53.0
+

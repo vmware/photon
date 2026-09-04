@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.112
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -210,6 +210,10 @@ Patch28: 0001-vmgenid-expose-vmgenid-via-sysfs.patch
 Patch29: 0001-randomize_kstack-Unify-random-source-across-arches.patch
 
 Patch30: 0001-sched_info_enqueue-don-t-update-last_queued-on-delay.patch
+
+# Improve small copy_to/from_user performance on CPUs without FSRM
+Patch31: 0001-x86-bring-back-unrolled-loop-for-small-sizes-without.patch
+Patch32: 0001-x86-only-clobber-registers-in-the-unrolled-case.patch
 
 %ifarch x86_64
 # VMW: [50..60]
@@ -1028,6 +1032,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 13 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.112-6
+- Bring back the unrolled loop for small user copies on CPUs without FSRM
 * Tue Oct 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.112-5
 - Fixes CVE-2026-80634
 * Tue Oct 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.112-4

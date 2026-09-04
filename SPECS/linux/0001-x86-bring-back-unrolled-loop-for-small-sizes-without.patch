@@ -1,0 +1,192 @@
+From bde9d87dae34b5c4d42051226b998bea4555bbbb Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 28 Aug 2026 15:55:36 -0700
+Subject: [PATCH] x86: bring back unrolled loop for small sizes without FSRM
+
+On CPUs without FSRM, e.g Cascade Lake / Skylake, small copies with rep movs
+take a significant performance penalty compared to hand-unrolled loops.
+Comparing nanoseconds to do 100 copies:
+```
+size=16
+unrolled:      448.000000
+movsq:        1524.000000
+movsb:        1523.000000
+size=32
+unrolled:      659.000000
+movsq:        1509.000000
+movsb:        1514.000000
+size=64
+unrolled:      594.000000
+movsq:        1511.000000
+movsb:        1508.000000
+size=128
+unrolled:      903.000000
+movsq:        1842.000000
+movsb:        1839.000000
+size=256
+unrolled:     1577.000000
+movsq:        2004.000000
+movsb:        1964.000000
+size=300
+unrolled:     1883.000000
+movsq:        2378.000000
+movsb:        2150.000000
+size=400
+unrolled:     2876.000000
+movsq:        2359.000000
+movsb:        2349.000000
+```
+
+For the FSRM-less case, bring back the hand unrolled loop for
+copies below 256 bytes, as this seems to be the general 2^X boundary
+where movsb/movsq becomes faster, although it may vary on specific
+CPUs.
+
+Note - on VMware hypervisors, ERMS is not enabled in the guest
+until FSRM is also present, thus any pre-FSRM CPUs will go to .Llarge_movsq,
+regardless of ERMS status.
+
+Also, do the alignment fix from b5322b6ec06a ("x86/uaccess: Improve
+performance by aligning writes to 8 bytes in copy_user_generic(), on
+non-FSRM/ERMS CPUs") on all paths > 64 bytes, since it seems that both
+the unrolled loop and `rep movsb` will benefit from it.
+
+There is probably an opportunity to improve this a bit more, since ERMS
+also just routes to `rep movsb` (in the alternative for `rep movs`...).
+But for now, this should be fine.
+
+Oddly enough, this was originally discovered by bisecting a regression
+in iperf3 where `iperf3 -s` and `iperf3 -c localhost` were running
+on the same machine with pre-FSRM CPU (Cascade Lake).
+
+When testing this patch on the original iperf3 benchmark, it was discovered
+that the threshold for unrolled needs to be > 32k to fix the regression,
+which is very curious. Testing with a reader/writer system
+on a circular buffer showed that movsq/movsb of the WRITER suffers significantly
+when the READER is reading the data the WRITER has recently finished copying.
+Unrolled is not affected nearly as badly, for whatever reason.
+
+Anyways, this patch doesn't fix the original regression on my machine, but it
+should still yield performance improvements for non-FSRM CPUs on certain
+workloads.
+
+Fixes: ca96b162bfd2 ("x86: bring back rep movsq for user access on CPUs without ERMS")
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ arch/x86/include/asm/uaccess_64.h |  2 +-
+ arch/x86/lib/copy_user_64.S       | 66 +++++++++++++++++++++++++++----
+ 2 files changed, 60 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/include/asm/uaccess_64.h b/arch/x86/include/asm/uaccess_64.h
+index abbadb42d..4af90ab51 100644
+--- a/arch/x86/include/asm/uaccess_64.h
++++ b/arch/x86/include/asm/uaccess_64.h
+@@ -130,7 +130,7 @@ copy_user_generic(void *to, const void *from, unsigned long len)
+ 		"2:\n"
+ 		_ASM_EXTABLE_UA(1b, 2b)
+ 		:"+c" (len), "+D" (to), "+S" (from), ASM_CALL_CONSTRAINT
+-		: : "memory", "rax");
++		: : "memory", "rax", "r8", "r9", "r10", "r11");
+ 	clac();
+ 	return len;
+ }
+diff --git a/arch/x86/lib/copy_user_64.S b/arch/x86/lib/copy_user_64.S
+index b8f74d80f..7ade912a1 100644
+--- a/arch/x86/lib/copy_user_64.S
++++ b/arch/x86/lib/copy_user_64.S
+@@ -27,7 +27,7 @@
+  * NOTE! The calling convention is very intentionally the same as
+  * for 'rep movs', so that we can rewrite the function call with
+  * just a plain 'rep movs' on machines that have FSRM.  But to make
+- * it simpler for us, we can clobber rsi/rdi and rax freely.
++ * it simpler for us, we can clobber rsi/rdi and rax/r8-r11 freely.
+  */
+ SYM_FUNC_START(rep_movs_alternative)
+ 	cmpq $64,%rcx
+@@ -68,12 +68,6 @@ SYM_FUNC_START(rep_movs_alternative)
+ 	_ASM_EXTABLE_UA( 3b, .Lcopy_user_tail)
+ 
+ .Llarge:
+-0:	ALTERNATIVE "jmp .Llarge_movsq", "rep movsb", X86_FEATURE_ERMS
+-1:	RET
+-
+-	_ASM_EXTABLE_UA( 0b, 1b)
+-
+-.Llarge_movsq:
+ 	/* Do the first possibly unaligned word */
+ 0:	movq (%rsi),%rax
+ 1:	movq %rax,(%rdi)
+@@ -91,6 +85,18 @@ SYM_FUNC_START(rep_movs_alternative)
+ 	addq %rax,%rsi
+ 	subq %rax,%rcx
+ 
++	cmpq $64,%rcx
++	jb .Lword
++
++	cmpq $256,%rcx
++	jbe .Lunrolled
++
++0:	ALTERNATIVE "jmp .Llarge_movsq", "rep movsb", X86_FEATURE_ERMS
++1:	RET
++
++	_ASM_EXTABLE_UA( 0b, 1b)
++
++.Llarge_movsq:
+ 	/* make %rcx contain the number of words, %rax the remainder */
+ 	movq %rcx,%rax
+ 	shrq $3,%rcx
+@@ -105,5 +111,51 @@ SYM_FUNC_START(rep_movs_alternative)
+ 	jmp .Lcopy_user_tail
+ 
+ 	_ASM_EXTABLE_UA( 0b, 1b)
++
++	.p2align 4
++.Lunrolled:
++10:	movq (%rsi),%r8
++11:	movq 8(%rsi),%r9
++12:	movq 16(%rsi),%r10
++13:	movq 24(%rsi),%r11
++14:	movq %r8,(%rdi)
++15:	movq %r9,8(%rdi)
++16:	movq %r10,16(%rdi)
++17:	movq %r11,24(%rdi)
++20:	movq 32(%rsi),%r8
++21:	movq 40(%rsi),%r9
++22:	movq 48(%rsi),%r10
++23:	movq 56(%rsi),%r11
++24:	movq %r8,32(%rdi)
++25:	movq %r9,40(%rdi)
++26:	movq %r10,48(%rdi)
++27:	movq %r11,56(%rdi)
++	addq $64,%rsi
++	addq $64,%rdi
++	subq $64,%rcx
++	cmpq $64,%rcx
++	jae .Lunrolled
++	cmpl $8,%ecx
++	jae .Lword
++	testl %ecx,%ecx
++	jne .Lcopy_user_tail
++	RET
++
++	_ASM_EXTABLE_UA(10b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(11b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(12b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(13b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(14b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(15b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(16b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(17b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(20b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(21b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(22b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(23b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(24b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(25b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(26b, .Lcopy_user_tail)
++	_ASM_EXTABLE_UA(27b, .Lcopy_user_tail)
+ SYM_FUNC_END(rep_movs_alternative)
+ EXPORT_SYMBOL(rep_movs_alternative)
+-- 
+2.53.0
+
