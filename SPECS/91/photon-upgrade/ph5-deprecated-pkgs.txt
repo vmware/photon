@@ -114,7 +114,6 @@ perl-DBIx-Simple
 perl-JSON-Any
 perl-Object-Accessor
 perl-Perl4-CoreLibs
-perl-WWW-Curl
 pth
 pth-devel
 python3-argparse
@@ -147,8 +146,6 @@ python3-subprocess32
 python3-tools
 redis
 rng-tools
-rpcsvc-proto
-rpcsvc-proto-devel
 rpm-ostree
 rpm-ostree-devel
 rpm-ostree-host

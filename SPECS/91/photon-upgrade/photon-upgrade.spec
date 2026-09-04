@@ -1,9 +1,7 @@
-%global build_if %{photon_subrelease} >= 92
-
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        11%{?dist}
+Release:        10.1%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -60,8 +58,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
-* Fri Sep 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-11
-- Add perl-WWW-Curl, rpcsvc-proto to deprecated package list
+* Fri Sep 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-10.1
+- Sub branch for 91
 * Mon Aug 31 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-10
 - Fix issue of dhcp-libs and python3-asn1crypto being left over after upgrade
 * Mon Aug 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-9
