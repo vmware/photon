@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+Date: Thu, 02 Apr 2026 15:00:00 +0200
+Subject: [PATCH] Fix STIG playbook: PAM stack, FIPS module config, IMA hash
+
+1) Fix PHTN-50-000192 pam_faillock.so setup: regex_search() in
+   set_fact returns None when no match. The comparison
+   'preauthsearch == ""' evaluates to False when preauthsearch is
+   None, causing the cleanup step to be skipped while add steps
+   still run, corrupting the PAM auth stack with duplicate entries.
+   Use '| default("")' so None is treated as empty string.
+   (Backward-compatible: no-op when value is already a string on
+   older Ansible.)
+
+2) Add ima_hash=sha256 kernel parameter when fips=1 is active.
+   FIPS mode disables sha1 but IMA defaults to sha1, causing
+   allocation failures during boot.
+
+3) Generate /etc/ssl/fipsmodule.cnf via 'openssl fipsinstall' when
+   the FIPS provider module is present but fipsmodule.cnf is missing.
+   Without it, booting with fips=1 causes OpenSSL to fail to
+   initialize FIPS mode and pam_unix.so cannot verify passwords.
+
+Signed-off-by: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+---
+diff -ruN a/tasks/photon.yml b/tasks/photon.yml
+--- a/tasks/photon.yml	2026-04-02 14:09:20.577266299 +0200
++++ b/tasks/photon.yml	2026-04-02 14:10:05.298254183 +0200
+@@ -305,6 +305,17 @@
+         - run_openssl_fips_install | bool
+         - opensslfipsinstalled.stdout == ""
+ 
++    - name: PHTN-50-000013 - Check if FIPS module is present
++      ansible.builtin.stat:
++        path: /usr/lib/ossl-modules/fips.so
++      register: fips_module_file
++
++    - name: PHTN-50-000013 - Generate FIPS module config if missing
++      ansible.builtin.command: openssl fipsinstall -out /etc/ssl/fipsmodule.cnf -module /usr/lib/ossl-modules/fips.so
++      args:
++        creates: /etc/ssl/fipsmodule.cnf
++      when: fips_module_file.stat.exists
++
+ ###################################################################################################################################
+ - name: PHTN-50-000014 - Configure auditd.conf write_logs
+   tags: [PHTN-50-000014, auditd]
+@@ -1183,6 +1194,12 @@
+         regexp: '^(\s*linux(?!.* fips=).*)'
+         replace: '\1 fips=1'
+ 
++    - name: PHTN-50-000182 - Add ima_hash=sha256 when fips=1 is active
++      ansible.builtin.replace:
++        path: '{{ var_grub_conf_file }}'
++        regexp: '^(\s*linux(?!.* ima_hash=).*fips=1.*)'
++        replace: '\1 ima_hash=sha256'
++
+     - name: PHTN-50-000080 - Replace fips=1 in /boot/grub2/grub.cfg
+       ansible.builtin.replace:
+         path: '{{ var_grub_conf_file }}'
+@@ -1320,7 +1337,7 @@
+         state: absent
+         regexp: '^auth\s+(required|requisite|\[default=die\])\s+pam_faillock\.so.*$'
+       when:
+-        - preauthsearch == "" or authfailsearch == ""
++        - preauthsearch | default('') == "" or authfailsearch | default('') == ""
+ 
+     - name: Ensure pam_unix.so auth control is 'sufficient' in system-auth if it is 'required'
+       ansible.builtin.replace:
+@@ -1375,7 +1392,7 @@
+         module_path: pam_faillock.so
+         state: absent
+       when:
+-        - sysaccountsearch == ""
++        - sysaccountsearch | default('') == ""
+ 
+     - name: PHTN-50-000192 - Add pam_faillock.so to system-account if it doesn't exist
+       community.general.pamd:
+-- 
+2.43.7

@@ -4,7 +4,7 @@ Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        2.1
-Release:        8%{?dist}
+Release:        10%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -23,6 +23,8 @@ Source1: license.txt
 Patch0: fix-some-value-checks.patch
 Patch1: system-auth-fix.patch
 Patch2: fix-photon.yml-for-latest-audit-and-ansible.patch
+Patch3: fix-stig-playbook-fips-pam.patch
+Patch4: fix-selinux-relabel-first-boot.patch
 
 Requires: ansible >= 2.20.1
 Requires: ansible-community-general
@@ -44,6 +46,14 @@ cp -a %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{nam
 %{_datadir}/ansible/
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.1-10
+- Order selinux-relabel.service before systemd-sysctl, auditd and systemd-networkd
+  so the STIG sysctl hardening is applied on the first boot, not only after a reboot
+* Sun Aug 30 2026 Daniel Casota <dcasota@gmail.com> 2.1-9
+- Fix PHTN-50-000192 pam_faillock PAM stack corruption (| default guard)
+- Add ima_hash=sha256 kernel parameter when fips=1 is active
+- Generate fipsmodule.cnf when FIPS provider is present but config is missing
+- Add first-boot SELinux relabel service for unlabeled filesystems (PR #9)
 * Wed Jun 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-8
 - Revisit system-auth fix, the previous fix was incomplete
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1-7
