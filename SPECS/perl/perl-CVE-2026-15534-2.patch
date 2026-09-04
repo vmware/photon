@@ -1,0 +1,85 @@
+From 54cf3d44cbbedd17d774e9a37921963e8fd5d0cb Mon Sep 17 00:00:00 2001
+From: David Mitchell <davem@iabyn.com>
+Date: Tue, 30 Jun 2026 12:14:52 +0100
+Subject: [PATCH] regex: make superlinear cache 64-bit clean
+
+(See the previous commit for an explanation of what the SLC is).
+
+The iter and maxiter variables associated with the SLC are currently
+declared as I32. This causes various possible issues, including
+potential out of bounds reads and writes of the cache in the presence of
+very large strings and many WHILEM nodes: for example when the string is
+over 128Mb and there are 16 nodes (the max).
+
+Following on from the previous commit which made iter never be negative,
+this commit changes the variables' type to STRLEN (typically equal to
+U64 on 64-bit systems) and does calculations in a way to avoid potential
+overflows. If an overflow *could* occur, the cache isn't enabled.
+
+Previously, a -ve overflow was "fixed" by setting maxiter to I32_MAX, and
++ve overflows weren't detected.
+
+No tests are added, since this code only affects very large strings
+using lots of memory and iterations, and such tests would crash on small
+memory machines.
+---
+ regexec.c | 23 ++++++++++++++---------
+ regexp.h  |  4 ++--
+ 2 files changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/regexec.c b/regexec.c
+index 29aa73c13cb9..66e0c0924059 100644
+--- a/regexec.c
++++ b/regexec.c
+@@ -9202,22 +9202,27 @@ NULL
+                 if (!reginfo->poscache_maxiter) {
+                     /* start the countdown: Postpone detection until we
+                      * know the match is not *that* much linear. */
+-                    reginfo->poscache_maxiter
+-                        =    (reginfo->strend - reginfo->strbeg + 1)
+-                           * (FLAGS(scan)>>4);
+-                    /* possible overflow for long strings and many CURLYX's */
+-                    if (reginfo->poscache_maxiter < 0)
+-                        reginfo->poscache_maxiter = I32_MAX;
+-                    reginfo->poscache_iter = reginfo->poscache_maxiter;
++                    STRLEN len = reginfo->strend - reginfo->strbeg;
++                    /* number of participating WHILEMs */
++                    U8 n = (FLAGS(scan)>>4);
++
++                    /* Only do the calculations and enable the cache if it
++                     * won't overflow. This test is equivalent to:
++                     *    ((len + 1) * n  + 7) <= max(STRLEN)
++                     */
++                    if (len < ((~(STRLEN)0) - 7)/n) {
++                        reginfo->poscache_maxiter = (len + 1) * n;
++                        reginfo->poscache_iter = reginfo->poscache_maxiter;
++                    }
+                 }
+ 
+                 if (reginfo->poscache_iter == 1) {
+                     reginfo->poscache_iter--;
+                     /* initialise cache */
+-                    const SSize_t size = (reginfo->poscache_maxiter + 7)/8;
++                    const STRLEN size = (reginfo->poscache_maxiter + 7)/8;
+                     regmatch_info_aux *const aux = reginfo->info_aux;
+                     if (aux->poscache) {
+-                        if ((SSize_t)reginfo->poscache_size < size) {
++                        if (reginfo->poscache_size < size) {
+                             Renew(aux->poscache, size, char);
+                             reginfo->poscache_size = size;
+                         }
+diff --git a/regexp.h b/regexp.h
+index 057d9ac5011b..d5d40e0a5618 100644
+--- a/regexp.h
++++ b/regexp.h
+@@ -839,8 +839,8 @@ typedef struct {
+     char *cutpoint;      /* (*COMMIT) position (if any) */
+     regmatch_info_aux      *info_aux; /* extra fields that need cleanup */
+     regmatch_info_aux_eval *info_aux_eval; /* extra saved state for (?{}) */
+-    I32  poscache_maxiter; /* how many whilems todo before S-L cache kicks in */
+-    I32  poscache_iter;    /* current countdown from _maxiter to zero */
++    STRLEN poscache_maxiter; /* how many whilems todo before S-L cache kicks in */
++    STRLEN poscache_iter;    /* current countdown from _maxiter to zero */
+     STRLEN poscache_size;  /* size of regmatch_info_aux.poscache */
+     bool intuit;    /* re_intuit_start() is the top-level caller */
+     bool is_utf8_pat;    /* regex is utf8 */

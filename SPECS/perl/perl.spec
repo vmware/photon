@@ -14,7 +14,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.42.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -38,6 +38,9 @@ Patch4:         02-perl-CVE-2026-8376.patch
 Patch5:         perl-CVE-2026-13221.patch
 Patch6:         perl-01-CVE-2026-57432.patch
 Patch7:         perl-02-CVE-2026-57432.patch
+Patch8:         perl-CVE-2026-12087.patch
+Patch9:         perl-CVE-2026-15534-1.patch
+Patch10:        perl-CVE-2026-15534-2.patch
 
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -64,7 +67,7 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %if 0%{?with_check}
 %autopatch -p1 -m0 -M1
 %endif
-%autopatch -p1 -m2 -M7
+%autopatch -p1 -m2 -M10
 
 %build
 export BUILD_ZLIB=False
@@ -116,6 +119,8 @@ make test TEST_SKIP_VERSION_CHECK=1 %{?_smp_mflags}
 %{_mandir}/*/*
 
 %changelog
+* Fri Sep 04 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-5
+- Fix CVE-2026-12087 and CVE-2026-15534
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.42.2-4
 - Extend to build for 91 and above
 * Mon Jul 20 2026 Dweep Advani <dweep.advani@broadcom.com> 5.42.2-3

@@ -1,0 +1,72 @@
+From 568e6fd238867bb9e99fa3f47cba3169009239e0 Mon Sep 17 00:00:00 2001
+From: David Mitchell <davem@iabyn.com>
+Date: Tue, 30 Jun 2026 11:19:45 +0100
+Subject: [PATCH] regex super-linear cache: make countdown unsigned
+
+The super-linear cache is a block of flag bits malloc()ed during regex
+execution for patterns such as:
+
+    ((aaa)+)+
+
+which can go exponential in run time. The idea is that after the pattern
+has been executing for a while, the cache is malloced(), and subsequent
+failed iterations set a flag in the cache indicating a fail at this
+position, so that it can be failed quickly if a similar point is
+reached again after backtracking.
+
+The "executing for a while" bit is determined by setting a counter to a
+largish value, then counting down each time a WHILEM node is executed.
+When the count reaches zero, the cache is malloc()ed. When the count
+reaches -1, the cache becomes active, and no more decrements are done.
+
+This commit changes it so that the zero and -1 above become 1 and 0.
+This will allow the counter be made unsigned.
+
+This commit's only side effect is that the SLC will become active one
+iteration earlier than it did before. This isn't really an issue, as the
+current count start value is an extremely vague heuristic: the value
+used at the moment is (string length) x (the number of WHILEM nodes
+which can participate in the SLC).
+
+Actually changing the counter's type to unsigned will be done in the
+next commit.
+---
+ regexec.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/regexec.c b/regexec.c
+index 35a727459c4a..29aa73c13cb9 100644
+--- a/regexec.c
++++ b/regexec.c
+@@ -9211,7 +9211,8 @@ NULL
+                     reginfo->poscache_iter = reginfo->poscache_maxiter;
+                 }
+ 
+-                if (reginfo->poscache_iter-- == 0) {
++                if (reginfo->poscache_iter == 1) {
++                    reginfo->poscache_iter--;
+                     /* initialise cache */
+                     const SSize_t size = (reginfo->poscache_maxiter + 7)/8;
+                     regmatch_info_aux *const aux = reginfo->info_aux;
+@@ -9232,11 +9233,10 @@ NULL
+                     );
+                 }
+ 
+-                if (reginfo->poscache_iter < 0) {
++                if (reginfo->poscache_iter == 0) {
+                     /* have we already failed at this position? */
+                     SSize_t offset, mask;
+ 
+-                    reginfo->poscache_iter = -1; /* stop eventual underflow */
+                     offset  = (FLAGS(scan) & 0xf) - 1
+                                 +   (locinput - reginfo->strbeg)
+                                   * (FLAGS(scan)>>4);
+@@ -9252,6 +9252,8 @@ NULL
+                     ST.cache_offset = offset;
+                     ST.cache_mask   = mask;
+                 }
++                else
++                    reginfo->poscache_iter--;
+             }
+ 
+             /* Prefer B over A for minimal matching. */
