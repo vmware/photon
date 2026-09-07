@@ -1,12 +1,12 @@
 sources:
-- archive: tornado-6.5.7.tar.gz
-  archive_sha512sum: b7ab8612f71ea419e13c355095a41c412791891d111956aa4e7f7bbe2427ce5c78b264123154d319a875413ce858d7885165b874bcf092f6a71e17341c41406f
+- archive: tornado-6.5.8.tar.gz
+  archive_sha512sum: 0e9a59aa410b20a3c622fbb44161e1193dd0927eb36ca6cc479dad01a281c5dbe323546c81f1366beaae3b623c5996405db5c64b467f20e1551e7d617265e5ba
   archive_type: upstream
-  name: tornado-6.5.7
-  version: 6.5.7
-  url: https://github.com/tornadoweb/tornado/archive/refs/tags/v6.5.7.tar.gz
+  name: tornado-6.5.8
+  version: 6.5.8
+  url: https://github.com/tornadoweb/tornado/archive/refs/tags/v6.5.8.tar.gz
   repo_url: https://github.com/tornadoweb/tornado
-  commit_id: 48fc2d43d1f48b8b3b0be5dcf6a7634c6f45b1c4
+  commit_id: a55abe3e3bf59994f29b2f7084c46341f0d4f6a7
   spdx:
     package:
       detailed_description: 'Tornado is a Python web framework and asynchronous networking

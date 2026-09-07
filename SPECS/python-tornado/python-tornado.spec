@@ -3,12 +3,12 @@
 %global srcname tornado
 
 Name:           python3-tornado
-Version:        6.5.7
-Release:        2%{?dist}
+Version:        6.5.8
+Release:        1%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/tornado
-Source0:        https://github.com/tornadoweb/tornado/archive/refs/tags/v6.5.7.tar.gz#/%{srcname}-%{version}.tar.gz
+Source0:        https://github.com/tornadoweb/tornado/archive/refs/tags/v6.5.8.tar.gz#/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -47,6 +47,8 @@ sh runtests.sh
 %{python3_sitelib}/*
 
 %changelog
+* Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 6.5.8-1
+- Upgrade to version 6.5.8, fixes CVE-2026-82397
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.5.7-2
 - Extend to build for 91 and above
 * Mon Aug 03 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.5.7-1
