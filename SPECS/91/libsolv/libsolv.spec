@@ -3,7 +3,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.22
-Release:        7.2%{?dist}
+Release:        7.3%{?dist}
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Source0: https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 
 Patch0: libsolv-CVE-2026-9150.patch
 Patch1: libsolv-CVE-2026-9149.patch
+Patch2: libsolv-CVE-2026-48863.patch
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -82,6 +83,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.7.22-7.3
+- Fix CVE-2026-48863
 * Thu Jun 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.7.22-7.2
 - Fix CVE-2026-9150: buffer overflow when copying SHA-384/512 checksum from a Debian repository
 - Fix CVE-2026-9149: integer overflow in data size arithmetics in repo_add_solv()
