@@ -15,8 +15,8 @@
 
 Summary:        Go
 Name:           go
-Version:        1.26.5
-Release:        2%{?dist}
+Version:        1.26.8
+Release:        1%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -120,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.8-1
+- Upgrade to 1.26.8
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.26.5-2
 - Extend to build for 91 and above
 * Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.5-1
