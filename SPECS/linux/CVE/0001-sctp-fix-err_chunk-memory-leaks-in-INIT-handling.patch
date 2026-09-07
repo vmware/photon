@@ -1,0 +1,73 @@
+From 1bf1d8641e503e9e02994f19748c620357a3dbef Mon Sep 17 00:00:00 2001
+From: Xin Long <lucien.xin@gmail.com>
+Date: Mon, 7 Sep 2026 07:56:38 +0000
+Subject: [PATCH] sctp: fix err_chunk memory leaks in INIT handling
+
+[ Upstream commit 9f58a0a4d6c2ed5d341bba64f058f15d1b0c36f2 ]
+
+When sctp_verify_init() encounters unrecognized parameters, it allocates an
+err_chunk to report them. However, this chunk is leaked in several code
+paths:
+
+1. In sctp_sf_do_5_1B_init(), if security_sctp_assoc_request() fails after
+   sctp_verify_init() has populated err_chunk, the function returns
+   immediately without freeing it.
+
+2. In sctp_sf_do_unexpected_init(), the same leak occurs on the
+   security_sctp_assoc_request() failure path.
+
+3. In sctp_sf_do_unexpected_init(), on the success path after copying
+   unrecognized parameters to the INIT-ACK, the function returns without
+   freeing err_chunk, unlike sctp_sf_do_5_1B_init() which properly frees
+   it.
+
+Fix all three leaks by adding sctp_chunk_free(err_chunk) calls before
+returning in the error paths and on the success path in
+sctp_sf_do_unexpected_init().
+
+Fixes: c081d53f97a1 ("security: pass asoc to sctp_assoc_request and sctp_sk_clone")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Link: https://patch.msgid.link/0656704f1b0158287c98aec09ba36c83e4a537ab.1781970534.git.lucien.xin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Shivani: Backported for CVE-2026-72413. Modified to apply on 6.12.y ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ net/sctp/sm_statefuns.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index b9c7d06544c1..5be54b119c39 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -416,6 +416,8 @@ enum sctp_disposition sctp_sf_do_5_1B_init(struct net *net,
+ 	/* Update socket peer label if first association. */
+ 	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
+ 		sctp_association_free(new_asoc);
++		if (err_chunk)
++			sctp_chunk_free(err_chunk);
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 	}
+ 
+@@ -1607,6 +1609,8 @@ static enum sctp_disposition sctp_sf_do_unexpected_init(
+ 	/* Update socket peer label if first association. */
+ 	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
+ 		sctp_association_free(new_asoc);
++		if (err_chunk)
++			sctp_chunk_free(err_chunk);
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 	}
+ 
+@@ -1672,6 +1676,7 @@ static enum sctp_disposition sctp_sf_do_unexpected_init(
+ 		 * parameter type.
+ 		 */
+ 		sctp_addto_chunk(repl, len, unk_param);
++		sctp_chunk_free(err_chunk);
+ 	}
+ 
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_NEW_ASOC, SCTP_ASOC(new_asoc));
+-- 
+2.53.0
+

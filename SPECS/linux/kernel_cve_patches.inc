@@ -60,3 +60,6 @@ Patch3044: 0001-bpf-fix-the-return-value-of-push_stack.patch
 # Fixes CVE-2026-72288, CVE-2026-72355
 Patch3045: 0001-KVM-arm64-vgic-Handle-race-between-interrupt-affini.patch
 Patch3046: 0001-netfs-Fix-barriering-when-walking-subrequest-list.patch
+# Fixes CVE-2026-72413, CVE-2026-72423
+Patch3047: 0001-bpf-Guard-conntrack-opts-error-writes.patch
+Patch3048: 0001-sctp-fix-err_chunk-memory-leaks-in-INIT-handling.patch

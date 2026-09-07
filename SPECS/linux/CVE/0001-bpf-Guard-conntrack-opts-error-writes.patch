@@ -1,0 +1,117 @@
+From ed854b2b82cae6d1ddb97ce492737e6784fe78c1 Mon Sep 17 00:00:00 2001
+From: Yiyang Chen <chenyy23@mails.tsinghua.edu.cn>
+Date: Mon, 7 Sep 2026 07:56:38 +0000
+Subject: [PATCH] bpf: Guard conntrack opts error writes
+
+[ Upstream commit 6f6183a39533d727deaa5061cadae6dd9e6744d0 ]
+
+The conntrack lookup and allocation kfuncs take an opts pointer
+together with an opts__sz argument. The verifier checks only the memory
+range described by opts__sz, but the wrappers unconditionally write
+opts->error whenever the internal lookup or allocation helper returns an
+error.
+
+For an invalid size smaller than the end of opts->error, that write can
+land outside the verifier-checked range. Keep returning NULL for invalid
+arguments, but only report the error through opts->error when the
+supplied size includes the field.
+
+This preserves error reporting for the supported 12-byte and 16-byte
+layouts, and for other invalid sizes that still include opts->error.
+
+Fixes: b4c2b9593a1c ("net/netfilter: Add unstable CT lookup helpers for XDP and TC-BPF")
+Fixes: d7e79c97c00c ("net: netfilter: Add kfuncs to allocate and insert CT")
+Signed-off-by: Yiyang Chen <chenyy23@mails.tsinghua.edu.cn>
+Link: https://lore.kernel.org/r/9535e781fe14449b1d4e9bbc3baa7566a93bf512.1781765747.git.chenyy23@mails.tsinghua.edu.cn
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+[ Shivani: Backported for CVE-2026-72423. Modified to apply on 6.12.y.
+  kept the existing 'if (opts)' NULL guard from 6.12.y instead of
+  pulling in the unrelated upstream commit bddaf9adda72 ("bpf: net:
+  netfilter: drop dead NULL checks") that removed it, to keep this backport
+  minimal. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ net/netfilter/nf_conntrack_bpf.c | 39 +++++++++++---------------------
+ 1 file changed, 13 insertions(+), 26 deletions(-)
+
+diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+index 4a136fc3a9c0..c91a935a0170 100644
+--- a/net/netfilter/nf_conntrack_bpf.c
++++ b/net/netfilter/nf_conntrack_bpf.c
+@@ -64,6 +64,15 @@ enum {
+ 	NF_BPF_CT_OPTS_SZ = 16,
+ };
+ 
++static void *bpf_ct_opts_result(struct bpf_ct_opts *opts, u32 opts__sz, void *ret)
++{
++	if (!IS_ERR(ret))
++		return ret;
++	if (opts && opts__sz >= offsetofend(struct bpf_ct_opts, error))
++		opts->error = PTR_ERR(ret);
++	return NULL;
++}
++
+ static int bpf_nf_ct_tuple_parse(struct bpf_sock_tuple *bpf_tuple,
+ 				 u32 tuple_len, u8 protonum, u8 dir,
+ 				 struct nf_conntrack_tuple *tuple)
+@@ -298,13 +307,7 @@ bpf_xdp_ct_alloc(struct xdp_md *xdp_ctx, struct bpf_sock_tuple *bpf_tuple,
+ 
+ 	nfct = __bpf_nf_ct_alloc_entry(dev_net(ctx->rxq->dev), bpf_tuple, tuple__sz,
+ 				       opts, opts__sz, 10);
+-	if (IS_ERR(nfct)) {
+-		if (opts)
+-			opts->error = PTR_ERR(nfct);
+-		return NULL;
+-	}
+-
+-	return (struct nf_conn___init *)nfct;
++	return (struct nf_conn___init *)bpf_ct_opts_result(opts, opts__sz, nfct);
+ }
+ 
+ /* bpf_xdp_ct_lookup - Lookup CT entry for the given tuple, and acquire a
+@@ -333,12 +336,7 @@ bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx, struct bpf_sock_tuple *bpf_tuple,
+ 
+ 	caller_net = dev_net(ctx->rxq->dev);
+ 	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts, opts__sz);
+-	if (IS_ERR(nfct)) {
+-		if (opts)
+-			opts->error = PTR_ERR(nfct);
+-		return NULL;
+-	}
+-	return nfct;
++	return bpf_ct_opts_result(opts, opts__sz, nfct);
+ }
+ 
+ /* bpf_skb_ct_alloc - Allocate a new CT entry
+@@ -366,13 +364,7 @@ bpf_skb_ct_alloc(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
+ 
+ 	net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
+ 	nfct = __bpf_nf_ct_alloc_entry(net, bpf_tuple, tuple__sz, opts, opts__sz, 10);
+-	if (IS_ERR(nfct)) {
+-		if (opts)
+-			opts->error = PTR_ERR(nfct);
+-		return NULL;
+-	}
+-
+-	return (struct nf_conn___init *)nfct;
++	return (struct nf_conn___init *)bpf_ct_opts_result(opts, opts__sz, nfct);
+ }
+ 
+ /* bpf_skb_ct_lookup - Lookup CT entry for the given tuple, and acquire a
+@@ -401,12 +393,7 @@ bpf_skb_ct_lookup(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
+ 
+ 	caller_net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
+ 	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts, opts__sz);
+-	if (IS_ERR(nfct)) {
+-		if (opts)
+-			opts->error = PTR_ERR(nfct);
+-		return NULL;
+-	}
+-	return nfct;
++	return bpf_ct_opts_result(opts, opts__sz, nfct);
+ }
+ 
+ /* bpf_ct_insert_entry - Add the provided entry into a CT map
+-- 
+2.53.0
+
