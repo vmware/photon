@@ -13,5 +13,6 @@ common/data/pkg_info.json
 .idea/
 SPECS/kernels-drivers-intel/*.spec
 SPECS/91/kernels-drivers-intel/*.spec
+SPECS/90/kernels-drivers-intel/*.spec
 SPECS/falco/*.spec
 SPECS/sysdig/*.spec

@@ -4,7 +4,7 @@ Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        2.1
-Release:        5.1.1%{?dist}
+Release:        5.1.2%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -35,14 +35,27 @@ VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 %autosetup -p1 -n %{name}-ph5-%{version}
 
 %install
-install -d %{buildroot}%{_datadir}/ansible/
-cp -a %{_builddir}/%{name}-ph5-%{version}/ %{buildroot}%{_datadir}/ansible/%{name}
+install -d %{buildroot}%{_datadir}/ansible/%{name}
+
+pushd %{_builddir}/%{name}-ph5-%{version}
+cp -a *.md \
+  *.yml \
+  defaults \
+  handlers \
+  meta \
+  tasks \
+  templates \
+  vars* \
+  %{buildroot}%{_datadir}/ansible/%{name}
+popd
 
 %files
 %defattr(-,root,root,-)
 %{_datadir}/ansible/
 
 %changelog
+* Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-5.1.2
+- Use a definite list files for installation
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1-5.1.1
 - Adjusted to build for subrelease 90
 * Wed Apr 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-5.1
