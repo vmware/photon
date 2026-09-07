@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.21.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
@@ -11,6 +11,7 @@ Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 Patch0:         CVE-2024-38428.patch
+Patch1:         CVE-2026-16599.patch
 
 Requires:       openssl
 BuildRequires:  openssl-devel
@@ -63,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+* Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.21.3-8
+- Patched for CVE-2026-16599
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.21.3-7
 - Release bump for aarch64 SRP compliance
 * Wed Dec 11 2024 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.21.3-6
