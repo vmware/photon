@@ -6,8 +6,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        10.4p1
-Release:        3%{?dist}
+Version:        10.5p1
+Release:        1%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -38,7 +38,6 @@ Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch2: 0001-Use-OOB-ed25519-implementation-explicitly.patch
 Patch3: 0001-print-sshd-confs-in-lower-case.patch
-Patch4: gssapi-config-fix.patch
 
 BuildRequires: openssl-fips-provider
 BuildRequires: openssl-devel
@@ -245,6 +244,9 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Tue Sep 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 10.5p1-1
+- Upgrade to version 10.5p1 to fix CVE-2026-73283, CVE-2026-73282, CVE-2026-73281
+- Drop gssapi-config-fix.patch, now included upstream
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.4p1-3
 - Extend to build for 91 and above
 * Fri Jul 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.4p1-2
