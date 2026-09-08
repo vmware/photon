@@ -37,6 +37,11 @@ PRECHECK_ONLY='n'   # When set to y, indicates that pre upgrade checks to
 # Allow users to temporarily retain packages from the deprecated package list.
 RETAIN_DEPRECATED_PKGS=''
 
+# Sub-release qualifier used to select a subrelease-specific deprecated pkg
+# list, e.g. "91" selects ph4-to-ph5-91-deprecated-pkgs.txt
+# defaults to 91
+SUBRELEASE=''
+
 # Temp location for 'rpm -qa' & rpm db copy
 TMP_BACKUP_LOC=''
 
@@ -81,6 +86,8 @@ This script upgrades or updates Photon OS based upon the options provided.
 --rm-pkgs-post : Comma separated list of packages to remove afer upgrade
 --precheck-only: Performs checks for anomalies that will impact the OS upgrade
                  and warns the user about found anomalies and exits
+--subrelease   : Photon OS 5 sub-release to upgrade to (default: 91),
+                 e.g. --subrelease=92
 --retain-deprecated-pkgs: (dev only option, *DO NOT USE IN PRODUCTION*) retain a deprected package post upgrade
 "
   exit $rc
@@ -814,6 +821,7 @@ function verify_version_and_upgrade() {
     echo "Your current version $FROM_VERSION is the latest version. Nothing to do."
     exit 0
   fi
+  echo "Upgrading to Photon OS $TO_VERSION subrelease $SUBRELEASE."
   if [ -z "$ASSUME_YES_OPT" ]; then
     # This is interactive invocation of the script
     echo "You are about to upgrade PhotonOS from $FROM_VERSION to $TO_VERSION."
@@ -909,7 +917,7 @@ function verify_version_and_upgrade() {
 
 CMD_ARGS=$(
   getopt --long \
-  'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,to-ver:,skip-update,upgrade-os,retain-deprecated-pkgs:' \
+  'assume-yes,help,install-all,precheck-only,repos:,rm-pkgs-pre:,rm-pkgs-post:,subrelease:,to-ver:,skip-update,upgrade-os,retain-deprecated-pkgs:' \
   -- -- "$@"
 )
 if [ $? -ne 0 ]; then
@@ -969,6 +977,10 @@ while [ $# -gt 0 ]; do
       RETAIN_DEPRECATED_PKGS="$2"
       shift
       ;;
+    --subrelease )
+      SUBRELEASE="$2"
+      shift
+      ;;
     --skip-update )
       UPDATE_PKGS='n'  # Any value other than 'y' would not update packages
       ;;
@@ -986,6 +998,8 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+SUBRELEASE=${SUBRELEASE:-91}
 
 if [ "$UPGRADE_OS" = "n" ]; then
   if [ -n "$TO_VERSION" ]; then

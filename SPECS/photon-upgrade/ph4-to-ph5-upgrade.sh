@@ -1,10 +1,17 @@
-read -d "\n" -a deprecated_packages_arr < "$1/ph4-to-ph5-deprecated-pkgs.txt"
+_depr_pkgs_fn="$1/ph4-to-ph5-${SUBRELEASE}-deprecated-pkgs.txt"
+if [ ! -f "${_depr_pkgs_fn}" ]; then
+  abort $ERETRY_EINVAL "ERROR: subrelease deprecated packages file ${_depr_pkgs_fn} not found."
+fi
+
+read -d "\n" -a deprecated_packages_arr < "${_depr_pkgs_fn}"
+unset _depr_pkgs_fn
 
 # This hashtable maps package name changes between source and target Photon OS
 # Examples:
 #   [p1]=p2
 #   [p3]="p4 p5"     where p3 is replaced by either p4 or p5
 # we do not expect any core packages here
+# Use separate array for 92 when needed
 declare -A replaced_pkgs_map=(
   [apache-tomcat]="apache-tomcat11 apache-tomcat10 apache-tomcat9"
   [apache-tomcat-webapps]="apache-tomcat11-webapps apache-tomcat10-webapps apache-tomcat9-webapps"
@@ -14,8 +21,6 @@ declare -A replaced_pkgs_map=(
 
   [calico-confd]="calico-confd confd"
 
-  [chkconfig]="alternatives"
-
   [dstat]="dstat dool"
 
   [fakeroot-ng]="fakeroot"
@@ -24,60 +29,111 @@ declare -A replaced_pkgs_map=(
 
   [gcovr]="gcovr python3-gcovr"
 
+  [go-1.26]="go"
+
   [google-compute-engine]="google-compute-engine google-guest-configs"
   [google-compute-engine-services]="google-compute-engine-services google-guest-configs"
 
   [netmgmt]=network-config-manager
   [netmgmt-devel]="network-config-manager-devel"
 
-  [openjdk8]="openjdk25 openjdk21 openjdk17 openjdk11"
-  [openjre8]="openjdk25-jre openjdk21-jre openjdk17-jre openjdk11-jre"
-  [openjdk8-doc]="openjdk25-doc openjdk21-doc openjdk17-doc openjdk11-doc"
-  [openjdk8-src]="openjdk25-src openjdk21-src openjdk17-src openjdk11-src"
-
   [pmd]=pmd-ng
   [pmd-cli]="pmd-ng"
   [pmd-libs]=pmd-ng
   [pmd-gssapi-unix]="pmd-ng"
 
-  [procmail]="dovecot"
-
-  [pgaudit13]="pgaudit18 pgaudit17 pgaudit16 pgaudit15"
-  [pgaudit14]="pgaudit18 pgaudit17 pgaudit16 pgaudit15"
-  [pgaudit15]="pgaudit15 pgaudit18 pgaudit17 pgaudit16"
-
-  [postgresql10]="postgresql18 postgresql17 postgresql16 postgresql15"
-  [postgresql10-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel"
-  [postgresql10-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs"
-
-  [postgresql13]="postgresql18 postgresql17 postgresql16 postgresql15"
-  [postgresql13-client]="postgresql18-client postgresql17-client postgresql16-client postgresql15-client"
-  [postgresql13-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel"
-  [postgresql13-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs"
-  [postgresql13-server]="postgresql18-server postgresql17-server postgresql16-server postgresql15-server"
-
-  [postgresql14]="postgresql18 postgresql17 postgresql16 postgresql15"
-  [postgresql14-client]="postgresql18-client postgresql17-client postgresql16-client postgresql15-client"
-  [postgresql14-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel"
-  [postgresql14-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs"
-  [postgresql14-server]="postgresql18-server postgresql17-server postgresql16-server postgresql15-server"
-
-  [postgresql15]="postgresql15 postgresql18 postgresql17 postgresql16"
-  [postgresql15-client]="postgresql15-client postgresql18-client postgresql17-client postgresql16-client"
-  [postgresql15-devel]="postgresql15-devel postgresql18-devel postgresql17-devel postgresql16-devel"
-  [postgresql15-libs]="postgresql15-libs postgresql18-libs postgresql17-libs postgresql16-libs"
-  [postgresql15-server]="postgresql15-server postgresql18-server postgresql17-server postgresql16-server"
-
   [python3-gcovr]="gcovr python3-gcovr"
-
-  [repmgr]="repmgr18 repmgr17 repmgr16 repmgr15"
-  [repmgr10]="repmgr18 repmgr17 repmgr16 repmgr15"
-  [repmgr13]="repmgr18 repmgr17 repmgr16 repmgr15"
-  [repmgr14]="repmgr18 repmgr17 repmgr16 repmgr15"
-  [repmgr15]="repmgr15 repmgr18 repmgr17 repmgr16"
 
   [rubygem-mini_portile]="rubygem-mini_portile2"
 )
+
+if [[ "$SUBRELEASE" -gt 90 ]]; then
+  replaced_pkgs_map+=(
+    [chkconfig]="alternatives"
+
+    [openjdk8]="openjdk25 openjdk21 openjdk17 openjdk11"
+    [openjre8]="openjdk25-jre openjdk21-jre openjdk17-jre openjdk11-jre"
+    [openjdk8-doc]="openjdk25-doc openjdk21-doc openjdk17-doc openjdk11-doc"
+    [openjdk8-src]="openjdk25-src openjdk21-src openjdk17-src openjdk11-src"
+
+    [procmail]="dovecot"
+
+    [pgaudit13]="pgaudit18 pgaudit17 pgaudit16 pgaudit15"
+    [pgaudit14]="pgaudit18 pgaudit17 pgaudit16 pgaudit15"
+    [pgaudit15]="pgaudit15 pgaudit18 pgaudit17 pgaudit16"
+
+    [postgresql10]="postgresql18 postgresql17 postgresql16 postgresql15"
+    [postgresql10-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel"
+    [postgresql10-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs"
+
+    [postgresql13]="postgresql18 postgresql17 postgresql16 postgresql15"
+    [postgresql13-client]="postgresql18-client postgresql17-client postgresql16-client postgresql15-client"
+    [postgresql13-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel"
+    [postgresql13-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs"
+    [postgresql13-server]="postgresql18-server postgresql17-server postgresql16-server postgresql15-server"
+
+    [postgresql14]="postgresql18 postgresql17 postgresql16 postgresql15"
+    [postgresql14-client]="postgresql18-client postgresql17-client postgresql16-client postgresql15-client"
+    [postgresql14-devel]="postgresql18-devel postgresql17-devel postgresql16-devel postgresql15-devel"
+    [postgresql14-libs]="postgresql18-libs postgresql17-libs postgresql16-libs postgresql15-libs"
+    [postgresql14-server]="postgresql18-server postgresql17-server postgresql16-server postgresql15-server"
+
+    [postgresql15]="postgresql15 postgresql18 postgresql17 postgresql16"
+    [postgresql15-client]="postgresql15-client postgresql18-client postgresql17-client postgresql16-client"
+    [postgresql15-devel]="postgresql15-devel postgresql18-devel postgresql17-devel postgresql16-devel"
+    [postgresql15-libs]="postgresql15-libs postgresql18-libs postgresql17-libs postgresql16-libs"
+    [postgresql15-server]="postgresql15-server postgresql18-server postgresql17-server postgresql16-server"
+
+    [repmgr]="repmgr18 repmgr17 repmgr16 repmgr15"
+    [repmgr10]="repmgr18 repmgr17 repmgr16 repmgr15"
+    [repmgr13]="repmgr18 repmgr17 repmgr16 repmgr15"
+    [repmgr14]="repmgr18 repmgr17 repmgr16 repmgr15"
+    [repmgr15]="repmgr15 repmgr18 repmgr17 repmgr16"
+  )
+else
+  replaced_pkgs_map+=(
+    [openjdk8]="openjdk21 openjdk17 openjdk11"
+    [openjre8]="openjdk21-jre openjdk17-jre openjdk11-jre"
+    [openjdk8-doc]="openjdk21-doc openjdk17-doc openjdk11-doc"
+    [openjdk8-src]="openjdk21-src openjdk17-src openjdk11-src"
+
+    [pgaudit13]="pgaudit13 pgaudit15 pgaudit14"
+    [pgaudit14]="pgaudit14 pgaudit15"
+
+    [postgresql10]="postgresql17 postgresql16 postgresql15 postgresql14"
+    [postgresql10-devel]="postgresql17-devel postgresql16-devel postgresql15-devel postgresql14-devel"
+    [postgresql10-libs]="postgresql17-libs postgresql16-libs postgresql15-libs postgresql14-libs"
+
+    [postgresql13]="postgresql17 postgresql16 postgresql15 postgresql14"
+    [postgresql13-client]="postgresql17-client postgresql16-client postgresql15-client postgresql14-client"
+    [postgresql13-devel]="postgresql17-devel postgresql16-devel postgresql15-devel postgresql14-devel"
+    [postgresql13-libs]="postgresql17-libs postgresql16-libs postgresql15-libs postgresql14-libs"
+    [postgresql13-server]="postgresql17-server postgresql16-server postgresql15-server postgresql14-server"
+
+    [postgresql14]="postgresql17 postgresql16 postgresql15"
+    [postgresql14-client]="postgresql17-client postgresql16-client postgresql15-client"
+    [postgresql14-devel]="postgresql17-devel postgresql16-devel postgresql15-devel"
+    [postgresql14-libs]="postgresql17-libs postgresql16-libs postgresql15-libs"
+    [postgresql14-server]="postgresql17-server postgresql16-server postgresql15-server"
+
+    [postgresql15]="postgresql17 postgresql16"
+    [postgresql15-client]="postgresql15-client postgresql17-client postgresql16-client postgresql15-client"
+    [postgresql15-devel]="postgresql15-devel postgresql17-devel postgresql16-devel postgresql16-devel"
+    [postgresql15-libs]="postgresql15-libs postgresql17-libs postgresql16-libs"
+    [postgresql15-server]="postgresql15-server postgresql17-server postgresql16-server"
+
+    [postgresql16]="postgresql16 postgresql17"
+    [postgresql16-client]="postgresql16-client postgresql17-client"
+    [postgresql16-devel]="postgresql16-devel postgresql17-devel"
+    [postgresql16-libs]="postgresql16-libs postgresql17-libs"
+    [postgresql16-server]="postgresql16-server postgresql17-server"
+
+    [repmgr]="repmgr15 repmgr14 repmgr13"
+    [repmgr10]="repmgr15 repmgr14 repmgr13"
+    [repmgr13]="repmgr13 repmgr15 repmgr14"
+    [repmgr14]="repmgr14 repmgr15"
+  )
+fi
 
 # Hash keys are paths in source OS mapping to paths as values in target OS
 declare -A conf_path_map=(

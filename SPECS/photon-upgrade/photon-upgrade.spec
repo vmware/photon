@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -15,7 +15,9 @@ Source1: constants.sh
 Source2: ph4-to-ph5-upgrade.sh
 Source3: utils.sh
 Source4: common.sh
-Source5: ph4-to-ph5-deprecated-pkgs.txt
+Source5: ph4-to-ph5-90-deprecated-pkgs.txt
+Source6: ph4-to-ph5-91-deprecated-pkgs.txt
+Source7: ph4-to-ph5-92-deprecated-pkgs.txt
 
 Requires:       (coreutils or coreutils-selinux)
 Requires:       gawk
@@ -27,8 +29,8 @@ Requires:       findutils
 Requires:       util-linux
 
 %description
-Photon upgrade scripts for updating the packages and
-upgrading the Photon OS from 4.0 to 5.0.
+Photon upgrade scripts for updating the packages and upgrading the Photon OS
+from 4.0 to 5.0.
 
 %prep
 
@@ -42,6 +44,8 @@ install -m440 %{SOURCE2} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE3} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE4} %{buildroot}%{_libdir}/%{name}
 install -m440 %{SOURCE5} %{buildroot}%{_libdir}/%{name}
+install -m440 %{SOURCE6} %{buildroot}%{_libdir}/%{name}
+install -m440 %{SOURCE7} %{buildroot}%{_libdir}/%{name}
 
 %clean
 rm -rf %{buildroot}
@@ -52,6 +56,9 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-6
+- Add --subrelease option; default to 91
+- Add ph4-to-ph5-{90,91,92}-deprecated-pkgs.txt
 * Mon Aug 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-5
 - Update deprecated package list
 * Tue Jun 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-4
