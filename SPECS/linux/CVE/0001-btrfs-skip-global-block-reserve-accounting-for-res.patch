@@ -1,0 +1,136 @@
+From 51a0e8399858621442807a26057bcd1cd3ced046 Mon Sep 17 00:00:00 2001
+From: Dongjiang Zhu <zhudongjiang@fnnas.com>
+Date: Mon, 13 Jul 2026 16:50:08 +0800
+Subject: [PATCH] btrfs: skip global block reserve accounting for rescue
+ mounts
+
+[ Upstream commit 51a0e8399858621442807a26057bcd1cd3ced046 ]
+
+[BUG]
+Mounting with rescue=ibadroots after corrupting the block group tree
+root triggers a NULL pointer dereference:
+
+  BUG: kernel NULL pointer dereference, address: 0000000000000100
+  RIP: 0010:btrfs_update_global_block_rsv+0x9d/0x1c0 [btrfs]
+  Call Trace:
+   fill_dummy_bgs+0xd4/0x120 [btrfs]
+   open_ctree+0xc6e/0x1ca0 [btrfs]
+   btrfs_get_tree+0x50d/0xa40 [btrfs]
+
+The same crash occurs with a corrupted raid stripe tree root, via
+btrfs_read_block_groups() instead of fill_dummy_bgs().
+
+[CAUSE]
+With rescue=ibadroots, btrfs_read_roots() allows the mount to continue
+when either root cannot be read, leaving the corresponding root pointer
+NULL while its on-disk feature bit remains set.
+
+btrfs_update_global_block_rsv() then dereferences the missing root based
+on the feature bit alone.
+
+[FIX]
+Rescue mounts are fully read-only and cannot start transactions, so the
+global reserve is never consumed. Under btrfs_is_full_ro(), mark the
+reserve as full and return before performing the accounting.
+
+And since we need to check if the fs is mount fully RO, export
+fs_is_full_ro() as btrfs_is_full_ro(), and move it to fs.h.
+
+Fixes: 8dbfc14fc736 ("btrfs: account block group tree when calculating global reserve size")
+Fixes: 515020900d44 ("btrfs: read raid stripe tree from disk")
+Suggested-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Dongjiang Zhu <zhudongjiang@fnnas.com>
+[ Squash the fs_is_full_ro() export commit into this one. ]
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+[ Shivani: Backported for CVE-2026-74571. Modified to apply on 6.12.y. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ fs/btrfs/block-rsv.c | 19 +++++++++++++++++--
+ fs/btrfs/disk-io.c   | 11 +----------
+ fs/btrfs/fs.h        |  9 +++++++++
+ 3 files changed, 27 insertions(+), 12 deletions(-)
+
+diff --git a/fs/btrfs/block-rsv.c b/fs/btrfs/block-rsv.c
+index a578bd3b32bb..f111500a2c46 100644
+--- a/fs/btrfs/block-rsv.c
++++ b/fs/btrfs/block-rsv.c
+@@ -326,10 +326,25 @@ void btrfs_block_rsv_add_bytes(struct btrfs_block_rsv *block_rsv,
+ void btrfs_update_global_block_rsv(struct btrfs_fs_info *fs_info)
+ {
+ 	struct btrfs_block_rsv *block_rsv = &fs_info->global_block_rsv;
+-	struct btrfs_space_info *sinfo = block_rsv->space_info;
++	struct btrfs_space_info *sinfo;
+ 	struct btrfs_root *root, *tmp;
+-	u64 num_bytes = btrfs_root_used(&fs_info->tree_root->root_item);
+ 	unsigned int min_items = 1;
++	u64 num_bytes;
++
++	/*
++	 * A full read-only mount (rescue options) cannot start transactions,
++	 * so the global reserve is never consumed. Mark it as full and skip
++	 * the accounting.
++	 */
++	if (btrfs_is_full_ro(fs_info)) {
++		spin_lock(&block_rsv->lock);
++		block_rsv->full = true;
++		spin_unlock(&block_rsv->lock);
++		return;
++	}
++
++	sinfo = block_rsv->space_info;
++	num_bytes = btrfs_root_used(&fs_info->tree_root->root_item);
+
+ 	/*
+ 	 * The global block rsv is based on the size of the extent tree, the
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index 8befa96374a9..a5aee96f7993 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3169,15 +3169,6 @@ int btrfs_check_features(struct btrfs_fs_info *fs_info, bool is_rw_mount)
+ 	return 0;
+ }
+
+-static bool fs_is_full_ro(const struct btrfs_fs_info *fs_info)
+-{
+-	if (!sb_rdonly(fs_info->sb))
+-		return false;
+-	if (unlikely(fs_info->mount_opt & BTRFS_MOUNT_FULL_RO_MASK))
+-		return true;
+-	return false;
+-}
+-
+ int __cold open_ctree(struct super_block *sb, struct btrfs_fs_devices *fs_devices)
+ {
+ 	u32 sectorsize;
+@@ -3287,7 +3278,7 @@ int __cold open_ctree(struct super_block *sb, struct btrfs_fs_devices *fs_device
+ 		WRITE_ONCE(fs_info->fs_error, -EUCLEAN);
+
+ 	/* If the fs has any rescue options, no transaction is allowed. */
+-	if (fs_is_full_ro(fs_info))
++	if (btrfs_is_full_ro(fs_info))
+ 		WRITE_ONCE(fs_info->fs_error, -EROFS);
+
+ 	/* Set up fs_info before parsing mount options */
+diff --git a/fs/btrfs/fs.h b/fs/btrfs/fs.h
+index 219345ff17f5..c9eca8b13f7a 100644
+--- a/fs/btrfs/fs.h
++++ b/fs/btrfs/fs.h
+@@ -1034,6 +1034,15 @@ void __btrfs_clear_fs_compat_ro(struct btrfs_fs_info *fs_info, u64 flag,
+ #define btrfs_test_opt(fs_info, opt)	((fs_info)->mount_opt & \
+ 					 BTRFS_MOUNT_##opt)
+
++static inline bool btrfs_is_full_ro(const struct btrfs_fs_info *fs_info)
++{
++	if (!sb_rdonly(fs_info->sb))
++		return false;
++	if (unlikely(fs_info->mount_opt & BTRFS_MOUNT_FULL_RO_MASK))
++		return true;
++	return false;
++}
++
+ static inline int btrfs_fs_closing(const struct btrfs_fs_info *fs_info)
+ {
+ 	/* Do it this way so we only ever do one test_bit in the normal case. */
+--
+2.53.0

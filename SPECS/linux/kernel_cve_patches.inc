@@ -81,3 +81,6 @@ Patch3060: 0001-drm-amdgpu-vcn-set-no_user_fence-for-VCN-v4.0-enc-r.patch
 Patch3061: 0001-netfilter-x_tables-add-and-use-xt_unregister_table_p.patch
 Patch3062: 0001-netfs-Fix-netfs_read_folio-to-wait-on-writeback.patch
 Patch3063: 0002-netfilter-x_tables-add-and-use-xtables_unregister_ta.patch
+# Fixes CVE-2026-74571, CVE-2026-80580
+Patch3064: 0001-btrfs-skip-global-block-reserve-accounting-for-res.patch
+Patch3065: 0001-fbdev-bound-mode-sysfs-output-to-the-sysfs-buffer.patch

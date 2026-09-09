@@ -1,0 +1,88 @@
+From b918b9080264083dd3190c91cfff7763007e38e0 Mon Sep 17 00:00:00 2001
+From: Melbin K Mathew <mlbnkm1@gmail.com>
+Date: Thu, 2 Jul 2026 01:42:46 +0200
+Subject: [PATCH] fbdev: bound mode sysfs output to the sysfs buffer
+
+[ Upstream commit d15d51fb26e830af58f3f21964f1c09c239077ea ]
+
+mode_string() uses snprintf() which can return a value larger than the
+remaining buffer space. show_modes() accumulates the return value into i
+without checking whether i has reached PAGE_SIZE, causing the offset to
+advance past the sysfs buffer if the modelist is long enough.
+
+Add a size parameter to mode_string() and use scnprintf() to return
+only the bytes actually written. Add an early return when offset
+already exceeds the buffer. In show_modes(), stop accumulating once
+the buffer is full.
+
+Cc: stable@vger.kernel.org # v7.1+
+Signed-off-by: Melbin K Mathew <mlbnkm1@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+[ Shivani: Backported for CVE-2026-80580. Modified to apply on 6.12.y ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ drivers/video/fbdev/core/fbsysfs.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+index 10c3cfb959f4..6bbda920d924 100644
+--- a/drivers/video/fbdev/core/fbsysfs.c
++++ b/drivers/video/fbdev/core/fbsysfs.c
+@@ -32,12 +32,15 @@ static int activate(struct fb_info *fb_info, struct fb_var_screeninfo *var)
+ 	return 0;
+ }
+ 
+-static int mode_string(char *buf, unsigned int offset,
++static int mode_string(char *buf, size_t size, unsigned int offset,
+ 		       const struct fb_videomode *mode)
+ {
+ 	char m = 'U';
+ 	char v = 'p';
+ 
++	if (offset >= size)
++		return 0;
++
+ 	if (mode->flag & FB_MODE_IS_DETAILED)
+ 		m = 'D';
+ 	if (mode->flag & FB_MODE_IS_VESA)
+@@ -50,7 +53,7 @@ static int mode_string(char *buf, unsigned int offset,
+ 	if (mode->vmode & FB_VMODE_DOUBLE)
+ 		v = 'd';
+ 
+-	return snprintf(&buf[offset], PAGE_SIZE - offset, "%c:%dx%d%c-%d\n",
++	return scnprintf(&buf[offset], size - offset, "%c:%dx%d%c-%d\n",
+ 	                m, mode->xres, mode->yres, v, mode->refresh);
+ }
+ 
+@@ -69,7 +72,7 @@ static ssize_t store_mode(struct device *device, struct device_attribute *attr,
+ 
+ 	list_for_each_entry(modelist, &fb_info->modelist, list) {
+ 		mode = &modelist->mode;
+-		i = mode_string(mstr, 0, mode);
++		i = mode_string(mstr, sizeof(mstr), 0, mode);
+ 		if (strncmp(mstr, buf, max(count, i)) == 0) {
+ 
+ 			var = fb_info->var;
+@@ -91,7 +94,7 @@ static ssize_t show_mode(struct device *device, struct device_attribute *attr,
+ 	if (!fb_info->mode)
+ 		return 0;
+ 
+-	return mode_string(buf, 0, fb_info->mode);
++	return mode_string(buf, PAGE_SIZE, 0, fb_info->mode);
+ }
+ 
+ static ssize_t store_modes(struct device *device,
+@@ -141,7 +144,9 @@ static ssize_t show_modes(struct device *device, struct device_attribute *attr,
+ 	i = 0;
+ 	list_for_each_entry(modelist, &fb_info->modelist, list) {
+ 		mode = &modelist->mode;
+-		i += mode_string(buf, i, mode);
++		i += mode_string(buf, PAGE_SIZE, i, mode);
++		if (i >= PAGE_SIZE - 1)
++			break;
+ 	}
+ 	return i;
+ }
+-- 
+2.53.0
+
