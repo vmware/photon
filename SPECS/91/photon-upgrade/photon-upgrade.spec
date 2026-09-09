@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} <= 91
+
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        10.1%{?dist}
+Release:        10.2%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -58,6 +60,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Wed Sep 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-10.2
+- Fix build_if
 * Fri Sep 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-10.1
 - Sub branch for 91
 * Mon Aug 31 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-10
