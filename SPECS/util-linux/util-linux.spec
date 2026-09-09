@@ -3,7 +3,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.41.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -14,18 +14,20 @@ Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.41/%{name
 Source1: license.txt
 %include %{SOURCE1}
 
-# Fix CVE-2026-3184
-Patch0: CVE-2026-3184.patch
+Patch0: 0001-build-remove-BUILD_CORESCHED-block-from-Makemodule.a.patch
+Patch1: CVE-2026-3184.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
 
 %if 0%{?with_check}
 BuildRequires:  ncurses-terminfo
+BuildRequires:  sudo
 %endif
 
 Requires: %{name}-libs = %{version}-%{release}
 Requires: logger = %{version}-%{release}
+Requires: fsck-bin = %{version}-%{release}
 
 Conflicts: toybox < 0.8.2-2
 
@@ -35,49 +37,65 @@ and messages.
 
 %package lang
 Summary:    Additional language files for util-linux
-Group:      Applications/System
 Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of util-linux.
 
+%package docs
+Summary:    Man pages and documentation for %{name}
+Requires:   %{name} = %{version}-%{release}
+Conflicts:  %{name} < 2.41.5-3
+Conflicts:  logger < 2.41.5-3
+
+%description docs
+%{summary}
+
 %package devel
 Summary:    Header and library files for util-linux
-Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires:   pkg-config
+Conflicts:  %{name} < 2.41.5-3
+Conflicts:  logger < 2.41.5-3
+
 %description devel
 These are the header and library files of util-linux.
 
 %package libs
 Summary:    library files for util-linux
-Group:      Development/Libraries
+
 %description libs
 These are library files of util-linux.
 
 %package -n logger
 Summary:    Logger utility from util-linux
-Group:      Applications/System
 Conflicts:  %{name} < 2.38-10
 Requires:   logger-bin = %{version}-%{release}
+
 %description -n logger
 Logger utility from util-linux
 
 %package -n logger-bin
 Summary:    Logger utility binary from util-linux
-Group:      Applications/System
 Conflicts:  %{name} < 2.38-10
+
 %description -n logger-bin
 Logger utility binary from util-linux
 
+%package -n fsck-bin
+Summary:    fsck binary from %{name}
+Requires:   %{name}-libs = %{version}-%{release}
+Conflicts:  %{name} < 2.41.5-3
+
+%description -n fsck-bin
+%{summary}
+
 %prep
 %autosetup -p1
-sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
-# Do not build coresched (schedutils/coresched.c) due to license
-sed -i '/^if BUILD_CORESCHED$/,/^endif$/d' schedutils/Makemodule.am
-sed -i '/bash-completion\/coresched/d' bash-completion/Makemodule.am
 
 %build
 export GTKDOCIZE=true
+export ADJTIME_PATH=%{_sharedstatedir}/hwclock/adjtime
 autoreconf -fiv
 %configure \
     --disable-nologin \
@@ -101,9 +119,17 @@ find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check
-chown -Rv nobody .
-sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
-rm -rf %{buildroot}/lib/systemd/system
+chown -R nobody .
+# TS_OPT_lsfd_fake -> avoids hangs: requires loopback/IPv6 sockets
+# TS_OPT_column_invalid_multibyte_fake -> avoids errors: requires missing C.UTF-8 locale
+# TS_OPT_script_fake -> avoids errors: requires PTY (/dev/ptmx) access
+# TS_OPT_misc_flock_fake -> avoids hangs: fails on OverlayFS/tmpfs locks
+sudo -u nobody /bin/bash -c "
+export TS_OPT_lsfd_fake=yes
+export TS_OPT_column_invalid_multibyte_fake=yes
+export TS_OPT_script_fake=yes
+export TS_OPT_misc_flock_fake=yes
+make check %{?_smp_mflags}"
 %endif
 
 %post   -p /sbin/ldconfig
@@ -112,18 +138,12 @@ rm -rf %{buildroot}/lib/systemd/system
 %files
 %defattr(-,root,root)
 %dir %{_sharedstatedir}/hwclock
-%{_libdir}/libfdisk.so.*
-%{_libdir}/libsmartcols.so.*
+%{_libdir}/libfdisk.so.1*
+%{_libdir}/libsmartcols.so.1*
 %{_bindir}/*
-%exclude %{_bindir}/logger
 %{_sbindir}/*
-%{_mandir}/man1/*
-%exclude %{_mandir}/man1/logger.1.gz
-%{_mandir}/man5/*
-%{_mandir}/man8/*
-%{_datadir}/bash-completion/completions/*
-%exclude %{_datadir}/bash-completion/completions/logger
-%{_docdir}/%{name}/getopt*
+%exclude %{_bindir}/logger
+%exclude %{_sbindir}/fsck
 
 %files -n logger-bin
 %defattr(-,root,root)
@@ -131,14 +151,16 @@ rm -rf %{buildroot}/lib/systemd/system
 
 %files -n logger
 %defattr(-,root,root)
-%{_datadir}/bash-completion/completions/logger
-%{_mandir}/man1/logger.1.gz
+
+%files -n fsck-bin
+%defattr(-,root,root)
+%{_sbindir}/fsck
 
 %files libs
 %defattr(-,root,root)
-%{_libdir}/libblkid.so.*
-%{_libdir}/libmount.so.*
-%{_libdir}/libuuid.so.*
+%{_libdir}/libblkid.so.1*
+%{_libdir}/libmount.so.1*
+%{_libdir}/libuuid.so.1*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
@@ -148,9 +170,19 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.so
 %{_includedir}/*
-%{_mandir}/man3/*
+%{_datadir}/bash-completion/completions/*
+
+%files docs
+%defattr(-,root,root)
+%{_mandir}/*
+%{_docdir}/%{name}/getopt*
 
 %changelog
+* Wed Sep 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.41.5-3
+- Split package further
+- Ship fsck binary as a standalone package
+- Move man pages and documentation to docs sub package
+- Move bash completions to devel package
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.41.5-2
 - Extend to build for 91 and above
 * Tue Jun 30 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.41.5-1

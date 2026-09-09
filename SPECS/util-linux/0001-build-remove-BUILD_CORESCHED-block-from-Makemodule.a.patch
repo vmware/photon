@@ -1,0 +1,53 @@
+From 8784d2c6f8729afebb170808db2adaa7646fada5 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 27 Aug 2026 13:13:27 +0530
+Subject: [PATCH 2/2] build: remove BUILD_CORESCHED block from Makemodule.am
+
+Delete the conditional BUILD_CORESCHED section in
+schedutils/Makemodule.am.
+
+build: remove coresched from bash-completion build
+
+Delete the coresched completion entry from
+bash-completion/Makemodule.am.
+
+This patch is generated using following commands:
+sed -i '/^if BUILD_CORESCHED$/,/^endif$/d' schedutils/Makemodule.am
+sed -i '/bash-completion\/coresched/d' bash-completion/Makemodule.am
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ bash-completion/Makemodule.am | 1 -
+ schedutils/Makemodule.am      | 7 -------
+ 2 files changed, 8 deletions(-)
+
+diff --git a/bash-completion/Makemodule.am b/bash-completion/Makemodule.am
+index 3b75ef2..4717c07 100644
+--- a/bash-completion/Makemodule.am
++++ b/bash-completion/Makemodule.am
+@@ -22,7 +22,6 @@ if BUILD_COLUMN
+ dist_bashcompletion_DATA += bash-completion/column
+ endif
+ if BUILD_CORESCHED
+-dist_bashcompletion_DATA += bash-completion/coresched
+ endif
+ if BUILD_EXCH
+ dist_bashcompletion_DATA += bash-completion/exch
+diff --git a/schedutils/Makemodule.am b/schedutils/Makemodule.am
+index 0cb6554..e949cf0 100644
+--- a/schedutils/Makemodule.am
++++ b/schedutils/Makemodule.am
+@@ -30,10 +30,3 @@ uclampset_SOURCES = schedutils/uclampset.c schedutils/sched_attr.h
+ uclampset_LDADD = $(LDADD) libcommon.la
+ endif
+ 
+-if BUILD_CORESCHED
+-usrbin_exec_PROGRAMS += coresched
+-MANPAGES += schedutils/coresched.1
+-dist_noinst_DATA += schedutils/coresched.1.adoc
+-coresched_SOURCES = schedutils/coresched.c
+-coresched_LDADD = $(LDADD) libcommon.la
+-endif
+-- 
+2.55.0
+
