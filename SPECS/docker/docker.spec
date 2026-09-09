@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        29.5.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -59,6 +59,11 @@ Docker is an open source project to build, ship and run any application as a lig
 
 %package        engine
 Summary:        Docker Engine
+# docker-init is bind-mounted into containers and exec'd as PID 1 there, so it
+# must not depend on the container's libc. The dependency is versioned because
+# tini-static first appears in tini-0.19.0-3; an unversioned one would let an
+# older tini satisfy it and leave /usr/bin/docker-init dangling.
+Requires:       tini-static >= 0.19.0-3
 Requires:       libapparmor
 Requires:       libseccomp
 Requires:       libltdl
@@ -191,7 +196,7 @@ install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd %{b
 install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 
 # install tini
-ln -srv %{buildroot}%{_bindir}/tini %{buildroot}%{_bindir}/docker-init
+ln -srv %{buildroot}%{_bindir}/tini-static %{buildroot}%{_bindir}/docker-init
 
 # add init scripts
 install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/docker.service
@@ -291,6 +296,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Sep 01 2026 Daniel Casota <dcasota@gmail.com> 29.5.3-3
+- Point docker-init at tini-static so --init works in non-glibc containers
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.5.3-2
 - Remove unnecessary requires
 - Don't delete group post uninstall
