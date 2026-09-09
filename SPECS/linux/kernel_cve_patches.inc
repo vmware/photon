@@ -84,3 +84,9 @@ Patch3063: 0002-netfilter-x_tables-add-and-use-xtables_unregister_ta.patch
 # Fixes CVE-2026-74571, CVE-2026-80580
 Patch3064: 0001-btrfs-skip-global-block-reserve-accounting-for-res.patch
 Patch3065: 0001-fbdev-bound-mode-sysfs-output-to-the-sysfs-buffer.patch
+# Fixes CVE-2026-68399, CVE-2026-68404, CVE-2026-68409, CVE-2026-68441, CVE-2026-68447, CVE-2026-74571
+Patch3066: 0001-CVE-2026-68399-bpf-Fix-UAF-in-sock-clone-early-bailo.patch
+Patch3067: 0001-CVE-2026-68404-wifi-cfg80211-use-wiphy-work-for-sock.patch
+Patch3068: 0001-CVE-2026-68409-wifi-mac80211-defer-link-RX-stats-per.patch
+Patch3069: 0001-CVE-2026-68441-net-sched-Handle-TC_ACT_REDIRECT-from.patch
+Patch3070: 0001-CVE-2026-68447-drm-amdkfd-clamp-v9-CRIU-control-stac.patch
