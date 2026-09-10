@@ -10,8 +10,8 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.116
-Release:        3%{?dist}
+Version:        9.0.121
+Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -147,6 +147,9 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Thu Sep 10 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.121-1
+- Version upgrade
+- Fixes multiple CVEs
 * Fri Mar 27 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.0.116-3
 - Require alternatives instead of chkconfig
 * Fri Mar 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.116-2
