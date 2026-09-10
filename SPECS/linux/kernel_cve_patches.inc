@@ -92,3 +92,6 @@ Patch3070: 0001-CVE-2026-68447-drm-amdkfd-clamp-v9-CRIU-control-stac.patch
 # Fixes CVE-2026-74605, CVE-2026-74611
 Patch3071: 0001-eventfs-Use-children-field-for-rcu-head-and-add-memo.patch
 Patch3072: 0002-tls-rx-restore-msg_iter-before-TLS-1.3-optimistic-re.patch
+# Fixes CVE-2026-80785
+Patch3073: 0001-fbdev-Wrap-user-invoked-calls-to-fb_set_var-in-helpe.patch
+Patch3074: 0002-fbdev-serialize-mode-sysfs-access-with-lock_fb_info.patch

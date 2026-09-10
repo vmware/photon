@@ -1,0 +1,140 @@
+From 34312b027085543bfc495605c4deb0a85dce2056 Mon Sep 17 00:00:00 2001
+From: Melbin K Mathew <mlbnkm1@gmail.com>
+Date: Thu, 2 Jul 2026 01:42:48 +0200
+Subject: [PATCH 2/2] fbdev: serialize mode sysfs access with lock_fb_info()
+
+[ Upstream commit 061db6b7a910b8378f3b2df64f8c0a3ddc6e85f2 ]
+
+show_mode(), show_modes(), and store_mode() access fb_info->modelist
+and fb_info->mode without holding lock_fb_info(). store_modes() takes
+lock_fb_info() while replacing the modelist and freeing the old one.
+
+A concurrent reader or writer can load a pointer to an old modelist
+entry before store_modes() frees it, then dereference freed memory or
+store a stale freed pointer in fb_info->mode.
+
+Take lock_fb_info() in show_mode(), show_modes(), and store_mode() to
+serialize with store_modes(). In show_mode(), copy the mode to the
+stack and format after dropping the lock. In store_mode(), split
+activate() into a _locked variant to avoid double-locking, and hold
+the locks for the modelist walk, mode conversion, activation, and
+fb_info->mode assignment together.
+
+Cc: stable@vger.kernel.org # v7.1+
+Signed-off-by: Melbin K Mathew <mlbnkm1@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ drivers/video/fbdev/core/fbsysfs.c | 46 ++++++++++++++++++++++++------
+ 1 file changed, 38 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+index 0387f448918d..b5c8424c5082 100644
+--- a/drivers/video/fbdev/core/fbsysfs.c
++++ b/drivers/video/fbdev/core/fbsysfs.c
+@@ -15,19 +15,24 @@
+ 
+ #define FB_SYSFS_FLAG_ATTR 1
+ 
++static int activate_locked(struct fb_info *fb_info,
++			    struct fb_var_screeninfo *var)
++{
++	var->activate |= FB_ACTIVATE_FORCE;
++	return fb_set_var_from_user(fb_info, var);
++}
++
+ static int activate(struct fb_info *fb_info, struct fb_var_screeninfo *var)
+ {
+ 	int err;
+ 
+-	var->activate |= FB_ACTIVATE_FORCE;
+ 	console_lock();
+ 	lock_fb_info(fb_info);
+-	err = fb_set_var_from_user(fb_info, var);
++	err = activate_locked(fb_info, var);
+ 	unlock_fb_info(fb_info);
+ 	console_unlock();
+-	if (err)
+-		return err;
+-	return 0;
++
++	return err;
+ }
+ 
+ static int mode_string(char *buf, size_t size, unsigned int offset,
+@@ -68,6 +73,9 @@ static ssize_t store_mode(struct device *device, struct device_attribute *attr,
+ 
+ 	memset(&var, 0, sizeof(var));
+ 
++	console_lock();
++	lock_fb_info(fb_info);
++
+ 	list_for_each_entry(modelist, &fb_info->modelist, list) {
+ 		mode = &modelist->mode;
+ 		i = mode_string(mstr, sizeof(mstr), 0, mode);
+@@ -75,12 +83,22 @@ static ssize_t store_mode(struct device *device, struct device_attribute *attr,
+ 
+ 			var = fb_info->var;
+ 			fb_videomode_to_var(&var, mode);
+-			if ((err = activate(fb_info, &var)))
++			err = activate_locked(fb_info, &var);
++			if (err) {
++				unlock_fb_info(fb_info);
++				console_unlock();
+ 				return err;
++			}
+ 			fb_info->mode = mode;
++			unlock_fb_info(fb_info);
++			console_unlock();
+ 			return count;
+ 		}
+ 	}
++
++	unlock_fb_info(fb_info);
++	console_unlock();
++
+ 	return -EINVAL;
+ }
+ 
+@@ -88,11 +106,20 @@ static ssize_t show_mode(struct device *device, struct device_attribute *attr,
+ 			 char *buf)
+ {
+ 	struct fb_info *fb_info = dev_get_drvdata(device);
++	struct fb_videomode mode;
++	bool have_mode = false;
+ 
+-	if (!fb_info->mode)
++	lock_fb_info(fb_info);
++	if (fb_info->mode) {
++		mode = *fb_info->mode;
++		have_mode = true;
++	}
++	unlock_fb_info(fb_info);
++
++	if (!have_mode)
+ 		return 0;
+ 
+-	return mode_string(buf, PAGE_SIZE, 0, fb_info->mode);
++	return mode_string(buf, PAGE_SIZE, 0, &mode);
+ }
+ 
+ static ssize_t store_modes(struct device *device,
+@@ -140,12 +167,15 @@ static ssize_t show_modes(struct device *device, struct device_attribute *attr,
+ 	const struct fb_videomode *mode;
+ 
+ 	i = 0;
++	lock_fb_info(fb_info);
+ 	list_for_each_entry(modelist, &fb_info->modelist, list) {
+ 		mode = &modelist->mode;
+ 		i += mode_string(buf, PAGE_SIZE, i, mode);
+ 		if (i >= PAGE_SIZE - 1)
+ 			break;
+ 	}
++	unlock_fb_info(fb_info);
++
+ 	return i;
+ }
+ 
+-- 
+2.43.7
+
