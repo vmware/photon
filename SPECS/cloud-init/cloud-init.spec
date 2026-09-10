@@ -9,7 +9,7 @@
 
 Name:           cloud-init
 Version:        26.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -36,6 +36,8 @@ Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
 Patch7: 0008-No-single-process.patch
 Patch8: 0009-Show-stdout-logs-in-journal-only.patch
 Patch9: 0010-Drop-mandatory-configobj-dependency.patch
+Patch10: 0011-generator-photon-uses-libexecdir.patch
+Patch11: 0012-photon-usr-lib-exec-is-libexecdir.patch
 
 BuildRequires: meson
 BuildRequires: bash-completion-devel
@@ -167,6 +169,9 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Thu Sep 10 2026 Daniel Casota <dcasota@gmail.com> 26.2-3
+- Fix generator looking for ds-identify under /usr/lib not /usr/libexec
+- Set usr_lib_exec to /usr/libexec so helper lookups resolve
 * Tue Sep 01 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.2-2
 - Remove python3-configobj dependency
 * Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-1
