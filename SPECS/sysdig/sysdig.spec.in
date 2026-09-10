@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global security_hardening      none
 %define uname_r                 %{KERNEL_VERSION}-%{KERNEL_RELEASE}
@@ -15,7 +15,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.39.0
-Release:        4%{?kernelsubrelease}%{?dist}
+Release:        5%{?kernelsubrelease}%{?dist}
 URL:            http://www.sysdig.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -184,6 +184,8 @@ rm -rf %{buildroot}/*
 %{_modulesdir}/extra/scap.ko.xz
 
 %changelog
+* Tue Sep 01 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.39.0-5
+- Extend release to 91
 * Mon Jul 27 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.39.0-4
 - Convert to a .spec.in template so sysdig is built against every active
   kernel (v6.1 and v6.12) in subrelease 92 instead of only one
