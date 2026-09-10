@@ -3,7 +3,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Thu Sep 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-12
+- Add python3-configobj to deprecated package list
 * Fri Sep 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-11
 - Add perl-WWW-Curl, rpcsvc-proto to deprecated package list
 * Mon Aug 31 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-10
