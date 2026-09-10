@@ -2,8 +2,8 @@
 
 Summary:        Ruby
 Name:           ruby
-Version:        4.0.5
-Release:        2%{?dist}
+Version:        4.0.6
+Release:        1%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -15,6 +15,8 @@ Source1:        macros.ruby
 
 Source3: license.txt
 %include %{SOURCE3}
+
+Patch0:         CVE-2026-33210.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -109,6 +111,9 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Thu Sep 10 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.6-1
+- Upgrade to ruby 4.0.6 to fix CVE-2026-42257, CVE-2026-42245, CVE-2026-42246
+- Added patch file for CVE-2026-33210
 * Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.0.5-2
 - Move headers, unversioned .so, and pkgconfig .pc files to -devel subpackage
 * Mon Jun 15 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.5-1

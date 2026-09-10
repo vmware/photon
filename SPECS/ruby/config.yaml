@@ -1,9 +1,9 @@
 sources:
-- archive: ruby-4.0.5.tar.gz
-  archive_sha512sum: ce50c8dda1479f5a84771df37cdb23f0183bba900494e7492bb90d4b0a3e60ff28b799f3c469977f5f7c1335a6c1f3400a9ca52cd4acfcbed08f016d352943f4
+- archive: ruby-4.0.6.tar.gz
+  archive_sha512sum: 0c050ac9b806facb1e1ec1f6a8def7fc33cf1ccfb57a502b1fc467e76e534e7eaf60297fb08e35e89c8727510903f48c73ccc8f9888a017cd6032379e84ed83e
   license_manual_review:
   - file_paths:
-    - ruby-4.0.5/lib/rubygems/util/licenses.rb
+    - ruby-4.0.6/lib/rubygems/util/licenses.rb
     sha256sum: 61988fbc87fb4a8aef2255bec853ef7ea0f7cd8619f456324fa64ef627147df0
     spdx_exp: BSD-2-Clause
   skip_validation: true
