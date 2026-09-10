@@ -1,6 +1,6 @@
 sources:
-- archive: libedit-20260512-3.1.tar.gz
-  archive_sha512sum: 8d6d04f4d50e7f30bf426b009454400d3ad9a840ddf075cc5eabd9a551f325f923c02d56d7b4535820a613ff01c5f77074b6df9e8e83a1f6bb4124dd87133623
+- archive: libedit-20221030-3.1.tar.gz
+  archive_sha512sum: 41eb46feaffa909e8790b9a9e304d5246e82ab366721196126a923d68b4d4964d0a433fe238f9d5e0a00aefb5c8cb66132150792929a793785ad091d91016f97
   skip_validation: true
   spdx:
     package:

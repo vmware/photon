@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 90
 
 %define libedit_version 3.1
-%define libedit_release 20260512
+%define libedit_release 20221030
 
 Summary:        The NetBSD Editline library
 Name:           libedit
-Version:        3.1.20260512
-Release:        1%{?dist}
+Version:        3.1.20221030
+Release:        4.1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.thrysoee.dk/editline
@@ -65,8 +65,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-* Thu Sep 10 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.20260512-1
-- Upgrade to 20260512 version
+* Thu Sep 10 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.1.20221030-4.1
+- Bump version after moving to SPECS/90
 * Tue Aug 26 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.1.20221030-4
 - Bump version as a part of ncurses upgrade
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 3.1.20221030-3
