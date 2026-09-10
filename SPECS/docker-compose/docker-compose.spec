@@ -5,7 +5,7 @@
 %define plugins_dir     %{_libexecdir}/docker/cli-plugins
 
 Name:           docker-compose
-Version:        5.1.4
+Version:        5.5.1
 Release:        1%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
@@ -59,6 +59,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Thu Sep 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.5.1-1
+- Upgrade to v5.5.1
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.1.4-1
 - Upgrade to v5.1.4
 - CVE-2026-33186 included upstream

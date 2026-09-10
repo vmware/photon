@@ -5,16 +5,16 @@
 %define __os_install_post %{nil}
 
 # Must be in sync with package version
-%define DOCKER_ENGINE_GITCOMMIT 285b471
-%define DOCKER_CLI_GITCOMMIT d1c06ef
+%define DOCKER_ENGINE_GITCOMMIT 3ce5872
+%define DOCKER_CLI_GITCOMMIT 88096ef
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
 
 Summary:        Docker
 Name:           docker
-Version:        29.5.3
-Release:        2%{?dist}
+Version:        29.8.0
+Release:        1%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -291,6 +291,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Sep 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.8.0-1
+- Upgrade to v29.8.0
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.5.3-2
 - Remove unnecessary requires
 - Don't delete group post uninstall

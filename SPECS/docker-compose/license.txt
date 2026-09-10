@@ -1,1 +1,1 @@
-License: TMate AND Apache-2.0 AND MIT
+License: Apache-2.0 AND MIT AND TMate

@@ -1,12 +1,12 @@
 sources:
-- archive: docker-compose-5.1.4.tar.gz
+- archive: docker-compose-5.5.1.tar.gz
   archive_type: upstream
-  archive_sha512sum: b9cc1c74251f97b4eef6448f66e58613c3b22b683ea92bebb6d8279b00739c285170d6cdc059e7341cb419c197b47958c6ad446ca763c93121ee524e57412a68
-  version: 5.1.4
-  name: compose-5.1.4
-  url: https://github.com/docker/compose/archive/refs/tags/v5.1.4.tar.gz
+  archive_sha512sum: 477025f5a18c7d281a774007f01065128e90ab5cae7340daf98913dd1f44854882db5d9f808ef425c15e861e96be9bbb8a4516af3c39d3aa82eb04b284f6bfe3
+  version: 5.5.1
+  name: compose-5.5.1
+  url: https://github.com/docker/compose/archive/refs/tags/v5.5.1.tar.gz
   repo_url: https://github.com/docker/compose
-  commit_id: 4732a2ed20a49c43a7b44bb4928259162c3ae3be
+  commit_id: 5f94fb0aa42a2cd1248c6e6c7fafb87546b9c8de
   skip_list: []
   missing: []
   skip_validation: false
