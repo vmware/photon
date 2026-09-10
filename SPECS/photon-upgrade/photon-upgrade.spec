@@ -1,7 +1,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{_libdir}/*
 
 %changelog
+* Thu Sep 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-7
+- Add python3-configobj to 92 deprecated package list
 * Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2-6
 - Add --subrelease option; default to 91
 - Add ph4-to-ph5-{90,91,92}-deprecated-pkgs.txt
