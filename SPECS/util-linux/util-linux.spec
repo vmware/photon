@@ -3,7 +3,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.41.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -14,8 +14,7 @@ Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.41/%{name
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: 0001-build-remove-BUILD_CORESCHED-block-from-Makemodule.a.patch
-Patch1: CVE-2026-3184.patch
+Patch0: CVE-2026-3184.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -142,6 +141,8 @@ make check %{?_smp_mflags}"
 %{_libdir}/libsmartcols.so.1*
 %{_bindir}/*
 %{_sbindir}/*
+# exclude coresched (license issue)
+%exclude %{_bindir}/coresched
 %exclude %{_bindir}/logger
 %exclude %{_sbindir}/fsck
 
@@ -178,6 +179,8 @@ make check %{?_smp_mflags}"
 %{_docdir}/%{name}/getopt*
 
 %changelog
+* Thu Sep 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.41.5-4
+- Exclude coresched from packaging
 * Wed Sep 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.41.5-3
 - Split package further
 - Ship fsck binary as a standalone package
