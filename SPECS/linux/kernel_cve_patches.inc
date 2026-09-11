@@ -35,7 +35,6 @@ Patch3022: 0001-netfilter-bridge-eb_tables-close-module-init-race.patch
 Patch3023: 0001-netfilter-ebtables-move-to-two-stage-removal-scheme.patch
 Patch3024: 0001-scsi-qla2xxx-Clear-cmds-after-chip-reset.patch
 # Fixes CVE-2026-52988, CVE-2026-52991, CVE-2026-53089, CVE-2026-53091
-Patch3025: 0001-bpf-Fix-use-after-free-in-offloaded-map-prog-info-fi.patch
 Patch3026: 0001-cgroup-psi-Set-of-priv-to-NULL-upon-file-release.patch
 Patch3027: 0001-rculist-add-list_splice_rcu-for-private-lists.patch
 Patch3028: 0002-netfilter-nf_tables-join-hook-list-via-splice_list_r.patch
