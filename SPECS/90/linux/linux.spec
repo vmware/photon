@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.183
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -145,9 +145,6 @@ Source53: config_x86_64_acvp
 Source54: check_for_acvp_config_applicability.inc
 %endif
 
-# glibc-2.43 build error fixes
-Source55: glibc-2.43-build-error-fix.patches
-
 Source100: Makefile.viomem
 Source101: viomem.c
 Source102: kernel_cve_patches.inc
@@ -226,6 +223,11 @@ Patch101: seccomp-release-task-filters-when-the-task-exits.patch
 
 # CVE patches — see kernel_cve_patches.inc (range 3000–3999)
 %include %{SOURCE102}
+
+# perf: off-cpu sample [221..223]
+Patch221: 0001-perf-core-add-logic-to-collect-off-cpu-sample.patch
+Patch222: 0002-perf-record-add-options-to-off-cpu.patch
+Patch223: 0003-perf-display-off-cpu-samples.patch
 
 %ifarch aarch64
 # aarch specific patches [250..269]
@@ -408,8 +410,12 @@ BuildRequires:  elfutils-libelf-devel
 BuildRequires:  binutils-devel
 BuildRequires:  xz-devel
 BuildRequires:  slang-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  cmake
 BuildRequires:  bison
+BuildRequires:  flex
+BuildRequires:  perl
 BuildRequires:  dwarves-devel
 BuildRequires:  which
 BuildRequires:  gmp-devel
@@ -489,6 +495,39 @@ Requires:      %{name} = %{version}-%{release}
 The kernel fips-canister
 %endif
 
+%package tools
+Summary:        Linux kernel userspace tools including perf, turbostat, cpupower and bpftool
+Requires:       audit
+Requires:       elfutils-libelf
+Requires:       binutils-libs
+Requires:       xz-libs
+Requires:       slang
+Requires:       python3
+Requires:       traceevent-plugins
+%ifarch x86_64
+Requires:       pciutils
+%endif
+Requires:       linux-python3-perf = %{version}-%{release}
+Requires:       bpftool = %{version}-%{release}
+
+%description tools
+Linux kernel userspace tools including perf, turbostat, cpupower and bpftool.
+
+%package python3-perf
+Summary:        Python bindings for perf
+Requires:       %{name}-tools = %{version}-%{release}
+Requires:       python3
+
+%description python3-perf
+Python bindings for perf events.
+
+%package -n bpftool
+Summary:        eBPF inspection tool
+Requires:       %{name}-tools = %{version}-%{release}
+
+%description -n bpftool
+bpftool for inspecting and manipulating eBPF programs and maps.
+
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
@@ -567,6 +606,9 @@ The kernel fips-canister
 
 # Report guest crash to vmware hypervisor
 %autopatch -p1 -m1000 -M1001
+
+# perf: off-cpu sample
+%autopatch -p1 -m221 -M223
 
 # Patches for efa driver
 pushd ../amzn-drivers-efa_linux_%{efa_version}
@@ -715,6 +757,22 @@ popd
 %include %{SOURCE50}
 %endif
 
+%ifarch aarch64
+ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
+%endif
+ARCH_FLAGS="${ARCH_FLAGS} EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
+
+%make_build ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
+
+tools/perf/perf -vv | grep libunwind | grep OFF
+tools/perf/perf -vv | grep dwarf | grep on
+
+%ifarch x86_64
+%make_build ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
+%endif
+
+%make_build install -C tools/bpf/bpftool prefix=%{_prefix}
+
 %install
 %if 0%{?canister_build}
 install -vdm 755 %{buildroot}%{_libdir}/fips-canister/
@@ -823,6 +881,25 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE19} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
 
+%ifarch aarch64
+ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
+%endif
+ARCH_FLAGS="${ARCH_FLAGS} EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
+
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+     prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
+
+%make_build -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
+     prefix=%{_prefix} PYTHON=python3 install-python_ext
+
+%ifarch x86_64
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+      prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
+%endif
+
+%make_build install -C tools/bpf/bpftool \
+      prefix=%{_prefix} DESTDIR=%{buildroot}
+
 %include %{SOURCE2}
 %include %{SOURCE6}
 %include %{SOURCE18}
@@ -880,7 +957,46 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/fips-canister/*
 %endif
 
+%files tools
+%defattr(-,root,root)
+%ifarch x86_64
+%exclude %{_lib64}/traceevent
+%endif
+%ifarch aarch64
+%exclude %{_libdir}/traceevent
+%endif
+%{_bindir}/*
+%{_sysconfdir}/bash_completion.d/perf
+%{_libexecdir}/perf-core
+%{_docdir}/perf-tip
+%{_libdir}/perf/examples/bpf/*
+%{_libdir}/perf/include/bpf/*
+%{_includedir}/perf/*
+%ifarch x86_64
+%{_mandir}/*
+%{_datadir}/perf-core
+%{_includedir}/cpufreq.h
+%{_includedir}/cpuidle.h
+%{_lib64dir}/libcpupower.so*
+%{_docdir}/packages/cpupower
+%{_datadir}/bash-completion/completions/cpupower
+%config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
+%{_sbindir}/cpufreq-bench
+%{_datadir}/locale/*/LC_MESSAGES/cpupower.mo
+%endif
+
+%files python3-perf
+%defattr(-,root,root)
+%{python3_sitelib}/*
+
+%files -n bpftool
+%defattr(-,root,root)
+%{_sbindir}/bpftool
+%{_datadir}/bash-completion/completions/bpftool
+
 %changelog
+* Fri Sep 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.183-2
+- Club linux-tools.spec into linux.spec
 * Fri Aug 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.183-1
 - Update to version 6.1.183
 - Fix BPF JIT memory (bpf_jit_limit) leak from seccomp filters pinned by unreaped zombies
