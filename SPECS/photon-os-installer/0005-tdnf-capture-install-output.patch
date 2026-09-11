@@ -1,0 +1,44 @@
+From 43ea3a467cfc4c4abb2690e17fe3ab5e619f19cf Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Thu, 4 Jun 2026 22:05:37 +0200
+Subject: [PATCH] tdnf: capture install output so it doesn't overlay the curses
+ UI
+
+execute(do_json=False) used subprocess.check_call(), inheriting the
+installer's stdout/stderr. During a UI install that overlays the curses
+progress bar with tdnf/rpm messages (e.g. file paths like /etc/os-release).
+Capture the output and send it to the log instead.
+
+Co-Authored-By: Daniel Casota <dcasota@gmail.com>
+---
+ photon_installer/tdnf.py | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/photon_installer/tdnf.py b/photon_installer/tdnf.py
+index 8d98b8e..567dd61 100644
+--- a/photon_installer/tdnf.py
++++ b/photon_installer/tdnf.py
+@@ -177,7 +177,19 @@ class Tdnf:
+ 
+             return retval, out_json
+         else:
+-            return subprocess.check_call(args)
++            # Capture output and route it to the log instead of inheriting the
++            # parent's stdout/stderr. During a UI (curses) install the latter
++            # overlays the progress bar with tdnf/rpm messages such as file
++            # paths (e.g. /etc/os-release).
++            process = subprocess.Popen(
++                args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
++            )
++            for line in process.stdout:
++                self.logger.info(line.decode('utf-8', errors='replace').rstrip())
++            retval = process.wait()
++            if retval != 0:
++                raise subprocess.CalledProcessError(retval, args)
++            return retval
+ 
+     def run(self, args=None, do_json=True):
+         # Fix mutable default arguments issue
+-- 
+2.43.7
+

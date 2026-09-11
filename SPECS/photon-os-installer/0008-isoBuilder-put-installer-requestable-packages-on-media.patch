@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Mon, 31 Aug 2026 00:00:00 +0000
+Subject: [PATCH] isoBuilder: put installer-requestable packages on the media
+
+The media must be able to satisfy what the installer can request at
+install time. It could not: selecting "Apply STIG hardening" in the
+installer asks for the STIG package set, and if those RPMs are not in the
+ISO's own RPMS/ the install aborts with
+
+  Error(1011) : No matching packages
+
+KS_STIG_PACKAGES in stigenable.py is the installer's own declaration of
+what that option installs, so import it rather than restating those names
+in a package list file. Restating them is how the media and the installer
+drifted apart in the first place, leaving the STIG menu offering an option
+the media could not honour. The import is local because stigenable pulls
+in the curses UI modules, which need not become a module-level dependency
+of the ISO builder.
+
+Packages named via --initrd-pkgs were also never added to this download
+list - only the list *file* was parsed - so they could not be installed
+into the initrd from the ISO's own RPMS/ either.
+
+Both additions go to the ISO's RPMS/ only, not into self.initrd_pkgs, so
+the initrd does not grow.
+
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
+---
+diff --git a/photon_installer/isoBuilder.py b/photon_installer/isoBuilder.py
+index 6aed7e0..ed23a5f 100755
+--- a/photon_installer/isoBuilder.py
++++ b/photon_installer/isoBuilder.py
+@@ -195,6 +195,22 @@ class IsoBuilder(object):
+         # Add installer initrd and custom packages to package list..
+         self.addPkgsToList(self.initrd_pkg_list_file)
+         self.addPkgsToList(self.packageslist_file)
++        # The media must be able to satisfy what the installer can request at
++        # install time. KS_STIG_PACKAGES is the installer's own declaration of
++        # what "Apply STIG hardening" installs, so import it rather than
++        # restating those names in a package list file -- restating them is how
++        # the media and the installer drifted apart, leaving the STIG menu
++        # offering an option the media could not honour ("Error(1011) : No
++        # matching packages"). Imported locally: stigenable pulls in the curses
++        # UI modules, which need not be a module-level dependency of the ISO
++        # builder. These go to the ISO's RPMS/ only, not into self.initrd_pkgs,
++        # so the initrd does not grow.
++        from stigenable import KS_STIG_PACKAGES
++        self.pkg_list.extend(KS_STIG_PACKAGES)
++        # Packages named via --initrd-pkgs never reached this download list
++        # (only the list *file* was parsed above), so they could not be
++        # installed into the initrd from the ISO's own RPMS/ either.
++        self.pkg_list.extend(self.initrd_pkgs)
+ 
+         linux_flavors = [
+             "linux",
