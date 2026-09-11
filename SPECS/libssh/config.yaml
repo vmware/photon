@@ -1,12 +1,12 @@
 sources:
-- archive: libssh-0.11.4.tar.xz
-  archive_sha512sum: 55f315fafb7c545c8ad9b1e6a4d9d5b7aadfbbd782dfd1919699deed1089ff05506b66b047e395062f010c299ad44ce71d20384288444ed202a9a5abfc34b495
+- archive: libssh-0.11.5.tar.xz
+  archive_sha512sum: 9cf40f1bbf072d5e176289b7aee0bb498a17dfff932a2197da00872959fa59a134890e81decd66f419ac1382e44a5d32546fe0b191f975af96db21d6de953faf
   archive_type: upstream
-  name: libssh-0.11.4
-  version: 0.11.4
+  name: libssh-0.11.5
+  version: 0.11.5
   repo_url: https://git.libssh.org/projects/libssh.git
-  commit_id: 46accf06695b1dd13a47d3382dc38d99c66b53fb
-  url: https://git.libssh.org/projects/libssh.git/snapshot/libssh-0.11.4.tar.xz
+  commit_id: a09fdd00416e53b6ed436df6ff14339a4f884601
+  url: https://git.libssh.org/projects/libssh.git/snapshot/libssh-0.11.5.tar.xz
   skip_list: []
   missing: []
   spdx:

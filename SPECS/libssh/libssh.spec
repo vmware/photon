@@ -1,6 +1,6 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
-Version:        0.11.4
+Version:        0.11.5
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -110,6 +110,10 @@ install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/%{name}_server.confi
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}_server.config
 
 %changelog
+* Fri Sep 11 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 0.11.5-1
+- Upgrade to v0.11.5 to fix CVE-2026-15370, CVE-2026-59843, CVE-2026-59844,
+  CVE-2026-59845, CVE-2026-59846, CVE-2026-59847, CVE-2026-59848, CVE-2026-59849,
+  CVE-2026-59850
 * Wed Mar 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.11.4-1
 - Upgrade to v0.11.4 to address security issues
 * Thu Aug 07 2025 Mukul Sikka <mukul.sikka@broadcom.com> 0.11.2-1
