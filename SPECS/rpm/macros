@@ -31,3 +31,10 @@
 
 # Treat scriptlet errors as non fatal by default
 %_fail_on_scriptlet_errors 0
+
+%_embed_rpmbuild_args       1
+%_embed_pkglist_in_srpm     1
+%_embed_rpmbuild_env_vars   1
+%_buildenv_vars_file        /etc/rpm/buildenv-allowlist
+#%%_gcc_specs_path            %{_libdir}/gcc/%{_host_cpu}-unknown-linux-gnu/specs
+#%%_run_custom_script       <path>

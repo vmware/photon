@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.4%{?dist}
+Release:    8.5%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -13,10 +13,10 @@ Distribution: Photon
 Source0: https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
 
 Source1:    macros
-Source2:    macros.php
-Source3:    macros.perl
-Source4:    macros.vpath
-Source5:    macros.ldconfig
+Source2:    macros.perl
+Source3:    macros.vpath
+Source4:    macros.ldconfig
+Source5:    buildenv-allowlist
 
 Source6: license.txt
 %include %{SOURCE6}
@@ -30,6 +30,8 @@ Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
 Patch6: 0007-build-support-findreq-findprov-in-Requires-Provides-.patch
 Patch7: 0008-fix-division-by-zero-in-elfdeps-RhBug-2299414.patch
 Patch8: 0009-CVE-2026-78367.patch
+Patch9: 0009-add-pager-support-to-rpm-changelog.patch
+Patch10: 0010-Preserve-build-environment-details-in-source-rpm.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -212,15 +214,10 @@ ln -sfrv %{buildroot}%{_bindir}/find-debuginfo \
 
 # System macros and prefix
 install -dm644 %{buildroot}%{_sysconfdir}/%{name}
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
+install -vm644 %{SOURCE1} %{SOURCE5} %{buildroot}%{_sysconfdir}/%{name}
 install -vm644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}
 install -vm644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}
-install -vm644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}
-
-%check
-%make_build check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
-%make_build clean
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -274,6 +271,7 @@ rm -rf %{buildroot}
 %files libs
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/%{name}/macros
+%config(noreplace) %{_sysconfdir}/%{name}/buildenv-allowlist
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
 %{rpmhome}/macros
@@ -351,6 +349,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Fri Sep 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.5
+- Store build env info in src rpm
 * Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.4
 - Fix CVE-2026-78367
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.3

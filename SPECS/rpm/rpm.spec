@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.1.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -18,6 +18,7 @@ Source3:    macros.vpath
 Source4:    macros.ldconfig
 
 Source5: license.txt
+Source6: buildenv-allowlist
 %include %{SOURCE5}
 
 Patch0: 0001-This-patch-fixes-a-warning-that-is-shown-upon-every-.patch
@@ -33,6 +34,8 @@ Patch9: 0010-rpm-6.0-vfylevel.patch
 Patch10: 0011-dilute-user-group-requires.patch
 Patch11: 0012-Treat-scriptlet-failures-as-non-fatal-by-default.patch
 Patch12: 0013-CVE-2026-78367.patch
+Patch13: 0013-Preserve-build-environment-details-in-source-rpm.patch
+Patch14: 0014-add-pager-support-to-rpm-changelog.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -213,7 +216,7 @@ ln -sfrv %{buildroot}%{_bindir}/find-debuginfo \
 
 # System macros and prefix
 install -dm644 %{buildroot}%{_sysconfdir}/%{name}
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}
+install -vm644 %{SOURCE1} %{SOURCE6} %{buildroot}%{_sysconfdir}/%{name}
 install -vm644 %{SOURCE2} %{SOURCE3} %{SOURCE4} %{buildroot}%{_rpmmacrodir}
 
 %clean
@@ -271,6 +274,7 @@ rm -rf %{buildroot}
 %files libs
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/%{name}/macros
+%config(noreplace) %{_sysconfdir}/%{name}/buildenv-allowlist
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
 %{rpmhome}/macros
@@ -360,6 +364,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Fri Sep 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-3
+- Store build env info in src rpm
 * Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-2
 - Fix CVE-2026-78367
 * Fri Aug 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-1

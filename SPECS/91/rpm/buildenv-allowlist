@@ -1,0 +1,54 @@
+# Build environment variable allowlist for RPM build capture.
+# Variables listed here are captured when %_embed_rpmbuild_env_vars is enabled.
+# Add or remove entries as needed. Lines starting with # are comments.
+
+# Compiler toolchain
+CC
+CXX
+CPP
+AR
+AS
+LD
+NM
+RANLIB
+OBJCOPY
+STRIP
+ADDR2LINE
+READELF
+
+# Compiler and linker flags
+CFLAGS
+CXXFLAGS
+CPPFLAGS
+LDFLAGS
+ASFLAGS
+
+# Build system
+MAKEFLAGS
+MAKE
+JOBS
+
+# Locale
+LANG
+LC_ALL
+LC_CTYPE
+LC_MESSAGES
+LC_COLLATE
+
+# System paths
+PATH
+
+# RPM build variables
+RPM_ARCH
+RPM_OS
+RPM_PACKAGE_NAME
+RPM_PACKAGE_VERSION
+RPM_PACKAGE_RELEASE
+RPM_BUILD_ROOT
+RPM_BUILD_DIR
+RPM_BUILD_TIME
+
+# Host
+TERM
+HOME
+SHELL

@@ -1,0 +1,380 @@
+From fe3d99eda1d0598f308302a1a4d1954a8752641d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 24 Jul 2026 13:49:52 +0530
+Subject: [PATCH] Preserve build environment details in source rpm
+
+Currently rpm build does not store the details of build host while
+building a package, example: list of installed packages, macros that get
+enabled during build based on args passed to rpmbuild command and any
+other info if package maintainers want to embed in rpm and use it at a
+later point. This can be done by patching spec files further and
+explicitly adding these info to rpm or src rpm which can be used in
+further but there is no generic solution to achieve this.
+
+This is particularly helpful while building a kernel live patch like
+deliverable which usually happens several months or years after a kernel
+release.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ build/files.c             |  31 ++++++
+ build/pack.c              | 225 ++++++++++++++++++++++++++++++++++++++
+ build/rpmbuild_internal.h |   2 +
+ 3 files changed, 258 insertions(+)
+
+diff --git a/build/files.c b/build/files.c
+index 1df854a9e..5b29a47b5 100644
+--- a/build/files.c
++++ b/build/files.c
+@@ -2722,7 +2722,38 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
+-    fl.files.alloced = spec->numSources + 1;
++    fl.files.alloced = spec->numSources + 6;
+     fl.files.recs = xcalloc(fl.files.alloced, sizeof(*fl.files.recs));
+     fl.pkgFlags = pkgFlags;
+ 
++    /* Capture build environment details and add them to the source rpm */
++    {
++        char *sourcesPath = rpmExpand("%{_sourcedir}", NULL);
++        char *destdir = rpmGetPath(sourcesPath, "/BUILD_ENV", NULL);
++
++        if (rpmMkdirs(NULL, destdir) == 0) {
++            captureBuildEnvironment(destdir);
++
++            const char *buildenvfiles[] = {
++                "rpmbuild-args.txt",
++                "env-vars.txt",
++                "packages.list",
++                "gcc-specs.txt",
++                "custom-script-output.txt",
++                NULL
++            };
++
++            for (int i = 0; buildenvfiles[i]; i++) {
++                char *f = rpmGetPath(destdir, "/", buildenvfiles[i], NULL);
++                if (access(f, R_OK) == 0)
++                    argvAdd(&files, f);
++                free(f);
++            }
++        } else {
++            rpmlog(RPMLOG_WARNING, _("Failed to create BUILD_ENV directory '%s'\n"), destdir);
++        }
++
++        free(destdir);
++        free(sourcesPath);
++    }
++
+     for (ARGV_const_t fp = files; *fp != NULL; fp++) {
+ 	const char *diskPath = *fp;
+ 	char *tmp;
+diff --git a/build/pack.c b/build/pack.c
+index 0351963ba..a1448343e 100644
+--- a/build/pack.c
++++ b/build/pack.c
+@@ -12,6 +12,7 @@
+ #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
+ #include <rpm/rpmfileutil.h>
+ #include <rpm/rpmlog.h>
++#include <rpm/rpmdb.h>
+ 
+ #include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
+ #include "lib/fsm.h"
+@@ -790,6 +791,281 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
+     return rc;
+ }
+ 
++static int cmpstr(const void *a, const void *b)
++{
++    return strcmp(*(const char **)a, *(const char **)b);
++}
++
++static int rpmMacroEnabled(const char *name)
++{
++    return rpmExpandNumeric(name) != 0;
++}
++
++static void writeRpmbuildArgs(const char *destdir)
++{
++    char path[64] = {0};
++    char *buf = NULL;
++    size_t bufsz = 4096;
++    size_t n;
++    char *outfile = rpmGetPath(destdir, "/rpmbuild-args.txt", NULL);
++
++    snprintf(path, sizeof(path), "/proc/%d/cmdline", getpid());
++
++    FILE *f = fopen(path, "r");
++    if (!f) {
++        rpmlog(RPMLOG_ERR, _("fopen('%s')\n"), path);
++        goto out;
++    }
++
++    buf = xmalloc(bufsz);
++    n = fread(buf, 1, bufsz - 1, f);
++    fclose(f);
++
++    if (n == 0) {
++        rpmlog(RPMLOG_ERR, _("rpmbuild cmdline empty or unreadable\n"));
++        free(buf);
++        goto out;
++    }
++
++    buf[n] = '\0';
++    for (size_t i = 0; i < n; i++) {
++        if (buf[i] == '\0')
++            buf[i] = ' ';
++    }
++    buf[n - 1] = '\n';
++
++    {
++        FILE *out = fopen(outfile, "w");
++        if (out) {
++            fputs(buf, out);
++            fclose(out);
++        } else {
++            rpmlog(RPMLOG_WARNING, _("Failed to write '%s'\n"), outfile);
++        }
++    }
++    free(buf);
++
++out:
++    free(outfile);
++}
++
++static void writeEnvVars(const char *destdir)
++{
++    extern char **environ;
++    char **allowed = NULL;
++    int allowed_count = 0;
++    int use_allowlist = 0;
++    char *outfile = rpmGetPath(destdir, "/env-vars.txt", NULL);
++    const char *fmacro = "%{_buildenv_vars_file}";
++    char *apath = rpmExpand(fmacro, NULL);
++
++    if (apath && *apath && strcmp(apath, fmacro) != 0) {
++        use_allowlist = 1;
++        FILE *af = fopen(apath, "r");
++        if (af) {
++            char buf[256];
++            while (fgets(buf, sizeof(buf), af)) {
++                char *p = strchr(buf, '\n');
++                if (p) *p = '\0';
++                if (buf[0] == '#' || buf[0] == '\0')
++                    continue;
++                allowed = xrealloc(allowed, (allowed_count + 1) * sizeof(char *));
++                allowed[allowed_count++] = xstrdup(buf);
++            }
++            fclose(af);
++        } else {
++            rpmlog(RPMLOG_WARNING, _("Cannot open buildenv allowlist '%s'\n"), apath);
++        }
++    }
++    free(apath);
++
++    FILE *out = fopen(outfile, "w");
++    if (!out) {
++        rpmlog(RPMLOG_WARNING, _("Failed to write '%s'\n"), outfile);
++        for (int i = 0; i < allowed_count; i++) free(allowed[i]);
++        free(allowed);
++        free(outfile);
++        return;
++    }
++
++    if (environ) {
++        for (int i = 0; environ[i]; i++) {
++            if (use_allowlist) {
++                const char *eq = strchr(environ[i], '=');
++                size_t namelen = eq ? (size_t)(eq - environ[i]) : strlen(environ[i]);
++                int found = 0;
++                for (int j = 0; j < allowed_count; j++) {
++                    if (strlen(allowed[j]) == namelen &&
++                        strncmp(environ[i], allowed[j], namelen) == 0) {
++                        found = 1;
++                        break;
++                    }
++                }
++                if (!found)
++                    continue;
++            }
++            fputs(environ[i], out);
++            fputc('\n', out);
++        }
++    }
++    fclose(out);
++
++    for (int i = 0; i < allowed_count; i++) free(allowed[i]);
++    free(allowed);
++    free(outfile);
++}
++
++static void writeInstalledPackages(const char *destdir)
++{
++    Header h;
++    rpmts ts;
++    rpmdbMatchIterator mi;
++    char **packages = NULL;
++    size_t count = 0;
++    char line[1024] = {0};
++    char *outfile = rpmGetPath(destdir, "/packages.list", NULL);
++
++    ts = rpmtsCreate();
++    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
++    if (!mi) {
++        rpmtsFree(ts);
++        free(outfile);
++        return;
++    }
++
++    while ((h = rpmdbNextIterator(mi)) != NULL) {
++        const char *name = headerGetString(h, RPMTAG_NAME);
++        const char *version = headerGetString(h, RPMTAG_VERSION);
++        const char *release = headerGetString(h, RPMTAG_RELEASE);
++
++        if (!name || strstr(name, "gpg-pubkey"))
++            continue;
++
++        snprintf(line, sizeof(line), "%s-%s-%s\n", name, version, release);
++        packages = xrealloc(packages, (count + 1) * sizeof(char *));
++        packages[count++] = xstrdup(line);
++    }
++
++    rpmdbFreeIterator(mi);
++    rpmtsFree(ts);
++
++    if (count > 0)
++        qsort(packages, count, sizeof(char *), cmpstr);
++
++    FILE *out = fopen(outfile, "w");
++    if (out) {
++        for (size_t i = 0; i < count; i++)
++            fputs(packages[i], out);
++        fclose(out);
++    } else {
++        rpmlog(RPMLOG_WARNING, _("Failed to write '%s'\n"), outfile);
++    }
++
++    for (size_t i = 0; i < count; i++)
++        free(packages[i]);
++    free(packages);
++    free(outfile);
++}
++
++static void writeShellScriptOutput(const char *destdir)
++{
++    FILE *fp;
++    char *script;
++    char *cmd;
++    char line[1024] = {0};
++    const char *macro = "%{_run_custom_script}";
++    char *outfile = rpmGetPath(destdir, "/custom-script-output.txt", NULL);
++
++    script = rpmExpand(macro, NULL);
++    if (!script || !*script || !strcmp(script, macro)) {
++        free(script);
++        free(outfile);
++        return;
++    }
++
++    cmd = rstrscat(NULL, "/bin/bash \"", script, "\"", NULL);
++    fp = popen(cmd, "r");
++    free(cmd);
++    if (!fp) {
++        rpmlog(RPMLOG_ERR, _("popen('%s') failed\n"), script);
++        free(script);
++        free(outfile);
++        return;
++    }
++
++    FILE *out = fopen(outfile, "w");
++    if (out) {
++        while (fgets(line, sizeof(line), fp))
++            fputs(line, out);
++        fclose(out);
++    } else {
++        rpmlog(RPMLOG_WARNING, _("Failed to write '%s'\n"), outfile);
++    }
++
++    int rc = pclose(fp);
++    if (rc == -1)
++        rpmlog(RPMLOG_WARNING, _("pclose failed for custom script '%s': %s\n"), script, strerror(errno));
++    else if (rc != 0) {
++        if (WIFEXITED(rc))
++            rpmlog(RPMLOG_WARNING, _("Custom script '%s' exited with status %d\n"), script, WEXITSTATUS(rc));
++        else if (WIFSIGNALED(rc))
++            rpmlog(RPMLOG_WARNING, _("Custom script '%s' killed by signal %d\n"), script, WTERMSIG(rc));
++    }
++
++    free(script);
++    free(outfile);
++}
++
++static void writeGccSpecs(const char *destdir)
++{
++    const char *macro = "%{_gcc_specs_path}";
++    char *specspath = rpmExpand(macro, NULL);
++    char *outfile = rpmGetPath(destdir, "/gcc-specs.txt", NULL);
++
++    if (!specspath || !*specspath || !strcmp(specspath, macro)) {
++        free(specspath);
++        free(outfile);
++        return;
++    }
++
++    FILE *in = fopen(specspath, "r");
++    if (!in) {
++        rpmlog(RPMLOG_WARNING, _("GCC specs not found at '%s'\n"), specspath);
++        free(specspath);
++        free(outfile);
++        return;
++    }
++
++    FILE *out = fopen(outfile, "w");
++    if (out) {
++        char line[1024];
++        while (fgets(line, sizeof(line), in))
++            fputs(line, out);
++        fclose(out);
++    } else {
++        rpmlog(RPMLOG_WARNING, _("Failed to write '%s'\n"), outfile);
++    }
++
++    fclose(in);
++    free(specspath);
++    free(outfile);
++}
++
++void captureBuildEnvironment(const char *destdir)
++{
++    if (rpmMacroEnabled("%_embed_rpmbuild_args"))
++        writeRpmbuildArgs(destdir);
++
++    if (rpmMacroEnabled("%_embed_rpmbuild_env_vars"))
++        writeEnvVars(destdir);
++
++    if (rpmMacroEnabled("%_embed_pkglist_in_srpm"))
++        writeInstalledPackages(destdir);
++
++    writeShellScriptOutput(destdir);
++    writeGccSpecs(destdir);
++}
++
+ rpmRC packageSources(rpmSpec spec, char **cookie)
+ {
+     Package sourcePkg = spec->sourcePackage;
+diff --git a/build/rpmbuild_internal.h b/build/rpmbuild_internal.h
+index 09baee2fa..1fe681687 100644
+--- a/build/rpmbuild_internal.h
++++ b/build/rpmbuild_internal.h
+@@ -613,6 +613,9 @@ void addLuaSource(const struct Source *p);
+ void addLuaSource(const struct Source *p);
++RPM_GNUC_INTERNAL
++void captureBuildEnvironment(const char *destdir);
++
+ #ifdef __cplusplus
+ }
+ #endif
+
+ #endif /* _RPMBUILD_INTERNAL_H */
+-- 
+2.43.0
+

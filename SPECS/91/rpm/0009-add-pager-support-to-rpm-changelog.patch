@@ -1,0 +1,26 @@
+From 0c26d1ece52fa11589886ebd561add6506744e66 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 19 Dec 2025 00:51:50 +0530
+Subject: [PATCH] Add pager support to RPM changelog aliases
+
+- Pipe changelog output through `less` if available, falling back to
+  `cat`.
+- Improves readability for long changelogs in the terminal.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ rpmpopt.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rpmpopt.in b/rpmpopt.in
+index b25841c50c..b579dcfc17 100644
+--- a/rpmpopt.in
++++ b/rpmpopt.in
+@@ -111,6 +111,7 @@ Description  :\n%{DESCRIPTION}\n' \
+ 	--POPTdesc=$"list descriptive information from package(s)"
+ 
+ rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
++	--pipe "if command -v less >/dev/null 2>&1; then less; else cat; fi" \
+ 	--POPTdesc=$"list change logs for this package"
+ 
+ rpm	alias --changes --qf '[* %{CHANGELOGTIME:date} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
