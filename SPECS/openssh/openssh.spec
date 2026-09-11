@@ -1,5 +1,8 @@
 %global build_if %{photon_subrelease} >= 91
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# STIG conditional in this spec permanently unreachable, and untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 %define privsep_path %{_datadir}/empty.sshd
 %global sshd_services sshd.service sshd-keygen.service
@@ -7,7 +10,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        10.5p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -244,6 +247,13 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Sep 09 2026 Daniel Casota <dcasota@gmail.com> 10.5p1-2
+- Replace the plain define of STIG_HARDEN with a define-if-unset so the flag
+  can be set from pkg_build_options.json or rpmbuild -D. A plain define in the
+  spec body beats -D, so every STIG conditional in this spec was unreachable
+  and had never been parsed or built in any constellation.
+- No change to the default build: with STIG_HARDEN unset the value is still 0
+  and the expanded spec is identical.
 * Tue Sep 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 10.5p1-1
 - Upgrade to version 10.5p1 to fix CVE-2026-73283, CVE-2026-73282, CVE-2026-73281
 - Drop gssapi-config-fix.patch, now included upstream

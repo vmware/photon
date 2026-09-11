@@ -1,11 +1,14 @@
 %global build_if %{photon_subrelease} <= 90
 
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# STIG conditional in this spec permanently unreachable, and untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.4
-Release:        7.1.1%{?dist}
+Release:        7.1.2%{?dist}
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -101,6 +104,13 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitearch}/pwquality-*.egg/*
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 1.4.4-7.1.2
+- Replace the plain define of STIG_HARDEN with a define-if-unset so the flag
+  can be set from pkg_build_options.json or rpmbuild -D. A plain define in the
+  spec body beats -D, so every STIG conditional in this spec was unreachable
+  and had never been parsed or built in any constellation.
+- No change to the default build: with STIG_HARDEN unset the value is still 0
+  and the expanded spec is identical.
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.4-7.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.4.4-7.1
