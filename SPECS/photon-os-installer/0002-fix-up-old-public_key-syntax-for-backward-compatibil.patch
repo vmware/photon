@@ -9,10 +9,9 @@ Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/photon_installer/installer.py b/photon_installer/installer.py
-index 6cec185..91f782f 100644
 --- a/photon_installer/installer.py
 +++ b/photon_installer/installer.py
-@@ -543,6 +543,10 @@ class Installer(object):
+@@ -554,6 +554,10 @@
                  script = os.path.join(self.cwd, script)
              self.user_grub_cfg_fn = script
  
@@ -20,9 +19,6 @@ index 6cec185..91f782f 100644
 +        if 'public_key' in install_config and type(install_config['public_key']) is str:
 +            install_config['public_key'] = {'key': install_config['public_key'], 'reason': 'unknown'}
 +
-     def _check_install_config(self, install_config):
-         """
-         Sanity check of install_config before its execution.
--- 
-2.53.0
-
+         # A grub password is mandatory by default. If not provided, use a default hash that is impossible to use.
+         if 'grub' not in install_config or 'password_pbkdf2' not in install_config['grub']:
+             install_config['grub'] = {'password_pbkdf2': DEFAULT_GRUB_PASSWORD_HASH}
