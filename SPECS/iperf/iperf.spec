@@ -1,26 +1,21 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.17.1
-Release:        5%{?dist}
+Version:        3.21
+Release:        1%{?dist}
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-#Source download URL: https://github.com/esnet/iperf/archive/%{version}.tar.gz
-Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
+#Source download URL: https://github.com/esnet/iperf/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/esnet/iperf/archive/%{version}/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 Patch1: disablepg.patch
-Patch2: iperf-CVE-2024-53580.patch
-# Fix for CVE-2025-54349
-Patch3: 0001-Fix-off-by-one-heap-overflow-in-auth.patch
-# Fix for CVE-2025-54350
-Patch4: 0002-Prevent-crash-due-to-assertion-failures-on-malformed.patch
 # Fix for CVE-2026-71217
-Patch5: CVE-2026-71217.patch
+Patch2: CVE-2026-71217.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -65,6 +60,10 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Fri Sep 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.21-1
+- Update to version 3.21, fix for CVE-2026-71217 (JSON parameter bounds checks
+  not yet present upstream at 3.21); drop CVE-2024-53580, CVE-2025-54349 and
+  CVE-2025-54350 patches, already fixed upstream in 3.21
 * Thu Aug 20 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.17.1-5
 - Fix for CVE-2026-71217
 * Wed Aug 06 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 3.17.1-4
