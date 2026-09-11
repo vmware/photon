@@ -1,20 +1,20 @@
 sources:
-- archive: dovecot-2.3-pigeonhole-0.5.21.1.tar.gz
-  archive_sha512sum: 7387b417611599fe70d1a83d3b408321e66f5a883bf78a9d55c7496b1a17220677daebaefde2061e0d7064fe07c410ecfc64662878bb253ddcd9e128dd83fbaa
+- archive: dovecot-pigeonhole-2.4.5.tar.gz
+  archive_sha512sum: fa353a8994c532be5d71eb9371e0a673888f76c6af941deca9131b0535e8b1a2b24a199935895f4cf3717d107d62bf1090d88ee424263b4a590309f53d8b5ebd
   archive_type: upstream
-  name: dovecot-2.3-pigeonhole-0.5.21.1
-  version: 0.5.21.1
-  url: https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.21.1.tar.gz
+  name: dovecot-pigeonhole-2.4.5
+  version: 2.4.5
+  url: https://pigeonhole.dovecot.org/releases/2.4/dovecot-pigeonhole-2.4.5.tar.gz
   repo_url: https://github.com/dovecot/pigeonhole.git
-  commit_id: '49005e736d8c60ff9a4427049a02f6f430e4c993'
-  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__']
-  missing: ['ltmain.sh', '.gitignore', 'autogen.sh', 'install-sh', 'errors', 'pigeonhole-version.h', 'realpath.h', 'fileinto-bad-utf8.sieve', 'dummy-config.h.in', 'ltversion.m4', 'strtrim.c', 'realpath.c', 'config.guess', 'Makefile.in', 'failures', 'lda-sieve-log.c', 'aclocal.m4', 'errors-cpu-limit.svtest', 'strtrim.h', 'configure', 'limits.svtest', 'sieve-execute.h', 'config.sub', 'xml', 'libtool.m4', 'depcomp', 'config.rpath', 'ltoptions.m4', 'RFC-questions.txt', 'lda-sieve-log.h', 'errors.svtest', 'syntax.sieve', 'sieve-execute.c', 'metadataexists-bad-utf8.sieve', 'test-realpath.c', 'ltsugar.m4', 'test-rfc2822.c', 'missing', 'special-use', 'lt~obsolete.m4', 'cpu-limit.sieve', 'compile', 'ChangeLog', 'fileinto.sieve', 'metadata-bad-utf8.sieve', 'variables.txt']
+  commit_id: '742bb8923b5aab398f8d962e827fcde7ad4a3f73'
+  skip_list: ['RCS', 'CVS', 'tags', '.git', '.hg', '.bzr', '_darcs', '__pycache__', 'Makefile.am', 'Makefile.in', 'configure', 'aclocal.m4', 'ltmain.sh', 'libtool.m4', 'config.guess', 'config.sub', 'ltoptions.m4', 'ltsugar.m4', 'ltversion.m4', 'lt~obsolete.m4', 'ChangeLog', 'NEWS', 'INSTALL', 'collation.rfc4790.txt', 'draft-bosch-imap-filter-sieve-00.txt', 'draft-duerst-mailto-bis-05.txt', 'duplicate.rfc7352.txt', 'imail.rfc2822.txt', 'imapsieve.rfc6785.txt', 'managesieve.rfc5804.txt', 'notify.rfc5435.txt', 'sieve.rfc5228.txt', 'uri.rfc3986.txt', 'utf-8.rfc3629.txt']
+  missing: ['.editorconfig', '.gitignore', '.gitkeep', 'RFC-questions.txt', 'SECURITY.md', 'autogen.sh', 'pigeonhole-zimbra-settings.c', 'reference.DSN.xml', 'reference.ENVIRONMENT.xml', 'reference.IMAPSIEVE.xml', 'reference.INCLUDE.xml', 'reference.KEYWORDS.xml', 'reference.MARF.xml', 'reference.MDN.xml', 'reference.NET-UNICODE.xml', 'reference.RFC.2045.xml', 'reference.RFC.3834.xml', 'reference.RFC.3894.xml', 'reference.RFC.5429.xml', 'reference.SIEVE.xml', 'reference.SUBADDRESS.xml', 'reference.UTF-8.xml', 'reference.VARIABLES.xml', 'spec-bosch-sieve-debug.xml', 'spec-bosch-sieve-dovecot-environment.xml', 'spec-bosch-sieve-extprograms.xml', 'spec-bosch-sieve-report.xml', 'variables.txt', 'ChangeLog', 'Makefile.in', 'aclocal.m4', 'compile', 'config.guess', 'config.rpath', 'config.sub', 'configure', 'depcomp', 'dummy-config.h.in', 'install-sh', 'libtool.m4', 'lt~obsolete.m4', 'ltoptions.m4', 'ltmain.sh', 'ltsugar.m4', 'ltversion.m4', 'missing', 'pigeonhole-settings-dynamic.c', 'pigeonhole-version.h', 'settings-history-pigeonhole.h', 'stamp-man', 'xml', 'doveadm-sieve.1', 'pigeonhole.7', 'sieve-dump.1', 'sieve-filter.1', 'sieve-test.1', 'sievec.1']
   spdx:
     package:
       detailed_description: 'Pigeonhole adds Sieve language and ManageSieve protocol support to the Dovecot
         Secure IMAP Server'
       home_page: https://pigeonhole.dovecot.org/
-      license_concluded: BSD-2-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND X11
-      license_declared: BSD-2-Clause AND FSFUL AND FSFULLR AND FSFULLRWD AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND X11
+      license_concluded: BSD-2-Clause AND FSFULLR AND GPL-2.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND X11
+      license_declared: BSD-2-Clause AND FSFULLR AND GPL-2.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-only AND X11
       short_summary: Sieve and ManageSieve support for Dovecot
       supplier: 'Organization: Broadcom, Inc.'

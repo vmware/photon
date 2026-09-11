@@ -1,35 +1,41 @@
-From 68fc6a477a402e659fa2e273315272b20e65427b Mon Sep 17 00:00:00 2001
+From b72a082eba0b69e2038ff7ba7ad68f400e52bc3e Mon Sep 17 00:00:00 2001
 From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
-Date: Fri, 29 May 2026 23:06:38 +0530
+Date: Wed, 2 Sep 2026 16:54:08 +0530
 Subject: [PATCH] use openssl hmac instead of custom implementation
 
 Took from fedora
-https://src.fedoraproject.org/rpms/dovecot/raw/f42/f/dovecot-2.3.6-opensslhmac.patch
+-https://src.fedoraproject.org/rpms/dovecot/raw/f42/f/dovecot-2.3.6-opensslhmac.patch
 
 Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
 ---
- src/auth/auth-token.c               |  14 +--
- src/auth/mech-cram-md5.c            |   8 +-
- src/auth/mech-scram.c               |  16 +--
- src/auth/password-scheme-scram.c    |  38 +++----
- src/auth/password-scheme.c          |   4 +-
- src/lib-imap-urlauth/imap-urlauth.c |   8 +-
- src/lib-oauth2/oauth2-jwt.c         |  12 +--
- src/lib-oauth2/test-oauth2-jwt.c    |   6 +-
- src/lib/Makefile.am                 |   3 +-
- src/lib/hmac-cram-md5.c             |   8 +-
- src/lib/hmac-cram-md5.h             |   4 +-
- src/lib/hmac.c                      | 157 +++++++++++++++++++---------
- src/lib/hmac.h                      |  63 ++++++++---
- src/lib/pkcs5.c                     |  16 +--
- src/lib/test-hmac.c                 |  30 +++---
- 15 files changed, 241 insertions(+), 146 deletions(-)
+ src/auth/auth-token.c                     |  14 +--
+ src/lib-auth/auth-scram-client.c          |  26 ++--
+ src/lib-auth/auth-scram-server.c          |  16 +--
+ src/lib-auth/auth-scram.c                 |  30 ++---
+ src/lib-auth/password-scheme-scram.c      |   8 +-
+ src/lib-auth/password-scheme.c            |   4 +-
+ src/lib-imap-urlauth/imap-urlauth.c       |   8 +-
+ src/lib-oauth2/oauth2-jwt.c               |  12 +-
+ src/lib-oauth2/test-oauth2-jwt.c          |   6 +-
+ src/lib-sasl/dsasl-client-mech-cram-md5.c |   8 +-
+ src/lib-sasl/sasl-server-mech-cram-md5.c  |   8 +-
+ src/lib/Makefile.am                       |   2 +-
+ src/lib/hmac-cram-md5.c                   |   8 +-
+ src/lib/hmac-cram-md5.h                   |   4 +-
+ src/lib/hmac.c                            | 137 ++++++++++++++--------
+ src/lib/hmac.h                            |  46 ++++++--
+ src/lib/pkcs5.c                           |  16 +--
+ src/lib/strfuncs.c                        |  14 +--
+ src/auth/test-db-oauth2.c                  |   2 +-
+ src/lib/test-hmac.c                       |  30 ++---
+ m4/ssl.m4                                 |   2 +-
+ 21 files changed, 228 insertions(+), 173 deletions(-)
 
 diff --git a/src/auth/auth-token.c b/src/auth/auth-token.c
-index 74a1020cf7..3200f90f76 100644
+index fb768ac..0029055 100644
 --- a/src/auth/auth-token.c
 +++ b/src/auth/auth-token.c
-@@ -161,17 +161,17 @@ void auth_token_deinit(void)
+@@ -162,17 +162,17 @@ void auth_token_deinit(void)
  const char *auth_token_get(const char *service, const char *session_pid,
  			   const char *username, const char *session_id)
  {
@@ -54,93 +60,131 @@ index 74a1020cf7..3200f90f76 100644
  
  	return binary_to_hex(result, sizeof(result));
  }
-diff --git a/src/auth/mech-cram-md5.c b/src/auth/mech-cram-md5.c
-index e6ab88881b..7388d67825 100644
---- a/src/auth/mech-cram-md5.c
-+++ b/src/auth/mech-cram-md5.c
-@@ -51,7 +51,7 @@ static bool verify_credentials(struct cram_auth_request *request,
- {
- 	
- 	unsigned char digest[MD5_RESULTLEN];
--        struct hmac_context ctx;
-+        struct orig_hmac_context ctx;
- 	const char *response_hex;
- 
- 	if (size != CRAM_MD5_CONTEXTLEN) {
-@@ -60,10 +60,10 @@ static bool verify_credentials(struct cram_auth_request *request,
- 		return FALSE;
- 	}
- 
--	hmac_init(&ctx, NULL, 0, &hash_method_md5);
-+	orig_hmac_init(&ctx, NULL, 0, &hash_method_md5);
- 	hmac_md5_set_cram_context(&ctx, credentials);
--	hmac_update(&ctx, request->challenge, strlen(request->challenge));
--	hmac_final(&ctx, digest);
-+	orig_hmac_update(&ctx, request->challenge, strlen(request->challenge));
-+	orig_hmac_final(&ctx, digest);
- 
- 	response_hex = binary_to_hex(digest, sizeof(digest));
- 
-diff --git a/src/auth/mech-scram.c b/src/auth/mech-scram.c
-index a90d0d1f9b..a85dc733eb 100644
---- a/src/auth/mech-scram.c
-+++ b/src/auth/mech-scram.c
-@@ -93,7 +93,7 @@ get_scram_server_first(struct scram_auth_request *request,
- static const char *get_scram_server_final(struct scram_auth_request *request)
- {
- 	const struct hash_method *hmethod = request->hash_method;
+diff --git a/src/lib-auth/auth-scram-client.c b/src/lib-auth/auth-scram-client.c
+index 31fe48a..f6f206a 100644
+--- a/src/lib-auth/auth-scram-client.c
++++ b/src/lib-auth/auth-scram-client.c
+@@ -226,7 +226,7 @@ static string_t *auth_scram_get_client_final(struct auth_scram_client *client)
+ 	unsigned char client_signature[hmethod->digest_size];
+ 	unsigned char client_proof[hmethod->digest_size];
+ 	unsigned char server_key[hmethod->digest_size];
 -	struct hmac_context ctx;
 +	struct openssl_hmac_context ctx;
- 	const char *auth_message;
- 	unsigned char server_signature[hmethod->digest_size];
- 	string_t *str;
-@@ -109,9 +109,9 @@ static const char *get_scram_server_final(struct scram_auth_request *request)
- 			request->server_first_message, ",",
- 			request->client_final_message_without_proof, NULL);
+ 	const void *cbind_input;
+ 	size_t cbind_input_size;
+ 	string_t *auth_message, *str;
+@@ -282,9 +282,9 @@ static string_t *auth_scram_get_client_final(struct auth_scram_client *client)
+ 		      client->iter, salted_password);
  
--	hmac_init(&ctx, request->server_key, hmethod->digest_size, hmethod);
--	hmac_update(&ctx, auth_message, strlen(auth_message));
--	hmac_final(&ctx, server_signature);
-+	openssl_hmac_init(&ctx, request->server_key, hmethod->digest_size, hmethod);
-+	openssl_hmac_update(&ctx, auth_message, strlen(auth_message));
-+	openssl_hmac_final(&ctx, server_signature);
+ 	/* ClientKey       := HMAC(SaltedPassword, "Client Key") */
+-	hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
+-	hmac_update(&ctx, "Client Key", 10);
+-	hmac_final(&ctx, client_key);
++	openssl_hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
++	openssl_hmac_update(&ctx, "Client Key", 10);
++	openssl_hmac_final(&ctx, client_key);
  
- 	/* RFC 5802, Section 7:
+ 	/* StoredKey       := H(ClientKey) */
+ 	hash_method_get_digest(hmethod, client_key, sizeof(client_key),
+@@ -302,9 +302,9 @@ static string_t *auth_scram_get_client_final(struct auth_scram_client *client)
+ 	str_append_str(auth_message, str);
  
-@@ -292,7 +292,7 @@ parse_scram_client_first(struct scram_auth_request *request,
- static bool verify_credentials(struct scram_auth_request *request)
- {
- 	const struct hash_method *hmethod = request->hash_method;
+ 	/* ClientSignature := HMAC(StoredKey, AuthMessage) */
+-	hmac_init(&ctx, stored_key, sizeof(stored_key), hmethod);
+-	hmac_update(&ctx, str_data(auth_message), str_len(auth_message));
+-	hmac_final(&ctx, client_signature);
++	openssl_hmac_init(&ctx, stored_key, sizeof(stored_key), hmethod);
++	openssl_hmac_update(&ctx, str_data(auth_message), str_len(auth_message));
++	openssl_hmac_final(&ctx, client_signature);
+ 
+ 	/* ClientProof     := ClientKey XOR ClientSignature */
+ 	for (k = 0; k < hmethod->digest_size; k++)
+@@ -315,16 +315,16 @@ static string_t *auth_scram_get_client_final(struct auth_scram_client *client)
+ 	safe_memset(client_signature, 0, sizeof(client_signature));
+ 
+ 	/* ServerKey       := HMAC(SaltedPassword, "Server Key") */
+-	hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
+-	hmac_update(&ctx, "Server Key", 10);
+-	hmac_final(&ctx, server_key);
++	openssl_hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
++	openssl_hmac_update(&ctx, "Server Key", 10);
++	openssl_hmac_final(&ctx, server_key);
+ 
+ 	/* ServerSignature := HMAC(ServerKey, AuthMessage) */
+ 	client->server_signature =
+ 		p_malloc(client->pool, hmethod->digest_size);
+-	hmac_init(&ctx, server_key, sizeof(server_key), hmethod);
+-	hmac_update(&ctx, str_data(auth_message), str_len(auth_message));
+-	hmac_final(&ctx, client->server_signature);
++	openssl_hmac_init(&ctx, server_key, sizeof(server_key), hmethod);
++	openssl_hmac_update(&ctx, str_data(auth_message), str_len(auth_message));
++	openssl_hmac_final(&ctx, client->server_signature);
+ 
+ 	safe_memset(salted_password, 0, sizeof(salted_password));
+ 
+diff --git a/src/lib-auth/auth-scram-server.c b/src/lib-auth/auth-scram-server.c
+index 2fee0de..2ba57cf 100644
+--- a/src/lib-auth/auth-scram-server.c
++++ b/src/lib-auth/auth-scram-server.c
+@@ -297,7 +297,7 @@ auth_scram_server_verify_credentials(struct auth_scram_server *server)
+ 	i_assert(hmethod != NULL);
+ 
+ 	struct auth_scram_key_data *kdata = &server->key_data;
 -	struct hmac_context ctx;
 +	struct openssl_hmac_context ctx;
  	const char *auth_message;
  	unsigned char client_key[hmethod->digest_size];
  	unsigned char client_signature[hmethod->digest_size];
-@@ -310,9 +310,9 @@ static bool verify_credentials(struct scram_auth_request *request)
- 			request->server_first_message, ",",
- 			request->client_final_message_without_proof, NULL);
+@@ -318,9 +318,9 @@ auth_scram_server_verify_credentials(struct auth_scram_server *server)
+ 			server->server_first_message, ",",
+ 			server->client_final_message_without_proof, NULL);
  
--	hmac_init(&ctx, request->stored_key, hmethod->digest_size, hmethod);
+-	hmac_init(&ctx, kdata->stored_key, hmethod->digest_size, hmethod);
 -	hmac_update(&ctx, auth_message, strlen(auth_message));
 -	hmac_final(&ctx, client_signature);
-+	openssl_hmac_init(&ctx, request->stored_key, hmethod->digest_size, hmethod);
++	openssl_hmac_init(&ctx, kdata->stored_key, hmethod->digest_size, hmethod);
 +	openssl_hmac_update(&ctx, auth_message, strlen(auth_message));
 +	openssl_hmac_final(&ctx, client_signature);
  
  	/* ClientProof     := ClientKey XOR ClientSignature */
- 	const unsigned char *proof_data = request->proof->data;
-diff --git a/src/auth/password-scheme-scram.c b/src/auth/password-scheme-scram.c
-index a395074a68..dcf5170d78 100644
---- a/src/auth/password-scheme-scram.c
-+++ b/src/auth/password-scheme-scram.c
-@@ -30,23 +30,23 @@ Hi(const struct hash_method *hmethod, const unsigned char *str, size_t str_size,
-    const unsigned char *salt, size_t salt_size, unsigned int i,
-    unsigned char *result)
+ 	const unsigned char *proof_data = server->proof->data;
+@@ -461,7 +461,7 @@ auth_scram_get_server_final(struct auth_scram_server *server)
+ 	i_assert(hmethod != NULL);
+ 
+ 	struct auth_scram_key_data *kdata = &server->key_data;
+-	struct hmac_context ctx;
++	struct openssl_hmac_context ctx;
+ 	const char *auth_message;
+ 	unsigned char server_signature[hmethod->digest_size];
+ 	string_t *str;
+@@ -477,9 +477,9 @@ auth_scram_get_server_final(struct auth_scram_server *server)
+ 			server->server_first_message, ",",
+ 			server->client_final_message_without_proof, NULL);
+ 
+-	hmac_init(&ctx, kdata->server_key, hmethod->digest_size, hmethod);
+-	hmac_update(&ctx, auth_message, strlen(auth_message));
+-	hmac_final(&ctx, server_signature);
++	openssl_hmac_init(&ctx, kdata->server_key, hmethod->digest_size, hmethod);
++	openssl_hmac_update(&ctx, auth_message, strlen(auth_message));
++	openssl_hmac_final(&ctx, server_signature);
+ 
+ 	/* RFC 5802, Section 7:
+ 
+diff --git a/src/lib-auth/auth-scram.c b/src/lib-auth/auth-scram.c
+index 94e2afe..418984c 100644
+--- a/src/lib-auth/auth-scram.c
++++ b/src/lib-auth/auth-scram.c
+@@ -31,7 +31,7 @@ void auth_scram_hi(const struct hash_method *hmethod,
+ 		   const unsigned char *salt, size_t salt_size, unsigned int i,
+ 		   unsigned char *result)
  {
 -	struct hmac_context ctx;
 +	struct openssl_hmac_context ctx;
  	unsigned char U[hmethod->digest_size];
  	unsigned int j, k;
+ 
+@@ -51,18 +51,18 @@ void auth_scram_hi(const struct hash_method *hmethod,
+ 	*/
  
  	/* Calculate U1 */
 -	hmac_init(&ctx, str, str_size, hmethod);
@@ -165,7 +209,45 @@ index a395074a68..dcf5170d78 100644
  		for (k = 0; k < hmethod->digest_size; k++)
  			result[k] ^= U[k];
  	}
-@@ -102,7 +102,7 @@ int scram_verify(const struct hash_method *hmethod, const char *scheme_name,
+@@ -75,7 +75,7 @@ void auth_scram_generate_key_data(const struct hash_method *hmethod,
+ 				  unsigned char stored_key_r[],
+ 				  unsigned char server_key_r[])
+ {
+-	struct hmac_context ctx;
++	struct openssl_hmac_context ctx;
+ 	unsigned char salt[16];
+ 	unsigned char salted_password[hmethod->digest_size];
+ 	unsigned char client_key[hmethod->digest_size];
+@@ -97,18 +97,18 @@ void auth_scram_generate_key_data(const struct hash_method *hmethod,
+ 		      salt, sizeof(salt), rounds, salted_password);
+ 
+ 	/* Calculate ClientKey */
+-	hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
+-	hmac_update(&ctx, "Client Key", 10);
+-	hmac_final(&ctx, client_key);
++	openssl_hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
++	openssl_hmac_update(&ctx, "Client Key", 10);
++	openssl_hmac_final(&ctx, client_key);
+ 
+ 	/* Calculate StoredKey */
+ 	hash_method_get_digest(hmethod, client_key, sizeof(client_key),
+ 			       stored_key_r);
+ 
+ 	/* Calculate ServerKey */
+-	hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
+-	hmac_update(&ctx, "Server Key", 10);
+-	hmac_final(&ctx, server_key_r);
++	openssl_hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
++	openssl_hmac_update(&ctx, "Server Key", 10);
++	openssl_hmac_final(&ctx, server_key_r);
+ 
+ 	safe_memset(salted_password, 0, sizeof(salted_password));
+ 	safe_memset(client_key, 0, sizeof(client_key));
+diff --git a/src/lib-auth/password-scheme-scram.c b/src/lib-auth/password-scheme-scram.c
+index 67a55ca..6ae9b79 100644
+--- a/src/lib-auth/password-scheme-scram.c
++++ b/src/lib-auth/password-scheme-scram.c
+@@ -23,7 +23,7 @@ int scram_verify(const struct hash_method *hmethod, const char *scheme_name,
  		 const char *plaintext, const unsigned char *raw_password,
  		 size_t size, const char **error_r)
  {
@@ -174,8 +256,8 @@ index a395074a68..dcf5170d78 100644
  	const char *salt_base64;
  	unsigned int iter_count;
  	const unsigned char *salt;
-@@ -126,9 +126,9 @@ int scram_verify(const struct hash_method *hmethod, const char *scheme_name,
- 	   salt, salt_len, iter_count, salted_password);
+@@ -49,9 +49,9 @@ int scram_verify(const struct hash_method *hmethod, const char *scheme_name,
+ 		      salt, salt_len, iter_count, salted_password);
  
  	/* Calculate ClientKey */
 -	hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
@@ -187,46 +269,11 @@ index a395074a68..dcf5170d78 100644
  
  	/* Calculate StoredKey */
  	hash_method_get_digest(hmethod, client_key, sizeof(client_key),
-@@ -147,7 +147,7 @@ void scram_generate(const struct hash_method *hmethod, const char *plaintext,
- 		    const unsigned char **raw_password_r, size_t *size_r)
- {
- 	string_t *str;
--	struct hmac_context ctx;
-+	struct openssl_hmac_context ctx;
- 	unsigned char salt[16];
- 	unsigned char salted_password[hmethod->digest_size];
- 	unsigned char client_key[hmethod->digest_size];
-@@ -165,9 +165,9 @@ void scram_generate(const struct hash_method *hmethod, const char *plaintext,
- 	   sizeof(salt), SCRAM_DEFAULT_ITERATE_COUNT, salted_password);
- 
- 	/* Calculate ClientKey */
--	hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
--	hmac_update(&ctx, "Client Key", 10);
--	hmac_final(&ctx, client_key);
-+	openssl_hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
-+	openssl_hmac_update(&ctx, "Client Key", 10);
-+	openssl_hmac_final(&ctx, client_key);
- 
- 	/* Calculate StoredKey */
- 	hash_method_get_digest(hmethod, client_key, sizeof(client_key),
-@@ -176,9 +176,9 @@ void scram_generate(const struct hash_method *hmethod, const char *plaintext,
- 	base64_encode(stored_key, sizeof(stored_key), str);
- 
- 	/* Calculate ServerKey */
--	hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
--	hmac_update(&ctx, "Server Key", 10);
--	hmac_final(&ctx, server_key);
-+	openssl_hmac_init(&ctx, salted_password, sizeof(salted_password), hmethod);
-+	openssl_hmac_update(&ctx, "Server Key", 10);
-+	openssl_hmac_final(&ctx, server_key);
- 	str_append_c(str, ',');
- 	base64_encode(server_key, sizeof(server_key), str);
- 
-diff --git a/src/auth/password-scheme.c b/src/auth/password-scheme.c
-index c572cd3779..d9a6b54ea7 100644
---- a/src/auth/password-scheme.c
-+++ b/src/auth/password-scheme.c
-@@ -639,11 +639,11 @@ static void
+diff --git a/src/lib-auth/password-scheme.c b/src/lib-auth/password-scheme.c
+index 4e6b66a..79e6f53 100644
+--- a/src/lib-auth/password-scheme.c
++++ b/src/lib-auth/password-scheme.c
+@@ -632,11 +632,11 @@ static void
  cram_md5_generate(const char *plaintext, const struct password_generate_params *params ATTR_UNUSED,
  		  const unsigned char **raw_password_r, size_t *size_r)
  {
@@ -241,12 +288,12 @@ index c572cd3779..d9a6b54ea7 100644
  	hmac_md5_get_cram_context(&ctx, context_digest);
  
 diff --git a/src/lib-imap-urlauth/imap-urlauth.c b/src/lib-imap-urlauth/imap-urlauth.c
-index a9c2673024..47c9cbe6d9 100644
+index 35ea73b..aede730 100644
 --- a/src/lib-imap-urlauth/imap-urlauth.c
 +++ b/src/lib-imap-urlauth/imap-urlauth.c
-@@ -85,15 +85,15 @@ imap_urlauth_internal_generate(const char *rumpurl,
- 			       const unsigned char mailbox_key[IMAP_URLAUTH_KEY_LEN],
- 			       size_t *token_len_r)
+@@ -87,15 +87,15 @@ imap_urlauth_internal_generate(
+ 	const unsigned char mailbox_key[IMAP_URLAUTH_KEY_LEN],
+ 	size_t *token_len_r)
  {
 -	struct hmac_context hmac;
 +	struct openssl_hmac_context hmac;
@@ -265,35 +312,35 @@ index a9c2673024..47c9cbe6d9 100644
  	*token_len_r = SHA1_RESULTLEN + 1;
  	return token;
 diff --git a/src/lib-oauth2/oauth2-jwt.c b/src/lib-oauth2/oauth2-jwt.c
-index 04db602e9d..b6f4de65d3 100644
+index de22644..24a7dd2 100644
 --- a/src/lib-oauth2/oauth2-jwt.c
 +++ b/src/lib-oauth2/oauth2-jwt.c
-@@ -168,14 +168,14 @@ oauth2_validate_hmac(const struct oauth2_settings *set, const char *azp,
+@@ -218,14 +218,14 @@ oauth2_validate_hmac(const struct oauth2_settings *set, const char *azp,
  	if (oauth2_lookup_hmac_key(set, azp, alg, key_id, &key, error_r) < 0)
  		return -1;
  
 -	struct hmac_context ctx;
++	struct openssl_hmac_context ctx;
+ 	unsigned char digest[method->digest_size];
+ 
 -	hmac_init(&ctx, key->data, key->used, method);
 -	hmac_update(&ctx, blobs[0], strlen(blobs[0]));
 -	hmac_update(&ctx, ".", 1);
 -	hmac_update(&ctx, blobs[1], strlen(blobs[1]));
-+	struct openssl_hmac_context ctx;
+-	hmac_final(&ctx, digest);
 +	openssl_hmac_init(&ctx, key->data, key->used, method);
 +	openssl_hmac_update(&ctx, blobs[0], strlen(blobs[0]));
 +	openssl_hmac_update(&ctx, ".", 1);
 +	openssl_hmac_update(&ctx, blobs[1], strlen(blobs[1]));
- 	unsigned char digest[method->digest_size];
- 
--	hmac_final(&ctx, digest);
 +	openssl_hmac_final(&ctx, digest);
  
  	buffer_t *their_digest =
  		t_base64url_decode_str(BASE64_DECODE_FLAG_NO_PADDING, blobs[2]);
 diff --git a/src/lib-oauth2/test-oauth2-jwt.c b/src/lib-oauth2/test-oauth2-jwt.c
-index 021c91f552..119f4eeaf5 100644
+index 5fac05d..51a00f3 100644
 --- a/src/lib-oauth2/test-oauth2-jwt.c
 +++ b/src/lib-oauth2/test-oauth2-jwt.c
-@@ -247,7 +247,7 @@ static void save_key_azp_to(const char *algo, const char *azp,
+@@ -250,7 +250,7 @@ static void save_key_azp_to(const char *algo, const char *azp,
  static void sign_jwt_token_hs256(buffer_t *tokenbuf, buffer_t *key)
  {
  	i_assert(key != NULL);
@@ -302,7 +349,7 @@ index 021c91f552..119f4eeaf5 100644
  				      tokenbuf);
  	buffer_append(tokenbuf, ".", 1);
  	base64url_encode(BASE64_ENCODE_FLAG_NO_PADDING, SIZE_MAX,
-@@ -257,7 +257,7 @@ static void sign_jwt_token_hs256(buffer_t *tokenbuf, buffer_t *key)
+@@ -260,7 +260,7 @@ static void sign_jwt_token_hs256(buffer_t *tokenbuf, buffer_t *key)
  static void sign_jwt_token_hs384(buffer_t *tokenbuf, buffer_t *key)
  {
  	i_assert(key != NULL);
@@ -311,7 +358,7 @@ index 021c91f552..119f4eeaf5 100644
  				      tokenbuf);
  	buffer_append(tokenbuf, ".", 1);
  	base64url_encode(BASE64_ENCODE_FLAG_NO_PADDING, SIZE_MAX,
-@@ -267,7 +267,7 @@ static void sign_jwt_token_hs384(buffer_t *tokenbuf, buffer_t *key)
+@@ -270,7 +270,7 @@ static void sign_jwt_token_hs384(buffer_t *tokenbuf, buffer_t *key)
  static void sign_jwt_token_hs512(buffer_t *tokenbuf, buffer_t *key)
  {
  	i_assert(key != NULL);
@@ -320,22 +367,70 @@ index 021c91f552..119f4eeaf5 100644
  				      tokenbuf);
  	buffer_append(tokenbuf, ".", 1);
  	base64url_encode(BASE64_ENCODE_FLAG_NO_PADDING, SIZE_MAX,
+diff --git a/src/lib-sasl/dsasl-client-mech-cram-md5.c b/src/lib-sasl/dsasl-client-mech-cram-md5.c
+index 1ceb5db..fb2440f 100644
+--- a/src/lib-sasl/dsasl-client-mech-cram-md5.c
++++ b/src/lib-sasl/dsasl-client-mech-cram-md5.c
+@@ -81,13 +81,13 @@ mech_cram_md5_output(struct dsasl_client *client,
+ 		return DSASL_CLIENT_RESULT_OK;
+ 	}
+ 
+-	struct hmac_context ctx;
++	struct orig_hmac_context ctx;
+ 	unsigned char digest[MD5_RESULTLEN];
+ 
+-	hmac_init(&ctx, (const unsigned char *)client->password,
++	orig_hmac_init(&ctx, (const unsigned char *)client->password,
+ 		  strlen(client->password), &hash_method_md5);
+-	hmac_update(&ctx, cclient->challenge, strlen(cclient->challenge));
+-	hmac_final(&ctx, digest);
++	orig_hmac_update(&ctx, cclient->challenge, strlen(cclient->challenge));
++	orig_hmac_final(&ctx, digest);
+ 
+ 	str = str_new(client->pool, 256);
+ 	str_append(str, client->set.authid);
+diff --git a/src/lib-sasl/sasl-server-mech-cram-md5.c b/src/lib-sasl/sasl-server-mech-cram-md5.c
+index fe6dea5..c0190c3 100644
+--- a/src/lib-sasl/sasl-server-mech-cram-md5.c
++++ b/src/lib-sasl/sasl-server-mech-cram-md5.c
+@@ -53,7 +53,7 @@ verify_credentials(struct sasl_server_mech_request *auth_request,
+ 		container_of(auth_request, struct cram_auth_request,
+ 			     auth_request);
+ 	unsigned char digest[MD5_RESULTLEN];
+-        struct hmac_context ctx;
++        struct orig_hmac_context ctx;
+ 
+ 	if (size != CRAM_MD5_CONTEXTLEN) {
+ 		e_error(auth_request->event, "invalid credentials length");
+@@ -61,10 +61,10 @@ verify_credentials(struct sasl_server_mech_request *auth_request,
+ 		return;
+ 	}
+ 
+-	hmac_init(&ctx, NULL, 0, &hash_method_md5);
++	orig_hmac_init(&ctx, NULL, 0, &hash_method_md5);
+ 	hmac_md5_set_cram_context(&ctx, credentials);
+-	hmac_update(&ctx, request->challenge, strlen(request->challenge));
+-	hmac_final(&ctx, digest);
++	orig_hmac_update(&ctx, request->challenge, strlen(request->challenge));
++	orig_hmac_final(&ctx, digest);
+ 
+ 	if (!mem_equals_timing_safe(digest, request->response,
+ 				    sizeof(digest))) {
 diff --git a/src/lib/Makefile.am b/src/lib/Makefile.am
-index ac5c62b102..7ab9797a8b 100644
+index 46f2488..b1c5196 100644
 --- a/src/lib/Makefile.am
 +++ b/src/lib/Makefile.am
-@@ -36,7 +36,8 @@ $(srcdir)/UnicodeData.txt:
- $(srcdir)/unicodemap.c: $(srcdir)/unicodemap.pl $(srcdir)/UnicodeData.txt
- 	perl $(srcdir)/unicodemap.pl < $(srcdir)/UnicodeData.txt > $@
+@@ -108,7 +108,7 @@ $(srcdir)/unicode-data-tables.c $(srcdir)/unicode-data-tables.h \
+ 	$(srcdir)/unicode-ucd-compile.py $(UCD_FILES)
+ 	$(AM_V_GEN)$(PYTHON) $(srcdir)/unicode-ucd-compile.py $(UCD_DIR) $(srcdir)
  
--liblib_la_LIBADD = $(LIBUNWIND_LIBS)
-+liblib_la_LIBADD = $(LIBUNWIND_LIBS) $(SSL_LIBS)
-+liblib_la_CFLAGS = $(SSL_CFLAGS)
+-liblib_la_LIBADD = $(LIBUNWIND_LIBS) $(ZLIB_LIBS_STATIC) $(ZLIB_LIBS)
++liblib_la_LIBADD = $(LIBUNWIND_LIBS) $(ZLIB_LIBS_STATIC) $(ZLIB_LIBS) $(SSL_LIBS)
  liblib_la_SOURCES = \
  	array.c \
  	aqueue.c \
 diff --git a/src/lib/hmac-cram-md5.c b/src/lib/hmac-cram-md5.c
-index 46d73c4160..88438a4e1b 100644
+index 46d73c4..88438a4 100644
 --- a/src/lib/hmac-cram-md5.c
 +++ b/src/lib/hmac-cram-md5.c
 @@ -9,10 +9,10 @@
@@ -365,7 +460,7 @@ index 46d73c4160..88438a4e1b 100644
  
  	struct md5_context *ctx = (void*)hmac_ctx->ctx;
 diff --git a/src/lib/hmac-cram-md5.h b/src/lib/hmac-cram-md5.h
-index 5b0a384245..2b452e4eb4 100644
+index 5b0a384..2b452e4 100644
 --- a/src/lib/hmac-cram-md5.h
 +++ b/src/lib/hmac-cram-md5.h
 @@ -5,9 +5,9 @@
@@ -381,107 +476,87 @@ index 5b0a384245..2b452e4eb4 100644
  
  
 diff --git a/src/lib/hmac.c b/src/lib/hmac.c
-index 0138a4a61a..5e7b4418d0 100644
+index eb2436a..f9cad4e 100644
 --- a/src/lib/hmac.c
 +++ b/src/lib/hmac.c
 @@ -7,6 +7,11 @@
   * This software is released under the MIT license.
   */
  
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+#include <fcntl.h>
-+#include <unistd.h>
-+#include <openssl/fips.h>
++#include <openssl/evp.h>
++#include <openssl/kdf.h>
++#include <openssl/err.h>
++#include <openssl/params.h>
++#include <openssl/core_names.h>
  #include "lib.h"
  #include "hmac.h"
  #include "safe-memset.h"
-@@ -14,10 +19,52 @@
+@@ -14,10 +19,38 @@
  
  #include "hex-binary.h"
  
 -void hmac_init(struct hmac_context *_ctx, const unsigned char *key,
-+#ifndef HAVE_HMAC_CTX_NEW
-+#  define HMAC_Init_ex(ctx, key, key_len, md, impl) \
-+	HMAC_Init_ex(&(ctx), key, key_len, md, impl)
-+#  define HMAC_Update(ctx, data, len) HMAC_Update(&(ctx), data, len)
-+#  define HMAC_Final(ctx, md, len) HMAC_Final(&(ctx), md, len)
-+#  define HMAC_CTX_free(ctx) HMAC_cleanup(&(ctx))
-+#else
-+#  define HMAC_CTX_free(ctx) \
-+	STMT_START { HMAC_CTX_free(ctx); (ctx) = NULL; } STMT_END
-+#endif
-+
++static EVP_MAC *dovecot_evp_hmac = NULL;
 +
 +void openssl_hmac_init(struct openssl_hmac_context *_ctx, const unsigned char *key,
  		size_t key_len, const struct hash_method *meth)
  {
 -	struct hmac_context_priv *ctx = &_ctx->u.priv;
 +	struct openssl_hmac_context_priv *ctx = &_ctx->u.priv;
++	OSSL_PARAM params[2];
 +
-+	const EVP_MD *md;
-+	const char *ebuf = NULL;
-+	const char **error_r = &ebuf;
-+
-+	md = EVP_get_digestbyname(meth->name);
-+	if(md == NULL) {
-+		if (error_r != NULL) {
-+			*error_r = t_strdup_printf("Invalid digest %s",
-+						   meth->name);
-+		}
-+		//return FALSE;
++	if (dovecot_evp_hmac == NULL) {
++		dovecot_evp_hmac = EVP_MAC_fetch(NULL, "HMAC", NULL);
++		i_assert(dovecot_evp_hmac != NULL);
 +	}
++	ctx->ctx = EVP_MAC_CTX_new(dovecot_evp_hmac);
++	i_assert(ctx->ctx != NULL);
 +
-+// 	int ec;
++	params[0] = OSSL_PARAM_construct_utf8_string(OSSL_MAC_PARAM_DIGEST,
++					(char *)meth->name, 0);
++	params[1] = OSSL_PARAM_construct_end();
++	i_assert(EVP_MAC_init(ctx->ctx, key, key_len, params) == 1);
++}
 +
-+	i_assert(md != NULL);
-+#ifdef HAVE_HMAC_CTX_NEW
-+	ctx->ctx = HMAC_CTX_new();
-+/*	if (ctx->ctx == NULL)
-+		dcrypt_openssl_error(error_r);*/
-+#endif
-+	/*ec = */HMAC_Init_ex(ctx->ctx, key, key_len, md, NULL);
++void openssl_hmac_update(struct openssl_hmac_context *_ctx, const void *data, size_t size)
++{
++	struct openssl_hmac_context_priv *ctx = &_ctx->u.priv;
++	EVP_MAC_update(ctx->ctx, data, size);
 +}
 +
 +void orig_hmac_init(struct orig_hmac_context *_ctx, const unsigned char *key,
 +		size_t key_len, const struct hash_method *meth)
 +{
-+	i_assert(!FIPS_mode());
++	i_assert(!EVP_default_properties_is_fips_enabled(NULL));
 +	struct orig_hmac_context_priv *ctx = &_ctx->u.priv;
  	unsigned int i;
  	unsigned char k_ipad[meth->block_size];
  	unsigned char k_opad[meth->block_size];
-@@ -53,9 +100,27 @@ void hmac_init(struct hmac_context *_ctx, const unsigned char *key,
+@@ -54,9 +87,21 @@ void hmac_init(struct hmac_context *_ctx, const unsigned char *key,
  	safe_memset(k_opad, 0, meth->block_size);
  }
  
 -void hmac_final(struct hmac_context *_ctx, unsigned char *digest)
 +void openssl_hmac_final(struct openssl_hmac_context *_ctx, unsigned char *digest)
- {
--	struct hmac_context_priv *ctx = &_ctx->u.priv;
-+	int ec;
-+	unsigned char buf[HMAC_MAX_MD_CBLOCK];
-+	unsigned int outl;
-+//     const char *ebuf = NULL;
-+//     const char **error_r = &ebuf;
++{
++	struct openssl_hmac_context_priv *ctx = &_ctx->u.priv;
++	unsigned char buf[EVP_MAX_MD_SIZE];
++	size_t outl = 0;
 +
-+    struct openssl_hmac_context_priv *ctx = &_ctx->u.priv;
-+	ec = HMAC_Final(ctx->ctx, buf, &outl);
-+	HMAC_CTX_free(ctx->ctx);
-+	if (ec == 1)
++	if (EVP_MAC_final(ctx->ctx, buf, &outl, sizeof(buf)) == 1)
 +		memcpy(digest, buf, outl);
-+//	else
-+//		dcrypt_openssl_error(error_r);
-+
++	EVP_MAC_CTX_free(ctx->ctx);
++	ctx->ctx = NULL;
 +}
 +
 +void orig_hmac_final(struct orig_hmac_context *_ctx, unsigned char *digest)
-+{
+ {
+-	struct hmac_context_priv *ctx = &_ctx->u.priv;
 +	struct orig_hmac_context_priv *ctx = &_ctx->u.priv;
  
  	ctx->hash->result(ctx->ctx, digest);
  
-@@ -63,53 +128,50 @@ void hmac_final(struct hmac_context *_ctx, unsigned char *digest)
+@@ -64,53 +109,50 @@ void hmac_final(struct hmac_context *_ctx, unsigned char *digest)
  	ctx->hash->result(ctx->ctxo, digest);
  }
  
@@ -549,7 +624,7 @@ index 0138a4a61a..5e7b4418d0 100644
  
  	/* salt and info can be NULL */
  	i_assert(salt != NULL || salt_len == 0);
-@@ -118,35 +180,30 @@ void hmac_hkdf(const struct hash_method *method,
+@@ -119,35 +161,28 @@ void hmac_hkdf(const struct hash_method *method,
  	i_assert(ikm != NULL && ikm_len > 0);
  	i_assert(okm_r != NULL && okm_len > 0);
  
@@ -580,7 +655,10 @@ index 0138a4a61a..5e7b4418d0 100644
 -		hmac_final(&info_mac, okm);
 -		buffer_append(okm_r, okm, amt);
 -		remain -= amt;
-+
+-	}
+ 
+-	safe_memset(prk, 0, sizeof(prk));
+-	safe_memset(okm, 0, sizeof(okm));
 +	md = EVP_get_digestbyname(method->name);
 +	pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_HKDF, NULL);
 +	unsigned char *okm_buf = buffer_get_space_unsafe(okm_r, 0, okm_len);
@@ -602,35 +680,23 @@ index 0138a4a61a..5e7b4418d0 100644
 +	EVP_PKEY_CTX_free(pctx);
 +	if (r <= 0) {
 +		unsigned long ec = ERR_get_error();
-+		unsigned char *error = t_strdup_printf("%s", ERR_error_string(ec, NULL));
-+		i_error("%s", error);
- 	}
- 
--	safe_memset(prk, 0, sizeof(prk));
--	safe_memset(okm, 0, sizeof(okm));
++		i_error("openssl_hmac_hkdf: %s", ERR_error_string(ec, NULL));
++	}
  }
 diff --git a/src/lib/hmac.h b/src/lib/hmac.h
-index b32c0394ba..0417178301 100644
+index 071ff25..0acba1e 100644
 --- a/src/lib/hmac.h
 +++ b/src/lib/hmac.h
-@@ -4,60 +4,97 @@
- #include "hash-method.h"
- #include "sha1.h"
- #include "sha2.h"
-+#include <openssl/objects.h>
-+#include <openssl/hmac.h>
-+#include <openssl/kdf.h>
-+#include <openssl/err.h>
+@@ -7,57 +7,77 @@
  
- #define HMAC_MAX_CONTEXT_SIZE sizeof(struct sha512_ctx)
+ #define HMAC_MAX_CONTEXT_SIZE HASH_METHOD_MAX_CONTEXT_SIZE
  
 -struct hmac_context_priv {
++/* Forward declaration — full type only needed in hmac.c */
++typedef struct evp_mac_ctx_st EVP_MAC_CTX;
++
 +struct openssl_hmac_context_priv {
-+#ifdef HAVE_HMAC_CTX_NEW
-+	HMAC_CTX *ctx;
-+#else
-+	HMAC_CTX ctx;
-+#endif
++	EVP_MAC_CTX *ctx;
 +	const struct hash_method *hash;
 +};
 +
@@ -659,20 +725,8 @@ index b32c0394ba..0417178301 100644
 +
 +void openssl_hmac_init(struct openssl_hmac_context *ctx, const unsigned char *key,
 +		size_t key_len, const struct hash_method *meth);
++void openssl_hmac_update(struct openssl_hmac_context *ctx, const void *data, size_t size);
 +void openssl_hmac_final(struct openssl_hmac_context *ctx, unsigned char *digest);
-+
-+static inline void
-+openssl_hmac_update(struct openssl_hmac_context *_ctx, const void *data, size_t size)
-+{
-+	struct openssl_hmac_context_priv *ctx = &_ctx->u.priv;
-+	HMAC_Update(ctx->ctx, data, size);
-+/*	if (ec != 1)
-+    {
-+        const char *ebuf = NULL;
-+        const char **error_r = &ebuf;
-+		dcrypt_openssl_error(error_r);
-+    }*/
-+}
 +
 +void orig_hmac_init(struct orig_hmac_context *ctx, const unsigned char *key,
  		size_t key_len, const struct hash_method *meth);
@@ -725,7 +779,7 @@ index b32c0394ba..0417178301 100644
  	return okm_buffer;
  }
 diff --git a/src/lib/pkcs5.c b/src/lib/pkcs5.c
-index e035d473b7..e38dd32e8c 100644
+index 78ad6b0..864d72a 100644
 --- a/src/lib/pkcs5.c
 +++ b/src/lib/pkcs5.c
 @@ -52,7 +52,7 @@ int pkcs5_pbkdf2(const struct hash_method *hash,
@@ -762,8 +816,43 @@ index e035d473b7..e38dd32e8c 100644
  			for(i = 0; i < hash->digest_size; i++)
  				block[i] ^= U_c[i];
  		}
+diff --git a/src/lib/strfuncs.c b/src/lib/strfuncs.c
+index 108192d..7f2daa9 100644
+--- a/src/lib/strfuncs.c
++++ b/src/lib/strfuncs.c
+@@ -662,7 +662,7 @@ bool str_equals_timing_almost_safe(const char *s1, const char *s2)
+ 
+ bool str_equals_hash_timing_safe(const char *s1, const char *s2)
+ {
+-	struct hmac_context ctx;
++	struct openssl_hmac_context ctx;
+ 	unsigned char digest1[SHA256_RESULTLEN];
+ 	unsigned char digest2[SHA256_RESULTLEN];
+ 
+@@ -673,15 +673,15 @@ bool str_equals_hash_timing_safe(const char *s1, const char *s2)
+ 	   a deployment constant (for the secret) or already known to the
+ 	   attacker (for their own input), so neither leaks a useful signal.
+ 	   hash_iv keys the HMAC to prevent precomputation. */
+-	hmac_init(&ctx, (const unsigned char *)&hash_iv, sizeof(hash_iv),
++	openssl_hmac_init(&ctx, (const unsigned char *)&hash_iv, sizeof(hash_iv),
+ 		  &hash_method_sha256);
+-	hmac_update(&ctx, s1, strlen(s1));
+-	hmac_final(&ctx, digest1);
++	openssl_hmac_update(&ctx, s1, strlen(s1));
++	openssl_hmac_final(&ctx, digest1);
+ 
+-	hmac_init(&ctx, (const unsigned char *)&hash_iv, sizeof(hash_iv),
++	openssl_hmac_init(&ctx, (const unsigned char *)&hash_iv, sizeof(hash_iv),
+ 		  &hash_method_sha256);
+-	hmac_update(&ctx, s2, strlen(s2));
+-	hmac_final(&ctx, digest2);
++	openssl_hmac_update(&ctx, s2, strlen(s2));
++	openssl_hmac_final(&ctx, digest2);
+ 
+ 	return mem_equals_timing_safe(digest1, digest2, sizeof(digest1));
+ }
 diff --git a/src/lib/test-hmac.c b/src/lib/test-hmac.c
-index cf3d6d6ad3..de5fe942ce 100644
+index 2fd5ae6..e495684 100644
 --- a/src/lib/test-hmac.c
 +++ b/src/lib/test-hmac.c
 @@ -206,11 +206,11 @@ static void test_hmac_rfc(void)
@@ -841,6 +930,31 @@ index cf3d6d6ad3..de5fe942ce 100644
  				    vec->ikm_len, vec->info, vec->info_len,
  				    vec->okm_len);
  	test_assert(tmp->used == vec->okm_len &&
--- 
+diff --git a/src/auth/test-db-oauth2.c b/src/auth/test-db-oauth2.c
+--- a/src/auth/test-db-oauth2.c
++++ b/src/auth/test-db-oauth2.c
+@@ -148,7 +148,7 @@
+ 			 str_data(body), str_len(body),
+ 			 tokenbuf);
+ 
+-	buffer_t *sig = t_hmac_buffer(&hash_method_sha256,
++	buffer_t *sig = openssl_t_hmac_buffer(&hash_method_sha256,
+ 				       test_hmac_key->data, test_hmac_key->used,
+ 				       tokenbuf);
+ 	if (bad_sig) {
+
+diff --git a/m4/ssl.m4 b/m4/ssl.m4
+--- a/m4/ssl.m4
++++ b/m4/ssl.m4
+@@ -66,7 +66,7 @@
+   AC_MSG_RESULT([$ssl_version_ge_300])
+
+   AS_IF([test $ssl_version_ge_300 = true], [
+-    SSL_CFLAGS="$SSL_CFLAGS -DOPENSSL_NO_DEPRECATED -DOPENSSL_API_COMPAT=30000 -DDOVECOT_USE_OPENSSL3"
++    SSL_CFLAGS="$SSL_CFLAGS -DOPENSSL_NO_DEPRECATED -DDOVECOT_USE_OPENSSL3"
+     dcrypt_openssl_ver=3
+     AC_DEFINE([HAVE_OPENSSL3],,1)
+   ], [
+--
 2.43.0
 

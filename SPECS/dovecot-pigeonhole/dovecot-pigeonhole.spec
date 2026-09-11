@@ -2,18 +2,19 @@
 
 Summary:        Sieve and ManageSieve support for Dovecot
 Name:           dovecot-pigeonhole
-Version:        0.5.21.1
+Version:        2.4.5
 Release:        1%{?dist}
 URL:            https://pigeonhole.dovecot.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-%{version}.tar.gz
+Source0:        https://pigeonhole.dovecot.org/releases/2.4/dovecot-pigeonhole-%{version}.tar.gz
 Source1:        license.txt
 %include %{SOURCE1}
 
 BuildRequires:  dovecot-devel
+BuildRequires:  python3
 
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       dovecot
@@ -35,7 +36,7 @@ Group:          System Environment/Libraries
 Shared libraries and helper executables for the Dovecot Pigeonhole plugin.
 
 %prep
-%autosetup -p1 -n dovecot-2.3-pigeonhole-%{version}
+%autosetup -p1 -n dovecot-pigeonhole-%{version}
 
 %build
 %configure \
@@ -66,6 +67,7 @@ rm -f %{buildroot}%{_datadir}/aclocal/dovecot-pigeonhole.m4
 %files libs
 %defattr(-,root,root)
 %{_libdir}/dovecot/libdovecot-sieve.so*
+%{_libdir}/dovecot/libdovecot-managesieve.so*
 %{_libdir}/dovecot/lib90_sieve_plugin.so
 %{_libdir}/dovecot/lib95_imap_filter_sieve_plugin.so
 %{_libdir}/dovecot/lib95_imap_sieve_plugin.so
@@ -76,5 +78,7 @@ rm -f %{buildroot}%{_datadir}/aclocal/dovecot-pigeonhole.m4
 %{_libexecdir}/dovecot/managesieve-login
 
 %changelog
+* Tue Sep 08 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.5-1
+- Upgrade to v2.4.5
 * Mon May 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.5.21.1-1
 - Initial build

@@ -2,24 +2,20 @@
 
 Summary:        Secure IMAP and POP3 server
 Name:           dovecot
-Version:        2.3.21.1
-Release:        4%{?dist}
+Version:        2.4.5
+Release:        1%{?dist}
 URL:            https://dovecot.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://dovecot.org/releases/2.3/%{name}-%{version}.tar.gz
+Source0:        https://dovecot.org/releases/2.4/%{name}-%{version}.tar.gz
 Source1:        license.txt
 %include %{SOURCE1}
 Source2:        dovecot.conf
 Source3:        dovecot.sysusers
 
 Patch1:         0001-use-openssl-hmac-instead-of-custom-implementation.patch
-Patch2:         0002-Remove-OTP-authentication-support.patch
-Patch3:         0003-lib-dcrypt-add-OpenSSL-3.x-compatibility-for-EVP_PKE.patch
-Patch4:         0004-support-OpenSSL-3-providers-and-drop-ENGINE-API.patch
-Patch5:         0005-m4-crypt_xpg6-define-_DEFAULT_SOURCE-for-current-gli.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
@@ -95,6 +91,7 @@ autoreconf -fi
 %make_install
 find %{buildroot} -type f -name "*.la" -delete -print
 install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/dovecot/dovecot.conf
+sed -i 's/@DOVECOT_CONFIG_VERSION@/%{version}/g' %{buildroot}%{_sysconfdir}/dovecot/dovecot.conf
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_sysusersdir}/%{name}.conf
 rm -rf %{buildroot}%{_docdir}/%{name}
 rm -rf %{buildroot}%{_mandir}
@@ -107,7 +104,6 @@ rm -rf %{buildroot}%{_mandir}
 %{_bindir}/doveadm
 %{_bindir}/doveconf
 %{_bindir}/dovecot-sysreport
-%{_bindir}/dsync
 %{_sbindir}/dovecot
 %config(noreplace) %{_sysconfdir}/dovecot
 %{_datadir}/dovecot
@@ -122,7 +118,6 @@ rm -rf %{buildroot}%{_mandir}
 %{_libdir}/dovecot/*.so*
 %{_libdir}/dovecot/auth/
 %{_libdir}/dovecot/doveadm/
-%{_libdir}/dovecot/old-stats/
 %{_libexecdir}/dovecot/
 %exclude %{_libexecdir}/dovecot/lmtp
 
@@ -137,6 +132,8 @@ rm -rf %{buildroot}%{_mandir}
 %{_libdir}/dovecot/dovecot-config
 
 %changelog
+* Mon Aug 31 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.4.5-1
+- Upgrade to v2.4.5
 * Sun Jun 14 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.21.1-4
 - Enable dovecot-lda local delivery: set protocols to imap pop3, mail_location
   to system mbox (/var/mail/%%u), add postmaster_address and passwd userdb /
