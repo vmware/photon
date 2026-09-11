@@ -2,19 +2,17 @@
 
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.41.5
-Release:        4%{?dist}
+Version:        2.42.3
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.41/%{name}-%{version}.tar.xz
+Source0: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.42/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: CVE-2026-3184.patch
 
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
@@ -179,6 +177,8 @@ make check %{?_smp_mflags}"
 %{_docdir}/%{name}/getopt*
 
 %changelog
+* Fri Sep 11 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.42.3-1
+- Upgrade to v2.42.3
 * Thu Sep 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.41.5-4
 - Exclude coresched from packaging
 * Wed Sep 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.41.5-3
