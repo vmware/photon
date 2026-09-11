@@ -1,0 +1,99 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+Date: Thu, 09 Apr 2026 15:00:00 +0200
+Subject: [PATCH] Add first-boot SELinux filesystem relabel service
+
+Install a oneshot systemd service (selinux-relabel.service) that
+runs 'restorecon -R /' on first boot when /.selinux-relabel exists.
+
+The installer kernel has SELinux compiled in but boots with no
+policy loaded, so lsetxattr for security.selinux returns EINVAL --
+install-time labeling is not possible. Files created or modified by
+the STIG Ansible playbook during installation therefore have no
+SELinux labels (unlabeled_t). When the installed system boots with
+SELINUX=enforcing, confined processes are denied access to these
+files, breaking login, networking, and audit.
+
+The service runs After=local-fs.target Before=getty-pre.target so
+the filesystem is relabeled before the login prompt appears. It
+removes its trigger file on completion and is a no-op on subsequent
+boots.
+
+Ordering against sysinit.target alone is not sufficient. Early units
+such as systemd-sysctl.service also set DefaultDependencies=no and
+declare only Before=sysinit.target, so they and the relabel are
+ordered against that target but not against each other -- systemd is
+free to run them in either order, and it ran systemd-sysctl first:
+
+  Starting Apply Kernel Variables...
+  AVC denied { read } comm="systemd-sysctl"
+      name="zz-stig-hardening.conf" tcontext=unlabeled_t permissive=0
+  systemd-sysctl: Failed to open file '/etc/sysctl.d/zz-stig-hardening.conf'
+  Failed to start Apply Kernel Variables.
+  Starting SELinux Relabel Filesystem (first boot)...   <- one second later
+
+systemd-sysctl aborts on the first unreadable file, so every parameter
+in zz-stig-hardening.conf is silently absent for the whole first boot.
+On a system installed to be STIG-hardened that is a compliance gap, not
+a cosmetic failure. Order the relabel explicitly before the units that
+consume files the playbook wrote.
+
+Signed-off-by: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+---
+diff -ruN a/files/selinux-relabel.service b/files/selinux-relabel.service
+--- a/files/selinux-relabel.service	1970-01-01 01:00:00.000000000 +0100
++++ b/files/selinux-relabel.service	2026-04-09 14:10:05.308254403 +0200
+@@ -0,0 +1,16 @@
++[Unit]
++Description=SELinux Relabel Filesystem (first boot)
++DefaultDependencies=no
++After=local-fs.target
++Before=getty-pre.target sysinit.target
++Before=systemd-sysctl.service auditd.service systemd-networkd.service
++ConditionPathExists=/.selinux-relabel
++
++[Service]
++Type=oneshot
++ExecStart=/usr/sbin/restorecon -R -e /proc -e /sys -e /dev /
++ExecStartPost=/usr/bin/rm -f /.selinux-relabel
++TimeoutSec=0
++
++[Install]
++WantedBy=sysinit.target
+diff -ruN a/tasks/photon.yml b/tasks/photon.yml
+--- a/tasks/photon.yml	2026-04-09 14:10:05.298254183 +0200
++++ b/tasks/photon.yml	2026-04-09 14:10:05.308254403 +0200
+@@ -2405,3 +2405,31 @@
+         - aidecheckoutput.rc is defined
+         - aidecheckoutput.rc != 0
+         - aideinstalled.stdout != ""
++
++###################################################################################################################################
++# SELinux relabel - must be the very last task so all file changes are included
++- name: Relabel filesystem for SELinux on first boot
++  tags: [selinux_relabel]
++  block:
++    - name: Check if SELinux enforcing is configured
++      ansible.builtin.command: grep -q '^SELINUX=enforcing' /etc/selinux/config
++      register: selinux_enforcing
++      failed_when: false
++      changed_when: false
++
++    - name: Install SELinux relabel service
++      ansible.builtin.copy:
++        src: selinux-relabel.service
++        dest: /usr/lib/systemd/system/selinux-relabel.service
++        owner: root
++        group: root
++        mode: "0644"
++      when: selinux_enforcing.rc == 0
++
++    - name: Enable SELinux relabel service
++      ansible.builtin.command: systemctl enable selinux-relabel.service
++      when: selinux_enforcing.rc == 0
++
++    - name: Create SELinux relabel trigger file
++      ansible.builtin.command: touch /.selinux-relabel
++      when: selinux_enforcing.rc == 0
+-- 
+2.43.7

@@ -4,7 +4,7 @@ Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        2.1
-Release:        9%{?dist}
+Release:        11%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -23,6 +23,8 @@ Source1: license.txt
 Patch0: fix-some-value-checks.patch
 Patch1: system-auth-fix.patch
 Patch2: fix-photon.yml-for-latest-audit-and-ansible.patch
+Patch3: fix-stig-playbook-fips-pam.patch
+Patch4: fix-selinux-relabel-first-boot.patch
 
 Requires: ansible >= 2.20.1
 Requires: ansible-community-general
@@ -57,6 +59,14 @@ popd
 %{_datadir}/ansible/
 
 %changelog
+* Wed Sep 09 2026 Daniel Casota <dcasota@gmail.com> 2.1-11
+- Order selinux-relabel.service before systemd-sysctl, auditd and systemd-networkd
+  so the STIG sysctl hardening is applied on the first boot, not only after a reboot
+* Wed Sep 09 2026 Daniel Casota <dcasota@gmail.com> 2.1-10
+- Fix PHTN-50-000192 pam_faillock PAM stack corruption (| default guard)
+- Add ima_hash=sha256 kernel parameter when fips=1 is active
+- Generate fipsmodule.cnf when FIPS provider is present but config is missing
+- Add first-boot SELinux relabel service for unlabeled filesystems (PR #9)
 * Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-9
 - Use a definite list files for installation
 * Wed Jun 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-8
