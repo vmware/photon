@@ -1,6 +1,6 @@
 Summary:        Multi-format archive and compression library
 Name:           libarchive
-Version:        3.8.7
+Version:        3.8.9
 Release:        1%{?dist}
 URL:            http://www.libarchive.org
 Group:          System Environment/Development
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Sep 08 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 3.8.9-1
+- Upgrade to version 3.8.9 to fix CVE-2026-14164, CVE-2026-15028, CVE-2026-16517
 * Mon Apr 13 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.8.7-1
 - Fixes CVE-2026-4426,CVE-2026-5121,CVE-2026-4111
 * Tue Nov 04 2025 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 3.8.2-1
