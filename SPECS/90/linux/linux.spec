@@ -968,13 +968,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_bindir}/*
 %{_sysconfdir}/bash_completion.d/perf
 %{_libexecdir}/perf-core
+%{_datadir}/perf-core
 %{_docdir}/perf-tip
 %{_libdir}/perf/examples/bpf/*
 %{_libdir}/perf/include/bpf/*
 %{_includedir}/perf/*
 %ifarch x86_64
 %{_mandir}/*
-%{_datadir}/perf-core
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
 %{_lib64dir}/libcpupower.so*
