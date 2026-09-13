@@ -322,7 +322,7 @@ index b0dd83555..55ed01a67 100644
  		skcipher_walk_done(&walk, 0);
  	return err;
 diff --git a/crypto/Makefile b/crypto/Makefile
-index 768f24db5..b4cb9f756 100644
+index 26e9e21cb..ab3d6fff0 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -18,9 +18,11 @@ crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
@@ -413,7 +413,7 @@ index 768f24db5..b4cb9f756 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -164,11 +182,14 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -164,8 +182,10 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
@@ -422,13 +422,17 @@ index 768f24db5..b4cb9f756 100644
  obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
 +canister += drbg.o
  
+ # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=124949
+ ifeq ($(CONFIG_ARM)$(CONFIG_KASAN_STACK)$(CONFIG_CC_IS_GCC),yyy)
+@@ -174,6 +194,7 @@ endif
+ 
  ecdh_generic-y += ecdh.o
  ecdh_generic-y += ecdh_helper.o
 +canister += $(ecdh_generic-y)
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -192,6 +213,97 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+@@ -197,6 +218,97 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
  # Key derivation function
  #
  obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
