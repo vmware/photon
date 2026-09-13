@@ -47,10 +47,19 @@
 %global fips 0
 %endif
 
+# acvp_build and kat_build are x86_64-only: the canister they certify is
+# arch/x86 crypto and the only ACVP config is config_x86_64_acvp. Refuse them
+# on any other architecture instead of building with x86_64 inputs.
+%ifnarch x86_64
+%if 0%{?acvp_build} || 0%{?kat_build}
+%{error:acvp_build and kat_build are x86_64-only; refusing to build for %{_target_cpu}}
+%endif
+%endif
+
 Summary:        Kernel
 Name:           linux
 Version:        6.1.190
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -995,6 +1004,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 04 2026 Daniel Casota <dcasota@gmail.com> 6.1.190-4
+- Refuse acvp_build and kat_build on architectures other than x86_64
 * Mon Nov 02 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.190-3
 - Fixes CVE-2026-74611, CVE-2026-89530, CVE-2026-89702
 * Thu Oct 29 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.190-2
