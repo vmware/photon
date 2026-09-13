@@ -86,7 +86,7 @@ index 9cac0a06b..d9b6d7d1d 100644
  	const unsigned int digest_size = req->dst_len;
  	int err;
  
- 	if (fcw_warn_on(req->dst) || fcw_warn_on(!digest_size) ||
+ 	if (fcw_warn_on(req->dst) || !digest_size ||
 -	    !ctx->key_size || sig_size != ctx->key_size)
 +	    !ctx->key_size || sig_size != ctx->key_size ||
 +	    pkcs1pad_invalid_hash_len(digest_size, digest_info))
