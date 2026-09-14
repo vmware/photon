@@ -89,3 +89,6 @@ Patch3067: 0001-CVE-2026-68404-wifi-cfg80211-use-wiphy-work-for-sock.patch
 Patch3068: 0001-CVE-2026-68409-wifi-mac80211-defer-link-RX-stats-per.patch
 Patch3069: 0001-CVE-2026-68441-net-sched-Handle-TC_ACT_REDIRECT-from.patch
 Patch3070: 0001-CVE-2026-68447-drm-amdkfd-clamp-v9-CRIU-control-stac.patch
+# Fixes CVE-2026-74605, CVE-2026-74611
+Patch3071: 0001-eventfs-Use-children-field-for-rcu-head-and-add-memo.patch
+Patch3072: 0002-tls-rx-restore-msg_iter-before-TLS-1.3-optimistic-re.patch

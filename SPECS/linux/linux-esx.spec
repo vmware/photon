@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.109
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -568,6 +568,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Sep 15 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.109-2
+- Fixes CVE-2026-74605, CVE-2026-74611
 * Fri Sep 11 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.109-1
 - Update to version 6.12.109
 * Fri Sep 11 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.107-11
