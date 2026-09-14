@@ -1,0 +1,50 @@
+From 85c78cbec1d3e518cfe5de898772761c48ef96d0 Mon Sep 17 00:00:00 2001
+From: Sabrina Dubroca <sd@queasysnail.net>
+Date: Fri, 29 Aug 2025 10:54:15 +0200
+Subject: [PATCH] xfrm: xfrm_alloc_spi shouldn't use 0 as SPI
+
+commit cd8ae32e4e4652db55bce6b9c79267d8946765a9 upstream
+
+x->id.spi == 0 means "no SPI assigned", but since commit
+94f39804d891 ("xfrm: Duplicate SPI Handling"), we now create states
+and add them to the byspi list with this value.
+
+__xfrm_state_delete doesn't remove those states from the byspi list,
+since they shouldn't be there, and this shows up as a UAF the next
+time we go through the byspi list.
+
+Reported-by: syzbot+a25ee9d20d31e483ba7b@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=a25ee9d20d31e483ba7b
+Fixes: 94f39804d891 ("xfrm: Duplicate SPI Handling")
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+[ Brennan : Applied to v6.1 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/xfrm/xfrm_state.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 181c10252180..cb7fbb15e744 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2082,6 +2082,8 @@ int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high)
+ 
+ 	for (h = 0; h < range; h++) {
+ 		u32 spi = (low == high) ? low : low + prandom_u32_max(high - low + 1);
++		if (spi == 0)
++			goto next;
+ 		newspi = htonl(spi);
+ 
+ 		spin_lock_bh(&net->xfrm.xfrm_state_lock);
+@@ -2097,6 +2099,7 @@ int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high)
+ 		xfrm_state_put(x0);
+ 		spin_unlock_bh(&net->xfrm.xfrm_state_lock);
+ 
++next:
+ 		if (signal_pending(current)) {
+ 			err = -ERESTARTSYS;
+ 			goto unlock;
+-- 
+2.40.4

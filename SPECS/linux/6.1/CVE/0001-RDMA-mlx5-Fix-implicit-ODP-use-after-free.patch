@@ -1,0 +1,91 @@
+From 73719dc70d21cd5073e705a87b471c9285b98156 Mon Sep 17 00:00:00 2001
+From: Patrisious Haddad <phaddad@nvidia.com>
+Date: Sun, 19 Jan 2025 10:21:41 +0200
+Subject: [PATCH] RDMA/mlx5: Fix implicit ODP use after free
+
+commit d3d930411ce390e532470194296658a960887773 upstream
+
+Prevent double queueing of implicit ODP mr destroy work by using
+__xa_cmpxchg() to make sure this is the only time we are destroying this
+specific mr.
+
+Without this change, we could try to invalidate this mr twice, which in
+turn could result in queuing a MR work destroy twice, and eventually the
+second work could execute after the MR was freed due to the first work,
+causing a user after free and trace below.
+
+   refcount_t: underflow; use-after-free.
+   WARNING: CPU: 2 PID: 12178 at lib/refcount.c:28 refcount_warn_saturate+0x12b/0x130
+   Modules linked in: bonding ib_ipoib vfio_pci ip_gre geneve nf_tables ip6_gre gre ip6_tunnel tunnel6 ipip tunnel4 ib_umad rdma_ucm mlx5_vfio_pci vfio_pci_core vfio_iommu_type1 mlx5_ib vfio ib_uverbs mlx5_core iptable_raw openvswitch nsh rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter rpcsec_gss_krb5 auth_rpcgss oid_registry overlay zram zsmalloc fuse [last unloaded: ib_uverbs]
+   CPU: 2 PID: 12178 Comm: kworker/u20:5 Not tainted 6.5.0-rc1_net_next_mlx5_58c644e #1
+   Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+   Workqueue: events_unbound free_implicit_child_mr_work [mlx5_ib]
+   RIP: 0010:refcount_warn_saturate+0x12b/0x130
+   Code: 48 c7 c7 38 95 2a 82 c6 05 bc c6 fe 00 01 e8 0c 66 aa ff 0f 0b 5b c3 48 c7 c7 e0 94 2a 82 c6 05 a7 c6 fe 00 01 e8 f5 65 aa ff <0f> 0b 5b c3 90 8b 07 3d 00 00 00 c0 74 12 83 f8 01 74 13 8d 50 ff
+   RSP: 0018:ffff8881008e3e40 EFLAGS: 00010286
+   RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000027
+   RDX: ffff88852c91b5c8 RSI: 0000000000000001 RDI: ffff88852c91b5c0
+   RBP: ffff8881dacd4e00 R08: 00000000ffffffff R09: 0000000000000019
+   R10: 000000000000072e R11: 0000000063666572 R12: ffff88812bfd9e00
+   R13: ffff8881c792d200 R14: ffff88810011c005 R15: ffff8881002099c0
+   FS:  0000000000000000(0000) GS:ffff88852c900000(0000) knlGS:0000000000000000
+   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+   CR2: 00007f5694b5e000 CR3: 00000001153f6003 CR4: 0000000000370ea0
+   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+   Call Trace:
+    <TASK>
+    ? refcount_warn_saturate+0x12b/0x130
+    free_implicit_child_mr_work+0x180/0x1b0 [mlx5_ib]
+    process_one_work+0x1cc/0x3c0
+    worker_thread+0x218/0x3c0
+    kthread+0xc6/0xf0
+    ret_from_fork+0x1f/0x30
+    </TASK>
+
+Fixes: 5256edcb98a1 ("RDMA/mlx5: Rework implicit ODP destroy")
+Cc: stable@vger.kernel.org
+Link: https://patch.msgid.link/r/c96b8645a81085abff739e6b06e286a350d1283d.1737274283.git.leon@kernel.org
+Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+[ Brennan : Drop patch for implicit_get_child_mr, as this code
+            is not present in v6.1 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/infiniband/hw/mlx5/odp.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
+index 87fbee806100..12debdce0e91 100644
+--- a/drivers/infiniband/hw/mlx5/odp.c
++++ b/drivers/infiniband/hw/mlx5/odp.c
+@@ -213,10 +213,24 @@ static void destroy_unused_implicit_child_mr(struct mlx5_ib_mr *mr)
+ 	unsigned long idx = ib_umem_start(odp) >> MLX5_IMR_MTT_SHIFT;
+ 	struct mlx5_ib_mr *imr = mr->parent;
+ 
++	/*
++	 * If userspace is racing freeing the parent implicit ODP MR then we can
++	 * loose the race with parent destruction. In this case
++	 * mlx5_ib_free_odp_mr() will free everything in the implicit_children
++	 * xarray so NOP is fine. This child MR cannot be destroyed here because
++	 * we are under its umem_mutex.
++	 */
+ 	if (!refcount_inc_not_zero(&imr->mmkey.usecount))
+ 		return;
+ 
+-	xa_erase(&imr->implicit_children, idx);
++	xa_lock(&imr->implicit_children);
++	if (__xa_cmpxchg(&imr->implicit_children, idx, mr, NULL, GFP_KERNEL) !=
++	    mr) {
++		xa_unlock(&imr->implicit_children);
++		return;
++	}
++
++	xa_unlock(&imr->implicit_children);
+ 
+ 	/* Freeing a MR is a sleeping operation, so bounce to a work queue */
+ 	INIT_WORK(&mr->odp_destroy.work, free_implicit_child_mr_work);
+-- 
+2.40.4
+

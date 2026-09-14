@@ -1,0 +1,131 @@
+From e09b4436bcc0b5fe8b57cfcfcbf8701ee43ac3f2 Mon Sep 17 00:00:00 2001
+From: Jiayuan Chen <jiayuan.chen@shopee.com>
+Date: Fri, 20 Mar 2026 15:21:26 +0800
+Subject: [PATCH] team: fix header_ops type confusion with non-Ethernet
+ ports
+
+[ Upstream commit 425000dbf17373a4ab8be9428f5dc055ef870a56 ]
+
+Similar to commit 950803f72547 ("bonding: fix type confusion in
+bond_setup_by_slave()") team has the same class of header_ops type
+confusion.
+
+For non-Ethernet ports, team_setup_by_port() copies port_dev->header_ops
+directly. When the team device later calls dev_hard_header() or
+dev_parse_header(), these callbacks can run with the team net_device
+instead of the real lower device, so netdev_priv(dev) is interpreted as
+the wrong private type and can crash.
+
+The syzbot report shows a crash in bond_header_create(), but the root
+cause is in team: the topology is gre -> bond -> team, and team calls
+the inherited header_ops with its own net_device instead of the lower
+device, so bond_header_create() receives a team device and interprets
+netdev_priv() as bonding private data, causing a type confusion crash.
+
+Fix this by introducing team header_ops wrappers for create/parse,
+selecting a team port under RCU, and calling the lower device callbacks
+with port->dev, so each callback always sees the correct net_device
+context.
+
+Also pass the selected lower device to the lower parse callback, so
+recursion is bounded in stacked non-Ethernet topologies and parse
+callbacks always run with the correct device context.
+
+Fixes: 1d76efe1577b ("team: add support for non-ethernet devices")
+Reported-by: syzbot+3d8bc31c45e11450f24c@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/all/69b46af7.050a0220.36eb34.000e.GAE@google.com/T/
+Cc: Jiayuan Chen <jiayuan.chen@linux.dev>
+Signed-off-by: Jiayuan Chen <jiayuan.chen@shopee.com>
+Link: https://patch.msgid.link/20260320072139.134249-2-jiayuan.chen@linux.dev
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/net/team/team.c | 65 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 64 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index ea2a7cea3f6a..42631072063e 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -2141,6 +2141,67 @@ static const struct ethtool_ops team_ethtool_ops = {
+  * rt netlink interface
+  ***********************/
+
++/* For tx path we need a linkup && enabled port and for parse any port
++ * suffices.
++ */
++static struct team_port *team_header_port_get_rcu(struct team *team,
++						  bool txable)
++{
++	struct team_port *port;
++
++	list_for_each_entry_rcu(port, &team->port_list, list) {
++		if (!txable || team_port_txable(port))
++			return port;
++	}
++
++	return NULL;
++}
++
++static int team_header_create(struct sk_buff *skb, struct net_device *team_dev,
++			      unsigned short type, const void *daddr,
++			      const void *saddr, unsigned int len)
++{
++	struct team *team = netdev_priv(team_dev);
++	const struct header_ops *port_ops;
++	struct team_port *port;
++	int ret = 0;
++
++	rcu_read_lock();
++	port = team_header_port_get_rcu(team, true);
++	if (port) {
++		port_ops = READ_ONCE(port->dev->header_ops);
++		if (port_ops && port_ops->create)
++			ret = port_ops->create(skb, port->dev,
++					       type, daddr, saddr, len);
++	}
++	rcu_read_unlock();
++	return ret;
++}
++
++static int team_header_parse(const struct sk_buff *skb,
++			     unsigned char *haddr)
++{
++	struct team *team = netdev_priv(skb->dev);
++	const struct header_ops *port_ops;
++	struct team_port *port;
++	int ret = 0;
++
++	rcu_read_lock();
++	port = team_header_port_get_rcu(team, false);
++	if (port) {
++		port_ops = READ_ONCE(port->dev->header_ops);
++		if (port_ops && port_ops->parse)
++			ret = port_ops->parse(skb, haddr);
++	}
++	rcu_read_unlock();
++	return ret;
++}
++
++static const struct header_ops team_header_ops = {
++	.create		= team_header_create,
++	.parse		= team_header_parse,
++};
++
+ static void team_setup_by_port(struct net_device *dev,
+ 			       struct net_device *port_dev)
+ {
+@@ -2149,7 +2210,8 @@ static void team_setup_by_port(struct net_device *dev,
+ 	if (port_dev->type == ARPHRD_ETHER)
+ 		dev->header_ops	= team->header_ops_cache;
+ 	else
+-		dev->header_ops	= port_dev->header_ops;
++		dev->header_ops	= port_dev->header_ops ?
++				  &team_header_ops : NULL;
+ 	dev->type = port_dev->type;
+ 	dev->hard_header_len = port_dev->hard_header_len;
+ 	dev->needed_headroom = port_dev->needed_headroom;
+--
+2.53.0
+
