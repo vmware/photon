@@ -1,0 +1,30 @@
+From d8069dca94d832678b5c6f47ed9a114960894a1b Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 18 Oct 2024 18:43:56 +0000
+Subject: [PATCH] change jitterentropy_rng driver name
+
+In order for the jitterentropy_rng_proxy to take over the "jitterentropy_rng"
+name, change the driver name to be "jitterentropy_rng-generic".
+
+The proxy driver name will be "jitterentropy_rng-proxy".
+
+---
+ crypto/jitterentropy-kcapi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
+index 8b98d2e29..7bfa140b8 100644
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
+@@ -153,7 +153,7 @@ static struct rng_alg jent_alg = {
+ 	.seedsize		= 0,
+ 	.base			= {
+ 		.cra_name               = "jitterentropy_rng",
+-		.cra_driver_name        = "jitterentropy_rng",
++		.cra_driver_name        = "jitterentropy_rng-generic",
+ 		.cra_priority           = 100,
+ 		.cra_ctxsize            = sizeof(struct jitterentropy),
+ 		.cra_module             = THIS_MODULE,
+--
+2.39.4
+

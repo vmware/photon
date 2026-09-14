@@ -1,0 +1,139 @@
+From 02816c52515542f0b2ef00fde316c7020c8d424f Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Thu, 4 Sep 2025 15:52:37 +0300
+Subject: [PATCH] net: phylink: add lock for serializing concurrent pl->phydev
+ writes with resolver
+
+[ Upstream commit 0ba5b2f2c381dbec9ed9e4ab3ae5d3e667de0dc3 ]
+
+Currently phylink_resolve() protects itself against concurrent
+phylink_bringup_phy() or phylink_disconnect_phy() calls which modify
+pl->phydev by relying on pl->state_mutex.
+
+The problem is that in phylink_resolve(), pl->state_mutex is in a lock
+inversion state with pl->phydev->lock. So pl->phydev->lock needs to be
+acquired prior to pl->state_mutex. But that requires dereferencing
+pl->phydev in the first place, and without pl->state_mutex, that is
+racy.
+
+Hence the reason for the extra lock. Currently it is redundant, but it
+will serve a functional purpose once mutex_lock(&phy->lock) will be
+moved outside of the mutex_lock(&pl->state_mutex) section.
+
+Another alternative considered would have been to let phylink_resolve()
+acquire the rtnl_mutex, which is also held when phylink_bringup_phy()
+and phylink_disconnect_phy() are called. But since phylink_disconnect_phy()
+runs under rtnl_lock(), it would deadlock with phylink_resolve() when
+calling flush_work(&pl->resolve). Additionally, it would have been
+undesirable because it would have unnecessarily blocked many other call
+paths as well in the entire kernel, so the smaller-scoped lock was
+preferred.
+
+Link: https://lore.kernel.org/netdev/aLb6puGVzR29GpPx@shell.armlinux.org.uk/
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://patch.msgid.link/20250904125238.193990-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Stable-dep-of: e2a10daba849 ("net: phy: transfer phy_config_inband() locking responsibility to phylink")
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Ankit: Backported for v6.1]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/net/phy/phylink.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 3069a7df25d3..a5d0243b33f7 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -69,6 +69,8 @@ struct phylink {
+ 				struct phylink_link_state *s);
+ 
+ 	struct mutex state_mutex;
++	/* Serialize updates to pl->phydev with phylink_resolve() */
++	struct mutex phydev_mutex;
+ 	struct phylink_link_state phy_state;
+ 	struct work_struct resolve;
+ 
+@@ -1255,8 +1257,11 @@ static void phylink_resolve(struct work_struct *w)
+ 	struct net_device *ndev = pl->netdev;
+ 	bool mac_config = false;
+ 	bool retrigger = false;
++	struct phy_device *phy;
+ 	bool cur_link_state;
+ 
++	mutex_lock(&pl->phydev_mutex);
++	phy = pl->phydev;
+ 	mutex_lock(&pl->state_mutex);
+ 	if (pl->netdev)
+ 		cur_link_state = netif_carrier_ok(ndev);
+@@ -1301,11 +1306,11 @@ static void phylink_resolve(struct work_struct *w)
+ 			/* If we have a phy, the "up" state is the union of
+ 			 * both the PHY and the MAC
+ 			 */
+-			if (pl->phydev)
++			if (phy)
+ 				link_state.link &= pl->phy_state.link;
+ 
+ 			/* Only update if the PHY link is up */
+-			if (pl->phydev && pl->phy_state.link) {
++			if (phy && pl->phy_state.link) {
+ 				/* If the interface has changed, force a
+ 				 * link down event if the link isn't already
+ 				 * down, and re-resolve.
+@@ -1372,6 +1377,7 @@ static void phylink_resolve(struct work_struct *w)
+ 		queue_work(system_power_efficient_wq, &pl->resolve);
+ 	}
+ 	mutex_unlock(&pl->state_mutex);
++	mutex_unlock(&pl->phydev_mutex);
+ }
+ 
+ static void phylink_run_resolve(struct phylink *pl)
+@@ -1473,6 +1479,7 @@ struct phylink *phylink_create(struct phylink_config *config,
+ 	if (!pl)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	mutex_init(&pl->phydev_mutex);
+ 	mutex_init(&pl->state_mutex);
+ 	INIT_WORK(&pl->resolve, phylink_resolve);
+ 
+@@ -1666,6 +1673,7 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 		     dev_name(&phy->mdio.dev), phy->drv->name, irq_str);
+ 	kfree(irq_str);
+ 
++	mutex_lock(&pl->phydev_mutex);
+ 	mutex_lock(&phy->lock);
+ 	mutex_lock(&pl->state_mutex);
+ 	pl->phydev = phy;
+@@ -1681,6 +1689,7 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 	linkmode_copy(phy->advertising, config.advertising);
+ 	mutex_unlock(&pl->state_mutex);
+ 	mutex_unlock(&phy->lock);
++	mutex_unlock(&pl->phydev_mutex);
+ 
+ 	phylink_dbg(pl,
+ 		    "phy: %s setting supported %*pb advertising %*pb\n",
+@@ -1838,6 +1847,7 @@ void phylink_disconnect_phy(struct phylink *pl)
+ 
+ 	ASSERT_RTNL();
+ 
++	mutex_lock(&pl->phydev_mutex);
+ 	phy = pl->phydev;
+ 	if (phy) {
+ 		mutex_lock(&phy->lock);
+@@ -1845,8 +1855,11 @@ void phylink_disconnect_phy(struct phylink *pl)
+ 		pl->phydev = NULL;
+ 		mutex_unlock(&pl->state_mutex);
+ 		mutex_unlock(&phy->lock);
+-		flush_work(&pl->resolve);
++	}
++	mutex_unlock(&pl->phydev_mutex);
+ 
++	if (phy) {
++		flush_work(&pl->resolve);
+ 		phy_disconnect(phy);
+ 	}
+ }
+-- 
+2.40.4
+

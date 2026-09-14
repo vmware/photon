@@ -1,0 +1,56 @@
+From 0681bc661d612242b2d1c0c4c2e33ffb8a8efc1a Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Wed, 11 Jun 2025 23:45:07 +0000
+Subject: [PATCH 1/2] x86-vmware: mark hypercalls as volatile
+
+Hypercalls can be optimized out by GCC when the return value
+is ignored. Mark as volatile to avoid this.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 81d9bda67..9ce083b98 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -61,7 +61,7 @@
+ #define VMWARE_HB_CMD_MESSAGE      0
+
+ #define VMWARE_CMD(cmd, eax, ebx, ecx, edx)				\
+-	__asm__(VMWARE_HYPERCALL :					\
++	__asm__ __volatile__(VMWARE_HYPERCALL :				\
+ 		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
+ 		"a"(VMWARE_HYPERVISOR_MAGIC),				\
+ 		"c"(VMWARE_CMD_##cmd),					\
+@@ -69,7 +69,7 @@
+ 		"memory")
+
+ #define VMWARE_CMD_6(cmd, eax, ebx, ecx, edx, esi, edi)		\
+-	__asm__(VMWARE_HYPERCALL :				        \
++	__asm__ __volatile__(VMWARE_HYPERCALL :				\
+ 		"=a"(eax), "=c"(ecx), "+d"(edx), "+b"(ebx),		\
+ 					"+S"(esi), "+D"(edi) :		\
+ 		"a"(VMWARE_HYPERVISOR_MAGIC),				\
+@@ -89,7 +89,7 @@ struct vmware_steal_time {
+ };
+
+ #define VMWARE_HB_OUT(cmd, eax, ebx, ecx, edx, esi, edi, ebp)		\
+-	__asm__("pushq %%rbp\n\t"					\
++	__asm__ __volatile__("pushq %%rbp\n\t"				\
+ 		"movl %[extra], %%ebp\n\t"				\
+ 		VMWARE_HYPERCALL_HB_OUT					\
+ 		"popq %%rbp\n\t" :					\
+@@ -100,7 +100,7 @@ struct vmware_steal_time {
+ 		"memory")
+
+ #define VMWARE_HB_IN(cmd, eax, ebx, ecx, edx, esi, edi, ebp)		\
+-	__asm__("pushq %%rbp\n\t"					\
++	__asm__ __volatile__("pushq %%rbp\n\t"				\
+ 		"movl %[extra], %%ebp\n\t"				\
+ 		VMWARE_HYPERCALL_HB_IN					\
+ 		"popq %%rbp\n\t" :					\
+--
+2.40.4
+

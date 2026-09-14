@@ -1,0 +1,48 @@
+From 9942ee80b7c2f8b26d2f05414dc694559dc18aec Mon Sep 17 00:00:00 2001
+From: Minwoo Ra <raminwo0202@gmail.com>
+Date: Sat, 14 Mar 2026 00:58:44 +0900
+Subject: [PATCH] xfrm: prevent policy_hthresh.work from racing with netns
+
+commit 29fe3a61bcdce398ee3955101c39f89c01a8a77e upstream.
+
+A XFRM_MSG_NEWSPDINFO request can queue the per-net work item
+policy_hthresh.work onto the system workqueue.
+
+The queued callback, xfrm_hash_rebuild(), retrieves the enclosing
+struct net via container_of(). If the net namespace is torn down
+before that work runs, the associated struct net may already have
+been freed, and xfrm_hash_rebuild() may then dereference stale memory.
+
+xfrm_policy_fini() already flushes policy_hash_work during teardown,
+but it does not synchronize policy_hthresh.work.
+
+Synchronize policy_hthresh.work in xfrm_policy_fini() as well, so the
+queued work cannot outlive the net namespace teardown and access a
+freed struct net.
+
+Fixes: 880a6fab8f6b ("xfrm: configure policy hash table thresholds by netlink")
+Signed-off-by: Minwoo Ra <raminwo0202@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Use cancel_work_sync() instead of disable_work_sync() ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/xfrm/xfrm_policy.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index cd534803a0e4..92271297984e 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -4123,6 +4123,8 @@ static void xfrm_policy_fini(struct net *net)
+ 	unsigned int sz;
+ 	int dir;
+ 
++	cancel_work_sync(&net->xfrm.policy_hthresh.work);
++
+ 	flush_work(&net->xfrm.policy_hash_work);
+ #ifdef CONFIG_XFRM_SUB_POLICY
+ 	xfrm_policy_flush(net, XFRM_POLICY_TYPE_SUB, false);
+-- 
+2.53.0
+
