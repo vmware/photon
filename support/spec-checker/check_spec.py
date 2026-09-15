@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import license_expression
 import operator
 
@@ -506,36 +507,34 @@ def check_mentioned_but_unused_files(spec_fn, dirname, subrelease):
     return source_patch_list
 
 
-def get_source_patches_from_all_specs(spec_fn, dirname):
+def get_source_patches_from_all_specs(dirname, subreleases):
     sources = []
     patches = []
     other_files = []
 
-    for _, _, fns in os.walk(dirname):
+    for root_d, _, fns in os.walk(dirname):
         for fn in fns:
             if not fn.endswith(".spec"):
                 fn = os.path.basename(fn)
                 other_files.append(fn)
                 continue
 
-            if fn == os.path.basename(spec_fn):
-                fn = spec_fn
-            else:
-                fn = create_altered_spec(f"{dirname}/{fn}")
+            # a spec can serve several subreleases through photon_subrelease
+            # conditionals; a file is in use when any subrelease uses it
+            for subrel in subreleases:
+                altered = create_altered_spec(os.path.join(root_d, fn), subrel)
+                tmp = getSpecObj(altered)
+                os.remove(altered)
 
-            tmp = getSpecObj(fn)
-            if fn != spec_fn:
-                os.remove(fn)
-
-            sources.extend(tmp.sources)
-            patches.extend(tmp.patches)
+                sources.extend(tmp.sources)
+                patches.extend(tmp.patches)
 
     other_files = [f for f in other_files if f not in sources + patches]
 
     return sources, patches, other_files
 
 
-def check_for_unused_files(spec_fn, err_dict, dirname, subrelease):
+def check_for_unused_files(spec_fn, err_dict, dirname, subrelease, mainline):
     global g_ignore_list
 
     g_ignore_list += cfg_dict["ignore_unused_files"].get(dirname, [])
@@ -555,8 +554,9 @@ def check_for_unused_files(spec_fn, err_dict, dirname, subrelease):
 
     check_for_unused_files.prev_dir = dirname
 
+    subreleases = [str(s) for s in range(90, int(mainline) + 1)]
     sources, patches, other_files = get_source_patches_from_all_specs(
-        spec_fn, dirname
+        dirname, subreleases
     )
 
     ret = check_spec_cfg_yml(sources, dirname, err_dict)
@@ -788,55 +788,128 @@ def find_file_in_dir(fn, path):
             return f"{root_d}/{fn}"
 
 
-def create_altered_spec(spec_fn):
+subrelease_cond_regex = re.compile(
+    r"^%if\s+0?%\{\??photon_subrelease\}\s*(==|!=|>=|<=|>|<)\s*(\d+)\s*$"
+)
+
+
+def create_altered_spec(spec_fn, subrelease=None):
     global g_ignore_list
 
-    lines = []
-
-    with open(spec_fn, "r") as fp:
-        lines = fp.readlines()
+    ops = {
+        "==": operator.eq,
+        "!=": operator.ne,
+        ">=": operator.ge,
+        "<=": operator.le,
+        ">": operator.gt,
+        "<": operator.lt,
+    }
 
     sources = {}
     output = []
     dirname = os.path.dirname(spec_fn)
+    spec_obj = None
 
-    # find the included files, add the file name to g_ignore_list
-    # replace %include <file> with actual content of <file>
-    for line in lines:
-        if line.lower().startswith("buildarch"):
-            line = f"#{line}"
+    # One frame per open conditional: None when the conditional is left to
+    # rpm, [taken] for a plain photon_subrelease comparison resolved here for
+    # the subrelease being checked. Conditionals may span include boundaries.
+    stack = []
+    # set when resolving a conditional dropped lines since the last emitted
+    # one, so two blank lines that only meet because of it stay one
+    dropped = False
 
-        if not line.startswith("%include"):
-            if re.search(source_regex, line):
-                k, v = line.split()
-                sources[k] = v
-            output.append(f"{line}")
-            continue
+    def active():
+        return all(f is None or f[0] for f in stack)
 
-        _, included_fn = line.split()
-        # %{SOURCEX} --> SOURCEX
-        for c in {"{", "}", "%"}:
-            included_fn = included_fn.replace(c, "")
+    def emit(line):
+        nonlocal dropped
+        if dropped and not line.strip() and output and not output[-1].strip():
+            return
+        output.append(line)
+        dropped = False
 
-        for k, v in sources.items():
-            if k.replace(":", "").lower() == included_fn.lower():
-                included_fn = v
-                break
+    def process(fn, included):
+        nonlocal spec_obj, dropped
 
-        included_fn = replace_macros(included_fn, getSpecObj(spec_fn))
+        with open(fn, "r") as fp:
+            lines = fp.readlines()
 
-        g_ignore_list.append(included_fn)
-        included_fn = find_file_in_dir(included_fn, dirname)
-        with open(included_fn, "r") as fp:
-            for ln in fp.readlines():
-                ln = ln.strip()
-                if ln:
-                    output.append(f"{ln}\n")
+        for line in lines:
+            stripped = line.strip()
+            if included:
+                if not stripped:
+                    continue
+                # keep indentation, changelog continuation lines depend on it
+                line = f"{line.rstrip()}\n"
 
-    altered_spec = f"/tmp/{os.path.basename(spec_fn)}"
-    with open(f"{altered_spec}", "w") as fp:
-        for ln in output:
-            fp.write(ln)
+            if line.lower().startswith("buildarch"):
+                line = f"#{line}"
+
+            m = subrelease_cond_regex.match(stripped) if subrelease is not None else None
+            if m:
+                stack.append([ops[m.group(1)](int(subrelease), int(m.group(2)))])
+                dropped = True
+                continue
+            if stripped.startswith("%if"):
+                if active():
+                    emit(line)
+                stack.append(None)
+                continue
+            if stripped.startswith("%else") and stack:
+                if stack[-1] is not None:
+                    stack[-1][0] = not stack[-1][0]
+                    dropped = True
+                elif active():
+                    emit(line)
+                continue
+            if stripped.startswith("%endif") and stack:
+                frame = stack.pop()
+                if frame is not None:
+                    dropped = True
+                elif active():
+                    emit(line)
+                continue
+            if not active():
+                dropped = True
+                continue
+
+            # find the included files, add the file name to g_ignore_list
+            # replace %include <file> with actual content of <file>
+            if not line.startswith("%include"):
+                src_m = source_regex.match(line)
+                if src_m:
+                    sources[src_m.group(1).strip()] = src_m.group(2).strip()
+                emit(line)
+                continue
+
+            _, included_fn = line.split()
+            # %{SOURCEX} --> SOURCEX
+            for c in {"{", "}", "%"}:
+                included_fn = included_fn.replace(c, "")
+
+            for k, v in sources.items():
+                if k.replace(":", "").lower() == included_fn.lower():
+                    included_fn = v
+                    break
+
+            if spec_obj is None:
+                spec_obj = getSpecObj(spec_fn)
+            included_fn = replace_macros(included_fn, spec_obj)
+
+            g_ignore_list.append(included_fn)
+            included_path = find_file_in_dir(included_fn, dirname)
+            if not included_path:
+                emit(line)
+                continue
+            process(included_path, True)
+
+    process(spec_fn, False)
+
+    fd, altered_spec = tempfile.mkstemp(
+        prefix=f"{os.path.basename(spec_fn)}.", suffix=".spec"
+    )
+    with os.fdopen(fd, "w") as fp:
+        fp.writelines(output)
 
     return altered_spec
 
@@ -891,7 +964,7 @@ def check_specs(files_list, subrelease, mainline):
 
         err_dict = ErrorDict(spec_fn)
 
-        altered_spec = create_altered_spec(spec_fn)
+        altered_spec = create_altered_spec(spec_fn, subrelease)
 
         spec = getSpecObj(altered_spec)
 
@@ -909,7 +982,7 @@ def check_specs(files_list, subrelease, mainline):
                 check_for_configure(lines_dict, err_dict),
                 check_setup(lines_dict, err_dict),
                 check_make_smp_flags(lines_dict, err_dict),
-                check_for_unused_files(altered_spec, err_dict, currSpecDir, subrelease),
+                check_for_unused_files(altered_spec, err_dict, currSpecDir, subrelease, mainline),
                 check_proper_spdx_license(spec, err_dict),
             ]
         ):
