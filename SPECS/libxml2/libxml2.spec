@@ -2,8 +2,8 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.15.3
-Release:        3%{?dist}
+Version:        2.15.4
+Release:        1%{?dist}
 URL:            http://xmlsoft.org
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
@@ -15,8 +15,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 #Note: If you are fixing a CVE here, please check for the same in gettext libxml2
-
-Patch0: CVE-2026-11979.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-xml
@@ -98,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+* Tue Sep 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.15.4-1
+- Upgrade to v2.15.4
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.15.3-3
 - Extend to build for 91 and above
 * Mon Aug 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.15.3-2
