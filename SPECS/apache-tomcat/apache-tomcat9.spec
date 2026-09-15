@@ -11,8 +11,8 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.116
-Release:        2%{?dist}
+Version:        9.0.121
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -22,7 +22,7 @@ Distribution:   Photon
 BuildArch: noarch
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=d484a3fc3eb20de9fdd082db0d7448a9e09b8ef872521ca92db2c058a58ee16137c8709b5e0fd93230d9fd1b5ee9032a95078b18fd7ee13daa78d0f0b3d243de
+%define sha512 %{_origname}=15a2b56f5d0feb2b70ea8a1d2369ddeac027b44ad18954cedd423da4ed98b14ba20a0f1c4a857f00262763beb83693d9569764946f911a8611dc1eb179cd4609
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -34,10 +34,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=06822c5c6ce421164839123bd55eaee9a19975e8bba046c1de22c8abb92ccb832721c586ceb52d3c4eec6c8ef4c7f772c43de2fa352f00b549c5d5e680f1ead7
-
-Patch0: CVE-2026-43513.patch
-Patch1: CVE-2026-53434.patch
+%define sha512 base=e685962f14c3ef9e431109524b9785d9e3dda6b21a87431c828c8ffd7462c417b49d3555b3b213cce3a363a57046f4415f9fa434bab7d879926d70fee970fe24
 
 BuildRequires: openjdk17
 BuildRequires: apache-ant
@@ -149,6 +146,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Sep 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.121-1
+- Upgrade to v9.0.121
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.116-2
 - Fix CVE-2026-43513, CVE-2026-53434
 * Tue Mar 24 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 9.0.116-1
