@@ -1,0 +1,25 @@
+sources:
+- archive: liburing-2.15.tar.gz
+  archive_type: upstream
+  archive_sha512sum:
+    8f2de8b294b14ef2802fe1806ae62a0a4e1f8a52c423e1069a97600a742492eecb1078c435624b9a094a07ae5f706a68e333714c00c904f3d93ca8acf40f81ae
+  name: liburing-liburing-2.15
+  version: 2.15
+  url: https://github.com/axboe/liburing/archive/refs/tags/liburing-2.15.tar.gz
+  repo_url: https://github.com/axboe/liburing.git
+  commit_id: d41bf9220ec39277ff235379e9089d9e0fd6c2a5
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Provides native async IO for the Linux kernel, in a fast
+        and efficient manner, for both buffered and O_DIRECT.'
+      home_page: https://github.com/axboe/liburing
+      license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT)
+        AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later AND
+        LGPL-2.1-only AND MIT
+      license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT)
+        AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-or-later AND
+        LGPL-2.1-only AND MIT
+      short_summary: Linux-native io_uring I/O access library
+      supplier: 'Organization: Broadcom, Inc.'
