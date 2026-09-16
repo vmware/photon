@@ -100,3 +100,5 @@ Patch3075: 0001-bpf-Fix-tcx-netkit-detach-permissions-when-prog-fd-i.patch
 Patch3076: 0001-libceph-Fix-potential-out-of-bounds-access-in-__ceph.patch
 Patch3077: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-counting-for-leg.patch
 Patch3078: 0001-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
+# Fixes CVE-2026-68337, CVE-2026-68441
+Patch3079: 0001-bpf-Reject-redirect-helpers-without-a-bpf_net_contex.patch

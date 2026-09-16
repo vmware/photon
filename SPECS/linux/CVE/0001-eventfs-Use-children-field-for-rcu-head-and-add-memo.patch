@@ -1,4 +1,4 @@
-From 0a22551891ae7cfc91d3f896e358435f504bf10b Mon Sep 17 00:00:00 2001
+From a3a7cf7a2099b86befe1c38f839a4dab475d469f Mon Sep 17 00:00:00 2001
 From: Steven Rostedt <rostedt@goodmis.org>
 Date: Sat, 8 Aug 2026 09:42:15 -0400
 Subject: [PATCH 1/2] eventfs: Use children field for rcu head and add memory
@@ -32,12 +32,12 @@ Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
 ---
- fs/tracefs/event_inode.c | 24 ++++++++++++++++++++++++
+ fs/tracefs/event_inode.c | 26 ++++++++++++++++++++++++++
  fs/tracefs/internal.h    |  4 ++--
- 2 files changed, 26 insertions(+), 2 deletions(-)
+ 2 files changed, 28 insertions(+), 2 deletions(-)
 
 diff --git a/fs/tracefs/event_inode.c b/fs/tracefs/event_inode.c
-index a7b082a665bd..abb0ea57601b 100644
+index a7b082a665bd..ca0bc6a7eb24 100644
 --- a/fs/tracefs/event_inode.c
 +++ b/fs/tracefs/event_inode.c
 @@ -124,7 +124,17 @@ static inline void put_ei(struct eventfs_inode *ei)
@@ -58,7 +58,7 @@ index a7b082a665bd..abb0ea57601b 100644
  		put_ei(ei);
  	}
  }
-@@ -649,6 +659,20 @@ static int eventfs_iterate(struct file *file, struct dir_context *ctx)
+@@ -649,6 +659,22 @@ static int eventfs_iterate(struct file *file, struct dir_context *ctx)
  	list_for_each_entry_srcu(ei_child, &ei->children, list,
  				 srcu_read_lock_held(&eventfs_srcu)) {
  
@@ -73,8 +73,10 @@ index a7b082a665bd..abb0ea57601b 100644
 +		 * Matches the smp_wmb() in free_ei()
 +		 */
 +		smp_rmb();
-+		if (ei->is_freed)
-+			return -EINVAL;
++		if (ei->is_freed) {
++			ret = -EINVAL;
++			goto out;
++		}
 +
  		if (c > 0) {
  			c--;

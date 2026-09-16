@@ -1,0 +1,104 @@
+From e48ea282d028f5628edb1a4960e80248ff65b73a Mon Sep 17 00:00:00 2001
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Mon, 6 Jul 2026 20:56:07 +0200
+Subject: [PATCH 1/2] bpf: Reject redirect helpers without a bpf_net_context
+
+[ Upstream commit 3f4920d165b29052255527d8ae7619e7ec132ece ]
+
+The bpf_redirect*() helpers and skb_do_redirect() obtain the per-task
+bpf_redirect_info via bpf_net_ctx_get_ri(), which dereferences the
+current->bpf_net_context unconditionally. That context is established
+on the paths that run tc BPF such as sch_handle_{ingress,egress}(),
+*except* for the case where {cls,act}_bpf was attached to a proper
+qdisc. A program running from there reaches the NULL deref in two ways:
+
+* It calls bpf_redirect() directly, which dereferences the context at
+  the top of the helper:
+
+     tc qdisc add dev eth0 root handle 1: red limit 1MB min 10KB max 20KB \
+        avpkt 1000 burst 100 qevent early_drop block 10
+     tc filter add block 10 pref 1 bpf obj redirect.o
+
+* It simply returns TC_ACT_REDIRECT without helper call: tcf_qevent_handle()
+  then dispatches to skb_do_redirect(), which dereferences the context
+
+Rather than extending bpf_net_context management into the qdisc path,
+make the redirect helpers refuse to operate when no context exists, and
+have tcf_qevent_handle() drop a TC_ACT_REDIRECT verdict instead of
+calling skb_do_redirect(). Previous behaviour was a crash, so nothing
+regresses by not supporting it.
+
+[ Photon 6.12.y backport: only the net/core/filter.c hunk is applied here.
+  The net/sched/cls_api.c change is intentionally dropped, because
+  CVE-2026-68441 (0001-CVE-2026-68441-net-sched-Handle-TC_ACT_REDIRECT-from.patch),
+  already applied earlier in the series, routes a qdisc TC_ACT_REDIRECT
+  verdict to TC_ACT_SHOT via tcf_classify_qdisc(), so tcf_qevent_handle()
+  never reaches the skb_do_redirect() path. Only the direct bpf_redirect*()
+  NULL-deref guards are still needed on this tree. - Guruswamy Basavaiah ]
+
+Fixes: 401cb7dae813 ("net: Reference bpf_redirect_info via task_struct on PREEMPT_RT.")
+Fixes: 3625750f05ec ("net: sched: Introduce helpers for qevent blocks")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://patch.msgid.link/20260706185609.330006-2-daniel@iogearbox.net
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/core/filter.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 90e396423eb7..2911f25f57d3 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2559,11 +2559,13 @@ int skb_do_redirect(struct sk_buff *skb)
+ 
+ BPF_CALL_2(bpf_redirect, u32, ifindex, u64, flags)
+ {
+-	struct bpf_redirect_info *ri = bpf_net_ctx_get_ri();
++	struct bpf_redirect_info *ri;
+ 
+-	if (unlikely(flags & (~(BPF_F_INGRESS) | BPF_F_REDIRECT_INTERNAL)))
++	if (unlikely(!bpf_net_ctx_get() ||
++		     (flags & (~(BPF_F_INGRESS) | BPF_F_REDIRECT_INTERNAL))))
+ 		return TC_ACT_SHOT;
+ 
++	ri = bpf_net_ctx_get_ri();
+ 	ri->flags = flags;
+ 	ri->tgt_index = ifindex;
+ 
+@@ -2580,11 +2582,12 @@ static const struct bpf_func_proto bpf_redirect_proto = {
+ 
+ BPF_CALL_2(bpf_redirect_peer, u32, ifindex, u64, flags)
+ {
+-	struct bpf_redirect_info *ri = bpf_net_ctx_get_ri();
++	struct bpf_redirect_info *ri;
+ 
+-	if (unlikely(flags))
++	if (unlikely(!bpf_net_ctx_get() || flags))
+ 		return TC_ACT_SHOT;
+ 
++	ri = bpf_net_ctx_get_ri();
+ 	ri->flags = BPF_F_PEER;
+ 	ri->tgt_index = ifindex;
+ 
+@@ -2602,11 +2605,13 @@ static const struct bpf_func_proto bpf_redirect_peer_proto = {
+ BPF_CALL_4(bpf_redirect_neigh, u32, ifindex, struct bpf_redir_neigh *, params,
+ 	   int, plen, u64, flags)
+ {
+-	struct bpf_redirect_info *ri = bpf_net_ctx_get_ri();
++	struct bpf_redirect_info *ri;
+ 
+-	if (unlikely((plen && plen < sizeof(*params)) || flags))
++	if (unlikely((plen && plen < sizeof(*params)) ||
++		     !bpf_net_ctx_get() || flags))
+ 		return TC_ACT_SHOT;
+ 
++	ri = bpf_net_ctx_get_ri();
+ 	ri->flags = BPF_F_NEIGH | (plen ? BPF_F_NEXTHOP : 0);
+ 	ri->tgt_index = ifindex;
+
+-- 
+2.43.0
+
