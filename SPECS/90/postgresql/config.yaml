@@ -35,15 +35,9 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgresql-14.22.tar.bz2
+- archive: postgres-REL_14_24.tar.gz
   skip_validation: true
-  archive_sha512sum: b192189db081c0cb1d6dfba132dc3969a32a8990c69a0acf8f2c79b3fb1e865e727e6153ddd988c099021950cf7896c6619a7a12d83ca22765bf2736f67d66f5
-  name: postgresql-14.22
-  version: '14.22'
-  url: http://ftp.postgresql.org/pub/source/v14.22/postgresql-14.22.tar.bz2
-  repo_url: https://github.com/postgres/postgres.git
-  commit_id: 966473719c7f8067848dc79b58da0fb17ed136b1
-  missing: []
+  archive_sha512sum: 99e687072d7b6c674d37950d829a5c5cc487e0d614d7cdd0ddf6da85a4a51ad5a7adab7a17e6276ed702f7ff8d042825f1f01dba986abf013ffb27ed7c8bae2b
   spdx:
     package:
       detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
