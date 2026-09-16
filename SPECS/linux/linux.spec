@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.109
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -622,7 +622,7 @@ popd
 %autopatch -p1 -m10000 -M10000
 
 # prep for viomem out-of-tree module
-mkdir ../viomem
+mkdir -p ../viomem
 pushd ../viomem
 cp %{SOURCE30} Makefile
 cp %{SOURCE31} .
@@ -634,7 +634,7 @@ popd
 %setup -q -T -D -b 10000 -n linux-%{version}
 
 cp -rf ../%{jent_name}/ crypto/
-rm -rf crypto/jitterentropy-kcapi.c
+rm crypto/jitterentropy-kcapi.c
 mv crypto/%{jent_name}/jitterentropy-kcapi.c crypto/jitterentropy-kcapi.c
 cp %{SOURCE10001} crypto/%{jent_name}/
 cp %{SOURCE10002} crypto/%{jent_name}/
@@ -656,7 +656,7 @@ install %{SOURCE10300} crypto/
 %endif
 
 # Clean the build tree. It must be done before copying the canister.
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 
 %if 0%{?canister_usage}
 tar -xvf /usr/lib/fips-canister/fips-canister-%{fips_canister_version}.tar.bz2
@@ -732,47 +732,52 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 %build
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
-    KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" \
+    KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
 bldroot="${PWD}"
 
-%ifarch aarch64
-ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
-%endif
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
-make %{?_smp_mflags} ARCH=%{arch} -C tools  perf PYTHON=python3 $ARCH_FLAGS
-ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=deprecated-declarations"
+
+%make_build ARCH=%{arch} -C tools \
+        PYTHON=python3 $ARCH_FLAGS \
+        perf
+
 ARCH_FLAGS+=" EXTRA_CFLAGS+=-DHAVE_LIBBPF_SUPPORT"
 ARCH_FLAGS+=" EXTRA_CFLAGS+=-DBUILD_BPF_SKEL"
-make %{?_smp_mflags} ARCH=%{arch} -C tools bpf PYTHON=python3 $ARCH_FLAGS
-# verify perf has no dependency on libunwind
+
+%make_build ARCH=%{arch} -C tools \
+        PYTHON=python3 $ARCH_FLAGS \
+        bpf
+
+# Verify perf has no dependency on libunwind
 tools/perf/perf -vv | grep libunwind | grep OFF
 tools/perf/perf -vv | grep dwarf | grep on
 
 %ifarch x86_64
-#build turbostat and cpupower
-make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
+# Build turbostat and cpupower
+%make_build ARCH=%{arch} -C tools \
+    PYTHON=python3 \
+    turbostat cpupower
 %endif
 
 # build ENA module
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 cp configure.sh ena-conf.sh
 ./ena-conf.sh --kernel-dir ${bldroot}
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" V=1 modules %{?_smp_mflags}
+%make_build -C ${bldroot} M="${PWD}" modules
 popd
 
 # build EFA module
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa
-mkdir build
-cd build
-%cmake -DKERNEL_DIR=${bldroot} ..
-%cmake_build
+mkdir -p build && cd build
+%{cmake} -DKERNEL_DIR=${bldroot} ..
+%{cmake_build}
 popd
 
 # build viomem module
 pushd ../viomem
-%make_build -C ${bldroot} M="${PWD}" V=1 modules
+%make_build -C ${bldroot} M="${PWD}" modules
 popd
 
 %if 0%{?canister_build}
@@ -792,23 +797,33 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 install -vdm 755 %{buildroot}%{_libdir}/debug/%{_modulesdir}
-make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
+
+%make_build ARCH=%{arch} \
+    INSTALL_MOD_PATH=%{buildroot} \
+    modules_install
 
 # install ENA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build -C ${bldroot} M="${PWD}" \
+    INSTALL_MOD_PATH=%{buildroot} \
+    modules_install
 popd
 
 # install EFA module
 bldroot="${PWD}"
 pushd ../amzn-drivers-efa_linux_%{efa_version}/kernel/linux/efa/build/src
-make %{?_smp_mflags} -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} modules_install
+%make_build -C ${bldroot} M="${PWD}" \
+    INSTALL_MOD_PATH=%{buildroot} \
+    modules_install
 popd
 
 # install viomem module
 pushd ../viomem
-%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra modules_install
+%make_build -C ${bldroot} M="${PWD}" \
+    INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra \
+    modules_install
 popd
 
 %ifarch x86_64
@@ -819,9 +834,9 @@ ID1=$(readelf -n vmlinux | grep "Build ID")
 ./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
 ID2=$(readelf -n extracted-vmlinux | grep "Build ID")
 if [ "$ID1" != "$ID2" ] ; then
-  echo "Build IDs do not match"
-  echo $ID1
-  echo $ID2
+  echo "ERROR: Build IDs do not match" >&2
+  echo "ID1: $ID1"
+  echo "ID2: $ID2"
   exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
@@ -845,7 +860,7 @@ cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 %if 0%{?_enable_debug_packages}
 install -vm 644 vmlinux %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
-ln -s vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
+ln -sv vmlinux-%{uname_r} %{buildroot}%{_libdir}/debug/%{_modulesdir}/vmlinux
 %endif
 
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
@@ -856,42 +871,58 @@ photon_initrd=initrd.img-%{uname_r}
 EOF
 
 # Register myself to initramfs
-mkdir -p %{buildroot}%{_localstatedir}/lib/initramfs/kernel
+mkdir -p %{buildroot}%{_sharedstatedir}/initramfs/kernel
 
 # Cleanup dangling symlinks
-rm -rf %{buildroot}%{_modulesdir}/source \
-       %{buildroot}%{_modulesdir}/build
+rm -f %{buildroot}%{_modulesdir}/source \
+      %{buildroot}%{_modulesdir}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | \
+      xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
+find arch/%{archdir}/include include scripts -type f | \
+      xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | \
+      xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
+find arch/%{archdir}/include Module.symvers include scripts -type f | \
+      xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/{objtool,fixdep} \
+                 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
+# copy .config manually to be where it's expected to be
+cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
+
+ln -sfv "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
+
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
 
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
-     prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+     prefix=%{_prefix} $ARCH_FLAGS \
+     PYTHON=python3 \
+     perf_install
 
-make %{?_smp_mflags} -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
-     prefix=%{_prefix} PYTHON=python3 install-python_ext
+%make_build -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} \
+     prefix=%{_prefix} PYTHON=python3 \
+     install-python_ext
 
 %ifarch x86_64
-make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
-      prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
+%make_build -C tools ARCH=%{arch} DESTDIR=%{buildroot} \
+      prefix=%{_prefix} mandir=%{_mandir} \
+      PYTHON=python3 \
+      turbostat_install cpupower_install
 %endif
 
-make install %{?_smp_mflags} -C tools/bpf prefix=%{_prefix} DESTDIR=%{buildroot}
+%make_install %{?_smp_mflags} -C tools/bpf prefix=%{_prefix}
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
 cp -p %{SOURCE19} %{buildroot}%{_modulesdir}/dracut.conf.d/%{name}.conf
@@ -953,13 +984,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files tools
 %defattr(-,root,root)
-%ifarch x86_64
-%exclude %{_lib}/traceevent
-%endif
 %ifarch aarch64
 %exclude %{_libdir}/traceevent
 %endif
-%{_bindir}
+%{_bindir}/*
+# exclude bpf_jit_disasm due to binutils-libs dependency
+# 91, 92 differ in binutils version
+%exclude %{_bindir}/bpf_jit_disasm
 %{_sysconfdir}/bash_completion.d/perf
 %{_libexecdir}/perf-core
 %{_datadir}/perf-core
@@ -992,6 +1023,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.109-4
+- Fix rpm build warnings
+- Exclude bpf_jit_disasm binary to avoid binutils-libs dependency
 * Wed Sep 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.109-3
 - Fixes CVE-2026-80785
 * Tue Sep 15 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.109-2

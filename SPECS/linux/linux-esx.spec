@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.109
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -376,7 +376,7 @@ The Linux package contains the Linux kernel doc files
 %autopatch -p1 -m300 -M309
 
 # prep for viomem out-of-tree module
-mkdir ../viomem
+mkdir -p ../viomem
 pushd ../viomem
 cp %{SOURCE30} Makefile
 cp %{SOURCE31} .
@@ -391,7 +391,7 @@ popd
 %setup -q -T -D -b 10000 -n linux-%{version}
 
 cp -rf ../%{jent_name}/ crypto/
-rm -rf crypto/jitterentropy-kcapi.c
+rm crypto/jitterentropy-kcapi.c
 pushd crypto/%{jent_name}
 %autopatch -p1 -m10050 -M10050
 popd
@@ -415,7 +415,7 @@ install %{SOURCE10300} crypto/
 %autopatch -p1 -m10300 -M10301
 %endif
 
-make %{?_smp_mflags} mrproper
+%make_build mrproper
 cp %{SOURCE1} .config
 cp %{SOURCE21} photon-cert-bundle.pem
 
@@ -460,14 +460,13 @@ sed -e "s,@@NAME@@,%{name},g" \
 %include %{SOURCE4}
 
 %build
-
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" \
-    KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+%make_build KBUILD_BUILD_VERSION="1-photon" \
+    KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 
 # build viomem module
 bldroot="${PWD}"
 pushd ../viomem
-%make_build -C ${bldroot} M="${PWD}" V=1 modules
+%make_build -C ${bldroot} M="${PWD}" modules
 popd
 
 %install
@@ -475,7 +474,10 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
+
+%make_build ARCH=%{arch} \
+        INSTALL_MOD_PATH=%{buildroot} \
+        modules_install
 
 %ifarch x86_64
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
@@ -498,7 +500,9 @@ cp -r Documentation/* %{buildroot}%{_docdir}/linux-%{uname_r}
 # install viomem module
 bldroot="${PWD}"
 pushd ../viomem
-%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra modules_install
+%make_build -C ${bldroot} M="${PWD}" INSTALL_MOD_PATH=%{buildroot} \
+    INSTALL_MOD_DIR=extra \
+    modules_install
 popd
 
 %if 0%{?_enable_debug_packages}
@@ -514,25 +518,33 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# cleanup dangling symlinks
+# Cleanup dangling symlinks
 rm -f %{buildroot}%{_modulesdir}/source \
       %{buildroot}%{_modulesdir}/build
 
 # create /use/src/linux-headers-*/ content
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | \
+    xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
+find arch/%{archdir}/include include scripts -type f | \
+    xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | \
+    xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
+find arch/%{archdir}/include Module.symvers include scripts -type f | \
+    xargs sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/{objtool,fixdep} \
+    %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}/tools/objtool/
 %endif
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-# symling to the build folder
-ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
+# Symlink to the build folder
+ln -sfv "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}%{_modulesdir}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 mkdir -p %{buildroot}%{_modulesdir}/dracut.conf.d/
@@ -552,9 +564,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
-/lib/modules/*
+%{_modulesdir}/*
 %exclude %{_modulesdir}/build
-%exclude %{_includedir}/powercap.h
 
 %config(noreplace) %{_modulesdir}/dracut.conf.d/%{name}.conf
 
@@ -568,6 +579,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.109-4
+- Use rpm macros while building
+- Fix rpm build warnings
 * Wed Sep 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.109-3
 - Fixes CVE-2026-80785
 * Tue Sep 15 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.109-2

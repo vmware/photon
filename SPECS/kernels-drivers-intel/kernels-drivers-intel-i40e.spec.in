@@ -113,7 +113,7 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %endif
 
 %if "%{src_ver}" == "2.25.7"
-* Thu Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-8
+* Tue Sep 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-8
 - Release bump
 * Mon Nov 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> %{PKG_VERSION}-7
 - Fix CVE-2025-39901
@@ -131,8 +131,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 - Initial addition of i40e v2.25.7
 %endif
 
-%if "%{src_ver}" != "2.25.7"
-* Thu Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-10
+%if "%{src_ver}" != "2.25.7" && "%{src_ver}" != "2.30.18"
+* Tue Sep 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-10
 - Release bump
 * Mon Nov 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> %{PKG_VERSION}-9
 - Fix CVE-2025-39901

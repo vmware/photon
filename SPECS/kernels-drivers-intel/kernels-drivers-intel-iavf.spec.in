@@ -113,8 +113,8 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 - Initial addition of iavf v4.13.16
 %endif
 
-%if "%{src_ver}" == "4.11.1"
-* Thu Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-7
+%if "%{src_ver}" != "4.11.1" && "%{src_ver}" != "4.13.16"
+* Tue Sep 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-7
 - Release bump
 * Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-6
 - Release bump
@@ -131,7 +131,7 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %endif
 
 %if "%{src_ver}" != "4.11.1"
-* Thu Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-9
+* Tue Sep 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-9
 - Release bump
 * Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-8
 - Release bump
