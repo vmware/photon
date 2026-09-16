@@ -788,32 +788,51 @@ verify_version_and_upgrade() {
 function update_os() {
   local install_all_rc=0
   local rc=0
+
   source "${PHOTON_UPGRADE_UTILS_DIR}/ph5-to-ph6-upgrade.sh" "${PHOTON_UPGRADE_UTILS_DIR}"
-  write_to_syslog "Starting update of packages with command line: $CMDLINE"
   TO_VERSION="$FROM_VERSION"
+
+  write_to_syslog "Starting update of packages with command line: $CMDLINE"
+  is_precheck_running && REPOS_OPT="--testonly $REPOS_OPT"
+
   rebuilddb
-  backup_rpms_list_n_db $RPMDB_PATH
+
+  is_precheck_running || backup_rpms_list_n_db $RPMDB_PATH
   tdnf_makecache $FROM_VERSION
 
   remove_debuginfo_packages
-  sanitize_extra_erased_pkgs_arr
-  # deprecated drpm package would prevent package manager update from happening
-  # remove it before updating package manager
-  erase_pkgs "drpm"
-  update_solv_to_support_complex_deps
-  pre_upgrade_rm_pkgs
-  rebuilddb
-  tdnf_makecache
-  echo "Upating all the remaining packages to the latest available versions."
-  if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh \
-      --allowerasing ${RETAIN_DEPRECATED_PKGS:+--exclude="${RETAIN_DEPRECATED_PKGS}"}; then
-    echo "All packages were updated to the latest available versions successfully."
+
+  if ! is_precheck_running; then
+    # deprecated drpm package would prevent package manager update from happening
+    # remove it before updating package manager
+    erase_pkgs "drpm"
+    update_solv_to_support_complex_deps
+    pre_upgrade_rm_pkgs
     rebuilddb
-  else
-    rc=$?
-    abort $ERETRY_EAGAIN "Error in updating all the remaining packages to the latest available versions (tdnf error code: $rc)."
   fi
-  rebuilddb
+  tdnf_makecache
+
+  if is_precheck_running; then
+    if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh \
+        --allowerasing ${RETAIN_DEPRECATED_PKGS:+--exclude="${RETAIN_DEPRECATED_PKGS}"}; then
+      echo "Update OS precheck succeeded."
+      exit 0
+    else
+      rc=$?
+      echoerr "Update OS precheck failed with tdnf error $rc."
+      exit $rc
+    fi
+  else
+    echo "Updating all the remaining packages to the latest available versions."
+    if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh \
+        --allowerasing ${RETAIN_DEPRECATED_PKGS:+--exclude="${RETAIN_DEPRECATED_PKGS}"}; then
+      echo "All packages were updated to the latest available versions successfully."
+      rebuilddb
+    else
+      rc=$?
+      abort $ERETRY_EAGAIN "Error in updating all the remaining packages to the latest available versions (tdnf error code: $rc)."
+    fi
+  fi
   find_installed_deprecated_packages
   find_installed_replaced_packages
   extra_erased_pkgs_arr+=(
@@ -822,6 +841,7 @@ function update_os() {
                              ${!replaced_pkgs_map[@]}
     )
   )
+  sanitize_extra_erased_pkgs_arr
 
   backup_configs $TMP_BACKUP_LOC \
                   ${!replaced_pkgs_map[@]} \
@@ -869,8 +889,8 @@ while [ $# -gt 0 ]; do
       PRECHECK_ONLY='y'
       ASSUME_YES_OPT='-y'
       # Below 2 values are set just to let prechecks run with minimum set of args
-      TO_VERSION=${TO_VERSION:-6.0}
-      UPGRADE_OS='y'
+      ###TO_VERSION=${TO_VERSION:-6.0}
+      ###UPGRADE_OS='y'
       ;;
     --repos )
       repos_csv="$2"
