@@ -1,5 +1,6 @@
 %define srcname         postgresql
 %global pgmajorversion  15
+%define src_rel         postgres-REL_%{pgmajorversion}_19
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -11,7 +12,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.17
+Version:        15.19
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -19,8 +20,8 @@ Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=032f27f4028ee8be10f7540edd0174b5e354a2a38f4f228414539178d1bbc542c4b9c599e376685fa9de78a2d918b9ce74997908e7e5c0204b3da88bc4661e2b
+Source0: https://github.com/postgres/postgres/archive/refs/tags/%{src_rel}.tar.gz
+%define sha512 %{src_rel}=e88936cc56b93addae5628d6e8d55db808931d5efc7f9c1c165183a47080c7a69a36c8ad4681fd5c3be016c1a354ef8aad6678004058e16d3014b80dc1b4deb8
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -29,6 +30,7 @@ Source4: %{srcname}-env-vars.conf
 Source5: %{srcname}.preset
 Source6: systemd-unit-instructions
 
+BuildRequires:  bison
 BuildRequires:  krb5-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libxml2-devel
@@ -79,7 +81,7 @@ The postgresql-devel package contains libraries and header files for
 developing applications that use postgresql.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n %{src_rel}
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
@@ -122,6 +124,7 @@ echo "%{_pglibdir}" > %{buildroot}%{_pgbaseinstdir}/%{srcname}.conf
 
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 # Run the main regression test suites in the source tree.
 run_test_path() {
@@ -140,6 +143,7 @@ run_test_path "src/test/authentication"
 run_test_path "src/test/recovery"
 run_test_path "src/test/ssl"
 run_test_path "src/test/subscription"
+%endif
 
 %pre
 groupadd -r postgres &> /dev/null || :
@@ -325,6 +329,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.19-1
+- Upgrade to v15.19
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.17-1
 - Upgrade to v15.17
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.16-1

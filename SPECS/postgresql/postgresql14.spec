@@ -1,5 +1,6 @@
 %define srcname         postgresql
 %global pgmajorversion  14
+%define src_rel         postgres-REL_%{pgmajorversion}_24
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -12,7 +13,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.22
+Version:        14.24
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -20,8 +21,8 @@ Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
-%define sha512 %{srcname}=b192189db081c0cb1d6dfba132dc3969a32a8990c69a0acf8f2c79b3fb1e865e727e6153ddd988c099021950cf7896c6619a7a12d83ca22765bf2736f67d66f5
+Source0: https://github.com/postgres/postgres/archive/refs/tags/%{src_rel}.tar.gz
+%define sha512 %{src_rel}=99e687072d7b6c674d37950d829a5c5cc487e0d614d7cdd0ddf6da85a4a51ad5a7adab7a17e6276ed702f7ff8d042825f1f01dba986abf013ffb27ed7c8bae2b
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -30,6 +31,7 @@ Source4: %{srcname}-env-vars.conf
 Source5: %{srcname}.preset
 Source6: systemd-unit-instructions
 
+BuildRequires:  bison
 BuildRequires:  krb5-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libxml2-devel
@@ -87,7 +89,7 @@ The postgresql-devel package contains libraries and header files for
 developing applications that use postgresql.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n %{src_rel}
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
@@ -133,10 +135,12 @@ echo "%{_pglibdir}" > %{buildroot}%{_pgbaseinstdir}/%{srcname}.conf
 
 %{_fixperms} %{buildroot}/*
 
+%if 0%{?with_check}
 %check
 sed -i '2219s/",/ ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g' src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH %make_build check"
+%endif
 
 %pre
 groupadd -r postgres &> /dev/null || :
@@ -321,6 +325,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.24-1
+- Upgrade to v14.24
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.22-1
 - Upgrade to v14.22
 * Thu Feb 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.21-1
