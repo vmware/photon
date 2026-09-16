@@ -12,7 +12,6 @@ Patch3001: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
 Patch3002: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
 
 # Fix CVE-2026-43101
-Patch3003: 0001-ipv6-adopt-skb_dst_dev-and-skb_dst_dev_net-_rcu-help.patch
 Patch3004: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
 # Fixes CVE-2026-31589, CVE-2026-43414, CVE-2026-43465, CVE-2026-53224, CVE-2026-53246, CVE-2026-53260
 Patch3005: 0001-mm-call-free_folio-directly-in-folio_.patch
@@ -21,7 +20,6 @@ Patch3007: 0001-scsi-qla2xxx-Completely-fix-fcport-do.patch
 Patch3008: 0001-sctp-validate-cached-peer-INIT-chunk-length-in-COOKI.patch
 Patch3010: 0002-sctp-validate-embedded-INIT-chunk-and.patch
 Patch3011: 0003-sctp-add-INIT-verification-after-cookie-unpacking.patch
-Patch3013: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
 # Fixes CVE-2025-40074, CVE-2025-68353, CVE-2026-23208, CVE-2026-43009, CVE-2026-43485
 Patch3014: 0001-ALSA-usb-audio-Prevent-excessive-number-of-frames.patch
 Patch3015: 0001-bpf-Fix-incorrect-pruning-due-to-atomic-fetch-precis.patch
@@ -54,19 +52,15 @@ Patch3040: 0001-netfs-Fix-missing-barriers-when-accessing-stream-sub.patch
 Patch3041: 0001-netfs-Fix-missing-locking-around-retry-adding-new-su.patch
 Patch3042: 0001-netfs-Fix-netfs_read_to_pagecache-to-pause-on-subreq.patch
 Patch3043: 0001-tcp-fix-stale-per-CPU-tcp_tw_isn-leak-enabling-ISN-p.patch
-# Fixes CVEs
-Patch3044: 0001-bpf-fix-the-return-value-of-push_stack.patch
 # Fixes CVE-2026-72288, CVE-2026-72355
 Patch3045: 0001-KVM-arm64-vgic-Handle-race-between-interrupt-affini.patch
 Patch3046: 0001-netfs-Fix-barriering-when-walking-subrequest-list.patch
 # Fixes CVE-2026-72413, CVE-2026-72423
 Patch3047: 0001-bpf-Guard-conntrack-opts-error-writes.patch
-Patch3048: 0001-sctp-fix-err_chunk-memory-leaks-in-INIT-handling.patch
 # Fixes CVE-2026-72366, CVE-2026-72463, CVE-2026-72493, CVE-2026-74268, CVE-2026-74269
 Patch3049: 0001-bnxt-fix-head-underflow-on-XDP-head-grow.patch
 Patch3050: 0001-net-serialize-netif_running-check-in-enqueue_to_backlog.patch
 Patch3051: 0001-netfs-Fix-netfs_create_write_req-to-handle-async-cac.patch
-Patch3052: 0001-tcp-clear-sock_ops-cb-flags-before-force-closing.patch
 Patch3053: 0001-xfrm-Fix-dev-use-after-free-in-xfrm-async-resumption.patch
 # Fixes CVE-2026-64160
 Patch3054: 0001-cifs-Fix-handling-of-a-beyond-EOF-DIO-unbuffered-rea.patch
@@ -78,7 +72,6 @@ Patch3058: 0001-cgroup-rstat-validate-cpu-before-css_rstat_cpu-acce.patch
 Patch3059: 0001-drm-amdgpu-fix-amdgpu_hmm_range_get_pages.patch
 Patch3060: 0001-drm-amdgpu-vcn-set-no_user_fence-for-VCN-v4.0-enc-r.patch
 Patch3061: 0001-netfilter-x_tables-add-and-use-xt_unregister_table_p.patch
-Patch3062: 0001-netfs-Fix-netfs_read_folio-to-wait-on-writeback.patch
 Patch3063: 0002-netfilter-x_tables-add-and-use-xtables_unregister_ta.patch
 # Fixes CVE-2026-74571, CVE-2026-80580
 Patch3064: 0001-btrfs-skip-global-block-reserve-accounting-for-res.patch
@@ -100,8 +93,6 @@ Patch3075: 0001-bpf-Fix-tcx-netkit-detach-permissions-when-prog-fd-i.patch
 Patch3076: 0001-libceph-Fix-potential-out-of-bounds-access-in-__ceph.patch
 Patch3077: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-counting-for-leg.patch
 Patch3078: 0001-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
-# Fixes CVE-2026-68337, CVE-2026-68441
-Patch3079: 0001-bpf-Reject-redirect-helpers-without-a-bpf_net_contex.patch
 # Fixes CVE-2026-64388, CVE-2026-72031, CVE-2026-72341, CVE-2026-72439
 Patch3080: 0001-ata-libata-core-Add-NOLPM-quirk-for-PNY-CS900-1TB-SS.patch
 Patch3081: 0001-md-raid10-fix-writes_pending-leak-on-write-request-f.patch

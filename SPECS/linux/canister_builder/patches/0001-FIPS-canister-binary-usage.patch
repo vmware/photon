@@ -158,18 +158,20 @@ index af6614b46..8db12b3b5 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -176,13 +163,11 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
+@@ -176,7 +163,6 @@ obj-$(CONFIG_CRYPTO_USER_API_SKCIPHER) += algif_skcipher.o
  obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
 -obj-$(CONFIG_CRYPTO_ECC) += ecc.o
  obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
  obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
- 
+
+@@ -187,7 +173,6 @@ endif
+
  ecdh_generic-y += ecdh.o
  ecdh_generic-y += ecdh_helper.o
 -obj-$(CONFIG_CRYPTO_ECDH) += ecdh_generic.o
- 
+
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
 @@ -206,3 +191,113 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o

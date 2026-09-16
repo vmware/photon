@@ -22,8 +22,8 @@ Signed-off-by: Alex Upshaw <upshawa@vmware.com>
  drivers/misc/vmw_extcfg/extcfg_device.h       |  40 ++++
  drivers/misc/vmw_extcfg/extcfg_driver.c       |   6 +
  drivers/misc/vmw_extcfg/extcfg_hotplug.c      | 189 ++++++++++++++++++
- .../misc/vmw_extcfg/extcfg_memory_hotplug.c   |  90 +++++++++
- 5 files changed, 326 insertions(+), 1 deletion(-)
+ .../misc/vmw_extcfg/extcfg_memory_hotplug.c   |  91 +++++++++
+ 5 files changed, 327 insertions(+), 1 deletion(-)
  create mode 100644 drivers/misc/vmw_extcfg/extcfg_hotplug.c
  create mode 100644 drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c
 
@@ -333,7 +333,7 @@ new file mode 100644
 index 000000000..380450aec
 --- /dev/null
 +++ b/drivers/misc/vmw_extcfg/extcfg_memory_hotplug.c
-@@ -0,0 +1,90 @@
+@@ -0,0 +1,91 @@
 +// SPDX-License-Identifier: Dual BSD/GPL
 +/*
 + * VMware Virtual Chipset Extended Configuration Driver
@@ -413,9 +413,10 @@ index 000000000..380450aec
 +	}
 +
 +	/* Add the memory to the memory manager. */
-+	ret = add_memory_resource(numa_node, res, mhp_default_online_type);
++	ret = add_memory_resource(numa_node, res, MHP_MERGE_RESOURCE);
 +	if (ret < 0) {
 +		pr_err("Failed to add hot added memory to the memory manager.\n");
++		release_resource(res);
 +		kfree(res);
 +		return ret;
 +	}

@@ -74,15 +74,15 @@ index 3bdfac9b4418..9dacb753b1fd 100644
  #define BPF_MAP_CREATE_LAST_FIELD map_token_fd
  /* called via syscall */
  static int map_create(union bpf_attr *attr)
-@@ -4156,6 +4151,8 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+@@ -4177,6 +4172,8 @@ static int bpf_prog_detach(const union bpf_attr *attr)
  			prog = bpf_prog_get_type(attr->attach_bpf_fd, ptype);
  			if (IS_ERR(prog))
  				return PTR_ERR(prog);
 +		} else if (!bpf_mprog_detach_empty(ptype)) {
 +			return -EPERM;
  		}
- 	} else if (attr->attach_flags ||
- 		   attr->relative_fd ||
+ 	} else if (is_cgroup_prog_type(ptype, 0, false)) {
+ 		if (attr->attach_flags || attr->relative_fd)
 -- 
 2.53.0
 

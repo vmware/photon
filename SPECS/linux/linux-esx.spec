@@ -28,8 +28,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.12.109
-Release:        10%{?dist}
+Version:        6.12.111
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -221,7 +221,7 @@ Patch208: 0001-arm64-report-guest-crash-to-vmware-hypervisor.patch
 
 # 9p: [300..350]
 Patch300: 0001-fs-9p-Add-opt_metaonly-cache-option.patch
-Patch301: 0002-p9fs_dir_readdir-offset-support.patch
+# Patch301: 0002-p9fs_dir_readdir-offset-support.patch
 Patch303: 0003-Enable-cache-loose-for-vdfs-9p.patch
 Patch304: 0004-Ensure-seekdir-take-effect-when-entries-in-readdir-b.patch
 Patch305: 0005-Initialize-fid-iounit-during-creation-of-p9_fid.patch
@@ -577,6 +577,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Sep 23 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.111-1
+- Update to version 6.12.111
 * Wed Sep 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.109-10
 - Fixes CVE-2026-46325, CVE-2026-68242, CVE-2026-68258
 * Mon Sep 21 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.109-9

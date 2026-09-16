@@ -41,16 +41,16 @@ diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
 index 868a25c57b92..12f765114ba0 100644
 --- a/net/ipv6/ioam6.c
 +++ b/net/ipv6/ioam6.c
-@@ -801,12 +801,16 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+@@ -802,12 +802,16 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
  		struct Qdisc *qdisc;
  		__u32 qlen, backlog;
  
--		if (skb_dst(skb)->dev->flags & IFF_LOOPBACK) {
-+		if (skb_dst(skb)->dev->flags & IFF_LOOPBACK ||
-+		    skb_get_queue_mapping(skb) >= skb_dst(skb)->dev->num_tx_queues) {
+-		if (dev->flags & IFF_LOOPBACK) {
++		if (dev->flags & IFF_LOOPBACK ||
++		    skb_get_queue_mapping(skb) >= dev->num_tx_queues) {
  			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
  		} else {
- 			queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
+ 			queue = skb_get_tx_queue(dev, skb);
  			qdisc = rcu_dereference(queue->qdisc);
 +
 +			spin_lock_bh(qdisc_lock(qdisc));
