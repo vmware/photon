@@ -102,3 +102,8 @@ Patch3077: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-counting-for-leg.patch
 Patch3078: 0001-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
 # Fixes CVE-2026-68337, CVE-2026-68441
 Patch3079: 0001-bpf-Reject-redirect-helpers-without-a-bpf_net_contex.patch
+# Fixes CVE-2026-64388, CVE-2026-72031, CVE-2026-72341, CVE-2026-72439
+Patch3080: 0001-ata-libata-core-Add-NOLPM-quirk-for-PNY-CS900-1TB-SS.patch
+Patch3081: 0001-md-raid10-fix-writes_pending-leak-on-write-request-f.patch
+Patch3082: 0001-net-mlx5e-Fix-publication-race-for-priv-channel_stat.patch
+Patch3083: 0001-smb-client-fix-chown-chgrp-with-SMB3-POSIX-Extension.patch

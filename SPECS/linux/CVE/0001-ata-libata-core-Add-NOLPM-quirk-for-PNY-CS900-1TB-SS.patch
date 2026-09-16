@@ -1,0 +1,40 @@
+From 462775c620197adaabc983ce847e5b9878ff4cb0 Mon Sep 17 00:00:00 2001
+From: Bryam Vargas <hexlabsecurity@proton.me>
+Date: Fri, 19 Jun 2026 21:54:02 -0500
+Subject: ata: libata-core: Add NOLPM quirk for PNY CS900 1TB SSD
+
+[ Upstream commit 462775c620197adaabc983ce847e5b9878ff4cb0 ]
+
+The PNY CS900 1TB SSD (Phison PS3111-S11, DRAM-less) drops off the bus
+after entering Device-Initiated Slumber during idle. With the default
+med_power_with_dipm policy the link goes down (SStatus 1 SControl 300)
+and does not recover, forcing the filesystem read-only. Forcing
+max_performance keeps the link stable across prolonged idle.
+
+Add a NOLPM quirk so link power management is disabled for this drive
+specifically, leaving it intact for other devices on the host.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
+Reviewed-by: Niklas Cassel <cassel@kernel.org>
+Signed-off-by: Damien Le Moal <dlemoal@kernel.org>
+[Shivani: Backported for CVE-2026-72031. Modified to apply on 6.12.y ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ drivers/ata/libata-core.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 1111111..2222222 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4224,6 +4224,9 @@ static const struct ata_dev_quirks_entry __ata_dev_quirks[] = {
+ 	/* Apacer models with LPM issues */
+ 	{ "Apacer AS340*",		NULL,	ATA_QUIRK_NOLPM },
+
++	/* PNY CS900 (Phison PS3111-S11, DRAM-less) drops the link on DIPM */
++	{ "PNY CS900 1TB SSD",		NULL,	ATA_QUIRK_NOLPM },
++
+ 	/* These specific Samsung models/firmware-revs do not handle LPM well */
+ 	{ "SAMSUNG MZMPC128HBFU-000MV", "CXM14M1Q", ATA_QUIRK_NOLPM },
+ 	{ "SAMSUNG SSD PM830 mSATA *",  "CXM13D1Q", ATA_QUIRK_NOLPM },
