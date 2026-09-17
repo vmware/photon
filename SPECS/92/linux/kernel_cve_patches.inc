@@ -132,3 +132,12 @@ Patch3110: 0003-perf-tools-Use-perf_env__get_cpu_topology-in-machine.patch
 Patch3111: 0001-bpf-Check-sk_state-before-sk_protocol-in-bpf_tcp_-_s.patch
 Patch3112: 0001-ceph-fix-UAF-in-check_new_map-on-session-freed-durin.patch
 Patch3113: 0002-ceph-fix-use-after-free-in-check_new_map-after-early.patch
+# Fixes CVE-2026-80631, CVE-2026-80668, CVE-2026-80705
+Patch3114: 0001-btrfs-lzo-reject-compressed-segment-that-overflows-t.patch
+Patch3115: 0001-drm-amd-display-check-if-dml21_add_phantom_plane-is.patch
+Patch3116: 0001-netfilter-conntrack-check-NULL-when-retrieving-ct-ex.patch
+Patch3117: 0002-netfilter-nf_conntrack_expect-use-conntrack-GC-to-re.patch
+Patch3118: 0003-netfilter-ctnetlink-do-not-expose-expectation-DEAD-f.patch
+Patch3119: 0004-netfilter-nf_conntrack_expect-add-and-use-nf_ct_expe.patch
+Patch3120: 0005-netfilter-nf_conntrack_expect-bail-out-on-insert-dea.patch
+Patch3121: 0006-netfilter-nf_conntrack_expect-consolidate-check-for-.patch

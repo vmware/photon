@@ -1,0 +1,39 @@
+From ccac2dbc1ccc9045691f2e38e33ed50ae736ff2d Mon Sep 17 00:00:00 2001
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Mon, 10 Aug 2026 12:31:24 +0200
+Subject: [PATCH] netfilter: nf_conntrack_expect: bail out on insert dead
+ expectations
+
+commit e765c95faa10a8b4e6e9ac7d338eca9662dc56da upstream.
+
+If the NF_CT_EXPECT_DEAD expectation flag is set on, bail out on
+insertion. Moreover, add also DEBUG_NET_WARN_ON_ONCE() since this should
+not ever happen. This is hardening commit b8b09dc2bf35 ("netfilter:
+nf_conntrack_expect: use conntrack GC to reap expectations").
+
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/netfilter/nf_conntrack_expect.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_expect.c
+index ceeb9c9..5b86429 100644
+--- a/net/netfilter/nf_conntrack_expect.c
++++ b/net/netfilter/nf_conntrack_expect.c
+@@ -515,6 +515,12 @@ int nf_ct_expect_related_report(struct nf_conntrack_expect *expect,
+ 	int ret;
+ 
+ 	spin_lock_bh(&nf_conntrack_expect_lock);
++	if (expect->flags & NF_CT_EXPECT_DEAD) {
++		DEBUG_NET_WARN_ON_ONCE(1);
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	master_help = nfct_help(expect->master);
+ 	if (!master_help) {
+ 		ret = -ESHUTDOWN;
+-- 
+2.53.0
+
