@@ -1,0 +1,23 @@
+sources:
+- archive: bpftrace-0.25.1.tar.gz
+  archive_type: upstream
+  archive_sha512sum: abe7bfab906894de889c958020b2dcc65bdc0b5c3d8986846ef41a9d593ca16075632916cf281154630221c6e511a11e3139a09bb641570277a44bd47299bbe6
+  name: "bpftrace-0.25.1"
+  version: 0.25.1
+  url: https://github.com/bpftrace/bpftrace/archive/refs/tags/v0.25.1.tar.gz
+  repo_url: https://github.com/bpftrace/bpftrace.git
+  commit_id: e491811e5d648288c01f42ce087967b271f504a0
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: bpftrace uses LLVM as a backend to compile scripts to
+        eBPF-bytecode and makes use of libbpf and bcc for interacting with the Linux
+        BPF subsystem, as well as existing Linux tracing capabilities
+      home_page: https://github.com/bpftrace/bpftrace
+      license_concluded: MIT AND BSD-3-Clause AND Apache-2.0 WITH LLVM-exception AND
+        GPL-1.0-or-later AND GPL-2.0-or-later AND Apache-2.0
+      license_declared: MIT AND BSD-3-Clause AND Apache-2.0 WITH LLVM-exception AND
+        GPL-1.0-or-later AND GPL-2.0-or-later AND Apache-2.0
+      short_summary: bpftrace is a high-level tracing language for Linux
+      supplier: 'Organization: Broadcom, Inc.'
