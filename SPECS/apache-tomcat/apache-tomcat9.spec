@@ -11,7 +11,7 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.121
+Version:        9.0.122
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -22,7 +22,7 @@ Distribution:   Photon
 BuildArch: noarch
 
 Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
-%define sha512 %{_origname}=15a2b56f5d0feb2b70ea8a1d2369ddeac027b44ad18954cedd423da4ed98b14ba20a0f1c4a857f00262763beb83693d9569764946f911a8611dc1eb179cd4609
+%define sha512 %{_origname}=c4cd027f427c66e566be2c8c534c748dbaeb94b2aea5822cf0e61a731afd86a9b22b5a551e768e62c676c779a5d6494e784530e73b549fb49f2df47fc89e86e8
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -34,7 +34,7 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_orig
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 Source1: base-for-%{_origname}-%{version}.tar.gz
-%define sha512 base=e685962f14c3ef9e431109524b9785d9e3dda6b21a87431c828c8ffd7462c417b49d3555b3b213cce3a363a57046f4415f9fa434bab7d879926d70fee970fe24
+%define sha512 base=45a126e559bea3c67e17f5edcdeaf1f003124952a50adcce32acb0dcf282d1fa6d860d0180ad749465a246f76d026f8d92003b01dc1eb8ba4c5d831df5360d8f
 
 BuildRequires: openjdk17
 BuildRequires: apache-ant
@@ -146,6 +146,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Thu Sep 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.122-1
+- Upgrade to v9.0.122
 * Tue Sep 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.121-1
 - Upgrade to v9.0.121
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.116-2
