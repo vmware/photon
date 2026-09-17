@@ -1,0 +1,120 @@
+From fd1691ec62701c982ea32e749678988c67fd4c21 Mon Sep 17 00:00:00 2001
+From: David Francis <David.Francis@amd.com>
+Date: Mon, 6 Jul 2026 10:19:04 -0400
+Subject: [PATCH] drm/amdkfd: Check bounds on CRIU restore queue type and mqd
+ size
+
+[ Upstream commit 47ea05f246bebc81c7796f56265cffd812cf0601 ]
+
+We weren't checking whether the values provided in the private
+data in kfd CRIU restore were within bounds.
+
+For queue type, add a KFD_QUEUE_TYPE_MAX and ensure the provided
+type is less than it.
+
+For mqd_size, add new function mqd_size_from_queue_type and confirm
+that the provided mqd_size matches expectations.
+
+Reviewed-by: David Yat Sin <david.yatsin@amd.com>
+Signed-off-by: David Francis <David.Francis@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+(cherry picked from commit f19d8086f6644083c913d70bfdeee20e1b6f46a5)
+Cc: stable@vger.kernel.org
+[ Keerthana K: Backport to v6.12.y ]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ .../drm/amd/amdkfd/kfd_device_queue_manager.c |  6 +++++
+ .../drm/amd/amdkfd/kfd_device_queue_manager.h |  2 ++
+ drivers/gpu/drm/amd/amdkfd/kfd_priv.h         |  3 ++-
+ .../amd/amdkfd/kfd_process_queue_manager.c    | 24 +++++++++++++------
+ 4 files changed, 27 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+index 9035eebe9cd6..0f70ccfa83d4 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+@@ -3530,6 +3530,12 @@ bool kfd_dqm_is_queue_in_process(struct device_queue_manager *dqm,
+ 	dqm_unlock(dqm);
+ 	return r;
+ }
++
++size_t mqd_size_from_queue_type(struct device_queue_manager *dqm, enum kfd_queue_type type)
++{
++	return dqm->mqd_mgrs[get_mqd_type_from_queue_type(type)]->mqd_size;
++}
++
+ #if defined(CONFIG_DEBUG_FS)
+ 
+ static void seq_reg_dump(struct seq_file *m,
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.h b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.h
+index 09ab36f8e8c6..c03b6e6fb368 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.h
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.h
+@@ -327,6 +327,8 @@ int debug_refresh_runlist(struct device_queue_manager *dqm);
+ bool kfd_dqm_is_queue_in_process(struct device_queue_manager *dqm,
+ 				 struct qcm_process_device *qpd,
+ 				 int doorbell_off, u32 *queue_format);
++size_t mqd_size_from_queue_type(struct device_queue_manager *dqm,
++				enum kfd_queue_type type);
+ 
+ static inline unsigned int get_sh_mem_bases_32(struct kfd_process_device *pdd)
+ {
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
+index fb7e02523b7e..84f05ec5dcd5 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
+@@ -431,7 +431,8 @@ enum kfd_queue_type  {
+ 	KFD_QUEUE_TYPE_HIQ,
+ 	KFD_QUEUE_TYPE_DIQ,
+ 	KFD_QUEUE_TYPE_SDMA_XGMI,
+-	KFD_QUEUE_TYPE_SDMA_BY_ENG_ID
++	KFD_QUEUE_TYPE_SDMA_BY_ENG_ID,
++	KFD_QUEUE_TYPE_MAX,
+ };
+ 
+ enum kfd_queue_format {
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
+index 4ba100236abb..720f9c2279d3 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
+@@ -1015,6 +1015,23 @@ int kfd_criu_restore_queue(struct kfd_process *p,
+ 		goto exit;
+ 	}
+ 
++	pdd = kfd_process_device_data_by_id(p, q_data->gpu_id);
++	if (!pdd) {
++		pr_err("Failed to get pdd\n");
++		ret = -EINVAL;
++		goto exit;
++	}
++
++	if (q_data->type >= KFD_QUEUE_TYPE_MAX) {
++		ret = -EINVAL;
++		goto exit;
++	}
++
++	if (q_data->mqd_size != mqd_size_from_queue_type(pdd->dev->dqm, q_data->type)) {
++		ret = -EINVAL;
++		goto exit;
++	}
++
+ 	*priv_data_offset += sizeof(*q_data);
+ 	q_extra_data_size = (uint64_t)q_data->ctl_stack_size + q_data->mqd_size;
+ 
+@@ -1037,13 +1054,6 @@ int kfd_criu_restore_queue(struct kfd_process *p,
+ 
+ 	*priv_data_offset += q_extra_data_size;
+ 
+-	pdd = kfd_process_device_data_by_id(p, q_data->gpu_id);
+-	if (!pdd) {
+-		pr_err("Failed to get pdd\n");
+-		ret = -EINVAL;
+-		goto exit;
+-	}
+-
+ 	/* data stored in this order: mqd, ctl_stack */
+ 	mqd = q_extra_data;
+ 	ctl_stack = mqd + q_data->mqd_size;
+-- 
+2.43.7
+

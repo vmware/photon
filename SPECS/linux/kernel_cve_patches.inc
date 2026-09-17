@@ -109,3 +109,7 @@ Patch3082: 0001-net-mlx5e-Fix-publication-race-for-priv-channel_stat.patch
 Patch3083: 0001-smb-client-fix-chown-chgrp-with-SMB3-POSIX-Extension.patch
 # Fixes CVE-2026-68426
 Patch3084: 0001-xfrm-fix-stale-skb-prev-after-async-crypto-steals-a-.patch
+# Fixes CVE-2026-46325, CVE-2026-68242, CVE-2026-68258
+Patch3085: 0001-RDMA-rxe-Fix-iova-to-va-conversion-for-MR-page-sizes.patch
+Patch3086: 0001-drm-amdkfd-Check-bounds-on-CRIU-restore-queue-type-a.patch
+Patch3087: 0001-drm-i915-gt-Fix-NULL-deref-on-sched_engine-alloc-fai.patch
