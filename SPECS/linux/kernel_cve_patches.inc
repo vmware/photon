@@ -107,3 +107,5 @@ Patch3080: 0001-ata-libata-core-Add-NOLPM-quirk-for-PNY-CS900-1TB-SS.patch
 Patch3081: 0001-md-raid10-fix-writes_pending-leak-on-write-request-f.patch
 Patch3082: 0001-net-mlx5e-Fix-publication-race-for-priv-channel_stat.patch
 Patch3083: 0001-smb-client-fix-chown-chgrp-with-SMB3-POSIX-Extension.patch
+# Fixes CVE-2026-68426
+Patch3084: 0001-xfrm-fix-stale-skb-prev-after-async-crypto-steals-a-.patch
