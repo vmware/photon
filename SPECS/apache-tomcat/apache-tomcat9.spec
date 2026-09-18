@@ -10,7 +10,7 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.121
+Version:        9.0.122
 Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -19,14 +19,14 @@ Distribution:   Photon
 Obsoletes:      apache-tomcat-9 < 9.0.82-1%{?dist}
 Provides:       apache-tomcat-9 = %{version}-%{release}
 
-Source0: https://archive.apache.org/dist/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
+Source0: https://downloads.apache.org/tomcat/tomcat-9/v%{version}/src/%{_origname}-%{version}-src.tar.gz
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
 # base-for-apache-tomcat is a cached -Dbase.path folder
 # generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
 # 2. cd %{_origname}-%{version}-src && ant deploy dist-prepare dist-source
-# 3. generated code will be exist to default location $HOME/tomcat-build-libs
+# 3. Generated code will be at $HOME/tomcat-build-libs
 # 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
 
@@ -63,6 +63,10 @@ The web application for Apache Tomcat.
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
+
+pushd %{_builddir}/base-for-apache-tomcat-%{version}
+rm nsis-3.12-src/Contrib/MakeLangId/MakeLangId.cpp
+popd
 
 %build
 ant -Dant.build.javac.source=1.8 -Dant.build.javac.target=1.8 \
@@ -147,6 +151,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Thu Sep 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.122-1
+- Upgrade to v9.0.122
 * Thu Sep 10 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.121-1
 - Version upgrade
 - Fixes multiple CVEs

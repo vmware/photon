@@ -10,7 +10,7 @@
 
 Summary:        Apache Tomcat 11
 Name:           apache-tomcat11
-Version:        11.0.21
+Version:        11.0.26
 Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -21,7 +21,7 @@ Distribution:   Photon
 Obsoletes:      %{_origname} < 11.0.21-1%{?dist}
 Provides:       %{_origname} = %{version}-%{release}
 
-Source0: https://archive.apache.org/dist/tomcat/tomcat-11/v%{version}/src/%{_origname}-%{version}-src.tar.gz
+Source0: https://downloads.apache.org/tomcat/tomcat-11/v%{version}/src/%{_origname}-%{version}-src.tar.gz
 
 # Please check the below link for the supported java version
 # https://tomcat.apache.org/whichversion.html
@@ -30,11 +30,12 @@ Source0: https://archive.apache.org/dist/tomcat/tomcat-11/v%{version}/src/%{_ori
 # Generate base-for-apache-tomcat code with following steps:
 # 1. tar -xvzf Source0 to $HOME
 # 2. cd %{_origname}-%{version}-src && ant deploy dist-prepare dist-source
-# 3. generated code will be exist to default location $HOME/tomcat-build-libs
-# 4. delete nsis-3.11-src.tar.bz2, nsis-3.11.zip and download-211133185.zip
+# 3. Generated code will be at $HOME/tomcat-build-libs
+# 4. lete nsis-3.11-src.tar.bz2, nsis-3.11.zip and download-211133185.zip
 #    present inside $HOME/tomcat-build-libs.(version number may differ)
-# 4. mv tomcat-build-libs base-for-%{_origname}-%{version}
-# 5. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
+# 5. mv tomcat-build-libs base-for-%{_origname}-%{version}
+# 6. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
+
 Source1: base-for-%{_origname}-%{version}.tar.gz
 
 Source2: license-apache-tomcat11.txt
@@ -66,6 +67,10 @@ The web application for Apache Tomcat.
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
+
+pushd %{_builddir}/base-for-apache-tomcat-%{version}
+rm nsis-3.12-src/Contrib/MakeLangId/MakeLangId.cpp
+popd
 
 %build
 ant \
@@ -152,5 +157,7 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Thu Sep 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1
+- Upgrade to v11.0.26
 * Tue Apr 14 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 11.0.21-1
 - Initial build of version 11.0.21
