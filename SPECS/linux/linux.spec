@@ -57,8 +57,19 @@
 %global canister_build 1
 %endif
 
+%ifarch x86_64
 %if 0%{?acvp_build}
 %global fips 1
+%endif
+%endif
+
+# acvp_build and kat_build are x86_64-only: the canister they certify is
+# arch/x86 crypto and the only ACVP config is config_x86_64_acvp. Refuse them
+# on any other architecture instead of building with x86_64 inputs.
+%ifnarch x86_64
+%if 0%{?acvp_build} || 0%{?kat_build}
+%{error:acvp_build and kat_build are x86_64-only; refusing to build for %{_target_cpu}}
+%endif
 %endif
 
 # Set default FIPS flags
@@ -80,7 +91,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.109
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -99,6 +110,8 @@ Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux
 %define efa_version 3.1.0
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
 
+# shared canister/.config handling, also included by linux-esx.spec
+Source5:        canister_config.inc
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
@@ -702,14 +715,7 @@ sed -i 's/CONFIG_LD_VERSION=23900/CONFIG_LD_VERSION=24601/' .config
 sed -i 's/CONFIG_GCC_ASM_GOTO_OUTPUT_BROKEN=y/CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y\nCONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y/' .config
 %endif
 
-%if 0%{?canister_build}
-sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
-sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
-%endif
-
-%if 0%{?canister_usage}
-sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
-%endif
+%include %{SOURCE5}
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -1023,6 +1029,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Sat Sep 19 2026 Daniel Casota <dcasota@gmail.com> 6.12.109-7
+- Share canister/.config handling via canister_config.inc (fixes the fips=0 path) and make canister_build work against the current kernel
 * Fri Sep 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.109-6
 - Fixes CVE-2026-68337, CVE-2026-68441
 * Thu Sep 17 2026 srinidhira0 <srinidhi.rao@broadcom.com> 6.12.109-5
