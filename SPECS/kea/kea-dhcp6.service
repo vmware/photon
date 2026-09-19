@@ -1,0 +1,29 @@
+[Unit]
+Description=Kea DHCPv6 Server
+Documentation=https://kea.readthedocs.io/
+Wants=network-online.target
+After=network-online.target
+After=time-sync.target
+
+[Service]
+# Type=simple, not Type=notify: Kea 3.1.9 has no sd_notify support upstream
+# (no libsystemd dependency, no NOTIFY_SOCKET handling). Distributions that
+# use Type=notify carry an out-of-tree sd-daemon patch; Photon does not.
+Type=simple
+User=kea
+Group=kea
+# CAP_NET_BIND_SERVICE: bind the privileged DHCPv6 server port 547.
+# DHCPv6 uses ordinary UDP sockets, so CAP_NET_RAW is not required.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+RuntimeDirectory=kea
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+StateDirectory=kea
+StateDirectoryMode=0750
+LogsDirectory=kea
+LogsDirectoryMode=0750
+ExecStart=/usr/sbin/kea-dhcp6 -c /etc/kea/kea-dhcp6.conf
+ExecReload=/usr/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
