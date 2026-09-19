@@ -1,11 +1,14 @@
 %global build_if %{photon_subrelease} >= 91
 
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# STIG conditional in this spec permanently unreachable, and untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.7.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -150,6 +153,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 1.7.2-4
+- Define STIG_HARDEN only if unset so it can be set from pkg_build_options.json or rpmbuild -D; the default build is unchanged
 * Thu May 21 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.7.2-3
 - Remove libnsl depndency
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.7.2-2
