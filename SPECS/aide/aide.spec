@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.19
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/aide/aide
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -37,7 +37,20 @@ BuildRequires: check-devel
 Requires: pcre2
 Requires: libgpg-error
 Requires: openssl
+# libgcrypt must be at least the version aide is built against. The
+# auto-generated soname dependency (libgcrypt.so.20(GCRYPT_1.6)) is satisfied by
+# 1.10.1 as well, so an unversioned Requires lets an already-installed 1.10.1
+# satisfy the install and libgcrypt is never upgraded. The stig-hardening role
+# works around that by running "tdnf -y install aide libgcrypt" by hand
+# (tasks/photon.yml, "Currently a bug in the aide package that does not upgrade
+# libgcrypt to the needed version"). Expressing it here removes the need for the
+# workaround. Guarded because libgcrypt is 1.10.4 only for subrelease >= 91;
+# subrelease <= 90 ships SPECS/90/libgcrypt at 1.10.1.
+%if 0%{photon_subrelease} >= 91
+Requires: libgcrypt >= 1.10.4
+%else
 Requires: libgcrypt
+%endif
 Requires: audit
 Requires: libacl
 Requires: attr
@@ -99,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_var}/log/%{name}
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 0.19-3
+- Require libgcrypt >= 1.10.4 so it is upgraded rather than left at 1.10.1
 * Wed Mar 11 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.19-2
 - Migrate from pcre to pcre2
 * Tue Oct 07 2025 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 0.19-1
