@@ -1,0 +1,130 @@
+From 2899d58462ba868287d6ff3acad3675e7adf934f Mon Sep 17 00:00:00 2001
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Wed, 10 Jul 2024 10:40:42 -0700
+Subject: [PATCH 2/2] ethtool: fail closed if we can't get max channel used in
+ indirection tables
+
+[ Upstream commit 2899d58462ba868287d6ff3acad3675e7adf934f ]
+
+Commit 0d1b7d6c9274 ("bnxt: fix crashes when reducing ring count with
+active RSS contexts") proves that allowing indirection table to contain
+channels with out of bounds IDs may lead to crashes. Currently the
+max channel check in the core gets skipped if driver can't fetch
+the indirection table or when we can't allocate memory.
+
+Both of those conditions should be extremely rare but if they do
+happen we should try to be safe and fail the channel change.
+
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Link: https://patch.msgid.link/20240710174043.754664-2-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ net/ethtool/channels.c |  4 +---
+ net/ethtool/common.c   | 26 +++++++++++++++-----------
+ net/ethtool/common.h   |  2 +-
+ net/ethtool/ioctl.c    |  4 +---
+ 4 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/net/ethtool/channels.c b/net/ethtool/channels.c
+index 4833b3231..23bda1dcc 100644
+--- a/net/ethtool/channels.c
++++ b/net/ethtool/channels.c
+@@ -194,9 +194,7 @@ int ethnl_set_channels(struct sk_buff *skb, struct genl_info *info)
+ 	 */
+ 	if (ethtool_get_max_rxnfc_channel(dev, &max_rxnfc_in_use))
+ 		max_rxnfc_in_use = 0;
+-	if (!netif_is_rxfh_configured(dev) ||
+-	    ethtool_get_max_rxfh_channel(dev, &max_rxfh_in_use))
+-		max_rxfh_in_use = 0;
++	max_rxfh_in_use = ethtool_get_max_rxfh_channel(dev);
+ 	if (channels.combined_count + channels.rx_count <= max_rxfh_in_use) {
+ 		ret = -EINVAL;
+ 		GENL_SET_ERR_MSG(info, "requested channel counts are too low for existing indirection table settings");
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index d6f387ff6..baeb6a9bf 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -405,35 +405,39 @@ int ethtool_get_max_rxnfc_channel(struct net_device *dev, u64 *max)
+ 	return err;
+ }
+ 
+-int ethtool_get_max_rxfh_channel(struct net_device *dev, u32 *max)
++u32 ethtool_get_max_rxfh_channel(struct net_device *dev)
+ {
+-	u32 dev_size, current_max = 0;
++	u32 dev_size, current_max;
+ 	u32 *indir;
+ 	int ret;
+ 
++	if (!netif_is_rxfh_configured(dev))
++		return 0;
++
+ 	if (!dev->ethtool_ops->get_rxfh_indir_size ||
+ 	    !dev->ethtool_ops->get_rxfh)
+-		return -EOPNOTSUPP;
++		return 0;
+ 	dev_size = dev->ethtool_ops->get_rxfh_indir_size(dev);
+ 	if (dev_size == 0)
+-		return -EOPNOTSUPP;
++		return 0;
+ 
+ 	indir = kcalloc(dev_size, sizeof(indir[0]), GFP_USER);
+ 	if (!indir)
+-		return -ENOMEM;
++		return U32_MAX;
+ 
+ 	ret = dev->ethtool_ops->get_rxfh(dev, indir, NULL, NULL);
+-	if (ret)
+-		goto out;
++	if (ret) {
++		current_max = U32_MAX;
++		goto out_free;
++	}
+ 
++	current_max = 0;
+ 	while (dev_size--)
+ 		current_max = max(current_max, indir[dev_size]);
+ 
+-	*max = current_max;
+-
+-out:
++out_free:
+ 	kfree(indir);
+-	return ret;
++	return current_max;
+ }
+ 
+ int ethtool_check_ops(const struct ethtool_ops *ops)
+diff --git a/net/ethtool/common.h b/net/ethtool/common.h
+index 90b375122..98581c3de 100644
+--- a/net/ethtool/common.h
++++ b/net/ethtool/common.h
+@@ -35,7 +35,7 @@ int __ethtool_get_link(struct net_device *dev);
+ bool convert_legacy_settings_to_link_ksettings(
+ 	struct ethtool_link_ksettings *link_ksettings,
+ 	const struct ethtool_cmd *legacy_settings);
+-int ethtool_get_max_rxfh_channel(struct net_device *dev, u32 *max);
++u32 ethtool_get_max_rxfh_channel(struct net_device *dev);
+ int ethtool_get_max_rxnfc_channel(struct net_device *dev, u64 *max);
+ int __ethtool_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info);
+ 
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 08ec984b4..fa4673c2a 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -1806,9 +1806,7 @@ static noinline_for_stack int ethtool_set_channels(struct net_device *dev,
+ 	 * indirection table/rxnfc settings */
+ 	if (ethtool_get_max_rxnfc_channel(dev, &max_rxnfc_in_use))
+ 		max_rxnfc_in_use = 0;
+-	if (!netif_is_rxfh_configured(dev) ||
+-	    ethtool_get_max_rxfh_channel(dev, &max_rxfh_in_use))
+-		max_rxfh_in_use = 0;
++	max_rxfh_in_use = ethtool_get_max_rxfh_channel(dev);
+ 	if (channels.combined_count + channels.rx_count <=
+ 	    max_t(u64, max_rxnfc_in_use, max_rxfh_in_use))
+ 		return -EINVAL;
+-- 
+2.39.4
+

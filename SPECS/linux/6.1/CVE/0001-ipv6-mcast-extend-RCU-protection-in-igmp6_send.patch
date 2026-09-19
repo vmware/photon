@@ -1,0 +1,105 @@
+From 26bbbed5949d4cc7205354ad0df4b95e78d409a5 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 7 Feb 2025 13:58:40 +0000
+Subject: [PATCH] ipv6: mcast: extend RCU protection in igmp6_send()
+
+[ Upstream commit 087c1faa594fa07a66933d750c0b2610aa1a2946 ]
+
+igmp6_send() can be called without RTNL or RCU being held.
+
+Extend RCU protection so that we can safely fetch the net pointer
+and avoid a potential UAF.
+
+Note that we no longer can use sock_alloc_send_skb() because
+ipv6.igmp_sk uses GFP_KERNEL allocations which can sleep.
+
+Instead use alloc_skb() and charge the net->ipv6.igmp_sk
+socket under RCU protection.
+
+Fixes: b8ad0cbc58f7 ("[NETNS][IPV6] mcast - handle several network namespace")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Link: https://patch.msgid.link/20250207135841.1948589-9-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/ipv6/mcast.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
+
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index a1b3f3e7921f..e235806adedb 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -2129,21 +2129,21 @@ static void mld_send_cr(struct inet6_dev *idev)
+ 
+ static void igmp6_send(struct in6_addr *addr, struct net_device *dev, int type)
+ {
+-	struct net *net = dev_net(dev);
+-	struct sock *sk = net->ipv6.igmp_sk;
++	const struct in6_addr *snd_addr, *saddr;
++	int err, len, payload_len, full_len;
++	struct in6_addr addr_buf;
+ 	struct inet6_dev *idev;
+ 	struct sk_buff *skb;
+ 	struct mld_msg *hdr;
+-	const struct in6_addr *snd_addr, *saddr;
+-	struct in6_addr addr_buf;
+ 	int hlen = LL_RESERVED_SPACE(dev);
+ 	int tlen = dev->needed_tailroom;
+-	int err, len, payload_len, full_len;
+ 	u8 ra[8] = { IPPROTO_ICMPV6, 0,
+ 		     IPV6_TLV_ROUTERALERT, 2, 0, 0,
+ 		     IPV6_TLV_PADN, 0 };
+-	struct flowi6 fl6;
+ 	struct dst_entry *dst;
++	struct flowi6 fl6;
++	struct net *net;
++	struct sock *sk;
+ 
+ 	if (type == ICMPV6_MGM_REDUCTION)
+ 		snd_addr = &in6addr_linklocal_allrouters;
+@@ -2154,20 +2154,21 @@ static void igmp6_send(struct in6_addr *addr, struct net_device *dev, int type)
+ 	payload_len = len + sizeof(ra);
+ 	full_len = sizeof(struct ipv6hdr) + payload_len;
+ 
+-	rcu_read_lock();
+-	IP6_UPD_PO_STATS(net, __in6_dev_get(dev),
+-		      IPSTATS_MIB_OUT, full_len);
+-	rcu_read_unlock();
++	skb = alloc_skb(hlen + tlen + full_len, GFP_KERNEL);
+ 
+-	skb = sock_alloc_send_skb(sk, hlen + tlen + full_len, 1, &err);
++	rcu_read_lock();
+ 
++	net = dev_net_rcu(dev);
++	idev = __in6_dev_get(dev);
++	IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_OUT, full_len);
+ 	if (!skb) {
+-		rcu_read_lock();
+-		IP6_INC_STATS(net, __in6_dev_get(dev),
+-			      IPSTATS_MIB_OUTDISCARDS);
++		IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTDISCARDS);
+ 		rcu_read_unlock();
+ 		return;
+ 	}
++	sk = net->ipv6.igmp_sk;
++	skb_set_owner_w(skb, sk);
++
+ 	skb->priority = TC_PRIO_CONTROL;
+ 	skb_reserve(skb, hlen);
+ 
+@@ -2192,9 +2193,6 @@ static void igmp6_send(struct in6_addr *addr, struct net_device *dev, int type)
+ 					 IPPROTO_ICMPV6,
+ 					 csum_partial(hdr, len, 0));
+ 
+-	rcu_read_lock();
+-	idev = __in6_dev_get(skb->dev);
+-
+ 	icmpv6_flow_init(sk, &fl6, type,
+ 			 &ipv6_hdr(skb)->saddr, &ipv6_hdr(skb)->daddr,
+ 			 skb->dev->ifindex);
+-- 
+2.40.4
+

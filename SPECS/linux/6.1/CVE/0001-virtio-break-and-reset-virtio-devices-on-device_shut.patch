@@ -1,0 +1,93 @@
+From 0548186b2fe7610e550a466d32cdc89560654cd8 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Wed, 15 Oct 2025 10:27:45 +0000
+Subject: [PATCH] virtio: break and reset virtio devices on device_shutdown()
+
+From: Michael S. Tsirkin <mst@redhat.com>
+
+[ Upstream commit 8bd2fa086a04886798b505f28db4002525895203 ]
+
+Hongyu reported a hang on kexec in a VM. QEMU reported invalid memory
+accesses during the hang.
+
+	Invalid read at addr 0x102877002, size 2, region '(null)', reason: rejected
+	Invalid write at addr 0x102877A44, size 2, region '(null)', reason: rejected
+	...
+
+It was traced down to virtio-console. Kexec works fine if virtio-console
+is not in use.
+
+The issue is that virtio-console continues to write to the MMIO even after
+underlying virtio-pci device is reset.
+
+Additionally, Eric noticed that IOMMUs are reset before devices, if
+devices are not reset on shutdown they continue to poke at guest memory
+and get errors from the IOMMU. Some devices get wedged then.
+
+The problem can be solved by breaking all virtio devices on virtio
+bus shutdown, then resetting them.
+
+Reported-by: Eric Auger <eauger@redhat.com>
+Reported-by: Hongyu Ning <hongyu.ning@linux.intel.com>
+Message-ID: <c1dbc7dbad9b445245d3348f19e6742b0be07347.1740094946.git.mst@redhat.com>
+Tested-by: Eric Auger <eric.auger@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+[ Ajay: Modified to apply on v6.1.y]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ drivers/virtio/virtio.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index 1ef094427..0d3481250 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -340,6 +340,34 @@ static void virtio_dev_remove(struct device *_d)
+ 	of_node_put(dev->dev.of_node);
+ }
+ 
++static void virtio_dev_shutdown(struct device *_d)
++{
++	struct virtio_device *dev = dev_to_virtio(_d);
++	struct virtio_driver *drv = drv_to_virtio(dev->dev.driver);
++
++	/*
++	 * Stop accesses to or from the device.
++	 * We only need to do it if there's a driver - no accesses otherwise.
++	 */
++	if (!drv)
++		return;
++
++	/*
++	 * Some devices get wedged if you kick them after they are
++	 * reset. Mark all vqs as broken to make sure we don't.
++	 */
++	virtio_break_device(dev);
++	/*
++	 * Guarantee that any callback will see vq->broken as true.
++	 */
++	virtio_synchronize_cbs(dev);
++	/*
++	 * As IOMMUs are reset on shutdown, this will block device access to memory.
++	 * Some devices get wedged if this happens, so reset to make sure it does not.
++	 */
++	dev->config->reset(dev);
++}
++
+ static struct bus_type virtio_bus = {
+ 	.name  = "virtio",
+ 	.match = virtio_dev_match,
+@@ -347,6 +375,7 @@ static struct bus_type virtio_bus = {
+ 	.uevent = virtio_uevent,
+ 	.probe = virtio_dev_probe,
+ 	.remove = virtio_dev_remove,
++	.shutdown = virtio_dev_shutdown,
+ };
+ 
+ int register_virtio_driver(struct virtio_driver *driver)
+-- 
+2.40.4
+
