@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Mon, 31 Aug 2026 00:00:00 +0000
+Subject: [PATCH] isoBuilder: put installer-requestable packages on the media
+
+Two gaps in how the download list is built.
+
+1. The STIG menu offers "Apply STIG hardening", which makes the installer
+   request KS_STIG_PACKAGES at install time. Those names were never added to
+   the ISO's own RPMS/, so on a minimal ISO - where downloadPkgs() resolves a
+   closure rather than copying every rpm - the packages simply were not there
+   and the install failed with "Error(1011) : No matching packages".
+   Use stigenable.KS_STIG_PACKAGES rather than restating the names in a
+   package list file; restating them is exactly how the media and the
+   installer drifted apart.
+
+2. Packages named via --initrd-pkgs never reached this list either. Only the
+   list *file* was parsed, so a package requested on the command line could
+   not be installed into the initrd from the ISO's own RPMS/.
+
+Both extend self.pkg_list only, so they land in the ISO's RPMS/ and the
+initrd does not grow.
+
+Verified end to end: a minimal ISO built with this carries 290 rpms instead
+of 254, including selinux-policy, libselinux-utils, rsyslog, aide,
+openssl-fips-provider and ntpsec; the UI wizard's STIG option completes; and
+the installed system comes up SELinux Enforcing with 0 failed ansible tasks.
+
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01JW73JTCUGRcaNTUEQcAMtf
+---
+ photon_installer/isoBuilder.py | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/photon_installer/isoBuilder.py b/photon_installer/isoBuilder.py
+index 6aed7e0..0949cd4 100755
+--- a/photon_installer/isoBuilder.py
++++ b/photon_installer/isoBuilder.py
+@@ -13,6 +13,7 @@ import shutil
+ import tempfile
+ from argparse import ArgumentParser
+ 
++import stigenable
+ import yaml
+ from commandutils import CommandUtils
+ from generate_initrd import IsoInitrd
+@@ -195,6 +196,19 @@ class IsoBuilder(object):
+         # Add installer initrd and custom packages to package list..
+         self.addPkgsToList(self.initrd_pkg_list_file)
+         self.addPkgsToList(self.packageslist_file)
++        # The media must be able to satisfy what the installer can request at
++        # install time. stigenable.KS_STIG_PACKAGES is the installer's own
++        # declaration of what "Apply STIG hardening" installs, so refer to it
++        # rather than restating those names in a package list file -- restating
++        # them is how the media and the installer drifted apart, leaving the
++        # STIG menu offering an option the media could not honour
++        # ("Error(1011) : No matching packages"). These go to the ISO's RPMS/
++        # only, not into self.initrd_pkgs, so the initrd does not grow.
++        self.pkg_list.extend(stigenable.KS_STIG_PACKAGES)
++        # Packages named via --initrd-pkgs never reached this download list
++        # (only the list *file* was parsed above), so they could not be
++        # installed into the initrd from the ISO's own RPMS/ either.
++        self.pkg_list.extend(self.initrd_pkgs)
+ 
+         linux_flavors = [
+             "linux",
