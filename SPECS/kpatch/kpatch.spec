@@ -1,10 +1,10 @@
 
-%define photon_kpatch_utils_version 1.1
+%define photon_kpatch_utils_version 1.2
 %define kpatch_utils photon-kpatch-utils-%{photon_kpatch_utils_version}
 Name:           kpatch
 Summary:        Dynamic kernel patching
 Version:        0.9.10
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://github.com/dynup/kpatch
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -25,6 +25,9 @@ Patch2:         0003-patch-hook-fix-cast-errors.patch
 Patch3:         0004-Support-building-of-photon-live-patch-from-kernel-so.patch
 Patch4:         0005-kpatch-build-adapt-kernel-source-path-based-on-RPM-v.patch
 Patch5:         0006-kpatch-build-handle-resolve_btfids-build-failure-wit.patch
+Patch6:         0007-kpatch-link-prefixed-functions-tolerate-cfi-padding.patch
+Patch7:         0008-kpatch-bundle-symbols-tolerate-cfi-padding.patch
+Patch8:         0009-kpatch-guard-null-section-in-dynamic-debug-symbol.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -91,6 +94,7 @@ cp %{kpatch_utils}/auto_livepatch %{kpatch_utils}/gen_livepatch %{buildroot}%{_b
 cp %{kpatch_utils}/livepatch.sh %{buildroot}%{_libdir}
 cp %{kpatch_utils}/README.md %{kpatch_utils}/rpm/livepatch_spec.template %{buildroot}%{_datadir}/livepatch
 cp %{kpatch_utils}/Dockerfile.ph* %{buildroot}%{_datadir}/livepatch/dockerfiles
+cp %{kpatch_utils}/default-packages.list %{buildroot}%{_datadir}/livepatch/dockerfiles
 
 %files
 %defattr(-,root,root,-)
@@ -123,8 +127,15 @@ cp %{kpatch_utils}/Dockerfile.ph* %{buildroot}%{_datadir}/livepatch/dockerfiles
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph5
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph4
 %{_datadir}/livepatch/dockerfiles/Dockerfile.ph3
+%{_datadir}/livepatch/dockerfiles/default-packages.list
 
 %changelog
+* Fri Sep 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-11
+- Add build environment reproducibility support to livepatch: pinned package versions,
+  rpmbuild macro replay, gcc specs capture and vmlinux symbol comparison
+- kpatch: match __cfi_/__pfx_ stubs tolerant of CFI/RAP function padding (CONFIG_CFI_CLANG)
+- kpatch: bundle_symbols tolerate CFI/RAP function padding (named and anonymous)
+- kpatch: guard NULL section in is_dynamic_debug_symbol
 * Tue Jun 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.9.10-10
 - kpatch-build: Adapt kernel source directory path based on RPM major version
 - kpatch-build: handle resolve_btfids build failure with newer glibc

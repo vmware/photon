@@ -24,8 +24,8 @@ sources:
       short_summary: Dynamic kernel patching
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: photon-kpatch-utils-1.1.tar.gz
-  archive_sha512sum: 6b78b720e76a40f6bf5ed1e7d21ec9689da9b342c299650884480bfcd1cc62d93ec914cc8a21bb0afa746364b59b00676b531f1f151845be6733329695e7243e
+- archive: photon-kpatch-utils-1.2.tar.gz
+  archive_sha512sum: 3d1453a901383d0516beebea5a7995adbb48913a09c554069afe826a7989f5fdc059cabc909e24062ab813e691fa731c1a1de306c2fecd9e78bff9a4853ac703
   skip_validation: true
   spdx:
     package:

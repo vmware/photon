@@ -1,0 +1,130 @@
+From 0000000000000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Fri, 19 Sep 2026 00:00:00 +0000
+Subject: [PATCH] kpatch: match __cfi_/__pfx_ stubs tolerant of function padding
+
+With CONFIG_CFI_CLANG=y and Photon's gcc-rap-plugin-with-kcfi.patch, the
+compiler emits a __cfi_<func> (or __pfx_<func>) stub at the start of each
+function's .text.<func> section, followed by CONFIG_FUNCTION_PADDING bytes,
+then the function itself. Example (meminfo.o):
+
+    __cfi_meminfo_proc_show : st_value=0x0  st_size=5
+    meminfo_proc_show       : st_value=0x10 (=16)   (same section)
+
+kpatch_link_prefixed_functions() matched the function only at the exact
+offset (stub st_value + st_size). Because the stub size (5) does not include
+the 11-byte function padding, the function at offset 16 is never found and
+the build aborts with "missing func for __cfi_<func>", even for the patched,
+indirectly-called function whose type-id must be preserved.
+
+Match by the nearest following STT_FUNC in the same section instead of an
+exact offset. This is padding-agnostic and still resolves the no-padding
+case (offset == stub_end). Aliases (multiple functions at the same offset)
+are all linked, as before. If no following function exists, a __cfi_ stub
+for an __init function (.init.text, discarded after boot, never livepatched)
+is skipped; anything else remains a hard error.
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+--- a/kpatch-build/kpatch-elf.c
++++ b/kpatch-build/kpatch-elf.c
+@@ -453,12 +453,15 @@
+ static void kpatch_link_prefixed_functions(struct kpatch_elf *kelf)
+ {
+ 	struct symbol *func, *pfx;
+-	bool found;
+ 
+ 	if (kelf->arch != X86_64)
+ 		return;
+ 
+ 	list_for_each_entry(pfx, &kelf->symbols, list) {
++		bool found = false;
++		unsigned long best_value = 0;
++		struct symbol *base;
++
+ 		if (!pfx->name || pfx->type != STT_FUNC)
+ 			continue;
+ 
+@@ -466,25 +469,68 @@
+ 		    strncmp(pfx->name, "__cfi_", 6))
+ 			continue;
+ 
+-		found = false;
+-
++		/*
++		 * Find the function this prefix stub belongs to: the nearest
++		 * STT_FUNC in the same section that starts at or after the end
++		 * of the stub. An exact "stub_end" offset is not reliable -
++		 * with CONFIG_CFI_CLANG / Photon's gcc-rap-plugin-with-kcfi the
++		 * function is placed after the stub plus CONFIG_FUNCTION_PADDING
++		 * bytes, so the __cfi_ stub's size does not reach the function.
++		 * Matching by "closest following function" is padding-agnostic
++		 * and still works for the no-padding case (offset == stub_end).
++		 */
+ 		list_for_each_entry(func, &kelf->symbols, list) {
+-			if (func->type == STT_FUNC && func->sec == pfx->sec &&
+-			    func->sym.st_value == pfx->sym.st_value + pfx->sym.st_size) {
+-
+-				/*
+-				 * If a func has aliases, it's possible for
+-				 * multiple functions to have the same 'pfx'.
+-				 */
+-
+-				pfx->is_pfx = true;
+-				func->pfx = pfx;
++			if (func == pfx || func->type != STT_FUNC ||
++			    func->sec != pfx->sec || !func->name)
++				continue;
++			/* skip other prefix stubs (e.g. a __pfx_/__cfi_ pair) */
++			if (!strncmp(func->name, "__pfx_", 6) ||
++			    !strncmp(func->name, "__cfi_", 6))
++				continue;
++			if (func->sym.st_value <
++			    pfx->sym.st_value + pfx->sym.st_size)
++				continue;
++			if (!found || func->sym.st_value < best_value) {
++				best_value = func->sym.st_value;
+ 				found = true;
+ 			}
+ 		}
+ 
+-		if (!found)
+-			ERROR("missing func for %s", pfx->name);
++		if (found) {
++			/*
++			 * Link every function at that closest offset; aliases
++			 * share the same prefix stub.
++			 */
++			pfx->is_pfx = true;
++			list_for_each_entry(func, &kelf->symbols, list) {
++				if (func == pfx || func->type != STT_FUNC ||
++				    func->sec != pfx->sec || !func->name)
++					continue;
++				if (!strncmp(func->name, "__pfx_", 6) ||
++				    !strncmp(func->name, "__cfi_", 6))
++					continue;
++				if (func->sym.st_value == best_value)
++					func->pfx = pfx;
++			}
++			continue;
++		}
++
++		/*
++		 * No following function at all. A __cfi_ stub for an __init
++		 * function (.init.text, discarded after boot, never livepatched)
++		 * can be safely ignored; anything else is a genuine build error.
++		 */
++		base = NULL;
++		if (!strncmp(pfx->name, "__cfi_", 6))
++			base = find_symbol_by_name(&kelf->symbols,
++						   pfx->name + 6);
++		if (base && base->sec &&
++		    !strncmp(base->sec->name, ".init.text", 10)) {
++			log_debug("skipping __cfi_ prefix for __init func: %s\n",
++				  pfx->name);
++			continue;
++		}
++		ERROR("missing func for %s", pfx->name);
+ 	}
+ }
+ 

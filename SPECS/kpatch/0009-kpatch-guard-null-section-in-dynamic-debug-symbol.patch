@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000003 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Sat, 20 Sep 2026 00:00:00 +0000
+Subject: [PATCH] kpatch: guard NULL section in is_dynamic_debug_symbol
+
+is_dynamic_debug_symbol() dereferences sym->sec->name for every STT_OBJECT
+symbol without checking sym->sec. An undefined/external STT_OBJECT symbol
+(SHN_UNDEF) has sym->sec == NULL, so create-diff-object segfaults when
+kpatch_correlate_symbols() -> is_special_static() -> is_dynamic_debug_symbol()
+is called for such a symbol. This is reached on CONFIG_CFI_CLANG kernels once
+the __cfi_/__pfx_ prefix handling lets correlation proceed (e.g. diffing
+fs/proc/meminfo.o).
+
+A symbol with no section is not a dynamic-debug descriptor (those live in the
+__verbose/__dyndbg sections), so guard sym->sec and treat it as non-matching.
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+--- a/kpatch-build/create-diff-object.c
++++ b/kpatch-build/create-diff-object.c
+@@ -349,9 +349,11 @@
+ {
+ 	if (sym->type == STT_OBJECT && !strncmp(sym->name, "__rap_hash", 10))
+ 		return false;
+-	if (sym->type == STT_OBJECT && !strcmp(sym->sec->name, "__verbose"))
++	if (sym->type == STT_OBJECT && sym->sec &&
++	    !strcmp(sym->sec->name, "__verbose"))
+ 		return true;
+-	if (sym->type == STT_OBJECT && !strcmp(sym->sec->name, "__dyndbg"))
++	if (sym->type == STT_OBJECT && sym->sec &&
++	    !strcmp(sym->sec->name, "__dyndbg"))
+ 		return true;
+ 	if (sym->type == STT_SECTION && !strcmp(sym->name, "__verbose"))
+ 		return true;

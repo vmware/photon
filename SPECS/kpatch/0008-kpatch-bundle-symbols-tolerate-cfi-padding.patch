@@ -1,0 +1,68 @@
+From 0000000000000000000000000000000000000002 Mon Sep 17 00:00:00 2001
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Date: Sat, 20 Sep 2026 00:00:00 +0000
+Subject: [PATCH] kpatch: bundle_symbols tolerate CFI/RAP function padding
+
+kpatch_bundle_symbols() required a bundleable function to sit at an exact
+offset within its section (pfx->st_size if prefixed, 8 for ppc64le gcc6
+localentry, else 0). On CONFIG_CFI_CLANG=y kernels with Photon's
+gcc-rap-plugin-with-kcfi.patch the function is preceded by function padding:
+
+  - indirectly-callable functions get a named __cfi_ stub, then padding, then
+    the function (e.g. meminfo_proc_show at offset 16 with a 5-byte stub);
+  - direct-only functions get NO named prefix symbol at all, but still start
+    after anonymous CFI/RAP padding (e.g. show_val_kb at offset 16).
+
+The exact check aborts in both cases ("expected 5" / "expected 0"). Accept a
+prefixed symbol at or after the end of its stub, keep the exact ppc64le gcc6
+check, and accept any offset for the no-prefix (anonymous-padding) case.
+
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+--- a/kpatch-build/create-diff-object.c
++++ b/kpatch-build/create-diff-object.c
+@@ -236,21 +236,32 @@
+ static void kpatch_bundle_symbols(struct kpatch_elf *kelf)
+ {
+ 	struct symbol *sym;
+-	uint64_t expected_offset;
+ 
+ 	list_for_each_entry(sym, &kelf->symbols, list) {
+ 		if (is_bundleable(sym)) {
+-			if (sym->pfx)
+-				expected_offset = sym->pfx->sym.st_size;
+-			else if (is_gcc6_localentry_bundled_sym(kelf, sym))
+-				expected_offset = 8;
+-			else
+-				expected_offset = 0;
+-
+-			if (sym->sym.st_value != expected_offset) {
+-				ERROR("symbol %s at offset %lu within section %s, expected %lu",
+-				      sym->name, sym->sym.st_value,
+-				      sym->sec->name, expected_offset);
++			/*
++			 * With CONFIG_CFI_CLANG / Photon's gcc-rap-plugin-with-
++			 * kcfi, the function within its own .text.<func> section is
++			 * preceded by function padding (and, for indirectly-callable
++			 * functions, a __cfi_/__pfx_ stub), so it does not start at
++			 * the classic offset. Accept:
++			 *   - prefixed symbols: at or after the end of the stub
++			 *   - ppc64le gcc6 localentry: exactly 8
++			 *   - otherwise: any offset - a direct-only function has no
++			 *     named prefix symbol but still sits after anonymous
++			 *     CFI/RAP padding (e.g. show_val_kb at offset 16).
++			 */
++			if (sym->pfx) {
++				if (sym->sym.st_value < sym->pfx->sym.st_size)
++					ERROR("symbol %s at offset %lu within section %s, before end of prefix %lu",
++					      sym->name, sym->sym.st_value,
++					      sym->sec->name,
++					      (uint64_t)sym->pfx->sym.st_size);
++			} else if (is_gcc6_localentry_bundled_sym(kelf, sym)) {
++				if (sym->sym.st_value != 8)
++					ERROR("symbol %s at offset %lu within section %s, expected 8",
++					      sym->name, sym->sym.st_value,
++					      sym->sec->name);
+ 			}
+ 
+ 			sym->sec->sym = sym;
