@@ -10,25 +10,25 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  2 files changed, 21 insertions(+), 5 deletions(-)
 
 diff --git a/paramiko/pkey.py b/paramiko/pkey.py
-index 4600cb9..b0ab61d 100644
+index 1111111..2222222 100644
 --- a/paramiko/pkey.py
 +++ b/paramiko/pkey.py
-@@ -22,6 +22,7 @@ Common API for all public keys.
- 
- import base64
+@@ -24,6 +24,7 @@ import base64
+ from base64 import encodebytes, decodebytes
+ from binascii import unhexlify
  import os
 +import _hashlib
+ from pathlib import Path
+ from hashlib import md5, sha256
  import re
- import struct
- from base64 import decodebytes, encodebytes
-@@ -149,6 +150,8 @@ class PKey:
+@@ -122,6 +123,8 @@ class PKey:
      BEGIN_TAG = re.compile(r"^-{5}BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-{5}\s*$")
      END_TAG = re.compile(r"^-{5}END (RSA|EC|OPENSSH) PRIVATE KEY-{5}\s*$")
  
 +    OPENSSL_FIPS = _hashlib.get_fips_mode()
 +
      @staticmethod
-     def from_path(path, password: Optional[str] = None):
+     def from_path(path, passphrase=None):
          """
 @@ -351,6 +354,8 @@ class PKey:
              a 16-byte `string <str>` (binary) of the MD5 fingerprint, in SSH
@@ -52,27 +52,26 @@ index 4600cb9..b0ab61d 100644
              cipher(key), mode(salt), backend=default_backend()
          ).decryptor()
 diff --git a/tests/test_pkey.py b/tests/test_pkey.py
-index 0b009d2..dd9f1f3 100644
+index 3333333..4444444 100644
 --- a/tests/test_pkey.py
 +++ b/tests/test_pkey.py
-@@ -23,9 +23,10 @@ Some unit tests for public/private key objects.
- 
+@@ -24,8 +24,9 @@ Some unit tests for public/private key objects.
+ import unittest
  import os
  import stat
 +import _hashlib
- import unittest
  from binascii import hexlify
 -from hashlib import md5
 +from hashlib import md5, sha256
  from io import StringIO
- from unittest.mock import Mock, patch
  
-@@ -129,8 +130,12 @@ class KeyTest(unittest.TestCase):
+ from paramiko import (
+@@ -130,8 +131,12 @@ class KeyTest(unittest.TestCase):
              self.assertEqual(fh.readline()[0:10], "DEK-Info: ")
  
      def test_generate_key_bytes(self):
 -        key = util.generate_key_bytes(md5, x1234, "happy birthday", 30)
--        exp = b"\x61\xe1\xf2\x72\xf4\xc1\xc4\x56\x15\x86\xbd\x32\x24\x98\xc0\xe9\x24\x67\x27\x80\xf4\x7b\xb3\x7d\xda\x7d\x54\x01\x9e\x64"  # noqa
+-        exp = b"\x61\xE1\xF2\x72\xF4\xC1\xC4\x56\x15\x86\xBD\x32\x24\x98\xC0\xE9\x24\x67\x27\x80\xF4\x7B\xB3\x7D\xDA\x7D\x54\x01\x9E\x64"  # noqa
 +        if not _hashlib.get_fips_mode():
 +            key = util.generate_key_bytes(md5, x1234, "happy birthday", 30)
 +            exp = b"\x61\xE1\xF2\x72\xF4\xC1\xC4\x56\x15\x86\xBD\x32\x24\x98\xC0\xE9\x24\x67\x27\x80\xF4\x7B\xB3\x7D\xDA\x7D\x54\x01\x9E\x64"  # noqa

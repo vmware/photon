@@ -1,0 +1,514 @@
+From e8548621de9c2791494c7ac7d1740d16f451a494 Mon Sep 17 00:00:00 2001
+From: Alex Gaynor <alex.gaynor@gmail.com>
+Date: Sun, 9 Aug 2026 18:09:58 -0400
+Subject: [PATCH] Add ML-KEM hybrid post-quantum key exchange support
+
+Implements `mlkem768x25519-sha256` from
+draft-ietf-sshm-mlkem-hybrid-kex, combining ML-KEM-768 (FIPS 203) with
+X25519. The shared secret is SHA-256(K_PQ || K_CL); per the draft, K
+is encoded as an SSH string (rather than an mpint) in both the
+exchange hash and the symmetric key derivation.
+
+ML-KEM is provided by pyca/cryptography (>=48), which itself requires
+OpenSSL 3.5+, AWS-LC, or BoringSSL. The kex method is auto-registered
+when ML-KEM is importable and is preferred over the existing classical
+methods. Verified interoperable with OpenSSH 10.0 in both directions.
+---
+ .circleci/config.yml    |   2 +-
+ paramiko/kex_mlkem.py   | 211 ++++++++++++++++++++++++++++++++++++++++
+ paramiko/transport.py   |  18 +++-
+ sites/www/changelog.rst |   8 ++
+ tests/pkey.py           |   3 +-
+ tests/test_kex.py       | 139 +++++++++++++++++++++++++-
+ 6 files changed, 376 insertions(+), 5 deletions(-)
+ create mode 100644 paramiko/kex_mlkem.py
+
+diff --git a/.circleci/config.yml b/.circleci/config.yml
+index 16f5fe1311..9c1c3bf31b 100644
+--- a/.circleci/config.yml
++++ b/.circleci/config.yml
+@@ -84,7 +84,7 @@ workflows:
+               # somewhere between yaml, pip and bash all escapes get fucky
+               # TODO: what is our current oldest/newest cryptography supported
+               # versions? DOES that change from py3.6->3.9?
+-              pip-overrides: ["cryptography==3.3.2", "cryptography==39.0.0"]
++              pip-overrides: ["cryptography==3.3.2", "cryptography==39.0.0", "cryptography==48.0.0"]
+       # Kerberos tests. Currently broken :(
+       #- kerberos:
+       #    name: Test 3.6 w/ Kerberos support
+diff --git a/paramiko/kex_mlkem.py b/paramiko/kex_mlkem.py
+new file mode 100644
+index 0000000000..8b2ae2aa22
+--- /dev/null
++++ b/paramiko/kex_mlkem.py
+@@ -0,0 +1,211 @@
++"""
++ML-KEM hybrid key exchange for SSH.
++
++Implements the post-quantum / classical hybrid key agreement methods
++described in draft-ietf-sshm-mlkem-hybrid-kex (e.g.
++``mlkem768x25519-sha256``).
++
++Each method combines an ML-KEM key encapsulation with a traditional
++ECDH/X25519 key agreement; the final shared secret is the hash of the
++two component secrets concatenated together.
++"""
++
++import hashlib
++
++from cryptography.exceptions import UnsupportedAlgorithm
++from cryptography.hazmat.primitives import constant_time
++from cryptography.hazmat.primitives.asymmetric.x25519 import (
++    X25519PrivateKey,
++    X25519PublicKey,
++)
++
++try:
++    from cryptography.hazmat.primitives.asymmetric import mlkem
++except ImportError:  # pragma: no cover - cryptography <48
++    mlkem = None
++
++from paramiko.common import byte_chr
++from paramiko.message import Message
++from paramiko.ssh_exception import SSHException
++
++
++# Per draft-ietf-sshm-mlkem-hybrid-kex, the hybrid kex reuses message
++# numbers 30 and 31 (named SSH_MSG_KEX_HYBRID_INIT / _REPLY).
++_MSG_KEX_HYBRID_INIT, _MSG_KEX_HYBRID_REPLY = range(30, 32)
++c_MSG_KEX_HYBRID_INIT, c_MSG_KEX_HYBRID_REPLY = [
++    byte_chr(c) for c in range(30, 32)
++]
++
++
++class KexMLKEM768X25519:
++    """
++    ``mlkem768x25519-sha256`` hybrid key exchange.
++
++    Combines ML-KEM-768 (FIPS 203) with X25519. The shared secret is
++    ``SHA-256(K_PQ || K_CL)`` where ``K_PQ`` is the ML-KEM secret and
++    ``K_CL`` is the X25519 shared secret.
++    """
++
++    name = "mlkem768x25519-sha256"
++    hash_algo = hashlib.sha256
++    # Fixed sizes from FIPS 203 (ML-KEM-768) and RFC 7748 (X25519).
++    _MLKEM_PUBKEY_BYTES = 1184
++    _MLKEM_CIPHERTEXT_BYTES = 1088
++    _X25519_PUBKEY_BYTES = 32
++    _C_INIT_BYTES = _MLKEM_PUBKEY_BYTES + _X25519_PUBKEY_BYTES
++    _S_REPLY_BYTES = _MLKEM_CIPHERTEXT_BYTES + _X25519_PUBKEY_BYTES
++
++    def __init__(self, transport):
++        self.transport = transport
++        # Client-side: our ML-KEM decapsulation key. Server-side: unused.
++        self.mlkem_key = None
++        # Our ephemeral X25519 private key (both roles).
++        self.x25519_key = None
++
++    @classmethod
++    def is_available(cls):
++        if mlkem is None:
++            return False
++        try:
++            mlkem.MLKEM768PrivateKey.generate()
++            X25519PrivateKey.generate()
++        except UnsupportedAlgorithm:
++            return False
++        return True
++
++    # ---- protocol entry points ---------------------------------------
++
++    def start_kex(self):
++        self.x25519_key = X25519PrivateKey.generate()
++        if self.transport.server_mode:
++            self.transport._expect_packet(_MSG_KEX_HYBRID_INIT)
++            return
++        self.mlkem_key = mlkem.MLKEM768PrivateKey.generate()
++        c_init = (
++            self.mlkem_key.public_key().public_bytes_raw()
++            + self.x25519_key.public_key().public_bytes_raw()
++        )
++        m = Message()
++        m.add_byte(c_MSG_KEX_HYBRID_INIT)
++        m.add_string(c_init)
++        self.transport._send_message(m)
++        self.transport._expect_packet(_MSG_KEX_HYBRID_REPLY)
++
++    def parse_next(self, ptype, m):
++        if self.transport.server_mode and ptype == _MSG_KEX_HYBRID_INIT:
++            return self._parse_hybrid_init(m)
++        if not self.transport.server_mode and ptype == _MSG_KEX_HYBRID_REPLY:
++            return self._parse_hybrid_reply(m)
++        raise SSHException(
++            "{} asked to handle packet type {:d}".format(
++                self.__class__.__name__, ptype
++            )
++        )
++
++    def _x25519_exchange(self, peer_pub_bytes):
++        peer = X25519PublicKey.from_public_bytes(peer_pub_bytes)
++        secret = self.x25519_key.exchange(peer)
++        # Per RFC 8731 (and reaffirmed by the hybrid draft), reject the
++        # all-zero output that signals a small-order public value.
++        if constant_time.bytes_eq(secret, b"\x00" * 32):
++            raise SSHException(
++                "peer's curve25519 public value has wrong order"
++            )
++        return secret
++
++    # ---- server side -------------------------------------------------
++
++    def _parse_hybrid_init(self, m):
++        c_init = m.get_string()
++        if len(c_init) != self._C_INIT_BYTES:
++            raise SSHException(
++                "Invalid C_INIT length for {}: got {}, expected {}".format(
++                    self.name, len(c_init), self._C_INIT_BYTES
++                )
++            )
++        c_pk2 = c_init[: self._MLKEM_PUBKEY_BYTES]
++        c_pk1 = c_init[self._MLKEM_PUBKEY_BYTES :]
++
++        # Encapsulate against the client's ML-KEM public key.
++        client_mlkem_pub = mlkem.MLKEM768PublicKey.from_public_bytes(c_pk2)
++        k_pq, s_ct2 = client_mlkem_pub.encapsulate()
++
++        # X25519 with the client's ephemeral public value.
++        k_cl = self._x25519_exchange(c_pk1)
++
++        K_bytes = self.hash_algo(k_pq + k_cl).digest()
++
++        s_pk1 = self.x25519_key.public_key().public_bytes_raw()
++        s_reply = s_ct2 + s_pk1
++
++        K_S = self.transport.get_server_key().asbytes()
++
++        hm = Message()
++        hm.add(
++            self.transport.remote_version,
++            self.transport.local_version,
++            self.transport.remote_kex_init,
++            self.transport.local_kex_init,
++        )
++        hm.add_string(K_S)
++        hm.add_string(c_init)
++        hm.add_string(s_reply)
++        # Per the hybrid draft: K is the hash output, encoded as a string.
++        hm.add_string(K_bytes)
++        H = self.hash_algo(hm.asbytes()).digest()
++
++        self.transport._set_K_H(K_bytes, H)
++
++        sig = self.transport.get_server_key().sign_ssh_data(
++            H, self.transport.host_key_type
++        )
++
++        reply = Message()
++        reply.add_byte(c_MSG_KEX_HYBRID_REPLY)
++        reply.add_string(K_S)
++        reply.add_string(s_reply)
++        reply.add_string(sig)
++        self.transport._send_message(reply)
++        self.transport._activate_outbound()
++
++    # ---- client side -------------------------------------------------
++
++    def _parse_hybrid_reply(self, m):
++        K_S = m.get_string()
++        s_reply = m.get_string()
++        sig = m.get_binary()
++
++        if len(s_reply) != self._S_REPLY_BYTES:
++            raise SSHException(
++                "Invalid S_REPLY length for {}: got {}, expected {}".format(
++                    self.name, len(s_reply), self._S_REPLY_BYTES
++                )
++            )
++        s_ct2 = s_reply[: self._MLKEM_CIPHERTEXT_BYTES]
++        s_pk1 = s_reply[self._MLKEM_CIPHERTEXT_BYTES :]
++
++        k_pq = self.mlkem_key.decapsulate(s_ct2)
++        k_cl = self._x25519_exchange(s_pk1)
++        K_bytes = self.hash_algo(k_pq + k_cl).digest()
++
++        c_init = (
++            self.mlkem_key.public_key().public_bytes_raw()
++            + self.x25519_key.public_key().public_bytes_raw()
++        )
++
++        hm = Message()
++        hm.add(
++            self.transport.local_version,
++            self.transport.remote_version,
++            self.transport.local_kex_init,
++            self.transport.remote_kex_init,
++        )
++        hm.add_string(K_S)
++        hm.add_string(c_init)
++        hm.add_string(s_reply)
++        hm.add_string(K_bytes)
++        H = self.hash_algo(hm.asbytes()).digest()
++
++        self.transport._set_K_H(K_bytes, H)
++        self.transport._verify_key(K_S, sig)
++        self.transport._activate_outbound()
+diff --git a/paramiko/transport.py b/paramiko/transport.py
+index dd23f1fe57..cdfa2032d3 100644
+--- a/paramiko/transport.py
++++ b/paramiko/transport.py
+@@ -101,6 +101,7 @@
+ from paramiko.kex_gex import KexGexSHA256
+ from paramiko.kex_group14 import KexGroup14SHA256
+ from paramiko.kex_group16 import KexGroup16SHA512
++from paramiko.kex_mlkem import KexMLKEM768X25519
+ from paramiko.message import Message
+ from paramiko.packet import NeedRekeyException, Packetizer
+ from paramiko.pkey import PKey
+@@ -221,6 +222,8 @@ class Transport(threading.Thread, ClosingContextManager):
+     )
+     if KexCurve25519.is_available():
+         _preferred_kex = ("curve25519-sha256@libssh.org",) + _preferred_kex
++    if KexMLKEM768X25519.is_available():
++        _preferred_kex = ("mlkem768x25519-sha256",) + _preferred_kex
+     _preferred_compression = ("none",)
+ 
+     _cipher_info = {
+@@ -330,6 +333,8 @@ class Transport(threading.Thread, ClosingContextManager):
+     }
+     if KexCurve25519.is_available():
+         _kex_info["curve25519-sha256@libssh.org"] = KexCurve25519
++    if KexMLKEM768X25519.is_available():
++        _kex_info["mlkem768x25519-sha256"] = KexMLKEM768X25519
+ 
+     _compression_info = {
+         # zlib@openssh.com is just zlib, but only turned on after a successful
+@@ -1860,10 +1865,19 @@ def _verify_key(self, host_key, sig):
+             )  # noqa
+         self.host_key = key
+ 
++    def _add_K(self, m):
++        # Hybrid post-quantum kex methods (e.g. mlkem768x25519-sha256)
++        # produce K as a fixed-length hash output, which the draft mandates
++        # be encoded as an SSH string rather than an mpint.
++        if isinstance(self.K, bytes):
++            m.add_string(self.K)
++        else:
++            m.add_mpint(self.K)
++
+     def _compute_key(self, id, nbytes):
+         """id is 'A' - 'F' for the various keys used by ssh"""
+         m = Message()
+-        m.add_mpint(self.K)
++        self._add_K(m)
+         m.add_bytes(self.H)
+         m.add_byte(b(id))
+         m.add_bytes(self.session_id)
+@@ -1882,7 +1896,7 @@ def _compute_key(self, id, nbytes):
+         out = sofar = hash_algo(m.asbytes()).digest()
+         while len(out) < nbytes:
+             m = Message()
+-            m.add_mpint(self.K)
++            self._add_K(m)
+             m.add_bytes(self.H)
+             m.add_bytes(sofar)
+             digest = hash_algo(m.asbytes()).digest()
+diff --git a/sites/www/changelog.rst b/sites/www/changelog.rst
+index c209cdd814..092ca8e051 100644
+--- a/sites/www/changelog.rst
++++ b/sites/www/changelog.rst
+@@ -2,6 +2,14 @@
+ Changelog
+ =========
+ 
++- :feature:`-` Added support for the ``mlkem768x25519-sha256`` post-quantum
++  hybrid key exchange method described in
++  ``draft-ietf-sshm-mlkem-hybrid-kex``. It pairs ML-KEM-768 (FIPS 203) with
++  X25519 and is interoperable with OpenSSH 10.0+. The new method is enabled
++  automatically when the installed ``cryptography`` library exposes ML-KEM
++  (which requires OpenSSL 3.5+, AWS-LC, or BoringSSL); it is preferred over
++  the existing classical methods when available. See
++  `paramiko.kex_mlkem.KexMLKEM768X25519`.
+ - :release:`5.0.0 <2026-05-09>`
+ - :bug:`- major` Fix `Ed25519Key <paramiko.ed25519key.Ed25519Key>`'s internals
+   such that it no longer throws `AttributeError` during calls to ``__repr__``
+diff --git a/tests/pkey.py b/tests/pkey.py
+index 2c55abefb1..fdb5091197 100644
+--- a/tests/pkey.py
++++ b/tests/pkey.py
+@@ -307,5 +307,6 @@ def has_non_excepting_repr_during_load_errors(self) -> None:
+         # will effectively be that of an 'empty' key bytes)
+         assert (
+             repr(info.traceback[1].locals["self"])
+-            == "PKey(alg=ED25519, bits=256, fp=SHA256:UsIasxMWEd9VFEwjARWWtGJ08DgHp1eib3gSBLed54U)"
++            == "PKey(alg=ED25519, bits=256,"
++            " fp=SHA256:UsIasxMWEd9VFEwjARWWtGJ08DgHp1eib3gSBLed54U)"
+         )
+diff --git a/tests/test_kex.py b/tests/test_kex.py
+index 0871836435..487315f52e 100644
+--- a/tests/test_kex.py
++++ b/tests/test_kex.py
+@@ -21,6 +21,7 @@
+ """
+ 
+ import os
++import threading
+ import unittest
+ from binascii import hexlify, unhexlify
+ from unittest.mock import Mock, patch
+@@ -34,14 +35,20 @@
+ except ImportError:
+     x25519 = None
+ 
++import paramiko.kex_mlkem
+ import paramiko.util
+-from paramiko import Message
++from paramiko import Message, RSAKey, Transport
+ from paramiko.common import byte_chr
+ from paramiko.kex_curve25519 import KexCurve25519
+ from paramiko.kex_ecdh_nist import KexNistp256
+ from paramiko.kex_gex import KexGexSHA256
+ from paramiko.kex_group14 import KexGroup14SHA256
+ from paramiko.kex_group16 import KexGroup16SHA512
++from paramiko.kex_mlkem import KexMLKEM768X25519
++from paramiko.ssh_exception import SSHException
++
++from ._loop import LoopSocket
++from ._util import TestServer, _support
+ 
+ 
+ def dummy_urandom(n):
+@@ -479,3 +486,133 @@ def test_kex_c25519_server(self):
+         self.assertEqual(K, transport._K)
+         self.assertTrue(transport._activated)
+         self.assertEqual(H, hexlify(transport._H).upper())
++
++
++@pytest.mark.skipif("not KexMLKEM768X25519.is_available()")
++class MLKEM768X25519Test(unittest.TestCase):
++    """
++    Tests for the ML-KEM-768 + X25519 hybrid post-quantum key exchange
++    (draft-ietf-sshm-mlkem-hybrid-kex).
++    """
++
++    NAME = "mlkem768x25519-sha256"
++
++    def test_is_registered(self):
++        self.assertIn(self.NAME, Transport._kex_info)
++        self.assertIs(Transport._kex_info[self.NAME], KexMLKEM768X25519)
++        self.assertEqual(Transport._preferred_kex[0], self.NAME)
++
++    def test_round_trip(self):
++        """
++        Drive a real client/server handshake over a loopback and confirm
++        the negotiated kex is the hybrid method, both sides authenticate,
++        and the encrypted channel is usable end-to-end (which exercises
++        the bytes-K key derivation path through Transport._compute_key).
++        """
++        host_key = RSAKey.from_private_key_file(_support("rsa.key"))
++
++        socks = LoopSocket()
++        sockc = LoopSocket()
++        sockc.link(socks)
++        tc = Transport(sockc)
++        ts = Transport(socks)
++        try:
++            for side in (tc, ts):
++                side.get_security_options().kex = (self.NAME,)
++            ts.add_server_key(host_key)
++            event = threading.Event()
++            ts.start_server(event, TestServer())
++            tc.connect(
++                hostkey=RSAKey(data=host_key.asbytes()),
++                username="slowdive",
++                password="pygmalion",
++            )
++            event.wait(1.0)
++            self.assertTrue(event.is_set())
++            self.assertTrue(ts.is_active())
++            self.assertTrue(tc.is_authenticated())
++            # Smoke-test the encrypted channel: if the bytes-K key
++            # derivation path were broken, the two sides would compute
++            # different session keys and the first encrypted packet would
++            # fail to decrypt.
++            chan = tc.open_session()
++            chan.exec_command("yes")
++            chan.close()
++        finally:
++            tc.close()
++            ts.close()
++            socks.close()
++            sockc.close()
++
++    def _server_kex(self):
++        kex = KexMLKEM768X25519(_FakeTransport(server_mode=True))
++        kex.start_kex()
++        return kex
++
++    def _client_kex(self):
++        kex = KexMLKEM768X25519(_FakeTransport(server_mode=False))
++        kex.start_kex()
++        return kex
++
++    def test_rejects_wrong_init_length(self):
++        # Anything other than exactly 1184 + 32 = 1216 bytes must be
++        # rejected with SSHException (no ValueError, IndexError, etc.).
++        bad_sizes = [
++            0,  # empty
++            10,  # too short
++            1184,  # ML-KEM pubkey-sized but no X25519 half
++            32,  # X25519-sized but no ML-KEM half
++            1216 - 1,  # one byte short of the correct total
++            1216 + 1,  # one byte too long
++            1216 * 2,  # two valid-sized payloads concatenated
++        ]
++        for size in bad_sizes:
++            with self.subTest(size=size):
++                bad = Message()
++                bad.add_string(b"\x00" * size)
++                bad.rewind()
++                with pytest.raises(SSHException):
++                    self._server_kex().parse_next(
++                        paramiko.kex_mlkem._MSG_KEX_HYBRID_INIT, bad
++                    )
++
++    def test_rejects_wrong_reply_length(self):
++        # Symmetric coverage on the client side.
++        bad_sizes = [
++            0,  # empty
++            10,  # too short
++            1088,  # ciphertext-sized but no X25519 half
++            32,  # X25519-sized but no ciphertext
++            1120 - 1,  # one byte short of the correct total
++            1120 + 1,  # one byte too long
++        ]
++        for size in bad_sizes:
++            with self.subTest(size=size):
++                bad = Message()
++                bad.add_string(b"fake-host-key")
++                bad.add_string(b"\x00" * size)
++                bad.add_string(b"fake-sig")
++                bad.rewind()
++                with pytest.raises(SSHException):
++                    self._client_kex().parse_next(
++                        paramiko.kex_mlkem._MSG_KEX_HYBRID_REPLY, bad
++                    )
++
++
++class _FakeTransport:
++    """Minimal Transport stub for negative-path tests of KexMLKEM768X25519."""
++
++    local_version = "SSH-2.0-paramiko_test"
++    remote_version = "SSH-2.0-peer"
++    local_kex_init = b"local"
++    remote_kex_init = b"remote"
++    host_key_type = "fake-key"
++
++    def __init__(self, server_mode):
++        self.server_mode = server_mode
++
++    def _send_message(self, m):
++        pass
++
++    def _expect_packet(self, *t):
++        pass

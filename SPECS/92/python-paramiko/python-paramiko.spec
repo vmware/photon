@@ -1,11 +1,12 @@
-%global build_if %{photon_subrelease} >= 93
+%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} <=92
 
 %define srcname paramiko
 
 Summary:        Python SSH module
 Name:           python3-paramiko
-Version:        5.0.0
-Release:        1%{?dist}
+Version:        4.0.0
+Release:        1.1%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,7 +18,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: support-key-operations-in-openssl-fips-mode.patch
-Patch1: add-pqc-support.patch
 
 BuildArch:      noarch
 
@@ -26,6 +26,7 @@ BuildRequires:  python3-build
 BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-wheel
 BuildRequires:  python3-xml
 BuildRequires:  python3-packaging
 BuildRequires:  python3-installer
@@ -72,8 +73,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-* Mon Sep 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-1
-- Upgrade to version 5.0.0
+* Mon Sep 21 2026 Prashant S Chauhan <prahant.singh-chauhan@broadcom.com> 4.0.0-1.1
+- Build for subrelease 92
 * Mon May 18 2026 Prashant S Chauhan <prahant.singh-chauhan@broadcom.com> 4.0.0-1
 - Upgrade to upstream 4.0.0.
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.12.0-10
