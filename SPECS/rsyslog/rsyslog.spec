@@ -2,14 +2,14 @@
 
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.2602.0
-Release:        5%{?dist}
+Version:        8.2608.0
+Release:        1%{?dist}
 URL:            http://www.rsyslog.com
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
+Source0:        https://github.com/rsyslog/rsyslog/releases/download/v%{version}/%{name}-%{version}.tar.gz
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -32,6 +32,8 @@ BuildRequires:  protobuf-c-devel
 BuildRequires:  snappy-devel
 BuildRequires:  libestr-devel
 BuildRequires:  liblognorm-devel
+BuildRequires:  autoconf-archive
+BuildRequires:  libyaml-devel
 
 Requires:       gnutls
 Requires:       systemd
@@ -43,6 +45,7 @@ Requires:       libgpg-error
 Requires:       protobuf-c
 Requires:       snappy
 Requires:       libestr
+Requires:       libyaml
 
 %description
 RSYSLOG is the rocket-fast system for log processing.
@@ -126,6 +129,8 @@ make %{?_smp_mflags} check
 %{_libdir}/rsyslog/mmnormalize.so
 
 %changelog
+* Mon Sep 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.2608.0-1
+- Update to 8.2608.0
 * Mon Aug 24 2026 Ajay Kaher <ajay.kaher@broadcom.com> 8.2602.0-5
 - Fix RainerScript replace heap buffer overflow
 * Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 8.2602.0-4
