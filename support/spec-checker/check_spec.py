@@ -927,7 +927,6 @@ def check_specs(files_list, subrelease, mainline):
     n = int(mainline)
     assert n >= 90, f"mainline should be  90 >= mainline <= {n}"
     assert int(subrelease) >= 90, f"subrelease should be 90 >= subrelease <= {n}"
-    assert int(subrelease) <= n, f"subrelease should be 90 >= subrelease <= {n}"
 
     if check_subrelease_specs(specsForSubrelCheck, n):
         ret = True
