@@ -1,13 +1,12 @@
 sources:
-- archive: cryptography-50.0.1.tar.gz
-  archive_sha512sum: a25b07f00b9b92b2557da7cc97755e5df78197b881882ecd062d2c3c312d4b6af61225d1f0633bd654261c1a30ab7e5883a298b7dbdee1fb37c60514fe67633c
+- archive: cryptography-49.0.0.tar.gz
+  archive_sha512sum: 6a4435e90b981dfe1cc90479846041f800d618b8a673351ae55e308eeb7c152959ee56cb7a7188a7b46ae3228577192c651bc9801796f62fed55e7f8c3258f33
   archive_type: upstream
-  name: cryptography-50.0.1
-  url: https://github.com/pyca/cryptography/archive/refs/tags/50.0.1.tar.gz
+  version: 49.0.0
+  name: cryptography-49.0.0
+  url: https://github.com/pyca/cryptography/archive/refs/tags/49.0.0.tar.gz
   repo_url: https://github.com/pyca/cryptography
-  commit_id: ffde75a2b594822c740a2e4748b56c00548302bf
-  skip_list: []
-  missing: []
+  commit_id: c739e7347fe16a9f9f5adc3a0186abb73872be85
   spdx:
     package:
       detailed_description: 'Cryptography is a Python library which exposes cryptographic
@@ -17,13 +16,13 @@ sources:
       license_declared: Apache-2.0 AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
       short_summary: Python cryptography library
       supplier: 'Organization: Broadcom, Inc.'
-- archive: python3-cryptography-registry-50.0.1-1.ph5.tar.gz
-  archive_sha512sum: d75b9484bdc3beaf5f40a17802735f97d15242999d7315cf21c9c4828c109b01deba0afd28f4415b5b7ca597afc0789353d9fed64b2de863827693bb2814e03e
+- archive: python3-cryptography-registry-49.0.0-1.ph5.tar.gz
+  archive_sha512sum: d0aea9af534e5cb6acaec147f725edd4732fcfd6b65c629700cf4876252b55a5af18421ff2c090b00bd6266d078ec656437e151b2512b63626b9540a47a102b2
   skip_validation: true
   spdx:
     package:
-      detailed_description: Contains vendor rust file sources which were needed to
-        do offline build
+      detailed_description: 'Contains vendor rust file sources which were needed to
+        do offline build'
       home_page: https://github.com/vmware/photon
       license_concluded: BSD-3-Clause AND BSD-2-Clause AND (Apache-2.0 OR MIT) AND
         GPL-2.0-only AND bzip2-1.0.6 AND (MIT OR Apache-2.0) AND OpenSSL-standalone
