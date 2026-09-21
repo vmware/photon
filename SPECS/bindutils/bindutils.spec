@@ -6,8 +6,8 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.20.26
-Release:        3%{?dist}
+Version:        9.20.29
+Release:        1%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -134,6 +134,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Mon Sep 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.20.29-1
+- Upgrade bindutils to version 9.20.29
 * Mon Aug 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.26-3
 - Remove unnecessary requires
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.20.26-2

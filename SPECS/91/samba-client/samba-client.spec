@@ -8,7 +8,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.24.5
-Release:        3.1%{?dist}
+Release:        3.2%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -588,6 +588,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/samba/libpyldb-util.cpython-*-private-samba.so
 
 %changelog
+* Mon Sep 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.24.5-3.2
+- Bump release due to bindutils upgrade
 * Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.24.5-3.1
 - Sub branch for 91, as a part of rpcsvc-proto deprecation
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.24.5-3

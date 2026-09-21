@@ -1,11 +1,11 @@
 sources:
-- archive: bind-9.20.26.tar.xz
+- archive: bind-9.20.29.tar.xz
   archive_type: upstream
-  version: 9.20.26
-  name: bind-9.20.26
-  url: https://downloads.isc.org/isc/bind9/9.20.26/bind-9.20.26.tar.xz
+  version: 9.20.29
+  name: bind-9.20.29
+  url: https://downloads.isc.org/isc/bind9/9.20.29/bind-9.20.29.tar.xz
   repo_url: https://github.com/isc-projects/bind9.git
-  commit_id: 5a605f835e9a7f245d412410ef3836db9be14f34
+  commit_id: c3d4465e57f2771d780c82f413d4dc4cc779fb64
   skip_list: []
   missing:
   - '*.in'
@@ -63,7 +63,9 @@ sources:
   - models.c
   - gen-rsa-sha-vectors.c
   - gen-eddsa-vectors.c
-  archive_sha512sum: 6d90452d86bfbd1cd6c1301f8c2d9c2251402c81a03d45ab30217f5db05ab1ca6ca7e01fac3642bcd7e1866bd535763e9a9526886312eb5eaf4e532431a92931
+  - .agents
+  - .claude
+  archive_sha512sum: afedc73a1376d662eec86b7f0e5795a3b0302e7184af83f90d06e3b5054efb54f5d7ab73f777e0d1b84b25aa27f299de688c508e28f0a22e67ba5eb07aa46077
   skip_validation: false
   spdx:
     package:
