@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.109
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -195,8 +195,6 @@ Patch85: 0001-Adding-SBX-kernel-driver.patch
 %ifarch x86_64
 #SBX DTLS driver
 Patch86: 0001-linux-esx-Add-SBX-DTLS-kernel-module.patch
-# D-TLS ZERO COPY driver
-Patch88: 0001-Adding-DTLS-Zero-Copy-Driver.patch
 %endif
 
 # Backward compatibility
@@ -579,6 +577,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 21 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.109-9
+- Revert D-TLS ZERO COPY driver
 * Mon Sep 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.109-8
 - Fixes CVE-2026-68426
 * Mon Sep 21 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.109-7
