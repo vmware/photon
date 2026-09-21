@@ -3,7 +3,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.39
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -22,11 +22,13 @@ Patch0: CVE-2026-48864.patch
 Requires:       rpm-libs >= 4.16.1.3
 Requires:       expat-libs
 Requires:       zlib
+Requires:       zstd-libs
 
 BuildRequires:  cmake
 BuildRequires:  rpm-devel >= 4.16.1.3
 BuildRequires:  expat-devel
 BuildRequires:  zlib-devel
+BuildRequires:  zstd-devel
 
 %description
 Libsolv is a free package management library, using SAT technology to solve requests.
@@ -38,6 +40,9 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel
 Provides:       pkgconfig(libsolv)
 Provides:       pkgconfig(libsolvext)
+
+Conflicts:      %{name} < 0.7.39-2
+
 %description devel
 The libsolv-devel package contains libraries, header files and documentation
 for developing applications that use libsolv.
@@ -46,19 +51,20 @@ for developing applications that use libsolv.
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} \
     -DENABLE_RPMDB=ON \
     -DENABLE_COMPLEX_DEPS=ON \
     -DENABLE_RPMDB_BYRPMHEADER=ON \
     -DENABLE_RPMDB_LIBRPM=ON \
     -DENABLE_RPMMD=ON \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DENABLE_ZSTD_COMPRESSION=ON \
     -DCMAKE_BUILD_TYPE=Debug
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
@@ -70,9 +76,8 @@ make %{?_smp_mflags} test
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/libsolv.so.*
-%{_libdir}/libsolvext.so.*
-%{_mandir}/man1/*
+%{_libdir}/libsolv.so.1*
+%{_libdir}/libsolvext.so.1*
 
 %files devel
 %defattr(-,root,root)
@@ -81,9 +86,11 @@ make %{?_smp_mflags} test
 %{_libdir}/libsolvext.so
 %{_libdir}/pkgconfig/*
 %{_datadir}/cmake/*
-%{_mandir}/man3/*
+%{_mandir}/*
 
 %changelog
+* Mon Sep 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.39-2
+- Support zst compression
 * Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.7.39-1
 - Upgrade to v0.7.39
 * Tue Jan 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.35-1

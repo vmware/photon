@@ -3,7 +3,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.22
-Release:        7.3%{?dist}
+Release:        7.4%{?dist}
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -21,11 +21,13 @@ Source1: license.txt
 Requires:       rpm-libs >= 4.16.1.3
 Requires:       expat-libs
 Requires:       zlib
+Requires:       zstd-libs
 
 BuildRequires:  cmake
 BuildRequires:  rpm-devel >= 4.16.1.3
 BuildRequires:  expat-devel
 BuildRequires:  zlib-devel
+BuildRequires:  zstd-devel
 
 %description
 Libsolv is a free package management library, using SAT technology to solve requests.
@@ -37,6 +39,7 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel
 Provides:       pkgconfig(libsolv)
 Provides:       pkgconfig(libsolvext)
+
 %description devel
 The libsolv-devel package contains libraries, header files and documentation
 for developing applications that use libsolv.
@@ -45,19 +48,20 @@ for developing applications that use libsolv.
 %autosetup -p1
 
 %build
-%cmake \
+%{cmake} \
     -DENABLE_RPMDB=ON \
     -DENABLE_COMPLEX_DEPS=ON \
     -DENABLE_RPMDB_BYRPMHEADER=ON \
     -DENABLE_RPMDB_LIBRPM=ON \
     -DENABLE_RPMMD=ON \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DENABLE_ZSTD_COMPRESSION=ON \
     -DCMAKE_BUILD_TYPE=Debug
 
-%cmake_build
+%{cmake_build}
 
 %install
-%cmake_install
+%{cmake_install}
 find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
@@ -83,6 +87,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Sep 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.7.22-7.4
+- Support zst compression
 * Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.7.22-7.3
 - Fix CVE-2026-48863
 * Thu Jun 18 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 0.7.22-7.2
