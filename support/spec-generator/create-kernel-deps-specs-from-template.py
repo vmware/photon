@@ -16,6 +16,10 @@ _BUILD_IF_OPS = {
 
 
 class KernelSpecProcessor:
+    _SUBREL_IF = re.compile(
+        r"^%if\s+0?%\{\??photon_subrelease\}\s*(==|!=|>=|<=|>|<)\s*(\d+)\s*$"
+    )
+
     def __init__(self, driver_info_file, spec_paths):
         self.kvers = defaultdict(list)
         self.krels = defaultdict(list)
@@ -142,22 +146,100 @@ class KernelSpecProcessor:
             for spec_file in k_specs:
                 spec_file.unlink()
 
+    # The spec as the current subrelease sees it: plain photon_subrelease
+    # comparisons decided and %include'd files inlined. A spec that serves
+    # several subreleases (SPECS/linux/linux.spec builds kernel 6.1 up to 90
+    # and 6.12 from 91) keeps each kernel's Version behind such a conditional
+    # and its Release in an included file. Other conditionals are kept.
+    def __resolved_spec(self, spec_path):
+        ops = dict(_BUILD_IF_OPS)
+        ops["!="] = operator.ne
+        negate = {"<=": (">=", 1), "<": (">=", 0), ">=": ("<=", -1), ">": ("<=", 0),
+                  "==": ("!=", 0), "!=": ("==", 0)}
+        out, stack, sources = [], [], {}
+        # The subrelease condition in force where Version: is read: what a
+        # separate per-subrelease spec used to state as its build_if.
+        self.__version_condition = None
+
+        def active():
+            return all(f is None or f[0] for f in stack)
+
+        def walk(path, depth):
+            with open(path, "r") as spec_file:
+                lines = spec_file.read().splitlines()
+            for line in lines:
+                s = line.strip()
+                m = None
+                if self.current_subrelease is not None:
+                    m = self._SUBREL_IF.match(s)
+                if m:
+                    op, n = m.group(1), int(m.group(2))
+                    stack.append([ops[op](self.current_subrelease, n), op, n])
+                    continue
+                if s.startswith("%if"):
+                    if active():
+                        out.append(line)
+                    stack.append(None)
+                    continue
+                if s.startswith("%else") and stack:
+                    if stack[-1] is not None:
+                        taken, op, n = stack[-1]
+                        nop, shift = negate[op]
+                        stack[-1] = [not taken, nop, n + shift]
+                    elif active():
+                        out.append(line)
+                    continue
+                if s.startswith("%endif") and stack:
+                    if stack.pop() is None and active():
+                        out.append(line)
+                    continue
+                if not active():
+                    continue
+                if s.startswith("Version:") and self.__version_condition is None:
+                    conds = [f"%{{photon_subrelease}} {f[1]} {f[2]}" for f in stack if f is not None]
+                    if len(conds) == 1:
+                        self.__version_condition = conds[0]
+                src = re.match(r"^Source(\d+)\s*:\s*(\S+)", s, re.IGNORECASE)
+                if src:
+                    sources[src.group(1)] = src.group(2)
+                inc = re.match(r"^%include\s+(\S+)\s*$", s)
+                if inc and depth < 8:
+                    name = inc.group(1)
+                    ref = re.fullmatch(r"%\{SOURCE(\d+)\}", name)
+                    if ref:
+                        name = sources.get(ref.group(1), "")
+                    name = os.path.basename(name)
+                    if name and "%" not in name:
+                        target = Path(path).parent / name
+                        if target.is_file():
+                            walk(target, depth + 1)
+                            continue
+                out.append(line)
+
+        walk(spec_path, 0)
+        return "\n".join(out) + "\n"
+
     def __extract_kernel_data(self):
         # # Extract kernel versions, releases, and build targets
         for linux_flavour in self.linux_flavours:
             spec_paths = self.__find_spec_files(linux_flavour)
             for spec_path in spec_paths:
-                with open(spec_path, 'r') as spec_file:
-                    spec_content = spec_file.read()
+                spec_content = self.__resolved_spec(spec_path)
 
-                version_match = re.search(r"^Version:\s*(\S+)",
-                                          spec_content, re.MULTILINE).group(1)
-                release_match = re.search(r"^Release:\s*(\S+)",
-                                          spec_content, re.MULTILINE).group(1)
+                version = re.search(r"^Version:\s*(\S+)", spec_content, re.MULTILINE)
+                release = re.search(r"^Release:\s*(\S+)", spec_content, re.MULTILINE)
+                if not version or not release:
+                    print(f"Error: {spec_path}: no Version/Release at "
+                          f"subrelease {self.current_subrelease}")
+                    sys.exit(1)
+                version_match = version.group(1)
+                release_match = release.group(1)
                 build_for_match = re.search(r"^\s*%(?:global|define)\s+build_if\s+(.*)", spec_content, re.MULTILINE)
 
                 if build_for_match:
                     build_for_value = build_for_match.group(1).strip()
+                elif self.__version_condition:
+                    build_for_value = self.__version_condition
                 else:
                     build_for_value = "1"
 
