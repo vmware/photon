@@ -1,7 +1,7 @@
 Summary:      Provides API to packets queued by kernel packet filter
 Name:         libnetfilter_queue
 Version:      1.0.5
-Release:      4%{?dist}
+Release:      5%{?dist}
 URL:          http://www.netfilter.org/projects/libnetfilter_queue/index.html
 Group:        System Environment/Libraries
 Vendor:       VMware, Inc.
@@ -16,6 +16,9 @@ BuildRequires:  libmnl-devel
 BuildRequires:  libnfnetlink-devel
 BuildRequires:  linux-api-headers
 
+Requires: libmnl
+Requires: libnfnetlink
+
 %description
 libnetfilter_queue is a userspace library providing an API to packets that
 have been queued by the kernel packet filter. It is is part of a system that
@@ -24,10 +27,10 @@ previously known as libnfnetlink_queue.
 
 %package        devel
 Summary:        Development files for %{name}
-Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:       libnfnetlink-devel
 Requires:       linux-api-headers
+Requires:       libmnl-devel
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -55,6 +58,8 @@ developing applications that use %{name}.
 %{_libdir}/*.so
 
 %changelog
+* Tue Sep 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.5-5
+- Fix requires of main and devel package
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.5-4
 - Release bump for SRP compliance
 * Sun Aug 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.0.5-3
