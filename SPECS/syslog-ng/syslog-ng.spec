@@ -5,7 +5,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -63,7 +63,6 @@ BuildRequires:  python3-PyYAML
 BuildRequires:  python3-requests
 BuildRequires:  python3-requests-oauthlib
 BuildRequires:  python3-rsa
-BuildRequires:  python3-six
 BuildRequires:  python3-urllib3
 BuildRequires:  python3-websocket-client
 BuildRequires:  python3-boto3
@@ -94,7 +93,6 @@ Requires:  python3-PyYAML
 Requires:  python3-requests
 Requires:  python3-requests-oauthlib
 Requires:  python3-rsa
-Requires:  python3-six
 Requires:  python3-urllib3
 Requires:  python3-websocket-client
 
@@ -225,6 +223,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-14
+- Remove stale python3-six dependency
 * Thu Jun 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3.1-13
 - Fix pyasn1 dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3.1-12

@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        3.0.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -28,14 +28,12 @@ BuildRequires:  systemd
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  python3-six
 BuildRequires:  python3-xml
 Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
 Requires:       python3
 Requires:       python3-libs
-Requires:       python3-six
 Requires:       python3-xml
 Requires:       gawk
 
@@ -153,6 +151,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 %{_mandir}/man5/ovsdb.local-config.5.gz
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.2-9
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.2-8
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.2-7

@@ -4,7 +4,7 @@
 
 Name:           python3-setuptools-rust
 Version:        1.12.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Setuptools plugin for Rust support
 Group:          Development/Languages/Python
 Url:            https://github.com/PyO3/setuptools-rust
@@ -25,7 +25,6 @@ BuildRequires:  python3-wheel
 BuildRequires:  python3-pip
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
-BuildRequires:  python3-six
 BuildRequires:  python3-attrs
 BuildRequires:  python3-pluggy
 BuildRequires:  python3-more-itertools
@@ -63,6 +62,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.12.0-3
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.12.0-2
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.0-1

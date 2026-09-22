@@ -3,7 +3,7 @@
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
 Version:        0.18.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,7 +14,6 @@ Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  python3-six
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-hypothesis
@@ -56,6 +55,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18.1-5
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.18.1-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18.1-3

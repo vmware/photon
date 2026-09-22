@@ -5,7 +5,7 @@
 Summary:    The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:       python3-gcovr
 Version:    5.2
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://gcovr.com
 Vendor:     VMware, Inc.
 Group:      Development/Tools
@@ -25,7 +25,6 @@ Obsoletes: %{srcname}
 %if 0%{?with_check}
 BuildRequires: openssl-devel
 BuildRequires: curl-devel
-BuildRequires: python3-six
 BuildRequires: python3-attrs
 BuildRequires: python3-lxml
 BuildRequires: python3-pip
@@ -63,6 +62,8 @@ python3 -m nox
 %{python3_sitelib}*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-7
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.2-6
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.2-5

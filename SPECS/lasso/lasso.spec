@@ -3,7 +3,7 @@
 Summary:        Liberty Alliance Single Sign On
 Name:           lasso
 Version:        2.9.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries/C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,7 +15,6 @@ Source1: license.txt
 BuildRequires: libxml2-devel
 BuildRequires: glib-devel
 BuildRequires: openssl-devel
-BuildRequires: python3-six
 BuildRequires: which
 BuildRequires: xmlsec1-devel
 Requires:      xmlsec1
@@ -72,6 +71,8 @@ find %{buildroot} -name '*.a' -delete
 %{_defaultdocdir}/%{name}
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.0-5
+- Remove stale python3-six dependency
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.9.0-4
 - Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.0-3

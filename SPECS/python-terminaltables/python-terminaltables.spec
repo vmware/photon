@@ -3,7 +3,7 @@
 Summary:        Draw tables in terminal/console applications from a list of lists of strings
 Name:           python3-terminaltables
 Version:        3.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,7 +20,6 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-attrs
 BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
-BuildRequires:  python3-six
 %endif
 
 Requires:       python3
@@ -49,6 +48,8 @@ python3 -m pytest tests
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.0-5
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.0-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.1.0-3

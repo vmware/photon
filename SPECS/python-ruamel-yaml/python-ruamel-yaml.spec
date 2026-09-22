@@ -5,7 +5,7 @@
 Summary:        YAML parser/emitter.
 Name:           python3-ruamel-yaml
 Version:        0.19.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,7 +20,6 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 %if 0%{?with_check}
 BuildRequires:  python3-attrs
-BuildRequires:  python3-six
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pip
 %endif
@@ -54,6 +53,8 @@ find %{buildroot} -name '*.pyc' -delete
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.19.1-4
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.19.1-3
 - Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.19.1-2

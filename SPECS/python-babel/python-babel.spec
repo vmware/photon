@@ -4,7 +4,7 @@
 
 Name:           python3-babel
 Version:        2.18.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
 Group:          Development/Languages/Python
 Url:            http://babel.pocoo.org
@@ -25,7 +25,6 @@ BuildRequires:  python3-xml
 BuildRequires:  curl-devel
 BuildRequires:  python3-pytest
 BuildRequires:  openssl-devel
-BuildRequires:  python3-six
 BuildRequires:  python3-attrs
 %endif
 
@@ -63,6 +62,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.18.0-4
+- Remove stale python3-six dependency
 * Wed May 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 2.18.0-3
 - Disable python3-pytz dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.18.0-2

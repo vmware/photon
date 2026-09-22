@@ -3,7 +3,7 @@
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python3-prompt_toolkit
 Version:        3.0.30
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,7 +19,6 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-Pygments
 BuildRequires:  python3-wcwidth
-BuildRequires:  python3-six
 %if 0%{?with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -30,7 +29,6 @@ BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-Pygments
-Requires:       python3-six
 Requires:       python3-wcwidth
 BuildArch:      noarch
 
@@ -54,6 +52,8 @@ prompt_toolkit is a library for building powerful interactive command lines and 
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.0.30-6
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.30-5
 - Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.0.30-4

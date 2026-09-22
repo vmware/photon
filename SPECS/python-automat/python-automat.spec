@@ -5,7 +5,7 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        22.10.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,13 +28,11 @@ BuildRequires: python3-docutils
 BuildRequires: python3-mistune
 BuildRequires: python3-graphviz
 BuildRequires: python3-attrs
-BuildRequires: python3-six
 
 %if 0%{?with_check}
 BuildRequires: python3-pytest
 %endif
 
-Requires: python3-six
 Requires: python3-attrs
 Requires: python3
 Requires: python3-graphviz
@@ -71,6 +69,8 @@ ln -sv automat-visualize3 %{buildroot}%{_bindir}/automat-visualize
 %{_bindir}/automat-visualize*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-7
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 22.10.0-6
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-5

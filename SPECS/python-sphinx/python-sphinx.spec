@@ -5,7 +5,7 @@
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       9.1.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Tools
 URL:           www.sphinx-doc.org
 Vendor:        VMware, Inc.
@@ -39,7 +39,6 @@ Requires: python3-babel
 Requires: python3-docutils
 Requires: python3-jinja2
 Requires: python3-Pygments
-Requires: python3-six
 Requires: python3-alabaster
 Requires: python3-imagesize
 Requires: python3-requests
@@ -83,6 +82,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 9.1.0-3
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.1.0-2
 - Extended to build for subrelease 91 and above
 * Sun Mar 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.1.0-1

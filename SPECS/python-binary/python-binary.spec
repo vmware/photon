@@ -2,7 +2,7 @@
 
 Name:           python3-binary
 Version:        1.0.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Library to convert between binary and SI units
 Group:          Development/Languages/Python
 Url:            https://github.com/ofek/binary
@@ -18,7 +18,6 @@ BuildRequires:  python3-setuptools
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pip
-BuildRequires:  python3-six
 BuildRequires:  python3-attrs
 %endif
 Requires:       python3
@@ -46,6 +45,8 @@ python3 -m pytest tests
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.0-6
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.0-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.0-4

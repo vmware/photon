@@ -2,7 +2,7 @@
 
 Name:           python3-ply
 Version:        3.11
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Python Lex & Yacc
 Group:          Development/Languages/Python
 Url:            http://www.dabeaz.com/ply/
@@ -12,11 +12,10 @@ Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-%if 0%{?with_check}
-BuildRequires:  python3-six
-%endif
+
 Requires:       python3
 BuildArch:      noarch
 Provides:       python%{python3_version}dist(ply)
@@ -59,6 +58,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11-10
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.11-9
 - Extended to build for subrelease 91 and above
 * Tue Dec 09 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11-8

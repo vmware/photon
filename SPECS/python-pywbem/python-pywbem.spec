@@ -2,7 +2,7 @@
 
 Name:           python3-pywbem
 Version:        1.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
 URL:            http://pywbem.sourceforge.net
@@ -22,7 +22,6 @@ BuildRequires:  python3-wheel
 BuildRequires:  python3-setuptools_scm
 BuildRequires:  python3-installer
 Requires:       python3
-Requires:       python3-six
 Requires:       python3-xml
 Requires:       python3-M2Crypto
 Requires:       python3-PyYAML
@@ -73,6 +72,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.9.0-3
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.9.0-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.9.0-1

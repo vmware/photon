@@ -5,7 +5,7 @@
 Summary:    Google Auth Python Library
 Name:       python3-google-auth
 Version:    2.32.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        https://github.com/googleapis/google-auth-library-python
 Group:      Development/Languages/Python
 Vendor:     VMware, Inc.
@@ -36,7 +36,6 @@ BuildRequires: python3-cryptography
 Requires:  python3-pyasn1
 Requires:  python3-pyasn1-modules
 Requires:  python3-rsa
-Requires:  python3-six
 Requires:  python3-cachetools
 Requires:  python3
 
@@ -69,6 +68,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/google_auth-%{version}.dist-info/
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.32.0-5
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.32.0-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.32.0-3

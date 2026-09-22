@@ -7,7 +7,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        22.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -149,7 +149,6 @@ The liblldb package contains shared libraries for lldb
 %package -n     python3-lldb
 Summary:        Python module for lldb
 Requires:       lldb = %{version}-%{release}
-Requires:       python3-six
 
 %description -n python3-lldb
 The package contains the LLDB Python3 module.
@@ -379,6 +378,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/LLVMSPIRVLib.pc
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.1.0-4
+- Remove stale python3-six dependency
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 22.1.0-3
 - Release version bump as part of libxml2/libxslt
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 22.1.0-2

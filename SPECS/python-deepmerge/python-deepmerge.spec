@@ -2,7 +2,7 @@
 
 Name:           python3-deepmerge
 Version:        1.1.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 URL:            https://pypi.org/project/deepmerge
@@ -25,7 +25,6 @@ BuildRequires:  python3-wheel
 %if 0%{?with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-attrs
-BuildRequires:  python3-six
 BuildRequires:  python3-requests
 %endif
 
@@ -61,6 +60,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-6
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.0-5
 - Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1.0-4

@@ -3,7 +3,7 @@
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
 Version:        25.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -24,13 +24,11 @@ BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-xml
 BuildRequires:  python3-pyparsing
-BuildRequires:  python3-six
 %endif
 
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pyparsing
-Requires:       python3-six
 
 BuildArch:      noarch
 
@@ -58,6 +56,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.0-4
+- Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 25.0-3
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 25.0-2

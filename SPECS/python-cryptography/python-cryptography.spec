@@ -3,7 +3,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        49.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -51,7 +51,6 @@ Requires:       python3-libs
 Requires:       python3-cffi
 Requires:       python3-idna
 Requires:       python3-pyasn1
-Requires:       python3-six
 Requires:       python3-packaging
 
 %description
@@ -93,6 +92,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 49.0.0-2
+- Remove stale python3-six dependency
 * Fri Jul 10 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 49.0.0-1
 - Upgrade to version 49.0.0
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 41.0.7-10

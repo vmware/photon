@@ -9,7 +9,7 @@
 
 Name:           cloud-init
 Version:        26.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -46,7 +46,6 @@ BuildRequires: dbus
 BuildRequires: iproute2
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
-BuildRequires: python3-six
 BuildRequires: python3-requests
 BuildRequires: python3-PyYAML
 BuildRequires: python3-urllib3
@@ -81,7 +80,6 @@ Requires: python3-jsonpatch
 Requires: python3-oauthlib
 Requires: python3-jinja2
 Requires: python3-markupsafe
-Requires: python3-six
 Requires: python3-setuptools
 Requires: python3-xml
 Requires: python3-jsonschema
@@ -167,6 +165,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.2-3
+- Remove stale python3-six dependency
 * Tue Sep 01 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.2-2
 - Remove python3-configobj dependency
 * Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-1
