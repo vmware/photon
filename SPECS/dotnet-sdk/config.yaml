@@ -1,15 +1,15 @@
 sources:
-- archive: dotnet-sdk-10.0.303-linux-x64.tar.gz
-  archive_sha512sum: 538df11ceb9d86bdda061bab6ede3d1f6d46bb9ba087ae905643f3d456afe982949d1b952bceb305a5d22d2d6e69cc0e5100216ffcc709aaa86e867f2d9cdf9a
+- archive: dotnet-sdk-10.0.401-linux-x64.tar.gz
+  archive_sha512sum: 51c8b999af9e8dd9998c9edc5944e19a90788862068acd38694e098889054ce8c23d4f0c5cccfa16bf187d044562359e5ee69a9f8ad0bbe913ba90311fbce25b
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - sdk/10.0.303/NuGet.Packaging.dll
-    sha256sum: f0fc91fbafcd7a37089c357985c763cd0cd326301dbd0838e8d95cc07aa44e35
+    - sdk/10.0.401/NuGet.Packaging.dll
+    sha256sum: d1347085c89142139ec26c860a7635207cebd5af5a6bf1908a067b69233d73d2
     spdx_exp: ''
   - file_paths:
-    - sdk/10.0.303/Sdks/Microsoft.NET.Sdk/tools/net472/NuGet.Packaging.dll
-    sha256sum: d62c8e5588893754ba00ff4eef3ff9e4c5d2b33e7304da77c9b0673d5635c708
+    - sdk/10.0.401/Sdks/Microsoft.NET.Sdk/tools/net472/NuGet.Packaging.dll
+    sha256sum: d149980e83dc9e091e18141254d317f444f3219b572c561a53e9e3c9db2c6914
     spdx_exp: ''
   spdx:
     package:

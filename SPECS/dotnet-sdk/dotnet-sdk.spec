@@ -4,8 +4,8 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        10.0.303
-Release:        2%{?dist}
+Version:        10.0.401
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -14,11 +14,7 @@ Group:          Development/Tools
 BuildArch: x86_64
 
 # Download source tarball from the links provided in:
-# https://github.com/dotnet/core/tree/main/release-notes
-#
-# For example:
-# https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
-# https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
+# https://dotnet.microsoft.com/en-us/download/dotnet/10.0
 Source0: %{name}-%{version}-linux-x64.tar.gz
 
 Source1: license.txt
@@ -50,6 +46,8 @@ echo "%{_datadir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Wed Sep 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.401-1
+- Upgrade to v10.0.401
 * Sun Sep 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.303-2
 - Bump as a part of dotnet-runtime upgrade
 * Sat Aug 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.303-1

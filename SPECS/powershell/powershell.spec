@@ -13,8 +13,8 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.6.5
-Release:        2%{?dist}
+Version:        7.6.6
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -78,7 +78,7 @@ BuildRequires:  wget
 
 Requires:       icu >= 70.1
 Requires:       zlib
-Requires:       dotnet-sdk = 10.0.303
+Requires:       dotnet-sdk = 10.0.401
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -157,6 +157,8 @@ fi
 %{_bindir}/pwsh
 
 %changelog
+* Wed Sep 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.6-1
+- Upgrade to v7.6.6
 * Sun Sep 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.5-2
 - Bump as a part of dotnet-runtime upgrade
 * Sat Aug 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.5-1
