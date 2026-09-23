@@ -2,8 +2,8 @@
 
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.26.0
-Release:        2%{?dist}
+Version:        1.26.1
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Wed Sep 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.1-1
+- Upgrade to v1.26.1
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.26.0-2
 - Extend to build for 91 and above
 * Wed Aug 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.0-1
