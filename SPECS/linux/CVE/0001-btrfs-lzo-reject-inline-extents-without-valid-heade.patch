@@ -1,0 +1,90 @@
+From 0fa78ef637deb5dbe341582f88553a4bce496de0 Mon Sep 17 00:00:00 2001
+From: David Lee <david.lee@trailofbits.com>
+Date: Wed, 15 Jul 2026 09:05:14 +0000
+Subject: [PATCH] btrfs: lzo: reject inline extents without valid headers
+
+[ Upstream commit 0fa78ef637deb5dbe341582f88553a4bce496de0 ]
+
+[BUG]
+For a crafted btrfs image, the following KASAN can be triggered when
+reading an inline lzo compressed file extent:
+
+  BUG: KASAN: slab-out-of-bounds in lzo_decompress+0x57d/0x700
+  Read of size 4 at addr ffff888006f2e644 by task btrfs_lzo_inlin/77
+
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x5b/0x70
+   print_report+0xd1/0x610
+   kasan_report+0xe0/0x110
+   __asan_report_load_n_noabort+0x13/0x20
+   lzo_decompress+0x57d/0x700
+   btrfs_decompress+0x140/0x1c0
+   uncompress_inline+0x147/0x1b0
+   btrfs_get_extent+0xb23/0x10a0
+   btrfs_do_readpage.constprop.0+0x538/0x1ac0
+   btrfs_readahead+0x32f/0x5f0
+   read_pages+0x16f/0x850
+   page_cache_ra_unbounded+0x296/0x490
+   do_page_cache_ra+0xd9/0x130
+   page_cache_sync_ra+0x3ee/0x6f0
+   filemap_get_pages+0x306/0x15c0
+   filemap_read+0x329/0xd00
+   btrfs_file_read_iter+0x1f8/0x2b0
+   vfs_read+0x4ef/0x720
+   ksys_read+0xf8/0x1d0
+   __x64_sys_read+0x71/0xb0
+   x64_sys_call+0x1ab0/0x1b70
+   do_syscall_64+0x61/0x470
+   entry_SYSCALL_64_after_hwframe+0x4b/0x53
+   </TASK>
+
+[CAUSE]
+For an inline lzo compressed file extent, there should always be one lzo
+header, recording the total length of the compressed data, followed by
+one segment header, recording the compressed lzo payload.
+
+But if a crafted inline lzo compressed file extent contains only an lzo
+header, without the segment header or payload, lzo_decompress() will
+still try to read the segment header, causing a read beyond the item
+boundary.
+
+Furthermore if the inline lzo compressed file extent is the first item
+of the leaf, it will be at the extent buffer boundary. The above
+out-of-boundary read will go beyond the extent buffer boundary,
+triggering the above KASAN report.
+
+[FIX]
+Validate the total length of the inlined lzo compressed file extent, to
+make sure there is at least one LZO header and one segment header, and a
+non-zero payload.
+
+Fixes: a6fa6fae40ec ("btrfs: Add lzo compression support")
+Assisted-by: Codex:gpt-5.5
+Signed-off-by: David Lee <david.lee@trailofbits.com>
+[ Rework the commit message to remove slop ]
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+[Shivani: Backported for CVE-2026-74723. 6.12.y's lzo_decompress()
+  predates the refactor that added the btrfs_err() diagnostics on
+  this path, so only the bounds check itself is carried over. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ fs/btrfs/lzo.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/btrfs/lzo.c b/fs/btrfs/lzo.c
+index 72856f6775f7..0d136da8b6be 100644
+--- a/fs/btrfs/lzo.c
++++ b/fs/btrfs/lzo.c
+@@ -449,7 +449,7 @@ int lzo_decompress(struct list_head *ws, const u8 *data_in,
+ 	size_t max_segment_len = WORKSPACE_BUF_LENGTH;
+ 	int ret = 0;
+
+-	if (srclen < LZO_LEN || srclen > max_segment_len + LZO_LEN * 2)
++	if (srclen <= LZO_LEN * 2 || srclen > max_segment_len + LZO_LEN * 2)
+ 		return -EUCLEAN;
+
+ 	in_len = read_compress_length(data_in);
+--
+2.53.0
