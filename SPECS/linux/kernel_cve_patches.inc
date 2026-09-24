@@ -101,3 +101,5 @@ Patch3084: 0001-xfrm-fix-stale-skb-prev-after-async-crypto-steals-a-.patch
 Patch3085: 0001-RDMA-rxe-Fix-iova-to-va-conversion-for-MR-page-sizes.patch
 Patch3086: 0001-drm-amdkfd-Check-bounds-on-CRIU-restore-queue-type-a.patch
 Patch3087: 0001-drm-i915-gt-Fix-NULL-deref-on-sched_engine-alloc-fai.patch
+# Fixes CVE-2026-74752
+Patch3088: 0001-sctp-validate-cookie-AUTH-state-before-use.patch
