@@ -1,0 +1,64 @@
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Wed, 24 Sep 2026 00:00:00 +0530
+Subject: [PATCH] sandbox: allow recvmsg, sendmsg, rseq, membarrier syscalls
+
+RCA
+---
+OpenSSH 10.5 split the preauth code into a separately re-executed binary
+(sshd-auth). The seccomp sandbox is installed in sshd-auth before kex
+begins (sshd-auth.c: ssh_sandbox_child() at line 213, do_ssh2_kex() at
+line 735). After receiving SSH2_MSG_KEXECDH_INIT the kex handler calls
+mm_receive_fd() in monitor_fdpass.c to pull a file descriptor from the
+sshd-session monitor via SCM_RIGHTS. This uses recvmsg(2) (NR 47 on
+x86_64), which was not in the seccomp allowlist. The sandbox default
+action is SECCOMP_RET_KILL, so sshd-auth was killed with SIGSYS before
+it could complete the handshake.
+
+The PQC patches replaced libcrux ML-KEM with OpenSSL EVP.
+The EVP code path for ML-KEM goes through a kex handler branch that
+reaches mm_receive_fd(), whereas the libcrux path did not. The sandbox
+allowlist was never updated to cover this new code path.
+
+Additionally, glibc 2.35+ registers threads with rseq(2) (NR 334) and
+uses membarrier(2) (NR 324) during CRYPTO_THREAD_run_once() called by
+EVP provider initialisation. Both were also absent from the allowlist.
+
+Fix: add SC_ALLOW entries for recvmsg, sendmsg (the paired send side),
+rseq, and membarrier.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ sandbox-seccomp-filter.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/sandbox-seccomp-filter.c b/sandbox-seccomp-filter.c
+index xxxxxxx..xxxxxxx 100644
+--- a/sandbox-seccomp-filter.c
++++ b/sandbox-seccomp-filter.c
+@@ -323,6 +323,12 @@
+ #ifdef __NR_getpid
+ 	SC_ALLOW(__NR_getpid),
+ #endif
++#ifdef __NR_rseq
++	SC_ALLOW(__NR_rseq),
++#endif
++#ifdef __NR_membarrier
++	SC_ALLOW(__NR_membarrier),
++#endif
+ #ifdef __NR_getrandom
+ 	SC_ALLOW(__NR_getrandom),
+ #endif
+@@ -426,6 +432,13 @@
+ #ifdef __NR_writev
+ 	SC_ALLOW(__NR_writev),
+ #endif
++#ifdef __NR_recvmsg
++	/* needed for monitor fd-passing (SCM_RIGHTS) during kex signing */
++	SC_ALLOW(__NR_recvmsg),
++#endif
++#ifdef __NR_sendmsg
++	SC_ALLOW(__NR_sendmsg),
++#endif
+ #ifdef __NR_getsockopt
+ 	SC_ALLOW(__NR_getsockopt),
+ #endif

@@ -1,0 +1,2115 @@
+From 1991c801c55182d52bce256097eee503c3121828 Mon Sep 17 00:00:00 2001
+From: Viswesh Narayanan <viswesh.narayanan@broadcom.com>
+Date: Thu, 3 Sep 2026 14:37:11 -0700
+Subject: [PATCH 2/2] NIST curves hybrid KEX implementation
+
+This implementation is based on the RedHat patch (patch 0047),
+with the only deviation being that we allow mlkem768x25519-sha256
+in FIPS mode (hybrids are OK if the classical key is non-FIPS
+based on NIST SP 800-56C Rev 2).
+
+Key Changes:
+
+* Adds NIST Hybrid KEX: Introduces mlkem768nistp256-sha256 and
+  mlkem1024nistp384-sha384 alongside the existing X25519 hybrid.
+
+* FIPS Integration: Integrates all three methods with FIPS-tiering
+  using OpenSSL's EVP API, properly gating availability based on
+  what the OpenSSL FIPS provider supports. Note X25519 is used
+  from upstream OpenSSH implementation.
+
+* Code Refactoring & Bug Fixes: Consolidates KEX gating logic to
+  prevent divergence, fixes error handling (e.g., properly reporting
+  SSH_ERR_LIBCRYPTO_ERROR instead of silent failures), and ensures
+  safe memory cleanup for hybrid client keys.
+
+* File Restructuring: Splits the implementation into three files
+  (kexmlkemevp.c, kexmlkemnist.c, kexmlkem768x25519.c) to cleanly
+  separate OpenSSL helpers, NIST-curve hybrids,
+  and the upstream X25519 code for easier future merges.
+---
+ .depend                          |   7 +-
+ Makefile.in                      |   5 +-
+ compat.c                         |  47 ++-
+ compat.h                         |   2 +
+ kex-names.c                      |  96 ++++-
+ kex.c                            |   1 +
+ kex.h                            |  25 +-
+ kexgen.c                         |  35 +-
+ kexmlkem768ecdh.c                | 308 ---------------
+ kexmlkem768x25519.c              | 124 +-----
+ kexmlkemevp.c                    | 212 +++++++++++
+ kexmlkemevp.h                    |  54 +++
+ kexmlkemnist.c                   | 633 +++++++++++++++++++++++++++++++
+ monitor.c                        |   3 +-
+ myproposal.h                     |  12 +-
+ regress/unittests/kex/Makefile   |   3 +-
+ regress/unittests/kex/test_kex.c |   8 +-
+ ssh-keyscan.c                    |   3 +-
+ ssh_api.c                        |   6 +-
+ ssh_config.5                     |   6 +-
+ sshconnect2.c                    |   3 +-
+ sshd-auth.c                      |   3 +-
+ sshd_config.5                    |   8 +-
+ 23 files changed, 1115 insertions(+), 489 deletions(-)
+ delete mode 100644 kexmlkem768ecdh.c
+ create mode 100644 kexmlkemevp.c
+ create mode 100644 kexmlkemevp.h
+ create mode 100644 kexmlkemnist.c
+
+diff --git a/.depend b/.depend
+index 845fadc..9c99de3 100644
+--- a/.depend
++++ b/.depend
+@@ -44,7 +44,7 @@ cipher.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat
+ cleanup.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h log.h ssherr.h
+ clientloop.o: hostfile.h
+ clientloop.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h xmalloc.h ssh.h ssh2.h packet.h dispatch.h sshbuf.h compat.h channels.h sshkey.h kex.h mac.h crypto_api.h log.h ssherr.h misc.h readconf.h clientloop.h sshconnect.h authfd.h atomicio.h sshpty.h match.h
+-compat.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h xmalloc.h packet.h dispatch.h compat.h log.h ssherr.h match.h
++compat.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h xmalloc.h packet.h dispatch.h compat.h kex.h mac.h crypto_api.h log.h ssherr.h match.h
+ dh.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h
+ digest-libc.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h ssherr.h sshbuf.h digest.h
+ digest-openssl.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h
+@@ -70,8 +70,9 @@ kexgen.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat
+ kexgex.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h
+ kexgexc.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h
+ kexgexs.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h
+-kexmlkem768ecdh.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h sshkey.h kex.h mac.h crypto_api.h sshbuf.h digest.h ssherr.h
+-kexmlkem768x25519.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h sshkey.h kex.h mac.h crypto_api.h sshbuf.h digest.h ssherr.h log.h
++kexmlkem768x25519.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h sshkey.h kex.h mac.h crypto_api.h sshbuf.h digest.h ssherr.h log.h kexmlkemevp.h
++kexmlkemevp.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h kex.h mac.h ssherr.h log.h crypto_api.h kexmlkemevp.h
++kexmlkemnist.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h kex.h mac.h crypto_api.h sshbuf.h digest.h ssherr.h log.h kexmlkemevp.h
+ kexsntrup761x25519.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h ssherr.h
+ krl.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h sshbuf.h ssherr.h sshkey.h misc.h log.h digest.h bitmap.h utf8.h krl.h
+ libcrux-mlkem-mldsa.o: includes.h config.h defines.h platform.h openbsd-compat/openbsd-compat.h openbsd-compat/base64.h openbsd-compat/sigact.h openbsd-compat/readpassphrase.h openbsd-compat/vis.h openbsd-compat/getrrsetbyname.h openbsd-compat/sha1.h openbsd-compat/bsd-sha2.h openbsd-compat/md5.h openbsd-compat/blf.h openbsd-compat/fnmatch.h openbsd-compat/getopt.h openbsd-compat/bsd-signal.h openbsd-compat/bsd-misc.h openbsd-compat/bsd-setres_id.h openbsd-compat/bsd-statvfs.h openbsd-compat/bsd-waitpid.h openbsd-compat/bsd-poll.h openbsd-compat/fake-rfc2553.h openbsd-compat/bsd-cygwin_util.h openbsd-compat/port-aix.h openbsd-compat/port-irix.h openbsd-compat/port-linux.h openbsd-compat/port-solaris.h openbsd-compat/port-net.h openbsd-compat/port-uw.h openbsd-compat/bsd-nextstep.h entropy.h
+diff --git a/Makefile.in b/Makefile.in
+index e9503e7..6452750 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -105,8 +105,9 @@ LIBSSH_OBJS=${LIBOPENSSH_OBJS} \
+ 	libcrux-mlkem-mldsa.o ssh-mldsa-eddsa.o \
+ 	hmac.o ed25519.o ed25519-openssl.o \
+ 	kex.o kex-names.o kexdh.o kexgex.o kexecdh.o kexc25519.o \
+-	kexgexc.o kexgexs.o kexmlkem768ecdh.o \
+-	kexsntrup761x25519.o kexmlkem768x25519.o sntrup761.o kexgen.o \
++	kexgexc.o kexgexs.o \
++	kexsntrup761x25519.o kexmlkem768x25519.o kexmlkemevp.o kexmlkemnist.o \
++	sntrup761.o kexgen.o \
+ 	sftp-realpath.o platform-pledge.o platform-tracing.o platform-misc.o \
+ 	sshbuf-io.o misc-agent.o ssherr-libcrypto.o
+ 
+diff --git a/compat.c b/compat.c
+index 4cc7ca6..ba6b560 100644
+--- a/compat.c
++++ b/compat.c
+@@ -34,6 +34,7 @@
+ #include "xmalloc.h"
+ #include "packet.h"
+ #include "compat.h"
++#include "kex.h"
+ #include "log.h"
+ #include "match.h"
+ 
+@@ -142,9 +143,17 @@ char *
+ compat_kex_proposal(struct ssh *ssh, const char *p)
+ {
+ 	char *cp = NULL, *cp2 = NULL;
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++	int mlkem768_available = is_mlkem768_available();
++	int mlkem1024_available = is_mlkem1024_available();
+ 
++	if ((ssh->compat & (SSH_BUG_CURVE25519PAD|SSH_OLD_DHGEX)) == 0 &&
++	    mlkem768_available && mlkem1024_available)
++		return xstrdup(p);
++#else
+ 	if ((ssh->compat & (SSH_BUG_CURVE25519PAD|SSH_OLD_DHGEX)) == 0)
+ 		return xstrdup(p);
++#endif
+ 	debug2_f("original KEX proposal: %s", p);
+ 	if ((ssh->compat & SSH_BUG_CURVE25519PAD) != 0)
+ 		if ((cp = match_filter_denylist(p,
+@@ -158,7 +167,43 @@ compat_kex_proposal(struct ssh *ssh, const char *p)
+ 		free(cp);
+ 		cp = cp2;
+ 	}
+-	if (cp == NULL || *cp == '\0')
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++	/*
++	 * kex_alg_list() (via kex_assemble_names()) has normally already
++	 * dropped an unavailable ML-KEM name from the proposal by the time
++	 * it reaches here, so the notice is stated as a property of this
++	 * OpenSSL rather than gated on the proposal actually containing the
++	 * name -- otherwise it would never fire on the real ssh/sshd paths.
++	 */
++	if (!mlkem768_available)
++		logit("ML-KEM-768 is not available from this OpenSSL; "
++		    "mlkem768x25519-sha256 and mlkem768nistp256-sha256 "
++		    "cannot be offered");
++	if (!mlkem1024_available)
++		logit("ML-KEM-1024 is not available from this OpenSSL; "
++		    "mlkem1024nistp384-sha384 cannot be offered");
++	if (!mlkem768_available && kex_has_any_alg(cp ? cp : p,
++	    "mlkem768x25519-sha256,mlkem768nistp256-sha256")) {
++		if ((cp2 = match_filter_denylist(cp ? cp : p,
++		    "mlkem768x25519-sha256,"
++		    "mlkem768nistp256-sha256")) == NULL)
++			fatal("match_filter_denylist failed");
++		free(cp);
++		cp = cp2;
++	}
++	if (!mlkem1024_available && kex_has_any_alg(cp ? cp : p,
++	    "mlkem1024nistp384-sha384")) {
++		if ((cp2 = match_filter_denylist(cp ? cp : p,
++		    "mlkem1024nistp384-sha384")) == NULL)
++			fatal("match_filter_denylist failed");
++		free(cp);
++		cp = cp2;
++	}
++#endif
++
++	if (cp == NULL)
++		cp = xstrdup(p);
++	if (*cp == '\0')
+ 		fatal("No supported key exchange algorithms found");
+ 	debug2_f("compat KEX proposal: %s", cp);
+ 	return cp;
+diff --git a/compat.h b/compat.h
+index 1a19060..6b29a1e 100644
+--- a/compat.h
++++ b/compat.h
+@@ -62,4 +62,6 @@ struct ssh;
+ 
+ void    compat_banner(struct ssh *, const char *);
+ char	*compat_kex_proposal(struct ssh *, const char *);
++int	 is_mlkem768_available(void);
++int	 is_mlkem1024_available(void);
+ #endif
+diff --git a/kex-names.c b/kex-names.c
+index 938588a..3558d94 100644
+--- a/kex-names.c
++++ b/kex-names.c
+@@ -33,6 +33,7 @@
+ #ifdef WITH_OPENSSL
+ #include <openssl/crypto.h>
+ #include <openssl/evp.h>
++#include <openssl/err.h>
+ #endif
+ 
+ #include "kex.h"
+@@ -67,8 +68,6 @@ static const struct kexalg kexalgs[] = {
+ 	    SSH_DIGEST_SHA384, KEX_NOT_PQ },
+ 	{ KEX_ECDH_SHA2_NISTP521, KEX_ECDH_SHA2, NID_secp521r1,
+ 	    SSH_DIGEST_SHA512, KEX_NOT_PQ },
+-	{ KEX_MLKEM768NISTP256_SHA256, KEX_KEM_MLKEM768ECDH_SHA256,
+-	    NID_X9_62_prime256v1, SSH_DIGEST_SHA256, KEX_IS_PQ },
+ #endif /* WITH_OPENSSL */
+ #if defined(HAVE_EVP_SHA256) || !defined(WITH_OPENSSL)
+ 	{ KEX_CURVE25519_SHA256, KEX_C25519_SHA256, 0, SSH_DIGEST_SHA256, KEX_NOT_PQ },
+@@ -79,27 +78,72 @@ static const struct kexalg kexalgs[] = {
+ 	{ KEX_SNTRUP761X25519_SHA512_OLD, KEX_KEM_SNTRUP761X25519_SHA512, 0,
+ 	    SSH_DIGEST_SHA512, KEX_IS_PQ },
+ #endif
+-#ifdef USE_MLKEM768X25519
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
+ 	{ KEX_MLKEM768X25519_SHA256, KEX_KEM_MLKEM768X25519_SHA256, 0,
+ 	    SSH_DIGEST_SHA256, KEX_IS_PQ },
+-#endif
++	{ KEX_MLKEM768NISTP256_SHA256, KEX_KEM_MLKEM768NISTP256_SHA256, 0,
++	    SSH_DIGEST_SHA256, KEX_IS_PQ },
++	{ KEX_MLKEM1024NISTP384_SHA384, KEX_KEM_MLKEM1024NISTP384_SHA384, 0,
++	    SSH_DIGEST_SHA384, KEX_IS_PQ },
++#endif /* WITH_OPENSSL && USE_MLKEM768X25519 */
+ #endif /* HAVE_EVP_SHA256 || !WITH_OPENSSL */
+ 	{ NULL, 0, -1, -1, 0 },
+ };
+ 
+ #if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++/*
++ * Each ML-KEM parameter set is fetched, and its availability cached,
++ * independently: a provider may implement one and not the other, and
++ * mlkem1024nistp384-sha384's security claim must not be inferred from
++ * an mlkem768 probe.
++ */
+ static int
++is_mlkem_available(const char *algname)
++{
++	EVP_KEM *kem;
++	int available;
++
++	ERR_set_mark();
++	kem = EVP_KEM_fetch(NULL, algname, NULL);
++	available = kem != NULL;
++	EVP_KEM_free(kem);
++	ERR_pop_to_mark();
++
++	return available;
++}
++
++int
+ is_mlkem768_available(void)
+ {
+-	static int is_fetched = -1;
++	static int available = -1;
+ 
+-	if (is_fetched == -1) {
+-		EVP_KEM *mlkem768 = EVP_KEM_fetch(NULL, "mlkem768", NULL);
+-		is_fetched = mlkem768 != NULL ? 1 : 0;
+-		EVP_KEM_free(mlkem768);
+-	}
++	if (available == -1)
++		available = is_mlkem_available("mlkem768");
++	return available;
++}
++
++int
++is_mlkem1024_available(void)
++{
++	static int available = -1;
++
++	if (available == -1)
++		available = is_mlkem_available("mlkem1024");
++	return available;
++}
+ 
+-	return is_fetched;
++/* Returns non-zero if kexalgs[] entry "name" needs an unavailable ML-KEM */
++static int
++kex_alg_needs_missing_mlkem(const char *name)
++{
++	if ((strcmp(name, KEX_MLKEM768X25519_SHA256) == 0 ||
++	    strcmp(name, KEX_MLKEM768NISTP256_SHA256) == 0) &&
++	    !is_mlkem768_available())
++		return 1;
++	if (strcmp(name, KEX_MLKEM1024NISTP384_SHA384) == 0 &&
++	    !is_mlkem1024_available())
++		return 1;
++	return 0;
+ }
+ #endif /* WITH_OPENSSL && USE_MLKEM768X25519 */
+ 
+@@ -112,8 +156,7 @@ kex_alg_list(char sep)
+ 
+ 	for (k = kexalgs; k->name != NULL; k++) {
+ #if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
+-		if (strcmp(k->name, KEX_MLKEM768X25519_SHA256) == 0
+-		    && !is_mlkem768_available())
++		if (kex_alg_needs_missing_mlkem(k->name))
+ 			continue;
+ #endif
+ 		xextendf(&ret, sep_str, "%s", k->name);
+@@ -122,17 +165,12 @@ kex_alg_list(char sep)
+ 	return ret;
+ }
+ 
++/* Look up a kexalgs[] entry by name, ignoring ML-KEM availability. */
+ static const struct kexalg *
+-kex_alg_by_name(const char *name)
++kex_alg_lookup(const char *name)
+ {
+ 	const struct kexalg *k;
+ 
+-#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
+-	if (strcmp(name, KEX_MLKEM768X25519_SHA256) == 0
+-	    && !is_mlkem768_available())
+-		return NULL;
+-#endif
+-
+ 	for (k = kexalgs; k->name != NULL; k++) {
+ 		if (strcmp(k->name, name) == 0)
+ 			return k;
+@@ -140,6 +178,16 @@ kex_alg_by_name(const char *name)
+ 	return NULL;
+ }
+ 
++static const struct kexalg *
++kex_alg_by_name(const char *name)
++{
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++	if (kex_alg_needs_missing_mlkem(name))
++		return NULL;
++#endif
++	return kex_alg_lookup(name);
++}
++
+ int
+ kex_name_valid(const char *name)
+ {
+@@ -199,6 +247,14 @@ kex_names_valid(const char *names)
+ 	for ((p = strsep(&cp, ",")); p && *p != '\0';
+ 	    (p = strsep(&cp, ","))) {
+ 		if (kex_alg_by_name(p) == NULL) {
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++			if (kex_alg_lookup(p) != NULL) {
++				/* recognised name, just not available right now */
++				debug("\"%.100s\" is not available in this "
++				    "configuration; skipping", p);
++				continue;
++			}
++#endif
+ 			error("Unsupported KEX algorithm \"%.100s\"", p);
+ 			free(s);
+ 			return 0;
+diff --git a/kex.c b/kex.c
+index b2c3d97..3d63520 100644
+--- a/kex.c
++++ b/kex.c
+@@ -733,6 +733,7 @@ kex_free(struct kex *kex)
+ #ifdef WITH_OPENSSL
+ 	DH_free(kex->dh);
+ 	EC_KEY_free(kex->ec_client_key);
++	EVP_PKEY_free(kex->ec_hybrid_client_key);
+ #endif /* WITH_OPENSSL */
+ 	for (mode = 0; mode < MODE_MAX; mode++) {
+ 		kex_free_newkeys(kex->newkeys[mode]);
+diff --git a/kex.h b/kex.h
+index 9816b1d..6ccc318 100644
+--- a/kex.h
++++ b/kex.h
+@@ -34,13 +34,20 @@
+ #include <openssl/dh.h>
+ #include <openssl/ec.h>
+ #include <openssl/ecdsa.h>
++#include <openssl/evp.h>
+ #else /* OPENSSL */
+ #define BIGNUM		void
+ #define DH		void
+ #define EC_KEY		void
+ #define EC_GROUP	void
++#define EVP_PKEY	void
+ #endif /* WITH_OPENSSL */
+ 
++/* ML-KEM-1024; OpenSSL-only, no bundled implementation (see crypto_api.h) */
++#define crypto_kem_mlkem1024_PUBLICKEYBYTES 1568
++#define crypto_kem_mlkem1024_SECRETKEYBYTES 3168
++#define crypto_kem_mlkem1024_CIPHERTEXTBYTES 1568
++
+ #define KEX_COOKIE_LEN	16
+ 
+ #define	KEX_DH1				"diffie-hellman-group1-sha1"
+@@ -59,6 +66,7 @@
+ #define	KEX_SNTRUP761X25519_SHA512_OLD	"sntrup761x25519-sha512@openssh.com"
+ #define	KEX_MLKEM768X25519_SHA256	"mlkem768x25519-sha256"
+ #define	KEX_MLKEM768NISTP256_SHA256	"mlkem768nistp256-sha256"
++#define	KEX_MLKEM1024NISTP384_SHA384	"mlkem1024nistp384-sha384"
+ 
+ #define COMP_NONE	0
+ #define COMP_DELAYED	2
+@@ -97,7 +105,8 @@ enum kex_exchange {
+ 	KEX_C25519_SHA256,
+ 	KEX_KEM_SNTRUP761X25519_SHA512,
+ 	KEX_KEM_MLKEM768X25519_SHA256,
+-	KEX_KEM_MLKEM768ECDH_SHA256,
++	KEX_KEM_MLKEM768NISTP256_SHA256,
++	KEX_KEM_MLKEM1024NISTP384_SHA384,
+ 	KEX_MAX
+ };
+ 
+@@ -184,6 +193,8 @@ struct kex {
+ 	u_char sntrup761_client_key[crypto_kem_sntrup761_SECRETKEYBYTES]; /* KEM */
+ 	u_char mlkem768_client_key[crypto_kem_mlkem768_SECRETKEYBYTES]; /* KEM */
+ 	struct sshbuf *client_pub;
++	EVP_PKEY *ec_hybrid_client_key; /* NIST hybrids */
++	u_char mlkem1024_client_key[crypto_kem_mlkem1024_SECRETKEYBYTES]; /* ML-KEM 1024 + NIST */
+ };
+ 
+ int	 kex_name_valid(const char *);
+@@ -259,10 +270,16 @@ int	 kex_kem_mlkem768x25519_enc(struct kex *, const struct sshbuf *,
+ int	 kex_kem_mlkem768x25519_dec(struct kex *, const struct sshbuf *,
+     struct sshbuf **);
+ 
+-int	 kex_kem_mlkem768ecdh_keypair(struct kex *);
+-int	 kex_kem_mlkem768ecdh_enc(struct kex *, const struct sshbuf *,
++int	 kex_kem_mlkem768nistp256_keypair(struct kex *);
++int	 kex_kem_mlkem768nistp256_enc(struct kex *, const struct sshbuf *,
++    struct sshbuf **, struct sshbuf **);
++int	 kex_kem_mlkem768nistp256_dec(struct kex *, const struct sshbuf *,
++    struct sshbuf **);
++
++int	 kex_kem_mlkem1024nistp384_keypair(struct kex *);
++int	 kex_kem_mlkem1024nistp384_enc(struct kex *, const struct sshbuf *,
+     struct sshbuf **, struct sshbuf **);
+-int	 kex_kem_mlkem768ecdh_dec(struct kex *, const struct sshbuf *,
++int	 kex_kem_mlkem1024nistp384_dec(struct kex *, const struct sshbuf *,
+     struct sshbuf **);
+ 
+ int	 kex_dh_keygen(struct kex *);
+diff --git a/kexgen.c b/kexgen.c
+index d1f9d84..325699f 100644
+--- a/kexgen.c
++++ b/kexgen.c
+@@ -113,9 +113,6 @@ kex_gen_client(struct ssh *ssh)
+ 	case KEX_ECDH_SHA2:
+ 		r = kex_ecdh_keypair(kex);
+ 		break;
+-	case KEX_KEM_MLKEM768ECDH_SHA256:
+-		r = kex_kem_mlkem768ecdh_keypair(kex);
+-		break;
+ #endif /* WITH_OPENSSL */
+ 	case KEX_C25519_SHA256:
+ 		r = kex_c25519_keypair(kex);
+@@ -126,6 +123,12 @@ kex_gen_client(struct ssh *ssh)
+ 	case KEX_KEM_MLKEM768X25519_SHA256:
+ 		r = kex_kem_mlkem768x25519_keypair(kex);
+ 		break;
++	case KEX_KEM_MLKEM768NISTP256_SHA256:
++		r = kex_kem_mlkem768nistp256_keypair(kex);
++		break;
++	case KEX_KEM_MLKEM1024NISTP384_SHA384:
++		r = kex_kem_mlkem1024nistp384_keypair(kex);
++		break;
+ 	default:
+ 		r = SSH_ERR_INVALID_ARGUMENT;
+ 		break;
+@@ -190,10 +193,6 @@ input_kex_gen_reply(int type, uint32_t seq, struct ssh *ssh)
+ 	case KEX_ECDH_SHA2:
+ 		r = kex_ecdh_dec(kex, server_blob, &shared_secret);
+ 		break;
+-	case KEX_KEM_MLKEM768ECDH_SHA256:
+-		r = kex_kem_mlkem768ecdh_dec(kex, server_blob,
+-		    &shared_secret);
+-		break;
+ #endif /* WITH_OPENSSL */
+ 	case KEX_C25519_SHA256:
+ 		r = kex_c25519_dec(kex, server_blob, &shared_secret);
+@@ -206,6 +205,14 @@ input_kex_gen_reply(int type, uint32_t seq, struct ssh *ssh)
+ 		r = kex_kem_mlkem768x25519_dec(kex, server_blob,
+ 		    &shared_secret);
+ 		break;
++	case KEX_KEM_MLKEM768NISTP256_SHA256:
++		r = kex_kem_mlkem768nistp256_dec(kex, server_blob,
++		    &shared_secret);
++		break;
++	case KEX_KEM_MLKEM1024NISTP384_SHA384:
++		r = kex_kem_mlkem1024nistp384_dec(kex, server_blob,
++		    &shared_secret);
++		break;
+ 	default:
+ 		r = SSH_ERR_INVALID_ARGUMENT;
+ 		break;
+@@ -259,6 +266,8 @@ out:
+ 	    sizeof(kex->sntrup761_client_key));
+ 	explicit_bzero(kex->mlkem768_client_key,
+ 	    sizeof(kex->mlkem768_client_key));
++	explicit_bzero(kex->mlkem1024_client_key,
++	    sizeof(kex->mlkem1024_client_key));
+ 	sshbuf_free(server_host_key_blob);
+ 	free(signature);
+ 	sshbuf_free(tmp);
+@@ -317,10 +326,6 @@ input_kex_gen_init(int type, uint32_t seq, struct ssh *ssh)
+ 		r = kex_ecdh_enc(kex, client_pubkey, &server_pubkey,
+ 		    &shared_secret);
+ 		break;
+-	case KEX_KEM_MLKEM768ECDH_SHA256:
+-		r = kex_kem_mlkem768ecdh_enc(kex, client_pubkey,
+-		    &server_pubkey, &shared_secret);
+-		break;
+ #endif /* WITH_OPENSSL */
+ 	case KEX_C25519_SHA256:
+ 		r = kex_c25519_enc(kex, client_pubkey, &server_pubkey,
+@@ -334,6 +339,14 @@ input_kex_gen_init(int type, uint32_t seq, struct ssh *ssh)
+ 		r = kex_kem_mlkem768x25519_enc(kex, client_pubkey,
+ 		    &server_pubkey, &shared_secret);
+ 		break;
++	case KEX_KEM_MLKEM768NISTP256_SHA256:
++		r = kex_kem_mlkem768nistp256_enc(kex, client_pubkey,
++		    &server_pubkey, &shared_secret);
++		break;
++	case KEX_KEM_MLKEM1024NISTP384_SHA384:
++		r = kex_kem_mlkem1024nistp384_enc(kex, client_pubkey,
++		    &server_pubkey, &shared_secret);
++		break;
+ 	default:
+ 		r = SSH_ERR_INVALID_ARGUMENT;
+ 		break;
+diff --git a/kexmlkem768ecdh.c b/kexmlkem768ecdh.c
+deleted file mode 100644
+index b43b1b3..0000000
+--- a/kexmlkem768ecdh.c
++++ /dev/null
+@@ -1,308 +0,0 @@
+-/* $OpenBSD: kexmlkem768ecdh.c,v 1.4 2026/08/03 06:43:16 djm Exp $ */
+-/*
+- * Copyright (c) 2025 Markus Friedl.  All rights reserved.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer.
+- * 2. Redistributions in binary form must reproduce the above copyright
+- *    notice, this list of conditions and the following disclaimer in the
+- *    documentation and/or other materials provided with the distribution.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#include "includes.h"
+-
+-#include <sys/types.h>
+-
+-#include <stdio.h>
+-#include <stdint.h>
+-#include <stdbool.h>
+-#include <string.h>
+-#include <signal.h>
+-#include <endian.h>
+-
+-#include "sshkey.h"
+-#include "kex.h"
+-#include "sshbuf.h"
+-#include "digest.h"
+-#include "ssherr.h"
+-
+-#ifdef WITH_OPENSSL
+-int
+-kex_kem_mlkem768ecdh_keypair(struct kex *kex)
+-{
+-	struct sshbuf *buf = NULL;
+-	struct sshbuf *ec_blob = NULL;
+-	EC_KEY *client_key = NULL;
+-	const EC_GROUP *group;
+-	const EC_POINT *public_key;
+-	u_char *cp = NULL;
+-	size_t need;
+-	int r = SSH_ERR_INTERNAL_ERROR;
+-
+-	if ((buf = sshbuf_new()) == NULL)
+-		return SSH_ERR_ALLOC_FAIL;
+-	need = MLKEM768_PUBLICKEYBYTES;
+-	if ((r = sshbuf_reserve(buf, need, &cp)) != 0)
+-		goto out;
+-	if (crypto_kem_mlkem768_keypair(cp, kex->mlkem768_client_key) != 0) {
+-		r = SSH_ERR_INTERNAL_ERROR;
+-		goto out;
+-	}
+-#ifdef DEBUG_KEXECDH
+-	dump_digest("client public key mlkem768:", cp,
+-	    MLKEM768_PUBLICKEYBYTES);
+-#endif
+-	if ((client_key = EC_KEY_new_by_curve_name(kex->ec_nid)) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	if (EC_KEY_generate_key(client_key) != 1) {
+-		r = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto out;
+-	}
+-	group = EC_KEY_get0_group(client_key);
+-	public_key = EC_KEY_get0_public_key(client_key);
+-
+-	if ((ec_blob = sshbuf_new()) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	if ((r = sshbuf_put_ec(ec_blob, public_key, group)) != 0 ||
+-	    (r = sshbuf_get_u32(ec_blob, NULL)) != 0 ||
+-	    (r = sshbuf_putb(buf, ec_blob)) != 0)
+-		goto out;
+-#ifdef DEBUG_KEXECDH
+-	fputs("client private key EC:\n", stderr);
+-	sshkey_dump_ec_key(client_key);
+-#endif
+-	/* success */
+-	r = 0;
+-	kex->ec_client_key = client_key;
+-	kex->ec_group = group;
+-	client_key = NULL;	/* owned by the kex */
+-	kex->client_pub = buf;
+-	buf = NULL;
+- out:
+-	sshbuf_free(buf);
+-	sshbuf_free(ec_blob);
+-	EC_KEY_free(client_key);
+-	return r;
+-}
+-
+-int
+-kex_kem_mlkem768ecdh_enc(struct kex *kex,
+-   const struct sshbuf *client_blob, struct sshbuf **server_blobp,
+-   struct sshbuf **shared_secretp)
+-{
+-	const EC_GROUP *group;
+-	const EC_POINT *pub_key;
+-	EC_KEY *server_key = NULL;
+-	struct sshbuf *ec_pub = NULL;
+-	struct sshbuf *ec_blob = NULL;
+-	struct sshbuf *ec_shared = NULL;
+-	struct sshbuf *server_blob = NULL;
+-	struct sshbuf *buf = NULL;
+-	const u_char *client_pub;
+-	u_char hash[SSH_DIGEST_MAX_LENGTH];
+-	u_char ct[MLKEM768_CIPHERTEXTBYTES];
+-	u_char shared_secret[MLKEM768_BYTES];
+-	size_t need;
+-	int r = SSH_ERR_INTERNAL_ERROR;
+-
+-	*server_blobp = NULL;
+-	*shared_secretp = NULL;
+-
+-	/* client_blob contains both KEM and ECDH client pubkeys */
+-	need = MLKEM768_PUBLICKEYBYTES;
+-	if (sshbuf_len(client_blob) <= need) {
+-		r = SSH_ERR_SIGNATURE_INVALID;
+-		goto out;
+-	}
+-	client_pub = sshbuf_ptr(client_blob);
+-#ifdef DEBUG_KEXECDH
+-	dump_digest("client public key mlkem768:", client_pub,
+-	    MLKEM768_PUBLICKEYBYTES);
+-#endif
+-
+-	/* allocate buffer for concatenation of KEM key and ECDH shared key */
+-	/* the buffer will be hashed and the result is the shared secret */
+-	if ((buf = sshbuf_new()) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	/* allocate space for encrypted KEM key and ECDH pub key */
+-	if ((server_blob = sshbuf_new()) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	/* generate and encrypt KEM key with client key */
+-	if (crypto_kem_mlkem768_enc(ct, shared_secret, client_pub) != 0) {
+-		r = SSH_ERR_INTERNAL_ERROR;
+-		goto out;
+-	}
+-	if ((r = sshbuf_put(buf, shared_secret, sizeof(shared_secret))) != 0 ||
+-	    (r = sshbuf_put(server_blob, ct, sizeof(ct))) != 0)
+-		goto out;
+-
+-	client_pub += MLKEM768_PUBLICKEYBYTES;
+-	if ((ec_pub = sshbuf_from(client_pub, sshbuf_len(client_blob) -
+-	    MLKEM768_PUBLICKEYBYTES)) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	/* generate ECDH key pair */
+-	if ((server_key = EC_KEY_new_by_curve_name(kex->ec_nid)) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	if (EC_KEY_generate_key(server_key) != 1) {
+-		r = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto out;
+-	}
+-	group = EC_KEY_get0_group(server_key);
+-#ifdef DEBUG_KEXECDH
+-	fputs("server private key EC:\n", stderr);
+-	sshkey_dump_ec_key(server_key);
+-#endif
+-	/* store server pubkey after ciphertext */
+-	pub_key = EC_KEY_get0_public_key(server_key);
+-	if ((ec_blob = sshbuf_new()) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	if ((r = sshbuf_put_ec(ec_blob, pub_key, group)) != 0 ||
+-	    (r = sshbuf_get_u32(ec_blob, NULL)) != 0 ||
+-	    (r = sshbuf_putb(server_blob, ec_blob)) != 0)
+-		goto out;
+-
+-	/* append ECDH shared key */
+-	if ((r = kex_ecdh_dec_key_group(kex, ec_pub, server_key, group,
+-	    1, &ec_shared)) != 0 ||
+-	    (r = sshbuf_putb(buf, ec_shared)) != 0)
+-		goto out;
+-
+-	if ((r = ssh_digest_buffer(kex->hash_alg, buf, hash, sizeof(hash))) != 0)
+-		goto out;
+-#ifdef DEBUG_KEXECDH
+-	dump_digest("server cipher text:", ct, sizeof(ct));
+-	dump_digest("server kem key:", shared_secret, sizeof(shared_secret));
+-	dump_digest("concatenation of KEM key and ECDH shared key:",
+-	    sshbuf_ptr(buf), sshbuf_len(buf));
+-#endif
+-	/* string-encoded hash is resulting shared secret */
+-	sshbuf_reset(buf);
+-	if ((r = sshbuf_put_string(buf, hash,
+-	    ssh_digest_bytes(kex->hash_alg))) != 0)
+-		goto out;
+-#ifdef DEBUG_KEXECDH
+-	dump_digest("encoded shared secret:", sshbuf_ptr(buf), sshbuf_len(buf));
+-#endif
+-	/* success */
+-	r = 0;
+-	*server_blobp = server_blob;
+-	*shared_secretp = buf;
+-	server_blob = NULL;
+-	buf = NULL;
+- out:
+-	explicit_bzero(hash, sizeof(hash));
+-	explicit_bzero(shared_secret, sizeof(shared_secret));
+-	EC_KEY_free(server_key);
+-	sshbuf_free(ec_pub);
+-	sshbuf_free(ec_blob);
+-	sshbuf_free(ec_shared);
+-	sshbuf_free(server_blob);
+-	sshbuf_free(buf);
+-	return r;
+-}
+-
+-int
+-kex_kem_mlkem768ecdh_dec(struct kex *kex,
+-    const struct sshbuf *server_blob, struct sshbuf **shared_secretp)
+-{
+-	struct sshbuf *buf = NULL;
+-	struct sshbuf *ec_pub = NULL;
+-	struct sshbuf *ec_shared = NULL;
+-	u_char shared_secret[MLKEM768_BYTES];
+-	const u_char *ciphertext, *server_pub;
+-	u_char hash[SSH_DIGEST_MAX_LENGTH];
+-	size_t need;
+-	int r;
+-
+-	*shared_secretp = NULL;
+-
+-	need = MLKEM768_CIPHERTEXTBYTES;
+-	if (sshbuf_len(server_blob) <= need) {
+-		r = SSH_ERR_SIGNATURE_INVALID;
+-		goto out;
+-	}
+-	ciphertext = sshbuf_ptr(server_blob);
+-	server_pub = ciphertext + MLKEM768_CIPHERTEXTBYTES;
+-#ifdef DEBUG_KEXECDH
+-	dump_digest("server cipher text (dec):", ciphertext,
+-	    MLKEM768_CIPHERTEXTBYTES);
+-#endif
+-	/* hash concatenation of KEM key and ECDH shared key */
+-	if ((buf = sshbuf_new()) == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	if (crypto_kem_mlkem768_dec(shared_secret, ciphertext,
+-	    kex->mlkem768_client_key) != 0) {
+-		r = SSH_ERR_INTERNAL_ERROR;
+-		goto out;
+-	}
+-	if ((r = sshbuf_put(buf, shared_secret, sizeof(shared_secret))) != 0)
+-		goto out;
+-	if ((ec_pub = sshbuf_from(server_pub, sshbuf_len(server_blob) - need))
+-	    == NULL) {
+-		r = SSH_ERR_ALLOC_FAIL;
+-		goto out;
+-	}
+-	if ((r = kex_ecdh_dec_key_group(kex, ec_pub, kex->ec_client_key,
+-	    kex->ec_group, 1, &ec_shared)) != 0 ||
+-	    (r = sshbuf_putb(buf, ec_shared)) != 0)
+-		goto out;
+-	if ((r = ssh_digest_buffer(kex->hash_alg, buf,
+-	    hash, sizeof(hash))) != 0)
+-		goto out;
+-#ifdef DEBUG_KEXECDH
+-	dump_digest("client kem key:", shared_secret, sizeof(shared_secret));
+-	dump_digest("concatenation of KEM key and ECDH shared key:",
+-	    sshbuf_ptr(buf), sshbuf_len(buf));
+-#endif
+-	sshbuf_reset(buf);
+-	if ((r = sshbuf_put_string(buf, hash,
+-	    ssh_digest_bytes(kex->hash_alg))) != 0)
+-		goto out;
+-#ifdef DEBUG_KEXECDH
+-	dump_digest("encoded shared secret:", sshbuf_ptr(buf), sshbuf_len(buf));
+-#endif
+-	/* success */
+-	r = 0;
+-	*shared_secretp = buf;
+-	buf = NULL;
+- out:
+-	explicit_bzero(hash, sizeof(hash));
+-	explicit_bzero(shared_secret, sizeof(shared_secret));
+-	EC_KEY_free(kex->ec_client_key);
+-	kex->ec_client_key = NULL;
+-	sshbuf_free(ec_pub);
+-	sshbuf_free(ec_shared);
+-	sshbuf_free(buf);
+-	return r;
+-}
+-#endif	/* WITH_OPENSSL */
+diff --git a/kexmlkem768x25519.c b/kexmlkem768x25519.c
+index 4334d19..b833fbf 100644
+--- a/kexmlkem768x25519.c
++++ b/kexmlkem768x25519.c
+@@ -42,124 +42,9 @@
+ #include "log.h"
+ 
+ #include "crypto_api.h"
++#include "kexmlkemevp.h"
+ 
+-#ifdef USE_MLKEM768X25519
+-
+-#include <openssl/err.h>
+-#include <openssl/evp.h>
+-
+-static int
+-mlkem768_keypair_gen(unsigned char *pubkeybuf, unsigned char *privkeybuf)
+-{
+-	EVP_PKEY_CTX *ctx = NULL;
+-	EVP_PKEY *pkey = NULL;
+-	int ret = SSH_ERR_INTERNAL_ERROR;
+-	size_t pubkey_size = crypto_kem_mlkem768_PUBLICKEYBYTES,
+-	    privkey_size = crypto_kem_mlkem768_SECRETKEYBYTES;
+-
+-	ctx = EVP_PKEY_CTX_new_from_name(NULL, "mlkem768", NULL);
+-	if (ctx == NULL) {
+-		ret = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-
+-	if (EVP_PKEY_keygen_init(ctx) <= 0
+-	    || EVP_PKEY_keygen(ctx, &pkey) <= 0) {
+-		ret = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-
+-	if (EVP_PKEY_get_raw_public_key(pkey, pubkeybuf, &pubkey_size) <= 0
+-	    || EVP_PKEY_get_raw_private_key(pkey, privkeybuf, &privkey_size) <= 0) {
+-		ret = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-
+-	if (privkey_size != crypto_kem_mlkem768_SECRETKEYBYTES
+-	    || pubkey_size != crypto_kem_mlkem768_PUBLICKEYBYTES) {
+-		ret = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-	ret = 0;
+-
+- err:
+-	EVP_PKEY_free(pkey);
+-	EVP_PKEY_CTX_free(ctx);
+-	if (ret == SSH_ERR_LIBCRYPTO_ERROR)
+-		ERR_print_errors_fp(stderr);
+-	return ret;
+-}
+-
+-static int
+-mlkem768_encap_secret(const u_char *pubkeybuf, u_char *secret, u_char *out)
+-{
+-	EVP_PKEY *pkey = NULL;
+-	EVP_PKEY_CTX *ctx = NULL;
+-	int r = SSH_ERR_INTERNAL_ERROR;
+-	size_t outlen = crypto_kem_mlkem768_CIPHERTEXTBYTES,
+-	    secretlen = crypto_kem_mlkem768_BYTES;
+-
+-	pkey = EVP_PKEY_new_raw_public_key_ex(NULL, "mlkem768", NULL,
+-	    pubkeybuf, crypto_kem_mlkem768_PUBLICKEYBYTES);
+-	if (pkey == NULL) {
+-		r = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-
+-	ctx = EVP_PKEY_CTX_new_from_pkey(NULL, pkey, NULL);
+-	if (ctx == NULL
+-	    || EVP_PKEY_encapsulate_init(ctx, NULL) <= 0
+-	    || EVP_PKEY_encapsulate(ctx, out, &outlen, secret, &secretlen) <= 0
+-	    || secretlen != crypto_kem_mlkem768_BYTES
+-	    || outlen != crypto_kem_mlkem768_CIPHERTEXTBYTES) {
+-		r = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-	r = 0;
+-
+- err:
+-	EVP_PKEY_free(pkey);
+-	EVP_PKEY_CTX_free(ctx);
+-	if (r == SSH_ERR_LIBCRYPTO_ERROR)
+-		ERR_print_errors_fp(stderr);
+-
+-	return r;
+-}
+-
+-static int
+-mlkem768_decap_secret(const u_char *privkeybuf, const u_char *wrapped, u_char *secret)
+-{
+-	EVP_PKEY *pkey = NULL;
+-	EVP_PKEY_CTX *ctx = NULL;
+-	int r = SSH_ERR_INTERNAL_ERROR;
+-	size_t wrappedlen = crypto_kem_mlkem768_CIPHERTEXTBYTES,
+-	    secretlen = crypto_kem_mlkem768_BYTES;
+-
+-	pkey = EVP_PKEY_new_raw_private_key_ex(NULL, "mlkem768", NULL,
+-	    privkeybuf, crypto_kem_mlkem768_SECRETKEYBYTES);
+-	if (pkey == NULL) {
+-		r = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-
+-	ctx = EVP_PKEY_CTX_new_from_pkey(NULL, pkey, NULL);
+-	if (ctx == NULL
+-	    || EVP_PKEY_decapsulate_init(ctx, NULL) <= 0
+-	    || EVP_PKEY_decapsulate(ctx, secret, &secretlen, wrapped, wrappedlen) <= 0
+-	    || secretlen != crypto_kem_mlkem768_BYTES) {
+-		r = SSH_ERR_LIBCRYPTO_ERROR;
+-		goto err;
+-	}
+-	r = 0;
+-
+- err:
+-	EVP_PKEY_free(pkey);
+-	EVP_PKEY_CTX_free(ctx);
+-	if (r == SSH_ERR_LIBCRYPTO_ERROR)
+-		ERR_print_errors_fp(stderr);
+-
+-	return r;
+-}
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
+ 
+ int
+ kex_kem_mlkem768x25519_keypair(struct kex *kex)
+@@ -348,7 +233,8 @@ kex_kem_mlkem768x25519_dec(struct kex *kex,
+ 	sshbuf_free(buf);
+ 	return r;
+ }
+-#else /* USE_MLKEM768X25519 */
++
++#else /* !(WITH_OPENSSL && USE_MLKEM768X25519) */
+ int
+ kex_kem_mlkem768x25519_keypair(struct kex *kex)
+ {
+@@ -369,4 +255,4 @@ kex_kem_mlkem768x25519_dec(struct kex *kex,
+ {
+ 	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
+ }
+-#endif /* USE_MLKEM768X25519 */
++#endif /* WITH_OPENSSL && USE_MLKEM768X25519 */
+diff --git a/kexmlkemevp.c b/kexmlkemevp.c
+new file mode 100644
+index 0000000..c6118aa
+--- /dev/null
++++ b/kexmlkemevp.c
+@@ -0,0 +1,212 @@
++/*
++ * Copyright (c) 2026 VMWare Inc
++ * (Derived from kexmlkem768x25519.c: Copyright (c) 2023 Markus Friedl.)
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
++ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
++ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
++ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include "includes.h"
++
++#include <sys/types.h>
++
++#include <string.h>
++
++#include "kex.h"
++#include "ssherr.h"
++#include "log.h"
++
++#include "crypto_api.h"
++#include "kexmlkemevp.h"
++
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++
++#include <openssl/err.h>
++#include <openssl/evp.h>
++
++static int
++mlkem_keypair_gen(const char *algname, unsigned char *pubkeybuf, size_t pubkey_size,
++	          unsigned char *privkeybuf, size_t privkey_size)
++{
++	EVP_PKEY_CTX *ctx = NULL;
++	EVP_PKEY *pkey = NULL;
++	int ret = SSH_ERR_INTERNAL_ERROR;
++	size_t got_pub_size = pubkey_size, got_priv_size = privkey_size;
++
++	if ((ctx = EVP_PKEY_CTX_new_from_name(NULL, algname, NULL)) == NULL) {
++		ret = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++
++	if (EVP_PKEY_keygen_init(ctx) <= 0
++	    || EVP_PKEY_keygen(ctx, &pkey) <= 0) {
++		ret = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++
++	if (EVP_PKEY_get_raw_public_key(pkey, NULL, &got_pub_size) <= 0
++	    || EVP_PKEY_get_raw_private_key(pkey, NULL, &got_priv_size) <= 0) {
++		ret = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++
++	if (privkey_size != got_priv_size || pubkey_size != got_pub_size) {
++		ret = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++
++	if (EVP_PKEY_get_raw_public_key(pkey, pubkeybuf, &got_pub_size) <= 0
++	    || EVP_PKEY_get_raw_private_key(pkey, privkeybuf, &got_priv_size) <= 0) {
++		ret = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++
++	ret = 0;
++
++ err:
++	EVP_PKEY_free(pkey);
++	EVP_PKEY_CTX_free(ctx);
++	if (ret == SSH_ERR_LIBCRYPTO_ERROR)
++		error_f("libcrypto error: %s", ERR_error_string(ERR_get_error(), NULL));
++	return ret;
++}
++
++int
++mlkem768_keypair_gen(unsigned char *pubkeybuf, unsigned char *privkeybuf)
++{
++	return mlkem_keypair_gen("mlkem768", pubkeybuf, crypto_kem_mlkem768_PUBLICKEYBYTES,
++			privkeybuf, crypto_kem_mlkem768_SECRETKEYBYTES);
++}
++
++int
++mlkem1024_keypair_gen(unsigned char *pubkeybuf, unsigned char *privkeybuf)
++{
++	return mlkem_keypair_gen("mlkem1024", pubkeybuf, crypto_kem_mlkem1024_PUBLICKEYBYTES,
++			privkeybuf, crypto_kem_mlkem1024_SECRETKEYBYTES);
++}
++
++static int
++mlkem_encap_secret(const char *mlkem_alg, const u_char *pubkeybuf, u_char *secret, u_char *out)
++{
++	EVP_PKEY *pkey = NULL;
++	EVP_PKEY_CTX *ctx = NULL;
++	int r = SSH_ERR_INTERNAL_ERROR;
++	size_t expected_outlen, outlen, publen, secretlen = MLKEM_SHARED_SECRET_BYTES;
++
++	if (strcmp(mlkem_alg, "mlkem768") == 0) {
++		expected_outlen = crypto_kem_mlkem768_CIPHERTEXTBYTES;
++		publen = crypto_kem_mlkem768_PUBLICKEYBYTES;
++	} else if (strcmp(mlkem_alg, "mlkem1024") == 0) {
++		expected_outlen = crypto_kem_mlkem1024_CIPHERTEXTBYTES;
++		publen = crypto_kem_mlkem1024_PUBLICKEYBYTES;
++	} else
++		return r;
++
++	outlen = expected_outlen;
++
++	if ((pkey = EVP_PKEY_new_raw_public_key_ex(NULL, mlkem_alg, NULL,
++	    pubkeybuf, publen)) == NULL) {
++		r = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++
++	ctx = EVP_PKEY_CTX_new_from_pkey(NULL, pkey, NULL);
++	if (ctx == NULL
++	    || EVP_PKEY_encapsulate_init(ctx, NULL) <= 0
++	    || EVP_PKEY_encapsulate(ctx, out, &outlen, secret, &secretlen) <= 0
++	    || secretlen != MLKEM_SHARED_SECRET_BYTES
++	    || outlen != expected_outlen) {
++		r = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++	r = 0;
++
++ err:
++	EVP_PKEY_free(pkey);
++	EVP_PKEY_CTX_free(ctx);
++	if (r == SSH_ERR_LIBCRYPTO_ERROR)
++		error_f("libcrypto error: %s", ERR_error_string(ERR_get_error(), NULL));
++
++	return r;
++}
++
++int
++mlkem768_encap_secret(const u_char *pubkeybuf, u_char *secret, u_char *out)
++{
++	return mlkem_encap_secret("mlkem768", pubkeybuf, secret, out);
++}
++
++int
++mlkem1024_encap_secret(const u_char *pubkeybuf, u_char *secret, u_char *out)
++{
++	return mlkem_encap_secret("mlkem1024", pubkeybuf, secret, out);
++}
++
++static int
++mlkem_decap_secret(const char *algname,
++    const u_char *privkeybuf, size_t privkey_len,
++    const u_char *wrapped, size_t wrapped_len,
++    u_char *secret)
++{
++	EVP_PKEY *pkey = NULL;
++	EVP_PKEY_CTX *ctx = NULL;
++	int r = SSH_ERR_INTERNAL_ERROR;
++	size_t secretlen = MLKEM_SHARED_SECRET_BYTES;
++
++	if ((pkey = EVP_PKEY_new_raw_private_key_ex(NULL, algname,
++	    NULL, privkeybuf, privkey_len)) == NULL) {
++		r = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++
++	ctx = EVP_PKEY_CTX_new_from_pkey(NULL, pkey, NULL);
++	if (ctx == NULL
++	    || EVP_PKEY_decapsulate_init(ctx, NULL) <= 0
++	    || EVP_PKEY_decapsulate(ctx, secret, &secretlen, wrapped, wrapped_len) <= 0
++	    || secretlen != MLKEM_SHARED_SECRET_BYTES) {
++		r = SSH_ERR_LIBCRYPTO_ERROR;
++		goto err;
++	}
++	r = 0;
++
++ err:
++	EVP_PKEY_free(pkey);
++	EVP_PKEY_CTX_free(ctx);
++	if (r == SSH_ERR_LIBCRYPTO_ERROR)
++		error_f("libcrypto error: %s", ERR_error_string(ERR_get_error(), NULL));
++
++	return r;
++}
++
++int
++mlkem768_decap_secret(const u_char *privkeybuf, const u_char *wrapped, u_char *secret)
++{
++	return mlkem_decap_secret("mlkem768", privkeybuf, crypto_kem_mlkem768_SECRETKEYBYTES,
++		wrapped, crypto_kem_mlkem768_CIPHERTEXTBYTES, secret);
++}
++
++int
++mlkem1024_decap_secret(const u_char *privkeybuf, const u_char *wrapped, u_char *secret)
++{
++	return mlkem_decap_secret("mlkem1024", privkeybuf, crypto_kem_mlkem1024_SECRETKEYBYTES,
++		wrapped, crypto_kem_mlkem1024_CIPHERTEXTBYTES, secret);
++}
++
++#endif /* WITH_OPENSSL && USE_MLKEM768X25519 */
+diff --git a/kexmlkemevp.h b/kexmlkemevp.h
+new file mode 100644
+index 0000000..540f0e0
+--- /dev/null
++++ b/kexmlkemevp.h
+@@ -0,0 +1,54 @@
++/*
++ * Copyright (c) 2026 VMWare Inc
++ * (Derived from kexmlkem768x25519.c: Copyright (c) 2023 Markus Friedl.)
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
++ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
++ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
++ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++/*
++ * OpenSSL EVP KEM helpers for ML-KEM-768/1024, shared by
++ * kexmlkem768x25519.c (mlkem768x25519-sha256) and kexmlkemnist.c
++ * (mlkem768nistp256-sha256, mlkem1024nistp384-sha384).
++ */
++
++#ifndef KEXMLKEMEVP_H
++#define KEXMLKEMEVP_H
++
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++
++/* ML-KEM's shared secret is 32 bytes for every parameter set. */
++#define MLKEM_SHARED_SECRET_BYTES 32
++
++int mlkem768_keypair_gen(unsigned char *pubkeybuf, unsigned char *privkeybuf);
++int mlkem768_encap_secret(const u_char *pubkeybuf, u_char *secret,
++    u_char *out);
++int mlkem768_decap_secret(const u_char *privkeybuf, const u_char *wrapped,
++    u_char *secret);
++
++int mlkem1024_keypair_gen(unsigned char *pubkeybuf, unsigned char *privkeybuf);
++int mlkem1024_encap_secret(const u_char *pubkeybuf, u_char *secret,
++    u_char *out);
++int mlkem1024_decap_secret(const u_char *privkeybuf, const u_char *wrapped,
++    u_char *secret);
++
++#endif /* WITH_OPENSSL && USE_MLKEM768X25519 */
++
++#endif /* KEXMLKEMEVP_H */
+diff --git a/kexmlkemnist.c b/kexmlkemnist.c
+new file mode 100644
+index 0000000..c90647c
+--- /dev/null
++++ b/kexmlkemnist.c
+@@ -0,0 +1,633 @@
++/*
++ * Copyright (c) 2026 VMWare Inc
++ * (Derived from kexmlkem768x25519.c: Copyright (c) 2023 Markus Friedl.)
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
++ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
++ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
++ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++/*
++ * mlkem768nistp256-sha256 and mlkem1024nistp384-sha384: ML-KEM/NIST-curve
++ * hybrid post-quantum key exchange (draft-ietf-sshm-mlkem-hybrid-kex).
++ */
++
++#include "includes.h"
++
++#include <sys/types.h>
++
++#include <stdio.h>
++#include <stdint.h>
++#include <stdbool.h>
++#include <string.h>
++#include <signal.h>
++#include <endian.h>
++
++#include "kex.h"
++#include "sshbuf.h"
++#include "digest.h"
++#include "ssherr.h"
++#include "log.h"
++
++#include "crypto_api.h"
++#include "kexmlkemevp.h"
++
++#if defined(WITH_OPENSSL) && defined(USE_MLKEM768X25519)
++
++#include <openssl/bn.h>
++#include <openssl/core_names.h>
++#include <openssl/ec.h>
++#include <openssl/err.h>
++#include <openssl/evp.h>
++
++#define NIST_P256_COMPRESSED_LEN   33
++#define NIST_P256_UNCOMPRESSED_LEN 65
++#define NIST_P384_COMPRESSED_LEN   49
++#define NIST_P384_UNCOMPRESSED_LEN 97
++#define NIST_BUF_MAX_SIZE NIST_P384_UNCOMPRESSED_LEN
++
++static const char ec256[] = "P-256";
++static const char ec384[] = "P-384";
++static const char *len2curve_name(size_t len)
++{
++	switch (len) {
++		case NIST_P256_COMPRESSED_LEN:
++		case NIST_P256_UNCOMPRESSED_LEN:
++			return ec256;
++			break;
++		case NIST_P384_COMPRESSED_LEN:
++		case NIST_P384_UNCOMPRESSED_LEN:
++			return ec384;
++			break;
++	}
++	return NULL;
++}
++
++static EVP_PKEY *
++buf2nist_key(const unsigned char *pub_key_buf, size_t pub_key_len)
++{
++	EVP_PKEY *pkey = NULL;
++	EVP_PKEY_CTX *ctx = NULL;
++	OSSL_PARAM params[3];
++	const char *curve_name = len2curve_name(pub_key_len);
++
++	if (curve_name == NULL)
++		return NULL;
++
++	ctx = EVP_PKEY_CTX_new_from_name(NULL, "EC", NULL);
++	if (!ctx)
++		goto err;
++
++	if (EVP_PKEY_fromdata_init(ctx) <= 0)
++		goto err;
++
++	params[0] = OSSL_PARAM_construct_utf8_string(OSSL_PKEY_PARAM_GROUP_NAME, (char *)curve_name, 0);
++	params[1] = OSSL_PARAM_construct_octet_string(
++			OSSL_PKEY_PARAM_PUB_KEY, (void *)pub_key_buf, pub_key_len);
++	params[2] = OSSL_PARAM_construct_end();
++
++	if (EVP_PKEY_fromdata(ctx, &pkey, EVP_PKEY_PUBLIC_KEY, params) <= 0)
++		goto err;
++
++	EVP_PKEY_CTX_free(ctx);
++	return pkey;
++
++err:
++	EVP_PKEY_CTX_free(ctx);
++	EVP_PKEY_free(pkey);
++	return NULL;
++}
++
++static int
++kex_nist_shared_key_ext(EVP_PKEY *priv_key,
++    const u_char *pub_key_buf, size_t pub_key_len, struct sshbuf *out)
++{
++	EVP_PKEY_CTX *ctx = NULL;
++	unsigned char *shared_secret = NULL;
++	size_t shared_secret_len = 0;
++	EVP_PKEY *peer_key = buf2nist_key(pub_key_buf, pub_key_len);
++	int r = SSH_ERR_INTERNAL_ERROR;
++
++	if (peer_key == NULL)
++		return SSH_ERR_KEY_LENGTH;
++
++	ctx = EVP_PKEY_CTX_new_from_pkey(NULL, priv_key, NULL);
++	if (!ctx)
++		goto end;
++
++	if ((EVP_PKEY_derive_init(ctx) <= 0)
++		|| EVP_PKEY_derive_set_peer(ctx, peer_key) <= 0
++		|| EVP_PKEY_derive(ctx, NULL, &shared_secret_len) <= 0)
++		goto end;
++
++	shared_secret = OPENSSL_malloc(shared_secret_len);
++	if (shared_secret == NULL)
++		goto end;
++
++	if (EVP_PKEY_derive(ctx, shared_secret, &shared_secret_len) <= 0)
++		goto end;
++
++	if ((r = sshbuf_put(out, shared_secret, shared_secret_len)) != 0)
++		goto end;
++
++	r = 0;
++
++end:
++	EVP_PKEY_free(peer_key);
++	if (shared_secret)
++		OPENSSL_clear_free(shared_secret, shared_secret_len);
++	EVP_PKEY_CTX_free(ctx);
++
++	return r;
++}
++
++static EVP_PKEY *
++nist_pkey_keygen(size_t pub_key_len)
++{
++	const char *curve_name = len2curve_name(pub_key_len);
++	EVP_PKEY_CTX *pctx = NULL;
++	EVP_PKEY *pkey = NULL;
++	OSSL_PARAM params[2];
++
++	if (curve_name == NULL)
++		return NULL;
++
++	pctx = EVP_PKEY_CTX_new_from_name(NULL, "EC", NULL);
++	if (!pctx)
++		return NULL;
++
++	if (EVP_PKEY_keygen_init(pctx) <= 0) {
++		EVP_PKEY_CTX_free(pctx);
++		return NULL;
++	}
++
++	params[0] = OSSL_PARAM_construct_utf8_string(OSSL_PKEY_PARAM_GROUP_NAME, (char *)curve_name, 0);
++	params[1] = OSSL_PARAM_construct_end();
++
++	if (EVP_PKEY_CTX_set_params(pctx, params) <= 0
++	    || EVP_PKEY_keygen(pctx, &pkey) <= 0) {
++		EVP_PKEY_CTX_free(pctx);
++		return NULL;
++	}
++
++	EVP_PKEY_CTX_free(pctx);
++	return pkey;
++}
++
++static size_t
++decompress_pub_key(void *pub, size_t compressed_len, size_t decompressed_len)
++{
++	EC_GROUP *group = NULL;
++	EC_POINT *point = NULL;
++	BN_CTX *ctx = NULL;
++	size_t len = 0;
++	int group_nid = NID_undef;
++
++	switch (compressed_len) {
++	case NIST_P256_COMPRESSED_LEN:
++		group_nid = NID_X9_62_prime256v1;
++		break;
++	case NIST_P384_COMPRESSED_LEN:
++		group_nid = NID_secp384r1;
++		break;
++	default:
++		return 0;
++	}
++
++	ctx = BN_CTX_new();
++	group = EC_GROUP_new_by_curve_name(group_nid);
++	if (ctx == NULL || group == NULL)
++		goto err;
++
++	point = EC_POINT_new(group);
++	if (point == NULL)
++		goto err;
++
++	if (!EC_POINT_oct2point(group, point, pub, compressed_len, ctx))
++		goto err;
++
++	len = EC_POINT_point2oct(group, point, POINT_CONVERSION_UNCOMPRESSED,
++	    pub, decompressed_len, ctx);
++
++ err:
++	EC_POINT_free(point);
++	EC_GROUP_free(group);
++	BN_CTX_free(ctx);
++
++	return len;
++}
++
++static int
++get_uncompressed_ec_pubkey(EVP_PKEY *pkey, unsigned char *buf, size_t buf_len)
++{
++	OSSL_PARAM params[2];
++	size_t required_len = 0, out_len = 0;
++	const char *required_curve, *buf_curve;
++
++	params[0] = OSSL_PARAM_construct_utf8_string(
++	    OSSL_PKEY_PARAM_EC_POINT_CONVERSION_FORMAT, "uncompressed", 0);
++	params[1] = OSSL_PARAM_construct_end();
++
++	if (EVP_PKEY_set_params(pkey, params) <= 0
++	    || EVP_PKEY_get_octet_string_param(pkey, OSSL_PKEY_PARAM_PUB_KEY,
++	    buf, buf_len, &required_len) <= 0)
++		return SSH_ERR_LIBCRYPTO_ERROR;
++
++	if (required_len == buf_len)
++		return 0;
++
++	/*
++	 * Red Hat's certified FIPS provider ignores
++	 * OSSL_PKEY_PARAM_EC_POINT_CONVERSION_FORMAT and returns a
++	 * compressed point anyway; decompress it by hand in that case.
++	 */
++	required_curve = len2curve_name(required_len);
++	buf_curve = len2curve_name(buf_len);
++	if (required_curve == NULL || buf_curve == NULL ||
++	    strcmp(required_curve, buf_curve) != 0) {
++		debug_f("unexpected length of uncompressed public key: "
++		    "expected %zu, got %zu", buf_len, required_len);
++		return SSH_ERR_LIBCRYPTO_ERROR;
++	}
++
++	out_len = decompress_pub_key(buf, required_len, buf_len);
++	if (out_len != buf_len) {
++		debug_f("error decompressing the compressed public key");
++		return SSH_ERR_LIBCRYPTO_ERROR;
++	}
++
++	return 0;
++}
++/* nist_bytes_len should always be uncompressed */
++static int
++kex_kem_mlkem_nist_keypair(struct kex *kex, size_t mlkem_bytes_len, size_t nist_bytes_len)
++{
++	struct sshbuf *buf = NULL;
++	u_char *cp = NULL;
++	size_t need;
++	int r = SSH_ERR_INTERNAL_ERROR;
++	u_char *client_key = NULL;
++
++	if ((buf = sshbuf_new()) == NULL)
++		return SSH_ERR_ALLOC_FAIL;
++	need = mlkem_bytes_len + nist_bytes_len;
++	if ((r = sshbuf_reserve(buf, need, &cp)) != 0)
++		goto out;
++
++	if (mlkem_bytes_len == crypto_kem_mlkem768_PUBLICKEYBYTES) {
++		client_key = kex->mlkem768_client_key;
++		r = mlkem768_keypair_gen(cp, client_key);
++	}
++
++	if (mlkem_bytes_len == crypto_kem_mlkem1024_PUBLICKEYBYTES) {
++		client_key = kex->mlkem1024_client_key;
++		r = mlkem1024_keypair_gen(cp, client_key);
++	}
++
++	if (client_key == NULL) {
++		r = SSH_ERR_INVALID_ARGUMENT;
++		goto out;
++	}
++
++	if (r != 0)
++		goto out;
++#ifdef DEBUG_KEXECDH
++	dump_digest("client public key mlkemXXX:", cp, mlkem_bytes_len);
++#endif
++	cp += mlkem_bytes_len;
++	EVP_PKEY_free(kex->ec_hybrid_client_key);
++	kex->ec_hybrid_client_key = NULL;
++	if ((kex->ec_hybrid_client_key = nist_pkey_keygen(nist_bytes_len)) == NULL) {
++		r = SSH_ERR_LIBCRYPTO_ERROR;
++		goto out;
++	}
++
++	if ((r = get_uncompressed_ec_pubkey(kex->ec_hybrid_client_key, cp, nist_bytes_len)) != 0)
++		goto out;
++
++#ifdef DEBUG_KEXECDH
++	dump_digest("client public key NIST:", cp, nist_bytes_len);
++#endif
++	/* success */
++	r = 0;
++	kex->client_pub = buf;
++	buf = NULL;
++ out:
++	sshbuf_free(buf);
++	if (r == SSH_ERR_LIBCRYPTO_ERROR)
++		error_f("libcrypto error: %s", ERR_error_string(ERR_get_error(), NULL));
++
++	return r;
++}
++
++static int
++kex_kem_mlkem_nist_enc(struct kex *kex, const char *nist_curve,
++   const struct sshbuf *client_blob, struct sshbuf **server_blobp,
++   struct sshbuf **shared_secretp)
++{
++	struct sshbuf *server_blob = NULL;
++	struct sshbuf *buf = NULL;
++	const u_char *client_pub;
++	u_char server_pub[NIST_BUF_MAX_SIZE];
++	u_char enc_out[crypto_kem_mlkem1024_CIPHERTEXTBYTES];
++	u_char secret[MLKEM_SHARED_SECRET_BYTES];
++	EVP_PKEY *server_key = NULL;
++	u_char hash[SSH_DIGEST_MAX_LENGTH];
++	size_t client_buf_len, mlkem_buf_len, ecdh_buf_len, server_key_len, enc_out_len;
++	int r = SSH_ERR_INTERNAL_ERROR;
++
++	*server_blobp = NULL;
++	*shared_secretp = NULL;
++
++	client_buf_len = sshbuf_len(client_blob);
++	/* client_blob contains both KEM and ECDH client pubkeys */
++	if (strcmp(nist_curve, "P-256") == 0) {
++		if (crypto_kem_mlkem768_PUBLICKEYBYTES > client_buf_len)
++			return SSH_ERR_SIGNATURE_INVALID;
++
++		ecdh_buf_len = client_buf_len - crypto_kem_mlkem768_PUBLICKEYBYTES;
++		if (ecdh_buf_len != NIST_P256_COMPRESSED_LEN &&
++			ecdh_buf_len != NIST_P256_UNCOMPRESSED_LEN)
++			return SSH_ERR_SIGNATURE_INVALID;
++		mlkem_buf_len = crypto_kem_mlkem768_PUBLICKEYBYTES;
++		enc_out_len = crypto_kem_mlkem768_CIPHERTEXTBYTES;
++		server_key_len = NIST_P256_UNCOMPRESSED_LEN;
++	} else if (strcmp(nist_curve, "P-384") == 0) {
++		if (crypto_kem_mlkem1024_PUBLICKEYBYTES > client_buf_len)
++			return SSH_ERR_SIGNATURE_INVALID;
++
++		ecdh_buf_len = client_buf_len - crypto_kem_mlkem1024_PUBLICKEYBYTES;
++		if (ecdh_buf_len != NIST_P384_COMPRESSED_LEN &&
++			ecdh_buf_len != NIST_P384_UNCOMPRESSED_LEN)
++			return SSH_ERR_SIGNATURE_INVALID;
++		mlkem_buf_len = crypto_kem_mlkem1024_PUBLICKEYBYTES;
++		enc_out_len = crypto_kem_mlkem1024_CIPHERTEXTBYTES;
++		server_key_len = NIST_P384_UNCOMPRESSED_LEN;
++	} else
++		return SSH_ERR_INVALID_ARGUMENT;
++
++	client_pub = sshbuf_ptr(client_blob);
++#ifdef DEBUG_KEXECDH
++	dump_digest("client public key mlkem:", client_pub, mlkem_buf_len);
++	dump_digest("client public key NIST:", client_pub + mlkem_buf_len, ecdh_buf_len);
++#endif
++
++	/* allocate buffer for concatenation of KEM key and ECDH shared key */
++	/* the buffer will be hashed and the result is the shared secret */
++	if ((buf = sshbuf_new()) == NULL) {
++		r = SSH_ERR_ALLOC_FAIL;
++		goto out;
++	}
++	/* allocate space for encrypted KEM key and ECDH pub key */
++	if ((server_blob = sshbuf_new()) == NULL) {
++		r = SSH_ERR_ALLOC_FAIL;
++		goto out;
++	}
++	r = (mlkem_buf_len == crypto_kem_mlkem768_PUBLICKEYBYTES) ?
++		mlkem768_encap_secret(client_pub, secret, enc_out) :
++		mlkem1024_encap_secret(client_pub, secret, enc_out);
++
++	if (r != 0)
++		goto out;
++
++	/* generate ECDH key pair, store server pubkey after ciphertext */
++	if ((server_key = nist_pkey_keygen(server_key_len)) == NULL) {
++		r = SSH_ERR_LIBCRYPTO_ERROR;
++		goto out;
++	}
++
++	if ((r = get_uncompressed_ec_pubkey(server_key, server_pub, server_key_len)) != 0 ||
++	    (r = sshbuf_put(buf, secret, sizeof(secret))) != 0 ||
++	    (r = sshbuf_put(server_blob, enc_out, enc_out_len)) != 0 ||
++	    (r = sshbuf_put(server_blob, server_pub, server_key_len)) != 0)
++		goto out;
++
++	/* append ECDH shared key */
++	client_pub += mlkem_buf_len;
++	if ((r = kex_nist_shared_key_ext(server_key, client_pub, ecdh_buf_len, buf)) != 0)
++		goto out;
++	if ((r = ssh_digest_buffer(kex->hash_alg, buf, hash, sizeof(hash))) != 0)
++		goto out;
++#ifdef DEBUG_KEXECDH
++	dump_digest("server public NIST:", server_pub, server_key_len);
++	dump_digest("server cipher text:", enc_out, enc_out_len);
++	dump_digest("server kem key:", secret, sizeof(secret));
++	dump_digest("concatenation of KEM key and ECDH shared key:",
++	    sshbuf_ptr(buf), sshbuf_len(buf));
++#endif
++	/* string-encoded hash is resulting shared secret */
++	sshbuf_reset(buf);
++	if ((r = sshbuf_put_string(buf, hash,
++	    ssh_digest_bytes(kex->hash_alg))) != 0)
++		goto out;
++#ifdef DEBUG_KEXECDH
++	dump_digest("encoded shared secret:", sshbuf_ptr(buf), sshbuf_len(buf));
++#endif
++	/* success */
++	r = 0;
++	*server_blobp = server_blob;
++	*shared_secretp = buf;
++	server_blob = NULL;
++	buf = NULL;
++ out:
++	explicit_bzero(hash, sizeof(hash));
++	EVP_PKEY_free(server_key);
++	explicit_bzero(enc_out, sizeof(enc_out));
++	explicit_bzero(secret, sizeof(secret));
++	sshbuf_free(server_blob);
++	sshbuf_free(buf);
++	return r;
++}
++
++static int
++kex_kem_mlkem_nist_dec(struct kex *kex,
++    const struct sshbuf *server_blob, struct sshbuf **shared_secretp,
++    size_t mlkem_len)
++{
++	struct sshbuf *buf = NULL;
++	const u_char *ciphertext, *server_pub;
++	u_char hash[SSH_DIGEST_MAX_LENGTH];
++	u_char decap[MLKEM_SHARED_SECRET_BYTES];
++	int r;
++	size_t nist_len;
++
++	*shared_secretp = NULL;
++
++	if (sshbuf_len(server_blob) < mlkem_len) {
++		r = SSH_ERR_SIGNATURE_INVALID;
++		goto out;
++	}
++
++	nist_len = sshbuf_len(server_blob) - mlkem_len;
++
++	switch (mlkem_len) {
++	case crypto_kem_mlkem768_CIPHERTEXTBYTES:
++		if (nist_len != NIST_P256_COMPRESSED_LEN &&
++		    nist_len != NIST_P256_UNCOMPRESSED_LEN) {
++			r = SSH_ERR_SIGNATURE_INVALID;
++			goto out;
++		}
++		break;
++	case crypto_kem_mlkem1024_CIPHERTEXTBYTES:
++		if (nist_len != NIST_P384_COMPRESSED_LEN &&
++		    nist_len != NIST_P384_UNCOMPRESSED_LEN) {
++			r = SSH_ERR_SIGNATURE_INVALID;
++			goto out;
++		}
++		break;
++	default:
++		r = SSH_ERR_INTERNAL_ERROR;
++		goto out;
++	}
++
++	ciphertext = sshbuf_ptr(server_blob);
++	server_pub = ciphertext + mlkem_len;
++	/* hash concatenation of KEM key and ECDH shared key */
++	if ((buf = sshbuf_new()) == NULL) {
++		r = SSH_ERR_ALLOC_FAIL;
++		goto out;
++	}
++#ifdef DEBUG_KEXECDH
++	dump_digest("server cipher text:", ciphertext, mlkem_len);
++	dump_digest("server public key NIST:", server_pub, nist_len);
++#endif
++	r = (mlkem_len == crypto_kem_mlkem768_CIPHERTEXTBYTES) ?
++		mlkem768_decap_secret(kex->mlkem768_client_key, ciphertext, decap) :
++		mlkem1024_decap_secret(kex->mlkem1024_client_key, ciphertext, decap);
++
++	if (r != 0)
++		goto out;
++	if ((r = sshbuf_put(buf, decap, sizeof(decap))) != 0)
++		goto out;
++	if ((r = kex_nist_shared_key_ext(kex->ec_hybrid_client_key, server_pub,
++		nist_len, buf)) != 0)
++		goto out;
++	if ((r = ssh_digest_buffer(kex->hash_alg, buf,
++	    hash, sizeof(hash))) != 0)
++		goto out;
++#ifdef DEBUG_KEXECDH
++	dump_digest("client kem key:", decap, sizeof(decap));
++	dump_digest("concatenation of KEM key and ECDH shared key:",
++	    sshbuf_ptr(buf), sshbuf_len(buf));
++#endif
++	sshbuf_reset(buf);
++	if ((r = sshbuf_put_string(buf, hash,
++	    ssh_digest_bytes(kex->hash_alg))) != 0)
++		goto out;
++#ifdef DEBUG_KEXECDH
++	dump_digest("encoded shared secret:", sshbuf_ptr(buf), sshbuf_len(buf));
++#endif
++	/* success */
++	r = 0;
++	*shared_secretp = buf;
++	buf = NULL;
++ out:
++	explicit_bzero(hash, sizeof(hash));
++	explicit_bzero(decap, sizeof(decap));
++	sshbuf_free(buf);
++	EVP_PKEY_free(kex->ec_hybrid_client_key);
++	kex->ec_hybrid_client_key = NULL;
++	return r;
++}
++
++int
++kex_kem_mlkem768nistp256_keypair(struct kex *kex)
++{
++	return kex_kem_mlkem_nist_keypair(kex, crypto_kem_mlkem768_PUBLICKEYBYTES, NIST_P256_UNCOMPRESSED_LEN);
++}
++
++int
++kex_kem_mlkem768nistp256_enc(struct kex *kex, const struct sshbuf *client_blob,
++    struct sshbuf **server_blobp, struct sshbuf **shared_secretp)
++{
++	return kex_kem_mlkem_nist_enc(kex, "P-256", client_blob, server_blobp, shared_secretp);
++}
++
++int
++kex_kem_mlkem768nistp256_dec(struct kex *kex, const struct sshbuf *server_blob,
++    struct sshbuf **shared_secretp)
++{
++	return kex_kem_mlkem_nist_dec(kex, server_blob, shared_secretp,
++		crypto_kem_mlkem768_CIPHERTEXTBYTES);
++}
++
++int
++kex_kem_mlkem1024nistp384_keypair(struct kex *kex)
++{
++	return kex_kem_mlkem_nist_keypair(kex, crypto_kem_mlkem1024_PUBLICKEYBYTES, NIST_P384_UNCOMPRESSED_LEN);
++}
++
++int
++kex_kem_mlkem1024nistp384_enc(struct kex *kex, const struct sshbuf *client_blob,
++    struct sshbuf **server_blobp, struct sshbuf **shared_secretp)
++{
++	return kex_kem_mlkem_nist_enc(kex, "P-384", client_blob, server_blobp, shared_secretp);
++}
++
++int
++kex_kem_mlkem1024nistp384_dec(struct kex *kex, const struct sshbuf *server_blob,
++    struct sshbuf **shared_secretp)
++{
++	return kex_kem_mlkem_nist_dec(kex, server_blob, shared_secretp,
++		crypto_kem_mlkem1024_CIPHERTEXTBYTES);
++}
++
++#else /* !(WITH_OPENSSL && USE_MLKEM768X25519) */
++
++int
++kex_kem_mlkem768nistp256_keypair(struct kex *kex)
++{
++	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
++}
++
++int
++kex_kem_mlkem768nistp256_enc(struct kex *kex, const struct sshbuf *client_blob,
++    struct sshbuf **server_blobp, struct sshbuf **shared_secretp)
++{
++	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
++}
++
++int
++kex_kem_mlkem768nistp256_dec(struct kex *kex, const struct sshbuf *server_blob,
++    struct sshbuf **shared_secretp)
++{
++	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
++}
++
++int
++kex_kem_mlkem1024nistp384_keypair(struct kex *kex)
++{
++	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
++}
++
++int
++kex_kem_mlkem1024nistp384_enc(struct kex *kex, const struct sshbuf *client_blob,
++    struct sshbuf **server_blobp, struct sshbuf **shared_secretp)
++{
++	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
++}
++
++int
++kex_kem_mlkem1024nistp384_dec(struct kex *kex, const struct sshbuf *server_blob,
++    struct sshbuf **shared_secretp)
++{
++	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
++}
++
++#endif /* WITH_OPENSSL && USE_MLKEM768X25519 */
+diff --git a/monitor.c b/monitor.c
+index 1496711..15ef54e 100644
+--- a/monitor.c
++++ b/monitor.c
+@@ -1875,7 +1875,8 @@ monitor_apply_keystate(struct ssh *ssh, struct monitor *pmonitor)
+ 	kex->kex[KEX_DH_GEX_SHA1] = kexgex_server;
+ 	kex->kex[KEX_DH_GEX_SHA256] = kexgex_server;
+ 	kex->kex[KEX_ECDH_SHA2] = kex_gen_server;
+-	kex->kex[KEX_KEM_MLKEM768ECDH_SHA256] = kex_gen_server;
++	kex->kex[KEX_KEM_MLKEM768NISTP256_SHA256] = kex_gen_server;
++	kex->kex[KEX_KEM_MLKEM1024NISTP384_SHA384] = kex_gen_server;
+ #endif
+ 	kex->kex[KEX_C25519_SHA256] = kex_gen_server;
+ 	kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_server;
+diff --git a/myproposal.h b/myproposal.h
+index a2a1f99..2079e56 100644
+--- a/myproposal.h
++++ b/myproposal.h
+@@ -25,13 +25,15 @@
+  */
+ 
+ #define KEX_SERVER_KEX	\
++	/* NOT FIPS "sntrup761x25519-sha512," */ \
++	/* NOT FIPS "sntrup761x25519-sha512@openssh.com," */ \
++	/* NOT FIPS "curve25519-sha256," */ \
++	/* NOT FIPS "curve25519-sha256@libssh.org," */ \
++	"mlkem1024nistp384-sha384," \
++	"mlkem768nistp256-sha256," \
+ 	"mlkem768x25519-sha256," \
+-	"sntrup761x25519-sha512," \
+-	"sntrup761x25519-sha512@openssh.com," \
+-	"curve25519-sha256," \
+-	"curve25519-sha256@libssh.org," \
+-	"ecdh-sha2-nistp256," \
+ 	"ecdh-sha2-nistp384," \
++	"ecdh-sha2-nistp256," \
+ 	"ecdh-sha2-nistp521" \
+ 
+ #define KEX_CLIENT_KEX KEX_SERVER_KEX "," \
+diff --git a/regress/unittests/kex/Makefile b/regress/unittests/kex/Makefile
+index 369a171..b209931 100644
+--- a/regress/unittests/kex/Makefile
++++ b/regress/unittests/kex/Makefile
+@@ -27,7 +27,8 @@ SRCS+=	smult_curve25519_ref.c
+ SRCS+=	kexgen.c
+ SRCS+=	kexsntrup761x25519.c
+ SRCS+=	kexmlkem768x25519.c
+-SRCS+=	kexmlkem768ecdh.c
++SRCS+=	kexmlkemevp.c
++SRCS+=	kexmlkemnist.c
+ SRCS+=	sntrup761.c
+ SRCS+=	utf8.c
+ 
+diff --git a/regress/unittests/kex/test_kex.c b/regress/unittests/kex/test_kex.c
+index 89376f1..5d92f29 100644
+--- a/regress/unittests/kex/test_kex.c
++++ b/regress/unittests/kex/test_kex.c
+@@ -110,7 +110,9 @@ do_kex_with_key(char *kex, char *cipher, char *mac,
+ 		kex_params.proposal[PROPOSAL_MAC_ALGS_CTOS] = mac;
+ 		kex_params.proposal[PROPOSAL_MAC_ALGS_STOC] = mac;
+ 	}
+-	keyname = strdup(sshkey_ssh_name(private));
++	/* ssh-rsa (RSA/SHA-1) signing is refused by a FIPS provider */
++	keyname = strdup(strcmp(sshkey_ssh_name(private), "ssh-rsa") == 0 ?
++	    "rsa-sha2-256" : sshkey_ssh_name(private));
+ 	ASSERT_PTR_NE(keyname, NULL);
+ 	kex_params.proposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = keyname;
+ 	ASSERT_INT_EQ(ssh_init(&client, 0, &kex_params), 0);
+@@ -164,6 +166,8 @@ do_kex_with_key(char *kex, char *cipher, char *mac,
+ 	server2->kex->kex[KEX_DH_GEX_SHA1] = kexgex_server;
+ 	server2->kex->kex[KEX_DH_GEX_SHA256] = kexgex_server;
+ 	server2->kex->kex[KEX_ECDH_SHA2] = kex_gen_server;
++	server2->kex->kex[KEX_KEM_MLKEM768NISTP256_SHA256] = kex_gen_server;
++	server2->kex->kex[KEX_KEM_MLKEM1024NISTP384_SHA384] = kex_gen_server;
+ #endif /* WITH_OPENSSL */
+ 	server2->kex->kex[KEX_C25519_SHA256] = kex_gen_server;
+ 	server2->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_server;
+@@ -241,6 +245,8 @@ kex_tests(void)
+ 	}
+ # ifdef USE_MLKEM768X25519
+ 	do_kex("mlkem768x25519-sha256");
++	do_kex("mlkem768nistp256-sha256");
++	do_kex("mlkem1024nistp384-sha384");
+ # endif /* USE_MLKEM768X25519 */
+ # ifdef USE_SNTRUP761X25519
+ 	do_kex("sntrup761x25519-sha512");
+diff --git a/ssh-keyscan.c b/ssh-keyscan.c
+index f093b01..7faacd7 100644
+--- a/ssh-keyscan.c
++++ b/ssh-keyscan.c
+@@ -294,11 +294,12 @@ keygrab_ssh2(con *c)
+ 	c->c_ssh->kex->kex[KEX_DH_GEX_SHA1] = kexgex_client;
+ 	c->c_ssh->kex->kex[KEX_DH_GEX_SHA256] = kexgex_client;
+ 	c->c_ssh->kex->kex[KEX_ECDH_SHA2] = kex_gen_client;
++	c->c_ssh->kex->kex[KEX_KEM_MLKEM768NISTP256_SHA256] = kex_gen_client;
++	c->c_ssh->kex->kex[KEX_KEM_MLKEM1024NISTP384_SHA384] = kex_gen_client;
+ #endif
+ 	c->c_ssh->kex->kex[KEX_C25519_SHA256] = kex_gen_client;
+ 	c->c_ssh->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_client;
+ 	c->c_ssh->kex->kex[KEX_KEM_MLKEM768X25519_SHA256] = kex_gen_client;
+-	c->c_ssh->kex->kex[KEX_KEM_MLKEM768ECDH_SHA256] = kex_gen_client;
+ 	ssh_set_verify_host_key_callback(c->c_ssh, key_print_wrapper);
+ 	/*
+ 	 * do the key-exchange until an error occurs or until
+diff --git a/ssh_api.c b/ssh_api.c
+index d01ac54..a9a1715 100644
+--- a/ssh_api.c
++++ b/ssh_api.c
+@@ -129,11 +129,12 @@ ssh_init(struct ssh **sshp, int is_server, struct kex_params *kex_params)
+ 		ssh->kex->kex[KEX_DH_GEX_SHA1] = kexgex_server;
+ 		ssh->kex->kex[KEX_DH_GEX_SHA256] = kexgex_server;
+ 		ssh->kex->kex[KEX_ECDH_SHA2] = kex_gen_server;
++		ssh->kex->kex[KEX_KEM_MLKEM768NISTP256_SHA256] = kex_gen_server;
++		ssh->kex->kex[KEX_KEM_MLKEM1024NISTP384_SHA384] = kex_gen_server;
+ #endif /* WITH_OPENSSL */
+ 		ssh->kex->kex[KEX_C25519_SHA256] = kex_gen_server;
+ 		ssh->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_server;
+ 		ssh->kex->kex[KEX_KEM_MLKEM768X25519_SHA256] = kex_gen_server;
+-		ssh->kex->kex[KEX_KEM_MLKEM768ECDH_SHA256] = kex_gen_server;
+ 		ssh->kex->load_host_public_key=&_ssh_host_public_key;
+ 		ssh->kex->load_host_private_key=&_ssh_host_private_key;
+ 		ssh->kex->sign=&_ssh_host_key_sign;
+@@ -147,11 +148,12 @@ ssh_init(struct ssh **sshp, int is_server, struct kex_params *kex_params)
+ 		ssh->kex->kex[KEX_DH_GEX_SHA1] = kexgex_client;
+ 		ssh->kex->kex[KEX_DH_GEX_SHA256] = kexgex_client;
+ 		ssh->kex->kex[KEX_ECDH_SHA2] = kex_gen_client;
++		ssh->kex->kex[KEX_KEM_MLKEM768NISTP256_SHA256] = kex_gen_client;
++		ssh->kex->kex[KEX_KEM_MLKEM1024NISTP384_SHA384] = kex_gen_client;
+ #endif /* WITH_OPENSSL */
+ 		ssh->kex->kex[KEX_C25519_SHA256] = kex_gen_client;
+ 		ssh->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_client;
+ 		ssh->kex->kex[KEX_KEM_MLKEM768X25519_SHA256] = kex_gen_client;
+-		ssh->kex->kex[KEX_KEM_MLKEM768ECDH_SHA256] = kex_gen_client;
+ 		ssh->kex->verify_host_key =&_ssh_verify_host_key;
+ 	}
+ 	*sshp = ssh;
+diff --git a/ssh_config.5 b/ssh_config.5
+index bdaa49c..1a8268f 100644
+--- a/ssh_config.5
++++ b/ssh_config.5
+@@ -1345,10 +1345,8 @@ default set.
+ .Pp
+ The default is:
+ .Bd -literal -offset indent
+-mlkem768x25519-sha256,
+-sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,
+-curve25519-sha256,curve25519-sha256@libssh.org,
+-ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,
++mlkem1024nistp384-sha384,mlkem768nistp256-sha256,mlkem768x25519-sha256,
++ecdh-sha2-nistp384,ecdh-sha2-nistp256,ecdh-sha2-nistp521,
+ diffie-hellman-group-exchange-sha256,
+ diffie-hellman-group16-sha512,
+ diffie-hellman-group18-sha512,
+diff --git a/sshconnect2.c b/sshconnect2.c
+index 0d48884..d6d67dc 100644
+--- a/sshconnect2.c
++++ b/sshconnect2.c
+@@ -271,11 +271,12 @@ ssh_kex2(struct ssh *ssh, char *host, struct sockaddr_storage *hostaddr,
+ 	ssh->kex->kex[KEX_DH_GEX_SHA1] = kexgex_client;
+ 	ssh->kex->kex[KEX_DH_GEX_SHA256] = kexgex_client;
+ 	ssh->kex->kex[KEX_ECDH_SHA2] = kex_gen_client;
++	ssh->kex->kex[KEX_KEM_MLKEM768NISTP256_SHA256] = kex_gen_client;
++	ssh->kex->kex[KEX_KEM_MLKEM1024NISTP384_SHA384] = kex_gen_client;
+ #endif
+ 	ssh->kex->kex[KEX_C25519_SHA256] = kex_gen_client;
+ 	ssh->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_client;
+ 	ssh->kex->kex[KEX_KEM_MLKEM768X25519_SHA256] = kex_gen_client;
+-	ssh->kex->kex[KEX_KEM_MLKEM768ECDH_SHA256] = kex_gen_client;
+ 	ssh->kex->verify_host_key=&verify_host_key_callback;
+ 
+ 	ssh_dispatch_run_fatal(ssh, DISPATCH_BLOCK, &ssh->kex->done);
+diff --git a/sshd-auth.c b/sshd-auth.c
+index 4888c8e..fa12b19 100644
+--- a/sshd-auth.c
++++ b/sshd-auth.c
+@@ -807,7 +807,8 @@ do_ssh2_kex(struct ssh *ssh)
+ 	kex->kex[KEX_DH_GEX_SHA1] = kexgex_server;
+ 	kex->kex[KEX_DH_GEX_SHA256] = kexgex_server;
+ 	kex->kex[KEX_ECDH_SHA2] = kex_gen_server;
+-	kex->kex[KEX_KEM_MLKEM768ECDH_SHA256] = kex_gen_server;
++	kex->kex[KEX_KEM_MLKEM768NISTP256_SHA256] = kex_gen_server;
++	kex->kex[KEX_KEM_MLKEM1024NISTP384_SHA384] = kex_gen_server;
+ #endif
+ 	kex->kex[KEX_C25519_SHA256] = kex_gen_server;
+ 	kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_server;
+diff --git a/sshd_config.5 b/sshd_config.5
+index a7d3001..7968e52 100644
+--- a/sshd_config.5
++++ b/sshd_config.5
+@@ -1083,6 +1083,8 @@ ecdh-sha2-nistp384
+ .It
+ ecdh-sha2-nistp521
+ .It
++mlkem1024nistp384-sha384
++.It
+ mlkem768nistp256-sha256
+ .It
+ mlkem768x25519-sha256
+@@ -1094,10 +1096,8 @@ sntrup761x25519-sha512@openssh.com
+ .Pp
+ The default is:
+ .Bd -literal -offset indent
+-mlkem768x25519-sha256,
+-sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,
+-curve25519-sha256,curve25519-sha256@libssh.org,
+-ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521
++mlkem1024nistp384-sha384,mlkem768nistp256-sha256,mlkem768x25519-sha256,
++ecdh-sha2-nistp384,ecdh-sha2-nistp256,ecdh-sha2-nistp521
+ .Ed
+ .Pp
+ The list of supported key exchange algorithms may also be obtained using
+-- 
+2.53.0
+
