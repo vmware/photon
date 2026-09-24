@@ -1,0 +1,54 @@
+From 7389e1c7397017bdd96e0ef1757d7586ac2edb9a Mon Sep 17 00:00:00 2001
+From: David Carlier <devnexen@gmail.com>
+Date: Sat, 23 May 2026 16:26:21 +0100
+Subject: [PATCH] netfilter: flowtable: avoid num_encaps underflow on bridge
+ VLAN untag
+
+[ Upstream commit e052f920773b73be49eb4d8702a9f85de7464363 ]
+
+The DEV_PATH_BR_VLAN_UNTAG case post-decrements info->num_encaps
+inside WARN_ON_ONCE(). num_encaps is u8, so if it's already 0 the
+decrement still happens and wraps it to 255. The break only leaves
+the inner switch -- a later path entry can set info->indev back to
+a real device, and we end up returning with num_encaps == 255.
+
+nft_dev_forward_path() then walks info.encap[] (size 2) up to
+num_encaps, which means an OOB stack read and a bogus count copied
+into the route descriptor.
+
+Should only happen on a malformed bridge path stack, hence the WARN,
+but worth handling sanely. Move the decrement out of the WARN.
+
+[ While at this, remove the WARN_ON_ONCE since this can only happen
+  with a buggy bridge path stack --pablo ].
+
+Fixes: e990cef6516d ("netfilter: flowtable: add bridge vlan filtering support")
+Signed-off-by: David Carlier <devnexen@gmail.com>
+Reviewed-by: Fernando Fernandez Mancera <fmancera@suse.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/netfilter/nft_flow_offload.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index 7dbbd892e197..709713634a66 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -150,10 +150,11 @@ static void nft_dev_path_info(const struct net_device_path_stack *stack,
+ 				info->num_encaps++;
+ 				break;
+ 			case DEV_PATH_BR_VLAN_UNTAG:
+-				if (WARN_ON_ONCE(info->num_encaps-- == 0)) {
++				if (info->num_encaps == 0) {
+ 					info->indev = NULL;
+ 					break;
+ 				}
++				info->num_encaps--;
+ 				break;
+ 			case DEV_PATH_BR_VLAN_KEEP:
+ 				break;
+-- 
+2.43.0
+

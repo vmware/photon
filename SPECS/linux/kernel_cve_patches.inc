@@ -108,3 +108,5 @@ Patch3089: 0001-NFSv4.1-zero-referring-call-lists-before-decoding.patch
 # Fixes CVE-2026-74723, CVE-2026-89537
 Patch3090: 0001-SUNRPC-Reject-short-RFC-4121-MIC-tokens-in-gss_krb5.patch
 Patch3091: 0001-btrfs-lzo-reject-inline-extents-without-valid-heade.patch
+# Fixes CVE-2026-80634
+Patch3092: 0001-netfilter-flowtable-avoid-num_encaps-underflow-on-br.patch
