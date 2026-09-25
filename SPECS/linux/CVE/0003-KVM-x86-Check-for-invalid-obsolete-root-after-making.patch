@@ -1,0 +1,97 @@
+From 58f75ff7bd9496934f9f2084f5c0e092b44d6669 Mon Sep 17 00:00:00 2001
+From: Sean Christopherson <seanjc@google.com>
+Date: Fri, 25 Sep 2026 08:15:54 +0000
+Subject: [PATCH 3/3] KVM: x86: Check for invalid/obsolete root *after* making
+ MMU pages available
+
+[ Upstream commit 2abd5287f08319fa35764566b15c6e22cb1068db ]
+
+Check for a "stale" page fault, i.e. for an invalid and/or obsolete root,
+after making MMU pages available for the shadow MMU.  If reclaiming shadow
+pages zaps an in-use root, i.e. marks it invalid, then KVM will attempt to
+map memory into an invalid root.  On its own, populating an invalid root is
+"fine", but because child shadow pages inherit their parent's role, any
+children created during the map/fetch will be created as invalid pages,
+thus violating KVM's invariant that invalid pages are never on the list of
+active MMU pages.
+
+Note, the underlying flaw has existed since KVM first started tracking
+invalid roots in 2008 (commit 2e53d63acba7, "KVM: MMU: ignore zapped root
+pagetables"), but the true badness only came along in 2020 (Linux 5.9)
+with the invariant that invalid shadow pages can't be on the list of
+active pages.
+
+Note #2, inheriting role.invalid when creating child shadow pages is also
+far from ideal; that flaw will be addressed separately.
+
+Reported-by: Hyunwoo Kim <imv4bel@gmail.com>
+Fixes: f95eec9bed76 ("KVM: x86/mmu: Don't put invalid SPs back on the list of active pages")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[backport note: upstream passes struct kvm_page_fault to is_page_fault_stale();
+ here individual parameters are used, as is_page_fault_stale() was
+ backported with that interface in the preceding commit]
+Signed-off-by: Kenta Akagi <k@mgml.me>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Ajay Kaher: Modified to apply on v5.10 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ arch/x86/kvm/mmu/mmu.c         | 9 ++++++---
+ arch/x86/kvm/mmu/paging_tmpl.h | 9 ++++++---
+ 2 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index fb38de2349a6..4a79d5e48e2d 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3762,14 +3762,17 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, gpa_t gpa, u32 error_code,
+ 	if (handle_abnormal_pfn(vcpu, is_tdp ? 0 : gpa, gfn, pfn, ACC_ALL, &r))
+ 		return r;
+ 
+-	r = RET_PF_RETRY;
+ 	spin_lock(&vcpu->kvm->mmu_lock);
+-	if (is_page_fault_stale(vcpu, mmu_seq))
+-		goto out_unlock;
++
+ 	r = make_mmu_pages_available(vcpu);
+ 	if (r)
+ 		goto out_unlock;
+ 
++	if (is_page_fault_stale(vcpu, mmu_seq)) {
++		r = RET_PF_RETRY;
++		goto out_unlock;
++	}
++
+ 	if (is_tdp_mmu_root(vcpu->kvm, vcpu->arch.mmu->root_hpa))
+ 		r = kvm_tdp_mmu_map(vcpu, gpa, error_code, map_writable, max_level,
+ 				    pfn, prefault);
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index a4a9842b0b81..715bd858fb98 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -867,15 +867,18 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, gpa_t addr, u32 error_code,
+ 			walker.pte_access &= ~ACC_EXEC_MASK;
+ 	}
+ 
+-	r = RET_PF_RETRY;
+ 	spin_lock(&vcpu->kvm->mmu_lock);
+-	if (is_page_fault_stale(vcpu, mmu_seq))
+-		goto out_unlock;
+ 
+ 	kvm_mmu_audit(vcpu, AUDIT_PRE_PAGE_FAULT);
+ 	r = make_mmu_pages_available(vcpu);
+ 	if (r)
+ 		goto out_unlock;
++
++	if (is_page_fault_stale(vcpu, mmu_seq)) {
++		r = RET_PF_RETRY;
++		goto out_unlock;
++	}
++
+ 	r = FNAME(fetch)(vcpu, addr, &walker, error_code, max_level, pfn,
+ 			 map_writable, prefault);
+ 	kvm_mmu_audit(vcpu, AUDIT_POST_PAGE_FAULT);
+-- 
+2.53.0
+

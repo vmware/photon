@@ -477,3 +477,7 @@ Patch3198: 0001-xfrm-defensively-unhash-xfrm_state-lists-in-__xfrm_state_delete.
 Patch3199: 0001-fbcon-Set-fb_displayi-mode-to-NULL-when-the-mode-is-released.patch
 # Fixes CVE-2024-35870
 Patch3200: 0001-smb-client-fix-UAF-in-smb2_reconnect_server.patch
+# Fixes CVE-2026-64561
+Patch3201: 0001-KVM-x86-mmu-Retry-page-fault-if-root-is-invalidated-.patch
+Patch3202: 0002-KVM-x86-Retry-page-fault-if-MMU-reload-is-pending-an.patch
+Patch3203: 0003-KVM-x86-Check-for-invalid-obsolete-root-after-making.patch

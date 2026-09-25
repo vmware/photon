@@ -1,0 +1,112 @@
+From 94db8c546e839fdd073864618a4381baeb75a3cd Mon Sep 17 00:00:00 2001
+From: Sean Christopherson <seanjc@google.com>
+Date: Fri, 25 Sep 2026 08:14:22 +0000
+Subject: [PATCH 1/3] KVM: x86/mmu: Retry page fault if root is invalidated by
+ memslot update
+
+[ Upstream commit a955cad84cdaffa282b3cf8f5ce69e9e5655e585 ]
+
+Bail from the page fault handler if the root shadow page was obsoleted by
+a memslot update.  Do the check _after_ acuiring mmu_lock, as the TDP MMU
+doesn't rely on the memslot/MMU generation, and instead relies on the
+root being explicit marked invalid by kvm_mmu_zap_all_fast(), which takes
+mmu_lock for write.
+
+For the TDP MMU, inserting a SPTE into an obsolete root can leak a SP if
+kvm_tdp_mmu_zap_invalidated_roots() has already zapped the SP, i.e. has
+moved past the gfn associated with the SP.
+
+For other MMUs, the resulting behavior is far more convoluted, though
+unlikely to be truly problematic.  Installing SPs/SPTEs into the obsolete
+root isn't directly problematic, as the obsolete root will be unloaded
+and dropped before the vCPU re-enters the guest.  But because the legacy
+MMU tracks shadow pages by their role, any SP created by the fault can
+can be reused in the new post-reload root.  Again, that _shouldn't_ be
+problematic as any leaf child SPTEs will be created for the current/valid
+memslot generation, and kvm_mmu_get_page() will not reuse child SPs from
+the old generation as they will be flagged as obsolete.  But, given that
+continuing with the fault is pointess (the root will be unloaded), apply
+the check to all MMUs.
+
+Fixes: b7cccd397f31 ("KVM: x86/mmu: Fast invalidation for TDP MMU")
+Cc: stable@vger.kernel.org
+Cc: Ben Gardon <bgardon@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20211120045046.3940942-5-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[backport note: is_page_fault_stale() adapted to take individual parameters
+ instead of struct kvm_page_fault, since 4326e57ef40a ("KVM: MMU: change
+ direct_page_fault() arguments to kvm_page_fault") is not in 5.15.y;
+ required by the following backport of 2abd5287f083 and by 0cb2af2ea66a
+ to be backported separately]
+Assisted-by: Claude:claude-sonnet-4.6
+Signed-off-by: Kenta Akagi <k@mgml.me>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Ajay Kaher: Modified to apply on v5.10 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ arch/x86/kvm/mmu/mmu.c         | 20 ++++++++++++++++++--
+ arch/x86/kvm/mmu/paging_tmpl.h |  2 +-
+ 2 files changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 13cad4becfba..6849b4bafa6e 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -1871,7 +1871,11 @@ static void mmu_audit_disable(void) { }
+ 
+ static bool is_obsolete_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
+ {
+-	return sp->role.invalid ||
++	if (sp->role.invalid)
++		return true;
++
++	/* TDP MMU pages due not use the MMU generation. */
++	return !sp->tdp_mmu_page &&
+ 	       unlikely(sp->mmu_valid_gen != kvm->arch.mmu_valid_gen);
+ }
+ 
+@@ -3699,6 +3703,18 @@ static bool try_async_pf(struct kvm_vcpu *vcpu, bool prefault, gfn_t gfn,
+ 	return false;
+ }
+ 
++/*
++ * Returns true if the page fault is stale and needs to be retried, i.e. if the
++ * root was invalidated by a memslot update or a relevant mmu_notifier fired.
++ */
++static bool is_page_fault_stale(struct kvm_vcpu *vcpu, unsigned long mmu_seq)
++{
++	if (is_obsolete_sp(vcpu->kvm, to_shadow_page(vcpu->arch.mmu->root_hpa)))
++		return true;
++
++	return mmu_notifier_retry(vcpu->kvm, mmu_seq);
++}
++
+ static int direct_page_fault(struct kvm_vcpu *vcpu, gpa_t gpa, u32 error_code,
+ 			     bool prefault, int max_level, bool is_tdp)
+ {
+@@ -3734,7 +3750,7 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, gpa_t gpa, u32 error_code,
+ 
+ 	r = RET_PF_RETRY;
+ 	spin_lock(&vcpu->kvm->mmu_lock);
+-	if (mmu_notifier_retry(vcpu->kvm, mmu_seq))
++	if (is_page_fault_stale(vcpu, mmu_seq))
+ 		goto out_unlock;
+ 	r = make_mmu_pages_available(vcpu);
+ 	if (r)
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index c6daeeff1d9c..a4a9842b0b81 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -869,7 +869,7 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, gpa_t addr, u32 error_code,
+ 
+ 	r = RET_PF_RETRY;
+ 	spin_lock(&vcpu->kvm->mmu_lock);
+-	if (mmu_notifier_retry(vcpu->kvm, mmu_seq))
++	if (is_page_fault_stale(vcpu, mmu_seq))
+ 		goto out_unlock;
+ 
+ 	kvm_mmu_audit(vcpu, AUDIT_PRE_PAGE_FAULT);
+-- 
+2.53.0
+
