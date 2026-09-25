@@ -39,3 +39,25 @@ system_default = system_default_sect
 MinProtocol = TLSv1.2
 CipherString = HIGH:!aNULL:!eNULL:!MD5:!3DES:!RC4:!CHACHA20:!ARIA:@SECLEVEL=2
 Ciphersuites = TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256
+
+# Post-quantum key agreement (FIPS 203 / ML-KEM), TLS 1.3 only.
+# Notation :- Each Tuple is Marked and Differentiated by '/'.
+#             Mandatory pre-sharing of key happens for algos Marked with '*'
+#
+# Tuple 1 - ML-KEM Hybrib X25519. This is the most widely supported algo
+# and an industry standard eventhough it is a hybrid. Hence Tuple-1 will always
+# starred to pre-share 1216 bytes of X25519-ML-KEM Hybrid within ClientHello msg,
+# So that, Negotiation can succeed with the peers & servers which support X25519 hybrid.
+#
+# Tuple-2 Is reserved for Full ML-KEM FIPS Compliant & NIST approved algo.
+# However, since actual ML-KEM 768 & 1024 are not widely supported in the industry today,
+# they are not starred and hence the Tuple doesn't contain actual pre-shared ML-KEM keys,
+# so that Payload size is minimized. However, If a server supports ML-KEM, it can always
+# Re-route and request for the ML-KEM Key for exchange with retry.
+#
+# Tuple-3 is reserved for classic algos which are already widely supported & adoted.
+# These algos are starred, so that Keys are always pre-shared in the ClientHello itself.
+# Since, the Key length for these classic algos are very less, it doesn't increase
+# the payload size by much and it will vaoid Re-Routing and Retry.
+# Tuple-3 classic algos are the last resort mechanism.
+Groups = ?*X25519MLKEM768:?SecP256r1MLKEM768:?SecP384r1MLKEM1024 / ?*secp256r1:?secp384r1:?secp521r1 / ?ffdhe3072:?ffdhe2048

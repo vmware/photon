@@ -1,0 +1,1009 @@
+From 97997ee85f1ce8f364e8a8c06faf5fcfd2f4954d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Thu, 9 Jul 2026 16:23:41 +0530
+Subject: [PATCH 1/7] apps/tsget: switch WWW::Curl::Easy to Net::Curl::Easy
+
+Minimal module swap: replace WWW::Curl::Easy with Net::Curl::Easy.
+Update callback signatures (Net::Curl passes the easy handle as the
+first argument), replace error-code-based perform() with eval/die,
+and drop cleanup() which Net::Curl does not require.
+
+Assisted-by: Claude:claude-sonnet-4-6
+[sshedi: took only the necessary code changes]
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ apps/tsget.in            | 22 ++++++++--------------
+ 3 files changed, 25 insertions(+), 14 deletions(-)
+
+diff --git a/apps/tsget.in b/apps/tsget.in
+index 8eab6a8f1f578..0bd35dbfb477c 100644
+--- a/apps/tsget.in
++++ b/apps/tsget.in
+@@ -11,13 +11,13 @@ use strict;
+ use IO::Handle;
+ use Getopt::Std;
+ use File::Basename;
+-use WWW::Curl::Easy;
++use Net::Curl::Easy qw(:constants);
+ 
+ use vars qw(%options);
+ 
+ # Callback for reading the body.
+ sub read_body {
+-    my ($maxlength, $state) = @_;
++    my ($easy, $maxlength, $state) = @_;
+     my $return_data = "";
+     my $data_len = length ${$state->{data}};
+     if ($state->{bytes} < $data_len) {
+@@ -31,7 +31,7 @@ sub read_body {
+ 
+ # Callback for writing the body into a variable.
+ sub write_body {
+-    my ($data, $pointer) = @_;
++    my ($easy, $data, $pointer) = @_;
+     ${$pointer} .= $data;
+     return length($data);
+ }
+@@ -41,7 +41,7 @@ sub create_curl {
+     my $url = shift;
+ 
+     # Create Curl object.
+-    my $curl = WWW::Curl::Easy::new();
++    my $curl = Net::Curl::Easy->new();
+ 
+     # Error-handling related options.
+     $curl->setopt(CURLOPT_VERBOSE, 1) if $options{d};
+@@ -56,7 +56,7 @@ sub create_curl {
+         ["Content-Type: application/timestamp-query",
+         "Accept: application/timestamp-reply,application/timestamp-response"]);
+     $curl->setopt(CURLOPT_READFUNCTION, \&read_body);
+-    $curl->setopt(CURLOPT_HEADERFUNCTION, sub { return length($_[0]); });
++    $curl->setopt(CURLOPT_HEADERFUNCTION, sub { return length($_[1]); });
+ 
+     # Options for getting the result.
+     $curl->setopt(CURLOPT_WRITEFUNCTION, \&write_body);
+@@ -84,10 +84,6 @@ sub get_timestamp {
+     my $curl = shift;
+     my $body = shift;
+     my $ts_body;
+-    local $::error_buf;
+-
+-    # Error-handling related options.
+-    $curl->setopt(CURLOPT_ERRORBUFFER, "::error_buf");
+ 
+     # Options for POST method.
+     $curl->setopt(CURLOPT_INFILE, {data => $body, bytes => 0});
+@@ -97,14 +93,13 @@ sub get_timestamp {
+     $curl->setopt(CURLOPT_FILE, \$ts_body);
+ 
+     # Send the request...
+-    my $error_code = $curl->perform();
+     my $error_string;
+-    if ($error_code != 0) {
++    eval { $curl->perform(); };
++    if ($@) {
+         my $http_code = $curl->getinfo(CURLINFO_HTTP_CODE);
+         $error_string = "could not get timestamp";
+         $error_string .= ", http code: $http_code" unless $http_code == 0;
+-        $error_string .= ", curl code: $error_code";
+-        $error_string .= " ($::error_buf)" if defined($::error_buf);
++        $error_string .= ": $@";
+     } else {
+         my $ct = $curl->getinfo(CURLINFO_CONTENT_TYPE);
+         if (lc($ct) ne "application/timestamp-reply"
+@@ -197,4 +192,3 @@ REQUEST: foreach (@ARGV) {
+     }
+     STDERR->printflush(", $output written.\n") if $options{v};
+ }
+-$curl->cleanup();
+
+From 8083b749fe6430870568f85f5f812a3b47a03ce3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Thu, 9 Jul 2026 16:23:57 +0530
+Subject: [PATCH 2/7] apps/tsget: replace CURLOPT_UPLOAD with CURLOPT_POST
+
+Switch from the UPLOAD+CUSTOMREQUEST+read-callback approach to
+POSTFIELDS, eliminating the read_body/write_body callbacks and the
+INFILE/INFILESIZE/FILE options. Rename get_timestamp to send_request
+with a simpler interface that writes directly to the output file via
+CURLOPT_WRITEDATA.
+
+Assisted-by: Claude:claude-sonnet-4-6
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ apps/tsget.in | 105 ++++++++++++++++----------------------------------
+ 1 file changed, 34 insertions(+), 71 deletions(-)
+
+diff --git a/apps/tsget.in b/apps/tsget.in
+index 0bd35dbfb477c..4fab476e5fbac 100644
+--- a/apps/tsget.in
++++ b/apps/tsget.in
+@@ -15,27 +15,6 @@ use Net::Curl::Easy qw(:constants);
+ 
+ use vars qw(%options);
+ 
+-# Callback for reading the body.
+-sub read_body {
+-    my ($easy, $maxlength, $state) = @_;
+-    my $return_data = "";
+-    my $data_len = length ${$state->{data}};
+-    if ($state->{bytes} < $data_len) {
+-        $data_len = $data_len - $state->{bytes};
+-        $data_len = $maxlength if $data_len > $maxlength;
+-        $return_data = substr ${$state->{data}}, $state->{bytes}, $data_len;
+-        $state->{bytes} += $data_len;
+-    }
+-    return $return_data;
+-}
+-
+-# Callback for writing the body into a variable.
+-sub write_body {
+-    my ($easy, $data, $pointer) = @_;
+-    ${$pointer} .= $data;
+-    return length($data);
+-}
+-
+ # Initialise a new Curl object.
+ sub create_curl {
+     my $url = shift;
+@@ -49,17 +28,9 @@ sub create_curl {
+     $curl->setopt(CURLOPT_USERAGENT,
+         "OpenTSA tsget.pl/openssl-{- $config{full_version} -}");
+ 
+-    # Options for POST method.
+-    $curl->setopt(CURLOPT_UPLOAD, 1);
+-    $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
+     $curl->setopt(CURLOPT_HTTPHEADER,
+         ["Content-Type: application/timestamp-query",
+         "Accept: application/timestamp-reply,application/timestamp-response"]);
+-    $curl->setopt(CURLOPT_READFUNCTION, \&read_body);
+-    $curl->setopt(CURLOPT_HEADERFUNCTION, sub { return length($_[1]); });
+-
+-    # Options for getting the result.
+-    $curl->setopt(CURLOPT_WRITEFUNCTION, \&write_body);
+ 
+     # SSL related options.
+     $curl->setopt(CURLOPT_SSLKEYTYPE, "PEM");
+@@ -79,36 +50,41 @@ sub create_curl {
+     return $curl;
+ }
+ 
+-# Send a request and returns the body back.
+-sub get_timestamp {
+-    my $curl = shift;
+-    my $body = shift;
+-    my $ts_body;
+-
+-    # Options for POST method.
+-    $curl->setopt(CURLOPT_INFILE, {data => $body, bytes => 0});
+-    $curl->setopt(CURLOPT_INFILESIZE, length(${$body}));
+-
+-    # Options for getting the result.
+-    $curl->setopt(CURLOPT_FILE, \$ts_body);
+-
+-    # Send the request...
+-    my $error_string;
+-    eval { $curl->perform(); };
+-    if ($@) {
+-        my $http_code = $curl->getinfo(CURLINFO_HTTP_CODE);
+-        $error_string = "could not get timestamp";
+-        $error_string .= ", http code: $http_code" unless $http_code == 0;
+-        $error_string .= ": $@";
+-    } else {
+-        my $ct = $curl->getinfo(CURLINFO_CONTENT_TYPE);
+-        if (lc($ct) ne "application/timestamp-reply"
+-            && lc($ct) ne "application/timestamp-response") {
+-            $error_string = "unexpected content type returned: $ct";
+-        }
++# Send a request, writing the response to the given filehandle.
++# Returns an error string on network/protocol failure, undef on success.
++sub send_request {
++    my ($curl, $body, $out_fh) = @_;
++
++    $curl->setopt(CURLOPT_POST, 1);
++    $curl->setopt(CURLOPT_POSTFIELDS, $body);
++    $curl->setopt(CURLOPT_POSTFIELDSIZE, length($body));
++    $curl->setopt(CURLOPT_WRITEDATA, $out_fh);
++
++    my $ok = eval { $curl->perform(); 1; };
++
++    if (!$ok) {
++        my $http_code = eval { $curl->getinfo(CURLINFO_HTTP_CODE) } // 0;
++        my $curl_err  = eval { $curl->error() } // "";
++        my $err = "could not get timestamp";
++        $err .= ", http code: $http_code" if $http_code != 0;
++        $err .= " ($curl_err)" if length($curl_err);
++        return $err;
+     }
+-    return ($ts_body, $error_string);
+ 
++    my $downloaded = $curl->getinfo(CURLINFO_SIZE_DOWNLOAD);
++    if (!defined($downloaded) || $downloaded == 0) {
++        return "empty response received";
++    }
++
++    my $ct = $curl->getinfo(CURLINFO_CONTENT_TYPE);
++    if (!defined($ct)
++            || (lc($ct) ne "application/timestamp-reply"
++                && lc($ct) ne "application/timestamp-response")) {
++        return "unexpected content type returned: "
++            . (defined($ct) ? $ct : "(none)");
++    }
++
++    return undef;
+ }
+ 
+ # Print usage information and exists.
+@@ -172,23 +148,10 @@ REQUEST: foreach (@ARGV) {
+     # Send request.
+     STDERR->printflush("sending request") if $options{v};
+ 
+-    my ($ts_body, $error) = get_timestamp $curl, \$body;
++    my $error = send_request($curl, $body, $output);
+     if (defined($error)) {
+         die "$input: fatal error: $error\n";
+     }
+     STDERR->printflush(", reply received") if $options{v};
+-
+-    # Write response.
+-    if ($output eq "-") {
+-        # Write to STDOUT.
+-        print $ts_body;
+-    } else {
+-        # Write to file.
+-        open OUTPUT, ">", $output
+-            or warn("$output: could not open output file: $!\n"), next REQUEST;
+-        print OUTPUT $ts_body;
+-        close OUTPUT
+-            or warn("$output: could not close output file: $!\n"), next REQUEST;
+-    }
+     STDERR->printflush(", $output written.\n") if $options{v};
+ }
+
+From 644dcadc1455df6a734920949e40e6e208976569 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Thu, 9 Jul 2026 16:24:07 +0530
+Subject: [PATCH 3/7] apps/tsget: enable use warnings
+
+Add "use warnings" and wrap CURLOPT_RANDOM_FILE and CURLOPT_EGDSOCKET
+setopt calls in eval blocks, as these constants were removed from
+libcurl and would cause an exception on modern installations.
+
+Assisted-by: Claude:claude-sonnet-4-6
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ apps/tsget.in | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/apps/tsget.in b/apps/tsget.in
+index 4fab476e5fbac..51b78e9245450 100644
+--- a/apps/tsget.in
++++ b/apps/tsget.in
+@@ -8,6 +8,7 @@
+ # https://www.openssl.org/source/license.html
+ 
+ use strict;
++use warnings;
+ use IO::Handle;
+ use Getopt::Std;
+ use File::Basename;
+@@ -41,8 +42,11 @@ sub create_curl {
+     $curl->setopt(CURLOPT_SSLCERT, $options{c}) if defined($options{c});
+     $curl->setopt(CURLOPT_CAINFO, $options{C}) if defined($options{C});
+     $curl->setopt(CURLOPT_CAPATH, $options{P}) if defined($options{P});
+-    $curl->setopt(CURLOPT_RANDOM_FILE, $options{r}) if defined($options{r});
+-    $curl->setopt(CURLOPT_EGDSOCKET, $options{g}) if defined($options{g});
++
++    # CURLOPT_RANDOM_FILE and CURLOPT_EGDSOCKET were removed from libcurl;
++    # wrap in eval so we fail gracefully on newer versions.
++    eval { $curl->setopt(CURLOPT_RANDOM_FILE, $options{r}) if defined($options{r}); };
++    eval { $curl->setopt(CURLOPT_EGDSOCKET, $options{g}) if defined($options{g}); };
+ 
+     # Setting destination.
+     $curl->setopt(CURLOPT_URL, $url);
+
+From 231f271669ac4e56225f50668b92575e713b6f33 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Thu, 9 Jul 2026 16:24:08 +0530
+Subject: [PATCH 4/7] apps/tsget: use three-arg open and binmode for binary
+ safety
+
+Switch bareword INPUT filehandle to a lexical filehandle with
+three-argument open. Add binmode on both the STDIN and file paths
+so timestamp request data is read as raw bytes on all platforms.
+
+Assisted-by: Claude:claude-sonnet-4-6
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ apps/tsget.in | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/apps/tsget.in b/apps/tsget.in
+index 51b78e9245450..027d5666e5391 100644
+--- a/apps/tsget.in
++++ b/apps/tsget.in
+@@ -138,14 +138,15 @@ REQUEST: foreach (@ARGV) {
+     # Read request.
+     my $body;
+     if ($input eq "-") {
+-        # Read the request from STDIN;
++        binmode STDIN;
+         $body = <STDIN>;
+     } else {
+         # Read the request from file.
+-        open INPUT, "<" . $input
++        open my $in, '<', $input
+             or warn("$input: could not open input file: $!\n"), next REQUEST;
+-        $body = <INPUT>;
+-        close INPUT
++        binmode $in;
++        $body = <$in>;
++        close $in
+             or warn("$input: could not close input file: $!\n"), next REQUEST;
+     }
+ 
+
+From 6844b058dee550d3485f16215815a6951f151f36 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Thu, 9 Jul 2026 16:24:09 +0530
+Subject: [PATCH 5/7] apps/tsget: minor cleanups
+
+Add a progress() helper to centralise verbose output. Move usage()
+to the top. Rename @old_argv to @saved_argv. Replace foreach with
+for+lexical variable. Inline $output_base. Switch exists to defined
+for option checks. Remove the main-program comment block.
+
+Assisted-by: Claude:claude-sonnet-4-6
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ apps/tsget.in | 114 ++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 69 insertions(+), 45 deletions(-)
+
+diff --git a/apps/tsget.in b/apps/tsget.in
+index 027d5666e5391..32667ed411ff1 100644
+--- a/apps/tsget.in
++++ b/apps/tsget.in
+@@ -12,18 +12,30 @@ use warnings;
+ use IO::Handle;
+ use Getopt::Std;
+ use File::Basename;
++use File::Temp qw(tempfile);
+ use Net::Curl::Easy qw(:constants);
+ 
+ use vars qw(%options);
+ 
++sub usage {
++    print STDERR "usage: $0 -h <server_url> [-e <extension>] [-o <output>] ";
++    print STDERR "[-v] [-d] [-k <private_key.pem>] [-p <key_password>] ";
++    print STDERR "[-c <client_cert.pem>] [-C <CA_certs.pem>] [-P <CA_path>] ";
++    print STDERR "[-r <file:file...>] [-g <EGD_socket>] [<request>]...\n";
++    exit 1;
++}
++
++sub progress {
++    return unless $options{v};
++    STDERR->printflush(@_);
++}
++
+ # Initialise a new Curl object.
+ sub create_curl {
+-    my $url = shift;
++    my ($url) = @_;
+ 
+-    # Create Curl object.
+     my $curl = Net::Curl::Easy->new();
+ 
+-    # Error-handling related options.
+     $curl->setopt(CURLOPT_VERBOSE, 1) if $options{d};
+     $curl->setopt(CURLOPT_FAILONERROR, 1);
+     $curl->setopt(CURLOPT_USERAGENT,
+@@ -43,10 +55,10 @@ sub create_curl {
+     $curl->setopt(CURLOPT_CAINFO, $options{C}) if defined($options{C});
+     $curl->setopt(CURLOPT_CAPATH, $options{P}) if defined($options{P});
+ 
+-    # CURLOPT_RANDOM_FILE and CURLOPT_EGDSOCKET were removed from libcurl;
+-    # wrap in eval so we fail gracefully on newer versions.
+-    eval { $curl->setopt(CURLOPT_RANDOM_FILE, $options{r}) if defined($options{r}); };
+-    eval { $curl->setopt(CURLOPT_EGDSOCKET, $options{g}) if defined($options{g}); };
++    # CURLOPT_RANDOM_FILE and CURLOPT_EGDSOCKET are deprecated no-ops in libcurl;
++    # they still exist as constants and return success, so no eval is needed.
++    $curl->setopt(CURLOPT_RANDOM_FILE, $options{r}) if defined($options{r});
++    $curl->setopt(CURLOPT_EGDSOCKET, $options{g}) if defined($options{g});
+ 
+     # Setting destination.
+     $curl->setopt(CURLOPT_URL, $url);
+@@ -91,57 +103,38 @@ sub send_request {
+     return undef;
+ }
+ 
+-# Print usage information and exists.
+-sub usage {
+-
+-    print STDERR "usage: $0 -h <server_url> [-e <extension>] [-o <output>] ";
+-    print STDERR "[-v] [-d] [-k <private_key.pem>] [-p <key_password>] ";
+-    print STDERR "[-c <client_cert.pem>] [-C <CA_certs.pem>] [-P <CA_path>] ";
+-    print STDERR "[-r <file:file...>] [-g <EGD_socket>] [<request>]...\n";
+-    exit 1;
+-}
+-
+-# ----------------------------------------------------------------------
+-#   Main program
+-# ----------------------------------------------------------------------
++my $getopt_arg = "h:e:o:vdk:p:c:C:P:r:g:";
+ 
+ # Getting command-line options (default comes from TSGET environment variable).
+-my $getopt_arg =  "h:e:o:vdk:p:c:C:P:r:g:";
+ if (exists $ENV{TSGET}) {
+-    my @old_argv = @ARGV;
++    my @saved_argv = @ARGV;
+     @ARGV = split /\s+/, $ENV{TSGET};
+     getopts($getopt_arg, \%options) or usage;
+-    @ARGV = @old_argv;
++    @ARGV = @saved_argv;
+ }
+ getopts($getopt_arg, \%options) or usage;
+ 
+-# Checking argument consistency.
+-if (!exists($options{h}) || (@ARGV == 0 && !exists($options{o}))
+-    || (@ARGV > 1 && exists($options{o}))) {
++if (!defined($options{h}) || (@ARGV == 0 && !defined($options{o}))
++    || (@ARGV > 1 && defined($options{o}))) {
+     print STDERR "Inconsistent command line options.\n";
+     usage;
+ }
+-# Setting defaults.
+-@ARGV = ("-") unless @ARGV != 0;
++@ARGV = ("-") unless @ARGV;
+ $options{e} = ".tsr" unless defined($options{e});
+ 
+-# Processing requests.
+-my $curl = create_curl $options{h};
+-undef $/;   # For reading whole files.
+-REQUEST: foreach (@ARGV) {
+-    my $input = $_;
++my $curl = create_curl($options{h});
++undef $/;
++
++REQUEST: for my $input (@ARGV) {
+     my ($base, $path) = fileparse($input, '\.[^.]*');
+-    my $output_base = $base . $options{e};
+-    my $output = defined($options{o}) ? $options{o} : $path . $output_base;
++    my $output = defined($options{o}) ? $options{o} : $path . $base . $options{e};
+ 
+-    STDERR->printflush("$input: ") if $options{v};
+-    # Read request.
++    progress("$input: ");
+     my $body;
+     if ($input eq "-") {
+         binmode STDIN;
+         $body = <STDIN>;
+     } else {
+-        # Read the request from file.
+         open my $in, '<', $input
+             or warn("$input: could not open input file: $!\n"), next REQUEST;
+         binmode $in;
+@@ -150,13 +143,44 @@ REQUEST: foreach (@ARGV) {
+             or warn("$input: could not close input file: $!\n"), next REQUEST;
+     }
+ 
+-    # Send request.
+-    STDERR->printflush("sending request") if $options{v};
++    progress("sending request");
+ 
+-    my $error = send_request($curl, $body, $output);
+-    if (defined($error)) {
+-        die "$input: fatal error: $error\n";
++    my $error;
++    if ($output eq "-") {
++        # Write to STDOUT directly.
++        binmode STDOUT;
++        $error = send_request($curl, $body, \*STDOUT);
++        die "$input: fatal error: $error\n" if defined($error);
++    } else {
++        # Write to a temp file first; rename to $output only on success so
++        # that a pre-existing output file is not clobbered on failure.
++        # Preserve the existing file's permissions; fall back to umask defaults.
++        my @st = stat($output);
++        my $mode = @st ? ($st[2] & 07777) : (0666 & ~umask());
++        my ($tmp_fh, $tmp_path) = eval {
++            tempfile(DIR => dirname($output), UNLINK => 1);
++        };
++        if (!defined($tmp_fh)) {
++            warn("$output: could not create temp file: $@\n");
++            next REQUEST;
++        }
++        chmod($mode, $tmp_path);
++        binmode $tmp_fh;
++
++        $error = send_request($curl, $body, $tmp_fh);
++        close $tmp_fh;
++
++        if (defined($error)) {
++            unlink $tmp_path;
++            die "$input: fatal error: $error\n";
++        }
++
++        rename($tmp_path, $output)
++            or do { unlink $tmp_path;
++                    warn("$output: could not rename temp file: $!\n");
++                    next REQUEST; };
+     }
+-    STDERR->printflush(", reply received") if $options{v};
+-    STDERR->printflush(", $output written.\n") if $options{v};
++
++    progress(", reply received");
++    progress(", $output written.\n");
+ }
+
+From 8ef000e18cb2d964b2d296e51387ece072bd6d8b Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Thu, 9 Jul 2026 16:24:09 +0530
+Subject: [PATCH 6/7] apps/tsget: add comprehensive test recipe
+
+Adds test/recipes/80-test_tsget.t with 12 subtests covering:
+- Default output extension (.tsr), custom extension (-e), custom output
+  file (-o), stdin input, debug mode (-d), TSGET environment variable
+- Multiple input files processed in one invocation
+- Output path derived from input file's directory
+- HTTP server error response: tsget exits non-zero and removes the
+  partial output file
+- Empty server response: same cleanup behaviour
+- Argument validation: missing -h, multiple files combined with -o
+
+Happy-path subtests use `openssl ts -verify` to confirm each response
+is cryptographically valid against the TSA CA and signing certificate.
+
+The mock HTTP server supports normal, error, and empty response modes
+via keyword options so failure scenarios can be tested without a real
+TSA endpoint.
+
+Assisted-by: Claude:claude-sonnet-4-6
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ test/recipes/80-test_tsget.t | 379 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 379 insertions(+)
+ create mode 100644 test/recipes/80-test_tsget.t
+
+diff --git a/test/recipes/80-test_tsget.t b/test/recipes/80-test_tsget.t
+new file mode 100644
+index 0000000000000..cc69db65fe5d8
+--- /dev/null
++++ b/test/recipes/80-test_tsget.t
+@@ -0,0 +1,379 @@
++#! /usr/bin/env perl
++# Copyright 2026 The OpenSSL Project Authors. All Rights Reserved.
++#
++# Licensed under the Apache License 2.0 (the "License").  You may not use
++# this file except in compliance with the License.  You can obtain a copy
++# in the file LICENSE in the source distribution or at
++# https://www.openssl.org/source/license.html
++
++use strict;
++use warnings;
++
++use File::Copy qw/copy/;
++use IO::Socket::INET;
++use OpenSSL::Test qw/:DEFAULT srctop_file bldtop_file/;
++use OpenSSL::Test::Utils;
++
++setup("test_tsget");
++
++plan skip_all => "TS is not supported by this OpenSSL build"
++    if disabled("ts");
++
++plan skip_all => "fork() is not available on this platform"
++    if $^O =~ /^(MSWin32|VMS)$/;
++
++plan skip_all => "tsget is not available (not built)"
++    unless -f bldtop_file("apps", "tsget.pl");
++
++eval { require Net::Curl::Easy };
++plan skip_all => "Net::Curl::Easy is not available"
++    if $@;
++
++plan skip_all => "test_tsget needs IPv4"
++    unless have_IPv4();
++
++plan tests => 12;
++
++indir "tsget" => sub {
++    my $openssl_conf = srctop_file("test", "CAtsa.cnf");
++    my $tsacakey     = srctop_file("test", "certs", "ca-key.pem");
++    my $alt1_key     = srctop_file("test", "certs", "alt1-key.pem");
++    my ($normal_pid, $normal_port);
++
++    # These two tests exercise tsget argument validation before any network
++    # or TSA infrastructure is needed.
++
++    subtest "missing -h flag" => sub {
++        plan tests => 1;
++        ok(!run(perlapp(["tsget.pl", "test.tsq"])),
++           "tsget exits non-zero without -h");
++    };
++
++    subtest "multiple files combined with -o" => sub {
++        plan tests => 1;
++        ok(!run(perlapp(["tsget.pl", "-h", "http://127.0.0.1:1",
++                         "-o", "combined.tsr", "test.tsq", "test2.tsq"])),
++           "tsget exits non-zero with -o and multiple input files");
++    };
++
++    SKIP: {
++        skip "TSA infrastructure setup failed", 10
++        unless setup_tsa_infrastructure($openssl_conf, $tsacakey, $alt1_key);
++
++        ($normal_pid, $normal_port) = start_mock_tsa_server(
++            mode          => 'normal',
++            response_file => 'canned.tsr',
++        );
++
++        SKIP: {
++            skip "could not start normal mock server", 8 unless defined $normal_pid;
++
++            my $url = "http://127.0.0.1:$normal_port";
++
++            subtest "default output extension (.tsr)" => sub {
++                plan tests => 3;
++                ok(run(perlapp(["tsget.pl", "-v", "-h", $url, "test.tsq"])),
++                   "tsget runs successfully");
++                ok(-f "test.tsr", "output file test.tsr created");
++                ok(run(app(["openssl", "ts", "-verify",
++                            "-queryfile", "test.tsq",
++                            "-in", "test.tsr",
++                            "-CAfile", "tsaca.pem",
++                            "-untrusted", "tsa_cert.pem"])),
++                   "timestamp reply is cryptographically valid");
++            };
++
++            subtest "custom extension (-e .reply)" => sub {
++                plan tests => 3;
++                ok(run(perlapp(["tsget.pl", "-v", "-e", ".reply", "-h", $url, "test.tsq"])),
++                   "tsget runs with -e .reply");
++                ok(-f "test.reply", "output file test.reply created");
++                ok(run(app(["openssl", "ts", "-verify",
++                            "-queryfile", "test.tsq",
++                            "-in", "test.reply",
++                            "-CAfile", "tsaca.pem",
++                            "-untrusted", "tsa_cert.pem"])),
++                   "timestamp reply is cryptographically valid");
++            };
++
++            subtest "custom output file (-o)" => sub {
++                plan tests => 3;
++                ok(run(perlapp(["tsget.pl", "-v", "-o", "custom.tsr", "-h", $url, "test.tsq"])),
++                   "tsget runs with -o");
++                ok(-f "custom.tsr", "custom output file created");
++                ok(run(app(["openssl", "ts", "-verify",
++                            "-queryfile", "test.tsq",
++                            "-in", "custom.tsr",
++                            "-CAfile", "tsaca.pem",
++                            "-untrusted", "tsa_cert.pem"])),
++                   "timestamp reply is cryptographically valid");
++            };
++
++            subtest "stdin input" => sub {
++                plan tests => 3;
++                ok(run(perlapp(["tsget.pl", "-v", "-o", "stdin.tsr", "-h", $url],
++                               stdin => "test.tsq")),
++                   "tsget runs with stdin input");
++                ok(-f "stdin.tsr", "output file stdin.tsr created");
++                ok(run(app(["openssl", "ts", "-verify",
++                            "-queryfile", "test.tsq",
++                            "-in", "stdin.tsr",
++                            "-CAfile", "tsaca.pem",
++                            "-untrusted", "tsa_cert.pem"])),
++                   "timestamp reply is cryptographically valid");
++            };
++
++            subtest "debug mode (-d)" => sub {
++                plan tests => 1;
++                ok(run(perlapp(["tsget.pl", "-d", "-o", "debug.tsr", "-h", $url, "test.tsq"])),
++                   "tsget runs with -d flag");
++            };
++
++            subtest "TSGET environment variable" => sub {
++                plan tests => 3;
++                local $ENV{TSGET} = "-v -e .envtsr -h $url";
++                ok(run(perlapp(["tsget.pl", "test.tsq"])),
++                   "tsget uses TSGET environment variable");
++                ok(-f "test.envtsr", "output file test.envtsr created");
++                ok(run(app(["openssl", "ts", "-verify",
++                            "-queryfile", "test.tsq",
++                            "-in", "test.envtsr",
++                            "-CAfile", "tsaca.pem",
++                            "-untrusted", "tsa_cert.pem"])),
++                   "timestamp reply is cryptographically valid");
++            };
++
++            subtest "multiple input files" => sub {
++                plan tests => 4;
++                SKIP: {
++                    skip "could not copy test.tsq to test2.tsq", 4
++                    unless copy("test.tsq", "test2.tsq");
++                    ok(run(perlapp(["tsget.pl", "-v", "-h", $url, "test.tsq", "test2.tsq"])),
++                        "tsget processes two input files");
++                    ok(-f "test.tsr",  "output test.tsr created for first file");
++                    ok(-f "test2.tsr", "output test2.tsr created for second file");
++                    ok(run(app(["openssl", "ts", "-verify",
++                                "-queryfile", "test.tsq",
++                                "-in", "test.tsr",
++                                "-CAfile", "tsaca.pem",
++                                "-untrusted", "tsa_cert.pem"])),
++                        "first timestamp reply is cryptographically valid");
++                }
++            };
++
++            subtest "input file in subdirectory" => sub {
++                plan tests => 3;
++                SKIP: {
++                    mkdir "subdir" unless -d "subdir";
++                    skip "could not set up subdir/test.tsq", 3
++                    unless -d "subdir" && copy("test.tsq", "subdir/test.tsq");
++                    ok(run(perlapp(["tsget.pl", "-v", "-h", $url, "subdir/test.tsq"])),
++                        "tsget derives output path from input path");
++                    ok(-f "subdir/test.tsr",
++                        "output placed in same directory as input");
++                    ok(run(app(["openssl", "ts", "-verify",
++                                "-queryfile", "subdir/test.tsq",
++                                "-in", "subdir/test.tsr",
++                                "-CAfile", "tsaca.pem",
++                                "-untrusted", "tsa_cert.pem"])),
++                        "timestamp reply is cryptographically valid");
++                }
++            };
++        }
++
++        subtest "HTTP server error response" => sub {
++            plan tests => 2;
++            my ($pid, $port) = start_mock_tsa_server(
++                mode         => 'error',
++                http_code    => 500,
++                max_requests => 1,
++            );
++            SKIP: {
++                skip "could not start error server", 2 unless defined $pid;
++                ok(!run(perlapp(["tsget.pl", "-h", "http://127.0.0.1:$port",
++                                "-o", "err_http.tsr", "test.tsq"])),
++                    "tsget exits non-zero on HTTP 500");
++                ok(!-f "err_http.tsr",
++                    "partial output file removed after HTTP error");
++            }
++            waitpid($pid, 0) if defined $pid;
++        };
++
++        subtest "empty server response" => sub {
++            plan tests => 2;
++            my ($pid, $port) = start_mock_tsa_server(
++                mode         => 'empty',
++                max_requests => 1,
++            );
++            SKIP: {
++                skip "could not start empty server", 2 unless defined $pid;
++                ok(!run(perlapp(["tsget.pl", "-h", "http://127.0.0.1:$port",
++                                "-o", "err_empty.tsr", "test.tsq"])),
++                    "tsget exits non-zero on empty response");
++                ok(!-f "err_empty.tsr",
++                    "partial output file removed after empty response");
++            }
++            waitpid($pid, 0) if defined $pid;
++        };
++    }
++
++    if (defined $normal_pid) {
++        kill 'TERM', $normal_pid;
++        waitpid($normal_pid, 0);
++    }
++
++}, create => 1, cleanup => 1;
++
++
++# Set up a local TSA: CA cert, signing cert/key, TSA config, and a
++# pre-generated timestamp response that the mock server will return for
++# every request.
++sub setup_tsa_infrastructure {
++    my ($conf, $cakey, $signerkey) = @_;
++
++    local $ENV{TSDNSECT} = "ts_ca_dn";
++
++    run(app(["openssl", "req",
++             "-config", $conf, "-new", "-x509", "-noenc",
++             "-out", "tsaca.pem", "-key", $cakey]))
++        or do { diag "Failed to create TSA CA cert"; return 0; };
++
++    local $ENV{TSDNSECT} = "ts_cert_dn";
++    local $ENV{INDEX}    = "1";
++
++    run(app(["openssl", "req",
++             "-config", $conf, "-new",
++             "-out", "tsa_req.pem",
++             "-key", $signerkey,
++             "-keyout", "tsa_key.pem"]))
++        or do { diag "Failed to create TSA cert request"; return 0; };
++
++    run(app(["openssl", "x509", "-req",
++             "-in", "tsa_req.pem",
++             "-out", "tsa_cert.pem",
++             "-CA", "tsaca.pem", "-CAkey", $cakey,
++             "-CAcreateserial",
++             "-extfile", $conf, "-extensions", "tsa_cert"]))
++        or do { diag "Failed to sign TSA cert"; return 0; };
++
++    open(my $cfh, ">", "local_tsa.cnf")
++        or do { diag "Failed to write local_tsa.cnf: $!"; return 0; };
++    print $cfh <<'END_CNF';
++[ tsa ]
++default_tsa = tsa_config1
++
++[ tsa_config1 ]
++dir               = .
++serial            = $dir/tsa_serial
++signer_cert       = $dir/tsa_cert.pem
++certs             = $dir/tsaca.pem
++signer_key        = $dir/tsa_key.pem
++signer_digest     = sha256
++default_policy    = 1.2.3.4.1
++digests           = sha1, sha256, sha384, sha512
++ordering          = yes
++tsa_name          = yes
++ess_cert_id_chain = yes
++ess_cert_id_alg   = sha256
++END_CNF
++    close $cfh;
++
++    open(my $sfh, ">", "tsa_serial")
++        or do { diag "Failed to write tsa_serial: $!"; return 0; };
++    print $sfh "01\n";
++    close $sfh;
++
++    run(app(["openssl", "ts", "-query",
++             "-data", $conf, "-sha256", "-cert",
++             "-out", "test.tsq"]))
++        or do { diag "Failed to create timestamp query"; return 0; };
++
++    run(app(["openssl", "ts", "-reply",
++             "-config", "local_tsa.cnf",
++             "-queryfile", "test.tsq",
++             "-chain", "tsaca.pem",
++             "-out", "canned.tsr"]))
++        or do { diag "Failed to generate canned timestamp response"; return 0; };
++
++    return 1;
++}
++
++
++# Fork a minimal HTTP server.  Behaviour is controlled by %opts:
++#   mode          => 'normal' (default): serve $response_file for every POST
++#                 => 'error':  return HTTP $http_code with an empty body
++#                 => 'empty':  return HTTP 200 with Content-Length: 0
++#   response_file => path to the canned response (used by 'normal' mode)
++#   http_code     => HTTP status for 'error' mode (default 500)
++#   max_requests  => stop after this many requests; 0 means unlimited (default)
++sub start_mock_tsa_server {
++    my %opts = @_;
++    my $mode          = $opts{mode}          // 'normal';
++    my $response_file = $opts{response_file};
++    my $http_code     = $opts{http_code}     // 500;
++    my $max_requests  = $opts{max_requests}  // 0;
++
++    my $sock = IO::Socket::INET->new(
++        LocalAddr => '127.0.0.1',
++        LocalPort => 0,
++        Type      => SOCK_STREAM,
++        Listen    => 5,
++        ReuseAddr => 1,
++    ) or do { diag "Failed to create server socket: $!"; return (undef, undef); };
++
++    my $port = $sock->sockport();
++
++    my $pid = fork();
++    if (!defined $pid) {
++        $sock->close();
++        diag "fork() failed: $!";
++        return (undef, undef);
++    }
++
++    if ($pid == 0) {
++        my $n = 0;
++        while (my $client = $sock->accept()) {
++            my $content_length = 0;
++            while (my $line = <$client>) {
++                $line =~ s/\r?\n$//;
++                last if $line eq '';
++                $content_length = $1
++                    if $line =~ /^Content-Length:\s*(\d+)/i;
++            }
++            my $body = '';
++            read($client, $body, $content_length) if $content_length > 0;
++
++            if ($mode eq 'normal' && defined $response_file
++                && open(my $fh, '<', $response_file)) {
++                binmode $fh;
++                local $/;
++                my $reply = <$fh>;
++                close $fh;
++                my $len = length($reply);
++                print $client
++                    "HTTP/1.0 200 OK\r\n",
++                    "Content-Type: application/timestamp-reply\r\n",
++                    "Content-Length: $len\r\n",
++                    "\r\n",
++                    $reply;
++            } elsif ($mode eq 'empty') {
++                print $client
++                    "HTTP/1.0 200 OK\r\n",
++                    "Content-Type: application/timestamp-reply\r\n",
++                    "Content-Length: 0\r\n",
++                    "\r\n";
++            } else {
++                print $client "HTTP/1.0 $http_code Server Error\r\n\r\n";
++            }
++            $client->close();
++            ++$n;
++            last if $max_requests > 0 && $n >= $max_requests;
++        }
++        exit 0;
++    }
++
++    $sock->close();
++    select(undef, undef, undef, 0.1);
++
++    return ($pid, $port);
++}
+
+From 8c659f689987325d1a925627721c3c565cbf4eac Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <yesshedi@gmail.com>
+Date: Thu, 16 Jul 2026 11:25:13 +0530
+Subject: [PATCH 7/7] Update tsget man page
+
+Assisted-by: Claude:claude-sonnet-4-6
+Signed-off-by: Shreenidhi Shedi <yesshedi@gmail.com>
+---
+ doc/man1/tsget.pod | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/doc/man1/tsget.pod b/doc/man1/tsget.pod
+index 66c0ba6299f36..2111c6a5fb1d6 100644
+--- a/doc/man1/tsget.pod
++++ b/doc/man1/tsget.pod
+@@ -76,7 +76,7 @@ error. (Optional)
+ 
+ =for comment perlpodstyle(1) says to refer to modules without section
+ 
+-Switches on verbose mode for the underlying perl module L<WWW::Curl::Easy>.
++Switches on verbose mode for the underlying perl module L<Net::Curl::Easy>.
+ You can see detailed debug messages for the connection. (Optional)
+ 
+ =item B<-k> I<private_key.pem>
+@@ -95,7 +95,7 @@ it will be prompted for. (Optional)
+ =item B<-c> I<client_cert.pem>
+ 
+ (HTTPS) In case of certificate-based client authentication over HTTPS
+-I<client_cert.pem> must contain the X.509 certificate of the user.  The B<-k>
++I<client_cert.pem> must contain the X.509 certificate of the user. The B<-k>
+ option must also be specified. If this option is not specified no
+ certificate-based client authentication will take place. (Optional)
+ 
+@@ -123,8 +123,7 @@ The name of an EGD socket to get random data from. (Optional)
+ 
+ List of files containing RFC 3161 DER-encoded timestamp requests. If no
+ requests are specified only one request will be sent to the server and it will
+-be read from the standard input.
+-(Optional)
++be read from the standard input. (Optional)
+ 
+ =back
+ 
+@@ -183,11 +182,11 @@ example:
+ 
+ =head1 SEE ALSO
+ 
+-=for openssl foreign manual WWW::Curl::Easy
++=for openssl foreign manual Net::Curl::Easy
+ 
+ L<openssl(1)>,
+ L<openssl-ts(1)>,
+-L<WWW::Curl::Easy>,
++L<Net::Curl::Easy>,
+ L<https://www.rfc-editor.org/rfc/rfc3161.html>
+ 
+ =head1 COPYRIGHT

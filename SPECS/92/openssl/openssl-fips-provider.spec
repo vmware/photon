@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 93
+%global build_if %{photon_subrelease} == 92
 
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
-Version:        3.5.4
-Release:        1%{?dist}
+Version:        3.1.2
+Release:        7.1%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -21,7 +21,7 @@ Source3: license.txt
 Requires: bash
 Requires: glibc
 Requires: libgcc
-Requires: openssl >= 3.5
+Requires: openssl >= 3.0
 
 %description
 Fips library for enabling fips.
@@ -31,7 +31,7 @@ if grep -q "^Patch[0-9]*:" %{_specdir}/%{name}.spec; then
   echo "ERROR: Patches detected in the %{name} spec file" 1>&2
   exit 1
 fi
-%autosetup -n openssl-%{version}
+%autosetup -n openssl-openssl-%{version}
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -92,10 +92,8 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 
 %changelog
-* Sun Sep 27 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-1
-- Upgrade OpenSSL FIPS provider to 3.5.4.
-- Enable ML-KEM hybrid key agreement for TLSv1.3 in FIPS mode.
-- Branch out openssl for Sub-release 93
+* Wed Sep 23 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.1.2-7.1
+- Branch out openssl for Sub-release 92
 * Wed Sep 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.1.2-7
 - Bump release to keep version higher than 91
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.1.2-6
