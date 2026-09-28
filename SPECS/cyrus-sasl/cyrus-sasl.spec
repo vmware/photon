@@ -3,7 +3,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.28
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://github.com/cyrusimap/cyrus-sasl
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -26,6 +26,7 @@ Requires:       krb5 >= 1.12
 Requires:       Linux-PAM
 Requires:       systemd
 Requires:       lmdb-libs
+Conflicts: %{name}-devel < 2.1.28-7
 
 %description
 The Cyrus SASL package contains a Simple Authentication and Security
@@ -137,13 +138,14 @@ rm -rf %{buildroot}/*
 %{_unitdir}/saslauthd.service
 %{_presetdir}/50-saslauthd.preset
 %{_libdir}/*.so.*
+# missing *.so files from cyrus-sasl will prevent pluginviewer from detecting all plugins
+%{_libdir}/sasl2/*.so
 %{_libdir}/sasl2/*.so.*
 %{_sbindir}/*
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/sasl2/*.so
 %{_mandir}/man3/*
 %{_mandir}/man8/saslauthd.8.gz
 %{_mandir}/man8/testsaslauthd.8.gz
@@ -154,6 +156,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Mon Sep 28 2026 Dweep Advani <dweep.advani@broadcom.com> 2.1.28-7
+- Fix issue of pluginviewer not able to detect all plugins
 * Tue Sep 16 2025 Francisco Jose Mulero <francisco-jose.mulero@broadcom.com> 2.1.28-6
 - Enable SASLdb authentication module by default
 * Wed Dec 11 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.28-5
