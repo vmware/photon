@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.111
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -426,6 +426,11 @@ sed -i 's/CONFIG_GCC_VERSION=120200/CONFIG_GCC_VERSION=120500/' .config
 sed -i 's/CONFIG_AS_VERSION=23900/CONFIG_AS_VERSION=24601/' .config
 sed -i 's/CONFIG_LD_VERSION=23900/CONFIG_LD_VERSION=24601/' .config
 sed -i 's/CONFIG_GCC_ASM_GOTO_OUTPUT_BROKEN=y/CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y\nCONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y/' .config
+# binutils >= 2.46.1 (used from sr92) supports RELR; make olddefconfig auto-enables these, add them explicitly to avoid config drift
+%ifarch aarch64
+sed -i '/CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y/a CONFIG_TOOLS_SUPPORT_RELR=y' .config
+sed -i '/CONFIG_ARCH_HAS_RELR=y/a CONFIG_RELR=y' .config
+%endif
 %endif
 
 %if 0%{?fips}
@@ -577,6 +582,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Sep 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.111-2
+- Fix aarch64 build: set RELR configs for sr92+ (binutils >= 2.46.1)
 * Wed Sep 23 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.111-1
 - Update to version 6.12.111
 * Wed Sep 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.109-10
