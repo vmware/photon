@@ -1,12 +1,15 @@
 #! /bin/bash
 
-BUILD_SCRIPT_VERSION=1.4
+BUILD_SCRIPT_VERSION=1.5
 
 # Target to Photon OS version
 VERSION="5.0"
 
 # Subrelease
 SUBRELEASE=""
+
+# Update Number
+UPDATE_NUMBER=""
 
 # Target Photon OS docker image (if different than `photon:<version>`)
 DKR_IMG=""
@@ -77,6 +80,22 @@ while [ "$#" -gt 0 ]; do
       SNAPSHOT_BASEURL="$2"
       shift 2
       ;;
+    --subrelease=*)
+      SUBRELEASE="${1#*=}"
+      shift
+      ;;
+    --subrelease)
+      SUBRELEASE="$2"
+      shift 2
+      ;;
+    --updatenumber=*)
+      UPDATE_NUMBER="${1#*=}"
+      shift
+      ;;
+    --updatenumber)
+      UPDATE_NUMBER="$2"
+      shift 2
+      ;;
     *)
       ARGS+=("$1")
       shift
@@ -86,6 +105,13 @@ done
 set -- "${ARGS[@]}"
 
 test "$#" -lt 1 && echo "Usage: $0 <spec-file-to-build.spec> [path-to-output-directory] [--snapshot <snapshot-list-file>] [--snapshot-baseurl <url-or-local-dir>]" && exit 1
+
+if [[ -n "$SUBRELEASE" ]] && [[ -z "$UPDATE_NUMBER" ]]; then
+  UPDATE_NUMBER="latest"
+elif [[ -n "$UPDATE_NUMBER" ]] && [[ -z "$SUBRELEASE" ]]; then
+  echo "Update number is gibberish wihout a subrelease specified!"
+  exit 1
+fi
 
 CP="cp"
 READLINK="readlink"
@@ -178,7 +204,11 @@ if [[ -n "$SNAPSHOT_LIST" ]]; then
   SNAPSHOT_CACHE_VERSION=2
   CONTAINER_IMG="photon_build_spec:$VERSION-snapshot-$(echo "$SNAPSHOT_HASH|$SNAPSHOT_BASEURL|$SNAPSHOT_CACHE_VERSION" | md5sum | cut -c1-12)"
 elif [[ -n "$SUBRELEASE" ]]; then
-  CONTAINER_IMG="photon_build_spec:$VERSION-$SUBRELEASE"
+  if [[ "$UPDATE_NUMBER" != "latest" ]]; then
+        CONTAINER_IMG="photon_build_spec:$VERSION-$SUBRELEASE-$UPDATE_NUMBER"
+  else
+    CONTAINER_IMG="photon_build_spec:$VERSION-$SUBRELEASE"
+  fi
 else
   CONTAINER_IMG="photon_build_spec:$VERSION"
 fi
@@ -209,6 +239,10 @@ fi
 LOGFILE=${LOCAL_STAGE}/LOGS/$(basename "$SPECFILE" .spec).log
 
 RPM_MACROS+=( --define \"dist $DIST\" --define \"with_check $WITH_CHECK\" )
+
+if [[ -n "$SUBRELEASE" ]]; then
+  RPM_MACROS+=( --define \"photon_subrelease $SUBRELEASE\" )
+fi
 
 # use &3 for user output
 exec 3>&1
@@ -328,6 +362,23 @@ create_sandbox() {
     run "Synchronize base image to snapshot" in_sandbox tdnf distro-sync --refresh -y
   fi
 
+  if [[ -n $SUBRELEASE ]]; then
+    run "Update tdnf vars - subrelease" in_sandbox sed -i 's/.*/$SUBRELEASE/g' /etc/tdnf/vars/subrelease
+  fi
+
+  if [[ -n "$UPDATE_NUMBER" ]]; then
+    run "Update tdnf vars - update number" in_sandbox sed -i 's/.*/$UPDATE_NUMBER/g' /etc/tdnf/vars/updatenumber
+
+    [[ "$UPDATE_NUMBER" == "latest" ]] && run "Update photon-snapshot.repo" in_sandbox sed -i 's/Update$updatenumber/$updatenumber/g' /etc/yum.repos.d/photon-snapshot.repo
+  fi
+
+  if [[ -n "$SUBRELEASE" ]] || [[ -n "$UPDATE_NUMBER" ]]; then
+    # Make sure all repos are disabled except for the snapshot repo
+    run "Disable all repos first, before enable snapshot repo" in_sandbox sh -c "\"sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*.repo\""
+    run "Enable snapshot repo" in_sandbox sed -i 's/^enabled=0/enabled=1/' /etc/yum.repos.d/photon-snapshot.repo
+    run "Sync packages to subrelease/updatenumber" in_sandbox tdnf distro-sync -y
+  fi
+
   # replace toybox with coreutils and install default build tools
   run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
 
@@ -337,9 +388,12 @@ create_sandbox() {
     in_sandbox tdnf install -y rpm-build build-essential gmp-devel \
       mpfr-devel tar sed findutils file gzip patch bzip2 createrepo python3
 
-  in_sandbox "mkdir -p $TOPDIR/LOCAL_RPMS"
-
-  run "Create local repo in sandbox" echo -e "[local]\nname=VMWare Photon Linux Local\nbaseurl=file://$TOPDIR/LOCAL_RPMS\nenabled=$([[ -n "$SNAPSHOT_LIST" ]] && echo 0 || echo 1)\ngpgcheck=0\nskip_if_unavailable=1\npriority=10" | sed 1d | docker exec -i $CONTAINER sh -c 'cat > /etc/yum.repos.d/local.repo'
+  # If subrelease and update number are specified, don't allow the local repo which may contain package versions
+  # which are not valid for the given subrelease/update number.
+  if [[ -z "$SUBRELEASE" ]] && [[ -z "$UPDATE_NUMBER" ]]; then
+    in_sandbox "mkdir -p $TOPDIR/LOCAL_RPMS"
+    run "Create local repo in sandbox" echo -e "[local]\nname=VMWare Photon Linux Local\nbaseurl=file://$TOPDIR/LOCAL_RPMS\nenabled=1\ngpgcheck=0\nskip_if_unavailable=1\npriority=10" | sed 1d | docker exec -i $CONTAINER sh -c 'cat > /etc/yum.repos.d/local.repo'
+  fi
 
   run "Create build template image for future use" docker commit "$(docker ps -q -f "name=$CONTAINER")" $CONTAINER_IMG
 }
@@ -349,7 +403,7 @@ prepare_buildenv() {
   local url=
   local enable_photon=
 
-  [[ -z "$SUBRELEASE" && -z "$SNAPSHOT_LIST" ]] && enable_photon="--enablerepo photon"
+  [[ -z "$SUBRELEASE" && -z "$SNAPSHOT_LIST" && -z "$UPDATE_NUMBER" ]] && enable_photon="--enablerepo photon"
 
   in_sandbox mkdir -p $SRCDIR
 
@@ -382,7 +436,14 @@ prepare_buildenv() {
   local br
   br=$(in_sandbox rpmspec ${RPM_MACROS[@]} -P $SRCDIR/"$SPECFILE" | sed -n 's/^BuildRequires://p' | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g;s/ \+/ /g' | tr '\n' ' ')
   if [ -n "$br" ]; then
-    run "Install build requirements" in_sandbox tdnf install -y $enable_photon --refresh $br
+   for pkg in $br; do
+     if [[ $pkg =~ linux-fips-canister* ]]; then
+       run "Install fips canister" in_sandbox tdnf install -y $pkg --enablerepo photon
+       continue
+     fi
+     new_br="${new_br} ${pkg}"
+   done
+   run "Install build requirements" in_sandbox tdnf install -y $enable_photon --refresh $new_br
   fi
 }
 
