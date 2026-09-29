@@ -2,7 +2,7 @@
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.0.21
+Version:        3.0.22
 Release:        1.1%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -193,6 +193,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Sep 29 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.0.22-1.1
+- Upgrade to version 3.0.22
 * Tue Jun 09 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.0.21-1.1
 - Upgrade to version 3.0.21
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.0.18-3.1

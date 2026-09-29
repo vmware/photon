@@ -1,12 +1,12 @@
 sources:
-- archive: openssl-3.0.21.tar.gz
+- archive: openssl-3.0.22.tar.gz
   archive_type: upstream
-  archive_sha512sum: 9be1c8c11a2d55417bb177804d1b5369aa54a9dcd2e136929509457d549697407ae9611079e94c61b58a95be598ce35b94edb336e050d1019e7269f4d2f52cda
-  version: 3.0.21
-  name: openssl-3.0.21
-  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.21/openssl-3.0.21.tar.gz
+  archive_sha512sum: 88f5cffd8949b9e236f989f414eefcd4e924145b9e8cb303a969534908e055a9ff2a4b29bd1619425c84240d9ae40aab0d84dbee0f338d20fac81cf7b2f20492
+  version: 3.0.22
+  name: openssl-3.0.22
+  url: https://github.com/openssl/openssl/releases/download/openssl-3.0.22/openssl-3.0.22.tar.gz
   repo_url: https://github.com/openssl/openssl
-  commit_id: 51ea949dc1436e865935b47874b21a3bb31a102e
+  commit_id: a279090b9cd6b682a5a178410765a63e619fa2d9
   missing: ['.git*', blame-ignore-revs, .codespellrc, .clang-format, .pre-commit-config.yaml, gost-engine, .gitmodules, pyca-cryptography, 90-team.norelease.conf, mktar.sh, mktar.sh, krb5, corpora, dev]
   spdx:
     package:
