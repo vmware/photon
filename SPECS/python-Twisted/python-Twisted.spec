@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        22.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,6 +16,7 @@ Source0: https://pypi.python.org/packages/source/T/Twisted/%{srcname}-%{version}
 
 Patch0: no_packet.patch
 Patch1: 0001-sslverify.py-use-fips-compatible-sha512-instead-of-m.patch
+Patch2: CVE-2026-42304.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-incremental
@@ -86,6 +87,8 @@ rm -rf %{buildroot}
 %{_bindir}/cftp*
 
 %changelog
+* Tue Sep 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-3
+- Fix CVE-2026-42304
 * Fri Sep 13 2024 Ankit Jain <ankit-aj.jain@broadcom.com> 22.10.0-2
 - Bump-up to compile with python3-attrs-22.2.0
 * Thu Aug 22 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.10.0-1
