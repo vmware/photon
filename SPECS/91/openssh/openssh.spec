@@ -1,5 +1,4 @@
-%global build_if %{photon_subrelease} >= 93
-%define STIG_HARDEN 0
+%global build_if %{photon_subrelease} >= 91 && %{photon_subrelease} <= 92
 
 %define privsep_path %{_datadir}/empty.sshd
 %global sshd_services sshd.service sshd-keygen.service
@@ -7,7 +6,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        10.5p1
-Release:        2%{?dist}
+Release:        1.1%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -27,21 +26,10 @@ Source5: %{name}.sysusers
 Source6: license.txt
 %include %{SOURCE6}
 
-%if 0%{?STIG_HARDEN}
-Patch0: 0001-hardened-sshd-config.patch
-%endif
-
-%if 0%{?STIG_HARDEN} == 0
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
-%endif
-
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
-Patch2: 0003-Use-OOB-ed25519-implementation-explicitly.patch
-Patch3: 0004-print-sshd-confs-in-lower-case.patch
-# PQC patches
-Patch4: 0005-mlkem768x25519-use-openssl-evp-kem.patch
-Patch5: 0006-add-mlkem-nist-hybrid-kex.patch
-Patch6: 0007-sandbox-seccomp-allow-recvmsg-sendmsg.patch
+Patch2: 0001-Use-OOB-ed25519-implementation-explicitly.patch
+Patch3: 0001-print-sshd-confs-in-lower-case.patch
 
 BuildRequires: openssl-fips-provider
 BuildRequires: openssl-devel
@@ -248,10 +236,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
-* Tue Sep 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.5p1-2
-- Add PQC KEX methods: mlkem768x25519-sha256, mlkem768nistp256-sha256, mlkem1024nistp384-sha384
-- Use OpenSSL EVP for ML-KEM instead of libcrux
-- Fix seccomp sandbox: allow recvmsg/sendmsg (SCM_RIGHTS during kex), rseq, membarrier
+* Tue Sep 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.5p1-1.1
+- Sub branch for 91, 92
 * Tue Sep 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 10.5p1-1
 - Upgrade to version 10.5p1 to fix CVE-2026-73283, CVE-2026-73282, CVE-2026-73281
 - Drop gssapi-config-fix.patch, now included upstream

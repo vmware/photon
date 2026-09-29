@@ -1,0 +1,72 @@
+From 6d99aaf6292c4d05306d6c84904b1ef506869499 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Tue, 29 Sep 2026 15:07:31 +0530
+Subject: [PATCH] sandbox: allow recvmsg, sendmsg, rseq, membarrier syscalls
+
+RCA
+---
+OpenSSH 10.5 split the preauth code into a separately re-executed binary
+(sshd-auth). The seccomp sandbox is installed in sshd-auth before kex
+begins (sshd-auth.c: ssh_sandbox_child() at line 213, do_ssh2_kex() at
+line 735). After receiving SSH2_MSG_KEXECDH_INIT the kex handler calls
+mm_receive_fd() in monitor_fdpass.c to pull a file descriptor from the
+sshd-session monitor via SCM_RIGHTS. This uses recvmsg(2) (NR 47 on
+x86_64), which was not in the seccomp allowlist. The sandbox default
+action is SECCOMP_RET_KILL, so sshd-auth was killed with SIGSYS before
+it could complete the handshake.
+
+The PQC patches replaced libcrux ML-KEM with OpenSSL EVP.
+The EVP code path for ML-KEM goes through a kex handler branch that
+reaches mm_receive_fd(), whereas the libcrux path did not. The sandbox
+allowlist was never updated to cover this new code path.
+
+Additionally, glibc 2.35+ registers threads with rseq(2) (NR 334) and
+uses membarrier(2) (NR 324) during CRYPTO_THREAD_run_once() called by
+EVP provider initialisation. Both were also absent from the allowlist.
+
+Note on SC_ALLOW_ARG: restricting recvmsg/sendmsg to PRIVSEP_MONITOR_FD
+(fd 3) was attempted but does not work. The recvmsg is called on a
+dynamically-allocated fd (observed as fd 7 in strace) because the SSH
+packet layer and OpenSSL EVP/FIPS init open additional fds after
+closefrom(PRIVSEP_MIN_FREE_FD) at sshd-auth.c:450. The fd number is
+not a compile-time constant, so SC_ALLOW_ARG with a fixed value misses
+the actual call and sshd-auth is killed. SC_ALLOW is the correct choice
+here.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ sandbox-seccomp-filter.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/sandbox-seccomp-filter.c b/sandbox-seccomp-filter.c
+index bf753ee..89047b0 100644
+--- a/sandbox-seccomp-filter.c
++++ b/sandbox-seccomp-filter.c
+@@ -323,6 +323,12 @@ static const struct sock_filter preauth_insns[] = {
+ #ifdef __NR_getpid
+ 	SC_ALLOW(__NR_getpid),
+ #endif
++#ifdef __NR_rseq
++	SC_ALLOW(__NR_rseq),
++#endif
++#ifdef __NR_membarrier
++	SC_ALLOW(__NR_membarrier),
++#endif
+ #ifdef __NR_getrandom
+ 	SC_ALLOW(__NR_getrandom),
+ #endif
+@@ -426,6 +432,12 @@ static const struct sock_filter preauth_insns[] = {
+ #ifdef __NR_writev
+ 	SC_ALLOW(__NR_writev),
+ #endif
++#ifdef __NR_recvmsg
++	SC_ALLOW(__NR_recvmsg),
++#endif
++#ifdef __NR_sendmsg
++	SC_ALLOW(__NR_sendmsg),
++#endif
+ #ifdef __NR_getsockopt
+ 	SC_ALLOW(__NR_getsockopt),
+ #endif
+--
+2.53.0
