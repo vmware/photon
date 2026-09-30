@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.111
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1028,6 +1028,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Wed Sep 30 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.111-3
+- Fix jent mem free.
 * Mon Sep 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.111-2
 - Fix aarch64 build: set RELR configs for sr92+ (binutils >= 2.46.1)
 * Wed Sep 23 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.111-1
