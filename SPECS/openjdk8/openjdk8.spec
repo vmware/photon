@@ -1,6 +1,6 @@
 %global security_hardening  none
 %define jdk_major_version   1.8.0
-%define subversion          502
+%define subversion          504
 %define _use_internal_dependency_generator 0
 %define _jobs %(echo $(( ($(nproc)+1) / 2 )))
 %define jdkInstallDir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -15,7 +15,7 @@
 
 Summary:    OpenJDK
 Name:       openjdk8
-Version:    1.8.0.502
+Version:    1.8.0.504
 Release:    1%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
@@ -24,7 +24,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/jdk8u%{subversion}-ga.tar.gz
-%define sha512 jdk8u=fdcb0cc19cba5bb8cabfc3c6439ae5d1ce33d5fa500b1fe2a7b8152bedaacdda11e58fd2eb0357a815dfc1a44423023a9149409c0cdaac931fe0958e91bca343
+%define sha512 jdk8u=65f7bc9603dad6ecb206fa62ba1e9c6b4b11cbbdaf4a9d69e5aa2ec57806f3447fdd0fbf7a11b34ecf5e504579721bb5c0b211e66a96972b0a092ec2b9e840c4
 
 Patch0: Awt_build_headless_only.patch
 Patch1: check-system-ca-certs-x86.patch
@@ -320,6 +320,8 @@ rm -rf %{buildroot}/*
 %{jdkInstallDir}/src.zip
 
 %changelog
+* Wed Sep 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.504-1
+- Upgrade to v1.8.0.504
 * Tue Aug 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.502-1
 - Upgrade to v1.8.0.502
 * Sun Jul 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.482-2

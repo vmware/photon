@@ -6,8 +6,8 @@
 
 Summary:        OpenJDK
 Name:           openjdk11
-Version:        11.0.30
-Release:        2%{?dist}
+Version:        11.0.32.1
+Release:        1%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
@@ -15,10 +15,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-11.0=d7352305622c439a07065664fc9c69b41b81990177f412b31fd7ac5654a60fec22a63ec91f7c747ee85e45755e7aa00ac7a31c8c43d400fd0a1d320b9577d3a1
-
-Patch0: CVE-2026-41254-1.patch
-Patch1: CVE-2026-41254-2.patch
+%define sha512 jdk-11.0=7052428039711174a98c0cce28461d2aa32e535bec2c3fafea69b228986b801ece544377517ef286d994703aa65b393765f39b3e3b2c816fb14cc98ba1c948d6
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -250,6 +247,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Wed Sep 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.32.1-1
+- Upgrade to v11.0.32.1
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-2
 - Fix CVE-2026-41254
 * Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-1

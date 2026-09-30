@@ -6,8 +6,8 @@
 
 Summary:    OpenJDK
 Name:       openjdk17
-Version:    17.0.18
-Release:    2%{?dist}
+Version:    17.0.20.1
+Release:    1%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
@@ -15,10 +15,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
-%define sha512 jdk-17=d828e4e6cb730c9452eb1085c752d8bb03c66f2edc9d177fc6c8eaa15e316f71b63545f1fcc5a628a5a40d280155da059a913c976a1af257df4d657ed940c5b8
-
-Patch0: CVE-2026-41254-1.patch
-Patch1: CVE-2026-41254-2.patch
+%define sha512 jdk-17=4659365e1bd18b66b853e11be3bd994351eaa40f22be6188a63fd1845b0c2330fc085059cdc5967fc5eaacc43e75abaf7c14fb7202635428516eeb234ade5428
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -241,6 +238,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Wed Sep 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.20.1-1
+- Upgrade to v17.0.20.1
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-2
 - Fix CVE-2026-41254
 * Tue Feb 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-1
