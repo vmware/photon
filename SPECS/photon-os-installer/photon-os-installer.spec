@@ -5,7 +5,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.8
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -17,6 +17,12 @@ Source1: license.txt
 
 Patch0: 0001-Use-mkpasswd-to-generate-password-hash.patch
 Patch1: 0002-fix-up-old-public_key-syntax-for-backward-compatibil.patch
+Patch2: 0003-isoInstaller-fix-interactive-NoneType-crash.patch
+Patch3: 0004-installer-add-btrfs-progs.patch
+Patch4: 0005-tdnf-capture-install-output.patch
+Patch5: 0006-stig-drop-redundant-packages.patch
+Patch6: 0007-installer-seed-locale.conf-before-package-install.patch
+Patch7: 0008-isoBuilder-put-installer-requestable-packages-on-media.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -71,6 +77,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Mon Aug 31 2026 Daniel Casota <dcasota@gmail.com> 2.8-3
+- Fix the interactive install crash and disk-selection UI, add btrfs-progs, capture tdnf output, drop redundant STIG packages, seed /etc/locale.conf, and put installer-requestable packages on the media
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 28 2026 Oliver Kurth <oliver.kurth@broadcom.com> 2.8-1

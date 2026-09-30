@@ -1,0 +1,74 @@
+From ad38512caefb9525a4d9cde74f7e736887930346 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Thu, 4 Jun 2026 15:24:46 +0200
+Subject: [PATCH] isoInstaller: fix interactive (no-kickstart) ISO install
+
+Booting the ISO interactively (no ks= boot param, no -c config, no VMware
+guestinfo.kickstart.*) was broken by two coupled regressions:
+
+1) _load_ks_config_platform()/_load_ks_config_vmware() returned None when
+   no platform kickstart exists; __init__ then crashed at
+   'if "live" not in install_config' with:
+       TypeError: argument of type 'NoneType' is not a container or iterable
+   Fix: return an empty {} config instead of None.
+
+2) The 'live' block unconditionally stamped install_config['live']=True,
+   making the empty interactive config truthy. installer.configure() only
+   runs the UI configurator when 'not install_config', so the UI was
+   skipped and _check_install_config() raised 'No disk configured'.
+   Fix: only stamp 'live' on a non-empty (kickstart) config; leave the
+   interactive config empty so the UI runs (live then defaults via
+   _add_defaults()).
+
+Regression introduced by 9fc8733 on top of 0a72c3a.
+
+Co-Authored-By: Daniel Casota <dcasota@gmail.com>
+---
+ photon_installer/isoInstaller.py | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index dd0bed7..f2b3e67 100644
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -79,8 +79,12 @@ class IsoInstaller(object):
+         else:
+             install_config = self._load_ks_config_platform(verify=not insecure_installation)
+ 
+-        # 'live' should be True for iso installs
+-        if 'live' not in install_config:
++        # 'live' should be True for iso installs. Only stamp it on an actual
++        # (non-empty) kickstart config. For an interactive install the config
++        # is empty here and must stay falsy, otherwise installer.configure()
++        # ('if not install_config and ui_config') skips the UI configurator
++        # and _check_install_config() fails with "No disk configured".
++        if install_config and 'live' not in install_config:
+             install_config['live'] = True
+ 
+         if insecure_installation and install_config is not None:
+@@ -164,7 +168,10 @@ class IsoInstaller(object):
+         if CommandUtils.is_vmware_virtualization():
+             return self._load_ks_config_vmware(verify=verify)
+         else:
+-            return None
++            # No platform-provided kickstart: fall back to an interactive
++            # install with an empty config. Returning None here makes the
++            # caller crash at "if 'live' not in install_config".
++            return {}
+ 
+     def _load_ks_config_vmware(self, verify=True):
+         try:
+@@ -191,6 +198,10 @@ class IsoInstaller(object):
+             print(
+                 f"Failed to run vmtoolsd, do you have open-vm-tools installed? Error: {e}"
+             )
++        # No guestinfo kickstart (data/url both absent) or vmtoolsd missing:
++        # fall back to an interactive install with an empty config instead of
++        # returning None, which would crash at "if 'live' not in install_config".
++        return {}
+ 
+     def mount_media(self, photon_media, mount_path=Defaults.MOUNT_PATH):
+         """Mount the external media"""
+-- 
+2.43.7
+
