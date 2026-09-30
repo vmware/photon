@@ -1,0 +1,25 @@
+From c1f34abfcfc19124001babd51826aad864d95140 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 26 Sep 2025 11:58:31 +0530
+Subject: [PATCH] Harden tmpfs mount options
+
+Ensure nosuid,noexec,nodev are enforced on tmpfs
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ units/tmp.mount | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/units/tmp.mount b/units/tmp.mount
+index 734acea..7b8fd9d 100644
+--- a/units/tmp.mount
++++ b/units/tmp.mount
+@@ -22,4 +22,4 @@ After=swap.target
+ What=tmpfs
+ Where=/tmp
+ Type=tmpfs
+-Options=mode=1777,strictatime,nosuid,nodev,size=50%%,nr_inodes=1m
++Options=mode=1777,strictatime,nosuid,noexec,nodev,size=50%%,nr_inodes=1m
+-- 
+2.51.0
+
