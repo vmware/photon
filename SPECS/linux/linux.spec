@@ -57,8 +57,19 @@
 %global canister_build 1
 %endif
 
+%ifarch x86_64
 %if 0%{?acvp_build}
 %global fips 1
+%endif
+%endif
+
+# acvp_build and kat_build are x86_64-only: the canister they certify is
+# arch/x86 crypto and the only ACVP config is config_x86_64_acvp. Refuse them
+# on any other architecture instead of building with x86_64 inputs.
+%ifnarch x86_64
+%if 0%{?acvp_build} || 0%{?kat_build}
+%{error:acvp_build and kat_build are x86_64-only; refusing to build for %{_target_cpu}}
+%endif
 %endif
 
 # Set default FIPS flags
@@ -80,7 +91,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.111
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -99,6 +110,8 @@ Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux
 %define efa_version 3.1.0
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
 
+# shared canister/.config handling, also included by linux-esx.spec
+Source5:        canister_config.inc
 # contains pre, postun, filetriggerun tasks
 Source6:        scriptlets.inc
 Source7:        check_for_config_applicability.inc
@@ -707,14 +720,7 @@ sed -i '/CONFIG_ARCH_HAS_RELR=y/a CONFIG_RELR=y' .config
 %endif
 %endif
 
-%if 0%{?canister_build}
-sed -i "s/# CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS=y/" .config
-sed -i "/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/d" .config
-%endif
-
-%if 0%{?canister_usage}
-sed -i "s/# CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS is not set/CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS=y/" .config
-%endif
+%include %{SOURCE5}
 
 %ifarch x86_64
 sed -e "s,@@NAME@@,%{name},g" \
@@ -1028,6 +1034,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Sep 29 2026 Daniel Casota <dcasota@gmail.com> 6.12.111-3
+- Share canister/.config handling via canister_config.inc (fixes the fips=0 path) and make canister_build work against the current kernel
 * Mon Sep 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.111-2
 - Fix aarch64 build: set RELR configs for sr92+ (binutils >= 2.46.1)
 * Wed Sep 23 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.111-1
