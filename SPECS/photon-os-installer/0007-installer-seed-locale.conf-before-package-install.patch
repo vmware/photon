@@ -1,0 +1,123 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Mon, 31 Aug 2026 00:00:00 +0000
+Subject: [PATCH] installer: seed /etc/locale.conf before package install
+
+dracut's 20i18n module reads /etc/locale.conf when it builds an initrd, and
+the initramfs rpm installs a file trigger that runs mkinitrd at the END of the
+package transaction started by _install_packages(). m_locale ran at
+POST_INSTALL, so the file was written after that trigger had already fired.
+dracut therefore aborted i18n setup with
+
+    "i18n_vars not set!  Please set up i18n_vars in  configuration file."
+
+and fell back to embedding every keymap.
+
+Move the write into the PRE_PKGS_INSTALL phase, where it lands before the
+transaction. _initialize_system() runs immediately before that phase, so the
+file appears at very nearly the same point in the sequence.
+
+localedef cannot move with it. It runs inside the chroot, and at
+PRE_PKGS_INSTALL the target holds only an initialised rpm database and the
+`filesystem` rpm - glibc, which provides /usr/bin/localedef, is not installed
+until _install_packages(). So locale setup is split along the line the phases
+already draw:
+
+  m_locale.py     PRE_PKGS_INSTALL  writes /etc/locale.conf
+  m_localedef.py  POST_INSTALL      runs localedef
+
+A separate module rather than a two-phase one because install_phase is a
+scalar compared with !=, in both photon-os-installer 2.8 and master; making a
+single module span two phases would mean changing the dispatcher, and 2.8 does
+not even have the MODULES_DISPATCHABLE_PHASES guard that master added. Two
+modules need no dispatcher change and behave identically on both.
+
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01JW73JTCUGRcaNTUEQcAMtf
+---
+ photon_installer/modules/m_locale.py    | 30 ++++++++++++-------------
+ photon_installer/modules/m_localedef.py | 30 +++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 15 deletions(-)
+ create mode 100644 photon_installer/modules/m_localedef.py
+
+diff --git a/photon_installer/modules/m_locale.py b/photon_installer/modules/m_locale.py
+index 6c489c3..fbca925 100644
+--- a/photon_installer/modules/m_locale.py
++++ b/photon_installer/modules/m_locale.py
+@@ -7,24 +7,24 @@ import os
+ 
+ import commons
+ 
+-install_phase = commons.POST_INSTALL
++# PRE_PKGS_INSTALL, not POST_INSTALL: dracut's 20i18n module reads
++# /etc/locale.conf when it builds an initrd, and the initramfs rpm installs a
++# file trigger that runs mkinitrd at the END of the package transaction started
++# by _install_packages(). A file written after that transaction is written too
++# late. Without it dracut aborts i18n setup with
++#     "i18n_vars not set!  Please set up i18n_vars in  configuration file."
++# and falls back to embedding every keymap.
++#
++# _initialize_system() runs immediately before this phase, so the file lands at
++# very nearly the same point in the sequence as it would have from there, but
++# in the module that owns locale rather than in the installer body.
++install_phase = commons.PRE_PKGS_INSTALL
+ enabled = True
+ 
+ 
+ def execute(installer):
+     # Set locale
+-    with open(
+-        os.path.join(installer.photon_root, "etc/locale.conf"), "w"
+-    ) as locale_conf:
++    locale_conf_path = os.path.join(installer.photon_root, "etc/locale.conf")
++    os.makedirs(os.path.dirname(locale_conf_path), exist_ok=True)
++    with open(locale_conf_path, "w") as locale_conf:
+         locale_conf.write("LANG=en_US.UTF-8\n")
+-
+-    """
+-    locale-gen.sh needs /usr/share/locale/locale.alias which is shipped
+-    with glibc-lang rpm, in some photon installations glibc-lang rpm is
+-    not installed by default. Call localedef directly here to define
+-    locale environment.
+-    """
+-    installer.cmd.run_in_chroot(
+-        installer.photon_root,
+-        "/usr/bin/localedef -c -i en_US -f UTF-8 en_US.UTF-8",
+-    )
+diff --git a/photon_installer/modules/m_localedef.py b/photon_installer/modules/m_localedef.py
+new file mode 100644
+index 0000000..5f06aea
+--- /dev/null
++++ b/photon_installer/modules/m_localedef.py
+@@ -0,0 +1,30 @@
++# /*
++# * Copyright © 2020 VMware, Inc.
++# * SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
++# */
++
++import commons
++
++# The other half of locale setup, and the half that cannot move earlier.
++#
++# m_locale writes /etc/locale.conf at PRE_PKGS_INSTALL because dracut needs it
++# before the package transaction ends. localedef cannot follow it there: it runs
++# inside the chroot, and at PRE_PKGS_INSTALL the target holds only an
++# initialised rpm database and the `filesystem` rpm - glibc, which provides
++# /usr/bin/localedef, is not installed until _install_packages(). So this stays
++# at POST_INSTALL.
++install_phase = commons.POST_INSTALL
++enabled = True
++
++
++def execute(installer):
++    """
++    locale-gen.sh needs /usr/share/locale/locale.alias which is shipped
++    with glibc-lang rpm, in some photon installations glibc-lang rpm is
++    not installed by default. Call localedef directly here to define
++    locale environment.
++    """
++    installer.cmd.run_in_chroot(
++        installer.photon_root,
++        "/usr/bin/localedef -c -i en_US -f UTF-8 en_US.UTF-8",
++    )
