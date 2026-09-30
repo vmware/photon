@@ -1,13 +1,13 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 %define gopath_comp github.com/%{name}/%{name}
-%define CONTAINERD_GITCOMMIT ee2735368117d2eb259779949d5e75cdafec9761
+%define CONTAINERD_GITCOMMIT fff62f14765df376e5fc36f5a8f8e795b5670f61
 
 Summary:        Containerd
 Name:           containerd
-Version:        2.3.6
+Version:        2.3.2
 Release:        1%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -140,10 +140,6 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
-* Wed Sep 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.6-1
-- Upgrade to v2.3.6
-- Fixes CVE-2026-53493
-- Restrict build to subrelease 92 and above; subrelease 91 forked off as a micro branch
 * Wed Jun 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.2-1
 - Upgrade to v2.3.2
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.1-1
