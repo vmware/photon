@@ -7,7 +7,7 @@ Summary:        chromium
 Name:           chromium
 # Don't bump or upgrade version of this spec
 # This is a special package & needs some manual effort
-Version:        150.0.7871.128
+Version:        154.0.8037.100
 Release:        1%{?dist}
 URL:            https://chromium.googlesource.com/chromium/src
 Group:          System Utility
@@ -20,7 +20,7 @@ BuildArch: x86_64
 # Contact Shreenidhi Shedi for cleanup related info.
 Source0: https://github.com/chromium/chromium/archive/%{name}-%{version}.tar.xz
 
-Source1: depot_tools-f394ab2.tar.xz
+Source1: depot_tools-9656a8d.tar.xz
 
 Source2: headless.gn
 
@@ -117,6 +117,8 @@ cp -a  %{output_dir}/headless_lib_data.pak \
 %{chromium_path}
 
 %changelog
+* Fri Oct 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 154.0.8037.100-1
+- Upgrade to v154.0.8037.100
 * Tue Jul 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 150.0.7871.128-1
 - Upgrade to v150.0.7871.128
 * Mon May 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 148.0.7778.165-1

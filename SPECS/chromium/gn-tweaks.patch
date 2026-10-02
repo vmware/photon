@@ -1,15 +1,22 @@
-From 7e28a5ee8103902fe483f7f6b66189ab22654565 Mon Sep 17 00:00:00 2001
+From 04c88f55513ae71d9f4359928ea5347163212006 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
-Date: Tue, 21 Jul 2026 00:00:00 -0600
+Date: Fri, 2 Oct 2026 11:35:25 -0500
 Subject: [PATCH] gn patches
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ BUILD.gn                                     | 37 --------------------
+ chrome/browser/enterprise/watermark/BUILD.gn |  2 --
+ chrome/browser/ui/browser_window/BUILD.gn    |  2 --
+ chrome/test/BUILD.gn                         |  2 --
+ services/audio/BUILD.gn                      |  1 -
+ 5 files changed, 44 deletions(-)
 
 diff --git a/BUILD.gn b/BUILD.gn
-index df09eb1d9b..ea982898ba 100644
+index d55402a..73c2427 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -315,9 +315,6 @@ group("gn_all") {
+@@ -319,9 +319,6 @@ group("gn_all") {
      if (toolkit_views) {
        deps += [
          "//ui/views:views_unittests",
@@ -19,7 +26,7 @@ index df09eb1d9b..ea982898ba 100644
        ]
      }
  
-@@ -340,7 +337,6 @@ group("gn_all") {
+@@ -344,7 +341,6 @@ group("gn_all") {
      if (!is_android && !is_ios && !is_fuchsia) {
        deps += [
          "//components/sync:sync_full_proto_unittests",
@@ -27,7 +34,7 @@ index df09eb1d9b..ea982898ba 100644
        ]
      }
  
-@@ -1163,7 +1159,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1194,7 +1190,6 @@ if (use_blink && !is_cronet_build) {
          "//chrome",
          "//chrome/test/chromedriver:chromedriver_server",
          "//third_party/blink/tools:wpt_tests_isolate",
@@ -35,7 +42,7 @@ index df09eb1d9b..ea982898ba 100644
        ]
      }
  
-@@ -1179,7 +1174,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1210,7 +1205,6 @@ if (use_blink && !is_cronet_build) {
          "//chrome/test/chromedriver:chromedriver_server",
          "//headless:headless_shell",
          "//third_party/blink/tools:wpt_tests_isolate",
@@ -43,17 +50,7 @@ index df09eb1d9b..ea982898ba 100644
        ]
        if (is_mac || is_linux) {
          data_deps += [ "//third_party/hyphenation-patterns:bundle_hyphen_data" ]
-@@ -1272,9 +1266,6 @@ if (use_blink && !is_cronet_build) {
-       "//testing/scripts/run_isolated_script_test.py",
-       "//testing/xvfb.py",
-       "//third_party/blink/tools/",
--      "//third_party/blink/web_tests/external/wpt/config.tmpl.json",
--      "//third_party/blink/web_tests/resources/",
--      "//third_party/blink/web_tests/TestLists/",
-       "//third_party/pywebsocket3/src/mod_pywebsocket/",
-       "//third_party/test_fonts/test_fonts/",
-       "//third_party/wpt_tools/",
-@@ -1360,7 +1351,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1391,7 +1385,6 @@ if (use_blink && !is_cronet_build) {
  
      data_deps = [
        ":blink_web_tests_support_data",
@@ -61,7 +58,7 @@ index df09eb1d9b..ea982898ba 100644
      ]
      data = [ "//third_party/blink/perf_tests/" ]
    }
-@@ -1371,7 +1361,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1402,7 +1395,6 @@ if (use_blink && !is_cronet_build) {
    # this target.
    group("blink_web_tests_expectations") {
      testonly = true
@@ -69,7 +66,7 @@ index df09eb1d9b..ea982898ba 100644
    }
  
    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
-@@ -1385,7 +1374,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1416,7 +1408,6 @@ if (use_blink && !is_cronet_build) {
  
      data_deps = [
        ":blink_web_tests_support_data",
@@ -77,7 +74,7 @@ index df09eb1d9b..ea982898ba 100644
      ]
      data = [ "//third_party/blink/perf_tests/" ]
    }
-@@ -1410,7 +1398,6 @@ if (use_blink && !is_cronet_build) {
+@@ -1441,7 +1432,6 @@ if (use_blink && !is_cronet_build) {
  
      data_deps = [
        ":blink_web_tests_support_data",
@@ -85,7 +82,7 @@ index df09eb1d9b..ea982898ba 100644
        "//third_party/webgpu-cts",
      ]
      data = [ "//third_party/webgpu-cts/scripts/" ]
-@@ -1461,34 +1448,7 @@ if (use_blink && !is_cronet_build) {
+@@ -1492,34 +1482,7 @@ if (use_blink && !is_cronet_build) {
        "//third_party/blink/renderer/bindings/scripts/",
        "//third_party/blink/renderer/build/scripts/",
        "//third_party/blink/tools/",
@@ -121,10 +118,10 @@ index df09eb1d9b..ea982898ba 100644
  }
  
 diff --git a/chrome/browser/enterprise/watermark/BUILD.gn b/chrome/browser/enterprise/watermark/BUILD.gn
-index ceb975fb40..d6859228a5 100644
+index 2f0046b..ae15aa9 100644
 --- a/chrome/browser/enterprise/watermark/BUILD.gn
 +++ b/chrome/browser/enterprise/watermark/BUILD.gn
-@@ -45,8 +45,6 @@ executable("watermark_app") {
+@@ -42,8 +42,6 @@ executable("watermark_app") {
      "//ui/gfx",
      "//ui/resources:ui_test_pak",
      "//ui/views",
@@ -134,10 +131,10 @@ index ceb975fb40..d6859228a5 100644
  
    defines = [ "VIEWS_EXAMPLES_IMPLEMENTATION" ]
 diff --git a/chrome/browser/ui/browser_window/BUILD.gn b/chrome/browser/ui/browser_window/BUILD.gn
-index ab08cd298d..dc8a96cdce 100644
+index 886c6c1..dbe9939 100644
 --- a/chrome/browser/ui/browser_window/BUILD.gn
 +++ b/chrome/browser/ui/browser_window/BUILD.gn
-@@ -69,7 +69,6 @@ if (!is_android) {
+@@ -70,7 +70,6 @@ if (!is_android) {
          "//base",
          "//base/test:test_support",
          "//chrome/browser/ui",
@@ -145,7 +142,7 @@ index ab08cd298d..dc8a96cdce 100644
          "//chrome/test:test_support",
          "//content/test:test_support",
          "//testing/gtest",
-@@ -91,7 +90,6 @@ if (!is_android || is_desktop_android) {
+@@ -92,7 +91,6 @@ if (!is_android || is_desktop_android) {
        "//base",
        "//base/test:test_support",
        "//chrome/browser/ui",
@@ -154,10 +151,10 @@ index ab08cd298d..dc8a96cdce 100644
        "//content/test:test_support",
        "//testing/gtest",
 diff --git a/chrome/test/BUILD.gn b/chrome/test/BUILD.gn
-index 80e65782a4..0b3294d554 100644
+index abc2dc9..e021033 100644
 --- a/chrome/test/BUILD.gn
 +++ b/chrome/test/BUILD.gn
-@@ -6587,7 +6587,6 @@ template("performance_test_suite_template_base") {
+@@ -4920,7 +4920,6 @@ template("performance_test_suite_template_base") {
        data_deps += [
          "//chrome/test:load_library_perf_tests",
          "//components/tracing:tracing_perftests",
@@ -165,29 +162,26 @@ index 80e65782a4..0b3294d554 100644
          "//testing:run_perf_test",
          "//ui/views:views_perftests",
        ]
-diff --git a/third_party/swiftshader/BUILD.gn b/third_party/swiftshader/BUILD.gn
-index cec2b68d5b..19c9bd5517 100644
---- a/third_party/swiftshader/BUILD.gn
-+++ b/third_party/swiftshader/BUILD.gn
-@@ -74,21 +74,3 @@ group("swiftshader") {
-     "src/Vulkan:swiftshader_libvulkan",
-   ]
- }
--
--if (build_with_chromium) {
--  group("swiftshader_tests") {
--    testonly = true
--
--    data_deps = [ "tests/SystemUnitTests:swiftshader_system_unittests" ]
--
--    if (supports_llvm) {
--      data_deps +=
--          [ "tests/ReactorUnitTests:swiftshader_reactor_llvm_unittests" ]
--    }
--
--    if (supports_subzero) {
--      data_deps +=
--          [ "tests/ReactorUnitTests:swiftshader_reactor_subzero_unittests" ]
--    }
--  }
--}
+@@ -8923,7 +8922,6 @@ if (!is_android && !is_chromeos_device) {
+       "//chrome/browser/ui/views/location_bar:interactive_ui_tests",
+       "//chrome/browser/ui/views/location_bar/cookie_controls:interactive_ui_tests",
+       "//chrome/browser/ui/views/tabs/groups:interactive_ui_tests",
+-      "//chrome/browser/ui/webui/print_preview:interactive_ui_tests",
+     ]
+ 
+     if (!is_chrome_for_testing) {
+diff --git a/services/audio/BUILD.gn b/services/audio/BUILD.gn
+index 3f466a7..8373a3e 100644
+--- a/services/audio/BUILD.gn
++++ b/services/audio/BUILD.gn
+@@ -202,7 +202,6 @@ source_set("tests") {
+     "//services/audio/public/cpp",
+     "//services/audio/public/cpp:test_support",
+     "//services/audio/public/mojom",
+-    "//services/audio/test:test_support",
+     "//testing/gmock",
+     "//testing/gtest",
+     "//third_party/flatbuffers",
+-- 
+2.53.0
+

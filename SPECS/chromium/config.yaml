@@ -1,6 +1,6 @@
 sources:
-- archive: chromium-150.0.7871.128.tar.xz
-  archive_sha512sum: 483557dbb273209815e3ff02bf3b4032a54b6c29bba8cc23660a140179400f73ee772a70f2327a454514bd8b048f57a86a9034879e4f3af06ee4317ecc63d7c7
+- archive: chromium-154.0.8037.100.tar.xz
+  archive_sha512sum: 9156f138e467ffac1ad945809ac5fd3daa227f77a88bb4097350a34aff74741f324bfdc93b6d82dd20fcc827feb71c2a9cc71731ee945dc5e5b679ebe6cdd680
   skip_validation: true
   spdx:
     package:
@@ -13,8 +13,8 @@ sources:
       short_summary: chromium
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: depot_tools-f394ab2.tar.xz
-  archive_sha512sum: 4cdfd4dc79056380016882f9b72f4acf73a7392720684ba4897c9355253ee677994861683f62e8c0058ba2ae5e44d8e7a42b655d19188acd2d687f1db2519b40
+- archive: depot_tools-9656a8d.tar.xz
+  archive_sha512sum: d14aba1e89fdc58094f3722c6c9f217ebb598d5ff0f3202bdf1ff0733a6dcb05031ef8c451f2e1527fbe568aac38ebb8ed39777b8f867b5a3b2cc050e627de5d
   skip_validation: true
   spdx:
     package:

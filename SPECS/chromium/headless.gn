@@ -30,7 +30,7 @@ icu_use_data_file = false
 # Use embedded data instead external files for headless in order
 # to simplify deployment.
 v8_use_external_startup_data = false
-enable_print_preview = false
+enable_print_preview = true
 enable_remoting = false
 use_alsa = false
 use_bluez = false
