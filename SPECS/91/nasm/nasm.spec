@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Netwide Assembler.
 Name:           nasm
 Version:        3.02
-Release:        3%{?dist}
+Release:        2%{?dist}
 URL:            http://www.nasm.us
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -15,8 +15,6 @@ Source1: http://www.nasm.us/pub/nasm/releasebuilds/%{version}/nasm-%{version}-xd
 
 Source2: license.txt
 %include %{SOURCE2}
-
-Patch0: CVE-2026-6067.patch
 
 %description
 NASM (Netwide Assembler) is an 80x86 assembler designed for portability and modularity.
@@ -30,7 +28,7 @@ Requires:       %{name} = %{version}-%{release}
 Extensive documentation for the Netwide Assembler (NASM) in HTML and PDF formats.
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -n %{name}-%{version}
 cd ../
 tar xf %{SOURCE1} --no-same-owner
 
@@ -76,9 +74,6 @@ make %{?_smp_mflags} -k test
 %{_docdir}/*.ps
 
 %changelog
-* Mon Oct 05 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.02-3
-- Fix CVE-2026-6067
-- Restrict build to subrelease 92 and above; subrelease 91 forked off as a micro branch
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.02-2
 - Extend to build for 91 and above
 * Tue Jun 30 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.02-1
