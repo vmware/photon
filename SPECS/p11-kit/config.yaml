@@ -1,7 +1,15 @@
 sources:
-- archive: p11-kit-0.24.1.tar.xz
-  archive_sha512sum: 8cf170c714bb9e0cf3df93e8ec55b8e3c55cabf2c6a27f177ac6de8b8028985df2ca0216d3215d6828dc2ae3095c4e1a4febe8cb26b88ec321defc66bb011e81
-  skip_validation: true
+- archive: p11-kit-0.26.5.tar.xz
+  archive_sha512sum: 180d8bfd07332aeb31b3008c6bf68492a754a81cd59c761ed76673210312b9c6ac7fbcf57df8328e897044a09f3531fd1701e462731feec4427b7430bb4c789e
+  archive_type: upstream
+  name: p11-kit-0.26.5
+  version: 0.26.5
+  url: https://github.com/p11-glue/p11-kit/releases/download/0.26.5/p11-kit-0.26.5.tar.xz
+  repo_url: https://github.com/p11-glue/p11-kit
+  commit_id: 120050e353e8f43d7c40bbcc047f667f903f4de5
+  skip_list: [ChangeLog]
+  missing: ['*.gmo', .dir-locals.el, .empty, .github, .gitignore, .gitmodules, .packit.yaml, ABOUT-NLS, Makefile.in, Makefile.in.in, README.md, Rules-quot, SECURITY.md, aclocal.m4, autogen.sh, automaint.sh, basic.asn.h, build-to-host.m4, certs, ci, compile, conf.in, config.guess, config.h.in, config.rpath, config.sub, configure, cross_file_mingw64.txt, depcomp, docbook-params.xsl, en@boldquot.header, en@quot.header, frob-multi-init.c, gettext.m4, host-cpu-c-abi.m4, html, iconv.m4, insert-header.sed, install-sh, internal, intlmacosx.m4, iter.gnu.c, lib-ld.m4, lib-link.m4, lib-prefix.m4, libtool.m4, lsan.supp, ltmain.sh, ltoptions.m4, ltsugar.m4, ltversion.m4, lt~obsolete.m4, meson_post_install_test.sh, missing, mock-module-v3-ep4.c, nls.m4, openssl.asn.h, p11-kit.pot, persist.in, pin.gnu.c, pkcs11-json, pkix.asn.h, po.m4, progtest.m4, proxy-generated.h, remove-potcdate.sed, rpc.in, run-afl.sh, run-wrapper.sh, setup-wrapper.sh, stamp-po, tap-driver.sh, test-driver, tx-update, uri.gnu.c, uri.in, virtual-base-generated.h, virtual-ffi-generated.h, virtual-fixed-closures.h, virtual-fixed-wrappers.h, virtual-stack-generated.h, wine-wrapper.sh]
+  skip_validation: false
   spdx:
     package:
       detailed_description: '%{name} provides a way to load and enumerate PKCS11 modules,

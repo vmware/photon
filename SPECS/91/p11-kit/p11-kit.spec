@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 %define _ca_trust_dir %{_sysconfdir}/pki/ca-trust
 
 Name:           p11-kit
 Summary:        Library for loading and sharing PKCS11 modules
-Version:        0.26.5
-Release:        1%{?dist}
+Version:        0.24.1
+Release:        6%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Development/Libraries
@@ -160,8 +160,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/update-ca-trust
 
 %changelog
-* Mon Oct 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.26.5-1
-- Upgrade to 0.26.5
 * Fri Mar 13 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.24.1-6
 - Remove stale chkconfig dependency
 * Wed Jan 22 2025 Tapas Kundu <tapas.kundu@broadcom.com> 0.24.1-5
