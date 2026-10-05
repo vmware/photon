@@ -1,0 +1,13 @@
+[Unit]
+Description=The Apache HTTP Server
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/run/httpd/httpd.pid
+ExecStart=/usr/sbin/httpd -k start
+ExecStop=/usr/sbin/httpd -k stop
+ExecReload=/usr/sbin/httpd -k graceful
+
+[Install]
+WantedBy=multi-user.target

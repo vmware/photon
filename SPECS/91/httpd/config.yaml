@@ -1,14 +1,14 @@
 sources:
-- archive: httpd-2.4.69.tar.bz2
-  archive_sha512sum: ca9c5808eef7a0d8d88148b0d2d6045b5a0151823f09afc786b283cef9990036a9c7bc53d043e2f67b6ec06db05f655aa961cb875fa7ad0911fa04fdd295bd93
-  name: httpd-2.4.69
-  version: 2.4.69
-  url: https://archive.apache.org/dist/httpd/httpd-2.4.69.tar.bz2
+- archive: httpd-2.4.68.tar.bz2
+  archive_sha512sum: 134a5bbd3ffe97523ac750490531bcb9441c532cedf0229aa006aa1368e9d25040507c6f519bed6754044f62c371f7c7f9a11b6a311f79b9680d478bf4373eb3
+  name: httpd-2.4.68
+  version: 2.4.68
+  url: https://archive.apache.org/dist/httpd/httpd-2.4.68.tar.bz2
   repo_url: https://github.com/apache/httpd.git
-  commit_id: 1e06e9860794ce39605b79a0a787abfe084e5677
+  commit_id: 736bb657405eb73fd68a64772c3a908807bdb887
   archive_type: upstream
   skip_list: [VERSIONING, ab.c, ROADMAP]
-  missing: ['*.fr', '*.xml', '*.tr', '*.ja', '*.ko', '*.meta', '*.ru', '*.be', '*.xsl', '*.de', '*.es', '*-br', '*-cn', tmp, apr_common.m4, config.sub, STATUS, .deps, ap_config_auto.h.in, configure, ltmain.sh, changes-entries, challenges, staging, config.guess, httpd.spec, index.xml.da, autoindex2]
+  missing: ['*.fr', '*.xml', '*.tr', '*.ja', '*.ko', '*.meta', '*.ru', '*.be', '*.xsl', '*.de', '*.es', '*-br', '*-cn', 'tmp', 'apr_common.m4', 'config.sub', 'STATUS', '.deps', 'ap_config_auto.h.in', 'configure', 'ltmain.sh', 'changes-entries', 'challenges', 'staging', 'config.guess', 'httpd.spec', 'index.xml.da']
   spdx:
     package:
       detailed_description: 'The Apache HTTP Server.'

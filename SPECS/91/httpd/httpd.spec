@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.69
-Release:        1%{?dist}
+Version:        2.4.68
+Release:        2%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -193,8 +193,6 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
-* Mon Oct 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.69-1
-- Upgrade to v2.4.69, contains security fixes
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.68-2
 - Remove unnecessary requires
 * Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.68-1
