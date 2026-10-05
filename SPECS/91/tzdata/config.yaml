@@ -1,6 +1,6 @@
 sources:
-- archive: tzdata2026e.tar.gz
-  archive_sha512sum: 5be2f875f73b75e5783c474bf7a6c768e433cc90283f8fc6a75e3d05bd92aec97936e8a55ccca5e880b5dacc18ba65932bab0e783e1ed5d2af4a3a4df95512be
+- archive: tzdata2026c.tar.gz
+  archive_sha512sum: e0b4b7044b66fbc27bc21d13d18063abcdf78ab58d5ba5fd64bd1a88d86e9d495f45add4d8e65bb6c40249f9c94ca29b72c8ebba8d0e4c468f2965ac77932ef0
   skip_validation: true
   spdx:
     package:
