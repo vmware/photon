@@ -3,7 +3,7 @@
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -60,6 +60,9 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Mon Oct 12 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-14
+- Fix --precheck-only issue of missing reporting error encountered in updating solv
+- Remove --rm-pkgs-pre named packages before updating package managment software in update_os
 * Tue Sep 15 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-13
 - Support --precheck-only option during OS update
 * Thu Sep 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.1-12

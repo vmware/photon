@@ -643,7 +643,7 @@ function update_solv_to_support_complex_deps() {
   local rc=0
 
   echo "Updating package management software and libraries."
-  if ${TDNF} $REPOS_OPT -y update libsolv rpm rpm-libs tdnf tdnf-cli-libs --refresh; then
+  if ${TDNF} $REPOS_OPT -y install libsolv rpm rpm-libs tdnf tdnf-cli-libs --refresh; then
     echo "Upgrade of package management software and libraries succeeded."
     rebuilddb
   else
@@ -806,22 +806,23 @@ function update_os() {
     # deprecated drpm package would prevent package manager update from happening
     # remove it before updating package manager
     erase_pkgs "drpm"
-    update_solv_to_support_complex_deps
     pre_upgrade_rm_pkgs
-    rebuilddb
   fi
+  update_solv_to_support_complex_deps
+  rc=$?
+  rebuilddb
   tdnf_makecache
 
   if is_precheck_running; then
-    if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh \
-        --allowerasing ${RETAIN_DEPRECATED_PKGS:+--exclude="${RETAIN_DEPRECATED_PKGS}"}; then
+    ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh \
+        --allowerasing ${RETAIN_DEPRECATED_PKGS:+--exclude="${RETAIN_DEPRECATED_PKGS}"}
+    rc=$(($rc+$?))
+    if [ $rc -eq 0 ]; then
       echo "Update OS precheck succeeded."
-      exit 0
     else
-      rc=$?
       echoerr "Update OS precheck failed with tdnf error $rc"
-      exit $rc
     fi
+    exit $rc
   else
     echo "Updating all the remaining packages to the latest available versions."
     if ${TDNF} $REPOS_OPT $ASSUME_YES_OPT distro-sync --refresh \
