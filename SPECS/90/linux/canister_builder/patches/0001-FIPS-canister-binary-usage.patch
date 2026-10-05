@@ -138,13 +138,15 @@ index 515ca3a4c..851fbc4fb 100644
  obj-$(CONFIG_CRYPTO_POLYVAL) += polyval-generic.o
  obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
  obj-$(CONFIG_CRYPTO_USER_API_HASH) += algif_hash.o
-@@ -185,13 +162,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -185,7 +162,6 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
 -obj-$(CONFIG_CRYPTO_ECC) += ecc.o
  obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
  obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
+ 
+@@ -192,7 +168,6 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  
  ecdh_generic-y += ecdh.o
  ecdh_generic-y += ecdh_helper.o

@@ -32,7 +32,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.183
+Version:        6.1.189
 Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -214,7 +214,6 @@ Patch257: 6.0-0001-vmw_vmci-arm64-support-memory-ordering.patch
 
 # 9p: [300..350]
 Patch300: 0001-fs-9p-Add-opt_metaonly-cache-option.patch
-Patch301: 0002-p9fs_dir_readdir-offset-support.patch
 Patch302: 0003-Add-9p-zero-copy-data-path-using-crossfd.patch
 Patch303: 0004-Enable-cache-loose-for-vdfs-9p.patch
 Patch304: 0005-Ensure-seekdir-take-effect-when-entries-in-readdir-b.patch
@@ -581,6 +580,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Oct 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.189-1
+- Update to version 6.1.189
+- Drop 0002-p9fs_dir_readdir-offset-support.patch, superseded by upstream
+  ad8b42dc6fde (9p: invalidate readdir buffer on seek)
 * Fri Aug 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.183-1
 - Update to version 6.1.183
 - Fix BPF JIT memory (bpf_jit_limit) leak from seccomp filters pinned by unreaped zombies

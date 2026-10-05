@@ -42,9 +42,6 @@ Patch3024: 0001-bpf-Fix-accesses-to-uninit-stack-slots.patch
 # Fix CVE-2024-46813
 Patch3025: 0001-drm-amd-display-Check-link_index-before-accessing-dc.patch
 
-# Fix CVE-2024-50029
-Patch3026: 0001-Bluetooth-hci_conn-Fix-UAF-in-hci_enhanced_setup_syn.patch
-
 # Fix CVE-2024-41045
 Patch3028: 0001-bpf-Defer-work-in-bpf_timer_cancel_and_free.patch
 
@@ -71,9 +68,6 @@ Patch3036: 0001-rv-Use-strings-in-da-monitors-tracepoints.patch
 # Fix CVE-2024-50018
 Patch3037: 0001-net-napi-Prevent-overflow-of-napi_defer_hard_irqs.patch
 
-# Fix CVE-2025-21759
-Patch3038: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
-
 # Fix CVE-2025-21714
 Patch3039: 0001-RDMA-mlx5-Fix-implicit-ODP-use-after-free.patch
 Patch3040: 0001-RDMA-mlx5-Fix-implicit-ODP-hang-on-parent-deregistra.patch
@@ -83,9 +77,6 @@ Patch3041: 0001-smb-client-fix-use-after-free-of-signing-key.patch
 
 # Fix CVE-2024-53168
 Patch3042: 0001-sunrpc-fix-one-UAF-issue-caused-by-sunrpc-kernel-tcp.patch
-
-# Fix CVE-2025-21969
-Patch3043: 0001-Bluetooth-L2CAP-Fix-slab-use-after-free-Read-in-l2ca.patch
 
 # Fix CVE-2024-27042
 Patch3044: 0001-drm-amdgpu-Fix-potential-out-of-bounds-access-in-amd.patch
@@ -153,9 +144,6 @@ Patch3066: 0001-bridge-mcast-fix-use-after-free-during-router-port-configuration
 Patch3067: 0001-xfrm-Duplicate-SPI-Handling.patch
 Patch3068: 0001-xfrm-xfrm_alloc_spi-shouldn-t-use-0-as-SPI.patch
 
-# Fix CVE-2025-38616
-Patch3069: 0001-tls-handle-data-disappearing-from-under-the-TLS-ULP.patch
-
 # Fix CVE-2025-39810
 Patch3070: 0001-bnxt_en-Fix-possible-crash-after-creating-sw-mqprio-.patch
 Patch3071: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
@@ -166,8 +154,6 @@ Patch3073: 0002-smb-client-fix-use-after-free-in-smb2_query_info_com.patch
 Patch3074: 0003-smb-Don-t-leak-cfid-when-reconnect-races-with-open_c.patch
 Patch3075: 0004-smb-prevent-use-after-free-due-to-open_cached_dir-er.patch
 
-# CVE-2025-40362
-Patch3076: 0001-ceph-pass-the-mdsc-to-several-helpers.patch
 Patch3077: 0002-ceph-fix-multifs-mds-auth-caps-issue.patch
 
 # CVE-2025-39905
@@ -194,9 +180,6 @@ Patch3084: 0001-svcrdma-bound-check-rq_pages-index-in-inline-path.patch
 # Fix CVE-2025-68353
 Patch3085: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
 
-# Fix CVE-2025-68190
-Patch3087: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
-
 # Fix CVE-2024-25742 and CVE-2024-25743
 Patch3088: 0001-x86-sev-Harden-VC-instruction-emulation-somewhat.patch
 
@@ -212,9 +195,6 @@ Patch3091: 0001-spi-rockchip-Fix-register-out-of-bounds-access.patch
 # CVE-2026-23171
 Patch3092: 0001-bonding-fix-use-after-free-due-to-enslave-fail-after-slave-array-update.patch
 
-# Fix CVE-2026-23447
-Patch3093: 0001-net-usb-cdc_ncm-add-ndpoffset-to-NDP32-nframes-bound.patch
-
 # Fix CVE-2026-31648
 Patch3094: 0001-mm-filemap-fix-nr_pages-calculation-overflow-in-file.patch
 
@@ -229,9 +209,6 @@ Patch3097: 0001-drm-amd-display-Fix-vs-typos.patch
 
 # Fix CVE-2026-43414
 Patch3098: 0001-scsi-qla2xxx-Completely-fix-fcport-double-free.patch
-
-# Fix CVE-2026-23239
-Patch3102: 0001-espintcp-Fix-race-condition-in-espintcp_close.patch
 
 # Fix CVE-2026-31527
 Patch3103: 0001-driver-core-generalize-driver_override-in-struct-dev.patch
@@ -263,9 +240,6 @@ Patch3115: 0001-nvmet-move-async-event-work-off-nvmet-wq.patch
 # Fix CVE-2026-23383
 Patch3116: 0001-bpf-arm64-Force-8-byte-alignment-for-JIT-buffer.patch
 
-# Fix CVE-2026-31419
-Patch3117: 0001-net-bonding-fix-use-after-free-in-bond_xmit_broadcas.patch
-
 # Fix CVE-2026-3118
 Patch3118: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
 
@@ -276,5 +250,3 @@ Patch3119: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
 Patch3121: 0001-net-sched-sch_netem-fix-out-of-bounds-access-in-pack.patch
 Patch3122: 0002-net-sched-netem-handle-multi-segment-skb-in-corrupti.patch
 
-# Fix CVE-2026-46266
-Patch3123: 0001-inet-RAW-sockets-IPPROTO_RAW-MUST-drop-incoming-ICMP.patch

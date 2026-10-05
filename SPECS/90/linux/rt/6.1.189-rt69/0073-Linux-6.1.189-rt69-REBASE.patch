@@ -1,0 +1,20 @@
+From d3f9c5c35572dc853280b50873745c31d6adba50 Mon Sep 17 00:00:00 2001
+From: Clark Williams <clrkwllms@kernel.org>
+Date: Wed, 7 Oct 2026 17:22:48 -0500
+Subject: [PATCH 73/73] Linux 6.1.189-rt69 REBASE
+
+Signed-off-by: Clark Williams <clrkwllms@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index e2eb19782d4c..65189810797f 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt65
++-rt69
+-- 
+2.55.0
+

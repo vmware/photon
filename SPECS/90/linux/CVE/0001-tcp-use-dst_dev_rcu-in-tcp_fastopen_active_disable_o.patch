@@ -16,31 +16,23 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 [Ankit: Backported for v6.1]
 Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- net/ipv4/tcp_fastopen.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/ipv4/tcp_fastopen.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
 index cbce1306b..0f049ab39 100644
 --- a/net/ipv4/tcp_fastopen.c
 +++ b/net/ipv4/tcp_fastopen.c
-@@ -558,6 +558,7 @@ bool tcp_fastopen_active_should_disable(struct sock *sk)
- void tcp_fastopen_active_disable_ofo_check(struct sock *sk)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
-+	struct net_device *dev;
- 	struct dst_entry *dst;
- 	struct sk_buff *skb;
- 
-@@ -574,10 +575,12 @@ void tcp_fastopen_active_disable_ofo_check(struct sock *sk)
+@@ -575,11 +575,12 @@ void tcp_fastopen_active_disable_ofo_check(struct sock *sk)
  		}
  	} else if (tp->syn_fastopen_ch &&
  		   atomic_read(&sock_net(sk)->ipv4.tfo_active_disable_times)) {
 -		dst = sk_dst_get(sk);
--		if (!(dst && dst->dev && (dst->dev->flags & IFF_LOOPBACK)))
+-		dev = dst ? dst_dev(dst) : NULL;
 +		rcu_read_lock();
 +		dst = __sk_dst_get(sk);
 +		dev = dst ? dst_dev_rcu(dst) : NULL;
-+		if (!(dev && (dev->flags & IFF_LOOPBACK)))
+ 		if (!(dev && (dev->flags & IFF_LOOPBACK)))
  			atomic_set(&sock_net(sk)->ipv4.tfo_active_disable_times, 0);
 -		dst_release(dst);
 +		rcu_read_unlock();
@@ -49,4 +41,3 @@ index cbce1306b..0f049ab39 100644
  
 -- 
 2.40.4
-

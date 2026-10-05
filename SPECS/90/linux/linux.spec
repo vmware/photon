@@ -49,8 +49,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.183
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.1.189
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -995,6 +995,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Oct 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.189-1
+- Update to version 6.1.189
 * Fri Sep 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.183-2
 - Club linux-tools.spec into linux.spec
 * Fri Aug 21 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.1.183-1
