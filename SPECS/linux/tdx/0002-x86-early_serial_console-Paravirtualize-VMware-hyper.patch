@@ -1,0 +1,105 @@
+From 338885f0bf36c644724547dcd307ccc1c52d6b92 Mon Sep 17 00:00:00 2001
+From: Alex James <alex.james@broadcom.com>
+Date: Fri, 24 Apr 2026 23:53:05 +0000
+Subject: [PATCH 2/7] x86/early_serial_console: Paravirtualize VMware
+ hypervisor detection for TDX
+
+console_init() attempts to detect VMware hypervisors by reading the
+VMware info CPUID leaf. Accesses to hypervisor CPUID leaves generate
+virtualization exceptions in Intel TDX guests, but the IDT used during
+decompression lacks a #VE handler. Rework the VMware detection code to
+paravirtualize the VMware CPUID access when compiled as a part of the
+decompression code.
+
+Signed-off-by: Alex James <alex.james@broadcom.com>
+---
+ .../boot/compressed/early_serial_console.c    |  3 ++
+ arch/x86/boot/early_serial_console.c          | 47 ++++++++++++++-----
+ 2 files changed, 39 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/early_serial_console.c b/arch/x86/boot/compressed/early_serial_console.c
+index 70a8d1706d0f..4ddb98173e3d 100644
+--- a/arch/x86/boot/compressed/early_serial_console.c
++++ b/arch/x86/boot/compressed/early_serial_console.c
+@@ -1,6 +1,9 @@
+ #include "misc.h"
++#include "tdx.h"
+ 
+ /* This might be accessed before .bss is cleared, so use .data instead. */
+ int early_serial_base __section(".data");
+ 
++#define __BOOT_COMPRESSED
++
+ #include "../early_serial_console.c"
+diff --git a/arch/x86/boot/early_serial_console.c b/arch/x86/boot/early_serial_console.c
+index 987eab9765e4..778e3b499be2 100644
+--- a/arch/x86/boot/early_serial_console.c
++++ b/arch/x86/boot/early_serial_console.c
+@@ -6,6 +6,13 @@
+ #include "boot.h"
+ #include "string.h"
+ 
++#include <asm/shared/tdx.h>
++#include <uapi/asm/vmx.h>
++
++#ifndef __BOOT_COMPRESSED
++#define early_is_tdx_guest()                 (false)
++#endif
++
+ #define CPUID_VMWARE_INFO_LEAF               0x40000000
+ #define CPUID_VMWARE_FEATURES_LEAF           0x40000010
+ 
+@@ -186,21 +193,39 @@ static void vmw_sio_serial_init(void)
+ 	vmw_sio_write(FER_IDX, fer | 2);
+ }
+ 
+-void console_init(void)
++static bool vmw_hypervisor_present(void)
+ {
+-	unsigned int hyper_vendor_id[3], ecx_f1;
+-	unsigned int eax_f1 = 1, eax_f2 = CPUID_VMWARE_INFO_LEAF;
++	u32 eax, sig[3];
+ 
+-	asm("cpuid" : "+a" (eax_f1), "=c" (ecx_f1) :: "ebx", "edx");
++	if (early_is_tdx_guest()) {
++		struct tdx_module_args args = {
++			.r10 = TDX_HYPERCALL_STANDARD,
++			.r11 = hcall_func(EXIT_REASON_CPUID),
++			.r12 = CPUID_VMWARE_INFO_LEAF
++		};
+ 
+-	if (ecx_f1 & (1UL << 31)) {
+-		asm("cpuid" : "+a" (eax_f2),
+-			"=b"(hyper_vendor_id[0]),
+-			"=c"(hyper_vendor_id[1]),
+-			"=d"(hyper_vendor_id[2]));
++		if (__tdx_hypercall(&args))
++			return false;
+ 
+-		if (!memcmp(hyper_vendor_id, "VMwareVMware", 12))
+-			vmw_sio_serial_init();
++		sig[0] = args.r13;
++		sig[1] = args.r14;
++		sig[2] = args.r15;
++	} else {
++		cpuid_count(1, 0, &eax, &sig[0], &sig[1], &sig[2]);
++		if (!(sig[1] & BIT(X86_FEATURE_HYPERVISOR & 31)))
++			return false;
++
++		cpuid_count(CPUID_VMWARE_INFO_LEAF, 0,
++		            &eax, &sig[0], &sig[1], &sig[2]);
++	}
++
++	return memcmp(sig, "VMwareVMware", 12) == 0;
++}
++
++void console_init(void)
++{
++	if (vmw_hypervisor_present()) {
++		vmw_sio_serial_init();
+ 	}
+ 
+ 	parse_earlyprintk();
+-- 
+2.53.0
+

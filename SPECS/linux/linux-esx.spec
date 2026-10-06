@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.113
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -206,6 +206,17 @@ Patch86: 0001-linux-esx-Add-SBX-DTLS-kernel-module.patch
 Patch91: 0001-block-Fix-validation-of-ioprio-level.patch
 %endif
 
+%ifarch x86_64
+# Intel TDX patches
+Patch100: 0001-x86-tdx-Export-decompression-time-TDX-detection-code.patch
+Patch101: 0002-x86-early_serial_console-Paravirtualize-VMware-hyper.patch
+Patch102: 0003-x86-boot-Skip-ACPI-RSDP-probing-on-TDX.patch
+Patch103: 0004-x86-coco-Move-snp_dmi_setup-function-to-common-code.patch
+Patch104: 0005-x86-tdx-Avoid-scanning-ROM-regions-during-boot.patch
+Patch105: 0006-x86-vmware-Parse-MP-tables-for-confidential-guests-o.patch
+Patch106: 0007-x86-vmware-Parse-MPWK-mailbox-in-TDX-VMs-without-UEF.patch
+%endif
+
 # CVE patches — see kernel_cve_patches.inc (range 3000–3999)
 %include %{SOURCE10301}
 
@@ -367,6 +378,12 @@ The Linux package contains the Linux kernel doc files
 # Backward compatibility
 %if "%{dist}" == ".ph5"
 %autopatch -p1 -m91 -M91
+%endif
+
+%ifarch x86_64
+# Intel TDX patches
+%autopatch -p1 -m100 -M109
+
 %endif
 
 %ifarch aarch64
@@ -586,6 +603,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Oct 21 2026 Alex James <alex.james@broadcom.com> 6.12.113-2
+- Support Intel TDX guests without UEFI
 * Mon Oct 19 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.113-1
 - Update to version 6.12.113
 * Mon Oct 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.112-7

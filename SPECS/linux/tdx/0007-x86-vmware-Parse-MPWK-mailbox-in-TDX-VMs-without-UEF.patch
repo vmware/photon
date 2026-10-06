@@ -1,0 +1,74 @@
+From 3a3b2fc5f608f1e90791e99392543893371a10d7 Mon Sep 17 00:00:00 2001
+From: Alex James <alex.james@broadcom.com>
+Date: Thu, 8 Oct 2026 23:57:51 +0000
+Subject: [PATCH 7/7] x86/vmware: Parse MPWK mailbox in TDX VMs without UEFI
+
+VMware hypervisors support the use of minimal firmware without ACPI
+support in Intel TDX guests. The minimal firmware exposes the MPWK
+mailbox at a fixed address to support SMP startup on TDX. Update the
+VMware platform setup code to use the firmware-provided MPWK mailbox
+when UEFI is disabled.
+
+Signed-off-by: Alex James <alex.james@broadcom.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index c20e91423e0e..8856cf76e22a 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -32,6 +32,7 @@
+ #include <linux/kmsg_dump.h>
+ #include <linux/set_memory.h>
+ #include <linux/panic_notifier.h>
++#include <linux/acpi.h>
+ #include <asm/pci_x86.h>
+ #include <asm/div64.h>
+ #include <asm/x86_init.h>
+@@ -55,6 +56,8 @@
+ #define STEALCLOCK_DISABLED        0
+ #define STEALCLOCK_ENABLED         1
+ 
++#define MPWK_MAILBOX_ADDR                    0x1000
++
+ struct vmware_steal_time {
+ 	union {
+ 		u64 clock;	/* stolen time counter in units of vtsc */
+@@ -522,9 +525,32 @@ static void __init vmware_platform_setup(void)
+ 	}
+ 
+ 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+-	    !efi_enabled(EFI_BOOT))
++	    !efi_enabled(EFI_BOOT)) {
+ 		x86_init.mpparse.find_mptable = mpparse_find_mptable;
+ 
++#ifdef CONFIG_ACPI_MADT_WAKEUP
++		if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
++			int err;
++			union acpi_subtable_headers *header;
++			struct acpi_madt_multiproc_wakeup mpwk = {
++				.header = {
++					.type = ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
++					.length = sizeof(mpwk)
++				},
++				.version = ACPI_MADT_MP_WAKEUP_VERSION_NONE,
++				.mailbox_address = MPWK_MAILBOX_ADDR
++			};
++
++			header = (union acpi_subtable_headers *)&mpwk.header;
++			err = acpi_parse_mp_wake(header,
++			                         (unsigned long)header +
++			                         sizeof(mpwk));
++			if (err)
++				pr_warn("Failed to parse MPWK mailbox\n");
++		}
++#endif
++	}
++
+ 	vmware_paravirt_ops_setup();
+ 
+ #ifdef CONFIG_X86_IO_APIC
+-- 
+2.53.0
+

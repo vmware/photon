@@ -1,0 +1,41 @@
+From fa735b044d7b975903896f3bd704d1e6169e6160 Mon Sep 17 00:00:00 2001
+From: Alex James <alex.james@broadcom.com>
+Date: Wed, 29 Apr 2026 23:55:00 +0000
+Subject: [PATCH 5/7] x86/tdx: Avoid scanning ROM regions during boot
+
+Commit 0f4a1e80989a ("x86/sev: Skip ROM range scans and validation for
+SEV-SNP guests") updated sme_early_init() to skip probing of ROM region
+in SEV-SNP guests. Like SEV-SNP, TDX guests also require encrypted
+memory to be accepted before it can be accessed. Some hypervisors may
+boot TDX guests with minimal firmware that does not expose standard
+tables (such as DMI or PIRQ routing tables) or legacy ROM regions. To
+avoid guest crashes caused by accessing unaccepted memory, update
+tdx_early_init() to override init functions which access DMI tables,
+PIRQ routing tables, or legacy ROM regions.
+
+Signed-off-by: Alex James <alex.james@broadcom.com>
+---
+ arch/x86/coco/tdx/tdx.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index af2068b81c80..6d06e678afcf 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -1089,5 +1089,13 @@ void __init tdx_early_init(void)
+ 	 */
+ 	x86_cpuinit.parallel_bringup = false;
+ 
++	/*
++	 * Override init functions that scan the ROM region in TDX guests,
++	 * as this memory is not accepted and would thus cause a crash.
++	 */
++	x86_init.pci.init_irq = x86_init_noop;
++	x86_init.resources.dmi_setup = cc_dmi_setup;
++	x86_init.resources.probe_roms = x86_init_noop;
++
+ 	pr_info("Guest detected\n");
+ }
+-- 
+2.53.0
+

@@ -1,0 +1,124 @@
+From b2407197dc961cdda18df08bd58241613bbaebe6 Mon Sep 17 00:00:00 2001
+From: Alex James <alex.james@broadcom.com>
+Date: Fri, 24 Apr 2026 23:21:58 +0000
+Subject: [PATCH 1/7] x86/tdx: Export decompression-time TDX detection code
+
+Commit 75d090fd167a ("x86/tdx: Add unaccepted memory support") added
+early_is_tdx_guest() to detect TDX in the decompression-time unaccepted
+memory code. Move the TDX detection code out of mem.c to allow other
+parts of the decompression-time code to determine if TDX is enabled.
+
+Signed-off-by: Alex James <alex.james@broadcom.com>
+---
+ arch/x86/boot/compressed/mem.c | 26 --------------------------
+ arch/x86/boot/compressed/tdx.c | 33 ++++++++++++++++++++++++++++-----
+ arch/x86/boot/compressed/tdx.h |  2 ++
+ 3 files changed, 30 insertions(+), 31 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/mem.c b/arch/x86/boot/compressed/mem.c
+index 0e9f84ab4bdc..8c2f9f53e5dd 100644
+--- a/arch/x86/boot/compressed/mem.c
++++ b/arch/x86/boot/compressed/mem.c
+@@ -6,32 +6,6 @@
+ #include "sev.h"
+ #include <asm/shared/tdx.h>
+ 
+-/*
+- * accept_memory() and process_unaccepted_memory() called from EFI stub which
+- * runs before decompressor and its early_tdx_detect().
+- *
+- * Enumerate TDX directly from the early users.
+- */
+-static bool early_is_tdx_guest(void)
+-{
+-	static bool once;
+-	static bool is_tdx;
+-
+-	if (!IS_ENABLED(CONFIG_INTEL_TDX_GUEST))
+-		return false;
+-
+-	if (!once) {
+-		u32 eax, sig[3];
+-
+-		cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax,
+-			    &sig[0], &sig[2],  &sig[1]);
+-		is_tdx = !memcmp(TDX_IDENT, sig, sizeof(sig));
+-		once = true;
+-	}
+-
+-	return is_tdx;
+-}
+-
+ void arch_accept_memory(phys_addr_t start, phys_addr_t end)
+ {
+ 	/* Platform-specific memory-acceptance call goes here */
+diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
+index 8451d6a1030c..8f40274e815c 100644
+--- a/arch/x86/boot/compressed/tdx.c
++++ b/arch/x86/boot/compressed/tdx.c
+@@ -16,6 +16,32 @@ void __tdx_hypercall_failed(void)
+ 	error("TDVMCALL failed. TDX module bug?");
+ }
+ 
++/*
++ * accept_memory() and process_unaccepted_memory() called from EFI stub which
++ * runs before decompressor and its early_tdx_detect().
++ *
++ * Enumerate TDX directly from the early users.
++ */
++bool early_is_tdx_guest(void)
++{
++	static bool once;
++	static bool is_tdx;
++
++	if (!IS_ENABLED(CONFIG_INTEL_TDX_GUEST))
++		return false;
++
++	if (!once) {
++		u32 eax, sig[3];
++
++		cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax,
++			    &sig[0], &sig[2],  &sig[1]);
++		is_tdx = !memcmp(TDX_IDENT, sig, sizeof(sig));
++		once = true;
++	}
++
++	return is_tdx;
++}
++
+ static inline unsigned int tdx_io_in(int size, u16 port)
+ {
+ 	struct tdx_module_args args = {
+@@ -63,12 +89,9 @@ static inline void tdx_outw(u16 value, u16 port)
+ 
+ void early_tdx_detect(void)
+ {
+-	u32 eax, sig[3];
+-
+-	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
+-
+-	if (memcmp(TDX_IDENT, sig, sizeof(sig)))
++	if (!early_is_tdx_guest()) {
+ 		return;
++	}
+ 
+ 	/* Use hypercalls instead of I/O instructions */
+ 	pio_ops.f_inb  = tdx_inb;
+diff --git a/arch/x86/boot/compressed/tdx.h b/arch/x86/boot/compressed/tdx.h
+index 9055482cd35c..191692938262 100644
+--- a/arch/x86/boot/compressed/tdx.h
++++ b/arch/x86/boot/compressed/tdx.h
+@@ -5,8 +5,10 @@
+ #include <linux/types.h>
+ 
+ #ifdef CONFIG_INTEL_TDX_GUEST
++bool early_is_tdx_guest(void);
+ void early_tdx_detect(void);
+ #else
++static inline bool early_is_tdx_guest(void) { return false; };
+ static inline void early_tdx_detect(void) { };
+ #endif
+ 
+-- 
+2.53.0
+

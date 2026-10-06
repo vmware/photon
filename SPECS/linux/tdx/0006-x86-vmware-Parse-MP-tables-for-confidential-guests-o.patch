@@ -1,0 +1,35 @@
+From fd39b0ce3fbc4f5f9dc844124c6feb131aa9b92a Mon Sep 17 00:00:00 2001
+From: Alex James <alex.james@broadcom.com>
+Date: Wed, 29 Apr 2026 20:39:10 +0000
+Subject: [PATCH 6/7] x86/vmware: Parse MP tables for confidential guests on
+ VMware hypervisors
+
+Commit a2ab25529bbc ("x86/vmware: Parse MP tables for SEV-SNP enabled
+guests under VMware hypervisors") updated vmware_platform_setup() to
+parse MP tables in SEV-SNP guests without UEFI. Update this branch to
+use CC_ATTR_GUEST_MEM_ENCRYPT to cover both SEV-SNP and TDX. There is no
+functional change for TDX guests as mpparse_find_mptable() is already
+used.
+
+Signed-off-by: Alex James <alex.james@broadcom.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 23f3fc69aaee..c20e91423e0e 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -521,7 +521,8 @@ static void __init vmware_platform_setup(void)
+ 		pr_warn("Failed to get TSC freq from the hypervisor\n");
+ 	}
+ 
+-	if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP) && !efi_enabled(EFI_BOOT))
++	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
++	    !efi_enabled(EFI_BOOT))
+ 		x86_init.mpparse.find_mptable = mpparse_find_mptable;
+ 
+ 	vmware_paravirt_ops_setup();
+-- 
+2.53.0
+

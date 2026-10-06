@@ -1,0 +1,26 @@
+From da568919c92a2ce456fc1fa159a1909b875b43d8 Mon Sep 17 00:00:00 2001
+From: Alex James <alex.james@broadcom.com>
+Date: Sat, 25 Apr 2026 00:10:30 +0000
+Subject: [PATCH 3/7] x86/boot: Skip ACPI RSDP probing on TDX
+
+Signed-off-by: Alex James <alex.james@broadcom.com>
+---
+ arch/x86/boot/compressed/acpi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/boot/compressed/acpi.c b/arch/x86/boot/compressed/acpi.c
+index 29191713553f..1c53426e4745 100644
+--- a/arch/x86/boot/compressed/acpi.c
++++ b/arch/x86/boot/compressed/acpi.c
+@@ -165,7 +165,7 @@ acpi_physical_address get_rsdp_addr(void)
+ 	if (!pa)
+ 		pa = efi_get_rsdp_addr();
+ 
+-	if (!pa && !get_sev_encryption_bit())
++	if (!pa && !get_sev_encryption_bit() && !early_is_tdx_guest())
+ 		pa = bios_get_rsdp_addr();
+ 
+ 	return pa;
+-- 
+2.53.0
+
