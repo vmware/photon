@@ -1,20 +1,23 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} <= 91
 
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.22
+Version:        3.21
 Release:        1%{?dist}
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/esnet/iperf/releases/download/%{version}/%{name}-%{version}.tar.gz
+#Source download URL: https://github.com/esnet/iperf/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/esnet/iperf/archive/%{version}/%{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 Patch1: disablepg.patch
+# Fix for CVE-2026-71217
+Patch2: CVE-2026-71217.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -59,8 +62,6 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
-* Tue Oct 06 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.22-1
-- Update to version 3.22, fix for CVE-2026-101283, CVE-2026-101276
 * Fri Sep 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.21-1
 - Update to version 3.21, fix for CVE-2026-71217 (JSON parameter bounds checks
   not yet present upstream at 3.21); drop CVE-2024-53580, CVE-2025-54349 and

@@ -1,12 +1,12 @@
 sources:
-- archive: iperf-3.22.tar.gz
-  archive_sha512sum: afa690cfdc0b05498778d6853c01d7bee02e86ba8b2af8f498d0b545eae2c407c25bc524bf52299bcd2875e9b123d855a9360a841014388b31cd8760bc7be15a
+- archive: iperf-3.21.tar.gz
+  archive_sha512sum: 6418c5521ab4e7ab9a18ecf07b3c0b9460d0015314bf6fdea9b3a748b1deb8c47a6ed1e5fd86cc0a99e0f6877e943f44488387f1fc2c3c17e091014fb9ad003c
   archive_type: upstream
-  name: iperf-3.22
-  version: '3.22'
-  url: https://github.com/esnet/iperf/releases/download/3.22/iperf-3.22.tar.gz
+  name: iperf-3.21
+  version: '3.21'
+  url: https://github.com/esnet/iperf/archive/3.21/iperf-3.21.tar.gz
   repo_url: https://github.com/esnet/iperf
-  commit_id: 926bd905501b792bd082d2200d1d1a84aa543e3a
+  commit_id: d39cf41526626b4e5a130f115d931cd6cbdffc19
   skip_list: []
   missing: ['.git']
   skip_validation: false
